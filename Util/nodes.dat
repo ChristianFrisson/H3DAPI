@@ -1,0 +1,1757 @@
+
+X3DNode : Node {
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This abstract node type is the base type for all nodes in the X3D
+///  system. }
+{/// }
+
+
+X3DChildNode : X3DNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This abstract node type indicates that the concrete nodes which are
+/// instantiated based on it may be used in children, addChildren, and
+/// removeChildren fields. }
+{/// More details on the children, addChildren, and removeChildren
+///fields can be found in 10.2.1 Grouping and children node types.}
+
+
+X3DBindableNode : X3DChildNode {
+  SFBool [in]     set_bind
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+  SFTime [out]    bindTime
+  SFBool [out]    isBound
+}
+{X3DBindableNode is the abstract base type for all bindable children
+/// nodes, including Background, TextureBackground, Fog, NavigationInfo
+/// and Viewpoint. For complete discussion of bindable behaviors, see
+/// 7.2.2 Bindable children nodes. }
+{/// }
+
+
+X3DGroupingNode : X3DChildNode { 
+  MFNode  [in]     addChildren
+  MFNode  [in]     removeChildren
+  MFNode  [in,out] children       []
+  SFNode  [in,out] metadata       NULL
+  SFVec3f []       bboxCenter     0 0 0
+  SFVec3f []       bboxSize       -1 -1 -1
+}
+{ This abstract node type indicates that concrete node types derived
+///  from it contain children nodes and is the basis for all
+///  aggregation. }
+{/// More details on the children, addChildren, and removeChildren fields
+/// can be found in 10.2.1 Grouping and children node types. }
+
+
+Group : X3DGroupingNode {
+  MFNode  [in]     addChildren
+  MFNode  [in]     removeChildren
+  MFNode  [in,out] children       []
+  SFNode  [in,out] metadata       NULL
+  SFVec3f []       bboxCenter     0 0 0
+  SFVec3f []       bboxSize       -1 -1 -1
+}
+{ A Group node contains children nodes without introducing a new
+///  transformation. It is equivalent to a Transform node containing an
+///  identity transform. }
+{/// More details on the children, addChildren, and removeChildren
+/// fields can be found in 10.2.1 Grouping and children node types.
+///
+/// The bboxCenter and bboxSize fields specify a bounding box that
+/// encloses the Group node's children. This is a hint that may be used
+/// for optimization purposes. The results are undefined if the specified
+/// bounding box is smaller than the actual bounding box of the children
+/// at any time. A default bboxSize value, (-1, -1, -1), implies that the
+/// bounding box is not specified and, if needed, is calculated by the
+/// browser. A description of the bboxCenter and bboxSize fields is
+/// contained in 10.2.2 Bounding boxes.  }
+
+
+X3DSensorNode  : X3DChildNode {
+  SFBool [in,out] enabled  TRUE
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+  SFBool [out]    isActive
+}
+{This abstract node type is the base type for all sensors. }
+{/// }
+
+
+X3DTimeDependentNode : X3DChildNode {
+  SFBool  [in,out] loop         FALSE
+  SFNode  [in,out] metadata     NULL  [X3DMetadataObject]
+  SFTime  [in,out] pauseTime    0     (-8,8)
+  SFTime  [in,out] resumeTime   0     (-8,8)
+  SFTime  [in,out] startTime    0     (-8,8)
+  SFTime  [in,out] stopTime     0     (-8,8)
+  SFTime  [out]    elapsedTime
+  SFBool  [out]    isActive
+  SFBool  [out]    isPaused
+}
+{ This abstract node type is the base node type from which all
+/// time-dependent nodes are derived. 8.2 Concepts, contains a detailed
+/// discussion of time-dependent nodes. }
+{/// }
+
+
+TimeSensor : X3DTimeDependentNode {
+  SFTime  [in,out] cycleInterval    1     (0,8)
+  SFBool  [in,out] enabled          TRUE
+  SFBool  [in,out] loop             FALSE
+  SFNode  [in,out] metadata         NULL  [X3DMetadataObject]
+  SFTime  [in,out] pauseTime        0     (-8,8)
+  SFTime  [in,out] resumeTime       0
+  SFTime  [in,out] startTime        0     (-8,8)
+  SFTime  [in,out] stopTime         0     (-8,8)
+  SFTime  [out]    cycleTime
+  SFTime  [out]    elapsedTime
+  SFFloat [out]    fraction_changed
+  SFBool  [out]    isActive
+  SFBool  [out]    isPaused
+  SFTime  [out]    time
+}
+{ TimeSensor nodes generate events as time passes. }
+{///TimeSensor nodes can be used for many purposes including: 
+///
+///  - driving continuous simulations and animations; 
+///  - controlling periodic activities (e.g., one per minute); 
+///  - initiating single occurrence events such as an alarm clock. 
+///
+/// See the X3D Specifications for full documentation of this node.  }
+
+
+X3DNetworkSensorNode : X3DSensorNode {
+  SFBool [in,out] enabled  TRUE
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+  SFBool [out]    isActive
+}
+{ This abstract node type is the basis for all sensors that generate
+/// events based on network activity. }
+{/// }
+
+
+X3DUrlObject : Node {
+  MFString [in,out] url [] [urn]
+}
+{This abstract interface is inherited by all nodes that contain data
+/// located on the World Wide Web, such as AudioClip, ImageTexture and
+/// Inline. }
+{///All url fields can hold multiple string values. The strings in these
+/// fields indicate multiple locations to search for data in decreasing
+/// order of preference. If the browser cannot locate or interpret the
+/// data specified by the first location, it shall try the second and
+/// subsequent locations in order until a location containing
+/// interpretable data is encountered. X3D browsers only have to interpret
+/// a single string. If no interpretable locations are found, the node
+/// type defines the resultant default behaviour. 
+/// 
+/// For more information on URLs, see 9.2.1 URLs. }
+
+
+Inline : X3DChildNode {
+  SFBool   [in,out] load       TRUE
+  SFNode   [in,out] metadata   NULL     [X3DMetadataObject]
+  MFString [in,out] url        []       [url or urn]
+  SFVec3f  []       bboxCenter 0 0 0    (-8,8)
+  SFVec3f  []       bboxSize   -1 -1 -1 [0,8) or -1 -1 -1
+}
+{The Inline node embeds an X3D scene stored at a location on the World
+/// Wide Web into the current scene. }
+{///The Inline node embeds an X3D scene stored at a location on the World
+/// Wide Web into the current scene. Exactly when the Inline scene is read
+/// and displayed is defined by the value of the load field, in profiles
+/// that support that field. In profiles that do not support the load
+/// field, exactly when the scene is read and displayed is not defined
+/// (e.g. reading the scene may be delayed until the Inline node's
+/// bounding box is visible to the viewer). Once the Inline scene is
+/// loaded, its children are added to the current scene and are treated as
+/// children of the Inline for rendering and interaction; however the
+/// children are not exposed to the current scene for routing and DEF name
+/// access unless their names have been explicitly imported into the scene
+/// using the IMPORT statement (see 4.4.6.2 IMPORT semantics).
+///
+/// Each specified URL shall refer to a valid X3D file that contains a
+/// list of children nodes, prototypes and routes at the top level as
+/// described in 10.2.1 Grouping and children node types. The results are
+/// undefined if the URL refers to a file that is not an X3D file, or if
+/// the X3D file contains an invalid scene.
+///
+/// It shall be an error to specify a file in the URL field that has a set
+/// of component definitions that is not a subset of the components of the
+/// containing world. In addition, the components shall not be of a higher
+/// support level than those used by the containing world, either
+/// implicitly or through the PROFILE declaration or additional COMPONENT
+/// statements. When an inlined world requests capabilities greater than
+/// its parent, the following actions shall occur:
+///
+///  - an error shall be generated, 
+///  - the URL shall be treated as not interpretable as specified in
+///    9.3.2 X3DUrlObject, and  
+///  - the next URL shall be loaded and checked in accordance with 9.2
+///    Concepts.  
+///
+/// If the load field is set to TRUE (the default field value), the X3D
+/// file specified by the url field is loaded immediately. If the load
+/// field is set to FALSE, no action is taken. It is possible to
+/// explicitly load the URL at a later time by sending a TRUE event to the
+/// load field (e.g., as the result of a ProximitySensor or other sensor
+/// firing an event). If a FALSE event is sent to the load field of a
+/// previously loaded Inline, the contents of the Inline will be unloaded
+/// from the scene graph.
+///
+/// An event sent to url can be used to change the scene that is inlined
+/// by the Inline node. If this value is set after the Inline is already
+/// loaded, its contents will be unloaded and the scene to which the new
+/// URL points will be loaded.
+///
+/// The user is able to specify a bounding box for the Inline node using
+/// the bboxCenter and bboxSize fields. This is a hint to the browser and
+/// could be used for optimization purposes such as culling. }
+
+
+Switch : X3DGroupingNode {
+  MFNode  [in]     addChildren             [X3DChildNode]
+  MFNode  [in]     removeChildren          [X3DChildNode]
+  MFNode  [in,out] children       []       [X3DChildNode]
+  SFNode  [in,out] metadata       NULL     [X3DMetadataObject]
+  SFInt32 [in,out] whichChoice    -1       [-1,8)
+  SFVec3f []       bboxCenter     0 0 0    (-8,8)
+  SFVec3f []       bboxSize       -1 -1 -1 [0,8) or -1 -1 -1
+}
+{The Switch grouping node traverses zero or one of the nodes specified
+/// in the choice field. }
+{/// 10.2.1 Grouping and children node types, describes details on the
+/// types of nodes that are legal values for children.
+///
+/// The whichChoice field specifies the index of the child to traverse,
+/// with the first child having index 0. If whichChoice is less than zero
+/// or greater than the number of nodes in the choice field, nothing is
+/// chosen.
+///
+/// All nodes under a Switch continue to receive and send events
+/// regardless of the value of whichChoice. For example, if an active
+/// TimeSensor is contained within an inactive choice of an Switch, the
+/// TimeSensor sends events regardless of the Switch's state.
+/// 
+/// The bboxCenter and bboxSize fields specify a bounding box that
+/// encloses the Switch node's children. This is a hint that may be used
+/// for optimization purposes. The results are undefined if the specified
+/// bounding box is smaller than the actual bounding box of the child with
+/// the largest bounding box at any time. A default bboxSize value, (-1,
+/// -1, -1), implies that the bounding box is not specified and, if
+/// needed, is calculated by the browser. A description of the bboxCenter
+/// and bboxSize fields is contained in 10.2.2 Bounding boxes. }
+
+
+
+Transform : X3DGroupingNode {
+  MFNode     [in]     addChildren               [X3DChildNode]
+  MFNode     [in]     removeChildren            [X3DChildNode]
+  SFVec3f    [in,out] center           0 0 0    (-8,8)
+  MFNode     [in,out] children         []       [X3DChildNode]
+  SFNode     [in,out] metadata         NULL     [X3DMetadataObject]
+  SFRotation [in,out] rotation         0 0 1 0  [-1,1] or (-8,8)
+  SFVec3f    [in,out] scale            1 1 1    (0,8)
+  SFRotation [in,out] scaleOrientation 0 0 1 0  [-1,1] or (-8,8)
+  SFVec3f    [in,out] translation      0 0 0    (-8,8)
+  SFVec3f    []       bboxCenter       0 0 0    (-8,8)
+  SFVec3f    []       bboxSize         -1 -1 -1 [0,8) or -1 -1 -1
+}
+{The Transform node is a grouping node that defines a coordinate system
+/// for its children that is relative to the coordinate systems of its
+/// ancestors. See 4.3.5 Transformation hierarchy and 4.3.6 Standard units
+/// and coordinate system for a description of coordinate systems and
+/// transformations. }
+{/// 10.2.1 Grouping and children node types, provides a description of the
+/// children, addChildren, and removeChildren fields.
+///
+/// The bboxCenter and bboxSize fields specify a bounding box that
+/// encloses the children of the Transform node. This is a hint that may
+/// be used for optimization purposes. The results are undefined if the
+/// specified bounding box is smaller than the actual bounding box of the
+/// children at any time. A default bboxSize value, (-1, -1, -1), implies
+/// that the bounding box is not specified and, if needed, shall be
+/// calculated by the browser. The bounding box shall be large enough at
+/// all times to enclose the union of the group's children's bounding
+/// boxes; it shall not include any transformations performed by the group
+/// itself (i.e., the bounding box is defined in the local coordinate
+/// system of the children). The results are undefined if the specified
+/// bounding box is smaller than the true bounding box of the group. A
+/// description of the bboxCenter and bboxSize fields is provided in
+/// 10.2.2 Bounding boxes.
+/// 
+/// The translation, rotation, scale, scaleOrientation and center fields
+/// define a geometric 3D transformation consisting of (in order):
+///
+///   - a (possibly) non-uniform scale about an arbitrary point; 
+///   - a rotation about an arbitrary point and axis; 
+///   - a translation.  
+///
+/// The center field specifies a translation offset from the origin of the
+/// local coordinate system (0,0,0). The rotation field specifies a
+/// rotation of the coordinate system. The scale field specifies a
+/// non-uniform scale of the coordinate system. scale values may have any
+/// value: positive, negative (indicating a reflection), or zero. A value
+/// of zero indicates that any child geometry shall not be displayed. The
+/// scaleOrientation specifies a rotation of the coordinate system before
+/// the scale (to specify scales in arbitrary orientations). The
+/// scaleOrientation applies only to the scale operation. The translation
+/// field specifies a translation to the coordinate system.
+///
+/// Given a 3-dimensional point P and Transform node, P is transformed
+/// into point P' in its parent's coordinate system by a series of
+/// intermediate transformations. In matrix transformation notation, where
+/// C (center), SR (scaleOrientation), T (translation), R (rotation), and
+/// S (scale) are the equivalent transformation matrices,
+///
+///    P' = T * C * R * SR * S * -SR * -C * P
+/// }
+
+
+X3DColorNode : X3DGeometricPropertyNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for color specifications in X3D. }
+{/// }
+
+
+X3DComposedGeometryNode : X3DGeometryNode { 
+  SFNode [in,out] color           NULL
+  SFNode [in,out] coord           NULL
+  SFNode [in,out] metadata        NULL [X3DMetadataObject]
+  SFNode [in,out] normal          NULL
+  SFNode [in,out] texCoord        NULL
+  SFBool []       ccw             TRUE
+  SFBool []       colorPerVertex  TRUE
+  SFBool []       normalPerVertex TRUE
+  SFBool []       solid           TRUE
+}
+{This is the base node type for all composed 3D geometry in X3D. }
+{/// A composed geometry node type defines an abstract type that composes
+/// geometry from a set of nodes that define individual
+/// components. Composed geometry may have color, coordinates, normal and
+/// texture coordinates supplied. The rendered output of the combination
+/// of these is dependent on the concrete node definition. However, in
+/// general, the following rules shall be applied for all nodes:
+///
+/// - If the color field is not NULL, it shall contain an X3DColorNode node
+///   whose colours are applied to the vertices or faces of the
+///   X3DComposedGeometryNode as follows: 
+///
+/// - If colorPerVertex is FALSE, colours are applied to each face. If
+///   colorPerVertex is true, colours are applied to each vertex. 
+///
+/// - If the color field is NULL, the geometry shall be rendered normally
+///   using the Material and texture defined in the Appearance node (see
+///   12.2.2 Appearance node for details). 
+///
+/// - If normalPerVertex is FALSE, colours are applied to each face. If
+///   normalPerVertex is true, colours are applied to each vertex. 
+///
+/// - If the normal field is not NULL, it shall contain a Normal node whose
+///   normals are applied to the vertices or faces of the
+///   X3DComposedGeometryNode in a manner exactly equivalent to that
+///   described above for applying colours to vertices/faces (where
+///   normalPerVertex corresponds to colorPerVertex and normalIndex
+///   corresponds to colorIndex). 
+///
+/// - If the normal field is NULL, the browser shall automatically generate
+///   normals in accordance with the node's definition. If the node does not
+///   define a behaviour, the default is to generate an averaged normal for
+///   all faces that share that vertex. 
+///
+/// If the texCoord field is not NULL, it shall contain a
+/// TextureCoordinate node.
+/// }
+
+
+X3DCoordinateNode : X3DGeometricPropertyNode {
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for all coordinate node types in X3D. All
+/// coordinates are specified in nodes derived from this abstract node
+/// type.}
+{/// }
+
+
+X3DGeometricPropertyNode : X3DNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for all geometric property node types
+/// defined in X3D }
+{/// }
+
+
+X3DGeometryNode : X3DChildNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for all geometry in X3D. }
+{/// }
+
+
+X3DNormalNode : X3DGeometricPropertyNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for all normal node types in X3D. All
+/// normals are specified in nodes derived from this abstract node type.}
+{/// }
+
+
+Color : X3DColorNode { 
+  MFColor [in,out] color    [NULL] [0,1]
+  SFNode  [in,out] metadata NULL   [X3DMetadataObject]
+}
+{This node defines a set of RGB colours to be used in the fields of
+/// another node. }
+{/// Color nodes are only used to specify multiple colours for a single
+/// geometric shape, such as colours for the faces or vertices of an
+/// IndexedFaceSet. A Material node is used to specify the overall
+/// material parameters of lit geometry. If both a Material node and a
+/// Color node are specified for a geometric shape, the colours shall
+/// replace the diffuse component of the material.
+///
+/// RGB or RGBA textures take precedence over colours; specifying both an
+/// RGB or RGBA texture and a Color node for geometric shape will result
+/// in the Color node being ignored. Details on lighting equations can be
+/// found in 17.2.2 Lighting model. }
+
+
+ColorRGBA : X3DColorNode { 
+  MFColorRGBA [in,out] color    [NULL] [0,1]
+  SFNode      [in,out] metadata NULL   [X3DMetadataObject]
+}
+{This node defines a set of RGBA colours to be used in the fields of
+/// another node. }
+{/// RGBA color nodes are only used to specify multiple colours with alpha
+/// for a single geometric shape, such as colours for the faces or
+/// vertices of an IndexedFaceSet. A Material node is used to specify the
+/// overall material parameters of lit geometry. If both a Material node
+/// and a ColorRGBA node are specified for a geometric shape, the colours
+/// shall replace the diffuse and transparency components of the material.
+///
+/// RGB or RGBA textures take precedence over colours; specifying both an
+/// RGB or RGBA texture and a Color node for geometric shape will result
+/// in the Color node being ignored. Details on lighting equations can be
+/// found in 17.2.2 Lighting model. }
+
+
+Coordinate : X3DCoordinateNode { 
+  SFNode  [in,out] metadata NULL   [X3DMetadataObject]
+  MFVec3f [in,out] point    [NULL] (-8,8)
+}
+{This node defines a set of 3D coordinates to be used in the coord
+/// field of vertex-based geometry nodes. }
+{/// }
+
+IndexedLineSet : X3DGeometryNode {
+  MFInt32 [in]     set_colorIndex
+  MFInt32 [in]     set_coordIndex
+  SFNode  [in,out] color          NULL [X3DColorNode]
+  SFNode  [in,out] coord          NULL [X3DCoordinateNode]
+  SFNode  [in,out] metadata       NULL [X3DMetadataObject]
+  MFInt32 []       colorIndex     []   [0,8) or -1
+  SFBool  []       colorPerVertex TRUE
+  MFInt32 []       coordIndex     []   [0,8) or -1
+}
+{The IndexedLineSet node represents a 3D geometry formed by
+/// constructing polylines from 3D vertices specified in the coord
+/// field. }
+{/// IndexedLineSet uses the indices in its coordIndex field to
+/// specify the polylines by connecting vertices from the coord field. An
+/// index of "-1" indicates that the current polyline has ended and the
+/// next one begins. The last polyline may be (but does not have to be)
+/// followed by a "-1". IndexedLineSet is specified in the local
+/// coordinate system and is affected by the transformations of its
+/// ancestors.
+///
+/// The coord field specifies the 3D vertices of the line set and contains
+/// a Coordinate node.
+/// 
+/// Lines are not lit, are not texture-mapped, and do not participate in
+/// collision detection. The width of lines is implementation dependent
+/// and each line segment is solid (i.e., not dashed).
+///
+/// If the color field is not NULL, it shall contain a Color node. The
+/// colours are applied to the line(s) as follows:
+///
+/// a. If colorPerVertex is FALSE: 
+///
+///   1. If the colorIndex field is not empty, one colour is used for each
+///   polyline of the IndexedLineSet. There shall be at least as many
+///   indices in the colorIndex field as there are polylines in the
+///   IndexedLineSet. If the greatest index in the colorIndex field is N,
+///   there shall be N+1 colours in the Color node. The colorIndex field
+///   shall not contain any negative entries. 
+///
+///   2. If the colorIndex field is empty, the colours from the Color node are
+///   applied to each polyline of the IndexedLineSet in order. There shall
+///   be at least as many colours in the Color node as there are polylines. 
+///
+/// b. If colorPerVertex is TRUE: 
+///
+///   1. If the colorIndex field is not empty, colours are applied to each
+///   vertex of the IndexedLineSet in exactly the same manner that the
+///   coordIndex field is used to supply coordinates for each vertex from
+///   the Coordinate node. The colorIndex field shall contain at least as
+///   many indices as the coordIndex field and shall contain end-of-polyline
+///   markers (-1) in exactly the same places as the coordIndex field. If
+///   the greatest index in the colorIndex field is N, there shall be N+1
+///   colours in the Color node. 
+///
+///   2. If the colorIndex field is empty, the coordIndex field is used to
+///   choose colours from the Color node. If the greatest index in the
+///   coordIndex field is N, there shall be N+1 colours in the Color node. 
+///
+/// If the color field is NULL and there is a Material defined for the
+/// Appearance affecting this IndexedLineSet, the emissiveColor of the
+/// Material shall be used to draw the lines. Details on lighting
+/// equations as they affect IndexedLineSet nodes are described in 17
+/// Lighting component. }
+
+
+IndexedTriangleFanSet : X3DComposedGeometryNode {
+  MFInt32 [in]     set_index       []   [0,8) or -1
+  SFNode  [in,out] color           NULL [X3DColorNode]
+  SFNode  [in,out] coord           NULL [X3DCoordinateNode]
+  SFNode  [in,out] metadata        NULL [X3DMetadataObject]
+  SFNode  [in,out] normal          NULL [X3DNormalNode]
+  SFNode  [in,out] texCoord        NULL [X3DTextureCoordinateNode]
+  SFBool  []       ccw             TRUE
+  SFBool  []       colorPerVertex  TRUE
+  SFBool  []       normalPerVertex TRUE
+  SFBool  []       solid           TRUE
+  MFInt32 []       index           []   [0,8) or -1
+}
+{An IndexedTriangleFanSet represents a 3D shape composed of triangles
+// that form a fan shape around the first vertex declared in each fan
+//  as depicted in Figure 11.1 (X3D Specification). }
+{/// IndexedTriangleFanSet uses the indices in its index field to specify
+/// the triangle fans by connecting vertices from the coord field. An
+/// index of "-1" indicates that the current fan has ended and the next
+/// one begins. The last fan may be (but does not have to be) followed by
+/// a "-1".Each fan shall have at least three non-coincident vertices.
+///
+/// The IndexedTriangleFanSet node is specified in the local coordinate
+/// system and is affected by the transformations of its
+/// ancestors. Descriptions of the color, coord, normal, and texCoord
+/// fields are provided in the Color, Coordinate, Normal, and
+/// TextureCoordinate nodes, respectively. If values are provided for the
+/// color, normal and texCoord fields, the values are applied in the same
+/// manner as the values from the coord field and there shall be at least
+/// as many values as are present in the coord field. The value of the
+/// colorPerVertex field is ignored and always treated as TRUE. If the
+///normal field is not provided, normals shall be generated as follows:
+///
+/// - If normalPerVertex is TRUE, the normal for each vertex shall be the
+///   average of the normals for all triangles sharing that vertex. 
+///
+/// - If normalPerVertex is FALSE, the normal shall be generated for the
+///   current triangle based on the ccw field. 
+///
+/// The solid field determines whether the IndexedTriangleFanSet is
+/// visible when viewed from the inside. 11.2.3 Common geometry fields
+/// provides a complete description of the solid field. }
+
+
+IndexedTriangleSet : X3DComposedGeometryNode {
+  MFInt32 [in]     set_index       []   [0,8) or -1
+  SFNode  [in,out] color           NULL [X3DColorNode]
+  SFNode  [in,out] coord           NULL [X3DCoordinateNode]
+  SFNode  [in,out] metadata        NULL [X3DMetadataObject]
+  SFNode  [in,out] normal          NULL [X3DNormalNode]
+  SFNode  [in,out] texCoord        NULL [X3DTextureCoordinateNode]
+  SFBool  []       ccw             TRUE
+  SFBool  []       colorPerVertex  TRUE
+  SFBool  []       normalPerVertex TRUE
+  SFBool  []       solid           TRUE
+  MFInt32 []       index           []   [0,8) or -1
+}
+{The IndexedTriangleSet node represents a 3D shape composed of a
+/// collection of individual triangles as depicted in Figure
+/// 11.2 (X3D Specifications). }
+{/// IndexedTriangleSet uses the indices in its index field to
+/// specify the vertices of each triangle from the coord field. Each
+/// triangle is formed from a set of three vertices of the Coordinate
+/// node identified by three consecutive indices from the index field If
+/// the index field does not contain a multiple of three coordinate
+/// values, the remaining vertices shall be ignored.
+///
+/// The IndexedTriangleSet node is specified in the local coordinate
+/// system and is affected by the transformations of its
+/// ancestors. Descriptions of the color, coord, normal, and texCoord
+/// fields are provided in the Color, Coordinate, Normal, and
+/// TextureCoordinate nodes, respectively. If values are provided for the
+/// color, normal and texCoord fields, the values are applied in the same
+/// manner as the values from the coord field and there shall be at least
+/// as many values as are present in the coord field. The value of the
+/// colorPerVertex field is ignored and always treated as TRUE. If the
+/// normal field is not supplied, normals shall be generated as follows:
+/// 
+/// - If normalPerVertex is TRUE, the normal at each vertex shall be the
+/// average of the normals for all triangles that share that vertex. 
+/// 
+/// - If normalPerVertex is FALSE, the normal at each vertex shall be
+/// perpendicular to the face for that triangle. 
+///
+/// The solid field determines whether the cylinder is visible when viewed
+/// from the inside. 11.2.3 Common geometry fields provides a complete
+/// description of the solid field. }
+
+
+IndexedTriangleStripSet : X3DComposedGeometryNode {
+  MFInt32 [in]     set_index       []   [0,8) or -1
+  SFNode  [in,out] color           NULL [X3DColorNode]
+  SFNode  [in,out] coord           NULL [X3DCoordinateNode]
+  SFFloat [in,out] creaseAngle     0    [0,8)
+  SFNode  [in,out] metadata        NULL [X3DMetadataObject]
+  SFNode  [in,out] normal          NULL [X3DNormalNode]
+  SFNode  [in,out] texCoord        NULL [X3DTextureCoordinateNode]
+  SFBool  []       ccw             TRUE
+  SFBool  []       colorPerVertex  TRUE
+  SFBool  []       normalPerVertex TRUE
+  SFBool  []       solid           TRUE
+  MFInt32 []       index           []   [0,8) or -1
+}
+{An IndexedTriangleStripSet represents a 3D shape composed of strips of
+/// triangles as depicted in Figure 11.3 (X3D Specification). }
+{/// IndexedTriangleStripSet uses the indices in its index field to specify
+/// the triangle strips by connecting vertices from the coord field. An
+/// index of "-1" indicates that the current strip has ended and the next
+/// one begins. The last strip may be (but does not have to be) followed
+/// by a "-1". Each strip shall have at least three non-coincident
+/// vertices.
+///
+/// The IndexedTriangleStripSet node is specified in the local coordinate
+/// system and is affected by the transformations of its
+/// ancestors. Descriptions of the color, coord, normal, and texCoord
+/// fields are provided in the Color, Coordinate, Normal, and
+/// TextureCoordinate nodes, respectively. If values are provided for the
+/// color, normal and texCoord fields, the values are applied in the same
+/// manner as the values from the coord field and there shall be at least
+/// as many values as are present in the coord field. The value of the
+/// colorPerVertex field is ignored and always treated as TRUE. If the
+/// normal field is not supplied, normals shall be generated as follows:  
+///
+/// - If normalPerVertex is TRUE, the normal shall be the average of all
+/// triangles sharing that vertex.  
+/// - If normalPerVertex is FALSE, the normal shall be generated for the
+/// triangle based on the ccw field.  
+///
+/// The solid field determines whether the IndexedTriangleStripSet is
+/// visible when viewed from the inside. 11.2.3 Common geometry fields
+/// provides a complete description of the solid field.  }
+
+
+LineSet : X3DGeometryNode {
+  SFNode  [in,out] color          NULL [X3DColorNode]
+  SFNode  [in,out] coord          NULL [X3DCoordinateNode]
+  MFInt32 [in,out] vertexCount    []   [2,8)
+  SFNode  [in,out] metadata       NULL [X3DMetadataObject]
+}
+{The LineSet node represents a 3D geometry formed by constructing
+/// polylines from 3D vertices specified in the coord field. }
+{/// The color field specifies the colour of the line set at each vertex
+/// and contains a Color node. A description of the color field is
+/// provided in the Color node.If the color field is NULL and there is a
+/// Material defined for the Appearance affecting this LineSet, the
+/// emissiveColor of the Material shall be used to draw the lines. Details
+/// on lighting equations as they affect LineSet nodes are described in 17
+/// Lighting component 
+///
+/// The coord field specifies the 3D vertices of the line set and contains
+/// a Coordinate node. 
+///
+/// The vertexCount field describes how many vertices are to be used in
+/// each polyline from the coordinate field. Coordinates are assigned to
+/// each line by taking vertexCount[n] vertices from the coordinate
+/// field. Each value of the vertexCount array shall be greater than or
+/// equal to two. It shall be an error to have a value less than two. 
+///
+/// Lines are not lit, are not texture-mapped, and do not participate in
+/// collision detection. The width of lines is implementation dependent
+/// and each line segment is solid (i.e., not dashed). }
+
+
+Normal : X3DNormalNode { 
+  SFNode  [in,out] metadata NULL [X3DMetadataObject]
+  MFVec3f [in,out] vector   []   (-8,8)
+}
+{This node defines a set of 3D surface normal vectors to be used in the
+/// vector field of some geometry nodes.}
+{/// This node defines a set of 3D surface normal vectors to be used in the
+/// vector field of some geometry nodes (EXAMPLE  IndexedFaceSet and
+/// ElevationGrid). This node contains one multiple-valued field that
+/// contains the normal vectors. Normals shall be of unit length. }
+
+
+PointSet : X3DGeometryNode { 
+  SFNode [in,out] color    NULL [X3DColorNode]
+  SFNode [in,out] coord    NULL [X3DCoordinateNode]
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{The PointSet node specifies a set of 3D points, in the local
+/// coordinate system, with associated colours at each point.}
+{/// The coord field specifies a Coordinate node (or instance of a
+/// Coordinate node). The results are undefined if the coord field
+/// specifies any other type of node. PointSet uses the coordinates in
+/// order. If the coord field is NULL, the point set is considered empty.
+///
+/// PointSet nodes are not lit, not texture-mapped, nor do they
+/// participate in collision detection. The size of each point is
+/// implementation-dependent. 
+///
+/// If the color field is not NULL, it shall specify a Color node that
+/// contains at least the number of points contained in the coord
+/// node. The results are undefined if the color field specifies any other
+/// type of node. Colours shall be applied to each point in order. The
+/// results are undefined if the number of values in the Color node is
+/// less than the number of values specified in the Coordinate node. 
+///
+/// If the color field is NULLand there is a Material node defined for the
+/// Appearance node affecting this PointSet node, the emissiveColor of the
+/// Material node shall be used to draw the points. More details on
+/// lighting equations can be found 17 Lighting component. }
+
+
+TriangleFanSet : X3DComposedGeometryNode {
+  SFNode  [in,out] color           NULL [X3DColorNode]
+  SFNode  [in,out] coord           NULL [X3DCoordinateNode]
+  MFInt32 [in,out] fanCount        []   [3,8)
+  SFNode  [in,out] metadata        NULL [X3DMetadataObject]
+  SFNode  [in,out] normal          NULL [X3DNormalNode]
+  SFNode  [in,out] texCoord        NULL [X3DTextureCoordinateNode]
+  SFBool  []       ccw             TRUE
+  SFBool  []       colorPerVertex  TRUE
+  SFBool  []       normalPerVertex TRUE
+  SFBool  []       solid           TRUE
+}
+{A TriangleFanSet represents a 3D shape composed of triangles that form
+/// a fan shape around the first vertex declared in each fan. }
+{/// The fanCount field describes how many vertices are to be used in each
+/// fan from the coordinate field. Coordinates are assigned to each strip
+/// by taking fanCount[n] vertices from the coordinate field. Each value
+/// of the fanCount array shall be greater than or equal to three. It
+/// shall be an error to have a value less than three. 
+///
+/// Figure 11.1 (X3D Specification) displays a TriangleFanSet
+/// containing a single fan showing the ordering of the vertices for
+/// that fan. 
+///
+/// The TriangleFanSet node is specified in the local coordinate system
+/// and is affected by the transformations of its ancestors. Descriptions
+/// of the color, coord, normal, and texCoord fields are provided in the
+/// Color, Coordinate, Normal, and TextureCoordinate nodes,
+/// respectively. If values are provided for the color, normal, and
+/// texCoord fields, there shall be at least as many values as are present
+/// in the coord field. The value of the colorPerVertex field is ignored
+/// and always treated as TRUE. If the normal field is not provided, for
+/// each fan, the normal shall be generated as follows: if normalPerVertex
+/// is TRUE, the normal shall be the average of all triangles within that
+/// fan sharing that vertex. For the vertex of the fan, the normal shall
+/// be the average of the contributions of all of the individual face
+/// normals. If normalPerVertex is FALSE, the normal shall be generated
+/// for the current triangle based on the ccw field. 
+///
+/// The solid field determines whether the TriangleFanSet is visible when
+/// viewed from the inside. 11.2.3 Common geometry fields provides a
+/// complete description of the solid field. }
+
+
+TriangleSet : X3DComposedGeometryNode {
+  SFNode  [in,out] color           NULL [X3DColorNode]
+  SFNode  [in,out] coord           NULL [X3DCoordinateNode]
+  SFNode  [in,out] metadata        NULL [X3DMetadataObject]
+  SFNode  [in,out] normal          NULL [X3DNormalNode]
+  SFNode  [in,out] texCoord        NULL [X3DTextureCoordinateNode]
+  SFBool  []       ccw             TRUE
+  SFBool  []       colorPerVertex  TRUE
+  SFBool  []       normalPerVertex TRUE
+  SFBool  []       solid           TRUE
+}
+{The TriangleSet node represents a 3D shape that represents a
+/// collection of individual triangles. }
+{/// The coord field contains a Coordinate node that defines the 3D
+/// vertices that define the triangle. Each triangle is formed from a
+/// consecutive set of three vertices of the coordinate node. If the
+/// coordinate node does not contain a multiple of three coordinate
+/// values, the remaining vertices the remaining vertices shall be
+/// ignored. 
+///
+/// Figure 11.2 (X3D Specification) depicts a TriangleSet node with
+/// several triangles. The ordering of the vertices is also shown. An
+/// arrow points to a vertex at the apex of the pyramid. Note that
+/// vertices 3 and 14 are obscured.
+///
+/// The TriangleSet node is specified in the local coordinate system and
+/// is affected by the transformations of its ancestors. Descriptions of
+/// the color, coord, normal, and texCoord fields are provided in the
+/// Color, Coordinate, Normal, and TextureCoordinate nodes,
+/// respectively. If values are provided for the color, normal, and
+/// texCoord fields, there shall be at least as many values as are present
+/// in the coord field. The value of the colorPerVertex field is ignored
+/// and always treated as TRUE. If the normal field is not supplied, the
+/// normal shall be generated as perpendicular to the face for either
+/// version of normalPerVertex. 
+///
+/// The solid field determines whether the cylinder is visible when viewed
+/// from the inside. 11.2.3 Common geometry fields provides a complete
+/// description of the solid field. }
+
+
+TriangleStripSet : X3DComposedGeometryNode {
+  SFNode  [in,out] color           NULL [X3DColorNode]
+  SFNode  [in,out] coord           NULL [X3DCoordinateNode]
+  SFNode  [in,out] metadata        NULL [X3DMetadataObject]
+  SFNode  [in,out] normal          NULL [X3DNormalNode]
+  MFInt32 [in,out] stripCount      []   [3,8)
+  SFNode  [in,out] texCoord        NULL [X3DTextureCoordinateNode]
+  SFBool  []       ccw             TRUE
+  SFBool  []       colorPerVertex  TRUE
+  SFBool  []       normalPerVertex TRUE
+  SFBool  []       solid           TRUE
+}
+{A TriangleStripSet represents a 3D shape composed of strips of triangles.}
+{/// The stripCount field describes how many vertices are to be used in
+/// each strip from the coordinate field. Coordinates are assigned to each
+/// strip by taking stripCount[n] vertices from the coordinate field. Each
+/// value of the stripCount array shall be greater than or equal to
+/// three. It shall be an error to have a value less than three. Figure
+/// 11.3 (X3D Specification) depicts a TriangleStripSet with a single
+/// triangle strip.
+///
+/// The TriangleStripSet node is specified in the local coordinate system
+/// and is affected by the transformations of its ancestors. Descriptions
+/// of the color, coord, normal, and texCoord fields are provided in the
+/// Color, Coordinate, Normal, and TextureCoordinate nodes,
+/// respectively. If values are provided for the color, normal, and
+/// texCoord fields, there shall be at least as many values as are present
+/// in the coord field. The value of the colorPerVertex field is ignored
+/// and always treated as TRUE. If the normal field is not provided, for
+/// each strip, the normal shall be generated as follows: if
+/// normalPerVertex is TRUE, the normal shall be the average of all
+/// triangles within that strip sharing that vertex. If normalPerVertex is
+/// FALSE, the normal shall be generated for the triangle based on the ccw
+/// field.  
+///
+/// The solid field determines whether the TriangleStripSet is visible
+/// when viewed from the inside. 11.2.3 Common geometry fields provides a
+/// complete description of the solid field. }
+
+
+X3DAppearanceChildNode : X3DNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for the child nodes of the
+///  X3DAppearanceNode type.}
+{/// }
+
+
+X3DAppearanceNode : X3DNode {
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for all Appearance nodes.}
+{/// }
+
+
+X3DMaterialNode : X3DAppearanceChildNode {
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This is the base node type for all Material nodes.}
+{/// }
+
+
+X3DShapeNode : X3DChildNode {
+  SFNode  [in,out] appearance NULL     [X3DAppearanceNode]
+  SFNode  [in,out] geometry   NULL     [X3DGeometryNode]
+  SFNode  [in,out] metadata   NULL     [X3DMetadataObject]
+  SFVec3f []       bboxCenter 0 0 0    (-8,8)
+  SFVec3f []       bboxSize   -1 -1 -1 [0,8) or -1 -1 -1
+}
+{This is the base node type for all Shape nodes.}
+{/// }
+
+
+Appearance : X3DAppearanceNode { 
+  SFNode [in,out] fillProperties   NULL [FillProperties]
+  SFNode [in,out] lineProperties   NULL [LineProperties]
+  SFNode [in,out] material         NULL [X3DMaterialNode]
+  SFNode [in,out] metadata         NULL [X3DMetadataObject]
+  SFNode [in,out] texture          NULL [X3DTextureNode]
+  SFNode [in,out] textureTransform NULL [X3DTextureTransformNode]
+}
+{The Appearance node specifies the visual properties of geometry.}
+{/// The value for each of the fields in this node may be NULL. However,
+/// if the field is non-NULL, it shall contain one node of the appropriate
+/// type.
+///
+/// The material field, if specified, shall contain a Material node. If
+/// the material field is NULLor unspecified, lighting is off (all lights
+/// are ignored during rendering of the object that references this
+/// Appearance) and the unlit object colour is (1, 1, 1). Details of the
+/// X3D lighting model are in 17 Lighting component. 
+///
+/// The texture field, if specified, shall contain one of the various
+/// types of texture nodes (see 18 Texturing component). If the texture
+/// node is NULL or the texture field is unspecified, the object that
+/// references this Appearance is not textured. 
+///
+/// The textureTransform field, if specified, shall contain a
+/// TextureTransform node as defined in 18.4.8 TextureTransform. If the
+/// textureTransform is NULL or unspecified, the textureTransform field
+/// has no effect. 
+///
+/// The lineProperties field, if specified, shall contain a LineProperties
+/// node as specified in 12.4.3 LineProperties. If lineProperties is NULL
+/// or unspecified, the lineProperties field has no effect. 
+///
+/// The fillProperties field, if specified, shall contain a FillProperties
+/// node as specified in 12.4.2 FillProperties. If fillProperties is NULL
+/// or unspecified, the fillProperties field has no effect. }
+
+
+FillProperties : X3DAppearanceChildNode { 
+  SFBool  [in,out] filled     TRUE
+  SFColor [in,out] hatchColor 1 1 1 [0,1]
+  SFBool  [in,out] hatched    TRUE
+  SFInt32 [in,out] hatchStyle 1     [0,8)
+  SFNode  [in,out] metadata   NULL  [X3DMetadataObject]
+}
+{The FillProperties node specifies additional properties to be applied
+/// to all polygonal areas on top of whatever appearance is specified by
+/// the other fields of the respective Appearance node. }
+{/// Thus, hatches are applied on top of the already rendered appearance of
+/// the node. Hatches are not affected by lighting.
+///
+/// The hatchStyle field selects a hatch pattern as defined in the
+/// International Register of Graphical Items (see 2.[REG]). The hatches
+/// are rendered using the colour specified by the hatchColor field. 
+/// 
+/// The associated geometry shall be filled and/or hatched only when the
+/// respective values of the filled and/or hatched fields have value
+/// TRUE. }
+
+
+LineProperties : X3DAppearanceChildNode { 
+  SFBool  [in,out] applied              TRUE
+  SFInt32 [in,out] linetype             1    [1,8)
+  SFFloat [in,out] linewidthScaleFactor 0    [-8,8)
+  SFNode  [in,out] metadata             NULL [X3DMetadataObject]
+}
+{ The LineProperties node specifies additional properties to be applied
+// to all line geometry. }
+{/// The linetype and linewidth shall only be applied when the applied
+/// field has value TRUE. When the value of the applied field is FALSE, a
+/// solid line of nominal width shall be produced. The colour of the line
+/// is specified by the associated Material node.
+///
+/// The linetype field selects a line pattern as defined in the
+/// International Register of Graphical Items (see 2.[REG]). X3D browsers
+/// shall support linetypes 1 through 5 with linetype 1 being the
+/// default. X3D browsers may support any other of the registered
+/// linetypes. If a linetype that is not supported is requested, linetype
+/// 1 shall be used. Table 12.2 specifies the first sixteen linetypes as
+/// defined in the Linetype Section of the International Register of
+/// Graphical Items. 
+///
+/// Table 12.2 International registry of graphical items linetypes
+///
+///  1 Solid 
+///  2 Dashed 
+///  3 Dotted 
+///  4 Dashed-dotted 
+///  5 Dash-dot-dot 
+///  6 (single) 
+///  7 (single dot) 
+///  8 (double arrow) 
+/// 10 (chain line) 
+/// 11 (center line) 
+/// 12 (hidden line) 
+/// 13 (phantom line) 
+/// 14 (break line 1) 
+/// 15 (break line 2) 
+/// 16 User-specified dash pattern 
+///
+/// The linewidthScaleFactor is a multiplicative value that scales a
+/// browser dependent nominal linewidth by the linewidth scale
+/// factor. This resulting value shall then be mapped to the nearest
+/// available line width. A value less than or equal to zero refers to the
+/// minimum available line width. }
+
+
+Material : X3DMaterialNode { 
+  SFFloat [in,out] ambientIntensity 0.2         [0,1]
+  SFColor [in,out] diffuseColor     0.8 0.8 0.8 [0,1]
+  SFColor [in,out] emissiveColor    0 0 0       [0,1]
+  SFNode  [in,out] metadata         NULL        [X3DMetadataObject]
+  SFFloat [in,out] shininess        0.2         [0,1]
+  SFColor [in,out] specularColor    0 0 0       [0,1]
+  SFFloat [in,out] transparency     0           [0,1]
+}
+{The Material node specifies surface material properties for associated
+/// geometry nodes and is used by the X3D lighting equations during
+/// rendering.}
+{/// S. 17 Lighting (X3D Specification) component contains a detailed
+/// description of the X3D lighting model equations.
+///
+/// All of the fields in the Material node range from 0.0 to 1.0.
+/// 
+/// The fields in the Material node determine how light reflects off an
+/// object to create colour: 
+///
+/// a. The ambientIntensity field specifies how much ambient light from light
+/// sources this surface shall reflect. Ambient light is omnidirectional
+/// and depends only on the number of light sources, not their positions
+/// with respect to the surface. Ambient colour is calculated as
+/// ambientIntensity × diffuseColor.
+///
+/// b. The diffuseColor field reflects all X3D light sources depending on the
+/// angle of the surface with respect to the light source. The more
+/// directly the surface faces the light, the more diffuse light reflects.  
+///
+/// c. The emissiveColor field models "glowing" objects. This can be useful
+/// for displaying pre-lit models (where the light energy of the room is
+/// computed explicitly), or for displaying scientific data.  
+///
+/// d. The specularColor and shininess fields determine the specular
+/// highlights (e.g., the shiny spots on an apple). When the angle from
+/// the light to the surface is close to the angle from the surface to the
+/// viewer, the specularColor is added to the diffuse and ambient colour
+/// calculations. Lower shininess values produce soft glows, while higher
+/// values result in sharper, smaller highlights.  
+///
+/// e. The transparency field specifies how "clear" an object is, with 1.0
+/// being completely transparent, and 0.0 completely opaque. }
+
+
+Shape : X3DShapeNode {
+  SFNode  [in,out] appearance NULL     [X3DAppearanceNode]
+  SFNode  [in,out] geometry   NULL     [X3DGeometryNode]
+  SFNode  [in,out] metadata   NULL     [X3DMetadataObject]
+  SFVec3f []       bboxCenter 0 0 0    (-8,8)
+  SFVec3f []       bboxSize   -1 -1 -1 [0,8) or -1 -1 -1
+}
+{The Shape node has two fields, appearance and geometry, which are used
+/// to create rendered objects in the world. }
+{/// The appearance field contains an Appearance node that specifies the
+/// visual attributes (e.g., material and texture) to be applied to the
+/// geometry. The geometry field contains a geometry node. The specified
+/// geometry node is rendered with the specified appearance nodes
+/// applied. See 12.2 Concepts for more information.
+///
+/// S 17 Lighting (X3D Specification) component contains details of the
+/// X3D lighting model and the interaction between Appearance nodes and
+/// geometry nodes.  
+///
+/// If the geometry field is NULL, the object is not drawn.
+///
+/// The bboxCenter and bboxSize fields specify a bounding box that
+/// encloses the Shape node's geometry. This is a hint that may be used
+/// for optimization purposes. The results are undefined if the specified
+/// bounding box is smaller than the actual bounding box of the geometry
+/// at any time. A default bboxSize value, (-1, -1, -1), implies that the
+/// bounding box is not specified and, if needed, is calculated by the
+/// browser. A description of the bboxCenter and bboxSize fields is
+/// contained in 10.2.2 Bounding boxes. }
+
+
+X3DFontStyleNode : X3DNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This abstract node type is the base node type for all FontStyle
+///  nodes. }
+{/// }
+
+
+FontStyle : X3DFontStyleNode {
+  SFNode   [in,out] metadata    NULL    [X3DMetadataObject]
+  MFString []       family      "SERIF"
+  SFBool   []       horizontal  TRUE
+  MFString []       justify     "BEGIN" ["BEGIN"|"END"|"FIRST"|"MIDDLE"|""]
+  SFString []       language    ""
+  SFBool   []       leftToRight TRUE
+  SFFloat  []       size        1.0     (0,8)
+  SFFloat  []       spacing     1.0     [0,8)
+  SFString []       style       "PLAIN" ["PLAIN"|"BOLD"|"ITALIC"|"BOLDITALIC"|""]
+  SFBool   []       topToBottom TRUE
+}
+{The FontStyle node defines the size, family, and style used for Text
+/// nodes (see 15.2.2 Text formatting), as well as the direction of the
+/// text strings and any language-specific rendering techniques used for
+/// non-English text. See Text for a description of the Text node.}
+{/// The size field specifies the nominal height, in the local coordinate
+/// system of the Text node, of glyphs rendered and determines the spacing
+/// of adjacent lines of text. Values of the size field shall be greater
+/// than zero. 
+///
+/// The spacing field determines the line spacing between adjacent lines
+/// of text. The distance between the baseline of each line of text is
+/// (spacing × size) in the appropriate direction (depending on other
+/// fields described below). The effects of the size and spacing field are
+/// depicted in Figure 15.2 (spacing greater than 1.0). Values of the
+/// spacing field shall be non-negative. }
+
+
+Text : X3DGeometryNode {
+  SFNode   [in,out] fontStyle NULL  [X3FontSyleNode]
+  MFFloat  [in,out] length    []    [0,8)
+  SFFloat  [in,out] maxExtent 0.0   [0,8)
+  SFNode   [in,out] metadata  NULL  [X3DMetadataObject]
+  MFString [in,out] stringF   []
+  SFBool   []       solid     FALSE
+}
+{The Text node specifies a two-sided, flat text string object
+/// positioned in the Z=0 plane of the local coordinate system based on
+/// values defined in the fontStyle field (see 15.4.1 FontStyle). }
+{/// Text nodes may contain multiple text strings specified using the
+/// UTF-8 encoding as specified by ISO 10646-1:1993 (see
+/// 2.[I10646-1]). The text strings are stored in the order in which the
+/// text mode characters are to be produced as defined by the parameters
+/// in the FontStyle node.
+///
+/// The text strings are contained in the string field. The fontStyle
+/// field contains one FontStyle node that specifies the font size, font
+/// family and style, direction of the text strings, and any specific
+/// language rendering techniques used for the text. 
+///
+/// The maxExtent field limits and compresses all of the text strings if
+/// the length of the maximum string is longer than the maximum extent, as
+/// measured in the local coordinate system. If the text string with the
+/// maximum length is shorter than the maxExtent, then there is no
+/// compressing. The maximum extent is measured horizontally for
+/// horizontal text (FontStyle node: horizontal=TRUE) and vertically for
+/// vertical text (FontStyle node: horizontal=FALSE). The maxExtent field
+/// shall be greater than or equal to zero.
+///
+/// The length field contains an MFFloat value that specifies the length
+/// of each text string in the local coordinate system. If the string is
+/// too short, it is stretched (either by scaling the text or by adding
+/// space between the characters). If the string is too long, it is
+/// compressed (either by scaling the text or by subtracting space between
+/// the characters). If a length value is missing (for example, if there
+/// are four strings but only three length values), the missing values are
+/// considered to be 0. The length field shall be greater than or equal to
+/// zero. 
+///
+/// Specifying a value of 0 for both the maxExtent and length fields
+/// indicates that the string may be any length. 
+///
+/// S 11.2.3 Common (X3D Specification) geometry fields provides a
+// complete description of the solid field. }
+
+
+X3DSoundNode : X3DChildNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This abstract node type is the base for all Sound nodes.}
+{/// }
+
+
+X3DSoundSourceNode : X3DTimeDependentNode { 
+  SFString [in,out] description      ""
+  SFBool   [in,out] loop             FALSE
+  SFNode   [in,out] metadata         NULL [X3DMetadataObject]
+  SFTime   [in,out] pauseTime        0    (-8,8)
+  SFFloat  [in,out] pitch            1.0  (0,8)
+  SFTime   [in,out] resumeTime       0    (-8,8)
+  SFTime   [in,out] startTime        0    (-8,8)
+  SFTime   [in,out] stopTime         0    (-8,8)
+  SFTime   [out]    duration_changed
+  SFTime   [out]    elapsedTime
+  SFBool   [out]    isActive
+  SFBool   [out]    isPaused
+}
+{ This abstract node type is used to derive node types that can emit
+/// audio data. }
+{/// }
+
+
+AudioClip : X3DSoundSourceNode {
+  SFString [in,out] description      ""
+  SFBool   [in,out] loop             FALSE
+  SFNode   [in,out] metadata         NULL  [X3DMetadataObject]
+  SFTime   [in,out] pauseTime        0     (-8,8)
+  SFFloat  [in,out] pitch            1.0   (0,8)
+  SFTime   [in,out] resumeTime       0     (-8,8)
+  SFTime   [in,out] startTime        0     (-8,8)
+  SFTime   [in,out] stopTime         0     (-8,8)
+  MFString [in,out] url              []    [urn]
+  SFTime   [out]    duration_changed
+  SFTime   [out]    elapsedTime
+  SFBool   [out]    isActive
+  SFBool   [out]    isPaused
+}
+{An AudioClip node specifies audio data that can be referenced by Sound 
+/// nodes. }
+{/// The description field specifies a textual description of the audio
+/// source. A browser is not required to display the description field but
+/// may choose to do so in addition to playing the sound. 
+///
+/// The url field specifies the URL from which the sound is
+/// loaded. Browsers shall support at least the wavefile format in
+/// uncompressed PCM format (see [WAV]). It is recommended that browsers
+/// also support the MIDI file type 1 sound format (see 2.[MIDI]) and the
+/// MP3 compressed format (see 2.[I11172-1]). MIDI files are presumed to
+/// use the General MIDI patch set. 9.2.1 URLs contains details on the url
+/// field. 
+///
+/// The loop, pauseTime, resumeTime, startTime, and stopTime inputOutput
+/// fields and the elapsedTime, isActive, and isPaused outputOnly fields,
+/// and their effects on the AudioClip node, are discussed in detail in 8
+/// Time component. The "cycle" of an AudioClip is the length of time in
+/// seconds for one playing of the audio at the specified pitch. 
+///
+/// The pitch field specifies a multiplier for the rate at which sampled
+/// sound is played. Values for the pitch field shall be greater than
+/// zero. Changing the pitch field affects both the pitch and playback
+/// speed of a sound. A set_pitch event to an active AudioClip is ignored
+/// and no pitch_changed field is generated. If pitch is set to 2.0, the
+/// sound shall be played one octave higher than normal and played twice
+/// as fast. For a sampled sound, the pitch field alters the sampling rate
+/// at which the sound is played. The proper implementation of pitch
+/// control for MIDI (or other note sequence sound clips) is to multiply
+/// the tempo of the playback by the pitch value and adjust the MIDI
+/// Coarse Tune and Fine Tune controls to achieve the proper pitch
+/// change. 
+///
+/// A duration_changed event is sent whenever there is a new value for the
+/// "normal" duration of the clip. Typically, this will only occur when
+/// the current url in use changes and the sound data has been loaded,
+/// indicating that the clip is playing a different sound source. The
+/// duration is the length of time in seconds for one cycle of the audio
+/// for a pitch set to 1.0. Changing the pitch field will not trigger a
+/// duration_changed event. A duration value of "-1" implies that the
+/// sound data has not yet loaded or the value is unavailable for some
+/// reason. A duration_changed event shall be generated if the AudioClip
+/// node is loaded when the X3D file is read or the AudioClip node is
+/// added to the scene graph. 
+///
+/// The isActive field may be used by other nodes to determine if the clip
+/// is currently active. If an AudioClip is active, it shall be playing
+/// the sound corresponding to the sound time (i.e., in the sound's local
+/// time system with sample 0 at time 0): 
+///
+///    t = (now - startTime) modulo (duration / pitch)
+/// }
+
+
+Sound : X3DSoundNode {
+  SFVec3f [in,out] direction  0 0 1 (-8,8)
+  SFFloat [in,out] intensity  1     [0,1]
+  SFVec3f [in,out] location   0 0 0 (-8,8)
+  SFFloat [in,out] maxBack    10    [0,8)
+  SFFloat [in,out] maxFront   10    [0,8)
+  SFNode  [in,out] metadata   NULL  [X3DMetadataObject]
+  SFFloat [in,out] minBack    1     [0,8)
+  SFFloat [in,out] minFront   1     [0,8)
+  SFFloat [in,out] priority   0     [0,1]
+  SFNode  [in,out] source     NULL  [X3DSoundSourceNode]
+  SFBool  []       spatialize TRUE
+}
+{The Sound node specifies the spatial presentation of a sound in a X3D
+/// scene. }
+{/// The sound is located at a point in the local coordinate system
+/// and emits sound in an elliptical pattern (defined by two
+/// ellipsoids). The ellipsoids are oriented in a direction specified by
+/// the direction field. The shape of the ellipsoids may be modified to
+/// provide more or less directional focus from the location of the
+/// sound. }
+
+
+X3DLightNode : X3DChildNode { 
+  SFFloat [in,out] ambientIntensity 0     [0,1]
+  SFColor [in,out] color            1 1 1 [0,1]
+  SFFloat [in,out] intensity        1     [0,1]
+  SFNode  [in,out] metadata         NULL  [X3DMetadataObject]
+  SFBool  [in,out] on               TRUE
+}
+{ The X3DLightNode abstract node type is the base type from which all
+/// node types that serve as light sources are derived. }
+{/// A description of the ambientIntensity, color, intensity, and on 
+/// fields is in 17.2.1 Light source semantics. }
+
+
+DirectionalLight : X3DLightNode {
+  SFFloat [in,out] ambientIntensity 0      [0,1]
+  SFColor [in,out] color            1 1 1  [0,1]
+  SFVec3f [in,out] direction        0 0 -1 (-8,8)
+  SFFloat [in,out] intensity        1      [0,1]
+  SFNode  [in,out] metadata         NULL   [X3DMetadataObject]
+  SFBool  [in,out] on               TRUE
+}
+{ The DirectionalLight node defines a directional light source that
+/// illuminates along rays parallel to a given 3-dimensional vector. A
+/// description of the ambientIntensity, color, intensity, and on fields
+/// is in 17.2.1 Light source semantics. }
+{/// The direction field specifies the direction vector of the illumination
+/// emanating from the light source in the local coordinate system. Light
+/// is emitted along parallel rays from an infinite distance away. A
+/// directional light source illuminates only the objects in its enclosing
+/// parent group. The light may illuminate everything within this
+/// coordinate system, including all children and descendants of its
+/// parent group. The accumulated transformations of the parent nodes
+/// affect the light. 
+///
+/// DirectionalLight nodes do not attenuate with distance. A precise
+/// description of X3D's lighting equations is contained in 17.2.2
+/// Lighting model. }
+
+
+PointLight : X3DLightNode {
+  SFFloat [in,out] ambientIntensity 0     [0,1]
+  SFVec3f [in,out] attenuation      1 0 0 [0,8)
+  SFColor [in,out] color            1 1 1 [0,1]
+  SFFloat [in,out] intensity        1     [0,1]
+  SFVec3f [in,out] location         0 0 0 (-8,8)
+  SFNode [in,out]  metadata         NULL  [X3DMetadataObject]
+  SFBool  [in,out] on               TRUE
+  SFFloat [in,out] radius           100   [0,8)
+}
+{ The PointLight node specifies a point light source at a 3D location in
+/// the local coordinate system. }
+{/// A point light source emits light equally in all directions; that is,
+/// it is omnidirectional. PointLight nodes are specified in the local
+/// coordinate system and are affected by ancestor transformations.
+///
+/// Subclause 17.2.1 Light source semantics, contains a detailed
+/// description of the ambientIntensity, color, and intensity fields. 
+///
+/// A PointLight node illuminates geometry within radius metres of its
+/// location. Both radius and location are affected by ancestors'
+/// transformations (scales affect radius and transformations affect
+/// location). The radius field shall be greater than or equal to zero. 
+///
+/// PointLight node's illumination falls off with distance as specified by
+/// three attenuation coefficients. The attenuation factor is: 
+///
+///  1/max(attenuation[0] + attenuation[1] × r + attenuation[2] × r2, 1)
+///
+/// where r is the distance from the light to the surface being
+/// illuminated. The default is no attenuation. An attenuation value of
+/// (0, 0, 0) is identical to (1, 0, 0). Attenuation values shall be
+/// greater than or equal to zero. A detailed description of X3D's
+/// lighting equations is contained in 17.2.2 Lighting model. }
+
+
+SpotLight : X3DLightNode {
+  SFFloat [in,out] ambientIntensity 0        [0,1]
+  SFVec3f [in,out] attenuation      1 0 0    [0,8)
+  SFFloat [in,out] beamWidth        p/2      (0,p/2]
+  SFColor [in,out] color            1 1 1    [0,1]
+  SFFloat [in,out] cutOffAngle      p/4      (0,p/2]
+  SFVec3f [in,out] direction        0 0 -1   (-8,8)
+  SFFloat [in,out] intensity        1        [0,1]
+  SFVec3f [in,out] location         0 0 0    (-8,8)
+  SFNode  [in,out] metadata         NULL     [X3DMetadataObject]
+  SFBool  [in,out] on               TRUE
+  SFFloat [in,out] radius           100      [0,8)
+}
+{The SpotLight node defines a light source that emits light from a
+/// specific point along a specific direction vector and constrained
+/// within a solid angle. }
+{/// Spotlights may illuminate geometry nodes that
+/// respond to light sources and intersect the solid angle defined by the
+/// SpotLight. Spotlight nodes are specified in the local coordinate
+/// system and are affected by ancestors' transformations. 
+///
+/// A detailed description of ambientIntensity, color, intensity, and the
+/// lighting equations of X3D is provided in 17.2.1 Light source
+/// semantics. More information on lighting concepts can be found in
+/// 17.2.2 Lighting model, including a detailed description of the X3D
+/// lighting equations. 
+///
+/// The location field specifies a translation offset of the centre point
+/// of the light source from the light's local coordinate system
+/// origin. This point is the apex of the solid angle which bounds light
+/// emission from the given light source. The direction field specifies
+/// the direction vector of the light's central axis defined in the local
+/// coordinate system. 
+///
+/// The on field specifies whether the light source emits light. If on is
+/// TRUE, the light source is emitting light and may illuminate geometry
+/// in the scene. If on is FALSE, the light source does not emit light and
+/// does not illuminate any geometry. 
+///
+/// The radius field specifies the radial extent of the solid angle and
+/// the maximum distance from location that may be illuminated by the
+/// light source. The light source does not emit light outside this
+/// radius. The radius shall be greater than or equal to zero. 
+///
+/// Both radius and location are affected by ancestors' transformations
+/// (scales affect radius and transformations affect location). 
+///
+/// The cutOffAngle field specifies the outer bound of the solid
+/// angle. The light source does not emit light outside of this solid
+/// angle. The beamWidth field specifies an inner solid angle in which the
+/// light source emits light at uniform full intensity. The light source's
+/// emission intensity drops off from the inner solid angle (beamWidth) to
+/// the outer solid angle (cutOffAngle) as described in the following
+/// equations: 
+///
+///    angle = the angle between the Spotlight's direction vector
+///            and the vector from the Spotlight location to the point
+///            to be illuminated
+///
+///    if (angle = cutOffAngle):
+///        multiplier = 0
+///    else if (angle = beamWidth):
+///        multiplier = 1
+///    else:
+///        multiplier = (angle - cutOffAngle) / (beamWidth - cutOffAngle)
+///    intensity(angle) = SpotLight.intensity × multiplier
+///
+/// If the beamWidth is greater than the cutOffAngle, beamWidth is defined
+/// to be equal to the cutOffAngle and the light source emits full
+/// intensity within the entire solid angle defined by cutOffAngle. Both
+/// beamWidth and cutOffAngle shall be greater than 0.0 and less than or
+/// equal to p/2. Figure 17.1 depicts the beamWidth, cutOffAngle,
+/// direction, location, and radius fields of the SpotLight node. 
+///
+/// SpotLight illumination falls off with distance as specified by three
+/// attenuation coefficients. The attenuation factor is: 
+///
+///  1/max(attenuation[0] + attenuation[1] × r + attenuation[2] × r2 , 1)
+///
+/// where r is the distance from the light to the surface being
+/// illuminated. The default is no attenuation. An attenuation value of
+/// (0, 0, 0) is identical to (1, 0, 0). Attenuation values shall be
+/// greater than or equal to zero. A detailed description of X3D's
+/// lighting equations is contained in 17.2.2 Lighting model. }
+
+
+X3DTextureCoordinateNode : X3DGeometricPropertyNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This abstract node type is the base type for all node types which
+/// specify texture coordinates. It adds a new geometric property node
+/// type to those specified in 11 Rendering component.}
+{/// }
+
+
+X3DTextureNode : X3DAppearanceChildNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{ This abstract node type is the base type for all node types which
+/// specify sources for texture images. }
+{/// }
+
+
+X3DTexture2DNode : X3DTextureNode {
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+  SFBool []       repeatS  TRUE
+  SFBool []       repeatT  TRUE
+}
+{This abstract node type is the base type for all node types which
+/// specify 2D sources for texture images. }
+{/// }
+
+X3DTextureTransformNode : X3DAppearanceChildNode { 
+  SFNode [in,out] metadata NULL [X3DMetadataObject]
+}
+{This abstract node type is the base type for all node types which
+/// specify a transformation of texture coordinates. }
+{/// }
+
+X3DTextureTransform2DNode : X3DTextureTransformNode { 
+  SFVec2f [in,out] center      0 0  (-8,8)
+  SFNode  [in,out] metadata    NULL [X3DMetadataObject]
+  SFFloat [in,out] rotation    0    (-8,8)
+  SFVec2f [in,out] scale       1 1  (-8,8)
+  SFVec2f [in,out] translation 0 0  (-8,8)
+}
+{This abstract node type is the base type for all node types which
+/// specify a 2D transformation of texture coordinates. }
+{/// }
+
+ImageTexture : X3DTexture2DNode { 
+  SFNode   [in,out] metadata NULL [X3DMetadataObject]
+  MFString [in,out] url      []   [urn]
+  SFBool   []       repeatS  TRUE 
+  SFBool   []       repeatT  TRUE 
+}
+{The ImageTexture node defines a texture map by specifying an image
+/// file and general parameters for mapping to geometry. }
+{/// The texture is read from the URL specified by the url field. When the
+/// url field contains no values ([]), texturing is disabled. Browsers
+/// shall support the JPEG (see 2. [JPEG]) and PNG (see 2.[I15948]) image
+/// file formats. In addition, browsers may support other image formats
+/// (EXAMPLE  CGM, 2. [I8632]) which can be rendered into a 2D
+/// image. Support for the GIF format (see [GIF]) is also recommended
+/// (including transparency). Details on the url field can be found in
+/// 9.2.1 URLs. 
+///
+/// See 18.2 Concepts, for a general description of texture maps.
+///
+/// See 17 Lighting component for a description of lighting equations and
+/// the interaction between textures, materials, and geometry appearance. }
+
+Box : X3DGeometryNode { 
+  SFNode  [in,out] metadata NULL  [X3DMetadataObject]
+  SFVec3f []       size     2 2 2 (0,)
+  SFBool  []       solid    TRUE
+}
+{The Box node specifies a rectangular parallelepiped box centred at (0,
+/// 0, 0) in the local coordinate system and aligned with the local
+/// coordinate axes.}
+
+{/// By default, the box measures 2 units in each dimension, from -1 to
+/// +1. The size field specifies the extents of the box along the X-, Y-,
+/// and Z-axes respectively and each component value shall be greater than
+/// zero. Figure 13.1 illustrates the Box node.
+///
+/// Textures are applied individually to each face of the box. On the
+/// front (+Z), back (-Z), right (+X), and left (-X) faces of the box,
+/// when viewed from the outside with the +Y-axis up, the texture is
+/// mapped onto each face with the same orientation as if the image were
+/// displayed normally in 2D. On the top face of the box (+Y), when viewed
+/// from above and looking down the Y-axis toward the origin with the
+/// -Z-axis as the view up direction, the texture is mapped onto the face
+/// with the same orientation as if the image were displayed normally in
+/// 2D. On the bottom face of the box (-Y), when viewed from below looking
+/// up the Y-axis toward the origin with the +Z-axis as the view up
+/// direction, the texture is mapped onto the face with the same
+/// orientation as if the image were displayed normally in
+/// 2D. TextureTransform affects the texture coordinates of the Box (see
+/// 18.4.8 TextureTransform).
+///
+/// The solid field determines whether the box is visible when viewed from
+/// the inside. 11.2.3 Common geometry fields provides a complete
+/// description of the solid field.}
+
+
+Cone : X3DGeometryNode { 
+  SFNode  [in,out] metadata     NULL [X3DMetadataObject]
+  SFBool  []       bottom       TRUE
+  SFFloat []       bottomRadius 1    (0,)
+  SFFloat []       height       2    (0,)
+  SFBool  []       side         TRUE
+  SFBool  []       solid        TRUE
+}
+{The Cone node specifies a cone which is centred in the local
+/// coordinate system and whose central axis is aligned with the local
+/// Y-axis. }
+{/// The bottomRadius field specifies the radius of the cone's base, and
+/// the height field specifies the height of the cone from the centre of
+/// the base to the apex. By default, the cone has a radius of 1.0 at the
+/// bottom and a height of 2.0, with its apex at y = height/2 and its
+/// bottom at y = -height/2. Both bottomRadius and height shall be greater
+/// than zero. Figure 13.2 illustrates the Cone node.
+///
+/// The side field specifies whether sides of the cone are created and the
+/// bottom field specifies whether the bottom cap of the cone is
+/// created. A value of TRUE specifies that this part of the cone exists,
+/// while a value of FALSE specifies that this part does not exist (not
+/// rendered or eligible for collision or sensor intersection tests).
+///
+/// When a texture is applied to the sides of the cone, the texture wraps
+/// counterclockwise (from above) starting at the back of the cone. The
+/// texture has a vertical seam at the back in the X=0 plane, from the
+/// apex (0, height/2, 0) to the point (0, -height/2, -bottomRadius). For
+/// the bottom cap, a circle is cut out of the texture square centred at
+/// (0, -height/2, 0) with dimensions (2 X bottomRadius) by (2 X
+/// bottomRadius). The bottom cap texture appears right side up when the
+/// top of the cone is rotated towards the -Z-axis. TextureTransform
+/// affects the texture coordinates of the Cone (see 18.4.8
+/// TextureTransform).
+///
+/// The solid field determines whether the cone is visible when viewed
+/// from the inside. 11.2.3 Common geometry fields provides a complete
+/// description of the solid field. }
+
+
+Cylinder : X3DGeometryNode { 
+  SFNode  [in,out] metadata NULL [X3DMetadataObject]
+  SFBool  []       bottom   TRUE
+  SFFloat []       height   2    (0,)
+  SFFloat []       radius   1    (0,)
+  SFBool  []       side     TRUE
+  SFBool  []       solid    TRUE
+  SFBool  []       top      TRUE
+}
+{The Cylinder node specifies a capped cylinder centred at (0,0,0) in
+/// the local coordinate system and with a central axis oriented along the
+/// local Y-axis.} 
+{/// By default, the cylinder is sized at "-1" to "+1" in all three
+/// dimensions. The radius field specifies the radius of the cylinder and
+/// the height field specifies the height of the cylinder along the
+/// central axis. Both radius and height shall be greater than
+/// zero. Figure 13.3 illustrates the Cylinder node.
+///
+/// The cylinder has three parts: the side, the top (Y = +height/2) and
+/// the bottom (Y = height/2). Each part has an associated SFBool field
+/// that indicates whether the part exists (TRUE) or does not exist
+/// (FALSE). Parts which do not exist are not rendered and not eligible
+/// for intersection tests (EXAMPLE collision detection or sensor
+/// activation).
+///
+/// When a texture is applied to a cylinder, it is applied differently to
+/// the sides, top, and bottom. On the sides, the texture wraps
+/// counterclockwise (from above) starting at the back of the
+/// cylinder. The texture has a vertical seam at the back, intersecting
+/// the X=0 plane. For the top and bottom caps, a circle is cut out of the
+/// unit texture squares centred at (0, +-height/2, 0) with dimensions 2 X
+/// radius by 2 X radius. The top texture appears right side up when the
+/// top of the cylinder is tilted toward the +Z-axis, and the bottom
+/// texture appears right side up when the top of the cylinder is tilted
+/// toward the Z-axis. TextureTransform affects the texture coordinates of
+/// the Cylinder node (see 18.4.8 TextureTransform).
+///
+/// The solid field determines whether the cylinder is visible when viewed
+/// from the inside. 11.2.3 Common geometry fields provides a complete
+/// description of the solid field.}
+
+IndexedFaceSet : X3DComposedGeometryNode {
+  MFInt32 [in]     set_colorIndex
+  MFInt32 [in]     set_coordIndex
+  MFInt32 [in]     set_normalIndex
+  MFInt32 [in]     set_texCoordIndex
+  SFNode  [in,out] color             NULL [X3DColorNode]
+  SFNode  [in,out] coord             NULL [X3DCoordinateNode]
+  SFNode  [in,out] metadata          NULL [X3DMetadataObject]
+  SFNode  [in,out] normal            NULL [X3DNormalNode]
+  SFNode  [in,out] texCoord          NULL [X3DTextureCoordinateNode]
+  SFBool  []       ccw               TRUE
+  MFInt32 []       colorIndex        []   [0,) or -1
+  SFBool  []       colorPerVertex    TRUE
+  SFBool  []       convex            TRUE
+  MFInt32 []       coordIndex        []   [0,) or -1
+  SFFloat []       creaseAngle       0    [0,)
+  MFInt32 []       normalIndex       []   [0,) or -1
+  SFBool  []       normalPerVertex   TRUE
+  SFBool  []       solid             TRUE
+  MFInt32 []       texCoordIndex     []   [-1,)
+}
+{The IndexedFaceSet node represents a 3D shape formed by constructing
+/// faces (polygons) from vertices listed in the coord field. }
+{/// The coord field contains a Coordinate node that defines the 3D
+/// vertices referenced by the coordIndex field. IndexedFaceSet uses the
+/// indices in its coordIndex field to specify the polygonal faces by
+/// indexing into the coordinates in the Coordinate node. An index of "1"
+/// indicates that the current face has ended and the next one begins. The
+/// last face may be (but does not have to be) followed by a "1" index. If
+/// the greatest index in the coordIndex field is N, the Coordinate node
+/// shall contain N+1 coordinates (indexed as 0 to N). Each face of the
+/// IndexedFaceSet shall have:
+///
+/// a. at least three non-coincident vertices;
+/// b. vertices that define a planar polygon;
+/// c. vertices that define a non-self-intersecting polygon.
+///
+/// Otherwise, The results are undefined.
+///
+/// The IndexedFaceSet node is specified in the local coordinate system
+/// and is affected by the transformations of its ancestors.
+///
+/// Descriptions of the coord, normal, and texCoord fields are provided in
+/// the Coordinate, Normal, and TextureCoordinate nodes, respectively.
+///
+/// Details on lighting equations and the interaction between color field,
+/// normal field, textures, materials, and geometries are provided in 11
+/// Rendering component and 12 Shape component.
+///
+/// If the color field is not NULL, it shall contain a Color node whose
+/// colours are applied to the vertices or faces of the IndexedFaceSet as
+/// follows:
+///
+/// d. If colorPerVertex is FALSE, colours are applied to each face, as
+///    follows:
+///
+/// 1. If the colorIndex field is not empty, one colour is used for each face
+///    of the IndexedFaceSet. There shall be at least as many indices in
+///    the colorIndex field as there are faces in the IndexedFaceSet. If
+///    the greatest index in the colorIndex field is N, then there shall be
+///    N+1 colours in the Color node. The colorIndex field shall not contain
+///    any negative entries.
+///
+/// 2. If the colorIndex field is empty, the colours in the Color node are
+///    applied to each face of the IndexedFaceSet in order. There shall be at
+///    least as many colours in the Color node as there are faces.
+///
+/// e. If colorPerVertex is TRUE, colours are applied to each vertex, as
+///    follows:
+///
+/// 1. If the colorIndex field is not empty, colours are applied to each
+///    vertex of the IndexedFaceSet in exactly the same manner that the
+///    coordIndex field is used to choose coordinates for each vertex from
+///    the Coordinate node. The colorIndex field shall contain at least as
+///    many indices as the coordIndex field, and shall contain end-of-face
+///    markers (1) in exactly the same places as the coordIndex field. If the
+///    greatest index in the colorIndex field is N, then there shall be N+1
+///    colours in the Color node.
+///
+/// 2. If the colorIndex field is empty, the coordIndex field is used to
+///    choose colours from the Color node. If the greatest index in the
+///    coordIndex field is N, then there shall be N+1 colours in the Color
+///    node.
+///
+/// If the color field is NULL, the geometry shall be rendered normally
+/// using the Material and texture defined in the Appearance node (see 12
+/// Shape component for details).
+///
+/// If the normal field is not NULL, it shall contain a Normal node whose
+/// normals are applied to the vertices or faces of the IndexedFaceSet in
+/// a manner exactly equivalent to that described above for applying
+/// colours to vertices/faces (where normalPerVertex corresponds to
+/// colorPerVertex and normalIndex corresponds to colorIndex). If the
+/// normal field is NULL, the browser shall automatically generate
+/// normals, using creaseAngle to determine if and how normals are
+/// smoothed across shared vertices (see 11.2.3 Common geometry fields).
+/// 
+/// If the texCoord field is not NULL, it shall contain a
+/// TextureCoordinate node. The texture coordinates in that node are
+/// applied to the vertices of the IndexedFaceSet as follows:
+///
+/// f. If the texCoordIndex field is not empty, then it is used to choose
+///    texture coordinates for each vertex of the IndexedFaceSet in exactly
+///    the same manner that the coordIndex field is used to choose
+///    coordinates for each vertex from the Coordinate node. The
+///    texCoordIndex field shall contain at least as many indices as the
+///    coordIndex field, and shall contain end-of-face markers (1) in exactly
+///    the same places as the coordIndex field. If the greatest index in the
+///    texCoordIndex field is N, then there shall be N+1 texture coordinates
+///    in the TextureCoordinate node.
+/// 
+/// g. If the texCoordIndex field is empty, then the coordIndex array is used
+///    to choose texture coordinates from the TextureCoordinate node. If the
+///    greatest index in the coordIndex field is N, then there shall be N+1
+///    texture coordinates in the TextureCoordinate node.
+/// 
+/// If the texCoord field is NULL, a default texture coordinate mapping is
+/// calculated using the local coordinate system bounding box of the
+/// shape. The longest dimension of the bounding box defines the S
+/// coordinates, and the next longest defines the T coordinates. If two or
+/// all three dimensions of the bounding box are equal, ties shall be
+/// broken by choosing the X, Y, or Z dimension in that order of
+/// preference. The value of the S coordinate ranges from 0 to 1, from one
+/// end of the bounding box to the other. The T coordinate ranges between
+/// 0 and the ratio of the second greatest dimension of the bounding box
+/// to the greatest dimension. Figure 13.6 illustrates the default texture
+/// coordinates for a simple box shaped IndexedFaceSet with an X dimension
+/// twice as large as the Z dimension and four times as large as the Y
+/// dimension. Figure 13.7 illustrates the original texture image used on
+/// the IndexedFaceSet used in Figure 13.6. }
+
+
+Sphere : X3DGeometryNode { 
+  SFNode  [in,out] metadata NULL [X3DMetadataObject]
+  SFFloat []       radius   1    (0,)
+  SFBool  []       solid    TRUE
+}
+{The Sphere node specifies a sphere centred at (0, 0, 0) in the local
+/// coordinate system. }
+{/// The radius field specifies the radius of the sphere and shall be
+/// greater than zero. Figure 13.8 depicts the fields of the Sphere node.
+///
+/// When a texture is applied to a sphere, the texture covers the entire
+/// surface, wrapping counterclockwise from the back of the sphere (i.e.,
+/// longitudinal arc intersecting the -Z-axis) when viewed from the top of
+/// the sphere. The texture has a seam at the back where the X=0 plane
+/// intersects the sphere and Z values are negative. TextureTransform
+/// affects the texture coordinates of the Sphere (see 18.4.8
+/// TextureTransform).
+///
+/// The solid field determines whether the sphere is visible when viewed
+/// from the inside. 11.2.3 Common geometry fields provides a complete
+/// description of the solid field.}
+
+
