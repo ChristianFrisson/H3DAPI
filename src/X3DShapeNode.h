@@ -1,0 +1,198 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file X3DShapeNode.h
+/// \brief Header file for X3DShapeNode, X3D scene-graph node
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+#ifndef __X3DSHAPENODE_H__
+#define __X3DSHAPENODE_H__
+
+#include "X3DChildNode.h"
+#include "X3DBoundedObject.h"
+#include "X3DAppearanceNode.h"
+#include "X3DGeometryNode.h"
+#include "DependentNodeFields.h"
+#include "H3DDisplayListObject.h"
+
+namespace H3D {
+  /// \ingroup AbstractNodes
+  /// \class X3DShapeNode
+  /// This is the base node type for all Shape nodes.
+  ///
+  /// \par Internal routes:
+  /// \dotfile X3DShapeNode.dot
+  class H3DAPI_API X3DShapeNode : 
+    public X3DChildNode,
+    public X3DBoundedObject,
+    public H3DDisplayListObject {
+  public:
+    /// SFAppearanceNode is dependent on the displayList field of its
+    /// encapsulated X3DAppearanceNode node, i.e. an event from that
+    /// field will trigger an event from the SFAppearanceNode as well.
+    typedef DependentSFNode< X3DAppearanceNode,
+                             FieldRef<H3DDisplayListObject, 
+                                      H3DDisplayListObject::DisplayList,
+                                      &H3DDisplayListObject::displayList >, 
+                             true > 
+    SFAppearanceNode;
+        
+    /// SFHapticGeometry contains a X3DGeometryNode.
+    typedef TypedSFNode< X3DGeometryNode > SFHapticGeometry;
+ 
+    /// SFGeometryNode is dependent on the displayList field of its
+    /// encapsulated X3DGeometryNode node, i.e. an event from that
+    /// field will trigger an event from the SFGeometryNode as
+    /// well. Also we ovverride onAdd and onRemove in order to uphold
+    /// a route between the encapsulated X3DGeometryNode's bound field
+    /// to the bound field of the X3DShapeNode the field resides in.
+    ///
+    class SFGeometryNode: 
+      public DependentSFNode< X3DGeometryNode, 
+      FieldRef< H3DDisplayListObject,
+      H3DDisplayListObject::DisplayList,
+      &H3DDisplayListObject::displayList >, true > {
+        typedef DependentSFNode< X3DGeometryNode, 
+        FieldRef< H3DDisplayListObject,
+                  H3DDisplayListObject::DisplayList,
+                  &H3DDisplayListObject::displayList >, true > BaseField;
+    public:
+    
+      /// Constructor.
+      SFGeometryNode(): 
+        owner( NULL ) {}
+
+      /// Destructor. Sets the value to NULL in order to get the correct
+      /// onAdd and onRemove functions to be called. 
+      ~SFGeometryNode() {
+        value = NULL;
+      }
+
+      /// This function will be called when the value of RefCountField
+      /// changes. As soon as the value changes onRemove will
+      /// be called on the old value and onAdd will be called
+      /// on the new value. 
+      /// \param n The new value.
+      ///
+      virtual void onAdd( Node *n ) {
+        BaseField::onAdd( n );
+        if( n && owner->use_geometry_bound ) {
+          X3DGeometryNode *g = static_cast< X3DGeometryNode * >( n );
+          g->bound->route( owner->bound );
+        }
+      }
+      
+      /// This function will be called when the value of RefCountField
+      /// changes. As soon as the value changes onRemove will
+      /// be called on the old value and onAdd will be called
+      /// on the new value. 
+      /// \param n The old value.
+      ///
+      virtual void onRemove( Node *n ) {
+        BaseField::onRemove( n );
+        if( n && owner->use_geometry_bound ) {
+          X3DGeometryNode *g = static_cast< X3DGeometryNode * >( n );
+          g->bound->unroute( owner->bound );
+        }
+      }
+
+      // the shape node that the instance of the SFGeometry field
+      // is in.
+      X3DShapeNode *owner;
+
+    };
+
+
+    /// Constructor.
+    X3DShapeNode( Inst< SFAppearanceNode > _appearance     = 0,
+                  Inst< SFGeometryNode   > _geometry       = 0,
+                  Inst< SFHapticGeometry > _hapticGeometry = 0,
+                  Inst< SFNode           > _metadata       = 0,
+                  Inst< SFBound          > _bound          = 0,
+                  Inst< SFVec3f          > _bboxCenter     = 0,
+                  Inst< SFVec3f          > _bboxSize       = 0
+                  );
+
+    
+    /// Sets up the bound field using the bboxCenter and bboxSize fields.
+    /// If bboxSize is (-1, -1, -1) the bound will be the bound of the
+    /// geometry field. Otherwise it will be a BoxBound with center
+    /// and origin determined by the bboxCenter and bboxOrigin fields.
+    virtual void initialize() {
+      const Vec3f &size = bboxSize->getValue();
+      if( size.x == -1 && size.y == -1 && size.z == -1 ) {
+        use_geometry_bound = true;
+        X3DGeometryNode *g = 
+          static_cast< X3DGeometryNode * >( geometry->getValue() );
+        if( g ) {
+          g->bound->route( this->bound );
+        }
+      } else {
+        BoxBound *bb = new BoxBound();
+        bb->center->setValue( bboxCenter->getValue() );
+        bb->size->setValue( bboxSize->getValue() );
+        bound->setValue( bb );
+      }
+      X3DChildNode::initialize();
+    }
+
+    /// Render the shape using OpenGL.
+    virtual void render();
+
+    /// Traverse the scenegraph. Calls traverseSG on appeance and geometry.
+    virtual void traverseSG( TraverseInfo &ti );
+
+    /// The field containing the X3DAppearance node to be used when
+    /// rendering the shape.
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile X3DShapeNode_appearance.dot
+    auto_ptr<    SFAppearanceNode  >  appearance;
+
+    /// Contains the X3DGeometryNode to be rendered.
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile X3DShapeNode_geometry.dot
+    auto_ptr<    SFGeometryNode  >  geometry;
+
+    /// If specified, contains a X3DGeometryNode to be rendered haptically.
+    /// If NULL the geometry in the geometry field will be used.
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile X3DShapeNode_hapticGeometry.dot
+    auto_ptr<    SFHapticGeometry  >  hapticGeometry;
+
+    // if true a route will be set up between the bound field of the
+    // geometry node in this field and the bound field of the shape. 
+    bool use_geometry_bound;
+
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database;
+  };
+}
+
+#endif

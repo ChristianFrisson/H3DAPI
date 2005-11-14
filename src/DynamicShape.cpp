@@ -1,0 +1,235 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file Dynamicshape.cpp
+/// \brief CPP file for Dynamicshape, X3D scene-graph node
+///
+//
+//
+//////////////////////////////////////////////////////////////////////////////
+
+#include "DynamicShape.h"
+#include "GL/glut.h"
+#include "RK4.h"
+#include "Scene.h"
+
+using namespace H3D;
+
+// Add this node to the H3DNodeDatabase system.
+H3DNodeDatabase DynamicShape::database( 
+                                       "DynamicShape", 
+                                       &(newInstance<DynamicShape>), 
+                                       typeid( DynamicShape ) );
+
+namespace DynamicShapeInternals {
+  FIELDDB_ELEMENT( DynamicShape, children,        INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, metadata,        INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, bboxCenter,      INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, bboxSize,        INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, orientation,     INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, position,        INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, velocity,        OUTPUT_ONLY  );
+  FIELDDB_ELEMENT( DynamicShape, momentum,        INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, force,           INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, angularVelocity, OUTPUT_ONLY  );
+  FIELDDB_ELEMENT( DynamicShape, angularMomentum, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, spin,            OUTPUT_ONLY  );
+  FIELDDB_ELEMENT( DynamicShape, torque,          INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, mass,            INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, inertia,         INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, motion,          INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, accumulatedInverse, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, accumulatedForward, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DynamicShape, matrix,          INPUT_OUTPUT );
+}
+
+
+DynamicShape::DynamicShape(
+                           Inst< MFChild            > _addChildren,
+                           Inst< MFChild            > _removeChildren,
+                           Inst< MFChild            > _children,
+                           Inst< SFNode             > _metadata,
+                           Inst< SFBound            > _bound,  
+                           Inst< SFVec3f            > _bboxCenter,
+                           Inst< SFVec3f            > _bboxSize,
+                           Inst< SFTransformedBound > _transformedBound,
+                           Inst< SFMatrix4f         > _matrix,
+                           Inst< SFMatrix4f         > _accumulatedForward,
+                           Inst< SFMatrix4f         > _accumulatedInverse,
+                           Inst< SFVec3f            > _position,
+                           Inst< SFRotation         > _orientation,
+                           Inst< SFVelocity         > _velocity,
+                           Inst< SFVec3f            > _momentum,
+                           Inst< SFVec3f            > _force,
+                           Inst< SFAngularVelocity  > _angularVelocity,
+                           Inst< SFVec3f            > _angularMomentum,
+                           Inst< SFSpin             > _spin,
+                           Inst< SFVec3f            > _torque,
+                           Inst< SFFloat            > _mass,
+                           Inst< SFMatrix3f         > _inertia,
+                           Inst< SFMotion           > _motion ):
+  MatrixTransform( _addChildren, _removeChildren, _children,
+                   _metadata, _bound,_bboxCenter, _bboxSize,
+                   _transformedBound, _matrix, 
+                   _accumulatedForward, _accumulatedInverse ),
+  position        ( _position         ),
+  orientation     ( _orientation      ),
+  velocity        ( _velocity         ),
+  momentum        ( _momentum         ),
+  force           ( _force            ),
+  angularVelocity ( _angularVelocity  ),
+  angularMomentum ( _angularMomentum  ),
+  spin            ( _spin             ),
+  torque          ( _torque           ),
+  mass            ( _mass             ),
+  inertia         ( _inertia          ),
+  motion          ( _motion           )   {
+  type_name = "DynamicShape";
+  database.initFields( this );
+  //motion->last_t = 0;
+
+  position->setValue( Vec3f( 0, 0, 0 ) );
+  orientation->setValue( Rotation( 0, 0, 1, 0 ) );
+  momentum->setValue( Vec3f( 0, 0, 0 ) );
+  force->setValue( Vec3f( 0, 0, 0 ) );
+  angularMomentum->setValue( Vec3f( 0, 0, 0 ) );
+  torque->setValue( Vec3f( 0, 0, 0 ) );
+  
+  mass->setValue( 1 );
+  inertia->setValue( Matrix3f( 1, 0, 0,
+                               0, 1, 0,
+                               0, 0, 1 ) );
+
+  orientation->route( matrix );
+  position->route( matrix );
+
+  mass->route( velocity, id );
+  momentum->route( velocity, id );
+
+  angularVelocity->route( spin, id );
+  orientation->route( spin, id );
+
+  inertia->route( angularVelocity, id );
+  angularMomentum->route( angularVelocity, id );
+
+  Scene::time->route( motion );
+  motion->route( Scene::eventSink );
+}
+
+
+void DynamicShape::SFMotion::update() {
+  if ( routes_in.size() != 1 )
+    return;
+  
+  H3DTime  t  = static_cast< SFTime *>(routes_in[0])->getValue();
+
+  //cerr << "DynamicShape::SFMotion::update() v = " << v << endl;
+
+  H3DTime dt = t - last_t;
+  last_t = t;
+  if ( dt > 0.2 ) return; // ignore large dt's
+
+  // iteratively perform the RK4 integration at 1ms intervals until
+  // we have exceeded the current dt.
+  LMState state;
+  DynamicShape *ds = static_cast<DynamicShape*>(owner);
+  state.pos = ds->position->getValue(); 
+  state.vel = ds->velocity->getValue();
+  state.mom = ds->momentum->getValue();
+  state.force = ds->force->getValue(); 
+  state.orn = ds->orientation->getValue(); 
+  state.spin = ds->spin->getValue();
+  state.angVel = ds->angularVelocity->getValue();
+  state.angMom = ds->angularMomentum->getValue();
+  state.torque = ds->torque->getValue(); 
+  state.mass = ds->mass->getValue();
+  state.inertiaTensor = ds->inertia->getValue();
+
+  updateState( state, dt );
+
+  //cerr << "SFMotion::update() momentum = " << solve.mom << endl;
+  ds->position->setValue( state.pos );
+  ds->momentum->setValue( state.mom );
+  ds->orientation->setValue( state.orn );
+  ds->angularMomentum->setValue( state.angMom );
+}
+
+
+void DynamicShape::SFMotion::updateState( LMState &state, H3DTime dt ) {
+  //DynamicShape *ds = static_cast<DynamicShape*>(owner);
+
+  // only perform integration if the momentum is non-zero
+  // H3DFloat stepsize=0.01; // 1ms
+  //while ( dt > stepsize/2 ) {  
+  //  LinearMotion::solve( state, stepsize );
+  ////  dt = dt - stepsize;
+  // }
+  
+  LinearMotion::solve( state, dt );
+}
+
+void DynamicShape::SFMatrix4f::update() {
+  Rotation r  = static_cast< SFRotation *>(routes_in[0])->getValue();
+  Vec3f    t  = static_cast< SFVec3f * >(routes_in[1])->getValue();
+
+  H3DFloat t1 = r.axis.x*r.axis.x;
+  H3DFloat t2 = H3DCos(r.angle);
+  H3DFloat t5 = t1+t2*(1.0f-t1);
+  H3DFloat t7 = 1.0f-t2;
+  H3DFloat t8 = r.axis.x*r.axis.y*t7;
+  H3DFloat t9 = H3DSin(r.angle);
+  H3DFloat t10 = r.axis.z*t9;
+  H3DFloat t11 = t8-t10;
+  H3DFloat t13 = r.axis.x*r.axis.z*t7;
+  H3DFloat t14 = r.axis.y*t9;
+  H3DFloat t15 = t13+t14;
+  H3DFloat t20 = t8+t10;
+  H3DFloat t21 = r.axis.y*r.axis.y;
+  H3DFloat t24 = t21+t2*(1.0f-t21);
+  H3DFloat t26 = r.axis.y*r.axis.z*t7;
+  H3DFloat t27 = t9*r.axis.x;
+  H3DFloat t28 = t26-t27;
+  H3DFloat t33 = t13-t14;
+  H3DFloat t34 = t26+t27;
+  H3DFloat t35 = r.axis.z*r.axis.z;
+  H3DFloat t38 = t35+t2*(1.0f-t35);
+  value[0][0] = t5;
+  value[0][1] = t11;
+  value[0][2] = t15;
+  value[0][3] = t.x;
+  value[1][0] = t20;
+  value[1][1] = t24;
+  value[1][2] = t28;
+  value[1][3] = t.y;
+  value[2][0] = t33;
+  value[2][1] = t34;
+  value[2][2] = t38;
+  value[2][3] = t.z;
+  value[3][0] = 0.0f;
+  value[3][1] = 0.0f;
+  value[3][2] = 0.0f;
+  value[3][3] = 1.0f;
+}
+
+
+

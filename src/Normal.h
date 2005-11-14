@@ -1,0 +1,82 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file Normal.h
+/// \brief Header file for Normal, X3D scene-graph node
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+#ifndef __NORMAL_H__
+#define __NORMAL_H__
+
+#include "X3DNormalNode.h"
+#include "FieldTemplates.h"
+#include "GL/glew.h"
+
+namespace H3D {
+
+  /// \ingroup Nodes
+  /// \class Normal
+  /// \brief This node defines a set of 3D surface normal vectors to be used in the
+  /// vector field of some geometry nodes.
+  ///
+  /// This node defines a set of 3D surface normal vectors to be used in the
+  /// vector field of some geometry nodes (EXAMPLE  IndexedFaceSet and
+  /// ElevationGrid). This node contains one multiple-valued field that
+  /// contains the normal vectors. Normals shall be of unit length. 
+  class H3DAPI_API Normal : public X3DNormalNode {
+  public:
+    
+    Normal( Inst< SFNode >  _metadata = 0,
+            Inst< MFVec3f>  _vector   = 0 );
+
+    /// Perform the OpenGL commands to render a normal given the index
+    /// of the normal. Installs the normal as a glNormal3f.
+    virtual void render( int index ) {
+      const Vec3f &v = vector->getValueByIndex( index );
+      glNormal3f( v.x, v.y, v.z );
+    }
+
+    /// Perform the OpenGL commands to render all verties as a vertex
+    /// array.
+    virtual void renderArray();
+
+    /// Disable the array state enabled in renderArray().
+    virtual void disableArray();
+
+    /// Returns the number of normals this normal node can render.
+    virtual unsigned int nrAvailableNormals() {
+      return vector->size();
+    } 
+
+    /// A vector of 3D normal vectors.
+    ///
+    /// <b>Access type: </b> inputOutput
+    auto_ptr< MFVec3f >  vector;
+
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database;
+  };
+}
+
+#endif

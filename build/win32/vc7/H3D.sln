@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H3DLoad", "H3DLoad.vcproj", "{FB794093-CA26-4DBF-A7DF-1A62B7C872D5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71C03655-AF1F-426E-9F63-5C415390A8CA} = {71C03655-AF1F-426E-9F63-5C415390A8CA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H3DApi", "H3DApi.vcproj", "{71C03655-AF1F-426E-9F63-5C415390A8CA}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{FB794093-CA26-4DBF-A7DF-1A62B7C872D5}.Debug.ActiveCfg = Debug|Win32
+		{FB794093-CA26-4DBF-A7DF-1A62B7C872D5}.Debug.Build.0 = Debug|Win32
+		{FB794093-CA26-4DBF-A7DF-1A62B7C872D5}.Release.ActiveCfg = Release|Win32
+		{FB794093-CA26-4DBF-A7DF-1A62B7C872D5}.Release.Build.0 = Release|Win32
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Debug.ActiveCfg = Debug|Win32
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Debug.Build.0 = Debug|Win32
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Release.ActiveCfg = Release|Win32
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

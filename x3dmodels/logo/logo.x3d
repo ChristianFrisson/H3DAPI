@@ -1,0 +1,14 @@
+<Group>
+<Transform DEF="ROT" scale="1 0.33246 1" translation="-0.23 0.21 0" >
+   <Shape bboxSize="43 4.34 3" >
+    <Appearance>
+	<SmoothSurface />
+	<ImageTexture url="sensegraphics2.jpg"/>
+    </Appearance>
+    <IndexedFaceSet coordIndex="3 2 1 -1 0 3 1"  normalPerVertex="true" solid="false" ccw="true" >
+	<Coordinate point="0.1 0.1 0, 0.1 -0.1 0, -0.1 -0.1 0, -0.1 0.1 0 " />
+	<TextureCoordinate point=" 1 1, 1 0, 0 0, 0 1" />
+	</IndexedFaceSet>
+   </Shape>
+</Transform>
+</Group>

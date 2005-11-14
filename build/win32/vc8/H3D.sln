@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H3DApi", "H3DApi.vcproj", "{71C03655-AF1F-426E-9F63-5C415390A8CA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H3DLoad", "H3DLoad.vcproj", "{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Debug|Win32.Build.0 = Debug|Win32
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Release|Win32.ActiveCfg = Release|Win32
+		{71C03655-AF1F-426E-9F63-5C415390A8CA}.Release|Win32.Build.0 = Release|Win32
+		{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}.Debug|Win32.Build.0 = Debug|Win32
+		{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}.Release|Win32.ActiveCfg = Release|Win32
+		{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group>
+<!--Viewpoint /-->
+   <FitToBoxTransform boxCenter="0 0 0" boxSize="0.01 0.01 0.01"
+   uniformScalingOnly="true" active="true">
+     <Shape>
+       <Appearance>
+        <Material diffuseColor="0.7 1 0.7"/>
+       </Appearance>
+	   <SuperShape DEF="SS" resolution="20" 
+	   ss1_m="8" 
+	   ss1_n1="100" ss1_n2="100" ss1_n3="100"
+	   ss2_m="0" 
+	   ss2_n1="100" ss2_n2="100" ss2_n3="100"  /> 
+     </Shape>
+   </FitToBoxTransform>
+   <PythonScript DEF="PS" url="SuperShape.py" />
+   <ROUTE fromNode="PS" fromField="ss1_m"  toNode="SS" toField="ss1_m" />
+   <ROUTE fromNode="PS" fromField="ss1_n1" toNode="SS" toField="ss1_n1" />
+   <ROUTE fromNode="PS" fromField="ss1_n2" toNode="SS" toField="ss1_n2" />
+   <ROUTE fromNode="PS" fromField="ss1_n3" toNode="SS" toField="ss1_n3" />
+   <ROUTE fromNode="PS" fromField="ss1_a"  toNode="SS" toField="ss1_a" />
+   <ROUTE fromNode="PS" fromField="ss1_b"  toNode="SS" toField="ss1_b" />
+   <ROUTE fromNode="PS" fromField="ss2_m"  toNode="SS" toField="ss2_m" />
+   <ROUTE fromNode="PS" fromField="ss2_n1" toNode="SS" toField="ss2_n1" />
+   <ROUTE fromNode="PS" fromField="ss2_n2" toNode="SS" toField="ss2_n2" />
+   <ROUTE fromNode="PS" fromField="ss2_n3" toNode="SS" toField="ss2_n3" />
+   <ROUTE fromNode="PS" fromField="ss2_a"  toNode="SS" toField="ss2_a" />
+   <ROUTE fromNode="PS" fromField="ss2_b"  toNode="SS" toField="ss2_b" />
+   <!--ROUTE fromNode="PS" fromField="pos" toNode="TX" toField="translation" /-->
+</Group>
