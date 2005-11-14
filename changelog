@@ -1,0 +1,215 @@
+Changes for version 1.3:
+
+New nodes:
+Arc2D
+ArcClose2D
+AudioClip
+Circle2D
+ComposedCubeMapTexture
+ComposedShader
+Disk2D
+DynamicShape
+FloatVertexAttribute
+GeneratedCubeMapTexture
+Matrix3fVertexAttribute
+Matrix4fVertexAttribute
+PackagedShader
+Polyline2D
+Polypoint2D
+ProgramShader
+ShaderPart
+ShaderProgram
+Sound
+TriangleSet2D
+	
+- Added erase and insert methods to MFields.
+
+- None object is now used in Python to represent a NULL node pointer.
+
+- Added lots of new member functions for MFields in Python, such as erase
+push_back, empty etc.
+
+- Several fixes to give better error messages in Python.
+
+- Fixed a bug in the Material node where the specular color was never 
+specified.
+	
+- Fixed a bug where texture coordinate generation was not turned off in 
+X3DComposedGeometryNode.
+
+- Added ROUTE_NO_EVENT keyword to X3D.
+
+- Fixed a bug in Background and TextureBackground where the front and back 
+textures were mixed up. Also there was a problem with one of the texture 
+coordinates for the top texture.
+
+- Added CAMERASPACEREFLECTIONVECTOR and CAMERASPACENORMAL texture
+coordinate generation modes to TextureCoordinateGenerator.
+
+- Fixed a bug with background rendering in stereo.
+
+- Fixes to compile with Visual Studio 2005.
+
+- Lots of other smaller bugfixes. See svn changelog at www.h3d.org:8080
+for details.
+
+Changes for version 1.2:
+
+New nodes:
+Background
+BooleanFilter
+H3DThreadedHapticsDevice
+FakeHapticsDevice
+NavigationInfo
+SpaceWareHapticsDevice
+StereoInfo
+TextureBackground
+X3DBackgroundNode
+	
+- Added access to the different bindable stacks from Python. The
+H3DInterface module now contains getActiveBackground, getActiveDeviceInfo,
+getActiveStereoInfo, getActiveViewpoint and getActiveNavigationInfo
+functions.
+
+- Added access to the current scenes from Python via the getCurrentScenes
+function in the H3DInterface module.
+
+- All the createX3D...() functions in Python now returns a dictionary with
+the DEFed names and nodes from the x3d-file as well as the toplevel node.
+
+- When an ImageTexture or Image3DTexture node does not succeed to load
+any of the urls it is provided, a warnings message is now given instead of
+throwing an exception as before.
+
+- Added some threading classes for creating threads, mutex locks etc(
+Threads.h)
+
+- A static eventSink field has been added to the Scene class. The
+eventSink field updates itself once per scene-graph loop and will make all
+the fields routed to it up-to-date at that time.
+
+- Added the PeriodicUpdate field template modifier that can make a field
+make sure it is up-to-date periodically.
+
+- Fixed some bugs with the calibration matrix not working properly for HLHapticsDevice.
+
+- Lots of other smaller bugfixes. See cvs changelog at www.h3d.org:8080
+for details.
+	
+Changes for version 1.1:
+
+New nodes:
+Billboard	
+ClipPlane
+ColorInterpolator
+Composed3DTexture
+CoordinateInterpolator
+FillProperties
+ImageObjectTexture
+ImageTexture3D
+ImportLibrary
+IndexedLineSet
+IndexedTriangleFanSet
+IndexedTriangleSet
+IndexedTriangleStripSet,
+Inline
+KeySensor (shiftKey, altKey and controlKey fields not supported)
+LineSet 
+LineProperies
+MetadataDouble
+MetadataFloat
+MetadataInteger
+MetadataSet
+MetadataString
+NormalInterpolator
+MultiTextureCoordinate
+MultiTextureTransform
+OrientationInterpolator
+Pixel3DTexture
+PointLight
+PointNormalClipPlane
+PointSet
+PositionInterpolator
+RawImageLoader
+ScalarInterpolator
+Switch
+TextureCoordinate3D
+TextureCoordinate4D
+TextureCoordinateGenerator
+TextureMatrixTransform
+TextureTransform3D
+TimeSensor
+TransformInfo
+TriangleFanSet
+TriangleSet
+TriangleStripSet
+	
+- Implemented SFBound for Text node.
+
+- Fixed a bug with MultiTexturing not working. 
+
+- Geometries are now unlit if the Shape node has no Appearance node or the
+Appearance node has no Material node, according to the X3D spec.
+	
+- Added preRender() and postRender() functions to X3DAppearanceNode and
+X3DAppearanceChildNode to be able to save the state before rendering the
+appearance and restoring it after rendering the geometry.
+
+- Moved IndexedFaceSet::SFBound class to CoordBoundField and using that
+instead in IndexedFaceSet.
+
+- Added bounds checks in MField::getValueByIndex() function.
+
+- Texturing is now disabled in IndexedLineSet
+
+- Parsing of SFVec4f, SFVec4d and SFImage when SFImage is a 3D image
+added. 
+
+- Added interpolate field to X3DTexture2DNode to be able to specify if 
+the pixels should be interpolated or not.
+
+- Various changes to support Linux and Mac.
+
+- Some fixes where the OpenGL display list was not rebuild when field
+values changed.
+
+- Fixed a bug where SFNode or MFNode fields could not be declared
+INITIALIZE_ONLY and then be set in the .x3d file (#8)
+
+- Added createX3DNodeFromString, createX3DNodeFromURL and
+createX3DNodeFromStream functions to X3D.h to be able to get the node
+created from the source to be returned directly and not put into a group.
+
+- Matrix3f and Matrix4f is now available in the PythonScript node.
+
+- Fixed a bug in the Box node. There was never any haptics added.
+
+- Fixed a bug in setting up the near and far clip planes (#19)
+
+- TypedSFNode< NodeType >::getValue() function now returns the node type
+specified in the template and not just Node *.
+
+- Slerp function added to Quaternion
+
+- Added DynamicLibrary with functions for loading dynamic libraries. 
+
+- Fixed bugs in stereo rendering.
+
+- Blending is now enabled if texture contains alpha values.
+
+- Rendering stylii before scene in order to make the stylii visible
+through semitransparent objects in the scene.
+
+- Fixed a bug with the positionCalibration matrix in HLHapticsDevice,
+where the matrix used before was the transposed matrx.
+
+- Conversions are now possible between d and f types e.g. Vec3f and
+Vec3d. Matrix3d and Matrix4d added. 
+
+- contactPoint and contactNormal fields in X3DGeometryNode are now in
+local coordinates.
+
+- added H3DDynamicFieldsObject that allows you to add fields to a node
+that are not members of the node, if it inherits from it.
+
+- Lots of minor bugfixes. See cvs changelog at www.h3d.org:8080 for details.
