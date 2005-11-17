@@ -209,7 +209,7 @@
 				RelativePath="..\..\..\src\DynamicLibrary.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DynamicShape.cpp">
+				RelativePath="..\..\..\src\DynamicTransform.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Exception.cpp">
@@ -518,6 +518,9 @@
 				RelativePath="..\..\..\src\Switch.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\TexGenGeometry.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\Text.cpp">
 			</File>
 			<File
@@ -820,7 +823,7 @@
 				RelativePath="..\..\..\src\DynamicLibrary.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DynamicShape.h">
+				RelativePath="..\..\..\src\DynamicTransform.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Exception.h">
@@ -1232,6 +1235,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Switch.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\TexGenGeometry.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Text.h">

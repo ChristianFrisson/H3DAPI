@@ -117,11 +117,10 @@ void *Thread::thread_func( void * _data ) {
 
 #ifdef MACOSX
   // set thread priority
-  cerr << "SETTING REALTIME ON MAC" << endl;
   struct thread_time_constraint_policy ttcpolicy;
   int ret;
   ttcpolicy.period=      100000;
-  ttcpolicy.computation=  10000;
+  ttcpolicy.computation=  20000;
   ttcpolicy.constraint=  100000;
   ttcpolicy.preemptible=  1;
   if ((ret=thread_policy_set( mach_thread_self(),

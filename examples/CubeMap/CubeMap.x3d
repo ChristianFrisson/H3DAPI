@@ -1,0 +1,46 @@
+<Group>
+	<Background			
+		 backUrl	="../textures/b_arch_00000.png"
+	   frontUrl ="../textures/f_arch_00000.png"
+	   leftUrl	="../textures/l_arch_00000.png"
+	   rightUrl ="../textures/r_arch_00000.png"
+	   bottomUrl="../textures/d_arch_00000.png"
+	   topUrl		="../textures/t_arch_00000.png"	 />
+  
+  <Viewpoint position="0 0 0.6" />
+  <DynamicTransform angularMomentum="0.1 0.25 0">
+    <FitToBoxTransform boxCenter="0 0 0" boxSize="0.25 0.25 0.25"
+	                     uniformScalingOnly="true" active="true">
+      <Shape>
+	      <Appearance>
+			    <Material />
+          
+			    <ComposedCubeMapTexture>
+			      <ImageTexture url="../textures/b_arch_00000rot.png" 
+                          containerField="back"/>
+			      <ImageTexture url="../textures/f_arch_00000rot.png" 
+                          containerField="front"/>
+			      <ImageTexture url="../textures/l_arch_00000rot.png" 
+                          containerField="left"/>
+			      <ImageTexture url="../textures/r_arch_00000rot.png" 
+                          containerField="right"/>
+			      <ImageTexture url="../textures/t_arch_00000.png" 
+                          containerField="top"/>
+			      <ImageTexture url="../textures/d_arch_00000.png" 
+                          containerField="bottom"/>
+			    </ComposedCubeMapTexture>
+		      
+	      </Appearance>
+	      <TexGenGeometry>
+	        <SuperShape DEF="SS" resolution="128" 
+					            ss1_m="1" ss1_a="1.1" ss1_b="1.88"
+					            ss1_n1="3.41" ss1_n2="-0.24" ss1_n3="19.07"
+					            ss2_m="4" ss2_a="1" ss2_b="1"
+					            ss2_n1="110" ss2_n2="100" ss2_n3="90"	/> 
+				  
+	        <TextureCoordinateGenerator mode="CAMERASPACEREFLECTIONVECTOR" />
+        </TexGenGeometry>
+      </Shape>
+    </FitToBoxTransform>
+  </DynamicTransform>
+</Group>

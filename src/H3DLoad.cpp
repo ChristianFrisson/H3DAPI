@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
     ks->actionKeyPress->route( kr );
     ms->leftButton->route( kr );
     ms->motion->route( kr );
-    //kr->route( t->rotation );
+    kr->route( t->rotation );
 		  
     AutoRef< Group > g( new Group );     
     
@@ -148,8 +148,6 @@ int main(int argc, char* argv[]) {
     glwindow->fullscreen->setValue( fullscreen );
     glwindow->mirrored->setValue( mirrored );
     glwindow->renderMode->setValue( render_mode );
-    glwindow->width->setValue( 0.8*1280 );
-    glwindow->height->setValue( 0.8*720 );
     scene->window->push_back( glwindow );
     scene->sceneRoot->setValue( g.get() );
     Scene::mainLoop();

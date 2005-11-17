@@ -80,14 +80,14 @@ namespace HLHapticsDeviceInternal {
   HDCallbackCode HDCALLBACK forceEffectCallback( void *data ) {
     HLHapticsDevice *hd = static_cast< HLHapticsDevice * >( data );
   
-#ifdef MACOSX_DISABLED
+#ifdef MACOSX
     // set thread priority
     if ( !init_realtime ) {
       struct thread_time_constraint_policy ttcpolicy;
       int ret;
-      ttcpolicy.period=      30000; // HZ/160;
-      ttcpolicy.computation= 10000; // HZ/3300;
-      ttcpolicy.constraint=  20000; //HZ/2200;
+      ttcpolicy.period=      100000; // HZ/160;
+      ttcpolicy.computation=  20000; // HZ/3300;
+      ttcpolicy.constraint=  100000; //HZ/2200;
       ttcpolicy.preemptible=1;
       if ((ret=thread_policy_set( mach_thread_self(),
                                   THREAD_TIME_CONSTRAINT_POLICY, (thread_policy_t)&ttcpolicy,

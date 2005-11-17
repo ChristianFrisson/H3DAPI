@@ -1,0 +1,30 @@
+<Group>
+  <!-- This demo plays a sound at the position of the haptics device. -->
+  <DeviceInfo>
+    <HLHapticsDevice DEF="HDEV" positionCalibration="2e-3 0 0 0 0 2e-3 0 0 0 0 2e-3 0 0 0 0 1" >
+      <Group containerField="stylus">
+        <Shape>
+          <Appearance>
+            <Material/>
+          </Appearance>
+          <Sphere radius="0.0025"/>
+        </Shape>
+        <Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
+          <Shape>
+            <Appearance>
+              <Material/>
+            </Appearance>
+            <Cylinder radius="0.005" height="0.1"/>
+          </Shape>
+        </Transform>
+      </Group>
+    </HLHapticsDevice>
+  </DeviceInfo>
+  <Viewpoint position="0 0 0.65" />
+  <Sound maxFront="0.9" maxBack="0.9"  minFront="0.0001" intensity="1" DEF="SOUND" >
+    <AudioClip DEF="AUDIO" url="ding.wav" loop="TRUE"/>
+  </Sound>
+
+  <ROUTE fromNode="HDEV" fromField="trackerPosition" 
+         toNode="SOUND" toField="location" />
+</Group>

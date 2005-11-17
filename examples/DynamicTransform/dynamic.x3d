@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group>
+  <DeviceInfo>
+    <HLHapticsDevice DEF="HDEV"
+      positionCalibration="2e-3 0 0 0 0 2e-3 0 0 0 0 2e-3 0 0 0 0 1" >
+      <Shape containerField="stylus" >
+        <Appearance >
+          <Material />
+        </Appearance >
+        <Sphere radius="0.005" />
+      </Shape>
+    </HLHapticsDevice>
+  </DeviceInfo>
+    
+  <DynamicTransform  DEF="DYN"
+                     mass="20" 
+                     inertiaTensor="0.1 0 0 0 0.1 0 0 0 0.1">
+    <Shape>
+      <Appearance>
+        <Material diffuseColor="1 0 0"/>
+        <FrictionalSurface dynamicFriction="0.6" staticFriction="0.2"/>
+      </Appearance>
+      <Box DEF="BOX" size="0.2 0.2 0.2" />
+    </Shape>
+  </DynamicTransform>
+ 
+
+   <PythonScript DEF="PS" url="dynamic.py">
+   </PythonScript>
+
+   <ROUTE fromNode="DYN" fromField="position"
+      toNode="PS" toField="linSpring" />
+
+   <ROUTE fromNode="DYN" fromField="velocity"
+      toNode="PS" toField="linDamper" />
+
+   <ROUTE fromNode="PS" fromField="sumForces"
+      toNode="DYN" toField="force" />
+
+
+   <ROUTE fromNode="BOX" fromField="force"
+      toNode="PS" toField="invertForce" />
+
+   <ROUTE fromNode="DYN" fromField="matrix"
+      toNode="PS" toField="applyTorque" />
+
+   <ROUTE fromNode="BOX" fromField="force"
+      toNode="PS" toField="applyTorque" />
+
+   <ROUTE fromNode="BOX" fromField="contactPoint"
+      toNode="PS" toField="applyTorque" />
+
+   <ROUTE fromNode="DYN" fromField="orientation"
+      toNode="PS" toField="angSpring" />
+
+   <ROUTE fromNode="DYN" fromField="angularVelocity"
+      toNode="PS" toField="angDamper" />
+
+   <ROUTE fromNode="PS" fromField="sumTorques"
+      toNode="DYN" toField="torque" />
+</Group>

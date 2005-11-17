@@ -186,6 +186,7 @@ void GLWindow::initialize() {
     RenderMode::Mode stereo_mode = renderMode->getRenderMode();
     
     if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
+        stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
         stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
       //mode |= GLUT_STENCIL;
     } else  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
@@ -467,6 +468,8 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     vp_ref.reset( vp );
   }
 
+  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
+
   Vec3f vp_position = vp->position->getValue();
   Rotation vp_orientation = vp->orientation->getValue();
   const Matrix4f &vp_inv_m = vp->accInverseMatrix->getValue();
@@ -485,7 +488,6 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
 
   if( rebuild_stencil_mask ) {
     glClear( GL_STENCIL_BUFFER_BIT );
-    //RenderMode::Mode stereo_mode = renderMode->getRenderMode();
     // build up stencil buffer
     int w = width->getValue();
     // width needs to be a power of 2 because of how glDrawPixels work.
@@ -493,9 +495,16 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     w += 4 - (w  % 4  );
     int h = height->getValue();
     unsigned char *mask = (unsigned char*)malloc(w*h);
-    for( int i = 0; i < h; i++ )
-      for( int j = 0; j < w; j++ )
-        mask[i*w+j]=(j+1)%2;
+
+    if( stereo_mode == RenderMode::HORIZONTAL_INTERLACED ) {
+      for( int i = 0; i < h; i++ )
+        for( int j = 0; j < w; j++ )
+          mask[i*w+j]=(i+1)%2;
+    } else {
+      for( int i = 0; i < h; i++ )
+        for( int j = 0; j < w; j++ )
+          mask[i*w+j]=(j+1)%2;
+    }
     glDrawPixels( w, h, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, mask );
     free( mask );
     rebuild_stencil_mask = false;
@@ -570,7 +579,7 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     // perspective projection method, which means that the viewpoint for each 
     // eye remain parallell and an the asymmetric view frustum is set up using 
     // glFrustum.
-    RenderMode::Mode stereo_mode = renderMode->getRenderMode();
+
     // LEFT EYE
     H3DFloat frustum_shift = 
       half_interocular_distance * clip_near / focal_distance; 
@@ -602,11 +611,17 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
       // render only the red component
       glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
+             stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
              stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
-      // render only every second vertical line
+      // render only every second line
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_EQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
+    } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ) {
+      glViewport( 0, height->getValue() / 2, 
+                  width->getValue(), height->getValue() / 2 );
+    } else if( stereo_mode == RenderMode::VERTICAL_SPLIT ) {
+      glViewport( 0, 0, width->getValue() / 2, height->getValue() );
     }
 
     // clear the buffers before rendering
@@ -674,10 +689,17 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE);
     } else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
+               stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
                stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_NOTEQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
+    } if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ) {
+      glViewport( 0, 0, 
+                  width->getValue(), height->getValue() / 2 );
+    } else if( stereo_mode == RenderMode::VERTICAL_SPLIT ) {
+      glViewport( width->getValue() / 2, 0, 
+                  width->getValue() / 2, height->getValue() );
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -715,7 +737,8 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     if( stereo_mode == RenderMode::RED_BLUE_STEREO ||
         stereo_mode == RenderMode::RED_CYAN_STEREO )
       glDisable( GL_BLEND );
-    else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ) 
+    else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
+             stereo_mode == RenderMode::HORIZONTAL_INTERLACED ) 
       glDisable( GL_STENCIL_TEST );
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
       glDisable( GL_STENCIL_TEST );
@@ -818,6 +841,7 @@ void GLWindow::reshape( int w, int h ) {
   height->setValue( h );
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
   if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
+      stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
       stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
     rebuild_stencil_mask = true;
   }
@@ -845,8 +869,14 @@ GLWindow::RenderMode::Mode GLWindow::RenderMode::getRenderMode() {
     return MONO;
   else if( value == "QUAD_BUFFERED_STEREO" )
     return QUAD_BUFFERED_STEREO;
+  else if( value == "VERTICAL_SPLIT" )
+    return VERTICAL_SPLIT;
+  else if( value == "HORIZONTAL_SPLIT" )
+    return HORIZONTAL_SPLIT;
   else if( value == "VERTICAL_INTERLACED" )
     return VERTICAL_INTERLACED;
+  else if( value == "HORIZONTAL_INTERLACED" )
+    return HORIZONTAL_INTERLACED;
   else if( value == "RED_BLUE_STEREO" )
     return RED_BLUE_STEREO;
   else if( value == "RED_CYAN_STEREO" )
@@ -855,8 +885,9 @@ GLWindow::RenderMode::Mode GLWindow::RenderMode::getRenderMode() {
     return VERTICAL_INTERLACED_GREEN_SHIFT;  
   else {
     stringstream s;
-    s << "Must be one of MONO, QUAD_BUFFERED_STEREO, "
+    s << "Must be one of MONO, QUAD_BUFFERED_STEREO, HORIZONTAL_INTERLACED"
       << "VERTICAL_INTERLACED, VERTICAL_INTERLACED_GREEN_SHIFT, "
+      << "VERTICAL_SPLIT, HORIZONTAL_SPLIT, "
       << "RED_CYAN_STEREO or RED_BLUE_STEREO. " << ends;
     throw InvalidRenderMode( value, 
                              s.str(),

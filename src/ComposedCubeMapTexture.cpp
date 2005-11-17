@@ -97,19 +97,27 @@ void ComposedCubeMapTexture::render() {
       unsigned int dim;
       bool textures_ok = true;
       Image *i = back_tex->image->getValue();
-      if( i ) 
+      if( i ) { 
         dim = i->width();
-      
-      textures_ok = textures_ok && ( i->height() == dim );
-      i = front_tex->image->getValue();
-      textures_ok = i && textures_ok && i->width() == dim && i->height() == dim;
-      i = left_tex->image->getValue();
-      textures_ok = i && textures_ok && i->width() == dim && i->height() == dim;
-      i = right_tex->image->getValue();
-      textures_ok = i && textures_ok && i->width() == dim && i->height() == dim;
-      i = top_tex->image->getValue();
-      textures_ok = i && textures_ok && i->width() == dim && i->height() == dim;
-      i = bottom_tex->image->getValue();
+        textures_ok = textures_ok && ( i->height() == dim );
+        i = front_tex->image->getValue();
+        textures_ok = i && textures_ok && i->width() == dim && 
+          i->height() == dim;
+        i = left_tex->image->getValue();
+        textures_ok = i && textures_ok && i->width() == dim && 
+          i->height() == dim;
+        i = right_tex->image->getValue();
+        textures_ok = i && textures_ok && i->width() == dim && 
+          i->height() == dim;
+        i = top_tex->image->getValue();
+        textures_ok = i && textures_ok && i->width() == dim && 
+          i->height() == dim;
+        i = bottom_tex->image->getValue();
+        textures_ok = i && textures_ok && i->width() == dim && 
+          i->height() == dim;
+	  } else {
+        textures_ok = false;
+	  }
 
       if( textures_ok ) {
         
@@ -150,6 +158,7 @@ void ComposedCubeMapTexture::render() {
         glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, 
                         GL_LINEAR);
       } else {
+		glBindTexture( GL_TEXTURE_CUBE_MAP_ARB, 0 );
         cerr << "Warning: Invalid cube map textures in \"" << getName()
              << "\" node. All images must have the same square dimensions."
              << endl;

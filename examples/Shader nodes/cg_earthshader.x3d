@@ -1,0 +1,51 @@
+<Group>
+  <DeviceInfo>
+    <HLHapticsDevice DEF="HDEV" positionCalibration="2e-3 0 0 0
+                                                     0 2e-3 0 0
+                                                     0 0 2e-3 0
+                                                     0 0 0 1" >
+      <Group containerField="stylus">
+        <Shape>
+          <Appearance>
+            <Material/>
+          </Appearance>
+          <Sphere radius="0.0025"/>
+        </Shape>
+        <Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
+          <Shape>
+            <Appearance>
+              <Material/>
+            </Appearance>
+            <Cylinder radius="0.005" height="0.1"/>
+          </Shape>
+        </Transform>
+      </Group>
+    </HLHapticsDevice>
+  </DeviceInfo>
+  <Shape>
+    <Appearance>
+      <Material />
+      <ProgramShader DEF="SHADER" language="CG" >
+        <ShaderProgram DEF="FRAGMENT_SHADER" type="FRAGMENT" url="Shaders/cg_Earth.frag" >
+          <field name="EarthDay" type="SFNode" accessType="inputOutput">
+            <ImageTexture DEF="EARTH_DAY" url="../textures/Day.jpg" />
+          </field>
+          <field name="EarthNight" type="SFNode" accessType="inputOutput">
+            <ImageTexture DEF="EARTH_NIGHT" url="../textures/Night.jpg" />
+          </field>
+          <field name="EarthCloudGloss" type="SFNode" accessType="inputOutput">
+            <ImageTexture DEF="EARTH_CLOUDS" url="../textures/Clouds.jpg" />
+          </field>
+        </ShaderProgram>
+        <ShaderProgram DEF="VERTEX_SHADER" type="VERTEX" url="Shaders/cg_Earth.vert" >
+          <field name="LightPosition" type="SFVec3f" value="0.45 0 -0.45"
+                 accessType="inputOutput" />
+        </ShaderProgram>
+      </ProgramShader>
+    </Appearance>
+    <Sphere radius="0.1" />
+  </Shape>
+  <ROUTE fromNode="HDEV" fromField="trackerPosition" toNode="VERTEX_SHADER"
+         toField="LightPosition" />
+</Group>
+

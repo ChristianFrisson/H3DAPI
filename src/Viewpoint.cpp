@@ -33,6 +33,12 @@
 
 using namespace H3D;
 
+#ifdef MACOSX
+template<>
+X3DBindableNode< Viewpoint >::StackType X3DBindableNode< Viewpoint >::stack = 
+X3DBindableNode< Viewpoint >::StackType();
+#endif
+
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase Viewpoint::database( 
                                     "Viewpoint", 

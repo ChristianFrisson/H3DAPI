@@ -13,10 +13,10 @@ class SS:
     self.a  = a
     self.b  = b
 
-src_ss1 = SS( 100, 100, 100, 4, 1, 1 )
-src_ss2 = SS( 100, 100, 100, 4, 1, 1 )
-dst_ss1 = SS( 100, 100, 100, 3, 1, 1 )
-dst_ss2 = SS( 100, 100, 100, 5, 1, 1 )
+src_ss1 = SS( 3.41, -0.24, 19.07, 1, 1.1, 1.88 )
+src_ss2 = SS( 110, 100, 90, 4, 1, 1 )
+dst_ss1 = SS( 1, 1, 1, 6, 1, 1 )
+dst_ss2 = SS( 1, 1, 1, 3, 1, 1 )
 
 ss1_m  = SFFloat()
 ss1_n1 = SFFloat()
@@ -33,10 +33,11 @@ ss2_a  = SFFloat()
 ss2_b  = SFFloat()
 
 tick=0
+direction=1
 
 def traverseSG():
   global src_ss1, src_ss2, dst_ss1, dst_ss2
-  global tick
+  global tick, direction
 
   ss1_m.setValue ( src_ss1.m  * (1-tick) + dst_ss1.m  * tick )
   ss1_n1.setValue( src_ss1.n1 * (1-tick) + dst_ss1.n1 * tick )
@@ -52,21 +53,16 @@ def traverseSG():
   ss2_a.setValue ( src_ss2.a  * (1-tick) + dst_ss2.a  * tick )
   ss2_b.setValue ( src_ss2.b  * (1-tick) + dst_ss2.b  * tick )
 
-  tick = tick + 0.01
+
+  if direction==1:
+    tick = tick + 0.005
+  else:
+    tick = tick - 0.005
+
   if tick > 1.0:
-    tick = 0
-    #generate new src/dst
-    src_ss1 = dst_ss1
-    src_ss2 = dst_ss2 
-    dst_ss1 = SS( 10*random.random(),
-                  2*random.random()+1,
-                  2*random.random()+1,
-                  2*random.random()+1,
-                  10*random.random()+1,
-                  10*random.random()+1 )
-    dst_ss2 = SS( 10*random.random(),
-                  2*random.random()+1,
-                  2*random.random()+1,
-                  2*random.random()+1,
-                  10*random.random()+1,
-                  10*random.random()+1 )
+    direction = 1 - direction
+    tick = 1.0
+  if tick < 0.0:
+    tick = 0.0
+    direction = 1 - direction
+

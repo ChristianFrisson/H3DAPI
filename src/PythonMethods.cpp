@@ -524,6 +524,8 @@ if( check_func( value ) ) {                                         \
       PyQuaternion::installType( H3D_module );
       PyMatrix3f::installType( H3D_module );     
       PyMatrix4f::installType( H3D_module );
+      PyMatrix3d::installType( H3D_module );     
+      PyMatrix4d::installType( H3D_module );
       PythonInternals::insertFieldTypes( H3D_dict );
 
       PythonInternals::H3DInterface_module = 
