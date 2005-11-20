@@ -187,6 +187,8 @@ namespace H3D {
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~H3DHapticsDevice() {
       disableDevice();
+      if( thread )
+        delete thread;
     }
 
     /// Returns the default xml containerField attribute value.

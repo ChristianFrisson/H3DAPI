@@ -66,6 +66,11 @@ Thread::CallbackCode H3DThreadedHapticsDevice::changeForceEffects( void *_data )
     Rotation rot = hd->getOrientation();
     Vec3f pos = hd->getPosition();
     Vec3f vel = hd->getVelocity();
+    bool b = hd->getButtonStatus();
+    if( hd->mainButton->getValue() != b )
+      hd->mainButton->setValue( b );
+    hd->devicePosition->setValue( pos, hd->id );
+    hd->deviceOrientation->setValue( rot, hd->id );
 
     // apply the calibration matrices to get the values to
     // in the H3D API coordinate space.
@@ -120,8 +125,9 @@ Thread::CallbackCode H3DThreadedHapticsDevice::changeForceEffects( void *_data )
   } 
 
 /// Constructor.
-H3DThreadedHapticsDevice::H3DThreadedHapticsDevice( Inst< SFVec3f         > _devicePosition,
-               Inst< SFRotation      > _deviceOrientation      ,
+H3DThreadedHapticsDevice::H3DThreadedHapticsDevice( 
+               Inst< ThreadSafeSField< SFVec3f > > _devicePosition,
+               Inst< ThreadSafeSField< SFRotation >  > _deviceOrientation,
                Inst< TrackerPosition > _trackerPosition        ,
                Inst< TrackerOrientation > _trackerOrientation  ,
                Inst< PosCalibration  > _positionCalibration    ,
@@ -129,7 +135,7 @@ H3DThreadedHapticsDevice::H3DThreadedHapticsDevice( Inst< SFVec3f         > _dev
                Inst< SFVec3f         > _proxyPosition          ,
                Inst< WeightedProxy   > _weightedProxyPosition  ,     
                Inst< SFFloat         > _proxyWeighting         ,
-               Inst< SFBool          > _mainButton             ,
+               Inst< ThreadSafeSField< SFBool > > _mainButton  ,
                Inst< ThreadSafeSField< SFVec3f > > _force      ,
                Inst< ThreadSafeSField< SFVec3f > > _torque     ,
                Inst< SFInt32         > _inputDOF               ,
@@ -173,14 +179,16 @@ void H3DThreadedHapticsDevice::disableDevice() {
 
 void H3DThreadedHapticsDevice::renderEffects( 
                          const HapticEffectVector &effects ) {
-  // make a copy of the effects vector since it is swapped in
-  // the callback.
-  HapticEffectVector effects_copy( effects );
-  typedef void *pp;
-  void * param[] = { this, &effects_copy };
-  // change the current_force_effects vector to render the new effects.
-  thread->synchronousCallback( H3DThreadedHapticsDevice::changeForceEffects,
-                               param );
+  if( thread ) {
+    // make a copy of the effects vector since it is swapped in
+    // the callback.
+    HapticEffectVector effects_copy( effects );
+    typedef void *pp;
+    void * param[] = { this, &effects_copy };
+    // change the current_force_effects vector to render the new effects.
+    thread->synchronousCallback( H3DThreadedHapticsDevice::changeForceEffects,
+                                 param );
+  }
 }
 
 void H3DThreadedHapticsDevice::updateDeviceValues() {

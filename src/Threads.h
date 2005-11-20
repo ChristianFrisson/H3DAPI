@@ -249,13 +249,13 @@ namespace H3D {
   /// HapticThread is a thread class that should be used by haptics devices
   /// when creating threads. It is the same as Thread, but also inherits
   /// from HapticThreadBase to make it aware that it is a haptic thread/
-  class H3DAPI_API HapticThread : public Thread,
-                                  public HapticThreadBase {
+  class H3DAPI_API HapticThread : public HapticThreadBase,
+                                  public Thread {
   public:
     /// Constructor.
     HapticThread( int thread_priority =  DEFAULT_THREAD_PRIORITY,
 		int thread_frequency = -1 ):
-	Thread( thread_priority, thread_frequency ) {
+      Thread( thread_priority, thread_frequency ) {
     }
   };
 
@@ -263,8 +263,8 @@ namespace H3D {
   /// and thread running when using OpenHaptics and HD API. It is used
   /// by the HLHapticsDevice and uses its own thread handling. Since only
   /// one instance of the HD API scheduler exists it is a singleton class.
-  class H3DAPI_API HLThread : public ThreadBase,
-                              public HapticThreadBase {
+  class H3DAPI_API HLThread : public HapticThreadBase,
+                              public ThreadBase {
 
   private:
     HLThread():

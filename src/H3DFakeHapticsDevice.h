@@ -56,7 +56,7 @@ namespace H3D {
          Inst< SFVec3f         > _proxyPosition          = 0,
          Inst< WeightedProxy   > _weightedProxyPosition  = 0,    
          Inst< SFFloat         > _proxyWeighting         = 0,
-         Inst< SFBool          > _main_button            = 0,
+         Inst< ThreadSafeSField< SFBool > > _main_button = 0,
          Inst< ThreadSafeSField< SFVec3f > > _force      = 0,
          Inst< ThreadSafeSField< SFVec3f > > _torque     = 0,
          Inst< SFInt32         > _inputDOF               = 0,
@@ -102,6 +102,8 @@ namespace H3D {
     virtual Vec3f getVelocity();
     /// Get the orientation of the haptics device.
     virtual Rotation getOrientation();
+    /// Get the button status of the haptics device.
+    virtual bool getButtonStatus();
     /// Forces are ignored.
     virtual void sendForce( const Vec3f &f ) {}
     /// Torques are ignored.

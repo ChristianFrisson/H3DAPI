@@ -89,7 +89,8 @@ H3DHapticsDevice::H3DHapticsDevice( Inst< SFVec3f         > _devicePosition,
   outputDOF( _outputDOF ),
   hapticsRate( _hapticsRate ),
   stylus( _stylus ),
-  initialized( _initialized ) {
+  initialized( _initialized ),
+  thread( NULL ) {
 
   type_name = "H3DHapticsDevice";  
   database.initFields( this );

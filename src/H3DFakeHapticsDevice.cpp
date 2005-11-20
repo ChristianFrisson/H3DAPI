@@ -48,7 +48,7 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
          Inst< SFVec3f         > _proxyPosition          ,
          Inst< WeightedProxy   > _weightedProxyPosition  ,     
          Inst< SFFloat         > _proxyWeighting         ,
-         Inst< SFBool          > _mainButton             ,
+         Inst< ThreadSafeSField< SFBool > > _mainButton  ,
          Inst< ThreadSafeSField< SFVec3f > > _force      ,
          Inst< ThreadSafeSField< SFVec3f > > _torque     ,
          Inst< SFInt32         > _inputDOF               ,
@@ -102,6 +102,11 @@ Vec3f H3DFakeHapticsDevice::getVelocity() {
 Rotation H3DFakeHapticsDevice::getOrientation() {
   // deviceOrientation is thread safe so we can use getValue()
   return deviceOrientation->getValue();
+}
+
+bool H3DFakeHapticsDevice::getButtonStatus() {
+  // mainButton is thread safe so we can use getValue()
+  return mainButton->getValue();
 }
 
 

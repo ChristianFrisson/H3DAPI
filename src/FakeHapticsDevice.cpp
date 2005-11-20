@@ -54,7 +54,7 @@ FakeHapticsDevice::FakeHapticsDevice(
          Inst< SFVec3f         > _proxyPosition          ,
          Inst< WeightedProxy   > _weightedProxyPosition  ,     
          Inst< SFFloat         > _proxyWeighting         ,
-         Inst< SFBool          > _mainButton             ,
+         Inst< ThreadSafeSField< SFBool > > _mainButton  ,
          Inst< ThreadSafeSField< SFVec3f > > _force      ,
          Inst< ThreadSafeSField< SFVec3f > > _torque     ,
          Inst< SFInt32         > _inputDOF               ,

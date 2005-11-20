@@ -63,7 +63,7 @@ namespace H3D {
          Inst< SFVec3f         > _proxyPosition          = 0,
          Inst< WeightedProxy   > _weightedProxyPosition  = 0,    
          Inst< SFFloat         > _proxyWeighting         = 0,
-         Inst< SFBool          > _main_button            = 0,
+         Inst< ThreadSafeSField< SFBool >  > _main_button  = 0,
          Inst< ThreadSafeSField< SFVec3f > > _force      = 0,
          Inst< ThreadSafeSField< SFVec3f > > _torque     = 0,
          Inst< SFInt32         > _inputDOF               = 0,

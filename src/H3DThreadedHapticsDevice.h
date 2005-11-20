@@ -52,23 +52,24 @@ namespace H3D {
   public:
 
     /// Constructor.
-    H3DThreadedHapticsDevice( Inst< SFVec3f         > _devicePosition         = 0,
-                              Inst< SFRotation      > _deviceOrientation      = 0,
-                              Inst< TrackerPosition > _trackerPosition        = 0,
-                              Inst< TrackerOrientation > _trackerOrientation  = 0,
-                              Inst< PosCalibration  > _positionCalibration    = 0,
-                              Inst< OrnCalibration  > _orientationCalibration = 0,
-                              Inst< SFVec3f         > _proxyPosition          = 0,
-                              Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
-                              Inst< SFFloat         > _proxyWeighting         = 0,
-                              Inst< SFBool          > _main_button            = 0,
-                              Inst< ThreadSafeSField< SFVec3f > > _force      = 0,
-                              Inst< ThreadSafeSField< SFVec3f > > _torque     = 0,
-                              Inst< SFInt32         > _inputDOF               = 0,
-                              Inst< SFInt32         > _outputDOF              = 0,
-                              Inst< SFInt32         > _hapticsRate            = 0,
-                              Inst< SFNode          > _stylus                 = 0,
-                              Inst< SFBool          > _initialized            = 0 );
+    H3DThreadedHapticsDevice( 
+          Inst< ThreadSafeSField< SFVec3f > > _devicePosition = 0,
+          Inst< ThreadSafeSField< SFRotation > > _deviceOrientation      = 0,
+          Inst< TrackerPosition > _trackerPosition        = 0,
+          Inst< TrackerOrientation > _trackerOrientation  = 0,
+          Inst< PosCalibration  > _positionCalibration    = 0,
+          Inst< OrnCalibration  > _orientationCalibration = 0,
+          Inst< SFVec3f         > _proxyPosition          = 0,
+          Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
+          Inst< SFFloat         > _proxyWeighting         = 0,
+          Inst< ThreadSafeSField< SFBool > > _main_button = 0,
+          Inst< ThreadSafeSField< SFVec3f > > _force      = 0,
+          Inst< ThreadSafeSField< SFVec3f > > _torque     = 0,
+          Inst< SFInt32         > _inputDOF               = 0,
+          Inst< SFInt32         > _outputDOF              = 0,
+          Inst< SFInt32         > _hapticsRate            = 0,
+          Inst< SFNode          > _stylus                 = 0,
+          Inst< SFBool          > _initialized            = 0 );
 
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~H3DThreadedHapticsDevice() {
@@ -130,6 +131,10 @@ namespace H3D {
     /// Get the orientation of the haptics device. Only to be called in the 
     /// haptics loop.
     virtual Rotation getOrientation() = 0;
+
+    /// Returns true if main button on haptics device pressed. Only to be called in the 
+    /// haptics loop.
+    virtual bool getButtonStatus() = 0;
 
     /// Send the force to render on the haptics device. Only to be called in the 
     /// haptics loop.

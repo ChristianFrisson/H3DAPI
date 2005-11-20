@@ -114,7 +114,7 @@ void ConditionLock::broadcast() {
 
 void *Thread::thread_func( void * _data ) {
   Thread *thread = static_cast< Thread * >( _data );
-
+  pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, NULL );
 #ifdef MACOSX
   // set thread priority
   struct thread_time_constraint_policy ttcpolicy;
@@ -217,9 +217,10 @@ Thread::Thread( int _thread_priority,
 }
 
 Thread::~Thread() {
-  // TODO: what signal? 
-  // synch callback to exit?
-//  pthread_kill( 0 );
+  ThreadId this_thread = getCurrentThreadId();
+  pthread_cancel( thread_id );
+  if( !pthread_equal( this_thread, thread_id ) )
+    pthread_join( thread_id, NULL );
 }
 
 
