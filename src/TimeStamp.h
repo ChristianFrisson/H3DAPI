@@ -60,13 +60,13 @@ namespace H3D {
     }
 
         
-    operator double() { return time; }
-    bool operator==( TimeStamp &arg ) { return time==arg.time; }
-    bool operator!=( TimeStamp &arg ) { return time!=arg.time; }
-    bool operator> ( TimeStamp &arg ) { return time>arg.time;  }
-    bool operator< ( TimeStamp &arg ) { return time<arg.time;  }
-    bool operator>=( TimeStamp &arg ) { return time>=arg.time; }
-    bool operator<=( TimeStamp &arg ) { return time<=arg.time; }
+    operator double() const { return time; }
+    bool operator==( const TimeStamp &arg ) const { return time==arg.time; }
+    bool operator!=( const TimeStamp &arg ) const { return time!=arg.time; }
+    bool operator> ( const TimeStamp &arg ) const { return time>arg.time;  }
+    bool operator< ( const TimeStamp &arg ) const { return time<arg.time;  }
+    bool operator>=( const TimeStamp &arg ) const { return time>=arg.time; }
+    bool operator<=( const TimeStamp &arg ) const { return time<=arg.time; }
 
   protected:
     double time; // seconds since epoch
