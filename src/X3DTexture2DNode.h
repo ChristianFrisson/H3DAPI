@@ -152,7 +152,7 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  private:
+  protected:
     /// The OpenGL texture id of the installed texture, 0 if not installed.
     GLuint texture_id;
     /// The OpenGL texture unit that is used to render this texture.

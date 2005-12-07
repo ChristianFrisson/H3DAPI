@@ -100,7 +100,7 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
     free_image_data = true;
   }
 
-  if( scale_to_power_of_two  ) {
+  if( scale_to_power_of_two && !GLEW_ARB_texture_non_power_of_two ) {
     // check if any scaling is required and if so scale the image.
     bool needs_scaling = false;
     unsigned int new_width  = i->width();
