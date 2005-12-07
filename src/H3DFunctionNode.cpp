@@ -21,38 +21,16 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file H3DFunctionNode.h
-/// \brief Header file for H3DFunctionNode.
+/// \file H3DFunctionNode.cpp
+/// \brief Cpp file for H3DFunctionNode.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __H3DFUNCTIONNODE_H__
-#define __H3DFUNCTIONNODE_H__
 
-#include "X3DNode.h"
+#include "H3DFunctionNode.h"
 
-namespace H3D {
-  class H3DAPI_API H3DFunctionNode : public X3DNode {
-  public:
-    
-    /// Constructor.
-    H3DFunctionNode( Inst< SFNode>  _metadata = 0 );
+using namespace H3D;
 
-    /// Get the value as unsigned byte
-    virtual unsigned char getChar(unsigned char x) = 0;
-    ///
-    virtual H3DFloat get(H3DFloat x) = 0;
-    
-    virtual string defaultXMLContainerField() {
-      return "function";
-    }
-    
-    /// Field that indicated whether the function has changed. Since
-    /// H3DFunctionNode is an abstract type we do not know anything
-    /// about which fields will be available. Subclasses must route in
-    /// all fields that determines if the properties have changed.
-    auto_ptr< Field > functionChanged;
-  };
-}
+H3DFunctionNode::H3DFunctionNode( Inst< SFNode>  _metadata ) :
+  functionChanged( new Field ) {}
 
-#endif
