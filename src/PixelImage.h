@@ -108,6 +108,54 @@ namespace H3D {
       return image_data;
     }
 
+    /// Set the height of the image in pixels.
+    virtual void setHeight( unsigned int height ) {
+      h = height;
+    }
+
+    /// Set the width of the image in pixels.
+    virtual void setWidth( unsigned int width ) {
+      w = width;
+    }
+
+    /// Set the depth of the image in pixels.
+    virtual void setDepth( unsigned int depth ) {
+      d = depth;
+    }
+
+
+    /// Set the size of the pixel in x, y and z direction in metres.
+    virtual void setPixelSize( const Vec3f &s ) {
+      pixel_size = s;
+    }
+
+    /// Set the number of bits used for each pixel in the image.
+    virtual bitsPerPixel( unsigned int b ) {
+      bits_per_pixel = b;
+    }
+
+    /// Set the PixelType of the image.
+    virtual void pixelType( const PixelType &pt) {
+      pixel_type = pt;
+    }
+        
+    /// Set the PixelComponentType of the image.
+    virtual void pixelComponentType( const PixelComponentType &pct ) {
+      pixel_component_type = pct;
+    }
+        
+    /// Set a pointer to the raw image data. 
+    virtual void setImageData( unsigned char * data, bool copy_data = false ) {
+      if( image_data ) delete image_data;
+      if( copy_data ) {
+        unsigned int size = (w * h * d * bits_per_pixel)/8;
+        image_data = new unsigned char[ size ];
+        memcpy( image_data, data, size );
+      } else {
+        image_data = data;
+      }
+    }
+
   protected:
     unsigned int w, h, d;
     unsigned int bits_per_pixel;
