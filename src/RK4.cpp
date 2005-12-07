@@ -60,7 +60,7 @@ DvState LinearMotion::evaluate( LMState state ) {
 }
 
 DvState LinearMotion::evaluate( LMState state, 
-                                H3DFloat dt, DvState start ) {
+                                H3DTime dt, DvState start ) {
   state.pos    += start.vel    * dt;
   state.mom    += start.force  * dt;
   state.orn    += start.spin   * dt;
@@ -76,11 +76,11 @@ DvState LinearMotion::evaluate( LMState state,
 }
 
 
-void LinearMotion::solve( LMState &state, H3DFloat dt ) {
+void LinearMotion::solve( LMState &state, H3DTime dt ) {
   // Sample four different DvStates from the current state:
   DvState a = evaluate( state );  // current state
-  DvState b = evaluate( state, 0.5f*dt, a );
-  DvState c = evaluate( state, 0.5f*dt, b );
+  DvState b = evaluate( state, 0.5*dt, a );
+  DvState c = evaluate( state, 0.5*dt, b );
   DvState d = evaluate( state, dt, c );
 		
   // update position and momentum from a weighted average of the

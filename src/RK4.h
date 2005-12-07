@@ -72,9 +72,9 @@ namespace H3D {
 
     static DvState evaluate( LMState state );
 
-    static DvState evaluate( LMState state, H3DFloat dt, DvState start );
+    static DvState evaluate( LMState state, H3DTime dt, DvState start );
 
-    static void solve( LMState &state, H3DFloat dt );
+    static void solve( LMState &state, H3DTime dt );
     
   };
 
