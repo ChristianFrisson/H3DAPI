@@ -31,8 +31,8 @@
 #include "Scene.h"
 #include "TimeStamp.h"
 #include "DeviceInfo.h"
-#include "GL/glew.h"
-#include "GL/glut.h"
+#include <GL/glew.h>
+#include <GL/glut.h>
 #include "PeriodicUpdate.h"
 
 using namespace H3D;

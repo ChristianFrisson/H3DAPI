@@ -31,8 +31,8 @@
 
 #include "X3DSensorNode.h"
 #include <list>
-#include "GL/glew.h"
-#include "GL/glut.h"
+#include <GL/glew.h>
+#include <GL/glut.h>
 
 namespace H3D {
 

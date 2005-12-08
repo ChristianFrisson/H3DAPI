@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "DynamicTransform.h"
-#include "GL/glut.h"
+#include <GL/glut.h>
 #include "RK4.h"
 #include "Scene.h"
 
