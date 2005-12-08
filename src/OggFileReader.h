@@ -33,6 +33,9 @@
 #include "H3DSoundFileNode.h"
 
 #ifdef HAVE_LIBVORBIS
+#ifdef _MSC_VER
+#pragma comment( lib, "vorbisfile.lib" )
+#endif
 #include <vorbis/vorbisfile.h>
 
 namespace H3D {

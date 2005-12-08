@@ -33,7 +33,6 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cg.lib cgGL.lib audiofileD.lib vorbisfile_d.lib ALut.lib OpenAL32.lib xerces-c_2d.lib FreeImage.lib glew32.lib hl.lib hd.lib hlu.lib hdu.lib siapp.lib spwmath.lib ftgl_dynamic_MTD.lib pthreadVC2.lib"
 				OutputFile="$(OutDir)/H3DApi.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(CG_LIB_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
@@ -84,7 +83,6 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cg.lib cgGL.lib audiofile.lib vorbisfile.lib ALut.lib OpenAL32.lib xerces-c_2.lib FreeImage.lib glew32.lib hl.lib hd.lib hlu.lib hdu.lib siapp.lib spwmath.lib freetype219MT.lib ftgl_dynamic_MTD.lib pthreadVC2.lib"
 				OutputFile="$(OutDir)/H3DApi.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(CG_LIB_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
@@ -258,6 +256,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DFakeHapticsDevice.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DFunctionNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DHapticsDevice.cpp">

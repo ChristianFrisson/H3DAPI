@@ -35,6 +35,12 @@
 #include "GL/glew.h"
 #include "FieldTemplates.h"
 
+#ifdef _MSC_VER
+#pragma comment( lib, "OpenGL32.lib" )
+#pragma comment( lib, "glu32.lib" )
+#pragma comment( lib, "glew32.lib" )
+#endif
+
 namespace H3D {
   /// \ingroup AbstractInterface
   /// \brief This abstract interface class is the base class for all node

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="xerces-c_2.lib H3DAPI.lib FreeImage.lib"
+				AdditionalDependencies="H3DAPI.lib"
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OutDir);$(H3D_EXTERNAL_ROOT)\lib"
@@ -100,7 +100,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="xerces-c_2D.lib H3DAPI.lib FreeImage.lib"
+				AdditionalDependencies="H3DAPI.lib"
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OutDir);$(H3D_EXTERNAL_ROOT)\lib"

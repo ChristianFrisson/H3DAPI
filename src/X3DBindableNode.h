@@ -118,6 +118,10 @@ namespace H3D {
   /// </ul>
   /// The results are undefined if a bindable node is bound and is the child
   /// of an LOD, Switch, or any node or prototype that disables its children. 
+  ///
+  /// Any class that is an instance of the X3DBindableNode must include
+  /// the X3DBindableNode.cpp file in its .cpp file in order to get the
+  /// static stack member variable initialized.
   template< class T >
   class X3DBindableNode : public X3DChildNode {
   public:

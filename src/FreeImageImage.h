@@ -34,6 +34,10 @@
 #include "Exception.h"
 
 #ifdef HAVE_FREEIMAGE
+#ifdef _MSC_VER
+#pragma comment( lib, "FreeImage.lib" )
+#endif
+
 #include <FreeImage.h>
 
 namespace H3D {

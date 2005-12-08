@@ -38,6 +38,10 @@
 #endif
 
 #ifdef HAVE_3DXWARE
+#ifdef _MSC_VER
+#pragma comment( lib, "siapp.lib" )
+#pragma comment( lib, "spwmath.lib" )
+#endif
 extern "C" {
 #include <si.h>
 #include <siapp.h>

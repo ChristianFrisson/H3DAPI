@@ -40,6 +40,9 @@
 #ifdef WIN32
 #include <al.h>
 #include <alc.h>
+#ifdef _MSC_VER
+#pragma comment( lib, "OpenAL32.lib" )
+#endif
 #elif defined( MACOSX )
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>

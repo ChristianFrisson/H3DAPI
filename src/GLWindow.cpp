@@ -32,8 +32,6 @@
 #include "GLWindow.h"
 #include "Viewpoint.h"
 #include "TimeStamp.h"
-#include "GL/glew.h"
-#include "GL/glut.h"
 #include "Bound.h"
 #include "H3DBoundedObject.h"
 #include "DeviceInfo.h"
@@ -46,6 +44,15 @@
 #include "NavigationInfo.h"
 #include "StereoInfo.h"
 #include "GeneratedCubeMapTexture.h"
+
+#include <GL/glew.h>
+#include <GL/glut.h>
+#ifdef FREEGLUT
+#include <GL/freeglut.h>
+#ifdef _MSC_VER
+#pragma comment( lib, "freeglut.lib" )
+#endif
+#endif
 
 using namespace H3D;
 
@@ -71,8 +78,6 @@ namespace GLWindowInternals {
 }
 
 
-
-bool GLWindow::GLUT_init = false;
 bool GLWindow::GLEW_init = false;
 
 set< GLWindow* > GLWindow::windows;
@@ -104,11 +109,10 @@ namespace GLWindowInternal {
 
 
 void GLWindow::initGLUT() {
-  if ( !GLUT_init ) {
+  if ( !glutGet( GLUT_INIT_STATE ) ) {
     char *argv[1] = { "H3DLoad" };
     int argc = 1;
     glutInit(&argc, argv);
-    GLUT_init = true;
   }
 }
 
@@ -152,8 +156,14 @@ GLWindow::GLWindow(
 }
 
 GLWindow::~GLWindow() {
-  if ( window_id > 0 )
-    glutDestroyWindow( window_id );
+  if ( window_id > 0 ) {
+    // If the window is closed with the x-button glut can be deinitialized
+    // before getting here, so make sure glut is initialized before calling
+    // glutDestroyWindow
+    if( glutGet( GLUT_INIT_STATE ) ) {
+      glutDestroyWindow( window_id );
+    }
+  }
   windows.erase( this );
 }
 
@@ -227,8 +237,12 @@ void GLWindow::initialize() {
     glutMouseFunc( MouseSensor::glutMouseCallback );
     glutMotionFunc( MouseSensor::glutMotionCallback );
     glutPassiveMotionFunc( MouseSensor::glutMotionCallback );
-    
-    
+#ifdef FREEGLUT
+    glutMouseWheelFunc( MouseSensor::glutMouseWheelCallback );
+    glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, 
+                   GLUT_ACTION_GLUTMAINLOOP_RETURNS );
+#endif    
+
     // configure OpenGL context for rendering.
     glEnable( GL_DEPTH_TEST );
     glDepthFunc( GL_LESS );
@@ -401,8 +415,8 @@ bool GLWindow::calculateFarAndNearPlane( H3DFloat &clip_far,
 
     // add an epsilon value to make sure nothing is clipped away
     // unintentially.
-    clip_near = min_d - 1e-4;
-    clip_far = max_d + 1e-4;
+    clip_near = min_d - 1e-4f;
+    clip_far = max_d + 1e-4f;
 
     // make sure the clip planes are in front of the camera. Depth
     // buffer precision is affected by the values of clip_far and clip_near.
@@ -410,7 +424,7 @@ bool GLWindow::calculateFarAndNearPlane( H3DFloat &clip_far,
     // be. So we do not want to set clip_near too close to 0. Therefore
     // we make sure that the ratio is at most 1000.
     if( clip_far <= 0 ) clip_far = 2*Constants::f_epsilon;
-    if( clip_near <= clip_far * 0.001 ) clip_near = clip_far * 0.001;
+    if( clip_near <= clip_far * 0.001f ) clip_near = clip_far * 0.001f;
     
     return success;
   }
@@ -511,21 +525,21 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
   }
 
   H3DFloat fov_h, fov_v;
-  H3DFloat lwidth = width->getValue();
-  H3DFloat lheight = height->getValue();
+  H3DFloat lwidth = (H3DFloat) width->getValue();
+  H3DFloat lheight = (H3DFloat) height->getValue();
   H3DFloat field_of_view = vp->fieldOfView->getValue();
   H3DFloat aspect_ratio = lwidth / lheight;
   
   // calculate the horizontal and vertical field of view components
   // as defined by the X3D spec for Viewpoint.
   if ( field_of_view > Constants::pi )
-    field_of_view = Constants::pi;
+    field_of_view = (H3DFloat) Constants::pi;
   if ( lwidth < lheight ) {
     // width is smallest
     fov_h = field_of_view;
     fov_v = 2 * atan( ( lheight * tan(fov_h/2) ) / lwidth );
     if ( fov_v > Constants::pi ) {
-      fov_v = Constants::pi;
+      fov_v = (H3DFloat) Constants::pi;
       fov_h = 2 * atan( ( lwidth / lheight ) * tan(fov_v/2) );        
     }
   } else {
@@ -537,8 +551,8 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     }
   }
   
-  H3DFloat clip_near = 0.01;  // near viewing plane at 1cm
-  H3DFloat clip_far  = 10; // far viewing plane at 10m
+  H3DFloat clip_near = 0.01f;  // near viewing plane at 1cm
+  H3DFloat clip_far  = 10.f; // far viewing plane at 10m
 
   // calculate the far and near clipping planes from the union of the 
   // bounding box of the child_to_render node and the styli of the 
@@ -550,12 +564,12 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     clip_far = nav_info->visibilityLimit->getValue();
 
   if( background ) {
-    if( clip_near > 0.01 ) clip_near = 0.01;
-    if( clip_far < 0.051 ) clip_far = 0.1;
+    if( clip_near > 0.01f ) clip_near = 0.01f;
+    if( clip_far < 0.051f ) clip_far = 0.1f;
   }
 
-  H3DFloat interocular_distance = 0.06;
-  H3DFloat focal_distance = 0.6;
+  H3DFloat interocular_distance = 0.06f;
+  H3DFloat focal_distance = 0.6f;
 
   StereoInfo *stereo_info = StereoInfo::getActive();
   if( stereo_info ) {
@@ -569,10 +583,10 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     // make sure the focal plane is between the near and far 
     // clipping planes.
     if( focal_distance <= clip_near ) {
-      clip_near = focal_distance - 0.01;
+      clip_near = focal_distance - 0.01f;
     }
     if( focal_distance >= clip_far ) {
-      clip_far = focal_distance + 0.01;
+      clip_far = focal_distance + 0.01f;
     }
 
     // The stereo rendering is made using the parallel axis asymmetric frustum 
@@ -630,11 +644,11 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glPushMatrix();
-    glRotatef( -(180/Constants::pi)*vp_orientation.angle, 
+    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
                vp_orientation.axis.x, 
                vp_orientation.axis.y,
                vp_orientation.axis.z );
-    glRotatef( (180/Constants::pi)*vp_inv_rot.angle, 
+    glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
                vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
     if( background ) {
       glDepthMask( GL_FALSE );
@@ -643,7 +657,7 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     }
     glPopMatrix();
     glTranslatef( half_interocular_distance, 0, 0 );
-    glRotatef( -(180/Constants::pi)*vp_orientation.angle, 
+    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
                vp_orientation.axis.x, 
                vp_orientation.axis.y,
                vp_orientation.axis.z );
@@ -705,11 +719,11 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glPushMatrix();
-    glRotatef( -(180/Constants::pi)*vp_orientation.angle, 
+    glRotatef( (H3DFloat)-(180/Constants::pi)*vp_orientation.angle, 
                vp_orientation.axis.x, 
                vp_orientation.axis.y,
                vp_orientation.axis.z );
-    glRotatef( (180/Constants::pi)*vp_inv_rot.angle, 
+    glRotatef( (H3DFloat)(180/Constants::pi)*vp_inv_rot.angle, 
                vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
     if( background ) {
       glDepthMask( GL_FALSE );
@@ -720,7 +734,7 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
 
 
     glTranslatef( -half_interocular_distance, 0, 0 );
-    glRotatef( -(180/Constants::pi)*vp_orientation.angle, 
+    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
                vp_orientation.axis.x, 
                vp_orientation.axis.y,
                vp_orientation.axis.z );
@@ -805,7 +819,7 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     glDrawBuffer(GL_BACK);
     glLoadIdentity();
     
-    glRotatef( -(180/Constants::pi)*vp_orientation.angle, 
+    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
                vp_orientation.axis.x, 
                vp_orientation.axis.y,
                vp_orientation.axis.z );
@@ -814,7 +828,7 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     glPushMatrix();
-    glRotatef( (180/Constants::pi)*vp_inv_rot.angle, 
+    glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
                vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
 
     if( background ) {

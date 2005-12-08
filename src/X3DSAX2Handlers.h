@@ -39,6 +39,10 @@
 #include "DEFNodes.h"
 #include "AutoRef.h"
 
+#ifdef _MSC_VER
+#pragma comment( lib, "xerces-c_2.lib" )
+#endif
+
 
 XERCES_CPP_NAMESPACE_USE
 namespace H3D {

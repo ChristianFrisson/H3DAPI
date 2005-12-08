@@ -32,6 +32,9 @@
 #include "H3DSoundFileNode.h"
 
 #ifdef HAVE_LIBAUDIOFILE
+#ifdef _MSC_VER
+#pragma comment( lib, "audiofile.lib" )
+#endif
 #include <audiofile.h>
 
 namespace H3D {

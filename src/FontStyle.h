@@ -33,6 +33,9 @@
 #include "X3DFontStyleNode.h"
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
+#ifdef _MSC_VER
+#pragma comment( lib, "ftgl_dynamic_MTD.lib" )
+#endif
 #include <FTGLTextureFont.h>
 #endif
 
