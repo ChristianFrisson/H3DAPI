@@ -49,6 +49,8 @@ namespace MouseSensorInternals {
   FIELDDB_ELEMENT( MouseSensor, middleButton, OUTPUT_ONLY );
   FIELDDB_ELEMENT( MouseSensor, rightButton, OUTPUT_ONLY );
   FIELDDB_ELEMENT( MouseSensor, motion, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( MouseSensor, scrollUp, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( MouseSensor, scrollDown, OUTPUT_ONLY );
 }
 
 
@@ -59,13 +61,17 @@ MouseSensor::MouseSensor( Inst< SFBool>  _enabled,
                           Inst<  SFBool>  _leftButton,
                           Inst<  SFBool>  _middleButton,
                           Inst<  SFBool>  _rightButton,
-                          Inst<  SFVec2f>  _motion ):
+                          Inst<  SFVec2f>  _motion,
+                          Inst< SFBool > _scrollUp,
+                          Inst< SFBool > _scrollDown ):
   X3DSensorNode( _enabled, _metadata, _isActive ),
   position( _position ),
   leftButton( _leftButton ),
   middleButton( _middleButton ),
   rightButton( _rightButton ),
-  motion( _motion ) {
+  motion( _motion ),
+  scrollUp( _scrollUp ),
+  scrollDown( _scrollDown ) {
   
   type_name = "MouseSensor";
   database.initFields( this );
@@ -74,6 +80,9 @@ MouseSensor::MouseSensor( Inst< SFBool>  _enabled,
   leftButton->setValue( false, id );
   middleButton->setValue( false, id );
   rightButton->setValue( false, id );
+
+  scrollUp->setValue( true, id );
+  scrollDown->setValue( true, id );
 
   instances.push_back( this );
 }
@@ -96,9 +105,17 @@ void MouseSensor::addGLUTMouseButtonAction( int button, int state ) {
   }
 }
 
+void MouseSensor::addGLUTMouseWheelAction( int wheel, int direction ) { 
+  if( direction == 1 ) {
+    scrollUp->setValue( true, id );
+  } else {
+    scrollDown->setValue( true, id );
+  }
+}
+
 void MouseSensor::addGLUTMouseMotionAction( int x, int y ) { 
   const Vec2f &last_pos = position->getValue();
-  Vec2f new_pos = Vec2f( x, y );
+  Vec2f new_pos = Vec2f( (H3DFloat) x, (H3DFloat) y );
   Vec2f diff = new_pos - last_pos;
   if( diff * diff > Constants::f_epsilon ) {
     position->setValue( new_pos, id );
@@ -120,5 +137,14 @@ void MouseSensor::glutMotionCallback( int x, int y ) {
        i != instances.end();
        i++ ) {
     (*i)->addGLUTMouseMotionAction( x, y );
+  }
+}
+
+void MouseSensor::glutMouseWheelCallback( int wheel, int direction,
+                                          int x, int y ) {
+  for( list< MouseSensor * >::iterator i = instances.begin();
+       i != instances.end();
+       i++ ) {
+    (*i)->addGLUTMouseWheelAction( wheel, direction );
   }
 }

@@ -32,14 +32,18 @@
 
 #include "X3DSensorNode.h"
 #include <list>
-#include "GL/glew.h"
-#include "GL/glut.h"
+#include <GL/glew.h>
+#include <GL/glut.h>
 
 namespace H3D {
 
   /// \ingroup Nodes
   /// \class MouseSensor
   /// \brief A sensor node for reading mouse values. 
+  ///
+  /// The scrollUp and scrollDown fields will only be usable if you
+  /// are compiling against freeglut instead of GLUT.
+  /// 
   ///
   class H3DAPI_API MouseSensor : public X3DSensorNode {
   public:
@@ -52,7 +56,9 @@ namespace H3D {
                  Inst< SFBool  > _leftButton   = 0,
                  Inst< SFBool  > _middleButton = 0,
                  Inst< SFBool  > _rightButton  = 0,
-                 Inst< SFVec2f > _motion       = 0
+                 Inst< SFVec2f > _motion       = 0,
+                 Inst< SFBool  > _scrollUp     = 0,
+                 Inst< SFBool  > _scrollDown   = 0
                  );
 
     /// Destructor.
@@ -69,6 +75,9 @@ namespace H3D {
     /// the callback was due to a release or press respectively.
     virtual void addGLUTMouseButtonAction( int button, int state );
 
+    /// Will be called  when a mouse scroll wheel event occurs.
+    virtual void addGLUTMouseWheelAction( int wheel, int direction );
+
     /// glut callback function. Calls addGLUTMouseButtonAction() on all
     /// MouseSensor instances.
     static void glutMouseCallback( int button, int state, 
@@ -77,6 +86,10 @@ namespace H3D {
     /// glut callback function. Calls addGLUTMouseMotionAction() on all
     /// MouseSensor instances.
     static void glutMotionCallback( int x, int y );
+
+    /// glut callback function for mouse scroll wheel. 
+    static void glutMouseWheelCallback( int wheel, 
+                                        int direction, int x, int y );
     
     /// The position of the mouse in window relative coordinates.
     /// 
@@ -103,6 +116,19 @@ namespace H3D {
     /// <b>Access type: </b> outputOnly
     auto_ptr< SFVec2f>  motion;
 
+    /// The scrollUp field generates a TRUE event when the mouse scroll wheel
+    /// is moved up.
+    /// 
+    /// <b>Access type: </b> outputOnly
+    auto_ptr< SFBool >  scrollUp;
+
+    /// The scrollDown field generates a TRUE event when the mouse scroll wheel
+    /// is moved down.
+    /// 
+    /// <b>Access type: </b> outputOnly
+    auto_ptr< SFBool >  scrollDown;
+
+    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   private:
