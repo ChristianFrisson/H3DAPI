@@ -130,17 +130,17 @@ namespace H3D {
     }
 
     /// Set the number of bits used for each pixel in the image.
-    virtual bitsPerPixel( unsigned int b ) {
+    virtual void setbitsPerPixel( unsigned int b ) {
       bits_per_pixel = b;
     }
 
     /// Set the PixelType of the image.
-    virtual void pixelType( const PixelType &pt) {
+    virtual void setPixelType( const PixelType &pt) {
       pixel_type = pt;
     }
         
     /// Set the PixelComponentType of the image.
-    virtual void pixelComponentType( const PixelComponentType &pct ) {
+    virtual void setPixelComponentType( const PixelComponentType &pct ) {
       pixel_component_type = pct;
     }
         
