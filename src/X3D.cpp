@@ -108,11 +108,11 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   else {
     XERCES_CPP_NAMESPACE_USE
     ifstream is( resolved_url.c_str() );
-    XMLCh *url_ch = new XMLCh[ resolved_url.size() + 1 ];
-    for( unsigned int i = 0; i < resolved_url.size(); i++ ) {
-      url_ch[i] = resolved_url[i];
+    XMLCh *url_ch = new XMLCh[ url.size() + 1 ];
+    for( unsigned int i = 0; i < url.size(); i++ ) {
+      url_ch[i] = url[i];
     }
-    url_ch[ resolved_url.size() ] = '\0'; 
+    url_ch[ url.size() ] = '\0'; 
     parser->parse( IStreamInputSource( is, url_ch ) );
     delete url_ch;
 	is.close();

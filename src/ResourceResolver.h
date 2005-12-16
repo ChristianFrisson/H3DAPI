@@ -39,71 +39,49 @@ using namespace std;
 
 namespace H3D {
 
+  /// The ResourceResolver class is both a base class for all classes
+  /// that resolves resource names and contains static functions for
+  /// resolving them.
   class H3DAPI_API ResourceResolver {
   public:
 
+    /// Destructor.
+    virtual ~ResourceResolver() {}
+
+    /// This function must be implemeted by all subclasses to 
+    /// ResourceResolver. It returns a local filename that contains
+    /// the resource specified by url.
     virtual string resolveURLAsTmpFile( const string &url ) = 0;
 
+    /// Set the URNResolver to use when resolving resource.
     static void setURNResolver( URNResolver *resolver ) {
       urn_resolver.reset( resolver );
     } 
 
+    /// Get the current URNResolver.
     static URNResolver* getURNResolver() {
       return urn_resolver.get();
     } 
 
+    /// Add a ResourceResolver that can be used when resolving resources. 
     static void addResolver( ResourceResolver *resolver ) {
       resolvers.push_back( resolver );
     }
 
+    /// Set the current base URL. The base URL will be used as the base
+    /// when the url to resolve is a relative url.
     static void setBaseURL( const string &base ) {
       baseURL = base;
     }
 
+    /// Get the current base URL,
     static const string & getBaseURL() {
       return baseURL;
     }
 
-    static string resolveURLAsFile( const string &urn ) {
-      string filename = urn;
-      if( urn_resolver.get() ) {
-        filename = urn_resolver->resolveURN( urn );
-      }
-      
-      // first try as relative path
-      if( baseURL != "" ) {
-        string full_url = baseURL + filename;
-        
-        // if is a local file, just return the file name
-        ifstream is( full_url.c_str() );
-        is.close();
-        if( !is.fail() ) 
-          return full_url;
-
-        // otherwise try the resolvers.
-        for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
-             i != resolvers.end(); i++ ) {
-          string resolved_name = (*i)->resolveURLAsTmpFile( full_url );
-          if( resolved_name != "" ) return resolved_name;
-        }
-      }
-
-      // try as absolute path
-
-      // if is a local file, just return the file name
-      ifstream is( filename.c_str() );
-      is.close();
-      if( !is.fail() ) 
-        return filename;
-
-      // otherwise try the resolvers.
-      for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
-           i != resolvers.end(); i++ ) {
-        string resolved_name = (*i)->resolveURLAsTmpFile( filename );
-        if( resolved_name != "" ) return resolved_name;
-      }
-      return "";
-    }
+    /// Returns a local filename that contains the resource specified
+    /// by urn.
+    static string resolveURLAsFile( const string &urn );
 
   protected:
     static auto_ptr< URNResolver > urn_resolver;

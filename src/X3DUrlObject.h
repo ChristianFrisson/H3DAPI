@@ -54,6 +54,8 @@ namespace H3D {
     /// Constructor.
     X3DUrlObject( Inst< MFString>  _url = 0 );
 
+    virtual ~X3DUrlObject() {}
+
     typedef enum {
       /// The url has not been tried to load yet.
       INIT,

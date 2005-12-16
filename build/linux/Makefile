@@ -38,6 +38,9 @@ INCLUDES   = -I$(H3D_HOME)/src
 CXXFLAGS   = -g $(INCLUDES)
 LDFLAGS    = 
 
+#libcurl
+CXXLIBS   += -lcurl
+
 # CG
 CXXLIBS   += -lCg -lCgGL
 

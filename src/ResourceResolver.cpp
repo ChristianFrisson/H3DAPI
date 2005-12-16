@@ -35,3 +35,45 @@ auto_ptr< URNResolver > ResourceResolver::urn_resolver( NULL );
 AutoPtrVector< ResourceResolver > ResourceResolver::resolvers; 
 
 string ResourceResolver::baseURL( "" );
+
+
+string ResourceResolver::resolveURLAsFile( const string &urn ) {
+  string filename = urn;
+  if( urn_resolver.get() ) {
+    filename = urn_resolver->resolveURN( urn );
+  }
+  
+  // first try as relative path
+  if( baseURL != "" ) {
+    string full_url = baseURL + filename;
+    
+    // if is a local file, just return the file name
+    ifstream is( full_url.c_str() );
+    is.close();
+    if( !is.fail() ) 
+      return full_url;
+    
+    // otherwise try the resolvers.
+    for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
+	 i != resolvers.end(); i++ ) {
+      string resolved_name = (*i)->resolveURLAsTmpFile( full_url );
+      if( resolved_name != "" ) return resolved_name;
+    }
+  }
+  
+  // try as absolute path
+  
+  // if is a local file, just return the file name
+  ifstream is( filename.c_str() );
+  is.close();
+  if( !is.fail() ) 
+    return filename;
+  
+  // otherwise try the resolvers.
+  for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
+       i != resolvers.end(); i++ ) {
+    string resolved_name = (*i)->resolveURLAsTmpFile( filename );
+    if( resolved_name != "" ) return resolved_name;
+  }
+  return "";
+}

@@ -93,7 +93,7 @@ namespace H3D {
 
   protected:
 
-    static const MAX_LINE_SIZE = 1024;
+    static const unsigned int MAX_LINE_SIZE = 1024;
     bool nonCaseEquals( const string &s1, 
                         const string &s2 ) {
       if( s1.size() != s2.size() ) return false;
