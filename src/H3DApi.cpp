@@ -34,6 +34,13 @@
 #include <fontconfig/fontconfig.h>
 #endif
 
+#ifdef HAVE_LIBCURL
+#include <curl/curl.h>
+#include "LibCurlResolver.h"
+#endif
+
+#include "ResourceResolver.h"
+
 using namespace H3D;
 
 #ifdef WIN32
@@ -48,6 +55,18 @@ BOOL APIENTRY DllMain( HANDLE hModule,
       FreeImage_Initialise();
 #endif
       XMLPlatformUtils::Initialize();
+      string urn_config_file = "index.urn";
+      char *buffer = getenv( "H3D_URN_CONFIG_FILE" );
+      if( buffer ) urn_config_file = buffer;
+      else if( buffer = getenv( "H3D_ROOT" ) ) {
+        urn_config_file = buffer;
+        urn_config_file += "/index.urn";
+      }
+      ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );
+#ifdef HAVE_LIBCURL
+      curl_global_init( CURL_GLOBAL_ALL );
+      ResourceResolver::addResolver( new LibCurlResolver );
+#endif
       break;
     }
     case DLL_THREAD_ATTACH:
@@ -57,6 +76,9 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     case DLL_PROCESS_DETACH:
 #ifdef HAVE_FREEIMAGE
       FreeImage_DeInitialise();
+#endif
+#ifdef HAVE_LIBCURL
+    curl_global_cleanup();
 #endif
       XMLPlatformUtils::Terminate();
       break;
@@ -75,12 +97,28 @@ extern "C" {
 #ifdef LINUX
     FcInit();
 #endif 
+
     XMLPlatformUtils::Initialize();
+    string urn_config_file = "index.urn";
+    char *buffer = getenv( "H3D_URN_CONFIG_FILE" );
+    if( buffer ) urn_config_file = buffer;
+    else if( buffer = getenv( "H3D_ROOT" ) ) {
+      urn_config_file = buffer;
+      urn_config_file += "/index.urn";
+    }
+    ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );
+#ifdef HAVE_LIBCURL
+      curl_global_init( CURL_GLOBAL_ALL );
+      ResourceResolver::addResolver( new LibCurlResolver );
+#endif
   }
   void __attribute__((destructor)) finiAPI( void ) {
     XERCES_CPP_NAMESPACE_USE
 #ifdef HAVE_FREEIMAGE
     FreeImage_DeInitialise();
+#endif
+#ifdef HAVE_LIBCURL
+    curl_global_cleanup();
 #endif
     XMLPlatformUtils::Terminate();
   }

@@ -30,6 +30,7 @@
 
 #include "ShaderPart.h"
 #include <fstream>
+
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
@@ -109,7 +110,7 @@ GLhandleARB ShaderPart::compileShader() {
                        NULL,
                        log );
       cerr << "Warning: Error when compiling shader source of \"" 
-           << getName() << "\" node (" << shaderString->url_used 
+           << getName() << "\" node (" << url_used 
            << ")." << endl << log << endl;
 
       glDeleteObjectARB( shader_handle );
@@ -120,34 +121,44 @@ GLhandleARB ShaderPart::compileShader() {
 }
 
 void ShaderPart::SFShaderString::update() {
+  ShaderPart *shader_part = static_cast< ShaderPart * >( getOwner() ); 
   MFString *urls = static_cast< MFString * >( routes_in[0] );
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-    ifstream is( (*i).c_str() );
-    if( is.good() ) {
-      int length;
-      char * buffer;
-      
-      // get length of file:
-      is.seekg (0, ios::end);
-      length = is.tellg();
-      is.seekg (0, ios::beg);
-      
+    string url = shader_part->resolveURLAsFile( *i );
+    if( url != "" ) {
+      ifstream is( url.c_str() );
+      if( is.good() ) {
+        int length;
+        char * buffer;
+        
+        // get length of file:
+        is.seekg (0, ios::end);
+        length = is.tellg();
+        is.seekg (0, ios::beg);
+        
       // allocate memory:
-      buffer = new char [length + 1];
-      // read data as a block:
-      is.read (buffer,length);
+        buffer = new char [length + 1];
+        // read data as a block:
+        is.read (buffer,length);
+        is.close();
+        buffer[length] = '\0';
+        shader_part->setURLUsed( *i );
+        value = string( buffer );
+        return;
+      }
       is.close();
-      buffer[length] = '\0';
-      url_used = *i;
-      value = string( buffer );
-      return;
     }
-    is.close();
   }
   cerr << "None of the urls in ShaderPart with url [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
     cerr << " \"" << *i << "\"";
   }
   cerr << "] could be loaded." << ends;
+  shader_part->setURLUsed( "" );
   value = "";
+}
+
+X3DUrlObject::LoadStatus ShaderPart::loadStatus() {
+  if( url_used != "" ) return X3DUrlObject::LOADED;
+  else return X3DUrlObject::FAILED;
 }

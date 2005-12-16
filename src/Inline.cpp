@@ -30,6 +30,7 @@
 
 #include "Inline.h"
 #include "X3D.h"
+#include "X3DSAX2Handlers.h"
 
 using namespace H3D;
 
@@ -98,14 +99,33 @@ void Inline::traverseSG( TraverseInfo &ti ) {
 }
 
 void Inline::LoadedScene::update() {
+  Inline *inline_node = static_cast< Inline * >( getOwner() );
   value.clear();
   bool load = static_cast< SFBool * >( routes_in[0] )->getValue();
   if( load ) {
     MFString *urls = static_cast< MFString * >( routes_in[1] );
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-      Group *g = X3D::createX3DFromURL( *i );
-      value.push_back( g );
+      string url = inline_node->resolveURLAsFile( *i );
+      if( url != "" ) {
+        try {
+          Group *g = X3D::createX3DFromURL( url );
+          value.push_back( g );
+          inline_node->setURLUsed( *i );
+        } catch( const X3D::XMLParseError &e ) {
+          cerr << "Warning: Error when parsing \"" << *i << "\" in \"" 
+               << getOwner()->getName() << "\" (" << e << ")." << endl;
+        } 
+        return;
+      }
     }
+
+    cerr << "Warning: None of the urls in Inline node with url [";
+    for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
+      cerr << " \"" << *i << "\"";
+    }
+    cerr << "] could be loaded. "
+         << "(in " << getOwner()->getName() << ")" << endl;
+    inline_node->setURLUsed( "" );
   }
 }
 
@@ -139,3 +159,5 @@ void Inline::LoadedScene::onRemove( Node *n ) {
   }
   LoadedSceneBase::onRemove( n );
 }
+
+

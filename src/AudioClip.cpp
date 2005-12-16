@@ -30,6 +30,7 @@
 
 #include "AudioClip.h"
 #include "H3DSoundFileNode.h"
+#include "ResourceResolver.h"
 
 using namespace H3D;
 
@@ -92,12 +93,18 @@ void AudioClip::ALrender() {
       alSourcei( (*i)->getALSourceId(), AL_BUFFER, 0 );
     }
     
+    setURLUsed( "" );
     for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {
-      H3DSoundFileNode *sf = H3DSoundFileNode::getSupportedFileReader( *i );
-      if( sf ) {
-        sf->load( *i );
+      string url = resolveURLAsFile( *i );
+      if( url != "" ) {
+        H3DSoundFileNode *sf = H3DSoundFileNode::getSupportedFileReader( url );
+        if( sf ) {
+          sf->load( url );
+          reader.reset( sf );
+          setURLUsed( *i );
+          break;
+        }
       }
-      reader.reset( sf );
     }
 
     if( reader.get() ) { 
@@ -180,3 +187,4 @@ void AudioClip::ALrender() {
   
 #endif
 }
+

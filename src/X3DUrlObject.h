@@ -54,8 +54,69 @@ namespace H3D {
     /// Constructor.
     X3DUrlObject( Inst< MFString>  _url = 0 );
 
+    typedef enum {
+      /// The url has not been tried to load yet.
+      INIT,
+      /// The url has been successfully loaded
+      LOADED,
+      /// The url is currently loading.
+      LOADING,
+      /// The loading of the url failed.
+      FAILED
+    } LoadStatus;
+
+    /// The loadStatus function returns the status of the loading
+    /// of the current urls in order to be used with the LoadSensor
+    /// node.
+    virtual LoadStatus loadStatus() { 
+       if( url_used != "" ) return X3DUrlObject::LOADED;
+       else return X3DUrlObject::FAILED;
+    }
+
+    /// The loadProgress() functions returns a value between 0 and 1 
+    /// indicating how much of the current url has been loaded. 1 means
+    /// that the file has been sucessfully loaded. The only requirement of
+    /// this function is that if the url has been successfully loaded the
+    /// function returns 1.
+    virtual H3DFloat loadProgress() {
+      if( loadStatus() == LOADED ) return 1;
+      else return 0;
+    }
+
+    /// Set the url that is currently loaded.
+    inline void setURLUsed( const string &_url_used ) {
+      url_used = _url_used;
+    }
+
+    /// Get the url that is currently loaded.
+    inline const string &getURLUsed() {
+      return url_used;
+    }
+
+    /// Set the url base address.
+    inline void setURLBase( const string &_url_base ) {
+      url_base = _url_base;
+    }
+
+    /// Get the current url base address.
+    inline const string &getURLBase() {
+      return url_base;
+    }
+
+    string resolveURLAsFile( const string &url );
+    
     /// The urls in decreasing order of preference.
     auto_ptr< MFString >  url;
+  protected:
+    /// If loadStatus() returns LOADED this string should contain
+    /// the url that is loaded. All subclasses of X3DUrlObject should
+    /// set this when successfully loaded a file.
+    string url_used;
+
+    /// The base URL for urls in this url object. All relative paths
+    /// will start from this. Will be set to ResourceResolver::getBaseURL()
+    /// when created.
+    string url_base;
   };
 }
 

@@ -129,6 +129,7 @@ void ShaderProgram::disableCGShaderProgram() {
 }
 
 void ShaderProgram::initCGShaderProgram() {
+  setURLUsed( "" );
   const string &shader_type = type->getValue();
   if( !(shader_type == "FRAGMENT" || shader_type == "VERTEX") ) {
     cerr << "Warning: Unsupported shader type \"" << shader_type
@@ -156,22 +157,36 @@ void ShaderProgram::initCGShaderProgram() {
   if( cgGLIsProfileSupported( cg_profile ) ) {
     for( MFString::const_iterator i = url->begin(); 
          i != url->end(); i++ ) { 
-      cg_program = cgCreateProgramFromFile( cg_context,
-                                            CG_SOURCE, 
-                                            (*i).c_str(),
-                                            cg_profile,
-                                            NULL, NULL);
-      err = cgGetError();
-      if( err == CG_NO_ERROR ) {
-        source_url = *i;
+      string resolved_url = resolveURLAsFile( *i );
+      if( resolved_url != "" ) {
+        setURLUsed( *i );
+        cg_program = cgCreateProgramFromFile( cg_context,
+                                              CG_SOURCE, 
+                                              resolved_url.c_str(),
+                                              cg_profile,
+                                              NULL, NULL);
+        err = cgGetError();
+        if( err == CG_NO_ERROR ) {
+          source_url = *i;
+        } else {
+          cerr << "Warning: Shader program error when compiling source (" 
+               << *i << ") of \"" 
+               << getName() << "\" node." << endl << cgGetErrorString( err ) 
+               << endl;
+          const char *last_listing = cgGetLastListing( cg_context );
+          if( last_listing ) cerr << last_listing  << endl;
+        }
         break;
-      } else {
-        cerr << "Warning: Shader program error when compiling source of \"" 
-             << getName() << "\" node." << endl << cgGetErrorString( err ) 
-             << endl;
-        const char *last_listing = cgGetLastListing( cg_context );
-        if( last_listing ) cerr << last_listing  << endl;
       }
+    }
+
+    if( getURLUsed() == "" ) {
+      cerr << "Warning: None of the urls in ShaderProgram node with url [";
+      for( MFString::const_iterator i = url->begin(); 
+           i != url->end(); ++i ) {  
+        cerr << " \"" << *i << "\"";
+      }
+      cerr << "] could be loaded (in " << getName() << ")" << endl;
     }
   } else {
     cerr << "Warning: Your graphics card does not support the "

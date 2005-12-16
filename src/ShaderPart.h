@@ -61,8 +61,6 @@ namespace H3D {
                          MFString > {
     protected:
       virtual void update();
-    public:
-      string url_used;
     };
 
     /// Constructor.
@@ -101,6 +99,11 @@ namespace H3D {
     virtual string defaultXMLContainerField() {
       return "parts";
     }
+
+    /// The loadStatus function returns the status of the loading
+    /// of the current urls in order to be used with the LoadSensor
+    /// node.
+    virtual X3DUrlObject::LoadStatus loadStatus();
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

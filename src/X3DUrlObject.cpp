@@ -29,13 +29,24 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "X3DUrlObject.h"
+#include "ResourceResolver.h"
 
 using namespace H3D;
 
 
 X3DUrlObject::X3DUrlObject( 
                            Inst< MFString>  _url ):
-  url( _url ){
+  url( _url ),
+  url_used( "" ),
+  url_base( ResourceResolver::getBaseURL() ) {
+  
 }
 
 
+string X3DUrlObject::resolveURLAsFile( const string &url ) {
+  string old_base = ResourceResolver::getBaseURL();
+  ResourceResolver::setBaseURL( url_base );
+  string result = ResourceResolver::resolveURLAsFile( url );
+  ResourceResolver::setBaseURL( old_base );
+  return result;
+}

@@ -67,6 +67,7 @@ ImageTexture::ImageTexture(
 }
 
 void ImageTexture::SFImage::update() {
+  ImageTexture *texture = static_cast< ImageTexture * >( getOwner() );
   MFImageLoader *image_loaders = static_cast< MFImageLoader * >( routes_in[1] );
   MFString *urls = static_cast< MFString * >( routes_in[0] );
 
@@ -75,10 +76,12 @@ void ImageTexture::SFImage::update() {
       for( MFImageLoader::const_iterator il = image_loaders->begin();
            il != image_loaders->end();
            il++ ) {
+        string url = texture->resolveURLAsFile( *i );
         Image *image = 
-          static_cast< H3DImageLoaderNode * >(*il)->loadImage( *i );
+          static_cast< H3DImageLoaderNode * >(*il)->loadImage( url );
         if( image ) {
           value = image;
+          texture->setURLUsed( *i );
           return;
         }
       }
@@ -86,9 +89,11 @@ void ImageTexture::SFImage::update() {
   }
 
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-    H3DImageLoaderNode *il = H3DImageLoaderNode::getSupportedFileReader( *i );
+    string url = texture->resolveURLAsFile( *i );
+	  H3DImageLoaderNode *il = H3DImageLoaderNode::getSupportedFileReader( url );
     if( il ) {
-      value = il->loadImage( *i );
+      value = il->loadImage( url );
+      texture->setURLUsed( *i );
       return;
     }
   }
@@ -101,6 +106,7 @@ void ImageTexture::SFImage::update() {
        << "is not supported by any H3DImageLoaderNode that is available "
        << "(in " << getOwner()->getName() << ")" << endl;
 
+  texture->setURLUsed( "" );
   value = NULL;
 }
 

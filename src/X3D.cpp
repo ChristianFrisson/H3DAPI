@@ -8,6 +8,7 @@
 #include "X3D.h"
 #include "X3DSAX2Handlers.h"
 #include "IStreamInputSource.h"
+#include "ResourceResolver.h"
 #include <sstream>
 
 using namespace H3D;
@@ -91,7 +92,32 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   X3DSAX2Handlers handler( dn );
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
-  parser->parse(url.c_str());
+  
+  URNResolver *urn_resolver = ResourceResolver::getURNResolver();
+  string urn = url;
+  if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
+  string::size_type pos = urn.find_last_of( "/\\" );
+  string path = urn.substr( 0, pos + 1 );
+  string old_base = ResourceResolver::getBaseURL();
+
+  string resolved_url = ResourceResolver::resolveURLAsFile( url );
+  ResourceResolver::setBaseURL( path ); 
+
+  if( resolved_url == "" )
+    parser->parse( url.c_str() );
+  else {
+    XERCES_CPP_NAMESPACE_USE
+    ifstream is( resolved_url.c_str() );
+    XMLCh *url_ch = new XMLCh[ resolved_url.size() + 1 ];
+    for( unsigned int i = 0; i < resolved_url.size(); i++ ) {
+      url_ch[i] = resolved_url[i];
+    }
+    url_ch[ resolved_url.size() ] = '\0'; 
+    parser->parse( IStreamInputSource( is, url_ch ) );
+    delete url_ch;
+	is.close();
+  }
+  ResourceResolver::setBaseURL( old_base );
   return handler.getResultingNode();
 }
 

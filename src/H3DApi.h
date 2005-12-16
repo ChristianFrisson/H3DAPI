@@ -76,6 +76,11 @@
 /// ImageTexture nodes will not be able to read image files.
 #define HAVE_FREEIMAGE
 
+/// Undef if you do not have libcurl(http://sourceforge.net/projects/curl/)
+/// installed. URLs using protocols like http and ftp will then not be 
+/// supported. Only local filenames can be used. 
+#define HAVE_LIBCURL
+
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
 // are compiled with the H3DAPI_EXPORTS symbol defined on the command

@@ -137,7 +137,7 @@ void PackagedShader::render() {
 
 
 void PackagedShader::initCGShaderProgram() {
-
+  setURLUsed( "" );
   if( !cg_context ) 
     cg_context = cgCreateContext();
   
@@ -164,44 +164,55 @@ void PackagedShader::initCGShaderProgram() {
   if( cgGLIsProfileSupported( cg_vertex_profile ) &&
       cgGLIsProfileSupported( cg_fragment_profile )) {
     for( MFString::const_iterator i = url->begin(); 
-         i != url->end(); i++ ) { 
-      cg_vertex_program = cgCreateProgramFromFile( cg_context,
-                                                   CG_SOURCE, 
-                                                   (*i).c_str(),
-                                                   cg_vertex_profile,
-                                                   "vert_main", NULL);
-      err = cgGetError();
-      if( err != CG_NO_ERROR ) {
-        cerr << "Warning: Shader program error when compiling vertex "
-             << "shader source of \"" 
-             << getName() << "\" node." << endl << cgGetErrorString( err ) 
-             << endl;
-        const char *last_listing = cgGetLastListing( cg_context );
-        if( last_listing ) cerr << last_listing  << endl;
-        continue;
-      }
-
-      cg_fragment_program = cgCreateProgramFromFile( cg_context,
+         i != url->end(); i++ ) {       
+      string resolved_url = resolveURLAsFile( *i );
+      if( resolved_url != "" ) {
+        setURLUsed( *i );
+        cg_vertex_program = cgCreateProgramFromFile( cg_context,
                                                      CG_SOURCE, 
-                                                     (*i).c_str(),
-                                                     cg_fragment_profile,
-                                                     "frag_main", NULL);
-      err = cgGetError();
-      if( err != CG_NO_ERROR ) {
-        cerr << "Warning: Shader program error when compiling fragment "
-             << "shader source of \"" 
-             << getName() << "\" node." << endl << cgGetErrorString( err ) 
-             << endl;
-        const char *last_listing = cgGetLastListing( cg_context );
-        if( last_listing ) cerr << last_listing  << endl;
-        if( cg_vertex_program ) {
-          cgDestroyProgram( cg_vertex_program );
-          cg_vertex_program = NULL;
+                                                     resolved_url.c_str(),
+                                                     cg_vertex_profile,
+                                                     "vert_main", NULL);
+        err = cgGetError();
+        if( err != CG_NO_ERROR ) {
+          cerr << "Warning: Shader program error when compiling vertex "
+               << "shader source (" << *i << ") in \"" 
+               << getName() << "\" node." << endl << cgGetErrorString( err ) 
+               << endl;
+          const char *last_listing = cgGetLastListing( cg_context );
+          if( last_listing ) cerr << last_listing  << endl;
         }
-      } else {
-        source_url = *i;
+
+        cg_fragment_program = cgCreateProgramFromFile( cg_context,
+                                                       CG_SOURCE, 
+                                                       resolved_url.c_str(),
+                                                       cg_fragment_profile,
+                                                       "frag_main", NULL);
+        err = cgGetError();
+        if( err != CG_NO_ERROR ) {
+          cerr << "Warning: Shader program error when compiling fragment "
+               << "shader source (" << *i << ") in \"" 
+               << getName() << "\" node." << endl << cgGetErrorString( err ) 
+               << endl;
+          const char *last_listing = cgGetLastListing( cg_context );
+          if( last_listing ) cerr << last_listing  << endl;
+          if( cg_vertex_program ) {
+            cgDestroyProgram( cg_vertex_program );
+            cg_vertex_program = NULL;
+          }
+        } else {
+          source_url = *i;
+        }
         break;
       }
+    }
+    if( getURLUsed() == "" ) {
+      cerr << "Warning: None of the urls in PackagedShader node with url [";
+      for( MFString::const_iterator i = url->begin(); 
+           i != url->end(); ++i ) {  
+        cerr << " \"" << *i << "\"";
+      }
+      cerr << "] could be loaded (in " << getName() << ")" << endl;
     }
   } else {
     cerr << "Warning: Your graphics card does not support the "
