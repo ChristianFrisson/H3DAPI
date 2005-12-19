@@ -41,8 +41,8 @@ namespace H3DScriptNodeInternals {
   FIELDDB_ELEMENT( H3DScriptNode, url, INPUT_OUTPUT );
 }
 
-H3DScriptNode::H3DScriptNode( Inst< ScriptURL > _url ) : 
-  url( _url ) {
+H3DScriptNode::H3DScriptNode( Inst< MFString > _url ) : 
+  X3DUrlObject( _url ) {
   type_name = "H3DScriptNode";
   database.initFields( this );
 }

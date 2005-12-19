@@ -87,7 +87,7 @@ H3DNodeDatabase PythonScript::database(
                                        &H3DScriptNode::database );
 
 namespace PythonScriptInternals {
-  FIELDDB_ELEMENT( PythonScript, references, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PythonScript, references, INITIALIZE_ONLY );
 }
 
 
@@ -108,7 +108,7 @@ Field *PythonScript::lookupField( const string &name ) {
 }
 
 
-PythonScript::PythonScript( Inst< ScriptURL > _url,
+PythonScript::PythonScript( Inst< MFString > _url,
                             Inst< MFNode    > _references ) : 
   H3DScriptNode( _url ),
   references( _references ),
@@ -183,19 +183,38 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
 
 void PythonScript::initialize() {
   H3DScriptNode::initialize();
-  loadScript( url->getValue() );
-  PyObject *func = 
-    PyDict_GetItemString( static_cast< PyObject * >( module_dict ), "initialize" );
-  if( func && PyFunction_Check( func ) ) {
-    PyObject *args = PyTuple_New(0);
-    PyObject *result = PyEval_CallObject( func, args );
-    if ( result == NULL )
-      PyErr_Print();
-    else 
-      Py_DECREF( result );
+  bool script_loaded = false;
+  for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {
+    string url = resolveURLAsFile( *i );
+    if( url != "" ) {
+      loadScript( url );
+      script_loaded = true;
+      break;
+    }
+  }
 
-    Py_DECREF( args );
-  }   
+  if( script_loaded ) {
+    PyObject *func = 
+      PyDict_GetItemString( static_cast< PyObject * >( module_dict ), "initialize" );
+    if( func && PyFunction_Check( func ) ) {
+      PyObject *args = PyTuple_New(0);
+      PyObject *result = PyEval_CallObject( func, args );
+      if ( result == NULL )
+        PyErr_Print();
+      else 
+        Py_DECREF( result );
+      
+      Py_DECREF( args );
+    }   
+  } else {
+    cerr << "Warning: None of the urls in the PythonScript node \"" 
+         << getName() << "\" with url [";
+    for( MFString::const_iterator i = url->begin(); 
+         i != url->end(); ++i ) {  
+      cerr << " \"" << *i << "\"";
+    }
+    cerr << "] could be found. " << endl;
+  }
 }
 
 #endif // HAVE_PYTHON

@@ -30,30 +30,17 @@
 #define __H3DSCRIPTNODE_H__
 
 #include "X3DChildNode.h"
+#include "X3DUrlObject.h"
 
 namespace H3D {
 
   /// \ingroup AbstractNodes
   /// \brief The base class for script nodes.
-  struct H3DAPI_API H3DScriptNode : public X3DChildNode {
-    // Exceptions:
-    //H3D_VALUE_EXCEPTION( const char*, FieldNotFound );
-    
-    // Nested classes:
-    struct H3DAPI_API ScriptURL : public SFString {
-      inline virtual void update(){ 
-        SFString::update();
- //       static_cast< H3DScriptNode * >(owner)->loadScript( value );
-      }
-      inline virtual void setValue( const string &v, int id = 0 ) {
-        SFString::setValue( v, id );
-//        static_cast< H3DScriptNode * >( owner )->loadScript( value );
-      }
-    };
-
+  struct H3DAPI_API H3DScriptNode : public X3DChildNode,
+                                    public X3DUrlObject {
     
     // Constructor
-    H3DScriptNode( Inst< ScriptURL > _url = 0 );
+    H3DScriptNode( Inst< MFString > _url = 0 );
     
     
     // Standard node functions:
@@ -73,9 +60,6 @@ namespace H3D {
     virtual void loadScript( const string &url ) = 0;
     
     virtual Field* lookupField( const string &name ) = 0;
-    
-    // Fields
-    auto_ptr< ScriptURL > url;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

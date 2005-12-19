@@ -42,7 +42,7 @@ namespace H3D {
   ///  code as part of the API
   struct H3DAPI_API PythonScript : public H3DScriptNode {
     ///Constructor.
-    PythonScript( Inst< ScriptURL > _url = 0,
+    PythonScript( Inst< MFString > _url = 0,
                   Inst< MFNode    > _references = 0 );
     
     virtual Field* getField( const string&name ) {
