@@ -101,6 +101,7 @@ void Inline::traverseSG( TraverseInfo &ti ) {
 void Inline::LoadedScene::update() {
   Inline *inline_node = static_cast< Inline * >( getOwner() );
   value.clear();
+  inline_node->exported_nodes.clear();
   bool load = static_cast< SFBool * >( routes_in[0] )->getValue();
   if( load ) {
     MFString *urls = static_cast< MFString * >( routes_in[1] );
@@ -108,7 +109,7 @@ void Inline::LoadedScene::update() {
       string url = inline_node->resolveURLAsFile( *i );
       if( url != "" ) {
         try {
-          Group *g = X3D::createX3DFromURL( url );
+          Group *g = X3D::createX3DFromURL( url, NULL, &inline_node->exported_nodes );
           value.push_back( g );
           inline_node->setURLUsed( *i );
         } catch( const X3D::XMLParseError &e ) {

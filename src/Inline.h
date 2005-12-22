@@ -34,6 +34,7 @@
 #include "X3DBoundedObject.h"
 #include "H3DDisplayListObject.h"
 #include "Group.h"
+#include "DEFNodes.h"
 
 namespace H3D {
 
@@ -166,6 +167,10 @@ namespace H3D {
             Inst< SFBool      >  _load       = 0,
             Inst< LoadedScene > _loadedScene = 0 );
 
+    virtual ~Inline() {
+      exported_nodes.clear();
+    }
+
     /// Sets up the bound field using the bboxCenter and bboxSize fields.
     /// If bboxSize is (-1, -1, -1) the bound will be the union of all the
     /// bound objects of the Nodes in the children field. Otherwise it will
@@ -209,6 +214,10 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// A DEFMap from the name of nodes exported with the EXPORT statement
+    /// in thr url of the Inline node, to the acutal node.
+    X3D::DEFNodes exported_nodes;
   };
 }
 

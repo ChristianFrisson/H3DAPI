@@ -33,6 +33,7 @@
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/sax/Locator.hpp>
 #include <stack>
+#include <list>
 #include "Field.h"
 #include "Node.h"
 #include "Exception.h"
@@ -61,20 +62,27 @@ namespace H3D {
       ///  Constructor.
       ///  \param dn A structure to store the mapping between DEF names
       ///  and the nodes the reference
-      X3DSAX2Handlers( DEFNodes *dn = NULL ): 
-        error_on_elements( false ),
+      X3DSAX2Handlers( DEFNodes *dn = NULL,
+		       DEFNodes *_exported_nodes = NULL ): 
         delete_DEF_map( dn == NULL ),
+	delete_exported_map( _exported_nodes == NULL ),
         DEF_map( dn ),
+	exported_nodes( _exported_nodes ),
         locator( NULL ){
         if( !DEF_map ) {
           DEF_map = new DEFNodes();
-        } 
+        }
+	if( !_exported_nodes ) {
+	  exported_nodes = new DEFNodes();
+	}
       };
 
       /// Destructor.
       ~X3DSAX2Handlers() {
         if( delete_DEF_map ) 
           delete DEF_map;
+	if( delete_exported_map )
+	  delete exported_nodes;
       };
 
         
@@ -135,6 +143,11 @@ namespace H3D {
       void fatalError(const SAXParseException& exc);
       
     protected:
+      bool handleRouteElement( const Attributes &attrs, bool route_no_event = false );
+      Field * handleFieldElement( const Attributes &attrs, Node *parent );
+      bool handleImportElement( const Attributes &attrs  );
+      bool handleExportElement( const Attributes &attrs  );
+
       /// Encapsulate a node with its XML containerField attribute.
       /// References the node that it encapsulates.
       class NodeElement {
@@ -201,16 +214,21 @@ namespace H3D {
       /// structure
       NodeElementStack node_stack;
         
-      /// If TRUE a call to startElement() will raise an XMLParseError 
-      bool error_on_elements;
-        
       /// If true the DEF_map member will be deleted when the X3DSAX2handlers
       /// object is destructed
       bool delete_DEF_map;
+
+      /// If true the exported_nodes member will be deleted when the X3DSAX2handlers
+      /// object is destructed
+      bool delete_exported_map;
         
       /// A structure containing a map between DEF names and nodes that
       /// are found during parsing.
       DEFNodes *DEF_map;
+
+      /// A list of DEFNodes that contain the nodes that have been exported
+      /// using the EXPORT statement.
+      DEFNodes *exported_nodes;
 
       /// The Node that is created during parsing
       AutoRef<Node> resulting_node;

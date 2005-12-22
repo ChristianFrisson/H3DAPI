@@ -15,6 +15,7 @@
 #include "Group.h"
 #include "H3DDynamicFieldsObject.h"
 #include "X3DTypeFunctions.h"
+#include "Inline.h"
 
 
 using namespace std;
@@ -82,15 +83,347 @@ string X3DSAX2Handlers::getLocationString() {
   return s.str();
 }
 
+Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs, Node* parent ) {
+  H3DDynamicFieldsObject *dyn_object = 
+    dynamic_cast< H3DDynamicFieldsObject * >( parent );
+  if( dyn_object ) {
+    int nr_attrs = attrs.getLength();
+    const XMLCh *field_name  = NULL;
+    const XMLCh *field_type = NULL;
+    const XMLCh *field_access_type    = NULL;
+    const XMLCh *field_value    = NULL;
+    
+    for( int i = 0; i < nr_attrs; i++ ) {
+      const XMLCh *name = attrs.getQName( i );
+      if( !field_name && toString( name ).compare( "name" ) == 0 ) {
+	field_name = attrs.getValue( i );
+      } else if( !field_type && 
+		 toString( name ).compare( "type" ) == 0 ) {
+	field_type = attrs.getValue( i );
+      } else if( !field_access_type && 
+		 toString( name ).compare( "accessType" ) == 0 ) {
+	field_access_type = attrs.getValue( i );
+      } else if( !field_value && 
+	       toString( name ).compare( "value" ) == 0) {
+	field_value = attrs.getValue( i );
+      } else {
+	cerr << "WARNING: Unknown attribute \"" << name  
+	     << "\" in 'field' element " << getLocationString() << endl;
+      }
+    }
+    
+    // All field attributes were not found, so throw exception
+    if( !field_name ) {
+      string message = 
+	"Invalid 'field' specification. Missing \"name\" attribute";
+      throw X3D::XMLParseError( message, "", 
+				toString( locator->getSystemId() ),
+				locator->getLineNumber()  );
+    } else if ( !field_type ) {
+      string message = 
+	"Invalid 'field' specification. Missing \"type\" attribute";
+      throw X3D::XMLParseError( message, "", 
+				toString( locator->getSystemId() ),
+				locator->getLineNumber() );
+    } else if ( !field_access_type ) {
+      string message = 
+	"Invalid 'field' specification. Missing \"accessType\" attribute";
+      throw X3D::XMLParseError( message, "", 
+				toString( locator->getSystemId() ),
+				locator->getLineNumber() );
+    } 
+    Field *f = X3DTypes::newFieldInstance( toString( field_type ).c_str() );
+    if( !f ) {
+      string message = 
+	"Invalid value for 'type' attribute of 'field' specification.";
+      throw X3D::XMLParseError( message, "", 
+				toString( locator->getSystemId() ),
+				locator->getLineNumber() );
+    }
+    
+    string access_type_string = toString( field_access_type );
+    Field::AccessType access_type;
+    if( access_type_string == "initializeOnly" ) 
+      access_type= Field::INITIALIZE_ONLY;
+    else if( access_type_string == "outputOnly" )
+      access_type = Field::OUTPUT_ONLY;
+    else if( access_type_string == "inputOnly" )
+      access_type = Field::INPUT_ONLY;
+    else if( access_type_string == "inputOutput" )
+      access_type = Field::INPUT_OUTPUT;
+    else {
+      string message = 
+	"Invalid value for 'accessType' attribute of 'field' specification.";
+      throw X3D::XMLParseError( message, "", 
+				toString( locator->getSystemId() ),
+				locator->getLineNumber() );
+    }
+    
+    if( field_value ) {
+      ParsableField *pfield = 
+	dynamic_cast< ParsableField * >( f );
+      if( !pfield ) {
+	stringstream s;
+	s << "Cannot parse field \"" << f->getName() 
+	  << "\". Field type must be a subclass of ParsableField "
+	  << "in order to be parsable. " << ends;
+	throw X3D::XMLParseError( s.str(), "", 
+				  toString( locator->getSystemId() ),
+				  locator->getLineNumber() );
+      }
+      if( access_type == Field::INITIALIZE_ONLY ||
+	  access_type == Field::INPUT_OUTPUT ) {
+	try {
+	  pfield->setValueFromString( toString( field_value ) ); 
+	}
+	catch( const Convert::X3DFieldConversionError &e ) {
+	  stringstream s;
+	  s << "Could not convert \"" 
+	    << ( XMLString::stringLen( field_value ) < 100 ? 
+		 toString( field_value ): "value" ) 
+	    << "\" to " << e.value << " for field \"" 
+	    << f->getName() << "\"." << ends;
+	  throw X3D::XMLParseError( s.str(), "", 
+				    toString( locator->getSystemId() ),
+				    locator->getLineNumber() );
+	}
+	catch( const Convert::UnimplementedConversionType &e ) {
+	  stringstream s;
+	  s << "Field conversion error when converting value for field \"" 
+	    << f->getName() << "\". Conversion for " << e.value 
+	    << " not implemented" << ends;
+	  throw X3D::XMLParseError( s.str(), "", 
+				    toString( locator->getSystemId() ),
+				    locator->getLineNumber() ); 
+	}
+      } else {
+	cerr << "Warning: 'value' attribute ignored. Only used if "
+	     << "accesstype is initializeOnly or inputOutput " 
+	     << getLocationString() << endl;
+      }
+    }
+    dyn_object->addField( toString( field_name ),
+			  access_type,
+			  f );
+    FieldValue *fv = new FieldValue( toString( field_name ), f );
+    node_stack.push( NodeElement( fv ) ); 
+  }  else {
+    cerr << "Warning: 'field' declaration in Node that is does not support"
+	 << " it " << getLocationString() << endl;
+    node_stack.push( NodeElement( NULL ) ); 
+  }
+}
+
+
+bool X3DSAX2Handlers::handleRouteElement( const Attributes &attrs, bool route_no_event  ) {
+  int nr_attrs = attrs.getLength();
+  const XMLCh *from_node_name  = NULL;
+  const XMLCh *from_field_name = NULL;
+  const XMLCh *to_node_name    = NULL;
+  const XMLCh *to_field_name   = NULL;
+  
+  // get all the route specific attributes
+  for( int i = 0; i < nr_attrs; i++ ) {
+    const XMLCh *name = attrs.getQName( i );
+    if( !from_node_name && toString( name ).compare( "fromNode" ) == 0 ) {
+      from_node_name = attrs.getValue( i );
+    } else if( !to_node_name && 
+	       toString( name ).compare( "toNode" ) == 0 ) {
+      to_node_name = attrs.getValue( i );
+    } else if( !from_field_name && 
+	       toString( name ).compare( "fromField" ) == 0 ) {
+      from_field_name = attrs.getValue( i );
+    } else if( !to_field_name && 
+	       toString( name ).compare( "toField" ) == 0) {
+      to_field_name = attrs.getValue( i );
+    } else {
+      cerr << "WARNING: Unknown attribute \"" << name  
+	   << "\" in ROUTE element " << getLocationString() << endl;
+    }
+  }
+            
+  // All route attributes were not found, so whrow exception
+  if( !from_node_name ) {
+    string message = "Invalid ROUTE specification. Missing \"fromNode\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber()  );
+  } else if ( !from_field_name ) {
+    string message = "Invalid ROUTE specification. Missing \"fromField\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber() );
+  } else if ( !to_node_name ) {
+    string message = "Invalid ROUTE specification. Missing \"toNode\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber() );
+  }
+  else if ( !to_field_name ) {
+    string message = "Invalid ROUTE specification. Missing \"toField\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber() );
+  } else {
+    // Lookup the nodes and fields and set up the route.
+    Node *from_node = DEF_map->getNode( toString( from_node_name ) );
+    if( from_node ) {
+      Field *from_field = from_node->getField( toString( from_field_name ).c_str() );
+      if( from_field ) {
+	Node *to_node = DEF_map->getNode( toString( to_node_name ) );
+	if( to_node ) {
+	  Field *to_field = to_node->getField( toString( to_field_name ).c_str() );
+	  if( to_field ) {
+	    if( !route_no_event )
+	      from_field->route( to_field );
+	    else
+	      from_field->routeNoEvent( to_field );
+	  } else {
+	    cerr << "WARNING: Route error. Could not find field named \"" 
+		 << to_field_name
+		 << "\" in \"" << to_node_name << "\" Node " 
+		 << getLocationString() << endl;
+	  }
+	} else {
+	  cerr << "WARNING: Route error. Could not find Node named \"" 
+	       << to_node_name
+	       << "\" specified in \"toNode\" attribute " 
+	       << getLocationString() << endl;
+	}
+      } else {
+	cerr << "WARNING: Route error. Could not find field named \"" 
+	     << from_field_name
+	     << "\" in \"" << from_node_name << "\" Node " 
+	     << getLocationString() << endl;
+      }
+    } else {
+      cerr << "WARNING: Route error. Could not find Node named \"" 
+	   << from_node_name
+	   << "\" specified in \"fromNode\" attribute " 
+	   << getLocationString() << endl;
+    }
+  }
+}
+
+
+bool X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
+  int nr_attrs = attrs.getLength();
+  const XMLCh *inline_def_name  = NULL;
+  const XMLCh *exported_def_name = NULL;
+  const XMLCh *as_name    = NULL;
+  
+  // get all the route specific attributes
+  for( int i = 0; i < nr_attrs; i++ ) {
+    const XMLCh *name = attrs.getQName( i );
+    if( !inline_def_name && toString( name ).compare( "inlineDEF" ) == 0 ) {
+      inline_def_name = attrs.getValue( i );
+    } else if( !exported_def_name && 
+	       toString( name ).compare( "exportedDEF" ) == 0 ) {
+      exported_def_name = attrs.getValue( i );
+    } else if( !as_name && 
+	       toString( name ).compare( "AS" ) == 0 ) {
+      as_name = attrs.getValue( i );
+    } else {
+      cerr << "WARNING: Unknown attribute \"" << name  
+	   << "\" in IMPORT element " << getLocationString() << endl;
+    }
+  }
+            
+  // All route attributes were not found, so whrow exception
+  if( !inline_def_name ) {
+    string message = "Invalid IMPORT specification. Missing \"inlineDEF\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber()  );
+  } else if ( !exported_def_name ) {
+    string message = "Invalid IMPORT specification. Missing \"exportedDEF\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber() );
+  } else if ( !as_name ) {
+    string message = "Invalid IMPORT specification. Missing \"AS\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber() );
+  } else {
+    
+
+    // Lookup the nodes and fields and set up the route.
+    Node *n = DEF_map->getNode( toString( inline_def_name ) );
+    Inline *inline_node = dynamic_cast< Inline * >( n );
+    if( inline_node ) {
+      Node *import_node = inline_node->exported_nodes.getNode( toString( exported_def_name ) );
+      if( import_node ) {
+	DEF_map->addNode( toString( as_name ), 
+			  import_node ); 
+      } else {
+	cerr << "WARNING: IMPORT error. Inline node \"" 
+	     << inline_def_name << "\" does not EXPORT \""
+	     << exported_def_name << "\"" 
+	     << getLocationString() << endl;
+      }
+    } else {
+      if( n ) {
+	cerr << "WARNING: IMPORT error. Node \"" 
+	     << inline_def_name << "\" is not an Inline node "
+	     << getLocationString() << endl;
+      } else {
+	cerr << "WARNING: IMPORT error. Node named \"" 
+	     << inline_def_name << "\" does not exist."
+	     << getLocationString() << endl;
+      }
+    }
+  }
+}
+
+bool X3DSAX2Handlers::handleExportElement( const Attributes &attrs  ) {
+  int nr_attrs = attrs.getLength();
+  const XMLCh *local_def_name  = NULL;
+  const XMLCh *as_name    = NULL;
+  
+  // get all the route specific attributes
+  for( int i = 0; i < nr_attrs; i++ ) {
+    const XMLCh *name = attrs.getQName( i );
+    if( !local_def_name && toString( name ).compare( "localDEF" ) == 0 ) {
+      local_def_name = attrs.getValue( i );
+    } else if( !as_name &&  toString( name ).compare( "AS" ) == 0 ) {
+      as_name = attrs.getValue( i );
+    } else {
+      cerr << "WARNING: Unknown attribute \"" << name  
+	   << "\" in EXPORT element " << getLocationString() << endl;
+    }
+  }
+            
+  if( !local_def_name ) {
+    string message = "Invalid EXPORT specification. Missing \"localDEF\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber()  );
+  } else if ( !as_name ) {
+    string message = "Invalid IMPORT specification. Missing \"AS\" attribute";
+    throw X3D::XMLParseError( message, "", 
+			      toString( locator->getSystemId() ),
+			      locator->getLineNumber() );
+  } else {
+    // Lookup the nodes and fields and set up the route.
+    Node *n = DEF_map->getNode( toString( local_def_name ) );
+    if( n ) {
+      exported_nodes->addNode( toString( as_name ), 
+			       n ); 
+    } else {
+      cerr << "WARNING: EXPORT error. Node named \"" 
+	   << local_def_name << "\" does not exist."
+	   << getLocationString() << endl;
+    }
+  }
+}
+
+
 // X3DSAX2Handlers: Implementation of the SAX DocumentHandler interface
 void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                                    const XMLCh* const localname, 
                                    const XMLCh* const qname,
                                    const Attributes& attrs) {
-  if( error_on_elements ) {
-    // TODO: correct error handling 
-    cerr << "Element not allowed in ROUTE element" << endl;
-  }
   Node *new_node = NULL;
   Node *parent = NULL;
   // skip special element X3D
@@ -119,7 +452,9 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
     // the previous node element could not be created so we skip all
     // children as well. 
     if( toString( localname ).compare( "ROUTE" ) !=0 ||
-        toString( localname ).compare( "ROUTE_NO_EVENT" ) !=0 ) {
+        toString( localname ).compare( "ROUTE_NO_EVENT" ) !=0 ||
+	toString( localname ).compare( "EXPORT" ) !=0 ||
+	toString( localname ).compare( "IMPORT" ) !=0 ) {
       node_stack.push( NodeElement( NULL ) );
     }
   } else {
@@ -149,229 +484,16 @@ in fieldValue element.", "",
       node_stack.push( NodeElement( fv ) ); 
     } // end localname == "fieldValue"
 
-    else if( toString( localname ).compare( "ROUTE" ) == 0 || 
-             toString( localname ).compare( "ROUTE_NO_EVENT" ) == 0) {
-      // The element is a ROUTE specification 
-      int nr_attrs = attrs.getLength();
-      const XMLCh *from_node_name  = NULL;
-      const XMLCh *from_field_name = NULL;
-      const XMLCh *to_node_name    = NULL;
-      const XMLCh *to_field_name   = NULL;
-            
-      // get all the route specific attributes
-      for( int i = 0; i < nr_attrs; i++ ) {
-        const XMLCh *name = attrs.getQName( i );
-        if( !from_node_name && toString( name ).compare( "fromNode" ) == 0 ) {
-          from_node_name = attrs.getValue( i );
-        } else if( !to_node_name && 
-                   toString( name ).compare( "toNode" ) == 0 ) {
-          to_node_name = attrs.getValue( i );
-        } else if( !from_field_name && 
-                   toString( name ).compare( "fromField" ) == 0 ) {
-          from_field_name = attrs.getValue( i );
-        } else if( !to_field_name && 
-                   toString( name ).compare( "toField" ) == 0) {
-          to_field_name = attrs.getValue( i );
-        } else {
-          cerr << "WARNING: Unknown attribute \"" << name  
-               << "\" in ROUTE element " << getLocationString() << endl;
-        }
-      }
-            
-      // All route attributes were not found, so whrow exception
-      if( !from_node_name ) {
-        string message = "Invalid ROUTE specification. Missing \"fromNode\" attribute";
-        throw X3D::XMLParseError( message, "", 
-                                  toString( locator->getSystemId() ),
-                                  locator->getLineNumber()  );
-      } else if ( !from_field_name ) {
-        string message = "Invalid ROUTE specification. Missing \"fromField\" attribute";
-        throw X3D::XMLParseError( message, "", 
-                                  toString( locator->getSystemId() ),
-                                  locator->getLineNumber() );
-      } else if ( !to_node_name ) {
-        string message = "Invalid ROUTE specification. Missing \"toNode\" attribute";
-        throw X3D::XMLParseError( message, "", 
-                                  toString( locator->getSystemId() ),
-                                  locator->getLineNumber() );
-      }
-      else if ( !to_field_name ) {
-        string message = "Invalid ROUTE specification. Missing \"toField\" attribute";
-        throw X3D::XMLParseError( message, "", 
-                                  toString( locator->getSystemId() ),
-                                  locator->getLineNumber() );
-      }
-            
-      // Lookup the nodes and fields and set up the route.
-      Node *from_node = DEF_map->getNode( toString( from_node_name ) );
-      if( from_node ) {
-        Field *from_field = from_node->getField( toString( from_field_name ).c_str() );
-        if( from_field ) {
-          Node *to_node = DEF_map->getNode( toString( to_node_name ) );
-          if( to_node ) {
-            Field *to_field = to_node->getField( toString( to_field_name ).c_str() );
-            if( to_field ) {
-              if( toString( localname ).compare( "ROUTE" ) == 0 )
-                from_field->route( to_field );
-              else
-                from_field->routeNoEvent( to_field );
-            } else {
-              cerr << "WARNING: Route error. Could not find field named \"" 
-                   << to_field_name
-                   << "\" in \"" << to_node_name << "\" Node " 
-                   << getLocationString() << endl;
-            }
-          } else {
-            cerr << "WARNING: Route error. Could not find Node named \"" 
-                 << to_node_name
-                 << "\" specified in \"toNode\" attribute " 
-                 << getLocationString() << endl;
-          }
-        } else {
-          cerr << "WARNING: Route error. Could not find field named \"" 
-               << from_field_name
-               << "\" in \"" << from_node_name << "\" Node " 
-               << getLocationString() << endl;
-        }
-      } else {
-        cerr << "WARNING: Route error. Could not find Node named \"" 
-             << from_node_name
-             << "\" specified in \"fromNode\" attribute " 
-             << getLocationString() << endl;
-      }
-      // make sure no more elements before the end of these route element
-      error_on_elements = true;
-    } // end localname == "ROUTE"
-    else if( toString( localname ).compare( "field" ) == 0 ) {
-      H3DDynamicFieldsObject *dyn_object = 
-        dynamic_cast< H3DDynamicFieldsObject * >( parent );
-      if( dyn_object ) {
-        int nr_attrs = attrs.getLength();
-        const XMLCh *field_name  = NULL;
-        const XMLCh *field_type = NULL;
-        const XMLCh *field_access_type    = NULL;
-        const XMLCh *field_value    = NULL;
-            
-        for( int i = 0; i < nr_attrs; i++ ) {
-          const XMLCh *name = attrs.getQName( i );
-          if( !field_name && toString( name ).compare( "name" ) == 0 ) {
-            field_name = attrs.getValue( i );
-          } else if( !field_type && 
-                     toString( name ).compare( "type" ) == 0 ) {
-            field_type = attrs.getValue( i );
-          } else if( !field_access_type && 
-                     toString( name ).compare( "accessType" ) == 0 ) {
-            field_access_type = attrs.getValue( i );
-          } else if( !field_value && 
-                     toString( name ).compare( "value" ) == 0) {
-            field_value = attrs.getValue( i );
-          } else {
-            cerr << "WARNING: Unknown attribute \"" << name  
-                 << "\" in 'field' element " << getLocationString() << endl;
-          }
-        }
-        
-        // All field attributes were not found, so throw exception
-        if( !field_name ) {
-          string message = 
-            "Invalid 'field' specification. Missing \"name\" attribute";
-          throw X3D::XMLParseError( message, "", 
-                                    toString( locator->getSystemId() ),
-                                    locator->getLineNumber()  );
-        } else if ( !field_type ) {
-          string message = 
-            "Invalid 'field' specification. Missing \"type\" attribute";
-          throw X3D::XMLParseError( message, "", 
-                                    toString( locator->getSystemId() ),
-                                    locator->getLineNumber() );
-        } else if ( !field_access_type ) {
-          string message = 
-            "Invalid 'field' specification. Missing \"accessType\" attribute";
-          throw X3D::XMLParseError( message, "", 
-                                    toString( locator->getSystemId() ),
-                                    locator->getLineNumber() );
-        }
-        Field *f = X3DTypes::newFieldInstance( toString( field_type ).c_str() );
-        if( !f ) {
-          string message = 
-            "Invalid value for 'type' attribute of 'field' specification.";
-          throw X3D::XMLParseError( message, "", 
-                                    toString( locator->getSystemId() ),
-                                    locator->getLineNumber() );
-        }
-        
-        string access_type_string = toString( field_access_type );
-        Field::AccessType access_type;
-        if( access_type_string == "initializeOnly" ) 
-          access_type= Field::INITIALIZE_ONLY;
-        else if( access_type_string == "outputOnly" )
-          access_type = Field::OUTPUT_ONLY;
-        else if( access_type_string == "inputOnly" )
-          access_type = Field::INPUT_ONLY;
-        else if( access_type_string == "inputOutput" )
-          access_type = Field::INPUT_OUTPUT;
-        else {
-          string message = 
-            "Invalid value for 'accessType' attribute of 'field' specification.";
-          throw X3D::XMLParseError( message, "", 
-                                    toString( locator->getSystemId() ),
-                                    locator->getLineNumber() );
-        }
-        
-        if( field_value ) {
-          ParsableField *pfield = 
-            dynamic_cast< ParsableField * >( f );
-          if( !pfield ) {
-            stringstream s;
-            s << "Cannot parse field \"" << f->getName() 
-              << "\". Field type must be a subclass of ParsableField "
-              << "in order to be parsable. " << ends;
-            throw X3D::XMLParseError( s.str(), "", 
-                                      toString( locator->getSystemId() ),
-                                      locator->getLineNumber() );
-          }
-          if( access_type == Field::INITIALIZE_ONLY ||
-              access_type == Field::INPUT_OUTPUT ) {
-            try {
-              pfield->setValueFromString( toString( field_value ) ); 
-            }
-            catch( const Convert::X3DFieldConversionError &e ) {
-              stringstream s;
-              s << "Could not convert \"" 
-                << ( XMLString::stringLen( field_value ) < 100 ? 
-                     toString( field_value ): "value" ) 
-                << "\" to " << e.value << " for field \"" 
-                << f->getName() << "\"." << ends;
-              throw X3D::XMLParseError( s.str(), "", 
-                                        toString( locator->getSystemId() ),
-                                        locator->getLineNumber() );
-            }
-            catch( const Convert::UnimplementedConversionType &e ) {
-              stringstream s;
-              s << "Field conversion error when converting value for field \"" 
-                << f->getName() << "\". Conversion for " << e.value 
-                << " not implemented" << ends;
-              throw X3D::XMLParseError( s.str(), "", 
-                                        toString( locator->getSystemId() ),
-                                        locator->getLineNumber() ); 
-            }
-          } else {
-            cerr << "Warning: 'value' attribute ignored. Only used if "
-                 << "accesstype is initializeOnly or inputOutput " 
-                 << getLocationString() << endl;
-          }
-        }
-
-        dyn_object->addField( toString( field_name ),
-                              access_type,
-                              f );
-        FieldValue *fv = new FieldValue( toString( localname ), f );
-        node_stack.push( NodeElement( fv ) ); 
-      }  else {
-        cerr << "Warning: 'field' declaration in Node that is does not support"
-             << " it " << getLocationString() << endl;
-        node_stack.push( NULL ); 
-      }
+    else if( toString( localname ).compare( "ROUTE" ) == 0 ) {
+      handleRouteElement( attrs, false );
+    } else if( toString( localname ).compare( "ROUTE_NO_EVENT" ) == 0 ) {
+      handleRouteElement( attrs, true );
+    } else if( toString( localname ).compare( "IMPORT" ) == 0 ) {
+      handleImportElement( attrs );
+    } else if( toString( localname ).compare( "EXPORT" ) == 0 ) {
+      handleExportElement( attrs );
+    } else if( toString( localname ).compare( "field" ) == 0 ) {
+      handleFieldElement( attrs, parent );
     } else {
       // if we have a USE attribute use that Node.
 
@@ -406,7 +528,6 @@ in fieldValue element.", "",
                 
         //cerr << "USE node: " << use_name << "(" 
         //     << new_node << ")" << endl;
-        error_on_elements = true;
       } else {
         // we do not have a USE attribute so create a new Node.
         try {
@@ -551,13 +672,12 @@ in fieldValue element.", "",
 void X3DSAX2Handlers::endElement (const XMLCh *const uri,
                                   const XMLCh *const localname, 
                                   const XMLCh *const qname) {
-  if( error_on_elements ) {
-    error_on_elements = false;
-  }
   // skip special element X3D.
   if( toString( localname ).compare( "X3D" ) == 0 ||
       toString( localname ).compare( "ROUTE" ) == 0 || 
-      toString( localname ).compare( "ROUTE_NO_EVENT" ) == 0) {
+      toString( localname ).compare( "ROUTE_NO_EVENT" ) == 0 || 
+      toString( localname ).compare( "IMPORT" ) == 0 || 
+      toString( localname ).compare( "EXPORT" ) == 0) {
     return;
   }
   

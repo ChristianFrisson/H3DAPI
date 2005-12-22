@@ -75,7 +75,7 @@ namespace H3D {
           (*i).second = def_node;
         }
       }
-      
+
       /// Removes a DEF name/Node * pair from the structure.
       /// \param def_name The DEF name to remove.
       ///
@@ -88,6 +88,23 @@ namespace H3D {
           (*i).second->unref();
           erase( i );
         }
+      }
+
+      /// Add the entries from another DEFNodes structure do this one.
+      /// If an entry already exists it will be replaced.
+      void merge( DEFNodes *dn ) {
+	if( dn ) {
+	  for( const_iterator i = dn->begin(); i != dn->end(); i++ )
+	    addNode( (*i).first, (*i).second );
+	}
+      }
+
+      /// Removes all the entries in the map.
+      void clear() {
+	for( const_iterator i = begin(); i != end(); i++ )
+          // unref the node that is removed
+          (*i).second->unref();
+	map< const string, Node * >::clear();
       }
 
       /// Get the node by its DEF name.
