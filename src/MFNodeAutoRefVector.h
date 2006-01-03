@@ -36,6 +36,7 @@ namespace H3D {
   class RefCountMField;
   
   namespace FieldInternals {
+   
     /// \internal
     /// The MFNodeAutoRefVector is a class used in MFNode in order to 
     /// call the onAdd and onRemove functions when
@@ -44,6 +45,7 @@ namespace H3D {
     template< class RefClass >
     class H3DAPI_API MFNodeAutoRefVector: public AutoRefVector< RefClass > {
     public :
+
       /// Creates an empty vector.
       inline MFNodeAutoRefVector() {}
       
@@ -86,7 +88,7 @@ namespace H3D {
       virtual void ref( RefClass *n ) const {
         if( n ) {
           AutoRefVector< RefClass >::ref( n );
-          owner->onAdd( n );
+          owner->onAdd( owner->preOnAdd( n ) );
         }
       }
       
@@ -99,7 +101,7 @@ namespace H3D {
       /// 
       virtual void unref( RefClass *n ) const {
         if( n ) {
-          owner->onRemove( n );
+          owner->onRemove( owner->preOnRemove( n ) );
           AutoRefVector< RefClass >::unref( n );
         }
       }
@@ -107,6 +109,7 @@ namespace H3D {
       /// The field the vector resides in.
       RefCountMField< RefClass > *owner;
     };
+
   }
 }
 

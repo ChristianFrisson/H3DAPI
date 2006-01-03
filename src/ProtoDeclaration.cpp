@@ -42,47 +42,65 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
     PrototypeInstance *proto = new PrototypeInstance( NULL );
 
     for( list< FieldDeclaration >::iterator i = field_declarations.begin();
-	 i != field_declarations.end(); i++ ) {
+         i != field_declarations.end(); i++ ) {
       Field *f = X3DTypes::newFieldInstance( (*i).type );
       if( f ) {
-	if( (*i).value != "" ) {
-	  ParsableField *pfield = 
-	    dynamic_cast< ParsableField * >( f );
-	  if( !pfield ) {
-	    cerr << "Cannot parse value field for\"" << f->getName() 
-		 << "\". Field type must be a subclass of ParsableField "
-		 << "in order to be parsable. " << endl;
-	  }
-	  if( (*i).access_type == Field::INITIALIZE_ONLY ||
-	      (*i).access_type == Field::INPUT_OUTPUT ) {
-	    try {
-	      pfield->setValueFromString( (*i).value ); 
-	    }
-	    catch( const X3D::Convert::X3DFieldConversionError &e ) {
-	      cerr << "Could not convert \"" 
-		   << ( (*i).value.size() < 100 ? (*i).value: "value" )
-		   << "\" to " << e.value << " for field \"" 
-		   << f->getName() << "\"." << endl;
-	    }
-	    catch( const X3D::Convert::UnimplementedConversionType &e ) {
-	      cerr << "Field conversion error when converting value for field \"" 
-		   << f->getName() << "\". Conversion for " << e.value 
-		   << " not implemented" << endl;
-	    }
-	  } else {
-	    cerr << "Warning: 'value' attribute ignored. Only used if "
-		 << "accesstype is initializeOnly or inputOutput " 
-		 << endl;
-	  }
-	} 
-	cerr << "Adding field: " << (*i).name << endl;
-	proto->addField( (*i).name, (*i).access_type, f );
+        f->setOwner( proto );
+        f->setName( (*i).name );
+        if( (*i).value != "" ) {
+          X3DTypes::X3DType type = f->getX3DType();
+          if( type == X3DTypes::SFNODE || type == X3DTypes::MFNODE ) {
+            try {
+              if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
+                mfnode->push_back( X3D::createX3DNodeFromString( (*i).value ).get() );
+              } else if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
+                sfnode->setValue( X3D::createX3DNodeFromString( (*i).value ) );
+              }
+            } catch( const Exception::H3DException &e ) {
+              cerr << "Could not create default value for " << f->getFullName() << endl;
+              cerr << e << endl;
+              return NULL;
+            }
+          } else {
+            ParsableField *pfield = 
+              dynamic_cast< ParsableField * >( f );
+            if( !pfield ) {
+              cerr << "Cannot parse value field for\"" << f->getFullName() 
+                   << "\". Field type must be a subclass of ParsableField "
+                   << "in order to be parsable. " << endl;
+            }
+            if( (*i).access_type == Field::INITIALIZE_ONLY ||
+                (*i).access_type == Field::INPUT_OUTPUT ) {
+              try {
+                pfield->setValueFromString( (*i).value ); 
+              }
+              catch( const X3D::Convert::X3DFieldConversionError &e ) {
+                cerr << "Could not convert \"" 
+                     << ( (*i).value.size() < 100 ? (*i).value: "value" )
+                     << "\" to " << e.value << " for field \"" 
+                     << f->getFullName() << "\"." << endl;
+              }
+              catch( const X3D::Convert::UnimplementedConversionType &e ) {
+                cerr << "Field conversion error when converting value for field \"" 
+                     << f->getFullName() << "\". Conversion for " << e.value 
+                     << " not implemented" << endl;
+              }
+            } else {
+              cerr << "Warning: 'value' attribute ignored. Only used if "
+                   << "accesstype is initializeOnly or inputOutput " 
+                   << endl;
+            }
+          } 
+        }
+        proto->addField( (*i).name, (*i).access_type, f );
 
       } else {
-	cerr << "Warning: Invalid field type in \"field\" element. " 
-	     << endl;
+        cerr << "Warning: Invalid field type in \"field\" element. " 
+             << endl;
       }
     }
+
+    if( body == "" ) return NULL;
 
     auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
     X3D::X3DSAX2Handlers handler;
@@ -93,7 +111,6 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
     parser->setErrorHandler(&handler); 
     parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
     AutoRef< Node > n = handler.getResultingNode();
-    cerr << "new " << name << endl;
     proto->setPrototypedNode( n.get() );
     return proto;
   } catch( const Exception::H3DException &e ) {

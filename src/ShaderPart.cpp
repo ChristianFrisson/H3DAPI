@@ -51,8 +51,8 @@ ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
                         Inst< SFShaderString > _shader_string ):
   X3DNode( _metadata ),
   X3DUrlObject( _url ),
-  shaderString( _shader_string ),
   type( _type ),
+  shaderString( _shader_string ),
   shader_handle( 0 ) {
   type_name = "ShaderPart";
   database.initFields( this );

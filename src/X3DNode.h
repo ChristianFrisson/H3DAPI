@@ -31,8 +31,6 @@
 
 #include "SFNode.h"
 #include "Node.h"
-#include "SFNode.h"
-#include "MFNode.h"
 #include "FieldTemplates.h"
 
 namespace H3D {

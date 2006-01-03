@@ -28,6 +28,9 @@
 #ifndef __DEPENDENTNODEFIELDS_H__
 #define __DEPENDENTNODEFIELDS_H__
 
+#include "SFNode.h"
+#include "MFNode.h"
+
 namespace H3D {
 
   /// Class used for specifying a field member of a node in a

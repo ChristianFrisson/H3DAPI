@@ -21,20 +21,21 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file PrototypeInstance.cpp
-/// \brief CPP file for PrototypeInstance.
-///
-//
+/// \file MFNode.cpp
+/// \brief Contains the MFNode class.
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "PrototypeInstance.h"
-
+#include "MFNode.h"
+#include "X3DPrototypeInstance.h"
 using namespace H3D;
 
-// Add this node to the H3DNodeDatabase system.
-H3DNodeDatabase PrototypeInstance::database( 
-                                            "PrototypeInstance", 
-                                            NULL,
-                                            typeid( PrototypeInstance ),
-                                            &X3DPrototypeInstance::database );
+
+Node *MFNode::getPrototypeNode( Node *n ) {
+  X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( n );
+  if( pi ) {
+    return pi->getPrototypedNode();
+  } else {
+    return NULL;
+  }
+}

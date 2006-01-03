@@ -77,6 +77,14 @@ namespace H3D {
     /// Make the field up to date if an event has occured
     inline virtual void update();
       
+    virtual RefClass *preOnAdd( RefClass *n ) {
+      return n;
+    }
+    
+    virtual RefClass *preOnRemove( RefClass *n ) {
+      return n;
+    }
+
     /// \internal
     /// The RefCountSFieldAutoRef is a AutoRef class used in 
     /// RefCountSField in order to call the onAdd and onRemove 
@@ -120,7 +128,7 @@ namespace H3D {
       inline virtual void ref( RefClass *n ) {
         if( rc_field && n ) {
           AutoRef< RefClass >::ref( n );
-          rc_field->onAdd( n );
+          rc_field->onAdd( rc_field->preOnAdd( n ) );
         }
       }
   
@@ -132,7 +140,7 @@ namespace H3D {
       /// 
       inline virtual void unref( RefClass *n ) {
         if( rc_field && n ) {
-          rc_field->onRemove( n );
+          rc_field->onRemove( rc_field->preOnRemove( n ) );
           AutoRef< RefClass >::unref( n );
         }
       }

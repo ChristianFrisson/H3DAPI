@@ -30,6 +30,7 @@
 #define __MULTITEXTURECOORDINATE_H__
 
 #include "X3DTextureCoordinateNode.h"
+#include "MFNode.h"
 
 namespace H3D {
 

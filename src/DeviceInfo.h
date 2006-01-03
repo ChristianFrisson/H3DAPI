@@ -31,6 +31,7 @@
 
 #include "X3DBindableNode.h"
 #include "H3DHapticsDevice.h"
+#include "MFNode.h"
 
 namespace H3D {
   /// \ingroup Nodes

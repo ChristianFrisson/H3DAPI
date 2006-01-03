@@ -48,7 +48,7 @@ SAX2XMLReader* X3D::getNewXMLParser() {
 Group* X3D::createX3DFromString( const string &str,
                                  DEFNodes *dn,
 				 DEFNodes *exported_nodes,
-				 PrototypeMap *prototypes  ) {
+				 PrototypeVector *prototypes  ) {
   Group *g = new Group;
   AutoRef< Node > n = createX3DNodeFromString( str, dn,
 					       exported_nodes, 
@@ -61,7 +61,7 @@ Group* X3D::createX3DFromString( const string &str,
 Group* X3D::createX3DFromURL( const string &url,
                               DEFNodes *dn,
 			      DEFNodes *exported_nodes,
-			      PrototypeMap *prototypes ) {
+			      PrototypeVector *prototypes ) {
   Group *g = new Group;
   AutoRef< Node > n = createX3DNodeFromURL( url, dn, exported_nodes, 
 					    prototypes );
@@ -73,7 +73,7 @@ Group* X3D::createX3DFromURL( const string &url,
 Group* X3D::createX3DFromStream( istream &is, 
                                  DEFNodes *dn,
 				 DEFNodes *exported_nodes,
-				 PrototypeMap *prototypes,
+				 PrototypeVector *prototypes,
                                  const XMLCh *const system_id ) {
   Group *g = new Group;
   AutoRef< Node > n = createX3DNodeFromStream( is, dn, exported_nodes, 
@@ -87,9 +87,9 @@ Group* X3D::createX3DFromStream( istream &is,
 AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
                                               DEFNodes *dn,
 					      DEFNodes *exported_nodes,
-					      PrototypeMap *prototypes ) {
+					      PrototypeVector *prototypes ) {
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
-  X3DSAX2Handlers handler( dn, exported_nodes );
+  X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   stringstream s;
   s << str << ends;
   parser->setContentHandler(&handler);
@@ -101,9 +101,9 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
 AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
                                            DEFNodes *dn,
 					   DEFNodes *exported_nodes,
-					   PrototypeMap *prototypes ) {
+					   PrototypeVector *prototypes ) {
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
-  X3DSAX2Handlers handler( dn, exported_nodes );
+  X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
   
@@ -138,10 +138,10 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
 AutoRef< Node > X3D::createX3DNodeFromStream( istream &is, 
                                               DEFNodes *dn,
 					      DEFNodes *exported_nodes,
-					      PrototypeMap *prototypes,
+					      PrototypeVector *prototypes,
                                               const XMLCh *const system_id ) {
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
-  X3DSAX2Handlers handler( dn, exported_nodes );
+  X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
   parser->parse( IStreamInputSource( is, system_id ) );

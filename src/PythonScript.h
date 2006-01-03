@@ -31,6 +31,7 @@
 
 #include "Exception.h"
 #include "H3DScriptNode.h"
+#include "MFNode.h"
 
 #ifdef HAVE_PYTHON
 

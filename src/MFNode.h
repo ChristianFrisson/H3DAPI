@@ -32,6 +32,7 @@
 #include "MFNodeAutoRefVector.h"
 #include "FieldTemplates.h"
 #include "Node.h"
+#include "X3DPrototypeInstance.h"
 
 namespace H3D {
 
@@ -44,6 +45,129 @@ namespace H3D {
     //    Field > {
   public:   
     
+    class const_iterator: public RefCountMField< Node >::const_iterator {
+    public:
+      const_iterator( RefCountMField< Node >::const_iterator i ):
+        RefCountMField< Node >::const_iterator( i ) {
+      }
+      
+      Node * const operator*() {
+        Node *n = RefCountMField< Node >::const_iterator::operator*();
+        X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( n );
+        if( pi ) {
+          return pi->getPrototypedNode();
+        } else {
+          return n;
+        }
+      }
+    };
+    
+    class H3DAPI_API const_reverse_iterator: 
+      public RefCountMField< Node >::const_reverse_iterator {
+    public:
+      /// Constructor.
+      const_reverse_iterator( RefCountMField< Node >::const_reverse_iterator i ):
+        RefCountMField< Node >::const_reverse_iterator( i ) {
+	
+      }
+      
+      Node * const operator*() {
+        Node *n = RefCountMField< Node >::const_reverse_iterator::operator*();
+        X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( n );
+        if( pi ) {
+          return pi->getPrototypedNode();
+        } else {
+          return n;
+        }
+      }
+    };
+
+    /// Returns a const_iterator pointing to the beginning of the vector.
+    inline const_iterator begin( int id = 0 ) { 
+      return const_iterator( RefCountMField<Node>::begin( id ) );
+    }
+    
+    /// Returns a const_iterator pointing to the end of the vector.
+    inline const_iterator end( int id = 0 ) { 
+      return const_iterator( RefCountMField<Node>::end( id ) );
+    }
+
+    /// Returns a const_reverse_iterator pointing to the beginning of the vector.
+    inline const_reverse_iterator rbegin( int id = 0 ) { 
+      return const_reverse_iterator( RefCountMField<Node>::rbegin( id ) );
+    }
+
+    /// Returns a const_reverse_iterator pointing to the end of the vector.
+    inline const_reverse_iterator rend( int id = 0 ) { 
+      return const_reverse_iterator( RefCountMField<Node>::rend( id ) );
+    }
+
+    /// Returns the n'th element.
+    inline virtual Node * operator[](size_type i ) {
+      Node *n = RefCountMField< Node >::operator[](i);
+      X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( n );
+      if( pi ) {
+        return pi->getPrototypedNode();
+      } else {
+        return n;
+      }
+    }
+    
+    /// Returns the first element.
+    inline virtual Node * front( int id = 0 ) { 
+      Node *n = RefCountMField< Node >::front(id);
+      X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( n );
+      if( pi ) {
+        return pi->getPrototypedNode();
+      } else {
+        return n;
+      }
+    }
+
+    /// Returns the last element.
+    inline virtual Node * back( int id = 0 ) {
+      Node *n = RefCountMField< Node >::back(id);
+      X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( n );
+      if( pi ) {
+        return pi->getPrototypedNode();
+      } else {
+        return n;
+      }
+    }
+
+    /// Get the value of the MField.
+    inline virtual Node * getValueByIndex( 
+                                          size_type i,
+                                          int id = 0 ) {
+      Node *n = RefCountMField< Node >::getValueByIndex( i, id );
+      X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( n );
+      if( pi ) {
+        return pi->getPrototypedNode();
+      } else {
+        return n;
+      }
+    }
+
+
+    
+    virtual Node *preOnAdd( Node *n ) {
+      Node *pn = getPrototypeNode( n );
+      if( pn ) {
+        return pn;
+      }
+      else
+        return n;
+    }
+    
+    virtual Node *preOnRemove( Node *n ) {
+      Node *pn = getPrototypeNode( n );
+      if( pn ) 
+        return pn;
+      else
+        return n;
+    }
+
+
     /// Default constructor. Creates an empty MFNode.
     MFNode() {}
     
@@ -59,7 +183,7 @@ namespace H3D {
       this->upToDate();
       return value;
     }
-    
+
     /// Returns a string name for this field type i.e. SFNode
     virtual string getTypeName() {
       return classTypeName();
@@ -72,6 +196,9 @@ namespace H3D {
 
     /// Returns the X3DType of the field.
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::MFNODE; }
+
+  protected:
+    Node *getPrototypeNode( Node *n );
   };
 
   template<>
@@ -90,14 +217,16 @@ namespace H3D {
     /// We check that the type of the Node is of the correct type.
     virtual void onAdd( Node *n) {
       if( !dynamic_cast< NodeType * >( n ) ) {
-        stringstream s;
-        s << "Expecting " << typeid( NodeType ).name() << ends;
-        throw InvalidNodeType( n->getTypeName(),
-                               s.str(),
-                               H3D_FULL_LOCATION ); 
-      } else {
-        MFNode::onAdd( n );
+        Node *pi = getPrototypeNode( n );
+        if( !dynamic_cast< NodeType * >( pi ) ) {
+          stringstream s;
+          s << "Expecting " << typeid( NodeType ).name() << ends;
+          throw InvalidNodeType( n->getTypeName(),
+                                 s.str(),
+                                 H3D_FULL_LOCATION ); 
+        } 
       }
+      MFNode::onAdd( n );
     }
     
   public:
@@ -109,10 +238,9 @@ namespace H3D {
 
     /// Get the value casted to the NodeType.
     virtual NodeType *getCastedValueByIndex( typename MFNode::size_type i, 
-                                         int id = 0 ) {
+                                             int id = 0 ) {
       return this->getValueByIndex( i, id );
     }
-    
   };
 
   /// Template to make sure that the Nodes that is set in a SFNode is
@@ -133,14 +261,16 @@ namespace H3D {
     /// We check that the type of the Node is of the correct type.
     void onAdd( Node *n) {
       if( !dynamic_cast< Type * >( n ) ) {
-        stringstream s;
-        s << "Expecting " << typeid( Type ).name() << ends;
-        throw InvalidNodeType( n->getTypeName(),
-                               s.str(),
-                               H3D_FULL_LOCATION ); 
-      } else {
-        MFNode::onAdd( n );
+        Node *pi = getPrototypeNode( n );
+        if( !dynamic_cast< Type * >( pi ) ) {
+          stringstream s;
+          s << "Expecting " << typeid( Type ).name() << ends;
+          throw InvalidNodeType( n->getTypeName(),
+                                 s.str(),
+                                 H3D_FULL_LOCATION ); 
+        } 
       }
+      MFNode::onAdd( n );
     }
     
   public:

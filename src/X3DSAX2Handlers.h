@@ -39,6 +39,9 @@
 #include "Exception.h"
 #include "DEFNodes.h"
 #include "AutoRef.h"
+#include "ProtoDeclaration.h"
+#include "AutoPtrVector.h"
+#include "X3D.h"
 
 #ifdef _MSC_VER
 #pragma comment( lib, "xerces-c_2.lib" )
@@ -63,26 +66,40 @@ namespace H3D {
       ///  \param dn A structure to store the mapping between DEF names
       ///  and the nodes the reference
       X3DSAX2Handlers( DEFNodes *dn = NULL,
-		       DEFNodes *_exported_nodes = NULL ): 
+                       DEFNodes *_exported_nodes = NULL,
+                       PrototypeVector *_proto_declarations = NULL ): 
+        proto_instance( NULL ),
+        proto_declaration( NULL ),
+        defining_proto_body( false ),
+        defining_proto_interface( false ),
+        defining_proto_connections( false ),
+        defining_extern_proto( false ),
         delete_DEF_map( dn == NULL ),
-	delete_exported_map( _exported_nodes == NULL ),
+        delete_exported_map( _exported_nodes == NULL ),
+        delete_proto_declarations( _proto_declarations == NULL ),
         DEF_map( dn ),
-	exported_nodes( _exported_nodes ),
+        exported_nodes( _exported_nodes ),
+        proto_declarations( _proto_declarations ),
         locator( NULL ){
         if( !DEF_map ) {
           DEF_map = new DEFNodes();
         }
-	if( !_exported_nodes ) {
-	  exported_nodes = new DEFNodes();
-	}
+        if( !_exported_nodes ) {
+          exported_nodes = new DEFNodes();
+        }
+        if( !_proto_declarations ) {
+          proto_declarations = new PrototypeVector;
+        }
       };
 
       /// Destructor.
       ~X3DSAX2Handlers() {
         if( delete_DEF_map ) 
           delete DEF_map;
-	if( delete_exported_map )
-	  delete exported_nodes;
+        if( delete_exported_map )
+          delete exported_nodes;
+        if( delete_proto_declarations )
+          delete proto_declarations;
       };
 
         
@@ -142,11 +159,65 @@ namespace H3D {
       /// \exception X3D::XMLParseError
       void fatalError(const SAXParseException& exc);
       
+      /// If this is set to non-NULL then the parser is used to create an 
+      /// X3DPrototypeInstance. This allows the IS and connect elements to be used.
+      X3DPrototypeInstance *proto_instance;
+
     protected:
-      bool handleRouteElement( const Attributes &attrs, bool route_no_event = false );
+      
+      /// This function will be called by startElement if the element is a
+      /// ProtoDeclare element or a child of it. It replaces the normal 
+      /// functionallity of startElement and creates a ProtoDeclaration instead.
+      void protoStartElement( const XMLCh* const uri,
+                              const XMLCh* const localname, 
+                              const XMLCh* const qname,
+                              const Attributes& attrs );
+      
+      /// This function will be called by endElement if the element is a
+      /// ProtoDeclare element or a child of it. It replaces the normal 
+      /// functionallity of startElement 
+      void protoEndElement( const XMLCh* const uri,
+                            const XMLCh* const localname, 
+                            const XMLCh* const qname );
+
+      /// This function is called when a field element has been found
+      /// in a ProtoInterface element. The attrs argument are the attributes
+      /// of the field element.
+      void handleProtoInterfaceFieldElement( const Attributes &attrs );
+      
+      /// This function will be called if a connect element has been found
+      /// in an IS element. The attrs argument are the attributes of the 
+      /// ProtoInterface element and the parent argument is the node of the element
+      /// that it lies within.
+      void handleConnectElement( const Attributes &attrs, Node *parent );
+
+      /// This function will be called if a ROUTE or ROUTE_NO_EVENT element
+      /// has been found.
+      void handleRouteElement( const Attributes &attrs, 
+                               bool route_no_event = false );
+
+      /// This function will be called if a "field" element has been found
+      /// that is not part of a ProtoInterface element. If successful it returns
+      /// a new Field with the specified attributes, if not NULL is returned.
       Field * handleFieldElement( const Attributes &attrs, Node *parent );
-      bool handleImportElement( const Attributes &attrs  );
-      bool handleExportElement( const Attributes &attrs  );
+
+      /// This function will be called if a IMPORT element has been found.
+      void handleImportElement( const Attributes &attrs  );
+      
+      /// This function will be called if a EXPORT element has been found.
+      void handleExportElement( const Attributes &attrs  );
+
+      /// This function will be called if a ProtoInstance element has been found. It
+      /// returns an X3DPrototypeInstance of the specified prototype if it exists,
+      /// otherwise NULL.
+      X3DPrototypeInstance* handleProtoInstanceElement( const Attributes &attrs );
+
+      /// This function will be called if a fieldValue element has been found in
+      /// a ProtoInstance element.
+      void handleFieldValueElement( const Attributes &attrs, Node *parent );
+
+      /// This function will be called if a ExternProtoDeclare element has been found.
+      void handleExternProtoDeclareElement( const Attributes &attrs );
 
       /// Encapsulate a node with its XML containerField attribute.
       /// References the node that it encapsulates.
@@ -200,7 +271,7 @@ namespace H3D {
         Node *node;
             
       };
-        
+
       /// Returns a string with the current location as given
       /// by the current Locator object. system id and line number
       /// is included. Only valid during event callbacks.
@@ -209,6 +280,28 @@ namespace H3D {
       /// A stack of NodeElements. Used during parsing to keep track
       /// of the created Nodes.
       typedef std::stack< NodeElement > NodeElementStack;
+
+      /// Will be set when a ProtoDeclare element is found and it is will be used in 
+      /// protoStartElement and protoEndElement to define a prototype.
+      /// On end of ProtoDeclare it will be added to proto_declarations and
+      /// proto_declaration will be set to NULL again;
+      ProtoDeclaration *proto_declaration;
+
+      /// The string_body string is used when defining ProtoBody. All elements will then
+      /// just be translated to a string to be used by the ProtoDeclaration.
+      string proto_body;
+
+      /// true if we are inside a ProtoBody element.
+      bool defining_proto_body;
+
+      /// true if we are inside a ProtoInterface element.
+      bool defining_proto_interface;
+
+      /// true if we are inside an IS element.
+      bool defining_proto_connections;
+
+      /// true if we are inside an ExternProtoDeclare element.
+      bool defining_extern_proto;
 
       /// A stack of nodes that have been created while traversing the XML 
       /// structure
@@ -221,6 +314,10 @@ namespace H3D {
       /// If true the exported_nodes member will be deleted when the X3DSAX2handlers
       /// object is destructed
       bool delete_exported_map;
+
+      /// If true the proto_declarations member will be deleted when the X3DSAX2handlers
+      /// object is destructed
+      bool delete_proto_declarations;
         
       /// A structure containing a map between DEF names and nodes that
       /// are found during parsing.
@@ -229,6 +326,9 @@ namespace H3D {
       /// A list of DEFNodes that contain the nodes that have been exported
       /// using the EXPORT statement.
       DEFNodes *exported_nodes;
+
+      /// The ProtoDeclarations that have been defined with ProtoDeclare elements.
+      PrototypeVector *proto_declarations;
 
       /// The Node that is created during parsing
       AutoRef<Node> resulting_node;

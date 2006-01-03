@@ -110,14 +110,14 @@ namespace H3D {
     const_reverse_iterator;
 
     /// Returns a const_iterator pointing to the beginning of the vector.
-    inline virtual const_iterator begin( int id = 0 ) { 
+    inline const_iterator begin( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
       return value.begin();
     }
     /// Returns a const_iterator pointing to the end of the vector.
-    inline virtual const_iterator end( int id = 0 ) { 
+    inline const_iterator end( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
@@ -125,7 +125,7 @@ namespace H3D {
     }
     /// Returns a const_reverse_iterator pointing to the beginning of the
     /// reversed vector.
-    inline virtual const_reverse_iterator rbegin( int id = 0 ) { 
+    inline const_reverse_iterator rbegin( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
@@ -133,7 +133,7 @@ namespace H3D {
     }
     /// Returns a const_reverse_iterator pointing to the end of the reversed 
     /// vector.
-    inline virtual const_reverse_iterator rend( int id = 0 ) { 
+    inline const_reverse_iterator rend( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
@@ -141,20 +141,20 @@ namespace H3D {
     }
 
     /// Returns the size of the vector.
-    inline virtual unsigned int size() { 
+    inline unsigned int size() { 
       this->upToDate();
       return value.size(); 
     }
 
     /// Returns the largest possible size of the vector.
-    inline virtual size_type max_size() {
+    inline size_type max_size() {
       this->upToDate();
       return value.max_size();
     }
         
     /// Number of elements for which memory has been allocated. capacity() 
     /// is always greater than or equal to size().
-    inline virtual size_type capacity() { 
+    inline size_type capacity() { 
       this->upToDate();
       return value.capacity(); 
     }
@@ -166,13 +166,13 @@ namespace H3D {
     /// equal to n; otherwise, capacity() is unchanged. In either case, 
     /// size() is unchanged.
     /// 
-    inline virtual void reserve( size_t s ) { 
+    inline void reserve( size_t s ) { 
       this->upToDate();
       value.reserve( s ); 
     }
 
     /// Inserts or erases elements at the end such that the size becomes n.
-    inline virtual void resize( size_t n, Type t = Type(), int id = 0 ) { 
+    inline  void resize( size_t n, Type t = Type(), int id = 0 ) { 
       this->checkAccessTypeSet( id );
       this->upToDate();
       value.resize( n ); 
@@ -180,12 +180,12 @@ namespace H3D {
     }
 
     /// true if the vector's size is 0.
-    inline virtual bool empty() { 
+    inline  bool empty() { 
       this->upToDate();
       return value.empty(); 
     }
     /// Returns the n'th element.
-    inline virtual const_reference operator[](size_type n ) {
+    inline  const_reference operator[](size_type n ) {
       // check that we have the correct access type
       this->checkAccessTypeGet( 0 );
       this->upToDate();
@@ -193,7 +193,7 @@ namespace H3D {
     }
 
     /// Returns the first element.
-    inline virtual const_reference front( int id = 0 ) { 
+    inline  const_reference front( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
@@ -201,7 +201,7 @@ namespace H3D {
     }
 
     /// Returns the last element.
-    inline virtual const_reference back( int id = 0 ) {
+    inline  const_reference back( int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
@@ -209,7 +209,7 @@ namespace H3D {
     }
 
     /// Swaps the contents of two vectors.
-    inline virtual void swap( VectorClass &x, int id = 0 ) {
+    inline  void swap( VectorClass &x, int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeSet( id );
       this->checkAccessTypeGet( id );
@@ -219,7 +219,7 @@ namespace H3D {
     }
 
     /// Inserts a new element at the end.
-    inline virtual void push_back( const Type &x, int id = 0 ) {
+    inline void push_back( const Type &x, int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeSet( id );
       this->upToDate();    
@@ -237,7 +237,7 @@ namespace H3D {
     }
 
     /// Erases all of the elements.
-    inline virtual void clear( int id = 0 ) {
+    inline  void clear( int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeSet( id );
       this->upToDate();

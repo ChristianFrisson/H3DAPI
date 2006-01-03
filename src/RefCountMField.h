@@ -65,7 +65,7 @@ namespace H3D {
     }
 
     /// Creates an RefCountMField with space reserved for size nodes.
-      RefCountMField( typename FieldInternals::MFNodeAutoRefVector< RefClass >::size_type sz ) : 
+    RefCountMField( typename FieldInternals::MFNodeAutoRefVector< RefClass >::size_type sz ) : 
       MFieldBase< RefClass *, 
                   FieldInternals::MFNodeAutoRefVector< RefClass >,
                   Field >( sz ){
@@ -85,8 +85,8 @@ namespace H3D {
 
     /// Get the value of the MField.
     inline virtual RefClass * getValueByIndex( 
-                                  typename BaseFieldType::size_type i,
-                                  int id = 0 ) {
+                                              typename BaseFieldType::size_type i,
+                                              int id = 0 ) {
       this->checkAccessTypeGet( id );
       this->upToDate();
       if( i < 0 || i >= this->value.size() ) {
@@ -117,7 +117,7 @@ namespace H3D {
     /// Set the value of the field.
     /// \param The new value.
     inline virtual void setValue( const AutoRefVector< RefClass > &v,
-      int id = 0  ) {
+                                  int id = 0  ) {
       this->checkAccessTypeSet( id );
       this->value = v;
       this->startEvent();
@@ -164,6 +164,14 @@ namespace H3D {
     /// Make the field up to date given that an event has occured.
     inline virtual void update() {
       this->value = static_cast< RefCountMField* >(this->event.ptr)->getValue();
+    }
+
+    virtual RefClass *preOnAdd( RefClass *n ) {
+      return n;
+    }
+
+    virtual RefClass *preOnRemove( RefClass *n ) {
+      return n;
     }
     
     /// This function will be called when values of SFNode

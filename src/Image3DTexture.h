@@ -32,6 +32,7 @@
 #include "X3DTexture3DNode.h"
 #include "H3DImageLoaderNode.h"
 #include "X3DUrlObject.h"
+#include "MFNode.h"
 
 namespace H3D {
   /// \ingroup Nodes 

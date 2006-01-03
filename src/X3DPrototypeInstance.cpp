@@ -35,10 +35,10 @@ using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase X3DPrototypeInstance::database( 
-                                   "X3DPrototypeInstance", 
-				   NULL,
-                                   typeid( X3DPrototypeInstance ),
-                                   &X3DNode::database );
+                                               "X3DPrototypeInstance", 
+                                               NULL,
+                                               typeid( X3DPrototypeInstance ),
+                                               &X3DNode::database );
 
 X3DPrototypeInstance::X3DPrototypeInstance( Inst< SFNode>  _metadata ):
   X3DNode( _metadata ),

@@ -32,7 +32,6 @@
 #include "RefCountSField.h"
 #include "Node.h"
 
-
 namespace H3D {
   
 
@@ -64,9 +63,27 @@ namespace H3D {
     static string classTypeName() {
       return "SFNode";
     }
+
+
     /// Returns the X3DType of the field.
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFNODE; }
+ 
+  protected:
+    virtual Node *preOnAdd( Node *n ) {
+      Node *pn = getPrototypeNode( n );
+      if( pn ) return pn;
+      else return n;
+    }
+    
+    virtual Node *preOnRemove( Node *n ) {
+      Node *pn = getPrototypeNode( n );
+      if( pn ) return pn;
+      else return n;
+    }
+
+    Node *getPrototypeNode( Node *n );
   };
+
 
   /// Template to make sure that the Node that is set in a SFNode is
   /// of a specified Node type.
@@ -85,26 +102,31 @@ namespace H3D {
     /// We check that the type of the Node is of the correct type.
     void onAdd( Node *n) {
       if( !dynamic_cast< NodeType * >( n ) ) {
-        stringstream s;
-        s << "Expecting " << typeid( NodeType ).name() << ends;
-        throw InvalidNodeType( n->getTypeName(),
-                               s.str(),
-                               H3D_FULL_LOCATION );
-  
+        Node *pi = getPrototypeNode( n );
+        if( !dynamic_cast< NodeType * >( pi ) ) {
+          stringstream s;
+          s << "Expecting " << typeid( NodeType ).name() << ends;
+          throw InvalidNodeType( n->getTypeName(),
+                                 s.str(),
+                                 H3D_FULL_LOCATION );
+        }
       }
-      else { 
-        SFNode::onAdd( n );
-      }
+      SFNode::onAdd( n );
     }
   public:
     /// Get the value casted to the NodeType.
     virtual NodeType *getValue( int id = 0 ) {
-      return static_cast< NodeType * >( SFNode::getValue( id ) );
+      return getCastedValue( id );
     }
 
     /// Get the value casted to the NodeType.  
     virtual NodeType *getCastedValue( int id = 0 ) {
-      return this->getValue();
+      Node *n = SFNode::getValue( id );
+      Node *pn = getPrototypeNode( n );
+      if( pn ) 
+        return static_cast< NodeType * >( pn );
+      else
+        return static_cast< NodeType * >( n );
     }
 
   };
@@ -127,19 +149,26 @@ namespace H3D {
     /// We check that the type of the Node is of the correct type.
     void onAdd( Node *n) {
       if( !dynamic_cast< Type * >( n ) ) {
-        stringstream s;
-        s << "Expecting " << typeid( Type ).name() << ends;
-        throw InvalidNodeType( n->getTypeName(),
-                               s.str(),
-                               H3D_FULL_LOCATION );
-      } else { 
-        SFNode::onAdd( n );
-      }
+        Node *pi = getPrototypeNode( n );
+        if( !dynamic_cast< Type * >( pi ) ) {
+          stringstream s;
+          s << "Expecting " << typeid( Type ).name() << ends;
+          throw InvalidNodeType( n->getTypeName(),
+                                 s.str(),
+                                 H3D_FULL_LOCATION );
+        }
+      } 
+      SFNode::onAdd( n );
     }
   public:
     /// Get the value casted to the Type.
     virtual Type *getCastedValue( int id = 0 ) {
-      return reinterpret_cast< Type * >( this->getValue( id ) );
+      Node *n = SFNode::getValue( id );
+      Node *pn = getPrototypeNode( n );
+      if( pn ) 
+        return reinterpret_cast< Type * >( pn );
+      else
+        return reinterpret_cast< Type * >( n );
     }
   };
 }

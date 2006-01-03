@@ -17,15 +17,34 @@
 #include "Group.h"
 #include "DEFNodes.h"
 #include "AutoRef.h"
+#include "ProtoDeclaration.h"
 
 using namespace std;
 XERCES_CPP_NAMESPACE_USE
 
 namespace H3D {
   namespace X3D {
-    class PrototypeMap {
+
+    class PrototypeVector: public AutoPtrVector< ProtoDeclaration > {
+    public:
+      PrototypeVector(): first_proto( NULL ) {}
+      ProtoDeclaration *getProtoDeclaration( const string & name ) {
+	for( PrototypeVector::iterator i = begin(); i != end(); i++ ) {
+	  if( (*i)->getName() == name )
+	    return *i;
+	}
+	return NULL;
+      }
+      inline ProtoDeclaration *getFirstProtoDeclaration() {
+	return first_proto;
+      }
+
+      inline void setFirstProtoDeclaration( ProtoDeclaration *pd ) {
+	first_proto = pd;
+      }
+    protected:
+      ProtoDeclaration *first_proto;
     };
-    
 
     /// Create H3D nodes given X3D data as a istream
     /// \param in The input stream to read X3D data from.
@@ -41,7 +60,7 @@ namespace H3D {
            istream &in,
            DEFNodes *dn = NULL,
 	   DEFNodes *exported_nodes = NULL,
-	   PrototypeMap *prototypes = NULL,
+	   PrototypeVector *prototypes = NULL,
            const XMLCh *const system_id =(const XMLCh *const)L"<stream input>"
          );
 
@@ -57,7 +76,7 @@ namespace H3D {
     H3DAPI_API Group* createX3DFromString( const string &str,
                                            DEFNodes *dn = NULL,
 					   DEFNodes *exported_nodes = NULL,
-					   PrototypeMap *prototypes = NULL );
+					   PrototypeVector *prototypes = NULL );
 
 
     /// Create H3D nodes given X3D data as a URL.
@@ -72,7 +91,7 @@ namespace H3D {
     H3DAPI_API Group* createX3DFromURL( const string &urn,
                                         DEFNodes *dn = NULL,
 					DEFNodes *exported_nodes = NULL,
-					PrototypeMap *prototypes = NULL  );
+					PrototypeVector *prototypes = NULL  );
 
     /// Create a H3D Node given X3D data as a istream
     /// \param in The input stream to read X3D data from.
@@ -88,7 +107,7 @@ namespace H3D {
            istream &in,
            DEFNodes *dn = NULL,
 	   DEFNodes *exported_nodes = NULL,
-	   PrototypeMap *prototypes = NULL,
+	   PrototypeVector *prototypes = NULL,
            const XMLCh *const system_id =(const XMLCh *const)L"<stream input>"
          );
 
@@ -104,7 +123,7 @@ namespace H3D {
     H3DAPI_API AutoRef<Node> createX3DNodeFromString( const string &str,
                                                       DEFNodes *dn = NULL,
 						      DEFNodes *exported_nodes = NULL,
-						      PrototypeMap *prototypes = NULL );
+						      PrototypeVector *prototypes = NULL );
 
 
     /// Create a H3D Node given X3D data as a URL.
@@ -119,7 +138,7 @@ namespace H3D {
     H3DAPI_API AutoRef<Node> createX3DNodeFromURL( const string &urn,
                                                    DEFNodes *dn = NULL,
 						   DEFNodes *exported_nodes = NULL,
-						   PrototypeMap *prototypes = NULL );
+						   PrototypeVector *prototypes = NULL );
 
     SAX2XMLReader* getNewXMLParser();
     

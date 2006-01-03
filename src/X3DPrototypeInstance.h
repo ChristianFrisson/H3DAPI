@@ -77,9 +77,9 @@ namespace H3D {
     /// Returns the default xml containerField attribute value.
     virtual string defaultXMLContainerField() {
       if( prototyped_node.get() )
-	return prototyped_node->defaultXMLContainerField();
+        return prototyped_node->defaultXMLContainerField();
       else
-	return X3DNode::defaultXMLContainerField();
+        return X3DNode::defaultXMLContainerField();
     }
 
     /// The H3DNodeDatabase for this node.
