@@ -85,8 +85,13 @@ void Field::route( Field *f, int id ) {
       routes_out.erase( i );
       throw;
     }
-	// experimental; placing routes automatically triggers an event...
-    touch();  
+    
+    // create new event, with a new timestamp
+    event.time_stamp = TimeStamp::now();
+    Event e( this, event.time_stamp );
+    event_lock = true;
+    f->propagateEvent( e );
+    event_lock = false;
   }
 }
 
@@ -195,8 +200,13 @@ Field * Field::replaceRoute( Field *f, unsigned int i, int id ) {
   if( f_i == routes_out.end() ) {
     routes_out.push_back( f );
     Field *replaced_field = f->replaceRouteFrom( this, i, id );
-    // experimental; placing routes automatically triggers an event...
-    touch();
+
+    // create new event, with a new timestamp
+    event.time_stamp = TimeStamp::now();
+    Event e( this, event.time_stamp );
+    event_lock = true;
+    f->propagateEvent( e );
+    event_lock = false;
     return replaced_field;
   }
   return NULL;
