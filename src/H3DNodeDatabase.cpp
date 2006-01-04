@@ -110,12 +110,12 @@ Field *H3DNodeDatabase::getField( Node *n, const string &name ) const {
   
   // could not find the field with the given name. If the name starts with
   // "set_" try to remove that prefix.
-  if( name.substr( 0, 4 ) == "set_" ) {
+  if( name.size() > 4 && name.substr( 0, 4 ) == "set_" ) {
     f = getFieldHelp( n, name.substr( 4, name.size() - 4 ) );
     if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
   }
 
-  if( name.substr( name.size() - 8, 8 ) == "_changed" ) {
+  if( name.size() > 8 && name.substr( name.size() - 8, 8 ) == "_changed" ) {
     f = getFieldHelp( n, name.substr( 0, name.size() - 8 ) );
     if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
   }
