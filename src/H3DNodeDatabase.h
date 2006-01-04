@@ -298,6 +298,9 @@ namespace H3D {
     void initFields( Node* ) const;
     
 	private:
+    /// Help function for getField.
+    Field *getFieldHelp( Node *n, const string& f ) const;
+
     /// The string name for this node, used by the X3D parser
     string name;
 

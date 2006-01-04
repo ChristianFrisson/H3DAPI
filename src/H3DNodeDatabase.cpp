@@ -91,7 +91,7 @@ void H3DNodeDatabase::initFields( Node *n ) const {
 }
 
 
-Field *H3DNodeDatabase::getField( Node *n, const string &f ) const {
+Field *H3DNodeDatabase::getFieldHelp( Node *n, const string &f ) const {
   for( FieldDBType::const_iterator i = fields.begin(); i != fields.end(); i++ ) {
     FieldDBElement *fdb = (*i).second;
     const string &name = (*i).first;
@@ -102,6 +102,25 @@ Field *H3DNodeDatabase::getField( Node *n, const string &f ) const {
     return parent->getField( n, f );
   else
     return NULL;
+}
+
+Field *H3DNodeDatabase::getField( Node *n, const string &name ) const {
+  Field *f = getFieldHelp( n, name );
+  if( f ) return f;
+  
+  // could not find the field with the given name. If the name starts with
+  // "set_" try to remove that prefix.
+  if( name.substr( 0, 4 ) == "set_" ) {
+    f = getFieldHelp( n, name.substr( 4, name.size() - 4 ) );
+    if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
+  }
+
+  if( name.substr( name.size() - 8, 8 ) == "_changed" ) {
+    f = getFieldHelp( n, name.substr( 0, name.size() - 8 ) );
+    if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
+  }
+  
+  return NULL;
 }
 
 void H3DNodeDatabase::addField( FieldDBElement *f ) {
