@@ -43,7 +43,8 @@ X3DBindableNode< Viewpoint >::StackType();
 H3DNodeDatabase Viewpoint::database( 
                                     "Viewpoint", 
                                     &(newInstance<Viewpoint>), 
-                                    typeid( Viewpoint ) );
+                                    typeid( Viewpoint ),
+                                    &X3DBindableNode< Viewpoint >::database );
 
 namespace ViewpointInternals {
   FIELDDB_ELEMENT( Viewpoint, centerOfRotation, INPUT_OUTPUT );

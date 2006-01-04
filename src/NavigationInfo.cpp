@@ -37,7 +37,8 @@ using namespace H3D;
 H3DNodeDatabase NavigationInfo::database( 
                                     "NavigationInfo", 
                                     &(newInstance<NavigationInfo>), 
-                                    typeid( NavigationInfo ) );
+                                    typeid( NavigationInfo ),
+                               &X3DBindableNode< NavigationInfo >::database );
 
 namespace NavigationInfoInternals {
   FIELDDB_ELEMENT( NavigationInfo, avatarSize, INPUT_OUTPUT );

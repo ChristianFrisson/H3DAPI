@@ -37,7 +37,8 @@ using namespace H3D;
 H3DNodeDatabase StereoInfo::database( 
                                     "StereoInfo", 
                                     &(newInstance<StereoInfo>), 
-                                    typeid( StereoInfo ) );
+                                    typeid( StereoInfo ),
+                       &X3DBindableNode< StereoInfo >::database );
 
 namespace StereoInfoInternals {
   FIELDDB_ELEMENT( StereoInfo, interocularDistance, INPUT_OUTPUT );

@@ -38,7 +38,8 @@ using namespace H3D;
 H3DNodeDatabase X3DBackgroundNode::database( 
                            "X3DBackgroundNode", 
                            NULL, 
-                           typeid( X3DBackgroundNode ) );
+                           typeid( X3DBackgroundNode ),
+                           &X3DBindableNode< X3DBackgroundNode >::database );
 
 namespace X3DBackgroundNodeInternals {
   FIELDDB_ELEMENT( X3DBackgroundNode, groundAngle, INPUT_OUTPUT );

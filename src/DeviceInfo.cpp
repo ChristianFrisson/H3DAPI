@@ -37,7 +37,8 @@ using namespace H3D;
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase DeviceInfo::database( "DeviceInfo", 
                                       &(newInstance<DeviceInfo>), 
-                                      typeid( DeviceInfo ) );
+                                      typeid( DeviceInfo ),
+                                      &X3DBindableNode< DeviceInfo >::database  );
 
 namespace DeviceInfoInternals {
   FIELDDB_ELEMENT( DeviceInfo, device, INPUT_OUTPUT );
