@@ -130,7 +130,7 @@ void Background::render() {
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
     glMultMatrixf( mv );
-
+    glColor4f( 1, 1, 1, 1 );
     if( frontUrl->size() > 0 ) {
       frontTexture->preRender();
       frontTexture->displayList->callList();

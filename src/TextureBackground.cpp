@@ -114,6 +114,8 @@ void TextureBackground::render() {
     X3DTextureNode *top_texture = topTexture->getValue();
     X3DTextureNode *bottom_texture = bottomTexture->getValue();
 
+    glColor4f( 1, 1, 1, 1 );
+
     if( front_texture  ) {
       front_texture->preRender();
       front_texture->displayList->callList();
