@@ -168,38 +168,60 @@ namespace H3D {
         // make sure the string is on the form
         // [whitespace][sign][digits][.digits][ {d | D | e | E }[sign]digits]
         int i = 0;
+        bool negative = false;
+        unsigned long integer_part = 0;
+        double fractional_part = 0;
         bool valid = false;
         while( isspace(s[i]) && s[i]!='\0' ) {
           i++;
         }
-        if( s[i] == '+' || s[i] == '-' ) {
+        if( s[i] == '+' ) {
           i++;
+        } else if( s[i] == '-' ) {
+          i++;
+          negative = true;
         }
         while( isdigit( s[i] ) && s[i]!='\0' ) {
+          integer_part = 10 * integer_part + ( s[i] - '0' );
           i++;
           valid = true;
         }
         if( s[i] == '.' ) {
           i++;
+          unsigned int divider = 10;
           while( isdigit( s[i] ) && s[i]!='\0' ) {
+            fractional_part = fractional_part + (double)(  s[i] - '0' ) / divider;
+            divider *= 10;
             valid = true;
             i++;
           }
         }
         int saved_i = i;
+        int exponent = 0;
+        bool exponent_negative = false;
         if( s[i] == 'd' || s[i] == 'D' || s[i] == 'e' || s[i] == 'E' ) {
           i++;
-          if( s[i] == '+' || s[i] == '-' ) {
+          if( s[i] == '+' ) {
             i++;
+          } else if ( s[i] == '-' ) {
+            i++;
+            exponent_negative = true;
           }
+          
           int before_digit = i;
           while( isdigit( s[i] ) && s[i]!='\0' ) {
+            exponent = 10 * exponent + ( s[i] - '0' );
             i++;
           }
           // make sure that we have at least one digit, otherwise this
           // part is invalid and only the previous part will be used.
           if( i == before_digit ) {
             i = saved_i;
+            exponent = 0;
+          } else {
+            if( exponent_negative ) {
+              exponent = -exponent;
+            }
           }
         }
   
@@ -207,7 +229,10 @@ namespace H3D {
           throw X3DFieldConversionError( "double" );
         } else {
           rest = &s[i];
-          return atof( s );
+          double res = integer_part + fractional_part;
+          if( negative ) res = -res;
+          if( exponent != 0 ) res = res * H3DPow( 10, exponent ); 
+          return res;
         }
       }
 
@@ -264,18 +289,28 @@ namespace H3D {
         } else {
           // decimal number. Make sure it is on the form
           // [sign]digits
-          if( s[i] == '+' || s[i] == '-' ) {
+          bool negative = false;
+
+          if( s[i] == '+' ) {
+            i++;
+          } else if ( s[i] == '-' ) {
+            negative = true;
             i++;
           }
+          
+          int result = 0;
           while( isdigit( s[i] ) && s[i]!='\0' ) {
+            result = 10 * result + ( s[i] - '0' );
             i++;
             valid = true;
           }
+
           if( !valid ) {
             throw X3DFieldConversionError( "int" );
           } else {
             rest = &s[i];
-            return atoi( s );
+            if( negative ) result = -result;
+            return result;
           }
         }
       }
