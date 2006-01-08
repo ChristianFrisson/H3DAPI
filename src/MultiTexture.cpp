@@ -93,28 +93,139 @@ void MultiTexture::render() {
       throw MultiTexturesNotSupported( s.str() );
     }
   }
-  int used_texture_units = 0;
   GLint saved_texture;
   glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &saved_texture );
     
   int nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
-    
-  
-  for( MFTexture::const_iterator i = texture->begin();
-       i != texture->end();
-       i++ ) {
-        
-    if( used_texture_units >= nr_textures_supported ) {
+
+  for( unsigned int i = 0; i < texture->size(); i++ ) {
+    if( i >= nr_textures_supported ) {
       cerr << "Warning! MultiTexture: Unable to display all"
            << "textures. Your device only has support for " 
            << nr_textures_supported << " texture units.\n";
       break;
     }
-    glActiveTexture( GL_TEXTURE0_ARB + used_texture_units );
-    used_texture_units++;
-    static_cast< X3DTextureNode * >(*i)->displayList->callList();
+    glActiveTexture( GL_TEXTURE0_ARB + i );
+    string rgb_blend_mode = "MODULATE";
+    string arg2 = "";
+    string previous_func = "";
+    if( i < mode->size() ) rgb_blend_mode = mode->getValueByIndex( i );
+    if( i < source->size() ) arg2 = source->getValueByIndex( i ); 
+    if( i > 0 && i < function->size() + 1) previous_func = function->getValueByIndex( i - 1 ); 
+    if( rgb_blend_mode != "OFF" ) {
+      texture->getValueByIndex( i )->displayList->callList();
+  
+      glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB );
+      const RGB &rgb = color->getValue();
+      GLfloat constant_color[] = { rgb.r, rgb.g, rgb.b, alpha->getValue() };
+      glTexEnvfv( GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, constant_color );
+      
+      glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE );
+      glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR );
+      glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_ARB, GL_TEXTURE );
+      glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_ALPHA_ARB, GL_SRC_ALPHA );
+
+      if( arg2 == "DIFFUSE" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_ARB, GL_PRIMARY_COLOR_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR );
+	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_ALPHA_ARB, GL_SRC_ALPHA );
+     } else if( arg2 == "FACTOR" ) {
+       glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_ARB );
+       glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_ARB, GL_CONSTANT_ARB );
+       glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR );
+       glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_ALPHA_ARB, GL_SRC_ALPHA );
+     } else {
+       glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PREVIOUS_ARB );
+       glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_ARB, GL_PREVIOUS_ARB );
+       if( arg2 == "" ) {
+	 if( previous_func == "COMPLEMENT" ) {
+	   glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_ONE_MINUS_SRC_COLOR );
+	   glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_ALPHA_ARB, GL_ONE_MINUS_SRC_ALPHA );
+	 } else if( previous_func == "ALPHAREPLICATE" ) {
+	   glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_ALPHA );
+	   glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_ALPHA_ARB, GL_SRC_ALPHA );
+	 } else {
+	   glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR );
+	   glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_ALPHA_ARB, GL_SRC_ALPHA );
+	   if( previous_func != "" ) {
+	     cerr << "Warning: Invalid function \"" << previous_func << "\" in MultiTexture "
+		  << " node (" << getName() << "). " << endl; 
+	   }
+	 }
+       } else {
+	 glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR );
+	 glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_ALPHA_ARB, GL_SRC_ALPHA );
+	 if( arg2 == "SPECULAR" ) {
+	   cerr << "Warning: Unsupported source \"" << arg2 << "\" in MultiTexture "
+		<< " node (" << getName() << ")." << endl; 
+	 } else {
+	   cerr << "Warning: Invalid source \"" << arg2 << "\" in MultiTexture "
+		<< " node (" << getName() << "). " << endl; 
+	 }
+       }
+     }
+
+     if( rgb_blend_mode == "MODULATE" ) {
+       glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE );
+      } else if( rgb_blend_mode == "REPLACE" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_REPLACE );
+      } else if( rgb_blend_mode == "MODULATE2X" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE );
+	glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 2 );
+      } else if( rgb_blend_mode == "MODULATE4X" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE );
+	glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 4 );
+      } else if( rgb_blend_mode == "ADD" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_ADD );
+      } else if( rgb_blend_mode == "ADDSIGNED" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_ADD_SIGNED_ARB );
+      } else if( rgb_blend_mode == "ADDSIGNED2X" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_ADD_SIGNED_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 2 );
+      } else if( rgb_blend_mode == "SUBTRACT" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_SUBTRACT_ARB );
+      } else if( rgb_blend_mode == "BLENDDIFFUSEALPHA" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_INTERPOLATE_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE2_RGB_ARB, GL_PRIMARY_COLOR_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND2_RGB_ARB, GL_SRC_ALPHA );
+      } else if( rgb_blend_mode == "BLENDTEXTUREALPHA" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_INTERPOLATE_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE2_RGB_ARB, GL_TEXTURE );
+	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND2_RGB_ARB, GL_SRC_ALPHA );
+      } else if( rgb_blend_mode == "BLENDFACTORALPHA" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_INTERPOLATE_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE2_RGB_ARB, GL_CONSTANT_ARB );
+	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND2_RGB_ARB, GL_SRC_ALPHA );
+      } else if( rgb_blend_mode == "SELECTARG1" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_REPLACE);
+      } else if( rgb_blend_mode == "SELECTARG2" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_REPLACE );
+	GLint value;
+	glGetTexEnviv( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, &value );
+	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, value );
+	glGetTexEnviv( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, &value );
+	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, value );
+      } else if( rgb_blend_mode == "DOTPRODUCT3" ) {
+	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGBA_ARB );
+      } else {
+	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+	if( rgb_blend_mode == "ADDSMOOTH" ||
+	    rgb_blend_mode == "MODULATEALPHA_ADDCOLOR" ||
+	    rgb_blend_mode == "MODULATEINVALPHA_ADDCOLOR" ||
+	    rgb_blend_mode == "MODULATEINVCOLOR_ADDALPHA" ) {
+	  cerr << "Warning: Unsupported mode \"" << rgb_blend_mode << "\" in MultiTexture "
+	       << " node (" << getName() << "). Using MODULATE instead. " << endl; 
+	} else {
+	  cerr << "Warning: Invalid mode \"" << rgb_blend_mode << "\" in MultiTexture "
+	       << " node (" << getName() << "). Using MODULATE instead. " << endl; 
+	}
+      }
+      
+    }
   }
+
   glActiveTexture( saved_texture );
   setActiveTexture( this );
 }
