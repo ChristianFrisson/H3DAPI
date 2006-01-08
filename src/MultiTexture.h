@@ -61,8 +61,6 @@ namespace H3D {
   class H3DAPI_API MultiTexture : public X3DTextureNode {
   public:
     
-    H3D_API_EXCEPTION( MultiTexturesNotSupported );
-
     /// An MFNode where we make sure the type of the nodes contained
     /// is a subclass of X3DTextureNode.
     typedef DependentMFNode< X3DTextureNode, 
@@ -135,10 +133,6 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
-private:
-    // variable that is false until a check that the graphics card 
-    // driver has support for multi textures is performed. 
-    static bool multitexture_support_checked;
   };
 }
 
