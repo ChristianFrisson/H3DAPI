@@ -224,6 +224,9 @@ namespace H3D {
     static bool GLEW_init;
     int window_id;
     bool rebuild_stencil_mask;
+    unsigned char *stencil_mask;
+    unsigned int stencil_mask_height;
+    unsigned int stencil_mask_width;
   };
 }
 

@@ -136,7 +136,10 @@ GLWindow::GLWindow(
   time    ( _time ),
   last_render_child( NULL ),
   window_id( 0 ),
-  rebuild_stencil_mask( false ) {
+  rebuild_stencil_mask( false ),
+  stencil_mask( NULL ),
+  stencil_mask_height( 0 ),
+  stencil_mask_width( 0 ) {
   
   initGLUT();
 
@@ -156,6 +159,8 @@ GLWindow::GLWindow(
 }
 
 GLWindow::~GLWindow() {
+  if( stencil_mask )
+    free( stencil_mask );
   if ( window_id > 0 ) {
     // If the window is closed with the x-button glut can be deinitialized
     // before getting here, so make sure glut is initialized before calling
@@ -501,26 +506,26 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
   glViewport( 0, 0, width->getValue(), height->getValue() );
 
   if( rebuild_stencil_mask ) {
-    glClear( GL_STENCIL_BUFFER_BIT );
     // build up stencil buffer
     int w = width->getValue();
     // width needs to be a power of 2 because of how glDrawPixels work.
     // The extra values will be ignored.
     w += 4 - (w  % 4  );
     int h = height->getValue();
-    unsigned char *mask = (unsigned char*)malloc(w*h);
+    if( stencil_mask ) free( stencil_mask );
+    stencil_mask = (unsigned char *) malloc( w*h );
+    stencil_mask_width = w;
+    stencil_mask_height = h;
 
     if( stereo_mode == RenderMode::HORIZONTAL_INTERLACED ) {
       for( int i = 0; i < h; i++ )
         for( int j = 0; j < w; j++ )
-          mask[i*w+j]=(i+1)%2;
+          stencil_mask[i*w+j]=(i+1)%2;
     } else {
       for( int i = 0; i < h; i++ )
         for( int j = 0; j < w; j++ )
-          mask[i*w+j]=(j+1)%2;
+          stencil_mask[i*w+j]=(j+1)%2;
     }
-    glDrawPixels( w, h, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, mask );
-    free( mask );
     rebuild_stencil_mask = false;
   }
 
@@ -627,6 +632,13 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
              stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
              stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
+      // TODO: Currently we redraw the stencil mask each loop, becuase of
+      // the stencil mask can be cleared when running on a Sharp laptop
+      // from somewhere outside H3D API. When this does not happen anymore
+      // we can initialize the stencil buffer once.
+      if( stencil_mask )
+        glDrawPixels( stencil_mask_width, stencil_mask_height, 
+                      GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencil_mask );
       // render only every second line
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_EQUAL,1,1);
@@ -899,7 +911,7 @@ GLWindow::RenderMode::Mode GLWindow::RenderMode::getRenderMode() {
     return VERTICAL_INTERLACED_GREEN_SHIFT;  
   else {
     stringstream s;
-    s << "Must be one of MONO, QUAD_BUFFERED_STEREO, HORIZONTAL_INTERLACED"
+    s << "Must be one of MONO, QUAD_BUFFERED_STEREO, HORIZONTAL_INTERLACED, "
       << "VERTICAL_INTERLACED, VERTICAL_INTERLACED_GREEN_SHIFT, "
       << "VERTICAL_SPLIT, HORIZONTAL_SPLIT, "
       << "RED_CYAN_STEREO or RED_BLUE_STEREO. " << ends;
