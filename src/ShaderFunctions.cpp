@@ -512,7 +512,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     delete v;
   } else if( SFMatrix4f *f = dynamic_cast< SFMatrix4f * >( field ) ) {
     const Matrix4f &m = f->getValue(); 
-    glUniformMatrix3fvARB( location, 
+    glUniformMatrix4fvARB( location, 
                            1,
                            true,
                            m[0] );
