@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CG_INC_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-2_6_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(CG_INC_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -71,7 +71,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(CG_INC_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-2_6_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(CG_INC_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -336,10 +336,16 @@
 				RelativePath="..\..\..\src\KeySensor.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\LibCurlResolver.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\LineProperties.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\LineSet.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\LoadSensor.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\MagneticSurface.cpp">
@@ -382,6 +388,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\MetadataString.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\MouseSensor.cpp">
@@ -447,6 +456,12 @@
 				RelativePath="..\..\..\src\ProgramShader.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\ProtoDeclaration.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\PrototypeInstance.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\PythonMethods.cpp">
 			</File>
 			<File
@@ -465,6 +480,9 @@
 				RelativePath="..\..\..\src\Rectangle2D.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\ResourceResolver.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\RK4.cpp">
 			</File>
 			<File
@@ -475,6 +493,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Scene.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\ShaderFunctions.cpp">
@@ -582,6 +603,9 @@
 				RelativePath="..\..\..\src\TriangleStripSet.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\URNResolver.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\Types\Vec2f.cpp">
 			</File>
 			<File
@@ -667,6 +691,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DProgrammableShaderObject.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DPrototypeInstance.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DSAX2Handlers.cpp">
