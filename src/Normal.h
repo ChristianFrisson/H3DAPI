@@ -50,6 +50,11 @@ namespace H3D {
     Normal( Inst< SFNode >  _metadata = 0,
             Inst< MFVec3f>  _vector   = 0 );
 
+    // Gets the normal of a given index.
+    virtual Vec3f getNormal( int index ) {
+      return vector->getValueByIndex( index );
+    }
+
     /// Perform the OpenGL commands to render a normal given the index
     /// of the normal. Installs the normal as a glNormal3f.
     virtual void render( int index ) {

@@ -45,6 +45,9 @@ namespace H3D {
     /// Constructor.
     X3DNormalNode( Inst< SFNode>  _metadata = 0 );
 
+    // Gets the normal of a given index.
+    virtual Vec3f getNormal( int index ) = 0;
+
     /// Perform the OpenGL commands to render a normal given the index
     /// of the normal.
     virtual void render( int index ) {}
