@@ -203,7 +203,7 @@ void IndexedFaceSet::render() {
       glBegin( GL_POLYGON );
       // set up normals if the normals are specified per face
       if( normals ) {
-        if ( !normalPerVertex->getValue() ) {
+        if ( !normalPerVertex->getValue() || creaseAngle->getValue() <= 0 ) {
           int ni;
           if ( normal_index.size() == 0 ) {
             ni = face_count;
@@ -247,34 +247,38 @@ void IndexedFaceSet::render() {
           } else {
             renderTexCoord( tci, tex_coords );
           } 
-        } else {
-          // TODO: generate texture coordinates.
-        }
+        } 
   
         // Set up normals if the normals are specified per vertex.
         if( normals ) {
-          if ( normalPerVertex->getValue() ) {
-            int ni;
-            if ( normal_index.size() == 0 ) {
-              ni = coord_index[ i ];
+          if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
+            if( normal->getValue() ) {
+              int ni;
+              if ( normal_index.size() == 0 ) {
+                ni = coord_index[ i ];
+              } else {
+                ni = normal_index[ i ];
+              }
+              
+              if( ni == -1 ) {
+                stringstream s;
+                s << "-1 mismatch between coord_index and normal_index in \"" 
+                  << getName()
+                  << "\" node. Must be of equal length and have -1 in "
+                  << "the same places. " << ends;
+                throw InvalidNormalIndex( ni, s.str() );
+              } else {
+                normals->render( ni );
+              }
             } else {
-              ni = normal_index[ i ];
-            }
-      
-            if( ni == -1 ) {
-              stringstream s;
-              s << "-1 mismatch between coord_index and normal_index in \"" 
-                << getName()
-                << "\" node. Must be of equal length and have -1 in "
-                << "the same places. " << ends;
-              throw InvalidNormalIndex( ni, s.str() );
-            } else {
-              normals->render( ni );
+              // normals have been automatically generated.
+              if( creaseAngle->getValue() < Constants::pi )
+                normals->render( vertex_count );
+              else 
+                normals->render( coord_index[i] );
             }
           }
-        } else {
-          // TODO: generated normals
-        }
+        } 
   
         // Set up colors.
         if( colors ) {
@@ -336,51 +340,39 @@ void IndexedFaceSet::AutoNormal::update() {
     static_cast< MFInt32 * >( routes_in[2] )->getValue();
   bool ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
   H3DFloat crease_angle = static_cast< SFFloat * >( routes_in[4] )->getValue();
-  if( normals_per_vertex ) 
-    value = generateNormalsPerVertex( coord, index, ccw, crease_angle );
-  else
+  if( normals_per_vertex && crease_angle > 0 ) {
+    if( crease_angle < Constants::pi )
+      value = generateNormalsPerVertex( coord, index, ccw, crease_angle );
+    else 
+      value = generateNormalsPerVertex( coord, index, ccw );
+  } else {
     value = generateNormalsPerFace( coord, index, ccw );
+  }
 }
 
 
 X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex( 
                                    X3DCoordinateNode *coord,
                                    const vector< int > &coord_index,
-                                   bool ccw,
-                                   H3DFloat crease_angle ) {
+                                   bool ccw ) {
   Normal *normal = new Normal;
   if( coord ) {
     vector< Vec3f > normals( coord->nrAvailableCoords(), 
                              Vec3f( 0, 0, 0 ) );
-    for( unsigned int j = 0; j < coord_index.size(); j++) {
-      Vec3f norm, A, B, C, AB, BC;
-      // make sure we have a valid face. If not use a dummy normal. 
-      if( j+2 >= coord_index.size() ||
-          coord_index[j]   == -1 ||
-          coord_index[j+1] == -1 ||
-          coord_index[j+2] == -1 ) {
-        norm =  Vec3f( 1, 0, 0 );
-      } else {  
-        // we try to calculate a normal using the first three vertices
-        // in the face.
-
-        A = coord->getCoord( coord_index[ j ] );
-        B = coord->getCoord( coord_index[ j+1 ] );
-        C = coord->getCoord( coord_index[ j+2 ] );
-      
-        AB = B - A;
-        BC = C - B;
-      
-        norm = AB % BC;
-        norm.normalizeSafe();
-        if( !ccw ) 
-          norm = -norm;
+    AutoRef< X3DNormalNode > normals_per_face;
+    normals_per_face.reset( generateNormalsPerFace( coord,
+                                                    coord_index,
+                                                    ccw ) );
+    unsigned int i = 0;
+    for( unsigned int face = 0; 
+         face < normals_per_face->nrAvailableNormals(); face++ ) {
+      Vec3f norm = normals_per_face->getNormal( face );
+      while( i < coord_index.size() && coord_index[i] != -1 ) {    
+        normals[coord_index[i++]]   += norm;
       }
-      while( j < coord_index.size() && coord_index[j] != -1 ) {    
-        normals[coord_index[j++]]   += norm;
-    
-      }
+      i++;
     }
+    
     for( vector<Vec3f>::iterator i = normals.begin(); 
          i != normals.end(); 
          i++ ) {
@@ -389,7 +381,69 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
     normal->vector->setValue( normals );
   }
   return normal;
-  
+}
+
+X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex( 
+                                   X3DCoordinateNode *coord,
+                                   const vector< int > &coord_index,
+                                   bool ccw,
+                                   H3DFloat crease_angle ) {
+  Normal *normal = new Normal;
+  if( coord ) {
+    AutoRef< X3DNormalNode > normals_per_face;
+    normals_per_face.reset( generateNormalsPerFace( coord,
+                                                    coord_index,
+                                                    ccw ) );
+    unsigned int i = 0;
+    vector< Vec3f > normals( coord_index.size(),
+                             Vec3f( 0, 0, 0 ) );
+    normals.clear();
+
+    std::map< int, vector< Vec3f > > point_to_face_normal_map;
+
+    H3DFloat cos_crease_angle = H3DCos( crease_angle );
+
+    // build a map from each vertex to a vector of all the normals 
+    // of the faces the vertex is a part of.
+    for( unsigned int face = 0; 
+         face < normals_per_face->nrAvailableNormals(); face++ ) {
+      while( i < coord_index.size() && coord_index[i] != -1 ) {    
+        int index = coord_index[i++];
+        Vec3f face_normal = normals_per_face->getNormal( face );
+        point_to_face_normal_map[ index ].push_back( face_normal );
+      }
+      i++;
+    }
+
+    i = 0;
+
+    // the normal for the vertex is the average of all normals of the faces
+    // which normal angle from the current face is less than the crease angle
+    for( unsigned int face = 0; 
+         face < normals_per_face->nrAvailableNormals(); face++ ) {
+      while( i < coord_index.size() && coord_index[i] != -1 ) {    
+        int index = coord_index[i++];
+        Vec3f face_normal = normals_per_face->getNormal( face );
+        Vec3f point_normal( 0, 0, 0 );
+
+        const vector< Vec3f > &face_normals = 
+          point_to_face_normal_map[ index ];
+        
+        for( vector< Vec3f >::const_iterator n = face_normals.begin();
+             n != face_normals.end(); n++ ) {
+          // a < b <=> cos(a) > cos(b)
+          if( face_normal * (*n) > cos_crease_angle ) {
+            point_normal += *n;
+          }
+        }
+        point_normal.normalizeSafe();
+        normals.push_back( point_normal );
+      }
+      i++;
+    }
+    normal->vector->setValue( normals );
+  }
+  return normal;
 }
 
 X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace( 
@@ -467,9 +521,6 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
 
       normals.push_back( norm );
     }
-
-  
-
     normal->vector->setValue( normals );
   }
   return normal;

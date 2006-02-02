@@ -161,6 +161,12 @@ namespace H3D {
 
     /// Specialized field for automatically generating normals from
     /// coordinates.
+    /// The resulting Normal node will contain normals per face
+    /// if normalPerVertex is false or creaseAngle <=0.
+    /// if normalPerVertex is true, then the normals returned will be
+    /// a normal per vertex in coord if creaseAngle >= pi and
+    /// a normal per vertex specified with coordIndex if 0 < creaseAngle < pi
+    ///
     /// routes_in[0] is the normalPerVertex field.
     /// routes_in[1] is the coord field.
     /// routes_in[2] is the coordIndex field.
@@ -174,13 +180,12 @@ namespace H3D {
                                 MFInt32, 
                                 SFBool, 
                                 SFFloat > > {
-      
-      /// Calls generateNormalsPerVertex() if routes_in[0] is true, 
-      /// otherwise generateNormalsPerFace() is called.
       virtual void update();
 
       /// Create a new X3DNormalNode from the arguments given
-      /// with one normal for each vertex specified.
+      /// with one normal for each vertex specified by coord_index, i.e.
+      /// the number of normals will be the number of non-(-1) values
+      /// in coord_index.
       ///
       /// \param coord Node with the coordinates.
       /// \param coord_index The indices in coord for the vertices.
@@ -206,6 +211,25 @@ namespace H3D {
                                     bool ccw,
                                     H3DFloat crease_angle );
     
+      /// Create a new X3DNormalNode from the arguments given
+      /// with one normal for each vertex in coord. The normal for each
+      /// vertex will be the average of the normal of all faces using
+      /// that vertex.
+      ///
+      /// \param coord Node with the coordinates.
+      /// \param coord_index The indices in coord for the vertices.
+      /// \param ccw Defines the ordering of the vertex coordinates of the 
+      /// geometry with respect to generated normal vectors used in the 
+      /// lighting model equations. If ccw is TRUE, the normals shall 
+      /// follow the right hand rule; the orientation of each normal with
+      /// respect to the vertices (taken in order) shall be such that the
+      /// vertices appear to be oriented in a counterclockwise order when 
+      /// the vertices are viewed (in the local coordinate system of the Shape)
+      /// from the opposite direction as the normal.
+       virtual X3DNormalNode *generateNormalsPerVertex( 
+                                    X3DCoordinateNode *coord,
+                                    const vector< int > &coord_index,
+                                    bool ccw );
 
       /// Create a new X3DNormalNode from the arguments given
       /// with one normal for each face specified.
@@ -245,7 +269,7 @@ namespace H3D {
                     Inst< SFBool       > _colorPerVertex     = 0,
                     Inst< SFBool       >  _normalPerVertex   = 0,
                     Inst< SFBool       > _solid              = 0,
-		    Inst< MFVertexAttributeNode > _attrib     = 0,
+                    Inst< MFVertexAttributeNode > _attrib     = 0,
                     Inst< AutoNormal   > _autoNormal         = 0,
                     Inst< SFBool       > _convex             = 0,
                     Inst< SFFloat      > _creaseAngle        = 0,
