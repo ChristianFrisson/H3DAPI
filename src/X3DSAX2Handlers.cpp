@@ -41,16 +41,12 @@ namespace H3D {
 
 
   string toString( const XMLCh * const xmls ) {
-    stringstream t;
-    t << xmls;
-    t << ends;
-    // Possible bug in stringstream's str() function, at least on Apple;
-    // returned string fails compare() calls that should succeeed.
-    // Temporary solution: convert all the way to a char* and back to a string
-    return t.str().c_str();
+    unsigned int str_len = XMLString::stringLen( xmls );
+    string s( str_len, 'a' );
+    for( unsigned int i = 0; i < str_len; i++)
+      s[i] = xmls[i];
+    return s;
   }
-
-  
 }
 
 namespace X3DSAX2HandlersInternals {
@@ -936,6 +932,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                                    const XMLCh* const localname, 
                                    const XMLCh* const qname,
                                    const Attributes& attrs) {
+  
   // we are inside a ProtoDeclare element, so use protoStartElement 
   // instead of the normal  element handling.
   if( proto_declaration ) {
