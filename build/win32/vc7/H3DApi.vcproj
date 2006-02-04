@@ -210,6 +210,9 @@
 				RelativePath="..\..\..\src\DynamicTransform.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\ElevationGrid.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\Exception.cpp">
 			</File>
 			<File
@@ -852,6 +855,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\DynamicTransform.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\ElevationGrid.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Exception.h">
