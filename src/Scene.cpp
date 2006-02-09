@@ -178,10 +178,8 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
 Scene::~Scene() {
   scenes.erase( this );
 
-  // can't remove the TraverseInfo since the HapticShape objects
-  // are being used in the realtime loop.
-  //  if( last_traverseinfo )
-  //    delete last_traverseinfo;
+  if( last_traverseinfo )
+    delete last_traverseinfo;
 }
 
 void Scene::mainLoop() {
