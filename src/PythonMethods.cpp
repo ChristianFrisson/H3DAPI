@@ -483,6 +483,7 @@ if( check_func( value ) ) {                                         \
       { "routeField", pythonRouteField, 0 },
       { "routeFieldNoEvent", pythonRouteFieldNoEvent, 0 },
       { "unrouteField", pythonUnrouteField, 0 },
+      { "getCPtr", pythonGetCPtr, 0 },
       { "createX3DFromURL", pythonCreateX3DFromURL, 0 },
       { "createX3DFromString", pythonCreateX3DFromString, 0 },
       { "createX3DNodeFromURL", pythonCreateX3DNodeFromURL, 0 },
@@ -836,6 +837,36 @@ call the base class __init__ function." );
       }
       
       Py_INCREF(Py_None);
+      return Py_None; 
+    }
+
+
+    // help function for pythonRouteField and pythonRouteFieldNoEvent.
+    PyObject *pythonGetCPtr( PyObject *self, 
+                             PyObject *arg  ) {
+      if( !arg || ! PyInstance_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.getCPtr( Field f )."
+            << " Requires one argument of type Field. "
+            << ends;
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, 
+                                                            "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      
+      return PyInt_FromLong( (int)field_ptr );
+      //Py_INCREF(Py_None);
       return Py_None; 
     }
 

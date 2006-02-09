@@ -42,6 +42,9 @@ class Field:
   def getRoutesOut( self ):
     return getRoutesOut( self )
 
+  def __cmp__( self, o ):
+    return getCPtr(self) - getCPtr(o)
+
 class SField( Field ):
   type = UNKNOWN_X3D_TYPE
   def setValue( self, value ):
