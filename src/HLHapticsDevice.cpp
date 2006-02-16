@@ -132,15 +132,16 @@ namespace HLHapticsDeviceInternal {
     hdGetDoublev( HD_CURRENT_VELOCITY, tmp );
     Vec3f vel( (H3DFloat) tmp[0], (H3DFloat) tmp[1], (H3DFloat) tmp[2] );
 
+    // Dump out values to log file
+    // BAF2 format uses uncalibrated position / orientation data.
+    if ( hd->log.get() )
+      hd->log->writeLog( pos, rot );
+
     // apply the calibration matrices to get the values to
     // in the H3D API coordinate space.
     pos = hd->positionCalibration->rt_pos_calibration * pos;
     vel = hd->positionCalibration->rt_pos_calibration * vel;
     rot = hd->orientationCalibration->rt_orn_calibration * rot;
-
-    // Dump out values to log file
-    if ( hd->log.get() )
-      hd->log->writeLog( pos, rot );
 
     TimeStamp dt = TimeStamp() - hd->last_effect_change;
     HapticForceEffect::EffectInput input( pos, vel, rot, dt );
