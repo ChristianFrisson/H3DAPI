@@ -38,7 +38,7 @@ H3DNodeDatabase H3DScriptNode::database(
         );
 
 namespace H3DScriptNodeInternals {
-  FIELDDB_ELEMENT( H3DScriptNode, url, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DScriptNode, url, INITIALIZE_ONLY );
 }
 
 H3DScriptNode::H3DScriptNode( Inst< MFString > _url ) : 

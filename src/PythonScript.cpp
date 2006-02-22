@@ -135,8 +135,6 @@ void PythonScript::initialiseParser() {
 }
 
 void PythonScript::loadScript( const string &script ) {
-  module = PyImport_AddModule( (char*)name.c_str() );
-  module_dict = PyModule_GetDict( static_cast< PyObject * >( module ) );
   PyObject *ref = (PyObject*)PythonInternals::fieldAsPythonObject( references.get() );
   PyDict_SetItem( (PyObject *)module_dict, 
                   PyString_FromString( "references" ), 
@@ -183,6 +181,8 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
 
 void PythonScript::initialize() {
   H3DScriptNode::initialize();
+  module = PyImport_AddModule( (char*)name.c_str() );
+  module_dict = PyModule_GetDict( static_cast< PyObject * >( module ) );
   bool script_loaded = false;
   for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {
     string url = resolveURLAsFile( *i );
