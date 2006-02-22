@@ -37,9 +37,6 @@
 #include "DeviceInfo.h"
 #include "X3DKeyDeviceSensorNode.h"
 #include "MouseSensor.h"
-#ifdef SPACEBALL
-#include "SpaceballSensor.h"
-#endif
 #include "H3DDisplayListObject.h"
 #include "Exception.h"
 #include "X3DBackgroundNode.h"
@@ -49,11 +46,7 @@
 #include "GeneratedCubeMapTexture.h"
 
 #include <GL/glew.h>
-#ifdef MACOSX
-#include <GLUT/glut.h>
-#else
 #include <GL/glut.h>
-#endif
 #ifdef FREEGLUT
 #include <GL/freeglut.h>
 #ifdef _MSC_VER
@@ -86,7 +79,6 @@ namespace GLWindowInternals {
 
 
 bool GLWindow::GLEW_init = false;
-bool GLWindow::GLUT_init = false;
 
 set< GLWindow* > GLWindow::windows;
 
@@ -117,11 +109,10 @@ namespace GLWindowInternal {
 
 
 void GLWindow::initGLUT() {
-  if ( !GLUT_init) {
+  if ( !glutGet( GLUT_INIT_STATE ) ) {
     char *argv[1] = { "H3DLoad" };
     int argc = 1;
     glutInit(&argc, argv);
-    GLUT_init=true;
   }
 }
 
@@ -174,7 +165,7 @@ GLWindow::~GLWindow() {
     // If the window is closed with the x-button glut can be deinitialized
     // before getting here, so make sure glut is initialized before calling
     // glutDestroyWindow
-    if( GLUT_init ) {
+    if( glutGet( GLUT_INIT_STATE ) ) {
       glutDestroyWindow( window_id );
     }
   }
@@ -251,12 +242,6 @@ void GLWindow::initialize() {
     glutMouseFunc( MouseSensor::glutMouseCallback );
     glutMotionFunc( MouseSensor::glutMotionCallback );
     glutPassiveMotionFunc( MouseSensor::glutMotionCallback );
-
-#ifdef SPACEBALL
-    glutSpaceballMotionFunc( SpaceballSensor::glutMotionCallback );
-    glutSpaceballRotateFunc( SpaceballSensor::glutRotateCallback );
-    glutSpaceballButtonFunc( SpaceballSensor::glutButtonCallback );
-#endif
 #ifdef FREEGLUT
     glutMouseWheelFunc( MouseSensor::glutMouseWheelCallback );
     glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, 

@@ -222,7 +222,6 @@ namespace H3D {
     X3DChildNode *last_render_child;
     bool initialized;
     static bool GLEW_init;
-    static bool GLUT_init;
     int window_id;
     bool rebuild_stencil_mask;
     unsigned char *stencil_mask;
