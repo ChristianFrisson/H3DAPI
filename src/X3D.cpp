@@ -14,9 +14,9 @@
 using namespace H3D;
 
 SAX2XMLReader* X3D::getNewXMLParser() {
-  SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Auto;
+  SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Never;
   bool                         doNamespaces = true;
-  bool                         doSchema = true;
+  bool                         doSchema = false;
   bool                         schemaFullChecking = false;
   //bool                         doList = false;
   //bool                         errorOccurred = false;
