@@ -21,22 +21,20 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file GLWindow.cpp
-/// \brief CPP file for GLWindow, X3D scene-graph node
+/// \file H3DWindowNode.cpp
+/// \brief CPP file for H3DWindowNode.
 ///
 //
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include "AutoPtrVector.h"
-#include "GLWindow.h"
+#include "H3DWindowNode.h"
 #include "Viewpoint.h"
 #include "TimeStamp.h"
 #include "Bound.h"
 #include "H3DBoundedObject.h"
 #include "DeviceInfo.h"
-#include "X3DKeyDeviceSensorNode.h"
-#include "MouseSensor.h"
 #include "H3DDisplayListObject.h"
 #include "Exception.h"
 #include "X3DBackgroundNode.h"
@@ -46,13 +44,6 @@
 #include "GeneratedCubeMapTexture.h"
 
 #include <GL/glew.h>
-#include <GL/glut.h>
-#ifdef FREEGLUT
-#include <GL/freeglut.h>
-#ifdef _MSC_VER
-#pragma comment( lib, "freeglut.lib" )
-#endif
-#endif
 
 using namespace H3D;
 
@@ -63,60 +54,25 @@ using namespace H3D;
 //
 
 // Add this node to the H3DNodeDatabase system.
-H3DNodeDatabase GLWindow::database( "GLWindow", 
-                                    &(newInstance<GLWindow>), 
-                                    typeid( GLWindow ) );
+H3DNodeDatabase H3DWindowNode::database( "H3DWindowNode", 
+                                         NULL, 
+                                         typeid( H3DWindowNode ) );
 
-namespace GLWindowInternals {
-  FIELDDB_ELEMENT( GLWindow, width, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GLWindow, height, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GLWindow, fullscreen, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GLWindow, mirrored, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GLWindow, renderMode, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GLWindow, viewpoint, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GLWindow, time, INPUT_OUTPUT );
+namespace H3DWindowNodeInternals {
+  FIELDDB_ELEMENT( H3DWindowNode, width, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, fullscreen, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, mirrored, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, renderMode, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, viewpoint, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, time, INPUT_OUTPUT );
 }
 
 
-bool GLWindow::GLEW_init = false;
+bool H3DWindowNode::GLEW_init = false;
+set< H3DWindowNode* > H3DWindowNode::windows;
 
-set< GLWindow* > GLWindow::windows;
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Internal functions for GL window handling
-//
-namespace GLWindowInternal {
-  void reshapeFunc( int w, int h ) { 
-    GLWindow *window = GLWindow::getGLWindow( glutGetWindow() );
-    if( window )
-      window->reshape( w, h );
-  }
-
-  void displayFunc() {
-    GLWindow *window = GLWindow::getGLWindow( glutGetWindow() );
-    if( window )
-      window->display();
-  }
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// GLWindow member functions
-//
-
-
-
-void GLWindow::initGLUT() {
-  if ( !glutGet( GLUT_INIT_STATE ) ) {
-    char *argv[1] = { "H3DLoad" };
-    int argc = 1;
-    glutInit(&argc, argv);
-  }
-}
-
-GLWindow::GLWindow( 
+H3DWindowNode::H3DWindowNode( 
                    Inst< SFInt32     > _width,
                    Inst< SFInt32     > _height,
                    Inst< SFBool      > _fullscreen,
@@ -141,9 +97,7 @@ GLWindow::GLWindow(
   stencil_mask_height( 0 ),
   stencil_mask_width( 0 ) {
   
-  initGLUT();
-
-  type_name = "GLWindow";
+  type_name = "H3DWindowNode";
   database.initFields( this );
 
   width->setValue( 800 );
@@ -153,26 +107,16 @@ GLWindow::GLWindow(
   renderMode->setValue( "MONO" );
   time->setValue( TimeStamp::now() );
 
-  initialized = false;
-  
   windows.insert( this );
 }
 
-GLWindow::~GLWindow() {
+H3DWindowNode::~H3DWindowNode() {
   if( stencil_mask )
     free( stencil_mask );
-  if ( window_id > 0 ) {
-    // If the window is closed with the x-button glut can be deinitialized
-    // before getting here, so make sure glut is initialized before calling
-    // glutDestroyWindow
-    if( glutGet( GLUT_INIT_STATE ) ) {
-      glutDestroyWindow( window_id );
-    }
-  }
   windows.erase( this );
 }
 
-void GLWindow::shareRenderingContext( GLWindow *w ) {
+void H3DWindowNode::shareRenderingContext( H3DWindowNode *w ) {
 #ifdef WIN32
   BOOL res = wglShareLists( rendering_context, w->getRenderingContext() );
   if( !res ) {
@@ -194,75 +138,58 @@ void GLWindow::shareRenderingContext( GLWindow *w ) {
 #endif
 }
 
-void GLWindow::initialize() {
-  if ( !initialized ) {
-    unsigned int mode = GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL;
-    
-    RenderMode::Mode stereo_mode = renderMode->getRenderMode();
-    
-    if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
-        stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
-        stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
-      //mode |= GLUT_STENCIL;
-    } else  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
-      mode |= GLUT_STEREO;
+void H3DWindowNode::initialize() {
+  initWindowHandler();
+  initWindow();
+
+  if( !GLEW_init ) {
+    GLenum err = glewInit();
+    if (GLEW_OK != err) {
+      stringstream s;
+      s << "Glew init error: " << glewGetErrorString( err ) << ends;
+      throw Exception::H3DAPIException( s.str() );
     }
-    glutInitDisplayMode( mode );
-    glutInitWindowSize( width->getValue(), height->getValue() );
-    window_id = glutCreateWindow( "H3D" );
-    if( !GLEW_init ) {
-      GLenum err = glewInit();
-      if (GLEW_OK != err) {
-        stringstream s;
-        s << "Glew init error: " << glewGetErrorString( err ) << ends;
-        throw Exception::H3DAPIException( s.str() );
-      }
-      GLEW_init = true;
-    }
+    GLEW_init = true;
+  }
     
 #ifdef WIN32
-    rendering_context = wglGetCurrentContext();
-#endif    
-
-    for( set< GLWindow * >::iterator i = windows.begin();
-         i != windows.end();
-         i++ ) {
-      if( (*i)!=this && (*i)->isInitialized() )
-        shareRenderingContext( *i );
+  rendering_context = wglGetCurrentContext();
+  if( renderMode->getRenderMode() == RenderMode::QUAD_BUFFERED_STEREO ) {
+    // make sure that we got the required pixel format for stereo.
+    HDC hdc = wglGetCurrentDC();
+    int pixel_format = GetPixelFormat( hdc );
+    PIXELFORMATDESCRIPTOR  pfd; 
+    DescribePixelFormat(hdc, pixel_format,  
+                        sizeof(PIXELFORMATDESCRIPTOR), &pfd); 
+    if( !(pfd.dwFlags & PFD_STEREO) ) {
+      cerr << "Warning: Stereo pixel format not supported by your "
+           << "graphics card. Quad buffered stereo cannot be used. "
+           << "Using \"MONO\" instead. " <<endl;
+      renderMode->setValue( "MONO", id );
     }
-    
-    glutSetWindow( window_id );
-    // set up GLUT callback functions
-    glutDisplayFunc ( GLWindowInternal::displayFunc  );
-    glutReshapeFunc ( GLWindowInternal::reshapeFunc  );
-    glutKeyboardFunc( X3DKeyDeviceSensorNode::glutKeyboardDownCallback );
-    glutSpecialFunc( X3DKeyDeviceSensorNode::glutSpecialDownCallback );
-    glutKeyboardUpFunc( X3DKeyDeviceSensorNode::glutKeyboardUpCallback );
-    glutSpecialUpFunc( X3DKeyDeviceSensorNode::glutSpecialUpCallback );
-    glutMouseFunc( MouseSensor::glutMouseCallback );
-    glutMotionFunc( MouseSensor::glutMotionCallback );
-    glutPassiveMotionFunc( MouseSensor::glutMotionCallback );
-#ifdef FREEGLUT
-    glutMouseWheelFunc( MouseSensor::glutMouseWheelCallback );
-    glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, 
-                   GLUT_ACTION_GLUTMAINLOOP_RETURNS );
+  }
 #endif    
 
-    // configure OpenGL context for rendering.
-    glEnable( GL_DEPTH_TEST );
-    glDepthFunc( GL_LESS );
-    glDepthMask( GL_TRUE );
-    glEnable( GL_LIGHTING );
-    glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
-    glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
-    GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, no_ambient);
-    
-    initialized = true;
+  for( set< H3DWindowNode * >::iterator i = windows.begin();
+       i != windows.end();
+       i++ ) {
+    if( (*i)!=this && (*i)->isInitialized() )
+      shareRenderingContext( *i );
   }
+  
+  // configure OpenGL context for rendering.
+  glEnable( GL_DEPTH_TEST );
+  glDepthFunc( GL_LESS );
+  glDepthMask( GL_TRUE );
+  glEnable( GL_LIGHTING );
+  glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
+  glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
+  GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+  glLightModelfv( GL_LIGHT_MODEL_AMBIENT, no_ambient);
+  Node::initialize();
 }
 
-bool GLWindow::calculateFarAndNearPlane( H3DFloat &clip_far,
+bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
                                          H3DFloat &clip_near,
                                          X3DChildNode *child_to_render,
                                          Viewpoint *vp,
@@ -444,16 +371,20 @@ void renderStyli() {
   }
 }
 
-void GLWindow::render( X3DChildNode *child_to_render ) {
-  if ( !initialized )
+void H3DWindowNode::render( X3DChildNode *child_to_render ) {
+  if( !child_to_render ) return;
+  
+  if ( !isInitialized() )
     initialize();
-  glutSetWindow( window_id );
-  if( fullscreen->getValue() ) {
-    glutFullScreen();
-  }
+
+  // make this the active window
+  makeWindowActive();
+
+  // set fullscreen mode
+  setFullscreen( fullscreen->getValue() );
+
   H3DDisplayListObject *dlo = 
     dynamic_cast< H3DDisplayListObject * >( child_to_render );
-
 
   X3DBackgroundNode *background = X3DBackgroundNode::getActive();
   RGB clear_color = RGB( 0, 0, 0 );
@@ -477,7 +408,7 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
     glEnable(GL_LIGHT0);
 
     AutoRef< Viewpoint > vp_ref;
-  // get the viewpoint. If the GLWindow viewpoint field is set use that
+  // get the viewpoint. If the H3DWindowNode viewpoint field is set use that
   // otherwise use the stack top of the Viewpoint bindable stack.
   Viewpoint *vp = static_cast< Viewpoint * >( viewpoint->getValue() );
   if( !vp ) 
@@ -808,7 +739,7 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
       glPopMatrix();
       glPopAttrib();
     }
-    glutSwapBuffers();
+    swapBuffers();
   } else {
     // MONO
     H3DFloat top    = clip_near * tan(fov_v/2);
@@ -857,12 +788,12 @@ void GLWindow::render( X3DChildNode *child_to_render ) {
 
     if( dlo )  dlo->displayList->callList();
     else child_to_render->render();
-    glutSwapBuffers();
+    swapBuffers();
   }
   
 }
 
-void GLWindow::reshape( int w, int h ) {
+void H3DWindowNode::reshape( int w, int h ) {
   width->setValue( w );
   height->setValue( h );
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
@@ -874,22 +805,12 @@ void GLWindow::reshape( int w, int h ) {
 }
 
 
-void GLWindow::display() {
+void H3DWindowNode::display() {
   if( last_render_child ) 
     render( last_render_child );
 }
-/// Given the identifier of a GLUT window the GLWindow instance
-/// that created that window is returned.
-GLWindow *GLWindow::getGLWindow( int glut_id ) {
-  for( set< GLWindow* >::iterator i = GLWindow::windows.begin(); 
-       i != GLWindow::windows.end(); i ++ ) {
-    if( (*i)->getGLUTWindowId() == glut_id )
-      return *i;
-  }
-  return NULL;
-}
 
-GLWindow::RenderMode::Mode GLWindow::RenderMode::getRenderMode() {
+H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
   upToDate();
   if( value == "MONO" )
     return MONO;

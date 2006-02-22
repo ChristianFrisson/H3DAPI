@@ -34,6 +34,7 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "PeriodicUpdate.h"
+#include "GLUTWindow.h"
 
 using namespace H3D;
 
@@ -141,7 +142,7 @@ void Scene::idle() {
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
        w != window->end(); w++ ) {
-    static_cast< GLWindow * >(*w)->
+    static_cast< H3DWindowNode * >(*w)->
       render( static_cast< X3DChildNode * >( sceneRoot->getValue() ) );
   }
 
@@ -183,7 +184,7 @@ Scene::~Scene() {
 }
 
 void Scene::mainLoop() {
-  GLWindow::initGLUT();
+  GLUTWindow::initGLUT();
   glutIdleFunc( SceneInternal::idle );
   glutMainLoop();
 }

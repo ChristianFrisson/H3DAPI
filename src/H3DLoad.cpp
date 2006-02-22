@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "X3DSAX2Handlers.h"
-#include "GLWindow.h"
+#include "GLUTWindow.h"
 #include "Group.h"
 #include "Transform.h"
 #include "Scene.h"
@@ -38,21 +38,21 @@ class KeyRotation: public TypedField< SFRotation,
     if( button_pressed && motion * motion > Constants::f_epsilon ) {
       Vec2f perp = Vec2f( -motion.y, motion.x );
       perp.normalize();
-      value = Rotation( perp.x, perp.y, 0, motion.length() * 0.01 ) * value;
+      value = Rotation( perp.x, perp.y, 0, motion.length() * 0.01f ) * value;
     } else {
       if( event.ptr == routes_in[0] ) {
         int key = static_cast< SFInt32 * >(routes_in[0])->getValue();
         if( key == KeySensor::UP ) {
-          value = Rotation( 1,0,0,-0.1 ) * value;
+          value = Rotation( 1,0,0,-0.1f ) * value;
         }
         if( key == KeySensor::DOWN ) {
-          value = Rotation( 1,0,0,0.1 ) * value;
+          value = Rotation( 1,0,0,0.1f ) * value;
         }
         if( key == KeySensor::LEFT ) {
-          value = Rotation( 0,1,0,-0.1 ) * value;
+          value = Rotation( 0,1,0,-0.1f ) * value;
         }
         if( key == KeySensor::RIGHT ) {
-          value = Rotation( 0,1,0,0.1 ) * value;
+          value = Rotation( 0,1,0,0.1f ) * value;
         }
       }
     }
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
     // create a Viewpoint if it does not exist.
     if( !Viewpoint::getActive() ) {
       Viewpoint *vp = new Viewpoint;
-      vp->position->setValue( Vec3f( 0, 0, 0.6 ) );
+      vp->position->setValue( Vec3f( 0, 0, 0.6f ) );
     }
                          
     g->children->push_back( t.get() );
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
 		  
     AutoRef< Scene > scene( new Scene );
     // create a window to display
-    GLWindow *glwindow = new GLWindow;
+    GLUTWindow *glwindow = new GLUTWindow;
 
     glwindow->fullscreen->setValue( fullscreen );
     glwindow->mirrored->setValue( mirrored );

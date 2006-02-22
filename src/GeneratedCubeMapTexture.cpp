@@ -31,7 +31,6 @@
 #include "GeneratedCubeMapTexture.h"
 #include "X3DBackgroundNode.h"
 #include "DeviceInfo.h"
-#include "GLWindow.h"
 
 using namespace H3D;
 

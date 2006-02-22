@@ -58,7 +58,7 @@ void H3DDisplayListObject::DisplayList::update() {
     glCallList( display_list );
     GLuint err = glGetError();
     if( err != GL_NO_ERROR ) {
-      cerr << "Error in glCallList() Error: \"" << gluErrorString( err ) 
+      cerr << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
            << "\" when rendering " << getFullName() << endl;
       have_valid_display_list = false;
     }
@@ -142,7 +142,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
       glNewList( display_list, GL_COMPILE );
       GLuint err = glGetError();
       if( err != GL_NO_ERROR ) {
-        cerr << "Error in glNewList() Error: \"" << gluErrorString( err ) 
+        cerr << "QpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
              << "\" when rendering " << getFullName() << endl;
         return false;
       }
@@ -150,7 +150,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
       glEndList();
       err = glGetError();
       if( err != GL_NO_ERROR ) {
-        cerr << "Error in glEndList() Error: \"" << gluErrorString( err ) 
+        cerr << "QpenGL error in glEndList() Error: \"" << gluErrorString( err ) 
              << "\" when rendering " << getFullName() << endl;
         return false;
       }
@@ -173,6 +173,12 @@ void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
 void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
   isActive->callListCalled();
 
+  GLuint err = glGetError();
+  if( err != GL_NO_ERROR ) {
+     cerr << "OpenGL error before H3DDisplayListObject::DisplayList::callList() Error: \"" << gluErrorString( err ) 
+          << "\" when rendering parent of " << getFullName() << endl;
+  }
+
   if( build_list ) { 
     if( !display_list ) 
       display_list = glGenLists( 1 );
@@ -194,7 +200,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     glCallList( display_list );
     GLuint err = glGetError();
     if( err != GL_NO_ERROR ) {
-      cerr << "Error in glCallList() Error: \"" << gluErrorString( err ) 
+      cerr << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
            << "\" when rendering " << getFullName() << endl;
       have_valid_display_list = false;
     }
@@ -203,7 +209,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     event_fields.clear();
     GLuint err = glGetError();
     if( err != GL_NO_ERROR ) {
-      cerr << "Error in render() Error: \"" << gluErrorString( err ) 
+      cerr << "OpenGL error in render() Error: \"" << gluErrorString( err ) 
            << "\" when rendering " << getFullName() << endl;
     } else {
       if( delay_cache_counter > 0 ) 

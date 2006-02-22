@@ -30,7 +30,7 @@
 #define __SCENE_H__
 
 #include "X3DChildNode.h"
-#include "GLWindow.h"
+#include "H3DWindowNode.h"
 
 namespace H3D {
 
@@ -45,7 +45,7 @@ namespace H3D {
   class H3DAPI_API Scene : public Node {
   public:
 
-    typedef TypedMFNode< GLWindow > MFWindow;
+    typedef TypedMFNode< H3DWindowNode > MFWindow;
     typedef TypedSFNode< X3DChildNode > SFChildNode;
 
     /// Constructor.

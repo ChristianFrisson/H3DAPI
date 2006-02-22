@@ -21,13 +21,13 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file GLWindow.h
-/// \brief Header file for GLWindow, X3D scene-graph node
+/// \file H3DWindowNode.h
+/// \brief Header file for H3DWindowNode.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __GLWINDOW_H__
-#define __GLWINDOW_H__
+#ifndef __H3DWINDOWNODE_H__
+#define __H3DWINDOWNODE_H__
 
 #include "Viewpoint.h"
 #include "MFNode.h"
@@ -35,10 +35,16 @@
 namespace H3D {
 
   /// \ingroup Nodes
-  /// \class GLWindow
-  /// \brief Standard OpenGL based window node.
+  /// \class H3DWindowNode
+  /// \brief The base class for all window nodes.
   /// 
-  class H3DAPI_API GLWindow : public Node {
+  /// A H3DWindowNode handles creation of windows and window properties for 
+  /// looking into a Scene. To implement a new window class the following
+  /// functions has to be specified:
+  ///   swapBuffers(), initWindow(), initWindowHandler(), setFullscreen( bool fullscreen )
+  ///   makeWindowActive(). 
+  /// For example implementation see GLUTWindow.
+  class H3DAPI_API H3DWindowNode : public Node {
   public:
     
     typedef TypedSFNode< Viewpoint > SFViewpoint;
@@ -92,23 +98,46 @@ namespace H3D {
     };
 
     /// Constructor.
-    GLWindow( Inst< SFInt32     > _width      = 0,
-              Inst< SFInt32     > _height     = 0,
-              Inst< SFBool      > _fullscreen = 0,
-              Inst< SFBool      > _mirrored   = 0,
-              Inst< RenderMode  > _renderMode = 0, 
-              Inst< SFViewpoint > _viewpoint  = 0,
-              Inst< SFTime      > _time       = 0 );
+    H3DWindowNode( Inst< SFInt32     > _width      = 0,
+                   Inst< SFInt32     > _height     = 0,
+                   Inst< SFBool      > _fullscreen = 0,
+                   Inst< SFBool      > _mirrored   = 0,
+                   Inst< RenderMode  > _renderMode = 0, 
+                   Inst< SFViewpoint > _viewpoint  = 0,
+                   Inst< SFTime      > _time       = 0 );
 
     /// Destructor.
-    ~GLWindow();
+    ~H3DWindowNode();
 
-    /// Creates and Initializes the GLUT window.
+    /// Virtual function to swap buffers.
+    virtual void swapBuffers() = 0;
+
+    /// Virtual function that should create a new window and set its properties
+    /// depending on the fields.
+    virtual void initWindow() = 0;
+
+    /// Virtual function to initialize the window handler if needed. E.g. glutInit().
+    virtual void initWindowHandler() = 0;
+
+    /// Virtual function to set whether the window should be fullscreen or not.
+    virtual void setFullscreen( bool fullscreen ) = 0;
+
+    /// Virtual function to make the current window active, i.e. make subsequent
+    /// OpenGL calls draw in the context of this window.
+    virtual void makeWindowActive() = 0;
+    
+    /// Initialize the window node. 
     virtual void initialize();
 
-    /// Given the identifier of a GLUT window the GLWindow instance
-    /// that created that window is returned.
-    static GLWindow * getGLWindow( int glut_id ); 
+    /// This function renders the X3DChildNode given into the 
+    /// window of the H3DWindowNode.
+    virtual void render( X3DChildNode *child_to_render );
+
+    /// This function will be called when the window size has changed.
+    virtual void reshape( int w, int h );
+
+    /// This function is called when the window has to redraw itself.
+    virtual void display();
 
     /// Calculate the far and near clipping planes from the bounding
     /// box of a X3DChildNode. The far and near planes will be calculated
@@ -129,23 +158,6 @@ namespace H3D {
                                    X3DChildNode *child,
                                    Viewpoint *vp,
                                    bool include_stylus );
-                                   
-    
-    /// This function renders the X3DChildNode given into the 
-    /// window of the GLWindow.
-    virtual void render( X3DChildNode *child_to_render );
-
-    /// Returns the GLUT window id for this window.
-    int getGLUTWindowId() {
-      return window_id;
-    }
-
-    /// This function will be called when the GLUT notices that
-    /// the window size has changed.
-    virtual void reshape( int w, int h );
-
-    /// This function is called when the window has to redraw itself.
-    virtual void display();
 
     /// The width in pixels of the window.
     ///  
@@ -181,7 +193,7 @@ namespace H3D {
     auto_ptr< RenderMode >  renderMode;
     
     /// If the viewpoint field is specified, that viewpoint is used 
-    /// by the rendering in GLWindow instead of the stack top of 
+    /// by the rendering in H3DWindowNode instead of the stack top of 
     /// the Viewpoint bindable stack. This is so that multiple windows
     /// with different viewpoints can be specified.
     ///  
@@ -189,24 +201,16 @@ namespace H3D {
     /// <b>Default value:</b> NULL \n
     auto_ptr< SFViewpoint > viewpoint;
     
-    /// Initialize GLUT. 
-    static void initGLUT();
-    
     auto_ptr< SFTime > time;
-    static set< GLWindow* > windows;
+    static set< H3DWindowNode* > windows;
     
-    /// This function shares the rendering context between this GLWindow
+    /// This function shares the rendering context between this H3DWindowNode
     /// and the one given as an argument. This means that the two windows
     /// after the call can share display lists and textures. When several
-    /// GLWindow instances are created this function will always be called
-    /// to share the rendering context between them, i.e. all GLWindow
+    /// H3DWindowNode instances are created this function will always be called
+    /// to share the rendering context between them, i.e. all H3DWindowNode
     /// instances share rendering context by default.
-    void shareRenderingContext( GLWindow *w );
-
-    /// Returns true if the initialize() function has been called.
-    bool isInitialized() {
-      return initialized;
-    }
+    void shareRenderingContext( H3DWindowNode *w );
 
 #if WIN32
     HGLRC getRenderingContext() {
@@ -215,12 +219,11 @@ namespace H3D {
 #endif
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  private:
+  protected:
 #if WIN32
     HGLRC rendering_context;
 #endif
     X3DChildNode *last_render_child;
-    bool initialized;
     static bool GLEW_init;
     int window_id;
     bool rebuild_stencil_mask;
