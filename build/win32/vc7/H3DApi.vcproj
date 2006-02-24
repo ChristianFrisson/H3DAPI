@@ -231,6 +231,9 @@
 				RelativePath="..\..\..\src\FloatVertexAttribute.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Fog.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\FontStyle.cpp">
 			</File>
 			<File
@@ -246,7 +249,7 @@
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GLWindow.cpp">
+				RelativePath="..\..\..\src\GLUTWindow.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Group.cpp">
@@ -280,6 +283,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DThreadedHapticsDevice.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DWindowNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticCylinder.cpp">
@@ -349,6 +355,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\LoadSensor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\LocalFog.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\MagneticSurface.cpp">
@@ -621,6 +630,9 @@
 				RelativePath="..\..\..\src\Viewpoint.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\WorldInfo.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3D.cpp">
 			</File>
 			<File
@@ -649,6 +661,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DFieldConversion.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DFogObject.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DFontStyleNode.cpp">
@@ -881,6 +896,9 @@
 				RelativePath="..\..\..\src\FloatVertexAttribute.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Fog.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\FontStyle.h">
 			</File>
 			<File
@@ -897,9 +915,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\GLWindow.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Group.h">
@@ -966,6 +981,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DTypes.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DWindowNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticCylinder.h">
@@ -1059,6 +1077,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\LineSet.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\LocalFog.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\MagneticSurface.h">
@@ -1370,6 +1391,9 @@
 				RelativePath="..\..\..\src\Viewpoint.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\WorldInfo.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3D.h">
 			</File>
 			<File
@@ -1406,6 +1430,9 @@
 				RelativePath="..\..\..\src\X3DFieldConversion.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\X3DFogObject.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3DFontStyleNode.h">
 			</File>
 			<File
@@ -1416,6 +1443,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DGroupingNode.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DInfoNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DInterpolatorNode.h">
