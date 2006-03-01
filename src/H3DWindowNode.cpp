@@ -42,6 +42,7 @@
 #include "NavigationInfo.h"
 #include "StereoInfo.h"
 #include "GeneratedCubeMapTexture.h"
+#include "Fog.h"
 
 #include <GL/glew.h>
 
@@ -386,9 +387,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   H3DDisplayListObject *dlo = 
     dynamic_cast< H3DDisplayListObject * >( child_to_render );
 
+  glPushAttrib( GL_ENABLE_BIT );
+
   X3DBackgroundNode *background = X3DBackgroundNode::getActive();
+  Fog *fog = Fog::getActive();
   RGB clear_color = RGB( 0, 0, 0 );
   if( background ) clear_color = background->glClearColor();
+  if( fog ) fog->renderFog(); 
   glClearColor( clear_color.r, clear_color.g, clear_color.b, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   
@@ -790,7 +795,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     else child_to_render->render();
     swapBuffers();
   }
-  
+  glPopAttrib();
 }
 
 void H3DWindowNode::reshape( int w, int h ) {
