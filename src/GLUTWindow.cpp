@@ -96,7 +96,11 @@ GLUTWindow::~GLUTWindow() {
     // If the window is closed with the x-button glut can be deinitialized
     // before getting here, so make sure glut is initialized before calling
     // glutDestroyWindow
+#ifdef FREEGLUT
+    if( glutGet( GLUT_INIT_STATE ) ) {
+#else
     if( GLUT_init ) {
+#endif
       glutDestroyWindow( window_id );
     }
   }
