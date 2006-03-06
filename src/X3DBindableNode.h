@@ -104,27 +104,27 @@ namespace H3D {
   /// </ul>
   /// The results are undefined if a bindable node is bound and is the child
   /// of an LOD, Switch, or any node or prototype that disables its children. 
-  class X3DBindableNode : public X3DChildNode {
+  class H3DAPI_API X3DBindableNode : public X3DChildNode {
   public:
     
     /// The SFSetBind field calls toStackTop() and removeFromStack() on the 
     /// X3DBindableNode it is in depending on the value that it is set to.
     struct H3DAPI_API SFSetBind : public SFBool {
       virtual inline void update() {
-	SFBool::update();
-	if( value )
-	  static_cast< X3DBindableNode * >( owner )->toStackTop();
-	else 
-	  static_cast< X3DBindableNode * >( owner )->removeFromStack();
+        SFBool::update();
+        if( value )
+          static_cast< X3DBindableNode * >( owner )->toStackTop();
+        else 
+          static_cast< X3DBindableNode * >( owner )->removeFromStack();
       }
-
+      
       /// Set the value of the field.
       inline virtual void setValue( const bool &v, int id = 0 ) {
-	SFBool::setValue( v, id );
-	if( value )
-	  static_cast< X3DBindableNode * >( owner )->toStackTop();
-	else 
-	  static_cast< X3DBindableNode * >( owner )->removeFromStack();
+        SFBool::setValue( v, id );
+        if( value )
+          static_cast< X3DBindableNode * >( owner )->toStackTop();
+        else 
+          static_cast< X3DBindableNode * >( owner )->removeFromStack();
       }
     };
 
