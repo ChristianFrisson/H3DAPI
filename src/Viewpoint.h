@@ -218,7 +218,7 @@ namespace H3D {
   /// or loadURL() method is invoked by a Script node), the Viewpoint node 
   /// named "ViewpointName" is bound (a set_bind TRUE event is sent to this
   /// Viewpoint node).
-  class H3DAPI_API Viewpoint : public X3DBindableNode< Viewpoint > {
+  class H3DAPI_API Viewpoint : public X3DBindableNode {
   public:
     /// Constructor.
     Viewpoint( 
@@ -241,6 +241,11 @@ namespace H3D {
     virtual void traverseSG( TraverseInfo &ti ) {
       accInverseMatrix->setValue( ti.getAccInverseMatrix(), id );
       accForwardMatrix->setValue( ti.getAccForwardMatrix(), id );
+    }
+
+    /// Convenience function to get the top of the Viewpoint stack.
+    static inline Viewpoint *getActive() {
+      return static_cast< Viewpoint * >( X3DBindableNode::getActive( "Viewpoint" ) );
     }
 
     /// The centerOfRotation field specifies a center about which to

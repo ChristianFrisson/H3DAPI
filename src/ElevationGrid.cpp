@@ -86,13 +86,13 @@ ElevationGrid::ElevationGrid(
   normalPerVertex( _normalPerVertex  ),
   solid          ( _solid            ),
   attrib         ( _attrib           ),
-  autoNormal     ( _autoNormal       ),
   creaseAngle    ( _creaseAngle      ),
   xDimension     ( _xDimension       ),
   zDimension     ( _zDimension       ),
   xSpacing       ( _xSpacing         ),
   zSpacing       ( _zSpacing         ),
-  height         ( _height           ) {
+  height         ( _height           ),
+  autoNormal     ( _autoNormal       ) {
 
   type_name = "ElevationGrid";
 
@@ -714,7 +714,6 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
     normals_per_face.reset( generateNormalsPerFace( x_dim, z_dim,
                                                     x_spacing, z_spacing,
                                                     height, ccw ) );
-    unsigned int i = 0;
     vector< Vec3f > normals( (x_dim -1) * (z_dim -1 ) * 4,
                              Vec3f( 0, 0, 0 ) );
     normals.clear();
@@ -725,10 +724,7 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
 
     // build a map from each vertex to a vector of all the normals 
     // of the faces the vertex is a part of.
-    for( unsigned int face = 0; 
-         face < normals_per_face->nrAvailableNormals(); face++ ) {
-      int row = face / (x_dim-1);
-      int col = face % (x_dim-1);
+    for( int face = 0; face < (int)normals_per_face->nrAvailableNormals(); face++ ) {
 
       int quad_x_dim = x_dim - 1;
       int quad_z_dim = z_dim - 1;

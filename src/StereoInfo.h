@@ -42,7 +42,7 @@ namespace H3D {
   /// 
   /// The focalDistance field specifies the distance in metres at which
   /// objects in the scene will appear to be at zero parallax.
-  class H3DAPI_API StereoInfo : public X3DBindableNode< StereoInfo > {
+  class H3DAPI_API StereoInfo : public X3DBindableNode {
   public:
     /// Constructor.
     StereoInfo( Inst< SFSetBind > _set_bind            = 0,
@@ -52,6 +52,11 @@ namespace H3D {
                 Inst< SFFloat   > _interocularDistance = 0,
                 Inst< SFFloat   > _focalDistance       = 0 );
     
+    /// Convenience function to get the top of the StereoInfo stack.
+    static inline StereoInfo *getActive() {
+      return static_cast< StereoInfo * >( X3DBindableNode::getActive( "StereoInfo" ) );
+    }
+
     /// The interocularDistance field specifies eye separation distance
     /// in metres, e.g. the distance between your two eyes.
     ///

@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "DeviceInfo.h"
-#include "X3DBindableNode.cpp"
 #include <GL/glew.h>
 
 using namespace H3D;
@@ -38,7 +37,7 @@ using namespace H3D;
 H3DNodeDatabase DeviceInfo::database( "DeviceInfo", 
                                       &(newInstance<DeviceInfo>), 
                                       typeid( DeviceInfo ),
-                                      &X3DBindableNode< DeviceInfo >::database  );
+                                      &X3DBindableNode::database  );
 
 namespace DeviceInfoInternals {
   FIELDDB_ELEMENT( DeviceInfo, device, INPUT_OUTPUT );
@@ -51,7 +50,7 @@ DeviceInfo::DeviceInfo(
                        Inst<  SFTime    >  _bindTime,
                        Inst<  SFBool    >  _isBound,
                        Inst< MFDevice >  _device ) :
-  X3DBindableNode<DeviceInfo>( _set_bind, _metadata, _bindTime, _isBound ),
+  X3DBindableNode( "DeviceInfo", _set_bind, _metadata, _bindTime, _isBound ),
   device        ( _device         ) {
 
   type_name = "DeviceInfo";

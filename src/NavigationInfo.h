@@ -41,7 +41,7 @@ namespace H3D {
   /// 
   /// Only the visibilityLimit and headlight are used in H3D API.
   /// 
-  class H3DAPI_API NavigationInfo : public X3DBindableNode< NavigationInfo > {
+  class H3DAPI_API NavigationInfo : public X3DBindableNode {
   public:
     /// Constructor.
     NavigationInfo( Inst< SFSetBind > _set_bind         = 0,
@@ -55,6 +55,11 @@ namespace H3D {
                     Inst< MFString  > _type             = 0,
                     Inst< SFFloat   > _visibilityLimit  = 0 );
     
+    /// Convenience function to get the top of the NavigationInfo stack.
+    static inline NavigationInfo *getActive() {
+      return static_cast< NavigationInfo * >( X3DBindableNode::getActive( "NavigationInfo" ) );
+    }
+
     /// The avatarSize field specifies the user's physical dimensions 
     /// in the world for the purpose of collision detection and terrain
     /// following.

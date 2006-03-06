@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "NavigationInfo.h"
-#include "X3DBindableNode.cpp"
 
 using namespace H3D;
 
@@ -38,7 +37,7 @@ H3DNodeDatabase NavigationInfo::database(
                                     "NavigationInfo", 
                                     &(newInstance<NavigationInfo>), 
                                     typeid( NavigationInfo ),
-                               &X3DBindableNode< NavigationInfo >::database );
+				    &X3DBindableNode::database );
 
 namespace NavigationInfoInternals {
   FIELDDB_ELEMENT( NavigationInfo, avatarSize, INPUT_OUTPUT );
@@ -61,7 +60,7 @@ NavigationInfo::NavigationInfo( Inst< SFSetBind > _set_bind,
                                 Inst< MFString  > _transitionType,
                                 Inst< MFString  > _type,
                                 Inst< SFFloat   > _visibilityLimit ):
-  X3DBindableNode<NavigationInfo>( _set_bind, _metadata, _bindTime, _isBound ),
+  X3DBindableNode( "NavigationInfo",_set_bind, _metadata, _bindTime, _isBound ),
   avatarSize( _avatarSize ),
   headlight( _headlight  ),
   speed( _speed ),

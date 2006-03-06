@@ -118,7 +118,7 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile X3DBackgroundNode.dot  
   class H3DAPI_API X3DBackgroundNode : 
-    public X3DBindableNode< X3DBackgroundNode > {
+    public X3DBindableNode {
   public:
     
     typedef H3DDisplayListObject::DisplayList DisplayList;
@@ -134,9 +134,16 @@ namespace H3D {
 		       Inst< MFFloat   > _skyAngle    = 0,
 		       Inst< MFColor   > _skyColor    = 0 );
 
+    /// Convenience function to get the top of the X3DBackgroundNode stack.
+    static inline X3DBackgroundNode *getActive() {
+      return static_cast< X3DBackgroundNode * >
+	( X3DBindableNode::getActive( "X3DBackgroundNode" ) );
+    }
+
+
     /// Saves the accForwardMatrix for use in the render function.
     virtual void traverseSG( TraverseInfo &ti ) {
-      X3DBindableNode< X3DBackgroundNode >::traverseSG( ti );
+      X3DBindableNode::traverseSG( ti );
       if( localToGlobal->getValue() != ti.getAccForwardMatrix() ) {
         localToGlobal->setValue( ti.getAccForwardMatrix() );
       }

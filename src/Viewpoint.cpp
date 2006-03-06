@@ -29,22 +29,15 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Viewpoint.h"
-#include "X3DBindableNode.cpp"
 
 using namespace H3D;
-
-#ifdef MACOSX
-template<>
-X3DBindableNode< Viewpoint >::StackType X3DBindableNode< Viewpoint >::stack = 
-X3DBindableNode< Viewpoint >::StackType();
-#endif
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase Viewpoint::database( 
                                     "Viewpoint", 
                                     &(newInstance<Viewpoint>), 
                                     typeid( Viewpoint ),
-                                    &X3DBindableNode< Viewpoint >::database );
+                                    &X3DBindableNode::database );
 
 namespace ViewpointInternals {
   FIELDDB_ELEMENT( Viewpoint, centerOfRotation, INPUT_OUTPUT );
@@ -72,7 +65,7 @@ Viewpoint::Viewpoint(
                      Inst< SFBool     > _isBound,
                      Inst< SFMatrix4f > _accForwardMatrix,
                      Inst< SFMatrix4f > _accInverseMatrix ) :
-  X3DBindableNode<Viewpoint>( _set_bind, _metadata, _bindTime, _isBound ),
+  X3DBindableNode( "Viewpoint", _set_bind, _metadata, _bindTime, _isBound ),
   centerOfRotation( _centerOfRotation ),
   description     ( _description      ),
   fieldOfView     ( _fieldOfView      ),

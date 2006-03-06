@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Fog.h"
-#include "X3DBindableNode.cpp"
 #include <GL/glew.h>
 
 using namespace H3D;
@@ -38,7 +37,7 @@ using namespace H3D;
 H3DNodeDatabase Fog::database( "Fog", 
                                &(newInstance<Fog>), 
                                typeid( Fog ),
-                               &X3DBindableNode< Fog >::database  );
+                               &X3DBindableNode::database  );
 
 namespace FogInternals {
   FIELDDB_ELEMENT( Fog, color, INPUT_OUTPUT );
@@ -54,7 +53,7 @@ Fog::Fog( Inst< SFSetBind > _set_bind,
           Inst< SFColor   > _color,
           Inst< SFString  > _fogType,
           Inst< SFFloat   > _visibilityRange ) :
-  X3DBindableNode<Fog>( _set_bind, _metadata, _bindTime, _isBound ),
+  X3DBindableNode( "Fog", _set_bind, _metadata, _bindTime, _isBound ),
   X3DFogObject( _color, _fogType, _visibilityRange ) {
   
   type_name = "Fog";

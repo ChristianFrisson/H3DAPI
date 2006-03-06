@@ -34,14 +34,6 @@
 #include "X3DChildNode.h"
 #include "FieldTemplates.h"
 
-#ifdef _MSC_VER
-// disable warnings about not finding the definition of the static
-// stack member. It is included by instances of X3DBindableNode by
-// including the X3DBindableNode.cpp file in the .cpp file of the class
-// using it.
-#pragma warning( disable: 4661 )
-#endif
-
 namespace H3D {
 
   /// \ingroup AbstractNodes
@@ -78,14 +70,8 @@ namespace H3D {
   /// <ul>
   /// <li>
   /// During read, the first encountered <bindable node> is bound by pushing
-  /// it to the top of the <bindable node> stack. Nodes contained within files
-  /// referenced by Inline nodes, within the strings passed to the 
-  /// X3D::createX3DFromString() method, or within X3D files passed to the
-  /// X3D::createX3DFromURL() method are not candidates for the first 
-  /// encountered <bindable node>. The first node within a locally defined 
-  /// prototype instance is a valid candidate for the first encountered <
-  /// bindable node>. The first encountered <bindable node> sends an isBound
-  /// TRUE event.
+  /// it to the top of the <bindable node> stack. The first encountered
+  /// <bindable node> sends an isBound TRUE event.
   /// <li>
   /// When a set_bind TRUE event is received by a <bindable node>,
   /// <ol><li>
@@ -118,68 +104,57 @@ namespace H3D {
   /// </ul>
   /// The results are undefined if a bindable node is bound and is the child
   /// of an LOD, Switch, or any node or prototype that disables its children. 
-  ///
-  /// Any class that is an instance of the X3DBindableNode must include
-  /// the X3DBindableNode.cpp file in its .cpp file in order to get the
-  /// static stack member variable initialized.
-  template< class T >
   class X3DBindableNode : public X3DChildNode {
   public:
     
-    
-    struct SFSetBind : SFBool {
+    /// The SFSetBind field calls toStackTop() and removeFromStack() on the 
+    /// X3DBindableNode it is in depending on the value that it is set to.
+    struct H3DAPI_API SFSetBind : public SFBool {
       virtual inline void update() {
-        static_cast< X3DBindableNode * >( owner )->makeActive();
+	SFBool::update();
+	if( value )
+	  static_cast< X3DBindableNode * >( owner )->toStackTop();
+	else 
+	  static_cast< X3DBindableNode * >( owner )->removeFromStack();
+      }
+
+      /// Set the value of the field.
+      inline virtual void setValue( const bool &v, int id = 0 ) {
+	SFBool::setValue( v, id );
+	if( value )
+	  static_cast< X3DBindableNode * >( owner )->toStackTop();
+	else 
+	  static_cast< X3DBindableNode * >( owner )->removeFromStack();
       }
     };
 
     
     /// Constructor.
-    inline X3DBindableNode( 
-                           Inst< SFSetBind > _set_bind = 0,
-                           Inst< SFNode    > _metadata = 0,
-                           Inst< SFTime    > _bindTime = 0,
-                           Inst< SFBool    > _isBound  = 0 ) :
-      X3DChildNode( _metadata ),
-      set_bind( _set_bind ),
-      bindTime( _bindTime ),
-      isBound ( _isBound  ) {
-
-      set_bind->setName( "set_bind");
-      bindTime->setName( "bindTime" );
-      isBound->setName( "isBound" );
-
-      set_bind->setOwner( this );
-      bindTime->setOwner( this );
-      isBound->setOwner( this );
-      
-      set_bind->setAccessType( Field::INPUT_ONLY );
-      bindTime->setAccessType( Field::OUTPUT_ONLY );
-      isBound->setAccessType( Field::OUTPUT_ONLY );
-
-      if ( stack.empty() ) {
-        stack.push_front( static_cast< T * >( this ) );
-        isBound->setValue( true, id );
-      }
-                 
-    }
+    X3DBindableNode( const string &_bindable_stack_name,
+		     Inst< SFSetBind > _set_bind = 0,
+		     Inst< SFNode    > _metadata = 0,
+		     Inst< SFTime    > _bindTime = 0,
+		     Inst< SFBool    > _isBound  = 0 );
 
     /// Destructor.
     virtual inline ~X3DBindableNode() {
-      if ( getActive() == this ) {
-        stack.pop_front();
-        T *active = getActive();
-        if( active ) 
-          active->isBound->setValue( true, id );
-      } else {
-        for( typename StackType::iterator i = stack.begin();
-             i != stack.end(); i++ )
-          if ( (*i) == this ) {
-            stack.erase( i );
-            i = stack.end();
-          }
-      }
+      removeFromStack();
     }
+
+    /// Returns the active bindable instance, i.e. the instance on the
+    /// top of the bindable stack.
+    static X3DBindableNode * getActive( const string &bindable_stack_name ) {
+      if ( !stack[bindable_stack_name].empty() ) 
+        return stack[bindable_stack_name].front();
+      else
+        return 0;
+    }
+
+    /// Move this instance to the stack top. 
+    void toStackTop();
+
+    /// Remove the bindable node from the stack.
+    void removeFromStack();
 
     /// Input field to bind or unbind the node.
     ///
@@ -197,39 +172,16 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFBool    >  isBound;
-
-    /// Returns the active bindable instance, i.e. the instance on the
-    /// top of the bindable stack.
-    static inline T * getActive() {
-      if ( !stack.empty() ) 
-        return stack.front();
-      else
-        return 0;
-    }
     
-    /// Make this instance the active node. 
-    inline void makeActive() {
-      T *active = X3DBindableNode<T>::getActive();
-      if ( active != this ) {
-        // remove this from the stack, if it was in the stack...
-        for( typename StackType::iterator i = stack.begin();
-             i != stack.end(); i++ )
-          if ( (*i) == this ) {
-            stack.erase( i );
-            i = stack.end();
-          }
-        // and place it on the top of the stack
-        stack.push_front( static_cast< T* >( this ) );
-        isBound->setValue( true, id );
-        /// TODO: FIX
-        active->isBound->setValue( false );
-      }
-    }
+    /// The H3DNodedatabase for this node
+    static H3DNodeDatabase database;
 
   protected:
-    typedef deque< T* > StackType;
+    string bindable_stack_name;
+    typedef std::deque< X3DBindableNode* > StackType;
+    typedef map< string, StackType> StackMapType;
     /// The bindable stack.
-    static StackType stack;
+    static StackMapType stack;
   };
 }
 

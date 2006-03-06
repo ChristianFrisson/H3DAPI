@@ -32,5 +32,83 @@
 
 using namespace H3D;
 
-template< class T >
-typename X3DBindableNode< T >::StackType X3DBindableNode< T >::stack;
+X3DBindableNode::StackMapType X3DBindableNode::stack;
+
+// Add this node to the H3DNodeDatabase system.
+H3DNodeDatabase X3DBindableNode::database( 
+					  "X3DBindableNode", 
+					  NULL, 
+					  typeid( X3DBindableNode ),
+					  &X3DChildNode::database );
+
+namespace X3DBindableNodeInternals {
+  FIELDDB_ELEMENT( X3DBindableNode, set_bind, INPUT_ONLY );
+  FIELDDB_ELEMENT( X3DBindableNode, isBound, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( X3DBindableNode, bindTime, OUTPUT_ONLY );
+}
+
+
+/// Constructor.
+X3DBindableNode::X3DBindableNode( const string &_bindable_stack_name,
+				  Inst< SFSetBind > _set_bind,
+				  Inst< SFNode    > _metadata,
+				  Inst< SFTime    > _bindTime,
+				  Inst< SFBool    > _isBound ) :
+  X3DChildNode( _metadata ),
+  set_bind( _set_bind ),
+  bindTime( _bindTime ),
+  isBound ( _isBound  ),
+  bindable_stack_name( _bindable_stack_name ) {
+  
+  type_name = "X3DBindableNode";
+  database.initFields( this );
+  
+  StackType &s = stack[bindable_stack_name];
+  s.push_back( this );
+  
+  if ( s.size() == 1 ) {
+    toStackTop();
+  } 
+}
+
+void X3DBindableNode::removeFromStack() {
+  StackType &s =  stack[bindable_stack_name];
+  if( s.size() > 0 ) {
+    bool is_active = (s.front() == this);
+    
+    if ( is_active ) {
+      s.pop_front();
+      isBound->setValue( false, id );
+      X3DBindableNode *new_top = s.front();
+      new_top->isBound->setValue( true, new_top->id );
+      new_top->bindTime->setValue( TimeStamp(), new_top->id );
+    } else {
+      for( StackType::iterator i = s.begin();
+	   i != s.end(); i++ )
+	if ( (*i) == this ) {
+	  s.erase( i );
+	  isBound->setValue( false, id );
+	  i = s.end();
+	}
+    }
+  }
+}
+
+void X3DBindableNode::toStackTop() {
+  StackType &s =  stack[bindable_stack_name];
+  X3DBindableNode *active = s.front();
+  if ( active != this ) {
+    // remove this from the stack, if it was in the stack...
+    for( StackType::iterator i = s.begin();
+	 i != s.end(); i++ )
+      if ( (*i) == this ) {
+	s.erase( i );
+	i = s.end();
+      }
+    // and place it on the top of the stack
+    s.push_front( this );
+    isBound->setValue( true, id );
+    bindTime->setValue( TimeStamp(), id );
+    active->isBound->setValue( false, active->id );
+  }
+}

@@ -40,7 +40,7 @@ namespace H3D {
   /// are used with the API. It contains e.g. all H3DHapticsDevice nodes
   /// that are used for haptic rendering, Mouse and Magellan devices.
   /// 
-  class H3DAPI_API DeviceInfo : public X3DBindableNode< DeviceInfo > {
+  class H3DAPI_API DeviceInfo : public X3DBindableNode {
   public:
     typedef TypedMFNode< H3DHapticsDevice > MFDevice;
 
@@ -50,6 +50,11 @@ namespace H3D {
                 Inst< SFTime    >  _bindTime        = 0,
                 Inst< SFBool    >  _isBound         = 0,
                 Inst< MFDevice  >  _device          = 0 );
+
+    /// Convenience function to get the top of the DeviceInfo stack.
+    static inline DeviceInfo *getActive() {
+      return static_cast< DeviceInfo * >( X3DBindableNode::getActive( "DeviceInfo" ) );
+    }
 
     /// Render the styli of all devices in the device field.
     virtual void renderStyli();

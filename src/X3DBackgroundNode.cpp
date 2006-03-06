@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "X3DBackgroundNode.h"
-#include "X3DBindableNode.cpp"
 #include <assert.h>
 
 using namespace H3D;
@@ -39,7 +38,7 @@ H3DNodeDatabase X3DBackgroundNode::database(
                            "X3DBackgroundNode", 
                            NULL, 
                            typeid( X3DBackgroundNode ),
-                           &X3DBindableNode< X3DBackgroundNode >::database );
+                           &X3DBindableNode::database );
 
 namespace X3DBackgroundNodeInternals {
   FIELDDB_ELEMENT( X3DBackgroundNode, groundAngle, INPUT_OUTPUT );
@@ -57,8 +56,7 @@ X3DBackgroundNode::X3DBackgroundNode( Inst< SFSetBind > _set_bind,
                                       Inst< MFColor   > _groundColor,
                                       Inst< MFFloat   > _skyAngle,
                                       Inst< MFColor   > _skyColor ) :
-  X3DBindableNode<X3DBackgroundNode>( _set_bind, _metadata, 
-                                      _bindTime, _isBound ),
+  X3DBindableNode( "X3DBackgroundNode", _set_bind, _metadata, _bindTime, _isBound ),
   displayList( _displayList ),
   groundAngle( _groundAngle ),
   groundColor( _groundColor ),

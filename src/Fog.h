@@ -55,7 +55,7 @@ namespace H3D {
   /// cueing effect. If fogType is "EXPONENTIAL," an exponential increase
   /// in blending is used, resulting in a more natural fog appearance.
   class H3DAPI_API Fog : 
-    public X3DBindableNode< Fog >,
+    public X3DBindableNode,
     public X3DFogObject {
   public:
     /// Construtor.
@@ -66,6 +66,11 @@ namespace H3D {
          Inst< SFColor   > _color            = 0,
          Inst< SFString  > _fogType          = 0,
          Inst< SFFloat   > _visibilityRange  = 0 );
+
+    /// Convenience function to get the top of the Fog stack.
+    static inline Fog *getActive() {
+      return static_cast< Fog * >( X3DBindableNode::getActive( "Fog" ) );
+    }
 
     /// Render the global fog with OpenGL.
     virtual void renderFog();

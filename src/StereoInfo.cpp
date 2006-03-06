@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "StereoInfo.h"
-#include "X3DBindableNode.cpp"
 
 using namespace H3D;
 
@@ -38,7 +37,7 @@ H3DNodeDatabase StereoInfo::database(
                                     "StereoInfo", 
                                     &(newInstance<StereoInfo>), 
                                     typeid( StereoInfo ),
-                       &X3DBindableNode< StereoInfo >::database );
+				    &X3DBindableNode::database );
 
 namespace StereoInfoInternals {
   FIELDDB_ELEMENT( StereoInfo, interocularDistance, INPUT_OUTPUT );
@@ -51,7 +50,7 @@ StereoInfo::StereoInfo( Inst< SFSetBind > _set_bind,
                         Inst< SFBool    > _isBound,
                         Inst< SFFloat   > _interocularDistance,
                         Inst< SFFloat   > _focalDistance ):
-  X3DBindableNode<StereoInfo>( _set_bind, _metadata, _bindTime, _isBound ),
+  X3DBindableNode( "StereoInfo", _set_bind, _metadata, _bindTime, _isBound ),
   interocularDistance( _interocularDistance ),
   focalDistance( _focalDistance  ) {
   
