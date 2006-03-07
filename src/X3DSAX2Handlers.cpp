@@ -16,6 +16,7 @@
 #include "H3DDynamicFieldsObject.h"
 #include "X3DTypeFunctions.h"
 #include "Inline.h"
+#include "H3DExports.h"
 
 using namespace std;
 using namespace H3D;
@@ -432,32 +433,46 @@ void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
                               toString( locator->getSystemId() ),
                               locator->getLineNumber() );
   } else {
-    
-
     // Lookup the nodes and fields and set up the route.
-    Node *n = DEF_map->getNode( toString( inline_def_name ) );
-    Inline *inline_node = dynamic_cast< Inline * >( n );
-    if( inline_node ) {
+    const string &inline_def_string = toString( inline_def_name );
+
+    if( inline_def_string == "H3D_EXPORTS" ) {
       Node *import_node = 
-        inline_node->exported_nodes.getNode( toString( exported_def_name ) );
+        H3DExports::getH3DExportNode( toString( exported_def_name ) );
       if( import_node ) {
         DEF_map->addNode( toString( as_name ), 
                           import_node ); 
       } else {
-        cerr << "WARNING: IMPORT error. Inline node \"" 
-             << inline_def_name << "\" does not EXPORT \""
+        cerr << "WARNING: IMPORT error. H3D_EXPORTS " 
+             << "does not include \""
              << exported_def_name << "\"" 
              << getLocationString() << endl;
       }
     } else {
-      if( n ) {
-        cerr << "WARNING: IMPORT error. Node \"" 
-             << inline_def_name << "\" is not an Inline node "
-             << getLocationString() << endl;
+      Node *n = DEF_map->getNode( inline_def_string );
+      Inline *inline_node = dynamic_cast< Inline * >( n );
+      if( inline_node ) {
+        Node *import_node = 
+          inline_node->exported_nodes.getNode( toString( exported_def_name ) );
+        if( import_node ) {
+          DEF_map->addNode( toString( as_name ), 
+                            import_node ); 
+        } else {
+          cerr << "WARNING: IMPORT error. Inline node \"" 
+               << inline_def_name << "\" does not EXPORT \""
+               << exported_def_name << "\"" 
+               << getLocationString() << endl;
+        }
       } else {
-        cerr << "WARNING: IMPORT error. Node named \"" 
-             << inline_def_name << "\" does not exist."
-             << getLocationString() << endl;
+        if( n ) {
+          cerr << "WARNING: IMPORT error. Node \"" 
+               << inline_def_name << "\" is not an Inline node "
+               << getLocationString() << endl;
+        } else {
+          cerr << "WARNING: IMPORT error. Node named \"" 
+               << inline_def_name << "\" does not exist."
+               << getLocationString() << endl;
+        }
       }
     }
   }
