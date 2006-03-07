@@ -106,7 +106,9 @@ namespace H3D {
   /// of an LOD, Switch, or any node or prototype that disables its children. 
   class H3DAPI_API X3DBindableNode : public X3DChildNode {
   public:
-    
+    typedef std::deque< X3DBindableNode* > StackType;
+    typedef map< string, StackType> StackMapType;
+
     /// The SFSetBind field calls toStackTop() and removeFromStack() on the 
     /// X3DBindableNode it is in depending on the value that it is set to.
     struct H3DAPI_API SFSetBind : public SFBool {
@@ -150,6 +152,12 @@ namespace H3D {
         return 0;
     }
 
+    /// Get the stack for a given name
+    static inline const StackType &getStack
+    ( const string &bindable_stack_name ) {
+      return stack[ bindable_stack_name ];
+    }
+
     /// Move this instance to the stack top. 
     void toStackTop();
 
@@ -178,8 +186,6 @@ namespace H3D {
 
   protected:
     string bindable_stack_name;
-    typedef std::deque< X3DBindableNode* > StackType;
-    typedef map< string, StackType> StackMapType;
     /// The bindable stack.
     static StackMapType stack;
   };

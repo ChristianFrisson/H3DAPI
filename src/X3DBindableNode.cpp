@@ -84,12 +84,13 @@ void X3DBindableNode::removeFromStack() {
       new_top->bindTime->setValue( TimeStamp(), new_top->id );
     } else {
       for( StackType::iterator i = s.begin();
-	   i != s.end(); i++ )
-	if ( (*i) == this ) {
-	  s.erase( i );
-	  isBound->setValue( false, id );
-	  i = s.end();
-	}
+           i != s.end(); i++ ) {
+        if ( (*i) == this ) {
+          s.erase( i );
+          isBound->setValue( false, id );
+          break;
+        }
+      }
     }
   }
 }
@@ -100,11 +101,13 @@ void X3DBindableNode::toStackTop() {
   if ( active != this ) {
     // remove this from the stack, if it was in the stack...
     for( StackType::iterator i = s.begin();
-	 i != s.end(); i++ )
+         i != s.end(); i++ ) {
       if ( (*i) == this ) {
-	s.erase( i );
-	i = s.end();
+        s.erase( i );
+        break;
       }
+    }
+    
     // and place it on the top of the stack
     s.push_front( this );
     isBound->setValue( true, id );
