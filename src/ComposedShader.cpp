@@ -98,10 +98,10 @@ void ComposedShader::postRender() {
 void ComposedShader::render() {
   if( !GLEW_ARB_shader_objects ) {
     if( !shader_support_checked ) {
-      cerr << "Your graphic card driver does not support "
-           << "shader objects( ARB_shader_objects) so you cannot"
-           << " use the ComposedShader node. Shader will be disabled"
-           << endl;
+      Console(4) << "Your graphic card driver does not support "
+                 << "shader objects( ARB_shader_objects) so you cannot"
+                 << " use the ComposedShader node. Shader will be disabled"
+                 << endl;
       shader_support_checked = true;
     } 
     if( isValid->getValue() ) isValid->setValue( false, id );
@@ -156,9 +156,9 @@ void ComposedShader::render() {
                              nr_characters,
                              NULL,
                              log );
-            cerr << "Warning: Error while linking shader parts in \""
-                 << getName() << "\" node. " << endl
-                 << log << endl;
+            Console(3) << "Warning: Error while linking shader parts in \""
+                       << getName() << "\" node. " << endl
+                       << log << endl;
             glDeleteObjectARB( program_handle );
             program_handle = 0;
           }
@@ -176,10 +176,10 @@ void ComposedShader::render() {
       for( unsigned int i = 0; i < dynamic_fields.size(); i++ ) {
         if( !Shaders::setGLSLUniformVariableValue( program_handle, 
                                                    dynamic_fields[i] ) ) {
-          cerr << "Warning: Uniform variable \"" 
-               <<  dynamic_fields[i]->getName() 
-               << "\" not defined in shader source of the ShaderPart nodes "
-               << "in the node \"" << getName() << "\"" << endl;
+          Console(3) << "Warning: Uniform variable \"" 
+                     <<  dynamic_fields[i]->getName() 
+                     << "\" not defined in shader source of the ShaderPart nodes "
+                     << "in the node \"" << getName() << "\"" << endl;
         }
       }
     }

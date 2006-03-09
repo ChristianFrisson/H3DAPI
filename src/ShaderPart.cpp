@@ -85,9 +85,9 @@ GLhandleARB ShaderPart::compileShader() {
       shader_handle = glCreateShaderObjectARB( GL_VERTEX_SHADER_ARB );
     } else {
       shader_handle = 0;
-      cerr << "Warning: Unsupported shader type \"" << shader_type
-           << "\" in ShaderPart node. Must be either \"FRAGMENT\"" 
-           << " or \"VERTEX\"." << endl;
+      Console(3) << "Warning: Unsupported shader type \"" << shader_type
+                 << "\" in ShaderPart node. Must be either \"FRAGMENT\"" 
+                 << " or \"VERTEX\"." << endl;
       return shader_handle;
     }
     
@@ -109,9 +109,9 @@ GLhandleARB ShaderPart::compileShader() {
                        nr_characters,
                        NULL,
                        log );
-      cerr << "Warning: Error when compiling shader source of \"" 
-           << getName() << "\" node (" << url_used 
-           << ")." << endl << log << endl;
+      Console(3) << "Warning: Error when compiling shader source of \"" 
+                 << getName() << "\" node (" << url_used 
+                 << ")." << endl << log << endl;
 
       glDeleteObjectARB( shader_handle );
       shader_handle = 0;
@@ -149,11 +149,11 @@ void ShaderPart::SFShaderString::update() {
       is.close();
     }
   }
-  cerr << "None of the urls in ShaderPart with url [";
+  Console(4) << "None of the urls in ShaderPart with url [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-    cerr << " \"" << *i << "\"";
+    Console(4) << " \"" << *i << "\"";
   }
-  cerr << "] could be loaded." << ends;
+  Console(4) << "] could be loaded." << ends;
   shader_part->setURLUsed( "" );
   value = "";
 }

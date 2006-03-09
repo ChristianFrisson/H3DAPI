@@ -163,9 +163,9 @@ void H3DWindowNode::initialize() {
     DescribePixelFormat(hdc, pixel_format,  
                         sizeof(PIXELFORMATDESCRIPTOR), &pfd); 
     if( !(pfd.dwFlags & PFD_STEREO) ) {
-      cerr << "Warning: Stereo pixel format not supported by your "
-           << "graphics card. Quad buffered stereo cannot be used. "
-           << "Using \"MONO\" instead. " <<endl;
+      Console(4) << "Warning: Stereo pixel format not supported by your "
+                 << "graphics card. Quad buffered stereo cannot be used. "
+                 << "Using \"MONO\" instead. " <<endl;
       renderMode->setValue( "MONO", id );
     }
   }

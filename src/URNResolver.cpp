@@ -28,14 +28,15 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "URNResolver.h"
+#include "Console.h"
 
 using namespace H3D;
 
 void URNResolver::loadConfigFile( const string &config_file ) {
   ifstream is( config_file.c_str() );
   if( !is.good() ) {
-    cerr << "Warning: Could not open file URN resolver config file \"" 
-         << config_file << "\"" << endl; 
+    Console(4) << "Warning: Could not open file URN resolver config file \"" 
+               << config_file << "\"" << endl; 
     return;
   }
   string line;
@@ -57,8 +58,8 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     
     string urn = line.substr( pos, 4 );
     if( !nonCaseEquals( urn, "urn:" ) ) {
-      cerr << "Invalid urn in URN resolve rule \"" << line 
-           << "\" in file \"" << config_file << "\"" << endl;
+      Console(3) << "Invalid urn in URN resolve rule \"" << line 
+                 << "\" in file \"" << config_file << "\"" << endl;
       continue;
     } 
     
@@ -67,8 +68,8 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     string name_space = "";
     pos = line.find( ':', characters_processed );
     if( pos == string::npos ) {
-      cerr << "Invalid urn in URN resolve rule \"" << line
-           << "\" in file \"" << config_file << "\"" << endl;
+      Console(3) << "Invalid urn in URN resolve rule \"" << line
+                 << "\" in file \"" << config_file << "\"" << endl;
       continue;
     } 
     
@@ -81,7 +82,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     string::size_type tab_pos = line.find( '\t', characters_processed );
     
     if( pos == string::npos && pos == string::npos )
-      cerr << "Invalid urn spec" << endl;
+      Console(3) << "Invalid urn spec" << endl;
     
     pos = pos < tab_pos ? pos: tab_pos;
     
@@ -97,8 +98,8 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     }
     
     if( pos >= line.size() ) {
-      cerr << "Invalid URN resolve rule \"" << line
-           << "\" in file \"" << config_file << endl;
+      Console(3) << "Invalid URN resolve rule \"" << line
+                 << "\" in file \"" << config_file << endl;
       continue;
     }
     

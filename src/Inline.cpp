@@ -113,18 +113,18 @@ void Inline::LoadedScene::update() {
           value.push_back( g );
           inline_node->setURLUsed( *i );
         } catch( const X3D::XMLParseError &e ) {
-          cerr << "Warning: Error when parsing \"" << *i << "\" in \"" 
-               << getOwner()->getName() << "\" (" << e << ")." << endl;
+          Console(3) << "Warning: Error when parsing \"" << *i << "\" in \"" 
+                     << getOwner()->getName() << "\" (" << e << ")." << endl;
         } 
         return;
       }
     }
 
-    cerr << "Warning: None of the urls in Inline node with url [";
+    Console(4) << "Warning: None of the urls in Inline node with url [";
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-      cerr << " \"" << *i << "\"";
+      Console(4) << " \"" << *i << "\"";
     }
-    cerr << "] could be loaded. "
+    Console(4) << "] could be loaded. "
          << "(in " << getOwner()->getName() << ")" << endl;
     inline_node->setURLUsed( "" );
   }

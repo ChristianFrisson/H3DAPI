@@ -205,7 +205,7 @@ namespace H3D {
     inline Quaternion operator-( const Quaternion &q ) { return q * -1; }
     
     /// Subtraction between two Quaternions. The result is not necessarily a unit 
-    /// quaternion even if and are unit quaternion.
+    /// quaternion even if a and b are unit quaternion.
     inline Quaternion operator-( const Quaternion &a, const Quaternion &b ) { 
       return a + (-b); 
     }

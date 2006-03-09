@@ -261,8 +261,8 @@ namespace SpaceWareSensorInternal {
       }
     }
     catch (const Exception::H3DException &e) {
-      cerr << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
-      cerr << e << endl;
+      Console(4) << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
+      Console(4) << e << endl;
     }
     return 1;
   }
@@ -356,11 +356,11 @@ SpaceWareSensor::SpaceWareSensor(
 
 #ifndef HAVE_3DXWARE
 #ifdef WIN32
-  cerr << "Warning: H3D API compiled without 3Dxware. SpaceWareSensor node "
-       << "will be unusable." << endl;
+  Console(4) << "Warning: H3D API compiled without 3Dxware. SpaceWareSensor node "
+             << "will be unusable." << endl;
 #else
-  cerr << "Warning: SpaceWareSensor only supported on Windows platform." 
-       << endl;
+  Console(4) << "Warning: SpaceWareSensor only supported on Windows platform." 
+             << endl;
 #endif
 #endif
 }

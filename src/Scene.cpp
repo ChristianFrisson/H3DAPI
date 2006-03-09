@@ -32,7 +32,11 @@
 #include "TimeStamp.h"
 #include "DeviceInfo.h"
 #include <GL/glew.h>
+#ifdef MACOSX
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include "PeriodicUpdate.h"
 #include "GLUTWindow.h"
 
@@ -80,7 +84,6 @@ void Scene::idle() {
   last_time = t;
   time->setValue( t, id );
 
-  //cerr << "fr = " << frameRate->getValue() << endl;
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {
     vector< H3DHapticsDevice * > hds;

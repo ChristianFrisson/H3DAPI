@@ -84,9 +84,9 @@ void FillProperties::render() {
  
     int hatch_style = hatchStyle->getValue();
     if( hatch_style < 1 || hatch_style > 6 ) {
-      cerr << "Warning: hatchStyle " << hatch_style 
-           << " not supported. Skipping hatches (in " 
-           << getName() << "). "<< endl;
+      Console(3) << "Warning: hatchStyle " << hatch_style 
+                 << " not supported. Skipping hatches (in " 
+                 << getName() << "). "<< endl;
     } else {
       const RGB &c = hatchColor->getValue();
       glColor3f( c.r, c.g, c.b );

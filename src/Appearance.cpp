@@ -35,6 +35,7 @@
 #include "X3DMaterialNode.h"
 #include "LineProperties.h"
 #include "MultiTexture.h"
+#include "Console.h"
 
 using namespace H3D;
 
@@ -166,9 +167,9 @@ void Appearance::preRender() {
        s->preRender();
        break;
      } else {
-       cerr << "Warning: Shader node \"" << s->getName() 
-            << "\" does not support the \"" << s->language->getValue() 
-            << "\" language. Shader will be ignored." << endl;
+       Console(3) << "Warning: Shader node \"" << s->getName() 
+                  << "\" does not support the \"" << s->language->getValue() 
+                  << "\" language. Shader will be ignored." << endl;
        s->setSelected( false );
      }
    }

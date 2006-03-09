@@ -322,7 +322,6 @@ GLuint X3DTextureNode::renderImage( Image *image,
     return texture_id;
   } else { 
     return 0;
-    cerr << "No image" << endl;
   }
 
 }

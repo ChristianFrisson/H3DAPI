@@ -644,7 +644,7 @@ CGprofile H3D::Shaders::cgProfileFromString( const string &profile,
     } 
   } else {
     if( profile != "CG" ) {
-      cerr << "Warning: Invalid profile name" << endl;
+      Console(3) << "Warning: Invalid profile name" << endl;
     }
     if( type == "VERTEX" )
       cg_profile = cgGLGetLatestProfile( CG_GL_VERTEX );
@@ -819,7 +819,7 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   // ignore any errors that occurs when setting uniform variables.
   CGerror err = cgGetError();
   if( err != CG_NO_ERROR )
-    cerr << cgGetErrorString( err ) << endl;
+    Console(3) << cgGetErrorString( err ) << endl;
   return err == GL_NO_ERROR;
  }
 

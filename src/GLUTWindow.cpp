@@ -32,7 +32,7 @@
 #include "X3DKeyDeviceSensorNode.h"
 #include "MouseSensor.h"
 #include <GL/glew.h>
-#include <GL/glut.h>
+#include <GLUT/glut.h>
 #ifdef FREEGLUT
 #include <GL/freeglut.h>
 #ifdef _MSC_VER

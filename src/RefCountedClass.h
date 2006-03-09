@@ -48,8 +48,8 @@ namespace H3D {
 
     /// Destructor.
     virtual ~RefCountedClass() {
-#ifdef REF_COUNT_DEBUG
-      cerr << "~RefCountedClass: " << this << endl;
+#ifdef DEBUG
+      Console(1) << "~RefCountedClass: " << this << endl;
 #endif
     }
 
@@ -63,8 +63,8 @@ namespace H3D {
     inline void ref() { 
       ref_count++;
 #ifdef REF_COUNT_DEBUG
-      cerr << "Ref " << getName() << " " << this << ": " 
-           << ref_count << endl;
+      Console(1) << "Ref " << getName() << " " << this << ": " 
+                 << ref_count << endl;
 #endif
       if( !manual_initialize && ref_count == 1 ) {
         initialize();
@@ -88,8 +88,8 @@ namespace H3D {
     inline void unref() {
       ref_count--;
 #ifdef REF_COUNT_DEBUG
-      cerr << "Unref " << getName() << " " << this << ": " 
-           << ref_count << endl;
+      Console(1) << "Unref " << getName() << " " << this << ": " 
+                 << ref_count << endl;
 #endif
       if( ref_count == 0 ) {
         delete this;

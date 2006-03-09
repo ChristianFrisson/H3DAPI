@@ -33,6 +33,13 @@
 
 using namespace H3D;
 
+#ifdef MACOSXBLAH
+template<>
+X3DBindableNode< DeviceInfo >::StackType X3DBindableNode< DeviceInfo >::stack = 
+X3DBindableNode< DeviceInfo >::StackType();
+#endif
+
+
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase DeviceInfo::database( "DeviceInfo", 
                                       &(newInstance<DeviceInfo>), 

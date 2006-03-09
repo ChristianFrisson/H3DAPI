@@ -111,9 +111,6 @@ void HLCALLBACK X3DGeometryNode::motionCallback( HLenum event,
                                            (H3DFloat)hlforce[2] );
     fv.push_back( f );
     geometry->force->setValue( fv, geometry->id );
-    //cerr << "X3D Force = " << f.x << ", " << f.y
-    //     << ", " << f.z << endl;
-
   }
 
 }

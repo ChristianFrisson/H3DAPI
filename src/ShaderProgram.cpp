@@ -87,10 +87,10 @@ void ShaderProgram::render() {
     for( unsigned int i = 0; i < dynamic_fields.size(); i++ ) {
       if( !Shaders::setCGUniformVariableValue( cg_program, 
                                                dynamic_fields[i] ) ) {
-        cerr << "Warning: Uniform variable \"" 
-             <<  dynamic_fields[i]->getName() 
-             << "\" not defined in shader source (" << source_url << ")" 
-             << " of the node \"" << getName() << "\"" << endl;
+        Console(3) << "Warning: Uniform variable \"" 
+                   <<  dynamic_fields[i]->getName() 
+                   << "\" not defined in shader source (" << source_url << ")" 
+                   << " of the node \"" << getName() << "\"" << endl;
       }
     }
   }
@@ -132,9 +132,9 @@ void ShaderProgram::initCGShaderProgram() {
   setURLUsed( "" );
   const string &shader_type = type->getValue();
   if( !(shader_type == "FRAGMENT" || shader_type == "VERTEX") ) {
-    cerr << "Warning: Unsupported shader type \"" << shader_type
-         << "\" in \"" << getName() << "\". Must be either \"FRAGMENT\"" 
-         << " or \"VERTEX\"." << endl;
+    Console(3) << "Warning: Unsupported shader type \"" << shader_type
+               << "\" in \"" << getName() << "\". Must be either \"FRAGMENT\"" 
+               << " or \"VERTEX\"." << endl;
     return;
   }
 
@@ -143,7 +143,7 @@ void ShaderProgram::initCGShaderProgram() {
   
   CGerror err = cgGetError();
   if (err != CG_NO_ERROR) {
-    cerr << cgGetErrorString( err ) << endl;
+    Console(3) << cgGetErrorString( err ) << endl;
   }
 
   if( cg_program ) {
@@ -169,29 +169,30 @@ void ShaderProgram::initCGShaderProgram() {
         if( err == CG_NO_ERROR ) {
           source_url = *i;
         } else {
-          cerr << "Warning: Shader program error when compiling source (" 
-               << *i << ") of \"" 
-               << getName() << "\" node." << endl << cgGetErrorString( err ) 
-               << endl;
+          Console(3) << "Warning: Shader program error when compiling source (" 
+                     << *i << ") of \"" 
+                     << getName() << "\" node." << endl << cgGetErrorString( err ) 
+                     << endl;
           const char *last_listing = cgGetLastListing( cg_context );
-          if( last_listing ) cerr << last_listing  << endl;
+          if( last_listing ) Console(3) << last_listing  << endl;
         }
         break;
       }
     }
 
     if( getURLUsed() == "" ) {
-      cerr << "Warning: None of the urls in ShaderProgram node with url [";
+      Console(4) << "Warning: None of the urls in ShaderProgram node with url [";
       for( MFString::const_iterator i = url->begin(); 
            i != url->end(); ++i ) {  
-        cerr << " \"" << *i << "\"";
+        Console(4) << " \"" << *i << "\"";
       }
-      cerr << "] could be loaded (in " << getName() << ")" << endl;
+      Console(4) << "] could be loaded (in " << getName() << ")" << endl;
     }
   } else {
-    cerr << "Warning: Your graphics card does not support the "
-         << "CG shader profile specified (" << cg_profile_string
-         << ") in \"" << getName() << "\". Shader will be disabled. " << endl;
+    Console(4) << "Warning: Your graphics card does not support the "
+               << "CG shader profile specified (" << cg_profile_string
+               << ") in \"" << getName() 
+               << "\". Shader will be disabled. " << endl;
   }
   
   cgGLSetManageTextureParameters( cg_context, true );

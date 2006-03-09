@@ -159,14 +159,14 @@ namespace H3D {
         ////const char *value = PyString_AsString( PyObject_Repr( r ) );
         Py_DECREF( args );
         if( r == Py_None ) {
-          cerr << "Warning: update()-function for Python defined field of type " 
-               << this->getFullName() << " does not return a value. "<< endl;
+          Console(3) << "Warning: update()-function for Python defined field of type " 
+                     << this->getFullName() << " does not return a value. "<< endl;
           Py_DECREF( r );
         } else if ( r ) {
           if( !PythonInternals::pythonSetFieldValueFromObject( this, r ) ) {
-            cerr << "Warning: invalid return value from update()-function"
-                 << " for Python defined field of type " 
-                 << this->getFullName() << endl;
+            Console(3) << "Warning: invalid return value from update()-function"
+                       << " for Python defined field of type " 
+                       << this->getFullName() << endl;
           }
           Py_DECREF( r );
         } else {

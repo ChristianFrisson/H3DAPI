@@ -108,9 +108,9 @@ void GeneratedCubeMapTexture::initializeTextures() {
 
 void GeneratedCubeMapTexture::render() {
   if( !GLEW_ARB_texture_cube_map ) {
-    cerr << "Warning: ARB_texture_cube_map extension not supported "
-         << "by your graphics card. ComposedCubeMapTexture node cannot "
-         << "be used." << endl; 
+    Console(4) << "Warning: ARB_texture_cube_map extension not supported "
+               << "by your graphics card. ComposedCubeMapTexture node cannot "
+               << "be used." << endl; 
   } else {
     if( !textures_initialized )
       initializeTextures();
@@ -263,10 +263,10 @@ void GeneratedCubeMapTexture::updateAllCubeMapTextures( X3DChildNode *n,
         if(  cubemap->getTextureId() == 0 ) 
           cubemap->updateCubeMapTextures( n, vp );
       } else {
-        cerr << "Warning: Invalid value for \"update\" field in \""
-             << cubemap->getName() << "\" node (\"" << update
-             << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
-             << " or \"ALWAYS\"" << endl;
+        Console(3) << "Warning: Invalid value for \"update\" field in \""
+                   << cubemap->getName() << "\" node (\"" << update
+                   << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
+                   << " or \"ALWAYS\"" << endl;
       }
     }
   }

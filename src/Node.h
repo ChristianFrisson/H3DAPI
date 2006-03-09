@@ -33,6 +33,8 @@
 #include <H3DNodeDatabase.h>
 #include "RefCountedClass.h"
 #include "TraverseInfo.h"
+#include "Console.h"
+
 //#include "FieldTemplates.h"
 
 using namespace std;

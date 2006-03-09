@@ -143,7 +143,7 @@ void PythonScript::loadScript( const string &script ) {
   if (PyDict_GetItemString( static_cast< PyObject * >(module_dict), "__builtins__") == NULL) {
     if (PyDict_SetItemString( static_cast< PyObject * >(module_dict), "__builtins__",
                              PyEval_GetBuiltins()) != 0)
-    cerr << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
+      Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
   }  
   
   FILE *f = fopen( script.c_str(), "r" );
@@ -156,7 +156,7 @@ void PythonScript::loadScript( const string &script ) {
       PyErr_Print();
     
   } else {
-    cerr << "Could not open \""<< script << endl;
+    Console(4) << "Could not open \""<< script << endl;
   }
 }
 
@@ -207,13 +207,13 @@ void PythonScript::initialize() {
       Py_DECREF( args );
     }   
   } else {
-    cerr << "Warning: None of the urls in the PythonScript node \"" 
+    Console(4) << "Warning: None of the urls in the PythonScript node \"" 
          << getName() << "\" with url [";
     for( MFString::const_iterator i = url->begin(); 
          i != url->end(); ++i ) {  
-      cerr << " \"" << *i << "\"";
+      Console(4) << " \"" << *i << "\"";
     }
-    cerr << "] could be found. " << endl;
+    Console(4) << "] could be found. " << endl;
   }
 }
 

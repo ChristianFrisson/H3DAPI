@@ -252,8 +252,6 @@ string FC_GetFontByName( const char *font_name ) {
   FcFontSet	*fs;
   FcPattern   *pat;
 
-  cerr << "FC_GetFontByName" << endl;
-
   pat = FcPatternCreate ();
   os = FcObjectSetBuild (FC_FAMILY, FC_FILE, 0);
   fs = FcFontList (0, pat, os);
@@ -263,7 +261,6 @@ string FC_GetFontByName( const char *font_name ) {
   if (fs) {
     int	j;
     
-    cerr << "FC_GetFontByName nfont = " << fs->nfont << endl;
     for (j = 0; j < fs->nfont; j++) {
       FcChar8 *font;
       FcChar8 *file;
@@ -281,7 +278,6 @@ string FC_GetFontByName( const char *font_name ) {
     }
     FcFontSetDestroy (fs);
   }
-  cerr << "FC_GetFontByName return = " << fn << endl;
   return fn;
 }
 
@@ -425,8 +421,8 @@ FontStyle::FontStyle(
   renderType->setValue( "TEXTURE" );
 
 #if !( defined( HAVE_FREETYPE ) && defined( HAVE_FTGL ) )
-  cerr << "Warning: H3D API compiled withour FTGL or FreeType. FontStyle"
-       << " nodes will be unusable." << endl;
+  Console(4) << "Warning: H3D API compiled withour FTGL or FreeType. FontStyle"
+             << " nodes will be unusable." << endl;
 #endif
 }
 
@@ -494,14 +490,14 @@ void FontStyle::buildFonts() {
   // no font was found use default font and print a warning message.
   if( !font ) {
     if( family->size() != 0 ) {
-      cerr << "Warning: None of the fonts [";
+      Console(4) << "Warning: None of the fonts [";
       for( MFString::const_iterator n = family->begin();
            n != family->end();
            n++ ) {
-        cerr << " \"" << *n << "\""; 
+        Console(4) << " \"" << *n << "\""; 
       }
 
-      cerr << " ] could be found. Using \"" << DEFAULT_SERIF_FONT 
+      Console(4) << " ] could be found. Using \"" << DEFAULT_SERIF_FONT 
            << "\" instead. " << endl;
     }
 

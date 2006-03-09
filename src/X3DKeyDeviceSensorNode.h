@@ -32,7 +32,11 @@
 #include "X3DSensorNode.h"
 #include <list>
 #include <GL/glew.h>
+#ifdef MACOSX
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 
 namespace H3D {
 

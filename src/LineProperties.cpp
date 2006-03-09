@@ -95,9 +95,9 @@ void LineProperties::render() {
         //dash-dot-dot
         glLineStipple( (GLint)width, 0x24ff );
       else {
-        cerr << "Warning: linetype " << line_type << " not supported. Using "
-             << "linetype 1 (solid) instead. Supported line types are "
-             << "1, 2, 3, 4 and 5 (in "  << getName() << "). "<< endl;
+        Console(3) << "Warning: linetype " << line_type << " not supported. Using "
+                   << "linetype 1 (solid) instead. Supported line types are "
+                   << "1, 2, 3, 4 and 5 (in "  << getName() << "). "<< endl;
       }
     }
   }

@@ -158,7 +158,7 @@ namespace H3D {
     ///
     virtual void onAdd( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
-      cerr << "RefCountSField: Add node" << endl;
+      Console(1) << "RefCountSField: Add node" << endl;
 #endif
     }
       
@@ -170,7 +170,7 @@ namespace H3D {
     ///
     virtual void onRemove( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
-      cerr << "RefCountSField: Remove node" << endl;
+      Console(1) << "RefCountSField: Remove node" << endl;
 #endif
     }
       
@@ -181,8 +181,8 @@ namespace H3D {
   template< class RefClass, class BaseField >
   void RefCountSField< RefClass, BaseField >::update() {
 #ifdef REF_COUNT_DEBUG
-    cerr << "RefCountSField(" << name << ")::update()   event_ptr = " 
-         << event.ptr << endl;
+    Console(1) << "RefCountSField(" << name << ")::update()   event_ptr = " 
+               << event.ptr << endl;
 #endif
     value = static_cast< RefCountSField* >(this->event.ptr)->getValue();
     
@@ -193,7 +193,7 @@ namespace H3D {
                                                                int id ) {
     this->checkAccessTypeSet( id );
 #ifdef REF_COUNT_DEBUG
-    cerr << "RefCountSField(" << name << ")::setValue()" << endl;
+    Console(1) << "RefCountSField(" << name << ")::setValue()" << endl;
 #endif
     value = n;
     // generate an event.
@@ -210,7 +210,7 @@ namespace H3D {
   template< class RefClass, class BaseField >
   RefClass *RefCountSField< RefClass, BaseField >::getValue( int id ) {
 #ifdef REF_COUNT_DEBUG
-    cerr << "RefCountSField(" <<  name << ")::getValue()" << endl;
+    Console(1) << "RefCountSField(" <<  name << ")::getValue()" << endl;
 #endif
     this->checkAccessTypeGet( id );
     // check that the field is up-to-date first

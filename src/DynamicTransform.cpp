@@ -29,7 +29,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "DynamicTransform.h"
+#ifdef MACOSX
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include "RK4.h"
 #include "Scene.h"
 

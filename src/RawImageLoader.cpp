@@ -97,8 +97,8 @@ Image *RawImageLoader::loadImage(  const string &url ) {
   else if( pixel_type_string == "VEC3" ) 
     pixel_type = Image::VEC3;
   else {
-    cerr << "Warning: Invalid pixelType value \"" << pixel_type_string
-         << "\" in  RawImageLoader. " << endl;
+    Console(3) << "Warning: Invalid pixelType value \"" << pixel_type_string
+               << "\" in  RawImageLoader. " << endl;
 	  return NULL;
   }
 
@@ -110,15 +110,14 @@ Image *RawImageLoader::loadImage(  const string &url ) {
   else if( pixel_component_type_string == "RATIONAL" )
     pixel_component_type = Image::RATIONAL;
   else {
-    cerr << "Warning: Invalid pixelComponentType value \"" 
-         << pixel_component_type_string
-         << "\" in  RawImageLoader. " << endl;
+    Console(3) << "Warning: Invalid pixelComponentType value \"" 
+               << pixel_component_type_string
+               << "\" in  RawImageLoader. " << endl;
 	  return NULL;
   }
     
   ifstream is( url.c_str(), ios::in | ios::binary );
   if( !is.good() ) {
-    //    cerr << "Could not open file \"" << url << "\" in RawImageLoader. "<< endl;
     return NULL;
   }
   

@@ -118,15 +118,15 @@ Sound::Sound(
   if( !al_device )
     al_device = alcOpenDevice(NULL);
   if( !al_device ) {
-    cerr << "Warning: Could not find audio device for use with Sound node."
-         << endl;
+    Console(4) << "Warning: Could not find audio device for use with Sound node."
+               << endl;
   }
   if( !al_context )
 	  al_context = alcCreateContext( al_device, NULL);
   
 	if( !al_context ) {
-    cerr << "Warning: Could not create OpenAL context for use with Sound node."
-         << endl;
+    Console(4) << "Warning: Could not create OpenAL context for use with Sound node."
+               << endl;
 	}
   alcMakeContextCurrent(al_context);
   if( !al_source ) {
@@ -134,8 +134,8 @@ Sound::Sound(
     }
   alSourcef( al_source, AL_GAIN, 0 );
 #else
-  cerr << "Warning: H3D API compiled without OpenAL. Sound nodes"
-       << " will be unusable." << endl;
+  Console(4) << "Warning: H3D API compiled without OpenAL. Sound nodes"
+             << " will be unusable." << endl;
 #endif
 }
 

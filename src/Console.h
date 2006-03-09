@@ -44,7 +44,8 @@
 //  Console(3) << "Level 3, with time" << endl;
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#ifndef __CONSOLE_H__
+#define __CONSOLE_H__
 
 #include <ostream>
 #include <sstream>
@@ -165,5 +166,4 @@ namespace H3D {
   extern H3DAPI_API ConsoleStream Console;
 
 }
-
-
+#endif

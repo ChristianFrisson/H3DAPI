@@ -83,9 +83,9 @@ void X3DLightNode::enableGraphicsState() {
   if( max_lights == -1 ) {
     glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
     if( light_index + 1 > (GLuint)max_lights )
-      cerr << "Warning: Maximum number of lightsources (" << max_lights 
-           << ") exceeded. Light will be ignored (" << getName() 
-           << ")" << endl;
+      Console(4) << "Warning: Maximum number of lightsources (" << max_lights 
+                 << ") exceeded. Light will be ignored (" << getName() 
+                 << ")" << endl;
   }
   
   if( light_index + 1 <= (GLuint)max_lights ) {

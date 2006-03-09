@@ -255,8 +255,6 @@ void SuperShape::render() {
       bb->center->setValue( half );
       Vec3f size = Vec3f( vmax.x-vmin.x, vmax.y-vmin.y, vmax.z-vmin.z );
       bb->size->setValue( size );
-      //cerr << "bb center= " << half << endl;
-      //cerr << "bb size=   " << size << endl;
       bound->setValue( bb );
     }
 }

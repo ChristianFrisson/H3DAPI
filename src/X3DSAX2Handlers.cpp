@@ -99,7 +99,7 @@ void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs 
       } else if( !field_value &&  name == "value" ) {
         field_value = attrs.getValue( i );
       } else {
-        cerr << "WARNING: Unknown attribute \"" << name  
+        Console(3) << "WARNING: Unknown attribute \"" << name  
              << "\" in 'field' element " << getLocationString() << endl;
       }
     }
@@ -147,7 +147,7 @@ void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs 
       X3DTypes::stringToType(  toString( field_type ).c_str() );
 
     if( x3d_type == X3DTypes::UNKNOWN_X3D_TYPE ) {
-      cerr << "WARNING: Invalid value for \"type\" attribute of \"field\" element "
+      Console(3) << "WARNING: Invalid value for \"type\" attribute of \"field\" element "
            << getLocationString() << endl;
     } else {
       string v = "";
@@ -188,7 +188,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
       } else if( !field_value && name == "value" ) {
         field_value = attrs.getValue( i );
       } else {
-        cerr << "WARNING: Unknown attribute \"" << name  
+        Console(3) << "WARNING: Unknown attribute \"" << name  
              << "\" in 'field' element " << getLocationString() << endl;
       }
     }
@@ -282,7 +282,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
                                     locator->getLineNumber() ); 
         }
       } else {
-        cerr << "Warning: 'value' attribute ignored. Only used if "
+        Console(3) << "Warning: 'value' attribute ignored. Only used if "
              << "accesstype is initializeOnly or inputOutput " 
              << getLocationString() << endl;
       }
@@ -294,7 +294,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
     node_stack.push( NodeElement( fv ) ); 
     return f;
   }  else {
-    cerr << "Warning: 'field' declaration in Node that is does not support"
+    Console(3) << "Warning: 'field' declaration in Node that is does not support"
          << " it " << getLocationString() << endl;
     node_stack.push( NodeElement( NULL ) ); 
   }
@@ -322,7 +322,7 @@ void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs,
     } else if( !to_field_name && name == "toField" ) {
       to_field_name = attrs.getValue( i );
     } else {
-      cerr << "WARNING: Unknown attribute \"" << name  
+      Console(3) << "WARNING: Unknown attribute \"" << name  
            << "\" in ROUTE element " << getLocationString() << endl;
     }
   }
@@ -366,25 +366,25 @@ void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs,
             else
               from_field->routeNoEvent( to_field );
           } else {
-            cerr << "WARNING: Route error. Could not find field named \"" 
+            Console(3) << "WARNING: Route error. Could not find field named \"" 
                  << to_field_name
                  << "\" in \"" << to_node_name << "\" Node " 
                  << getLocationString() << endl;
           }
         } else {
-          cerr << "WARNING: Route error. Could not find Node named \"" 
+          Console(3) << "WARNING: Route error. Could not find Node named \"" 
                << to_node_name
                << "\" specified in \"toNode\" attribute " 
                << getLocationString() << endl;
         }
       } else {
-        cerr << "WARNING: Route error. Could not find field named \"" 
+        Console(3) << "WARNING: Route error. Could not find field named \"" 
              << from_field_name
              << "\" in \"" << from_node_name << "\" Node " 
              << getLocationString() << endl;
       }
     } else {
-      cerr << "WARNING: Route error. Could not find Node named \"" 
+      Console(3) << "WARNING: Route error. Could not find Node named \"" 
            << from_node_name
            << "\" specified in \"fromNode\" attribute " 
            << getLocationString() << endl;
@@ -411,7 +411,7 @@ void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
     } else if( !as_name && name == "AS" ) {
       as_name = attrs.getValue( i );
     } else {
-      cerr << "WARNING: Unknown attribute \"" << name  
+      Console(3) << "WARNING: Unknown attribute \"" << name  
            << "\" in IMPORT element " << getLocationString() << endl;
     }
   }
@@ -443,7 +443,7 @@ void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
         DEF_map->addNode( toString( as_name ), 
                           import_node ); 
       } else {
-        cerr << "WARNING: IMPORT error. H3D_EXPORTS " 
+        Console(3) << "WARNING: IMPORT error. H3D_EXPORTS " 
              << "does not include \""
              << exported_def_name << "\"" 
              << getLocationString() << endl;
@@ -458,18 +458,18 @@ void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
           DEF_map->addNode( toString( as_name ), 
                             import_node ); 
         } else {
-          cerr << "WARNING: IMPORT error. Inline node \"" 
+          Console(3) << "WARNING: IMPORT error. Inline node \"" 
                << inline_def_name << "\" does not EXPORT \""
                << exported_def_name << "\"" 
                << getLocationString() << endl;
         }
       } else {
         if( n ) {
-          cerr << "WARNING: IMPORT error. Node \"" 
+          Console(3) << "WARNING: IMPORT error. Node \"" 
                << inline_def_name << "\" is not an Inline node "
                << getLocationString() << endl;
         } else {
-          cerr << "WARNING: IMPORT error. Node named \"" 
+          Console(3) << "WARNING: IMPORT error. Node named \"" 
                << inline_def_name << "\" does not exist."
                << getLocationString() << endl;
         }
@@ -493,7 +493,7 @@ void X3DSAX2Handlers::handleExportElement( const Attributes &attrs  ) {
     } else if( !as_name &&  name == "AS" ) {
       as_name = attrs.getValue( i );
     } else {
-      cerr << "WARNING: Unknown attribute \"" << name  
+      Console(3) << "WARNING: Unknown attribute \"" << name  
            << "\" in EXPORT element " << getLocationString() << endl;
     }
   }
@@ -515,7 +515,7 @@ void X3DSAX2Handlers::handleExportElement( const Attributes &attrs  ) {
       exported_nodes->addNode( toString( as_name ), 
                                n ); 
     } else {
-      cerr << "WARNING: EXPORT error. Node named \"" 
+      Console(3) << "WARNING: EXPORT error. Node named \"" 
            << local_def_name << "\" does not exist."
            << getLocationString() << endl;
     }
@@ -530,7 +530,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
   node_stack.push( NodeElement( NULL ) );
 
   if( !defining_proto_connections ) {
-    cerr << "Warning: \"connect\" element can only be defined in a IS element "
+    Console(3) << "Warning: \"connect\" element can only be defined in a IS element "
          << getLocationString() << endl;
   } else if( proto_instance ) {
   
@@ -546,7 +546,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
       } else if( !proto_field_name &&  name =="protoField" ) {
         proto_field_name = attrs.getValue( i );
       } else {
-        cerr << "WARNING: Unknown attribute \"" << name  
+        Console(3) << "WARNING: Unknown attribute \"" << name  
              << "\" in EXPORT element " << getLocationString() << endl;
       }
     }
@@ -569,26 +569,26 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
         proto_instance->getField( toString( proto_field_name ) );
       
       if( !node_field ) {
-        cerr << "WARNING: Could not find field \"" << node_field_name  
+        Console(3) << "WARNING: Could not find field \"" << node_field_name  
              << "\" in parent node" << getLocationString() << endl;
         return;
       }
       
       if( !proto_field ) {
-        cerr << "WARNING: Could not find field \"" << proto_field_name  
+        Console(3) << "WARNING: Could not find field \"" << proto_field_name  
              << "\" in ProtoInterface of PROTO node" 
              << getLocationString() << endl;
         return;
       }
       
       if( node_field->getAccessType() != proto_field->getAccessType() ) {
-        cerr << "WARNING: accessType of \"nodeField\" and \"protoField\" does not match"
+        Console(3) << "WARNING: accessType of \"nodeField\" and \"protoField\" does not match"
              << getLocationString() << endl;
         return;
       }
       
       if( node_field->getX3DType() != proto_field->getX3DType() ) {
-        cerr << "WARNING: type of \"nodeField\" and \"protoField\" does not match"
+        Console(3) << "WARNING: type of \"nodeField\" and \"protoField\" does not match"
              << getLocationString() << endl;
         return;
       }
@@ -624,13 +624,13 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
 
   if( localname_string == "ProtoDeclare" ) {
     if( proto_declaration ) {
-      cerr << "Warning: ProtoDeclare element not allowed inside other ProtoDeclare element"
+      Console(3) << "Warning: ProtoDeclare element not allowed inside other ProtoDeclare element"
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
     } else {
       const XMLCh *name = attrs.getValue( gname );
       if( !name ) {
-        cerr << "Warning: ProtoDeclare element is missing required \"name\" attibute "
+        Console(3) << "Warning: ProtoDeclare element is missing required \"name\" attibute "
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       } else {
@@ -642,7 +642,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
   } else if( localname_string == "ProtoInterface" ) {
     if( !proto_declaration || defining_proto_interface || 
         defining_proto_body || defining_extern_proto ) {
-      cerr << "Warning: ProtoInterface element can only be a child element of ProtoDeclare element "
+      Console(3) << "Warning: ProtoInterface element can only be a child element of ProtoDeclare element "
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
     } else {
@@ -652,7 +652,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
     if( !proto_declaration || defining_proto_interface || 
         defining_proto_body || defining_extern_proto ||
         proto_declaration->getProtoBody() != "" ) {
-      cerr << "Warning: ProtoBody element can only be a child element of ProtoDeclare element "
+      Console(3) << "Warning: ProtoBody element can only be a child element of ProtoDeclare element "
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
     } else {
@@ -662,7 +662,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
              !defining_proto_body && !defining_extern_proto ) {
     // Element in ProtoDeclare proto declare that is not ProtoInterface 
     // or ProtoBody.
-    cerr << "Warning: Only ProtoBody and ProtoInterface elements allowed in ProtoDeclare element "
+    Console(3) << "Warning: Only ProtoBody and ProtoInterface elements allowed in ProtoDeclare element "
          << getLocationString() << endl;
     node_stack.push( NodeElement( NULL ) );
   } else {
@@ -682,13 +682,13 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
         fd->value = fd->value + s.str();
         }
       } else {
-        cerr << "Warning: Only \"field\" elements allowed in ProtoInstance element "
+        Console(3) << "Warning: Only \"field\" elements allowed in ProtoInstance element "
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       }
     } else if( defining_proto_body ) {
       if( defining_proto_connections ) {
-        cerr << "Warning: Only \"connect\" elements allowed in IS element "
+        Console(3) << "Warning: Only \"connect\" elements allowed in IS element "
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       } else {
@@ -769,12 +769,12 @@ X3DPrototypeInstance* X3DSAX2Handlers::handleProtoInstanceElement( const Attribu
       proto_declarations->getProtoDeclaration( s_name );
     if( proto ) return proto->newProtoInstance();
     else {
-      cerr << "Warning: Could not find PROTO declaration for \"" << s_name  
+      Console(3) << "Warning: Could not find PROTO declaration for \"" << s_name  
            << "\" instance (" << toString( locator->getSystemId() )
            << ", line " << locator->getLineNumber() << ")" << endl;
     }
   } else {
-    cerr << "Warning: ProtoInstance element is missing required \"name\" attibute ("
+    Console(3) << "Warning: ProtoInstance element is missing required \"name\" attibute ("
          << toString( locator->getSystemId() )
 
 
@@ -787,18 +787,18 @@ X3DPrototypeInstance* X3DSAX2Handlers::handleProtoInstanceElement( const Attribu
 
 void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs ) {
   if( proto_declaration ) {
-    cerr << "Warning: ExternProtoDeclare element not allowed inside other ProtoDeclare element"
+    Console(3) << "Warning: ExternProtoDeclare element not allowed inside other ProtoDeclare element"
          << getLocationString() << endl;
     node_stack.push( NodeElement( NULL ) );
   } else {
     const XMLCh *name = attrs.getValue( gname );
     const XMLCh *url = attrs.getValue( gurl );
     if( !name ) {
-      cerr << "Warning: ExternProtoDeclare element is missing required \"name\" attibute "
+      Console(3) << "Warning: ExternProtoDeclare element is missing required \"name\" attibute "
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
     } else if( !url ) {
-      cerr << "Warning: ExternProtoDeclare element is missing required \"url\" attibute "
+      Console(3) << "Warning: ExternProtoDeclare element is missing required \"url\" attibute "
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
     } else {
@@ -841,7 +841,7 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
         break;
       }
       if( url_used == "" ) {
-        cerr << "Warning: None of the urls in ExternProtoDeclare element could "
+        Console(3) << "Warning: None of the urls in ExternProtoDeclare element could "
              << "be sucessfully loaded. "<< getLocationString()<< endl;
         node_stack.push( NodeElement( NULL ) );
         return;
@@ -854,13 +854,13 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
         // get the first prototype declaration from the url that was read.
         pd = proto_vector.getFirstProtoDeclaration();
         if( !pd ) {
-          cerr << "Warning: Could not find any PROTO declaration "
+          Console(3) << "Warning: Could not find any PROTO declaration "
                << getLocationString()<< endl;
         }
       } else {
         pd = proto_vector.getProtoDeclaration( proto_name );
         if( !pd ) {
-          cerr << "Warning: Could not find PROTO declaration \"" 
+          Console(3) << "Warning: Could not find PROTO declaration \"" 
                << proto_name
                << "\" " << getLocationString()<< endl;
         }
@@ -886,7 +886,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
   X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( parent );
 
   if( !pi ) {
-    cerr << "Warning: fieldValue element can only appear inside ProtoInstance "
+    Console(3) << "Warning: fieldValue element can only appear inside ProtoInstance "
          << "element (" << toString( locator->getSystemId() )
          << ", line " << locator->getLineNumber() << ")" << endl;
     return;
@@ -895,7 +895,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
   if( name && value ) {
     Field *field = pi->database.getField( parent, toString( name ) );
     if( !field ) {
-      cerr << "Warning: Field named \"" << name 
+      Console(3) << "Warning: Field named \"" << name 
            << "\" does not exist in ProtoInstance node (" 
            << toString( locator->getSystemId() )
            << ", line " << locator->getLineNumber() << ")" << endl;
@@ -904,7 +904,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
     ParsableField *pfield = 
       dynamic_cast< ParsableField * >( field );
     if( !pfield ) {
-      cerr << "Warning: Cannot parse field \"" << name 
+      Console(3) << "Warning: Cannot parse field \"" << name 
            << "\". Field type must be a subclass of ParsableField "
            << "in order to be parsable (" << toString( locator->getSystemId() )
            << ", line " << locator->getLineNumber() << ")" << endl;
@@ -936,7 +936,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
       } 
     }
   } else {
-    cerr << "Warning: Both \"name\" and \"value\" attributes required in fieldValue element" 
+    Console(3) << "Warning: Both \"name\" and \"value\" attributes required in fieldValue element" 
          << getLocationString() << endl;
     return;
   }
@@ -998,7 +998,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
       // parent is X3DPrototypeInstance that was created with a ProtoInstance element.
       // Only fieldValue elements are allowed.
       if( localname_string ==  "fieldValue" ) {
-        cerr << "WARNING: Only fieldValue elements allowed in ProtoInstance element "
+        Console(3) << "WARNING: Only fieldValue elements allowed in ProtoInstance element "
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       } else {
@@ -1012,16 +1012,16 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         protoStartElement( uri, localname, qname, attrs );
         return;
       } else if( localname_string == "ProtoInterface" ) {
-        cerr << "WARNING: ProtoInterface elements only allowed inside ProtoDeclare elements"
+        Console(3) << "WARNING: ProtoInterface elements only allowed inside ProtoDeclare elements"
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       } else if( localname_string == "ProtoBody" ) {
-        cerr << "WARNING: ProtoBody elements only allowed inside ProtoDeclare elements"
+        Console(3) << "WARNING: ProtoBody elements only allowed inside ProtoDeclare elements"
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       } else if( localname_string == "IS" )  {
         if( !proto_instance ) {
-          cerr << "WARNING: IS elements only allowed inside ProtoBody elements"
+          Console(3) << "WARNING: IS elements only allowed inside ProtoBody elements"
                << getLocationString() << endl;
           node_stack.push( NodeElement( NULL ) );
         } else {
@@ -1067,7 +1067,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             new_node = 
               H3DNodeDatabase::createNode( localname_string );
             if( !new_node ) {
-              cerr << "WARNING: Could not create \"" << localname 
+              Console(3) << "WARNING: Could not create \"" << localname 
                    << "\" node. It does not exist in the H3DNodeDatabase " 
                    << getLocationString() << endl;
             } else {
@@ -1077,7 +1077,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               new_node->setManualInitialize( true );
             }
           } catch (  const H3D::Exception::H3DException &e ) {
-            cerr << "WARNING: Could not create \"" << localname 
+            Console(3) << "WARNING: Could not create \"" << localname 
                  << "\" node. Exception in constructor: "
                  << e << " " << getLocationString() << endl;
           }
@@ -1107,7 +1107,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               container_field = s; 
             } else if( proto_instance ) {
               if( name == "name" ) {
-                cerr << "WARNING: Attribute name \"" << name 
+                Console(3) << "WARNING: Attribute name \"" << name 
                      << "\" not allowed in ProtoInstance element. "
                      << getLocationString() << endl;
               }
@@ -1117,7 +1117,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             } else {
               Field *field = new_node->getField( name );
               if( !field ) {
-                cerr << "WARNING: Couldn't find field named \"" << name 
+                Console(3) << "WARNING: Couldn't find field named \"" << name 
                      << "\" in " << qname << " node " 
                      << getLocationString() << endl;
               } else {
@@ -1252,12 +1252,12 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
             if( mf ) {
               mf->push_back( new_node );
             }
-            else cerr << "Warning: 'value' element ignored. Only used if "
+            else Console(3) << "Warning: 'value' element ignored. Only used if "
                       << "field type is SFNode or MFNode" 
                       << getLocationString() << endl;
           }
         } else {
-          cerr << "Warning: 'value' element ignored. Only used if "
+          Console(3) << "Warning: 'value' element ignored. Only used if "
                << "accesstype is initializeOnly or inputOutput " 
                << getLocationString() << endl;
         }
@@ -1307,9 +1307,9 @@ void X3DSAX2Handlers::fatalError(const SAXParseException& e) {
 }
 
 void X3DSAX2Handlers::warning(const SAXParseException& e) {
-  cerr << "Warning: " << e.getMessage() << " (" << e.getSystemId()
-       << ", line " << e.getLineNumber()
-       << ", char " << e.getColumnNumber() << ")" << endl;
+  Console(3) << "Warning: " << e.getMessage() << " (" << e.getSystemId()
+             << ", line " << e.getLineNumber()
+             << ", char " << e.getColumnNumber() << ")" << endl;
 }
 
 

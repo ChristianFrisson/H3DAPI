@@ -49,6 +49,7 @@ using namespace std;
 #include <mach/thread_act.h>
 #endif
 
+#include "Console.h"
 
 
 using namespace H3D;
@@ -126,7 +127,7 @@ void *Thread::thread_func( void * _data ) {
   if ((ret=thread_policy_set( mach_thread_self(),
                               THREAD_TIME_CONSTRAINT_POLICY, (thread_policy_t)&ttcpolicy,
                               THREAD_TIME_CONSTRAINT_POLICY_COUNT)) != KERN_SUCCESS) {
-    cerr << "set_realtime() failed" << endl;
+    Console(4) << "Threads: set_realtime() failed" << endl;
     return 0;
   }
 #endif
@@ -145,14 +146,14 @@ void *Thread::thread_func( void * _data ) {
     // Create a waitable timer.
     hTimer = CreateWaitableTimer(NULL, TRUE, "WaitableTimer");
     if (!hTimer) {
-      cerr << "CreateWaitableTimer failed (%d)" << endl 
-           << GetLastError() << endl;
+      Console(4) << "CreateWaitableTimer failed (%d)" << endl 
+                 << GetLastError() << endl;
       timeEndPeriod(1); 
       return NULL;
     }
   
     if (!SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, 0)) {
-      cerr << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
+      Console(4) << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
       timeEndPeriod(1); 
       return NULL;
     }
@@ -168,7 +169,7 @@ void *Thread::thread_func( void * _data ) {
 
       // Set a timer to wait for.
       if (!SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, 0)) {
-        cerr << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
+        Console(4) << "SetWaitableTimer failed (%d)\n" << GetLastError() << endl;
         return NULL;
       }
 #endif

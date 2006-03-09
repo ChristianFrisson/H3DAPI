@@ -105,8 +105,8 @@ namespace H3D {
           || l == "CG_OPENGL_NV30" || l == "CG_OPENGL_NV20" );
 #ifndef HAVE_CG
       if( is_cg ) {
-        cerr << "Warning: H3D API compiled without cg support. ProgramShader "
-             << " node will not support CG." << endl;
+        Console(4) << "Warning: H3D API compiled without cg support. ProgramShader "
+                   << " node will not support CG." << endl;
       }
       return false;
 #endif

@@ -145,7 +145,7 @@ namespace H3D {
                        const XMLCh *const qname);
       
       /// Handler for the SAX ErrorHandler interface.
-      /// Prints a warning message to cerr.
+      /// Prints a warning message to the Console.
       ///
       void warning(const SAXParseException& exc);
 

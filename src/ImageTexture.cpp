@@ -98,13 +98,13 @@ void ImageTexture::SFImage::update() {
     }
   }
 
-  cerr << "Warning: None of the urls in ImageTexture with url [";
+  Console(4) << "Warning: None of the urls in ImageTexture with url [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-    cerr << " \"" << *i << "\"";
+    Console(4) << " \"" << *i << "\"";
   }
-  cerr << "] could be loaded. Either they don't exist or the file format "
-       << "is not supported by any H3DImageLoaderNode that is available "
-       << "(in " << getOwner()->getName() << ")" << endl;
+  Console(4) << "] could be loaded. Either they don't exist or the file format "
+             << "is not supported by any H3DImageLoaderNode that is available "
+             << "(in " << getOwner()->getName() << ")" << endl;
 
   texture->setURLUsed( "" );
   value = NULL;

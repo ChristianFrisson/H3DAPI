@@ -92,8 +92,6 @@ Thread::CallbackCode H3DThreadedHapticsDevice::changeForceEffects( void *_data )
         output = output + (*i)->calculateForces( input );
     }
 
-    //    cerr << 1 / dt << endl;
-
     double weighting = dt / hd->last_loop_time;
     if( weighting > 1 ) weighting = 1;
     // the previous force effects are to be decreased as time goes by.

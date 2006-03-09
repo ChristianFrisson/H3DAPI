@@ -59,8 +59,8 @@ void ImportLibrary::initialize() {
        i++ ) {
     DynamicLibrary::LIBHANDLE handle = DynamicLibrary::load( *i );
     if( !handle )
-      cerr << "WARNING: Could not load dynamic library \"" 
-           << *i << "\" specified in " << getName() 
-           << " (" << DynamicLibrary::getLastError() << ")." << endl;
+      Console(4) << "WARNING: Could not load dynamic library \"" 
+                 << *i << "\" specified in " << getName() 
+                 << " (" << DynamicLibrary::getLastError() << ")." << endl;
   }
 }

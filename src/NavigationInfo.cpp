@@ -32,6 +32,7 @@
 
 using namespace H3D;
 
+
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase NavigationInfo::database( 
                                     "NavigationInfo", 

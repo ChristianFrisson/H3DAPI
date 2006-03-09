@@ -71,8 +71,8 @@ void Fog::renderFog() {
     } else if( type == "EXPONENTIAL" ) {
       glFogi( GL_FOG_MODE, GL_EXP );
     } else {
-      cerr << "Invalid fogType \"" << type << "\". Must be one of \"LINEAR\""
-           << " or \"EXPONENTIAL\" (in \"" << getName() << "\" node )" << endl;
+      Console(3) << "Invalid fogType \"" << type << "\". Must be one of \"LINEAR\""
+                 << " or \"EXPONENTIAL\" (in \"" << getName() << "\" node )" << endl;
     }
     
     glFogfv( GL_FOG_COLOR, gl_fog_color );

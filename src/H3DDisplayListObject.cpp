@@ -58,8 +58,8 @@ void H3DDisplayListObject::DisplayList::update() {
     glCallList( display_list );
     GLuint err = glGetError();
     if( err != GL_NO_ERROR ) {
-      cerr << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
-           << "\" when rendering " << getFullName() << endl;
+      Console(4) << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
+                 << "\" when rendering " << getFullName() << endl;
       have_valid_display_list = false;
     }
   } else {
@@ -142,16 +142,16 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
       glNewList( display_list, GL_COMPILE );
       GLuint err = glGetError();
       if( err != GL_NO_ERROR ) {
-        cerr << "QpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
-             << "\" when rendering " << getFullName() << endl;
+        Console(4) << "QpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
+                   << "\" when rendering " << getFullName() << endl;
         return false;
       }
       owner->render();
       glEndList();
       err = glGetError();
       if( err != GL_NO_ERROR ) {
-        cerr << "QpenGL error in glEndList() Error: \"" << gluErrorString( err ) 
-             << "\" when rendering " << getFullName() << endl;
+        Console(4) << "QpenGL error in glEndList() Error: \"" << gluErrorString( err ) 
+                   << "\" when rendering " << getFullName() << endl;
         return false;
       }
       return true;
@@ -175,8 +175,8 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
 
   GLuint err = glGetError();
   if( err != GL_NO_ERROR ) {
-     cerr << "OpenGL error before H3DDisplayListObject::DisplayList::callList() Error: \"" << gluErrorString( err ) 
-          << "\" when rendering parent of " << getFullName() << endl;
+    Console(4) << "OpenGL error before H3DDisplayListObject::DisplayList::callList() Error: \"" << gluErrorString( err ) 
+               << "\" when rendering parent of " << getFullName() << endl;
   }
 
   if( build_list ) { 
@@ -200,8 +200,8 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     glCallList( display_list );
     GLuint err = glGetError();
     if( err != GL_NO_ERROR ) {
-      cerr << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
-           << "\" when rendering " << getFullName() << endl;
+      Console(4) << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
+                 << "\" when rendering " << getFullName() << endl;
       have_valid_display_list = false;
     }
   } else {
@@ -209,8 +209,8 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     event_fields.clear();
     GLuint err = glGetError();
     if( err != GL_NO_ERROR ) {
-      cerr << "OpenGL error in render() Error: \"" << gluErrorString( err ) 
-           << "\" when rendering " << getFullName() << endl;
+      Console(4) << "OpenGL error in render() Error: \"" << gluErrorString( err ) 
+                 << "\" when rendering " << getFullName() << endl;
     } else {
       if( delay_cache_counter > 0 ) 
      	  delay_cache_counter--;

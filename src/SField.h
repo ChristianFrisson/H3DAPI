@@ -160,8 +160,8 @@ namespace H3D {
   template< class Type  >
   void SField< Type >::update() {
 #ifdef DEBUG
-    cerr << "SField< " << typeid( Type ).name() 
-         << " >(" << this->name << ")::update()" << endl;
+    Console(1) << "SField< " << typeid( Type ).name() 
+               << " >(" << this->name << ")::update()" << endl;
 #endif
     if( this->owner )
       this->value = 
@@ -175,8 +175,8 @@ namespace H3D {
   template< class Type >
   void SField<Type>::setValue( const Type &v, int id ) {
 #ifdef DEBUG
-    cerr << "SField< " << typeid( Type ).name() 
-         << " >(" << this->name << ")::setValue()" << endl;
+    Console(1) << "SField< " << typeid( Type ).name() 
+               << " >(" << this->name << ")::setValue()" << endl;
 #endif
     // check that we have the correct access type
     this->checkAccessTypeSet( id );
@@ -192,8 +192,8 @@ namespace H3D {
   template< class Type >
   const Type &SField<Type>::getValue( int id ) {
 #ifdef DEBUG
-    cerr << "SField< " << typeid( Type ).name() 
-         << " >(" <<  this->name << ")::getValue()" << endl;
+    Console(1) << "SField< " << typeid( Type ).name() 
+               << " >(" <<  this->name << ")::getValue()" << endl;
 #endif
     // check that we have the correct access type
     this->checkAccessTypeGet( id );

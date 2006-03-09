@@ -71,8 +71,8 @@ AudioClip::AudioClip(
   url->route( sound_buffer );
 
 #ifndef HAVE_OPENAL
-  cerr << "Warning: H3D API compiled without OpenAL. AudioClip nodes"
-       << " will be unusable." << endl;
+  Console(4) << "Warning: H3D API compiled without OpenAL. AudioClip nodes"
+             << " will be unusable." << endl;
 #endif
 }
 
@@ -114,9 +114,10 @@ void AudioClip::ALrender() {
         else if( reader->bitsPerSample() == 8 ) 
           al_format = AL_FORMAT_MONO8;
         else {
-          cerr << "Warning: Invalid sample width(" << reader->bitsPerSample()
-               << "Only 16 and 8 bit mono " 
-               << "audio clips supported. " << endl;
+          Console(3) << "Warning: Invalid sample width(" 
+                     << reader->bitsPerSample()
+                     << "Only 16 and 8 bit mono " 
+                     << "audio clips supported. " << endl;
           reader.reset( NULL );
         }
       else if( reader->nrChannels() == 2 ) {
@@ -125,14 +126,16 @@ void AudioClip::ALrender() {
         else if( reader->bitsPerSample() == 8 ) 
           al_format = AL_FORMAT_STEREO8;
         else {
-          cerr << "Warning: Invalid sample width(" << reader->bitsPerSample()
-               << "Only 16 and 8 bit stereo " 
-               << "audio clips supported. " << endl;
+          Console(3) << "Warning: Invalid sample width(" 
+                     << reader->bitsPerSample()
+                     << "Only 16 and 8 bit stereo " 
+                     << "audio clips supported. " << endl;
           reader.reset( NULL );
         }
       } else {
-         cerr << "Warning: Invalid number of channels(" << reader->nrChannels()
-               << "Only 1 and 2 bit channels are supported" << endl;
+        Console(3) << "Warning: Invalid number of channels(" 
+                   << reader->nrChannels()
+                   << "Only 1 and 2 bit channels are supported" << endl;
          reader.reset( NULL );
       }
     }
@@ -148,14 +151,14 @@ void AudioClip::ALrender() {
       }
     } else {
       duration_changed->setValue( -1, id );
-      cerr << "Warning: None of the urls in the node \"" << getName() 
-           << "\" with url [";
+      Console(3) << "Warning: None of the urls in the node \"" << getName() 
+                 << "\" with url [";
       for( MFString::const_iterator i = url->begin(); 
            i != url->end(); ++i ) {  
-        cerr << " \"" << *i << "\"";
+        Console(3) << " \"" << *i << "\"";
       }
-      cerr << "] could be loaded. No sound will be played "
-           << " from this AudioClip." << endl;
+      Console(3) << "] could be loaded. No sound will be played "
+                 << " from this AudioClip." << endl;
     }
   }
   X3DSoundSourceNode::ALrender();
@@ -165,20 +168,20 @@ void AudioClip::ALrender() {
     alutLoadWAVFile("ding.wav",&format,&data,&size,&freq,&loop);
     if ((error = alGetError()) != AL_NO_ERROR) {
       alDeleteBuffers(1, &al_buffer);
-      cerr << "FDAFAS" << endl;
+      Console(3) << "FDAFAS" << endl;
       exit(-1);
     }
     // Copy test.wav data into AL Buffer 0
     alBufferData(al_buffer,format,data,size,freq);
     if ((error = alGetError()) != AL_NO_ERROR) {
-      cerr << "FDASF" << endl;
+      Console(3) << "FDASF" << endl;
       alDeleteBuffers(1, &al_buffer);
       exit(-1);
     }
     // Unload test.wav
     alutUnloadWAV(format,data,size,freq);
     if ((error = alGetError()) != AL_NO_ERROR) {
-      cerr << "as" << endl;
+      Console(3) << "as" << endl;
       alDeleteBuffers(1, &al_buffer);
       exit(-1);
     }

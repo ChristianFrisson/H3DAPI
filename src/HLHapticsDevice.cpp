@@ -80,7 +80,7 @@ namespace HLHapticsDeviceInternal {
   HDCallbackCode HDCALLBACK forceEffectCallback( void *data ) {
     HLHapticsDevice *hd = static_cast< HLHapticsDevice * >( data );
   
-#ifdef MACOSX
+#ifdef MACOSX_SCHEDULER
     // set thread priority
     if ( !init_realtime ) {
       struct thread_time_constraint_policy ttcpolicy;
@@ -92,7 +92,7 @@ namespace HLHapticsDeviceInternal {
       if ((ret=thread_policy_set( mach_thread_self(),
                                   THREAD_TIME_CONSTRAINT_POLICY, (thread_policy_t)&ttcpolicy,
                                   THREAD_TIME_CONSTRAINT_POLICY_COUNT)) != KERN_SUCCESS) {
-        cerr << "set_realtime() failed" << endl;
+        Console(4) << "set_realtime() failed" << endl;
         return 0;
       }
       init_realtime = 1;
@@ -313,8 +313,8 @@ void HLHapticsDevice::renderShapes( const HapticShapeVector &objects  ) {
   // check for any errors
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
-    cerr << HLHapticsDeviceInternal::getHLErrorString( error )
-         << endl;
+    Console(4) << HLHapticsDeviceInternal::getHLErrorString( error )
+               << endl;
   }   
   current_shapes = objects;
 }
@@ -334,8 +334,8 @@ void HLHapticsDevice::renderEffects(
   // check for any errors
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
-    cerr << HLHapticsDeviceInternal::getHLErrorString( error )
-         << endl;
+    Console(4) << HLHapticsDeviceInternal::getHLErrorString( error )
+               << endl;
   }      
 }
 
@@ -516,16 +516,14 @@ void HLHapticsDevice::preRender() {
       hlGetShapeBooleanv( shape->getShapeId(),
                          HL_PROXY_IS_TOUCHING,
                          &b );
-      //cerr << (int)b << " ";
-      //cerr << d[0] << " " << d[1] << " " << d[2] << endl;
       }
       }*/
 
   // check for any errors
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
-    cerr << HLHapticsDeviceInternal::getHLErrorString( error )
-         << endl;
+    Console(4) << HLHapticsDeviceInternal::getHLErrorString( error )
+               << endl;
   }      
 
   
@@ -545,8 +543,8 @@ void HLHapticsDevice::postRender() {
    // check for any errors
   HLerror error;
   while ( HL_ERROR(error = hlGetError()) ) {
-    cerr << HLHapticsDeviceInternal::getHLErrorString( error )
-         << endl;
+    Console(4) << HLHapticsDeviceInternal::getHLErrorString( error )
+               << endl;
   }   
   #endif   
 }

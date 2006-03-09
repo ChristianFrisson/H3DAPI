@@ -181,8 +181,8 @@ namespace H3D {
     ///
     virtual void onAdd( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
-      cerr << "RefCountMField::onAdd( " << getFullName() << " = " << this 
-           << ", n = " << n << ") " << endl;
+      Console(1) << "RefCountMField::onAdd( " << getFullName() << " = " << this 
+                 << ", n = " << n << ") " << endl;
 #endif
     }
     
@@ -193,8 +193,8 @@ namespace H3D {
     ///
     virtual void onRemove( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
-      cerr << "RefCountMField::onRemove( " << getFullName() << " = " 
-           << this << ", n = " << n << ") " << endl;
+      Console(1) << "RefCountMField::onRemove( " << getFullName() << " = " 
+                 << this << ", n = " << n << ") " << endl;
 #endif
     }
   };

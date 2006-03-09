@@ -442,7 +442,6 @@ if( check_func( value ) ) {                                         \
     void insertFieldTypes( PyObject *dict ) {
       for( int i = 0; i <= X3DTypes::UNKNOWN_X3D_TYPE; i++ ) {
         // insert each type from the enumerated list into Python
-        //cerr << X3DTypes::typeToString( (X3DTypes::X3DType)i ) <<  endl;
         string str = X3DTypes::typeToString( (X3DTypes::X3DType)i );
         for( string::iterator x = str.begin(); x != str.end(); x++ )
           *x = std::toupper( *x );
@@ -533,7 +532,8 @@ if( check_func( value ) ) {                                         \
         PyImport_ImportModule( "H3DInterface" );
       if ( PythonInternals::H3DInterface_module == NULL ) {
         PyErr_Print();
-        cerr << "PythonScript::initialiseParser() ERROR importing H3DInterface, check your PYTHONPATH" << endl;
+        Console(4) << "PythonScript::initialiseParser() - ";
+        Console(4) << "  Error importing H3DInterface module, check that you have a valid PYTHONPATH environment variable and try again." << endl;
         exit(-1); // SHOULD THROW AN ERROR!
       }
 
@@ -752,7 +752,6 @@ have defined an __init__ function in a specialized field class, you \
 call the base class __init__ function." );
         return 0;
       }
-      //cerr << "pythonGetFieldValue() ptr=" << py_field_ptr << endl;
       
       Field *field_ptr = static_cast< Field * >
         ( PyCObject_AsVoidPtr( py_field_ptr ) );
@@ -1020,7 +1019,6 @@ have defined an __init__ function in a specialized field class, you \
 call the base class __init__ function." );
         return 0;
       }
-      //cerr << "pythonGetFieldValue() ptr=" << py_field_ptr << endl;
       
       Field *field_ptr = static_cast< Field * >
         ( PyCObject_AsVoidPtr( py_field_ptr ) );

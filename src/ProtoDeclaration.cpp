@@ -57,17 +57,18 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
                 sfnode->setValue( X3D::createX3DNodeFromString( (*i).value ) );
               }
             } catch( const Exception::H3DException &e ) {
-              cerr << "Could not create default value for " << f->getFullName() << endl;
-              cerr << e << endl;
+              Console(3) << "Could not create default value for " << f->getFullName() << endl;
+              Console(3) << e << endl;
               return NULL;
             }
           } else {
             ParsableField *pfield = 
               dynamic_cast< ParsableField * >( f );
             if( !pfield ) {
-              cerr << "Cannot parse value field for\"" << f->getFullName() 
-                   << "\". Field type must be a subclass of ParsableField "
-                   << "in order to be parsable. " << endl;
+              Console(3) << "Cannot parse value field for\"" 
+                         << f->getFullName() 
+                         << "\". Field type must be a subclass of ParsableField "
+                         << "in order to be parsable. " << endl;
             }
             if( (*i).access_type == Field::INITIALIZE_ONLY ||
                 (*i).access_type == Field::INPUT_OUTPUT ) {
@@ -75,18 +76,18 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
                 pfield->setValueFromString( (*i).value ); 
               }
               catch( const X3D::Convert::X3DFieldConversionError &e ) {
-                cerr << "Could not convert \"" 
+                Console(3) << "Could not convert \"" 
                      << ( (*i).value.size() < 100 ? (*i).value: "value" )
                      << "\" to " << e.value << " for field \"" 
                      << f->getFullName() << "\"." << endl;
               }
               catch( const X3D::Convert::UnimplementedConversionType &e ) {
-                cerr << "Field conversion error when converting value for field \"" 
+                Console(3) << "Field conversion error when converting value for field \"" 
                      << f->getFullName() << "\". Conversion for " << e.value 
                      << " not implemented" << endl;
               }
             } else {
-              cerr << "Warning: 'value' attribute ignored. Only used if "
+              Console(3) << "Warning: 'value' attribute ignored. Only used if "
                    << "accesstype is initializeOnly or inputOutput " 
                    << endl;
             }
@@ -95,8 +96,8 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
         proto->addField( (*i).name, (*i).access_type, f );
 
       } else {
-        cerr << "Warning: Invalid field type in \"field\" element. " 
-             << endl;
+        Console(3) << "Warning: Invalid field type in \"field\" element. " 
+                   << endl;
       }
     }
 
@@ -114,8 +115,8 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
     proto->setPrototypedNode( n.get() );
     return proto;
   } catch( const Exception::H3DException &e ) {
-    cerr << "Could not create X3DPrototypeInstance of " << name << endl;
-    cerr << e << endl;
+    Console(3) << "Could not create X3DPrototypeInstance of " << name << endl;
+    Console(3) << e << endl;
     return NULL;
   }
 }
