@@ -51,12 +51,10 @@
 #include <string>
 #include <iostream>
 #include "H3DApi.h"
+#include "TimeStamp.h"
 
 using namespace std;
 
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
 
 namespace H3D {
 
@@ -64,9 +62,9 @@ namespace H3D {
   class basic_debugbuf : public std::basic_stringbuf<CharT, TraitsT>  {
     int outputlevel, level;
     ostream *outputstream;
-    double starttime;
-    bool showlevel;
+    TimeStamp starttime;
     bool showtime;
+    bool showlevel;
   public:
     basic_debugbuf(  ) : 
       outputstream( &cerr ),
@@ -74,10 +72,6 @@ namespace H3D {
       level( 0 ),
       showtime(false),
       showlevel( false ) {
-      struct timeval tp;
-      struct timezone tzp;
-      gettimeofday( &tp, &tzp );
-      starttime=tp.tv_sec + (double) tp.tv_usec / 1e6; 
     }
 
     virtual ~basic_debugbuf() {
@@ -98,10 +92,7 @@ namespace H3D {
   protected:
 
     int sync()  {
-      struct timeval tp;
-      struct timezone tzp;
-      gettimeofday( &tp, &tzp );
-      double time=tp.tv_sec + (double) tp.tv_usec / 1e6; 
+      TimeStamp time;
 
       if ( outputlevel >= 0  &&  level >= outputlevel ) {
         if ( showlevel || showtime )
