@@ -344,7 +344,7 @@ void HLHapticsDevice::initDevice() {
     device_handle = hdInitDevice( deviceName->getValue().c_str() );
     HDErrorInfo error = hdGetError();
     if ( HD_DEVICE_ERROR( error ) ) {
-      cerr << "Warning: Could not init Phantom device." << " Error code: "
+      Console(4) << "Warning: Could not init Phantom device. Error code: "
         << HLHapticsDeviceInternal::getHDErrorCodeString( error.errorCode ) 
         << ". Internal error code: " << error.internalErrorCode << endl;
       return;
