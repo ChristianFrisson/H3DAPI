@@ -32,6 +32,8 @@
 #include "X3DNetworkSensorNode.h"
 #include "X3DUrlObject.h"
 #include "MFNode.h"
+#include "SFTime.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

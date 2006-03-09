@@ -30,6 +30,7 @@
 #define __CIRCLE2D_H__
 
 #include "X3DGeometryNode.h"
+#include "SFFloat.h"
 
 namespace H3D {
 
@@ -51,7 +52,7 @@ namespace H3D {
     ///
     /// routes_in[0] is the size field of the Box node.  
     ///
-    class SFBound: public TypedField< X3DGeometryNode::SFBound,
+    class H3DAPI_API SFBound: public TypedField< X3DGeometryNode::SFBound,
     SFFloat > {
       /// Update the bound from the radius field. 
       virtual void update() {

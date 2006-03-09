@@ -29,7 +29,9 @@
 #ifndef __X3DFOGOBJECT_H__
 #define __X3DFOGOBJECT_H__
 
-#include "FieldTemplates.h"
+#include "SFColor.h"
+#include "SFString.h"
+#include "SFFloat.h"
 
 namespace H3D {
   /// \ingroup AbstractInterface

@@ -30,6 +30,8 @@
 #define __WORLDINFO_H__
 
 #include "X3DInfoNode.h"
+#include "MFString.h"
+#include "SFString.h"
 
 namespace H3D {
 

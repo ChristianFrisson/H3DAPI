@@ -30,7 +30,9 @@
 #define __RAWIMAGELOADER_H__
 
 #include "H3DImageLoaderNode.h"
-#include "FieldTemplates.h"
+#include "SFInt32.h"
+#include "SFString.h"
+#include "SFVec3f.h"
 
 namespace H3D {
 

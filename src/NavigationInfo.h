@@ -30,7 +30,9 @@
 #define __NAVIGATIONINFO_H__
 
 #include "X3DBindableNode.h"
-#include "FieldTemplates.h"
+#include "MFFloat.h"
+#include "SFFloat.h"
+#include "MFString.h"
 #include "Exception.h"
 
 namespace H3D {

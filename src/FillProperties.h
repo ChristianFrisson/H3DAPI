@@ -30,6 +30,8 @@
 #define __FILLPROPERTIES_H__
 
 #include "X3DAppearanceChildNode.h"
+#include "SFColor.h"
+#include "SFInt32.h"
 
 namespace H3D {
 

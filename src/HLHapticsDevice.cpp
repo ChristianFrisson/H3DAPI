@@ -39,15 +39,6 @@
 
 using namespace H3D;
 
-#ifdef HAVE_OPENHAPTICS
-#ifdef _MSC_VER
-#pragma comment( lib, "hd.lib" )
-#pragma comment( lib, "hl.lib" )
-#pragma comment( lib, "hdu.lib" )
-#pragma comment( lib, "hlu.lib" )
-#endif
-#endif
-
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase HLHapticsDevice::database( 
                                            "HLHapticsDevice", 

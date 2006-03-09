@@ -30,6 +30,7 @@
 #define __X3DVERTEXATTRIBUTENODE_H__
 
 #include "X3DGeometricPropertyNode.h"
+#include "SFString.h"
 
 namespace H3D {
   /// \class X3DVertexAttributeNode

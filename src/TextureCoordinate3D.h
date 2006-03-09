@@ -30,7 +30,8 @@
 #define __TEXTURECOORDINATE3D_H__
 
 #include "X3DTextureCoordinateNode.h"
-#include "GL/glew.h"
+#include <GL/glew.h>
+#include "MFVec3f.h"
 
 namespace H3D {
 

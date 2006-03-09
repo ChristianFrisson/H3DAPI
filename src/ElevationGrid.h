@@ -36,6 +36,8 @@
 #include "X3DNormalNode.h"
 #include "X3DVertexAttributeNode.h"
 #include "DependentNodeFields.h"
+#include "SFInt32.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

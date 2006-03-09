@@ -30,6 +30,7 @@
 #define __POINTNORMALCLIPPLANE_H__
 
 #include "ClipPlane.h"
+#include "SFVec3f.h"
 
 namespace H3D {
 

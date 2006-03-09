@@ -30,6 +30,7 @@
 #define __DISK2D_H__
 
 #include "X3DGeometryNode.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

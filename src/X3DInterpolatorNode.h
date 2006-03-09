@@ -30,6 +30,8 @@
 #define __X3DINTERPOLATORNODE_H__
 
 #include "X3DChildNode.h"
+#include "SFFloat.h"
+#include "MFFloat.h"
 
 namespace H3D {
 

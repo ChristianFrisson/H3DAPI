@@ -35,6 +35,12 @@
 #include "HapticForceEffect.h"
 #include "SFNode.h"
 #include "Threads.h"
+#include "SFRotation.h"
+#include "SFFloat.h"
+#include "SFInt32.h"
+#include "SFBool.h"
+#include "SFMatrix4f.h"
+#include "SFVec3f.h"
 
 namespace H3D {
 

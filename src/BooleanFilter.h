@@ -30,6 +30,7 @@
 #define __BOOLEANFILTER_H__
 
 #include "X3DChildNode.h"
+#include "SFBool.h"
 
 namespace H3D {
 

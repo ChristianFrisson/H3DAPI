@@ -29,7 +29,7 @@
 #ifndef __X3DMETADATAOBJECT_H__
 #define __X3DMETADATAOBJECT_H__
 
-#include "FieldTemplates.h"
+#include "SFString.h"
 
 namespace H3D {
 

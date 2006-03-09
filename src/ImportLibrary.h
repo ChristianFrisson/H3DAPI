@@ -31,6 +31,7 @@
 #define __IMAGETEXTURE_H__
 
 #include "X3DChildNode.h"
+#include "MFString.h"
 
 namespace H3D {
   /// \ingroup Nodes 

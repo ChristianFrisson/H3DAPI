@@ -62,7 +62,7 @@ namespace H3D {
       }
     };
     
-    class H3DAPI_API const_reverse_iterator: 
+    class const_reverse_iterator: 
       public RefCountMField< Node >::const_reverse_iterator {
     public:
       /// Constructor.

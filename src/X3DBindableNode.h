@@ -32,7 +32,8 @@
 #include <iostream>
 #include <deque>
 #include "X3DChildNode.h"
-#include "FieldTemplates.h"
+#include "SFBool.h"
+#include "SFTime.h"
 
 namespace H3D {
 

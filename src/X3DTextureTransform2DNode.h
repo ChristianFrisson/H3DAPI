@@ -30,6 +30,8 @@
 #define __X3DTEXTURETRANSFORM2DNODE_H__
 
 #include "X3DTextureTransformNode.h"
+#include "SFVec2f.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

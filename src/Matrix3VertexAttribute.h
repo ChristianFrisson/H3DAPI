@@ -30,6 +30,7 @@
 #define __MATRIX3VERTEXATTRIBUTE_H__
 
 #include "X3DVertexAttributeNode.h"
+#include "MFMatrix3f.h"
 
 namespace H3D {
 

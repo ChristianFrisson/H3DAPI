@@ -31,6 +31,7 @@
 
 #include "H3DForceEffect.h" 
 #include "HapticForceField.h"
+#include "SFVec3f.h"
 
 namespace H3D {
   /// \ingroup Nodes 

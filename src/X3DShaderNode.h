@@ -30,6 +30,7 @@
 #define __X3DSHADERNODE_H__
 
 #include "X3DAppearanceChildNode.h"
+#include "SFString.h"
 
 namespace H3D {
   /// \ingroup AbstractNodes

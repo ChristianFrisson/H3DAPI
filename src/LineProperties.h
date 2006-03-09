@@ -30,6 +30,8 @@
 #define __LINEPROPERTIES_H__
 
 #include "X3DAppearanceChildNode.h"
+#include "SFInt32.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

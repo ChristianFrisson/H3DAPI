@@ -30,6 +30,8 @@
 #define __TEXTURECOORDINATEGENERATOR_H__
 
 #include "X3DTextureCoordinateNode.h"
+#include "SFString.h"
+#include "MFFloat.h"
 
 namespace H3D {
 

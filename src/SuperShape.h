@@ -29,19 +29,9 @@
 #ifndef __SUPERSHAPE_H__
 #define __SUPERSHAPE_H__
 
-#include <iostream>
 #include "X3DGeometryNode.h"
-#include "FieldTemplates.h"
-#include "Exception.h"
-
-/// Standard Template Library namespace
-using namespace std;
-
-/// H3D namespace
-using namespace H3D;
-
-/// Exception handling namespace
-using namespace Exception;
+#include "SFFloat.h"
+#include "SFInt32.h"
 
 /// H3D API namespace
 namespace H3D {

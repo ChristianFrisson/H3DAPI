@@ -32,6 +32,7 @@
 #include "X3DBackgroundNode.h"
 #include "X3DTextureNode.h"
 #include "DependentNodeFields.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

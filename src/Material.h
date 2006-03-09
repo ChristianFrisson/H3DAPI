@@ -30,6 +30,8 @@
 #define __MATERIAL_H__
 
 #include "X3DMaterialNode.h"
+#include "SFFloat.h"
+#include "SFColor.h"
 
 namespace H3D {
 

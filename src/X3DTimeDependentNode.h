@@ -30,6 +30,8 @@
 #define __X3DTIMEDEPENDENTNODE_H__
 
 #include "X3DChildNode.h"
+#include "SFTime.h"
+#include "SFBool.h"
 
 namespace H3D {
 

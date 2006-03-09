@@ -30,6 +30,7 @@
 #define __TEXTUREMATRIXTRANSFORM_H__
 
 #include "X3DTextureTransformNode.h"
+#include "SFMatrix4f.h"
 
 namespace H3D {
   /// \ingroup Nodes 

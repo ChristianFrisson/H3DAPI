@@ -32,6 +32,10 @@
 
 #include "X3DSensorNode.h"
 #include <list>
+#include "SFVec3f.h"
+#include "SFFloat.h"
+#include "SFInt32.h"
+#include "SFRotation.h"
 
 namespace H3D {
 

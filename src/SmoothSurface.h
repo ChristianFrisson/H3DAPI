@@ -31,7 +31,7 @@
 
 #include "H3DSurfaceNode.h"
 #include "HLSurface.h"
-#include "FieldTemplates.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

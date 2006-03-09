@@ -30,6 +30,8 @@
 #define __POSITIONINTERPOLATOR2D_H__
 
 #include "X3DInterpolatorNode.h"
+#include "SFVec2f.h"
+#include "MFVec2f.h"
 
 namespace H3D {
 

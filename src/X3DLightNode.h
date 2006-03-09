@@ -32,6 +32,8 @@
 #include "X3DChildNode.h"
 #include "H3DDisplayListObject.h"
 #include "H3DRenderStateObject.h"
+#include "SFFloat.h"
+#include "SFColor.h"
 
 namespace H3D {
 

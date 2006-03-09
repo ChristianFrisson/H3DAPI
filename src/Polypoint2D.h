@@ -30,6 +30,7 @@
 #define __POLYPOINT2D_H__
 
 #include "X3DGeometryNode.h"
+#include "MFVec2f.h"
 
 namespace H3D {
 

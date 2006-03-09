@@ -31,6 +31,10 @@
 
 #include "H3DForceEffect.h" 
 #include "HapticSpring.h"
+#include "SFVec3f.h"
+#include "SFBool.h"
+#include "SFFloat.h"
+#include "SFInt32.h"
 
 namespace H3D {
   /// \ingroup Nodes 

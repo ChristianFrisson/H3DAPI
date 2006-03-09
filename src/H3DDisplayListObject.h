@@ -34,6 +34,8 @@
 #include "Instantiate.h"
 #include "GL/glew.h"
 #include "FieldTemplates.h"
+#include "SFBool.h"
+#include "SFTime.h"
 
 #ifdef _MSC_VER
 #pragma comment( lib, "OpenGL32.lib" )

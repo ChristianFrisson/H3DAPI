@@ -32,6 +32,7 @@
 #include "X3DChildNode.h"
 #include "H3DDisplayListObject.h"
 #include "H3DRenderStateObject.h"
+#include "SFVec4d.h"
 
 namespace H3D {
 

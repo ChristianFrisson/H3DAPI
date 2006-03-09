@@ -32,6 +32,7 @@
 #include "X3DNode.h"
 #include "X3DUrlObject.h"
 #include <GL/glew.h>
+#include "SFString.h"
 
 namespace H3D {
 

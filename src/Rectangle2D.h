@@ -30,6 +30,7 @@
 #define __RECTANGLE2D_H__
 
 #include "X3DGeometryNode.h"
+#include "SFVec2f.h"
 
 namespace H3D {
 

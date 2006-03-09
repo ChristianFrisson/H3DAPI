@@ -32,6 +32,9 @@
 #include <iostream>
 #include "X3DTextureNode.h"
 #include "DependentNodeFields.h"
+#include "SFFloat.h"
+#include "SFColor.h"
+#include "MFString.h"
 
 namespace H3D {
   /// \ingroup Nodes 

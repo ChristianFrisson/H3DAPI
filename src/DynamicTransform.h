@@ -32,6 +32,8 @@
 #include "MatrixTransform.h"
 #include "PeriodicUpdate.h"
 #include "RK4.h"
+#include "SFMatrix3f.h"
+#include "SFQuaternion.h"
 
 namespace H3D {
 

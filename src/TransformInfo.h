@@ -30,6 +30,7 @@
 #define __TRANSFORMINFO_H__
 
 #include "X3DChildNode.h"
+#include "SFMatrix4f.h"
 
 namespace H3D {
 

@@ -32,6 +32,8 @@
 
 #include "X3DComposedGeometryNode.h"
 #include "CoordBoundField.h"
+#include "MFInt32.h"
+#include "SFFloat.h"
 
 namespace H3D {
 

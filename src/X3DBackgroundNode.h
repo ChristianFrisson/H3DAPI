@@ -31,6 +31,9 @@
 
 #include "X3DBindableNode.h"
 #include "H3DDisplayListObject.h"
+#include "MFFloat.h"
+#include "MFColor.h"
+#include "SFMatrix4f.h"
 
 namespace H3D {
 

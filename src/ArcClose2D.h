@@ -30,6 +30,8 @@
 #define __ARCCLOSE2D_H__
 
 #include "X3DGeometryNode.h"
+#include "SFFloat.h"
+#include "SFString.h"
 
 namespace H3D {
 

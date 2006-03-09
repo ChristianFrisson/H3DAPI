@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CG_INC_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-2_6_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -64,10 +64,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cg.lib cgGL.lib audiofileD.lib vorbisfile_d.lib ALut.lib OpenAL32.lib xerces-c_2d.lib FreeImage.lib glew32.lib hl.lib hd.lib hlu.lib hdu.lib siapp.lib spwmath.lib ftgl_dynamic_MTD.lib pthreadVC2.lib"
 				OutputFile="$(OutDir)/H3DApi.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(CG_LIB_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
 				IgnoreDefaultLibraryNames=""
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
@@ -126,7 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(CG_INC_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-2_6_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;NDEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -147,10 +146,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cg.lib cgGL.lib audiofile.lib vorbisfile.lib ALut.lib OpenAL32.lib xerces-c_2.lib FreeImage.lib glew32.lib hl.lib hd.lib hlu.lib hdu.lib siapp.lib spwmath.lib freetype219MT.lib ftgl_dynamic_MTD.lib pthreadVC2.lib"
 				OutputFile="$(OutDir)/H3DApi.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(CG_LIB_PATH)&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -310,6 +308,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\ElevationGrid.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\Exception.cpp"
 				>
 			</File>
@@ -334,6 +336,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\Fog.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\FontStyle.cpp"
 				>
 			</File>
@@ -354,7 +360,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\GLWindow.cpp"
+				RelativePath="..\..\..\src\GLUTWindow.cpp"
 				>
 			</File>
 			<File
@@ -370,7 +376,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\H3DExports.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\H3DFakeHapticsDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DFunctionNode.cpp"
 				>
 			</File>
 			<File
@@ -395,6 +409,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DThreadedHapticsDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DWindowNode.cpp"
 				>
 			</File>
 			<File
@@ -474,11 +492,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\LibCurlResolver.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\LineProperties.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\LineSet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\LoadSensor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\LocalFog.cpp"
 				>
 			</File>
 			<File
@@ -535,6 +565,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\MetadataString.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFNode.cpp"
 				>
 			</File>
 			<File
@@ -622,6 +656,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\ProtoDeclaration.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\PrototypeInstance.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\PythonMethods.cpp"
 				>
 			</File>
@@ -646,6 +688,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\ResourceResolver.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\RK4.cpp"
 				>
 			</File>
@@ -659,6 +705,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Scene.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFNode.cpp"
 				>
 			</File>
 			<File
@@ -802,6 +852,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\URNResolver.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\Types\Vec2f.cpp"
 				>
 			</File>
@@ -815,6 +869,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Viewpoint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\WorldInfo.cpp"
 				>
 			</File>
 			<File
@@ -855,6 +913,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DFieldConversion.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DFogObject.cpp"
 				>
 			</File>
 			<File
@@ -915,6 +977,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DProgrammableShaderObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DPrototypeInstance.cpp"
 				>
 			</File>
 			<File
@@ -1128,6 +1194,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\ElevationGrid.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\Exception.h"
 				>
 			</File>
@@ -1156,6 +1226,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\Fog.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\FontStyle.h"
 				>
 			</File>
@@ -1180,7 +1254,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\GLWindow.h"
+				RelativePath="..\..\..\src\GLUTWindow.h"
 				>
 			</File>
 			<File
@@ -1208,11 +1282,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\H3DExports.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\H3DFakeHapticsDevice.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DForceEffect.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DFunctionNode.h"
 				>
 			</File>
 			<File
@@ -1269,6 +1351,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DTypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DWindowNode.h"
 				>
 			</File>
 			<File
@@ -1388,11 +1474,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\LibCurlResolver.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\LineProperties.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\LineSet.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\LoadSensor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\LocalFog.h"
 				>
 			</File>
 			<File
@@ -1452,7 +1550,47 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\MFBool.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFColor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFColorRGBA.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFDouble.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFFloat.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\MField.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFInt32.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFMatrix3d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFMatrix3f.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFMatrix4d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFMatrix4f.h"
 				>
 			</File>
 			<File
@@ -1461,6 +1599,46 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\MFNodeAutoRefVector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFQuaternion.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFRotation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFString.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFTime.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFVec2d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFVec2f.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFVec3d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFVec3f.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFVec4d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\MFVec4f.h"
 				>
 			</File>
 			<File
@@ -1556,6 +1734,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\ProtoDeclaration.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\PrototypeInstance.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\PythonMethods.h"
 				>
 			</File>
@@ -1596,6 +1782,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\ResourceResolver.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\RK4.h"
 				>
 			</File>
@@ -1612,11 +1802,91 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\SFBool.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFColor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFColorRGBA.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFDouble.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFFloat.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\SField.h"
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\SFInt32.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFMatrix3d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFMatrix3f.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFMatrix4d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFMatrix4f.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\SFNode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFQuaternion.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFRotation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFString.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFTime.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFVec2d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFVec2f.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFVec3d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFVec3f.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFVec4d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SFVec4f.h"
 				>
 			</File>
 			<File
@@ -1780,6 +2050,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\URNResolver.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\Types\Vec2d.h"
 				>
 			</File>
@@ -1805,6 +2079,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Viewpoint.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\WorldInfo.h"
 				>
 			</File>
 			<File
@@ -1856,6 +2134,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\X3DFogObject.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3DFontStyleNode.h"
 				>
 			</File>
@@ -1869,6 +2151,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DGroupingNode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DInfoNode.h"
 				>
 			</File>
 			<File
@@ -1913,6 +2199,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DProgrammableShaderObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DPrototypeInstance.h"
 				>
 			</File>
 			<File

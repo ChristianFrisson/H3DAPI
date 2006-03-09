@@ -30,6 +30,8 @@
 #define __TEXTURETRANSFORM3D_H__
 
 #include "X3DTextureTransformNode.h"
+#include "SFVec3f.h"
+#include "SFRotation.h"
 
 namespace H3D {
   /// \ingroup Nodes 

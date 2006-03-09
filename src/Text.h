@@ -31,6 +31,9 @@
 
 #include "X3DGeometryNode.h"
 #include "X3DFontStyleNode.h"
+#include "MFFloat.h"
+#include "SFFloat.h"
+#include "MFString.h"
 
 namespace H3D {
 

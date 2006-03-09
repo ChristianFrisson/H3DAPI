@@ -30,6 +30,8 @@
 #define __ORIENTATIONINTERPOLATOR_H__
 
 #include "X3DInterpolatorNode.h"
+#include "SFRotation.h"
+#include "MFRotation.h"
 
 namespace H3D {
 

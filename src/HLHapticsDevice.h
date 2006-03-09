@@ -31,6 +31,7 @@
 
 #include "H3DHapticsDevice.h"
 #include "DeviceLog.h"
+#include "SFString.h" 
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
 #endif

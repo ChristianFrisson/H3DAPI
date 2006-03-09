@@ -28,7 +28,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "HLShape.h"
-#include "HLHapticsDevice.h"
 #include "X3DGeometryNode.h"
 #include "HapticShape.h"
 

@@ -30,6 +30,7 @@
 #define __SWITCH_H__
 
 #include "X3DGroupingNode.h"
+#include "SFInt32.h"
 
 namespace H3D {
 

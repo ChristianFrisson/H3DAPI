@@ -32,6 +32,8 @@
 #include "X3DChildNode.h"
 #include "H3DBoundedObject.h"
 #include "H3DDisplayListObject.h"
+#include "MFBool.h"
+#include "MFVec3f.h"
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
 #endif

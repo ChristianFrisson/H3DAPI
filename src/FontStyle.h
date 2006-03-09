@@ -31,6 +31,10 @@
 #define __FONTSTYLE_H__
 
 #include "X3DFontStyleNode.h"
+#include "SFString.h"
+#include "MFString.h"
+#include "SFBool.h"
+#include "SFFloat.h"
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 #ifdef _MSC_VER

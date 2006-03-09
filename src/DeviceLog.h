@@ -30,6 +30,7 @@
 #define __DEVICE_LOG_H__
 
 #include "X3DChildNode.h"
+#include "SFString.h"
 #ifdef WIN32
 #include <Windows.h>
 #endif

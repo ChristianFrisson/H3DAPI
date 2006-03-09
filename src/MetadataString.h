@@ -31,6 +31,7 @@
 
 #include "X3DMetadataObject.h"
 #include "X3DNode.h"
+#include "MFString.h"
 
 namespace H3D {
 

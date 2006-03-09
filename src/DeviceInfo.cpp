@@ -55,6 +55,8 @@ DeviceInfo::DeviceInfo(
 
   type_name = "DeviceInfo";
   database.initFields( this );
+
+  toStackTop();
 }
 
 void DeviceInfo::renderStyli() {

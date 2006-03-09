@@ -31,6 +31,8 @@
 
 
 #include "X3DKeyDeviceSensorNode.h"
+#include "SFInt32.h"
+#include "SFString.h"
 
 namespace H3D {
 

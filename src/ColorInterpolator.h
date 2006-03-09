@@ -32,6 +32,8 @@
 
 
 #include "X3DInterpolatorNode.h"
+#include "SFColor.h"
+#include "MFColor.h"
 
 namespace H3D {
 

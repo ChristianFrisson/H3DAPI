@@ -31,6 +31,7 @@
 
 #include "Viewpoint.h"
 #include "MFNode.h"
+#include "SFInt32.h"
 
 namespace H3D {
 

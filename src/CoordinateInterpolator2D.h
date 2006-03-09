@@ -31,6 +31,7 @@
 #define __COORDINATEINTERPOLATOR2D_H__
 
 #include "X3DInterpolatorNode.h"
+#include "MFVec2f.h"
 
 namespace H3D {
 

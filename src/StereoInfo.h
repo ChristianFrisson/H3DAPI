@@ -30,6 +30,7 @@
 #define __STEREOINFO_H__
 
 #include "X3DBindableNode.h"
+#include "SFFloat.h"
 
 namespace H3D {
   /// \ingroup Nodes

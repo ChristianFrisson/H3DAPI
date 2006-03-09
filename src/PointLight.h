@@ -30,6 +30,7 @@
 #define __POINTLIGHT_H__
 
 #include "X3DLightNode.h"
+#include "SFVec3f.h"
 
 namespace H3D {
 

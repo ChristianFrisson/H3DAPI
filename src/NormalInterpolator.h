@@ -30,6 +30,7 @@
 #define __NORMALINTERPOLATOR_H__
 
 #include "X3DInterpolatorNode.h"
+#include "MFVec3f.h"
 
 namespace H3D {
 

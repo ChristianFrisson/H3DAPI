@@ -34,6 +34,8 @@
 #include "X3DCoordinateNode.h"
 #include "X3DColorNode.h"
 #include "CoordBoundField.h"
+#include "IndexedLineSet.h"
+#include "MFInt32.h"
 
 namespace H3D {
 

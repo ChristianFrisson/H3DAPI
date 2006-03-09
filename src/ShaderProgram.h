@@ -33,6 +33,7 @@
 #include "X3DUrlObject.h"
 #include "X3DProgrammableShaderObject.h"
 #include "H3DDisplayListObject.h"
+#include "SFString.h"
 
 #ifdef HAVE_CG
 #include <GL/glew.h>

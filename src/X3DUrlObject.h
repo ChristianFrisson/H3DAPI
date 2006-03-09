@@ -31,6 +31,7 @@
 
 #include "Node.h"
 #include "FieldTemplates.h"
+#include "MFString.h"
 
 namespace H3D {
   /// \ingroup AbstractInterface

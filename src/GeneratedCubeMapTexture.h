@@ -35,6 +35,7 @@
 #include "X3DTexture2DNode.h"
 #include "DependentNodeFields.h"
 #include <list>
+#include "SFInt32.h"
 
 namespace H3D {
 

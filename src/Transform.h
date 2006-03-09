@@ -30,6 +30,7 @@
 #define __TRANSFORM_H__
 
 #include "MatrixTransform.h"
+#include "SFRotation.h"
 
 namespace H3D {
 

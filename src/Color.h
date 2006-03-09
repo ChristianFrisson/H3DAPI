@@ -30,7 +30,8 @@
 #define __COLOR_H__
 
 #include "X3DColorNode.h"
-#include "GL/glew.h"
+#include <GL/glew.h>
+#include "MFColor.h"
 
 namespace H3D {
 

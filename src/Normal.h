@@ -31,7 +31,8 @@
 
 #include "X3DNormalNode.h"
 #include "FieldTemplates.h"
-#include "GL/glew.h"
+#include <GL/glew.h>
+#include "MFVec3f.h"
 
 namespace H3D {
 

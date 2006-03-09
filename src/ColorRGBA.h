@@ -31,7 +31,8 @@
 
 #include "X3DColorNode.h"
 #include "FieldTemplates.h"
-#include "GL/glew.h"
+#include <GL/glew.h>
+#include "MFColorRGBA.h"
 
 namespace H3D {
   /// \ingroup Nodes
