@@ -89,12 +89,11 @@ void Scene::idle() {
          d != di->device->end();
          d++ ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *d );
-      if( !hd->initialized->getValue() ) { 
-        hd->initDevice();
+      if( hd->initialized->getValue() ) { 
+        hd->preRender();
+        hd->updateDeviceValues();
+        hds.push_back( hd );
       }
-      hd->preRender();
-      hd->updateDeviceValues();
-      hds.push_back( hd );
     }
 
     // traverse the scene graph to collect the HapticObject instances to render.
@@ -103,16 +102,16 @@ void Scene::idle() {
     if( c )
       c->traverseSG( *ti );
       
-    
-  
     // render the HapticShapes and HapticForceEffets in the TraverseInfo 
     // instance on the H3DHapticsDevices.
     unsigned int nr_devices = (unsigned int) ti->getHapticsDevices().size();
     for( unsigned int i = 0; i < nr_devices; i++ ) {
       H3DHapticsDevice *hd = ti->getHapticsDevice( i );
-      hd->renderShapes( ti->getHapticShapes( i ) );
-      hd->renderEffects( ti->getForceEffects( i ) );
-      hd->postRender();
+      if( hd->initialized->getValue() ) {
+        hd->renderShapes( ti->getHapticShapes( i ) );
+        hd->renderEffects( ti->getForceEffects( i ) );
+        hd->postRender();
+      }
     }
 
     // remove the TraverseInfo instance from the last loop. TraverseInfo 

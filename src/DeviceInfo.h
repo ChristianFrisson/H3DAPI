@@ -56,6 +56,15 @@ namespace H3D {
       return static_cast< DeviceInfo * >( X3DBindableNode::getActive( "DeviceInfo" ) );
     }
 
+    /// If this is the stack top, initialize the devices in it.
+    virtual void initialize();
+
+    /// Move this instance to the stack top. 
+    virtual void toStackTop();
+
+    /// Remove the bindable node from the stack.
+    virtual void removeFromStack();
+
     /// Render the styli of all devices in the device field.
     virtual void renderStyli();
 

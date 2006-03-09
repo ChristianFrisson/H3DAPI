@@ -64,9 +64,8 @@ X3DBindableNode::X3DBindableNode( const string &_bindable_stack_name,
   database.initFields( this );
   
   StackType &s = stack[bindable_stack_name];
-  s.push_back( this );
   
-  if ( s.size() == 1 ) {
+  if ( s.size() == 0 ) {
     toStackTop();
   } 
 }
@@ -97,7 +96,8 @@ void X3DBindableNode::removeFromStack() {
 
 void X3DBindableNode::toStackTop() {
   StackType &s =  stack[bindable_stack_name];
-  X3DBindableNode *active = s.front();
+  X3DBindableNode *active = NULL;
+  if( s.size() > 0 ) active = s.front();
   if ( active != this ) {
     // remove this from the stack, if it was in the stack...
     for( StackType::iterator i = s.begin();
@@ -112,6 +112,7 @@ void X3DBindableNode::toStackTop() {
     s.push_front( this );
     isBound->setValue( true, id );
     bindTime->setValue( TimeStamp(), id );
-    active->isBound->setValue( false, active->id );
+    if( active )
+      active->isBound->setValue( false, active->id );
   }
 }

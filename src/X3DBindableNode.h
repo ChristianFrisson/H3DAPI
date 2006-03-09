@@ -160,10 +160,17 @@ namespace H3D {
     }
 
     /// Move this instance to the stack top. 
-    void toStackTop();
+    virtual void toStackTop();
 
     /// Remove the bindable node from the stack.
-    void removeFromStack();
+    virtual void removeFromStack();
+
+    /// Is this node at the top of the stack
+    inline bool isStackTop() {
+      const StackType &s = getStack( bindable_stack_name );
+      if( s.size() > 0 ) return this == s.front();
+      else return false;
+    }
 
     /// Input field to bind or unbind the node.
     ///
