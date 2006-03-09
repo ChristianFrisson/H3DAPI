@@ -1,0 +1,45 @@
+<Group>
+<DeviceInfo>
+     <HLHapticsDevice DEF="HDEV" positionCalibration="2e-3 0 0 0 0 2e-3 0 0 0 0 2e-3 0 0 0 0 1" >
+	<Group containerField="stylus">
+
+	<Shape>
+	  <Appearance>
+	     <Material/>
+	  </Appearance>
+	<Sphere radius="0.0025"/>
+	</Shape>
+	<Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
+	<Shape>
+	  <Appearance>
+	     <Material/>
+	  </Appearance>
+	<Cylinder radius="0.005" height="0.1"/>
+	</Shape>
+	</Transform>
+	</Group>
+     </HLHapticsDevice>
+  </DeviceInfo>
+  <TransformInfo DEF="TRANS" />
+  <Shape>
+    <Appearance>
+      <Material />
+      <MultiTexture DEF="MT" color="0 0.2 0.45" source="DIFFUSE" mode='"DOTPRODUCT3" "MODULATE"' >
+        <ImageTexture url="stone_wall_normal_map.bmp" />
+        <ImageTexture url="stone_wall.bmp" />
+      </MultiTexture>
+    </Appearance>
+    <IndexedFaceSet coordIndex="0 1 2 3" solid="false">
+      <Coordinate DEF="COORD" point="0.15 0.15 0, 0.15 -0.15 0, -0.15 -0.15 0, -0.15 0.15 0" />
+      <Color DEF="COLOR" />
+    </IndexedFaceSet>
+  </Shape>
+  <PythonScript DEF="PS" url="bumpmap.py" />
+  <ROUTE fromNode="HDEV" fromField="trackerPosition" toNode="PS" toField="toColor" />
+  <ROUTE fromNode="TRANS" fromField="accInverseMatrix" toNode="PS" toField="toColor" />
+  <ROUTE fromNode="COORD" fromField="point" toNode="PS" toField="toColor" />
+
+  <ROUTE fromNode="PS" fromField="toColor" toNode="COLOR" toField="color" />
+  <NavigationInfo headlight="true" />
+
+</Group>
