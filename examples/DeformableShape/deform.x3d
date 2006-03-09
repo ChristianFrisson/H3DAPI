@@ -1,0 +1,46 @@
+<Group>
+  <DeviceInfo>
+    <HLHapticsDevice proxyWeighting="0" orientationCalibration="1 0 0 0.726225"
+                   positionCalibration="0.002332 0 0 0
+                                        0 0.00174361 -0.00154857 -0.1475
+                                        0 0.00154857 0.00174361 -0.128
+                                        0 0 0 1" >
+      <Group containerField="stylus">
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <Sphere radius="0.005"/>
+      </Shape>
+      <Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
+        <Shape>
+          <Appearance>
+            <Material/>
+          </Appearance>
+          <Cylinder radius="0.005" height="0.1"/>
+        </Shape>
+      </Transform>
+    </Group>
+    </HLHapticsDevice>
+  </DeviceInfo>
+
+  <Transform rotation="1 0 0 -0.5">
+    <DeformableShape DEF="DEFORM_SHAPE" >
+      <CoordinateDeformer >
+        <GaussianFunction width="0.05" containerField="distanceToDepth"/>
+      </CoordinateDeformer>
+      <Appearance DEF="LOCAL_APP" >
+        <ImageTexture url="plastic_2.jpg" />
+        <Material/>
+        <SmoothSurface stiffness="0.1" />
+      </Appearance>
+      <Rectangle2D size="0.4 0.4" DEF="HAPTIC_GEOM" solid="FALSE"
+                   containerField="hapticGeometry" />
+    </DeformableShape>
+  </Transform>
+
+  <PythonScript DEF="PS" url="deform.py" >
+    <DeformableShape USE="DEFORM_SHAPE" containerField="references" />
+  </PythonScript>
+
+</Group>

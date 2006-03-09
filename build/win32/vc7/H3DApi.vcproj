@@ -183,6 +183,9 @@
 				RelativePath="..\..\..\src\Coordinate.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\CoordinateDeformer.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordinateInterpolator.cpp">
 			</File>
 			<File
@@ -190,6 +193,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Cylinder.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\DeformableShape.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\DeviceInfo.cpp">
@@ -244,6 +250,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\FrictionalSurface.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\GaussianFunction.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.cpp">
@@ -842,6 +851,9 @@
 				RelativePath="..\..\..\src\Coordinate.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\CoordinateDeformer.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordinateInterpolator.h">
 			</File>
 			<File
@@ -852,6 +864,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\DEFNodes.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\DeformableShape.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\DependentNodeFields.h">
@@ -917,6 +932,9 @@
 				RelativePath="..\..\..\src\FrictionalSurface.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\GaussianFunction.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.h">
 			</File>
 			<File
@@ -930,6 +948,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DBoundedObject.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DCoordinateDeformerNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DDisplayListObject.h">
