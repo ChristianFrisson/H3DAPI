@@ -43,11 +43,11 @@ namespace H3D {
                       Inst< SFFloat > _amplitude = 0,
                       Inst< SFFloat > _width     = 0 );    
 
-    /** Get the value as unsigned byte */
+    /// Get the value as unsigned byte
     inline unsigned char getChar(unsigned char x){
       return (unsigned char)( 255.0f*get((H3DFloat)(x/255.0f)) );
     }
-    /** Get the value as mgFloat */
+    /// Get the value as H3DFloat 
     H3D::H3DFloat get(H3DFloat x);
 
     /// The amplitude of the gaussian.
