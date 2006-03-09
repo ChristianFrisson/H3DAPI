@@ -16,6 +16,7 @@
 #include "MouseSensor.h"
 #include "DEFNodes.h"
 #include "Viewpoint.h"
+#include "Console.h"
 
 #ifdef MACOSX
 #include "FreeImage.h"
@@ -72,9 +73,9 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 
 int main(int argc, char* argv[]) {
-
+  Console(4) << "H3DLoad build 204" << endl;
   if (argc < 2){
-    cerr << "Usage: " << argv[0] << " <X3D file>" << endl;
+    Console(4) << "Usage: " << argv[0] << " <X3D file>" << endl;
     return 1;
   }
 
@@ -90,7 +91,8 @@ int main(int argc, char* argv[]) {
     KeyRotation *kr = new KeyRotation;
     QuitAPIField *quit_api = new QuitAPIField;
     AutoRef< Transform > t( new Transform );
-    cerr << "Loading " << xml_file << endl;
+
+    Console(3) << "Loading " << xml_file << endl;
     t->children->push_back( X3D::createX3DFromURL( xml_file, 
                                                    &dn ) );
     
@@ -105,6 +107,8 @@ int main(int argc, char* argv[]) {
     
     // create a Viewpoint if it does not exist.
     if( !Viewpoint::getActive() ) {
+      Console(2) << "No Viewpoint node found, creating one." << endl;
+
       Viewpoint *vp = new Viewpoint;
       vp->position->setValue( Vec3f( 0, 0, 0.6f ) );
     }
@@ -123,8 +127,8 @@ int main(int argc, char* argv[]) {
       if (strcmp( buffer, "TRUE" ) == 0 )
         fullscreen = true;
       else if(strcmp( buffer, "FALSE" ) != 0 )
-        cerr << "Invalid valid value \"" << buffer << "\" on environment "
-             << "variable H3D_FULLSCREEN. Must be TRUE or FALSE. "<< endl;
+        Console(4) << "Invalid valid value \"" << buffer << "\" on environment "
+                   << "variable H3D_FULLSCREEN. Must be TRUE or FALSE. "<< endl;
     }
 
     buffer = getenv ("H3D_MIRRORED");
@@ -132,8 +136,8 @@ int main(int argc, char* argv[]) {
       if (strcmp( buffer, "TRUE" ) == 0 )
         mirrored = true;
       else if(strcmp( buffer, "FALSE" ) != 0 )
-        cerr << "Invalid valid value \"" << buffer << "\" on environment "
-             << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
+        Console(4) << "Invalid valid value \"" << buffer << "\" on environment "
+                   << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
     }
 
     buffer = getenv ("H3D_RENDERMODE");
@@ -156,7 +160,8 @@ int main(int argc, char* argv[]) {
   }
 
   catch (const Exception::H3DException &e) {
-    cerr << e << endl;
+    Console(4) << "Exception:" << endl;
+    Console(4) << "   " << e << endl;
   }
 
 }
