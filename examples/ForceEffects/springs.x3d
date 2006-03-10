@@ -1,0 +1,17 @@
+<Group>
+  <Shape>
+    <Appearance>
+      <Material diffuseColor="1 0 0" transparency="0.5"/>
+    </Appearance>
+    <Sphere DEF="SPHERE" radius = "0.01" />
+  </Shape>
+  <SpringEffect DEF="SPRING" escapeDistance="0.03"/>
+  <PythonScript DEF="PS" url="springs.py" />
+
+  <ROUTE fromNode="SPRING" fromField="active" toNode="PS" toField="sphereRadius"/>
+  <ROUTE fromNode="SPRING" fromField="startDistance" toNode="PS" toField="sphereRadius"/>
+  <ROUTE fromNode="SPRING" fromField="escapeDistance" toNode="PS" toField="sphereRadius"/>
+  <ROUTE fromNode="PS" fromField="sphereRadius" toNode="SPHERE" toField="radius"/>
+
+
+</Group>
