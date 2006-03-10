@@ -1233,6 +1233,8 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
   if( node_stack.size() > 0 ) 
     parent = node_stack.top().getNode();
 
+  if( dynamic_cast< FieldValue * > ( new_node ) ) return;
+
   // we have a node type
   if( new_node ) {
     // intialize the node if it is not already initialized
