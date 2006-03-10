@@ -108,7 +108,7 @@ namespace H3D {
         }
         if ( showlevel || showtime )
           *outputstream << "] ";
-        *outputstream << str().c_str() << ends;
+        *outputstream << std::basic_stringbuf<CharT, TraitsT>::str().c_str() << ends;
       }
       str(std::basic_string<CharT>());    // Clear the string buffer
       return 0;
@@ -126,31 +126,31 @@ namespace H3D {
     }
 
     ~basic_dostream() {
-      delete rdbuf(); 
+      delete std::ios::rdbuf(); 
     }
 
     void setShowTime( bool show ) { 
-      static_cast< basic_debugbuf<CharT, TraitsT>* >(rdbuf())->
+      static_cast< basic_debugbuf<CharT, TraitsT>* >(std::ios::rdbuf())->
         setShowTime( show );  
     }
 
     void setShowLevel( bool show ) { 
-      static_cast< basic_debugbuf<CharT, TraitsT>* >(rdbuf())->
+      static_cast< basic_debugbuf<CharT, TraitsT>* >(std::ios::rdbuf())->
         setShowLevel( show );  
     }
 
     void setOutputStream( ostream &s ) { 
-      static_cast< basic_debugbuf<CharT, TraitsT>* >(rdbuf())->
+      static_cast< basic_debugbuf<CharT, TraitsT>* >(std::ios::rdbuf())->
         setOutputStream( s );  
     }
 
     void setOutputLevel( int _outputlevel ) {
-      static_cast<basic_debugbuf<CharT, TraitsT>* >( rdbuf() )->
+      static_cast<basic_debugbuf<CharT, TraitsT>* >( std::ios::rdbuf() )->
         setOutputLevel( _outputlevel ); 
     }
 
     void setLevel( int _level ) { 
-      static_cast< basic_debugbuf<CharT, TraitsT>* >(rdbuf())->
+      static_cast< basic_debugbuf<CharT, TraitsT>* >(std::ios::rdbuf())->
         setLevel( _level );  
     }
 
