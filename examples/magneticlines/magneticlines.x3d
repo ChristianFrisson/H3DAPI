@@ -1,0 +1,11 @@
+<Group>
+  <Shape>
+    <Appearance>
+      <Material emissiveColor="1 0 0"/>
+      <MagneticSurface />
+    </Appearance>
+    <LineSet vertexCount="4">
+      <Coordinate point="0.1 0.1 0, 0.1 -0.1 0, -0.1 -0.1 0, -0.1 0.1 0"/> 
+    </LineSet>
+  </Shape>
+</Group>
