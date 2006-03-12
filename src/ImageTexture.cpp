@@ -120,7 +120,7 @@ void ImageTexture::render() {
       for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) { 
         s << " \"" << *i << "\"";
       }
-      s << "]." << ends;
+      s << "].";
       e.message = s.str();
       throw e;
     } catch( OpenGLTextureError &e ) {
@@ -129,7 +129,7 @@ void ImageTexture::render() {
       for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) { 
         s << " \"" << *i << "\"";
       }
-      s << "]." << ends;
+      s << "].";
       e.message = s.str();
       throw e;
     }

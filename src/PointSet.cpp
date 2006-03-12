@@ -92,7 +92,7 @@ void PointSet::render() {
         stringstream s;
         s << "Must be at least as many as coordinates in the coord field ("
           << coordinate_node->nrAvailableCoords() << ") in "
-          << getName() << "\" node) " << ends;
+          << getName() << "\" node) ";
         throw NotEnoughColors( color_node->nrAvailableColors(), s.str(), 
                                H3D_FULL_LOCATION );
       }

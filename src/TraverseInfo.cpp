@@ -65,7 +65,7 @@ void TraverseInfo::addForceEffect( int device_index,
   if( device_index < 0 || device_index >= (int)haptics_devices.size() ) {
     stringstream s;
     s << "TraverseInfo only has " << (unsigned int) haptics_devices.size() 
-      << " haptics device available. " << ends;
+      << " haptics device(s) available. ";
     throw InvalidHapticsDeviceIndex( device_index,
                                      s.str(),
                                      H3D_FULL_LOCATION );
@@ -83,7 +83,7 @@ void TraverseInfo::addHapticShape( int device_index,
   if( device_index < 0 || device_index >= (int)haptics_devices.size() ) {
     stringstream s;
     s << "TraverseInfo only has " << (unsigned int) haptics_devices.size() 
-      << " haptics device available. " << ends;
+      << " haptics device(s) available. ";
     throw InvalidHapticsDeviceIndex( device_index,
                                      s.str(),
                                      H3D_FULL_LOCATION );

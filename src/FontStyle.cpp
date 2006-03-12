@@ -437,8 +437,7 @@ void FontStyle::buildFonts() {
       render_type != "OUTLINE" ) {
     stringstream s;
     s << " in " << renderType->getFullName() 
-      << ". Valid values are \"POLYGON\", \"TEXTURE\" and \"OUTLINE\""
-      << ends;
+      << ". Valid values are \"POLYGON\", \"TEXTURE\" and \"OUTLINE\"";
     throw InvalidFontStyleRenderType( render_type, 
                                       s.str(), 
                                       H3D_FULL_LOCATION ); 
@@ -458,8 +457,7 @@ void FontStyle::buildFonts() {
   } else {
     stringstream s;
     s << " in " << style->getFullName() 
-      << ". Valid values are \"PLAIN\", \"BOLD\", \"ITALIC\" and \"BOLDITALIC\""
-      << ends;
+      << ". Valid values are \"PLAIN\", \"BOLD\", \"ITALIC\" and \"BOLDITALIC\"";
     throw InvalidFontStyleStyle( font_style, s.str(), H3D_FULL_LOCATION );  
   }
 
@@ -537,8 +535,7 @@ X3DFontStyleNode::Justification FontStyle::getMajorJustification() {
 
     stringstream serr;
     serr << " in " << justify->getFullName() 
-      << ". Valid values are \"BEGIN\", \"FIRST\", \"MIDDLE\" and \"END\""
-      << ends;
+         << ". Valid values are \"BEGIN\", \"FIRST\", \"MIDDLE\" and \"END\"";
     throw InvalidFontStyleJustify( s, serr.str(), H3D_FULL_LOCATION ); 
   }
 }
@@ -555,8 +552,7 @@ X3DFontStyleNode::Justification FontStyle::getMinorJustification() {
 
     stringstream serr;
     serr << " in " << justify->getFullName() 
-      << ". Valid values are \"BEGIN\", \"FIRST\", \"MIDDLE\" and \"END\""
-      << ends;
+         << ". Valid values are \"BEGIN\", \"FIRST\", \"MIDDLE\" and \"END\"";
     throw InvalidFontStyleJustify( s, serr.str(), H3D_FULL_LOCATION ); 
   }
 }

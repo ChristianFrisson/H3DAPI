@@ -845,7 +845,7 @@ namespace H3D {
       } catch( const ConversionError & ) {
         stringstream ss;
         ss << typeid( typename VectorType::value_type ).name() 
-           << " vector" << ends;
+           << " vector";
         throw ConversionError( ss.str() );
       }
     }
@@ -878,7 +878,7 @@ namespace H3D {
           }
       } catch( const ConversionError & ) {
         stringstream ss;
-        ss << " string vector" << ends;
+        ss << " string vector";
         throw ConversionError( ss.str() );
       }
     }

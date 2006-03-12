@@ -215,7 +215,7 @@ void ElevationGrid::renderTexCoord( int index,
   } else {
     stringstream s;
     s << "Trying to call renderTexCoord( int index, X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL." << ends;
+      << " when tc is NULL.";
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
   }
 }
@@ -253,7 +253,7 @@ void ElevationGrid::renderTexCoordArray(
   } else {
     stringstream s;
     s << "Trying to call renderTexCoordArray( X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL." << ends;
+      << " when tc is NULL.";
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
   }
 }
@@ -273,7 +273,7 @@ void ElevationGrid::disableTexCoordArray(
   } else {
     stringstream s;
     s << "Trying to call disableTexCoordArray( X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL." << ends;
+      << " when tc is NULL.";
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
   }
 }
@@ -614,7 +614,7 @@ void ElevationGrid::startTexGen(
     } else {
       stringstream s;
       s << "Could not start texture coordinate generation in IndexedFaceSet. "
-        << "Requires bound object of BoxBound type. "<< ends;
+        << "Requires bound object of BoxBound type. ";
       throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
     }
   }  else {

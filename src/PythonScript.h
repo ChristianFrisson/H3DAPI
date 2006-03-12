@@ -71,7 +71,7 @@ namespace H3D {
 
     virtual string getInstanceName() {
       ostringstream namestr;
-      namestr << "PythonScript_" << this << ends; 
+      namestr << "PythonScript_" << this; 
       return namestr.str();   
     }
     

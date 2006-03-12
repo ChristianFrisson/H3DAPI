@@ -48,8 +48,7 @@ PixelImage *X3D::X3DStringTo3DImage( const string &x3d_string ) {
   default:
     stringstream s;
     s << "SFImage. Component value is "
-      << nr_components << ". Must be 1, 2, 3 or 4. "
-      << ends;
+      << nr_components << ". Must be 1, 2, 3 or 4. ";
     throw ConversionError( s.str() );
   }
 
@@ -130,8 +129,7 @@ PixelImage *X3D::X3DStringTo2DImage( const string &x3d_string ) {
   default:
     stringstream s;
     s << "SFImage. Component value is "
-      << nr_components << ". Must be 1, 2, 3 or 4. "
-      << ends;
+      << nr_components << ". Must be 1, 2, 3 or 4. ";
     throw ConversionError( s.str() );
   }
 
@@ -180,7 +178,7 @@ unsigned char * X3D::Convert::readImageData( const char *s,
           delete data;
           stringstream s;
           s << "SFImage. Con't convert pixel ("
-            << x << ", " << y << ", " << z << ") to int" << ends;
+            << x << ", " << y << ", " << z << ") to int";
           throw X3DFieldConversionError( s.str() );
         } 
         t1 = Convert::skipWhitespaces( t2 );  
@@ -193,7 +191,7 @@ unsigned char * X3D::Convert::readImageData( const char *s,
             s << "SFImage. Single component pixel value of pixel ("
               << x << ", " << y << ", " << z << ") is " 
               << pixel << ". Pixel component "
-              << "values must be between 0 and 255. " << ends;
+              << "values must be between 0 and 255. ";
             throw X3DFieldConversionError( s.str() );
           }
           unsigned char c = pixel & 0x000000FF;
@@ -208,8 +206,7 @@ unsigned char * X3D::Convert::readImageData( const char *s,
             s << "SFImage. Two component pixel value of pixel ("
               << x << ", " << y << ", " << z << ") is " 
               << pixel << ". Pixel component "
-              << "values must be between 0x0000 and 0xFFFF."
-              << ends;
+              << "values must be between 0x0000 and 0xFFFF.";
             throw X3DFieldConversionError( s.str() );
           }
           unsigned char c = ( pixel & 0x0000FF00 ) >> 8;
@@ -226,8 +223,7 @@ unsigned char * X3D::Convert::readImageData( const char *s,
             s << "SFImage. Three component pixel value of pixel "
               << x << ", " << y << ", " << z << ") is " 
               << pixel << ". Pixel component "
-              << "values must be between 0x000000 and 0xFFFFFF."
-              << ends;
+              << "values must be between 0x000000 and 0xFFFFFF.";
             throw X3DFieldConversionError( s.str() );
           }
           unsigned char c = ( pixel & 0x00FF0000 ) >> 16;
@@ -253,8 +249,7 @@ unsigned char * X3D::Convert::readImageData( const char *s,
           delete data;
           stringstream s;
           s << "SFImage. Component value is "
-            << nr_components << ". Must be 1, 2, 3 or 4. "
-            << ends;
+            << nr_components << ". Must be 1, 2, 3 or 4. ";
           throw X3DFieldConversionError( s.str() );
         }           
         
@@ -265,15 +260,13 @@ unsigned char * X3D::Convert::readImageData( const char *s,
     delete data;
     stringstream s;
     s << "SFImage.  Only " << pixels_processed << " pixels. " 
-      << "Expecting " << nr_pixels << " pixels."
-      << ends;
+      << "Expecting " << nr_pixels << " pixels.";
     throw X3DFieldConversionError( s.str() );
   } else if( t1[0] != '\0' ) {
     delete data;
     stringstream s;
     s << "SFImage.  More than " << nr_pixels << " pixels. " 
-      << "Expecting " << nr_pixels << " pixels."
-      << ends;
+      << "Expecting " << nr_pixels << " pixels.";
     throw X3DFieldConversionError( s.str() );
   }
   return data;

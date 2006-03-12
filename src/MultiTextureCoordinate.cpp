@@ -141,7 +141,7 @@ void MultiTextureCoordinate::render( int index ) {
   stringstream s;
   s << "Cannot use render() function in MultiTextureCoordinate. Use "
     << "renderForTextureUnit() instead to specify which texture "
-    << "unit to render for. " << ends;
+    << "unit to render for. ";
   throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
 }
 
@@ -164,7 +164,7 @@ void MultiTextureCoordinate::renderArray() {
   stringstream s;
   s << "Cannot use renderArray() function in MultiTextureCoordinate. Use "
     << "renderArrayForTextureUnit() instead to specify which texture "
-    << "unit to render for. " << ends;
+    << "unit to render for. ";
   throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
 }
 

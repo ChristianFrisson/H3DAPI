@@ -393,10 +393,7 @@ namespace H3D {
             stringstream s;
             s << "Route " << field_index << " has type " 
               << f->getTypeName() <<". Expecting "
-              << RequiredArgType::classTypeName() << "."  
-              << ends;
-
-                        
+              << RequiredArgType::classTypeName() << ".";
             throw H3D::TypedFieldError( s.str() );
           }
         } else {
@@ -444,7 +441,7 @@ namespace H3D {
             stringstream s;
             s << "Route " << field_index << " has type " 
               << e.value <<". Expecting "
-              << e.message << ends;
+              << e.message;
             throw H3D::TypedFieldError( s.str() );
           }
         } else {
@@ -512,7 +509,7 @@ namespace H3D {
                                   int type_index ) {
         stringstream s;
         s << "Too many routes. Expecing a maximum of " 
-          << type_index  << " routes." << ends;
+          << type_index  << " routes.";
         throw TypedFieldError( s.str() );
       }
     };
@@ -550,13 +547,13 @@ namespace H3D {
             s << "Route " << field_index << " has type " 
               << f->getTypeName() <<". Expecting "
               << OptionalArgType::classTypeName() 
-              << "."<< ends;
+              << ".";
             throw H3D::TypedFieldError( s.str() );
           }
         } else {
           stringstream s;
           s << "Too many routes. Expecing a maximum of " 
-            << type_index << " routes." << ends;
+            << type_index << " routes.";
           throw H3D::TypedFieldError( s.str() );
         }
       }
@@ -594,7 +591,7 @@ namespace H3D {
         } else {
           stringstream s;
           s << "Too many routes. Expecing a maximum of " 
-            << type_index << " routes." << ends;
+            << type_index << " routes.";
           throw H3D::TypedFieldError( s.str() );
         }
       }
@@ -631,7 +628,7 @@ namespace H3D {
           stringstream s;
           s << "Route " << field_index << " has type " 
             << e.value <<". Expecting "
-            << e.message << "." << ends;
+            << e.message << ".";
           throw H3D::TypedFieldError( s.str() );
         }
       }

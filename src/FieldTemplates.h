@@ -53,7 +53,7 @@ namespace H3D {
     void onAdd( typename BaseRefCountType::value_type n) {
       if( !dynamic_cast< RefCountedType * >( n ) ) {
         stringstream s;
-        s << "Expecting " << typeid( RefCountedType ).name() << ends;
+        s << "Expecting " << typeid( RefCountedType ).name();
         throw InvalidNodeType( typeid( n ).name(),
                                s.str(),
                                H3D_FULL_LOCATION );

@@ -54,7 +54,7 @@ namespace H3D {
         s << "Cannot call callList() on the DisplayList of an "
           << "X3DTextureTransformNode since the rendering requires "
           << "specification of which texture units to render for. Use "
-          << "render() or renderForMultipleTexture() instead." << ends;
+          << "render() or renderForMultipleTexture() instead.";
         throw InvalidCallToCallList( s.str(), H3D_FULL_LOCATION );
       }
     };

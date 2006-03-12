@@ -220,7 +220,7 @@ namespace H3D {
         Node *pi = getPrototypeNode( n );
         if( !dynamic_cast< NodeType * >( pi ) ) {
           stringstream s;
-          s << "Expecting " << typeid( NodeType ).name() << ends;
+          s << "Expecting " << typeid( NodeType ).name();
           throw InvalidNodeType( n->getTypeName(),
                                  s.str(),
                                  H3D_FULL_LOCATION ); 
@@ -264,7 +264,7 @@ namespace H3D {
         Node *pi = getPrototypeNode( n );
         if( !dynamic_cast< Type * >( pi ) ) {
           stringstream s;
-          s << "Expecting " << typeid( Type ).name() << ends;
+          s << "Expecting " << typeid( Type ).name();
           throw InvalidNodeType( n->getTypeName(),
                                  s.str(),
                                  H3D_FULL_LOCATION ); 

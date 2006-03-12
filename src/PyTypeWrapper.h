@@ -109,11 +109,11 @@ namespace H3D {
     static PyObject* repr( PyObject *myself, PyObject *args ) {
       if( CheckFunc( myself ) ) {
         ostringstream s;
-        s << ValueFunc( myself ) << ends;
+        s << ValueFunc( myself );
         return PyString_FromString( s.str().c_str() );
       } else {
         ostringstream s;
-        s << "PyObject * is not a " << NameFunc() << "*" << ends; 
+        s << "PyObject * is not a " << NameFunc() << "*"; 
         throw Exception::H3DAPIException( s.str(), 
                                           H3D_FULL_LOCATION );
       }
@@ -128,7 +128,7 @@ namespace H3D {
         return a != b;
       } else {
         ostringstream s;
-        s << "PyObject * is not a " << NameFunc() << "*" << ends; 
+        s << "PyObject * is not a " << NameFunc() << "*"; 
         throw Exception::H3DAPIException( s.str(),
                                           H3D_FULL_LOCATION );
       }

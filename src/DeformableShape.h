@@ -83,7 +83,7 @@ namespace H3D {
           dynamic_cast< X3DComposedGeometryNode * >( n );
         if( !cg ) {
           stringstream s;
-          s << "Expecting X3DComposedGeometryNode"  << ends;
+          s << "Expecting X3DComposedGeometryNode";
           throw InvalidNodeType( n->getTypeName(),
                                  s.str(),
                                  H3D_FULL_LOCATION );

@@ -246,7 +246,7 @@ namespace HLHapticsDeviceInternal {
       stringstream s;
       s << "HL_DEVICE_ERROR( " 
         << getHDErrorCodeString( error.errorInfo.errorCode )
-        << " )" << ends;
+        << " )";
       return s.str();
     } else {
       return error.errorCode;

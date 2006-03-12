@@ -242,7 +242,7 @@ void IndexedFaceSet::render() {
             stringstream s;
             s << "-1 mismatch between coord_index and tex_coord_index in \"" 
               << getName()<< "\" node. Must be of equal length and have -1 in "
-              << "the same places. " << ends;
+              << "the same places. ";
             throw InvalidTexCoordIndex( tci, s.str() );
           } else {
             renderTexCoord( tci, tex_coords );
@@ -265,7 +265,7 @@ void IndexedFaceSet::render() {
                 s << "-1 mismatch between coord_index and normal_index in \"" 
                   << getName()
                   << "\" node. Must be of equal length and have -1 in "
-                  << "the same places. " << ends;
+                  << "the same places. ";
                 throw InvalidNormalIndex( ni, s.str() );
               } else {
                 normals->render( ni );
@@ -295,7 +295,7 @@ void IndexedFaceSet::render() {
               s << "-1 mismatch between coord_index and color_index in \"" 
                 << getName() 
                 << "\" node. Must be of equal length and have -1 in "
-                << "the same places. " << ends;
+                << "the same places. ";
               throw InvalidColorIndex( ci, s.str() );
             } else {
               colors->render( ci );

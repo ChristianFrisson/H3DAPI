@@ -111,7 +111,7 @@ void TextureCoordinateGenerator::startTexGen() {
       stringstream s;
       s << "\"MATRIX\" texture coord generation requires 12 values "
         << "in the parameter field. " << params.size() << " given (in "
-        << getName() << " node)" << ends;
+        << getName() << " node)";
       throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
     }
     H3DFloat sparams[4] = {params[0],params[1],params[2],params[3]};
@@ -186,7 +186,7 @@ void TextureCoordinateGenerator::startTexGen() {
   } else {
     stringstream s;
     s << "Unsupported mode \"" << gen_mode << "\" (in "
-        << getName() << " node)" << ends;
+        << getName() << " node)";
       throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
   }
 

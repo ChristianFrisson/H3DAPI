@@ -118,7 +118,7 @@ namespace H3D {
       if( device_index < 0 || device_index >= (int)haptics_devices.size() ) {
         stringstream s;
         s << "TraverseInfo only has " << (unsigned int) haptics_devices.size() 
-          << " haptics device available. " << ends;
+          << " haptics device available. ";
         throw InvalidHapticsDeviceIndex( device_index,
                                          s.str(),
                                          H3D_FULL_LOCATION );
@@ -167,7 +167,7 @@ namespace H3D {
       if( device_index < 0 || device_index >= (int)haptics_devices.size() ) {
         stringstream s;
         s << "TraverseInfo only has " << (unsigned int)haptics_devices.size() 
-          << " haptics device available. " << ends;
+          << " haptics device available. ";
         throw InvalidHapticsDeviceIndex( device_index,
                                          s.str(),
                                          H3D_FULL_LOCATION );

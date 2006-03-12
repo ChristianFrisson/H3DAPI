@@ -107,7 +107,7 @@ void LineSet::render() {
       if( (*i) < 2 ) {
         stringstream s;
         s << "Must be >= 2 (in \"" 
-          << getName() << "\" node) " << ends;
+          << getName() << "\" node) ";
         throw InvalidVertexCountValue( *i, s.str(), H3D_FULL_LOCATION );
       }
 

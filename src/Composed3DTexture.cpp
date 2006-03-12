@@ -228,7 +228,7 @@ void Composed3DTexture::render()     {
       GLenum error = glGetError();
       if( error != GL_NO_ERROR ) {
         stringstream msg;
-        msg << (char*) gluErrorString( error ) << " in " << name << ends;
+        msg << (char*) gluErrorString( error ) << " in " << name;
         throw OpenGLTextureError( (char*) gluErrorString( error ),
                                   H3D_FULL_LOCATION );
       }

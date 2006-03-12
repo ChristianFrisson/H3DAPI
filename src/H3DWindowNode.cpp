@@ -147,7 +147,7 @@ void H3DWindowNode::initialize() {
     GLenum err = glewInit();
     if (GLEW_OK != err) {
       stringstream s;
-      s << "Glew init error: " << glewGetErrorString( err ) << ends;
+      s << "Glew init error: " << glewGetErrorString( err );
       throw Exception::H3DAPIException( s.str() );
     }
     GLEW_init = true;
@@ -840,7 +840,7 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     s << "Must be one of MONO, QUAD_BUFFERED_STEREO, HORIZONTAL_INTERLACED, "
       << "VERTICAL_INTERLACED, VERTICAL_INTERLACED_GREEN_SHIFT, "
       << "VERTICAL_SPLIT, HORIZONTAL_SPLIT, "
-      << "RED_CYAN_STEREO or RED_BLUE_STEREO. " << ends;
+      << "RED_CYAN_STEREO or RED_BLUE_STEREO. ";
     throw InvalidRenderMode( value, 
                              s.str(),
                              H3D_FULL_LOCATION );

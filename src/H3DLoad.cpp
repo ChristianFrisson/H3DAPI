@@ -73,6 +73,7 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 
 int main(int argc, char* argv[]) {
+  Console.setShowLevel(false);
   Console(4) << "H3DLoad build 204" << endl;
   if (argc < 2){
     Console(4) << "Usage: " << argv[0] << " <X3D file>" << endl;

@@ -376,7 +376,7 @@ namespace H3D {
               } else {
                 stringstream s;
                 s << "Unsupported Bound type " 
-                  << typeid( *(b) ).name() << ends;
+                  << typeid( *(b) ).name();
                 throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
               }
             }

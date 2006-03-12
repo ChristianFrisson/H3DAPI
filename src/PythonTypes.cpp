@@ -264,7 +264,7 @@ self, name, field_type, access_type )" );
       return a != b;
     } else {
       ostringstream s;
-      s << "PyObject * is not a PyNode *" << ends; 
+      s << "PyObject * is not a PyNode *"; 
       throw Exception::H3DAPIException( s.str(),
                                         H3D_FULL_LOCATION );
     }
@@ -286,9 +286,9 @@ self, name, field_type, access_type )" );
   PyObject* PyNode::repr( PyNode *myself, PyObject *args) {
     ostringstream s;
     if ( myself->ptr )
-      s << myself->ptr->getName() << "( " << myself->ptr << ") " << ends;
+      s << myself->ptr->getName() << "( " << myself->ptr << ") ";
     else
-      s << "<invalid Node>" << ends;
+      s << "<invalid Node>";
     return PyString_FromString( s.str().c_str() );
   }
 

@@ -580,7 +580,7 @@ if( check_func( value ) ) {                                         \
     PyObject *pythonCreateField( PyObject *self, PyObject *args ) {
       if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 3  ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.createField( Field, int auto_update, name )" << ends;
+        err << "Invalid argument(s) to function H3D.createField( Field, int auto_update, name )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -779,7 +779,7 @@ call the base class __init__ function." );
                                   PyObject *args  ) {
       if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.unrouteField( fromField, toField )" << ends;
+        err << "Invalid argument(s) to function H3D.unrouteField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -788,13 +788,13 @@ call the base class __init__ function." );
       PyObject *to_field = PyTuple_GetItem( args, 1 );
       if( !PyInstance_Check( from_field ) ) {
         ostringstream err;
-        err << "Invalid Field type given as fromField argument to H3D.unrouteField( fromField, toField )" << ends;
+        err << "Invalid Field type given as fromField argument to H3D.unrouteField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
       if( !PyInstance_Check( to_field ) ) {
         ostringstream err;
-        err << "Invalid Field type given as toField argument to H3D.unrouteField( fromField, toField )" << ends;
+        err << "Invalid Field type given as toField argument to H3D.unrouteField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -816,13 +816,13 @@ call the base class __init__ function." );
       
       if( from_field_ptr == 0 ) {
         ostringstream err;
-        err << "Source not a Field class in H3D.unrouteField( fromField, toField )" << ends;
+        err << "Source not a Field class in H3D.unrouteField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;       
       }
       if( to_field_ptr == 0 ) {
         ostringstream err;
-        err << "Destination not a Field class in call to H3D.unrouteField( fromField, toField )" << ends;
+        err << "Destination not a Field class in call to H3D.unrouteField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;       
       }
@@ -830,7 +830,7 @@ call the base class __init__ function." );
         from_field_ptr->unroute( to_field_ptr );
       } catch ( H3D::Exception::H3DException &e ) {
         ostringstream errstr;
-        errstr << e << ends;
+        errstr << e;
         PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
         return NULL;
       }
@@ -846,8 +846,7 @@ call the base class __init__ function." );
       if( !arg || ! PyInstance_Check( arg ) ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getCPtr( Field f )."
-            << " Requires one argument of type Field. "
-            << ends;
+            << " Requires one argument of type Field. ";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -877,7 +876,7 @@ call the base class __init__ function." );
                                     bool send_event  ) {
       if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.routeField( fromField, toField )" << ends;
+        err << "Invalid argument(s) to function H3D.routeField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -886,13 +885,13 @@ call the base class __init__ function." );
       PyObject *to_field = PyTuple_GetItem( args, 1 );
       if( !PyInstance_Check( from_field ) ) {
         ostringstream err;
-        err << "Invalid Field type given as fromField argument to H3D.routeField( fromField, toField )" << ends;
+        err << "Invalid Field type given as fromField argument to H3D.routeField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
       if( !PyInstance_Check( to_field ) ) {
         ostringstream err;
-        err << "Invalid Field type given as toField argument to H3D.routeField( fromField, toField )" << ends;
+        err << "Invalid Field type given as toField argument to H3D.routeField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -914,13 +913,13 @@ call the base class __init__ function." );
       
       if( from_field_ptr == 0 ) {
         ostringstream err;
-        err << "Source not a Field class in H3D.routeField( fromField, toField )" << ends;
+        err << "Source not a Field class in H3D.routeField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;       
       }
       if( to_field_ptr == 0 ) {
         ostringstream err;
-        err << "Destination not a Field class in call to H3D.routeField( fromField, toField )" << ends;
+        err << "Destination not a Field class in call to H3D.routeField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;       
       }
@@ -931,7 +930,7 @@ call the base class __init__ function." );
           from_field_ptr->routeNoEvent( to_field_ptr );
       } catch ( H3D::Exception::H3DException &e ) {
         ostringstream errstr;
-        errstr << e << ends;
+        errstr << e;
         PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
         return NULL;
       }
@@ -945,7 +944,7 @@ call the base class __init__ function." );
     PyObject* pythonCreateX3DFromURL( PyObject *self, PyObject *arg ) {
       if( !arg || !PyString_Check( arg ) ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.createX3DFromURL( filename )" << ends;
+        err << "Invalid argument(s) to function H3D.createX3DFromURL( filename )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -960,7 +959,7 @@ call the base class __init__ function." );
     PyObject* pythonCreateX3DFromString( PyObject *self, PyObject *arg ) {
       if( !arg || !PyString_Check( arg ) ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.createX3DFromString( s )" << ends;
+        err << "Invalid argument(s) to function H3D.createX3DFromString( s )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -975,7 +974,7 @@ call the base class __init__ function." );
     PyObject* pythonCreateX3DNodeFromURL( PyObject *self, PyObject *arg ) {
       if( !arg || !PyString_Check( arg ) ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.createX3DFromURL( filename )" << ends;
+        err << "Invalid argument(s) to function H3D.createX3DFromURL( filename )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -988,8 +987,7 @@ call the base class __init__ function." );
     PyObject* pythonCreateX3DNodeFromString( PyObject *self, PyObject *arg ) {
       if( !arg || !PyString_Check( arg ) ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.createX3DFromString( s )"
-            << ends;
+        err << "Invalid argument(s) to function H3D.createX3DFromString( s )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1005,8 +1003,7 @@ call the base class __init__ function." );
       if( !arg || ! PyInstance_Check( arg ) ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getRoutesIn( Field f )."
-            << " Requires one argument of type Field. "
-            << ends;
+            << " Requires one argument of type Field. ";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1040,8 +1037,7 @@ call the base class __init__ function." );
       if( !arg || ! PyInstance_Check( arg ) ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getRoutesOut( Field f )."
-            << " Requires one argument of type Field. "
-            << ends;
+            << " Requires one argument of type Field. ";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1087,8 +1083,7 @@ call the base class __init__ function." );
       if( arg ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getCurrentScenes()."
-            << "Function does not take any arguments."
-            << ends;
+            << "Function does not take any arguments.";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1110,8 +1105,7 @@ call the base class __init__ function." );
       if( arg ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getActiveDeviceInfo()."
-            << "Function does not take any arguments."
-            << ends;
+            << "Function does not take any arguments.";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1125,8 +1119,7 @@ call the base class __init__ function." );
      if( arg ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getActiveViewpoint()."
-            << "Function does not take any arguments."
-            << ends;
+            << "Function does not take any arguments.";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1140,8 +1133,7 @@ call the base class __init__ function." );
      if( arg ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getActiveNavigationInfo()."
-            << "Function does not take any arguments."
-            << ends;
+            << "Function does not take any arguments.";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1155,8 +1147,7 @@ call the base class __init__ function." );
      if( arg ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getActiveStereoInfo()."
-            << "Function does not take any arguments."
-            << ends;
+            << "Function does not take any arguments.";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
@@ -1170,8 +1161,7 @@ call the base class __init__ function." );
      if( arg ) {
         ostringstream err;
         err << "Invalid argument(s) to function H3D.getActiveBackground()."
-            << "Function does not take any arguments."
-            << ends;
+            << "Function does not take any arguments.";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }

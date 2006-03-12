@@ -364,7 +364,7 @@ namespace H3D {
         stringstream s;
         s << "Trying to access value outside the bounds of field "
           << this->getFullName() << ". Field has size " << this->value.size()
-          << ". " << ends;
+          << ". ";
         throw InvalidIndex( i, s.str(), H3D_FULL_LOCATION );
       }
       return this->value[i];    

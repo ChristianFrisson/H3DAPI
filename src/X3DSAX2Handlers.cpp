@@ -74,9 +74,9 @@ public:
 };
 
 string X3DSAX2Handlers::getLocationString() {
-  stringstream s;
+  ostringstream s;
   s << "(" << locator->getSystemId() << " line " 
-    << locator->getLineNumber() << ")" << ends;  
+    << locator->getLineNumber() << ")";  
   return s.str();
 }
 
@@ -251,7 +251,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
         stringstream s;
         s << "Cannot parse field \"" << f->getFullName() 
           << "\". Field type must be a subclass of ParsableField "
-          << "in order to be parsable. " << ends;
+          << "in order to be parsable. ";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
                                   locator->getLineNumber() );
@@ -267,7 +267,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
             << ( XMLString::stringLen( field_value ) < 100 ? 
                  toString( field_value ): "value" ) 
             << "\" to " << e.value << " for field \"" 
-            << f->getFullName() << "\"." << ends;
+            << f->getFullName() << "\".";
           throw X3D::XMLParseError( s.str(), "", 
                                     toString( locator->getSystemId() ),
                                     locator->getLineNumber() );
@@ -276,7 +276,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
           stringstream s;
           s << "Field conversion error when converting value for field \"" 
             << f->getFullName() << "\". Conversion for " << e.value 
-            << " not implemented" << ends;
+            << " not implemented";
           throw X3D::XMLParseError( s.str(), "", 
                                     toString( locator->getSystemId() ),
                                     locator->getLineNumber() ); 
@@ -369,7 +369,7 @@ void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs,
             Console(3) << "WARNING: Route error. Could not find field named \"" 
                  << to_field_name
                  << "\" in \"" << to_node_name << "\" Node " 
-                 << getLocationString() << endl;
+                       << getLocationString() << endl;
           }
         } else {
           Console(3) << "WARNING: Route error. Could not find Node named \"" 
@@ -811,7 +811,7 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
           << ( XMLString::stringLen( url ) < 100 ? 
                toString( url ): "value" ) 
           << "\" to " << e.value << " for attribute \"" 
-          << url << "\"." << ends;
+          << url << "\".";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
                                   locator->getLineNumber() );
@@ -920,7 +920,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
           << ( XMLString::stringLen( value ) < 100 ? 
                toString( value ): "value" ) 
           << "\" to " << e.value << " for field \"" 
-          << name << "\"." << ends;
+          << name << "\".";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
                                   locator->getLineNumber() );
@@ -929,7 +929,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
         stringstream s;
         s << "Field conversion error when converting value for field \"" 
           << name << "\". Conversion for " << e.value 
-          << " not implemented" << ends;
+          << " not implemented";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
                                   locator->getLineNumber() ); 
@@ -1056,7 +1056,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             stringstream s;
             s << "Invalid USE attribute. " 
               << "No node with DEF name \"" << use_name 
-              << "\" defined." << ends;
+              << "\" defined.";
             throw X3D::XMLParseError( s.str(), "", 
                                       toString( locator->getSystemId() ),
                                       locator->getLineNumber() );
@@ -1118,8 +1118,8 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               Field *field = new_node->getField( name );
               if( !field ) {
                 Console(3) << "WARNING: Couldn't find field named \"" << name 
-                     << "\" in " << qname << " node " 
-                     << getLocationString() << endl;
+                           << "\" in " << qname << " node " 
+                           << getLocationString() << " this not is hidden" << endl;
               } else {
                 ParsableField *pfield = 
                   dynamic_cast< ParsableField * >( field );
@@ -1127,7 +1127,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                   stringstream s;
                   s << "Cannot parse field \"" << name 
                     << "\". Field type must be a subclass of ParsableField "
-                    << "in order to be parsable. " << ends;
+                    << "in order to be parsable. ";
                   throw X3D::XMLParseError( s.str(), "", 
                                             toString( locator->getSystemId() ),
                                             locator->getLineNumber() );
@@ -1150,7 +1150,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                       << ( XMLString::stringLen( attr_value ) < 100 ? 
                            toString( attr_value ): "value" ) 
                       << "\" to " << e.value << " for field \"" 
-                      << name << "\"." << ends;
+                      << name << "\".";
                     throw X3D::XMLParseError( s.str(), "", 
                                               toString( locator->getSystemId() ),
                                               locator->getLineNumber() );
@@ -1159,7 +1159,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                     stringstream s;
                     s << "Field conversion error when converting value for field \"" 
                       << name << "\". Conversion for " << e.value 
-                      << " not implemented" << ends;
+                      << " not implemented";
                     throw X3D::XMLParseError( s.str(), "", 
                                               toString( locator->getSystemId() ),
                                               locator->getLineNumber() ); 
@@ -1174,8 +1174,8 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               stringstream s;
               s << "Invalid containerField attribute \"" 
                 <<  container_field 
-                << "\". The field does not exist in parent node (" << parent->getName() << ")"  
-                << ends;
+                << "\". The field does not exist in parent node (" 
+                << parent->getName() << ")";
               throw X3D::XMLParseError( s.str(), "", 
                                         toString( locator->getSystemId() ),
                                         locator->getLineNumber() ); 
@@ -1185,8 +1185,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                 stringstream s;
                 s << "Invalid containerField attribute \"" 
                   <<  container_field
-                  << "\". Field is not of type SFNode or MFNode." 
-                  << ends; 
+                  << "\". Field is not of type SFNode or MFNode.";
                 throw X3D::XMLParseError( s.str(), "", 
                                           toString( locator->getSystemId() ),
                                           locator->getLineNumber() ); 
@@ -1291,7 +1290,7 @@ void X3DSAX2Handlers::error(const SAXParseException& e) {
   stringstream s;
   s << e.getMessage() << " (" << e.getSystemId()
     << ", line " << e.getLineNumber()
-    << ", char " << e.getColumnNumber() << ")" << ends;
+    << ", char " << e.getColumnNumber() << ")";
   throw X3D::XMLParseError( s.str());
 
 }
@@ -1304,7 +1303,6 @@ void X3DSAX2Handlers::fatalError(const SAXParseException& e) {
       << ", line " << e.getLineNumber()
       << ", char " << e.getColumnNumber() << ")";
   } 
-  s << ends;
   throw X3D::XMLParseError( s.str() );
 }
 

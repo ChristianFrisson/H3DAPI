@@ -88,7 +88,7 @@ void MultiTextureTransform::render() {
   stringstream s;
   s << "Cannot use render() function in MultiTextureTransform. Use "
     << "renderForTextureUnit() instead to specify which texture "
-    << "to render for. " << ends;
+    << "to render for. ";
   throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
 }
 

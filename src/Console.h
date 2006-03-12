@@ -72,7 +72,7 @@ namespace H3D {
       outputlevel( 3 ),
       level( 0 ),
       showtime(false),
-      showlevel( false ) {
+      showlevel( true ) {
     }
 
     virtual ~basic_debugbuf() {
@@ -108,7 +108,7 @@ namespace H3D {
         }
         if ( showlevel || showtime )
           *outputstream << "] ";
-        *outputstream << std::basic_stringbuf<CharT, TraitsT>::str().c_str() << ends;
+        *outputstream << std::basic_stringbuf<CharT, TraitsT>::str().c_str(); 
       }
       str(std::basic_string<CharT>());    // Clear the string buffer
       return 0;

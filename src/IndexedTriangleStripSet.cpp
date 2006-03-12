@@ -123,7 +123,7 @@ void IndexedTriangleStripSet::render() {
       stringstream s;
       s << "Must contain at least as many elements as coord (" 
         << coordinate_node->nrAvailableCoords() << ") in \"" 
-        << getName() << "\" node. " << ends;
+        << getName() << "\" node. ";
       throw NotEnoughTextureCoordinates( tex_coord_node->nrAvailableTexCoords(),
                                          s.str(), H3D_FULL_LOCATION );
     }
@@ -137,7 +137,7 @@ void IndexedTriangleStripSet::render() {
         stringstream s;
         s << "Must contain at least as many elements as coord (" 
           << coordinate_node->nrAvailableCoords() << ") in \"" 
-          << getName() << "\" node. " << ends;
+          << getName() << "\" node. ";
         throw NotEnoughColors( color_node->nrAvailableColors(),
                                s.str(), H3D_FULL_LOCATION );
       }

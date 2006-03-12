@@ -139,7 +139,7 @@ namespace H3D {
           stringstream msg;
           msg << "DEFNodes::getNode (expecting " 
               << typeid( NodeType ).name() 
-              << ")" << ends;
+              << ")";
           throw InvalidNodeType( typeid( *node ).name(), 
                                  msg.str() );
         }

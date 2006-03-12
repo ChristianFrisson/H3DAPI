@@ -89,7 +89,7 @@ namespace H3D {
       } catch( const InvalidTemplateArguments &e ) {
         stringstream s;
         s << e << " in definition of field named \"" << this->getFullName() 
-          << "\". " << ends;
+          << "\". ";
         throw TypedFieldError( s.str() );
       }
     }
@@ -111,7 +111,7 @@ namespace H3D {
         stringstream s;
         s << e.message << " Source field: \"" << f->getFullName() 
           << "\". Destination field: \"" << this->getFullName()
-          << "\"." << ends;
+          << "\".";
         e.message = s.str();
         throw e;
       }

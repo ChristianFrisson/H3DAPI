@@ -106,8 +106,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit UNSIGNED LUMINANCE value."
-          << ends;
+          << " bit UNSIGNED LUMINANCE value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION ); 
       }
     case Image::SIGNED:
@@ -119,8 +118,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit SIGNED LUMINANCE value."
-          << ends;
+          << " bit SIGNED LUMINANCE value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION ); 
       }
     case Image::RATIONAL:
@@ -130,8 +128,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit RATIONAL LUMINANCE value."
-          << ends;
+          << " bit RATIONAL LUMINANCE value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION ); 
       }
     }
@@ -146,8 +143,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit UNSIGNED LUMINANCE_ALPHA value."
-          << ends;
+          << " bit UNSIGNED LUMINANCE_ALPHA value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
       }
     case Image::SIGNED:
@@ -159,8 +155,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit SIGNED LUMINANCE_ALPHA value."
-          << ends;
+          << " bit SIGNED LUMINANCE_ALPHA value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
       }
     case Image::RATIONAL:
@@ -170,8 +165,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit RATIONAL LUMINANCE_ALPHA value."
-          << ends;
+          << " bit RATIONAL LUMINANCE_ALPHA value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
 
       }
@@ -188,8 +182,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit UNSIGNED RGB value."
-          << ends;
+          << " bit UNSIGNED RGB value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
       }
     case Image::SIGNED:
@@ -201,8 +194,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit SIGNED RGB value."
-          << ends;
+          << " bit SIGNED RGB value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
 
       }
@@ -213,8 +205,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit RATIONAL RGB value."
-          << ends;
+          << " bit RATIONAL RGB value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
 
       }
@@ -232,8 +223,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit UNSIGNED RGBA value."
-          << ends;
+          << " bit UNSIGNED RGBA value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
       }
     case Image::SIGNED:
@@ -245,8 +235,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit SIGNED RGBA value."
-          << ends;
+          << " bit SIGNED RGBA value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
       }
     case Image::RATIONAL:
@@ -256,8 +245,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         stringstream s;
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
-          << " bit RATIONAL RGBA value."
-          << ends;
+          << " bit RATIONAL RGBA value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
       }
     }
@@ -310,11 +298,11 @@ GLuint X3DTextureNode::renderImage( Image *image,
         invalid_dimensions = true;
       }
       if( invalid_dimensions ) {
-        msg << " in " << name << ends;
+        msg << " in " << name;
         throw InvalidTextureDimensions( msg.str(),
                                         H3D_FULL_LOCATION );
       }
-      msg << (char*) gluErrorString( error ) << " in " << name << ends;
+      msg << (char*) gluErrorString( error ) << " in " << name;
       throw OpenGLTextureError( (char*) gluErrorString( error ),
                                 H3D_FULL_LOCATION );
     } 

@@ -101,7 +101,7 @@ void Field::checkAccessTypeRoute( Field *f, int id ) {
       stringstream s;
       s << "Trying to set up a route from INPUT_ONLY field " 
         << getFullName() << " to the the field " 
-        << f->getFullName() << ends;
+        << f->getFullName();
       throw FieldAccessError( s.str() ); 
     }
   }
@@ -113,13 +113,13 @@ void Field::checkAccessTypeRouteFrom( Field *f, int id ) {
       stringstream s;
       s << "Trying to set up a route from " << f->getFullName()
         << " to the INITIALIZE_ONLY field " 
-        << getFullName() << ends;
+        << getFullName();
       throw FieldAccessError( s.str() ); 
     } else if( access_type == OUTPUT_ONLY ) {
       stringstream s;
       s << "Trying to set up a route from " << f->getFullName()
         << " to the OUTPUT_ONLY field " 
-        << getFullName() << ends;
+        << getFullName();
       throw FieldAccessError( s.str() ); 
     }
   }
@@ -131,7 +131,7 @@ void Field::checkAccessTypeGet( int id ) {
         owner->id != id ) {
       stringstream s;
       s << "Trying to get the value of INPUT_ONLY field " 
-        << getFullName() << " from outside the Node that contain it. " << ends;
+        << getFullName() << " from outside the Node that contain it. ";
       throw Field::FieldAccessError( s.str() ); 
     } 
   }
@@ -143,14 +143,14 @@ void Field::checkAccessTypeSet( int id ) {
       if( owner->isInitialized() ) {
         stringstream s;
         s << "Trying to set the INITIALIZE_ONLY field " 
-          << getFullName() << " after initialization. " << ends;
+          << getFullName() << " after initialization. ";
         throw Field::FieldAccessError( s.str() ); 
       } 
     } else if( access_type == OUTPUT_ONLY ) {
       if( owner->id != id ) {
         stringstream s;
         s << "Trying to set the OUTPUT_ONLY field " 
-          << getFullName() << " from outside the Node that contain it. " << ends;
+          << getFullName() << " from outside the Node that contain it. ";
         throw Field::FieldAccessError( s.str() ); 
       } 
     }

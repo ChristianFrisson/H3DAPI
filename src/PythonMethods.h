@@ -195,7 +195,7 @@ namespace H3D {
         PyTuple_Size( static_cast< PyObject * >(python_typeinfo) );
       if ( index >= arg_size ) {
         ostringstream err;
-        err << "Too many inputs, expected " << arg_size+1 << ends;
+        err << "Too many inputs, expected " << arg_size+1;
         throw H3D::PythonInvalidFieldType( err.str(), "", 
                                            H3D_FULL_LOCATION );
       }
@@ -210,7 +210,7 @@ namespace H3D {
         ostringstream err;
         err << "Bad input, expected " 
             << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
-            << " got " << f->getTypeName()<< ends;
+            << " got " << f->getTypeName();
         throw H3D::PythonInvalidFieldType( err.str(), "", 
                                            H3D_FULL_LOCATION );
       }

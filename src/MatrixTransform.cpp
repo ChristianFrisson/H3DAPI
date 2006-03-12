@@ -151,7 +151,7 @@ void MatrixTransform::SFTransformedBound::update() {
     value = new EmptyBound;
   } else {
     stringstream s;
-    s << "Unsupported Bound type " << typeid( *bound ).name() << ends;
+    s << "Unsupported Bound type " << typeid( *bound ).name();
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
   }
 }

@@ -107,7 +107,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
     X3D::X3DSAX2Handlers handler;
     handler.proto_instance = proto;
     stringstream s;
-    s << body << ends;
+    s << body;
     parser->setContentHandler(&handler);
     parser->setErrorHandler(&handler); 
     parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );

@@ -91,7 +91,7 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
   X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   stringstream s;
-  s << str << ends;
+  s << str;
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
   parser->parse( IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );

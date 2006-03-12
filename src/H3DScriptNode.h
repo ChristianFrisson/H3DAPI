@@ -53,7 +53,7 @@ namespace H3D {
 
     virtual string getInstanceName() {
       ostringstream namestr;
-      namestr << "H3DScriptNode_" << this << ends; 
+      namestr << "H3DScriptNode_" << this; 
       return namestr.str();     
     };
     

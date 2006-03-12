@@ -101,7 +101,7 @@ void IndexedLineSet::render() {
       stringstream s;
       s << "Must contain at least as many elements as coordIndex (" 
         << coord_index.size() << ") in \"" 
-        << getName() << "\" node. " << ends;
+        << getName() << "\" node. ";
       throw InvalidColorIndexSize( color_index.size(), s.str(), H3D_FULL_LOCATION );
 
     }
@@ -144,7 +144,7 @@ void IndexedLineSet::render() {
           else {
             stringstream s;
             s << "Must contain at least as many elements as polylines in \"" 
-              << getName() << "\" node. " << ends;
+              << getName() << "\" node. ";
             throw InvalidColorIndexSize( color_index.size(), s.str(), H3D_FULL_LOCATION );
           }
         }
@@ -166,7 +166,7 @@ void IndexedLineSet::render() {
             stringstream s;
             s << "-1 mismatch between coord_index and color_index in \"" 
               << getName() << "\" node. Must be of equal length and have -1 in "
-              << "the same places. " << ends;
+              << "the same places. ";
             throw InvalidColorIndex( ci, s.str(), H3D_FULL_LOCATION );
           } else {
             color_node->render( ci );
