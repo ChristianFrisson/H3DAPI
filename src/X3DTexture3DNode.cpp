@@ -119,19 +119,23 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
       new_height = nextPowerOfTwo( new_height );
       needs_scaling = true;
     } 
-    //if( !isPowerOfTwo( new_depth ) ) {
-    //  new_depth = nextPowerOfTwo( new_depth );
-    //  needs_scaling = true;
-    //} 
+
+    if( !isPowerOfTwo( new_depth ) ) {
+      new_depth = nextPowerOfTwo( new_depth );
+      needs_scaling = true;
+    } 
 
     if( needs_scaling ) {
+      Console( 3 ) << "Warning: Scaling not supported yet for 3D-textures " 
+                   << endl;
+      /*
       unsigned int bytes_per_pixel = i->bitsPerPixel();
       bytes_per_pixel = 
         bytes_per_pixel % 8 ? 
         bytes_per_pixel / 8 : bytes_per_pixel - 8 + 1;
       
       void *new_data = malloc( new_width*new_height*bytes_per_pixel );
-      gluScaleImage( glPixelFormat( i ), 
+      gluScaleImage3D( glPixelFormat( i ), 
                      width,
                      height,
                      glPixelComponentType( i ),
@@ -150,6 +154,7 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
         free_image_data = true;
       }
       image_data = new_data;
+      */
     }
   }
   glTexImage3D( texture_target, 

@@ -157,7 +157,7 @@ namespace H3D {
     /// ones.
     /// 
     /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> TRUE \n
+    /// <b>Default value:</b> FALSE \n
     ///
     /// \dotfile X3DTexture3DNode_image.dot 
     auto_ptr< SFBool > scaleToPowerOfTwo;
