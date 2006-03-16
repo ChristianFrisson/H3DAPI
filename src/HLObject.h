@@ -33,12 +33,6 @@
 
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
-#ifdef _MSC_VER
-#pragma comment( lib, "hd.lib" )
-#pragma comment( lib, "hl.lib" )
-#pragma comment( lib, "hdu.lib" )
-#pragma comment( lib, "hlu.lib" )
-#endif
 #endif
 
 namespace H3D {

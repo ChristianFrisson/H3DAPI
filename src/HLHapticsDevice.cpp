@@ -31,6 +31,15 @@
 #include "HLShape.h"
 #include "GL/glew.h"
 
+#ifdef HAVE_OPENHAPTICS
+#ifdef _MSC_VER
+#pragma comment( lib, "hd.lib" )
+#pragma comment( lib, "hl.lib" )
+#pragma comment( lib, "hdu.lib" )
+#pragma comment( lib, "hlu.lib" )
+#endif
+#endif
+
 #ifdef MACOSX
 #include <mach/mach_init.h>
 #include <mach/thread_policy.h>
