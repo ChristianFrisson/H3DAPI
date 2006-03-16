@@ -126,7 +126,7 @@ void ShaderPart::SFShaderString::update() {
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
     string url = shader_part->resolveURLAsFile( *i );
     if( url != "" ) {
-      ifstream is( url.c_str() );
+      ifstream is( url.c_str(), ios::binary );
       if( is.good() ) {
         int length;
         char * buffer;
