@@ -118,6 +118,24 @@ namespace H3D {
         return H3DSqrt( x*x + y*y + z*z );
       }
 
+      inline H3DDouble &operator[]( int i ) { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        if( i == 2 ) return z;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
+      inline const H3DDouble &operator[]( int i ) const { 
+        if( i == 0 ) return x;
+        if( i == 1 ) return y;
+        if( i == 2 ) return z;
+        
+        throw Exception::H3DAPIException( "Invalid index", 
+                                          H3D_FULL_LOCATION );
+      }
+
       /// The public values of the vector.
       H3DDouble x, y, z;
     };
