@@ -34,7 +34,7 @@
 #include "MFString.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup H3DNodes 
   /// \class ImportLibrary
   /// The ImportLibrary node makes it possible from a X3D file to load
   /// a dynamically linked library in order to e.g. access nodes defined

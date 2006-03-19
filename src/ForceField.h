@@ -34,7 +34,7 @@
 #include "SFVec3f.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup H3DNodes 
   /// \class ForceField
   /// This effect adds a constant force to all haptics devices at all times.
   class H3DAPI_API ForceField: public H3DForceEffect {

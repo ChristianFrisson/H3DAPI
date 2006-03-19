@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Interpolators
+  /// \ingroup X3DNodes
   /// \class PositionInterpolator
   /// \brief The PositionInterpolator node linearly interpolates among a 
   /// list of 3D vectors to produce an SFVec3f value_changed event. 

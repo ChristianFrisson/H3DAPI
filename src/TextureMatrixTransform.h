@@ -33,7 +33,7 @@
 #include "SFMatrix4f.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class TextureMatrixTransform
   /// \brief The matrix field specifies a generalized, unfiltered 4×4 
   /// transformation matrix that can be used to modify the texture. 

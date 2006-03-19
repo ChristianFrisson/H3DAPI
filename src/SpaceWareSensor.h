@@ -39,7 +39,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class SpaceWareSensor
   /// \brief This is a X3DSensorNode for reading values from a 3DConnexion motion
   /// controller such as the SpaceTraveller or SpaceMouse 5000.

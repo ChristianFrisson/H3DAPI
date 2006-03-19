@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class LineProperties
   /// \brief The LineProperties node specifies additional properties to be
   /// applied to all line geometry. 

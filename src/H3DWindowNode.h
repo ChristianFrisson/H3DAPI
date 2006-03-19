@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class H3DWindowNode
   /// \brief The base class for all window nodes.
   /// 

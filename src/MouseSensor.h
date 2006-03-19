@@ -43,7 +43,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class MouseSensor
   /// \brief A sensor node for reading mouse values. 
   ///

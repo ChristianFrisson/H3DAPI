@@ -38,7 +38,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class IndexedTriangleFanSet
   /// \brief An IndexedTriangleFanSet represents a 3D shape composed of 
   /// triangles that form a fan shape around the first vertex declared

@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class ComposedShader
   /// \brief The ComposedShader node defines a shader where the individual 
   /// source files are not individually programmable. All access to the

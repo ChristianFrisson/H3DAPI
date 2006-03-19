@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class FakeHapticsDevice
   /// \brief A H3DHapticsDevice node where the position, orientation
   /// and button can be controlled via the set_devicePosition, 

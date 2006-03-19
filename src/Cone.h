@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class Cone
   /// \brief The Cone node specifies a cone which is
   /// centred in the local coordinate system and whose central axis is

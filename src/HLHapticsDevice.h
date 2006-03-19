@@ -37,7 +37,7 @@
 #endif
 #include "GL/glew.h"
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class HLHapticsDevice
   /// HLHapticsDevice is a haptics device that uses the HLAPI from SensAble
   /// to do the haptic rendering.

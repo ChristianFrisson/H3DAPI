@@ -39,7 +39,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class IndexedLineSet
   /// \brief The IndexedLineSet node represents a 3D geometry 
   /// formed by constructing polylines from 3D vertices specified in the coord

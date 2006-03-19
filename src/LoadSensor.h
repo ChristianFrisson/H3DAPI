@@ -37,7 +37,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class LoadSensor
   ///
   /// 

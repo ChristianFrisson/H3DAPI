@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Circle2D
   /// \brief The Circle2D node specifies a circle centred at (0,0) in the
   /// local 2D coordinate system.  The radius field specifies the radius

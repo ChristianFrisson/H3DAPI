@@ -41,7 +41,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class ElevationGrid
   /// \brief The ElevationGrid node specifies a uniform rectangular grid of 
   /// varying height in the Y=0 plane of the local coordinate system. 

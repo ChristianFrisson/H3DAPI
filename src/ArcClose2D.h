@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class ArcClose2D
   /// \brief The ArcClose node specifies a portion of a circle whose center 
   /// is at (0,0) and whose angles are measured starting at the positive 

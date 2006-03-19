@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class ComposedCubeMapTexture
   /// The ComposedCubeMapTexture node defines a cubic environment map
   /// source as an explicit set of images drawn from individual 2D texture 

@@ -35,7 +35,7 @@
 #include "MFNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class Image3DTexture
   /// \brief The Image3DTexture node defines a texture map by
   /// specifying a single file that contains complete 3D data and

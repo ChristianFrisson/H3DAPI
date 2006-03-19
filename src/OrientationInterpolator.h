@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Interpolators
+  /// \ingroup X3DNodes
   /// \class OrientationInterpolator
   /// \brief The OrientationInterpolator node interpolates among a list of
   /// rotation values specified in the keyValue field to produce an SFRotation

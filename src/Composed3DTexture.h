@@ -34,7 +34,7 @@
 #include "X3DTexture2DNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class Composed3DTexture
   /// \brief The Composed3DTexture node defines a 3D image-based texture
   /// map as a  collection of 2D texture sources at various depths

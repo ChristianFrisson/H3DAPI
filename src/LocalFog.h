@@ -34,7 +34,7 @@
 #include "H3DRenderStateObject.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class LocalFog
   /// \brief The LocalFog node provides a way to simulate atmospheric effects
   /// by blending objects with the colour specified by the color field based

@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class ClipPlane
   /// \brief This node defines a single plane equation that will be used 
   /// to clip the geometry, i.e. remove parts of it from rendering.

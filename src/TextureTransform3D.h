@@ -34,7 +34,7 @@
 #include "SFRotation.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class TextureTransform3D
   /// \brief The TextureTransform3D node defines a 3D transformation that
   /// is applied to texture coordinates (see TextureCoordinate). 

@@ -33,7 +33,7 @@
 
 namespace H3D {
 
-  /// \ingroup Groups
+  /// \ingroup H3DNodes
   /// \class FitToBoxTransform
   /// The FitToBoxTransform node is a MatrixTransform that is used when 
   /// one wants to transform a part of a scene into a specific region

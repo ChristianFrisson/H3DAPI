@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Interpolators
+  /// \ingroup X3DNodes
   /// \class NormalInterpolator
   /// \brief The NormalInterpolator node interpolates among a list of normal
   /// vector sets specified by the keyValue field to produce an MFVec3f

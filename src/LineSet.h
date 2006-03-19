@@ -38,7 +38,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class LineSet
   /// \brief The LineSet node represents a 3D geometry formed by constructing
   /// polylines from 3D vertices specified in the coord field. 

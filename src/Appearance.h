@@ -40,7 +40,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class Appearance
   /// \brief The Appearance node specifies the visual properties of geometry.
   /// The value for each of the fields in this node may be NULL. However,

@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Arc2D
   /// \brief The Arc node specifies a linear circular arc whose center is 
   /// at (0,0) and whose angles are measured starting at the positive x-axis

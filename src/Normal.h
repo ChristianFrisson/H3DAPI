@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Normal
   /// \brief This node defines a set of 3D surface normal vectors to be used in the
   /// vector field of some geometry nodes.

@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Scene
   /// \brief The Scene node is topmost node that takes care of the rendering
   /// of the scene graph both haptically and graphically. Scene::mainLoop() 

@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Rectangle2D
   /// \brief The Rectangle2D node specifies a rectangle centred at (0, 0) in
   /// the current local 2D coordinate system and aligned with the local

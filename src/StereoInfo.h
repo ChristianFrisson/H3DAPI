@@ -33,7 +33,7 @@
 #include "SFFloat.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class StereoInfo
   /// \brief The StereoInfo nis a bindable node that contains information
   /// used when rendering the scene in stereo.

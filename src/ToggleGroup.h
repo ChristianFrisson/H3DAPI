@@ -33,7 +33,7 @@
 
 namespace H3D {
 
-  /// \ingroup Groups
+  /// \ingroup H3DNodes
   /// \class ToggleGroup
   /// \brief The ToggleGroup node enables you to enable/disable haptics and 
   /// graphics rendering of its children nodes.

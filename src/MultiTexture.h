@@ -37,7 +37,7 @@
 #include "MFString.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class MultiTexture
   /// Partially implemented.
   ///

@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class AudioClip
   /// \brief An AudioClip node specifies audio data that can 
   /// be referenced by Sound nodes. 

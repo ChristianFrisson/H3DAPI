@@ -37,7 +37,7 @@
 
 namespace H3D {
   
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class PythonScript
   /// \brief Interface to the dynamic Python library for executing script
   ///  code as part of the API

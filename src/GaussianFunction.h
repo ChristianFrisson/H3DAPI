@@ -33,7 +33,7 @@
 #include "SFFloat.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \brief The function node implements a gaussian function.
   class H3DAPI_API GaussianFunction : public H3DFunctionNode {
   public:

@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class BooleanFilter
   /// \brief BooleanFilter filters boolean events, allowing for selective 
   /// routing of TRUE or FALSE values and negation.

@@ -36,7 +36,7 @@
 #include "Exception.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class NavigationInfo
   /// \brief The NavigationInfo node contains information describing 
   /// the physical characteristics of the viewer's avatar and viewing model.

@@ -38,7 +38,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class Inline
   /// \brief The Inline node embeds an X3D scene stored at a location on
   /// the World Wide Web into the current scene. 

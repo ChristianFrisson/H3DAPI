@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class TriangleSet2D
   /// \brief The TriangleSet2D node specifies a set of triangles in the local 2D 
   /// coordinate system.  

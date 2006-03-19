@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Polyline2D
   /// \brief The Polyline2D node specifies a series of contiguous line 
   /// segments in the local 2D coordinate system connecting the specified

@@ -32,7 +32,7 @@
 #include "X3DTextureTransform2DNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class TextureTransform
   /// \brief The TextureTransform node defines a 2D transformation that is 
   /// applied to texture coordinates (see TextureCoordinate). 

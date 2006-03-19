@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \brief The TransformInfo node provides information about the coordinate
   /// space it resides in in the scene graph. 
   /// 

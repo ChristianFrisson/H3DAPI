@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class TextureCoordinateGenerator
   /// \brief TextureCoordinateGenerator supports the automatic generation 
   /// of texture coodinates for geometric shapes. 

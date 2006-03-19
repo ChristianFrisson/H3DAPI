@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Coordinate
   /// \brief This node defines a set of 3D coordinates to be used in the coord
   /// field of vertex-based geometry nodes. 

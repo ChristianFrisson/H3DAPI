@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class TimeSensor
   /// \brief TimeSensor nodes generate events as time passes. 
   ///

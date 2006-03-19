@@ -35,12 +35,14 @@
 
 namespace H3D {
 
-  /// \defgroup Nodes Node classes.
-  /// These are the Node classes available in H3DAPI.
+  /// \ingroup Nodes
+  /// \defgroup X3DNodes X3D node classes.
+  /// These are the X3D Node classes available in H3DAPI.
 
-  /// \defgroup Unimplemented Unimplemented nodes.
-  /// Nodes that have not yetbeen implemented in H3DAPI, but has a 
-  /// skeleton class defined.
+  /// \ingroup Nodes
+  /// \defgroup H3DNodes H3D specific Node classes.
+  /// These are the Node classes available in H3DAPI that are not part of the
+  /// X3D-specification.
 
   /// \ingroup Nodes
   /// \defgroup AbstractNodes Abstract nodes.

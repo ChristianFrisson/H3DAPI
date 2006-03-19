@@ -33,7 +33,7 @@
 
 namespace H3D {
 
-  /// \ingroup Interpolators
+  /// \ingroup X3DNodes
   /// \class ScalarInterpolator
   /// \brief This node linearly interpolates among a
   /// list of SFFloat values to produce an SFFloat value_changed

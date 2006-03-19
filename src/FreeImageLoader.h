@@ -38,7 +38,7 @@
 #include "FreeImageImage.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class FreeImageLoader
   /// FreeImageLoader uses the FreeImage library to load the images.
   /// Most image file types are supported including PNG, JPEG, GIF, BMP,

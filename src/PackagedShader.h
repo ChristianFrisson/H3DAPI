@@ -41,7 +41,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class PackagedShader
   /// \briefA PackagedShader node describes a single file that may contain a 
   /// number of shaders and combined effects.

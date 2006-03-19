@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class SpotLight
   /// \brief The SpotLight node defines a light source that emits light from a
   /// specific point along a specific direction vector and constrained

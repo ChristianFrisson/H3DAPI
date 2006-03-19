@@ -33,7 +33,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class Box
   /// \brief The Box node specifies a rectangular
   /// parallelepiped box centred at (0, 0, 0) in the local coordinate

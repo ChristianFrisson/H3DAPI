@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class ShaderPart
   /// \brief The ShaderPart node defines the source for a single object to
   /// be used by a ComposedShader node. The source is not required to be

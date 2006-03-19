@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class PointLight
   /// \brief The PointLight node specifies a point light source at a 3D 
   /// location in the local coordinate system. 

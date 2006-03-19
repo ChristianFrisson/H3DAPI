@@ -34,7 +34,7 @@
 #include "SFInt32.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class FloatVertexAttribute
   /// The FloatVertexAttribute node defines a set of per-vertex single 
   /// precision floating point attributes.

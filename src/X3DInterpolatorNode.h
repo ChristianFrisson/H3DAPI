@@ -35,10 +35,6 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
-  /// \defgroup Interpolators Interpolator nodes.
-  /// These are the X3DInterpolatorNode nodes available in H3DAPI.
-
   /// \ingroup AbstractNodes
   /// \class X3DInterpolatorNode
   /// \brief The abstract node X3DInterpolatorNode forms the basis for

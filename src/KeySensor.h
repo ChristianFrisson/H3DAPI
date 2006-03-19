@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class KeySensor
   /// \brief A KeySensor node generates events when the user presses keys
   /// on the keyboard.

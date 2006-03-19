@@ -35,7 +35,7 @@
 #include "MFColorRGBA.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class ColorRGBA
   /// \brief This node defines a set of RGBA colours to be used in the 
   /// fields of another node. 

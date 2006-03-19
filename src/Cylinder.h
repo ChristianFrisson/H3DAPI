@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class Cylinder
   /// \brief The Cylinder node specifies a capped cylinder centred at (0,0,0) 
   /// in the local coordinate system and with a central axis oriented along the

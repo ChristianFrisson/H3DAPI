@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class FrictionalSurface
   /// Surface with friction.
   class H3DAPI_API FrictionalSurface: public SmoothSurface {

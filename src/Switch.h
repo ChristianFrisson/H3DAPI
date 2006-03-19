@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Groups
+  /// \ingroup X3DNodes
   /// \class Switch
   /// \brief The Switch grouping node traverses zero or one of the nodes
   /// specified in the choice field. 

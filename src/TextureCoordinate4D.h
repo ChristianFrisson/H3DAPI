@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class TextureCoordinate4D
   /// \brief The TextureCoordinate4D node is a geometry property node that 
   /// specifies a set of 4D (homogeneous 3D) texture coordinates used by 

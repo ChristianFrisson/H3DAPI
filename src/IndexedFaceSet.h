@@ -37,7 +37,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class IndexedFaceSet
   /// \brief The IndexedFaceSet node represents a 3D shape formed by constructing
   /// faces (polygons) from vertices listed in the coord field. 

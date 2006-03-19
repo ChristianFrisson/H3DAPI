@@ -34,7 +34,7 @@
 #include "MFNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class DeviceInfo
   /// DeviceInfo is a X3DBindableNode that contains the devices that
   /// are used with the API. It contains e.g. all H3DHapticsDevice nodes

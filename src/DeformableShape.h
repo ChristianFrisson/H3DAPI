@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \brief The DeformableShape is an X3DShapeNode which makes it possible
   /// to deform the geometry of the shape when touching it with a haptics
   /// device.

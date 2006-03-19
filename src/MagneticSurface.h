@@ -33,7 +33,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class MagneticSurface
   /// The MagneticSurface is a surface where the proxy is attracted to
   /// the surface, and forces are generated in order to keep the proxy 

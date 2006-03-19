@@ -32,7 +32,7 @@
 #include "X3DTexture3DNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup H3DNodes 
   /// \class ImageObjectTexture
   /// \brief The ImageObjectTexture node uses the image data from any
   /// node that implements the H3DImageObject interface as texture data.

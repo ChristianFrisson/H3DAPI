@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class FillProperties
   /// \brief The FillProperties node specifies additional properties to be applied
   /// to all polygonal areas on top of whatever appearance is specified by

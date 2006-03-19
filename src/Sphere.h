@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class Sphere
   /// \brief The Sphere node specifies a sphere centred at (0, 0, 0) in the
   /// local coordinate system. 

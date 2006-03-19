@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Groups
+  /// \ingroup X3DNodes
   /// \class Transform
   /// \brief The Transform node is a grouping node that defines a coordinate system
   /// for its children that is relative to the coordinate systems of its

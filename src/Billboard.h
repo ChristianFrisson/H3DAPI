@@ -33,7 +33,7 @@
 
 namespace H3D {
 
-  /// \ingroup Groups
+  /// \ingroup X3DNodes
   /// \class Billboard
   /// \brief The Billboard node is a grouping node
   /// which modifies its coordinate system so that the Billboard

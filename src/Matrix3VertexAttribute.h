@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Matrix3VertexAttribute
   /// Defines a set of per-vertex 3×3 matrix attributes.
   /// 

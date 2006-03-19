@@ -37,7 +37,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class PointSet
   /// \brief The PointSet node specifies a set of 3D points, in the local
   /// coordinate system, with associated colours at each point.

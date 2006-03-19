@@ -39,7 +39,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class AudioFileReader
   /// \brief AudioFileReader uses the Audio File Library
   /// ( http://www.68k.org/~michael/audiofile/ ) to read sound data. It 

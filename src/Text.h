@@ -37,7 +37,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class Text
   /// \brief The Text node specifies a two-sided, flat text string object
   /// positioned in the Z=0 plane of the local coordinate system based on

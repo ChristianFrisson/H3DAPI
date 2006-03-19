@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class RawImageLoader
   /// \brief The RawImageLoader loads a raw data file and lets the user
   /// specify the parameters for the values directly.

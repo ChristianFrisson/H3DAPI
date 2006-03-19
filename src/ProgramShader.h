@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class ProgramShader
   /// \brief he ProgramShader node defines a shader that can consist 
   /// of one or more individually programmable, self contained pieces. 

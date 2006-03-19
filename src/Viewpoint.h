@@ -39,7 +39,7 @@
 #include "SFMatrix4f.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Viewpoint
   /// \brief The Viewpoint node defines a specific location in the local 
   /// coordinate system from which the user may view the scene. 

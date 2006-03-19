@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class PointNormalClipPlane
   /// \brief This is a ClipPlane where the plane is specified with a 
   /// point and a normal. Everything above the plane(in the direction

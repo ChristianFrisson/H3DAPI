@@ -32,7 +32,7 @@
 #include "X3DTexture3DNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class Pixel3DTexture
   /// The Pixel3DTexture node defines a 3D image-based texture map as an
   /// explicit array of pixel values (image field) and parameters controlling

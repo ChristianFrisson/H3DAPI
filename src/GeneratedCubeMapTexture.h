@@ -39,7 +39,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class GeneratedCubeMapTexture
   /// The ComposedCubeMapTexture node defines a cubic environment map 
   /// that sources its data from internally generated images. 

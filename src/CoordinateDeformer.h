@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \brief The CoordinateDeformer uses a H3DFunctionNode to determine
   /// the deformation.
   ///

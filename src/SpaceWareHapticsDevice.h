@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class SpaceWareHapticsDevice
   /// \brief A fake haptics device where the position and orientation is
   /// controlled via a SpaceWare device such as the SpaceMouse or SpaceTraveller.

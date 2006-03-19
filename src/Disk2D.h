@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Disk2D
   /// \brief The Disk2D node specifies a circular disk which is centred 
   /// at (0, 0) in the local coordinate system. The outerRadius field 

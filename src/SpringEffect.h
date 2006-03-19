@@ -37,7 +37,7 @@
 #include "SFInt32.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup H3DNodes 
   /// \class SpringEffect
   /// SpringEffect is a localized haptic effect where the haptics device
   /// is pulled towards to a point in space in a spring like manner, i.e.

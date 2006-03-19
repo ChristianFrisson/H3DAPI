@@ -38,7 +38,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup X3DNodes
   /// \class IndexedTriangleSet
   /// \brief The IndexedTriangleSet node represents a 3D shape composed of a
   /// collection of individual triangles.

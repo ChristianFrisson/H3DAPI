@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class SmoothSurface
   /// A SmoothSurface has no friction at all. Only the stiffness of the surface
   /// can be specified. The stiffness is specified as a value between 0 and 1

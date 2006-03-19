@@ -32,7 +32,7 @@
 #include "X3DShapeNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Shape
   /// \brief The Shape node has two fields, appearance and geometry, which 
   /// are used to create rendered objects in the world. 

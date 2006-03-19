@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Sound
   /// \brief The Sound node specifies the spatial presentation of a sound in
   /// a X3D scene. 

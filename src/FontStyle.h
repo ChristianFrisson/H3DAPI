@@ -45,7 +45,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class FontStyle
   /// \brief The FontStyle node defines the size, family, and style used
   /// for Text nodes, as well as the direction of the text strings and 

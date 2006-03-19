@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class TextureBackground
   /// \brief A background node that uses six individual texture nodes to
   /// compose the backdrop. Unlike the Background node, which only supports

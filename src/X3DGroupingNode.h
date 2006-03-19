@@ -35,9 +35,6 @@
 #include "H3DDisplayListObject.h"
 
 namespace H3D {
-  /// \ingroup Nodes
-  /// \defgroup Groups Grouping nodes.
-  /// These are the X3DGroupingNode nodes available in H3DAPI.
 
   /// \ingroup AbstractNodes
   /// \class X3DGroupingNode

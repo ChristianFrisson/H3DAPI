@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes 
+  /// \ingroup X3DNodes 
   /// \class Material
   /// \brief The Material node specifies surface material properties for 
   /// associated geometry nodes and is used by the X3D lighting equations

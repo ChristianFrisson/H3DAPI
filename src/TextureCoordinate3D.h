@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class TextureCoordinate3D
   /// \brief The TextureCoordinate3D node is a geometry property node 
   /// that specifies a set of 3D texture coordinates used by vertex-based

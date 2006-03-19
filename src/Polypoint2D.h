@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Polypoint2D
   /// \brief The Polyline2D node specifies a set of vertices in the local 2D
   /// coordinate system at each of which is displayed a point.  

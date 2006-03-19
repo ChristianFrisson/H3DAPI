@@ -40,7 +40,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class OggFileReader
   /// \brief OggFileReader uses the libVorbis (http://www.vorbis.com)
   /// decoder library to support

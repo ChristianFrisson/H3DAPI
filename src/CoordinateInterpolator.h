@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Interpolators
+  /// \ingroup X3DNodes
   /// \class CoordinateInterpolator
   /// \brief This node linearly interpolates among a
   /// list of MFVec3f values to produce an MFVec3f value_changed

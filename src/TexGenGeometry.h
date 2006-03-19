@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup H3DNodes
   /// \class TexGenGeometry
   /// \brief The TexGenGeometry node is a wrapper node that lets you specify
   /// a TextureCoordinateGenerator node to generate the texture coordinates

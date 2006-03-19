@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Background
   /// \brief A background node that uses six static images to compose the 
   /// backdrop.

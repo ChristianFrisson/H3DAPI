@@ -37,7 +37,7 @@
 
 namespace H3D {
 
-  /// \ingroup Interpolators
+  /// \ingroup X3DNodes
   /// \class ColorInterpolator
   /// \brief This node interpolates among a list of
   /// MFColor key values to produce an SFColor (RGB) value_changed

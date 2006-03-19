@@ -33,7 +33,7 @@
 
 namespace H3D {
 
-  /// \ingroup Groups
+  /// \ingroup X3DNodes
   /// \class Group
   /// \brief A Group node contains children nodes without introducing a new
   ///  transformation. It is equivalent to a Transform node containing an

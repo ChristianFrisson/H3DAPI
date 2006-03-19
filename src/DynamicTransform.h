@@ -37,7 +37,7 @@
 
 namespace H3D {
 
-  /// \ingroup Groups
+  /// \ingroup H3DNodes
   /// \class DynamicTransform
   /// \brief The DynamicTransform node is a Shape container that has basic
   /// properties for defining rigid body motion. This includes

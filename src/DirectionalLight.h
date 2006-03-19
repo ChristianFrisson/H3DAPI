@@ -34,7 +34,7 @@
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class DirectionalLight
   /// \brief The DirectionalLight node defines a directional light source that
   /// illuminates along rays parallel to a given 3-dimensional vector. 

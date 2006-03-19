@@ -36,7 +36,7 @@
 /// H3D API namespace
 namespace H3D {
 
-  /// \ingroup Geometries
+  /// \ingroup H3DNodes
   /// \class SuperShape
   /// \brief The SuperShape node implements a SuperShape!
   class H3DAPI_API SuperShape : public X3DGeometryNode {

@@ -33,7 +33,7 @@
 #include "X3DFogObject.h"
 
 namespace H3D {
-  /// \ingroup Nodes
+  /// \ingroup X3DNodes
   /// \class Fog
   /// \brief The Fog node provides a way to simulate atmospheric effects 
   /// by blending objects with the colour specified by the color field based

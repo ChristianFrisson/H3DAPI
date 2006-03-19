@@ -42,10 +42,6 @@ namespace H3D {
 
   class HLHapticsDevice;
 
-  /// \ingroup Nodes
-  /// \defgroup Geometries Geometry nodes.
-  /// These are the Gemoetry nodes available in H3DAPI.
-
   /// \ingroup AbstractNodes
   /// \class X3DGeometryNode
   /// This is the base node type for all geometry in X3D. 
