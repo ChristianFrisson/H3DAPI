@@ -1,0 +1,7 @@
+<DeviceInfo>
+  <HLHapticsDevice positionCalibration="0.00097199 0 0 0
+0 0.000529404 -0.000815167 -0.177486
+0 0.000815167 0.000529404 -0.333997
+0 0 0 1" 
+        orientationCalibration="1 0 0 0.994813" />
+</DeviceInfo>

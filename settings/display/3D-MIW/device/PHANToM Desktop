@@ -1,0 +1,6 @@
+<DeviceInfo>
+  <HLHapticsDevice positionCalibration="fadsfdasf" 
+                   orientationCalibration="fdasfdas" />
+  <HLHapticsDevice positionCalibration="fadsfdasf" 
+                   orientationCalibration="fdasfdas" />
+</DeviceInfo>
