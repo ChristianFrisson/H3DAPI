@@ -1,3 +1,61 @@
+Changes for version 1.4:
+
+New nodes:
+CoordinateDeformer
+DeformableShape
+ElevationGrid
+Fog
+GaussianFunction
+GLUTWindow
+H3DCoordinateDeformerNode
+H3DWindowNode
+LocalFog
+WorldInfo
+X3DFogObject
+X3DInfoNode
+
+- Moved template instantiations of basic field types as SFFloat, MFInt32,
+etc to separate files( SFFloat.h, MFInt32.h, etc). This makes a HUGE
+difference on the object file size when using Visual Studio and hence also
+the linking time. It will require all nodes to explicitly include the
+header files for the field types they use though.
+        
+- Added Console class to allow setting debug levels on warning messages
+and changed all printouts in the API to use it.
+
+- Changed implementation of X3DBindableNode to work more according to the
+X3D spec. Also it is no longer template based.
+        
+- Restructuring of window classes. GLWindow is no more and has been
+replaced by the abstract base class H3DWindowNode and GLUTWindow. This was
+done to allow easier use of other window handler as e.g. Qt. 
+        
+- Implemented creaseAngle in IndexedFaceSet
+        
+- Fixed a problem where the stereo effect would disappear sometimes on
+Sharp laptops using the VERTICAL_INTERLACED_GREEN_SHIFT stereo mode.
+
+- Proper implementation of MultiTexture node (bumpmap examples included for
+example usage)
+        
+- Added possibility to refer to INPUT_OUTPUT fields xxx as set_xxx and
+xxx_changed as defined in the x3d spec(in Python and X3D)       
+        
+- Added support for the IMPORT/EXPORT x3d statements.
+
+- Added support for PROTO nodes in x3d.
+        
+- Including .lib files in Visual Studio using pragmas in the source code
+to be able to automatically remove/add libraries depending on the values
+of the HAVE_* defines in H3DApi.h.
+
+- Added scrollUp and scrollDown to MouseSensor node (only works if using
+freeglut).
+
+- Added the ResourceResolver for resolving urls. Implemented
+LibCurlResolver that takes care of http, ftp, and some other protocols for
+resolving urls.
+
 Changes for version 1.3:
 
 New nodes:
@@ -21,7 +79,7 @@ ShaderPart
 ShaderProgram
 Sound
 TriangleSet2D
-	
+        
 - Added erase and insert methods to MFields.
 
 - None object is now used in Python to represent a NULL node pointer.
@@ -33,7 +91,7 @@ push_back, empty etc.
 
 - Fixed a bug in the Material node where the specular color was never 
 specified.
-	
+        
 - Fixed a bug where texture coordinate generation was not turned off in 
 X3DComposedGeometryNode.
 
@@ -65,7 +123,7 @@ SpaceWareHapticsDevice
 StereoInfo
 TextureBackground
 X3DBackgroundNode
-	
+        
 - Added access to the different bindable stacks from Python. The
 H3DInterface module now contains getActiveBackground, getActiveDeviceInfo,
 getActiveStereoInfo, getActiveViewpoint and getActiveNavigationInfo
@@ -95,11 +153,11 @@ make sure it is up-to-date periodically.
 
 - Lots of other smaller bugfixes. See cvs changelog at www.h3d.org:8080
 for details.
-	
+        
 Changes for version 1.1:
 
 New nodes:
-Billboard	
+Billboard       
 ClipPlane
 ColorInterpolator
 Composed3DTexture
@@ -143,14 +201,14 @@ TransformInfo
 TriangleFanSet
 TriangleSet
 TriangleStripSet
-	
+        
 - Implemented SFBound for Text node.
 
 - Fixed a bug with MultiTexturing not working. 
 
 - Geometries are now unlit if the Shape node has no Appearance node or the
 Appearance node has no Material node, according to the X3D spec.
-	
+        
 - Added preRender() and postRender() functions to X3DAppearanceNode and
 X3DAppearanceChildNode to be able to save the state before rendering the
 appearance and restoring it after rendering the geometry.
