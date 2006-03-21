@@ -26,13 +26,27 @@
 
 #include "H3DExports.h"
 #include "DeviceInfo.h"
+#include "FakeHapticsDevice.h"
 
 using namespace H3D;
+
+namespace H3DExportsInternal {
+  static AutoRef< H3DHapticsDevice > no_device( NULL ); 
+}
 
 Node *H3DExports::getH3DExportNode( const string &name ) {
   if( name == "HDEV" ) {
     DeviceInfo *di = DeviceInfo::getActive();
-    if( di ) return di->device->getValueByIndex( 0 );
+    if( di && di->device->size() > 0 ) 
+      return di->device->getValueByIndex( 0 );
+    else {
+      Console(3) << "Warning: No device exists in DeviceInfo when " 
+                 << "trying to IMPORT from HDEV from H3D_EXPORTS. "
+                 << "Using dummy device instead. " << endl;
+      if( !H3DExportsInternal::no_device.get() )
+        H3DExportsInternal::no_device.reset( new H3DHapticsDevice );
+      return H3DExportsInternal::no_device.get();
+    }
   }
   
   return NULL;
