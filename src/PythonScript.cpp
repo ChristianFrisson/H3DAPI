@@ -42,6 +42,7 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
+#include <fstream>
 #define DONT_HAVE_SYS_STAT_H
 #undef HAVE_STAT_H
 
@@ -146,15 +147,33 @@ void PythonScript::loadScript( const string &script ) {
       Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
   }  
   
-  FILE *f = fopen( script.c_str(), "r" );
-  if ( f ) {
-    PyErr_Clear();
-    PyObject *r = PyRun_File( f, script.c_str(), Py_file_input,
-                              static_cast< PyObject * >(module_dict), 
-                              static_cast< PyObject * >(module_dict) );
-    if ( r == NULL )
-      PyErr_Print();
+  ifstream is( script.c_str() );
+  if( is.good() ) {
+    int length;
+    char * buffer;
     
+    // get length of file:
+    is.seekg (0, ios::end);
+    length = is.tellg();
+    is.seekg (0, ios::beg);
+    
+    // allocate memory:
+    buffer = new char [length + 1];
+    // read data as a block:
+    is.read (buffer,length);
+    length = is.gcount();
+    is.close();
+    buffer[length ] = '\0';
+    
+    PyErr_Clear();
+    PyObject *r = PyRun_String( buffer, Py_file_input,
+                                static_cast< PyObject * >(module_dict), 
+                                static_cast< PyObject * >(module_dict) );
+    if ( r == NULL ) {
+      Console( 3 ) << "In file \"" << script << "\":" << endl;
+      PyErr_Print();
+    }
+    delete buffer;
   } else {
     Console(4) << "Could not open \""<< script << endl;
   }
