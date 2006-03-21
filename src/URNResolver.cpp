@@ -35,8 +35,8 @@ using namespace H3D;
 void URNResolver::loadConfigFile( const string &config_file ) {
   ifstream is( config_file.c_str() );
   if( !is.good() ) {
-    Console(4) << "Warning: Could not open file URN resolver config file \"" 
-               << config_file << "\"" << endl; 
+    //Console(4) << "Warning: Could not open file URN resolver config file \"" 
+    //<< config_file << "\"" << endl; 
     return;
   }
   string line;
