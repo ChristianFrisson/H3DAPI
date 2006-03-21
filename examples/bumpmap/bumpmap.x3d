@@ -1,25 +1,6 @@
+<!-- This example requires a haptics device -->
 <Group>
-<DeviceInfo>
-     <HLHapticsDevice DEF="HDEV" positionCalibration="2e-3 0 0 0 0 2e-3 0 0 0 0 2e-3 0 0 0 0 1" >
-	<Group containerField="stylus">
-
-	<Shape>
-	  <Appearance>
-	     <Material/>
-	  </Appearance>
-	<Sphere radius="0.0025"/>
-	</Shape>
-	<Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
-	<Shape>
-	  <Appearance>
-	     <Material/>
-	  </Appearance>
-	<Cylinder radius="0.005" height="0.1"/>
-	</Shape>
-	</Transform>
-	</Group>
-     </HLHapticsDevice>
-  </DeviceInfo>
+  <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />  
   <TransformInfo DEF="TRANS" />
   <Shape>
     <Appearance>

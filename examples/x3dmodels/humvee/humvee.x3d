@@ -1,27 +1,5 @@
   <Transform DEF="ROT" >
-  <fDeviceInfo>
-     <HLHapticsDevice positionCalibration="1e-3 0 0 0 0 1e-3 0 0 0 0 1e-3 0 0 0 0 1" >
-
-	<Group containerField="stylus">
-	<Shape>
-	  <Appearance>
-	     <Material/>
-	  </Appearance>
-	<Sphere radius="0.005"/>
-	</Shape>
-	<Transform translation="0 0 -0.08" rotation="1 0 0 1.570796" >
-	<Shape>
-	  <Appearance>
-	     <Material/>
-	  </Appearance>
-	<Cylinder radius="0.005" height="0.1"/>
-	</Shape>
-	</Transform>
-	</Group>
-     </HLHapticsDevice>
-  </fDeviceInfo>
   <Background  DEF="SIGNING_BG" skyColor="0.41960785 0.49019608 0.6784314 "/>
-		<Viewpoint position="0 0 0.6"/>
   <NavigationInfo  type='"EXAMINE" "ANY"'/>
 <FitToBoxTransform boxCenter="0 0 0" boxSize="0.4 0.4 0.4" uniformScalingOnly="true" active="true">	
   <Transform  DEF="Body" rotation="0 1 0 1" translation="0.005654 5.482 -0.8339">

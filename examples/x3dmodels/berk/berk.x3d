@@ -1,26 +1,4 @@
   <Group>
-  <DeviceInfo>
-     <HLHapticsDevice positionCalibration="1e-3 0 0 0 0 1e-3 0 0 0 0 1e-3 0 0 0 0 1" >
-
-	<Group containerField="stylus">
-	<Shape>
-	  <Appearance>
-	     <Material/>
-	  </Appearance>
-	<Sphere radius="0.005"/>
-	</Shape>
-	<Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
-	<Shape>
-	  <Appearance>
-	     <Material/>
-	  </Appearance>
-	<Cylinder radius="0.005" height="0.1"/>
-	</Shape>
-	</Transform>
-	</Group>
-     </HLHapticsDevice>
-  </DeviceInfo>
-
 <FitToBoxTransform boxCenter="0 0 0" boxSize="0.4 0.4 0.4" uniformScalingOnly="true" active="true">	
                   <Transform  DEF="topheadcc" >
                       <Transform  DEF="dad_GROUND"  translation="-0.01573 -1.06427 -0.02549" scale="0.05474 0.05474 0.05474">

@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- H3D Terrain demo
      Copyright 2005 SenseGraphics AB -->
-
 <Group>
-  <DeviceInfo>
-     <HLHapticsDevice DEF="DEV" 
-         positionCalibration="2e-3    0    0    0    
-                                 0  2e-3   0    0
-                                 0    0  2e-3   0 
-                                 0    0    0    1" >
-     </HLHapticsDevice>
-  </DeviceInfo>
+  <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
 
   <Viewpoint DEF="VP" position="0 0.05 0.0" />
 
@@ -157,7 +149,7 @@
   </PythonScript>
   
   <!-- Routes to/from PythonScript -->
-  <ROUTE fromNode="DEV" fromField="trackerPosition" 
+  <ROUTE fromNode="HDEV" fromField="trackerPosition" 
          toNode="PS" toField="proxyNavigator" />
   <ROUTE fromNode="KS" fromField="actionKeyPress" 
          toNode="PS" toField="keyManager" />

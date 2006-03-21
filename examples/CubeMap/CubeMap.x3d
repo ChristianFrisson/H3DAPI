@@ -7,7 +7,6 @@
 	   bottomUrl="../textures/d_arch_00000.png"
 	   topUrl		="../textures/t_arch_00000.png"	 />
   
-  <Viewpoint position="0 0 0.6" />
   <DynamicTransform angularMomentum="0.1 0.25 0">
     <FitToBoxTransform boxCenter="0 0 0" boxSize="0.25 0.25 0.25"
 	                     uniformScalingOnly="true" active="true">
