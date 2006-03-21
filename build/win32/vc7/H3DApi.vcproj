@@ -177,6 +177,9 @@
 				RelativePath="..\..\..\src\Cone.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Console.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordBoundField.cpp">
 			</File>
 			<File
@@ -343,6 +346,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\IndexedTriangleStripSet.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\INIFile.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Inline.cpp">
@@ -845,6 +851,9 @@
 				RelativePath="..\..\..\src\Cone.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Console.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordBoundField.h">
 			</File>
 			<File
@@ -1083,6 +1092,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\IndexedTriangleStripSet.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\INIFile.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Inline.h">
