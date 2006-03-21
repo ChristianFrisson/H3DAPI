@@ -6089,17 +6089,16 @@ var path: String;
     res_code: Integer;
 begin
   Exec('msiexec', ExpandConstant('/i {app}\python-2.4.2.msi'), '', SW_SHOW, ewWaitUntilTerminated, res_code);
-  RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\2.4\InstallPath', '', path) )
+  RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\2.4\InstallPath', '', path);
   RegWriteStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment','H3D_PYTHON_ROOT', path);
 end;
 
 function PythonNeedsInstalling: boolean;
   var path: String;
 begin
-  RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\2.4\InstallPath', '', path) )
+  RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\2.4\InstallPath', '', path);
   Result := (path = '');
   if not( Result ) then
     RegWriteStringValue(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment','H3D_PYTHON_ROOT', path);
 
 end;
-
