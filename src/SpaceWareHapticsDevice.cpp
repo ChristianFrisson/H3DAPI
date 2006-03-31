@@ -61,8 +61,8 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
          Inst< SFInt32         > _hapticsRate            ,
          Inst< SFNode          > _stylus                 ,
          Inst< SFBool          > _initialized            ,
-         Inst< SFVec3f         > _set_devicePosition     ,
-         Inst< SFRotation      > _set_deviceOrientation  ,
+         Inst< ThreadSafeSField< SFVec3f >         > _set_devicePosition     ,
+         Inst< ThreadSafeSField< SFRotation >      > _set_deviceOrientation  ,
          Inst< SetMainButton   > _set_mainButton,
          Inst< SFFloat         > _posSensitivity,
          Inst< SFFloat         > _ornSensitivity ) :
@@ -80,10 +80,6 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
 
   type_name = "SpaceWareHapticsDevice";  
   database.initFields( this );
-
-  set_devicePosition->route( devicePosition, id );
-  set_deviceOrientation->route( deviceOrientation, id );
-  set_mainButton->route( mainButton, id );
 
   inputDOF->setValue( 3, id );
   posSensitivity->setValue( 0.0001f );

@@ -56,9 +56,9 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
          Inst< SFInt32         > _hapticsRate            ,
          Inst< SFNode          > _stylus                 ,
          Inst< SFBool          > _initialized            ,
-         Inst< SFVec3f         > _set_devicePosition     ,
-         Inst< SFRotation      > _set_deviceOrientation  ,
-         Inst< SFBool          > _set_mainButton ):
+         Inst< ThreadSafeSField< SFVec3f >        > _set_devicePosition     ,
+         Inst< ThreadSafeSField< SFRotation >     > _set_deviceOrientation  ,
+         Inst< ThreadSafeSField< SFBool >         > _set_mainButton ):
   H3DThreadedHapticsDevice( _devicePosition, _deviceOrientation, 
                             _trackerPosition, _trackerOrientation,
                             _positionCalibration, _orientationCalibration,
@@ -80,19 +80,17 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
   set_mainButton->setOwner( this );
   set_mainButton->setName( "set_mainButton" );
 
-  set_devicePosition->route( devicePosition, id );
-  set_deviceOrientation->route( deviceOrientation, id );
-  set_mainButton->route( mainButton, id );
-
-
   inputDOF->setValue( 6, id );
   outputDOF->setValue( 0, id );
 }
 
+H3DFakeHapticsDevice::~H3DFakeHapticsDevice() {
+  disableDevice();
+}
 
 Vec3f H3DFakeHapticsDevice::getPosition() {
   // devicePosition is thread safe so we can use getValue()
-  return devicePosition->getValue();
+  return set_devicePosition->getValue();
 }
 
 Vec3f H3DFakeHapticsDevice::getVelocity() {
@@ -101,12 +99,12 @@ Vec3f H3DFakeHapticsDevice::getVelocity() {
 
 Rotation H3DFakeHapticsDevice::getOrientation() {
   // deviceOrientation is thread safe so we can use getValue()
-  return deviceOrientation->getValue();
+  return set_deviceOrientation->getValue();
 }
 
 bool H3DFakeHapticsDevice::getButtonStatus() {
   // mainButton is thread safe so we can use getValue()
-  return mainButton->getValue();
+  return set_mainButton->getValue();
 }
 
 

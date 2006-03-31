@@ -201,7 +201,7 @@ void *Thread::thread_func( void * _data ) {
 ThreadBase::ThreadId ThreadBase::main_thread_id = ThreadBase::getCurrentThreadId();
 ConditionLock HapticThreadBase::haptic_lock; 
 ConditionLock HapticThreadBase::sg_lock; 
-int HapticThreadBase::haptic_threads_left;
+int HapticThreadBase::haptic_threads_left = -1;
 std::vector< HapticThreadBase * > HapticThreadBase::threads;
 HLThread *HLThread::singleton = new HLThread;
 
@@ -217,11 +217,29 @@ Thread::Thread( int _thread_priority,
   pthread_create( &thread_id, &attr, thread_func, this ); 
 }
 
+namespace ThreadsInternal {
+  // callback functions
+  ThreadBase::CallbackCode doNothing( void * ) { 
+    return ThreadBase::CALLBACK_DONE; 
+  }
+  
+  ThreadBase::CallbackCode exitThread( void * ) { 
+    pthread_exit(0); 
+    return ThreadBase::CALLBACK_DONE; 
+  }
+}
+
+
 Thread::~Thread() {
   ThreadId this_thread = getCurrentThreadId();
-  pthread_cancel( thread_id );
-  if( !pthread_equal( this_thread, thread_id ) )
+  
+  //pthread_cancel( thread_id );
+  if( !pthread_equal( this_thread, thread_id ) ) {
+    asynchronousCallback( ThreadsInternal::exitThread, NULL );
     pthread_join( thread_id, NULL );
+  } else {
+    pthread_exit(0);
+  }
 }
 
 
@@ -237,6 +255,7 @@ void Thread::asynchronousCallback( CallbackFunc func, void *data ) {
   callbacks.push_back( make_pair( func, data ) );
   callback_lock.unlock();
 }
+
 
 #ifdef HAVE_OPENHAPTICS
 HDCallbackCode HDCALLBACK hdCallback( void *_data ) {
@@ -346,17 +365,27 @@ ThreadBase::CallbackCode HapticThreadBase::sync_haptics( void * ) {
   
   return ThreadBase::CALLBACK_DONE;
 }
-
 void HapticThreadBase::synchronousHapticCB( Thread::CallbackFunc func, 
                                             void *data ) {
+  // add empty callbacks in order to make sure that the haptics threads 
+  // have released the callback_lock since last call to sync_haptics.
+  for( vector< HapticThreadBase *>::iterator i = threads.begin();
+       i != threads.end(); i++ ) {
+    ThreadBase *thread = dynamic_cast< ThreadBase * >( *i );
+	  if( thread ) {
+	    thread->asynchronousCallback( ThreadsInternal::doNothing, NULL );
+
+	  }
+  }
   sg_lock.lock(); 
   haptic_threads_left = threads.size();
   if( haptic_threads_left > 0 ) {
     for( vector< HapticThreadBase *>::iterator i = threads.begin();
          i != threads.end(); i++ ) {
       ThreadBase *thread = dynamic_cast< ThreadBase * >( *i );
-      if( thread )
+      if( thread ) {
         thread->asynchronousCallback( sync_haptics, NULL );
+      }
     }
     sg_lock.wait();
     func( data );

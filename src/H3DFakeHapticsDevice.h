@@ -64,9 +64,12 @@ namespace H3D {
          Inst< SFInt32         > _hapticsRate            = 0,
          Inst< SFNode          > _stylus                 = 0,
          Inst< SFBool          > _initialized            = 0,
-         Inst< SFVec3f         > _set_devicePosition     = 0,
-         Inst< SFRotation      > _set_deviceOrientation  = 0,
-         Inst< SFBool          > _set_mainButton         = 0 );
+         Inst< ThreadSafeSField< SFVec3f >        > _set_devicePosition     = 0,
+         Inst< ThreadSafeSField< SFRotation >     > _set_deviceOrientation  = 0,
+         Inst< ThreadSafeSField< SFBool >         > _set_mainButton         = 0 );
+
+    /// Destructor.
+    virtual ~H3DFakeHapticsDevice();
 
     /// Node database entry
     static H3DNodeDatabase database;
