@@ -1,4 +1,5 @@
 <Group>
+  <Viewpoint position="0 0 0.6" />
 	<Background			
 		 backUrl	="../textures/b_arch_00000.png"
 	   frontUrl ="../textures/f_arch_00000.png"

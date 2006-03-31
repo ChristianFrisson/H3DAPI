@@ -73,8 +73,6 @@
 		4D0A007908A797D600A71D46 /* FreeImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D0AFEE108A797D400A71D46 /* FreeImageLoader.h */; };
 		4D0A007A08A797D600A71D46 /* FrictionalSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D0AFEE208A797D400A71D46 /* FrictionalSurface.cpp */; };
 		4D0A007B08A797D600A71D46 /* FrictionalSurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D0AFEE308A797D400A71D46 /* FrictionalSurface.h */; };
-		4D0A007C08A797D600A71D46 /* GLWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D0AFEE408A797D400A71D46 /* GLWindow.cpp */; };
-		4D0A007D08A797D600A71D46 /* GLWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D0AFEE508A797D400A71D46 /* GLWindow.h */; };
 		4D0A007E08A797D600A71D46 /* Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D0AFEE608A797D400A71D46 /* Group.cpp */; };
 		4D0A007F08A797D600A71D46 /* Group.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D0AFEE708A797D400A71D46 /* Group.h */; };
 		4D0A008008A797D600A71D46 /* H3DApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D0AFEE808A797D400A71D46 /* H3DApi.cpp */; };
@@ -430,6 +428,94 @@
 		4D7B1DAA08A8AE5E008FFC05 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D7B1D8C08A8AC4D008FFC05 /* libGLEW.a */; };
 		4D7B1DAB08A8AE5E008FFC05 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D0A01FB08A79C4300A71D46 /* OpenGL.framework */; };
 		4D7B1DD008A8BF65008FFC05 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D0A01FA08A79C4300A71D46 /* GLUT.framework */; };
+		4D91D75A09D1839D0053D977 /* X3DPrototypeInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D70B09D1839D0053D977 /* X3DPrototypeInstance.h */; };
+		4D91D75B09D1839D0053D977 /* X3DPrototypeInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D70C09D1839D0053D977 /* X3DPrototypeInstance.cpp */; };
+		4D91D75C09D1839D0053D977 /* X3DInfoNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D70D09D1839D0053D977 /* X3DInfoNode.h */; };
+		4D91D75D09D1839D0053D977 /* X3DFogObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D70E09D1839D0053D977 /* X3DFogObject.h */; };
+		4D91D75E09D1839D0053D977 /* X3DFogObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D70F09D1839D0053D977 /* X3DFogObject.cpp */; };
+		4D91D75F09D1839D0053D977 /* WorldInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71009D1839D0053D977 /* WorldInfo.h */; };
+		4D91D76009D1839D0053D977 /* WorldInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D71109D1839D0053D977 /* WorldInfo.cpp */; };
+		4D91D76109D1839D0053D977 /* SpaceballSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71209D1839D0053D977 /* SpaceballSensor.h */; };
+		4D91D76209D1839D0053D977 /* SpaceballSensor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D71309D1839D0053D977 /* SpaceballSensor.cpp */; };
+		4D91D76309D1839D0053D977 /* SFVec4f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71409D1839D0053D977 /* SFVec4f.h */; };
+		4D91D76409D1839D0053D977 /* SFVec4d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71509D1839D0053D977 /* SFVec4d.h */; };
+		4D91D76509D1839D0053D977 /* SFVec3f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71609D1839D0053D977 /* SFVec3f.h */; };
+		4D91D76609D1839D0053D977 /* SFVec3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71709D1839D0053D977 /* SFVec3d.h */; };
+		4D91D76709D1839D0053D977 /* SFVec2f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71809D1839D0053D977 /* SFVec2f.h */; };
+		4D91D76809D1839D0053D977 /* SFVec2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71909D1839D0053D977 /* SFVec2d.h */; };
+		4D91D76909D1839D0053D977 /* SFTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71A09D1839D0053D977 /* SFTime.h */; };
+		4D91D76A09D1839D0053D977 /* SFString.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71B09D1839D0053D977 /* SFString.h */; };
+		4D91D76B09D1839D0053D977 /* SFRotation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71C09D1839D0053D977 /* SFRotation.h */; };
+		4D91D76C09D1839D0053D977 /* SFQuaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71D09D1839D0053D977 /* SFQuaternion.h */; };
+		4D91D76D09D1839D0053D977 /* SFNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D71E09D1839D0053D977 /* SFNode.cpp */; };
+		4D91D76E09D1839D0053D977 /* SFMatrix4f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D71F09D1839D0053D977 /* SFMatrix4f.h */; };
+		4D91D76F09D1839D0053D977 /* SFMatrix4d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72009D1839D0053D977 /* SFMatrix4d.h */; };
+		4D91D77009D1839D0053D977 /* SFMatrix3f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72109D1839D0053D977 /* SFMatrix3f.h */; };
+		4D91D77109D1839D0053D977 /* SFMatrix3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72209D1839D0053D977 /* SFMatrix3d.h */; };
+		4D91D77209D1839D0053D977 /* SFInt32.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72309D1839D0053D977 /* SFInt32.h */; };
+		4D91D77309D1839D0053D977 /* SFFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72409D1839D0053D977 /* SFFloat.h */; };
+		4D91D77409D1839D0053D977 /* SFDouble.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72509D1839D0053D977 /* SFDouble.h */; };
+		4D91D77509D1839D0053D977 /* SFColorRGBA.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72609D1839D0053D977 /* SFColorRGBA.h */; };
+		4D91D77609D1839D0053D977 /* SFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72709D1839D0053D977 /* SFColor.h */; };
+		4D91D77709D1839D0053D977 /* SFBool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72809D1839D0053D977 /* SFBool.h */; };
+		4D91D77809D1839D0053D977 /* ResourceResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72909D1839D0053D977 /* ResourceResolver.h */; };
+		4D91D77909D1839D0053D977 /* ResourceResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D72A09D1839D0053D977 /* ResourceResolver.cpp */; };
+		4D91D77A09D1839D0053D977 /* PrototypeInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72B09D1839D0053D977 /* PrototypeInstance.h */; };
+		4D91D77B09D1839D0053D977 /* PrototypeInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D72C09D1839D0053D977 /* PrototypeInstance.cpp */; };
+		4D91D77C09D1839D0053D977 /* ProtoDeclaration.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72D09D1839D0053D977 /* ProtoDeclaration.h */; };
+		4D91D77D09D1839D0053D977 /* ProtoDeclaration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D72E09D1839D0053D977 /* ProtoDeclaration.cpp */; };
+		4D91D77E09D1839D0053D977 /* MFVec4f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D72F09D1839D0053D977 /* MFVec4f.h */; };
+		4D91D77F09D1839D0053D977 /* MFVec4d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73009D1839D0053D977 /* MFVec4d.h */; };
+		4D91D78009D1839D0053D977 /* MFVec3f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73109D1839D0053D977 /* MFVec3f.h */; };
+		4D91D78109D1839D0053D977 /* MFVec3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73209D1839D0053D977 /* MFVec3d.h */; };
+		4D91D78209D1839D0053D977 /* MFVec2f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73309D1839D0053D977 /* MFVec2f.h */; };
+		4D91D78309D1839D0053D977 /* MFVec2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73409D1839D0053D977 /* MFVec2d.h */; };
+		4D91D78409D1839D0053D977 /* MFTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73509D1839D0053D977 /* MFTime.h */; };
+		4D91D78509D1839D0053D977 /* MFString.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73609D1839D0053D977 /* MFString.h */; };
+		4D91D78609D1839D0053D977 /* MFRotation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73709D1839D0053D977 /* MFRotation.h */; };
+		4D91D78709D1839D0053D977 /* MFQuaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73809D1839D0053D977 /* MFQuaternion.h */; };
+		4D91D78809D1839D0053D977 /* MFNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D73909D1839D0053D977 /* MFNode.cpp */; };
+		4D91D78909D1839D0053D977 /* MFMatrix4f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73A09D1839D0053D977 /* MFMatrix4f.h */; };
+		4D91D78A09D1839D0053D977 /* MFMatrix4d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73B09D1839D0053D977 /* MFMatrix4d.h */; };
+		4D91D78B09D1839D0053D977 /* MFMatrix3f.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73C09D1839D0053D977 /* MFMatrix3f.h */; };
+		4D91D78C09D1839D0053D977 /* MFMatrix3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73D09D1839D0053D977 /* MFMatrix3d.h */; };
+		4D91D78D09D1839D0053D977 /* MFInt32.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73E09D1839D0053D977 /* MFInt32.h */; };
+		4D91D78E09D1839D0053D977 /* MFFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D73F09D1839D0053D977 /* MFFloat.h */; };
+		4D91D78F09D1839D0053D977 /* MFDouble.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74009D1839D0053D977 /* MFDouble.h */; };
+		4D91D79009D1839D0053D977 /* MFColorRGBA.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74109D1839D0053D977 /* MFColorRGBA.h */; };
+		4D91D79109D1839D0053D977 /* MFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74209D1839D0053D977 /* MFColor.h */; };
+		4D91D79209D1839D0053D977 /* MFBool.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74309D1839D0053D977 /* MFBool.h */; };
+		4D91D79309D1839D0053D977 /* LibCurlResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74409D1839D0053D977 /* LibCurlResolver.h */; };
+		4D91D79409D1839D0053D977 /* LibCurlResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D74509D1839D0053D977 /* LibCurlResolver.cpp */; };
+		4D91D79509D1839D0053D977 /* INIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74609D1839D0053D977 /* INIFile.h */; };
+		4D91D79609D1839D0053D977 /* INIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D74709D1839D0053D977 /* INIFile.cpp */; };
+		4D91D79709D1839D0053D977 /* H3DWindowNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74809D1839D0053D977 /* H3DWindowNode.h */; };
+		4D91D79809D1839D0053D977 /* H3DWindowNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D74909D1839D0053D977 /* H3DWindowNode.cpp */; };
+		4D91D79909D1839D0053D977 /* H3DExports.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74A09D1839D0053D977 /* H3DExports.h */; };
+		4D91D79A09D1839D0053D977 /* H3DExports.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D74B09D1839D0053D977 /* H3DExports.cpp */; };
+		4D91D79B09D1839D0053D977 /* H3DCoordinateDeformerNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74C09D1839D0053D977 /* H3DCoordinateDeformerNode.h */; };
+		4D91D79C09D1839D0053D977 /* GLUTWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74D09D1839D0053D977 /* GLUTWindow.h */; };
+		4D91D79D09D1839D0053D977 /* GLUTWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D74E09D1839D0053D977 /* GLUTWindow.cpp */; };
+		4D91D79E09D1839D0053D977 /* GaussianFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D74F09D1839D0053D977 /* GaussianFunction.h */; };
+		4D91D79F09D1839D0053D977 /* Fog.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D75009D1839D0053D977 /* Fog.h */; };
+		4D91D7A009D1839D0053D977 /* Fog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D75109D1839D0053D977 /* Fog.cpp */; };
+		4D91D7A109D1839D0053D977 /* ElevationGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D75209D1839D0053D977 /* ElevationGrid.h */; };
+		4D91D7A209D1839D0053D977 /* ElevationGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D75309D1839D0053D977 /* ElevationGrid.cpp */; };
+		4D91D7A309D1839D0053D977 /* DeformableShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D75409D1839D0053D977 /* DeformableShape.h */; };
+		4D91D7A409D1839D0053D977 /* DeformableShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D75509D1839D0053D977 /* DeformableShape.cpp */; };
+		4D91D7A509D1839D0053D977 /* CoordinateDeformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D75609D1839D0053D977 /* CoordinateDeformer.h */; };
+		4D91D7A609D1839D0053D977 /* CoordinateDeformer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D75709D1839D0053D977 /* CoordinateDeformer.cpp */; };
+		4D91D7A709D1839D0053D977 /* Console.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D75809D1839D0053D977 /* Console.h */; };
+		4D91D7A809D1839D0053D977 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D75909D1839D0053D977 /* Console.cpp */; };
+		4D91D7B209D18EB80053D977 /* GaussianFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D7AC09D18EB80053D977 /* GaussianFunction.cpp */; };
+		4D91D7B309D18EB80053D977 /* H3DFunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D7AD09D18EB80053D977 /* H3DFunctionNode.cpp */; };
+		4D91D7B409D18EB80053D977 /* LoadSensor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D7AE09D18EB80053D977 /* LoadSensor.cpp */; };
+		4D91D7B509D18EB80053D977 /* LoadSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D7AF09D18EB80053D977 /* LoadSensor.h */; };
+		4D91D7B609D18EB80053D977 /* LocalFog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D7B009D18EB80053D977 /* LocalFog.cpp */; };
+		4D91D7B709D18EB80053D977 /* LocalFog.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D7B109D18EB80053D977 /* LocalFog.h */; };
+		4D91D7BE09D19CED0053D977 /* X3DBindableNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D0AFFE908A797D500A71D46 /* X3DBindableNode.cpp */; };
+		4D91D7C909D19D370053D977 /* URNResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D7C709D19D370053D977 /* URNResolver.cpp */; };
+		4D91D7CA09D19D370053D977 /* URNResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D7C809D19D370053D977 /* URNResolver.h */; };
 		4DEC79E0092A216C00CB721D /* DynamicTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEC79D9092A216C00CB721D /* DynamicTransform.h */; };
 		4DEC79E1092A216C00CB721D /* X3DNurbsSurfaceGeometryNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEC79DA092A216C00CB721D /* X3DNurbsSurfaceGeometryNode.h */; };
 		4DEC79E2092A216C00CB721D /* X3DParametricGeometryNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEC79DB092A216C00CB721D /* X3DParametricGeometryNode.h */; };
@@ -478,7 +564,6 @@
 		4DF747BA08D8407F00E4EE0D /* TriangleSet2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DF747A808D8407F00E4EE0D /* TriangleSet2D.cpp */; };
 		4DF747BB08D8407F00E4EE0D /* TriangleSet2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DF747A908D8407F00E4EE0D /* TriangleSet2D.h */; };
 		4DF747C008D84A6400E4EE0D /* SpringEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D0AFF9108A797D500A71D46 /* SpringEffect.cpp */; };
-		8D07F2C00486CC7A007CD1D0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -518,7 +603,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		089C1667FE841158C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		08FB77AAFE841565C02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		4D0A000008A797D500A71D46 /* X3DKeyDeviceSensorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DKeyDeviceSensorNode.cpp; path = ../../src/X3DKeyDeviceSensorNode.cpp; sourceTree = SOURCE_ROOT; };
 		4D0A000108A797D500A71D46 /* X3DKeyDeviceSensorNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DKeyDeviceSensorNode.h; path = ../../src/X3DKeyDeviceSensorNode.h; sourceTree = SOURCE_ROOT; };
@@ -641,8 +725,6 @@
 		4D0AFEE108A797D400A71D46 /* FreeImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FreeImageLoader.h; path = ../../src/FreeImageLoader.h; sourceTree = SOURCE_ROOT; };
 		4D0AFEE208A797D400A71D46 /* FrictionalSurface.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FrictionalSurface.cpp; path = ../../src/FrictionalSurface.cpp; sourceTree = SOURCE_ROOT; };
 		4D0AFEE308A797D400A71D46 /* FrictionalSurface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FrictionalSurface.h; path = ../../src/FrictionalSurface.h; sourceTree = SOURCE_ROOT; };
-		4D0AFEE408A797D400A71D46 /* GLWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GLWindow.cpp; path = ../../src/GLWindow.cpp; sourceTree = SOURCE_ROOT; };
-		4D0AFEE508A797D400A71D46 /* GLWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GLWindow.h; path = ../../src/GLWindow.h; sourceTree = SOURCE_ROOT; };
 		4D0AFEE608A797D400A71D46 /* Group.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Group.cpp; path = ../../src/Group.cpp; sourceTree = SOURCE_ROOT; };
 		4D0AFEE708A797D400A71D46 /* Group.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Group.h; path = ../../src/Group.h; sourceTree = SOURCE_ROOT; };
 		4D0AFEE808A797D400A71D46 /* H3DApi.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = H3DApi.cpp; path = ../../src/H3DApi.cpp; sourceTree = SOURCE_ROOT; };
@@ -940,6 +1022,93 @@
 		4D7B1D9008A8ACA6008FFC05 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = /usr/local/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
 		4D7B1D9208A8ACCB008FFC05 /* libfreeimage.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreeimage.a; path = /usr/lib/libfreeimage.a; sourceTree = SOURCE_ROOT; };
 		4D7B1D9808A8AD7C008FFC05 /* H3DLoad */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = H3DLoad; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D91D70B09D1839D0053D977 /* X3DPrototypeInstance.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DPrototypeInstance.h; path = ../../src/X3DPrototypeInstance.h; sourceTree = SOURCE_ROOT; };
+		4D91D70C09D1839D0053D977 /* X3DPrototypeInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DPrototypeInstance.cpp; path = ../../src/X3DPrototypeInstance.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D70D09D1839D0053D977 /* X3DInfoNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DInfoNode.h; path = ../../src/X3DInfoNode.h; sourceTree = SOURCE_ROOT; };
+		4D91D70E09D1839D0053D977 /* X3DFogObject.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DFogObject.h; path = ../../src/X3DFogObject.h; sourceTree = SOURCE_ROOT; };
+		4D91D70F09D1839D0053D977 /* X3DFogObject.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DFogObject.cpp; path = ../../src/X3DFogObject.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D71009D1839D0053D977 /* WorldInfo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = WorldInfo.h; path = ../../src/WorldInfo.h; sourceTree = SOURCE_ROOT; };
+		4D91D71109D1839D0053D977 /* WorldInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = WorldInfo.cpp; path = ../../src/WorldInfo.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D71209D1839D0053D977 /* SpaceballSensor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SpaceballSensor.h; path = ../../src/SpaceballSensor.h; sourceTree = SOURCE_ROOT; };
+		4D91D71309D1839D0053D977 /* SpaceballSensor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SpaceballSensor.cpp; path = ../../src/SpaceballSensor.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D71409D1839D0053D977 /* SFVec4f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFVec4f.h; path = ../../src/SFVec4f.h; sourceTree = SOURCE_ROOT; };
+		4D91D71509D1839D0053D977 /* SFVec4d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFVec4d.h; path = ../../src/SFVec4d.h; sourceTree = SOURCE_ROOT; };
+		4D91D71609D1839D0053D977 /* SFVec3f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFVec3f.h; path = ../../src/SFVec3f.h; sourceTree = SOURCE_ROOT; };
+		4D91D71709D1839D0053D977 /* SFVec3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFVec3d.h; path = ../../src/SFVec3d.h; sourceTree = SOURCE_ROOT; };
+		4D91D71809D1839D0053D977 /* SFVec2f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFVec2f.h; path = ../../src/SFVec2f.h; sourceTree = SOURCE_ROOT; };
+		4D91D71909D1839D0053D977 /* SFVec2d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFVec2d.h; path = ../../src/SFVec2d.h; sourceTree = SOURCE_ROOT; };
+		4D91D71A09D1839D0053D977 /* SFTime.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFTime.h; path = ../../src/SFTime.h; sourceTree = SOURCE_ROOT; };
+		4D91D71B09D1839D0053D977 /* SFString.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFString.h; path = ../../src/SFString.h; sourceTree = SOURCE_ROOT; };
+		4D91D71C09D1839D0053D977 /* SFRotation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFRotation.h; path = ../../src/SFRotation.h; sourceTree = SOURCE_ROOT; };
+		4D91D71D09D1839D0053D977 /* SFQuaternion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFQuaternion.h; path = ../../src/SFQuaternion.h; sourceTree = SOURCE_ROOT; };
+		4D91D71E09D1839D0053D977 /* SFNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SFNode.cpp; path = ../../src/SFNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D71F09D1839D0053D977 /* SFMatrix4f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFMatrix4f.h; path = ../../src/SFMatrix4f.h; sourceTree = SOURCE_ROOT; };
+		4D91D72009D1839D0053D977 /* SFMatrix4d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFMatrix4d.h; path = ../../src/SFMatrix4d.h; sourceTree = SOURCE_ROOT; };
+		4D91D72109D1839D0053D977 /* SFMatrix3f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFMatrix3f.h; path = ../../src/SFMatrix3f.h; sourceTree = SOURCE_ROOT; };
+		4D91D72209D1839D0053D977 /* SFMatrix3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFMatrix3d.h; path = ../../src/SFMatrix3d.h; sourceTree = SOURCE_ROOT; };
+		4D91D72309D1839D0053D977 /* SFInt32.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFInt32.h; path = ../../src/SFInt32.h; sourceTree = SOURCE_ROOT; };
+		4D91D72409D1839D0053D977 /* SFFloat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFFloat.h; path = ../../src/SFFloat.h; sourceTree = SOURCE_ROOT; };
+		4D91D72509D1839D0053D977 /* SFDouble.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFDouble.h; path = ../../src/SFDouble.h; sourceTree = SOURCE_ROOT; };
+		4D91D72609D1839D0053D977 /* SFColorRGBA.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFColorRGBA.h; path = ../../src/SFColorRGBA.h; sourceTree = SOURCE_ROOT; };
+		4D91D72709D1839D0053D977 /* SFColor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFColor.h; path = ../../src/SFColor.h; sourceTree = SOURCE_ROOT; };
+		4D91D72809D1839D0053D977 /* SFBool.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SFBool.h; path = ../../src/SFBool.h; sourceTree = SOURCE_ROOT; };
+		4D91D72909D1839D0053D977 /* ResourceResolver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ResourceResolver.h; path = ../../src/ResourceResolver.h; sourceTree = SOURCE_ROOT; };
+		4D91D72A09D1839D0053D977 /* ResourceResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ResourceResolver.cpp; path = ../../src/ResourceResolver.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D72B09D1839D0053D977 /* PrototypeInstance.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PrototypeInstance.h; path = ../../src/PrototypeInstance.h; sourceTree = SOURCE_ROOT; };
+		4D91D72C09D1839D0053D977 /* PrototypeInstance.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PrototypeInstance.cpp; path = ../../src/PrototypeInstance.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D72D09D1839D0053D977 /* ProtoDeclaration.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ProtoDeclaration.h; path = ../../src/ProtoDeclaration.h; sourceTree = SOURCE_ROOT; };
+		4D91D72E09D1839D0053D977 /* ProtoDeclaration.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ProtoDeclaration.cpp; path = ../../src/ProtoDeclaration.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D72F09D1839D0053D977 /* MFVec4f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFVec4f.h; path = ../../src/MFVec4f.h; sourceTree = SOURCE_ROOT; };
+		4D91D73009D1839D0053D977 /* MFVec4d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFVec4d.h; path = ../../src/MFVec4d.h; sourceTree = SOURCE_ROOT; };
+		4D91D73109D1839D0053D977 /* MFVec3f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFVec3f.h; path = ../../src/MFVec3f.h; sourceTree = SOURCE_ROOT; };
+		4D91D73209D1839D0053D977 /* MFVec3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFVec3d.h; path = ../../src/MFVec3d.h; sourceTree = SOURCE_ROOT; };
+		4D91D73309D1839D0053D977 /* MFVec2f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFVec2f.h; path = ../../src/MFVec2f.h; sourceTree = SOURCE_ROOT; };
+		4D91D73409D1839D0053D977 /* MFVec2d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFVec2d.h; path = ../../src/MFVec2d.h; sourceTree = SOURCE_ROOT; };
+		4D91D73509D1839D0053D977 /* MFTime.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFTime.h; path = ../../src/MFTime.h; sourceTree = SOURCE_ROOT; };
+		4D91D73609D1839D0053D977 /* MFString.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFString.h; path = ../../src/MFString.h; sourceTree = SOURCE_ROOT; };
+		4D91D73709D1839D0053D977 /* MFRotation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFRotation.h; path = ../../src/MFRotation.h; sourceTree = SOURCE_ROOT; };
+		4D91D73809D1839D0053D977 /* MFQuaternion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFQuaternion.h; path = ../../src/MFQuaternion.h; sourceTree = SOURCE_ROOT; };
+		4D91D73909D1839D0053D977 /* MFNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MFNode.cpp; path = ../../src/MFNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D73A09D1839D0053D977 /* MFMatrix4f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFMatrix4f.h; path = ../../src/MFMatrix4f.h; sourceTree = SOURCE_ROOT; };
+		4D91D73B09D1839D0053D977 /* MFMatrix4d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFMatrix4d.h; path = ../../src/MFMatrix4d.h; sourceTree = SOURCE_ROOT; };
+		4D91D73C09D1839D0053D977 /* MFMatrix3f.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFMatrix3f.h; path = ../../src/MFMatrix3f.h; sourceTree = SOURCE_ROOT; };
+		4D91D73D09D1839D0053D977 /* MFMatrix3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFMatrix3d.h; path = ../../src/MFMatrix3d.h; sourceTree = SOURCE_ROOT; };
+		4D91D73E09D1839D0053D977 /* MFInt32.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFInt32.h; path = ../../src/MFInt32.h; sourceTree = SOURCE_ROOT; };
+		4D91D73F09D1839D0053D977 /* MFFloat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFFloat.h; path = ../../src/MFFloat.h; sourceTree = SOURCE_ROOT; };
+		4D91D74009D1839D0053D977 /* MFDouble.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFDouble.h; path = ../../src/MFDouble.h; sourceTree = SOURCE_ROOT; };
+		4D91D74109D1839D0053D977 /* MFColorRGBA.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFColorRGBA.h; path = ../../src/MFColorRGBA.h; sourceTree = SOURCE_ROOT; };
+		4D91D74209D1839D0053D977 /* MFColor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFColor.h; path = ../../src/MFColor.h; sourceTree = SOURCE_ROOT; };
+		4D91D74309D1839D0053D977 /* MFBool.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MFBool.h; path = ../../src/MFBool.h; sourceTree = SOURCE_ROOT; };
+		4D91D74409D1839D0053D977 /* LibCurlResolver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = LibCurlResolver.h; path = ../../src/LibCurlResolver.h; sourceTree = SOURCE_ROOT; };
+		4D91D74509D1839D0053D977 /* LibCurlResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = LibCurlResolver.cpp; path = ../../src/LibCurlResolver.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D74609D1839D0053D977 /* INIFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = INIFile.h; path = ../../src/INIFile.h; sourceTree = SOURCE_ROOT; };
+		4D91D74709D1839D0053D977 /* INIFile.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = INIFile.cpp; path = ../../src/INIFile.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D74809D1839D0053D977 /* H3DWindowNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = H3DWindowNode.h; path = ../../src/H3DWindowNode.h; sourceTree = SOURCE_ROOT; };
+		4D91D74909D1839D0053D977 /* H3DWindowNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = H3DWindowNode.cpp; path = ../../src/H3DWindowNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D74A09D1839D0053D977 /* H3DExports.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = H3DExports.h; path = ../../src/H3DExports.h; sourceTree = SOURCE_ROOT; };
+		4D91D74B09D1839D0053D977 /* H3DExports.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = H3DExports.cpp; path = ../../src/H3DExports.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D74C09D1839D0053D977 /* H3DCoordinateDeformerNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = H3DCoordinateDeformerNode.h; path = ../../src/H3DCoordinateDeformerNode.h; sourceTree = SOURCE_ROOT; };
+		4D91D74D09D1839D0053D977 /* GLUTWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GLUTWindow.h; path = ../../src/GLUTWindow.h; sourceTree = SOURCE_ROOT; };
+		4D91D74E09D1839D0053D977 /* GLUTWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GLUTWindow.cpp; path = ../../src/GLUTWindow.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D74F09D1839D0053D977 /* GaussianFunction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GaussianFunction.h; path = ../../src/GaussianFunction.h; sourceTree = SOURCE_ROOT; };
+		4D91D75009D1839D0053D977 /* Fog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Fog.h; path = ../../src/Fog.h; sourceTree = SOURCE_ROOT; };
+		4D91D75109D1839D0053D977 /* Fog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Fog.cpp; path = ../../src/Fog.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D75209D1839D0053D977 /* ElevationGrid.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ElevationGrid.h; path = ../../src/ElevationGrid.h; sourceTree = SOURCE_ROOT; };
+		4D91D75309D1839D0053D977 /* ElevationGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ElevationGrid.cpp; path = ../../src/ElevationGrid.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D75409D1839D0053D977 /* DeformableShape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DeformableShape.h; path = ../../src/DeformableShape.h; sourceTree = SOURCE_ROOT; };
+		4D91D75509D1839D0053D977 /* DeformableShape.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DeformableShape.cpp; path = ../../src/DeformableShape.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D75609D1839D0053D977 /* CoordinateDeformer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CoordinateDeformer.h; path = ../../src/CoordinateDeformer.h; sourceTree = SOURCE_ROOT; };
+		4D91D75709D1839D0053D977 /* CoordinateDeformer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CoordinateDeformer.cpp; path = ../../src/CoordinateDeformer.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D75809D1839D0053D977 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Console.h; path = ../../src/Console.h; sourceTree = SOURCE_ROOT; };
+		4D91D75909D1839D0053D977 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Console.cpp; path = ../../src/Console.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D7AC09D18EB80053D977 /* GaussianFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GaussianFunction.cpp; path = ../../src/GaussianFunction.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D7AD09D18EB80053D977 /* H3DFunctionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = H3DFunctionNode.cpp; path = ../../src/H3DFunctionNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D7AE09D18EB80053D977 /* LoadSensor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = LoadSensor.cpp; path = ../../src/LoadSensor.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D7AF09D18EB80053D977 /* LoadSensor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = LoadSensor.h; path = ../../src/LoadSensor.h; sourceTree = SOURCE_ROOT; };
+		4D91D7B009D18EB80053D977 /* LocalFog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = LocalFog.cpp; path = ../../src/LocalFog.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D7B109D18EB80053D977 /* LocalFog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = LocalFog.h; path = ../../src/LocalFog.h; sourceTree = SOURCE_ROOT; };
+		4D91D7C709D19D370053D977 /* URNResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = URNResolver.cpp; path = ../../src/URNResolver.cpp; sourceTree = SOURCE_ROOT; };
+		4D91D7C809D19D370053D977 /* URNResolver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = URNResolver.h; path = ../../src/URNResolver.h; sourceTree = SOURCE_ROOT; };
 		4DEC79D9092A216C00CB721D /* DynamicTransform.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DynamicTransform.h; path = ../../src/DynamicTransform.h; sourceTree = SOURCE_ROOT; };
 		4DEC79DA092A216C00CB721D /* X3DNurbsSurfaceGeometryNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DNurbsSurfaceGeometryNode.h; path = ../../src/X3DNurbsSurfaceGeometryNode.h; sourceTree = SOURCE_ROOT; };
 		4DEC79DB092A216C00CB721D /* X3DParametricGeometryNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DParametricGeometryNode.h; path = ../../src/X3DParametricGeometryNode.h; sourceTree = SOURCE_ROOT; };
@@ -1087,7 +1256,6 @@
 			isa = PBXGroup;
 			children = (
 				8D07F2C70486CC7A007CD1D0 /* Info.plist */,
-				089C1666FE841158C02AAC07 /* InfoPlist.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1095,6 +1263,28 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				4D91D7C709D19D370053D977 /* URNResolver.cpp */,
+				4D91D7AC09D18EB80053D977 /* GaussianFunction.cpp */,
+				4D91D7AD09D18EB80053D977 /* H3DFunctionNode.cpp */,
+				4D91D7AE09D18EB80053D977 /* LoadSensor.cpp */,
+				4D91D7B009D18EB80053D977 /* LocalFog.cpp */,
+				4D91D70C09D1839D0053D977 /* X3DPrototypeInstance.cpp */,
+				4D91D70F09D1839D0053D977 /* X3DFogObject.cpp */,
+				4D91D71109D1839D0053D977 /* WorldInfo.cpp */,
+				4D91D71309D1839D0053D977 /* SpaceballSensor.cpp */,
+				4D91D72A09D1839D0053D977 /* ResourceResolver.cpp */,
+				4D91D72C09D1839D0053D977 /* PrototypeInstance.cpp */,
+				4D91D72E09D1839D0053D977 /* ProtoDeclaration.cpp */,
+				4D91D73909D1839D0053D977 /* MFNode.cpp */,
+				4D91D74509D1839D0053D977 /* LibCurlResolver.cpp */,
+				4D91D74709D1839D0053D977 /* INIFile.cpp */,
+				4D91D74909D1839D0053D977 /* H3DWindowNode.cpp */,
+				4D91D74B09D1839D0053D977 /* H3DExports.cpp */,
+				4D91D75109D1839D0053D977 /* Fog.cpp */,
+				4D91D75309D1839D0053D977 /* ElevationGrid.cpp */,
+				4D91D75509D1839D0053D977 /* DeformableShape.cpp */,
+				4D91D75709D1839D0053D977 /* CoordinateDeformer.cpp */,
+				4D91D75909D1839D0053D977 /* Console.cpp */,
 				4D5AEA49092B88B700427A11 /* TexGenGeometry.cpp */,
 				4DEC7A0B092A21E400CB721D /* DynamicTransform.cpp */,
 				4DEC7A05092A21D400CB721D /* Matrix4VertexAttribute.cpp */,
@@ -1153,7 +1343,6 @@
 				4D0AFEDC08A797D400A71D46 /* ForceField.cpp */,
 				4D0AFEE008A797D400A71D46 /* FreeImageLoader.cpp */,
 				4D0AFEE208A797D400A71D46 /* FrictionalSurface.cpp */,
-				4D0AFEE408A797D400A71D46 /* GLWindow.cpp */,
 				4D0AFEE608A797D400A71D46 /* Group.cpp */,
 				4D0AFEE808A797D400A71D46 /* H3DApi.cpp */,
 				4D0AFEEB08A797D400A71D46 /* H3DDisplayListObject.cpp */,
@@ -1291,6 +1480,71 @@
 		4D0AFE9508A7975100A71D46 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				4D91D7C809D19D370053D977 /* URNResolver.h */,
+				4D91D7AF09D18EB80053D977 /* LoadSensor.h */,
+				4D91D7B109D18EB80053D977 /* LocalFog.h */,
+				4D91D70B09D1839D0053D977 /* X3DPrototypeInstance.h */,
+				4D91D70D09D1839D0053D977 /* X3DInfoNode.h */,
+				4D91D70E09D1839D0053D977 /* X3DFogObject.h */,
+				4D91D71009D1839D0053D977 /* WorldInfo.h */,
+				4D91D71209D1839D0053D977 /* SpaceballSensor.h */,
+				4D91D71409D1839D0053D977 /* SFVec4f.h */,
+				4D91D71509D1839D0053D977 /* SFVec4d.h */,
+				4D91D71609D1839D0053D977 /* SFVec3f.h */,
+				4D91D71709D1839D0053D977 /* SFVec3d.h */,
+				4D91D71809D1839D0053D977 /* SFVec2f.h */,
+				4D91D71909D1839D0053D977 /* SFVec2d.h */,
+				4D91D71A09D1839D0053D977 /* SFTime.h */,
+				4D91D71B09D1839D0053D977 /* SFString.h */,
+				4D91D71C09D1839D0053D977 /* SFRotation.h */,
+				4D91D71D09D1839D0053D977 /* SFQuaternion.h */,
+				4D91D71E09D1839D0053D977 /* SFNode.cpp */,
+				4D91D71F09D1839D0053D977 /* SFMatrix4f.h */,
+				4D91D72009D1839D0053D977 /* SFMatrix4d.h */,
+				4D91D72109D1839D0053D977 /* SFMatrix3f.h */,
+				4D91D72209D1839D0053D977 /* SFMatrix3d.h */,
+				4D91D72309D1839D0053D977 /* SFInt32.h */,
+				4D91D72409D1839D0053D977 /* SFFloat.h */,
+				4D91D72509D1839D0053D977 /* SFDouble.h */,
+				4D91D72609D1839D0053D977 /* SFColorRGBA.h */,
+				4D91D72709D1839D0053D977 /* SFColor.h */,
+				4D91D72809D1839D0053D977 /* SFBool.h */,
+				4D91D72909D1839D0053D977 /* ResourceResolver.h */,
+				4D91D72B09D1839D0053D977 /* PrototypeInstance.h */,
+				4D91D72D09D1839D0053D977 /* ProtoDeclaration.h */,
+				4D91D72F09D1839D0053D977 /* MFVec4f.h */,
+				4D91D73009D1839D0053D977 /* MFVec4d.h */,
+				4D91D73109D1839D0053D977 /* MFVec3f.h */,
+				4D91D73209D1839D0053D977 /* MFVec3d.h */,
+				4D91D73309D1839D0053D977 /* MFVec2f.h */,
+				4D91D73409D1839D0053D977 /* MFVec2d.h */,
+				4D91D73509D1839D0053D977 /* MFTime.h */,
+				4D91D73609D1839D0053D977 /* MFString.h */,
+				4D91D73709D1839D0053D977 /* MFRotation.h */,
+				4D91D73809D1839D0053D977 /* MFQuaternion.h */,
+				4D91D73A09D1839D0053D977 /* MFMatrix4f.h */,
+				4D91D73B09D1839D0053D977 /* MFMatrix4d.h */,
+				4D91D73C09D1839D0053D977 /* MFMatrix3f.h */,
+				4D91D73D09D1839D0053D977 /* MFMatrix3d.h */,
+				4D91D73E09D1839D0053D977 /* MFInt32.h */,
+				4D91D73F09D1839D0053D977 /* MFFloat.h */,
+				4D91D74009D1839D0053D977 /* MFDouble.h */,
+				4D91D74109D1839D0053D977 /* MFColorRGBA.h */,
+				4D91D74209D1839D0053D977 /* MFColor.h */,
+				4D91D74309D1839D0053D977 /* MFBool.h */,
+				4D91D74609D1839D0053D977 /* INIFile.h */,
+				4D91D74F09D1839D0053D977 /* GaussianFunction.h */,
+				4D91D74C09D1839D0053D977 /* H3DCoordinateDeformerNode.h */,
+				4D91D74409D1839D0053D977 /* LibCurlResolver.h */,
+				4D91D74809D1839D0053D977 /* H3DWindowNode.h */,
+				4D91D74A09D1839D0053D977 /* H3DExports.h */,
+				4D91D74D09D1839D0053D977 /* GLUTWindow.h */,
+				4D91D74E09D1839D0053D977 /* GLUTWindow.cpp */,
+				4D91D75009D1839D0053D977 /* Fog.h */,
+				4D91D75209D1839D0053D977 /* ElevationGrid.h */,
+				4D91D75409D1839D0053D977 /* DeformableShape.h */,
+				4D91D75609D1839D0053D977 /* CoordinateDeformer.h */,
+				4D91D75809D1839D0053D977 /* Console.h */,
 				4D5AEA47092B88B700427A11 /* TexGenGeometry.h */,
 				4D5AEA48092B88B700427A11 /* H3DFunctionNode.h */,
 				4DEC79E7092A219600CB721D /* Vec4f.h */,
@@ -1376,7 +1630,6 @@
 				4D0AFEDF08A797D400A71D46 /* FreeImageImage.h */,
 				4D0AFEE108A797D400A71D46 /* FreeImageLoader.h */,
 				4D0AFEE308A797D400A71D46 /* FrictionalSurface.h */,
-				4D0AFEE508A797D400A71D46 /* GLWindow.h */,
 				4D0AFEE708A797D400A71D46 /* Group.h */,
 				4D0AFEE908A797D400A71D46 /* H3DApi.h */,
 				4D0AFEEA08A797D400A71D46 /* H3DBoundedObject.h */,
@@ -1608,7 +1861,6 @@
 				4D0A007708A797D600A71D46 /* FreeImageImage.h in Headers */,
 				4D0A007908A797D600A71D46 /* FreeImageLoader.h in Headers */,
 				4D0A007B08A797D600A71D46 /* FrictionalSurface.h in Headers */,
-				4D0A007D08A797D600A71D46 /* GLWindow.h in Headers */,
 				4D0A007F08A797D600A71D46 /* Group.h in Headers */,
 				4D0A008108A797D600A71D46 /* H3DApi.h in Headers */,
 				4D0A008208A797D600A71D46 /* H3DBoundedObject.h in Headers */,
@@ -1820,6 +2072,69 @@
 				4DEC7A04092A219600CB721D /* H3DBasicTypes.h in Headers */,
 				4D5AEA4A092B88B700427A11 /* TexGenGeometry.h in Headers */,
 				4D5AEA4B092B88B700427A11 /* H3DFunctionNode.h in Headers */,
+				4D91D75A09D1839D0053D977 /* X3DPrototypeInstance.h in Headers */,
+				4D91D75C09D1839D0053D977 /* X3DInfoNode.h in Headers */,
+				4D91D75D09D1839D0053D977 /* X3DFogObject.h in Headers */,
+				4D91D75F09D1839D0053D977 /* WorldInfo.h in Headers */,
+				4D91D76109D1839D0053D977 /* SpaceballSensor.h in Headers */,
+				4D91D76309D1839D0053D977 /* SFVec4f.h in Headers */,
+				4D91D76409D1839D0053D977 /* SFVec4d.h in Headers */,
+				4D91D76509D1839D0053D977 /* SFVec3f.h in Headers */,
+				4D91D76609D1839D0053D977 /* SFVec3d.h in Headers */,
+				4D91D76709D1839D0053D977 /* SFVec2f.h in Headers */,
+				4D91D76809D1839D0053D977 /* SFVec2d.h in Headers */,
+				4D91D76909D1839D0053D977 /* SFTime.h in Headers */,
+				4D91D76A09D1839D0053D977 /* SFString.h in Headers */,
+				4D91D76B09D1839D0053D977 /* SFRotation.h in Headers */,
+				4D91D76C09D1839D0053D977 /* SFQuaternion.h in Headers */,
+				4D91D76E09D1839D0053D977 /* SFMatrix4f.h in Headers */,
+				4D91D76F09D1839D0053D977 /* SFMatrix4d.h in Headers */,
+				4D91D77009D1839D0053D977 /* SFMatrix3f.h in Headers */,
+				4D91D77109D1839D0053D977 /* SFMatrix3d.h in Headers */,
+				4D91D77209D1839D0053D977 /* SFInt32.h in Headers */,
+				4D91D77309D1839D0053D977 /* SFFloat.h in Headers */,
+				4D91D77409D1839D0053D977 /* SFDouble.h in Headers */,
+				4D91D77509D1839D0053D977 /* SFColorRGBA.h in Headers */,
+				4D91D77609D1839D0053D977 /* SFColor.h in Headers */,
+				4D91D77709D1839D0053D977 /* SFBool.h in Headers */,
+				4D91D77809D1839D0053D977 /* ResourceResolver.h in Headers */,
+				4D91D77A09D1839D0053D977 /* PrototypeInstance.h in Headers */,
+				4D91D77C09D1839D0053D977 /* ProtoDeclaration.h in Headers */,
+				4D91D77E09D1839D0053D977 /* MFVec4f.h in Headers */,
+				4D91D77F09D1839D0053D977 /* MFVec4d.h in Headers */,
+				4D91D78009D1839D0053D977 /* MFVec3f.h in Headers */,
+				4D91D78109D1839D0053D977 /* MFVec3d.h in Headers */,
+				4D91D78209D1839D0053D977 /* MFVec2f.h in Headers */,
+				4D91D78309D1839D0053D977 /* MFVec2d.h in Headers */,
+				4D91D78409D1839D0053D977 /* MFTime.h in Headers */,
+				4D91D78509D1839D0053D977 /* MFString.h in Headers */,
+				4D91D78609D1839D0053D977 /* MFRotation.h in Headers */,
+				4D91D78709D1839D0053D977 /* MFQuaternion.h in Headers */,
+				4D91D78909D1839D0053D977 /* MFMatrix4f.h in Headers */,
+				4D91D78A09D1839D0053D977 /* MFMatrix4d.h in Headers */,
+				4D91D78B09D1839D0053D977 /* MFMatrix3f.h in Headers */,
+				4D91D78C09D1839D0053D977 /* MFMatrix3d.h in Headers */,
+				4D91D78D09D1839D0053D977 /* MFInt32.h in Headers */,
+				4D91D78E09D1839D0053D977 /* MFFloat.h in Headers */,
+				4D91D78F09D1839D0053D977 /* MFDouble.h in Headers */,
+				4D91D79009D1839D0053D977 /* MFColorRGBA.h in Headers */,
+				4D91D79109D1839D0053D977 /* MFColor.h in Headers */,
+				4D91D79209D1839D0053D977 /* MFBool.h in Headers */,
+				4D91D79309D1839D0053D977 /* LibCurlResolver.h in Headers */,
+				4D91D79509D1839D0053D977 /* INIFile.h in Headers */,
+				4D91D79709D1839D0053D977 /* H3DWindowNode.h in Headers */,
+				4D91D79909D1839D0053D977 /* H3DExports.h in Headers */,
+				4D91D79B09D1839D0053D977 /* H3DCoordinateDeformerNode.h in Headers */,
+				4D91D79C09D1839D0053D977 /* GLUTWindow.h in Headers */,
+				4D91D79E09D1839D0053D977 /* GaussianFunction.h in Headers */,
+				4D91D79F09D1839D0053D977 /* Fog.h in Headers */,
+				4D91D7A109D1839D0053D977 /* ElevationGrid.h in Headers */,
+				4D91D7A309D1839D0053D977 /* DeformableShape.h in Headers */,
+				4D91D7A509D1839D0053D977 /* CoordinateDeformer.h in Headers */,
+				4D91D7A709D1839D0053D977 /* Console.h in Headers */,
+				4D91D7B509D18EB80053D977 /* LoadSensor.h in Headers */,
+				4D91D7B709D18EB80053D977 /* LocalFog.h in Headers */,
+				4D91D7CA09D19D370053D977 /* URNResolver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1955,7 +2270,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D07F2C00486CC7A007CD1D0 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2028,7 +2342,6 @@
 				4D0A007408A797D600A71D46 /* ForceField.cpp in Sources */,
 				4D0A007808A797D600A71D46 /* FreeImageLoader.cpp in Sources */,
 				4D0A007A08A797D600A71D46 /* FrictionalSurface.cpp in Sources */,
-				4D0A007C08A797D600A71D46 /* GLWindow.cpp in Sources */,
 				4D0A007E08A797D600A71D46 /* Group.cpp in Sources */,
 				4D0A008008A797D600A71D46 /* H3DApi.cpp in Sources */,
 				4D0A008308A797D600A71D46 /* H3DDisplayListObject.cpp in Sources */,
@@ -2193,6 +2506,31 @@
 				4DEC7A0A092A21D400CB721D /* FloatVertexAttribute.cpp in Sources */,
 				4DEC7A0C092A21E400CB721D /* DynamicTransform.cpp in Sources */,
 				4D5AEA79092C895800427A11 /* TexGenGeometry.cpp in Sources */,
+				4D91D75B09D1839D0053D977 /* X3DPrototypeInstance.cpp in Sources */,
+				4D91D75E09D1839D0053D977 /* X3DFogObject.cpp in Sources */,
+				4D91D76009D1839D0053D977 /* WorldInfo.cpp in Sources */,
+				4D91D76209D1839D0053D977 /* SpaceballSensor.cpp in Sources */,
+				4D91D76D09D1839D0053D977 /* SFNode.cpp in Sources */,
+				4D91D77909D1839D0053D977 /* ResourceResolver.cpp in Sources */,
+				4D91D77B09D1839D0053D977 /* PrototypeInstance.cpp in Sources */,
+				4D91D77D09D1839D0053D977 /* ProtoDeclaration.cpp in Sources */,
+				4D91D78809D1839D0053D977 /* MFNode.cpp in Sources */,
+				4D91D79409D1839D0053D977 /* LibCurlResolver.cpp in Sources */,
+				4D91D79609D1839D0053D977 /* INIFile.cpp in Sources */,
+				4D91D79809D1839D0053D977 /* H3DWindowNode.cpp in Sources */,
+				4D91D79A09D1839D0053D977 /* H3DExports.cpp in Sources */,
+				4D91D79D09D1839D0053D977 /* GLUTWindow.cpp in Sources */,
+				4D91D7A009D1839D0053D977 /* Fog.cpp in Sources */,
+				4D91D7A209D1839D0053D977 /* ElevationGrid.cpp in Sources */,
+				4D91D7A409D1839D0053D977 /* DeformableShape.cpp in Sources */,
+				4D91D7A609D1839D0053D977 /* CoordinateDeformer.cpp in Sources */,
+				4D91D7A809D1839D0053D977 /* Console.cpp in Sources */,
+				4D91D7B209D18EB80053D977 /* GaussianFunction.cpp in Sources */,
+				4D91D7B309D18EB80053D977 /* H3DFunctionNode.cpp in Sources */,
+				4D91D7B409D18EB80053D977 /* LoadSensor.cpp in Sources */,
+				4D91D7B609D18EB80053D977 /* LocalFog.cpp in Sources */,
+				4D91D7BE09D19CED0053D977 /* X3DBindableNode.cpp in Sources */,
+				4D91D7C909D19D370053D977 /* URNResolver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2205,17 +2543,6 @@
 			targetProxy = 4DF7479108D833DF00E4EE0D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		089C1666FE841158C02AAC07 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				089C1667FE841158C02AAC07 /* English */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4DF227C908E97C8900716BD4 /* Development */ = {

@@ -1,5 +1,12 @@
 from H3DInterface import *
 
+# make sure the proxy is drawn at the position of the haptics device
+di = getActiveDeviceInfo()
+if( di ):
+  devices = di.device.getValue()
+  for d in devices:
+    d.proxyWeighting.setValue( 0 )
+
 # This python file creates an rectangular IndexedTriangleSet with
 # columns X rows coordinates.
 columns = 30

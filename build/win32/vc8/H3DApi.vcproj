@@ -276,6 +276,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\CoordinateDeformer.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordinateInterpolator.cpp"
 				>
 			</File>
@@ -285,6 +289,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Cylinder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\DeformableShape.cpp"
 				>
 			</File>
 			<File
@@ -357,6 +365,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\FrictionalSurface.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\GaussianFunction.cpp"
 				>
 			</File>
 			<File
@@ -1162,6 +1174,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\CoordinateDeformer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordinateInterpolator.h"
 				>
 			</File>
@@ -1175,6 +1191,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\DEFNodes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\DeformableShape.h"
 				>
 			</File>
 			<File
@@ -1262,6 +1282,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\GaussianFunction.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.h"
 				>
 			</File>
@@ -1283,6 +1307,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DBoundedObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DCoordinateDeformerNode.h"
 				>
 			</File>
 			<File

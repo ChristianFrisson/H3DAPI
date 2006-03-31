@@ -62,7 +62,9 @@ namespace H3D {
     
     double pyObjectToDouble( PyObject *v );
 
-    void *fieldAsPythonObject( Field * f );
+    void fieldDestructor( void *f );
+
+    PyObject *fieldAsPythonObject( Field * f, bool destruct=false );
 
     PyObject *pythonCreateField( PyObject *self, PyObject *args );
     
@@ -150,9 +152,7 @@ namespace H3D {
       if ( python_update ) {
         PyErr_Clear();
         PyObject *args = PyTuple_New(1);
-        PyObject *f = 
-          static_cast< PyObject *>
-          ( PythonInternals::fieldAsPythonObject( this->event.ptr ) );
+        PyObject *f = PythonInternals::fieldAsPythonObject( this->event.ptr, false );
         PyTuple_SetItem( args, 0, f );
         PyObject *r = PyEval_CallObject( static_cast< PyObject * >(python_update), 
                                          args );
@@ -171,8 +171,7 @@ namespace H3D {
           Py_DECREF( r );
         } else {
           PyErr_Print();
-        }
-        
+        }        
       } else {
         F::update();
       }

@@ -459,12 +459,16 @@ void HLHapticsDevice::updateDeviceValues() {
   // button values are set via event callback functions
   hlMakeCurrent( haptic_context );  
 
+  hlMatrixMode( HL_TOUCHWORKSPACE );
+  hlLoadIdentity();
+
   HLdouble rotation[4];
   hlGetDoublev( HL_DEVICE_ROTATION, rotation );
   deviceOrientation->setValue( Rotation( Quaternion( (H3DFloat) rotation[1], 
                                                      (H3DFloat) rotation[2], 
                                                      (H3DFloat) rotation[3], 
                                                      (H3DFloat) rotation[0] ) ), id );
+
   HLdouble pos[3];
   hlGetDoublev( HL_DEVICE_POSITION, pos );
   devicePosition->setValue( Vec3f( (H3DFloat) pos[0], 
@@ -476,7 +480,7 @@ void HLHapticsDevice::updateDeviceValues() {
                      pcal[0][1], pcal[1][1], pcal[2][1], pcal[3][1], 
                      pcal[0][2], pcal[1][2], pcal[2][2], pcal[3][2], 
                      pcal[0][3], pcal[1][3], pcal[2][3], pcal[3][3] }; 
-  hlMatrixMode( HL_TOUCHWORKSPACE );
+
   hlLoadMatrixd( m );
 
   hlGetDoublev( HL_PROXY_POSITION, pos );

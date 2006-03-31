@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H3DApi", "H3DApi.vcproj", "{71C03655-AF1F-426E-9F63-5C415390A8CA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "H3DLoad", "H3DLoad.vcproj", "{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71C03655-AF1F-426E-9F63-5C415390A8CA} = {71C03655-AF1F-426E-9F63-5C415390A8CA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

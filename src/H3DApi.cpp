@@ -55,6 +55,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
       FreeImage_Initialise();
 #endif
       XMLPlatformUtils::Initialize();
+      /*
       string urn_config_file = "index.urn";
       char *buffer = getenv( "H3D_URN_CONFIG_FILE" );
       if( buffer ) urn_config_file = buffer;
@@ -63,6 +64,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
         urn_config_file += "/index.urn";
       }
       ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );
+      */
 #ifdef HAVE_LIBCURL
       curl_global_init( CURL_GLOBAL_ALL );
       ResourceResolver::addResolver( new LibCurlResolver );
@@ -99,6 +101,7 @@ extern "C" {
 #endif 
 
     XMLPlatformUtils::Initialize();
+    /*
     string urn_config_file = "index.urn";
     char *buffer = getenv( "H3D_URN_CONFIG_FILE" );
     if( buffer ) urn_config_file = buffer;
@@ -106,7 +109,7 @@ extern "C" {
       urn_config_file = buffer;
       urn_config_file += "/index.urn";
     }
-    ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );
+    ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );*/
 #ifdef HAVE_LIBCURL
       curl_global_init( CURL_GLOBAL_ALL );
       ResourceResolver::addResolver( new LibCurlResolver );

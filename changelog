@@ -14,6 +14,8 @@ WorldInfo
 X3DFogObject
 X3DInfoNode
 
+- Fixed some reference counting problems in the Python integration. 
+	
 - Moved template instantiations of basic field types as SFFloat, MFInt32,
 etc to separate files( SFFloat.h, MFInt32.h, etc). This makes a HUGE
 difference on the object file size when using Visual Studio and hence also

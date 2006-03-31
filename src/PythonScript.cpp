@@ -93,7 +93,7 @@ namespace PythonScriptInternals {
 
 
 Field *PythonScript::lookupField( const string &name ) {
-	if( module_dict ) {
+    if( module_dict ) {
     PyObject *fname = 
       PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
                             name.c_str() );
@@ -101,10 +101,13 @@ Field *PythonScript::lookupField( const string &name ) {
       // it was a variable in the python script, so extract the C++ type
       // pointer and return it
       PyObject *fieldptr = PyObject_GetAttrString( fname, "__fieldptr__" );
-      if ( fieldptr && PyCObject_Check( fieldptr ) )
-        return static_cast< Field* >( PyCObject_AsVoidPtr( fieldptr ) );
+      if ( fieldptr && PyCObject_Check( fieldptr ) ) {
+        Field *f = static_cast< Field* >( PyCObject_AsVoidPtr( fieldptr ) );
+        Py_DECREF( fieldptr );
+        return f;
+      }
     } 
-	}
+    }
   return NULL;
 }
 
@@ -136,7 +139,7 @@ void PythonScript::initialiseParser() {
 }
 
 void PythonScript::loadScript( const string &script ) {
-  PyObject *ref = (PyObject*)PythonInternals::fieldAsPythonObject( references.get() );
+  PyObject *ref = (PyObject*)PythonInternals::fieldAsPythonObject( references.get(), false );
   PyDict_SetItem( (PyObject *)module_dict, 
                   PyString_FromString( "references" ), 
                   ref );
@@ -147,6 +150,9 @@ void PythonScript::loadScript( const string &script ) {
       Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
   }  
   
+#ifdef WIN32
+  // have to read the script into a buffer instead of using FILE *
+  // since it is unsafe to use FILE * sent over DLL boundaries.
   ifstream is( script.c_str() );
   if( is.good() ) {
     int length;
@@ -174,7 +180,21 @@ void PythonScript::loadScript( const string &script ) {
       PyErr_Print();
     }
     delete buffer;
-  } else {
+  }
+#else
+  FILE *f = fopen( script.c_str(), "r" );
+  if ( f ) {
+    PyErr_Clear();
+    PyObject *r = PyRun_File( f, script.c_str(), Py_file_input,
+                              static_cast< PyObject * >(module_dict), 
+                              static_cast< PyObject * >(module_dict) );
+    if ( r == NULL )
+      PyErr_Print();
+  }
+  
+#endif
+
+  else {
     Console(4) << "Could not open \""<< script << endl;
   }
 }

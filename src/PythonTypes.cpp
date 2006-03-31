@@ -216,9 +216,9 @@ self, name, field_type, access_type )" );
     if( !dfo ) {
       PyErr_SetString( PyExc_ValueError, 
                "Trying to add field to Node that is not a H3DDynamicFieldsObject." );
-	  return NULL;
+      return NULL;
     }
-	Field *f = X3DTypes::newFieldInstance( (X3DTypes::X3DType)PyInt_AsLong( field_type ) );
+    Field *f = X3DTypes::newFieldInstance( (X3DTypes::X3DType)PyInt_AsLong( field_type ) );
 
     string access_type_string = PyString_AsString( py_access_type );
     Field::AccessType access_type;
@@ -299,7 +299,7 @@ self, name, field_type, access_type )" );
       H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *(n->ptr) ) );
       Field *f = db->getField( n->ptr, arg );
       if ( f ) 
-        return ( PyObject * ) PythonInternals::fieldAsPythonObject( f );
+        return ( PyObject * ) PythonInternals::fieldAsPythonObject( f, false );
     }
     // if arg was not a field, then default to Py_FindMethod:
     return Py_FindMethod(PyNode_methods, (PyObject *)myself, arg);
@@ -474,7 +474,7 @@ self, name, field_type, access_type )" );
       if (! PyArg_ParseTupleAndKeywords(args, kwds, "ff", kwlist, 
                                         &(self->x), &(self->y) ))
         return -1; 
-	}
+    }
     return 0;
   }
 

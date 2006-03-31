@@ -1,9 +1,7 @@
 #!/usr/local/bin/pythonw2.4
 
 import os
-import _winreg
 import wx
-import win32gui, win32con
 import ConfigParser
 import string
 
@@ -32,59 +30,86 @@ class MainFrame(wx.Frame):
 
 class TestDialog(wx.Dialog):
   def getCommonDevices( self ):
-    root, dirs, files  = os.walk("common/device").next()
-    return files
+    try:
+      root, dirs, files  = os.walk("common/device").next()
+      return files
+    except:
+      return []
+
 
   def isCommonStylus( self, stylus ):
-    root, dirs, files  = os.walk("common/stylus").next()
-    for f in files:
-      if( stylus == f ): 
-        return 1
-    return 0
+    try:
+      root, dirs, files  = os.walk("common/stylus").next()
+      for f in files:
+        if( stylus == f ): 
+          return 1
+      return 0
+    except:
+      return 0
 
   def isCommonDevice( self, device ):
-    root, dirs, files  = os.walk("common/device").next()
-    for f in files:
-      if( device == f ): 
-        return 1
-    return 0
+    try:
+      root, dirs, files  = os.walk("common/device").next()
+      for f in files:
+        if( device == f ): 
+          return 1
+      return 0
+    except:
+      return 0
 
   def getCommonStylus( self ):
-    root, dirs, files  = os.walk("common/stylus").next()
+    try:
+      root, dirs, files  = os.walk("common/stylus").next()
 
-    if( cp.has_option( "haptics device", "stylus" ) ):
-      stylus = cp.get( "haptics device", "stylus" ) 
-      if( not( self.isCommonStylus( stylus ) ) ):
-        files = files + [stylus]
+      if( cp.has_option( "haptics device", "stylus" ) ):
+        stylus = cp.get( "haptics device", "stylus" ) 
+        if( not( self.isCommonStylus( stylus ) ) ):
+          files = files + [stylus]
 
-    return files + ["Browse..." ] 
+      return files + ["Browse..." ] 
+    except:
+      return ["Browse..." ] 
 
   def isCommonViewpoint( self, viewpoint ):
-    root, dirs, files  = os.walk("common/viewpoint").next()
-    for f in files:
-      if( viewpoint == f ): 
-        return 1
-    return 0
+    try:
+      root, dirs, files  = os.walk("common/viewpoint").next()
+      for f in files:
+        if( viewpoint == f ): 
+          return 1
+      return 0
+    except:
+      return 0
 
   def isDisplayViewpoint( self, display, viewpoint ):
-    root, dirs, files  = os.walk('display/' + display + "/viewpoint").next()
-    for f in files:
-      if( viewpoint == f ): 
-        return 1
-    return 0
+    try:
+      root, dirs, files  = os.walk('display/' + display + "/viewpoint").next()
+      for f in files:
+        if( viewpoint == f ): 
+          return 1
+      return 0
+    except:
+      return 0
 
   def getCommonViewpoint( self ):
-    root, dirs, files  = os.walk("common/viewpoint").next()
-
-    return files + ["Browse..." ] 
+    try:
+      root, dirs, files  = os.walk("common/viewpoint").next()
+      return files + ["Browse..." ] 
+    except:
+      return ["Browse..." ] 
 
   def getViewpointForDisplay( self, display ):
-    root, dirs, files  = os.walk('display/' + display + "/viewpoint").next()
-    return files + self.browse_viewpoints + self.getCommonViewpoint()
+    try:
+      root, dirs, files  = os.walk('display/' + display + "/viewpoint").next()
+      return files + self.browse_viewpoints + self.getCommonViewpoint()
+    except:
+      return self.browse_viewpoints + self.getCommonViewpoint()
 
   def getDevicesForDisplay( self, display ):
-    root, dirs, files  = os.walk('display/' + display + "/device").next()
-    return ["None"] + self.getCommonDevices() + files
+    try:
+      root, dirs, files  = os.walk('display/' + display + "/device").next()
+      return ["None"] + self.getCommonDevices() + files
+    except:
+      return []
 
   def onDisplayChoice( self, event ):
     devices = self.getDevicesForDisplay( self.display_choice.GetValue() )
@@ -218,8 +243,11 @@ class TestDialog(wx.Dialog):
     self.saveCurrentSettings()
 
   def getAvailableDisplays( self ):
-    root, dirs, files  = os.walk('display').next()
-    return dirs
+    try:
+      root, dirs, files  = os.walk('display').next()
+      return dirs
+    except:
+      return []
 
   def getDefaultDisplay( self ):
     if( cp.has_option( "display", "type" ) ):
@@ -436,8 +464,8 @@ class MainApp(wx.App):
       
     if val == wx.ID_OK:
       dlg.saveCurrentSettings()
-    else:
-      print "Cancel"
+#    else:
+#      print "Cancel"
 
     dlg.Destroy()
 

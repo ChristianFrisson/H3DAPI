@@ -95,8 +95,8 @@ void Scene::idle() {
       if( hd->initialized->getValue() ) { 
         hd->preRender();
         hd->updateDeviceValues();
-        hds.push_back( hd );
       }
+      hds.push_back( hd );
     }
 
     // traverse the scene graph to collect the HapticObject instances to render.

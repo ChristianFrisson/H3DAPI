@@ -1,7 +1,0 @@
-<DeviceInfo>
-  <HLHapticsDevice positionCalibration="" 
-                   orientationCalibration="" >
-    <Inline url="stylus.x3d" containerField="stylus" />
-  </HLHapticsDevice>
-</DeviceInfo>
-

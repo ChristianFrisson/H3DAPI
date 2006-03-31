@@ -5,6 +5,7 @@
      <Shape>
        <Appearance>
         <Material diffuseColor="0.7 1 0.7"/>
+        <SmoothSurface />
        </Appearance>
        <SuperShape DEF="SS" resolution="128" 
                    ss1_m="6" ss1_a="1" ss1_b="1"

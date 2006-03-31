@@ -1,0 +1,4 @@
+<Group>
+  <Viewpoint position="0 0 0.45" fieldOfView="0.5336" />
+  <StereoInfo focalDistance="0.45" />
+</Group>
