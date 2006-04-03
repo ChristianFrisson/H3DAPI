@@ -75,16 +75,23 @@ void CoordinateDeformer::deformPoints( const vector< bool  > &is_touched,
     unsigned int nr_devices = penetration_points.size();
     if( nr_devices > 0 ) {
       for( unsigned int i = 0; i < resting_points.size(); i++ ) {
-        H3DFloat distance = ( resting_points[i] - touch_points[0] ).length();
-        Vec3f offset = ( penetration_points[0] - touch_points[0] ) * f->get( distance );
+        Vec3f offset = Vec3f( 0, 0, 0 );
+        if( is_touched[0] ) {
+          H3DFloat distance = ( resting_points[i] - touch_points[0] ).length();
+          offset = ( penetration_points[0] - touch_points[0] ) * f->get( distance );
+        }
         H3DFloat max_depth_sqr = offset * offset;
+
         for( unsigned int j = 1; j < nr_devices; j++ ) {
-          H3DFloat d = ( resting_points[i] - touch_points[j] ).length();
-          Vec3f o = ( penetration_points[j] - touch_points[j] ) * f->get( d );
-          if( o*o > max_depth_sqr ) {
-            offset = o;
+          if( is_touched[j] ) {
+            H3DFloat d = ( resting_points[i] - touch_points[j] ).length();
+            Vec3f o = ( penetration_points[j] - touch_points[j] ) * f->get( d );
+            if( o*o > max_depth_sqr ) {
+              offset = o;
+            }
           }
         }
+
         if( plasticity_value != 0 ) {
           new_resting_points.push_back( resting_points[i] + 
                                         offset * plasticity_value );

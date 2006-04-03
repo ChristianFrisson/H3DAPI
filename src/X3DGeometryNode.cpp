@@ -31,6 +31,7 @@
 #include "X3DGeometryNode.h"
 #include "HLShape.h"
 #include "HapticShape.h"
+#include "DeviceInfo.h"
 
 using namespace H3D;
 
@@ -75,7 +76,9 @@ void HLCALLBACK X3DGeometryNode::motionCallback( HLenum event,
                                                  HLenum thread,
                                                  HLcache *cache,
                                                  void *userdata ) {
-  X3DGeometryNode *geometry = static_cast< X3DGeometryNode * >( userdata );
+  CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
+  int device_index = cb_data->device_index;
+  X3DGeometryNode *geometry = cb_data->geometry;
   HLdouble n[3], p[3];
   hlCacheGetDoublev( cache, 
                      HL_PROXY_POSITION,
@@ -84,24 +87,31 @@ void HLCALLBACK X3DGeometryNode::motionCallback( HLenum event,
                      HL_PROXY_TOUCH_NORMAL,
                      n );
 
-
-
   // TODO: fix it for several devices.
   vector< Vec3f > v;
   vector< Vec3f > fv;
   if( HLShape::getHLShape( object ) ) {
     const Matrix4f &m = dynamic_cast< HapticShape * >
       (HLShape::getHLShape( object ))->transform.inverse();
-    v.push_back( m * Vec3f( (H3DFloat)p[0],
-                            (H3DFloat)p[1],
-                            (H3DFloat)p[2] ) );
-    geometry->contactPoint->setValue( v, geometry->id );
 
-    v[0] = m.getScaleRotationPart() * Vec3f( (H3DFloat)n[0],
-                                             (H3DFloat)n[1],
-                                             (H3DFloat)n[2] );
-    v[0].normalizeSafe();
-    geometry->contactNormal->setValue( v, geometry->id );
+    if( device_index > (int)geometry->contactPoint->size() -1 )
+      geometry->contactPoint->resize( device_index + 1, Vec3f( 0, 0, 0 ), geometry->id );
+    if( device_index > (int)geometry->contactNormal->size() -1 )
+      geometry->contactNormal->resize( device_index + 1, Vec3f( 1, 0, 0 ), geometry->id );
+    if( device_index > (int)geometry->force->size() -1 )
+      geometry->force->resize( device_index + 1, Vec3f( 0, 0, 0 ), geometry->id );
+
+    Vec3f cp = m * Vec3f( (H3DFloat)p[0],
+                         (H3DFloat)p[1],
+                         (H3DFloat)p[2] );
+
+    geometry->contactPoint->setValue( device_index, cp, geometry->id );
+
+    Vec3f cn = m.getScaleRotationPart() * Vec3f( (H3DFloat)n[0],
+                                                 (H3DFloat)n[1],
+                                                 (H3DFloat)n[2] );
+    cn.normalizeSafe();
+    geometry->contactNormal->setValue( device_index, cn, geometry->id );
     
     Vec3f f;
     HLdouble hlforce[3];
@@ -109,8 +119,7 @@ void HLCALLBACK X3DGeometryNode::motionCallback( HLenum event,
     f =  m.getScaleRotationPart() * Vec3f( (H3DFloat)hlforce[0],
                                            (H3DFloat)hlforce[1],
                                            (H3DFloat)hlforce[2] );
-    fv.push_back( f );
-    geometry->force->setValue( fv, geometry->id );
+    geometry->force->setValue( device_index, f, geometry->id );
   }
 
 }
@@ -120,14 +129,20 @@ void HLCALLBACK X3DGeometryNode::touchCallback( HLenum event,
                                                 HLenum thread,
                                                 HLcache *cache,
                                                 void *userdata ) {
-  X3DGeometryNode *geometry = static_cast< X3DGeometryNode * >( userdata );
+  CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
+  int device_index = cb_data->device_index;
+  X3DGeometryNode *geometry = cb_data->geometry;
   // make sure contactPoint and contactNormal vectors are set 
   // before isTouched is set to avoid errors if routed to AutoUpdate
   // fields.
   X3DGeometryNode::motionCallback( event, object, thread, cache, userdata );
-  vector< bool > v;
-  v.push_back( true );
-  geometry->isTouched->setValue( v, geometry->id );
+
+  if( device_index > (int)geometry->isTouched->size() -1 )
+    geometry->isTouched->resize( device_index + 1, false, geometry->id );
+  
+  geometry->isTouched->setValue( device_index, 
+                                 true,  
+                                 geometry->id );  
 }
 
 void HLCALLBACK X3DGeometryNode::untouchCallback( HLenum event,
@@ -135,13 +150,21 @@ void HLCALLBACK X3DGeometryNode::untouchCallback( HLenum event,
                                                   HLenum thread,
                                                   HLcache *cache,
                                                   void *userdata ) {
-  X3DGeometryNode *geometry = static_cast< X3DGeometryNode * >( userdata );
-  vector< bool > v;
-  v.push_back( false );
-  geometry->isTouched->setValue( v, geometry->id );
-  vector< Vec3f > fv;
-  fv.push_back( Vec3f( 0, 0, 0 ) );
-  geometry->force->setValue( fv, geometry->id );
+  CallbackData *cb_data = static_cast< CallbackData * >( userdata ); 
+  int device_index = cb_data->device_index;
+  X3DGeometryNode *geometry = cb_data->geometry;
+  if( device_index != -1 ) {
+    if( device_index > (int)geometry->isTouched->size() -1 )
+      geometry->isTouched->resize( device_index + 1, false, geometry->id );
+    if( device_index > (int)geometry->force->size() -1 )
+      geometry->force->resize( device_index + 1, Vec3f( 0, 0, 0 ), geometry->id );
+    geometry->isTouched->setValue( device_index, 
+                                   false,  
+                                   geometry->id );  
+    geometry->force->setValue( device_index, 
+                               Vec3f( 0, 0, 0 ), 
+                               geometry->id );
+  }
 }
 
 HLuint X3DGeometryNode::getHLShapeId( HLHapticsDevice *hd,
@@ -155,6 +178,20 @@ HLuint X3DGeometryNode::getHLShapeId( HLHapticsDevice *hd,
     for( size_t i = shape_ids.size();
          i <= index;
          i++ ) {
+      // find the index of the haptics device
+      DeviceInfo *di = DeviceInfo::getActive();
+      int device_index = -1;
+      if( di ) {
+        const NodeVector &devices = di->device->getValue();
+        for( unsigned int i = 0; i < devices.size(); i++ ) {
+          if( (Node *)devices[i] == (Node *)hd )
+            device_index = i;
+        }
+      }
+      assert( device_index != -1 );
+
+      CallbackData *cb_data = new CallbackData( this, device_index );
+      callback_data.push_back( cb_data );
       hlEventd(  HL_EVENT_MOTION_LINEAR_TOLERANCE, 0 );
       HLuint hl_shape_id = hlGenShapes(1);
       shape_ids.push_back( hl_shape_id );
@@ -162,17 +199,17 @@ HLuint X3DGeometryNode::getHLShapeId( HLHapticsDevice *hd,
                           hl_shape_id,
                           HL_CLIENT_THREAD,
                           &motionCallback,
-                          this );
+                          cb_data );
       hlAddEventCallback( HL_EVENT_TOUCH, 
                           hl_shape_id,
                           HL_CLIENT_THREAD,
                           &touchCallback,
-                          this );
+                          cb_data );
       hlAddEventCallback( HL_EVENT_UNTOUCH, 
                           hl_shape_id,
                           HL_CLIENT_THREAD,
                           &untouchCallback,
-                          this );
+                          cb_data );
     }
   }
   return shape_ids[index];
@@ -188,17 +225,17 @@ X3DGeometryNode::~X3DGeometryNode() {
     HLuint hl_shape_id = *i; 
     hlDeleteShapes( hl_shape_id, 1 );
     hlRemoveEventCallback( HL_EVENT_MOTION, 
-                        hl_shape_id,
-                        HL_CLIENT_THREAD,
-                        &motionCallback );
+                           hl_shape_id,
+                           HL_CLIENT_THREAD,
+                           &motionCallback );
     hlRemoveEventCallback( HL_EVENT_TOUCH, 
-                        hl_shape_id,
-                        HL_CLIENT_THREAD,
-                        &touchCallback );
+                           hl_shape_id,
+                           HL_CLIENT_THREAD,
+                           &touchCallback );
     hlRemoveEventCallback( HL_EVENT_UNTOUCH, 
-                        hl_shape_id,
-                        HL_CLIENT_THREAD,
-                        &untouchCallback );
+                           hl_shape_id,
+                           HL_CLIENT_THREAD,
+                           &untouchCallback );
   }
 }
 #endif

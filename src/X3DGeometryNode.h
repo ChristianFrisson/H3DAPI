@@ -34,6 +34,7 @@
 #include "H3DDisplayListObject.h"
 #include "MFBool.h"
 #include "MFVec3f.h"
+#include "AutoPtrVector.h"
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
 #endif
@@ -142,6 +143,14 @@ namespace H3D {
 
     /// HL identifiers for the geometry.
     ShapeIdMap hl_shape_ids;
+
+    struct CallbackData {
+      CallbackData( X3DGeometryNode *g, int i ): geometry( g ), device_index( i ) {}
+      X3DGeometryNode *geometry;
+      int device_index;
+    };
+    
+    AutoPtrVector< CallbackData > callback_data; 
   #endif
   };
 }
