@@ -87,9 +87,6 @@ void HLCALLBACK X3DGeometryNode::motionCallback( HLenum event,
                      HL_PROXY_TOUCH_NORMAL,
                      n );
 
-  // TODO: fix it for several devices.
-  vector< Vec3f > v;
-  vector< Vec3f > fv;
   if( HLShape::getHLShape( object ) ) {
     const Matrix4f &m = dynamic_cast< HapticShape * >
       (HLShape::getHLShape( object ))->transform.inverse();
