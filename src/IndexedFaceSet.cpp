@@ -137,6 +137,7 @@ void IndexedFaceSet::render() {
     dynamic_cast< TextureCoordinateGenerator * >( tex_coords );
   X3DColorNode *colors = color->getValue();
   X3DNormalNode *normals = normal->getValue();
+  bool using_auto_normals = normals == NULL;
   if( !normals ) {
     normals = autoNormal->getValue();
   }
@@ -172,7 +173,7 @@ void IndexedFaceSet::render() {
       glEnable( GL_COLOR_MATERIAL );
     } 
 
-	GLhandleARB shader_program = 0;
+    GLhandleARB shader_program = 0;
     // Set the attribute index to use for all vertex attributes
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
@@ -203,9 +204,10 @@ void IndexedFaceSet::render() {
       glBegin( GL_POLYGON );
       // set up normals if the normals are specified per face
       if( normals ) {
-        if ( !normalPerVertex->getValue() || creaseAngle->getValue() <= 0 ) {
+        if ( !normalPerVertex->getValue() || (using_auto_normals && 
+                                              creaseAngle->getValue() <= 0 ) ) {
           int ni;
-          if ( normal_index.size() == 0 ) {
+          if ( normal_index.size() == 0 || using_auto_normals ) {
             ni = face_count;
           } else {
             ni = normal_index[ face_count ];
@@ -251,8 +253,10 @@ void IndexedFaceSet::render() {
   
         // Set up normals if the normals are specified per vertex.
         if( normals ) {
-          if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
-            if( normal->getValue() ) {
+          if ( normalPerVertex->getValue() && 
+               !( using_auto_normals &&
+                  creaseAngle->getValue() <= 0 ) ) {
+            if( !using_auto_normals ) {
               int ni;
               if ( normal_index.size() == 0 ) {
                 ni = coord_index[ i ];
