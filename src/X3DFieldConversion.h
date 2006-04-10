@@ -52,25 +52,15 @@ namespace H3D {
         return s+i;
       }
       
-      /// Skip whitespaces and a possible comma at the beginning of a string.
-      /// Only one comma is allowed before a the first non whitespace that
-      /// is not a comma.
+      /// Skip whitespaces and commas at the beginning of a string.
       /// \param s The string to skip whitespace in
       /// \returns A pointer to the first character in the string that
       /// is not a whitespace
       ///
-      inline const char *skipWhitespacesAndComma( const char *s ) {
+      inline const char *skipWhitespacesAndCommas( const char *s ) {
         int i = 0; 
-        bool comma_skipped = false;
         while( true ) {
-          if( s[i] == ',' ) {
-            if( comma_skipped ) 
-              break;
-            else {
-              comma_skipped = true;
-              i++;
-            }
-          } else if( isspace(s[i] ) ) {
+          if( s[i] == ',' || isspace(s[i] ) ) {
             i++;
           } else { 
             break;
@@ -840,7 +830,7 @@ namespace H3D {
           values.push_back( Convert::getValue< 
                             typename VectorType::value_type >
                             ( (const char*)s, t1 ) );
-          s = Convert::skipWhitespacesAndComma( t1 );
+          s = Convert::skipWhitespacesAndCommas( t1 );
         }
       } catch( const ConversionError & ) {
         stringstream ss;
@@ -874,7 +864,7 @@ namespace H3D {
             values.push_back( 
                  Convert::getQuoteEnclosedStringValue( (const char*)s, t1 ) 
             );
-            s = Convert::skipWhitespacesAndComma( t1 );
+            s = Convert::skipWhitespacesAndCommas( t1 );
           }
       } catch( const ConversionError & ) {
         stringstream ss;
