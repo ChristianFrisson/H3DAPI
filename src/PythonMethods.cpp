@@ -882,7 +882,7 @@ call the base class __init__ function." );
       Py_DECREF( py_field_ptr );
       
       return PyInt_FromLong( (int)field_ptr );
-      //Py_INCREF(Py_None);
+      Py_INCREF(Py_None);
       return Py_None; 
     }
 
