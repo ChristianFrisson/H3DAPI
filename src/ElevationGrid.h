@@ -368,7 +368,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     ///
-    /// \dotfile ElevationGrid_ccw.dot 
+    /// \dotfile ElevationGrid_solid.dot 
     auto_ptr< SFBool >  solid;
     
     /// If the attrib field is not empty it shall contain a list of
