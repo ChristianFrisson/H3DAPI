@@ -194,28 +194,6 @@ void X3DTexture3DNode::render()     {
   }
   
   if( i ) {
-    /// If an RGB, BGR, RGBA or BGRA texture the texture values should not be
-    /// modulated with diffuseColor according to the X3D spec. So we set the 
-    /// diffuse color to 1 1 1 in order to show the texture values as they are.
-    /// The alpha value should be the one from material if 3 component texture
-    /// and the one from the texture if 4-component texture.
-    Image::PixelType pixel_type = i->pixelType();
-    if( pixel_type == Image::RGB ||
-        pixel_type == Image::BGR ) {
-      GLfloat material[] = { 1,1,1,1 };
-      GLfloat current_material[4];
-      glGetMaterialfv( GL_FRONT, GL_DIFFUSE, current_material );
-      material[3] = current_material[3];
-      glMaterialfv( GL_FRONT, GL_DIFFUSE, material );
-      glGetMaterialfv( GL_BACK, GL_DIFFUSE, current_material );
-      material[3] = current_material[3];
-      glMaterialfv( GL_BACK, GL_DIFFUSE, material );
-    } else if ( pixel_type == Image::RGBA ||
-                pixel_type == Image::BGRA ) {
-      GLfloat material[] = {1,1,1,1};
-      glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, material );
-    }
-    
     // set up texture parameters 
     if ( repeatS->getValue() )
       glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT );
