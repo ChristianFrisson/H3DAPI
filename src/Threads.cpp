@@ -99,8 +99,28 @@ void ConditionLock::wait() {
 /// Wait for the conditional to get a signal, but only wait a
 /// certain time. If the time exceeds the specified time false
 /// is returned. If signal is received true is returned.
-bool ConditionLock::timedWait( const struct timespec *abstime) {
-  return pthread_cond_timedwait( &cond, &mutex, abstime ) != ETIMEDOUT;
+bool ConditionLock::timedWait( unsigned int millisecs ) {
+  struct _timeb currSysTime;
+  int nanosecs, secs;
+  const int NANOSEC_PER_MILLISEC = 1000000;
+  const int NANOSEC_PER_SEC = 1000000000;
+
+  /* get current system time and add millisecs */
+  _ftime(&currSysTime);
+
+  nanosecs = ((int) (millisecs + currSysTime.millitm)) * NANOSEC_PER_MILLISEC;
+  if (nanosecs >= NANOSEC_PER_SEC) {
+      secs = currSysTime.time + 1;
+      nanosecs %= NANOSEC_PER_SEC;
+  } else {
+      secs = currSysTime.time;
+  }
+
+  timespec time;
+  time.tv_nsec = (long)nanosecs;
+  time.tv_sec = (long)secs;
+
+  return pthread_cond_timedwait( &cond, &mutex, &time ) != ETIMEDOUT;
 }
 
 /// Wakes up at least one thread blocked on this condition lock.
@@ -113,8 +133,8 @@ void ConditionLock::broadcast() {
   pthread_cond_broadcast( &cond );
 }
 
-void *Thread::thread_func( void * _data ) {
-  Thread *thread = static_cast< Thread * >( _data );
+void *PeriodicThread::thread_func( void * _data ) {
+  PeriodicThread *thread = static_cast< PeriodicThread * >( _data );
   pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, NULL );
 #ifdef MACOSX
   // set thread priority
@@ -176,18 +196,18 @@ void *Thread::thread_func( void * _data ) {
     }
 
     thread->callback_lock.lock();
-    vector< Thread::CallbackList::iterator > to_remove( 30 );
+    vector< PeriodicThread::CallbackList::iterator > to_remove( 30 );
     to_remove.clear();
-    for( Thread::CallbackList::iterator i = thread->callbacks.begin();
+    for( PeriodicThread::CallbackList::iterator i = thread->callbacks.begin();
          i != thread->callbacks.end(); i++ ) {
-      Thread::CallbackCode c = (*i).first( (*i).second );
-      if( c == Thread::CALLBACK_DONE ) {
+      PeriodicThread::CallbackCode c = (*i).first( (*i).second );
+      if( c == PeriodicThread::CALLBACK_DONE ) {
         to_remove.push_back( i );
       }
     }
     
     // remove all callbacks that returned CALLBACK_DONE.
-    for( vector< Thread::CallbackList::iterator >::iterator i = 
+    for( vector< PeriodicThread::CallbackList::iterator >::iterator i = 
            to_remove.begin();
          i != to_remove.end(); i++ ) {
       thread->callbacks.erase( *i );
@@ -205,8 +225,20 @@ int HapticThreadBase::haptic_threads_left = -1;
 std::vector< HapticThreadBase * > HapticThreadBase::threads;
 HLThread *HLThread::singleton = new HLThread;
 
-Thread::Thread( int _thread_priority,
-                int _thread_frequency ):
+namespace ThreadsInternal {
+  // callback functions
+  PeriodicThreadBase::CallbackCode doNothing( void * ) { 
+    return PeriodicThreadBase::CALLBACK_DONE; 
+  }
+  
+  PeriodicThreadBase::CallbackCode exitThread( void *data ) { 
+    pthread_exit(0); 
+    return PeriodicThreadBase::CALLBACK_DONE; 
+  }
+}
+
+PeriodicThread::PeriodicThread( int _thread_priority,
+                                int _thread_frequency ):
   priority( _thread_priority ),
   frequency( _thread_frequency ) {
   pthread_attr_t attr;
@@ -217,23 +249,10 @@ Thread::Thread( int _thread_priority,
   pthread_create( &thread_id, &attr, thread_func, this ); 
 }
 
-namespace ThreadsInternal {
-  // callback functions
-  ThreadBase::CallbackCode doNothing( void * ) { 
-    return ThreadBase::CALLBACK_DONE; 
-  }
-  
-  ThreadBase::CallbackCode exitThread( void * ) { 
-    pthread_exit(0); 
-    return ThreadBase::CALLBACK_DONE; 
-  }
-}
 
-
-Thread::~Thread() {
+PeriodicThread::~PeriodicThread() {
   ThreadId this_thread = getCurrentThreadId();
   
-  //pthread_cancel( thread_id );
   if( !pthread_equal( this_thread, thread_id ) ) {
     asynchronousCallback( ThreadsInternal::exitThread, NULL );
     pthread_join( thread_id, NULL );
@@ -242,15 +261,35 @@ Thread::~Thread() {
   }
 }
 
+SimpleThread::SimpleThread( void *(func) (void *),
+                            void *args,
+                            int thread_priority ) {
+  pthread_attr_t attr;
+  sched_param p;
+  p.sched_priority = thread_priority;
+  pthread_attr_init( &attr );
+  pthread_attr_setschedparam( &attr, &p );
+  pthread_create( &thread_id, &attr, func, args ); 
+}
 
-void Thread::synchronousCallback( CallbackFunc func, void *data ) {
+SimpleThread::~SimpleThread() {
+  ThreadId this_thread = getCurrentThreadId();
+  pthread_cancel( thread_id );  
+  if( !pthread_equal( this_thread, thread_id ) ) {
+    //pthread_join( thread_id, NULL );
+  } else {
+    pthread_exit(0);
+  }
+}
+
+void PeriodicThread::synchronousCallback( CallbackFunc func, void *data ) {
   callback_lock.lock();
   callbacks.push_back( make_pair( func, data ) );
   callback_lock.wait();
   callback_lock.unlock();
 }
 
-void Thread::asynchronousCallback( CallbackFunc func, void *data ) {
+void PeriodicThread::asynchronousCallback( CallbackFunc func, void *data ) {
   callback_lock.lock();
   callbacks.push_back( make_pair( func, data ) );
   callback_lock.unlock();
@@ -289,10 +328,10 @@ void HLThread::asynchronousCallback( CallbackFunc func, void *data ) {
 #endif
 }
 
-Thread::CallbackCode HLThread::setThreadId( void * data ) {
+PeriodicThread::CallbackCode HLThread::setThreadId( void * data ) {
   HLThread *thread = static_cast< HLThread * >( data );
-  thread->thread_id = Thread::getCurrentThreadId();
-  return Thread::CALLBACK_DONE;
+  thread->thread_id = PeriodicThread::getCurrentThreadId();
+  return PeriodicThread::CALLBACK_DONE;
 }
 
 void HLThread::setActive( bool _active ) { 
@@ -336,7 +375,7 @@ HapticThreadBase::~HapticThreadBase() {
 
 
 bool HapticThreadBase::inHapticThread() {
-	Thread::ThreadId id = Thread::getCurrentThreadId();
+	PeriodicThread::ThreadId id = PeriodicThread::getCurrentThreadId();
   for( vector< HapticThreadBase *>::iterator i = threads.begin();
        i != threads.end(); i++ ) {
     ThreadBase *thread = dynamic_cast< ThreadBase * >( *i );
@@ -346,7 +385,7 @@ bool HapticThreadBase::inHapticThread() {
   return false;
 }
 
-ThreadBase::CallbackCode HapticThreadBase::sync_haptics( void * ) {
+PeriodicThreadBase::CallbackCode HapticThreadBase::sync_haptics( void * ) {
   sg_lock.lock();
   haptic_threads_left--;
   if( haptic_threads_left == 0 ) {
@@ -363,15 +402,15 @@ ThreadBase::CallbackCode HapticThreadBase::sync_haptics( void * ) {
     haptic_lock.unlock();
   }
   
-  return ThreadBase::CALLBACK_DONE;
+  return PeriodicThreadBase::CALLBACK_DONE;
 }
-void HapticThreadBase::synchronousHapticCB( Thread::CallbackFunc func, 
+void HapticThreadBase::synchronousHapticCB( PeriodicThread::CallbackFunc func, 
                                             void *data ) {
   // add empty callbacks in order to make sure that the haptics threads 
   // have released the callback_lock since last call to sync_haptics.
   for( vector< HapticThreadBase *>::iterator i = threads.begin();
        i != threads.end(); i++ ) {
-    ThreadBase *thread = dynamic_cast< ThreadBase * >( *i );
+    PeriodicThreadBase *thread = dynamic_cast< PeriodicThreadBase * >( *i );
 	  if( thread ) {
 	    thread->asynchronousCallback( ThreadsInternal::doNothing, NULL );
 
@@ -382,7 +421,7 @@ void HapticThreadBase::synchronousHapticCB( Thread::CallbackFunc func,
   if( haptic_threads_left > 0 ) {
     for( vector< HapticThreadBase *>::iterator i = threads.begin();
          i != threads.end(); i++ ) {
-      ThreadBase *thread = dynamic_cast< ThreadBase * >( *i );
+      PeriodicThreadBase *thread = dynamic_cast< PeriodicThreadBase * >( *i );
       if( thread ) {
         thread->asynchronousCallback( sync_haptics, NULL );
       }

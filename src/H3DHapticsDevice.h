@@ -210,7 +210,7 @@ namespace H3D {
     }
 
     /// Get the thread that is used to run this haptics device.
-    inline ThreadBase *getThread() { return thread; }
+    inline PeriodicThreadBase *getThread() { return thread; }
 
     /// Reset the device.
     virtual void resetDevice() {}
@@ -391,7 +391,7 @@ namespace H3D {
     static H3DNodeDatabase database;
   protected:
     /// The thread that this haptics device loop is run in.
-    ThreadBase *thread;
+    PeriodicThreadBase *thread;
   };
 }
 

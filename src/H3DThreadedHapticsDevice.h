@@ -168,11 +168,11 @@ namespace H3D {
     TimeStamp last_loop_time;
 
     /// Callback function to render force effects.
-    static Thread::CallbackCode forceEffectCallback( void *data );
+    static PeriodicThread::CallbackCode forceEffectCallback( void *data );
 
     /// Callcack function to transfer the force effect vector to the 
     /// haptics loop.
-    static Thread::CallbackCode changeForceEffects( void *_data ); 
+    static PeriodicThread::CallbackCode changeForceEffects( void *_data ); 
   };
 }
 

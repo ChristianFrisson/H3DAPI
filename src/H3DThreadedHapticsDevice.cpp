@@ -44,7 +44,7 @@ namespace H3DThreadedHapticsDeviceInternals {
 
 
   // Callback function for changing force effect that are to be rendered.
-Thread::CallbackCode H3DThreadedHapticsDevice::changeForceEffects( void *_data ) {
+PeriodicThread::CallbackCode H3DThreadedHapticsDevice::changeForceEffects( void *_data ) {
     void * * data = static_cast< void * * >( _data );
     H3DThreadedHapticsDevice *hd = 
       static_cast< H3DThreadedHapticsDevice * >( data[0] );
@@ -55,11 +55,11 @@ Thread::CallbackCode H3DThreadedHapticsDevice::changeForceEffects( void *_data )
     TimeStamp now = TimeStamp();
     hd->last_loop_time = now - hd->last_effect_change;
     hd->last_effect_change = now;
-    return Thread::CALLBACK_DONE;
+    return PeriodicThread::CALLBACK_DONE;
   }
   // Callback function for rendering force effects on the 
   // HLHapticsDevice.  
-  Thread::CallbackCode H3DThreadedHapticsDevice::forceEffectCallback( void *data ) {
+  PeriodicThread::CallbackCode H3DThreadedHapticsDevice::forceEffectCallback( void *data ) {
     H3DThreadedHapticsDevice *hd = 
       static_cast< H3DThreadedHapticsDevice * >( data );
     
@@ -119,7 +119,7 @@ Thread::CallbackCode H3DThreadedHapticsDevice::changeForceEffects( void *_data )
     hd->force->setValue( output.force, hd->id );
     hd->torque->setValue( output.torque, hd->id );
     hd->nr_haptics_loops++;
-    return Thread::CALLBACK_CONTINUE;
+    return PeriodicThread::CALLBACK_CONTINUE;
   } 
 
 /// Constructor.

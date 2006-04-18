@@ -103,7 +103,7 @@ namespace H3D {
     /// Wait for the conditional to get a signal, but only wait a
     /// certain time. If the time exceeds the specified time false
     /// is returned. If signal is received true is returned.
-    bool timedWait( const struct timespec *abstime);
+    bool timedWait( unsigned int ms );
 
     /// Wakes up at least one thread blocked on this condition lock.
     void signal();
@@ -123,28 +123,6 @@ namespace H3D {
     virtual ~ThreadBase() {}
 
     typedef pthread_t ThreadId;
-
-    /// Return code for callback functions. 
-    typedef enum {
-      /// The callback is done and should not be called any more.
-      CALLBACK_DONE,
-      /// The callback should be rescheduled and called the next loop 
-      /// again.
-      CALLBACK_CONTINUE
-    } CallbackCode;
-
-    /// Callback function type.
-    typedef CallbackCode (*CallbackFunc)(void *data); 
-
-    /// Add a callback function to be executed in this thread. The calling
-    /// thread will wait until the callback function has returned before 
-    /// continuing. 
-    virtual void synchronousCallback( CallbackFunc func, void *data ) = 0;
-
-    /// Add a callback function to be executed in this thread. The calling
-    /// thread will continue executing after adding the callback and will 
-    /// not wait for the callback function to execute. 
-    virtual void asynchronousCallback( CallbackFunc func, void *data ) = 0;
 
     /// Returns the id of the thread this function is called in.
     static ThreadId getCurrentThreadId();
@@ -167,6 +145,33 @@ namespace H3D {
     static ThreadId main_thread_id;
   };
 
+  /// The abstract base class for threads that have a main loop and that allow
+  /// you to add callback functions to be run in that loop.
+  class H3DAPI_API PeriodicThreadBase: public ThreadBase {
+  public:
+    /// Return code for callback functions. 
+    typedef enum {
+      /// The callback is done and should not be called any more.
+      CALLBACK_DONE,
+      /// The callback should be rescheduled and called the next loop 
+      /// again.
+      CALLBACK_CONTINUE
+    } CallbackCode;
+
+    /// Callback function type.
+    typedef CallbackCode (*CallbackFunc)(void *data); 
+
+    /// Add a callback function to be executed in this thread. The calling
+    /// thread will wait until the callback function has returned before 
+    /// continuing. 
+    virtual void synchronousCallback( CallbackFunc func, void *data ) = 0;
+
+    /// Add a callback function to be executed in this thread. The calling
+    /// thread will continue executing after adding the callback and will 
+    /// not wait for the callback function to execute. 
+    virtual void asynchronousCallback( CallbackFunc func, void *data ) = 0;
+  };
+
   /// The interface base class for all threads that are used for haptics
   /// devices.
   class H3DAPI_API HapticThreadBase {
@@ -180,7 +185,7 @@ namespace H3D {
     /// Add a callback function that is to be executed when all the haptic
     /// threads have been synchronised, so it will be a thread safe 
     /// callback between all haptic threads.
-    static void synchronousHapticCB( ThreadBase::CallbackFunc func, 
+    static void synchronousHapticCB( PeriodicThreadBase::CallbackFunc func, 
                                      void *data );
 
     /// Returns true if the call was made from within a HapticThreadBase
@@ -188,7 +193,7 @@ namespace H3D {
     static bool inHapticThread();
   protected:
     // Callback function for synchronising all haptic threads.
-    static ThreadBase::CallbackCode sync_haptics( void * );
+    static PeriodicThreadBase::CallbackCode sync_haptics( void * );
 
     // The haptic threads that have been created.
     static std::vector< HapticThreadBase * > threads;
@@ -206,20 +211,35 @@ namespace H3D {
     static int haptic_threads_left;
   };
 
-  /// The Thread class is used to create new threads and provides an interface
+  /// The SimpleThread class creates a new thread to run a function. The
+  /// thread is run until the function returns.
+  class H3DAPI_API SimpleThread : public ThreadBase {
+  public:
+    /// Constructor.
+    /// \param thread_priority The priority of the thread.
+    /// \param func The function to run in the thread. 
+    SimpleThread( void *(func) (void *),
+                  void *args = NULL,
+                  int thread_priority = DEFAULT_THREAD_PRIORITY );
+    
+    /// Destructor.
+    virtual ~SimpleThread();
+  }; 
+
+  /// The PeriodicThread class is used to create new threads and provides an interface
   /// to add callback functions to be executed in the new thread that can be 
   /// used by other threads.
-  class H3DAPI_API Thread : public ThreadBase {
+  class H3DAPI_API PeriodicThread : public PeriodicThreadBase {
   public:
     /// Constructor.
     /// \param thread_priority The priority of the thread.
     /// \param thread_frequency The frequence of the thread loop. -1 means
     /// run as fast as possible.
-    Thread( int thread_priority = DEFAULT_THREAD_PRIORITY,
+    PeriodicThread( int thread_priority = DEFAULT_THREAD_PRIORITY,
             int thread_frequency = -1 );
     
     /// Destructor.
-    virtual ~Thread();
+    virtual ~PeriodicThread();
     
     /// Add a callback function to be executed in this thread. The calling
     /// thread will wait until the callback function has returned before 
@@ -250,15 +270,15 @@ namespace H3D {
   };
 
   /// HapticThread is a thread class that should be used by haptics devices
-  /// when creating threads. It is the same as Thread, but also inherits
+  /// when creating threads. It is the same as PeriodicThread, but also inherits
   /// from HapticThreadBase to make it aware that it is a haptic thread/
   class H3DAPI_API HapticThread : public HapticThreadBase,
-                                  public Thread {
+                                  public PeriodicThread {
   public:
     /// Constructor.
     HapticThread( int thread_priority =  DEFAULT_THREAD_PRIORITY,
 		int thread_frequency = -1 ):
-      Thread( thread_priority, thread_frequency ) {
+      PeriodicThread( thread_priority, thread_frequency ) {
     }
   };
 
@@ -267,7 +287,7 @@ namespace H3D {
   /// by the HLHapticsDevice and uses its own thread handling. Since only
   /// one instance of the HD API scheduler exists it is a singleton class.
   class H3DAPI_API HLThread : public HapticThreadBase,
-                              public ThreadBase {
+                              public PeriodicThreadBase {
 
   private:
     HLThread():
@@ -301,7 +321,7 @@ namespace H3D {
     /// not wait for the callback function to execute. 
     virtual void asynchronousCallback( CallbackFunc func, void *data );
   protected:
-    static Thread::CallbackCode setThreadId( void * _data );
+    static PeriodicThread::CallbackCode setThreadId( void * _data );
     static HLThread *singleton;
     bool is_active;
   };
