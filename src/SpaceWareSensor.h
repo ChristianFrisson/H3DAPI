@@ -36,6 +36,7 @@
 #include "SFFloat.h"
 #include "SFInt32.h"
 #include "SFRotation.h"
+#include "Threads.h"
 
 namespace H3D {
 
@@ -136,13 +137,6 @@ namespace H3D {
                     Inst< SFInt32               > _latestButtonPress = 0,
                     Inst< SFInt32               > _latestButtonRelease = 0
                     );
-
-    /// Destructor.
-    ~SpaceWareSensor();
-
-    /// Starts up the thread used for reading values from the SpaceWare 
-    /// device. 
-    virtual void initialize();
 
     /// Contains the current translation as reported by the device.
     ///
@@ -324,9 +318,9 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   private:
-#ifdef WIN32
+#ifdef HAVE_3DXWARE
     // the handle of the communication thread.
-    HANDLE thread_handle;
+    auto_ptr< SimpleThread > thread_handle;
 #endif
   };
 }
