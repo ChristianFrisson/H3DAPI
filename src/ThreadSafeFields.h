@@ -154,7 +154,7 @@ namespace H3D {
         rt_value.reset( v );
         rt_value_changed = true;
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::setValue( v, id );
         void * param[] = { v, &rt_value };
         HapticThread::synchronousHapticCB( transferValue, param );
@@ -166,7 +166,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return static_cast< typename BaseField::typed_value_type >( rt_value.get() );
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::getValue( id );
       }
     }
@@ -174,7 +174,7 @@ namespace H3D {
     /// Make sure that the field is up-to-date. upToDate() is specialized to 
     /// transfer the rt_value to the field if it has been changed.
     virtual void upToDate() {
-      assert( Thread::inMainThread() );
+      assert( ThreadBase::inMainThread() );
       
       if( rt_value_changed ) {
         void * param[] = { rt_value.get(), &this->value };
@@ -198,7 +198,7 @@ namespace H3D {
 
     /// onAdd is extended to change the rt_image value in a thread safe way.
     virtual void onAdd( typename BaseField::value_type i ) {
-      assert( Thread::inMainThread() );
+      assert( ThreadBase::inMainThread() );
       PeriodicUpdate< BaseField >::onAdd( i );
       void * param[] = { i, &rt_value };
       HapticThread::synchronousHapticCB( transferValue, param );
@@ -242,7 +242,7 @@ namespace H3D {
         rt_value = v;
         rt_value_changed = true;
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::setValue( v, id );
         void * param[] = { &this->value, &rt_value };
         HapticThread::synchronousHapticCB( transferValue, param );
@@ -260,7 +260,7 @@ namespace H3D {
         rt_value_changed = true;
       } else {
         // TODO: don't copy the entire rt_value vector, just change the current one.
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::setValue( i, t, id );
         void * param[] = { &this->value, &rt_value };
         HapticThread::synchronousHapticCB( transferValue, param );
@@ -273,7 +273,7 @@ namespace H3D {
         rt_value.swap( x );
         rt_value_changed = true;
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::swap( x, id );
         void * param[] = { &this->value, &rt_value };
         HapticThread::synchronousHapticCB( transferValue, param );
@@ -288,7 +288,7 @@ namespace H3D {
         rt_value_changed = true;
       } else {
         // TODO: don't copy the entire rt_value vector, just change the current one.
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::push_back( x, id );
         void * param[] = { &this->value, &rt_value };
         HapticThread::synchronousHapticCB( transferValue, param );
@@ -302,7 +302,7 @@ namespace H3D {
         rt_value_changed = true;
       } else {
         // TODO: don't copy the entire rt_value vector, just change the current one.
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::pop_back( id );
         void * param[] = { &this->value, &rt_value };
         HapticThread::synchronousHapticCB( transferValue, param );
@@ -315,7 +315,7 @@ namespace H3D {
         rt_value.clear();
         rt_value_changed = true;
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::clear( id );
         void * param[] = { &this->value, &rt_value };
         HapticThread::synchronousHapticCB( transferValue, param );
@@ -327,7 +327,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.begin();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::begin( id );
       }
     }
@@ -337,7 +337,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.end();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::end( id );
       }
     }
@@ -348,7 +348,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.rbegin();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::rbegin( id );
       }
     }
@@ -358,7 +358,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.rend();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::rend( id );
       }
     }
@@ -368,7 +368,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.size();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::size();
       }
     }
@@ -378,7 +378,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.max_size();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::max_size();
       }
     }
@@ -389,7 +389,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.capacity();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::capacity();
       }
     }
@@ -399,7 +399,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.empty();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::empty();
       }
     }
@@ -408,7 +408,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value[n];
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::operator[]( n );
       }
     }
@@ -418,7 +418,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.front();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::front( id );
       }
     }
@@ -428,7 +428,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value.back();
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::back( id );
       }
     }
@@ -438,7 +438,7 @@ namespace H3D {
       if( HapticThread::inHapticThread() ) {
         return rt_value;
       } else {
-        assert( Thread::inMainThread() );
+        assert( ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::getValue( id );
       }
     }
@@ -446,7 +446,7 @@ namespace H3D {
     /// Make sure that the field is up-to-date. upToDate() is specialized to 
     /// transfer the rt_value to the field if it has been changed.
     virtual void upToDate() {
-      assert( Thread::inMainThread() );
+      assert( ThreadBase::inMainThread() );
       
       if( rt_value_changed ) {
         void * param[] = { &rt_value, &this->value };
@@ -474,7 +474,7 @@ namespace H3D {
     /// haptics threads and copy the new value of the field to the
     /// rt_value member in a thread safe way.
     inline virtual void update() {
-      assert( Thread::inMainThread() );
+      assert( ThreadBase::inMainThread() );
       PeriodicUpdate< BaseField >::update();;
       void * param[] = { &this->value, &rt_value };
       HapticThread::synchronousHapticCB( transferValue, param );

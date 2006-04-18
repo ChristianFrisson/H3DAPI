@@ -100,21 +100,28 @@ void ConditionLock::wait() {
 /// certain time. If the time exceeds the specified time false
 /// is returned. If signal is received true is returned.
 bool ConditionLock::timedWait( unsigned int millisecs ) {
-  struct _timeb currSysTime;
   int nanosecs, secs;
-  const int NANOSEC_PER_MILLISEC = 1000000;
-  const int NANOSEC_PER_SEC = 1000000000;
+  const int NANOSEC_PER_MILLISEC = (int)1e6;
+  const int NANOSEC_PER_SEC = (int)1e9;
 
   /* get current system time and add millisecs */
-  _ftime(&currSysTime);
 
-  nanosecs = ((int) (millisecs + currSysTime.millitm)) * NANOSEC_PER_MILLISEC;
+#ifdef WIN32
+  _timeb sys_time;
+  _ftime(&sys_time);
+  secs = sys_time.time;
+  nanosecs = ((int) (millisecs + sys_time.millitm)) * NANOSEC_PER_MILLISEC;
+#else
+  timeval sys_time;
+  gettimeofday( &sys_time, NULL );
+  secs = sys_time.tv_sec;
+  nanosecs = ((int) (millisecs + sys_time.tv_usec * 1e-3)) * NANOSEC_PER_MILLISEC;
+#endif
+  
   if (nanosecs >= NANOSEC_PER_SEC) {
-      secs = currSysTime.time + 1;
+      secs = secs + nanosecs / NANOSEC_PER_SEC;
       nanosecs %= NANOSEC_PER_SEC;
-  } else {
-      secs = currSysTime.time;
-  }
+  } 
 
   timespec time;
   time.tv_nsec = (long)nanosecs;

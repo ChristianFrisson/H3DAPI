@@ -278,145 +278,143 @@ namespace SpaceWareSensorInternal {
 #endif // WIN32
 
 #if defined( __linux )
-  Thread::CallbackCode spaceWareThread( void* data ) {
-// the creator of this thread
+  void * spaceWareThread( void* data ) {
+    try {
+
+      // the creator of this thread
       SpaceWareSensor *space_ware_sensor = 
         static_cast< SpaceWareSensor * >( data );
-
-    Display *display;
-    Window root, window;
-    
-    int screennumber,width,height;
-    
-    char *WinName = "Magellan 3D Controller";
-    XTextProperty WindowName;
-    XGCValues xgcvalues;
-    
-    XEvent report;
-    MagellanFloatEvent MagellanEvent;
-    
-    XComposeStatus compose;
-    KeySym keysym;
-    
-    int MagellanDemoEnd = FALSE;
-    char MagellanBuffer[ 256 ];
-    
-    
-    /****************** Open a Window ******************************************/
-    
-    display = XOpenDisplay( NULL );
-    if ( display == NULL )
-      {
-	fprintf( stderr, "Can't open display! Exit ... \n");
-	exit( -1 );
+      
+      Display *display;
+      Window root, window;
+      
+      int screennumber,width,height;
+      
+      char *WinName = "Magellan 3D Controller";
+      XTextProperty WindowName;
+      
+      XEvent report;
+      MagellanFloatEvent MagellanEvent;
+      
+      int MagellanDemoEnd = FALSE;
+      char MagellanBuffer[ 256 ];
+      
+      
+      /****************** Open a Window ******************************************/
+      
+      display = XOpenDisplay( NULL );
+      if ( display == NULL ) {
+	throw CreateWindowError( "Could not ppen X display",
+				 H3D_FULL_LOCATION );  
       };
     
-    screennumber = DefaultScreen(display);
-    width  = DisplayWidth(display,screennumber);
-    height = DisplayHeight(display,screennumber);
-    root   = DefaultRootWindow(display);
-    window = XCreateSimpleWindow( display, root, 0,0, width/5*3,height/8, 20,
-				  BlackPixel(display,screennumber),
-				  WhitePixel(display,screennumber) );
+      screennumber = DefaultScreen(display);
+      width  = DisplayWidth(display,screennumber);
+      height = DisplayHeight(display,screennumber);
+      root   = DefaultRootWindow(display);
+      window = XCreateSimpleWindow( display, root, 0,0, width/5*3,height/8, 20,
+				    BlackPixel(display,screennumber),
+				    WhitePixel(display,screennumber) );
     
-    printf("Magellan: xapp.c\n" );
-    printf("Magellan Root Window=%08X \nMagellan Application Window=%08X \n\n",
-	   root, window );
+      
+      XStringListToTextProperty( &WinName, 1, &WindowName );
+      
+      XSizeHints *sizehints;
+      XWMHints *wmhints;
+      XClassHint *classhints;
+      
+      sizehints  = XAllocSizeHints();
+      wmhints    = XAllocWMHints();
+      classhints = XAllocClassHint();
+      
+      wmhints->initial_state = NormalState;
+      wmhints->input = TRUE;
+      wmhints->flags = StateHint | InputHint;
+      
+      classhints->res_name = "Magellan 3D Controller";
+      classhints->res_class = "BasicWindow";
+      
+      XSetWMProperties( display, window, &WindowName, NULL, NULL,
+			0, sizehints, wmhints, classhints );
+      
+      //XMapWindow( display, window ); 
     
-    XStringListToTextProperty( &WinName, 1, &WindowName );
-    
-    XSizeHints *sizehints;
-    XWMHints *wmhints;
-    XClassHint *classhints;
-
-    sizehints  = XAllocSizeHints();
-    wmhints    = XAllocWMHints();
-    classhints = XAllocClassHint();
-    
-    wmhints->initial_state = NormalState;
-    wmhints->input = TRUE;
-    wmhints->flags = StateHint | InputHint;
-    
-    classhints->res_name = "Magellan 3D Controller";
-    classhints->res_class = "BasicWindow";
-
-    XSetWMProperties( display, window, &WindowName, NULL, NULL,
-		      0, sizehints, wmhints, classhints );
-    
-    XMapWindow( display, window ); 
-    
-    /************************* Create 3D Event Types ***************************/
-    if ( !MagellanInit( display, window ) ) {
-      fprintf( stderr, "No driver is running. Exit ... \n" );
-      exit(-1);
-    };
-
-    /************************* Main Loop ***************************************/
-    //XSelectInput( display, window, KeyPressMask | KeyReleaseMask );
-
-    while( MagellanDemoEnd == FALSE )
-      {
+      /************************* Create 3D Event Types ***************************/
+      if ( !MagellanInit( display, window ) ) {
+	throw CouldNotInitSpaceWare( "No driver is running." );
+      };
+      
+      /************************* Main Loop ***************************************/
+      //XSelectInput( display, window, KeyPressMask | KeyReleaseMask );
+      
+      while( MagellanDemoEnd == FALSE )	{
 	XNextEvent( display, &report );
 	switch( report.type ) {
-	  case ClientMessage :
-	    switch( MagellanTranslateEvent( display, &report, &MagellanEvent, 1.0, 1.0 ) )
-	      {
-	      case MagellanInputMotionEvent :
-		MagellanRemoveMotionEvents( display );
-		sprintf( MagellanBuffer, 
-			 "x=%+5.0lf y=%+5.0lf z=%+5.0lf a=%+5.0lf b=%+5.0lf c=%+5.0lf   \n",
-			 MagellanEvent.MagellanData[ MagellanX ],
-			 MagellanEvent.MagellanData[ MagellanY ],
-			 MagellanEvent.MagellanData[ MagellanZ ],
-			 MagellanEvent.MagellanData[ MagellanA ],
-			 MagellanEvent.MagellanData[ MagellanB ],
-			 MagellanEvent.MagellanData[ MagellanC ] );
+	case ClientMessage :
+	  switch( MagellanTranslateEvent( display, &report, &MagellanEvent, 1.0, 1.0 ) )
+	    {
+	    case MagellanInputMotionEvent :
+	      MagellanRemoveMotionEvents( display );
+	      /*sprintf( MagellanBuffer, 
+		"x=%+5.0lf y=%+5.0lf z=%+5.0lf a=%+5.0lf b=%+5.0lf c=%+5.0lf   \n",
+		       MagellanEvent.MagellanData[ MagellanX ],
+		       MagellanEvent.MagellanData[ MagellanY ],
+		       MagellanEvent.MagellanData[ MagellanZ ],
+		       MagellanEvent.MagellanData[ MagellanA ],
+		       MagellanEvent.MagellanData[ MagellanB ],
+		       MagellanEvent.MagellanData[ MagellanC ] );
 
-		printf( MagellanBuffer );
-		// we have to negate the z component since H3D API
-		// and the SpaceWare have different coordinate systems.
-		space_ware_sensor->thread_translation =
-		  Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanX ],
-			 (H3DFloat)MagellanEvent.MagellanData[ MagellanY ],
-			 (H3DFloat)-MagellanEvent.MagellanData[ MagellanZ ] );
-		// convert to radians
-		space_ware_sensor->thread_rotation = 
-		  Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanA ],
-			 (H3DFloat)MagellanEvent.MagellanData[ MagellanB ],
-			 (H3DFloat)-MagellanEvent.MagellanData[ MagellanC ] ) * ( Constants::pi / 180 );
-		space_ware_sensor->thread_motion_event = true;
-		break;
+	      printf( MagellanBuffer );
+	      */
+	      // we have to negate the z component since H3D API
+	      // and the SpaceWare have different coordinate systems.
+	      space_ware_sensor->thread_translation =
+		Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanX ],
+		       (H3DFloat)MagellanEvent.MagellanData[ MagellanY ],
+		       (H3DFloat)-MagellanEvent.MagellanData[ MagellanZ ] );
+	      // convert to radians
+	      space_ware_sensor->thread_rotation = 
+		Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanA ],
+		       (H3DFloat)MagellanEvent.MagellanData[ MagellanB ],
+		       (H3DFloat)-MagellanEvent.MagellanData[ MagellanC ] ) * ( Constants::pi / 180 );
+	      space_ware_sensor->thread_motion_event = true;
+	      break;
 	 
-	      case MagellanInputButtonPressEvent :
-		sprintf( MagellanBuffer, "Button pressed [%c]  \n",
-			 MagellanEvent.MagellanButton ==  9 ? '*' :
-			 MagellanEvent.MagellanButton == 10 ? '+' :
-			 MagellanEvent.MagellanButton == 11 ? '-' :
-			 '0'+MagellanEvent.MagellanButton );
+	    case MagellanInputButtonPressEvent :
+	      sprintf( MagellanBuffer, "Button pressed [%c]  \n",
+		       MagellanEvent.MagellanButton ==  9 ? '*' :
+		       MagellanEvent.MagellanButton == 10 ? '+' :
+		       MagellanEvent.MagellanButton == 11 ? '-' :
+		       '0'+MagellanEvent.MagellanButton );
          
-		printf( MagellanBuffer );
-		break;
+	      printf( MagellanBuffer );
+	      break;
 	  
-	      case MagellanInputButtonReleaseEvent :
-		sprintf( MagellanBuffer, "Button released [%c] \n",
-			 MagellanEvent.MagellanButton == 9  ? '*' :
-			 MagellanEvent.MagellanButton == 10 ? '+' :
-			 MagellanEvent.MagellanButton == 11 ? '-' :
-			 '0'+MagellanEvent.MagellanButton ); 
-		printf( MagellanBuffer );
-		break;
+	    case MagellanInputButtonReleaseEvent :
+	      sprintf( MagellanBuffer, "Button released [%c] \n",
+		       MagellanEvent.MagellanButton == 9  ? '*' :
+		       MagellanEvent.MagellanButton == 10 ? '+' :
+		       MagellanEvent.MagellanButton == 11 ? '-' :
+		       '0'+MagellanEvent.MagellanButton ); 
+	      printf( MagellanBuffer );
+	      break;
 	
-	      default : /* another ClientMessage event */
-		break;
-	      };
-	    break;
-	  };
+	    default : /* another ClientMessage event */
+	      break;
+	    };
+	  break;
+	};
       };
 
-    MagellanClose( display );
-    XDestroyWindow( display, window );
-    XCloseDisplay( display );
-    return Thread::CALLBACK_DONE;
+      MagellanClose( display );
+      XDestroyWindow( display, window );
+      XCloseDisplay( display );
+    }
+    catch (const Exception::H3DException &e) {
+      Console(4) << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
+      Console(4) << e << endl;
+    }
+    return NULL;
   }
 #endif
 #endif // HAVE_3DXWARE
