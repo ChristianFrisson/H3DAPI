@@ -32,6 +32,8 @@
 #include "X3DGeometryNode.h"
 #include "SFInt32.h"
 #include "SFFloat.h"
+#include "MFRotation.h"
+#include "MFVec2f.h"
 
 namespace H3D {
 
@@ -40,29 +42,31 @@ namespace H3D {
   /// \brief
   /// \par Internal routes:
   /// \dotfile Extrusion.dot 
-  class H3DAPI_API Extrusion : public X3DGeometryNode {
+  class Extrusion : public X3DGeometryNode {
   public:
 
     /// Render the Extrusion with OpenGL.
     virtual void render();
+		/// returns true if the two points are coincident
+		inline bool coinc(Vec3f a, Vec3f b) { return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon;}
 
     /// Constructor.
     Extrusion( Inst< SFNode           > _metadata        = 0,
                Inst< SFBound          > _bound           = 0,
                Inst< DisplayList      > _displayList     = 0,
-               Inst< SFBool           > _beginCap		 = 0,
-			   Inst< SFBool           > _ccw             = 0,
-               Inst< SFBool           > _convex			 = 0,
+               Inst< SFBool           > _beginCap				 = 0,
+							 Inst< SFBool           > _ccw             = 0,
+               Inst< SFBool           > _convex					 = 0,
                Inst< SFFloat          > _creaseAngle     = 0,
                Inst< MFVec2f          > _crossSection    = 0,
-               Inst< SFBool			  > _endCap	         = 0,
+               Inst< SFBool						> _endCap	         = 0,
                Inst< MFRotation       > _orientation     = 0,
                Inst< MFVec2f          > _scale	         = 0,
                Inst< SFBool           > _solid           = 0,
-			   Inst< MFVec3f          > _spine           = 0 );
+							 Inst< MFVec3f          > _spine           = 0 );
 
     /// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_beginCap.dot 
@@ -82,14 +86,14 @@ namespace H3D {
     /// the orientation of the normals does not match the setting of the 
     /// ccw field, results are undefined.
     /// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_ccw.dot 
     auto_ptr< SFBool >  ccw;
     
 	/// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_convex.dot 
@@ -102,7 +106,7 @@ namespace H3D {
     /// be calculated so that a lighting discontinuity across the edge is 
     /// produced.
     /// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 \n
     /// <b>Valid range:</b> [0-inf]
     ///
@@ -110,28 +114,28 @@ namespace H3D {
     auto_ptr< SFFloat > creaseAngle;
 
 	/// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
 	/// <b>Default value:</b> [1 1 1 -1 -1 -1 -1 1 1 1] \n
     /// 
     /// \dotfile Extrusion_crossSection.dot 
     auto_ptr< MFVec2f >  crossSection;
 
 	/// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_endCap.dot 
     auto_ptr< SFBool >  endCap;
 
 	/// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 0 1 0 \n
     /// 
     /// \dotfile Extrusion_orientation.dot 
     auto_ptr< MFRotation >  orientation;
 
 	/// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 1 \n
     /// 
     /// \dotfile Extrusion_scale.dot 
@@ -144,18 +148,18 @@ namespace H3D {
     /// sides of lit surfaces). If solid is TRUE, back face culling will be 
     /// performed.
     /// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     ///
     /// \dotfile Extrusion_solid.dot 
     auto_ptr< SFBool >  solid;
 
 	/// 
-    /// <b>Access type:</b> inititalizeOnly \n
+    /// <b>Access type:</b> inputOutput \n
 	/// <b>Default value:</b> [0 0 0 0 1 0] \n
     /// 
     /// \dotfile Extrusion_spine.dot 
-    auto_ptr< SFBool >  spine;
+    auto_ptr< MFVec3f >  spine;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
