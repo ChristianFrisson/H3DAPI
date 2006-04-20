@@ -1,9 +1,11 @@
 %option noyywrap
 
 
-ID       [a-zA-Z][a-zA-Z0-9]*
+ID       [^\x30-\x39\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ][^\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ]*
 
-NUMBER   [\-\+0-9][0-9.e]*
+OLDID       [a-zA-Z][a-zA-Z0-9_]*
+
+NUMBER   (([\-\+0-9][0-9\+\-.eE]*)|(0[xX][0-9a-fA-F]+))
 
 WHITE    [ ,\t\n\r] 
 
@@ -12,9 +14,11 @@ STRING   \"[^\"]+\"
 %%
 
 %{
-#include "vrml.bison.tab.h"
+#include "vrml.hpp"
 %}
 
+TRUE        return TRUE;
+FALSE       return FALSE;
 PROFILE     return PROFILE;
 COMPONENT   return COMPONENT;
 EXPORT      return EXPORT;
@@ -32,44 +36,44 @@ EXTERNPROTO return EXTERNPROTO;
 ROUTE       return ROUTE;
 TO          return TO;
 IS          return IS;
-MFBool      return MFBool;
-MFColor     return MFColor;
-MFColorRGBA return MFColorRGBA;
-MFDouble    return MFDouble;
-MFFloat     return MFFloat;
-MFImage     return MFImage;
-MFInt32     return MFInt32;
-MFNode      return MFNode;
-MFRotation  return MFRotation;
-MFString    return MFString;
-MFTime      return MFTime;
-MFVec2d     return MFVec2d;
-MFVec2f     return MFVec2f;
-MFVec3d     return MFVec3d;
-MFVec3f     return MFVec3f;
-SFBool      return SFBool;
-SFColor     return SFColor;
-SFColorRGBA return SFColorRGBA;
-SFDouble    return SFDouble;
-SFFloat     return SFFloat;
-SFImage     return SFImage;
-SFInt32     return SFInt32;
-SFNode      return SFNode;
-SFRotation  return SFRotation;
-SFString    return SFString;
-SFTime      return SFTime;
-SFVec2d     return SFVec2d;
-SFVec2f     return SFVec2f;
-SFVec3d     return SFVec2d;
-SFVec3f     return SFVec3f;
+MFBool      return TMFBool;
+MFColor     return TMFColor;
+MFColorRGBA return TMFColorRGBA;
+MFDouble    return TMFDouble;
+MFFloat     return TMFFloat;
+MFImage     return TMFImage;
+MFInt32     return TMFInt32;
+MFNode      return TMFNode;
+MFRotation  return TMFRotation;
+MFString    return TMFString;
+MFTime      return TMFTime;
+MFVec2d     return TMFVec2d;
+MFVec2f     return TMFVec2f;
+MFVec3d     return TMFVec3d;
+MFVec3f     return TMFVec3f;
+SFBool      return TSFBool;
+SFColor     return TSFColor;
+SFColorRGBA return TSFColorRGBA;
+SFDouble    return TSFDouble;
+SFFloat     return TSFFloat;
+SFImage     return TSFImage;
+SFInt32     return TSFInt32;
+SFNode      return TSFNode;
+SFRotation  return TSFRotation;
+SFString    return TSFString;
+SFTime      return TSFTime;
+SFVec2d     return TSFVec2d;
+SFVec2f     return TSFVec2f;
+SFVec3d     return TSFVec2d;
+SFVec3f     return TSFVec3f;
 
 
-{ID}        yylval.val=yytext; return ID;
+{ID}        /*printf("ID=%s\n",yytext);*/ yylval.val=strdup(yytext); return ID;
 
 "#"[^\n]+   /* eat up comments */
 
 
-(({NUMBER}|{STRING})+({WHITE})*)+     yylval.val=yytext; return STRING;
+(({NUMBER}|{STRING})+({WHITE})*)+     /*printf("VAL=%s\n",yytext);*/ yylval.val=strdup(yytext); return STRING;
 
 {WHITE}+       /* eat up whitespace */
 
