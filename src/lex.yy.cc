@@ -689,9 +689,10 @@ YY_DECL
 
 
 #include "vrml.hpp"
+void setyylval(char *);
 
 
-#line 695 "lex.yy.cc"
+#line 696 "lex.yy.cc"
 
 	if ( yy_init )
 		{
@@ -776,285 +777,285 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 20 "vrml.l"
+#line 21 "vrml.l"
 return AS;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 21 "vrml.l"
+#line 22 "vrml.l"
 return TRUE;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 22 "vrml.l"
+#line 23 "vrml.l"
 return FALSE;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 23 "vrml.l"
+#line 24 "vrml.l"
 return PROFILE;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 24 "vrml.l"
+#line 25 "vrml.l"
 return COMPONENT;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 25 "vrml.l"
+#line 26 "vrml.l"
 return EXPORT;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 26 "vrml.l"
+#line 27 "vrml.l"
 return IMPORT;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 27 "vrml.l"
+#line 28 "vrml.l"
 return META;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 28 "vrml.l"
+#line 29 "vrml.l"
 return DEF;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 29 "vrml.l"
+#line 30 "vrml.l"
 return USE;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 30 "vrml.l"
+#line 31 "vrml.l"
 return PROTO;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 31 "vrml.l"
+#line 32 "vrml.l"
 return VRMLNULL;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 32 "vrml.l"
+#line 33 "vrml.l"
 return inputOnly;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 33 "vrml.l"
+#line 34 "vrml.l"
 return outputOnly;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 34 "vrml.l"
+#line 35 "vrml.l"
 return initializeOnly;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 35 "vrml.l"
+#line 36 "vrml.l"
 return inputOutput;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 36 "vrml.l"
+#line 37 "vrml.l"
 return EXTERNPROTO;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 37 "vrml.l"
+#line 38 "vrml.l"
 return ROUTE;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 38 "vrml.l"
+#line 39 "vrml.l"
 return TO;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 39 "vrml.l"
+#line 40 "vrml.l"
 return IS;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 40 "vrml.l"
+#line 41 "vrml.l"
 return TMFBool;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 41 "vrml.l"
+#line 42 "vrml.l"
 return TMFColor;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 42 "vrml.l"
+#line 43 "vrml.l"
 return TMFColorRGBA;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 43 "vrml.l"
+#line 44 "vrml.l"
 return TMFDouble;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 44 "vrml.l"
+#line 45 "vrml.l"
 return TMFFloat;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 45 "vrml.l"
+#line 46 "vrml.l"
 return TMFImage;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 46 "vrml.l"
+#line 47 "vrml.l"
 return TMFInt32;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 47 "vrml.l"
+#line 48 "vrml.l"
 return TMFNode;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 48 "vrml.l"
+#line 49 "vrml.l"
 return TMFRotation;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 49 "vrml.l"
+#line 50 "vrml.l"
 return TMFString;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 50 "vrml.l"
+#line 51 "vrml.l"
 return TMFTime;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 51 "vrml.l"
+#line 52 "vrml.l"
 return TMFVec2d;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 52 "vrml.l"
+#line 53 "vrml.l"
 return TMFVec2f;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 53 "vrml.l"
+#line 54 "vrml.l"
 return TMFVec3d;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 54 "vrml.l"
+#line 55 "vrml.l"
 return TMFVec3f;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 55 "vrml.l"
+#line 56 "vrml.l"
 return TSFBool;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 56 "vrml.l"
+#line 57 "vrml.l"
 return TSFColor;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 57 "vrml.l"
+#line 58 "vrml.l"
 return TSFColorRGBA;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 58 "vrml.l"
+#line 59 "vrml.l"
 return TSFDouble;
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 59 "vrml.l"
+#line 60 "vrml.l"
 return TSFFloat;
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 60 "vrml.l"
+#line 61 "vrml.l"
 return TSFImage;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 61 "vrml.l"
+#line 62 "vrml.l"
 return TSFInt32;
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 62 "vrml.l"
+#line 63 "vrml.l"
 return TSFNode;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 63 "vrml.l"
+#line 64 "vrml.l"
 return TSFRotation;
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 64 "vrml.l"
+#line 65 "vrml.l"
 return TSFString;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 65 "vrml.l"
+#line 66 "vrml.l"
 return TSFTime;
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 66 "vrml.l"
+#line 67 "vrml.l"
 return TSFVec2d;
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 67 "vrml.l"
+#line 68 "vrml.l"
 return TSFVec2f;
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 68 "vrml.l"
+#line 69 "vrml.l"
 return TSFVec2d;
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 69 "vrml.l"
+#line 70 "vrml.l"
 return TSFVec3f;
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 72 "vrml.l"
-/*printf("ID=%s\n",yytext);*/ yylval.val=strdup(yytext); return ID;
+#line 73 "vrml.l"
+/*printf("ID=%s\n",yytext);*/ setyylval(yytext); return ID;
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 74 "vrml.l"
+#line 75 "vrml.l"
 /* eat up comments */
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 77 "vrml.l"
-/*printf("VAL=%s\n",yytext);*/ yylval.val=strdup(yytext); return STRING;
+#line 78 "vrml.l"
+/*printf("VAL=%s\n",yytext);*/ setyylval(yytext); return STRING;
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 79 "vrml.l"
+#line 80 "vrml.l"
 /* eat up whitespace */
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 81 "vrml.l"
+#line 82 "vrml.l"
 return yytext[0];
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 85 "vrml.l"
+#line 86 "vrml.l"
 ECHO;
 	YY_BREAK
-#line 1058 "lex.yy.cc"
+#line 1059 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1861,7 +1862,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 85 "vrml.l"
+#line 86 "vrml.l"
 
 
 

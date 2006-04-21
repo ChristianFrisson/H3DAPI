@@ -25,6 +25,7 @@ using namespace std;
 #define YYERROR_VERBOSE  1
 extern FILE *yyin;
 
+void setyylval( char *);
 int yyerror( char const *e );
 int yylex();
 int parse( istream *, DEFNodes*, DEFNodes* );
@@ -470,3 +471,6 @@ Group *getRoot() {
   return root;
 }
 
+void setyylval( char* l ) {
+  yylval.val = strdup(l);
+}

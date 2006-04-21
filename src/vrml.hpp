@@ -143,7 +143,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 50 "vrml.bison"
+#line 51 "vrml.bison"
 typedef union YYSTYPE {
   char* val;
 } YYSTYPE;

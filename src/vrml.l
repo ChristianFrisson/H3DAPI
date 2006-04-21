@@ -15,6 +15,7 @@ STRING   \"(([^\\\"])|[\"]|\\.)+\"
 
 %{
 #include "vrml.hpp"
+void setyylval(char *);
 %}
 
 AS          return AS;
@@ -69,12 +70,12 @@ SFVec3d     return TSFVec2d;
 SFVec3f     return TSFVec3f;
 
 
-{ID}        /*printf("ID=%s\n",yytext);*/ yylval.val=strdup(yytext); return ID;
+{ID}        /*printf("ID=%s\n",yytext);*/ setyylval(yytext); return ID;
 
 "#"[^\n]+   /* eat up comments */
 
 
-(({NUMBER}|{STRING})+({WHITE})*)+     /*printf("VAL=%s\n",yytext);*/ yylval.val=strdup(yytext); return STRING;
+(({NUMBER}|{STRING})+({WHITE})*)+     /*printf("VAL=%s\n",yytext);*/ setyylval(yytext); return STRING;
 
 {WHITE}+       /* eat up whitespace */
 
