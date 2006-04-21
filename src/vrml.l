@@ -9,7 +9,7 @@ NUMBER   (([\-\+0-9][0-9\+\-.eE]*)|(0[xX][0-9a-fA-F]+))
 
 WHITE    [ ,\t\n\r] 
 
-STRING   \"[^\"]+\"
+STRING   \"(([^\\\"])|[\"]|\\.)+\"
 
 %%
 
@@ -17,6 +17,7 @@ STRING   \"[^\"]+\"
 #include "vrml.hpp"
 %}
 
+AS          return AS;
 TRUE        return TRUE;
 FALSE       return FALSE;
 PROFILE     return PROFILE;

@@ -6,26 +6,37 @@
 #include "Node.h"
 #include "Group.h"
 #include "DEFNodes.h"
+#include "Inline.h"
+#include "H3DExports.h"
+
 
 using namespace H3D;
 using namespace X3D;
 
+// For H3D API purposes, we include a copy of FlexLexer.h so that
+// users don't need a copy of Flex installed just to compile the
+// API.
+#include "FlexLexer.h"
+
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 #define YYERROR_VERBOSE  1
 extern FILE *yyin;
 
-extern "C" {
- int yylex();
-}
 int yyerror( char const *e );
-int parse( char *s );
+int yylex();
+int parse( istream *, DEFNodes*, DEFNodes* );
 char *getLocationString();
 Group *getRoot();
+void setFieldValue( const char*);
+void setNodeStatement( int );
 
+FlexLexer* lexer;
 Group *root;
 DEFNodes *DEF_map;
+DEFNodes *DEF_export;
 
 vector< Node* > node_stack;
 vector< const char* > field_stack;
@@ -40,17 +51,10 @@ vector< const char* > field_stack;
   char* val;
 }
 
-%type<val> initializeOnlyId
-%type<val> fieldValue 
-%type<val> sfValue
-%type<val> mfValue
-%type<val> STRING
-%type<val> TRUE
-%type<val> FALSE
-%type<val> nodeNameId
-%type<val> inputOnlyId
-%type<val> outputOnlyId
-
+%type<val> fieldValue sfValue
+%type<val> mfValue STRING TRUE FALSE
+%type<val> nodeNameId inputOnlyId outputOnlyId initializeOnlyId
+%type<val> inlineNodeNameId exportedNodeNameId
 
 %token ID
 %token STRING
@@ -58,55 +62,15 @@ vector< const char* > field_stack;
 %token VRMLNULL
 %token SCRIPT
 
-%token TRUE
-%token FALSE
-%token PROFILE
-%token COMPONENT
-%token EXPORT
-%token IMPORT
-%token META
-%token DEF
-%token USE
-%token PROTO
-%token inputOnly
-%token outputOnly
-%token initializeOnly
-%token inputOutput
-%token EXTERNPROTO
-%token ROUTE
-%token TO
-%token IS
+%token TRUE FALSE PROFILE COMPONENT EXPORT IMPORT META DEF USE
+%token PROTO inputOnly outputOnly initializeOnly inputOutput
+%token EXTERNPROTO ROUTE TO IS
 
-%token TMFBool
-%token TMFColor
-%token TMFColorRGBA
-%token TMFDouble
-%token TMFFloat
-%token TMFImage
-%token TMFInt32
-%token TMFNode
-%token TMFRotation
-%token TMFString
-%token TMFTime
-%token TMFVec2d
-%token TMFVec2f
-%token TMFVec3d
-%token TMFVec3f
-%token TSFBool
-%token TSFColor
-%token TSFColorRGBA
-%token TSFDouble
-%token TSFFloat
-%token TSFImage
-%token TSFInt32
-%token TSFNode
-%token TSFRotation
-%token TSFString
-%token TSFTime
-%token TSFVec2d
-%token TSFVec2f
-%token TSFVec3d
-%token TSFVec3f
+%token TMFBool TMFColor TMFColorRGBA TMFDouble TMFFloat TMFImage
+%token TMFInt32 TMFNode TMFRotation TMFString TMFTime TMFVec2d
+%token TMFVec2f TMFVec3d TMFVec3f TSFBool TSFColor TSFColorRGBA
+%token TSFDouble TSFFloat TSFImage TSFInt32 TSFNode TSFRotation
+%token TSFString TSFTime TSFVec2d TSFVec2f TSFVec3d TSFVec3f
 
 
 %%
@@ -117,9 +81,9 @@ x3dScene : { root = new Group(); }
        metaStatements
        statements
 
-profileStatement:      PROFILE profileNameId | ;
+profileStatement:        PROFILE profileNameId | ;
 
-profileNameId:         ID ;
+profileNameId:           ID ;
 
 componentStatements:     componentStatement |
                          componentStatement componentStatements |
@@ -131,10 +95,62 @@ componentNameId:         ID ;
 
 componentSupportLevel:   STRING ;
 
-exportStatement:         EXPORT nodeNameId AS exportedNodeNameId ;
+exportStatement:         EXPORT nodeNameId AS exportedNodeNameId {
+  Node *node= DEF_map->getNode( $2 );
+  if ( node ) {
+    if ( DEF_export )
+      DEF_export->addNode( $4, node );
+    else
+      Console(3) << "WARNING: EXPORT error. No export DEF map provided!"
+                 << getLocationString() << endl;
+  } else {
+    Console(3) << "WARNING: EXPORT error. Node named \"" 
+               << $2 << "\" does not exist."
+               << getLocationString() << endl;
+  }
+};
 
 importStatement:         IMPORT inlineNodeNameId '.' exportedNodeNameId 
-                         AS nodeNameId ;
+                         AS nodeNameId {
+  if( strcmp( $2, "H3D_EXPORTS" ) == 0 ) {
+    Node *import_node = 
+      H3DExports::getH3DExportNode( $4 );
+    if( import_node ) {
+      DEF_map->addNode( $6, import_node ); 
+    } else {
+      Console(3) << "WARNING: IMPORT error. H3D_EXPORTS " 
+                 << "does not include \""
+                 << $4 << "\"" 
+                 << getLocationString() << endl;
+    }
+  } else {
+    Node *n = DEF_map->getNode( $2 );
+    Inline *inline_node = dynamic_cast< Inline * >( n );
+    if( inline_node ) {
+      Node *import_node = 
+        inline_node->exported_nodes.getNode( $4 );
+      if( import_node ) {
+        DEF_map->addNode( $6, 
+                          import_node ); 
+      } else {
+        Console(3) << "WARNING: IMPORT error. Inline node \"" 
+                   << $2 << "\" does not EXPORT \""
+                   << $4 << "\"" 
+                   << getLocationString() << endl;
+      }
+    } else {
+      if( n ) {
+        Console(3) << "WARNING: IMPORT error. Node \"" 
+                   << $2 << "\" is not an Inline node "
+                   << getLocationString() << endl;
+      } else {
+        Console(3) << "WARNING: IMPORT error. Node named \"" 
+                   << $2 << "\" does not exist."
+                   << getLocationString() << endl;
+      }
+    }
+  }
+};
 
 metaStatements:          metaStatement |
                          metaStatement metaStatements |
@@ -155,6 +171,7 @@ statement:               nodeStatement {
                             node_stack.pop_back();
                             root->children->push_back( node );
                          } | 
+                         exportStatement |
                          importStatement |
                          protoStatement |
                          routeStatement ;
@@ -338,31 +355,17 @@ fieldType:              TMFBool |
                         TSFVec3f ;
 
 fieldValue:             sfValue  { 
-  Node *node = node_stack.back();
-  Field *field = node->getField( field_stack.back() );
-  ParsableField *pfield =  
-    dynamic_cast< ParsableField * >( field );
-  if ( pfield ) {
-    pfield->setValueFromString( $1 );
-  } else
-    Console(3) << "WARNING: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getLocationString() << " )" << endl;
+  setFieldValue( $1 );
 } |
                         mfValue  { 
-  Node *node = node_stack.back();
-  Field *field = node->getField( field_stack.back() );
-  ParsableField *pfield =  
-    dynamic_cast< ParsableField * >( field );
-  if ( pfield ) {
-    pfield->setValueFromString( $1 );
-  } else
-    Console(3) << "WARNING: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getLocationString() << " )" << endl;
+  setFieldValue( $1 );
                         } |
                         sfnodeValue |
                         mfnodeValue;
 
 sfValue:                STRING |
                         TRUE { $$ = "TRUE"; }|
-                        FALSE { $$ = "TRUE";} ;
+                        FALSE { $$ = "FALSE";} ;
 
 mfValue:                sfValue |
                         '[' ']' { $$ = ""; }  |
@@ -370,86 +373,26 @@ mfValue:                sfValue |
 
 
 sfnodeValue:            nodeStatement {
-                           Node *node_value = node_stack.back();
-                           node_stack.pop_back();
-                           Node *node = node_stack.back();
-                           Field *field = node->getField( field_stack.back() );
-                           SFNode *sf = dynamic_cast< SFNode *>( field );    
-                           if ( sf ) {
-                             sf->setValue( node_value );
-                           } else {
-                             MFNode *mf = dynamic_cast< MFNode *>( field );    
-                             if ( mf ) {
-                               mf->push_back( node_value );
-                             } else
-                               Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << endl;
-                           }
+  setNodeStatement( 0 );
                         } |
                         VRMLNULL {
-                           Node *node = node_stack.back();
-                           Field *field = node->getField( field_stack.back() );
-                           SFNode *sf = dynamic_cast< SFNode *>( field );    
-                           if ( sf ) {
-                             sf->setValue( NULL );
-                           } else {
-                             MFNode *mf = dynamic_cast< MFNode *>( field );    
-                             if ( mf ) {
-                               mf->clear();
-                             } else
-                               Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" to NULL in node " << node->getName() << endl; 
-                           }
+  setNodeStatement( 1 );
                         };
 
 mfnodeValue:            nodeStatement  {
-                           Node *node_value = node_stack.back();
-                           node_stack.pop_back();
-                           Node *node = node_stack.back();
-                           Field *field = node->getField( field_stack.back() );
-                           SFNode *sf = dynamic_cast< SFNode *>( field );    
-                           if ( sf ) {
-                             sf->setValue( node_value );
-                           } else {
-                             MFNode *mf = dynamic_cast< MFNode *>( field );    
-                             if ( mf ) {
-                               mf->push_back( node_value );
-                             } else
-                                Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << endl; 
-                           }
-                        }|
-                        '[' ']' |
+  setNodeStatement( 0 );
+                        } |
+                        '[' ']' { 
+  setNodeStatement( 1 );
+
+                        } |
                         '[' nodeStatements ']' ;
 
 nodeStatements:         nodeStatement  {
-                           Node *node_value = node_stack.back();
-                           node_stack.pop_back();
-                           Node *node = node_stack.back();
-                           Field *field = node->getField( field_stack.back() );
-                           SFNode *sf = dynamic_cast< SFNode *>( field );    
-                           if ( sf ) {
-                             sf->setValue( node_value );
-                           } else {
-                             MFNode *mf = dynamic_cast< MFNode *>( field );    
-                             if ( mf ) {
-                               mf->push_back( node_value );
-                             } else
-                                Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << endl; 
-                           }
+  setNodeStatement( 0 );
                         } |
                         nodeStatement  {
-                           Node *node_value = node_stack.back();
-                           node_stack.pop_back();
-                           Node *node = node_stack.back();
-                           Field *field = node->getField( field_stack.back() );
-                           SFNode *sf = dynamic_cast< SFNode *>( field );    
-                           if ( sf ) {
-                             sf->setValue( node_value );
-                           } else {
-                             MFNode *mf = dynamic_cast< MFNode *>( field );    
-                             if ( mf ) {
-                               mf->push_back( node_value );
-                             } else
-                               Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << endl; 
-                           }
+  setNodeStatement( 0 );
                         }  nodeStatements ;
 
 fieldId:                STRING;
@@ -463,13 +406,60 @@ int yyerror( char const *e ) {
 }
 
 
-int parse( char *f ) {
-  DEF_map = new DEFNodes();
-  yyin = fopen( f, "r" );
-  if (yyin)
-    return yyparse();
-  else
-    return -1;
+void setFieldValue( const char* v ) {
+  Node *node = node_stack.back();
+  Field *field = node->getField( field_stack.back() );
+  ParsableField *pfield =  
+    dynamic_cast< ParsableField * >( field );
+  if ( pfield ) {
+    pfield->setValueFromString( v );
+  } else
+    Console(3) << "WARNING: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getLocationString() << " )" << endl;
+}
+
+void setNodeStatement( int nullnode ) {
+  Node *node_value = NULL;
+  if ( !nullnode ) {
+    node_value = node_stack.back();
+    node_stack.pop_back();
+  }
+  Node *node = node_stack.back();
+  Field *field = node->getField( field_stack.back() );
+  SFNode *sf = dynamic_cast< SFNode *>( field );    
+  if ( sf ) {
+    sf->setValue( node_value );
+  } else {
+    MFNode *mf = dynamic_cast< MFNode *>( field );    
+    if ( mf ) {
+      if ( node_value )
+        mf->push_back( node_value );
+      else
+        mf->clear();
+    } else
+      Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << endl;
+  }
+}
+
+int yylex() {
+  return lexer->yylex();
+}
+
+int parse( istream *inp, DEFNodes *dn, DEFNodes *exported_nodes ) {
+  if ( !dn )
+    DEF_map = new DEFNodes();
+  else DEF_map = dn;
+  DEF_export = exported_nodes;
+
+  //yyin = fopen( f, "r" );
+  if (!inp->fail()) {
+    lexer = new yyFlexLexer( inp, &Console );
+    yyparse();
+    if ( !dn )
+      delete DEF_map;
+    delete lexer;
+    return 1;
+  } else 
+    return 0;
 }
 
 char *getLocationString() {
