@@ -195,6 +195,7 @@ using namespace std;
 #define YYERROR_VERBOSE  1
 extern FILE *yyin;
 
+void setyylval( char *);
 int yyerror( char const *e );
 int yylex();
 int parse( istream *, DEFNodes*, DEFNodes* );
@@ -235,12 +236,12 @@ vector< const char* > field_stack;
 #endif
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 50 "vrml.bison"
+#line 51 "vrml.bison"
 typedef union YYSTYPE {
   char* val;
 } YYSTYPE;
 /* Line 196 of yacc.c.  */
-#line 244 "vrml.cpp"
+#line 245 "vrml.cpp"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -252,7 +253,7 @@ typedef union YYSTYPE {
 
 
 /* Line 219 of yacc.c.  */
-#line 256 "vrml.cpp"
+#line 257 "vrml.cpp"
 
 #if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
 # define YYSIZE_T __SIZE_TYPE__
@@ -525,20 +526,20 @@ static const yysigned_char yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,    78,    78,    78,    84,    84,    86,    88,    89,    90,
-      92,    98,   113,   155,   156,   157,   159,   161,   163,   165,
-     166,   167,   169,   174,   175,   176,   177,   179,   180,   183,
-     187,   188,   190,   191,   193,   194,   195,   197,   200,   202,
-     203,   204,   207,   208,   209,   211,   212,   214,   218,   219,
-     221,   223,   224,   225,   226,   228,   265,   267,   270,   270,
-     278,   280,   281,   282,   284,   285,   286,   288,   289,   290,
-     291,   292,   294,   296,   296,   301,   302,   303,   304,   305,
-     306,   308,   310,   312,   314,   316,   318,   320,   322,   324,
-     326,   327,   328,   329,   330,   331,   332,   333,   334,   335,
-     336,   337,   338,   339,   340,   341,   342,   343,   344,   345,
-     346,   347,   348,   349,   350,   351,   352,   353,   354,   355,
-     357,   360,   363,   364,   366,   367,   368,   370,   371,   372,
-     375,   378,   382,   385,   389,   391,   394,   394,   398
+       0,    79,    79,    79,    85,    85,    87,    89,    90,    91,
+      93,    99,   114,   156,   157,   158,   160,   162,   164,   166,
+     167,   168,   170,   175,   176,   177,   178,   180,   181,   184,
+     188,   189,   191,   192,   194,   195,   196,   198,   201,   203,
+     204,   205,   208,   209,   210,   212,   213,   215,   219,   220,
+     222,   224,   225,   226,   227,   229,   266,   268,   271,   271,
+     279,   281,   282,   283,   285,   286,   287,   289,   290,   291,
+     292,   293,   295,   297,   297,   302,   303,   304,   305,   306,
+     307,   309,   311,   313,   315,   317,   319,   321,   323,   325,
+     327,   328,   329,   330,   331,   332,   333,   334,   335,   336,
+     337,   338,   339,   340,   341,   342,   343,   344,   345,   346,
+     347,   348,   349,   350,   351,   352,   353,   354,   355,   356,
+     358,   361,   364,   365,   367,   368,   369,   371,   372,   373,
+     376,   379,   383,   386,   390,   392,   395,   395,   399
 };
 #endif
 
@@ -1467,12 +1468,12 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 78 "vrml.bison"
+#line 79 "vrml.bison"
     { root = new Group(); ;}
     break;
 
   case 11:
-#line 98 "vrml.bison"
+#line 99 "vrml.bison"
     {
   Node *node= DEF_map->getNode( (yyvsp[-2].val) );
   if ( node ) {
@@ -1490,7 +1491,7 @@ yyreduce:
     break;
 
   case 12:
-#line 114 "vrml.bison"
+#line 115 "vrml.bison"
     {
   if( strcmp( (yyvsp[-4].val), "H3D_EXPORTS" ) == 0 ) {
     Node *import_node = 
@@ -1534,7 +1535,7 @@ yyreduce:
     break;
 
   case 22:
-#line 169 "vrml.bison"
+#line 170 "vrml.bison"
     {
                             Node *node = node_stack.back();
                             node_stack.pop_back();
@@ -1543,21 +1544,21 @@ yyreduce:
     break;
 
   case 28:
-#line 180 "vrml.bison"
+#line 181 "vrml.bison"
     {
                            DEF_map->addNode( (yyvsp[-1].val), node_stack.back() );
                          ;}
     break;
 
   case 29:
-#line 183 "vrml.bison"
+#line 184 "vrml.bison"
     {
                            node_stack.push_back( DEF_map->getNode( (yyvsp[0].val) ) );
                          ;}
     break;
 
   case 55:
-#line 229 "vrml.bison"
+#line 230 "vrml.bison"
     {
   Node *fr = DEF_map->getNode( (yyvsp[-6].val) );
   if ( fr ) {
@@ -1596,7 +1597,7 @@ yyreduce:
     break;
 
   case 58:
-#line 270 "vrml.bison"
+#line 271 "vrml.bison"
     { 
   Node *new_node =  H3DNodeDatabase::createNode( yylval.val );
   if ( !new_node )
@@ -1607,75 +1608,75 @@ yyreduce:
     break;
 
   case 73:
-#line 296 "vrml.bison"
+#line 297 "vrml.bison"
     { 
                             field_stack.push_back( (yyvsp[0].val) ); ;}
     break;
 
   case 74:
-#line 298 "vrml.bison"
+#line 299 "vrml.bison"
     {
                                 field_stack.pop_back();
                             ;}
     break;
 
   case 120:
-#line 357 "vrml.bison"
+#line 358 "vrml.bison"
     { 
   setFieldValue( (yyvsp[0].val) );
 ;}
     break;
 
   case 121:
-#line 360 "vrml.bison"
+#line 361 "vrml.bison"
     { 
   setFieldValue( (yyvsp[0].val) );
                         ;}
     break;
 
   case 125:
-#line 367 "vrml.bison"
+#line 368 "vrml.bison"
     { (yyval.val) = "TRUE"; ;}
     break;
 
   case 126:
-#line 368 "vrml.bison"
+#line 369 "vrml.bison"
     { (yyval.val) = "FALSE";;}
     break;
 
   case 128:
-#line 371 "vrml.bison"
+#line 372 "vrml.bison"
     { (yyval.val) = ""; ;}
     break;
 
   case 129:
-#line 372 "vrml.bison"
+#line 373 "vrml.bison"
     { (yyval.val) = (yyvsp[-1].val); ;}
     break;
 
   case 130:
-#line 375 "vrml.bison"
+#line 376 "vrml.bison"
     {
   setNodeStatement( 0 );
                         ;}
     break;
 
   case 131:
-#line 378 "vrml.bison"
+#line 379 "vrml.bison"
     {
   setNodeStatement( 1 );
                         ;}
     break;
 
   case 132:
-#line 382 "vrml.bison"
+#line 383 "vrml.bison"
     {
   setNodeStatement( 0 );
                         ;}
     break;
 
   case 133:
-#line 385 "vrml.bison"
+#line 386 "vrml.bison"
     { 
   setNodeStatement( 1 );
 
@@ -1683,14 +1684,14 @@ yyreduce:
     break;
 
   case 135:
-#line 391 "vrml.bison"
+#line 392 "vrml.bison"
     {
   setNodeStatement( 0 );
                         ;}
     break;
 
   case 136:
-#line 394 "vrml.bison"
+#line 395 "vrml.bison"
     {
   setNodeStatement( 0 );
                         ;}
@@ -1701,7 +1702,7 @@ yyreduce:
     }
 
 /* Line 1126 of yacc.c.  */
-#line 1705 "vrml.cpp"
+#line 1706 "vrml.cpp"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1969,13 +1970,14 @@ yyreturn:
 }
 
 
-#line 400 "vrml.bison"
+#line 401 "vrml.bison"
 
 
 
 
 int yyerror( char const *e ) {
    cerr << "YYERROR: " << e << endl;
+   return 0;
 }
 
 
@@ -2043,4 +2045,7 @@ Group *getRoot() {
   return root;
 }
 
+void setyylval( char* l ) {
+  yylval.val = strdup(l);
+}
 
