@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "VrmlParser.h"
 #include "X3DSAX2Handlers.h"
 #include "GLUTWindow.h"
 #include "Group.h"
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  const char* xml_file = argv[1];
+  string xml_file = argv[1];
   try {
     AutoRef< KeySensor > ks( new KeySensor );
     AutoRef< MouseSensor > ms( new MouseSensor );
@@ -145,8 +146,15 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    t->children->push_back( X3D::createX3DFromURL( xml_file, 
-                                                   &dn ) );
+    if ( xml_file.size() > 4 && 
+         xml_file.find( ".wrl", xml_file.size()-5 ) != string::npos )
+      t->children->push_back( X3D::createVRMLFromURL( xml_file, 
+                                                     &dn ) );
+    else
+      t->children->push_back( X3D::createX3DFromURL( xml_file, 
+                                                      &dn ) );
+
+
     
     // set up routes to rotate the model
     ks->keyPress->route( quit_api );
