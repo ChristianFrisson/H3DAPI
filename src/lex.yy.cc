@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <iostream>
 using namespace std;
-#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
