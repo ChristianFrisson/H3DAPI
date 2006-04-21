@@ -43,12 +43,15 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile Extrusion.dot 
   class Extrusion : public X3DGeometryNode {
+	protected:
+		/// returns true if the two points are coincident
+		template <typename T>
+		inline bool coinc(T a , T b) { return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon;}
+
   public:
 
     /// Render the Extrusion with OpenGL.
     virtual void render();
-		/// returns true if the two points are coincident
-		inline bool coinc(Vec3f a, Vec3f b) { return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon;}
 
     /// Constructor.
     Extrusion( Inst< SFNode           > _metadata        = 0,
