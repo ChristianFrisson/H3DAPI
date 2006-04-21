@@ -404,6 +404,7 @@ fieldId:                STRING;
 
 int yyerror( char const *e ) {
    cerr << "YYERROR: " << e << endl;
+   return 0;
 }
 
 
