@@ -47,7 +47,7 @@
 
 extern "C++" {
 
-#include <iostream.h>
+#include <iostream>
 
 struct yy_buffer_state;
 typedef int yy_state_type;
