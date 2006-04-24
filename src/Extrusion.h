@@ -47,6 +47,51 @@ namespace H3D {
 		/// returns true if the two points are coincident
 		template <typename T>
 		inline bool coinc(T a , T b) { return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon;}
+		
+		inline Vec3f calculateNormal( const vector < Vec3f > &vertexVector,
+																	H3DInt32 right,
+																	H3DInt32 middle,
+																	H3DInt32 left) {
+			return ( vertexVector[ right ] - vertexVector[ middle ] ).crossProduct( 
+							 vertexVector[ left ] - vertexVector[ middle ] ); }
+
+		/// Create a vector from the arguments given
+		/// with one normal for each vertex in each face, i.e.
+		/// the number of normals will be the number of facess *4
+		vector < Vec3f > generateNormalsPerVertex( 
+                      vector < Vec3f > &vertexVector,
+											const vector < Vec2f > &cross_section,
+											vector < Vec3f > &yAxis,
+											bool ccwcheck,
+											H3DInt32 nrOfCrossSectionPoints,
+											H3DInt32 nrOfSpinePoints,
+											bool closedSpine,
+											bool closedCrossSection,
+											H3DFloat creaseAngle);
+		
+		/// Create a vector from the arguments given
+		/// with one normal for each vertex. The normal for each
+		/// vertex will be the average of the normal of all faces using
+		/// that vertex.
+    vector < Vec3f > generateNormalsPerVertex( 
+                      vector < Vec3f > &vertexVector,
+											const vector < Vec2f > &cross_section,
+											vector < Vec3f > &yAxis,
+											bool ccwcheck,
+											H3DInt32 nrOfCrossSectionPoints,
+											H3DInt32 nrOfSpinePoints,
+											bool closedSpine,
+											bool closedCrossSection);
+
+		/// Create a vector from the arguments given
+		/// with one normal for each face specified.
+		vector< Vec3f > generateNormalsPerFace(  
+											vector < Vec3f > &vertexVector,
+											const vector < Vec2f > &cross_section,
+											vector < Vec3f > &yAxis,
+											bool ccwcheck,
+											H3DInt32 nrOfCrossSectionPoints,
+											H3DInt32 nrOfSpinePoints);
 
   public:
 
