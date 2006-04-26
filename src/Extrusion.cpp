@@ -130,12 +130,10 @@ void Extrusion::render() {
 	vector< int > spineForward;
 	vector< int > spineBackward;
 	vector< Matrix3f > orientationMatrices;
-	bool closedSpine = false;					// if the spine is closed
+	bool closedSpine = false;
 	bool collinear = true;				// if the spine is collinear
 	bool coincident = false;			// if every point on the spine is the same
 	bool closedCrossSection = false;
-	//Vec3f maxPoint;
-	//Vec3f minPoint;
 	
 	if( nrOfOrientationValues < nrOfSpinePoints && nrOfOrientationValues > 1 ) {
 		Console(3) << "Warning: Not enough orientation values in Extrusion node( "
@@ -176,22 +174,18 @@ void Extrusion::render() {
   if( solid->getValue() ) {
     glEnable( GL_CULL_FACE );
     glCullFace( GL_BACK );
-  } else {
+  } else
     glDisable( GL_CULL_FACE );
-  }
 	
-	if( nrOfOrientationValues > nrOfSpinePoints ) {
+	if( nrOfOrientationValues > nrOfSpinePoints )
 		nrOfOrientationValues = nrOfSpinePoints;
-	}
 
-	if( nrOfScaleValues > nrOfSpinePoints ) {
+	if( nrOfScaleValues > nrOfSpinePoints )
 		nrOfScaleValues = nrOfSpinePoints;
-	}
 
 	// check if the spine is closed
-	if( coinc( spineVectors.front(), spineVectors.back() ) ) {
+	if( coinc( spineVectors.front(), spineVectors.back() ) )
 		closedSpine = true;
-	}
 
 	// build vectors containing indicies to the first non-coincident spine. Backward and forward.
 	for(int i = 0; i < nrOfSpinePoints; i++) {
@@ -200,25 +194,22 @@ void Extrusion::render() {
 		do {
 			j++;
       
-			if( j >= nrOfSpinePoints) {
+			if( j >= nrOfSpinePoints)
 				j -= nrOfSpinePoints;
-			}
 		} while( j!= i && coinc( spineVectors[i], spineVectors[j] ) );
 		
 		spineForward.push_back(j);
 
-		if( i == 0 && j == 0){
+		if( i == 0 && j == 0)
 			coincident = true;
-		}
 		
 		j = i;
 
 		do {
 			j--;
       
-			if( j < 0 ) {
+			if( j < 0 )
 				j += nrOfSpinePoints;
-			}
 		} while( j!= i && coinc( spineVectors[i], spineVectors[j] ) );
 
 		spineBackward.push_back(j);
@@ -243,13 +234,11 @@ void Extrusion::render() {
 			Vec3f temp = ( spineVectors[spineForward.front()] - spineVectors[0] ).crossProduct( spineVectors[spineBackward.front()] - spineVectors[0] );
 			temp.normalizeSafe();
 			zAxis.push_back( temp );
-			if( H3DAbs( zAxis.front().lengthSqr() ) >= Constants::f_epsilon ) {
+			if( H3DAbs( zAxis.front().lengthSqr() ) >= Constants::f_epsilon )
 				collinear = false;
-			}
 		}
-		else {
+		else
 			zAxis.push_back( Vec3f( 0, 0, 0) );
-		}
 
 		// calculate z-axes for all spine points but the last and for the first spine point if it is undetermined.
 		for( int  i = 1; i < nrOfSpinePoints - 1; i++ ) {
@@ -259,23 +248,20 @@ void Extrusion::render() {
 
 			// minimize angle between positive zAxes
 			H3DFloat dotProduc = zAxis[i].dotProduct(zAxis[i - 1]);
-			if ( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 ) {
+			if( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 )
 				zAxis[i] = -zAxis[i];
-			}	
 
 			// first time a valid zAxes is calculated update the previous invalid ones
 			if( H3DAbs( zAxis.back().lengthSqr() ) >= Constants::f_epsilon ) {
 				collinear = false;
 				if( H3DAbs( zAxis.front().lengthSqr() ) < Constants::f_epsilon ) {
 					zAxis.front() = zAxis.back();
-					for( int j = 1; j < i && H3DAbs( zAxis[j].lengthSqr() ) < Constants::f_epsilon ; j++ ) {
+					for( int j = 1; j < i && H3DAbs( zAxis[j].lengthSqr() ) < Constants::f_epsilon ; j++ )
 						zAxis[j] = zAxis.front();
-					}
 				}
 			}
-			else {
+			else
 				zAxis.back() = zAxis[i-1];
-			}
 		}
 
 		// calculate z-axes for the last spine point
@@ -284,13 +270,11 @@ void Extrusion::render() {
 
 			// minimize angle between positive zAxes
 			H3DFloat dotProduc = zAxis.back().dotProduct(zAxis[nrOfSpinePoints - 2]);
-			if ( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 ) {
+			if( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 )
 				zAxis.back() = -zAxis.back();
-			}	
 		}
-		else {
+		else
 			zAxis.push_back( zAxis.back() );
-		}
 
 		if( collinear ) {
 			// the y-axes is calculated like this since when the spine is collinear
@@ -302,15 +286,12 @@ void Extrusion::render() {
 			yAxis.push_back( temp );
 
 			// create dummy x-axes.
-			if( H3DAbs( -1 + yAxis.front().x ) < Constants::f_epsilon ) {
+			if( H3DAbs( -1 + yAxis.front().x ) < Constants::f_epsilon )
 				xAxis.push_back( Vec3f(0, -1, 0) );
-			}
-			else if( H3DAbs( 1 + yAxis.front().x ) < Constants::f_epsilon ) {
+			else if( H3DAbs( 1 + yAxis.front().x ) < Constants::f_epsilon )
 				xAxis.push_back( Vec3f(0, 1, 0) );
-			}
-			else {
+			else
 				xAxis.push_back( Vec3f(1, 0, 0) );
-			}
 
 			zAxis.clear();
 			zAxis.push_back( xAxis.front().crossProduct( yAxis.front() ) );
@@ -362,11 +343,10 @@ void Extrusion::render() {
 				xAxis.push_back( temp );
 			}
 
-			if( closedSpine ) {
+			if( closedSpine )
 				yAxis.push_back( yAxis.front() );
-			}
 			else {
-				temp = spineVectors[spineBackward.back()] - spineVectors.back();
+				temp = spineVectors.back() - spineVectors[spineBackward.back()];
 				temp.normalizeSafe();
 				yAxis.push_back( temp );
 			}
@@ -376,26 +356,16 @@ void Extrusion::render() {
 		}
 	}
 
-	for( int i = 0; i < nrOfOrientationValues; i++ ) {
+	for( int i = 0; i < nrOfOrientationValues; i++ )
 		orientationMatrices.push_back( static_cast< Matrix3f >(orientationVectors[i]) );
-	}
 	
 	// check if the crossSection is closed
-	if( coinc( cross_section.front(), cross_section.back() ) ) {
+	if( coinc( cross_section.front(), cross_section.back() ) )
 		closedCrossSection = true;
-	}
 
 	H3DInt32 closedCrossSectionInt = 0;
-	if( closedCrossSection ) {
+	if( closedCrossSection )
 		closedCrossSectionInt = 1;
-	}
-
-	// to check which way the points are ordered looking in the negative direction from the positive y-axis.
-	H3DFloat ccwOrCw = 0;
-
-	for( int i = 0; i < nrOfCrossSectionPoints - closedCrossSectionInt; i++ ) {
-		ccwOrCw += cross_section[i].y * cross_section[(i+1) % nrOfCrossSectionPoints].x - cross_section[(i+1) % nrOfCrossSectionPoints].y * cross_section[i].x;
-	}
 
 	for( int i = 0; i < nrOfSpinePoints; i++) {
 		for( int j = 0; j < nrOfCrossSectionPoints; j++ ) {
@@ -408,48 +378,53 @@ void Extrusion::render() {
 				minPoint = point0;
 			}
 			else {
-				if( point0.x > maxPoint.x ) {
+				if( point0.x > maxPoint.x )
 					maxPoint.x = point0.x;
-				}
-				if( point0.y > maxPoint.y ) {
+				if( point0.y > maxPoint.y )
 					maxPoint.y = point0.y;
-				}
-				if( point0.z > maxPoint.z ) {
+				if( point0.z > maxPoint.z )
 					maxPoint.z = point0.z;
-				}
 
-				if( point0.x < minPoint.x ) {
+				if( point0.x < minPoint.x )
 					minPoint.x = point0.x;
-				}
-				if( point0.y < minPoint.y ) {
+				if( point0.y < minPoint.y )
 					minPoint.y = point0.y;
-				}
-				if( point0.z < minPoint.z ) {
+				if( point0.z < minPoint.z )
 					minPoint.z = point0.z;
-				}
 			}
 
 			vertexVector.push_back( point0 );
 		}
 	}
 
-	/*BoxBound *box_bound = dynamic_cast< BoxBound * >( bound->getValue() );
-	box_bound->size->setValue( maxPoint - minPoint );
-	box_bound->center->setValue( (maxPoint + minPoint) / 2 );*/
-
-	//normalVector = generateNormalsPerFace( vertexVector, cross_section, yAxis, ccwcheck, nrOfCrossSectionPoints, nrOfSpinePoints );
-	//normalVector = generateNormalsPerVertex( vertexVector, cross_section, yAxis, ccwcheck, nrOfCrossSectionPoints, nrOfSpinePoints, closedSpine, closedCrossSection );
-	normalVector = generateNormalsPerVertex( vertexVector, cross_section, yAxis, ccwcheck, nrOfCrossSectionPoints, nrOfSpinePoints, closedSpine, closedCrossSection, creaseAngle->getValue() );
+	generateNormalsPerVertex( normalVector, vertexVector, cross_section, yAxis, ccwcheck, nrOfCrossSectionPoints, nrOfSpinePoints, closedSpine, closedCrossSection, creaseAngle->getValue() );
 
 	bool useCreaseAngle = true;
-	if( H3DAbs( creaseAngle->getValue() ) < Constants::f_epsilon ) {
+	if( H3DAbs( creaseAngle->getValue() ) < Constants::f_epsilon )
 		useCreaseAngle = false;
-	}
 
 	if( beginCap -> getValue() ) {
 		Vec3f point_x;
 		Vec3f point_z;
 		Vec3f point;
+
+		
+
+		/*for( int i = nrOfCrossSectionPoints - 1; i >= 0; i-- )
+		{
+			glDisable( GL_LIGHTING );
+			glBegin( GL_LINES );
+			glColor3f(1, 0, 0);
+			point = vertexVector[ i ];
+			glVertex3f( point.x, point.y , point.z);
+
+			point = vertexVector[i] + normalVector[ i ];
+			glVertex3f( point.x, point.y , point.z);
+			glColor3f(1, 1, 1);
+			glEnd();
+			glEnable( GL_LIGHTING );
+		}*/
+
 
 		glBegin( GL_POLYGON );
 
@@ -465,9 +440,11 @@ void Extrusion::render() {
 				theNormal = normalVector[ i ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
-			point_x = scaleVectors.front().x * cross_section[i].x * xAxis.front();
+			/*point_x = scaleVectors.front().x * cross_section[i].x * xAxis.front();
 			point_z = scaleVectors.front().y * cross_section[i].y * zAxis.front();
-			point = spineVectors.front() + orientationMatrices.front() * (point_x + point_z);
+			point = spineVectors.front() + orientationMatrices.front() * (point_x + point_z);*/
+
+			point = vertexVector[ i ];
 
 			glVertex3f( point.x, point.y , point.z);
 		}
@@ -477,19 +454,68 @@ void Extrusion::render() {
 	for( int i = 0; i < nrOfSpinePoints - 1; i++) {
 		for( int j = 0; j < nrOfCrossSectionPoints - 1; j++ ) {
 
+			H3DInt32 lower = i * nrOfCrossSectionPoints + j;
+			H3DInt32 upper = ( i + 1 ) * nrOfCrossSectionPoints + j;
+			H3DInt32 quad_index = i * (nrOfCrossSectionPoints - 1) + j;
+			
 			if( !useCreaseAngle ) {
 				Vec3f theNormal = normalVector[ 1 + i * ( nrOfCrossSectionPoints - 1 ) + j ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
 
-			glBegin( GL_QUADS );
-			
-			H3DInt32 lower = i * nrOfCrossSectionPoints + j;
-			H3DInt32 upper = ( i + 1 ) * nrOfCrossSectionPoints + j;
-			H3DInt32 quad_index = i * (nrOfCrossSectionPoints - 1) + j;
+			/*if( useCreaseAngle ) {
+				Vec3f theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 ];
 
-			
-			//Vec3f theNormal = normalVector[ 1 + lower ];
+				glColor3f(1, 1, 1);
+				glDisable( GL_LIGHTING );
+				glBegin( GL_LINES );
+				Vec3f point = vertexVector[ lower ];
+				glVertex3f( point.x, point.y , point.z);
+
+				point = vertexVector[lower] + theNormal;
+				glVertex3f( point.x, point.y , point.z);
+				glEnd();
+				glEnable( GL_LIGHTING );
+
+				theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 1];
+				glColor3f(1, 1, 0);
+				glDisable( GL_LIGHTING );
+				glBegin( GL_LINES );
+				point = vertexVector[ lower + 1 ];
+				glVertex3f( point.x, point.y , point.z);
+
+				point = vertexVector[lower + 1] + theNormal;
+				glVertex3f( point.x, point.y , point.z);
+				glEnd();
+				glEnable( GL_LIGHTING );
+
+				theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 2];
+				glColor3f(1, 0, 1);
+				glDisable( GL_LIGHTING );
+				glBegin( GL_LINES );
+				point = vertexVector[ upper + 1 ];
+				glVertex3f( point.x, point.y , point.z);
+
+				point = vertexVector[upper + 1] + theNormal;
+				glVertex3f( point.x, point.y , point.z);
+				glEnd();
+				glEnable( GL_LIGHTING );
+
+				theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 3];
+				glColor3f(0, 0, 1);
+				glDisable( GL_LIGHTING );
+				glBegin( GL_LINES );
+				point = vertexVector[ upper ];
+				glVertex3f( point.x, point.y , point.z);
+
+				point = vertexVector[upper] + theNormal;
+				glVertex3f( point.x, point.y , point.z);
+				glEnd();
+				glEnable( GL_LIGHTING );
+			}*/
+
+			glBegin( GL_QUADS );
+						
 			if( useCreaseAngle ) {
 				Vec3f theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
@@ -502,7 +528,7 @@ void Extrusion::render() {
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
 
-			//theNormal = normalVector[ 1 + lower + 1 ];
+
 			glVertex3f( vertexVector[ lower + 1 ].x, vertexVector[ lower + 1 ].y, vertexVector[ lower + 1 ].z  );
 
 			
@@ -511,7 +537,6 @@ void Extrusion::render() {
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
 
-			//theNormal = normalVector[ 1 + upper + 1 ];
 			glVertex3f( vertexVector[ upper + 1 ].x, vertexVector[ upper + 1 ].y, vertexVector[ upper + 1 ].z  );
 
 			if( useCreaseAngle ) {
@@ -529,7 +554,7 @@ void Extrusion::render() {
 		Vec3f point_x;
 		Vec3f point_z;
 		Vec3f point;
-
+		
 		glBegin( GL_POLYGON );
 
 		Vec3f theNormal;
@@ -544,10 +569,11 @@ void Extrusion::render() {
 				theNormal = normalVector[ normalVector.size() - nrOfCrossSectionPoints + i ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
-			point_x = scaleVectors.back().x * cross_section[i].x * xAxis.back();
+			/*point_x = scaleVectors.back().x * cross_section[i].x * xAxis.back();
 			point_z = scaleVectors.back().y * cross_section[i].y * zAxis.back();
-			point = spineVectors.back() + orientationMatrices.back() * (point_x + point_z);
+			point = spineVectors.back() + orientationMatrices.back() * (point_x + point_z);*/
 
+			point = vertexVector[ vertexVector.size() - nrOfCrossSectionPoints + i ];
 			glVertex3f( point.x, point.y , point.z);
 		}
 		glEnd();
@@ -570,29 +596,23 @@ vector< Vec3f > Extrusion::generateNormalsPerFace(
 	H3DInt32 closedCrossSectionInt = 0;
 	H3DFloat ccwOrCw = 0; // to check which way the points are ordered looking in the negative direction from the positive y-axis.
 
-	if( coinc( cross_section.front(), cross_section.back() ) ) {
+	if( coinc( cross_section.front(), cross_section.back() ) )
 		closedCrossSection = true;
-	}
 
-	if( closedCrossSection ) {
+	if( closedCrossSection )
 		closedCrossSectionInt = 1;
-	}
 
-	for( int i = 0; i < nrOfCrossSectionPoints - closedCrossSectionInt; i++ ) {
+	for( int i = 0; i < nrOfCrossSectionPoints - closedCrossSectionInt; i++ )
 		ccwOrCw += cross_section[i].y * cross_section[(i+1) % nrOfCrossSectionPoints].x - cross_section[(i+1) % nrOfCrossSectionPoints].y * cross_section[i].x;
-	}
 
 	if( beginCap -> getValue() ) {
-		if( ( ccwcheck && ccwOrCw >= 0 ) || ( !ccwcheck && ccwOrCw < 0 ) ) {
+		if( ( ccwcheck && ccwOrCw >= 0 ) || ( !ccwcheck && ccwOrCw < 0 ) )
 			normalVector.push_back( Vec3f( -yAxis.front().x, -yAxis.front().y, -yAxis.front().z ) );
-		}
-		else {
+		else
 			normalVector.push_back( Vec3f( yAxis.front().x, yAxis.front().y, yAxis.front().z ) );
-		}
 	}
-	else {
+	else
 		normalVector.push_back( Vec3f( 0, 0, 0 ) );
-	}
 
 	for( int i = 0; i < nrOfSpinePoints - 1; i++) {
 		for( int j = 0; j < nrOfCrossSectionPoints - 1; j++ ) {
@@ -609,32 +629,26 @@ vector< Vec3f > Extrusion::generateNormalsPerFace(
 																		 theIndices[ ( k + 1 ) % 4 ],
 																		 theIndices[ k % 4 ],
 																		 theIndices[ ( k - 1 ) % 4 ] );
-				if( H3DAbs( theNormal.lengthSqr() ) > Constants::f_epsilon ) {
+				if( H3DAbs( theNormal.lengthSqr() ) > Constants::f_epsilon )
 					zeroNormal = false;
-				}
 			}
 			theNormal.normalizeSafe();
 			
-			if( ccwcheck ) {
+			if( ccwcheck )
 				normalVector.push_back( theNormal );
-			}
-			else {
+			else
 				normalVector.push_back( -theNormal );
-			}
 		}
 	}
 	
 	if( endCap -> getValue() ) {
-		if( ( ccwcheck && ccwOrCw >= 0 ) || ( !ccwcheck && ccwOrCw < 0 ) ) {
+		if( ( ccwcheck && ccwOrCw >= 0 ) || ( !ccwcheck && ccwOrCw < 0 ) )
 			normalVector.push_back( Vec3f( yAxis.back().x, yAxis.back().y, yAxis.back().z ) );
-		}
-		else {
+		else
 			normalVector.push_back( Vec3f( -yAxis.back().x, -yAxis.back().y, -yAxis.back().z ) );
-		}
 	}
-	else {
+	else
 		normalVector.push_back( Vec3f( 0, 0, 0 ) );
-	}
 
 	return normalVector;
 }
@@ -677,9 +691,8 @@ vector< Vec3f > Extrusion::generateNormalsPerFace(
 					normalVector.back() = normalVector.back() + normalsPerFace.back();
 					endCapSummed = true;
 				}
-				else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {
+				else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 )
 					normalVector.back() = normalVector.back() + normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
-				}
  			}
 			normalVector.back().normalizeSafe();
 		}
@@ -688,8 +701,9 @@ vector< Vec3f > Extrusion::generateNormalsPerFace(
 	return normalVector;
 }*/
 
-vector < Vec3f > Extrusion::generateNormalsPerVertex( 
-                      vector < Vec3f > &vertexVector,
+void Extrusion::generateNormalsPerVertex( 
+                      vector < Vec3f > &normalVector,
+											vector < Vec3f > &vertexVector,
 											const vector < Vec2f > &cross_section,
 											vector < Vec3f > &yAxis,
 											bool ccwcheck,
@@ -698,7 +712,6 @@ vector < Vec3f > Extrusion::generateNormalsPerVertex(
 											bool closedSpine,
 											bool closedCrossSection,
 											H3DFloat crease_angle) {
-	vector< Vec3f > normalVector;
 	vector< Vec3f > normalsPerFace = generateNormalsPerFace( vertexVector,
 																													 cross_section,
 																													 yAxis,
@@ -706,256 +719,230 @@ vector < Vec3f > Extrusion::generateNormalsPerVertex(
 																													 nrOfCrossSectionPoints,
 																													 nrOfSpinePoints);
 	
-	if( H3DAbs( crease_angle ) < Constants::f_epsilon ) {
-		return normalsPerFace;
-	}
-	H3DFloat cos_crease_angle = H3DCos( crease_angle );
-	
-	if( beginCap->getValue() ) {
-		
-		Vec3f theFaceNormal = normalsPerFace.front();
-		normalVector.push_back( theFaceNormal );
-		Vec3f quad_normal = normalsPerFace[ 1 + (nrOfCrossSectionPoints - 2) ];
-		if( quad_normal * theFaceNormal > cos_crease_angle ) {
-			normalVector.back() += quad_normal;
-		}
-		if( closedCrossSection ) {
-			quad_normal = normalsPerFace[ 1 ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
-				normalVector.back() += quad_normal;
-			}
-		}
-		normalVector.back().normalizeSafe();
-		
-		for( int i = nrOfCrossSectionPoints - 2; i >= 1; i-- )
-		{
-			normalVector.push_back( theFaceNormal );
-			
-			quad_normal = normalsPerFace[ 1 + i ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
-				normalVector.back() += quad_normal;
-			}
-			
-			quad_normal = normalsPerFace[ 1 + i - 1 ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
-				normalVector.back() += quad_normal;
-			}
-
-			normalVector.back().normalizeSafe();
-		}
-
-		normalVector.push_back( theFaceNormal );
-		quad_normal = normalsPerFace[ 1 ];
-		if( quad_normal * theFaceNormal > cos_crease_angle ) {
-			normalVector.back() += quad_normal;
-		}
-		if( closedCrossSection ) {
-			quad_normal = normalsPerFace[ 1 + (nrOfCrossSectionPoints - 2) ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
-				normalVector.back() += quad_normal;
-			}
-		}
-		normalVector.back().normalizeSafe();
-	}
+	if( H3DAbs( crease_angle ) < Constants::f_epsilon )
+		normalVector = normalsPerFace;
 	else {
-		for( int i = 0; i < nrOfCrossSectionPoints; i++)
-			normalVector.push_back( normalsPerFace.front() );
-	}
+		H3DFloat cos_crease_angle = H3DCos( crease_angle );
 
-	for( int i = 0; i < nrOfSpinePoints - 1; i++) {
-		for( int j = 0; j < nrOfCrossSectionPoints - 1; j++ ) {
-			vector< H3DInt32 > theIndices;
-			Vec3f theFaceNormal = normalsPerFace[ 1 + i * (nrOfCrossSectionPoints - 1) + j ];
-			bool beginCapSummed = false;
-			bool endCapSummed = false;
-			
-			//vertex 0
-			normalVector.push_back( Vec3f( 0, 0, 0 ) );
-			H3DInt32 indexI = i;
-			H3DInt32 indexJ = j;
-			theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
-																				 closedCrossSection, nrOfCrossSectionPoints );
+		if( beginCap->getValue() ) {
 
-			
-			for( int k = 0; k < 4; k++) {
-				if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.front();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back() += quad_normal;
-					}
-					beginCapSummed = true;
-				}
-				else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.back();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-					endCapSummed = true;
-				}
-				else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {
-					Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-				}
- 			}
-			normalVector.back().normalizeSafe();
-
-			beginCapSummed = false;
-			endCapSummed = false;
-			//vertex 1
-			normalVector.push_back( Vec3f( 0, 0, 0 ) );
-			indexI = i;
-			indexJ = j + 1;
-			theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
-																				 closedCrossSection, nrOfCrossSectionPoints );
-
-			for( int k = 0; k < 4; k++) {
-				if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.front();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-					beginCapSummed = true;
-				}
-				else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.back();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-					endCapSummed = true;
-				}
-				else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {		
-					Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-				}
- 			}
-			normalVector.back().normalizeSafe();
-
-			//vertex 2
-			beginCapSummed = false;
-			endCapSummed = false;
-			normalVector.push_back( Vec3f( 0, 0, 0 ) );
-			indexI = i + 1;
-			indexJ = j + 1;
-			theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
-																				 closedCrossSection, nrOfCrossSectionPoints );
-
-			for( int k = 0; k < 4; k++) {
-				if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.front();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-					beginCapSummed = true;
-				}
-				else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.back();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-					endCapSummed = true;
-				}
-				else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {
-					Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-				}
- 			}
-			normalVector.back().normalizeSafe();
-
-			//vertex 3
-			beginCapSummed = false;
-			endCapSummed = false;
-			normalVector.push_back( Vec3f( 0, 0, 0 ) );
-			indexI = i + 1;
-			indexJ = j;
-			theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
-																				 closedCrossSection, nrOfCrossSectionPoints );
-
-			for( int k = 0; k < 4; k++) {
-				if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.front();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-					beginCapSummed = true;
-				}
-				else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
-					Vec3f quad_normal = normalsPerFace.back();
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-					endCapSummed = true;
-				}
-				else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {
-					Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
-					if( quad_normal * theFaceNormal > cos_crease_angle ) {
-						normalVector.back()+=quad_normal;
-					}
-				}
- 			}
-
-			normalVector.back().normalizeSafe();
-		}
-	}
-	
-	if( endCap->getValue() ) {
-		
-		H3DInt32 theLastVertexNormal = normalsPerFace.size() - 1;
-		Vec3f theFaceNormal = normalsPerFace.back();
-		normalVector.push_back( theFaceNormal );
-		Vec3f quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints ];
-		if( quad_normal * theFaceNormal > cos_crease_angle ) {
-			normalVector.back() += quad_normal;
-		}
-		if( closedCrossSection ) {
-			quad_normal = normalsPerFace[ theLastVertexNormal ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
-				normalVector.back() += quad_normal;
-			}
-		}
-		normalVector.back().normalizeSafe();
-		
-		for( int i = 1; i < nrOfCrossSectionPoints - 1; i++ )
-		{
+			Vec3f theFaceNormal = normalsPerFace.front();
 			normalVector.push_back( theFaceNormal );
-			
-			quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints + i ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
+			Vec3f quad_normal = normalsPerFace[ 1 ];
+			if( quad_normal * theFaceNormal > cos_crease_angle )
 				normalVector.back() += quad_normal;
+			if( closedCrossSection ) {
+				quad_normal = normalsPerFace[ 1 + (nrOfCrossSectionPoints - 1) - 1 ];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
 			}
+			normalVector.back().normalizeSafe();
 			
-			quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints + i - 1 ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
-				normalVector.back() += quad_normal;
+			for( int i = 1; i < nrOfCrossSectionPoints - 1; i++ )
+			{
+				normalVector.push_back( theFaceNormal );
+
+				quad_normal = normalsPerFace[ 1 + i ];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
+
+				quad_normal = normalsPerFace[ 1 + i - 1 ];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
+
+				normalVector.back().normalizeSafe();
 			}
 
+			normalVector.push_back( theFaceNormal );
+			quad_normal = normalsPerFace[ 1 + (nrOfCrossSectionPoints - 1) - 1 ];
+			if( quad_normal * theFaceNormal > cos_crease_angle )
+				normalVector.back() += quad_normal;
+			if( closedCrossSection ) {
+				quad_normal = normalsPerFace[ 1 ];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
+			}
 			normalVector.back().normalizeSafe();
 		}
-
-		normalVector.push_back( theFaceNormal );
-		quad_normal = normalsPerFace[ theLastVertexNormal ];
-		if( quad_normal * theFaceNormal > cos_crease_angle ) {
-			normalVector.back() += quad_normal;
+		else {
+			for( int i = 0; i < nrOfCrossSectionPoints; i++)
+				normalVector.push_back( normalsPerFace.front() );
 		}
-		if( closedCrossSection ) {
-			quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints ];
-			if( quad_normal * theFaceNormal > cos_crease_angle ) {
-				normalVector.back() += quad_normal;
+
+		for( int i = 0; i < nrOfSpinePoints - 1; i++) {
+			for( int j = 0; j < nrOfCrossSectionPoints - 1; j++ ) {
+				vector< H3DInt32 > theIndices;
+				Vec3f theFaceNormal = normalsPerFace[ 1 + i * (nrOfCrossSectionPoints - 1) + j ];
+				bool beginCapSummed = false;
+				bool endCapSummed = false;
+
+				//vertex 0
+				normalVector.push_back( Vec3f( 0, 0, 0 ) );
+				H3DInt32 indexI = i;
+				H3DInt32 indexJ = j;
+				theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
+					closedCrossSection, nrOfCrossSectionPoints );
+
+
+				for( int k = 0; k < 4; k++) {
+					if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.front();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back() += quad_normal;
+						beginCapSummed = true;
+					}
+					else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.back();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back()+=quad_normal;
+						endCapSummed = true;
+					}
+					else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {
+							Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
+							if( quad_normal * theFaceNormal > cos_crease_angle )
+								normalVector.back()+=quad_normal;
+					}
+				}
+				normalVector.back().normalizeSafe();
+
+				beginCapSummed = false;
+				endCapSummed = false;
+				//vertex 1
+				normalVector.push_back( Vec3f( 0, 0, 0 ) );
+				indexI = i;
+				indexJ = j + 1;
+				theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
+					closedCrossSection, nrOfCrossSectionPoints );
+
+				for( int k = 0; k < 4; k++) {
+					if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.front();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back()+=quad_normal;
+						beginCapSummed = true;
+					}
+					else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.back();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back()+=quad_normal;
+						endCapSummed = true;
+					}
+					else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {		
+							Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
+							if( quad_normal * theFaceNormal > cos_crease_angle )
+								normalVector.back()+=quad_normal;
+					}
+				}
+				normalVector.back().normalizeSafe();
+
+				//vertex 2
+				beginCapSummed = false;
+				endCapSummed = false;
+				normalVector.push_back( Vec3f( 0, 0, 0 ) );
+				indexI = i + 1;
+				indexJ = j + 1;
+				theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
+					closedCrossSection, nrOfCrossSectionPoints );
+
+				for( int k = 0; k < 4; k++) {
+					if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.front();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back()+=quad_normal;
+						beginCapSummed = true;
+					}
+					else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.back();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back()+=quad_normal;
+						endCapSummed = true;
+					}
+					else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {
+							Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
+							if( quad_normal * theFaceNormal > cos_crease_angle )
+								normalVector.back()+=quad_normal;
+					}
+				}
+				normalVector.back().normalizeSafe();
+
+				//vertex 3
+				beginCapSummed = false;
+				endCapSummed = false;
+				normalVector.push_back( Vec3f( 0, 0, 0 ) );
+				indexI = i + 1;
+				indexJ = j;
+				theIndices = findSurroundingFaces( indexI, indexJ, closedSpine, nrOfSpinePoints, 
+					closedCrossSection, nrOfCrossSectionPoints );
+
+				for( int k = 0; k < 4; k++) {
+					if( theIndices[ k ] == -1 && theIndices[ k + 4 ] != -2 && !beginCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.front();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back()+=quad_normal;
+						beginCapSummed = true;
+					}
+					else if( theIndices[ k ] == -3 && theIndices[ k + 4 ] != -2 && !endCapSummed ) {
+						Vec3f quad_normal = normalsPerFace.back();
+						if( quad_normal * theFaceNormal > cos_crease_angle )
+							normalVector.back()+=quad_normal;
+						endCapSummed = true;
+					}
+					else if( theIndices[ k ] != -2 && theIndices[ k + 4 ] != -2 && theIndices[ k ] != -1 && theIndices[ k ] != -3 ) {
+							Vec3f quad_normal = normalsPerFace[ 1 + theIndices[ k ] * (nrOfCrossSectionPoints - 1) + theIndices[ k + 4 ] ];
+							if( quad_normal * theFaceNormal > cos_crease_angle )
+								normalVector.back()+=quad_normal;
+					}
+				}
+
+				normalVector.back().normalizeSafe();
 			}
 		}
-		normalVector.back().normalizeSafe();
-	}
-	else {
-		for( int i = 0; i < nrOfCrossSectionPoints; i++ )
-		normalVector.push_back( normalsPerFace.back() );
-	}
 
-	return normalVector;
+		if( endCap->getValue() ) {
+
+			H3DInt32 theLastVertexNormal = normalsPerFace.size() - 1;
+			Vec3f theFaceNormal = normalsPerFace.back();
+			normalVector.push_back( theFaceNormal );
+			Vec3f quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints ];
+			if( quad_normal * theFaceNormal > cos_crease_angle )
+				normalVector.back() += quad_normal;
+			if( closedCrossSection ) {
+				quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints + 1];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
+			}
+			normalVector.back().normalizeSafe();
+
+			for( int i = 1; i < nrOfCrossSectionPoints - 1; i++ )	{
+				normalVector.push_back( theFaceNormal );
+
+				quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints + i ];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
+
+				quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints + i + 1 ];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
+
+				normalVector.back().normalizeSafe();
+			}
+
+			normalVector.push_back( theFaceNormal );
+			quad_normal = normalsPerFace[ theLastVertexNormal  - nrOfCrossSectionPoints + 1 ];
+			if( quad_normal * theFaceNormal > cos_crease_angle )
+				normalVector.back() += quad_normal;
+			if( closedCrossSection ) {
+				quad_normal = normalsPerFace[ theLastVertexNormal - nrOfCrossSectionPoints ];
+				if( quad_normal * theFaceNormal > cos_crease_angle )
+					normalVector.back() += quad_normal;
+			}
+			normalVector.back().normalizeSafe();
+		}
+		else {
+			for( int i = 0; i < nrOfCrossSectionPoints; i++ )
+				normalVector.push_back( normalsPerFace.back() );
+		}
+	}
 }
 
 vector< H3DInt32 > Extrusion::findSurroundingFaces( 

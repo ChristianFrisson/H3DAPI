@@ -66,8 +66,9 @@ namespace H3D {
 		/// Create a vector from the arguments given
 		/// with one normal for each vertex in each face, i.e.
 		/// the number of normals will be the number of facess *4
-		vector < Vec3f > generateNormalsPerVertex( 
-                      vector < Vec3f > &vertexVector,
+		void generateNormalsPerVertex( 
+                      vector < Vec3f > &normalVector,
+											vector < Vec3f > &vertexVector,
 											const vector < Vec2f > &cross_section,
 											vector < Vec3f > &yAxis,
 											bool ccwcheck,
