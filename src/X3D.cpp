@@ -9,9 +9,51 @@
 #include "X3DSAX2Handlers.h"
 #include "IStreamInputSource.h"
 #include "ResourceResolver.h"
+#include "VrmlParser.h"
 #include <sstream>
 
 using namespace H3D;
+
+namespace X3DInternals {
+  // A simple attempt to automatically determine VRMLedness of a 
+  // file/string/url.
+  bool isVRML( const string &str ) {
+    int x3d_pos = str.find( "<" );
+    int vrml_pos = str.find( "{" );
+    if ( vrml_pos == string::npos )
+      return false;
+    else if  ( x3d_pos == string::npos )
+      return true;
+    else if ( x3d_pos < vrml_pos )
+      return false;
+    else if ( x3d_pos > vrml_pos )
+      return true;
+    else if ( str.find( "#VRML" ) == 0 )
+      return true;
+    else
+      return false;
+  }
+
+  bool isVRML( const istream &is ) {
+    char c;
+    while ( is.get(c) ) {
+      if ( c == '<' )
+        return false;
+      if ( c == '{' )
+        return true;
+      if ( c == '#' ) {
+        // could be a VRML comment
+        while ( is.get(c) ) {
+          if ( c == '\n' )
+            break;
+        }
+      }
+    }
+    return false;
+  }
+}
+
+using namespace X3DInternals;
 
 SAX2XMLReader* X3D::getNewXMLParser() {
   SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Never;
@@ -51,8 +93,8 @@ Group* X3D::createX3DFromString( const string &str,
 				 PrototypeVector *prototypes  ) {
   Group *g = new Group;
   AutoRef< Node > n = createX3DNodeFromString( str, dn,
-					       exported_nodes, 
-					       prototypes  );
+                                               exported_nodes, 
+                                               prototypes  );
   if( n.get() )
     g->children->push_back( n.get() );
   return g;
@@ -88,14 +130,18 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
                                               DEFNodes *dn,
 					      DEFNodes *exported_nodes,
 					      PrototypeVector *prototypes ) {
-  auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
-  X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
-  stringstream s;
-  s << str;
-  parser->setContentHandler(&handler);
-  parser->setErrorHandler(&handler); 
-  parser->parse( IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
-  return handler.getResultingNode();
+  if ( isVRML( str ) )
+    return createVRMLNodeFromString( str, dn );
+  else {
+    auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
+    X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
+    stringstream s;
+    s << str;
+    parser->setContentHandler(&handler);
+    parser->setErrorHandler(&handler); 
+    parser->parse( IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
+    return handler.getResultingNode();
+  }
 }
 
 AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
@@ -121,6 +167,10 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
     parser->parse( url.c_str() );
   else {
     XERCES_CPP_NAMESPACE_USE
+    ifstream istest( resolved_url.c_str() );
+    if ( isVRML( istest ) )
+      return createVRMLNodeFromURL( resolved_url, dn );
+    // else...
     ifstream is( resolved_url.c_str() );
     XMLCh *url_ch = new XMLCh[ url.size() + 1 ];
     for( unsigned int i = 0; i < url.size(); i++ ) {
