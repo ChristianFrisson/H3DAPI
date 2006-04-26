@@ -65,7 +65,8 @@ Extrusion::Extrusion(
                               Inst< MFRotation  > _orientation,
                               Inst< MFVec2f			> _scale,
 															Inst< SFBool      > _solid,
-                              Inst< MFVec3f			> _spine ) :
+                              Inst< MFVec3f			> _spine,
+															Inst< MFVec3f     > _vertexVectors) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   beginCap       ( _beginCap     ),
   ccw						 ( _ccw          ),
@@ -76,7 +77,8 @@ Extrusion::Extrusion(
   orientation    ( _orientation  ),
   scale					 ( _scale        ),
   solid					 ( _solid				 ),
-  spine					 ( _spine				 ) {
+  spine					 ( _spine				 ),
+	vertexVectors  ( _vertexVectors ) {
 
   type_name = "Extrusion";
 
@@ -108,6 +110,8 @@ Extrusion::Extrusion(
   scale->route( displayList, id );
   solid->route( displayList, id );
   spine->route( displayList, id );
+
+	vertexVectors->route( bound );
 }
 
 void Extrusion::render() {
@@ -121,6 +125,7 @@ void Extrusion::render() {
   const vector< Vec2f > &scaleVectors = scale->getValue();
   const vector< Vec3f > &spineVectors = spine->getValue();
 	const vector< Rotation > &orientationVectors = orientation->getValue();
+	H3DFloat crease_angle = creaseAngle->getValue();
   vector< Vec3f > xAxis;
   vector< Vec3f > yAxis;
   vector< Vec3f > zAxis;
@@ -130,6 +135,8 @@ void Extrusion::render() {
 	vector< int > spineForward;
 	vector< int > spineBackward;
 	vector< Matrix3f > orientationMatrices;
+	vector< H3DFloat > uTextureCoordinates;
+	vector< H3DFloat > vTextureCoordinates;
 	bool closedSpine = false;
 	bool collinear = true;				// if the spine is collinear
 	bool coincident = false;			// if every point on the spine is the same
@@ -396,35 +403,44 @@ void Extrusion::render() {
 			vertexVector.push_back( point0 );
 		}
 	}
+	vertexVectors->setValue(vertexVector);
 
-	generateNormalsPerVertex( normalVector, vertexVector, cross_section, yAxis, ccwcheck, nrOfCrossSectionPoints, nrOfSpinePoints, closedSpine, closedCrossSection, creaseAngle->getValue() );
+	H3DFloat spineLength = 0;
+	vTextureCoordinates.push_back( 0 );
+	for( int i = 0; i < nrOfSpinePoints - 1; i++) {
+		spineLength += ( spineVectors[ i + 1 ] - spineVectors[ i ] ).length();
+		vTextureCoordinates.push_back( spineLength );
+	}
+
+	for( int i = 0; i < nrOfSpinePoints; i++) {
+		vTextureCoordinates[ i ] = vTextureCoordinates[ i ] / spineLength;
+	}
+	
+	H3DFloat crossSectionLength = 0;
+	uTextureCoordinates.push_back( 0 );
+	for( int i = 0; i < nrOfCrossSectionPoints - 1; i++) {
+		crossSectionLength += ( cross_section[ i + 1 ] - cross_section[ i ] ).length();
+		uTextureCoordinates.push_back( crossSectionLength );
+	}
+
+	for( int i = 0; i < nrOfCrossSectionPoints; i++) {
+		uTextureCoordinates[ i ] = uTextureCoordinates[ i ] / crossSectionLength;
+	}
+
+
+	if( crease_angle < Constants::pi )
+		generateNormalsPerVertex( normalVector, vertexVector, cross_section, yAxis, ccwcheck, nrOfCrossSectionPoints, nrOfSpinePoints, closedSpine, closedCrossSection, crease_angle );
+	else
+		generateNormalsPerVertex( normalVector, vertexVector, cross_section, yAxis, ccwcheck, nrOfCrossSectionPoints, nrOfSpinePoints, closedSpine, closedCrossSection );
 
 	bool useCreaseAngle = true;
-	if( H3DAbs( creaseAngle->getValue() ) < Constants::f_epsilon )
+	if( H3DAbs( crease_angle ) < Constants::f_epsilon )
 		useCreaseAngle = false;
 
 	if( beginCap -> getValue() ) {
 		Vec3f point_x;
 		Vec3f point_z;
 		Vec3f point;
-
-		
-
-		/*for( int i = nrOfCrossSectionPoints - 1; i >= 0; i-- )
-		{
-			glDisable( GL_LIGHTING );
-			glBegin( GL_LINES );
-			glColor3f(1, 0, 0);
-			point = vertexVector[ i ];
-			glVertex3f( point.x, point.y , point.z);
-
-			point = vertexVector[i] + normalVector[ i ];
-			glVertex3f( point.x, point.y , point.z);
-			glColor3f(1, 1, 1);
-			glEnd();
-			glEnable( GL_LIGHTING );
-		}*/
-
 
 		glBegin( GL_POLYGON );
 
@@ -440,10 +456,7 @@ void Extrusion::render() {
 				theNormal = normalVector[ i ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
-			/*point_x = scaleVectors.front().x * cross_section[i].x * xAxis.front();
-			point_z = scaleVectors.front().y * cross_section[i].y * zAxis.front();
-			point = spineVectors.front() + orientationMatrices.front() * (point_x + point_z);*/
-
+			
 			point = vertexVector[ i ];
 
 			glVertex3f( point.x, point.y , point.z);
@@ -457,94 +470,59 @@ void Extrusion::render() {
 			H3DInt32 lower = i * nrOfCrossSectionPoints + j;
 			H3DInt32 upper = ( i + 1 ) * nrOfCrossSectionPoints + j;
 			H3DInt32 quad_index = i * (nrOfCrossSectionPoints - 1) + j;
+			Vec3f point;
+			Vec3f theNormal;
 			
 			if( !useCreaseAngle ) {
 				Vec3f theNormal = normalVector[ 1 + i * ( nrOfCrossSectionPoints - 1 ) + j ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
 
-			/*if( useCreaseAngle ) {
-				Vec3f theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 ];
-
-				glColor3f(1, 1, 1);
-				glDisable( GL_LIGHTING );
-				glBegin( GL_LINES );
-				Vec3f point = vertexVector[ lower ];
-				glVertex3f( point.x, point.y , point.z);
-
-				point = vertexVector[lower] + theNormal;
-				glVertex3f( point.x, point.y , point.z);
-				glEnd();
-				glEnable( GL_LIGHTING );
-
-				theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 1];
-				glColor3f(1, 1, 0);
-				glDisable( GL_LIGHTING );
-				glBegin( GL_LINES );
-				point = vertexVector[ lower + 1 ];
-				glVertex3f( point.x, point.y , point.z);
-
-				point = vertexVector[lower + 1] + theNormal;
-				glVertex3f( point.x, point.y , point.z);
-				glEnd();
-				glEnable( GL_LIGHTING );
-
-				theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 2];
-				glColor3f(1, 0, 1);
-				glDisable( GL_LIGHTING );
-				glBegin( GL_LINES );
-				point = vertexVector[ upper + 1 ];
-				glVertex3f( point.x, point.y , point.z);
-
-				point = vertexVector[upper + 1] + theNormal;
-				glVertex3f( point.x, point.y , point.z);
-				glEnd();
-				glEnable( GL_LIGHTING );
-
-				theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 3];
-				glColor3f(0, 0, 1);
-				glDisable( GL_LIGHTING );
-				glBegin( GL_LINES );
-				point = vertexVector[ upper ];
-				glVertex3f( point.x, point.y , point.z);
-
-				point = vertexVector[upper] + theNormal;
-				glVertex3f( point.x, point.y , point.z);
-				glEnd();
-				glEnable( GL_LIGHTING );
-			}*/
-
 			glBegin( GL_QUADS );
-						
+
+			glTexCoord2d( uTextureCoordinates[ j ], vTextureCoordinates[ i ] );
 			if( useCreaseAngle ) {
-				Vec3f theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 ];
+				if( crease_angle < Constants::pi )
+					theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 ];
+				else
+					theNormal = normalVector[ 1 + lower ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
+			point = vertexVector[ lower ];
+			glVertex3f( point.x, point.y, point.z );
 			
-			glVertex3f( vertexVector[ lower ].x, vertexVector[ lower ].y, vertexVector[ lower ].z  );
-			
+			glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[ i ] );
 			if( useCreaseAngle ) {
-				Vec3f theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 1 ];
+				if( crease_angle < Constants::pi )
+					theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 1 ];
+				else
+					theNormal = normalVector[ 1 + lower + 1 ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
+			point = vertexVector[ lower + 1 ];
+			glVertex3f( point.x, point.y, point.z );
 
-
-			glVertex3f( vertexVector[ lower + 1 ].x, vertexVector[ lower + 1 ].y, vertexVector[ lower + 1 ].z  );
-
-			
+			glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[ i + 1 ] );
 			if( useCreaseAngle ) {
-				Vec3f theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 2 ];
+				if( crease_angle < Constants::pi )
+					theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 2 ];
+				else
+					theNormal = normalVector[ 1 + upper + 1 ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
+			point = vertexVector[ upper + 1 ];
+			glVertex3f( point.x, point.y, point.z );
 
-			glVertex3f( vertexVector[ upper + 1 ].x, vertexVector[ upper + 1 ].y, vertexVector[ upper + 1 ].z  );
-
+			glTexCoord2d( uTextureCoordinates[ j ], vTextureCoordinates[ i + 1 ] );
 			if( useCreaseAngle ) {
-				Vec3f theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 3 ];
+				if( crease_angle < Constants::pi )
+					theNormal = normalVector[ nrOfCrossSectionPoints + quad_index * 4 + 3 ];
+				else
+					theNormal = normalVector[ 1 + upper ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
-			//theNormal = normalVector[ 1 + upper ];
-			glVertex3f( vertexVector[ upper ].x, vertexVector[ upper ].y, vertexVector[ upper ].z  );
+			point = vertexVector[ upper ];
+			glVertex3f( point.x, point.y, point.z );
 			
 			glEnd();
 		}
@@ -569,9 +547,6 @@ void Extrusion::render() {
 				theNormal = normalVector[ normalVector.size() - nrOfCrossSectionPoints + i ];
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
-			/*point_x = scaleVectors.back().x * cross_section[i].x * xAxis.back();
-			point_z = scaleVectors.back().y * cross_section[i].y * zAxis.back();
-			point = spineVectors.back() + orientationMatrices.back() * (point_x + point_z);*/
 
 			point = vertexVector[ vertexVector.size() - nrOfCrossSectionPoints + i ];
 			glVertex3f( point.x, point.y , point.z);
@@ -653,7 +628,8 @@ vector< Vec3f > Extrusion::generateNormalsPerFace(
 	return normalVector;
 }
 
-/*vector < Vec3f > Extrusion::generateNormalsPerVertex( 
+void Extrusion::generateNormalsPerVertex(
+											vector < Vec3f > &normalVector,
                       vector < Vec3f > &vertexVector,
 											const vector < Vec2f > &cross_section,
 											vector < Vec3f > &yAxis,
@@ -663,7 +639,6 @@ vector< Vec3f > Extrusion::generateNormalsPerFace(
 											bool closedSpine,
 											bool closedCrossSection) {
   
-	vector< Vec3f > normalVector;
 	vector< Vec3f > normalsPerFace = generateNormalsPerFace( vertexVector,
 																													 cross_section,
 																													 yAxis,
@@ -698,8 +673,7 @@ vector< Vec3f > Extrusion::generateNormalsPerFace(
 		}
 	}
 	normalVector.push_back( normalsPerFace.back() );
-	return normalVector;
-}*/
+}
 
 void Extrusion::generateNormalsPerVertex( 
                       vector < Vec3f > &normalVector,
@@ -1024,10 +998,11 @@ vector< H3DInt32 > Extrusion::findSurroundingFaces(
 	return theIndices;
 }
 
-/*void Extrusion::SFBound::update() {
-
-  BoxBound *bb = new BoxBound;
-  bb->size->setValue( maxPoint - minPoint );
-  bb->center->setValue( (maxPoint + minPoint) / 2 );
+void Extrusion::SFBound::update() {
+  const vector< Vec3f > &vertexVectors1 = 
+    static_cast< MFVec3f * >( routes_in[0] )->getValue();
+	
+	BoxBound *bb = new BoxBound;
+	bb->fitAroundPoints( vertexVectors1.begin(), vertexVectors1.end() );
   value = bb;
-}*/
+}

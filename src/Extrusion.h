@@ -78,19 +78,20 @@ namespace H3D {
 											bool closedCrossSection,
 											H3DFloat crease_angle);
 		
-		/*/// Create a vector from the arguments given
+		/// Create a vector from the arguments given
 		/// with one normal for each vertex. The normal for each
 		/// vertex will be the average of the normal of all faces using
 		/// that vertex.
-    vector < Vec3f > generateNormalsPerVertex( 
-                      vector < Vec3f > &vertexVector,
+    void generateNormalsPerVertex( 
+                      vector < Vec3f > &normalVector,
+											vector < Vec3f > &vertexVector,
 											const vector < Vec2f > &cross_section,
 											vector < Vec3f > &yAxis,
 											bool ccwcheck,
 											H3DInt32 nrOfCrossSectionPoints,
 											H3DInt32 nrOfSpinePoints,
 											bool closedSpine,
-											bool closedCrossSection);*/
+											bool closedCrossSection);
 
 		/// Create a vector from the arguments given
 		/// with one normal for each face specified.
@@ -107,9 +108,15 @@ namespace H3D {
 
   public:
 
-		/*class H3DAPI_API SFBound: public TypedField< X3DGeometryNode::SFBound >{
+		/// SFBound is specialized update itself from the fields of the
+    /// Extrusion
+    ///
+    /// routes_in[0] is the vertexVector field of the Extrusion Node
+    ///
+    class SFBound: public TypedField< X3DGeometryNode::SFBound,
+                                      Types< MFVec3f > >{
       virtual void update();
-    };*/
+    };
 
     /// Render the Extrusion with OpenGL.
     virtual void render();
@@ -127,7 +134,8 @@ namespace H3D {
                Inst< MFRotation       > _orientation     = 0,
                Inst< MFVec2f          > _scale	         = 0,
                Inst< SFBool           > _solid           = 0,
-							 Inst< MFVec3f          > _spine           = 0 );
+							 Inst< MFVec3f          > _spine           = 0,
+							 Inst< MFVec3f          > _vertexVector    = 0 );
 
     /// 
     /// <b>Access type:</b> inputOutput \n
@@ -224,6 +232,12 @@ namespace H3D {
     /// 
     /// \dotfile Extrusion_spine.dot 
     auto_ptr< MFVec3f >  spine;
+		
+		/// This is where the vertices in the extrusion are stored
+    /// Only accessable in C++.
+    ///
+    /// \dotfile ElevationGrid_vertexVectors.dot 
+    auto_ptr< MFVec3f  > vertexVectors;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
