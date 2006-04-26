@@ -20,6 +20,7 @@ using namespace X3D;
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using namespace std;
 
 #define YYERROR_VERBOSE  1
@@ -29,10 +30,12 @@ void setyylval( char *);
 int yyerror( char const *e );
 int yylex();
 int parse( istream *, DEFNodes*, DEFNodes* );
-char *getLocationString();
+string getLocationString();
+string getOldLocationString();
 Group *getRoot();
 void setFieldValue( const char*);
 void setNodeStatement( int );
+void resetLine();
 
 FlexLexer* lexer;
 Group *root;
@@ -41,6 +44,12 @@ DEFNodes *DEF_export;
 
 vector< Node* > node_stack;
 vector< const char* > field_stack;
+
+int vrml_line_no;
+int old_line_no;
+int old_char_no;
+string vrml_line;
+const char *file_name;
 
 // %type<node_t> node
 //   struct Node* node_t;
@@ -56,6 +65,8 @@ vector< const char* > field_stack;
 %type<val> mfValue STRING TRUE FALSE
 %type<val> nodeNameId inputOnlyId outputOnlyId initializeOnlyId
 %type<val> inlineNodeNameId exportedNodeNameId
+%type<val> nodeTypeId 
+%type<val> ID
 
 %token ID
 %token STRING
@@ -90,7 +101,7 @@ componentStatements:     componentStatement |
                          componentStatement componentStatements |
                          empty ;
 
-componentStatement:      COMPONENT componentNameId:componentSupportLevel ;
+componentStatement:      COMPONENT componentNameId ':' componentSupportLevel ;
 
 componentNameId:         ID ;
 
@@ -361,8 +372,8 @@ fieldValue:             sfValue  {
                         mfValue  { 
   setFieldValue( $1 );
                         } |
-                        sfnodeValue |
-                        mfnodeValue;
+                        sfnodeValue {} |
+                        mfnodeValue {};
 
 sfValue:                STRING |
                         TRUE { $$ = "TRUE"; }|
@@ -402,21 +413,22 @@ fieldId:                STRING;
 
 
 
-int yyerror( char const *e ) {
-   cerr << "YYERROR: " << e << endl;
-   return 0;
-}
-
-
 void setFieldValue( const char* v ) {
   Node *node = node_stack.back();
   Field *field = node->getField( field_stack.back() );
   ParsableField *pfield =  
     dynamic_cast< ParsableField * >( field );
   if ( pfield ) {
-    pfield->setValueFromString( v );
+    try {
+      pfield->setValueFromString( v );
+    } catch( const Convert::X3DFieldConversionError &e ) {
+       Console(3) << "WARNING: Could not convert field " 
+                  << field->getName() << " argument in node "
+                  << node->getName() << " ( " << getOldLocationString()
+                  << " ) " << endl;
+    }
   } else
-    Console(3) << "WARNING: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getLocationString() << " )" << endl;
+    Console(3) << "WARNING: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getOldLocationString() << " )" << endl;
 }
 
 void setNodeStatement( int nullnode ) {
@@ -446,7 +458,11 @@ int yylex() {
   return lexer->yylex();
 }
 
-int parse( istream *inp, DEFNodes *dn, DEFNodes *exported_nodes ) {
+int parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes *exported_nodes ) {
+  file_name = fn;
+  vrml_line_no=1;
+  resetLine();
+
   if ( !dn )
     DEF_map = new DEFNodes();
   else DEF_map = dn;
@@ -464,8 +480,29 @@ int parse( istream *inp, DEFNodes *dn, DEFNodes *exported_nodes ) {
     return 0;
 }
 
-char *getLocationString() {
-  return "Nowhere";
+
+int yyerror( char const *e ) {
+   Console(3) << "VRMLParser Error: "<< endl;
+   Console(3) << getLocationString() << endl;
+   Console(3) << vrml_line << endl;
+   for( int i=0; i<vrml_line.length(); i++)
+     Console(3) << " ";
+   Console(3) << "^" << endl;
+   Console(3) << e << endl;
+   return 0;
+}
+
+
+string getLocationString() {
+  stringstream ss;
+  ss << file_name << ":" << vrml_line_no << "." << vrml_line.length();
+  return ss.str();
+}
+
+string getOldLocationString() {
+  stringstream ss;
+  ss << file_name << ":" << old_line_no << "." << old_char_no;
+  return ss.str();
 }
 
 Group *getRoot() {
@@ -474,4 +511,29 @@ Group *getRoot() {
 
 void setyylval( char* l ) {
   yylval.val = strdup(l);
+}
+
+void incLineCount() {
+  vrml_line_no++;
+}
+
+void addLine( const char *c ) {
+   old_line_no=vrml_line_no;
+   old_char_no=vrml_line.length();
+
+   const char *x=c;
+   const char *last_line=c;
+   while (*x!='\0') {
+     if (*x=='\n') {
+       vrml_line_no++;
+       last_line=x+1;
+       vrml_line="";
+     }
+     x++;
+  }
+   vrml_line += last_line;
+}
+
+void resetLine() {
+   vrml_line = "";
 }

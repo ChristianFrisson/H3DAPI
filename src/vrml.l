@@ -9,13 +9,16 @@ NUMBER   (([\-\+0-9][0-9\+\-.eE]*)|(0[xX][0-9a-fA-F]+))
 
 WHITE    [ ,\t\n\r] 
 
-STRING   \"(([^\\\"])|[\"]|\\.)+\"
+OLDSTRING   \"(([^\\\"])|[\"]|\\.)+\"
+
+STRING    \"[^\"]+\"
 
 %%
 
 %{
 #include "vrml.hpp"
 void setyylval(char *);
+void addLine( const char* );
 %}
 
 AS          return AS;
@@ -31,9 +34,13 @@ USE         return USE;
 PROTO       return PROTO;
 NULL        return VRMLNULL;
 inputOnly   return inputOnly;
+eventIn     return inputOnly;
 outputOnly  return outputOnly;
+eventOut    return outputOnly;
 initializeOnly return initializeOnly;
+field       return initializeOnly;
 inputOutput return inputOutput;
+exposedField return inputOutput;
 EXTERNPROTO return EXTERNPROTO;
 ROUTE       return ROUTE;
 TO          return TO;
@@ -70,16 +77,16 @@ SFVec3d     return TSFVec2d;
 SFVec3f     return TSFVec3f;
 
 
-{ID}        /*printf("ID=%s\n",yytext);*/ setyylval(yytext); return ID;
+{ID}        /*printf("ID=%s\n",yytext);*/ addLine( yytext ); setyylval(yytext); return ID;
 
-"#"[^\n]+   /* eat up comments */
+"#"[^\n]+    addLine( yytext ); /* eat up comments */
 
 
-(({NUMBER}|{STRING})+({WHITE})*)+     /*printf("VAL=%s\n",yytext);*/ setyylval(yytext); return STRING;
+(({NUMBER}|{STRING})+({WHITE})*)+      addLine( yytext ); /*printf("VAL=%s\n",yytext);*/ setyylval(yytext); return STRING;
 
-{WHITE}+       /* eat up whitespace */
+{WHITE}+      addLine( yytext );  /* eat up whitespace */
 
-.           return yytext[0];
+.            addLine( yytext ); return yytext[0];
 
 
 
