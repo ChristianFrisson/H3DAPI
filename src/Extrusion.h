@@ -55,6 +55,14 @@ namespace H3D {
 			return ( vertexVector[ right ] - vertexVector[ middle ] ).crossProduct( 
 							 vertexVector[ left ] - vertexVector[ middle ] ); }
 
+		vector< H3DInt32 > findSurroundingFaces( 
+												H3DInt32 i,
+												H3DInt32 j,
+												bool closedSpine,
+												H3DInt32 nrOfSpinePoints,
+												bool closedCrossSection,
+												H3DInt32 nrOfCrossSectionPoints );
+
 		/// Create a vector from the arguments given
 		/// with one normal for each vertex in each face, i.e.
 		/// the number of normals will be the number of facess *4
@@ -67,9 +75,9 @@ namespace H3D {
 											H3DInt32 nrOfSpinePoints,
 											bool closedSpine,
 											bool closedCrossSection,
-											H3DFloat creaseAngle);
+											H3DFloat crease_angle);
 		
-		/// Create a vector from the arguments given
+		/*/// Create a vector from the arguments given
 		/// with one normal for each vertex. The normal for each
 		/// vertex will be the average of the normal of all faces using
 		/// that vertex.
@@ -81,7 +89,7 @@ namespace H3D {
 											H3DInt32 nrOfCrossSectionPoints,
 											H3DInt32 nrOfSpinePoints,
 											bool closedSpine,
-											bool closedCrossSection);
+											bool closedCrossSection);*/
 
 		/// Create a vector from the arguments given
 		/// with one normal for each face specified.
@@ -93,7 +101,14 @@ namespace H3D {
 											H3DInt32 nrOfCrossSectionPoints,
 											H3DInt32 nrOfSpinePoints);
 
+		Vec3f maxPoint;
+		Vec3f minPoint;
+
   public:
+
+		/*class H3DAPI_API SFBound: public TypedField< X3DGeometryNode::SFBound >{
+      virtual void update();
+    };*/
 
     /// Render the Extrusion with OpenGL.
     virtual void render();
