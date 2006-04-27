@@ -44,39 +44,42 @@ namespace H3D {
   /// \dotfile Extrusion.dot 
   class Extrusion : public X3DGeometryNode {
 	protected:
+		
 		/// returns true if the two points are coincident
 		template <typename T>
 		inline bool coinc(T a , T b) { return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon;}
 		
-		inline Vec3f calculateNormal( const vector < Vec3f > &vertexVector,
+		// calculate the normal to a face given three vertices in the face.
+		inline Vec3f calculateNormal( const vector < Vec3f > &vertex_vector,
 																	H3DInt32 right,
 																	H3DInt32 middle,
 																	H3DInt32 left) {
-			return ( vertexVector[ right ] - vertexVector[ middle ] ).crossProduct( 
-							 vertexVector[ left ] - vertexVector[ middle ] ); }
+			return ( vertex_vector[ right ] - vertex_vector[ middle ] ).crossProduct( 
+							 vertex_vector[ left ] - vertex_vector[ middle ] ); }
 
+		// find the surrounding faces to the face defined by i and j.
 		vector< H3DInt32 > findSurroundingFaces( 
 												H3DInt32 i,
 												H3DInt32 j,
 												bool closedSpine,
 												H3DInt32 nrOfSpinePoints,
 												bool closedCrossSection,
-												H3DInt32 nrOfCrossSectionPoints );
+												H3DInt32 nrOfCrossSectionPoints);
 
 		/// Create a vector from the arguments given
 		/// with one normal for each vertex in each face, i.e.
 		/// the number of normals will be the number of facess *4
 		void generateNormalsPerVertex( 
                       vector < Vec3f > &normalVector,
-											vector < Vec3f > &vertexVector,
+											const vector < Vec3f > &vertex_vector,
 											const vector < Vec2f > &cross_section,
 											vector < Vec3f > &yAxis,
 											bool ccwcheck,
 											H3DInt32 nrOfCrossSectionPoints,
 											H3DInt32 nrOfSpinePoints,
 											bool closedSpine,
-											bool closedCrossSection,
-											H3DFloat crease_angle);
+											H3DFloat crease_angle,
+											H3DInt32 &ifCapsAdd );
 		
 		/// Create a vector from the arguments given
 		/// with one normal for each vertex. The normal for each
@@ -84,27 +87,26 @@ namespace H3D {
 		/// that vertex.
     void generateNormalsPerVertex( 
                       vector < Vec3f > &normalVector,
-											vector < Vec3f > &vertexVector,
+											const vector < Vec3f > &vertex_vector,
 											const vector < Vec2f > &cross_section,
 											vector < Vec3f > &yAxis,
 											bool ccwcheck,
 											H3DInt32 nrOfCrossSectionPoints,
 											H3DInt32 nrOfSpinePoints,
 											bool closedSpine,
-											bool closedCrossSection);
+											H3DInt32 &ifCapsAdd );
 
 		/// Create a vector from the arguments given
 		/// with one normal for each face specified.
 		vector< Vec3f > generateNormalsPerFace(  
-											vector < Vec3f > &vertexVector,
+											const vector < Vec3f > &vertex_vector,
 											const vector < Vec2f > &cross_section,
 											vector < Vec3f > &yAxis,
 											bool ccwcheck,
 											H3DInt32 nrOfCrossSectionPoints,
-											H3DInt32 nrOfSpinePoints);
-
-		Vec3f maxPoint;
-		Vec3f minPoint;
+											H3DInt32 nrOfSpinePoints,
+											bool closedCrossSection,
+											H3DInt32 &ifCapsAdd );
 
   public:
 
@@ -118,8 +120,28 @@ namespace H3D {
       virtual void update();
     };
 
+		/// Specialized field vertex coordinates from the fields affecting this,
+    /// the resulting vertexVector will be used both in render and in bound.
+		///
+    /// routes_in[0] is the crossSection field.
+    /// routes_in[1] is the orientation field.
+    /// routes_in[2] is the scale field.
+    /// routes_in[3] is the spine field.
+    class VertexVectors: 
+      public TypedField< MFVec3f,
+                         Types< MFVec2f, 
+                                MFRotation, 
+                                MFVec2f, 
+                                MFVec3f > > {
+      virtual void update();
+		};
+
     /// Render the Extrusion with OpenGL.
     virtual void render();
+
+		/// Traverse the scenegraph. A HLFeedbackShape is added for haptic
+    /// rendering if haptics is enabled.
+    virtual void traverseSG( TraverseInfo &ti );  
 
     /// Constructor.
     Extrusion( Inst< SFNode           > _metadata        = 0,
@@ -135,7 +157,7 @@ namespace H3D {
                Inst< MFVec2f          > _scale	         = 0,
                Inst< SFBool           > _solid           = 0,
 							 Inst< MFVec3f          > _spine           = 0,
-							 Inst< MFVec3f          > _vertexVector    = 0 );
+							 Inst< VertexVectors    > _vertexVector    = 0 );
 
     /// 
     /// <b>Access type:</b> inputOutput \n
@@ -233,11 +255,11 @@ namespace H3D {
     /// \dotfile Extrusion_spine.dot 
     auto_ptr< MFVec3f >  spine;
 		
-		/// This is where the vertices in the extrusion are stored
+		/// The vector of vertices constructing the extrusion-shape
     /// Only accessable in C++.
     ///
-    /// \dotfile ElevationGrid_vertexVectors.dot 
-    auto_ptr< MFVec3f  > vertexVectors;
+    /// \dotfile Extrusion_vertexVector.dot 
+    auto_ptr< VertexVectors  >  vertexVector;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
