@@ -104,6 +104,9 @@ Rotation::Rotation( const Vec3f &n1, const Vec3f &n2 ) {
     else axis = Vec3f( 0, n1.z, -n1.y );
   } else {
     axis = n1 % n2;
+		if( axis * axis < Constants::f_epsilon )
+			axis = Vec3f( 1, 0, 0 );
   }
+
   axis.normalize();
 }
