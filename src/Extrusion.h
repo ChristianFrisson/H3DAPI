@@ -47,14 +47,15 @@ namespace H3D {
 		
 		/// returns true if the two points are coincident
 		template <typename T>
-		inline bool coinc(T a , T b) { return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon;}
+		inline bool coinc(T a , T b) 
+					{ return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon; }
 		
 		// calculate the normal to a face given three vertices in the face.
 		inline Vec3f calculateNormal( const vector < Vec3f > &vertex_vector,
 																	H3DInt32 right,
 																	H3DInt32 middle,
 																	H3DInt32 left) {
-			return ( vertex_vector[ right ] - vertex_vector[ middle ] ).crossProduct( 
+			return ( vertex_vector[ right ] - vertex_vector[ middle ] ).crossProduct(
 							 vertex_vector[ left ] - vertex_vector[ middle ] ); }
 
 		// find the surrounding faces to the face defined by i and j.
