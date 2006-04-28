@@ -39,7 +39,10 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class Extrusion
-  /// \brief
+  /// \brief The Extrusion node specifies geometric shapes based on a two
+	/// dimensional cross-section extruded along a three dimensional spine 
+	/// in the local coordinate system. The cross-section can be scaled and 
+	/// rotated at each spine point to produce a wide variety of shapes.
   /// \par Internal routes:
   /// \dotfile Extrusion.dot 
   class Extrusion : public X3DGeometryNode {
