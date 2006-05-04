@@ -37,7 +37,7 @@ int VrmlDriver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
   if (!dn) DEF_map = new DEFNodes();
 
   if (!inp->fail()) {
-    lexer = new yyFlexLexer( inp, &Console );
+    lexer = new VRMLFlexLexer( inp, &Console );
     yy::VrmlParser parser (*this);
     if ( !global_proto_vector ) {
       global_proto_vector=proto_vector;

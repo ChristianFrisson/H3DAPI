@@ -22,6 +22,9 @@ union YYSTYPE;
 class VrmlDriver;
 
 struct VRMLFlexLexer : public yyFlexLexer {
+	VRMLFlexLexer( istream* arg_yyin = 0, ostream* arg_yyout = 0 ) :
+    yyFlexLexer( arg_yyin, arg_yyout ) {};
+
   int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 };
 
