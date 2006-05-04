@@ -41,8 +41,8 @@ namespace yy
      AS = 260,
      VRMLNULL = 261,
      SCRIPT = 262,
-     TRUE = 263,
-     FALSE = 264,
+     VRMLTRUE = 263,
+     VRMLFALSE = 264,
      PROFILE = 265,
      COMPONENT = 266,
      EXPORT = 267,
@@ -92,7 +92,8 @@ namespace yy
 /// \file vrml.bison
 /// \brief Bison VRML grammar
 //
-//  To generate vrml.cpp and vrml.hpp, simply run "bison vrml.bison"
+//  To generate vrml.cpp and vrml.hpp, simply run:
+//     bison -o vrml.cpp vrml.bison
 //
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -128,7 +129,7 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 
 
 /* Line 321 of lalr1.cc.  */
-#line 132 "vrml.hpp"
+#line 133 "vrml.hpp"
 
 #include "stack.hh"
 #include "location.hh"
@@ -158,12 +159,12 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 #endif
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 83 "vrml.bison"
+#line 84 "vrml.bison"
 union YYSTYPE {
   char* val;
 };
 /* Line 321 of lalr1.cc.  */
-#line 167 "vrml.hpp"
+#line 168 "vrml.hpp"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -173,7 +174,7 @@ union YYSTYPE {
 
 
 /* Line 321 of lalr1.cc.  */
-#line 177 "vrml.hpp"
+#line 178 "vrml.hpp"
 /* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
    If N is 0, then set CURRENT to the empty location which ends
    the previous symbol: RHS[0] (always defined).  */

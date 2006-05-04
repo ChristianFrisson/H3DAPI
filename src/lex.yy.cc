@@ -4845,7 +4845,7 @@ static yyconst long int yy_rule_linenum[30] =
 //
 //
 //  Flex instructions:
-//  Generate lex.yy.cc by running   "flex -Cfa vrml.l"
+//  Generate lex.yy.cc by running   "flex++ -Cfa vrml.l"
 //  The -Cfa flag specifies that the parser should generate an
 //  uncompressed lookup table and opt for speed over size.
 //
@@ -5078,12 +5078,12 @@ driver.addLine( yytext ); return AS;
 case 2:
 YY_RULE_SETUP
 #line 57 "vrml.l"
-driver.addLine( yytext ); return TRUE;
+driver.addLine( yytext ); return VRMLTRUE;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 58 "vrml.l"
-driver.addLine( yytext ); return FALSE;
+driver.addLine( yytext ); return VRMLFALSE;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP

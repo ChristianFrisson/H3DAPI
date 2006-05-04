@@ -86,7 +86,7 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 }
 
 %type<val> fieldValue sfValue
-%type<val> mfValue STRING TRUE FALSE
+%type<val> mfValue STRING VRMLTRUE VRMLFALSE
 %type<val> nodeNameId inputOnlyId outputOnlyId initializeOnlyId
 %type<val> inlineNodeNameId exportedNodeNameId
 %type<val> nodeTypeId 
@@ -99,7 +99,7 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 %token VRMLNULL
 %token SCRIPT
 
-%token TRUE FALSE PROFILE COMPONENT EXPORT IMPORT META DEF USE
+%token VRMLTRUE VRMLFALSE PROFILE COMPONENT EXPORT IMPORT META DEF USE
 %token PROTO inputOnly outputOnly initializeOnly inputOutput
 %token EXTERNPROTO ROUTE TO IS
 
@@ -434,8 +434,8 @@ if ( driver.proto_declarations.size()==0 )
                         mfnodeValue {};
 
 sfValue:                STRING |
-                        TRUE { $$ = "TRUE"; }|
-                        FALSE { $$ = "FALSE";} ;
+                        VRMLTRUE { $$ = "TRUE"; }|
+                        VRMLFALSE { $$ = "FALSE";} ;
 
 mfValue:                sfValue |
                         '[' ']' { $$ = ""; }  |

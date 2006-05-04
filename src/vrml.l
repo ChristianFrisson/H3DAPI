@@ -26,7 +26,7 @@
 //
 //
 //  Flex instructions:
-//  Generate lex.yy.cc by running   "flex -Cfa vrml.l"
+//  Generate lex.yy.cc by running   "flex++ -Cfa vrml.l"
 //  The -Cfa flag specifies that the parser should generate an
 //  uncompressed lookup table and opt for speed over size.
 //
@@ -54,8 +54,8 @@ STRING    \"[^\"]+\"
 
 
 AS             driver.addLine( yytext ); return AS;
-TRUE           driver.addLine( yytext ); return TRUE;
-FALSE          driver.addLine( yytext ); return FALSE;
+TRUE           driver.addLine( yytext ); return VRMLTRUE;
+FALSE          driver.addLine( yytext ); return VRMLFALSE;
 PROFILE        driver.addLine( yytext ); return PROFILE;
 COMPONENT      driver.addLine( yytext ); return COMPONENT;
 EXPORT         driver.addLine( yytext ); return EXPORT;
