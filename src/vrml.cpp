@@ -83,7 +83,7 @@ do {					\
    apostrophe, a comma, or backslash (other than backslash-backslash).
    YYSTR is taken from yytname.  */
 std::string
-yy::vrml_parser::yytnamerr_ (const char *yystr)
+yy::VrmlParser::yytnamerr_ (const char *yystr)
 {
   if (*yystr == '"')
     {
@@ -122,7 +122,7 @@ yy::vrml_parser::yytnamerr_ (const char *yystr)
 `--------------------------------*/
 
 void
-yy::vrml_parser::yysymprint_ (int yytype,
+yy::VrmlParser::yysymprint_ (int yytype,
                          const semantic_type* yyvaluep, const location_type* yylocationp)
 {
   /* Pacify ``unused variable'' warnings.  */
@@ -145,7 +145,7 @@ yy::vrml_parser::yysymprint_ (int yytype,
 #endif /* ! YYDEBUG */
 
 void
-yy::vrml_parser::yydestruct_ (const char* yymsg,
+yy::VrmlParser::yydestruct_ (const char* yymsg,
                          int yytype, semantic_type* yyvaluep, location_type* yylocationp)
 {
   /* Pacify ``unused variable'' warnings.  */
@@ -164,7 +164,7 @@ yy::vrml_parser::yydestruct_ (const char* yymsg,
 }
 
 void
-yy::vrml_parser::yypop_ (unsigned int n)
+yy::VrmlParser::yypop_ (unsigned int n)
 {
   yystate_stack_.pop (n);
   yysemantic_stack_.pop (n);
@@ -172,33 +172,33 @@ yy::vrml_parser::yypop_ (unsigned int n)
 }
 
 std::ostream&
-yy::vrml_parser::debug_stream () const
+yy::VrmlParser::debug_stream () const
 {
   return *yycdebug_;
 }
 
 void
-yy::vrml_parser::set_debug_stream (std::ostream& o)
+yy::VrmlParser::set_debug_stream (std::ostream& o)
 {
   yycdebug_ = &o;
 }
 
 
-yy::vrml_parser::debug_level_type
-yy::vrml_parser::debug_level () const
+yy::VrmlParser::debug_level_type
+yy::VrmlParser::debug_level () const
 {
   return yydebug_;
 }
 
 void
-yy::vrml_parser::set_debug_level (debug_level_type l)
+yy::VrmlParser::set_debug_level (debug_level_type l)
 {
   yydebug_ = l;
 }
 
 
 int
-yy::vrml_parser::parse ()
+yy::VrmlParser::parse ()
 {
   /* Look-ahead and look-ahead in internal form.  */
   int yylooka;
@@ -229,7 +229,7 @@ yy::vrml_parser::parse ()
 
 
   /* User initialization code. */
-  #line 58 "vrml.bison"
+  #line 75 "vrml.bison"
 {
   // Initialize the initial location.
   yylloc.begin.filename = yylloc.end.filename = &driver.file;
@@ -356,12 +356,12 @@ yyreduce:
   switch (yyn_)
     {
         case 2:
-#line 93 "vrml.bison"
+#line 110 "vrml.bison"
     { driver.root = new Group(); ;}
     break;
 
   case 13:
-#line 113 "vrml.bison"
+#line 130 "vrml.bison"
     {
   Node *node= driver.DEF_map->getNode( (yysemantic_stack_[2].val) );
   if ( node ) {
@@ -379,7 +379,7 @@ yyreduce:
     break;
 
   case 14:
-#line 129 "vrml.bison"
+#line 146 "vrml.bison"
     {
 if( driver.proto_declarations.size()==0 ) {
   if( strcmp( (yysemantic_stack_[4].val), "H3D_EXPORTS" ) == 0 ) {
@@ -425,7 +425,7 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 24:
-#line 186 "vrml.bison"
+#line 203 "vrml.bison"
     {
                            if ( driver.proto_declarations.size()==0 ) {
                               Node *node = driver.node_stack.back();
@@ -436,7 +436,7 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 30:
-#line 199 "vrml.bison"
+#line 216 "vrml.bison"
     {
   if ( driver.proto_declarations.size()==0 )
     driver.DEF_map->addNode( (yysemantic_stack_[1].val), driver.node_stack.back() );
@@ -444,7 +444,7 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 31:
-#line 203 "vrml.bison"
+#line 220 "vrml.bison"
     {
   if ( driver.proto_declarations.size()==0 )
     driver.node_stack.push_back( driver.DEF_map->getNode( (yysemantic_stack_[0].val) ) );
@@ -452,7 +452,7 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 39:
-#line 218 "vrml.bison"
+#line 235 "vrml.bison"
     {
    if ( driver.proto_vector ) {
      driver.proto_declarations.push_back( new ProtoDeclaration( (yysemantic_stack_[0].val) ) );
@@ -465,12 +465,12 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 40:
-#line 227 "vrml.bison"
+#line 244 "vrml.bison"
     { if ( driver.proto_declarations.size()==1 ) driver.proto_body = ""; ;}
     break;
 
   case 41:
-#line 228 "vrml.bison"
+#line 245 "vrml.bison"
     {
    if ( driver.proto_declarations.size()==1 ) {
      // remove trailing '}'
@@ -483,35 +483,35 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 47:
-#line 246 "vrml.bison"
+#line 263 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[0].val), (yysemantic_stack_[1].val), Field::INPUT_ONLY, NULL );
 ;}
     break;
 
   case 48:
-#line 249 "vrml.bison"
+#line 266 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[0].val), (yysemantic_stack_[1].val), Field::OUTPUT_ONLY, NULL );
 ;}
     break;
 
   case 49:
-#line 252 "vrml.bison"
+#line 269 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[1].val), (yysemantic_stack_[2].val), Field::INITIALIZE_ONLY, (yysemantic_stack_[0].val) );
 ;}
     break;
 
   case 51:
-#line 257 "vrml.bison"
+#line 274 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[1].val), (yysemantic_stack_[2].val), Field::INPUT_OUTPUT, (yysemantic_stack_[0].val) );
 ;}
     break;
 
   case 60:
-#line 277 "vrml.bison"
+#line 294 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 ) {
   Node *fr = driver.DEF_map->getNode( (yysemantic_stack_[6].val) );
@@ -552,7 +552,7 @@ if ( driver.proto_declarations.size()==0 ) {
     break;
 
   case 63:
-#line 320 "vrml.bison"
+#line 337 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 ) {
   Node *new_node =  H3DNodeDatabase::createNode( yylval.val );
@@ -574,13 +574,13 @@ if ( driver.proto_declarations.size()==0 ) {
     break;
 
   case 78:
-#line 357 "vrml.bison"
+#line 374 "vrml.bison"
     { 
                             driver.field_stack.push_back( (yysemantic_stack_[0].val) ); ;}
     break;
 
   case 79:
-#line 359 "vrml.bison"
+#line 376 "vrml.bison"
     {
                            if ( driver.proto_declarations.size()==0 )
                                 driver.field_stack.pop_back();
@@ -588,7 +588,7 @@ if ( driver.proto_declarations.size()==0 ) {
     break;
 
   case 80:
-#line 363 "vrml.bison"
+#line 380 "vrml.bison"
     {
   if ( driver.proto_instance != NULL ) {
     Node *node = driver.node_stack.back();
@@ -613,7 +613,7 @@ if ( driver.proto_declarations.size()==0 ) {
     break;
 
   case 93:
-#line 407 "vrml.bison"
+#line 424 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
   driver.setFieldValue( (yysemantic_stack_[0].val) );
@@ -621,7 +621,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 94:
-#line 411 "vrml.bison"
+#line 428 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
   driver.setFieldValue( (yysemantic_stack_[0].val) );
@@ -629,37 +629,37 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 95:
-#line 415 "vrml.bison"
+#line 432 "vrml.bison"
     {;}
     break;
 
   case 96:
-#line 416 "vrml.bison"
+#line 433 "vrml.bison"
     {;}
     break;
 
   case 98:
-#line 419 "vrml.bison"
+#line 436 "vrml.bison"
     { (yyval.val) = "TRUE"; ;}
     break;
 
   case 99:
-#line 420 "vrml.bison"
+#line 437 "vrml.bison"
     { (yyval.val) = "FALSE";;}
     break;
 
   case 101:
-#line 423 "vrml.bison"
+#line 440 "vrml.bison"
     { (yyval.val) = ""; ;}
     break;
 
   case 102:
-#line 424 "vrml.bison"
+#line 441 "vrml.bison"
     { (yyval.val) = (yysemantic_stack_[1].val); ;}
     break;
 
   case 103:
-#line 427 "vrml.bison"
+#line 444 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -667,7 +667,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 104:
-#line 431 "vrml.bison"
+#line 448 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 1 );
@@ -675,7 +675,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 105:
-#line 436 "vrml.bison"
+#line 453 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -683,7 +683,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 106:
-#line 440 "vrml.bison"
+#line 457 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 1 );
@@ -692,7 +692,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 108:
-#line 447 "vrml.bison"
+#line 464 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -700,7 +700,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 109:
-#line 451 "vrml.bison"
+#line 468 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -860,7 +860,7 @@ yyreturn:
 
 // Generate an error message.
 std::string
-yy::vrml_parser::yysyntax_error_ (YYERROR_VERBOSE_IF (int tok))
+yy::VrmlParser::yysyntax_error_ (YYERROR_VERBOSE_IF (int tok))
 {
   std::string res;
 #if YYERROR_VERBOSE
@@ -909,9 +909,9 @@ yy::vrml_parser::yysyntax_error_ (YYERROR_VERBOSE_IF (int tok))
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-const signed char yy::vrml_parser::yypact_ninf_ = -118;
+const signed char yy::VrmlParser::yypact_ninf_ = -118;
 const short int
-yy::vrml_parser::yypact_[] =
+yy::VrmlParser::yypact_[] =
 {
     -118,    23,    20,  -118,    43,    37,  -118,  -118,    48,    38,
       37,  -118,  -118,    29,    49,   178,    38,  -118,  -118,    58,
@@ -939,7 +939,7 @@ yy::vrml_parser::yypact_[] =
    doesn't specify something else to do.  Zero means the default is an
    error.  */
 const unsigned char
-yy::vrml_parser::yydefact_[] =
+yy::VrmlParser::yydefact_[] =
 {
        2,     0,     5,     1,     0,    62,     6,     4,     0,    62,
        7,     9,    11,     0,     0,    62,    15,    17,     8,     0,
@@ -965,7 +965,7 @@ yy::vrml_parser::yydefact_[] =
 
 /* YYPGOTO[NTERM-NUM].  */
 const short int
-yy::vrml_parser::yypgoto_[] =
+yy::VrmlParser::yypgoto_[] =
 {
     -118,  -118,  -118,  -118,  -118,   140,  -118,  -118,  -118,  -118,
     -118,   135,  -118,  -118,  -118,   -32,  -118,   -14,  -118,   -12,
@@ -977,7 +977,7 @@ yy::vrml_parser::yypgoto_[] =
 
 /* YYDEFGOTO[NTERM-NUM].  */
 const short int
-yy::vrml_parser::yydefgoto_[] =
+yy::VrmlParser::yydefgoto_[] =
 {
       -1,     1,     2,     5,     7,     9,    10,    13,    45,    31,
       32,    15,    16,    21,    47,    33,    34,   117,   191,    65,
@@ -990,9 +990,9 @@ yy::vrml_parser::yydefgoto_[] =
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule which
    number is the opposite.  If zero, do what YYDEFACT says.  */
-const signed char yy::vrml_parser::yytable_ninf_ = -109;
+const signed char yy::VrmlParser::yytable_ninf_ = -109;
 const short int
-yy::vrml_parser::yytable_[] =
+yy::VrmlParser::yytable_[] =
 {
       11,    35,    58,    36,    17,    11,    39,    75,    53,    54,
      107,    17,    57,   108,   118,   157,   129,   111,    60,   104,
@@ -1019,7 +1019,7 @@ yy::vrml_parser::yytable_[] =
 
 /* YYCHECK.  */
 const short int
-yy::vrml_parser::yycheck_[] =
+yy::VrmlParser::yycheck_[] =
 {
        5,    15,    34,    15,     9,    10,    15,    53,    26,    27,
       82,    16,    30,    83,    88,   132,    92,    87,     3,    79,
@@ -1047,7 +1047,7 @@ yy::vrml_parser::yycheck_[] =
 /* STOS_[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 const unsigned char
-yy::vrml_parser::yystos_[] =
+yy::VrmlParser::yystos_[] =
 {
        0,    33,    34,     0,    10,    35,     3,    36,    11,    37,
       38,    66,     3,    39,    14,    43,    44,    66,    37,    26,
@@ -1075,7 +1075,7 @@ yy::vrml_parser::yystos_[] =
 /* TOKEN_NUMBER_[YYLEX-NUM] -- Internal symbol number corresponding
    to YYLEX-NUM.  */
 const unsigned short int
-yy::vrml_parser::yytoken_number_[] =
+yy::VrmlParser::yytoken_number_[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
@@ -1086,7 +1086,7 @@ yy::vrml_parser::yytoken_number_[] =
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 const unsigned char
-yy::vrml_parser::yyr1_[] =
+yy::VrmlParser::yyr1_[] =
 {
        0,    32,    34,    33,    35,    35,    36,    37,    37,    37,
       38,    39,    40,    41,    42,    43,    43,    43,    44,    45,
@@ -1104,7 +1104,7 @@ yy::vrml_parser::yyr1_[] =
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 const unsigned char
-yy::vrml_parser::yyr2_[] =
+yy::VrmlParser::yyr2_[] =
 {
        0,     2,     0,     5,     2,     0,     1,     1,     2,     1,
        4,     1,     1,     4,     6,     1,     2,     1,     3,     1,
@@ -1124,7 +1124,7 @@ yy::vrml_parser::yyr2_[] =
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at \a yyntokens_, nonterminals. */
 const char*
-const yy::vrml_parser::yytname_[] =
+const yy::VrmlParser::yytname_[] =
 {
   "$end", "error", "$undefined", "\"identifier\"", "\"field value\"",
   "AS", "VRMLNULL", "SCRIPT", "TRUE", "FALSE", "PROFILE", "COMPONENT",
@@ -1150,8 +1150,8 @@ const yy::vrml_parser::yytname_[] =
 
 #if YYDEBUG
 /* YYRHS -- A `-1'-separated list of the rules' RHS. */
-const yy::vrml_parser::rhs_number_type
-yy::vrml_parser::yyrhs_[] =
+const yy::VrmlParser::rhs_number_type
+yy::VrmlParser::yyrhs_[] =
 {
       33,     0,    -1,    -1,    34,    35,    37,    43,    47,    -1,
       10,    36,    -1,    -1,     3,    -1,    38,    -1,    38,    37,
@@ -1191,7 +1191,7 @@ yy::vrml_parser::yyrhs_[] =
 /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
    YYRHS.  */
 const unsigned short int
-yy::vrml_parser::yyprhs_[] =
+yy::VrmlParser::yyprhs_[] =
 {
        0,     0,     3,     4,    10,    13,    14,    16,    18,    21,
       23,    28,    30,    32,    37,    44,    46,    49,    51,    55,
@@ -1209,25 +1209,25 @@ yy::vrml_parser::yyprhs_[] =
 
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 const unsigned short int
-yy::vrml_parser::yyrline_[] =
+yy::VrmlParser::yyrline_[] =
 {
-       0,    93,    93,    93,    99,    99,   101,   103,   104,   105,
-     107,   109,   111,   113,   128,   172,   173,   174,   176,   178,
-     180,   182,   183,   184,   186,   193,   194,   195,   196,   198,
-     199,   203,   208,   209,   211,   212,   214,   215,   216,   218,
-     227,   228,   218,   239,   241,   242,   243,   246,   249,   252,
-     256,   257,   262,   266,   267,   269,   271,   272,   273,   274,
-     276,   315,   317,   320,   320,   339,   341,   342,   343,   345,
-     346,   347,   349,   350,   351,   352,   353,   355,   357,   357,
-     363,   384,   385,   387,   389,   391,   393,   395,   397,   399,
-     401,   403,   405,   407,   411,   415,   416,   418,   419,   420,
-     422,   423,   424,   427,   431,   436,   440,   445,   447,   451,
-     451,   456
+       0,   110,   110,   110,   116,   116,   118,   120,   121,   122,
+     124,   126,   128,   130,   145,   189,   190,   191,   193,   195,
+     197,   199,   200,   201,   203,   210,   211,   212,   213,   215,
+     216,   220,   225,   226,   228,   229,   231,   232,   233,   235,
+     244,   245,   235,   256,   258,   259,   260,   263,   266,   269,
+     273,   274,   279,   283,   284,   286,   288,   289,   290,   291,
+     293,   332,   334,   337,   337,   356,   358,   359,   360,   362,
+     363,   364,   366,   367,   368,   369,   370,   372,   374,   374,
+     380,   401,   402,   404,   406,   408,   410,   412,   414,   416,
+     418,   420,   422,   424,   428,   432,   433,   435,   436,   437,
+     439,   440,   441,   444,   448,   453,   457,   462,   464,   468,
+     468,   473
 };
 
 // Print the state stack on the debug stream.
 void
-yy::vrml_parser::yystack_print_ ()
+yy::VrmlParser::yystack_print_ ()
 {
   *yycdebug_ << "Stack now";
   for (state_stack_type::const_iterator i = yystate_stack_.begin ();
@@ -1238,7 +1238,7 @@ yy::vrml_parser::yystack_print_ ()
 
 // Report on the debug stream that the rule \a yyrule is going to be reduced.
 void
-yy::vrml_parser::yyreduce_print_ (int yyrule)
+yy::VrmlParser::yyreduce_print_ (int yyrule)
 {
   unsigned int yylno = yyrline_[yyrule];
   /* Print the symbols being reduced, and their result.  */
@@ -1252,8 +1252,8 @@ yy::vrml_parser::yyreduce_print_ (int yyrule)
 #endif // YYDEBUG
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
-yy::vrml_parser::token_number_type
-yy::vrml_parser::yytranslate_ (int token)
+yy::VrmlParser::token_number_type
+yy::VrmlParser::yytranslate_ (int token)
 {
   static
   const token_number_type
@@ -1295,116 +1295,28 @@ yy::vrml_parser::yytranslate_ (int token)
     return yyundef_token_;
 }
 
-const int yy::vrml_parser::yyeof_ = 0;
-const int yy::vrml_parser::yylast_ = 208;
-const int yy::vrml_parser::yynnts_ = 59;
-const int yy::vrml_parser::yyempty_ = -2;
-const int yy::vrml_parser::yyfinal_ = 3;
-const int yy::vrml_parser::yyterror_ = 1;
-const int yy::vrml_parser::yyerrcode_ = 256;
-const int yy::vrml_parser::yyntokens_ = 32;
+const int yy::VrmlParser::yyeof_ = 0;
+const int yy::VrmlParser::yylast_ = 208;
+const int yy::VrmlParser::yynnts_ = 59;
+const int yy::VrmlParser::yyempty_ = -2;
+const int yy::VrmlParser::yyfinal_ = 3;
+const int yy::VrmlParser::yyterror_ = 1;
+const int yy::VrmlParser::yyerrcode_ = 256;
+const int yy::VrmlParser::yyntokens_ = 32;
 
-const unsigned int yy::vrml_parser::yyuser_token_number_max_ = 280;
-const yy::vrml_parser::token_number_type yy::vrml_parser::yyundef_token_ = 2;
+const unsigned int yy::VrmlParser::yyuser_token_number_max_ = 280;
+const yy::VrmlParser::token_number_type yy::VrmlParser::yyundef_token_ = 2;
 
-#line 458 "vrml.bison"
+#line 475 "vrml.bison"
 
 
 
-void
-yy::vrml_parser::error( const yy::vrml_parser::location_type& l,
-                        const std::string& m ) {
+void yy::VrmlParser::error( const yy::VrmlParser::location_type& l,
+                            const std::string& m ) {
   driver.error( l, m );
 }
 
-
-int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver)
-{
+int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver) {
    return driver.lexer->yylex(yylval, yylloc, driver);
 }
-//int yylex() {
-//  return lexer->yylex();
-//}
-
-/*
-int parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
-  *exported_nodes, PrototypeVector *prototypes ) {
-  // initialise all parser variables:
-  file_name = fn;
-  vrml_line_no=1;
-  proto_declarations.clear();
-  if ( prototypes )
-    proto_vector = prototypes;
-  else
-    proto_vector = new PrototypeVector;
-  resetLine();
-
-  if ( !dn )
-    DEF_map = new DEFNodes();
-  else DEF_map = dn;
-  DEF_export = exported_nodes;
-
-  //yyin = fopen( f, "r" );
-  if (!inp->fail()) {
-    lexer = new yyFlexLexer( inp, &Console );
-    yyparse();
-    if ( !dn )
-      delete DEF_map;
-    if ( !prototypes )
-      delete proto_vector;
-    delete lexer;
-    Console(3) << "Finished Parsing" << endl;
-    return 1;
-  } else 
-    return 0;
-}
-
-int yyerror( char const *e ) {
-   Console(3) << "VRMLParser Error: "<< endl;
-   Console(3) << driver.getLocationString() << endl;
-   Console(3) << vrml_line << endl;
-   for( int i=0; i<vrml_line.length(); i++)
-     Console(3) << " ";
-   Console(3) << "^" << endl;
-   Console(3) << e << endl;
-   return 0;
-}
-
-
-Group *getRoot() {
-  return root;
-}
-
-void setyylval( char* l ) {
-  yylval.val = strdup(l);
-}
-
-void incLineCount() {
-  vrml_line_no++;
-}
-
-void addLine( const char *c ) {
-   if ( proto_declarations.size() != 0 )
-     proto_body += c;
-
-   old_line_no=vrml_line_no;
-   old_char_no=vrml_line.length();
-
-   const char *x=c;
-   const char *last_line=c;
-   while (*x!='\0') {
-     if (*x=='\n') {
-       vrml_line_no++;
-       last_line=x+1;
-       vrml_line="";
-     }
-     x++;
-  }
-   vrml_line += last_line;
-}
-
-void resetLine() {
-   vrml_line = "";
-}
-*/
 

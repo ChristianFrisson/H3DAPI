@@ -65,6 +65,39 @@ namespace yy
 /* Copy the first part of user declarations.  */
 #line 6 "vrml.bison"
 
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+//
+/// \file vrml.bison
+/// \brief Bison VRML grammar
+//
+//  To generate vrml.cpp and vrml.hpp, simply run "bison vrml.bison"
+//
+//
+//////////////////////////////////////////////////////////////////////////////
+
+
 #include "H3DApi.h"
 #include "Node.h"
 #include "Group.h"
@@ -84,34 +117,18 @@ using namespace X3D;
 #include "VrmlDriver.h"
 
 #include <iostream>
-#include <fstream>
 #include <sstream>
 using namespace std;
 
 
-
 #define YYERROR_VERBOSE  1
-//extern FILE *yyin;
 
-//void setyylval( char *);
-//int yyerror( char const *e );
-//int yylex();
-int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver);
-//int parse( istream *, DEFNodes*, DEFNodes* );
-//string getLocationString();
-//string getOldLocationString();
-
-//void resetLine();
-
-
-
-// %type<node_t> node
-//   struct Node* node_t;
+int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 
 
 
 /* Line 321 of lalr1.cc.  */
-#line 115 "vrml.hpp"
+#line 132 "vrml.hpp"
 
 #include "stack.hh"
 #include "location.hh"
@@ -141,12 +158,12 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver);
 #endif
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 66 "vrml.bison"
+#line 83 "vrml.bison"
 union YYSTYPE {
   char* val;
 };
 /* Line 321 of lalr1.cc.  */
-#line 150 "vrml.hpp"
+#line 167 "vrml.hpp"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -156,7 +173,7 @@ union YYSTYPE {
 
 
 /* Line 321 of lalr1.cc.  */
-#line 160 "vrml.hpp"
+#line 177 "vrml.hpp"
 /* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
    If N is 0, then set CURRENT to the empty location which ends
    the previous symbol: RHS[0] (always defined).  */
@@ -178,7 +195,7 @@ do {							\
 
 namespace yy
 {
-  class vrml_parser;
+  class VrmlParser;
 
   template <typename P>
   struct traits
@@ -186,7 +203,7 @@ namespace yy
   };
 
   template <>
-  struct traits<vrml_parser>
+  struct traits<VrmlParser>
   {
     typedef unsigned char token_number_type;
     typedef signed char       rhs_number_type;
@@ -199,23 +216,23 @@ namespace yy
 namespace yy
 {
   /// A Bison parser.
-  class vrml_parser
+  class VrmlParser
   {
     /// Symbol semantic values.
-    typedef traits<vrml_parser>::semantic_type semantic_type;
+    typedef traits<VrmlParser>::semantic_type semantic_type;
     /// Symbol locations.
-    typedef traits<vrml_parser>::location_type location_type;
+    typedef traits<VrmlParser>::location_type location_type;
 
   public:
     /// Build a parser object.
-    vrml_parser (vrml_driver& driver_yyarg) :
+    VrmlParser (VrmlDriver& driver_yyarg) :
       yydebug_ (false),
       yycdebug_ (&std::cerr),
       driver (driver_yyarg)
     {
     }
 
-    virtual ~vrml_parser ()
+    virtual ~VrmlParser ()
     {
     }
 
@@ -257,7 +274,7 @@ namespace yy
 
 
     /// State numbers.
-    typedef traits<vrml_parser>::state_type state_type;
+    typedef traits<VrmlParser>::state_type state_type;
     /// State stack type.
     typedef stack<state_type>    state_stack_type;
     /// Semantic value stack type.
@@ -273,7 +290,7 @@ namespace yy
     location_stack_type yylocation_stack_;
 
     /// Internal symbol numbers.
-    typedef traits<vrml_parser>::token_number_type token_number_type;
+    typedef traits<VrmlParser>::token_number_type token_number_type;
     /* Tables.  */
     /// For a state, the index in \a yytable_ of its portion.
     static const short int yypact_[];
@@ -317,7 +334,7 @@ namespace yy
 
 #if YYDEBUG
     /// A type to store symbol numbers and -1.
-    typedef traits<vrml_parser>::rhs_number_type rhs_number_type;
+    typedef traits<VrmlParser>::rhs_number_type rhs_number_type;
     /// A `-1'-separated list of the rules' RHS.
     static const rhs_number_type yyrhs_[];
     /// For each rule, the index of the first RHS symbol in \a yyrhs_.
@@ -376,7 +393,7 @@ namespace yy
 
 
     /* User arguments.  */
-    vrml_driver& driver;
+    VrmlDriver& driver;
   };
 }
 

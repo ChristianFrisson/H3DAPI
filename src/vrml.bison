@@ -1,9 +1,43 @@
 
 %skeleton "lalr1.cc"
-%define "parser_class_name" "vrml_parser"
+%define "parser_class_name" "VrmlParser"
 %defines
 
 %{
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+//
+/// \file vrml.bison
+/// \brief Bison VRML grammar
+//
+//  To generate vrml.cpp and vrml.hpp, simply run:
+//     bison -o vrml.cpp vrml.bison
+//
+//
+//////////////////////////////////////////////////////////////////////////////
+
+
 #include "H3DApi.h"
 #include "Node.h"
 #include "Group.h"
@@ -23,35 +57,19 @@ using namespace X3D;
 #include "VrmlDriver.h"
 
 #include <iostream>
-#include <fstream>
 #include <sstream>
 using namespace std;
 
 
-
 #define YYERROR_VERBOSE  1
-//extern FILE *yyin;
 
-//void setyylval( char *);
-//int yyerror( char const *e );
-//int yylex();
-int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver);
-//int parse( istream *, DEFNodes*, DEFNodes* );
-//string getLocationString();
-//string getOldLocationString();
-
-//void resetLine();
-
-
-
-// %type<node_t> node
-//   struct Node* node_t;
+int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 
 %}
 
 
-%parse-param { vrml_driver& driver }
-%lex-param   { vrml_driver& driver }
+%parse-param { VrmlDriver& driver }
+%lex-param   { VrmlDriver& driver }
 
 %locations
 
@@ -458,99 +476,11 @@ fieldId:                VRMLID;
 %%
 
 
-void
-yy::vrml_parser::error( const yy::vrml_parser::location_type& l,
-                        const std::string& m ) {
+void yy::VrmlParser::error( const yy::VrmlParser::location_type& l,
+                            const std::string& m ) {
   driver.error( l, m );
 }
 
-
-int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver)
-{
+int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver) {
    return driver.lexer->yylex(yylval, yylloc, driver);
 }
-//int yylex() {
-//  return lexer->yylex();
-//}
-
-/*
-int parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
-  *exported_nodes, PrototypeVector *prototypes ) {
-  // initialise all parser variables:
-  file_name = fn;
-  vrml_line_no=1;
-  proto_declarations.clear();
-  if ( prototypes )
-    proto_vector = prototypes;
-  else
-    proto_vector = new PrototypeVector;
-  resetLine();
-
-  if ( !dn )
-    DEF_map = new DEFNodes();
-  else DEF_map = dn;
-  DEF_export = exported_nodes;
-
-  //yyin = fopen( f, "r" );
-  if (!inp->fail()) {
-    lexer = new yyFlexLexer( inp, &Console );
-    yyparse();
-    if ( !dn )
-      delete DEF_map;
-    if ( !prototypes )
-      delete proto_vector;
-    delete lexer;
-    Console(3) << "Finished Parsing" << endl;
-    return 1;
-  } else 
-    return 0;
-}
-
-int yyerror( char const *e ) {
-   Console(3) << "VRMLParser Error: "<< endl;
-   Console(3) << driver.getLocationString() << endl;
-   Console(3) << vrml_line << endl;
-   for( int i=0; i<vrml_line.length(); i++)
-     Console(3) << " ";
-   Console(3) << "^" << endl;
-   Console(3) << e << endl;
-   return 0;
-}
-
-
-Group *getRoot() {
-  return root;
-}
-
-void setyylval( char* l ) {
-  yylval.val = strdup(l);
-}
-
-void incLineCount() {
-  vrml_line_no++;
-}
-
-void addLine( const char *c ) {
-   if ( proto_declarations.size() != 0 )
-     proto_body += c;
-
-   old_line_no=vrml_line_no;
-   old_char_no=vrml_line.length();
-
-   const char *x=c;
-   const char *last_line=c;
-   while (*x!='\0') {
-     if (*x=='\n') {
-       vrml_line_no++;
-       last_line=x+1;
-       vrml_line="";
-     }
-     x++;
-  }
-   vrml_line += last_line;
-}
-
-void resetLine() {
-   vrml_line = "";
-}
-*/

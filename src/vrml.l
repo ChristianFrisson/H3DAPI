@@ -1,10 +1,39 @@
 
 %{
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+//
+//
+//  Flex instructions:
+//  Generate lex.yy.cc by running   "flex -Cfa vrml.l"
+//  The -Cfa flag specifies that the parser should generate an
+//  uncompressed lookup table and opt for speed over size.
+//
 
 #include "VrmlDriver.h"
 #include "vrml.hpp"
-//#define YYLMAX 16777216
-//#define YYLMAX 16777
+#define YYLMAX 65535
 %}
 
 %option noyywrap nounput batch debug
@@ -21,15 +50,8 @@ WHITE    [ ,\t\n\r]
 STRING    \"[^\"]+\"
 
 
-%{
-//# define YY_USER_ACTION yylloc->columns (yyleng);
-%}
-
 %%
 
-%{
-//yylloc->step ();
-%}
 
 AS             driver.addLine( yytext ); return AS;
 TRUE           driver.addLine( yytext ); return TRUE;
@@ -57,15 +79,15 @@ TO             driver.addLine( yytext ); return TO;
 IS             driver.addLine( yytext ); return IS;
 
 
-{ID}        /*printf("ID=%s\n",yytext);*/ yylval->val=strdup(yytext); driver.addLine( yytext );  return VRMLID;
+{ID}        yylval->val=strdup(yytext); driver.addLine( yytext );  return VRMLID;
 
-({COMMENT}({WHITE})*)+    driver.addLine( yytext ); /* eat up comments */
-
-
-(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+      driver.addLine( yytext );/* printf("VAL=%s\n",yytext); */ yylval->val=strdup(yytext); return STRING;
+({COMMENT}({WHITE})*)+    driver.addLine( yytext );
 
 
-{WHITE}+     driver.addLine( yytext );  /* eat up whitespace */
+(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+      driver.addLine( yytext ); yylval->val=strdup(yytext); return STRING;
+
+
+{WHITE}+     driver.addLine( yytext );
 
 .            driver.addLine( yytext ); return yytext[0];
 
@@ -73,12 +95,3 @@ IS             driver.addLine( yytext ); return IS;
 
 %%
 
-void vrml_driver::scan_begin () {
-  //yy_flex_debug = trace_scanning;
- // if (!(lexer->yyin = fopen (file.c_str (), "r")))
- //   error (std::string ("cannot open ") + file);
-}
-
-void vrml_driver::scan_end () {
-  //fclose (lexer->yyin);
-}
