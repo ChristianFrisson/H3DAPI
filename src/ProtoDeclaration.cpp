@@ -34,6 +34,9 @@
 #include "X3DFieldConversion.h"
 #include "X3DSAX2Handlers.h"
 #include "IStreamInputSource.h"
+#include "VrmlDriver.h"
+#include "VrmlParser.h"
+
 
 using namespace H3D;
 
@@ -103,17 +106,35 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
 
     if( body == "" ) return NULL;
 
-    auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
-    X3D::X3DSAX2Handlers handler;
-    handler.proto_instance = proto;
-    stringstream s;
-    s << body;
-    parser->setContentHandler(&handler);
-    parser->setErrorHandler(&handler); 
-    parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
-    AutoRef< Node > n = handler.getResultingNode();
-    proto->setPrototypedNode( n.get() );
-    return proto;
+    if ( X3D::isVRML( body ) ) {
+      AutoRef< Node > n;
+      stringstream s;
+      s << body;
+      vrml_driver driver;
+      driver.proto_instance = proto;
+      if (driver.parse( &s, "<proto>", NULL, NULL, NULL )) {
+        Group *c = driver.getRoot();
+        if ( c && !c->children->empty() )
+          n.reset( c->children->front() );
+      } else {
+        Console(3) << "WARNING: Could not parse VRML from string" << endl;
+      }
+
+      proto->setPrototypedNode( n.get() );
+      return proto;
+    } else {
+      auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
+      X3D::X3DSAX2Handlers handler;
+      handler.proto_instance = proto;
+      stringstream s;
+      s << body;
+      parser->setContentHandler(&handler);
+      parser->setErrorHandler(&handler); 
+      parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
+      AutoRef< Node > n = handler.getResultingNode();
+      proto->setPrototypedNode( n.get() );
+      return proto;
+    }
   } catch( const Exception::H3DException &e ) {
     Console(3) << "Could not create X3DPrototypeInstance of " << name << endl;
     Console(3) << e << endl;
