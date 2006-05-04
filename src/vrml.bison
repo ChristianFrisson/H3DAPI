@@ -1,5 +1,7 @@
 
-
+%skeleton "lalr1.cc"
+%define "parser_class_name" "vrml_parser"
+%defines
 
 %{
 #include "H3DApi.h"
@@ -8,7 +10,8 @@
 #include "DEFNodes.h"
 #include "Inline.h"
 #include "H3DExports.h"
-
+#include "X3D.h"
+#include "X3DTypeFunctions.h"
 
 using namespace H3D;
 using namespace X3D;
@@ -17,45 +20,48 @@ using namespace X3D;
 // users don't need a copy of Flex installed just to compile the
 // API.
 #include "FlexLexer.h"
+#include "VrmlDriver.h"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 using namespace std;
 
+
+
 #define YYERROR_VERBOSE  1
-extern FILE *yyin;
+//extern FILE *yyin;
 
-void setyylval( char *);
-int yyerror( char const *e );
-int yylex();
-int parse( istream *, DEFNodes*, DEFNodes* );
-string getLocationString();
-string getOldLocationString();
-Group *getRoot();
-void setFieldValue( const char*);
-void setNodeStatement( int );
-void resetLine();
+//void setyylval( char *);
+//int yyerror( char const *e );
+//int yylex();
+int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver);
+//int parse( istream *, DEFNodes*, DEFNodes* );
+//string getLocationString();
+//string getOldLocationString();
 
-FlexLexer* lexer;
-Group *root;
-DEFNodes *DEF_map;
-DEFNodes *DEF_export;
+//void resetLine();
 
-vector< Node* > node_stack;
-vector< const char* > field_stack;
 
-int vrml_line_no;
-int old_line_no;
-int old_char_no;
-string vrml_line;
-const char *file_name;
 
 // %type<node_t> node
 //   struct Node* node_t;
 
 %}
 
+
+%parse-param { vrml_driver& driver }
+%lex-param   { vrml_driver& driver }
+
+%locations
+
+%initial-action {
+  // Initialize the initial location.
+  @$.begin.filename = @$.end.filename = &driver.file;
+};
+
+%debug
+%error-verbose
 
 %union {
   char* val;
@@ -66,10 +72,11 @@ const char *file_name;
 %type<val> nodeNameId inputOnlyId outputOnlyId initializeOnlyId
 %type<val> inlineNodeNameId exportedNodeNameId
 %type<val> nodeTypeId 
-%type<val> ID
+%type<val> VRMLID fieldType fieldId
 
-%token ID
-%token STRING
+
+%token VRMLID   "identifier"
+%token STRING   "field value"
 %token AS
 %token VRMLNULL
 %token SCRIPT
@@ -78,16 +85,12 @@ const char *file_name;
 %token PROTO inputOnly outputOnly initializeOnly inputOutput
 %token EXTERNPROTO ROUTE TO IS
 
-%token TMFBool TMFColor TMFColorRGBA TMFDouble TMFFloat TMFImage
-%token TMFInt32 TMFNode TMFRotation TMFString TMFTime TMFVec2d
-%token TMFVec2f TMFVec3d TMFVec3f TSFBool TSFColor TSFColorRGBA
-%token TSFDouble TSFFloat TSFImage TSFInt32 TSFNode TSFRotation
-%token TSFString TSFTime TSFVec2d TSFVec2f TSFVec3d TSFVec3f
-
 
 %%
 
-x3dScene : { root = new Group(); }
+
+
+x3dScene : { driver.root = new Group(); }
        profileStatement 
        componentStatements
        metaStatements
@@ -95,7 +98,7 @@ x3dScene : { root = new Group(); }
 
 profileStatement:        PROFILE profileNameId | ;
 
-profileNameId:           ID ;
+profileNameId:           VRMLID ;
 
 componentStatements:     componentStatement |
                          componentStatement componentStatements |
@@ -103,65 +106,67 @@ componentStatements:     componentStatement |
 
 componentStatement:      COMPONENT componentNameId ':' componentSupportLevel ;
 
-componentNameId:         ID ;
+componentNameId:         VRMLID ;
 
 componentSupportLevel:   STRING ;
 
 exportStatement:         EXPORT nodeNameId AS exportedNodeNameId {
-  Node *node= DEF_map->getNode( $2 );
+  Node *node= driver.DEF_map->getNode( $2 );
   if ( node ) {
-    if ( DEF_export )
-      DEF_export->addNode( $4, node );
+    if ( driver.DEF_export )
+      driver.DEF_export->addNode( $4, node );
     else
       Console(3) << "WARNING: EXPORT error. No export DEF map provided!"
-                 << getLocationString() << endl;
+                 << driver.getLocationString() << endl;
   } else {
     Console(3) << "WARNING: EXPORT error. Node named \"" 
                << $2 << "\" does not exist."
-               << getLocationString() << endl;
+               << driver.getLocationString() << endl;
   }
 };
 
 importStatement:         IMPORT inlineNodeNameId '.' exportedNodeNameId 
                          AS nodeNameId {
+if( driver.proto_declarations.size()==0 ) {
   if( strcmp( $2, "H3D_EXPORTS" ) == 0 ) {
     Node *import_node = 
       H3DExports::getH3DExportNode( $4 );
     if( import_node ) {
-      DEF_map->addNode( $6, import_node ); 
+      driver.DEF_map->addNode( $6, import_node ); 
     } else {
       Console(3) << "WARNING: IMPORT error. H3D_EXPORTS " 
                  << "does not include \""
                  << $4 << "\"" 
-                 << getLocationString() << endl;
+                 << driver.getLocationString() << endl;
     }
   } else {
-    Node *n = DEF_map->getNode( $2 );
+    Node *n = driver.DEF_map->getNode( $2 );
     Inline *inline_node = dynamic_cast< Inline * >( n );
     if( inline_node ) {
       Node *import_node = 
         inline_node->exported_nodes.getNode( $4 );
       if( import_node ) {
-        DEF_map->addNode( $6, 
+        driver.DEF_map->addNode( $6, 
                           import_node ); 
       } else {
         Console(3) << "WARNING: IMPORT error. Inline node \"" 
                    << $2 << "\" does not EXPORT \""
                    << $4 << "\"" 
-                   << getLocationString() << endl;
+                   << driver.getLocationString() << endl;
       }
     } else {
       if( n ) {
         Console(3) << "WARNING: IMPORT error. Node \"" 
                    << $2 << "\" is not an Inline node "
-                   << getLocationString() << endl;
+                   << driver.getLocationString() << endl;
       } else {
         Console(3) << "WARNING: IMPORT error. Node named \"" 
                    << $2 << "\" does not exist."
-                   << getLocationString() << endl;
+                   << driver.getLocationString() << endl;
       }
     }
   }
+}
 };
 
 metaStatements:          metaStatement |
@@ -179,9 +184,11 @@ statements:              statement |
                          empty ;
 
 statement:               nodeStatement {
-                            Node *node = node_stack.back();
-                            node_stack.pop_back();
-                            root->children->push_back( node );
+                           if ( driver.proto_declarations.size()==0 ) {
+                              Node *node = driver.node_stack.back();
+                              driver.node_stack.pop_back();
+                              driver.root->children->push_back( node );
+                           }
                          } | 
                          exportStatement |
                          importStatement |
@@ -190,11 +197,13 @@ statement:               nodeStatement {
 
 nodeStatement:           node  |
                          DEF nodeNameId node {
-                           DEF_map->addNode( $2, node_stack.back() );
-                         } |
+  if ( driver.proto_declarations.size()==0 )
+    driver.DEF_map->addNode( $2, driver.node_stack.back() );
+  } |
                          USE nodeNameId {
-                           node_stack.push_back( DEF_map->getNode( $2 ) );
-                         };
+  if ( driver.proto_declarations.size()==0 )
+    driver.node_stack.push_back( driver.DEF_map->getNode( $2 ) );
+  };
 
 rootNodeStatement:       node | 
                          DEF nodeNameId node ;
@@ -206,8 +215,26 @@ protoStatements:         protoStatement |
                          protoStatement protoStatements |
                          empty ;
 
-proto:                   PROTO nodeTypeId '[' interfaceDeclarations ']' 
-                         '{' protoBody '}' ;
+proto:                   PROTO nodeTypeId {
+   if ( driver.proto_vector ) {
+     driver.proto_declarations.push_back( new ProtoDeclaration( $2 ) );
+     if ( driver.proto_declarations.size()==1 ) {
+       driver.proto_body = "";
+       driver.proto_vector->push_back( driver.proto_declarations.back() );
+     }
+   }
+} '[' interfaceDeclarations ']'  
+  '{' { if ( driver.proto_declarations.size()==1 ) driver.proto_body = ""; } 
+   protoBody  {
+   if ( driver.proto_declarations.size()==1 ) {
+     // remove trailing '}'
+     int pos = driver.proto_body.find_last_of( "}" );
+     driver.proto_body[pos]=' ';
+     driver.proto_declarations.back()->setProtoBody( driver.proto_body );
+   }
+   driver.proto_declarations.pop_back();
+}
+  '}' ;
 
 protoBody:               protoStatements rootNodeStatement statements ;
 
@@ -216,12 +243,21 @@ interfaceDeclarations:   interfaceDeclaration |
                          empty ;
 
 restrictedInterfaceDeclaration: 
-                         inputOnly fieldType inputOnlyId |
-                         outputOnly fieldType outputOnlyId |
-                         initializeOnly fieldType initializeOnlyId fieldValue;
+                         inputOnly fieldType inputOnlyId {
+  driver.setProtoField( $3, $2, Field::INPUT_ONLY, NULL );
+}|
+                         outputOnly fieldType outputOnlyId {
+  driver.setProtoField( $3, $2, Field::OUTPUT_ONLY, NULL );
+} |
+                         initializeOnly fieldType initializeOnlyId fieldValue {
+  driver.setProtoField( $3, $2, Field::INITIALIZE_ONLY, $4 );
+};
 
 interfaceDeclaration:    restrictedInterfaceDeclaration |
-                         inputOutput fieldType fieldId fieldValue ;
+                         inputOutput fieldType fieldId fieldValue {
+  driver.setProtoField( $3, $2, Field::INPUT_OUTPUT, $4 );
+};
+
 
 externproto:             EXTERNPROTO nodeTypeId 
                          '[' externInterfaceDeclarations ']' URLList ;
@@ -235,15 +271,16 @@ externInterfaceDeclaration:
                          inputOnly fieldType inputOnlyId |
                          outputOnly fieldType outputOnlyId |
                          initializeOnly fieldType initializeOnlyId |
-                         inputOutput fieldType ID ;
+                         inputOutput fieldType VRMLID ;
 
 routeStatement:          ROUTE nodeNameId '.' outputOnlyId 
                          TO nodeNameId '.' inputOnlyId {
-  Node *fr = DEF_map->getNode( $2 );
+if ( driver.proto_declarations.size()==0 ) {
+  Node *fr = driver.DEF_map->getNode( $2 );
   if ( fr ) {
     Field *frf = fr->getField( $4 );
     if ( frf ) {
-      Node *to = DEF_map->getNode( $6 );
+      Node *to = driver.DEF_map->getNode( $6 );
       if ( to ) {
         Field *tof = to->getField( $8 );
         if ( tof )
@@ -252,26 +289,27 @@ routeStatement:          ROUTE nodeNameId '.' outputOnlyId
           Console(3) << "WARNING: Route error. Could not find field named \"" 
                      <<  $8
                      << "\" in \"" << $6 << "\" Node " 
-                     << getLocationString() << endl;
+                     << driver.getLocationString() << endl;
         }
       } else {
         Console(3) << "WARNING: Route error. Could not find destination Node named \"" 
                    << $6
                    << "\" " 
-                   << getLocationString() << endl;
+                   << driver.getLocationString() << endl;
       }
     } else {
       Console(3) << "WARNING: Route error. Could not find field named \"" 
                  << $4
                  << "\" in \"" << $2 << "\" Node " 
-                 << getLocationString() << endl;
+                 << driver.getLocationString() << endl;
     }  
   } else {
     Console(3) << "WARNING: Route error. Could not find source Node named \"" 
                << $2
                << "\" " 
-               << getLocationString() << endl;
+               << driver.getLocationString() << endl;
   }
+}
 };
 
 URLList:                 mfValue ;
@@ -280,11 +318,22 @@ empty:                   ;
 
 
 node:                    nodeTypeId { 
+if ( driver.proto_declarations.size()==0 ) {
   Node *new_node =  H3DNodeDatabase::createNode( yylval.val );
-  if ( !new_node )
-    Console(3) << "WARNING: Could not create node \"" << yylval.val << 
-      "\" - name not found in the node database." << endl;
-  node_stack.push_back( new_node );
+  if ( !new_node ) {
+    // try as a proto:
+    ProtoDeclaration *proto = driver.proto_vector->getProtoDeclaration(
+    yylval.val );
+    if ( proto ) {
+       new_node = proto->newProtoInstance();
+    }
+    if ( !new_node )
+      Console(3) << "WARNING: Could not create node \"" << yylval.val << 
+        "\" - name not found in the node database." << endl;
+  }
+  if ( new_node )
+    driver.node_stack.push_back( new_node );
+}
 }
                         '{' nodeBody '}' |
                          SCRIPT '{' scriptBody '}' ;
@@ -306,71 +355,62 @@ scriptBodyElement:       nodeBodyElement |
                          inputOutput fieldType inputOutputId IS inputOutputId;
 
 nodeBodyElement:         initializeOnlyId { 
-                            field_stack.push_back( $1 ); } fieldValue
+                            driver.field_stack.push_back( $1 ); } fieldValue
                             {
-                                field_stack.pop_back();
+                           if ( driver.proto_declarations.size()==0 )
+                                driver.field_stack.pop_back();
                             } |
-                         initializeOnlyId IS initializeOnlyId |
-                         inputOnlyId IS inputOnlyId |
-                         outputOnlyId IS outputOnlyId |
-                         inputOutputId IS inputOutputId |
+                         initializeOnlyId IS initializeOnlyId {
+  if ( driver.proto_instance != NULL ) {
+    Node *node = driver.node_stack.back();
+    Field *node_field = node->getField( $1 );
+    Field *proto_field =  
+        driver.proto_instance->getField( $3 );
+    if ( node && node_field && proto_field ) {
+      Field::AccessType access_type = node_field->getAccessType();
+        
+      if( access_type == Field::OUTPUT_ONLY ) {
+        node_field->route( proto_field, driver.proto_instance->id );
+      } else if ( access_type == Field::INPUT_OUTPUT ) {
+        node_field->routeNoEvent( proto_field, driver.proto_instance->id );
+      }
+      
+      if( access_type != Field::OUTPUT_ONLY ) {
+        proto_field->route( node_field, driver.proto_instance->id );
+      }
+    }
+  }
+}|
                          routeStatement |
                          protoStatement ;
 
-nodeNameId:              ID ;
+nodeNameId:              VRMLID ;
 
-nodeTypeId:              ID ;
+nodeTypeId:              VRMLID ;
 
-inlineNodeNameId:        ID ;
+inlineNodeNameId:        VRMLID ;
 
-exportedNodeNameId:      ID ;
+exportedNodeNameId:      VRMLID ;
 
-nodeTypeId:              ID ;
+nodeTypeId:              VRMLID ;
 
-initializeOnlyId:        ID ;
+initializeOnlyId:        VRMLID ;
 
-inputOnlyId:             ID ;
+inputOnlyId:             VRMLID ;
 
-inputOutputId:           ID ;
+inputOutputId:           VRMLID ;
 
-outputOnlyId:            ID ;
+outputOnlyId:            VRMLID ;
 
-fieldType:              TMFBool |
-                        TMFColor |
-                        TMFColorRGBA |
-                        TMFDouble |
-                        TMFFloat |
-                        TMFImage |
-                        TMFInt32 |
-                        TMFNode |
-                        TMFRotation |
-                        TMFString |
-                        TMFTime |
-                        TMFVec2d |
-                        TMFVec2f |
-                        TMFVec3d |
-                        TMFVec3f |
-                        TSFBool |
-                        TSFColor |
-                        TSFColorRGBA |
-                        TSFDouble |
-                        TSFFloat |
-                        TSFImage |
-                        TSFInt32 |
-                        TSFNode |
-                        TSFRotation |
-                        TSFString |
-                        TSFTime |
-                        TSFVec2d |
-                        TSFVec2f |
-                        TSFVec3d |
-                        TSFVec3f ;
+fieldType:              VRMLID ;
 
 fieldValue:             sfValue  { 
-  setFieldValue( $1 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setFieldValue( $1 );
 } |
                         mfValue  { 
-  setFieldValue( $1 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setFieldValue( $1 );
                         } |
                         sfnodeValue {} |
                         mfnodeValue {};
@@ -385,82 +425,65 @@ mfValue:                sfValue |
 
 
 sfnodeValue:            nodeStatement {
-  setNodeStatement( 0 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setNodeStatement( 0 );
                         } |
                         VRMLNULL {
-  setNodeStatement( 1 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setNodeStatement( 1 );
                         };
 
 mfnodeValue:            nodeStatement  {
-  setNodeStatement( 0 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setNodeStatement( 0 );
                         } |
                         '[' ']' { 
-  setNodeStatement( 1 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setNodeStatement( 1 );
 
                         } |
                         '[' nodeStatements ']' ;
 
 nodeStatements:         nodeStatement  {
-  setNodeStatement( 0 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setNodeStatement( 0 );
                         } |
                         nodeStatement  {
-  setNodeStatement( 0 );
+if ( driver.proto_declarations.size()==0 )
+  driver.setNodeStatement( 0 );
                         }  nodeStatements ;
 
-fieldId:                STRING;
+fieldId:                VRMLID;
 
 %%
 
 
-
-void setFieldValue( const char* v ) {
-  Node *node = node_stack.back();
-  Field *field = node->getField( field_stack.back() );
-  ParsableField *pfield =  
-    dynamic_cast< ParsableField * >( field );
-  if ( pfield ) {
-    try {
-      pfield->setValueFromString( v );
-    } catch( const Convert::X3DFieldConversionError &e ) {
-       Console(3) << "WARNING: Could not convert field " 
-                  << field->getName() << " argument in node "
-                  << node->getName() << " ( " << getOldLocationString()
-                  << " ) " << endl;
-    }
-  } else
-    Console(3) << "WARNING: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getOldLocationString() << " )" << endl;
+void
+yy::vrml_parser::error( const yy::vrml_parser::location_type& l,
+                        const std::string& m ) {
+  driver.error( l, m );
 }
 
-void setNodeStatement( int nullnode ) {
-  Node *node_value = NULL;
-  if ( !nullnode ) {
-    node_value = node_stack.back();
-    node_stack.pop_back();
-  }
-  Node *node = node_stack.back();
-  Field *field = node->getField( field_stack.back() );
-  SFNode *sf = dynamic_cast< SFNode *>( field );    
-  if ( sf ) {
-    sf->setValue( node_value );
-  } else {
-    MFNode *mf = dynamic_cast< MFNode *>( field );    
-    if ( mf ) {
-      if ( node_value )
-        mf->push_back( node_value );
-      else
-        mf->clear();
-    } else
-      Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << endl;
-  }
-}
 
-int yylex() {
-  return lexer->yylex();
+int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver)
+{
+   return driver.lexer->yylex(yylval, yylloc, driver);
 }
+//int yylex() {
+//  return lexer->yylex();
+//}
 
-int parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes *exported_nodes ) {
+/*
+int parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
+  *exported_nodes, PrototypeVector *prototypes ) {
+  // initialise all parser variables:
   file_name = fn;
   vrml_line_no=1;
+  proto_declarations.clear();
+  if ( prototypes )
+    proto_vector = prototypes;
+  else
+    proto_vector = new PrototypeVector;
   resetLine();
 
   if ( !dn )
@@ -474,16 +497,18 @@ int parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes *exported_nodes 
     yyparse();
     if ( !dn )
       delete DEF_map;
+    if ( !prototypes )
+      delete proto_vector;
     delete lexer;
+    Console(3) << "Finished Parsing" << endl;
     return 1;
   } else 
     return 0;
 }
 
-
 int yyerror( char const *e ) {
    Console(3) << "VRMLParser Error: "<< endl;
-   Console(3) << getLocationString() << endl;
+   Console(3) << driver.getLocationString() << endl;
    Console(3) << vrml_line << endl;
    for( int i=0; i<vrml_line.length(); i++)
      Console(3) << " ";
@@ -492,18 +517,6 @@ int yyerror( char const *e ) {
    return 0;
 }
 
-
-string getLocationString() {
-  stringstream ss;
-  ss << file_name << ":" << vrml_line_no << "." << vrml_line.length();
-  return ss.str();
-}
-
-string getOldLocationString() {
-  stringstream ss;
-  ss << file_name << ":" << old_line_no << "." << old_char_no;
-  return ss.str();
-}
 
 Group *getRoot() {
   return root;
@@ -518,6 +531,9 @@ void incLineCount() {
 }
 
 void addLine( const char *c ) {
+   if ( proto_declarations.size() != 0 )
+     proto_body += c;
+
    old_line_no=vrml_line_no;
    old_char_no=vrml_line.length();
 
@@ -537,3 +553,4 @@ void addLine( const char *c ) {
 void resetLine() {
    vrml_line = "";
 }
+*/

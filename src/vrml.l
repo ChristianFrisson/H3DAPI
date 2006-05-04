@@ -1,95 +1,84 @@
-%option noyywrap
+
+%{
+
+#include "VrmlDriver.h"
+#include "vrml.hpp"
+//#define YYLMAX 16777216
+//#define YYLMAX 16777
+%}
+
+%option noyywrap nounput batch debug
 
 
 ID       [^\x30-\x39\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ][^\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ]*
 
-OLDID       [a-zA-Z][a-zA-Z0-9_]*
+NUMBER   (([\-\+0-9\.][0-9\+\-.eE]*)|(0[xX][0-9a-fA-F]+))
 
-NUMBER   (([\-\+0-9][0-9\+\-.eE]*)|(0[xX][0-9a-fA-F]+))
+COMMENT  \#[^\n]*
 
 WHITE    [ ,\t\n\r] 
 
-OLDSTRING   \"(([^\\\"])|[\"]|\\.)+\"
-
 STRING    \"[^\"]+\"
+
+
+%{
+//# define YY_USER_ACTION yylloc->columns (yyleng);
+%}
 
 %%
 
 %{
-#include "vrml.hpp"
-void setyylval(char *);
-void addLine( const char* );
+//yylloc->step ();
 %}
 
-AS          return AS;
-TRUE        return TRUE;
-FALSE       return FALSE;
-PROFILE     return PROFILE;
-COMPONENT   return COMPONENT;
-EXPORT      return EXPORT;
-IMPORT      return IMPORT;
-META        return META;
-DEF         return DEF;
-USE         return USE;
-PROTO       return PROTO;
-NULL        return VRMLNULL;
-inputOnly   return inputOnly;
-eventIn     return inputOnly;
-outputOnly  return outputOnly;
-eventOut    return outputOnly;
-initializeOnly return initializeOnly;
-field       return initializeOnly;
-inputOutput return inputOutput;
-exposedField return inputOutput;
-EXTERNPROTO return EXTERNPROTO;
-ROUTE       return ROUTE;
-TO          return TO;
-IS          return IS;
-MFBool      return TMFBool;
-MFColor     return TMFColor;
-MFColorRGBA return TMFColorRGBA;
-MFDouble    return TMFDouble;
-MFFloat     return TMFFloat;
-MFImage     return TMFImage;
-MFInt32     return TMFInt32;
-MFNode      return TMFNode;
-MFRotation  return TMFRotation;
-MFString    return TMFString;
-MFTime      return TMFTime;
-MFVec2d     return TMFVec2d;
-MFVec2f     return TMFVec2f;
-MFVec3d     return TMFVec3d;
-MFVec3f     return TMFVec3f;
-SFBool      return TSFBool;
-SFColor     return TSFColor;
-SFColorRGBA return TSFColorRGBA;
-SFDouble    return TSFDouble;
-SFFloat     return TSFFloat;
-SFImage     return TSFImage;
-SFInt32     return TSFInt32;
-SFNode      return TSFNode;
-SFRotation  return TSFRotation;
-SFString    return TSFString;
-SFTime      return TSFTime;
-SFVec2d     return TSFVec2d;
-SFVec2f     return TSFVec2f;
-SFVec3d     return TSFVec2d;
-SFVec3f     return TSFVec3f;
+AS             driver.addLine( yytext ); return AS;
+TRUE           driver.addLine( yytext ); return TRUE;
+FALSE          driver.addLine( yytext ); return FALSE;
+PROFILE        driver.addLine( yytext ); return PROFILE;
+COMPONENT      driver.addLine( yytext ); return COMPONENT;
+EXPORT         driver.addLine( yytext ); return EXPORT;
+IMPORT         driver.addLine( yytext ); return IMPORT;
+META           driver.addLine( yytext ); return META;
+DEF            driver.addLine( yytext ); return DEF;
+USE            driver.addLine( yytext ); return USE;
+PROTO          driver.addLine( yytext ); return PROTO;
+NULL           driver.addLine( yytext ); return VRMLNULL;
+inputOnly      driver.addLine( yytext ); return inputOnly;
+eventIn        driver.addLine( yytext ); return inputOnly;
+outputOnly     driver.addLine( yytext ); return outputOnly;
+eventOut       driver.addLine( yytext ); return outputOnly;
+initializeOnly driver.addLine( yytext ); return initializeOnly;
+field          driver.addLine( yytext ); return initializeOnly;
+inputOutput    driver.addLine( yytext ); return inputOutput;
+exposedField   driver.addLine( yytext ); return inputOutput;
+EXTERNPROTO    driver.addLine( yytext ); return EXTERNPROTO;
+ROUTE          driver.addLine( yytext ); return ROUTE;
+TO             driver.addLine( yytext ); return TO;
+IS             driver.addLine( yytext ); return IS;
 
 
-{ID}        /*printf("ID=%s\n",yytext);*/ addLine( yytext ); setyylval(yytext); return ID;
+{ID}        /*printf("ID=%s\n",yytext);*/ yylval->val=strdup(yytext); driver.addLine( yytext );  return VRMLID;
 
-"#"[^\n]+    addLine( yytext ); /* eat up comments */
+({COMMENT}({WHITE})*)+    driver.addLine( yytext ); /* eat up comments */
 
 
-(({NUMBER}|{STRING})+({WHITE})*)+      addLine( yytext ); /*printf("VAL=%s\n",yytext);*/ setyylval(yytext); return STRING;
+(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+      driver.addLine( yytext );/* printf("VAL=%s\n",yytext); */ yylval->val=strdup(yytext); return STRING;
 
-{WHITE}+      addLine( yytext );  /* eat up whitespace */
 
-.            addLine( yytext ); return yytext[0];
+{WHITE}+     driver.addLine( yytext );  /* eat up whitespace */
+
+.            driver.addLine( yytext ); return yytext[0];
 
 
 
 %%
 
+void vrml_driver::scan_begin () {
+  //yy_flex_debug = trace_scanning;
+ // if (!(lexer->yyin = fopen (file.c_str (), "r")))
+ //   error (std::string ("cannot open ") + file);
+}
 
+void vrml_driver::scan_end () {
+  //fclose (lexer->yyin);
+}

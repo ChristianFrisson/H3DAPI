@@ -23,6 +23,11 @@ using namespace std;
 namespace H3D {
   namespace X3D {
     
+    // A simple attempt to automatically determine VRMLedness of a 
+    // file/string/url.
+    bool isVRML( const string &str );
+    bool isVRML( const istream &is );
+
     /// Create H3D nodes given VRML data as an istream
     /// \param in The input stream to read VRML data from.
     /// \param dn A DEFNodes structure to store the DEF nodes found
