@@ -110,7 +110,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
       AutoRef< Node > n;
       stringstream s;
       s << body;
-      vrml_driver driver;
+      VrmlDriver driver;
       driver.proto_instance = proto;
       if (driver.parse( &s, "<proto>", NULL, NULL, NULL )) {
         Group *c = driver.getRoot();
