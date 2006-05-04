@@ -54,17 +54,7 @@ H3DDisplayListObject::H3DDisplayListObject(
 
 void H3DDisplayListObject::DisplayList::update() {
   have_valid_display_list = tryBuildDisplayList( true );
-  if ( haveValidDisplayList() ) {
-    glCallList( display_list );
-    GLuint err = glGetError();
-    if( err != GL_NO_ERROR ) {
-      Console(4) << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
-                 << "\" when rendering " << getFullName() << endl;
-      have_valid_display_list = false;
-    }
-  } else {
-    owner->render();
-  }
+  if( !have_valid_display_list ) owner->render();
   event_fields.clear();
 }
 
@@ -139,7 +129,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
     // create the new display list if the displayLists we are dependent 
     if( have_all_needed_display_lists ) {
       //display_list = glGenLists( 1 ); 
-      glNewList( display_list, GL_COMPILE );
+      glNewList( display_list, GL_COMPILE_AND_EXECUTE );
       GLuint err = glGetError();
       if( err != GL_NO_ERROR ) {
         Console(4) << "QpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
@@ -192,6 +182,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
       // display list, try to build a new one.
       if( !haveValidDisplayList() ) {
         have_valid_display_list = tryBuildDisplayList( false );
+        if( have_valid_display_list ) return;
       }
     }
   } 
