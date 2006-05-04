@@ -2,19 +2,19 @@
 #include "VrmlDriver.h"
 #include "vrml.hpp"
 
-PrototypeVector *vrml_driver::global_proto_vector=NULL;
+PrototypeVector *VrmlDriver::global_proto_vector=NULL;
 
-vrml_driver::vrml_driver ()
+VrmlDriver::VrmlDriver ()
   : trace_scanning (false), trace_parsing (false) {
 
   proto_instance = 0;
 }
 
-vrml_driver::~vrml_driver () {
+VrmlDriver::~VrmlDriver () {
 }
 
 
-int vrml_driver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
+int VrmlDriver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
                         *exported_nodes, PrototypeVector *prototypes ) {
   lexer = NULL;
   root = NULL;
@@ -38,31 +38,27 @@ int vrml_driver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
 
   if (!inp->fail()) {
     lexer = new yyFlexLexer( inp, &Console );
-    scan_begin ();
-      yy::vrml_parser parser (*this);
+    yy::VrmlParser parser (*this);
     if ( !global_proto_vector ) {
       global_proto_vector=proto_vector;
       parser.parse ();
       global_proto_vector=NULL;
     } else
       parser.parse ();
-
-    //parser.set_debug_level (trace_parsing);
-    scan_end ();
   }
   
 }
 
-void vrml_driver::error (const yy::location& l, const std::string& m) {
+void VrmlDriver::error (const yy::location& l, const std::string& m) {
   cerr << "VrmlParser error: " << getLocationString() << " - " << m << endl;
 }
 
-void vrml_driver::error (const std::string& m) {
+void VrmlDriver::error (const std::string& m) {
   cerr << "VrmlParser error: " << getLocationString() << " - " << m << endl;
 }
 
 
-void vrml_driver::setFieldValue( const char* v ) {
+void VrmlDriver::setFieldValue( const char* v ) {
   Node *node = node_stack.back();
   Field *field = node->getField( field_stack.back() );
   ParsableField *pfield =  
@@ -96,7 +92,7 @@ void vrml_driver::setFieldValue( const char* v ) {
 
 
 
-void vrml_driver::setNodeStatement( int nullnode ) {
+void VrmlDriver::setNodeStatement( int nullnode ) {
   Node *node_value = NULL;
   if ( !nullnode ) {
     node_value = node_stack.back();
@@ -125,7 +121,7 @@ void vrml_driver::setNodeStatement( int nullnode ) {
 
 
 
-void vrml_driver::setProtoField( const char* name, const char* type, const
+void VrmlDriver::setProtoField( const char* name, const char* type, const
                                  Field::AccessType &access_type, 
                                  const char* value = 0 ) {
   if ( proto_declarations.size()==1 ) {
@@ -148,7 +144,7 @@ void vrml_driver::setProtoField( const char* name, const char* type, const
 }
 
 
-void vrml_driver::addLine( const char *c ) {
+void VrmlDriver::addLine( const char *c ) {
    if ( proto_declarations.size() != 0 )
      proto_body += c;
 
@@ -168,13 +164,13 @@ void vrml_driver::addLine( const char *c ) {
    vrml_line += last_line;
 }
 
-string vrml_driver::getLocationString() {
+string VrmlDriver::getLocationString() {
   stringstream ss;
   ss << file_name << ":" << vrml_line_no << "." << vrml_line.length();
   return ss.str();
 }
 
-string vrml_driver::getOldLocationString() {
+string VrmlDriver::getOldLocationString() {
   stringstream ss;
   ss << file_name << ":" << old_line_no << "." << old_char_no;
   return ss.str();

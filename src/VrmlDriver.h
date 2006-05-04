@@ -19,29 +19,27 @@ using namespace X3D;
 // Forward declarations.
 union YYSTYPE;
 
-class vrml_driver;
+class VrmlDriver;
 
 struct VRMLFlexLexer : public yyFlexLexer {
-  int yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver);
+  int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 };
 
 // Announce to Flex the prototype we want for lexing function, ...
 # define YY_DECL                                                      \
-  int VRMLFlexLexer::yylex (YYSTYPE* yylval, yy::location* yylloc, vrml_driver& driver)
+  int VRMLFlexLexer::yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver)
 // ... and declare it for the parser's sake.
 //YY_DECL;
 
 // Conducting the whole scanning and parsing of Calc++.
-class vrml_driver {
+class VrmlDriver {
 public:
-  vrml_driver ();
-  virtual ~vrml_driver ();
+  VrmlDriver ();
+  virtual ~VrmlDriver ();
 
   int result;
 
   // Handling the scanner.
-  void scan_begin ();
-  void scan_end ();
   bool trace_scanning;
   
   // Handling the parser.
@@ -57,9 +55,9 @@ public:
   void setProtoInstance ( X3DPrototypeInstance *p ) {
     proto_instance = p;
   }
-  void vrml_driver::setProtoField( const char* name, const char* type, const
-                                   Field::AccessType &access_type, 
-                                   const char* value = 0 );
+  void setProtoField( const char* name, const char* type, const
+                      Field::AccessType &access_type, 
+                      const char* value = 0 );
 
   // VRML specific functions:
 

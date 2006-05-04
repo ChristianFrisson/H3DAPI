@@ -64,7 +64,7 @@ Group* X3D::createVRMLFromString( const string &str,
   Group *g = new Group;
   stringstream inp;
   inp << str;
-  vrml_driver driver;
+  VrmlDriver driver;
   if (driver.parse( &inp, "<string>", dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c )
@@ -81,7 +81,7 @@ Group* X3D::createVRMLFromURL( const string &url,
                                PrototypeVector *prototypes ) {
   Group *g = new Group;
   ifstream inp(url.c_str() );
-  vrml_driver driver;
+  VrmlDriver driver;
   if (driver.parse( &inp, url.c_str(), dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c )
@@ -98,7 +98,7 @@ Group* X3D::createVRMLFromStream( istream &is,
                                    DEFNodes *exported_nodes,
                                    PrototypeVector *prototypes ) {
   Group *g = new Group;
-  vrml_driver driver;
+  VrmlDriver driver;
   if (driver.parse( &is, "<stream>", dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c )
@@ -117,7 +117,7 @@ AutoRef< Node > X3D::createVRMLNodeFromString( const string &str,
   AutoRef< Node > g;
   stringstream inp;
   inp << str;
-  vrml_driver driver;
+  VrmlDriver driver;
   if (driver.parse( &inp, "<string>", dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c && !c->children->empty() )
@@ -135,7 +135,7 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
                                              PrototypeVector *prototypes ) {
   AutoRef< Node > g;
   ifstream inp(url.c_str() );
-  vrml_driver driver;
+  VrmlDriver driver;
   if (driver.parse( &inp, url.c_str(), dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c && !c->children->empty() )
@@ -153,7 +153,7 @@ AutoRef< Node > X3D::createVRMLNodeFromStream( istream &is,
                                                 DEFNodes *exported_nodes,
                                                 PrototypeVector *prototypes ) {
   AutoRef< Node > g;
-  vrml_driver driver;
+  VrmlDriver driver;
   if (driver.parse( &is, "<stream>", dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c && !c->children->empty() )
