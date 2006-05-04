@@ -14,46 +14,6 @@
 
 using namespace H3D;
 
-namespace X3DInternals {
-  // A simple attempt to automatically determine VRMLedness of a 
-  // file/string/url.
-  bool isVRML( const string &str ) {
-    int x3d_pos = str.find( "<" );
-    int vrml_pos = str.find( "{" );
-    if ( vrml_pos == string::npos )
-      return false;
-    else if  ( x3d_pos == string::npos )
-      return true;
-    else if ( x3d_pos < vrml_pos )
-      return false;
-    else if ( x3d_pos > vrml_pos )
-      return true;
-    else if ( str.find( "#VRML" ) == 0 )
-      return true;
-    else
-      return false;
-  }
-
-  bool isVRML( const istream &is ) {
-    char c;
-    while ( is.get(c) ) {
-      if ( c == '<' )
-        return false;
-      if ( c == '{' )
-        return true;
-      if ( c == '#' ) {
-        // could be a VRML comment
-        while ( is.get(c) ) {
-          if ( c == '\n' )
-            break;
-        }
-      }
-    }
-    return false;
-  }
-}
-
-using namespace X3DInternals;
 
 SAX2XMLReader* X3D::getNewXMLParser() {
   SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Never;
