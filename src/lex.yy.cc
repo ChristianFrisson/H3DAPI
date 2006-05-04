@@ -4804,9 +4804,9 @@ static yyconst yy_state_type yy_NUL_trans[259] =
 
 static yyconst long int yy_rule_linenum[30] =
     {   0,
-       34,   35,   36,   37,   38,   39,   40,   41,   42,   43,
-       44,   45,   46,   47,   48,   49,   50,   51,   52,   53,
-       54,   55,   56,   57,   60,   62,   65,   68,   70
+       56,   57,   58,   59,   60,   61,   62,   63,   64,   65,
+       66,   67,   68,   69,   70,   71,   72,   73,   74,   75,
+       76,   77,   78,   79,   82,   84,   87,   90,   92
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -4819,15 +4819,42 @@ static yyconst long int yy_rule_linenum[30] =
 #line 1 "vrml.l"
 #define INITIAL 0
 #line 3 "vrml.l"
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+//
+//
+//  Flex instructions:
+//  Generate lex.yy.cc by running   "flex -Cfa vrml.l"
+//  The -Cfa flag specifies that the parser should generate an
+//  uncompressed lookup table and opt for speed over size.
+//
 
 #include "VrmlDriver.h"
 #include "vrml.hpp"
-//#define YYLMAX 16777216
-//#define YYLMAX 16777
+#define YYLMAX 65535
 #define YY_NO_UNPUT 1
-#line 25 "vrml.l"
-//# define YY_USER_ACTION yylloc->columns (yyleng);
-#line 4831 "lex.yy.cc"
+#line 4858 "lex.yy.cc"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -4954,14 +4981,11 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 28 "vrml.l"
+#line 53 "vrml.l"
 
 
 
-//yylloc->step ();
-
-
-#line 4965 "lex.yy.cc"
+#line 4989 "lex.yy.cc"
 
 	if ( yy_init )
 		{
@@ -5048,155 +5072,155 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 34 "vrml.l"
+#line 56 "vrml.l"
 driver.addLine( yytext ); return AS;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 35 "vrml.l"
+#line 57 "vrml.l"
 driver.addLine( yytext ); return TRUE;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 36 "vrml.l"
+#line 58 "vrml.l"
 driver.addLine( yytext ); return FALSE;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 37 "vrml.l"
+#line 59 "vrml.l"
 driver.addLine( yytext ); return PROFILE;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 38 "vrml.l"
+#line 60 "vrml.l"
 driver.addLine( yytext ); return COMPONENT;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 39 "vrml.l"
+#line 61 "vrml.l"
 driver.addLine( yytext ); return EXPORT;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 40 "vrml.l"
+#line 62 "vrml.l"
 driver.addLine( yytext ); return IMPORT;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 41 "vrml.l"
+#line 63 "vrml.l"
 driver.addLine( yytext ); return META;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 42 "vrml.l"
+#line 64 "vrml.l"
 driver.addLine( yytext ); return DEF;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 43 "vrml.l"
+#line 65 "vrml.l"
 driver.addLine( yytext ); return USE;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 44 "vrml.l"
+#line 66 "vrml.l"
 driver.addLine( yytext ); return PROTO;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 45 "vrml.l"
+#line 67 "vrml.l"
 driver.addLine( yytext ); return VRMLNULL;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 46 "vrml.l"
+#line 68 "vrml.l"
 driver.addLine( yytext ); return inputOnly;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 47 "vrml.l"
+#line 69 "vrml.l"
 driver.addLine( yytext ); return inputOnly;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 48 "vrml.l"
+#line 70 "vrml.l"
 driver.addLine( yytext ); return outputOnly;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 49 "vrml.l"
+#line 71 "vrml.l"
 driver.addLine( yytext ); return outputOnly;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 50 "vrml.l"
+#line 72 "vrml.l"
 driver.addLine( yytext ); return initializeOnly;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 51 "vrml.l"
+#line 73 "vrml.l"
 driver.addLine( yytext ); return initializeOnly;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 52 "vrml.l"
+#line 74 "vrml.l"
 driver.addLine( yytext ); return inputOutput;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 53 "vrml.l"
+#line 75 "vrml.l"
 driver.addLine( yytext ); return inputOutput;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 54 "vrml.l"
+#line 76 "vrml.l"
 driver.addLine( yytext ); return EXTERNPROTO;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 55 "vrml.l"
+#line 77 "vrml.l"
 driver.addLine( yytext ); return ROUTE;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 56 "vrml.l"
+#line 78 "vrml.l"
 driver.addLine( yytext ); return TO;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 57 "vrml.l"
+#line 79 "vrml.l"
 driver.addLine( yytext ); return IS;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 60 "vrml.l"
-/*printf("ID=%s\n",yytext);*/ yylval->val=strdup(yytext); driver.addLine( yytext );  return VRMLID;
+#line 82 "vrml.l"
+yylval->val=strdup(yytext); driver.addLine( yytext );  return VRMLID;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 62 "vrml.l"
-driver.addLine( yytext ); /* eat up comments */
+#line 84 "vrml.l"
+driver.addLine( yytext );
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 65 "vrml.l"
-driver.addLine( yytext );/* printf("VAL=%s\n",yytext); */ yylval->val=strdup(yytext); return STRING;
+#line 87 "vrml.l"
+driver.addLine( yytext ); yylval->val=strdup(yytext); return STRING;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 68 "vrml.l"
-driver.addLine( yytext );  /* eat up whitespace */
+#line 90 "vrml.l"
+driver.addLine( yytext );
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 70 "vrml.l"
+#line 92 "vrml.l"
 driver.addLine( yytext ); return yytext[0];
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 74 "vrml.l"
+#line 96 "vrml.l"
 ECHO;
 	YY_BREAK
-#line 5200 "lex.yy.cc"
+#line 5224 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -5998,15 +6022,6 @@ int main()
 	return 0;
 	}
 #endif
-#line 74 "vrml.l"
+#line 96 "vrml.l"
 
 
-void vrml_driver::scan_begin () {
-  //yy_flex_debug = trace_scanning;
- // if (!(lexer->yyin = fopen (file.c_str (), "r")))
- //   error (std::string ("cannot open ") + file);
-}
-
-void vrml_driver::scan_end () {
-  //fclose (lexer->yyin);
-}
