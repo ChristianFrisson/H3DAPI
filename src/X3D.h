@@ -17,34 +17,13 @@
 #include "Group.h"
 #include "DEFNodes.h"
 #include "AutoRef.h"
-#include "ProtoDeclaration.h"
+#include "PrototypeVector.h"
 
 using namespace std;
 XERCES_CPP_NAMESPACE_USE
 
 namespace H3D {
   namespace X3D {
-
-    class PrototypeVector: public AutoPtrVector< ProtoDeclaration > {
-    public:
-      PrototypeVector(): first_proto( NULL ) {}
-      ProtoDeclaration *getProtoDeclaration( const string & name ) {
-	for( PrototypeVector::iterator i = begin(); i != end(); i++ ) {
-	  if( (*i)->getName() == name )
-	    return *i;
-	}
-	return NULL;
-      }
-      inline ProtoDeclaration *getFirstProtoDeclaration() {
-	return first_proto;
-      }
-
-      inline void setFirstProtoDeclaration( ProtoDeclaration *pd ) {
-	first_proto = pd;
-      }
-    protected:
-      ProtoDeclaration *first_proto;
-    };
 
     /// Create H3D nodes given X3D data as a istream
     /// \param in The input stream to read X3D data from.
@@ -59,8 +38,8 @@ namespace H3D {
     H3DAPI_API Group*createX3DFromStream( 
            istream &in,
            DEFNodes *dn = NULL,
-	   DEFNodes *exported_nodes = NULL,
-	   PrototypeVector *prototypes = NULL,
+           DEFNodes *exported_nodes = NULL,
+           PrototypeVector *prototypes = NULL,
            const XMLCh *const system_id =(const XMLCh *const)L"<stream input>"
          );
 
@@ -75,10 +54,10 @@ namespace H3D {
     /// \return A Group containing the nodes created.
     H3DAPI_API Group* createX3DFromString( const string &str,
                                            DEFNodes *dn = NULL,
-					   DEFNodes *exported_nodes = NULL,
-					   PrototypeVector *prototypes = NULL );
-
-
+                                           DEFNodes *exported_nodes = NULL,
+                                           PrototypeVector *prototypes = NULL );
+    
+    
     /// Create H3D nodes given X3D data as a URL.
     /// \param str The input URL to read X3D data from.
     /// \param dn A DEFNodes structure to store the DEF nodes found
@@ -90,9 +69,9 @@ namespace H3D {
     /// \return A Group containing the nodes created.
     H3DAPI_API Group* createX3DFromURL( const string &urn,
                                         DEFNodes *dn = NULL,
-					DEFNodes *exported_nodes = NULL,
-					PrototypeVector *prototypes = NULL  );
-
+                                        DEFNodes *exported_nodes = NULL,
+                                        PrototypeVector *prototypes = NULL  );
+    
     /// Create a H3D Node given X3D data as a istream
     /// \param in The input stream to read X3D data from.
     /// \param dn A DEFNodes structure to store the DEF nodes found
@@ -106,10 +85,10 @@ namespace H3D {
     H3DAPI_API AutoRef<Node> createX3DNodeFromStream( 
            istream &in,
            DEFNodes *dn = NULL,
-	   DEFNodes *exported_nodes = NULL,
-	   PrototypeVector *prototypes = NULL,
+           DEFNodes *exported_nodes = NULL,
+           PrototypeVector *prototypes = NULL,
            const XMLCh *const system_id =(const XMLCh *const)L"<stream input>"
-         );
+           );
 
     /// Create a H3D Node given X3D data as a string.
     /// \param str The input string to read X3D data from.
@@ -120,11 +99,12 @@ namespace H3D {
     /// \param prototypes A map from the PROTO declaration nodes specified
     /// in the string.
     /// \return The created Node.
-    H3DAPI_API AutoRef<Node> createX3DNodeFromString( const string &str,
-                                                      DEFNodes *dn = NULL,
-						      DEFNodes *exported_nodes = NULL,
-						      PrototypeVector *prototypes = NULL );
-
+    H3DAPI_API AutoRef<Node> createX3DNodeFromString( 
+           const string &str,
+           DEFNodes *dn = NULL,
+           DEFNodes *exported_nodes = NULL,
+           PrototypeVector *prototypes = NULL );
+    
 
     /// Create a H3D Node given X3D data as a URL.
     /// \param str The input URL to read X3D data from.
@@ -135,10 +115,11 @@ namespace H3D {
     /// \param prototypes A map from the PROTO declaration nodes specified
     /// in the URL.
     /// \return The created Node.
-    H3DAPI_API AutoRef<Node> createX3DNodeFromURL( const string &urn,
-                                                   DEFNodes *dn = NULL,
-						   DEFNodes *exported_nodes = NULL,
-						   PrototypeVector *prototypes = NULL );
+    H3DAPI_API AutoRef<Node> createX3DNodeFromURL( 
+           const string &urn,
+           DEFNodes *dn = NULL,
+           DEFNodes *exported_nodes = NULL,
+           PrototypeVector *prototypes = NULL );
 
     SAX2XMLReader* getNewXMLParser();
     
