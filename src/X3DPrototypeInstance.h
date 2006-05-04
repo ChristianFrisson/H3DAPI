@@ -34,7 +34,7 @@
 
 // forward declaration for Bison VRML parser.
 namespace yy {
-  class vrml_parser;
+  class VrmlParser;
   class location;
 }
 namespace H3D {
@@ -96,7 +96,7 @@ namespace H3D {
 
     /// And the same for the VRML parser. Bison code handles routing,
     /// so yy::vrml_parser must be a friend:
-    friend class yy::vrml_parser;
+    friend class yy::VrmlParser;
   protected:
     AutoRef< Node > prototyped_node;
   };
