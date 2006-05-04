@@ -32,6 +32,11 @@
 #include "X3DNode.h"
 #include "H3DDynamicFieldsObject.h"
 
+// forward declaration for Bison VRML parser.
+namespace yy {
+  class vrml_parser;
+  class location;
+}
 namespace H3D {
 
   // forward declaration.
@@ -88,6 +93,10 @@ namespace H3D {
     /// We need to make it possible for X3DSAX2Handlers to set up routes to fields
     /// withing the X3DPrototypeNode, so it must have access to the id member variable.
     friend class X3D::X3DSAX2Handlers;
+
+    /// And the same for the VRML parser. Bison code handles routing,
+    /// so yy::vrml_parser must be a friend:
+    friend class yy::vrml_parser;
   protected:
     AutoRef< Node > prototyped_node;
   };
