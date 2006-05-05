@@ -37,21 +37,22 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class BooleanToggle
   /// \brief BooleanToggle stores a boolean value for toggling on/off.
-  ///
   /// When a set_boolean TRUE event is received, the BooleanToggle negates 
 	/// the value of the toggle field and generates the corresponding toggle
 	/// field output event. set_boolean FALSE events are ignored.
+	/// The BooleanToggle can be reset to a specific state by directly setting
+	/// the value of the inputOutput toggle field.
   ///
   /// \par Internal routes:
   /// \dotfile BooleanToggle.dot
-  class BooleanToggle : public X3DChildNode {
+	class H3DAPI_API BooleanToggle : public X3DChildNode {
   public:
 
     /// The SetBoolean class is specialize to negate the value of the
-		/// toggle field and generate a toggle field if true is given.
-    class SetBoolean: public AutoUpdate< SFBool > {
+		/// toggle field if a true event is given.
+    class H3DAPI_API SetBoolean: public AutoUpdate< SFBool > {
     public:
-      /// Negates the toggle field if it should be done.
+      // Negates the toggle field if true.
       virtual void setValue( const bool &b, int id = 0 ) {
         SFBool::setValue( b );
         BooleanToggle *bf = 
@@ -60,7 +61,7 @@ namespace H3D {
 					bf->toggle->setValue( !( bf->toggle->getValue() ) );
       }
     protected:
-      /// Negates the vaule of the toggle field if true.
+      // Negates the vaule of the toggle field if true.
       virtual void update() {
         SFBool::update();
         BooleanToggle *bf = 
@@ -77,17 +78,17 @@ namespace H3D {
                    Inst< SetBoolean > _set_boolean = 0,
                    Inst< SFBool     > _toggle      = 0 );
 
-    /// The boolean field to toggle.
+    /// Negates the value of the toggle field.
     /// 
     /// <b>Access type:</b> inputOnly \n
     /// 
     /// \dotfile BooleanToggle_set_boolean.dot
     auto_ptr< SetBoolean > set_boolean;
 
-    /// Generates an FALSE event if the set_boolean value is set to
-    /// FALSE.
+    /// The boolean field to toggle.
     /// 
-    /// <b>Access type:</b> outputOnly \n
+    /// <b>Access type:</b> inputOutput \n
+		/// <b>Default value:</b> FALSE \n
     /// 
     /// \dotfile BooleanToggle_toggle.dot
     auto_ptr< SFBool > toggle;

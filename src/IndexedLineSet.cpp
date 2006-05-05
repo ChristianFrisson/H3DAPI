@@ -152,7 +152,7 @@ void IndexedLineSet::render() {
       }
     
       // render all vertices for this polyline.
-      for(; coord_index[i] != -1 && i < coord_index.size(); i ++ ) {
+      for(; i < coord_index.size() && coord_index[i] != -1;  i ++ ) {
         // Set up colors if colors are specified per vertex.
         if( color_node && colorPerVertex->getValue() ) {
           int ci;

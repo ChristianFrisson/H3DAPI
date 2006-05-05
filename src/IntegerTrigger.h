@@ -38,17 +38,21 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class IntegerTrigger
   /// \brief IntegerTrigger handles single field Boolean 
-	/// events to set an integer value for the output event.
+	/// events to set an integer value for the output event. Upon receiving a 
+	/// set_boolean event, the IntegerTrigger node will generate a triggerValue
+	/// event with the current value of integerKey. 
+	/// This is useful for connecting environmental events to 
+	/// the Switch node's whichChoice.
   ///
   /// \par Internal routes:
   /// \dotfile IntegerTrigger.dot
   
-	class IntegerTrigger : public X3DTriggerNode {
+	class H3DAPI_API IntegerTrigger : public X3DTriggerNode {
   public:
 
 		/// The SetTriggerValue class is specialize to set the vaule of
 		/// the triggerValue field to the value of the field integerKey.
-    class SetTriggerValue: public AutoUpdate< TypedField < SFInt32, SFBool > > {
+    class H3DAPI_API SetTriggerValue: public AutoUpdate< TypedField < SFInt32, SFBool > > {
     protected:
       virtual void update() {
         IntegerTrigger *bf = 
@@ -73,14 +77,14 @@ namespace H3D {
     /// \dotfile IntegerTrigger__set_boolean.dot
     auto_ptr< SFBool > set_boolean;
 
-    /// contains the value triggerValue will be set to.
+    /// Contains the value triggerValue will be set to.
 		///
 		/// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile IntegerTrigger_integerKey.dot
     auto_ptr< SFInt32 > integerKey;
 
-		/// triggerValue will be set if a setBoolean event is recieved.
+		/// TriggerValue will be set if a set_boolean event is recieved.
 		///
 		/// <b>Access type:</b> outputOnly \n
     /// 

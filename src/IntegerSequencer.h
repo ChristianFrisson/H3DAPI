@@ -39,9 +39,10 @@ namespace H3D {
   /// \class IntegerSequencer
   /// \brief The IntegerSequencer node generates sequential discrete SFInt32 
 	/// events in response to each set_fraction, next, or previous event.
+	///
   /// \par Internal routes:
   /// \dotfile IntegerSequencer.dot 
-  class IntegerSequencer : public X3DSequencerNode {
+  class H3DAPI_API IntegerSequencer : public X3DSequencerNode {
   public:
 
     /// Constructor.
@@ -49,8 +50,8 @@ namespace H3D {
 											Inst< KeyValues1 < MFInt32 > > _keyValue	= 0,
 											Inst< ValueChanged < SFInt32, MFInt32 > >
 												_value_changed	= 0 );
-							 
 
+		/// The keyValue field is made up of a list of integer values.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> - \n
@@ -62,7 +63,7 @@ namespace H3D {
 		/// value in the key field. The keys shall be monotonically non-decreasing,
 		/// otherwise the results are undefined.
 		/// 
-    /// <b>Access type:</b> inputOutput \n
+    /// <b>Access type:</b> outputOnly \n
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile IntegerSequencer_value_changed.dot 

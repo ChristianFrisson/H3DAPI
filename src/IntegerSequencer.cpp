@@ -44,20 +44,21 @@ namespace IntegerSequencerInternals {
   FIELDDB_ELEMENT( IntegerSequencer, value_changed, INPUT_OUTPUT );
 }
 
-IntegerSequencer::IntegerSequencer( Inst< SFNode > _metadata,
-																	  Inst< KeyValues1 < MFInt32 > > _keyValue,
-																		Inst< ValueChanged < SFInt32, MFInt32 > > _value_changed ) :
+IntegerSequencer::IntegerSequencer( 
+									Inst< SFNode > _metadata,
+									Inst< KeyValues1 < MFInt32 > > _keyValue,
+									Inst< ValueChanged < SFInt32, MFInt32 > > _value_changed ) :
   X3DSequencerNode( _metadata      ),
   keyValue        ( _keyValue      ),
   value_changed		( _value_changed ) {
 
   type_name = "IntegerSequencer";
 
-	next->route( value_changed );
-	previous->route( value_changed );
-	set_fraction->route( value_changed );
-	key->route( value_changed );
-	keyValue->route( value_changed );
+	next->route( value_changed, id );
+	previous->route( value_changed, id );
+	set_fraction->route( value_changed, id );
+	key->route( value_changed, id );
+	keyValue->route( value_changed, id );
 
   database.initFields( this );
 }

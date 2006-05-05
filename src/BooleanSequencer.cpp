@@ -44,9 +44,10 @@ namespace BooleanSequencerInternals {
   FIELDDB_ELEMENT( BooleanSequencer, value_changed, OUTPUT_ONLY );
 }
 
-BooleanSequencer::BooleanSequencer( Inst< SFNode > _metadata,
-																	  Inst< KeyValues1 < MFBool > > _keyValue,
-																		Inst< ValueChanged < SFBool, MFBool > > _value_changed ) :
+BooleanSequencer::BooleanSequencer( 
+										Inst< SFNode > _metadata,
+										Inst< KeyValues1 < MFBool > > _keyValue,
+										Inst< ValueChanged < SFBool, MFBool > > _value_changed ) :
   X3DSequencerNode( _metadata      ),
   keyValue        ( _keyValue      ),
   value_changed		( _value_changed ) {

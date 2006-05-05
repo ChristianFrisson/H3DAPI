@@ -39,6 +39,9 @@ namespace H3D {
   /// \class TimeTrigger
   /// \brief TimeTrigger is a trigger node that generates
 	/// time events upon receiving boolean events.
+	/// The triggerTime event is generated when the TimeTrigger receives 
+	/// a set_boolean event. The value of triggerTime shall be the time at which
+	/// set_boolean is received. The value of set_boolean shall be ignored.
   ///
   /// \par Internal routes:
   /// \dotfile TimeTrigger.dot

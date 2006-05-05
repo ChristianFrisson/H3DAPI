@@ -40,10 +40,11 @@ namespace H3D {
 	/// from a TimeSensor clock. Among other actions, it can enable/disable 
 	/// lights and sensors, or bind/unbind Viewpoints and other 
 	/// X3DBindableNodes via set_bind events.
+	/// A BooleanSequencer shall be instanced for every node enabled or bound.
 	///
   /// \par Internal routes:
   /// \dotfile BooleanSequencer.dot 
-  class BooleanSequencer : public X3DSequencerNode {
+  class H3DAPI_API BooleanSequencer : public X3DSequencerNode {
   public:
 
     /// Constructor.
@@ -53,7 +54,8 @@ namespace H3D {
 												_value_changed	= 0 );
 							 
 
-    /// The keyValue field is made up of a list of FALSE and TRUE values.
+    /// The keyValue field is made up of a list of FALSE and TRUE values
+		/// which can be used for timed on and off switching.
 		///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> - \n
@@ -65,7 +67,7 @@ namespace H3D {
 		/// value in the key field. The keys shall be monotonically non-decreasing,
 		/// otherwise the results are undefined.
 		///
-    /// <b>Access type:</b> inputOutput \n
+    /// <b>Access type:</b> outputOnly \n
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile BooleanSequencer_value_changed.dot 
