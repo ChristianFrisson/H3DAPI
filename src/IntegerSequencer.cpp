@@ -46,7 +46,7 @@ namespace IntegerSequencerInternals {
 
 IntegerSequencer::IntegerSequencer( 
 									Inst< SFNode > _metadata,
-									Inst< KeyValues1 < MFInt32 > > _keyValue,
+									Inst< KeyValues < MFInt32 > > _keyValue,
 									Inst< ValueChanged < SFInt32, MFInt32 > > _value_changed ) :
   X3DSequencerNode( _metadata      ),
   keyValue        ( _keyValue      ),

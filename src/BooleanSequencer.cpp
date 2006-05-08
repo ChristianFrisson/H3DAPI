@@ -46,7 +46,7 @@ namespace BooleanSequencerInternals {
 
 BooleanSequencer::BooleanSequencer( 
 										Inst< SFNode > _metadata,
-										Inst< KeyValues1 < MFBool > > _keyValue,
+										Inst< KeyValues < MFBool > > _keyValue,
 										Inst< ValueChanged < SFBool, MFBool > > _value_changed ) :
   X3DSequencerNode( _metadata      ),
   keyValue        ( _keyValue      ),

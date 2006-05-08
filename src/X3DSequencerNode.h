@@ -70,7 +70,7 @@ namespace H3D {
 		
 		/// Each value in the keyValue field corresponds in order to the parameter
 		/// value in the key field.
-		template< class MType > class H3DAPI_API KeyValues1 : public MType {};
+		template< class MType > class H3DAPI_API KeyValues : public MType {};
 
 		/// ValueChanged is a specialized class used to evaluate and set the 
 		/// value_changed field depending on the input to the class.
@@ -80,13 +80,13 @@ namespace H3D {
 		/// routes_in[2] is the set_fraction field.
     /// routes_in[3] is the key field.
     /// routes_in[4] is the keyValue field.
-		template< class TheType, class KeyValues > class H3DAPI_API ValueChanged
+		template< class TheType, class KeyValuesIn > class H3DAPI_API ValueChanged
 			: public TypedField < typename TheType, 
 														Types< SFBool, 
 															SFBool, 
 															SFFloat, 
 															MFFloat, 
-															typename KeyValues > > {
+															typename KeyValuesIn > > {
 		public:
 			ValueChanged() { currentPosition = 0; fractionInitialized = false; }
 			bool fractionInitialized;
@@ -97,7 +97,7 @@ namespace H3D {
 		protected:
 			// evaluate the value using set_fraction
 			inline typename TheType::value_type evaluateValueChanged(
-				const typename KeyValues::vector_type &key_value, 
+				const typename KeyValuesIn::vector_type &key_value, 
 				const vector< H3DFloat > &keys, 
 				const H3DFloat &setFraction) {
 				
@@ -120,8 +120,8 @@ namespace H3D {
 
 				bool notMonotonically = false;
 
-				const typename KeyValues::vector_type &key_value = 
-					static_cast< typename KeyValues * >( routes_in[4] )->getValue();
+				const typename KeyValuesIn::vector_type &key_value = 
+					static_cast< typename KeyValuesIn * >( routes_in[4] )->getValue();
 
 				const vector< H3DFloat > &keys = 
 					static_cast< MFFloat * >( routes_in[3] )->getValue();

@@ -49,7 +49,7 @@ namespace H3D {
 
     /// Constructor.
     BooleanSequencer( Inst< SFNode								>	_metadata	= 0,
-											Inst< KeyValues1 < MFBool > > _keyValue = 0,
+											Inst< KeyValues < MFBool > > _keyValue = 0,
 											Inst< ValueChanged < SFBool, MFBool > >
 												_value_changed	= 0 );
 							 
@@ -61,7 +61,7 @@ namespace H3D {
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile BooleanSequencer_keyValue.dot 
-    auto_ptr< KeyValues1 < MFBool > >  keyValue;
+    auto_ptr< KeyValues < MFBool > >  keyValue;
 
 		/// Each value in the keyValue field corresponds in order to the parameter
 		/// value in the key field. The keys shall be monotonically non-decreasing,

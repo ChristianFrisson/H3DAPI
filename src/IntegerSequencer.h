@@ -47,7 +47,7 @@ namespace H3D {
 
     /// Constructor.
     IntegerSequencer( Inst< SFNode								 > _metadata	= 0,
-											Inst< KeyValues1 < MFInt32 > > _keyValue	= 0,
+											Inst< KeyValues < MFInt32 > > _keyValue	= 0,
 											Inst< ValueChanged < SFInt32, MFInt32 > >
 												_value_changed	= 0 );
 
@@ -57,7 +57,7 @@ namespace H3D {
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile IntegerSequencer_keyValue.dot 
-    auto_ptr< KeyValues1 < MFInt32 > >  keyValue;
+    auto_ptr< KeyValues < MFInt32 > >  keyValue;
 
 		/// Each value in the keyValue field corresponds in order to the parameter
 		/// value in the key field. The keys shall be monotonically non-decreasing,
