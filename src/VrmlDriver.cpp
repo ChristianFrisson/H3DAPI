@@ -46,7 +46,7 @@ int VrmlDriver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
     } else
       parser.parse ();
   }
-  
+  return 1;
 }
 
 void VrmlDriver::error (const yy::location& l, const std::string& m) {
@@ -79,7 +79,7 @@ void VrmlDriver::setFieldValue( const char* v ) {
       }
       // then pass the string on to the field value parser:
       pfield->setValueFromString( s );
-    } catch( const Convert::X3DFieldConversionError &e ) {
+    } catch( const Convert::X3DFieldConversionError & ) {
       Console(3) << "WARNING: Could not convert field " 
                  << field->getName() << " argument in node "
                  << node->getName() << " ( " << getOldLocationString()
@@ -123,7 +123,7 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
 
 void VrmlDriver::setProtoField( const char* name, const char* type, const
                                  Field::AccessType &access_type, 
-                                 const char* value = 0 ) {
+                                 const char* value ) {
   if ( proto_declarations.size()==1 ) {
     X3DTypes::X3DType x3d_type = 
       X3DTypes::stringToType(  type );
@@ -179,4 +179,5 @@ string VrmlDriver::getOldLocationString() {
 
 int yyFlexLexer::yylex() {
   Console(3) << "BAD yylex called" << endl;
+  return 0;
 }

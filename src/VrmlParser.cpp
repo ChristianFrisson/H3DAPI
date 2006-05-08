@@ -39,7 +39,7 @@ bool X3D::isVRML( const string &str ) {
     return false;
 }
 
-bool X3D::isVRML( const istream &is ) {
+bool X3D::isVRML( istream &is ) {
   char c;
   while ( is.get(c) ) {
     if ( c == '<' )

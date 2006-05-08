@@ -26,7 +26,7 @@ namespace H3D {
     // A simple attempt to automatically determine VRMLedness of a 
     // file/string/url.
     bool isVRML( const string &str );
-    bool isVRML( const istream &is );
+    bool isVRML( istream &is );
 
     /// Create H3D nodes given VRML data as an istream
     /// \param in The input stream to read VRML data from.
