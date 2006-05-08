@@ -54,11 +54,11 @@ IntegerSequencer::IntegerSequencer(
 
   type_name = "IntegerSequencer";
 
-	next->route( value_changed, id );
-	previous->route( value_changed, id );
-	set_fraction->route( value_changed, id );
-	key->route( value_changed, id );
-	keyValue->route( value_changed, id );
+	next->routeNoEvent( value_changed, id );
+	previous->routeNoEvent( value_changed, id );
+	set_fraction->routeNoEvent( value_changed, id );
+	key->routeNoEvent( value_changed, id );
+	keyValue->routeNoEvent( value_changed, id );
 
   database.initFields( this );
 }

@@ -81,12 +81,12 @@ namespace H3D {
     /// routes_in[3] is the key field.
     /// routes_in[4] is the keyValue field.
 		template< class TheType, class KeyValuesIn > class H3DAPI_API ValueChanged
-			: public TypedField < typename TheType, 
-														Types< SFBool, 
-															SFBool, 
-															SFFloat, 
-															MFFloat, 
-															typename KeyValuesIn > > {
+			: public AutoUpdate< TypedField< typename TheType, 
+																				Types< SFBool, 
+																							 SFBool, 
+															 								 SFFloat, 
+															 							 	 MFFloat, 
+																							 typename KeyValuesIn > > >{
 		public:
 			ValueChanged() { currentPosition = 0; fractionInitialized = false; }
 			bool fractionInitialized;
