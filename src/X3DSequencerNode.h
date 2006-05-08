@@ -81,12 +81,12 @@ namespace H3D {
     /// routes_in[3] is the key field.
     /// routes_in[4] is the keyValue field.
 		template< class TheType, class KeyValuesIn > class H3DAPI_API ValueChanged
-			: public AutoUpdate< TypedField< typename TheType, 
-																				Types< SFBool, 
-																							 SFBool, 
-															 								 SFFloat, 
-															 							 	 MFFloat, 
-																							 typename KeyValuesIn > > >{
+			: public AutoUpdate< TypedField< TheType, 
+																			 Types< SFBool, 
+																			 			  SFBool, 
+															 								SFFloat, 
+															 							 	MFFloat, 
+																							KeyValuesIn > > >{
 		public:
 			ValueChanged() { currentPosition = 0; fractionInitialized = false; }
 			bool fractionInitialized;
@@ -96,7 +96,7 @@ namespace H3D {
 			H3DInt32 currentPosition;
 		protected:
 			// evaluate the value using set_fraction
-			inline typename TheType::value_type evaluateValueChanged(
+			inline  typename TheType::value_type evaluateValueChanged(
 				const typename KeyValuesIn::vector_type &key_value, 
 				const vector< H3DFloat > &keys, 
 				const H3DFloat &setFraction) {
@@ -121,7 +121,7 @@ namespace H3D {
 				bool notMonotonically = false;
 
 				const typename KeyValuesIn::vector_type &key_value = 
-					static_cast< typename KeyValuesIn * >( routes_in[4] )->getValue();
+					static_cast<  KeyValuesIn * >( routes_in[4] )->getValue();
 
 				const vector< H3DFloat > &keys = 
 					static_cast< MFFloat * >( routes_in[3] )->getValue();
@@ -156,51 +156,51 @@ namespace H3D {
 
 				if( notMonotonically ) {
 					Console(3) << "Warning: The key array is not monotonically " <<
-						"non-decreasing in X3DSequencerNode ( " << getName() << 
+						"non-decreasing in X3DSequencerNode ( " << TheType::getName() << 
 						"). Node will not be used. " << endl;
 					return;
 				}
 
 				// next value
-				if( routes_in[0] == event.ptr ) {
+				if( TheType::routes_in[0] == TheType::event.ptr ) {
 					currentPosition++;
 					if( currentPosition > ( H3DInt32 )key_value.size() - 1 )
 						currentPosition = 0;
 
-					value = key_value[ currentPosition ];
+					TheType::value = key_value[ currentPosition ];
 				}
 				// previous value
-				else if( routes_in[1] == event.ptr ) {
+				else if( TheType::routes_in[1] == TheType::event.ptr ) {
 					currentPosition--;
 					if( currentPosition < 0 )
 						currentPosition = key_value.size() - 1;
 
-					value = key_value[ currentPosition ];
+					TheType::value = key_value[ currentPosition ];
 				}
 				// if set_fraction is used or anything else changes.
-				else if( routes_in[2] == event.ptr ) {
+				else if( TheType::routes_in[2] == TheType::event.ptr ) {
 					fractionInitialized = true;
 					const H3DFloat &setFraction = 
-						static_cast< SFFloat * >( routes_in[2] )->getValue( sN -> id );
-					value = evaluateValueChanged(key_value, keys, setFraction);
+						static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
+					TheType::value = evaluateValueChanged(key_value, keys, setFraction);
 				}
-				else if( routes_in[3] == event.ptr ) {
+				else if( TheType::routes_in[3] == TheType::event.ptr ) {
 					if( fractionInitialized ) {
 						const H3DFloat &setFraction = 
-						static_cast< SFFloat * >( routes_in[2] )->getValue( sN -> id );
-						value = evaluateValueChanged(key_value, keys, setFraction);
+						static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
+						TheType::value = evaluateValueChanged(key_value, keys, setFraction);
 					}
 				}
-				else if ( routes_in[4] == event.ptr ) {
+				else if ( TheType::routes_in[4] == TheType::event.ptr ) {
 					if( fractionInitialized ) {
 						const H3DFloat &setFraction = 
-						static_cast< SFFloat * >( routes_in[2] )->getValue( sN -> id );
-						value = evaluateValueChanged(key_value, keys, setFraction);
+						static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
+						TheType::value = evaluateValueChanged(key_value, keys, setFraction);
 					}
 
 					if( currentPosition > ( H3DInt32 )key_value.size() - 1 ) {
 						currentPosition = key_value.size() - 1;
-						value = key_value[ currentPosition ];
+						TheType::value = key_value[ currentPosition ];
 					}
 				}
 			}
