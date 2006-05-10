@@ -116,33 +116,33 @@ namespace H3D {
 			}
 			virtual void update() {
 				X3DSequencerNode * sN = 
-          static_cast< X3DSequencerNode * >( getOwner() );
+          static_cast< X3DSequencerNode * >( TheType::getOwner() );
 
 				bool notMonotonically = false;
 
 				const typename KeyValuesIn::vector_type &key_value = 
-					static_cast<  KeyValuesIn * >( routes_in[4] )->getValue();
+					static_cast<  KeyValuesIn * >( TheType::routes_in[4] )->getValue();
 
 				const vector< H3DFloat > &keys = 
-					static_cast< MFFloat * >( routes_in[3] )->getValue();
+					static_cast< MFFloat * >( TheType::routes_in[3] )->getValue();
 
 				if( keys.empty() ) {
 					Console(3) << "Warning: The key array is empty in " <<
-						"X3DSequencerNode ( " << getName() << 
+						"X3DSequencerNode ( " << TheType::getName() << 
 						"). Node will not be used. " << endl;
 					return;
 				}
 
 				if( key_value.empty() ) {
 					Console(3) << "Warning: The keyValue array is empty in " <<
-						"X3DSequencerNode ( " << getName() << 
+						"X3DSequencerNode ( " << TheType::getName() << 
 						"). Node will not be used. " << endl;
 					return;
 				}
 
 				if( keys.size() != key_value.size() ) {
 					Console(3) << "Warning: The key and keyValue arrays mismatch in " <<
-						"X3DSequencerNode ( " << getName() << 
+						"X3DSequencerNode ( " << TheType::getName() << 
 						"). Node will not be used. " << endl;
 					return;
 				}
