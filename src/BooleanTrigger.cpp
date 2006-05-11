@@ -37,7 +37,7 @@ H3DNodeDatabase BooleanTrigger::database(
                                    "BooleanTrigger", 
                                    &(newInstance<BooleanTrigger>), 
                                    typeid( BooleanTrigger ),
-                                   &X3DChildNode::database );
+                                   &X3DTriggerNode::database );
 
 namespace BooleanTriggerInternals {
   FIELDDB_ELEMENT( BooleanTrigger, set_triggerTime, INPUT_ONLY );

@@ -37,7 +37,7 @@ H3DNodeDatabase TimeTrigger::database(
                                    "TimeTrigger", 
                                    &(newInstance<TimeTrigger>), 
                                    typeid( TimeTrigger ),
-                                   &X3DChildNode::database );
+                                   &X3DTriggerNode::database );
 
 namespace TimeTriggerInternals {
   FIELDDB_ELEMENT( TimeTrigger, set_boolean, INPUT_ONLY );

@@ -37,7 +37,7 @@ H3DNodeDatabase IntegerTrigger::database(
                                    "IntegerTrigger", 
                                    &(newInstance<IntegerTrigger>), 
                                    typeid( IntegerTrigger ),
-                                   &X3DChildNode::database );
+                                   &X3DTriggerNode::database );
 
 namespace IntegerTriggerInternals {
   FIELDDB_ELEMENT( IntegerTrigger, set_boolean, INPUT_ONLY );
