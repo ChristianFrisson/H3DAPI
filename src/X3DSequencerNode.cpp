@@ -35,7 +35,7 @@ using namespace H3D;
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase X3DSequencerNode::database( 
                                    "X3DSequencerNode", 
-                                   &(newInstance<X3DSequencerNode>), 
+                                   NULL, 
                                    typeid( X3DSequencerNode ),
                                    &X3DChildNode::database );
 
