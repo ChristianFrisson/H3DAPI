@@ -110,7 +110,6 @@ Extrusion::Extrusion(
   solid->route( displayList, id );
   spine->route( displayList, id );
 	vertexVector->route( displayList, id );
-	spine->route( displayList, id );
 
 	crossSection->route( vertexVector );
 	orientation->route( vertexVector );
@@ -134,254 +133,265 @@ void Extrusion::VertexVectors::update() {
 	Extrusion *theExtrusion = static_cast< Extrusion * >( getOwner() );
 
 	H3DInt32 nrOfSpinePoints = spineVectors.size();
-  H3DInt32 nrOfCrossSectionPoints = cross_section.size();
+	H3DInt32 nrOfCrossSectionPoints = cross_section.size();
 	H3DInt32 nrOfScaleValues = scaleVectors.size();
 	H3DInt32 nrOfOrientationValues = orientationVectors.size();
- 
-	vector< Vec3f > xAxis;
-  vector< Vec3f > yAxis;
-  vector< Vec3f > zAxis;
-	vector< int > spineForward;
-	vector< int > spineBackward;
-	vector< Matrix3f > orientationMatrices;
 
-	bool closedSpine = false;
-	bool collinear = true;				// if the spine is collinear
-	bool coincident = false;			// if every point on the spine is the same
-	
-	// Orientation and scale values have to be 1 or >= the number of spine points.
-	// If there are more scale or orientation values than spine points
-	// the excess values are ignored.
-	if( nrOfOrientationValues < nrOfSpinePoints && nrOfOrientationValues > 1 ) {
-		Console(3) << "Warning: Not enough orientation values in Extrusion node( "
-               << getName() << "). Node will not be rendered. " << endl;
-    return;
-	}
+	if( nrOfSpinePoints > 1 ) {
+		vector< Vec3f > xAxis;
+		vector< Vec3f > yAxis;
+		vector< Vec3f > zAxis;
+		vector< int > spineForward;
+		vector< int > spineBackward;
+		vector< Matrix3f > orientationMatrices;
 
-	if( nrOfScaleValues < nrOfSpinePoints && nrOfScaleValues > 1  ) {
-		Console(3) << "Warning: Not enough scale values in Extrusion node( "
-               << getName() << "). Node will not be rendered. " << endl;
-    return;
-	}
-	
-	// To not get problems with Vectors later on. The excess values are ignored.
-	if( nrOfOrientationValues > nrOfSpinePoints )
-		nrOfOrientationValues = nrOfSpinePoints;
-	if( nrOfScaleValues > nrOfSpinePoints )
-		nrOfScaleValues = nrOfSpinePoints;
+		bool closedSpine = false;
+		bool collinear = true;				// if the spine is collinear
+		bool coincident = false;			// if every point on the spine is the same
 
-	// check if the spine is closed
-	if( theExtrusion->coinc( spineVectors.front(), spineVectors.back() ) )
-		closedSpine = true;
-
-	// build vectors containing indicies to the first non-coincident spine. 
-	// Backward and forward.
-	// these vectors are used to calculate axis for the SCP around each spine.
-	for( int i = 0; i < nrOfSpinePoints; i++ ) {
-    int j = i;
-
-		do {
-			j++;
-      
-			if( j >= nrOfSpinePoints )
-				j -= nrOfSpinePoints;
-		} while( j!= i && theExtrusion->coinc( spineVectors[i], spineVectors[j] ) );
-		
-		spineForward.push_back(j);
-
-		if( i == 0 && j == 0 )
-			coincident = true;
-		
-		j = i;
-
-		do {
-			j--;
-      
-			if( j < 0 )
-				j += nrOfSpinePoints;
-		} while( j!= i && theExtrusion->coinc( spineVectors[i], spineVectors[j] ) );
-
-		spineBackward.push_back(j);
-	}
-
-	// if the entire spine is coincident choose and arbitrary direction for the SCP.
-	// if another direction is desired use the orientation values.
-	// another node might be a better solution for this kind of shape.
-	if( coincident ) {
-		xAxis.push_back( Vec3f( 1, 0, 0 ) );
-		yAxis.push_back( Vec3f( 0, 1, 0 ) );
-		zAxis.push_back( Vec3f( 0, 0, 1 ) );
-
-		for( int i = 0; i < nrOfSpinePoints; i++ )
-		{
-			xAxis.push_back( xAxis.front() );
-			yAxis.push_back( yAxis.front() );
-			zAxis.push_back( zAxis.front() );
+		// Orientation and scale values have to be 1 or >= the number of spine points.
+		// If there are more scale or orientation values than spine points
+		// the excess values are ignored.
+		if( nrOfOrientationValues < nrOfSpinePoints && nrOfOrientationValues > 1 ) {
+			Console(3) << "Warning: Not enough orientation values in Extrusion node( "
+				<< getName() << "). Node will not be rendered. " << endl;
+			return;
 		}
-	}
-	else {
-		// calculate the Z-axes for the first spine point if the first spine point
-		// is undetermined at this stage add dummy.
-		if( closedSpine ) {
-			Vec3f temp = ( spineVectors[ spineForward.front() ] - spineVectors[0] )
-										.crossProduct( 
-										 spineVectors[ spineBackward.front() ] - spineVectors[0] );
-			temp.normalizeSafe();
-			zAxis.push_back( temp );
-			// if one of the cross products calculated is not zero then the spine is 
-			// not collinear.
-			if( H3DAbs( zAxis.front().lengthSqr() ) >= Constants::f_epsilon )
-				collinear = false;
+
+		if( nrOfScaleValues < nrOfSpinePoints && nrOfScaleValues > 1  ) {
+			Console(3) << "Warning: Not enough scale values in Extrusion node( "
+				<< getName() << "). Node will not be rendered. " << endl;
+			return;
 		}
-		else
-			zAxis.push_back( Vec3f( 0, 0, 0) );
 
-		// calculate z-axes for all spine points but the last and for the first 
-		// spine point if it is undetermined.
-		for( int  i = 1; i < nrOfSpinePoints - 1; i++ ) {
-			Vec3f temp =( spineVectors[ spineForward[i] ] - spineVectors[i] )
-									.crossProduct( 
-									spineVectors[ spineBackward[i] ] - spineVectors[i] );
-			temp.normalizeSafe();
-			zAxis.push_back( temp );
+		// To not get problems with Vectors later on. The excess values are ignored.
+		if( nrOfOrientationValues > nrOfSpinePoints )
+			nrOfOrientationValues = nrOfSpinePoints;
+		if( nrOfScaleValues > nrOfSpinePoints )
+			nrOfScaleValues = nrOfSpinePoints;
 
-			// minimize angle between positive zAxes
-			H3DFloat dotProduc = zAxis[i].dotProduct( zAxis[i - 1] );
-			if( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 )
-				zAxis[i] = -zAxis[i];
+		// check if the spine is closed
+		if( theExtrusion->coinc( spineVectors.front(), spineVectors.back() ) )
+			closedSpine = true;
 
-			// first time a valid zAxes is calculated update the previous invalid ones
-			if( H3DAbs( zAxis.back().lengthSqr() ) >= Constants::f_epsilon ) {
-				collinear = false;
-				if( H3DAbs( zAxis.front().lengthSqr() ) < Constants::f_epsilon ) {
-					zAxis.front() = zAxis.back();
-					for( int j = 1; 
-							 j < i && H3DAbs( zAxis[j].lengthSqr() ) < Constants::f_epsilon;
-							 j++ )
-						zAxis[j] = zAxis.front();
-				}
-			}
+		// build vectors containing indicies to the first non-coincident spine. 
+		// Backward and forward.
+		// these vectors are used to calculate axis for the SCP around each spine.
+		for( int i = 0; i < nrOfSpinePoints; i++ ) {
+			int j = i;
+
+			do {
+				j++;
+
+				if( j >= nrOfSpinePoints )
+					j -= nrOfSpinePoints;
+			} while( j!= i && theExtrusion->coinc( spineVectors[i], spineVectors[j] ) );
+
+			if( !closedSpine && j < i )
+				spineForward.push_back( nrOfSpinePoints - 1 );
 			else
-				zAxis.back() = zAxis[i-1];
-		}
+				spineForward.push_back(j);
 
-		// calculate z-axes for the last spine point
-		if( closedSpine ) {
-			zAxis.push_back( zAxis.front() );
 
-			// minimize angle between positive zAxes
-			H3DFloat dotProduc = zAxis.back().dotProduct( zAxis[ nrOfSpinePoints - 2 ] );
-			if( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 )
-				zAxis.back() = -zAxis.back();
-		}
-		else
-			zAxis.push_back( zAxis.back() );
+			if( i == 0 && j == 0 )
+				coincident = true;
 
-		if( collinear ) {
-			// the y-axes is calculated like this since when the spine is collinear
-			// it might be that the stepping forward to the first non-coincidential 
-			// spine point might end up being the same spine point as if stepping 
-			// backward to the first non-coincidential spine point
-			// if the spine is closed.
-			Vec3f temp = spineVectors[ spineForward.front() ] - spineVectors[0];
-			temp.normalizeSafe();
-			yAxis.push_back( temp );
+			j = i;
 
-			// create dummy x-axes.
-			if( H3DAbs( -1 + yAxis.front().x ) < Constants::f_epsilon )
-				xAxis.push_back( Vec3f(0, -1, 0) );
-			else if( H3DAbs( 1 + yAxis.front().x ) < Constants::f_epsilon )
-				xAxis.push_back( Vec3f(0, 1, 0) );
+			do {
+				j--;
+
+				if( j < 0 )
+					j += nrOfSpinePoints;
+			} while( j!= i && theExtrusion->coinc( spineVectors[i], spineVectors[j] ) );
+
+			if( !closedSpine && j > i )
+				spineBackward.push_back( 0 );
 			else
-				xAxis.push_back( Vec3f(1, 0, 0) );
+				spineBackward.push_back(j);
+		}
 
-			zAxis.clear();
-			zAxis.push_back( xAxis.front().crossProduct( yAxis.front() ) );
+		// if the entire spine is coincident choose and arbitrary direction for the SCP.
+		// if another direction is desired use the orientation values.
+		// another node might be a better solution for this kind of shape.
+		if( coincident ) {
+			xAxis.push_back( Vec3f( 1, 0, 0 ) );
+			yAxis.push_back( Vec3f( 0, 1, 0 ) );
+			zAxis.push_back( Vec3f( 0, 0, 1 ) );
 
-			// create final x-axes cause the axis need to be perpendicular to eachother
-			xAxis.front() = yAxis.front().crossProduct( zAxis.front() );
-
-			Vec3f spineVector = spineVectors.back() - spineVectors.front();
-			for ( int i = nrOfSpinePoints - 1; 
-						i > 0 && H3DAbs( spineVector.lengthSqr() ) < Constants::f_epsilon;
-						i-- ) {
-				spineVector = ( spineVectors[i] - spineVectors.front() );
-			}
-
-			// maybe this is unneccesary. It might be enough to just flip the y-axis.
-			spineVector.normalizeSafe();
-			Matrix3f rotationMatrix( Rotation ( yAxis.front(), spineVector ) );
-			yAxis.front() = rotationMatrix * yAxis.front();
-			xAxis.front() = rotationMatrix * xAxis.front();
-			zAxis.front() = rotationMatrix * zAxis.front();
-
-			for( int i = 1; i < nrOfSpinePoints; i++ ) {
+			for( int i = 0; i < nrOfSpinePoints; i++ )
+			{
 				xAxis.push_back( xAxis.front() );
 				yAxis.push_back( yAxis.front() );
 				zAxis.push_back( zAxis.front() );
 			}
 		}
 		else {
-			// axes for first spine point
-			Vec3f temp;
-			if( closedSpine ) {			
-				temp = spineVectors[ spineForward.front() ]
-							 - spineVectors[ spineBackward.front() ];
+			// calculate the Z-axes for the first spine point if the first spine point
+			// is undetermined at this stage add dummy.
+			if( closedSpine ) {
+				Vec3f temp = ( spineVectors[ spineForward.front() ] - spineVectors[0] )
+					.crossProduct( 
+					spineVectors[ spineBackward.front() ] - spineVectors[0] );
+				temp.normalizeSafe();
+				zAxis.push_back( temp );
+				// if one of the cross products calculated is not zero then the spine is 
+				// not collinear.
+				if( H3DAbs( zAxis.front().lengthSqr() ) >= Constants::f_epsilon )
+					collinear = false;
+			}
+			else
+				zAxis.push_back( Vec3f( 0, 0, 0) );
+
+			// calculate z-axes for all spine points but the last and for the first 
+			// spine point if it is undetermined.
+			for( int  i = 1; i < nrOfSpinePoints - 1; i++ ) {
+				Vec3f temp =( spineVectors[ spineForward[i] ] - spineVectors[i] )
+					.crossProduct( 
+					spineVectors[ spineBackward[i] ] - spineVectors[i] );
+				temp.normalizeSafe();
+				zAxis.push_back( temp );
+
+				// minimize angle between positive zAxes
+				H3DFloat dotProduc = zAxis[i].dotProduct( zAxis[i - 1] );
+				if( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 )
+					zAxis[i] = -zAxis[i];
+
+				// first time a valid zAxes is calculated update the previous invalid ones
+				if( H3DAbs( zAxis.back().lengthSqr() ) >= Constants::f_epsilon ) {
+					collinear = false;
+					if( H3DAbs( zAxis.front().lengthSqr() ) < Constants::f_epsilon ) {
+						zAxis.front() = zAxis.back();
+						for( int j = 1; 
+							j < i && H3DAbs( zAxis[j].lengthSqr() ) < Constants::f_epsilon;
+							j++ )
+							zAxis[j] = zAxis.front();
+					}
+				}
+				else
+					zAxis.back() = zAxis[i-1];
+			}
+
+			// calculate z-axes for the last spine point
+			if( closedSpine ) {
+				zAxis.push_back( zAxis.front() );
+
+				// minimize angle between positive zAxes
+				H3DFloat dotProduc = zAxis.back().dotProduct( zAxis[ nrOfSpinePoints - 2 ] );
+				if( H3DAbs( dotProduc ) >= Constants::f_epsilon && dotProduc < 0 )
+					zAxis.back() = -zAxis.back();
+			}
+			else
+				zAxis.push_back( zAxis.back() );
+
+			if( collinear ) {
+				// the y-axes is calculated like this since when the spine is collinear
+				// it might be that the stepping forward to the first non-coincidential 
+				// spine point might end up being the same spine point as if stepping 
+				// backward to the first non-coincidential spine point
+				// if the spine is closed.
+				Vec3f temp = spineVectors[ spineForward.front() ] - spineVectors[0];
 				temp.normalizeSafe();
 				yAxis.push_back( temp );
+
+				// create dummy x-axes.
+				if( H3DAbs( -1 + yAxis.front().x ) < Constants::f_epsilon )
+					xAxis.push_back( Vec3f(0, -1, 0) );
+				else if( H3DAbs( 1 + yAxis.front().x ) < Constants::f_epsilon )
+					xAxis.push_back( Vec3f(0, 1, 0) );
+				else
+					xAxis.push_back( Vec3f(1, 0, 0) );
+
+				zAxis.clear();
+				zAxis.push_back( xAxis.front().crossProduct( yAxis.front() ) );
+
+				// create final x-axes cause the axis need to be perpendicular to eachother
+				xAxis.front() = yAxis.front().crossProduct( zAxis.front() );
+				xAxis.front().normalizeSafe();
+				zAxis.front().normalizeSafe();
+
+				Vec3f spineVector = spineVectors.back() - spineVectors.front();
+				for ( int i = nrOfSpinePoints - 1; 
+					i > 0 && H3DAbs( spineVector.lengthSqr() ) < Constants::f_epsilon;
+					i-- ) {
+						spineVector = ( spineVectors[i] - spineVectors.front() );
+				}
+
+				// maybe this is unneccesary. It might be enough to just flip the y-axis.
+				spineVector.normalizeSafe();
+				Matrix3f rotationMatrix( Rotation ( yAxis.front(), spineVector ) );
+				yAxis.front() = rotationMatrix * yAxis.front();
+				xAxis.front() = rotationMatrix * xAxis.front();
+				zAxis.front() = rotationMatrix * zAxis.front();
+
+				for( int i = 1; i < nrOfSpinePoints; i++ ) {
+					xAxis.push_back( xAxis.front() );
+					yAxis.push_back( yAxis.front() );
+					zAxis.push_back( zAxis.front() );
+				}
 			}
 			else {
-				temp = spineVectors[ spineForward.front() ] - spineVectors[0];
+				// axes for first spine point
+				Vec3f temp;
+				if( closedSpine ) {			
+					temp = spineVectors[ spineForward.front() ]
+					- spineVectors[ spineBackward.front() ];
+					temp.normalizeSafe();
+					yAxis.push_back( temp );
+				}
+				else {
+					temp = spineVectors[ spineForward.front() ] - spineVectors[0];
+					temp.normalizeSafe();
+					yAxis.push_back( temp );
+				}
+
+				temp = yAxis.front().crossProduct( zAxis.front() );
 				temp.normalizeSafe();
-				yAxis.push_back( temp );
-			}
+				xAxis.push_back( temp );
 
-			temp = yAxis.front().crossProduct( zAxis.front() );
-			temp.normalizeSafe();
-			xAxis.push_back( temp );
+				// axes for all but the last and first spine point
+				for( int i = 1; i < nrOfSpinePoints - 1; i++ ) {
+					temp = spineVectors[ spineForward[i] ]
+					- spineVectors[ spineBackward[i] ];
+					temp.normalizeSafe();
+					yAxis.push_back( temp );
 
-			// axes for all but the last and first spine point
-			for( int i = 1; i < nrOfSpinePoints - 1; i++ ) {
-				temp = spineVectors[ spineForward[i] ]
-							 - spineVectors[ spineBackward[i] ];
-				temp.normalizeSafe();
-				yAxis.push_back( temp );
+					temp = yAxis[i].crossProduct( zAxis[i] );
+					temp.normalizeSafe();
+					xAxis.push_back( temp );
+				}
 
-				temp = yAxis[i].crossProduct( zAxis[i] );
+				// axes for last spine point
+				if( closedSpine )
+					yAxis.push_back( yAxis.front() );
+				else {
+					temp = spineVectors.back() - spineVectors[ spineBackward.back() ];
+					temp.normalizeSafe();
+					yAxis.push_back( temp );
+				}
+				temp = yAxis.back().crossProduct( zAxis.back() );
 				temp.normalizeSafe();
 				xAxis.push_back( temp );
 			}
-
-			// axes for last spine point
-			if( closedSpine )
-				yAxis.push_back( yAxis.front() );
-			else {
-				temp = spineVectors.back() - spineVectors[ spineBackward.back() ];
-				temp.normalizeSafe();
-				yAxis.push_back( temp );
-			}
-			temp = yAxis.back().crossProduct( zAxis.back() );
-			temp.normalizeSafe();
-			xAxis.push_back( temp );
 		}
-	}
 
-	for( int i = 0; i < nrOfOrientationValues; i++ )
-		orientationMatrices.push_back( 
-							static_cast< Matrix3f >( orientationVectors[i] ) );
+		for( int i = 0; i < nrOfOrientationValues; i++ )
+			orientationMatrices.push_back( 
+			static_cast< Matrix3f >( orientationVectors[i] ) );
 
-	// calculate vertices.
-	for( int i = 0; i < nrOfSpinePoints; i++ ) {
-		for( int j = 0; j < nrOfCrossSectionPoints; j++ ) {
-			Vec3f point0_x = scaleVectors[ i % nrOfScaleValues ].x
-											 * cross_section[j].x * xAxis[i];
-			Vec3f point0_z = scaleVectors[ i % nrOfScaleValues ].y
-											 * cross_section[j].y * zAxis[i];
-			Vec3f point0 = spineVectors[i] + 
-										 orientationMatrices[ i % nrOfOrientationValues ]
-										 * ( point0_x + point0_z );
+		// calculate vertices.
+		for( int i = 0; i < nrOfSpinePoints; i++ ) {
+			for( int j = 0; j < nrOfCrossSectionPoints; j++ ) {
+				Vec3f point0_x = scaleVectors[ i % nrOfScaleValues ].x
+					* cross_section[j].x * xAxis[i];
+				Vec3f point0_z = scaleVectors[ i % nrOfScaleValues ].y
+					* cross_section[j].y * zAxis[i];
+				Vec3f point0 = spineVectors[i] + 
+					orientationMatrices[ i % nrOfOrientationValues ]
+				* ( point0_x + point0_z );
 
-			value.push_back( point0 );
+				value.push_back( point0 );
+			}
 		}
 	}
 }
@@ -395,379 +405,387 @@ void Extrusion::render() {
 	const vector< Vec3f > &spineVectors = spine->getValue();
 	H3DFloat crease_angle = creaseAngle->getValue();
 
-  vector< Vec3f > yAxis;
-	vector< int > spineForward;
-	vector< int > spineBackward;
-	vector< Vec3f > normalVector;
+	if( nrOfSpinePoints > 1 ) {
+		vector< Vec3f > yAxis;
+		vector< int > spineForward;
+		vector< int > spineBackward;
+		vector< Vec3f > normalVector;
 
-	vector< H3DFloat > uTextureCoordinates;
-	vector< H3DFloat > vTextureCoordinates;
-	vector< Vec2f > textureCoordinatesCaps;
+		vector< H3DFloat > uTextureCoordinates;
+		vector< H3DFloat > vTextureCoordinates;
+		vector< Vec2f > textureCoordinatesCaps;
 
-	bool closedSpine = false;
-	bool collinear = true;				// if the spine is collinear
-	bool coincident = false;			// if every point on the spine is the same
-	H3DInt32 ifCapsAdd = 0;
-	
-	// determine which side of polygons is front and back face. Since the 
-	// GLWindow renderCamera() function might scale the y-axis with -1 and
-	// set the GL_FRONT_FACE to GL_CW if scaled and GL_CCW otherwise, we have
-	// to check what the previous value is to determine what the GL_FRONT_FACE 
-	// will be. This can also happen if a Transform node has negative scaling.
-	GLint front_face;
-	glGetIntegerv( GL_FRONT_FACE, &front_face );
-	if( front_face == GL_CW ) {
-		// we are in mirrored mode, so we have to set the front face
-		// to the opposite in order for it to be right when mirrored.
-		if( ccwcheck )
-			glFrontFace( GL_CW );
-		else  
-			glFrontFace( GL_CCW );
-	} else {
-		if( ccw->getValue() )
-			glFrontFace( GL_CCW );
-		else 
-			glFrontFace( GL_CW );
-	}
+		bool closedSpine = false;
+		bool collinear = true;				// if the spine is collinear
+		bool coincident = false;			// if every point on the spine is the same
+		H3DInt32 ifCapsAdd = 0;
 
-	glShadeModel( GL_SMOOTH ); 
-
-  // enable backface culling if solid is true
-  if( solid->getValue() ) {
-    glEnable( GL_CULL_FACE );
-    glCullFace( GL_BACK );
-  } else
-    glDisable( GL_CULL_FACE );
-	
-	// check if the spine is closed
-	if( coinc( spineVectors.front(), spineVectors.back() ) )
-		closedSpine = true;
-
-	// build vectors containing indicies to the first non-coincident spine. 
-	// Backward and forward.
-	// these vectors are used to calculate axis for the SCP around each spine.
-	for( int i = 0; i < nrOfSpinePoints; i++ ) {
-    int j = i;
-
-		do {
-			j++;
-      
-			if( j >= nrOfSpinePoints )
-				j -= nrOfSpinePoints;
-		} while( j!= i && coinc( spineVectors[i], spineVectors[j] ) );
-		
-		spineForward.push_back(j);
-
-		if( i == 0 && j == 0 )
-			coincident = true;
-		
-		j = i;
-
-		do {
-			j--;
-      
-			if( j < 0 )
-				j += nrOfSpinePoints;
-		} while( j!= i && coinc( spineVectors[i], spineVectors[j] ) );
-
-		spineBackward.push_back(j);
-	}
-
-	// if the entire spine is coincident choose and arbitrary direction for the SCP.
-	// if another direction is desired use the orientation values.
-	// another node might be a better solution for this kind of shape.
-	if( coincident ) {
-		yAxis.push_back( Vec3f( 0, 1, 0 ) );
-		yAxis.push_back( yAxis.front() );
-	}
-	else {
-		
-		// check if the spine is collinear
-		if( closedSpine ) {
-			Vec3f temp = ( spineVectors[ spineForward.front() ] - spineVectors[0] )
-									 .crossProduct( 
-										 spineVectors[ spineBackward.front() ] - spineVectors[0] );
-			// if one of the cross products calculated is not zero then the spine is
-			// not collinear.
-			if( H3DAbs( temp.lengthSqr() ) >= Constants::f_epsilon )
-				collinear = false;
+		// determine which side of polygons is front and back face. Since the 
+		// GLWindow renderCamera() function might scale the y-axis with -1 and
+		// set the GL_FRONT_FACE to GL_CW if scaled and GL_CCW otherwise, we have
+		// to check what the previous value is to determine what the GL_FRONT_FACE 
+		// will be. This can also happen if a Transform node has negative scaling.
+		GLint front_face;
+		glGetIntegerv( GL_FRONT_FACE, &front_face );
+		if( front_face == GL_CW ) {
+			// we are in mirrored mode, so we have to set the front face
+			// to the opposite in order for it to be right when mirrored.
+			if( ccwcheck )
+				glFrontFace( GL_CW );
+			else  
+				glFrontFace( GL_CCW );
+		} else {
+			if( ccw->getValue() )
+				glFrontFace( GL_CCW );
+			else 
+				glFrontFace( GL_CW );
 		}
 
-		for( int  i = 1; i < nrOfSpinePoints - 1 && collinear; i++ ) {
-			Vec3f temp =( spineVectors[ spineForward[i] ] - spineVectors[i] )
-									.crossProduct(
-									spineVectors[ spineBackward[i] ] - spineVectors[i] );
+		glShadeModel( GL_SMOOTH ); 
 
-			if( H3DAbs( temp.lengthSqr() ) >= Constants::f_epsilon ) {
-				collinear = false;
-			}
+		// enable backface culling if solid is true
+		if( solid->getValue() ) {
+			glEnable( GL_CULL_FACE );
+			glCullFace( GL_BACK );
+		} else
+			glDisable( GL_CULL_FACE );
+
+		// check if the spine is closed
+		if( coinc( spineVectors.front(), spineVectors.back() ) )
+			closedSpine = true;
+
+		// build vectors containing indicies to the first non-coincident spine. 
+		// Backward and forward.
+		// these vectors are used to calculate axis for the SCP around each spine.
+		for( int i = 0; i < nrOfSpinePoints; i++ ) {
+			int j = i;
+
+			do {
+				j++;
+
+				if( j >= nrOfSpinePoints )
+					j -= nrOfSpinePoints;
+			} while( j!= i && coinc( spineVectors[i], spineVectors[j] ) );
+
+			if( !closedSpine && j < i )
+				spineForward.push_back( nrOfSpinePoints - 1 );
+			else
+				spineForward.push_back(j);
+
+			if( i == 0 && j == 0 )
+				coincident = true;
+
+			j = i;
+
+			do {
+				j--;
+
+				if( j < 0 )
+					j += nrOfSpinePoints;
+			} while( j!= i && coinc( spineVectors[i], spineVectors[j] ) );
+
+			if( !closedSpine && j > i )
+				spineBackward.push_back( 0 );
+			else
+				spineBackward.push_back(j);
 		}
 
-		if( collinear ) {
-			// the y-axes is calculated like this since when the spine is collinear
-			// it might be that the stepping forward to the first non-coincidential 
-			// spine point might end up being the same spine point as if stepping 
-			// backward to the first non-coincidential spine point
-			// if the spine is closed.
-			Vec3f temp = spineVectors[ spineForward.front() ] - spineVectors[0];
-			temp.normalizeSafe();
-			yAxis.push_back( temp );
-
-			Vec3f spineVector = spineVectors.back() - spineVectors.front();
-			for ( int i = nrOfSpinePoints - 1;
-					  i > 0 && H3DAbs( spineVector.lengthSqr() ) < Constants::f_epsilon;
-						i-- ) {
-				spineVector = ( spineVectors[i] - spineVectors.front() );
-			}
-
-			// maybe this is unneccesary. It might be enough to just flip the y-axis.
-			spineVector.normalizeSafe();
-			Matrix3f rotationMatrix( Rotation ( yAxis.front(), spineVector ) );
-			yAxis.front() = rotationMatrix * yAxis.front();
+		// if the entire spine is coincident choose and arbitrary direction for the SCP.
+		// if another direction is desired use the orientation values.
+		// another node might be a better solution for this kind of shape.
+		if( coincident ) {
+			yAxis.push_back( Vec3f( 0, 1, 0 ) );
 			yAxis.push_back( yAxis.front() );
 		}
 		else {
-			
-			// axes for first spine point
-			Vec3f temp;
-			if( closedSpine ) {			
-				temp = spineVectors[ spineForward.front() ] -
-							 spineVectors[ spineBackward.front() ];
-				temp.normalizeSafe();
-				yAxis.push_back( temp );
-			}
-			else {
-				temp = spineVectors[ spineForward.front() ] - spineVectors[0];
-				temp.normalizeSafe();
-				yAxis.push_back( temp );
+
+			// check if the spine is collinear
+			if( closedSpine ) {
+				Vec3f temp = ( spineVectors[ spineForward.front() ] - spineVectors[0] )
+					.crossProduct( 
+					spineVectors[ spineBackward.front() ] - spineVectors[0] );
+				// if one of the cross products calculated is not zero then the spine is
+				// not collinear.
+				if( H3DAbs( temp.lengthSqr() ) >= Constants::f_epsilon )
+					collinear = false;
 			}
 
-			// axes for last spine point
-			if( closedSpine )
+			for( int  i = 1; i < nrOfSpinePoints - 1 && collinear; i++ ) {
+				Vec3f temp =( spineVectors[ spineForward[i] ] - spineVectors[i] )
+					.crossProduct(
+					spineVectors[ spineBackward[i] ] - spineVectors[i] );
+
+				if( H3DAbs( temp.lengthSqr() ) >= Constants::f_epsilon ) {
+					collinear = false;
+				}
+			}
+
+			if( collinear ) {
+				// the y-axes is calculated like this since when the spine is collinear
+				// it might be that the stepping forward to the first non-coincidential 
+				// spine point might end up being the same spine point as if stepping 
+				// backward to the first non-coincidential spine point
+				// if the spine is closed.
+				Vec3f temp = spineVectors[ spineForward.front() ] - spineVectors[0];
+				temp.normalizeSafe();
+				yAxis.push_back( temp );
+
+				Vec3f spineVector = spineVectors.back() - spineVectors.front();
+				for ( int i = nrOfSpinePoints - 1;
+					i > 0 && H3DAbs( spineVector.lengthSqr() ) < Constants::f_epsilon;
+					i-- ) {
+						spineVector = ( spineVectors[i] - spineVectors.front() );
+				}
+
+				// maybe this is unneccesary. It might be enough to just flip the y-axis.
+				spineVector.normalizeSafe();
+				Matrix3f rotationMatrix( Rotation ( yAxis.front(), spineVector ) );
+				yAxis.front() = rotationMatrix * yAxis.front();
 				yAxis.push_back( yAxis.front() );
+			}
 			else {
-				temp = spineVectors.back() - spineVectors[ spineBackward.back() ];
-				temp.normalizeSafe();
-				yAxis.push_back( temp );
+
+				// axes for first spine point
+				Vec3f temp;
+				if( closedSpine ) {			
+					temp = spineVectors[ spineForward.front() ] -
+						spineVectors[ spineBackward.front() ];
+					temp.normalizeSafe();
+					yAxis.push_back( temp );
+				}
+				else {
+					temp = spineVectors[ spineForward.front() ] - spineVectors[0];
+					temp.normalizeSafe();
+					yAxis.push_back( temp );
+				}
+
+				// axes for last spine point
+				if( closedSpine )
+					yAxis.push_back( yAxis.front() );
+				else {
+					temp = spineVectors.back() - spineVectors[ spineBackward.back() ];
+					temp.normalizeSafe();
+					yAxis.push_back( temp );
+				}
 			}
 		}
-	}
 
-	// get the Vertices
-	const vector< Vec3f > vertexvec = vertexVector->getValue();
+		// get the Vertices
+		const vector< Vec3f > vertexvec = vertexVector->getValue();
 
-	// Calculation of the u and v coordinates for the extrusion.
-	// u is along cross section, v is along the spine.
-	// For the caps u and v corresponds to x and z of the SCP
-	// and the biggest difference in x or z maps to 0-1. Uniform scaling.
-	H3DFloat spineLength = 0;
-	vTextureCoordinates.push_back(0);
-	for( int i = 0; i < nrOfSpinePoints - 1; i++ ) {
-		spineLength += ( spineVectors[ i + 1 ] - spineVectors[i] ).length();
-		vTextureCoordinates.push_back( spineLength );
-	}
-
-	for( int i = 0; i < nrOfSpinePoints; i++ ) {
-		vTextureCoordinates[i] = vTextureCoordinates[i] / spineLength;
-	}
-	
-	H3DFloat crossSectionLength = 0;
-	H3DFloat crossSectionXMin;
-	H3DFloat crossSectionXMax;
-	H3DFloat crossSectionZMin;
-	H3DFloat crossSectionZMax;
-	H3DFloat crossSectionRange;
-	uTextureCoordinates.push_back(0);
-	for( int i = 0; i < nrOfCrossSectionPoints - 1; i++ ) {
-		crossSectionLength += ( cross_section[ i + 1 ] - cross_section[i] ).length();
-		uTextureCoordinates.push_back( crossSectionLength );
-		if( i == 0 ) {
-			crossSectionXMin = cross_section[i].x;
-			crossSectionXMax = cross_section[i].x;
-			crossSectionZMin = cross_section[i].y;
-			crossSectionZMax = cross_section[i].y;
+		// Calculation of the u and v coordinates for the extrusion.
+		// u is along cross section, v is along the spine.
+		// For the caps u and v corresponds to x and z of the SCP
+		// and the biggest difference in x or z maps to 0-1. Uniform scaling.
+		H3DFloat spineLength = 0;
+		vTextureCoordinates.push_back(0);
+		for( int i = 0; i < nrOfSpinePoints - 1; i++ ) {
+			spineLength += ( spineVectors[ i + 1 ] - spineVectors[i] ).length();
+			vTextureCoordinates.push_back( spineLength );
 		}
-		else {
-			if( cross_section[i].x < crossSectionXMin )
+
+		for( int i = 0; i < nrOfSpinePoints; i++ ) {
+			vTextureCoordinates[i] = vTextureCoordinates[i] / spineLength;
+		}
+
+		H3DFloat crossSectionLength = 0;
+		H3DFloat crossSectionXMin;
+		H3DFloat crossSectionXMax;
+		H3DFloat crossSectionZMin;
+		H3DFloat crossSectionZMax;
+		H3DFloat crossSectionRange;
+		uTextureCoordinates.push_back(0);
+		for( int i = 0; i < nrOfCrossSectionPoints - 1; i++ ) {
+			crossSectionLength += ( cross_section[ i + 1 ] - cross_section[i] ).length();
+			uTextureCoordinates.push_back( crossSectionLength );
+			if( i == 0 ) {
 				crossSectionXMin = cross_section[i].x;
-			if( cross_section[i].x > crossSectionXMax )
 				crossSectionXMax = cross_section[i].x;
-			if( cross_section[i].y < crossSectionZMin )
 				crossSectionZMin = cross_section[i].y;
-			if( cross_section[i].y > crossSectionZMax )
 				crossSectionZMax = cross_section[i].y;
-		}
-	}
-
-	for( int i = 0; i < nrOfCrossSectionPoints; i++ ) {
-		uTextureCoordinates[i] = uTextureCoordinates[i] / crossSectionLength;
-	}
-
-	if( crossSectionXMax - crossSectionXMin >= crossSectionZMax - crossSectionZMin )
-		crossSectionRange = crossSectionXMax - crossSectionXMin;
-	else
-		crossSectionRange = crossSectionZMax - crossSectionZMin;
-
-	for( int i = 0; i < nrOfCrossSectionPoints; i++ )
-		textureCoordinatesCaps.push_back( Vec2f(
-						 ( cross_section[i].x - crossSectionXMin ) / crossSectionRange,
-						 ( cross_section[i].y - crossSectionZMin ) / crossSectionRange ) );
-
-	// generate normals depending on if creaseangle is used or not.
-	// if creaseangle is 0 normalVector contains the result 
-	// from generateNormalsPerFace
-	if( crease_angle < Constants::pi )
-		generateNormalsPerVertex( normalVector,
-															vertexvec,
-															cross_section, 
-															yAxis, 
-															ccwcheck, 
-															nrOfCrossSectionPoints, 
-															nrOfSpinePoints, 
-															closedSpine, 
-															crease_angle,
-															ifCapsAdd );
-	else
-		generateNormalsPerVertex( normalVector,
-															vertexvec, 
-															cross_section,
-															yAxis,
-															ccwcheck,
-															nrOfCrossSectionPoints,
-															nrOfSpinePoints,
-															closedSpine,
-															ifCapsAdd );
-
-
-	bool useCreaseAngle = true;
-	if( H3DAbs( crease_angle ) < Constants::f_epsilon )
-		useCreaseAngle = false;
-
-	// if there is a cap in the beginning, draw it.
-	if( beginCap -> getValue() ) {
-		Vec3f point_x;
-		Vec3f point_z;
-		Vec3f point;
-
-		glBegin( GL_POLYGON );
-
-		Vec3f theNormal;
-		if( !useCreaseAngle ) {
-			theNormal = normalVector.front();
-			glNormal3f( theNormal.x, theNormal.y, theNormal.z );
-		}
-
-		for( int i = nrOfCrossSectionPoints - 1; i >= 0; i-- )
-		{
-			glTexCoord2d( textureCoordinatesCaps[i].x, textureCoordinatesCaps[i].y );
-			if( useCreaseAngle ) {
-				theNormal = normalVector[i];
-				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
-			
-			point = vertexvec[i];
-
-			glVertex3f( point.x, point.y , point.z );
+			else {
+				if( cross_section[i].x < crossSectionXMin )
+					crossSectionXMin = cross_section[i].x;
+				if( cross_section[i].x > crossSectionXMax )
+					crossSectionXMax = cross_section[i].x;
+				if( cross_section[i].y < crossSectionZMin )
+					crossSectionZMin = cross_section[i].y;
+				if( cross_section[i].y > crossSectionZMax )
+					crossSectionZMax = cross_section[i].y;
+			}
 		}
-    glEnd();
-	}
 
-	// draw the quads of the body.
-	for( int i = 0; i < nrOfSpinePoints - 1; i++ ) {
-		for( int j = 0; j < nrOfCrossSectionPoints - 1; j++ ) {
+		for( int i = 0; i < nrOfCrossSectionPoints; i++ ) {
+			uTextureCoordinates[i] = uTextureCoordinates[i] / crossSectionLength;
+		}
 
-			H3DInt32 lower = i * nrOfCrossSectionPoints + j;
-			H3DInt32 upper = ( i + 1 ) * nrOfCrossSectionPoints + j;
-			H3DInt32 quad_index = i * ( nrOfCrossSectionPoints - 1 ) + j;
+		if( crossSectionXMax - crossSectionXMin >= crossSectionZMax - crossSectionZMin )
+			crossSectionRange = crossSectionXMax - crossSectionXMin;
+		else
+			crossSectionRange = crossSectionZMax - crossSectionZMin;
+
+		for( int i = 0; i < nrOfCrossSectionPoints; i++ )
+			textureCoordinatesCaps.push_back( Vec2f(
+			( cross_section[i].x - crossSectionXMin ) / crossSectionRange,
+			( cross_section[i].y - crossSectionZMin ) / crossSectionRange ) );
+
+		// generate normals depending on if creaseangle is used or not.
+		// if creaseangle is 0 normalVector contains the result 
+		// from generateNormalsPerFace
+		if( crease_angle < Constants::pi )
+			generateNormalsPerVertex( normalVector,
+			vertexvec,
+			cross_section, 
+			yAxis, 
+			ccwcheck, 
+			nrOfCrossSectionPoints, 
+			nrOfSpinePoints, 
+			closedSpine, 
+			crease_angle,
+			ifCapsAdd );
+		else
+			generateNormalsPerVertex( normalVector,
+			vertexvec, 
+			cross_section,
+			yAxis,
+			ccwcheck,
+			nrOfCrossSectionPoints,
+			nrOfSpinePoints,
+			closedSpine,
+			ifCapsAdd );
+
+
+		bool useCreaseAngle = true;
+		if( H3DAbs( crease_angle ) < Constants::f_epsilon )
+			useCreaseAngle = false;
+
+		// if there is a cap in the beginning, draw it.
+		if( beginCap -> getValue() ) {
+			Vec3f point_x;
+			Vec3f point_z;
 			Vec3f point;
+
+			glBegin( GL_POLYGON );
+
 			Vec3f theNormal;
-			
 			if( !useCreaseAngle ) {
-				Vec3f theNormal = normalVector[ ifCapsAdd + quad_index ];
+				theNormal = normalVector.front();
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
 
-			glBegin( GL_QUADS );
+			for( int i = nrOfCrossSectionPoints - 1; i >= 0; i-- )
+			{
+				glTexCoord2d( textureCoordinatesCaps[i].x, textureCoordinatesCaps[i].y );
+				if( useCreaseAngle ) {
+					theNormal = normalVector[i];
+					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				}
 
-			glTexCoord2d( uTextureCoordinates[j], vTextureCoordinates[i] );
-			if( useCreaseAngle ) {
-				if( crease_angle < Constants::pi )
-					theNormal = normalVector[ ifCapsAdd +  quad_index * 4 ];
-				else
-					theNormal = normalVector[ lower ];
-				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
-			}
-			point = vertexvec[ lower ];
-			glVertex3f( point.x, point.y, point.z );
-			
-			glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[i] );
-			if( useCreaseAngle ) {
-				if( crease_angle < Constants::pi )
-					theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 1 ];
-				else
-					theNormal = normalVector[ lower + 1 ];
-				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
-			}
-			point = vertexvec[ lower + 1 ];
-			glVertex3f( point.x, point.y, point.z );
+				point = vertexvec[i];
 
-			glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[ i + 1 ] );
-			if( useCreaseAngle ) {
-				if( crease_angle < Constants::pi )
-					theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 2 ];
-				else
-					theNormal = normalVector[ upper + 1 ];
-				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				glVertex3f( point.x, point.y , point.z );
 			}
-			point = vertexvec[ upper + 1 ];
-			glVertex3f( point.x, point.y, point.z );
-
-			glTexCoord2d( uTextureCoordinates[j], vTextureCoordinates[ i + 1 ] );
-			if( useCreaseAngle ) {
-				if( crease_angle < Constants::pi )
-					theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 3 ];
-				else
-					theNormal = normalVector[ upper ];
-				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
-			}
-			point = vertexvec[ upper ];
-			glVertex3f( point.x, point.y, point.z );
-			
 			glEnd();
 		}
-	}
 
-	// if there is a cap in the end, draw it.
-	if( endCap -> getValue() ) {
-		Vec3f point_x;
-		Vec3f point_z;
-		Vec3f point;
-		
-		glBegin( GL_POLYGON );
+		// draw the quads of the body.
+		for( int i = 0; i < nrOfSpinePoints - 1; i++ ) {
+			for( int j = 0; j < nrOfCrossSectionPoints - 1; j++ ) {
 
-		Vec3f theNormal;
-		if( !useCreaseAngle ) {
-			theNormal = normalVector.back();
-			glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				H3DInt32 lower = i * nrOfCrossSectionPoints + j;
+				H3DInt32 upper = ( i + 1 ) * nrOfCrossSectionPoints + j;
+				H3DInt32 quad_index = i * ( nrOfCrossSectionPoints - 1 ) + j;
+				Vec3f point;
+				Vec3f theNormal;
+
+				if( !useCreaseAngle ) {
+					Vec3f theNormal = normalVector[ ifCapsAdd + quad_index ];
+					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				}
+
+				glBegin( GL_QUADS );
+
+				glTexCoord2d( uTextureCoordinates[j], vTextureCoordinates[i] );
+				if( useCreaseAngle ) {
+					if( crease_angle < Constants::pi )
+						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 ];
+					else
+						theNormal = normalVector[ lower ];
+					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				}
+				point = vertexvec[ lower ];
+				glVertex3f( point.x, point.y, point.z );
+
+				glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[i] );
+				if( useCreaseAngle ) {
+					if( crease_angle < Constants::pi )
+						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 1 ];
+					else
+						theNormal = normalVector[ lower + 1 ];
+					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				}
+				point = vertexvec[ lower + 1 ];
+				glVertex3f( point.x, point.y, point.z );
+
+				glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[ i + 1 ] );
+				if( useCreaseAngle ) {
+					if( crease_angle < Constants::pi )
+						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 2 ];
+					else
+						theNormal = normalVector[ upper + 1 ];
+					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				}
+				point = vertexvec[ upper + 1 ];
+				glVertex3f( point.x, point.y, point.z );
+
+				glTexCoord2d( uTextureCoordinates[j], vTextureCoordinates[ i + 1 ] );
+				if( useCreaseAngle ) {
+					if( crease_angle < Constants::pi )
+						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 3 ];
+					else
+						theNormal = normalVector[ upper ];
+					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				}
+				point = vertexvec[ upper ];
+				glVertex3f( point.x, point.y, point.z );
+
+				glEnd();
+			}
 		}
 
-		for(int i = 0; i < nrOfCrossSectionPoints; i++ )
-		{
-			glTexCoord2d( textureCoordinatesCaps[i].x, textureCoordinatesCaps[i].y );
-			if( useCreaseAngle ) {
-				theNormal = 
-					normalVector[ normalVector.size() - nrOfCrossSectionPoints + i ];
+		// if there is a cap in the end, draw it.
+		if( endCap -> getValue() ) {
+			Vec3f point_x;
+			Vec3f point_z;
+			Vec3f point;
+
+			glBegin( GL_POLYGON );
+
+			Vec3f theNormal;
+			if( !useCreaseAngle ) {
+				theNormal = normalVector.back();
 				glNormal3f( theNormal.x, theNormal.y, theNormal.z );
 			}
 
-			point = vertexvec[ vertexvec.size() - nrOfCrossSectionPoints + i ];
-			glVertex3f( point.x, point.y , point.z );
-		}
-		glEnd();
-	}
+			for(int i = 0; i < nrOfCrossSectionPoints; i++ )
+			{
+				glTexCoord2d( textureCoordinatesCaps[i].x, textureCoordinatesCaps[i].y );
+				if( useCreaseAngle ) {
+					theNormal = 
+						normalVector[ normalVector.size() - nrOfCrossSectionPoints + i ];
+					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
+				}
 
-	// Restore the front face to its previuos value.
-  glFrontFace( front_face );
+				point = vertexvec[ vertexvec.size() - nrOfCrossSectionPoints + i ];
+				glVertex3f( point.x, point.y , point.z );
+			}
+			glEnd();
+		}
+
+		// Restore the front face to its previuos value.
+		glFrontFace( front_face );
+	}
 }
 
 vector< Vec3f > Extrusion::generateNormalsPerFace(  
