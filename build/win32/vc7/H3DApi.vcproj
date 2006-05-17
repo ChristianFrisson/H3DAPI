@@ -147,6 +147,15 @@
 				RelativePath="..\..\..\src\BooleanFilter.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\BooleanSequencer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\BooleanToggle.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\BooleanTrigger.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\Box.cpp">
 			</File>
 			<File
@@ -223,6 +232,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Exception.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\Extrusion.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\FakeHapticsDevice.cpp">
@@ -354,6 +366,12 @@
 				RelativePath="..\..\..\src\Inline.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\IntegerSequencer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\IntegerTrigger.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\IStreamInputSource.cpp">
 			</File>
 			<File
@@ -361,6 +379,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\KeySensor.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\lex.yy.cc">
 			</File>
 			<File
 				RelativePath="..\..\..\src\LibCurlResolver.cpp">
@@ -448,6 +469,12 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\OggFileReader.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\OpenHapticsOptions.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\OpenHapticsSettings.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\OrientationInterpolator.cpp">
@@ -546,6 +573,9 @@
 				RelativePath="..\..\..\src\Sound.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\SpaceballSensor.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\SpaceWareHapticsDevice.cpp">
 			</File>
 			<File
@@ -609,6 +639,9 @@
 				RelativePath="..\..\..\src\TimeStamp.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\TimeTrigger.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\ToggleGroup.cpp">
 			</File>
 			<File
@@ -646,6 +679,15 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Viewpoint.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\vrml.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\VrmlDriver.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\VrmlParser.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\WorldInfo.cpp">
@@ -732,10 +774,16 @@
 				RelativePath="..\..\..\src\X3DPrototypeInstance.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\X3DRenderOptionsNode.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3DSAX2Handlers.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DSensorNode.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DSequencerNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DShaderNode.cpp">
@@ -769,6 +817,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DTimeDependentNode.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DTriggerNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DUrlObject.cpp">
@@ -813,6 +864,15 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\BooleanFilter.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\BooleanSequencer.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\BooleanToggle.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\BooleanTrigger.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Bound.h">
@@ -905,6 +965,9 @@
 				RelativePath="..\..\..\src\Exception.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Extrusion.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\FakeHapticsDevice.h">
 			</File>
 			<File
@@ -918,6 +981,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\FitToBoxTransform.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\FlexLexer.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\FloatVertexAttribute.h">
@@ -945,6 +1011,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\GLUTWindow.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Group.h">
@@ -975,6 +1044,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DForceEffect.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DFunctionNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DHapticsDevice.h">
@@ -1101,6 +1173,12 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Instantiate.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\IntegerSequencer.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\IntegerTrigger.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\IStreamInputSource.h">
@@ -1265,6 +1343,12 @@
 				RelativePath="..\..\..\src\OggFileReader.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\OpenHapticsOptions.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\OpenHapticsSettings.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\OrientationInterpolator.h">
 			</File>
 			<File
@@ -1307,6 +1391,15 @@
 				RelativePath="..\..\..\src\ProgramShader.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\ProtoDeclaration.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\PrototypeInstance.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\PrototypeVector.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\PythonMethods.h">
 			</File>
 			<File
@@ -1335,6 +1428,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\RefCountSField.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\ResourceResolver.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\RK4.h">
@@ -1433,6 +1529,9 @@
 				RelativePath="..\..\..\src\Sound.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\SpaceballSensor.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\SpaceWareHapticsDevice.h">
 			</File>
 			<File
@@ -1499,6 +1598,9 @@
 				RelativePath="..\..\..\src\TimeStamp.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\TimeTrigger.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\ToggleGroup.h">
 			</File>
 			<File
@@ -1535,6 +1637,12 @@
 				RelativePath="..\..\..\src\TypedFieldTypesTmpl.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\unistd.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\URNResolver.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\Types\Vec2d.h">
 			</File>
 			<File
@@ -1554,6 +1662,15 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Viewpoint.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\vrml.hpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\VrmlDriver.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\VrmlParser.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\WorldInfo.h">
@@ -1646,10 +1763,19 @@
 				RelativePath="..\..\..\src\X3DProgrammableShaderObject.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\X3DPrototypeInstance.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DRenderOptionsNode.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3DSAX2Handlers.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DSensorNode.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DSequencerNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DShaderNode.h">
@@ -1683,6 +1809,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DTimeDependentNode.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DTriggerNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DTypeFunctions.h">
