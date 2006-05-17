@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Box.h"
-#include "HLFeedbackShape.h"
 
 using namespace H3D;
 
@@ -157,9 +156,8 @@ void Box::render() {
 
 void Box::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 24 ) );
+    ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
+                                                  ti.getAccForwardMatrix(),
+                                                  24 ) );
   }
 }

@@ -387,6 +387,7 @@ void HLHapticsDevice::initDevice() {
     hl_thread->setActive( true );
 
     hlEnable(HL_HAPTIC_CAMERA_VIEW);
+    hlEnable(HL_ADAPTIVE_VIEWPORT);
      
     HLint tmp_int;
     hdGetIntegerv( HD_INPUT_DOF, &tmp_int );

@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Text.h"
-#include "HLFeedbackShape.h"
 #include "FontStyle.h"
 
 using namespace H3D;
@@ -397,7 +396,7 @@ void Text::DisplayList::callList( bool build_list ) {
 
 void Text::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
+    ti.addHapticShapeToAll( getOpenGLHapticShape( 
                                                  ti.getCurrentSurface(),
                                                  ti.getAccForwardMatrix() ) );
   }

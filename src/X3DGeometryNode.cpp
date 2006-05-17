@@ -32,6 +32,10 @@
 #include "HLShape.h"
 #include "HapticShape.h"
 #include "DeviceInfo.h"
+#include "OpenHapticsSettings.h"
+#include "OpenHapticsOptions.h"
+#include "HLDepthBufferShape.h"
+#include "HLFeedbackShape.h"
 
 using namespace H3D;
 
@@ -44,6 +48,7 @@ namespace X3DGeometryNodeInternals {
   FIELDDB_ELEMENT( X3DGeometryNode, force, OUTPUT_ONLY );
   FIELDDB_ELEMENT( X3DGeometryNode, contactPoint, OUTPUT_ONLY );
   FIELDDB_ELEMENT( X3DGeometryNode, contactNormal, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( X3DGeometryNode, renderOptions, INPUT_OUTPUT );
 }
 
 X3DGeometryNode::X3DGeometryNode( 
@@ -60,7 +65,8 @@ X3DGeometryNode::X3DGeometryNode(
   isTouched( _isTouched ),
   force( _force ),
   contactPoint( _contactPoint ),
-  contactNormal( _contactNormal ) {
+  contactNormal( _contactNormal ),
+  renderOptions( new MFRenderOptionsNode ) {
 
   type_name = "X3DGeometryNode";
   
@@ -235,4 +241,57 @@ X3DGeometryNode::~X3DGeometryNode() {
                            &untouchCallback );
   }
 }
+
+HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
+                                                    const Matrix4f &_transform,
+                                                    HLint _nr_vertices ) {
+  int type = -1;
+
+  for( MFRenderOptionsNode::const_iterator i = renderOptions->begin();
+       i != renderOptions->end(); i++ ) {
+    OpenHapticsOptions *options = dynamic_cast< OpenHapticsOptions * >( *i );
+    if( options ) {
+      const string &shape = options->GLShape->getValue();
+      if( shape == "FEEDBACK_BUFFER" ) {
+        type = 0;
+      } else if( shape == "DEPTH_BUFFER" ) {
+        type = 1;
+      } else {
+        Console(4) << "Warning: Invalid OpenHaptics GLShape type: "
+                   << shape 
+                   << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
+                   << "(in \"" << getName() << "\")" << endl;
+      }
+    }
+  }
+
+  if( type == -1 ) {
+    OpenHapticsSettings *default_settings = OpenHapticsSettings::getActive();
+    if( default_settings ) {
+      const string &shape = default_settings->defaultGLShape->getValue();
+      if( shape == "FEEDBACK_BUFFER" ) {
+        type = 0;
+      } else if( shape == "DEPTH_BUFFER" ) {
+        type = 1;
+      } else {
+        Console(4) << "Warning: Invalid default OpenHaptics GLShape type: "
+                   << shape 
+                   << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
+                   << "(in active OpenHapticsSettings node\")" << endl;
+      }
+    }
+  }
+
+  if( type == 1 ) {
+    return new HLDepthBufferShape( this,
+                                   _surface,
+                                   _transform );
+  } else {
+    return new HLFeedbackShape( this,
+                                _surface,
+                                _transform,
+                                _nr_vertices );
+  }
+}
+
 #endif

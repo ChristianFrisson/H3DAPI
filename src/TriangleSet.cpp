@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TriangleSet.h"
-#include "HLFeedbackShape.h"
 #include "Normal.h"
 
 using namespace H3D;
@@ -190,8 +189,8 @@ void TriangleSet::render() {
 void TriangleSet::traverseSG( TraverseInfo &ti ) {
   X3DCoordinateNode *coord_node = coord->getValue();
   if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
-    HLFeedbackShape *fs = 
-      new HLFeedbackShape( this,
+    HapticShape *fs = 
+      getOpenGLHapticShape( 
                            ti.getCurrentSurface(),
                            ti.getAccForwardMatrix(),
                            coord_node->nrAvailableCoords());

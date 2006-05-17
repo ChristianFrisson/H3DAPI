@@ -35,6 +35,8 @@
 #include "MFBool.h"
 #include "MFVec3f.h"
 #include "AutoPtrVector.h"
+#include "X3DRenderOptionsNode.h"
+#include "MFNode.h"
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
 #endif
@@ -53,6 +55,8 @@ namespace H3D {
     public H3DBoundedObject,
     public H3DDisplayListObject {
   public:
+    typedef TypedMFNode< X3DRenderOptionsNode > MFRenderOptionsNode;
+
     /// Constructor.
     X3DGeometryNode( Inst< SFNode      >  _metadata = 0,
                      Inst< SFBound     > _bound = 0,
@@ -63,7 +67,7 @@ namespace H3D {
                      Inst< MFVec3f     > _contactNormal = 0);
  #ifdef HAVE_OPENHAPTICS   
     /// Destructor. Deletes the hl_shape_id.
-    ~X3DGeometryNode();
+    virtual ~X3DGeometryNode();
  
     /// Get a shape id to be used for rendering of this geometry with HLAPI for
     /// the given haptics device.
@@ -72,6 +76,14 @@ namespace H3D {
     /// get is determined by the index argument.
     HLuint getHLShapeId( HLHapticsDevice *hd,
                          unsigned int index );
+
+    /// Returns a either a HLFeedbackShape or a HLDepthBufferShape with
+    /// the X3DGeometryNode. Which type depents on possible 
+    /// OpenHapticsOptions nodes in the renderOptions field and
+    /// the default settings in OpenHapticsSettings bindable node.
+    HapticShape *getOpenGLHapticShape( H3DSurfaceNode *_surface,
+                                       const Matrix4f &_transform,
+                                       HLint _nr_vertices = -1 );
 #endif
     /// Returns the default xml containerField attribute value.
     /// For this node it is "geometry".
@@ -110,6 +122,11 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactNormal;
+
+    /// Contains nodes with options for haptics and graphics rendering.
+    ///
+    /// <b>Access type:</b> inputOnly
+    auto_ptr< MFRenderOptionsNode > renderOptions;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

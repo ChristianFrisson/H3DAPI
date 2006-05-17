@@ -31,7 +31,6 @@
 
 #include "IndexedTriangleFanSet.h"
 #include "Normal.h"
-#include "HLFeedbackShape.h"
 
 using namespace H3D;
 
@@ -283,7 +282,7 @@ void IndexedTriangleFanSet::render() {
 
 void IndexedTriangleFanSet::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
+    ti.addHapticShapeToAll( getOpenGLHapticShape( 
                                                  ti.getCurrentSurface(),
                                                  ti.getAccForwardMatrix(),
                                                  index->size() ) );

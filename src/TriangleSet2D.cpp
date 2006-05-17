@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TriangleSet2D.h"
-#include "HLFeedbackShape.h"
 #include "MultiTexture.h"
 
 using namespace H3D;
@@ -135,7 +134,7 @@ void TriangleSet2D::render() {
 
 void TriangleSet2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
+    ti.addHapticShapeToAll( getOpenGLHapticShape( 
                                                  ti.getCurrentSurface(),
                                                  ti.getAccForwardMatrix(),
                                                  vertices->size() ) );

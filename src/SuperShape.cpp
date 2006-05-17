@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "SuperShape.h"
-#include "HLFeedbackShape.h"
 
 using namespace H3D;
 
@@ -261,7 +260,7 @@ void SuperShape::render() {
 
 void SuperShape::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
+    ti.addHapticShapeToAll( getOpenGLHapticShape( 
                                                  ti.getCurrentSurface(),
                                                  ti.getAccForwardMatrix() ) );
   }

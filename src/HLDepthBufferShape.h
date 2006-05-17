@@ -8,8 +8,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HLFEEDBACKSHAPE_H__
-#define __HLFEEDBACKSHAPE_H__
+#ifndef __HLDEPTHBUFFERSHAPE_H__
+#define __HLDEPTHBUFFERSHAPE_H__
 
 #include "X3DGeometryNode.h"
 #include "H3DSurfaceNode.h"

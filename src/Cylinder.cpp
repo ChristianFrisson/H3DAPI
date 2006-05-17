@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Cylinder.h"
-#include "HLFeedbackShape.h"
  
 using namespace H3D;
 
@@ -156,8 +155,7 @@ void Cylinder::render() {
 
 void Cylinder::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll(  new HLFeedbackShape( this,
-                                                  ti.getCurrentSurface(),
-                                                  ti.getAccForwardMatrix() ) );
+    ti.addHapticShapeToAll(  getOpenGLHapticShape( ti.getCurrentSurface(),
+                                                   ti.getAccForwardMatrix()));
   }
 }

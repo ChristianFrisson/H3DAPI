@@ -30,8 +30,8 @@
 
 #include "IndexedFaceSet.h"
 #include "Normal.h"
-#include "HLFeedbackShape.h"
 #include "TextureCoordinateGenerator.h"
+
 
 using namespace H3D;
 
@@ -532,10 +532,9 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
 
 void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 coordIndex->size() ) );
+    ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
+                                                  ti.getAccForwardMatrix(),
+                                                  coordIndex->size() ) );
   }
 }
 

@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Rectangle2D.h"
-#include "HLFeedbackShape.h"
 
 using namespace H3D;
 
@@ -100,7 +99,7 @@ void Rectangle2D::render() {
 
 void Rectangle2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
+    ti.addHapticShapeToAll( getOpenGLHapticShape( 
                                                  ti.getCurrentSurface(),
                                                  ti.getAccForwardMatrix(),
                                                  4 ) );

@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "IndexedTriangleSet.h"
-#include "HLFeedbackShape.h"
 #include "Normal.h"
 
 using namespace H3D;
@@ -252,10 +251,9 @@ void IndexedTriangleSet::render() {
 
 void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
+    ti.addHapticShapeToAll( getOpenGLHapticShape(
                                                  ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 index->size() ) );
+                                                 ti.getAccForwardMatrix() ) );
   }
 }
 
