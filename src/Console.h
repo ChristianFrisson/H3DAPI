@@ -51,6 +51,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include "H3DApi.h"
 #include "TimeStamp.h"
 
