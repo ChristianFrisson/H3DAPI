@@ -21,35 +21,30 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file X3DTriggerNode.h
-/// \brief Header file for X3DTriggerNode, X3D scene-graph node
+/// \file ContourPolyline2D.cpp
+/// \brief CPP file for ContourPolyline2D, X3D scene-graph node
 ///
 //
+//
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __X3DTRIGGERNODE_H__
-#define __X3DTRIGGERNODE_H__
 
-#include "X3DChildNode.h"
+#include "ContourPolyline2D.h"
 
-namespace H3D {
+using namespace H3D;
 
-  /// \ingroup AbstractNodes
-  /// \class X3DTriggerNode
-  /// \brief This abstract node type is the base node type from which all 
-	/// Triggers are derived.
-  ///
-  /// \par Internal routes:
-  /// \dotfile X3DTriggerNode.dot
-  
-	class H3DAPI_API X3DTriggerNode : public X3DChildNode {
-  public:
+H3DNodeDatabase ContourPolyline2D::database( 
+	"ContourPolyline2D", 
+	&(newInstance<ContourPolyline2D>),
+	typeid( ContourPolyline2D ),
+	&X3DNurbsControlCurveNode::database );
 
-    /// Constructor.
-    X3DTriggerNode( Inst< SFNode > _metadata = 0 );
-
-    /// The H3DNodedatabase for this node.
-    static H3DNodeDatabase database;
-  };
+namespace ContourPolyline2DInternals {
 }
 
-#endif
+ContourPolyline2D::ContourPolyline2D( Inst< SFNode	 > _metadata,
+																			Inst< MFVec2d  > _controlPoint ):
+											X3DNurbsControlCurveNode( _metadata, _controlPoint ) {
+
+type_name = "ContourPolyline2D";
+database.initFields( this );
+}

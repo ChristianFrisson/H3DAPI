@@ -36,7 +36,7 @@
 
 namespace H3D {
 
-  /// \ingroup X3DNodes
+  /// \ingroup AbstractNodes
   /// \class X3DSequencerNode
   /// \brief This abstract node type is the base node type from which all 
 	/// Sequencers are derived.

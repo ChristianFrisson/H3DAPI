@@ -21,33 +21,40 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file X3DTriggerNode.h
-/// \brief Header file for X3DTriggerNode, X3D scene-graph node
+/// \file X3DNurbsControlCurveNode.h
+/// \brief Header file for X3DNurbsControlCurveNode, X3D scene-graph node
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __X3DTRIGGERNODE_H__
-#define __X3DTRIGGERNODE_H__
+#ifndef __X3DNURBSCONTROLCURVENODE_H__
+#define __X3DNURBSCONTROLCURVENODE_H__
 
-#include "X3DChildNode.h"
+#include "X3DNode.h"
+#include "MFVec2d.h"
 
 namespace H3D {
 
   /// \ingroup AbstractNodes
-  /// \class X3DTriggerNode
-  /// \brief This abstract node type is the base node type from which all 
-	/// Triggers are derived.
-  ///
-  /// \par Internal routes:
-  /// \dotfile X3DTriggerNode.dot
-  
-	class H3DAPI_API X3DTriggerNode : public X3DChildNode {
+  /// \class X3DNurbsControlCurveNode
+  /// \brief This abstract node type is the base type for all node types that
+	/// provide control curve information in 2D space. 
+  class H3DAPI_API X3DNurbsControlCurveNode : 
+    public X3DNode {
   public:
-
     /// Constructor.
-    X3DTriggerNode( Inst< SFNode > _metadata = 0 );
+    X3DNurbsControlCurveNode( Inst< SFNode      > _metadata			= 0,
+                              Inst< MFVec2d     > _controlPoint = 0);
 
-    /// The H3DNodedatabase for this node.
+		/// The control points are defined in 2D coordinate space and interpreted 
+		/// according to the descendent node type as well as the user of this 
+		/// node instance.
+		///
+    /// <b>Access type:</b> inputOutput \n
+    /// 
+    /// \dotfile X3DNurbsSurfaceGeometryNode_controlPoint.dot 
+    auto_ptr< MFVec2d >  controlPoint;
+
+		/// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };
 }

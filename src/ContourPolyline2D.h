@@ -21,33 +21,41 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file X3DTriggerNode.h
-/// \brief Header file for X3DTriggerNode, X3D scene-graph node
+/// \file ContourPolyline2D.h
+/// \brief Header file for ContourPolyline2D, X3D scene-graph node
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __X3DTRIGGERNODE_H__
-#define __X3DTRIGGERNODE_H__
+#ifndef __CONTOURPOLYLINE2D_H__
+#define __CONTOURPOLYLINE2D_H__
 
-#include "X3DChildNode.h"
+#include "X3DNurbsControlCurveNode.h"
+#include "MFVec2D.h"
 
 namespace H3D {
 
-  /// \ingroup AbstractNodes
-  /// \class X3DTriggerNode
-  /// \brief This abstract node type is the base node type from which all 
-	/// Triggers are derived.
-  ///
+  /// \ingroup X3DNode
+  /// \class ContourPolyline2D
+  /// \brief The ContourPolyline2D node defines a piecewise linear curve 
+	/// segment as a part of a trimming contour in the u,v domain of a surface.
+	///
+	/// The controlPoint field specifies the end points of each segment of 
+	/// the piecewise linear curve.
+	///
+	/// ContourPolyline2D nodes are used as children of the Contour2D group.
+	/// 
   /// \par Internal routes:
-  /// \dotfile X3DTriggerNode.dot
-  
-	class H3DAPI_API X3DTriggerNode : public X3DChildNode {
+  /// \dotfile ContourPolyline2D.dot
+
+  class H3DAPI_API ContourPolyline2D : 
+    public X3DNurbsControlCurveNode {
   public:
 
     /// Constructor.
-    X3DTriggerNode( Inst< SFNode > _metadata = 0 );
+    ContourPolyline2D( Inst< SFNode	 > _metadata = 0,
+											Inst< MFVec2d  > _controlPoint = 0 );
 
-    /// The H3DNodedatabase for this node.
+		/// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };
 }
