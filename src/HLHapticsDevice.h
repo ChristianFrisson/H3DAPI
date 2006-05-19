@@ -122,6 +122,8 @@ namespace H3D {
     /// use it.
     virtual void initDevice();
 
+	virtual void initHLLayer();
+
     /// Reset the device.
     virtual void resetDevice() {}
 
