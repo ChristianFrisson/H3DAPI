@@ -46,8 +46,12 @@ namespace H3D {
   public:
 
     /// Constructor.
-    IntegerSequencer( Inst< SFNode								 > _metadata	= 0,
-											Inst< KeyValues < MFInt32 > > _keyValue	= 0,
+    IntegerSequencer( Inst< SFNode								> _metadata			= 0,
+											Inst< SFBool								> _next    			= 0,
+											Inst< SFBool								> _previous 		= 0,
+											Inst< SFFloat								> _set_fraction	= 0,
+											Inst< MFFloat								> _key     			= 0,
+											Inst< KeyValues < MFInt32 > > _keyValue			= 0,
 											Inst< ValueChanged < SFInt32, MFInt32 > >
 												_value_changed	= 0 );
 

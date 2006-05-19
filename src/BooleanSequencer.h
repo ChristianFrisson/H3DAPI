@@ -48,8 +48,12 @@ namespace H3D {
   public:
 
     /// Constructor.
-    BooleanSequencer( Inst< SFNode								>	_metadata	= 0,
-											Inst< KeyValues < MFBool > > _keyValue = 0,
+    BooleanSequencer( Inst< SFNode								>	_metadata			= 0,
+											Inst< SFBool								> _next    			= 0,
+											Inst< SFBool								> _previous 		= 0,
+											Inst< SFFloat								> _set_fraction	= 0,
+											Inst< MFFloat								> _key     			= 0,
+											Inst< KeyValues < MFBool >	> _keyValue			= 0,
 											Inst< ValueChanged < SFBool, MFBool > >
 												_value_changed	= 0 );
 							 

@@ -45,10 +45,14 @@ namespace IntegerSequencerInternals {
 }
 
 IntegerSequencer::IntegerSequencer( 
-									Inst< SFNode > _metadata,
+									Inst< SFNode								> _metadata,
+									Inst< SFBool								> _next,
+									Inst< SFBool								> _previous,
+									Inst< SFFloat								> _set_fraction,
+									Inst< MFFloat								> _key,
 									Inst< KeyValues < MFInt32 > > _keyValue,
 									Inst< ValueChanged < SFInt32, MFInt32 > > _value_changed ) :
-  X3DSequencerNode( _metadata      ),
+  X3DSequencerNode( _metadata, _next, _previous, _set_fraction, _key ),
   keyValue        ( _keyValue      ),
   value_changed		( _value_changed ) {
 
