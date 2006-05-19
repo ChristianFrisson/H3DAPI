@@ -30,6 +30,7 @@
 
 #include "DeviceInfo.h"
 #include <GL/glew.h>
+#include "HLHapticsDevice.h"
 
 using namespace H3D;
 
@@ -104,6 +105,13 @@ void DeviceInfo::removeFromStack() {
         hd->initDevice();
       }
     }
+    for( MFDevice::const_iterator i = new_top->device->begin();
+         i != new_top->device->end(); i++ ) {
+      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      if( hl ) {
+        hl->initHLLayer();
+      }
+    }
   }
 }
 
@@ -130,6 +138,13 @@ void DeviceInfo::toStackTop() {
         hd->initDevice();
       }
     }
+    for( MFDevice::const_iterator i = device->begin();
+         i != device->end(); i++ ) {
+      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      if( hl ) {
+        hl->initHLLayer();
+      }
+    }
   } else {
     X3DBindableNode::toStackTop();
     for( MFDevice::const_iterator i = device->begin();
@@ -137,6 +152,13 @@ void DeviceInfo::toStackTop() {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
+      }
+    }
+    for( MFDevice::const_iterator i = device->begin();
+         i != device->end(); i++ ) {
+      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      if( hl ) {
+        hl->initHLLayer();
       }
     }
   }
@@ -149,6 +171,13 @@ void DeviceInfo::initialize() {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
+      }
+    }
+    for( MFDevice::const_iterator i = device->begin();
+         i != device->end(); i++ ) {
+      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      if( hl ) {
+        hl->initHLLayer();
       }
     }
   }
