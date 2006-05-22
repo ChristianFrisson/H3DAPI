@@ -374,12 +374,12 @@ void HLHapticsDevice::initDevice() {
                                      this,
                                      HD_MIN_SCHEDULER_PRIORITY );
     hd_handles.push_back( handle );
-    
+    H3DHapticsDevice::initDevice();
   }
 }
 void HLHapticsDevice::initHLLayer() {
-  if( !initialized->getValue() ) {
-	// Create a haptic context for the device. The haptic context maintains 
+  if( initialized->getValue() ) {
+    // Create a haptic context for the device. The haptic context maintains 
     // the state that persists between frame intervals and is used for
     // haptic rendering.
 
@@ -391,6 +391,7 @@ void HLHapticsDevice::initHLLayer() {
     hl_thread->setActive( true );
 
     hlEnable(HL_HAPTIC_CAMERA_VIEW);
+    hlEnable(HL_ADAPTIVE_VIEWPORT );
      
     HLint tmp_int;
     hdGetIntegerv( HD_INPUT_DOF, &tmp_int );
@@ -420,7 +421,6 @@ void HLHapticsDevice::initHLLayer() {
                         HLHapticsDevice::hlButtonCallback,
                         this );
 
-    H3DHapticsDevice::initDevice();
   }
 }
 

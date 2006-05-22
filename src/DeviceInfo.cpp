@@ -107,7 +107,7 @@ void DeviceInfo::removeFromStack() {
     }
     for( MFDevice::const_iterator i = new_top->device->begin();
          i != new_top->device->end(); i++ ) {
-      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
         hl->initHLLayer();
       }
@@ -140,7 +140,7 @@ void DeviceInfo::toStackTop() {
     }
     for( MFDevice::const_iterator i = device->begin();
          i != device->end(); i++ ) {
-      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
         hl->initHLLayer();
       }
@@ -156,7 +156,7 @@ void DeviceInfo::toStackTop() {
     }
     for( MFDevice::const_iterator i = device->begin();
          i != device->end(); i++ ) {
-      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
         hl->initHLLayer();
       }
@@ -175,7 +175,7 @@ void DeviceInfo::initialize() {
     }
     for( MFDevice::const_iterator i = device->begin();
          i != device->end(); i++ ) {
-      HLHapticsDevice *hl = static_cast< HLHapticsDevice * >( *i );
+      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
         hl->initHLLayer();
       }
