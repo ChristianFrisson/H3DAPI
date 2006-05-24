@@ -30,7 +30,7 @@
 #define __CONTOURPOLYLINE2D_H__
 
 #include "X3DNurbsControlCurveNode.h"
-#include "MFVec2D.h"
+#include "MFVec2d.h"
 
 namespace H3D {
 

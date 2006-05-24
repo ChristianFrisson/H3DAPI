@@ -34,7 +34,7 @@
 #include "MFFloat.h"
 #include "SFInt32.h"
 #include "MFDouble.h"
-#include "GL\glew.h"
+#include "GL/glew.h"
 
 namespace H3D {
 

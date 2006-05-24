@@ -33,7 +33,7 @@
 #include "MFNode.h"
 #include "NurbsCurve2D.h"
 #include "ContourPolyline2D.h"
-#include "GL\glew.h"
+#include "GL/glew.h"
 
 namespace H3D {
 
