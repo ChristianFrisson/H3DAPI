@@ -280,6 +280,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\Contour2D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\ContourPolyline2D.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordBoundField.cpp"
 				>
 			</File>
@@ -649,6 +657,22 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\NormalInterpolator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsCurve2D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsPatchSurface.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsTextureCoordinate.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsTrimmedSurface.cpp"
 				>
 			</File>
 			<File
@@ -1040,6 +1064,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\X3DNurbsControlCurveNode.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3DNurbsSurfaceGeometryNode.cpp"
 				>
 			</File>
@@ -1239,6 +1267,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Console.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\Contour2D.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\ContourPolyline2D.h"
 				>
 			</File>
 			<File
@@ -1810,6 +1846,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\NurbsCurve2D.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsPatchSurface.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsTextureCoordinate.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsTrimmedSurface.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\OggFileReader.h"
 				>
 			</File>
@@ -2351,6 +2403,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DNormalNode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\X3DNurbsControlCurveNode.h"
 				>
 			</File>
 			<File
