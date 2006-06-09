@@ -101,6 +101,9 @@ namespace H3D {
     /// Renders the Box using OpenGL.
     virtual void render();
 
+    /// Traverse the scenegraph. 
+    virtual void traverseSG( TraverseInfo &ti ); 
+
     /// The side field specifies whether the bottom cap of the cone is
     /// rendered.
     /// <b>Access type:</b>  inputOutput

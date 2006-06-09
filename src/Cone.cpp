@@ -133,5 +133,10 @@ void Cone::render() {
 }
 
 
-
+void Cone::traverseSG( TraverseInfo &ti ) {
+  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
+    ti.addHapticShapeToAll(  getOpenGLHapticShape( ti.getCurrentSurface(),
+                                                   ti.getAccForwardMatrix()));
+  }
+}
 
