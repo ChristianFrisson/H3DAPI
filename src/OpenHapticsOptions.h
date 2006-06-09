@@ -31,6 +31,7 @@
 
 #include "X3DRenderOptionsNode.h"
 #include "SFString.h"
+#include "SFBool.h"
 
 namespace H3D {
 
@@ -44,7 +45,10 @@ namespace H3D {
     
     /// Constructor.
     OpenHapticsOptions( Inst< SFNode >  _metadata = 0,
-                        Inst< SFString > _GLShape = 0 );
+                        Inst< SFString > _GLShape = 0,
+                        Inst< SFString  >  _touchableFace  = 0,
+                        Inst< SFBool    >  _useAdaptiveViewport = 0,
+                        Inst< SFBool    >  _useHapticCameraView = 0 );
     
     /// Specifies the OpenHaptics shape type to use when 
     /// rendering shapes using OpenGL. If "FEEDBACK_BUFFER" feedback 
@@ -61,6 +65,58 @@ namespace H3D {
     /// <b>Default value: </b> "FEEDBACK_BUFFER" \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFString > GLShape;
+
+    /// Specifies which sides of the shapes to render haptically. If "BACK"
+    /// only the back side of can be felt, "FRONT" only front side and 
+    /// "FRONT_AND_BACK" both sides.
+    ///
+    /// <b>Valid values: </b> "BACK", "FRONT" or "FRONT_AND_BACK" \n
+    /// <b>Default value: </b> "FRONT_AND_BACK" \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFString  > touchableFace;
+
+    /// The default setting for use of adaptive viewport.
+    /// When using depth buffer shapes, performance may be improved by 
+    /// enabling the adaptive viewport optimization. This optimization 
+    /// limits the region of the depth buffer that is read into memory
+    /// to be used for haptic rendering to the area near the current proxy
+    /// position. The performance improvement will depend on the speed at
+    /// which the graphics card is able to read the depth image from the
+    /// on board memory of the graphics accelerator. On many graphics
+    /// accelerators, reading data from the depth buffer can be very costly.
+    ///
+    /// <b>Default value: </b> true \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool > useAdaptiveViewport;
+
+    /// The default setting for use of haptic camera view.
+    /// When the haptic camera view is enabled, HLAPI will automatically 
+    /// modify the viewing parameters used when rendering a depth buffer
+    /// or feedback buffer shape so that only a subset of the geometry near
+    /// the proxy position will be rendered. When the haptic camera view is
+    /// enabled, HLAPI modifies the OpenGL view frustum so that only the shape
+    /// geometry near the proxy position is rendered.
+    /// For feedback buffer shapes, this can dramatically increase performance
+    /// by reducing the number of geometric primitives considered for haptic 
+    /// rendering. The improvement will depend on the density of the geometry
+    /// in the region around the proxy, since denser geometry will lead to a 
+    /// larger number of primitives in the haptic view frustum.
+    /// For depth buffer shapes, this offers less of a performance improvement,
+    /// since once the primitives have been rendered to the depth buffer, the
+    /// actual haptic rendering of a depth buffer image is not dependent on
+    /// the number of primitives. That said, there is some performance benefit
+    /// to considering only the geometry near the proxy when generating a
+    /// depth buffer image. In addition, when using haptic camera view, 
+    /// HLAPI generates a depth buffer image that is a subset of the full
+    /// depth buffer used by the graphics window so as with adaptive viewport, 
+    /// less data is read back from the depth buffer. If haptic camera view
+    /// is enabled, the adaptive viewport setting is ignored. In addition, 
+    /// for depth buffer shapes, using haptic camera view allows you to feel
+    /// parts of the geometry that are not viewable from the graphics view.
+    ///
+    /// <b>Default value: </b> true \n
+    /// <b>Access type: </b> inputOutput \n    
+    auto_ptr< SFBool > useHapticCameraView;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

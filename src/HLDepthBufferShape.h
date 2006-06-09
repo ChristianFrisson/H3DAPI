@@ -28,12 +28,27 @@ namespace H3D {
     /// Constructor.
     HLDepthBufferShape( X3DGeometryNode *_geometry,
                         H3DSurfaceNode *_surface,
-                        const Matrix4f &_transform ):
-      HapticShape( _geometry,_surface, _transform ) {}
+                        const Matrix4f &_transform,
+                        HLenum _touchable_face = HL_FRONT_AND_BACK,
+                        bool _use_haptic_camera = true,
+                        bool _use_adaptive_viewport = true ):
+      HapticShape( _geometry,_surface, _transform ),
+      touchable_face( _touchable_face ),
+      use_haptic_camera( _use_haptic_camera ),
+      use_adaptive_viewport( _use_adaptive_viewport ) {}
     
     /// This function performs all the HLAPI calls that are needed to render
     /// the shape. Uses HL_SHAPE_FEEDBACK_BUFFER to render the object.     
     virtual void hlRender( HLHapticsDevice *hd );
+
+    /// Which sides of the faces are touchable.
+    HLenum touchable_face;
+    
+    /// Enable HL_HAPTIC_CAMERA_VIEW or not
+    bool use_haptic_camera;
+
+   /// Enable HL_ADAPTIVE_VIEWPORT or not
+    bool use_adaptive_viewport;
   };
 }
 

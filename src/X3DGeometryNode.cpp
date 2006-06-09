@@ -246,6 +246,38 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
                                                     const Matrix4f &_transform,
                                                     HLint _nr_vertices ) {
   int type = -1;
+  bool adaptive_viewport = true;
+  bool camera_view = true;
+  HLenum touchable_face = HL_FRONT_AND_BACK;
+
+  OpenHapticsSettings *default_settings = OpenHapticsSettings::getActive();
+  if( default_settings ) {
+    const string &shape = default_settings->defaultGLShape->getValue();
+    if( shape == "FEEDBACK_BUFFER" ) {
+      type = 0;
+    } else if( shape == "DEPTH_BUFFER" ) {
+      type = 1;
+    } else {
+      Console(4) << "Warning: Invalid default OpenHaptics GLShape type: "
+                 << shape 
+                 << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
+                 << "(in active OpenHapticsSettings node\")" << endl;
+    }
+    const string &face = default_settings->touchableFace->getValue();
+    if( face == "FRONT" ) touchable_face = HL_FRONT;
+    else if( face == "BACK" ) touchable_face = HL_BACK;
+    else if( face == "FRONT_AND_BACK" ) touchable_face = HL_FRONT_AND_BACK;
+    else {
+      Console(4) << "Warning: Invalid default OpenHaptics touchable face: "
+                 << face 
+                 << ". Must be \"FRONT\", \"BACK\" or \"FRONT_AND_BACK\" "
+                 << "(in active OpenHapticsSettings node\")" << endl;
+    }
+
+    adaptive_viewport = default_settings->useAdaptiveViewport->getValue();
+    camera_view = default_settings->useHapticCameraView->getValue();
+  }
+
 
   for( MFRenderOptionsNode::const_iterator i = renderOptions->begin();
        i != renderOptions->end(); i++ ) {
@@ -263,23 +295,19 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
                    << "(in \"" << getName() << "\")" << endl;
       }
     }
-  }
-
-  if( type == -1 ) {
-    OpenHapticsSettings *default_settings = OpenHapticsSettings::getActive();
-    if( default_settings ) {
-      const string &shape = default_settings->defaultGLShape->getValue();
-      if( shape == "FEEDBACK_BUFFER" ) {
-        type = 0;
-      } else if( shape == "DEPTH_BUFFER" ) {
-        type = 1;
-      } else {
-        Console(4) << "Warning: Invalid default OpenHaptics GLShape type: "
-                   << shape 
-                   << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
-                   << "(in active OpenHapticsSettings node\")" << endl;
-      }
+        const string &face = default_settings->touchableFace->getValue();
+    if( face == "FRONT" ) touchable_face = HL_FRONT;
+    else if( face == "BACK" ) touchable_face = HL_BACK;
+    else if( face == "FRONT_AND_BACK" ) touchable_face = HL_FRONT_AND_BACK;
+    else {
+      Console(4) << "Warning: Invalid default OpenHaptics touchable face: "
+                 << face 
+                 << ". Must be \"FRONT\", \"BACK\" or \"FRONT_AND_BACK\" "
+                 << "(in active OpenHapticsSettings node\")" << endl;
     }
+
+    adaptive_viewport = default_settings->useAdaptiveViewport->getValue();
+    camera_view = default_settings->useHapticCameraView->getValue();
   }
 
   if( type == 1 ) {

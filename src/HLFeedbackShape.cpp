@@ -31,7 +31,12 @@ void HLFeedbackShape::hlRender( HLHapticsDevice *hd ) {
                      m[0][3], m[1][3], m[2][3], 1 };
     hlLoadMatrixf( vt );
     s->hlRender( hd );
-    hlTouchableFace( HL_FRONT_AND_BACK );
+    hlTouchableFace( touchable_face );
+    if( use_haptic_camera )
+      hlEnable( HL_HAPTIC_CAMERA_VIEW );
+    else
+      hlDisable( HL_HAPTIC_CAMERA_VIEW );
+
     Matrix3f m3 = m.getScaleRotationPart();
     GLint front_face;
 

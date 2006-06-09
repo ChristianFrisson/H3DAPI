@@ -31,8 +31,18 @@ void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
 		     m[0][3], m[1][3], m[2][3], 1 };
     hlLoadMatrixf( vt );
     s->hlRender( hd );
-    hlTouchableFace( HL_FRONT_AND_BACK );
-        Matrix3f m3 = m.getScaleRotationPart();
+    hlTouchableFace( touchable_face );
+    if( use_haptic_camera )
+      hlEnable( HL_HAPTIC_CAMERA_VIEW );
+    else
+      hlDisable( HL_HAPTIC_CAMERA_VIEW );
+
+    if( use_adaptive_viewport )
+      hlEnable( HL_ADAPTIVE_VIEWPORT );
+    else
+      hlDisable( HL_ADAPTIVE_VIEWPORT );
+
+    Matrix3f m3 = m.getScaleRotationPart();
     GLint front_face;
     bool negative_scaling = 
       ( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) ) < 0;

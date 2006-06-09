@@ -40,6 +40,9 @@ H3DNodeDatabase OpenHapticsSettings::database( "OpenHapticsSettings",
 
 namespace OpenHapticsSettingsInternals {
   FIELDDB_ELEMENT( OpenHapticsSettings, defaultGLShape, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( OpenHapticsSettings, touchableFace, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( OpenHapticsSettings, useAdaptiveViewport, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( OpenHapticsSettings, useHapticCameraView, INPUT_OUTPUT );
 }
 
 
@@ -48,12 +51,22 @@ OpenHapticsSettings::OpenHapticsSettings(
                        Inst< SFNode    >  _metadata,
                        Inst<  SFTime    >  _bindTime,
                        Inst<  SFBool    >  _isBound,
-                       Inst< SFString >  _defaultGLShape ) :
-  X3DBindableNode( "OpenHapticsSettings", _set_bind, _metadata, _bindTime, _isBound ),
-  defaultGLShape        ( _defaultGLShape ) {
+                       Inst< SFString >  _defaultGLShape,
+                       Inst< SFString  >  _touchableFace,
+                       Inst< SFBool    >  _useAdaptiveViewport,
+                       Inst< SFBool    >  _useHapticCameraView ) :
+  X3DBindableNode( "OpenHapticsSettings", _set_bind, _metadata, 
+                   _bindTime, _isBound ),
+  defaultGLShape        ( _defaultGLShape ),
+  touchableFace( _touchableFace ),
+  useAdaptiveViewport( _useAdaptiveViewport ),
+  useHapticCameraView( _useHapticCameraView ) {
 
   type_name = "OpenHapticsSettings";
   database.initFields( this );
 
   defaultGLShape->setValue( "FEEDBACK_BUFFER" );
+  touchableFace->setValue( "FRONT_AND_BACK" );
+  useAdaptiveViewport->setValue( true );
+  useHapticCameraView->setValue( true );
 }
