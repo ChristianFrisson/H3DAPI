@@ -468,6 +468,9 @@
 				RelativePath="..\..\..\src\NormalInterpolator.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\NurbsTextureCoordinate.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\OggFileReader.cpp">
 			</File>
 			<File
