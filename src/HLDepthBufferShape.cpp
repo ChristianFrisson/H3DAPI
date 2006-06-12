@@ -55,7 +55,9 @@ void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
         glFrontFace( GL_CCW );
     } else if( negative_scaling )
       glFrontFace( GL_CW );
+
     hlBeginShape( HL_SHAPE_DEPTH_BUFFER, getShapeId( hd ) );
+    glClear( GL_DEPTH_BUFFER_BIT );
     geometry->displayList->callList( false );
     hlEndShape();
     glFrontFace( front_face );
