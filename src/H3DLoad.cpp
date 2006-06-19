@@ -15,6 +15,7 @@
 #include "Scene.h"
 #include "KeySensor.h"
 #include "MouseSensor.h"
+#include "SpaceWareSensor.h"
 #include "DEFNodes.h"
 #include "Viewpoint.h"
 #include "DeviceInfo.h"
@@ -29,10 +30,11 @@
 using namespace std;
 using namespace H3D;
 
-class KeyRotation: public TypedField< SFRotation, 
-              Types< SFInt32,
-              SFBool,
-              SFVec2f > > {
+class KeyRotation : public TypedField< SFRotation, 
+                                       Types< SFInt32,
+                                              SFBool,
+                                              SFVec2f,
+                                              SFRotation> > {
   virtual void update() {
     bool button_pressed = static_cast< SFBool * >(routes_in[1])->getValue();
     Vec2f motion = static_cast< SFVec2f * >(routes_in[2])->getValue();
@@ -42,22 +44,27 @@ class KeyRotation: public TypedField< SFRotation,
       Vec2f perp = Vec2f( -motion.y, motion.x );
       perp.normalize();
       value = Rotation( perp.x, perp.y, 0, motion.length() * 0.01f ) * value;
-    } else {
-      if( event.ptr == routes_in[0] ) {
-        int key = static_cast< SFInt32 * >(routes_in[0])->getValue();
-        if( key == KeySensor::UP ) {
-          value = Rotation( 1,0,0,-0.1f ) * value;
-        }
-        if( key == KeySensor::DOWN ) {
-          value = Rotation( 1,0,0,0.1f ) * value;
-        }
-        if( key == KeySensor::LEFT ) {
-          value = Rotation( 0,1,0,-0.1f ) * value;
-        }
-        if( key == KeySensor::RIGHT ) {
-          value = Rotation( 0,1,0,0.1f ) * value;
-        }
+    }
+    
+    else if( event.ptr == routes_in[0] ) {
+      int key = static_cast< SFInt32 * >(routes_in[0])->getValue();
+      if( key == KeySensor::UP ) {
+        value = Rotation( 1,0,0,-0.1f ) * value;
       }
+      if( key == KeySensor::DOWN ) {
+        value = Rotation( 1,0,0,0.1f ) * value;
+      }
+      if( key == KeySensor::LEFT ) {
+        value = Rotation( 0,1,0,-0.1f ) * value;
+      }
+      if( key == KeySensor::RIGHT ) {
+        value = Rotation( 0,1,0,0.1f ) * value;
+      }
+    }
+    
+    else if( event.ptr == routes_in[3] ) {
+      Rotation r = static_cast< SFRotation * >(routes_in[3])->getValue();
+      value = r * value;
     }
   }
 };
@@ -156,10 +163,16 @@ int main(int argc, char* argv[]) {
   
   // Graphics, devices, models and such
   
+  string settings_path = 
+    GET_ENV_INI_DEFAULT( "H3D_DISPLAY",
+                         h3d_root + "/settings/display/",
+                         "display","type",
+                         h3d_root + "/settings/common/" );
+  
   string deviceinfo_file =
     GET_ENV_INI_DEFAULT( "H3D_DEFAULT_DEVICEINFO",
-                         h3d_root + "/settings/common/deviceinfo/",
-                         "haptics device","deviceinfo",
+                         settings_path + "/device/",
+                         "haptics device","device",
                          h3d_root + "/settings/current/deviceinfo.x3d" );
   
   string stylus_file =
@@ -170,7 +183,7 @@ int main(int argc, char* argv[]) {
   
   string viewpoint_file =
     GET_ENV_INI_DEFAULT( "H3D_DEFAULT_VIEWPOINT",
-                         h3d_root + "/settings/common/viewpoint/",
+                         settings_path + "/viewpoint/",
                          "graphical", "viewpoint",
                          h3d_root + "/settings/current/viewpoint.x3d" );
 
@@ -183,9 +196,11 @@ int main(int argc, char* argv[]) {
   
   bool fullscreen    = GET_BOOL("graphical", "fullscreen", false);
   if( char *buffer = getenv("H3D_FULLSCREEN") ) {
-    if (strcmp( buffer, "TRUE" ) == 0 )
-      fullscreen = true;
-    else if(strcmp( buffer, "FALSE" ) != 0 )
+    if (strcmp( buffer, "TRUE" ) == 0 ){
+      fullscreen = true; }
+    else if (strcmp( buffer, "FALSE" ) == 0 ){
+      fullscreen = false; }
+    else
       Console(4) << "Invalid valid value \"" << buffer 
                  << "\" on environment "
                  << "variable H3D_FULLSCREEN. Must be TRUE or FALSE. "
@@ -194,9 +209,11 @@ int main(int argc, char* argv[]) {
   
   bool mirrored      = GET_BOOL("graphical", "mirrored", false);
   if( char *buffer = getenv("H3D_MIRRORED") ) {
-    if (strcmp( buffer, "TRUE" ) == 0 )
-      mirrored = true;
-    else if(strcmp( buffer, "FALSE" ) != 0 )
+    if (strcmp( buffer, "TRUE" ) == 0 ){
+      mirrored = true; }
+    else if (strcmp( buffer, "FALSE" ) == 0 ){
+      mirrored = false; }
+    else
       Console(4) << "Invalid valid value \"" << buffer 
                  << "\" on environment "
                  << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
@@ -298,6 +315,7 @@ int main(int argc, char* argv[]) {
   try {
     AutoRef< KeySensor > ks( new KeySensor );
     AutoRef< MouseSensor > ms( new MouseSensor );
+    AutoRef< SpaceWareSensor > ss( new SpaceWareSensor );
     X3D::DEFNodes dn;
     KeyRotation *kr = new KeyRotation;
     QuitAPIField *quit_api = new QuitAPIField;
@@ -354,9 +372,11 @@ int main(int argc, char* argv[]) {
     ks->actionKeyPress->route( kr );
     ms->leftButton->route( kr );
     ms->motion->route( kr );
+    ss->instantRotation->route( kr );
     kr->route( t->rotation );
-		  
-    AutoRef< Group > g( new Group );     
+
+    AutoRef< Group > g( new Group );
+    g->children->push_back(ss.get());
     
     // create a Viewpoint if it does not exist.
     if( !Viewpoint::getActive() && viewpoint_file.size() ) {
