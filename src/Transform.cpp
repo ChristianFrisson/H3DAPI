@@ -286,7 +286,7 @@ Transform::Transform(
                      Inst< SFVec3f    > _bboxCenter,
                      Inst< SFVec3f    > _bboxSize,
                      Inst< SFTransformedBound > _transformedBound,  
-                     Inst< SFMatrix4f > _matrix,
+                     Inst< Matrix > _matrix,
                      Inst< SFMatrix4f > _accumulatedForward,
                      Inst< SFMatrix4f > _accumulatedInverse ) :
   MatrixTransform( _addChildren, _removeChildren, 
@@ -320,7 +320,7 @@ Transform::Transform(
 
 }
 
-void Transform::SFMatrix4f::update() {
+void Transform::Matrix::update() {
   Vec3f    c  = static_cast< SFVec3f *>(routes_in[0])->getValue();
   Rotation r  = static_cast< SFRotation *>(routes_in[1])->getValue();
   Vec3f    s  = static_cast< SFVec3f * >(routes_in[2])->getValue();

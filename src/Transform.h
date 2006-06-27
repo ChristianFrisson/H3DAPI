@@ -94,7 +94,7 @@ namespace H3D {
     /// routes_in[3] scaleOrientation field
     /// routes_in[4] translation field
     ///
-    class H3DAPI_API SFMatrix4f: 
+    class H3DAPI_API Matrix: 
       public TypedField< H3D::SFMatrix4f,
                          Types< SFVec3f, SFRotation, SFVec3f, 
                                 SFRotation, SFVec3f > >{
@@ -119,7 +119,7 @@ namespace H3D {
                Inst< SFVec3f    > _bboxCenter       = 0,
                Inst< SFVec3f    > _bboxSize         = 0,
                Inst< SFTransformedBound > _transformedBound = 0,  
-               Inst< SFMatrix4f > _matrix           = 0,
+               Inst< Matrix > _matrix           = 0,
                Inst< SFMatrix4f > _accumulatedForward = 0,
                Inst< SFMatrix4f > _accumulatedInverse = 0  );
 
