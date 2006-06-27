@@ -151,6 +151,13 @@ namespace H3D {
     template< class F >
     void unroute( auto_ptr< F > &f ) { unroute( f.get() ); }
 
+    /// Remove all the routes from this field.
+    inline void unrouteAll() {
+      while( routes_out.begin() != routes_out.end() ) {
+        unroute( *routes_out.begin() );
+      }
+    }
+
     /// Check that the field is up-to-date, if not update() is called 
     /// to make it up-to-date.
     virtual void upToDate();
@@ -185,6 +192,26 @@ namespace H3D {
     typedef vector< Field * > FieldSet;
     typedef vector< Field * > FieldVector;
 
+    /// Returns true of this field is routed to the field given
+    /// as argument.
+    inline bool routesTo( Field *f ) {
+      for( FieldSet::const_iterator i = routes_out.begin();
+           i != routes_out.end(); i++ ) {
+        if( (*i) == f ) return true;
+      }
+      return false;
+    }
+
+    /// Returns true of the field given as argumet is routed to
+    /// this field.
+    inline bool hasRouteFrom( Field *f ) {
+      for( FieldVector::const_iterator i = routes_in.begin();
+           i != routes_in.end(); i++ ) {
+        if( (*i) == f ) return true;
+      }
+      return false;
+    }
+
     /// Get the Fields that are routed to this Field.
     inline const FieldVector &getRoutesIn() {
       return routes_in;
@@ -193,6 +220,11 @@ namespace H3D {
     /// Get the Fields this Field is routed to.
     inline const FieldSet &getRoutesOut() {
       return routes_out;
+    }
+
+    /// Get the latest event.
+    inline const Event &getLatestEvent() {
+      return event;
     }
 
   protected:
