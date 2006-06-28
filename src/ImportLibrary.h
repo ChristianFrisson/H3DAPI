@@ -31,6 +31,7 @@
 #define __IMAGETEXTURE_H__
 
 #include "X3DChildNode.h"
+#include "X3DUrlObject.h"
 #include "MFString.h"
 
 namespace H3D {
@@ -42,20 +43,16 @@ namespace H3D {
   /// for different areas such as volume rendering nodes etc. The X3D file
   /// just needs to use the ImportLibrary node to import it and after that
   /// the nodes defined in the toolkit can be used in the X3D file.
-  class H3DAPI_API ImportLibrary : public X3DChildNode {
+  class H3DAPI_API ImportLibrary : public X3DChildNode,
+                                   public X3DUrlObject {
   public:
     /// Constructor.
     ImportLibrary( Inst< SFNode >  _metadata = 0,
-                   Inst< MFString > _library = 0 );
+                   Inst< MFString > _url = 0 );
 
     /// Initialize loads all the dynamic libraries specified in the library
     /// field.
     virtual void initialize();
-
-    /// Specifies the dynamic libraries to load.
-    ///
-    /// <b>Access type:</b> initializeOnly \n
-    auto_ptr< MFString > library;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

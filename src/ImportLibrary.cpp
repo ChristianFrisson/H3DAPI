@@ -41,23 +41,26 @@ H3DNodeDatabase ImportLibrary::database(
                                     &X3DChildNode::database );
 
 namespace TransformInternals {
-  FIELDDB_ELEMENT( ImportLibrary, library, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( ImportLibrary, url, INITIALIZE_ONLY );
+  // for backwards compability
+  FIELDDB_ELEMENT_EX( ImportLibrary, url, INITIALIZE_ONLY, library  ); 
 }
 
 ImportLibrary::ImportLibrary( Inst< SFNode >  _metadata,
-                              Inst< MFString > _library ):
+                              Inst< MFString > _url ):
   X3DChildNode( _metadata ),
-  library( _library ) {
+  X3DUrlObject( _url ) {
   
   type_name = "ImportLibrary";
   database.initFields( this );
 }
 
 void ImportLibrary::initialize() {
-  for( MFString::const_iterator i = library->begin();
-       i != library->end();
+  for( MFString::const_iterator i = url->begin();
+       i != url->end();
        i++ ) {
-    DynamicLibrary::LIBHANDLE handle = DynamicLibrary::load( *i );
+    DynamicLibrary::LIBHANDLE handle = 
+      DynamicLibrary::load( resolveURLAsFile( *i) );
     if( !handle )
       Console(4) << "WARNING: Could not load dynamic library \"" 
                  << *i << "\" specified in " << getName() 
