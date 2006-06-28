@@ -80,16 +80,33 @@ Group* X3D::createVRMLFromURL( const string &url,
                                DEFNodes *exported_nodes,
                                PrototypeVector *prototypes ) {
   Group *g = new Group;
-  ifstream inp(url.c_str() );
+
+  URNResolver *urn_resolver = ResourceResolver::getURNResolver();
+  string urn = url;
+  if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
+  string::size_type pos = urn.find_last_of( "/\\" );
+  string path = urn.substr( 0, pos + 1 );
+  string old_base = ResourceResolver::getBaseURL();
+
+  string resolved_url = ResourceResolver::resolveURLAsFile( url );
+  ResourceResolver::setBaseURL( path ); 
+
+  if( resolved_url == "" ) {
+    Console(3) << "WARNING: Could not open file " 
+               << url << " for parsing." << endl;
+    ResourceResolver::setBaseURL( old_base );
+    return g;
+  }
+
   VrmlDriver driver;
+  ifstream inp(resolved_url.c_str() );
+  
   if (driver.parse( &inp, url.c_str(), dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c )
       g->children->push_back( c );
-  } else {
-    Console(3) << "WARNING: Could not open file " 
-               << url << " for VRML parsing." << endl;
-  }
+  } 
+  ResourceResolver::setBaseURL( old_base );
   return g;
 }
 
@@ -134,17 +151,32 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
                                              DEFNodes *exported_nodes,
                                              PrototypeVector *prototypes ) {
   AutoRef< Node > g;
-  ifstream inp(url.c_str() );
   VrmlDriver driver;
+  
+  URNResolver *urn_resolver = ResourceResolver::getURNResolver();
+  string urn = url;
+  if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
+  string::size_type pos = urn.find_last_of( "/\\" );
+  string path = urn.substr( 0, pos + 1 );
+  string old_base = ResourceResolver::getBaseURL();
+
+  string resolved_url = ResourceResolver::resolveURLAsFile( url );
+  ResourceResolver::setBaseURL( path ); 
+
+  if( resolved_url == "" ) {
+    Console(3) << "WARNING: Could not open file " 
+               << url << " for parsing." << endl;
+    ResourceResolver::setBaseURL( old_base );
+    return g;
+  }
+
+  ifstream inp(resolved_url.c_str() );  
   if (driver.parse( &inp, url.c_str(), dn, exported_nodes, prototypes )) {
     Group *c = driver.getRoot();
     if ( c && !c->children->empty() )
       g.reset( c->children->front() );
-  } else {
-    Console(3) << "WARNING: Could not open file " 
-               << url << " for parsing." << endl;
-  }
-
+  } 
+  ResourceResolver::setBaseURL( old_base );
   return g;
 }
 
