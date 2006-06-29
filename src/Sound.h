@@ -130,7 +130,7 @@ namespace H3D {
     
     /// The SFSoundSourceNode registers the Sound node in the 
     /// X3DSoundSourceNode that is put into the field.
-    class SFSoundSourceNode: public TypedSFNode< X3DSoundSourceNode > {
+    class H3DAPI_API SFSoundSourceNode: public TypedSFNode< X3DSoundSourceNode > {
     public:
       /// Destructor.
       ~SFSoundSourceNode() { value = NULL; }
