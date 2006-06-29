@@ -60,6 +60,7 @@ void VrmlDriver::error (const std::string& m) {
 
 void VrmlDriver::setFieldValue( const char* v ) {
   Node *node = node_stack.back();
+  if ( !node ) return;
   Field *field = node->getField( field_stack.back() );
   ParsableField *pfield =  
     dynamic_cast< ParsableField * >( field );
@@ -104,6 +105,10 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
   }
   Node *node = node_stack.back();
   Field *field = node->getField( field_stack.back() );
+  if ( ! field ) {
+    Console(3) << "WARNING: Cannot set value for field named \"" << field_stack.back() << "\"  - it does not exist in node " << node->getName() << " at " << getOldLocationString() << endl ;
+    return;
+  }
   SFNode *sf = dynamic_cast< SFNode *>( field );    
   if ( sf ) {
     sf->setValue( node_value );
@@ -115,7 +120,7 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
       else
         mf->clear();
     } else
-      Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << endl;
+      Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << " at " << getOldLocationString() << endl;
   }
 }
 
