@@ -70,7 +70,7 @@ Group* X3D::createVRMLFromString( const string &str,
     if ( c )
       g->children->push_back( c );
   } else {
-    Console(3) << "WARNING: Could parse VRML from string" << endl;
+    Console(3) << "WARNING: Could not parse VRML from string" << endl;
   }
   return g;
 }
