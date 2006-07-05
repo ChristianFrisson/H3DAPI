@@ -38,7 +38,9 @@
 #include "PythonTypes.h"
 #include "MFNode.h"
 #include "X3D.h"
+#include "VrmlParser.h"
 #include "Scene.h"
+#include "ResourceResolver.h"
 #include <sstream>
 #include <cctype>
 
@@ -487,6 +489,10 @@ if( check_func( value ) ) {                                         \
       { "createX3DFromString", pythonCreateX3DFromString, 0 },
       { "createX3DNodeFromURL", pythonCreateX3DNodeFromURL, 0 },
       { "createX3DNodeFromString", pythonCreateX3DNodeFromString, 0 },
+      { "createVRMLFromURL", pythonCreateVRMLFromURL, 0 },
+      { "createVRMLFromString", pythonCreateVRMLFromString, 0 },
+      { "createVRMLNodeFromURL", pythonCreateVRMLNodeFromURL, 0 },
+      { "createVRMLNodeFromString", pythonCreateVRMLNodeFromString, 0 },
       { "getRoutesIn", pythonGetRoutesIn, 0 },
       { "getRoutesOut", pythonGetRoutesOut, 0 },
       { "getCurrentScenes", pythonGetCurrentScenes, 0 },
@@ -504,6 +510,7 @@ if( check_func( value ) ) {                                         \
       { "MFieldEmpty", pythonMFieldEmpty, 0 },
       { "MFieldPopBack", pythonMFieldPopBack, 0 },
       { "touchField", pythonTouchField, 0 },
+      { "resolveURLAsFile", pythonResolveURLAsFile, 0 },
       { NULL, NULL }      
     };
     
@@ -1019,6 +1026,64 @@ call the base class __init__ function." );
 
     /////////////////////////////////////////////////////////////////////////
 
+    PyObject* pythonCreateVRMLFromURL( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyString_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.createX3DFromURL( filename )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      char *filename = PyString_AsString( arg );
+      X3D::DEFNodes dm;
+      Node *n = X3D::createX3DFromURL( filename, &dm );
+      return PythonInternals::createX3DHelp( n, &dm );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject* pythonCreateVRMLFromString( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyString_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.createVRMLFromString( s )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      char *s = PyString_AsString( arg );
+      X3D::DEFNodes dm;
+      Node *n = X3D::createVRMLFromString( s, &dm );
+      return PythonInternals::createX3DHelp( n, &dm );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject* pythonCreateVRMLNodeFromURL( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyString_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.createVRMLFromURL( filename )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      char *filename = PyString_AsString( arg );
+      X3D::DEFNodes dm;
+      AutoRef< Node > n = X3D::createVRMLNodeFromURL( filename, &dm );
+      return PythonInternals::createX3DHelp( n.get(), &dm );
+    }
+
+    PyObject* pythonCreateVRMLNodeFromString( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyString_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.createVRMLFromString( s )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      char *s = PyString_AsString( arg );
+      X3D::DEFNodes dm;
+      AutoRef< Node > n = X3D::createVRMLNodeFromString( s, &dm );
+      return PythonInternals::createX3DHelp( n.get(), &dm );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
     PyObject* pythonGetRoutesIn( PyObject *self, PyObject *arg ) {
       if( !arg || ! PyInstance_Check( arg ) ) {
         ostringstream err;
@@ -1495,6 +1560,20 @@ call the base class __init__ function." );
       return 0;  
     }
 
+
+    PyObject *pythonResolveURLAsFile( PyObject *self, PyObject *args ) {
+
+      if( !args || !PyString_Check( args ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.resolveURLAsFile( url )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      char *url = PyString_AsString( args );
+      string resolved_url = ResourceResolver::resolveURLAsFile( url );
+      return PyString_FromString( resolved_url.c_str() );
+    }
 
   }
 

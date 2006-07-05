@@ -135,7 +135,7 @@ namespace H3D {
                     NodeType *&return_node ) {
         Node *node = getNode( def_name ) ;
         NodeType *n = dynamic_cast< NodeType * >( node );
-        if( !n ) {
+        if( node && !n ) {
           stringstream msg;
           msg << "DEFNodes::getNode (expecting " 
               << typeid( NodeType ).name() 

@@ -90,6 +90,14 @@ namespace H3D {
 
     PyObject* pythonCreateX3DNodeFromString( PyObject *self, PyObject *arg );
 
+    PyObject* pythonCreateVRMLFromURL( PyObject *self, PyObject *arg );
+
+    PyObject* pythonCreateVRMLFromString( PyObject *self, PyObject *arg );
+
+    PyObject* pythonCreateVRMLNodeFromURL( PyObject *self, PyObject *arg );
+
+    PyObject* pythonCreateVRMLNodeFromString( PyObject *self, PyObject *arg );
+
     PyObject* pythonGetRoutesIn( PyObject *self, PyObject *arg );
 
     PyObject* pythonGetRoutesOut( PyObject *self, PyObject *arg );
@@ -121,6 +129,8 @@ namespace H3D {
     PyObject* pythonMFieldPopBack( PyObject *self, PyObject *arg );
 
     PyObject* pythonTouchField( PyObject *self, PyObject *arg );
+
+    PyObject* pythonResolveURLAsFile( PyObject *self, PyObject *arg );
     
   }
 

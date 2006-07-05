@@ -130,6 +130,9 @@ namespace H3D {
     /// Get the list of fields available in this Node.
     static PyObject* getFieldList( PyObject *myself );
 
+    /// Get a field from the node database.
+    static PyObject* getSingleField( PyObject *self, PyObject *args );
+
     /// If this Node is a DynamicFieldsObject a new field is added.
     static PyObject* addField( PyObject *self, PyObject *args, 
                                PyObject *field_type, PyObject *access_type );

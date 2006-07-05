@@ -110,6 +110,7 @@ namespace H3D {
     { "__str__", (PyCFunction) PyNode::repr, 0 },
     { "getFieldList", (PyCFunction) PyNode::getFieldList, 0 },
     { "addField", (PyCFunction) PyNode::addField, 0 },
+    { "getField", (PyCFunction) PyNode::getSingleField, 0 },
     {NULL, NULL}
   };
   
@@ -303,6 +304,26 @@ self, name, field_type, access_type )" );
     }
     // if arg was not a field, then default to Py_FindMethod:
     return Py_FindMethod(PyNode_methods, (PyObject *)myself, arg);
+  }
+
+  PyObject* PyNode::getSingleField( PyObject *self, PyObject *args ) {
+    if(!args || ! PyString_Check( args ) ) {
+      PyErr_SetString( PyExc_ValueError, 
+                       "Invalid argument(s) to function H3D.Node.getField( self, f )" );
+        return 0;
+    }
+    char *field_name = PyString_AsString( args );
+    PyNode *n = (PyNode*)self;
+    if (n->ptr) {
+      H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *(n->ptr) ) );
+      Field *f = db->getField( n->ptr, field_name );
+      if ( f ) 
+        return ( PyObject * ) PythonInternals::fieldAsPythonObject( f, false );
+      else {
+        Py_INCREF( Py_None );
+        return Py_None;
+      }
+    }
   }
   
   PyObject* PyNode::getFieldList( PyObject *myself ) {
