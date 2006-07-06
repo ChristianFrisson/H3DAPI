@@ -297,8 +297,7 @@ self, name, field_type, access_type )" );
     ostringstream s;
     PyNode *n = (PyNode*)myself;
     if (n->ptr) {
-      H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *(n->ptr) ) );
-      Field *f = db->getField( n->ptr, arg );
+      Field *f = n->ptr->getField( arg );
       if ( f ) 
         return ( PyObject * ) PythonInternals::fieldAsPythonObject( f, false );
     }
@@ -315,8 +314,7 @@ self, name, field_type, access_type )" );
     char *field_name = PyString_AsString( args );
     PyNode *n = (PyNode*)self;
     if (n->ptr) {
-      H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *(n->ptr) ) );
-      Field *f = db->getField( n->ptr, field_name );
+      Field *f = n->ptr->getField( field_name );
       if ( f ) 
         return ( PyObject * ) PythonInternals::fieldAsPythonObject( f, false );
       else {
@@ -324,6 +322,8 @@ self, name, field_type, access_type )" );
         return Py_None;
       }
     }
+    Py_INCREF( Py_None );
+    return Py_None;
   }
   
   PyObject* PyNode::getFieldList( PyObject *myself ) {
