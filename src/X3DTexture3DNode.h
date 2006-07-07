@@ -66,7 +66,8 @@ namespace H3D {
       Image * i = static_cast< Image * >(image->getValue());
       if( i && 
           ( i->pixelType() == Image::LUMINANCE_ALPHA || 
-            i->pixelType() == Image::RGBA ) ) {
+            i->pixelType() == Image::RGBA || 
+            i->pixelType() == Image::BGRA ) ) {
         glEnable( GL_BLEND );
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       }
@@ -80,7 +81,8 @@ namespace H3D {
       Image * i = static_cast< Image * >(image->getValue());
       if( i && 
           ( i->pixelType() == Image::LUMINANCE_ALPHA || 
-            i->pixelType() == Image::RGBA ) ) {
+            i->pixelType() == Image::RGBA || 
+            i->pixelType() == Image::BGRA ) ) {
         glDisable( GL_BLEND );
       }
     }

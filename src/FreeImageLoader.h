@@ -62,7 +62,15 @@ namespace H3D {
 
       if( format != FIF_UNKNOWN && FreeImage_FIFSupportsReading( format ) ) { 
         FIBITMAP *bm = FreeImage_Load( format, url.c_str() );
+        
         if( bm ) {
+          // Take care of the case of 32 bit RGB images( alpha ignored ) that seems to
+          // happen once in a while with png images
+          if( FreeImage_GetColorType( bm ) == FIC_RGB && FreeImage_GetBPP( bm ) == 32 ) {
+            FIBITMAP *old = bm;
+            bm = FreeImage_ConvertTo24Bits( bm );
+            FreeImage_Unload( old );
+          }
           return new FreeImageImage( bm );
         } 
       }
