@@ -667,6 +667,19 @@ if( check_func( value ) ) {                                         \
             return NULL;
           }
         } else PyErr_Clear();
+
+        PyObject *opttypeinfo = 
+          PyObject_GetAttrString( field, "__opt_type_info__" );
+        if( opttypeinfo ) {
+          if( PyTuple_Check( opttypeinfo ) ) {
+            dynamic_cast< PythonFieldBase* >(f)->python_opttypeinfo = 
+              opttypeinfo;
+          } else {
+            PyErr_SetString( PyExc_ValueError, 
+                             "Symbol '__opt_type_info__' must be a tuple!" );
+            return NULL;
+          }
+        } else PyErr_Clear();
         
         //initField( (PyInstanceObject*) field );
         Py_INCREF( Py_None );
@@ -782,7 +795,7 @@ call the base class __init__ function." );
         if( !success )
           APPLY_MFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_MFIELD, success );
         if( !success ) {
-          PyErr_SetString( PyExc_ValueError, 
+           PyErr_SetString( PyExc_ValueError, 
                            "Error: not a valid Field instance" );
           return 0;  
         }
