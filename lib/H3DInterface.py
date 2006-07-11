@@ -146,12 +146,12 @@ class %s( MField ):
 
 typed_field_classes = {}
 
-def TypedField( base_class, type_info = None, opt_types = None ):
+def TypedField( base_class, type_info = None, opt_type_info = None ):
   class TypedBase( base_class ):
     pass
   global typed_field_classes
-  if( typed_field_classes.has_key( (base_class, type_info, opt_types) ) ):
-    return typed_field_classes[(base_class, type_info, opt_types)]
+  if( typed_field_classes.has_key( (base_class, type_info, opt_type_info) ) ):
+    return typed_field_classes[(base_class, type_info, opt_type_info)]
 
   if type_info == None:
     TypedBase.__type_info__ = ()
@@ -159,7 +159,15 @@ def TypedField( base_class, type_info = None, opt_types = None ):
     TypedBase.__type_info__ = ( type_info, )
   else:
     TypedBase.__type_info__ = type_info
-  typed_field_classes[(base_class, type_info, opt_types)] = TypedBase
+
+  if opt_type_info == None:
+    TypedBase.__opt_type_info__ = ()
+  elif type( opt_type_info ) != type(()):
+    TypedBase.__opt_type_info__ = ( opt_type_info, )
+  else:
+    TypedBase.__opt_type_info__ = opt_type_info
+
+  typed_field_classes[(base_class, type_info, opt_type_info)] = TypedBase
   return TypedBase
 
 
