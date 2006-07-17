@@ -59,25 +59,28 @@ void VrmlDriver::error (const std::string& m) {
 
 
 void VrmlDriver::setFieldValue( const char* v ) {
+  Node *node = node_stack.back();
+  if ( !node ) return;
+  Field *field = node->getField( field_stack.back() );
+
   // trim field value... remove any outer quotes and trailing whitespace
   // that comes after those quotes:
   const char *p=v;
   const char *l=0;
   const char *r=0;
-  while ( *p=='\n' || *p==' ' || *p=='\t' ) p++;
-  if ( *p=='"' ) {
-    l=p+1;
-    // go to end
-    while ( *(p+1) ) p++;
-    // now go backwards
-    while ( *p=='\n' || *p==' ' || *p=='\t' ) p--;
-    if ( *p=='"' )
-      r=p;
-  } 
+  if ( dynamic_cast<SFString*>(field) ) {
+    while ( *p=='\n' || *p==' ' || *p=='\t' ) p++;
+    if ( *p=='"' ) {
+      l=p+1;
+      // go to end
+      while ( *(p+1) ) p++;
+      // now go backwards
+      while ( *p=='\n' || *p==' ' || *p=='\t' ) p--;
+      if ( *p=='"' )
+        r=p;
+    } 
+  }
 
-  Node *node = node_stack.back();
-  if ( !node ) return;
-  Field *field = node->getField( field_stack.back() );
   ParsableField *pfield =  
     dynamic_cast< ParsableField * >( field );
   if ( pfield ) {
