@@ -205,7 +205,8 @@ statement:               nodeStatement {
                            if ( driver.proto_declarations.size()==0 ) {
                               Node *node = driver.node_stack.back();
                               driver.node_stack.pop_back();
-                              driver.root->children->push_back( node );
+                              if ( node ) 
+                                driver.root->children->push_back( node );
                            }
                          } | 
                          exportStatement |
@@ -215,9 +216,12 @@ statement:               nodeStatement {
 
 nodeStatement:           node  |
                          DEF nodeNameId node {
-  if ( driver.proto_declarations.size()==0 )
+  if ( driver.proto_declarations.size()==0 &&
+       driver.node_stack.back() ) {
     driver.DEF_map->addNode( $2, driver.node_stack.back() );
-  } |
+    driver.node_stack.back()->setName( $2 );
+  } 
+} |
                          USE nodeNameId {
   if ( driver.proto_declarations.size()==0 )
     driver.node_stack.push_back( driver.DEF_map->getNode( $2 ) );
@@ -337,21 +341,25 @@ empty:                   ;
 
 node:                    nodeTypeId { 
 if ( driver.proto_declarations.size()==0 ) {
-  Node *new_node =  H3DNodeDatabase::createNode( yylval.val );
-  if ( !new_node ) {
-    // try as a proto:
-    ProtoDeclaration *proto = driver.proto_vector->getProtoDeclaration(
-    yylval.val );
-    if ( proto ) {
-       new_node = proto->newProtoInstance();
+  Node *new_node = NULL;     
+  if ( driver.node_stack.size() == 0 || 
+       driver.node_stack.back() != NULL ) {
+    new_node =  H3DNodeDatabase::createNode( yylval.val );
+    if ( !new_node ) {
+      // try as a proto:
+      ProtoDeclaration *proto = driver.proto_vector->getProtoDeclaration(
+      yylval.val );
+      if ( proto ) {
+         new_node = proto->newProtoInstance();
+      }
+      if ( !new_node )
+        Console(3) << "WARNING: Could not create node \"" << yylval.val << 
+          "\" - name not found in the node database ( " <<
+          driver.getLocationString() << " )." << endl;
     }
-    if ( !new_node )
-      Console(3) << "WARNING: Could not create node \"" << yylval.val << 
-        "\" - name not found in the node database." << endl;
   }
-  if ( new_node )
-    driver.node_stack.push_back( new_node );
-}
+  driver.node_stack.push_back( new_node ); 
+  }
 }
                         '{' nodeBody '}' |
                          SCRIPT '{' scriptBody '}' ;

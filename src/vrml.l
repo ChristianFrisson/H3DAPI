@@ -39,17 +39,17 @@
 %option noyywrap nounput batch debug
 
 
-ID       [^\x30-\x39\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ][^\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ]*
+ID       [^\-\x30-\x39\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ][^\-\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ]*
 
 OLDNUMBER   (([\-\+0-9][0-9\+\-.eE]*)|([\-\+0-9\.][0-9\+\-.eE]+)|(0[xX][0-9a-fA-F]+))
 
 NUMBER    ([+/-]?((([0-9]+(\.)?)|([0-9]*\.[0-9]+))([eE][+\-]?[0-9]+)?)|([+\-]?(([0-9]+)|(0[xX][0-9a-fA-F]+))))
 
-COMMENT  \#[^\n]*
+COMMENT  \#[^\n]*\n
 
 WHITE    [ ,\t\n\r] 
 
-STRING    \"[^\"]+\"
+STRING    \"[^\"]*\"
 
 
 %%
@@ -83,10 +83,10 @@ IS             driver.addLine( yytext ); return IS;
 
 {ID}        yylval->val=strdup(yytext); driver.addLine( yytext );  return VRMLID;
 
-({COMMENT}({WHITE})*)+    driver.addLine( yytext );
+({COMMENT}({WHITE})*)+  driver.addLine( yytext );
 
 
-(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+      driver.addLine( yytext ); yylval->val=strdup(yytext); return STRING;
+(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+       driver.addLine( yytext ); yylval->val=strdup(yytext); return STRING;
 
 
 {WHITE}+     driver.addLine( yytext );

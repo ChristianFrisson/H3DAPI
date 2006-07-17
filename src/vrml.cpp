@@ -430,21 +430,25 @@ if( driver.proto_declarations.size()==0 ) {
                            if ( driver.proto_declarations.size()==0 ) {
                               Node *node = driver.node_stack.back();
                               driver.node_stack.pop_back();
-                              driver.root->children->push_back( node );
+                              if ( node ) 
+                                driver.root->children->push_back( node );
                            }
                          ;}
     break;
 
   case 30:
-#line 217 "vrml.bison"
+#line 218 "vrml.bison"
     {
-  if ( driver.proto_declarations.size()==0 )
+  if ( driver.proto_declarations.size()==0 &&
+       driver.node_stack.back() ) {
     driver.DEF_map->addNode( (yysemantic_stack_[1].val), driver.node_stack.back() );
-  ;}
+    driver.node_stack.back()->setName( (yysemantic_stack_[1].val) );
+  } 
+;}
     break;
 
   case 31:
-#line 221 "vrml.bison"
+#line 225 "vrml.bison"
     {
   if ( driver.proto_declarations.size()==0 )
     driver.node_stack.push_back( driver.DEF_map->getNode( (yysemantic_stack_[0].val) ) );
@@ -452,7 +456,7 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 39:
-#line 236 "vrml.bison"
+#line 240 "vrml.bison"
     {
    if ( driver.proto_vector ) {
      driver.proto_declarations.push_back( new ProtoDeclaration( (yysemantic_stack_[0].val) ) );
@@ -465,12 +469,12 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 40:
-#line 245 "vrml.bison"
+#line 249 "vrml.bison"
     { if ( driver.proto_declarations.size()==1 ) driver.proto_body = ""; ;}
     break;
 
   case 41:
-#line 246 "vrml.bison"
+#line 250 "vrml.bison"
     {
    if ( driver.proto_declarations.size()==1 ) {
      // remove trailing '}'
@@ -483,35 +487,35 @@ if( driver.proto_declarations.size()==0 ) {
     break;
 
   case 47:
-#line 264 "vrml.bison"
+#line 268 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[0].val), (yysemantic_stack_[1].val), Field::INPUT_ONLY, NULL );
 ;}
     break;
 
   case 48:
-#line 267 "vrml.bison"
+#line 271 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[0].val), (yysemantic_stack_[1].val), Field::OUTPUT_ONLY, NULL );
 ;}
     break;
 
   case 49:
-#line 270 "vrml.bison"
+#line 274 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[1].val), (yysemantic_stack_[2].val), Field::INITIALIZE_ONLY, (yysemantic_stack_[0].val) );
 ;}
     break;
 
   case 51:
-#line 275 "vrml.bison"
+#line 279 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[1].val), (yysemantic_stack_[2].val), Field::INPUT_OUTPUT, (yysemantic_stack_[0].val) );
 ;}
     break;
 
   case 60:
-#line 295 "vrml.bison"
+#line 299 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 ) {
   Node *fr = driver.DEF_map->getNode( (yysemantic_stack_[6].val) );
@@ -552,35 +556,39 @@ if ( driver.proto_declarations.size()==0 ) {
     break;
 
   case 63:
-#line 338 "vrml.bison"
+#line 342 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 ) {
-  Node *new_node =  H3DNodeDatabase::createNode( yylval.val );
-  if ( !new_node ) {
-    // try as a proto:
-    ProtoDeclaration *proto = driver.proto_vector->getProtoDeclaration(
-    yylval.val );
-    if ( proto ) {
-       new_node = proto->newProtoInstance();
+  Node *new_node = NULL;     
+  if ( driver.node_stack.size() == 0 || 
+       driver.node_stack.back() != NULL ) {
+    new_node =  H3DNodeDatabase::createNode( yylval.val );
+    if ( !new_node ) {
+      // try as a proto:
+      ProtoDeclaration *proto = driver.proto_vector->getProtoDeclaration(
+      yylval.val );
+      if ( proto ) {
+         new_node = proto->newProtoInstance();
+      }
+      if ( !new_node )
+        Console(3) << "WARNING: Could not create node \"" << yylval.val << 
+          "\" - name not found in the node database ( " <<
+          driver.getLocationString() << " )." << endl;
     }
-    if ( !new_node )
-      Console(3) << "WARNING: Could not create node \"" << yylval.val << 
-        "\" - name not found in the node database." << endl;
   }
-  if ( new_node )
-    driver.node_stack.push_back( new_node );
-}
+  driver.node_stack.push_back( new_node ); 
+  }
 ;}
     break;
 
   case 78:
-#line 375 "vrml.bison"
+#line 383 "vrml.bison"
     { 
                             driver.field_stack.push_back( (yysemantic_stack_[0].val) ); ;}
     break;
 
   case 79:
-#line 377 "vrml.bison"
+#line 385 "vrml.bison"
     {
                            if ( driver.proto_declarations.size()==0 )
                                 driver.field_stack.pop_back();
@@ -588,7 +596,7 @@ if ( driver.proto_declarations.size()==0 ) {
     break;
 
   case 80:
-#line 381 "vrml.bison"
+#line 389 "vrml.bison"
     {
   if ( driver.proto_instance != NULL ) {
     Node *node = driver.node_stack.back();
@@ -613,7 +621,7 @@ if ( driver.proto_declarations.size()==0 ) {
     break;
 
   case 93:
-#line 425 "vrml.bison"
+#line 433 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
   driver.setFieldValue( (yysemantic_stack_[0].val) );
@@ -621,7 +629,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 94:
-#line 429 "vrml.bison"
+#line 437 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
   driver.setFieldValue( (yysemantic_stack_[0].val) );
@@ -629,37 +637,37 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 95:
-#line 433 "vrml.bison"
+#line 441 "vrml.bison"
     {;}
     break;
 
   case 96:
-#line 434 "vrml.bison"
+#line 442 "vrml.bison"
     {;}
     break;
 
   case 98:
-#line 437 "vrml.bison"
+#line 445 "vrml.bison"
     { (yyval.val) = "TRUE"; ;}
     break;
 
   case 99:
-#line 438 "vrml.bison"
+#line 446 "vrml.bison"
     { (yyval.val) = "FALSE";;}
     break;
 
   case 101:
-#line 441 "vrml.bison"
+#line 449 "vrml.bison"
     { (yyval.val) = ""; ;}
     break;
 
   case 102:
-#line 442 "vrml.bison"
+#line 450 "vrml.bison"
     { (yyval.val) = (yysemantic_stack_[1].val); ;}
     break;
 
   case 103:
-#line 445 "vrml.bison"
+#line 453 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -667,7 +675,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 104:
-#line 449 "vrml.bison"
+#line 457 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 1 );
@@ -675,7 +683,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 105:
-#line 454 "vrml.bison"
+#line 462 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -683,7 +691,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 106:
-#line 458 "vrml.bison"
+#line 466 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 1 );
@@ -692,7 +700,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 108:
-#line 465 "vrml.bison"
+#line 473 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -700,7 +708,7 @@ if ( driver.proto_declarations.size()==0 )
     break;
 
   case 109:
-#line 469 "vrml.bison"
+#line 477 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
@@ -712,7 +720,7 @@ if ( driver.proto_declarations.size()==0 )
     }
 
 /* Line 676 of lalr1.cc.  */
-#line 716 "vrml.cpp"
+#line 724 "vrml.cpp"
 
   yypop_ (yylen_);
 
@@ -1213,16 +1221,16 @@ yy::VrmlParser::yyrline_[] =
 {
        0,   111,   111,   111,   117,   117,   119,   121,   122,   123,
      125,   127,   129,   131,   146,   190,   191,   192,   194,   196,
-     198,   200,   201,   202,   204,   211,   212,   213,   214,   216,
-     217,   221,   226,   227,   229,   230,   232,   233,   234,   236,
-     245,   246,   236,   257,   259,   260,   261,   264,   267,   270,
-     274,   275,   280,   284,   285,   287,   289,   290,   291,   292,
-     294,   333,   335,   338,   338,   357,   359,   360,   361,   363,
-     364,   365,   367,   368,   369,   370,   371,   373,   375,   375,
-     381,   402,   403,   405,   407,   409,   411,   413,   415,   417,
-     419,   421,   423,   425,   429,   433,   434,   436,   437,   438,
-     440,   441,   442,   445,   449,   454,   458,   463,   465,   469,
-     469,   474
+     198,   200,   201,   202,   204,   212,   213,   214,   215,   217,
+     218,   225,   230,   231,   233,   234,   236,   237,   238,   240,
+     249,   250,   240,   261,   263,   264,   265,   268,   271,   274,
+     278,   279,   284,   288,   289,   291,   293,   294,   295,   296,
+     298,   337,   339,   342,   342,   365,   367,   368,   369,   371,
+     372,   373,   375,   376,   377,   378,   379,   381,   383,   383,
+     389,   410,   411,   413,   415,   417,   419,   421,   423,   425,
+     427,   429,   431,   433,   437,   441,   442,   444,   445,   446,
+     448,   449,   450,   453,   457,   462,   466,   471,   473,   477,
+     477,   482
 };
 
 // Print the state stack on the debug stream.
@@ -1307,7 +1315,7 @@ const int yy::VrmlParser::yyntokens_ = 32;
 const unsigned int yy::VrmlParser::yyuser_token_number_max_ = 280;
 const yy::VrmlParser::token_number_type yy::VrmlParser::yyundef_token_ = 2;
 
-#line 476 "vrml.bison"
+#line 484 "vrml.bison"
 
 
 
