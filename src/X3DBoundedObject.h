@@ -60,16 +60,23 @@ namespace H3D {
     }
 
     /// Specifies a the center of an axis-aligned bounding box 
-    /// enclosing the node. 
+    /// enclosing the node. This field can be set in order to 
+    /// specify the bounding box of an object manually. 
+    /// The actual bounding volume can be found in the bound field.
+    /// Only used if bboxSize != (-1,-1,-1)
     /// 
-    /// <b>Access type:</b> inputOutput \n
+    /// <b>Access type:</b> initializeOnly \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
     auto_ptr< SFVec3f >  bboxCenter;
 
     /// Specifies a the size of an axis-aligned bounding box 
-    /// enclosing the node.
+    /// enclosing the node. This field can be set in order to 
+    /// specify the bounding box of an object manually. 
+    /// The actual bounding volume can be found in the bound field.
+    /// If bboxSize is (-1, -1, -1) the bounding volume will be 
+    /// automatically generated.
     /// 
-    /// <b>Access type:</b> inputOutput \n
+    /// <b>Access type:</b> initializeOnly \n
     /// <b>Default value:</b> Vec3f( -1, -1, -1 ) \n
     auto_ptr< SFVec3f >  bboxSize;
 
