@@ -15,11 +15,15 @@
 #include "Scene.h"
 #include "KeySensor.h"
 #include "MouseSensor.h"
+#ifndef MACOSX
 #include "SpaceWareSensor.h"
+#endif
 #include "DEFNodes.h"
 #include "Viewpoint.h"
 #include "DeviceInfo.h"
 #include "INIFile.h"
+#include "ResourceResolver.h"
+#include "PythonScript.h"
 
 #ifdef MACOSX
 #include "FreeImage.h"
@@ -107,7 +111,7 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 
 int main(int argc, char* argv[]) {
-  
+  PythonScript::setargv( argc, argv );
   
   // Settings and command line arguments ---
   
@@ -315,7 +319,9 @@ int main(int argc, char* argv[]) {
   try {
     AutoRef< KeySensor > ks( new KeySensor );
     AutoRef< MouseSensor > ms( new MouseSensor );
+#ifndef MACOSX
     AutoRef< SpaceWareSensor > ss( new SpaceWareSensor );
+#endif
     X3D::DEFNodes dn;
     KeyRotation *kr = new KeyRotation;
     QuitAPIField *quit_api = new QuitAPIField;
@@ -372,12 +378,15 @@ int main(int argc, char* argv[]) {
     ks->actionKeyPress->route( kr );
     ms->leftButton->route( kr );
     ms->motion->route( kr );
+#ifndef MACOSX
     ss->instantRotation->route( kr );
+#endif
     kr->route( t->rotation );
 
     AutoRef< Group > g( new Group );
+#ifndef MACOSX
     g->children->push_back(ss.get());
-    
+#endif    
     // create a Viewpoint if it does not exist.
     if( !Viewpoint::getActive() && viewpoint_file.size() ) {
       try {
