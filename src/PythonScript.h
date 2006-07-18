@@ -77,6 +77,8 @@ namespace H3D {
     
     virtual void loadScript( const string &script );
 
+    static void setargv( int _argc, char *_argv[] );
+
     /// Initialize is called once upon the first reference of the 
     /// RefCountedClass.
     virtual void initialize();
@@ -91,7 +93,9 @@ namespace H3D {
   private:
     void * module;
     void * module_dict;
-  };
+    static int argc;
+    static char** argv;
+ };
 }
 
 #endif // HAVE_PYTHON
