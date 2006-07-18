@@ -147,10 +147,10 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
   } else {
     MFNode *mf = dynamic_cast< MFNode *>( field );    
     if ( mf ) {
-      if ( node_value )
-        mf->push_back( node_value );
-      else
+      if ( nullnode ) 
         mf->clear();
+      else if ( node_value )
+        mf->push_back( node_value );
     } else
       Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << " at " << getOldLocationString() << endl;
   }
