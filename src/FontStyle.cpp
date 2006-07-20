@@ -53,6 +53,8 @@ using namespace H3D;
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 namespace FontStyleInternals {
+	static map< string, FTFont* > font_db;
+
 #if defined(__APPLE__) && defined(__MACH__)
 FT_Error  xFT_GetFile_From_Mac_Name( const char* fontName,
                                      FSSpec*     pathSpec,
@@ -290,7 +292,8 @@ string FC_GetFontByName( const char *font_name ) {
                          bool bold, 
                          bool italic,
                          const string &render_type ) {
-    string full_font_path;
+
+	string full_font_path;
 #if defined(__APPLE__) && defined(__MACH__)
     FSSpec ps;
     FT_Long face_index;
@@ -337,6 +340,11 @@ string FC_GetFontByName( const char *font_name ) {
     full_font_path = FC_GetFontByName( font_name.c_str() );
 #endif
     FTFont *font = NULL;
+	// search font cache first:
+    string font_to_search = render_type + full_font_path;
+	map<string,FTFont*>::iterator f = font_db.find( font_to_search );
+	if ( f != font_db.end() )
+	  return (*f).second;
     if( render_type == "POLYGON" ) {
       font = new FTGLPolygonFont( full_font_path.c_str() ); 
     } else if( render_type == "TEXTURE" ) {
@@ -347,7 +355,10 @@ string FC_GetFontByName( const char *font_name ) {
       font = new FTGLExtrdFont( full_font_path.c_str() ); 
     }
     if( !font || font->Error() ) return NULL;
-    else return font;
+	else {
+	  font_db[font_to_search]=font;
+	  return font;
+	}
   }
 
 }
@@ -474,7 +485,7 @@ void FontStyle::buildFonts() {
       font_name = DEFAULT_TYPEWRITER_FONT;
     } 
     
-	font = FontStyleInternals::getFontByName( font_name, bold, italic, render_type );
+	font =FontStyleInternals::getFontByName( font_name, bold, italic, render_type );
     // if bold or italic font was not found try to get the plain font
     // instead.
     if( !font && ( bold||italic) ) 

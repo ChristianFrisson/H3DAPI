@@ -374,7 +374,7 @@ namespace H3D {
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
     /// FTGL container class for all glyphs in the current font, used to
     /// measure bounding  boxes, render, advance, etc.
-    FTFont* font;   
+    FTFont *font;   
 #endif
   };
 }
