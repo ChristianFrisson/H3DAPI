@@ -64,6 +64,7 @@ namespace H3D {
     template< class Iterator >
     static inline Bound *SFBoundUnion( Iterator begin, Iterator end );
 
+    virtual Vec3f closestPoint( const Vec3f &p ) = 0;
   };
 
   /// An InfiniteBound is a Bound that encompasses everything. So every point
@@ -82,6 +83,10 @@ namespace H3D {
       to = from;
       return true;
     }
+    
+    virtual Vec3f closestPoint( const Vec3f &p ) {
+      return p;
+    }
   };  
 
   /// An EmptyBound is a Bound that encompasses nothing. So every point
@@ -98,6 +103,10 @@ namespace H3D {
     virtual bool lineSegmentIntersect( const Vec3f& from,
                                        Vec3f &to ) {
       return false;
+    }
+
+    virtual Vec3f closestPoint( const Vec3f &p ) {
+      return p;
     }
   };  
 
@@ -190,6 +199,26 @@ namespace H3D {
                                        Vec3f &to ) {
       throw Exception::H3DAPIException("BoxBound::lineSegmentIntersect not implemented" );     
     }
+
+    virtual Vec3f closestPoint( const Vec3f &p ) {
+      const Vec3f &c = center->getValue();
+      const Vec3f &half_s = size->getValue() / 2;
+      
+      Vec3f min = c - half_s;
+      Vec3f max = c + half_s;
+
+      Vec3f result;
+      // for each coordinate axis, if the point coordinate value
+      // is outside box, clamp it to the box, e;se keep it as it is
+      for( int i = 0; i < 3; i++ ) {
+        H3DFloat v = p[i];
+        if( v < min[i] ) v = min[i];
+        if( v > max[i] ) v = max[i];
+        result[i] = v;
+      }
+      return result;
+    }
+
     /// The center point of the bounding box.
     auto_ptr< SFVec3f > center;
     /// The size of the bounding box.
