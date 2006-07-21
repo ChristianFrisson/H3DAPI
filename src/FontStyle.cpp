@@ -356,6 +356,9 @@ string FC_GetFontByName( const char *font_name ) {
     }
     if( !font || font->Error() ) return NULL;
 	else {
+	  font->FaceSize( 72 );
+	  font->CharMap(ft_encoding_unicode);
+	  font->UseDisplayList( true );
 	  font_db[font_to_search]=font;
 	  return font;
 	}
@@ -429,7 +432,7 @@ FontStyle::FontStyle(
   spacing->setValue( 1.0 );
   style->setValue( "PLAIN" );
   topToBottom->setValue( true );
-  renderType->setValue( "TEXTURE" );
+  renderType->setValue( "POLYGON" );
 
 #if !( defined( HAVE_FREETYPE ) && defined( HAVE_FTGL ) )
   Console(4) << "Warning: H3D API compiled withour FTGL or FreeType. FontStyle"
@@ -489,7 +492,7 @@ void FontStyle::buildFonts() {
     // if bold or italic font was not found try to get the plain font
     // instead.
     if( !font && ( bold||italic) ) 
-      FontStyleInternals::getFontByName( font_name, false, false, render_type );
+      font = FontStyleInternals::getFontByName( font_name, false, false, render_type );
 
     // the font was found, so use that font
     if( font )
@@ -515,7 +518,7 @@ void FontStyle::buildFonts() {
                                               italic,
 											  render_type);
     if( !font && ( bold||italic) )
-      FontStyleInternals::getFontByName( DEFAULT_SERIF_FONT, 
+      font = FontStyleInternals::getFontByName( DEFAULT_SERIF_FONT, 
                                          false, 
                                          false,
 										 render_type);
@@ -527,9 +530,6 @@ void FontStyle::buildFonts() {
     }
   }
 
-  font->FaceSize( 72 );
-  font->CharMap(ft_encoding_unicode);
-  font->UseDisplayList( true );
   fonts_built = true;
 }
 
