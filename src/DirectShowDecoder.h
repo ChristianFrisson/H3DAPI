@@ -29,8 +29,19 @@
 #ifndef __DIRECTSHOWDECODER_H__
 #define __DIRECTSHOWDECODER_H__
 
+#include "FieldTemplates.h"
+#include "SFTime.h"
+
 // Include from DirectShow BaseClasses
 #include <streams.h>
+
+#ifdef _MSC_VER
+#ifdef _DEBUG
+#pragma comment( lib, "strmbasd.lib" )
+#else
+#pragma comment( lib, "strmbase.lib" )
+#endif
+#endif
 
 #include "H3DVideoClipDecoderNode.h"
 
@@ -41,8 +52,12 @@ namespace H3D {
 //-----------------------------------------------------------------------------
 struct __declspec(uuid("{71771540-2017-11cf-ae26-0020afd79767}")) CLSID_TextureRenderer;
 
-class DirectShowDecoder : public H3DVideoClipDecoderNode
+class H3DAPI_API DirectShowDecoder : public H3DVideoClipDecoderNode
 {
+  class DShowEventHandler: public AutoUpdate< SFTime > {
+    virtual void update();
+  };
+
   class CFrameGrabber: public CBaseVideoRenderer {
   public:
     CFrameGrabber(LPUNKNOWN pUnk, HRESULT *phr, DirectShowDecoder *d );
@@ -52,6 +67,7 @@ class DirectShowDecoder : public H3DVideoClipDecoderNode
     
     /// Called when a new frame is available
     HRESULT DoRenderSample(IMediaSample *pMediaSample); // New video sample
+    void OnReceiveFirstSample(IMediaSample *pSample) { DoRenderSample( pSample ); }
     
     DirectShowDecoder *decoder;
   };
@@ -62,9 +78,13 @@ public:
   DirectShowDecoder();
   ~DirectShowDecoder();
 
-  virtual bool loadClip( const string &url ) { return true; }
-  virtual void startPlaying() {}
-  virtual void stopPlaying() {}
+  virtual bool loadClip( const string &url );
+  virtual void startPlaying();
+  virtual void stopPlaying();
+  virtual void pausePlaying();
+  virtual void setLooping( bool v ) {
+    looping = v;
+  }
 
   virtual bool haveNewFrame() { return have_new_frame; }
   virtual void getNewFrame( unsigned char *buffer );
@@ -79,11 +99,11 @@ protected:
   // DirectShow pointers
   CComPtr<IGraphBuilder>  g_pGB;          // GraphBuilder
   CComPtr<IMediaControl>  g_pMC;          // Media Control
-  CComPtr<IMediaPosition> g_pMP;          // Media Position
+  CComPtr<IMediaSeeking> g_pMS;          // Media Seeking
   CComPtr<IMediaEvent>    g_pME;          // Media Event
   CComPtr<IBaseFilter>    g_pRenderer;    // our custom renderer
   
-  HRESULT initDShowTextureRenderer( CBaseVideoRenderer *pCTR );
+  HRESULT initDShowTextureRenderer( const string &url );
   void cleanupDShow( void );
 
   /// The width in pixels of the frame.
@@ -104,6 +124,11 @@ protected:
   
   /// The DirectShow object used to get frames.
   CFrameGrabber *frame_grabber;
+
+  /// True if the video should loop when it reaches the end.
+  bool looping;
+
+  auto_ptr< DShowEventHandler > event_handler;
 };
 }
 #endif

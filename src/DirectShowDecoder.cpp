@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "DirectShowDecoder.h"
+#include "Scene.h"
 
 using namespace H3D;
 
@@ -37,7 +38,7 @@ using namespace H3D;
 
 // Define this if you want to render only the video component with no audio
 //
-//   #define NO_AUDIO_RENDERER
+   #define NO_AUDIO_RENDERER
 
 // An application can advertise the existence of its filter graph
 // by registering the graph with a global Running Object Table (ROT).
@@ -46,18 +47,6 @@ using namespace H3D;
 //
 // To enable registration in this sample, define REGISTER_FILTERGRAPH.
 //
-#define REGISTER_FILTERGRAPH
-
-//-----------------------------------------------------------------------------
-// Global DirectShow pointers
-//-----------------------------------------------------------------------------
-CComPtr<IGraphBuilder>  g_pGB;          // GraphBuilder
-CComPtr<IMediaControl>  g_pMC;          // Media Control
-CComPtr<IMediaPosition> g_pMP;          // Media Position
-CComPtr<IMediaEvent>    g_pME;          // Media Event
-CComPtr<IBaseFilter>    g_pRenderer;    // our custom renderer
-
-//D3DFORMAT               g_TextureFormat; // Texture format
 
 
 //-----------------------------------------------------------------------------
@@ -89,7 +78,7 @@ void Msg(TCHAR *szFormat, ...)
 //-----------------------------------------------------------------------------
 // InitDShowTextureRenderer : Create DirectShow filter graph and run the graph
 //-----------------------------------------------------------------------------
-HRESULT DirectShowDecoder::initDShowTextureRenderer( CBaseVideoRenderer *pCTR )
+HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
 {
     HRESULT hr = S_OK;
     CComPtr<IBaseFilter>    pFSrc;          // Source Filter
@@ -101,8 +90,16 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( CBaseVideoRenderer *pCTR )
     if (FAILED(g_pGB.CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC)))
         return E_FAIL;
 
+    CFrameGrabber *frame_grabber = new CFrameGrabber( NULL, &hr, this );
+    if (FAILED(hr) ) {
+      cerr << "Failed to create CFrameGrabber" << endl;
+      delete frame_grabber;
+      frame_grabber = NULL;
+      return E_FAIL;
+    }
+
     // Get a pointer to the IBaseFilter on the TextureRenderer, add it to graph
-    g_pRenderer = pCTR;
+    g_pRenderer = frame_grabber;
     if (FAILED(hr = g_pGB->AddFilter(g_pRenderer, L"TEXTURERENDERER")))
     {
         Msg(TEXT("Could not add renderer filter to graph!  hr=0x%x"), hr);
@@ -111,28 +108,12 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( CBaseVideoRenderer *pCTR )
 
     // Determine the file to load based on windows directory
     // Use the standard win32 API to do this.
-    TCHAR strFileName[MAX_PATH] = "C:\\Documents and Settings\\Daniel\\My Documents\\My Videos\\Lost\\Lost - 2x17 - Lockdown.avi";
     WCHAR wFileName[MAX_PATH];
 
-
-
-  /*  if (! GetClipFileName(strFileName))
-    {
-        DWORD dwDlgErr = CommDlgExtendedError();
-
-        // Don't show output if user cancelled the selection (no dlg error)
-        if (dwDlgErr)
-        {
-            Msg(TEXT("GetClipFileName Failed! Error=0x%x\r\n"), GetLastError());
-        }
-        return E_FAIL;
-    }*/
-
-    strFileName[MAX_PATH-1] = 0;  // NULL-terminate
     wFileName[MAX_PATH-1] = 0;    // NULL-terminate
 
     USES_CONVERSION;
-    (void)StringCchCopyW(wFileName, NUMELMS(wFileName), T2W(strFileName));
+    (void)StringCchCopyW(wFileName, NUMELMS(wFileName), T2W(url.c_str()));
 
     // Add the source filter to the graph.
     hr = g_pGB->AddSourceFilter (wFileName, L"SOURCE", &pFSrc);
@@ -165,7 +146,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( CBaseVideoRenderer *pCTR )
     CComPtr<IPin> pFTRPinIn;      // Texture Renderer Input Pin
 
     // Find the source's output pin and the renderer's input pin
-    if (FAILED(hr = pFTR->FindPin(L"In", &pFTRPinIn)))
+    if (FAILED(hr = frame_grabber->FindPin(L"In", &pFTRPinIn)))
     {
         Msg(TEXT("Could not find input pin!  hr=0x%x"), hr);
         return hr;
@@ -194,48 +175,13 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( CBaseVideoRenderer *pCTR )
 
     // Get the graph's media control, event & position interfaces
     g_pGB.QueryInterface(&g_pMC);
-    g_pGB.QueryInterface(&g_pMP);
+    g_pGB.QueryInterface(&g_pMS);
     g_pGB.QueryInterface(&g_pME);
 
-    // Start the graph running;
-    if (FAILED(hr = g_pMC->Run()))
-    {
-        Msg(TEXT("Could not run the DirectShow graph!  hr=0x%x"), hr);
-        return hr;
-    }
-
+    g_pMC->Pause();
 
     return S_OK;
 }
-
-
-//-----------------------------------------------------------------------------
-// CheckMovieStatus: If the movie has ended, rewind to beginning
-//-----------------------------------------------------------------------------
-/*void CheckMovieStatus(void)
-{
-    long lEventCode;
-    LONG_PTR lParam1, lParam2;
-    HRESULT hr;
-
-    if (!g_pME)
-        return;
-
-    // Check for completion events
-    hr = g_pME->GetEvent(&lEventCode, &lParam1, &lParam2, 0);
-    if (SUCCEEDED(hr))
-    {
-        // If we have reached the end of the media file, reset to beginning
-        if (EC_COMPLETE == lEventCode)
-        {
-            hr = g_pMP->put_CurrentPosition(0);
-        }
-
-        // Free any memory associated with this event
-        hr = g_pME->FreeEventParams(lEventCode, lParam1, lParam2);
-    }
-}
-*/
 
 //-----------------------------------------------------------------------------
 // CleanupDShow
@@ -247,7 +193,7 @@ void DirectShowDecoder::cleanupDShow(void)
 
     if (!(!g_pMC)) g_pMC.Release();
     if (!(!g_pME)) g_pME.Release();
-    if (!(!g_pMP)) g_pMP.Release();
+    if (!(!g_pMS)) g_pMS.Release();
     if (!(!g_pGB)) g_pGB.Release();
     if (!(!g_pRenderer)) g_pRenderer.Release();
 }
@@ -261,18 +207,12 @@ DirectShowDecoder::DirectShowDecoder( )
                                     frame_height( 0 ),
                                     data_size( 0 ),
                                     data( NULL ), 
-                                    have_new_frame( false )
+                                    have_new_frame( false ),
+                                    looping( false )
 {
-  HRESULT hr = S_OK;
-  frame_grabber = new CFrameGrabber( NULL, &hr, this ); 
-  if (FAILED(hr) ) {
-    cerr << "Failed to create CFrameGrabber" << endl;
-    delete frame_grabber;
-    frame_grabber = NULL;
-    return;
-  }
-  initDShowTextureRenderer( frame_grabber );
-   
+  event_handler.reset( new DShowEventHandler );
+  event_handler->setOwner( this );
+  Scene::time->route( event_handler );
 }
 
 
@@ -349,10 +289,6 @@ HRESULT DirectShowDecoder::CFrameGrabber::DoRenderSample( IMediaSample * pSample
     DWORD * pdwD = NULL;
     UINT row, col, dwordWidth;
     
-    //    cerr << pSample->GetActualDataLength() << " " << pSample->GetSize() << endl;
-    //CheckPointer(pSample,E_POINTER);
-    //CheckPointer(g_pTexture,E_UNEXPECTED);
-
     // Get the video bitmap buffer
     pSample->GetPointer( &pBmpBuffer );
     
@@ -381,4 +317,71 @@ DirectShowDecoder::CFrameGrabber::CFrameGrabber( LPUNKNOWN pUnk,
 void DirectShowDecoder::getNewFrame( unsigned char *buffer ) {
   memcpy( buffer, data,  getFrameWidth() * getFrameHeight() * 3 );
   have_new_frame = false;
+}
+
+void DirectShowDecoder::startPlaying() {
+  if( g_pMC && status != PLAYING ) {
+    HRESULT hr = S_OK;
+    // Start the graph running;
+    if (FAILED(hr = g_pMC->Run()) ){
+      Msg(TEXT("Could not run the DirectShow graph!  hr=0x%x"), hr);
+    } else {
+      status = PLAYING;
+    }
+  }
+}
+
+void DirectShowDecoder::stopPlaying() {
+ if( g_pMC && g_pMS && status != STOPPED ) {
+    HRESULT hr = S_OK;
+    // Stop the graph running;
+    LONGLONG pos = 0;
+     hr = g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning );
+    hr = g_pMC->StopWhenReady();
+    status = STOPPED;
+ }
+}
+
+void DirectShowDecoder::pausePlaying() {
+  if( g_pMC && status == PLAYING ) {
+    HRESULT hr = S_OK;
+    // Stop the graph running;
+    if (FAILED(hr = g_pMC->Pause()) ){
+      Msg(TEXT("Could not run the DirectShow graph!  hr=0x%x"), hr);
+    } else {
+      status = PAUSED;
+    }
+  }
+}
+
+void DirectShowDecoder::DShowEventHandler::update() {
+  DirectShowDecoder *d = static_cast< DirectShowDecoder * >( getOwner() );
+  long lEventCode;
+  LONG_PTR lParam1, lParam2;
+  HRESULT hr;
+
+  if (!d->g_pME)
+      return;
+
+  // Check for completion events
+  hr = d->g_pME->GetEvent(&lEventCode, &lParam1, &lParam2, 0);
+  if (SUCCEEDED(hr)) {
+
+    // If we have reached the end of the media file, reset to beginning
+    if (EC_COMPLETE == lEventCode)
+      {
+        if( d->looping ) {
+          LONGLONG pos = 0;
+          hr = d->g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning );
+        }
+        
+        // Free any memory associated with this event
+        hr = d->g_pME->FreeEventParams(lEventCode, lParam1, lParam2);
+      }
+  }
+}
+
+bool DirectShowDecoder::loadClip( const string &url ) {
+  cleanupDShow();
+  return initDShowTextureRenderer( url ) == S_OK;
 }

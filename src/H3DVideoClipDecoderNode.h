@@ -44,7 +44,7 @@ namespace H3D {
   /// Each subclass must define the loadImage () function. 
   /// It is used by e.g. the MovieTexture node.
   ///
-  class H3DVideoClipDecoderNode : public Node {
+  class H3DAPI_API H3DVideoClipDecoderNode : public Node {
   public:
     typedef H3DVideoClipDecoderNode*( *CreateNodeFunc)(); 
 
@@ -79,7 +79,8 @@ namespace H3D {
     };
 
     /// Constructor.
-    H3DVideoClipDecoderNode() {
+    H3DVideoClipDecoderNode():
+      status( STOPPED ) {
       type_name = "H3DVideoClipDecoderNode";
     }
 
@@ -97,7 +98,9 @@ namespace H3D {
     virtual Image::PixelComponentType getFramePixelComponentType() = 0;
     virtual void startPlaying() = 0;
     virtual void stopPlaying() = 0;
-    
+    virtual void pausePlaying() = 0;
+    virtual void setLooping( bool on ) = 0;
+
     /// Returns the default xml containerField attribute value.
     /// For this node it is "imageLoader".
     ///
@@ -132,6 +135,13 @@ namespace H3D {
   protected:
     static list< FileReaderRegistration > *registered_file_readers;
     static bool initialized;
+    typedef enum {
+      PLAYING = 0,
+      STOPPED = 1,
+      PAUSED = 2 
+    } PlayStatus;
+
+    PlayStatus status;
   };
 }
 
