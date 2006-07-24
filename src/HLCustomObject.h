@@ -32,7 +32,6 @@
 #include "H3DTypes.h"
 #include "HLShape.h"
 
-
 namespace H3D {
 
   
@@ -80,16 +79,8 @@ namespace H3D {
     /// the instersectSurface and closestPointOnSurface function in the callback
     /// functions.
     /// 
-    virtual void hlRender( HLHapticsDevice *hd ) {
-#ifdef HAVE_OPENHAPTICS
-      hlBeginShape(HL_SHAPE_CALLBACK, getShapeId( hd) );
-      hlCallback(HL_SHAPE_INTERSECT_LS, 
-                 (HLcallbackProc) intersectCallback, this);
-      hlCallback(HL_SHAPE_CLOSEST_FEATURES, 
-                 (HLcallbackProc) closestFeaturesCallback, this);
-      hlEndShape();
-#endif
-    };
+    virtual void hlRender( HLHapticsDevice *hd );
+
 #ifdef HAVE_OPENHAPTICS
   protected:
     /// Callback function for finding the intersection between a line segment

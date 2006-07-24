@@ -12,13 +12,16 @@
 #include "GL/glew.h"
 #include "X3DChildNode.h"
 #include "HLSurface.h"
+#include "HLHapticsDevice.h"
 
 using namespace H3D;
 
 void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
 #ifdef HAVE_OPENHAPTICS
   HLSurface *s = dynamic_cast< HLSurface * >( surface );
-  if( s ) {
+  if( s && closeEnoughToBound( hd->proxyPosition->getValue(), 
+                               transform.inverse(), 
+                               geometry ) ) {
     hlMatrixMode( HL_VIEWTOUCH );
     hlPushMatrix();
 #if HL_VERSION_MAJOR_NUMBER >= 2

@@ -43,6 +43,7 @@ namespace OpenHapticsOptionsInternals {
   FIELDDB_ELEMENT( OpenHapticsOptions, touchableFace, INPUT_OUTPUT );
   FIELDDB_ELEMENT( OpenHapticsOptions, useAdaptiveViewport, INPUT_OUTPUT );
   FIELDDB_ELEMENT( OpenHapticsOptions, useHapticCameraView, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( OpenHapticsOptions, maxDistance, INPUT_OUTPUT );
 }
 
 OpenHapticsOptions::OpenHapticsOptions( 
@@ -50,12 +51,14 @@ OpenHapticsOptions::OpenHapticsOptions(
                            Inst< SFString > _GLShape,
                            Inst< SFString  >  _touchableFace,
                            Inst< SFBool    >  _useAdaptiveViewport,
-                           Inst< SFBool    >  _useHapticCameraView ) :
+                           Inst< SFBool    >  _useHapticCameraView,
+                           Inst< SFFloat   > _maxDistance ) :
   X3DRenderOptionsNode( _metadata ),
   GLShape( _GLShape ),
   touchableFace( _touchableFace ),
   useAdaptiveViewport( _useAdaptiveViewport ),
-  useHapticCameraView( _useHapticCameraView )  {
+  useHapticCameraView( _useHapticCameraView ),
+  maxDistance( _maxDistance ) {
   type_name = "OpenHapticsOptions";
 
   database.initFields( this );
@@ -64,6 +67,7 @@ OpenHapticsOptions::OpenHapticsOptions(
   touchableFace->setValue( "FRONT_AND_BACK" );
   useAdaptiveViewport->setValue( true );
   useHapticCameraView->setValue( true );
+  maxDistance->setValue( 0.01 );
 }
 
 

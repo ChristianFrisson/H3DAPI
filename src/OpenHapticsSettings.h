@@ -32,6 +32,7 @@
 #include "X3DBindableNode.h"
 #include "SFString.h"
 #include "SFBool.h"
+#include "SFFloat.h"
 
 namespace H3D {
   /// \ingroup H3DNodes
@@ -50,7 +51,8 @@ namespace H3D {
                          Inst< SFString  >  _defaultGLShape  = 0,
                          Inst< SFString  >  _touchableFace  = 0,
                          Inst< SFBool    >  _useAdaptiveViewport = 0,
-                         Inst< SFBool    >  _useHapticCameraView = 0 );
+                         Inst< SFBool    >  _useHapticCameraView = 0,
+                         Inst< SFFloat   >  _maxDistance  = 0 );
 
     /// Convenience function to get the top of the DeviceInfo stack.
     static inline OpenHapticsSettings *getActive() {
@@ -125,6 +127,14 @@ namespace H3D {
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n    
     auto_ptr< SFBool > useHapticCameraView;
+
+    /// The maximum distance in metres the proxy can be from a geometry's
+    /// bounding box for the geometry to be rendered haptically. A negative
+    /// value indicates that geometries should always be rendered. 
+    ///
+    /// <b>Default value: </b> 0.01 \n
+    /// <b>Access type: </b> inputOutput \n    
+    auto_ptr< SFFloat > maxDistance;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

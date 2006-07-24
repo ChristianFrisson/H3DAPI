@@ -32,6 +32,7 @@
 #include "X3DRenderOptionsNode.h"
 #include "SFString.h"
 #include "SFBool.h"
+#include "SFFloat.h"
 
 namespace H3D {
 
@@ -48,7 +49,8 @@ namespace H3D {
                         Inst< SFString > _GLShape = 0,
                         Inst< SFString  >  _touchableFace  = 0,
                         Inst< SFBool    >  _useAdaptiveViewport = 0,
-                        Inst< SFBool    >  _useHapticCameraView = 0 );
+                        Inst< SFBool    >  _useHapticCameraView = 0,
+                        Inst< SFFloat   >  _maxDistance  = 0 );
     
     /// Specifies the OpenHaptics shape type to use when 
     /// rendering shapes using OpenGL. If "FEEDBACK_BUFFER" feedback 
@@ -117,6 +119,14 @@ namespace H3D {
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n    
     auto_ptr< SFBool > useHapticCameraView;
+
+    /// The maximum distance in metres the proxy can be from a geometry's
+    /// bounding box for the geometry to be rendered haptically. A negative
+    /// value indicates that geometries should always be rendered. 
+    ///
+    /// <b>Default value: </b> 0.01 \n
+    /// <b>Access type: </b> inputOutput \n    
+    auto_ptr< SFFloat > maxDistance;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
