@@ -38,7 +38,7 @@ using namespace H3D;
 
 // Define this if you want to render only the video component with no audio
 //
-   #define NO_AUDIO_RENDERER
+//   #define NO_AUDIO_RENDERER
 
 // An application can advertise the existence of its filter graph
 // by registering the graph with a global Running Object Table (ROT).
@@ -383,5 +383,6 @@ void DirectShowDecoder::DShowEventHandler::update() {
 
 bool DirectShowDecoder::loadClip( const string &url ) {
   cleanupDShow();
+  status = STOPPED;
   return initDShowTextureRenderer( url ) == S_OK;
 }

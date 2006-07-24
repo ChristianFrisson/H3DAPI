@@ -60,7 +60,6 @@ void H3DVideoTextureNode::render() {
                                      PixelImage::UNSIGNED,
                                      buffer ) );
     frame_bytes_allocated = required_frame_bytes;
-    cerr << "Aloocated: " <<frame_bytes_allocated << endl;
     X3DTexture2DNode::render();
   } else {
     PixelImage *pi = dynamic_cast< PixelImage * >( image->getValue() );
