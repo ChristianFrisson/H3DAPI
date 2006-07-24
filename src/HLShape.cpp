@@ -29,6 +29,8 @@
 
 #include "HLShape.h"
 #include "X3DGeometryNode.h"
+#include "OpenHapticsSettings.h"
+#include "OpenHapticsOptions.h"
 #include "HapticShape.h"
 
 using namespace H3D;
@@ -64,6 +66,49 @@ HLShape::~HLShape() {
       hl_shape_map.erase( hl );
     }
   }
+}
+
+bool HLShape::closeEnoughToBound( const Vec3f &pos, 
+                                  const Matrix4f &m, 
+                                  X3DGeometryNode *geometry ) {
+  Bound *b = geometry->bound->getValue();
+  if( b ) {
+    H3DFloat max_distance = 0.01;
+    OpenHapticsSettings *default_settings = OpenHapticsSettings::getActive();
+    if( default_settings ) {
+      max_distance = default_settings->maxDistance->getValue();
+    }
+
+    for( X3DGeometryNode::MFRenderOptionsNode::const_iterator i = 
+           geometry->renderOptions->begin();
+         i != geometry->renderOptions->end(); i++ ) {
+      OpenHapticsOptions *options = dynamic_cast< OpenHapticsOptions * >( *i );
+      if( options ) {
+        max_distance = options->maxDistance->getValue();
+      }
+    }
+    if( max_distance < 0 ) return true;
+
+    Vec3f local_pos = m * pos;
+
+    //if( b->isInside( local_pos ) ) return true;
+
+    Vec3f f = (b->closestPoint( local_pos ) - local_pos);
+      
+    Matrix3f m3 =  m.getScaleRotationPart();
+    Vec3f scale ( ( m3 * Vec3f(1,0,0) ).length(),
+                  ( m3 * Vec3f(0,1,0) ).length(),
+                  ( m3 * Vec3f(0,0,1) ).length() );
+    f.x *= scale.x;
+    f.y *= scale.y;
+    f.z *= scale.z;
+    
+    H3DFloat l = f.length();
+    
+    return( l < max_distance );
+  }
+  cerr << "NO BOUND" << endl;
+  return true;
 }
 
 #endif

@@ -30,6 +30,8 @@
 #define __HLSHAPE_H__
 
 #include "HLObject.h"
+#include "H3DTypes.h"
+#include "Bound.h"
 #include <map>
 #include <map>
 #include <vector>
@@ -106,6 +108,16 @@ namespace H3D {
         return 0;
       }
     }
+
+    /// Returns true if the point is close enough to the bound of the geometry
+    /// to be considered for haptics rendering. By default the values
+    /// from OpenHapticsSettings and OpenHapticsOptions nodes are used.
+    /// p is in global coordinates and m is the transformation matrix
+    /// from global to local space.
+    virtual bool closeEnoughToBound( const Vec3f &p, 
+                                     const Matrix4f &m,
+                                     X3DGeometryNode *geom );
+
   };
 }
 
