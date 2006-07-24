@@ -432,7 +432,7 @@ FontStyle::FontStyle(
   spacing->setValue( 1.0 );
   style->setValue( "PLAIN" );
   topToBottom->setValue( true );
-  renderType->setValue( "POLYGON" );
+  renderType->setValue( "TEXTURE" );
 
 #if !( defined( HAVE_FREETYPE ) && defined( HAVE_FTGL ) )
   Console(4) << "Warning: H3D API compiled withour FTGL or FreeType. FontStyle"
