@@ -43,7 +43,6 @@ void HLCustomObject::hlRender( HLHapticsDevice *hd ) {
     return;
   }
   
-  cerr << "!";
   hlBeginShape(HL_SHAPE_CALLBACK, getShapeId( hd) );
   hlCallback(HL_SHAPE_INTERSECT_LS, 
              (HLcallbackProc) intersectCallback, this);
