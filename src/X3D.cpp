@@ -170,6 +170,10 @@ void X3D::writeNodeAsX3D( ostream& os,
   os << "<" << node_name << " containerField=\"" 
      << container_field << "\" ";
     
+  if( node->hasName() ) {
+    os << "DEF=\"" << node->getName() << "\" ";
+  }
+
   vector< pair< string, SFNode * > > sf_nodes;
   vector< pair< string, MFNode * > > mf_nodes;
 

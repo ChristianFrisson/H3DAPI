@@ -105,10 +105,13 @@ namespace H3D {
     }
 
     /// Set the name of the node.
-    void setName( const string &_name ) { 
+    inline void setName( const string &_name ) { 
       name = _name;
     }
     
+    /// Returns true if this node has been given a name.
+    inline bool hasName() { return name != ""; }
+
     /// Get the name of this Node type. E.g. if the Node is an IndexedFaceSet
     /// it should return "IndexedFaceSet"
     string getTypeName() {
