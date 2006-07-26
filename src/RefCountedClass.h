@@ -28,6 +28,7 @@
 #define __REFCOUNTEDCLASS_H__
 
 #include "H3DApi.h"
+#include "Console.h"
 #include <string>
 #include <iostream>
 using namespace std;
@@ -48,7 +49,7 @@ namespace H3D {
 
     /// Destructor.
     virtual ~RefCountedClass() {
-#ifdef DEBUG
+#ifdef REF_COUNT_DEBUG
       Console(1) << "~RefCountedClass: " << this << endl;
 #endif
     }
