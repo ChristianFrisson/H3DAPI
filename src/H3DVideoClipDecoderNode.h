@@ -55,22 +55,22 @@ namespace H3D {
     static H3DVideoClipDecoderNode *newImageLoaderNode() { return new N; };
 
     /// Class used to register a class to the registered file readers.
-    struct H3DAPI_API FileReaderRegistration{
+    struct H3DAPI_API DecoderRegistration{
     public:
       /// Constructor.
-      FileReaderRegistration( const string &_name,
-                              CreateNodeFunc _create, 
-                              SupportsFileFunc _supports ):
+      DecoderRegistration( const string &_name,
+                           CreateNodeFunc _create, 
+                           SupportsFileFunc _supports ):
       name( _name ),
       create_func( _create ),
       supports_func( _supports ) {
 		  
         if( !H3DVideoClipDecoderNode::initialized ) {
-          H3DVideoClipDecoderNode::registered_file_readers = 
-            new list< FileReaderRegistration >;
+          H3DVideoClipDecoderNode::registered_decoders = 
+            new list< DecoderRegistration >;
           initialized = true;
         }
-        H3DVideoClipDecoderNode::registerFileReader( *this );
+        H3DVideoClipDecoderNode::registerDecoder( *this );
       }
 
       string name;
@@ -112,28 +112,28 @@ namespace H3D {
     /// H3DVideoClipDecoderNode
     /// class that can handle that file type. If no such class is registered
     /// NULL is returns.
-    static H3DVideoClipDecoderNode *getSupportedFileReader( const string &url );
+    static H3DVideoClipDecoderNode *getSupportedDecoder( const string &url );
 
-    /// Register a file reader that can then be returned by 
-    /// getSupportedFileReader().
+    /// Register a decoder that can then be returned by 
+    /// getSupportedDecoder().
     /// \param name The name of the class
     /// \param create A function for creating an instance of that class.
     /// \param supports A function to determine if the class supports a
     /// given file type.
-    static void registerFileReader( const string &name,
+    static void registerDecoder( const string &name,
                                     CreateNodeFunc create, 
                                     SupportsFileFunc supports ) {
-      registerFileReader( FileReaderRegistration( name, create, supports ) );
+      registerDecoder( DecoderRegistration( name, create, supports ) );
     }
 
     /// Register a file reader that can then be returned by 
-    /// getSupportedFileReader().
-    static void registerFileReader( const FileReaderRegistration &fr ) {
-      registered_file_readers->push_back( fr );
+    /// getSupportedDecoder().
+    static void registerDecoder( const DecoderRegistration &fr ) {
+      registered_decoders->push_back( fr );
     }
 
   protected:
-    static list< FileReaderRegistration > *registered_file_readers;
+    static list< DecoderRegistration > *registered_decoders;
     static bool initialized;
     typedef enum {
       PLAYING = 0,

@@ -54,7 +54,7 @@ namespace H3D {
     }
 
     virtual void traverseSG( TraverseInfo &ti ) {
-      if( decoder->haveNewFrame() )
+      if( decoder.get() && decoder->haveNewFrame() )
         repeatS->touch();
       X3DTexture2DNode::traverseSG( ti );
     }

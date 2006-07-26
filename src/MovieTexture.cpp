@@ -29,7 +29,6 @@
 
 
 #include "MovieTexture.h"
-#include "DirectShowDecoder.h"
 
 using namespace H3D;
 
@@ -55,8 +54,6 @@ MovieTexture::MovieTexture(
                                    Inst< SFBool  > _interpolate ) {
   type_name = "MovieTexture";
   database.initFields( this );
-  HRESULT hr = S_OK;
-  decoder.reset( new DirectShowDecoder() ); 
   
   
 

@@ -81,6 +81,12 @@
 /// supported. Only local filenames can be used. 
 #define HAVE_LIBCURL
 
+/// Undef if you do not have DirectShow available. Needed for the 
+/// DirectShowDecoder node.
+#ifdef WIN32
+#define HAVE_DSHOW
+#endif
+
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
 // are compiled with the H3DAPI_EXPORTS symbol defined on the command

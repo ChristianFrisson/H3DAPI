@@ -30,54 +30,27 @@
 #include "DirectShowDecoder.h"
 #include "Scene.h"
 
-using namespace H3D;
+#ifdef HAVE_DSHOW
 
-//-----------------------------------------------------------------------------
-// Global Constants
-//-----------------------------------------------------------------------------
+using namespace H3D;
 
 // Define this if you want to render only the video component with no audio
 //
 //   #define NO_AUDIO_RENDERER
 
-// An application can advertise the existence of its filter graph
-// by registering the graph with a global Running Object Table (ROT).
-// The GraphEdit application can detect and remotely view the running
-// filter graph, allowing you to 'spy' on the graph with GraphEdit.
-//
-// To enable registration in this sample, define REGISTER_FILTERGRAPH.
-//
 
+// Add this node to the H3DNodeDatabase system.
+H3DNodeDatabase DirectShowDecoder::database( "DirectShowDecoder", 
+                                           &(newInstance<DirectShowDecoder>), 
+                                           typeid( DirectShowDecoder ) );
 
-//-----------------------------------------------------------------------------
-// Msg: Display an error message box if needed
-//-----------------------------------------------------------------------------
-void Msg(TCHAR *szFormat, ...)
-{
-    TCHAR szBuffer[1024];  // Large buffer for long filenames or URLs
-    const size_t NUMCHARS = sizeof(szBuffer) / sizeof(szBuffer[0]);
-    const int LASTCHAR = NUMCHARS - 1;
+H3DVideoClipDecoderNode::DecoderRegistration 
+DirectShowDecoder::reader_registration(
+                            "DirectShowDecoder",
+                            &(newImageLoaderNode< DirectShowDecoder >),
+                            &DirectShowDecoder::supportsFileType 
+                            );
 
-    // Format the input string
-    va_list pArgs;
-    va_start(pArgs, szFormat);
-
-    // Use a bounded buffer size to prevent buffer overruns.  Limit count to
-    // character size minus one to allow for a NULL terminating character.
-    (void)StringCchVPrintf(szBuffer, NUMCHARS - 1, szFormat, pArgs);
-    va_end(pArgs);
-
-    // Ensure that the formatted string is NULL-terminated
-    szBuffer[LASTCHAR] = TEXT('\0');
-
-    MessageBox(NULL, szBuffer, TEXT("DirectShow Texture3D9 Sample"),
-               MB_OK | MB_ICONERROR);
-}
-
-
-//-----------------------------------------------------------------------------
-// InitDShowTextureRenderer : Create DirectShow filter graph and run the graph
-//-----------------------------------------------------------------------------
 HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
 {
     HRESULT hr = S_OK;
@@ -92,7 +65,10 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
 
     CFrameGrabber *frame_grabber = new CFrameGrabber( NULL, &hr, this );
     if (FAILED(hr) ) {
-      cerr << "Failed to create CFrameGrabber" << endl;
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Failed to create CFrameGrabber(" 
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
+#endif
       delete frame_grabber;
       frame_grabber = NULL;
       return E_FAIL;
@@ -100,9 +76,11 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
 
     // Get a pointer to the IBaseFilter on the TextureRenderer, add it to graph
     g_pRenderer = frame_grabber;
-    if (FAILED(hr = g_pGB->AddFilter(g_pRenderer, L"TEXTURERENDERER")))
-    {
-        Msg(TEXT("Could not add renderer filter to graph!  hr=0x%x"), hr);
+    if (FAILED(hr = g_pGB->AddFilter(g_pRenderer, L"TEXTURERENDERER"))) {
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Could not add renderer filter to graph! (" 
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
+#endif
         return hr;
     }
 
@@ -119,22 +97,30 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     hr = g_pGB->AddSourceFilter (wFileName, L"SOURCE", &pFSrc);
 
     // If the media file was not found, inform the user.
-    if (hr == VFW_E_NOT_FOUND)
-    {
-        Msg(TEXT("Could not add source filter to graph!  (hr==VFW_E_NOT_FOUND)\r\n\r\n")
-            TEXT("This sample reads a media file from your windows directory.\r\n")
-            TEXT("This file is missing from this machine."));
-        return hr;
+    if (hr == VFW_E_NOT_FOUND) {
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Could not add source filter to graph! (hr==VFW_E_NOT" 
+                 << "_FOUND)" << endl 
+                 << "This sample reads a media file from your windows"
+                 <<" directory. This file is missing from this machine." 
+                 << endl << "(" 
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
+#endif
+      return hr;
     }
-    else if(FAILED(hr))
-    {
-        Msg(TEXT("Could not add source filter to graph!  hr=0x%x"), hr);
-        return hr;
+    else if(FAILED(hr)) {
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Could not add source filter to graph! (" 
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
+#endif
+      return hr;
     }
 
-    if (FAILED(hr = pFSrc->FindPin(L"Output", &pFSrcPinOut)))
-    {
-        Msg(TEXT("Could not find output pin!  hr=0x%x"), hr);
+    if (FAILED(hr = pFSrc->FindPin(L"Output", &pFSrcPinOut))) {
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Could not find output pin! " 
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
+#endif
         return hr;
     }
 
@@ -146,17 +132,21 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     CComPtr<IPin> pFTRPinIn;      // Texture Renderer Input Pin
 
     // Find the source's output pin and the renderer's input pin
-    if (FAILED(hr = frame_grabber->FindPin(L"In", &pFTRPinIn)))
-    {
-        Msg(TEXT("Could not find input pin!  hr=0x%x"), hr);
+    if (FAILED(hr = frame_grabber->FindPin(L"In", &pFTRPinIn))) {
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Could not find input pin!  (" 
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
+#endif
         return hr;
     }
 
     // Connect these two filters
-    if (FAILED(hr = g_pGB->Connect(pFSrcPinOut, pFTRPinIn)))
-    {
-        Msg(TEXT("Could not connect pins!  hr=0x%x"), hr);
-        return hr;
+    if (FAILED(hr = g_pGB->Connect(pFSrcPinOut, pFTRPinIn))) {
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Could not connect pins! (" 
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
+#endif
+      return hr;
     }
 
 #else
@@ -165,9 +155,12 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     // will connect the video stream to the loaded DirectShowDecoder
     // and will load and connect an audio renderer (if needed).
 
-    if (FAILED(hr = g_pGB->Render(pFSrcPinOut)))
-    {
-        Msg(TEXT("Could not render source output pin!  hr=0x%x"), hr);
+    if (FAILED(hr = g_pGB->Render(pFSrcPinOut))) {
+#ifdef DSHOW_DEBUG_MSG
+      Console(4) << "Could not render source output pin!  ("
+                 << DirectShowDecoder::initDShowTextureRenderer << ")" 
+                 << endl;
+#endif
         return hr;
     }
 
@@ -183,9 +176,6 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     return S_OK;
 }
 
-//-----------------------------------------------------------------------------
-// CleanupDShow
-//-----------------------------------------------------------------------------
 void DirectShowDecoder::cleanupDShow(void)
 {
     // Shut down the graph
@@ -199,9 +189,6 @@ void DirectShowDecoder::cleanupDShow(void)
 }
 
 
-//-----------------------------------------------------------------------------
-// DirectShowDecoder constructor
-//-----------------------------------------------------------------------------
 DirectShowDecoder::DirectShowDecoder( )
                                   : frame_width( 0 ),
                                     frame_height( 0 ),
@@ -216,22 +203,17 @@ DirectShowDecoder::DirectShowDecoder( )
 }
 
 
-//-----------------------------------------------------------------------------
 // DirectShowDecoder destructor
-//-----------------------------------------------------------------------------
-DirectShowDecoder::~DirectShowDecoder()
-{
+DirectShowDecoder::~DirectShowDecoder() {
   cleanupDShow();
     // Do nothing
 }
 
 
-//-----------------------------------------------------------------------------
+
 // CheckMediaType: This method forces the graph to give us an R8G8B8 video
-// type, making our copy to texture memory trivial.
-//-----------------------------------------------------------------------------
-HRESULT DirectShowDecoder::CFrameGrabber::CheckMediaType(const CMediaType *pmt)
-{
+// type.
+HRESULT DirectShowDecoder::CFrameGrabber::CheckMediaType(const CMediaType *pmt){
     HRESULT   hr = E_FAIL;
     VIDEOINFO *pvi=0;
 
@@ -254,18 +236,12 @@ HRESULT DirectShowDecoder::CFrameGrabber::CheckMediaType(const CMediaType *pmt)
     return hr;
 }
 
-//-----------------------------------------------------------------------------
-// SetMediaType: Graph connection has been made.
-//-----------------------------------------------------------------------------
-HRESULT DirectShowDecoder::CFrameGrabber::SetMediaType(const CMediaType *pmt)
-{
-    HRESULT hr;
-
+// Graph connection has been made. Set the dimensions of the video
+HRESULT DirectShowDecoder::CFrameGrabber::SetMediaType(const CMediaType *pmt) {
     UINT uintWidth = 2;
     UINT uintHeight = 2;
 
     // Retrive the size of this media type
-
     VIDEOINFO *pviBmp;                      // Bitmap info header
     pviBmp = (VIDEOINFO *)pmt->Format();
 
@@ -276,18 +252,13 @@ HRESULT DirectShowDecoder::CFrameGrabber::SetMediaType(const CMediaType *pmt)
 }
 
 
-//-----------------------------------------------------------------------------
-// DoRenderSample: A sample has been delivered. Copy it to the texture.
-//-----------------------------------------------------------------------------
-HRESULT DirectShowDecoder::CFrameGrabber::DoRenderSample( IMediaSample * pSample )
-{
-    BYTE  *pBmpBuffer, *pTxtBuffer; // Bitmap buffer, texture buffer
-    LONG  lTxtPitch;                // Pitch of bitmap, texture
+// We have a new sample. Copy it.
+HRESULT DirectShowDecoder::CFrameGrabber::DoRenderSample( IMediaSample * pSample ) {
+    BYTE  *pBmpBuffer;  
 
     BYTE  * pbS = NULL;
     DWORD * pdwS = NULL;
     DWORD * pdwD = NULL;
-    UINT row, col, dwordWidth;
     
     // Get the video bitmap buffer
     pSample->GetPointer( &pBmpBuffer );
@@ -324,7 +295,8 @@ void DirectShowDecoder::startPlaying() {
     HRESULT hr = S_OK;
     // Start the graph running;
     if (FAILED(hr = g_pMC->Run()) ){
-      Msg(TEXT("Could not run the DirectShow graph!  hr=0x%x"), hr);
+      Console( 4 ) << "Could not run the DirectShow graph! "
+                   << "(DirectShowDecoder::startPlaying)"<< endl; 
     } else {
       status = PLAYING;
     }
@@ -336,7 +308,7 @@ void DirectShowDecoder::stopPlaying() {
     HRESULT hr = S_OK;
     // Stop the graph running;
     LONGLONG pos = 0;
-     hr = g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning );
+    hr = g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning );
     hr = g_pMC->StopWhenReady();
     status = STOPPED;
  }
@@ -347,7 +319,7 @@ void DirectShowDecoder::pausePlaying() {
     HRESULT hr = S_OK;
     // Stop the graph running;
     if (FAILED(hr = g_pMC->Pause()) ){
-      Msg(TEXT("Could not run the DirectShow graph!  hr=0x%x"), hr);
+      Console( 4 ) << "Pause failed (" << (DirectShowDecoder::pausePlaying) << ")" << endl;
     } else {
       status = PAUSED;
     }
@@ -386,3 +358,11 @@ bool DirectShowDecoder::loadClip( const string &url ) {
   status = STOPPED;
   return initDShowTextureRenderer( url ) == S_OK;
 }
+
+// TODO: should find a better way to check if a file type is supported.
+bool DirectShowDecoder::supportsFileType( const string &url ) {
+  AutoRef< DirectShowDecoder > dec( new DirectShowDecoder() );
+  return dec->loadClip( url );
+}
+
+#endif

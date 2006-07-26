@@ -29,7 +29,6 @@
 
 
 #include "SimpleMovieTexture.h"
-#include "DirectShowDecoder.h"
 
 using namespace H3D;
 
@@ -88,7 +87,6 @@ SimpleMovieTexture::SimpleMovieTexture(
   type_name = "SimpleMovieTexture";
   database.initFields( this );
   HRESULT hr = S_OK;
-  decoder.reset( new DirectShowDecoder() ); 
   
   decoderManager->setOwner( this );
   
@@ -112,29 +110,40 @@ void SimpleMovieTexture::DecoderManager::update() {
   if( event.ptr == routes_in[0] ) {
     // play
     if( static_cast< SFBool * >( routes_in[0] )->getValue( tex->id ) ) {
-      tex->decoder->startPlaying();
+      if( tex->decoder.get() )
+        tex->decoder->startPlaying();
     }
   } else if( event.ptr == routes_in[1] ) {
     // stop
     if( static_cast< SFBool * >( routes_in[1] )->getValue( tex->id ) ) {
-       tex->decoder->stopPlaying();
+      if( tex->decoder.get() )
+        tex->decoder->stopPlaying();
     }
   } else if( event.ptr == routes_in[2] ) {
     // pause
     if( static_cast< SFBool * >( routes_in[2] )->getValue( tex->id ) ) {
-       tex->decoder->pausePlaying();
+      if( tex->decoder.get() )
+        tex->decoder->pausePlaying();
     }
   } else if( event.ptr == routes_in[3] ) {
     // loop
-    tex->decoder->setLooping( static_cast< SFBool * >( routes_in[2] )->getValue( tex->id ) );
+    if( tex->decoder.get() )
+      tex->decoder->setLooping( static_cast< SFBool * >( routes_in[2] )->getValue( tex->id ) );
   } else if( event.ptr == routes_in[4] ) {
     // url
     MFString *urls = static_cast< MFString * >( routes_in[4] );
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
       string url = tex->resolveURLAsFile( *i );
-      if( tex->decoder->loadClip( url ) ) {
-        tex->setURLUsed( *i );
-        return;
+      H3DVideoClipDecoderNode *decoder = 
+        H3DVideoClipDecoderNode::getSupportedDecoder( url );
+      if( decoder ) {
+        if( decoder->loadClip( url ) ) {
+          tex->decoder.reset( decoder );
+          tex->setURLUsed( *i );
+          return;
+        }
+      } else {
+        tex->decoder.reset( NULL );
       }
     }
 

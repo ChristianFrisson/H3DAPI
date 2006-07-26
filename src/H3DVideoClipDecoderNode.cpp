@@ -33,17 +33,17 @@
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-list< H3DVideoClipDecoderNode::FileReaderRegistration > 
-*H3DVideoClipDecoderNode::registered_file_readers; 
+list< H3DVideoClipDecoderNode::DecoderRegistration > 
+*H3DVideoClipDecoderNode::registered_decoders; 
 
 bool H3DVideoClipDecoderNode::initialized = false; 
 
-H3DVideoClipDecoderNode *H3DVideoClipDecoderNode::getSupportedFileReader( 
+H3DVideoClipDecoderNode *H3DVideoClipDecoderNode::getSupportedDecoder( 
    const string &url ) {
   if( initialized ) {
-    for( list< FileReaderRegistration >::iterator i = 
-           registered_file_readers->begin();
-         i != registered_file_readers->end(); i++ ) {
+    for( list< DecoderRegistration >::iterator i = 
+           registered_decoders->begin();
+         i != registered_decoders->end(); i++ ) {
       if( (*i).supports_func( url ) )
         return (*(*i).create_func)();
     }

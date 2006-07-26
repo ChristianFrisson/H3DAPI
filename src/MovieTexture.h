@@ -34,7 +34,7 @@
 namespace H3D {
   /// \ingroup Nodes 
   /// \class MovieTexture
-  class MovieTexture : public H3DVideoTextureNode {
+  class H3DAPI_API MovieTexture : public H3DVideoTextureNode {
   public:
     
     /// Constructor.

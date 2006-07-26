@@ -26,21 +26,43 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef __DIRECTSHOWDECODER_H__
 #define __DIRECTSHOWDECODER_H__
 
 #include "FieldTemplates.h"
 #include "SFTime.h"
 
+#ifdef HAVE_DSHOW
+
 // Include from DirectShow BaseClasses
+#ifdef _DEBUG
+#define RESTORE__DEBUG
+#undef _DEBUG
+#endif
+
+#ifdef DEBUG
+#define RESTORE_DEBUG
+#undef DEBUG
+#endif
 #include <streams.h>
 
-#ifdef _MSC_VER
-#ifdef _DEBUG
-#pragma comment( lib, "strmbasd.lib" )
-#else
-#pragma comment( lib, "strmbase.lib" )
+#ifdef RESTORE__DEBUG
+#define _DEBUG
+#undef RESTORE__DEBUG
 #endif
+
+#ifdef RESTORE_DEBUG
+#define DEBUG
+#undef RESTORE_DEBUG
+#endif
+
+#ifdef _MSC_VER
+//#ifdef _DEBUG
+//#pragma comment( lib, "strmbasd.lib" )
+//#else
+#pragma comment( lib, "strmbase.lib" )
+//#endif
 #endif
 
 #include "H3DVideoClipDecoderNode.h"
@@ -67,7 +89,9 @@ class H3DAPI_API DirectShowDecoder : public H3DVideoClipDecoderNode
     
     /// Called when a new frame is available
     HRESULT DoRenderSample(IMediaSample *pMediaSample); // New video sample
-    void OnReceiveFirstSample(IMediaSample *pSample) { DoRenderSample( pSample ); }
+    void OnReceiveFirstSample(IMediaSample *pSample) { 
+      DoRenderSample( pSample ); 
+    }
     
     DirectShowDecoder *decoder;
   };
@@ -95,6 +119,15 @@ public:
     return Image::UNSIGNED;
   }
 
+  /// The H3DNodeDatabase for this node.
+  static H3DNodeDatabase database;  
+  
+  /// Register this node to the H3DVideoClipDecoderNodes available.
+  static DecoderRegistration reader_registration;
+
+  /// Returns true if the node supports the filetype of the file
+  /// specified by url.
+  static bool supportsFileType( const string &url );
 protected:
   // DirectShow pointers
   CComPtr<IGraphBuilder>  g_pGB;          // GraphBuilder
@@ -130,5 +163,7 @@ protected:
 
   auto_ptr< DShowEventHandler > event_handler;
 };
+
 }
+#endif
 #endif
