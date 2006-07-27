@@ -40,24 +40,22 @@ H3DNodeDatabase H3DVideoTextureNode::database(
         );
 
 namespace H3DVideoVideoTextureNodeInternals {
-  FIELDDB_ELEMENT( H3DVideoTextureNode, 
-                   scaleFrameToFillTexture, INPUT_OUTPUT );
 }
 
 void H3DVideoTextureNode::render() {
   if( !decoder.get() ) return;
   // assuming 24 bit RGB image.
   unsigned int required_frame_bytes = 
-    decoder->getFrameWidth() * decoder->getFrameHeight() * 3;
+    decoder->getFrameSize();
 
   if( frame_bytes_allocated != required_frame_bytes ) {
     unsigned char *buffer = new unsigned char[ required_frame_bytes ];
     image->setValue( new PixelImage( decoder->getFrameWidth(),
                                      decoder->getFrameHeight(),
                                      1, 
-                                     24,
-                                     PixelImage::RGB,
-                                     PixelImage::UNSIGNED,
+                                     decoder->getFrameBitsPerPixel(),
+                                     decoder->getFramePixelType(),
+                                     decoder->getFramePixelComponentType(),
                                      buffer ) );
     frame_bytes_allocated = required_frame_bytes;
     X3DTexture2DNode::render();
@@ -75,48 +73,6 @@ void H3DVideoTextureNode::render() {
       bool free_image_data = false;
       void *image_data = pi->getImageData();
       
-      if( !GLEW_ARB_texture_non_power_of_two && 
-          scaleToPowerOfTwo->getValue() && 
-          scaleFrameToFillTexture->getValue() ) {
-        // check if any scaling is required and if so scale the image.
-        bool needs_scaling = false;
-        unsigned int new_width  = pi->width();
-        unsigned int new_height = pi->height(); 
-        
-        if( !isPowerOfTwo( new_width ) ) {
-        new_width = nextPowerOfTwo( new_width );
-        needs_scaling = true;
-        } 
-        
-        if( !isPowerOfTwo( new_height ) ) {
-        new_height = nextPowerOfTwo( new_height );
-        needs_scaling = true;
-        } 
-        
-        if( needs_scaling ) {
-          unsigned int bytes_per_pixel = pi->bitsPerPixel();
-          bytes_per_pixel = 
-            bytes_per_pixel % 8 ? 
-            bytes_per_pixel / 8 : bytes_per_pixel - 8 + 1;
-          
-          void * new_data = malloc( H3DMax( new_width, 4u )*
-                                    new_height*bytes_per_pixel );
-          gluScaleImage( glPixelFormat( pi ), 
-                         width,
-                         height,
-                         glPixelComponentType( pi ),
-                         image_data,
-                         new_width,
-                         new_height,
-                         glPixelComponentType( pi ),
-                         new_data );
-          width = new_width;
-          height = new_height;
-          
-          free_image_data = true;
-          image_data = new_data;
-        }
-      }
       glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 
                        width, height, 
                        GL_RGB,

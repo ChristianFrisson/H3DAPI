@@ -171,6 +171,11 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     g_pGB.QueryInterface(&g_pMS);
     g_pGB.QueryInterface(&g_pME);
 
+    setRate( rate );
+    LONGLONG dur;
+    g_pMS->GetDuration( &dur );
+    // convert to seconds.
+    duration = dur * 1e-7;
     g_pMC->Pause();
 
     return S_OK;
@@ -186,6 +191,7 @@ void DirectShowDecoder::cleanupDShow(void)
     if (!(!g_pMS)) g_pMS.Release();
     if (!(!g_pGB)) g_pGB.Release();
     if (!(!g_pRenderer)) g_pRenderer.Release();
+    duration = 0;
 }
 
 
@@ -195,7 +201,8 @@ DirectShowDecoder::DirectShowDecoder( )
                                     data_size( 0 ),
                                     data( NULL ), 
                                     have_new_frame( false ),
-                                    looping( false )
+                                    looping( false ),
+                                    rate( 1 )
 {
   event_handler.reset( new DShowEventHandler );
   event_handler->setOwner( this );
@@ -263,7 +270,7 @@ HRESULT DirectShowDecoder::CFrameGrabber::DoRenderSample( IMediaSample * pSample
     // Get the video bitmap buffer
     pSample->GetPointer( &pBmpBuffer );
     
-    unsigned int bytes_to_copy = decoder->frame_height * decoder->frame_width * 3;//pSample->GetActualDataLength();
+    unsigned int bytes_to_copy = decoder->getFrameSize();
     if( decoder->data_size < bytes_to_copy ) {
       if( decoder->data ) delete decoder->data;
       decoder->data = new unsigned char[ bytes_to_copy ];
@@ -286,7 +293,7 @@ DirectShowDecoder::CFrameGrabber::CFrameGrabber( LPUNKNOWN pUnk,
 }
 
 void DirectShowDecoder::getNewFrame( unsigned char *buffer ) {
-  memcpy( buffer, data,  getFrameWidth() * getFrameHeight() * 3 );
+  memcpy( buffer, data,  getFrameSize() );
   have_new_frame = false;
 }
 
@@ -308,7 +315,8 @@ void DirectShowDecoder::stopPlaying() {
     HRESULT hr = S_OK;
     // Stop the graph running;
     LONGLONG pos = 0;
-    hr = g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning );
+    hr = g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, 
+                             NULL, AM_SEEKING_NoPositioning );
     hr = g_pMC->StopWhenReady();
     status = STOPPED;
  }
@@ -319,7 +327,8 @@ void DirectShowDecoder::pausePlaying() {
     HRESULT hr = S_OK;
     // Stop the graph running;
     if (FAILED(hr = g_pMC->Pause()) ){
-      Console( 4 ) << "Pause failed (" << (DirectShowDecoder::pausePlaying) << ")" << endl;
+      Console( 4 ) << "Pause failed (" << (DirectShowDecoder::pausePlaying)
+                   << ")" << endl;
     } else {
       status = PAUSED;
     }
@@ -333,23 +342,22 @@ void DirectShowDecoder::DShowEventHandler::update() {
   HRESULT hr;
 
   if (!d->g_pME)
-      return;
+    return;
 
   // Check for completion events
   hr = d->g_pME->GetEvent(&lEventCode, &lParam1, &lParam2, 0);
   if (SUCCEEDED(hr)) {
-
     // If we have reached the end of the media file, reset to beginning
-    if (EC_COMPLETE == lEventCode)
-      {
-        if( d->looping ) {
-          LONGLONG pos = 0;
-          hr = d->g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, NULL, AM_SEEKING_NoPositioning );
-        }
-        
-        // Free any memory associated with this event
-        hr = d->g_pME->FreeEventParams(lEventCode, lParam1, lParam2);
+    if (EC_COMPLETE == lEventCode) {
+      if( d->looping ) {
+        LONGLONG pos = 0;
+        hr = d->g_pMS->SetPositions(&pos, AM_SEEKING_AbsolutePositioning, 
+                                    NULL, AM_SEEKING_NoPositioning );
       }
+      
+      // Free any memory associated with this event
+      hr = d->g_pME->FreeEventParams(lEventCode, lParam1, lParam2);
+    }
   }
 }
 
@@ -363,6 +371,23 @@ bool DirectShowDecoder::loadClip( const string &url ) {
 bool DirectShowDecoder::supportsFileType( const string &url ) {
   AutoRef< DirectShowDecoder > dec( new DirectShowDecoder() );
   return dec->loadClip( url );
+}
+
+/// Get the current position in the clip (in seconds from start position)
+H3DTime DirectShowDecoder::getPosition() {
+  LONGLONG pos;
+  if( g_pMS )
+    return g_pMS->GetCurrentPosition(&pos);
+  else 
+    return 0;
+}
+
+/// Set the current position in the clip(in seconds from start position)
+void DirectShowDecoder::setPosition( H3DTime pos ) {
+  LONGLONG p = (LONGLONG )( pos * 1e7 );
+  if( g_pMS )
+    g_pMS->SetPositions(&p, AM_SEEKING_AbsolutePositioning, 
+                        NULL, AM_SEEKING_NoPositioning );
 }
 
 #endif

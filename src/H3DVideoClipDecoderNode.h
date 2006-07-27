@@ -39,12 +39,15 @@ namespace H3D {
   /// \ingroup AbstractNodes
   /// \class H3DVideoClipDecoderNode
   /// \brief H3DVideoClipDecoderNode is a virtual base class for classes
-  /// decoding video clips making new frames available.
-  ///
-  /// Each subclass must define the loadImage () function. 
-  /// It is used by e.g. the MovieTexture node.
-  ///
+  /// decoding video clips making new frames available to render.
   class H3DAPI_API H3DVideoClipDecoderNode : public Node {
+  protected:
+    typedef enum {
+      PLAYING = 0,
+      STOPPED = 1,
+      PAUSED = 2 
+    } PlayStatus;
+
   public:
     typedef H3DVideoClipDecoderNode*( *CreateNodeFunc)(); 
 
@@ -84,22 +87,65 @@ namespace H3D {
       type_name = "H3DVideoClipDecoderNode";
     }
 
-    /// Pure virtual function to load an Image from a url.
-    /// \returns An Image * with the image data loaded from the
-    /// url.
-    ///
+    /// Pure virtual function to load an video clip from a url.
+    /// Returns true on success.
     virtual bool loadClip( const string &url ) = 0;
 
+    /// Returns true when a new frame is available.
     virtual bool haveNewFrame() = 0;
+
+    /// Get the new frame. The buffer must be at least getFrameSize() bytes. 
     virtual void getNewFrame( unsigned char *buffer ) = 0;
-    virtual H3DInt32 getFrameWidth() = 0;
-    virtual H3DInt32 getFrameHeight() = 0;
+
+    /// The size in bytes of the current frame.
+    virtual unsigned int getFrameSize() = 0;
+
+    /// The width in pixels of the current frame.
+    virtual unsigned int getFrameWidth() = 0;
+
+    /// The height in pixels of the current frame.
+    virtual unsigned int getFrameHeight() = 0;
+
+    /// The pixel type of the current frame.
     virtual Image::PixelType getFramePixelType() = 0;
+
+    /// The pixel component type of the current frame.
     virtual Image::PixelComponentType getFramePixelComponentType() = 0;
+
+    /// Get the number of bits per pixel in the current frame.
+    virtual unsigned int getFrameBitsPerPixel() = 0;
+
+    /// Start decoding the video clip.
     virtual void startPlaying() = 0;
+
+    /// Stop decoding the video clip and set the position to the start
+    /// position.
     virtual void stopPlaying() = 0;
+
+    /// Pause the decoding of the video clip.
     virtual void pausePlaying() = 0;
+
+    /// Set whether the clip should loop and start from the start again
+    /// when the end has been reached.
     virtual void setLooping( bool on ) = 0;
+
+    /// Get the current position in the clip (in seconds from start position)
+    virtual H3DTime getPosition() = 0;
+    
+    /// Set the current position in the clip(in seconds from start position)
+    virtual void setPosition( H3DTime pos ) = 0;
+
+    /// Set the playback rate. A rate of 1 means normal playback speed, 2 double.
+    /// Negative values means playing backwards. 
+    /// \returns true if the new rate is supported by the decoder.
+    virtual bool setRate( double r ) = 0;
+
+    /// Returns the duration in seconds at normal play rate of the currently
+    /// loaded video clip
+    virtual H3DTime getDuration() = 0;
+
+    /// Returns the current play status.
+    inline PlayStatus getPlayStatus() { return status; }
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "imageLoader".
@@ -107,7 +153,7 @@ namespace H3D {
     virtual string defaultXMLContainerField() {
       return "decoder";
     }
-
+    
     /// Given an url to a file, it returns an instance of a 
     /// H3DVideoClipDecoderNode
     /// class that can handle that file type. If no such class is registered
@@ -135,12 +181,6 @@ namespace H3D {
   protected:
     static list< DecoderRegistration > *registered_decoders;
     static bool initialized;
-    typedef enum {
-      PLAYING = 0,
-      STOPPED = 1,
-      PAUSED = 2 
-    } PlayStatus;
-
     PlayStatus status;
   };
 }

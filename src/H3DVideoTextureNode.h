@@ -33,8 +33,11 @@
 #include "H3DVideoClipDecoderNode.h"
 
 namespace H3D {
-  /// \ingroup Nodes 
+  /// \ingroup AbstractNodes 
   /// \class H3DVideoTextureNode
+  /// \brief H3DVideoTextureNode is a virtual base class for classes
+  /// using video as a texture.
+  /// Subclasses must set the decoder
   class H3DAPI_API H3DVideoTextureNode : public X3DTexture2DNode {
   public:
     
@@ -46,26 +49,28 @@ namespace H3D {
                  Inst< SFBool      > _repeatT     = 0,
                  Inst< SFBool      > _scaleToP2   = 0,
                  Inst< SFImage     > _image       = 0,
-                 Inst< SFBool      > _interpolate = 0,
-                 Inst< SFBool      > _scaleFrameToFillTexture = 0 ):
-      scaleFrameToFillTexture( _scaleFrameToFillTexture ),
-      frame_bytes_allocated( 0 ) {
-      scaleFrameToFillTexture->setValue( false );
-    }
+                 Inst< SFBool      > _interpolate = 0 ):
+      frame_bytes_allocated( 0 ) {}
 
+    /// Traverse the senegraph. 
     virtual void traverseSG( TraverseInfo &ti ) {
+      // break the display list cache if we have a new frame
       if( decoder.get() && decoder->haveNewFrame() )
         repeatS->touch();
       X3DTexture2DNode::traverseSG( ti );
     }
 
+    /// Render the texture.
     virtual void render();
 
-    auto_ptr< SFBool > scaleFrameToFillTexture;
-
+    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+    /// The decoder to use for the texture. Must be set by subclasses
+    /// in order for the video to be rendered.
     AutoRef< H3DVideoClipDecoderNode > decoder;
+
+    /// The number of bytes currently allocated for frame data.
     unsigned int frame_bytes_allocated;
   };
 }

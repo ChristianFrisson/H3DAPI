@@ -43,10 +43,10 @@ namespace SimpleMovieTextureInternals {
   FIELDDB_ELEMENT( SimpleMovieTexture, play, INPUT_ONLY );
   FIELDDB_ELEMENT( SimpleMovieTexture, stop, INPUT_ONLY );
   FIELDDB_ELEMENT( SimpleMovieTexture, pause, INPUT_ONLY );
-  FIELDDB_ELEMENT( SimpleMovieTexture, length, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( SimpleMovieTexture, frameRate, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( SimpleMovieTexture, width, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( SimpleMovieTexture, height, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( SimpleMovieTexture, duration, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( SimpleMovieTexture, rate, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( SimpleMovieTexture, videoWidth, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( SimpleMovieTexture, videoHeight, OUTPUT_ONLY );
   FIELDDB_ELEMENT( SimpleMovieTexture, loop, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SimpleMovieTexture, playAudio, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SimpleMovieTexture, url, INPUT_OUTPUT );
@@ -64,8 +64,8 @@ SimpleMovieTexture::SimpleMovieTexture(
                                    Inst< SFBool > _play,
                                    Inst< SFBool  > _stop,
                                    Inst< SFBool > _pause,
-                                   Inst< SFTime      > _length,
-                                   Inst< SFFloat     > _frameRate,
+                                   Inst< SFTime      > _duration,
+                                   Inst< SFFloat     > _rate,
                                    Inst< SFBool      > _playAudio,
                                    Inst< SFBool      > _loop,
                                    Inst< SFInt32     > _width,
@@ -77,12 +77,12 @@ SimpleMovieTexture::SimpleMovieTexture(
   play( _play ),
   stop( _stop ),
   pause( _pause ),
-  length( _length ),
-  frameRate( _frameRate ),
+  duration( _duration ),
+  rate( _rate ),
   playAudio( _playAudio ),
   loop( _loop ),
-  width( _width ),
-  height( _height ),
+  videoWidth( _width ),
+  videoHeight( _height ),
   decoderManager( new DecoderManager ) {
   type_name = "SimpleMovieTexture";
   database.initFields( this );
@@ -90,18 +90,19 @@ SimpleMovieTexture::SimpleMovieTexture(
   
   decoderManager->setOwner( this );
   
-  frameRate->setValue( 0, id );
+  rate->setValue( 1, id );
   playAudio->setValue( true, id );
   loop->setValue( false, id );
-  width->setValue( 0, id );
-  height->setValue( 0, id );
-  length->setValue( 0, id );
+  videoWidth->setValue( 0, id );
+  videoHeight->setValue( 0, id );
+  duration->setValue( 0, id );
 
   play->routeNoEvent( decoderManager, id );
   stop->routeNoEvent( decoderManager, id );
   pause->routeNoEvent( decoderManager, id );
   loop->routeNoEvent( decoderManager, id );
   url->routeNoEvent( decoderManager, id );
+  rate->route( decoderManager, id );
 }
 
 
@@ -140,10 +141,16 @@ void SimpleMovieTexture::DecoderManager::update() {
         if( decoder->loadClip( url ) ) {
           tex->decoder.reset( decoder );
           tex->setURLUsed( *i );
+          tex->videoWidth->setValue( decoder->getFrameWidth(), tex->id );
+          tex->videoHeight->setValue( decoder->getFrameHeight(), tex->id );
+          tex->duration->setValue( decoder->getDuration(), tex->id );
           return;
         }
       } else {
         tex->decoder.reset( NULL );
+        tex->videoWidth->setValue( 0, tex->id );
+        tex->videoHeight->setValue( 0, tex->id );
+        tex->duration->setValue( 0, tex->id );
       }
     }
 
@@ -156,6 +163,17 @@ void SimpleMovieTexture::DecoderManager::update() {
                << "(in " << getOwner()->getName() << ")" << endl;
 
     tex->setURLUsed( "" );
+  } else if( event.ptr == routes_in[5] ) {
+    // rate
+    H3DFloat rate =static_cast< SFFloat * >( routes_in[5] )->getValue( tex->id );
+    if( tex->decoder.get() ) {
+      if(! tex->decoder->setRate( rate ) ) {
+        Console(2) << "Warning: Unable to set rate to " << rate 
+                   << ". Rate not supported by decoder ( " 
+                   << tex->decoder->getName() << " in " 
+                   << tex->getName() << endl;
+      }
+    }
   }
 }
   

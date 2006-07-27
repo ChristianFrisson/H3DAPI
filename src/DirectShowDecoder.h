@@ -36,6 +36,9 @@
 #ifdef HAVE_DSHOW
 
 // Include from DirectShow BaseClasses
+// Remove the DEBUG defines when including DShow classes in order
+// to always use the release version. The debug version caused us
+// problems.
 #ifdef _DEBUG
 #define RESTORE__DEBUG
 #undef _DEBUG
@@ -58,111 +61,189 @@
 #endif
 
 #ifdef _MSC_VER
-//#ifdef _DEBUG
-//#pragma comment( lib, "strmbasd.lib" )
-//#else
 #pragma comment( lib, "strmbase.lib" )
-//#endif
 #endif
 
 #include "H3DVideoClipDecoderNode.h"
 
 namespace H3D {
-//-----------------------------------------------------------------------------
-// Define GUID for Texture Renderer
-// {71771540-2017-11cf-AE26-0020AFD79767}
-//-----------------------------------------------------------------------------
+
 struct __declspec(uuid("{71771540-2017-11cf-ae26-0020afd79767}")) CLSID_TextureRenderer;
 
-class H3DAPI_API DirectShowDecoder : public H3DVideoClipDecoderNode
-{
-  class DShowEventHandler: public AutoUpdate< SFTime > {
-    virtual void update();
-  };
+  /// \ingroup H3DNodes
+  /// \class DirectShowDecoder
+  /// This node uses DirectShow to decode video clips. All video types
+  /// that are supported by an installed DirectShow filter can be decoded.
+  class H3DAPI_API DirectShowDecoder : public H3DVideoClipDecoderNode {
 
-  class CFrameGrabber: public CBaseVideoRenderer {
+    /// The class checks for DirectShow events and handles them.
+    class DShowEventHandler: public AutoUpdate< SFTime > {
+      virtual void update();
+    };
+
+    /// The CFrameGrabber class is a DirectShow class implementation
+    /// for grabbing frames.
+    class CFrameGrabber: public CBaseVideoRenderer {
+    public:
+      /// Constructor.
+      CFrameGrabber(LPUNKNOWN pUnk, HRESULT *phr, DirectShowDecoder *d );
+
+      // CBaseVideoRenderer functions
+
+      /// We force the media type to be RGB24.
+      HRESULT CheckMediaType(const CMediaType *pmt );
+
+      /// We save the width and height of the video.
+      HRESULT SetMediaType(const CMediaType *pmt );
+    
+      /// Called when a new frame is available
+      HRESULT DoRenderSample(IMediaSample *pMediaSample); 
+
+      /// Called when the first sample is ready, before we start playing.
+      /// Implemented in order for the first frame of the video to be rendered
+      /// before playing is started.
+      void OnReceiveFirstSample(IMediaSample *pSample) { 
+        DoRenderSample( pSample ); 
+      }
+
+      DirectShowDecoder *decoder;
+    };
+
+    friend class CFrameGrabber;
+
   public:
-    CFrameGrabber(LPUNKNOWN pUnk, HRESULT *phr, DirectShowDecoder *d );
-    // CBaseVideoRenderer functions
-    HRESULT CheckMediaType(const CMediaType *pmt ); // Format acceptable?
-    HRESULT SetMediaType(const CMediaType *pmt );   // Video format notification
-    
-    /// Called when a new frame is available
-    HRESULT DoRenderSample(IMediaSample *pMediaSample); // New video sample
-    void OnReceiveFirstSample(IMediaSample *pSample) { 
-      DoRenderSample( pSample ); 
+    /// Constructor.
+    DirectShowDecoder();
+
+    /// Destructor.
+    ~DirectShowDecoder();
+
+    ///load an video clip from a url. Returns true on success.
+    virtual bool loadClip( const string &url );
+
+    /// Start decoding the video clip.
+    virtual void startPlaying();
+
+    /// Stop decoding the video clip and set the position to the start
+    /// position.
+    virtual void stopPlaying();
+
+    /// Pause the decoding of the video clip.
+    virtual void pausePlaying();
+
+    /// Set whether the clip should loop and start from the start again
+    /// when the end has been reached.
+    virtual void setLooping( bool v ) {
+      looping = v;
     }
+
+    /// Get the current position in the clip (in seconds from start position)
+    virtual H3DTime getPosition();
+
+    /// Set the current position in the clip(in seconds from start position)
+    virtual void setPosition( H3DTime pos );
+
+    /// Set the playback rate. A rate of 1 means normal playback speed, 
+    /// 2 double.
+    /// Negative values means playing backwards. 
+    /// \returns true if the new rate is supported by the decoder.
+    virtual bool setRate( double r ) {
+      HRESULT hr;
+      if( g_pMS ) 
+        hr = g_pMS->SetRate( r ); 
+      rate = r;
+      return hr == S_OK;
+    }
+
+    /// Returns the duration in seconds at normal play rate of the currently
+    /// loaded video clip
+    virtual H3DTime getDuration() {
+      return duration;
+    }
+
+    /// Returns true when a new frame is available.
+    virtual bool haveNewFrame() { return have_new_frame; }
+
+    /// Get the new frame. The buffer must be at least getFrameSize() bytes. 
+    virtual void getNewFrame( unsigned char *buffer );
+
+    /// The width in pixels of the current frame.
+    virtual unsigned int getFrameWidth() { return frame_width; }
+
+    /// The height in pixels of the current frame.
+    virtual unsigned int getFrameHeight() { return frame_height; }
+
+    /// Get the number of bits per pixel in the current frame.
+    virtual unsigned int getFrameBitsPerPixel() { return 24; }
+
+    /// The size in bytes of the current frame.
+    virtual unsigned int getFrameSize() { 
+      return frame_width * frame_height * 3; 
+    }
+
+    /// The pixel type of the current frame.
+    virtual Image::PixelType getFramePixelType() { return Image::RGB; }
     
-    DirectShowDecoder *decoder;
+    /// The pixel component type of the current frame.
+    virtual Image::PixelComponentType getFramePixelComponentType() { 
+      return Image::UNSIGNED;
+    }
+
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database;  
+  
+    /// Register this node to the H3DVideoClipDecoderNodes available.
+    static DecoderRegistration reader_registration;
+
+    /// Returns true if the node supports the filetype of the file
+    /// specified by url.
+    static bool supportsFileType( const string &url );
+  protected:
+    // DirectShow pointers
+    CComPtr<IGraphBuilder>  g_pGB;          // GraphBuilder
+    CComPtr<IMediaControl>  g_pMC;          // Media Control
+    CComPtr<IMediaSeeking> g_pMS;          // Media Seeking
+    CComPtr<IMediaEvent>    g_pME;          // Media Event
+    CComPtr<IBaseFilter>    g_pRenderer;    // our custom renderer
+  
+    /// Set up a DirectShow graph for playing the given url.
+    HRESULT initDShowTextureRenderer( const string &url );
+
+    /// Clean up all resources used by the current DirectShow
+    /// graph.
+    void cleanupDShow( void );
+
+    /// The width in pixels of the frame.
+    unsigned int frame_width;
+
+    /// The height in pixels of the frame.
+    unsigned int frame_height;
+
+    /// The size in bytes of the data.
+    unsigned int data_size;
+
+    /// The latest frame.
+    unsigned char *data;
+
+    /// Set to true when a new frame is available, reset to false when
+    /// getNewFrame is called
+    bool have_new_frame;
+
+    /// The speed at which to play the clip. 1 is normal speed, 0.5 half.
+    double rate;
+  
+    /// The DirectShow object used to get frames.
+    CFrameGrabber *frame_grabber;
+
+    /// True if the video should loop when it reaches the end.
+    bool looping;
+
+    /// The duration of the current clip in seconds.
+    H3DTime duration;
+
+    /// Event handler for DirectShow events.
+    auto_ptr< DShowEventHandler > event_handler;
   };
-
-  friend class CFrameGrabber;
-
-public:
-  DirectShowDecoder();
-  ~DirectShowDecoder();
-
-  virtual bool loadClip( const string &url );
-  virtual void startPlaying();
-  virtual void stopPlaying();
-  virtual void pausePlaying();
-  virtual void setLooping( bool v ) {
-    looping = v;
-  }
-
-  virtual bool haveNewFrame() { return have_new_frame; }
-  virtual void getNewFrame( unsigned char *buffer );
-  virtual H3DInt32 getFrameWidth() { return frame_width; }
-  virtual H3DInt32 getFrameHeight() { return frame_height; }
-  virtual Image::PixelType getFramePixelType() { return Image::RGB; }
-  virtual Image::PixelComponentType getFramePixelComponentType() { 
-    return Image::UNSIGNED;
-  }
-
-  /// The H3DNodeDatabase for this node.
-  static H3DNodeDatabase database;  
-  
-  /// Register this node to the H3DVideoClipDecoderNodes available.
-  static DecoderRegistration reader_registration;
-
-  /// Returns true if the node supports the filetype of the file
-  /// specified by url.
-  static bool supportsFileType( const string &url );
-protected:
-  // DirectShow pointers
-  CComPtr<IGraphBuilder>  g_pGB;          // GraphBuilder
-  CComPtr<IMediaControl>  g_pMC;          // Media Control
-  CComPtr<IMediaSeeking> g_pMS;          // Media Seeking
-  CComPtr<IMediaEvent>    g_pME;          // Media Event
-  CComPtr<IBaseFilter>    g_pRenderer;    // our custom renderer
-  
-  HRESULT initDShowTextureRenderer( const string &url );
-  void cleanupDShow( void );
-
-  /// The width in pixels of the frame.
-  unsigned int frame_width;
-
-  /// The height in pixels of the frame.
-  unsigned int frame_height;
-
-  /// The size in bytes of the data.
-  unsigned int data_size;
-
-  /// The latest frame.
-  unsigned char *data;
-
-  /// Set to true when a new frame is available, reset to false when
-  /// getNewFrame is called
-  bool have_new_frame;
-  
-  /// The DirectShow object used to get frames.
-  CFrameGrabber *frame_grabber;
-
-  /// True if the video should loop when it reaches the end.
-  bool looping;
-
-  auto_ptr< DShowEventHandler > event_handler;
-};
 
 }
 #endif
