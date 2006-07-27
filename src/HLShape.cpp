@@ -91,7 +91,7 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
 
     Vec3f local_pos = m * pos;
 
-    //if( b->isInside( local_pos ) ) return true;
+    if( b->isInside( local_pos ) ) return true;
 
     Vec3f f = (b->closestPoint( local_pos ) - local_pos);
       
