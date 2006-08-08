@@ -97,6 +97,7 @@ void Rectangle2D::render() {
   glEnd();
 }
 
+#ifdef USE_HAPTICS
 void Rectangle2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -107,3 +108,4 @@ void Rectangle2D::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

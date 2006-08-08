@@ -280,6 +280,7 @@ void IndexedTriangleFanSet::render() {
   } 
 }
 
+#ifdef USE_HAPTICS
 void IndexedTriangleFanSet::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -290,6 +291,7 @@ void IndexedTriangleFanSet::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif
 
 
 void IndexedTriangleFanSet::AutoNormal::update() {

@@ -290,9 +290,11 @@ namespace H3D {
     /// \dotfile SpaceWareSensor_latestButtonRelease.dot
     auto_ptr< SFInt32 > latestButtonRelease;
 
+#ifdef USE_HAPTICS
     /// Transfers the values from the device communication thread to
     /// the scenegraph thread.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     // This data structure is used to transfer button data from the 
     // device communication thread to the scene graph thread.

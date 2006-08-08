@@ -53,8 +53,10 @@ namespace H3D {
                    Inst< SFMatrix4f > _accForwardMatrix = 0,
                    Inst< SFMatrix4f > _accInverseMatrix = 0 );
 
+#ifdef USE_HAPTICS
     /// Set the matrix fields from the values provided in ti.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// The accForwardMatrix field is the matrix that transforms from the local
     /// coordinate space where this Node resides in the scenegraph to 

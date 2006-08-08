@@ -530,6 +530,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
   return normal;
 }
 
+#ifdef USE_HAPTICS
 void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -539,4 +540,5 @@ void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif
 

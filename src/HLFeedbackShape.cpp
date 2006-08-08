@@ -8,6 +8,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "HLSurface.h"
 #include "HLFeedbackShape.h"
 #include "GL/glew.h"
@@ -72,5 +74,5 @@ void HLFeedbackShape::hlRender( HLHapticsDevice *hd ) {
   }
 #endif
 }
-
+#endif
 

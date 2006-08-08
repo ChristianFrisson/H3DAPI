@@ -82,8 +82,10 @@ namespace H3D {
     /// Renders the Sphere with OpenGL.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. Adds a HapticSphere if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// The radius of the Sphere in metres.
     ///

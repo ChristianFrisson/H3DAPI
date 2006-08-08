@@ -66,8 +66,10 @@ namespace H3D {
     /// Renders prototyped_node.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverses prototyped_node.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
     
     /// Set the node that is the internal scenegraph of the prototype.
     virtual void setPrototypedNode( Node *n ) {

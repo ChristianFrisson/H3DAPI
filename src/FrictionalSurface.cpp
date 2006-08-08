@@ -26,7 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "FrictionalSurface.h"
 
 using namespace H3D;
@@ -69,3 +70,4 @@ FrictionalSurface::FrictionalSurface( Inst< SFFloat >  _stiffness,
   staticFriction->setValue( 0.1f );
   dynamicFriction->setValue( 0.4f );
 }
+#endif

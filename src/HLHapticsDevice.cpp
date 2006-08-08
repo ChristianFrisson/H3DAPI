@@ -26,7 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "HLHapticsDevice.h"
 #include "HLShape.h"
 #include "GL/glew.h"
@@ -565,4 +566,4 @@ void HLHapticsDevice::postRender() {
   }   
   #endif   
 }
-
+#endif

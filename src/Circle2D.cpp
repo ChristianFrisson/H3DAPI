@@ -90,6 +90,7 @@ void Circle2D::render() {
   glEnd ();
 }
 
+#ifdef USE_HAPTICS
 void Circle2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -99,3 +100,4 @@ void Circle2D::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

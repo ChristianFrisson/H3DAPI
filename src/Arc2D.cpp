@@ -112,6 +112,7 @@ void Arc2D::render() {
   glEnd ();
 }
 
+#ifdef USE_HAPTICS
 void Arc2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -121,3 +122,4 @@ void Arc2D::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

@@ -73,6 +73,7 @@ void ToggleGroup::render() {
     X3DGroupingNode::render();
 }
 
+#ifdef USE_HAPTICS
 void ToggleGroup::traverseSG( TraverseInfo &ti ) {
   bool is_enabled = ti.hapticsEnabled();
   if( is_enabled && !hapticsOn->getValue() ) {
@@ -83,3 +84,4 @@ void ToggleGroup::traverseSG( TraverseInfo &ti ) {
     X3DGroupingNode::traverseSG( ti );
   }
 }
+#endif

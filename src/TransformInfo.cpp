@@ -55,6 +55,7 @@ TransformInfo::TransformInfo( Inst< SFNode     > _metadata,
   database.initFields( this );
 }
 
+#ifdef USE_HAPTICS
 void TransformInfo::traverseSG( TraverseInfo &ti ) {
   X3DChildNode::traverseSG( ti );
 
@@ -67,3 +68,4 @@ void TransformInfo::traverseSG( TraverseInfo &ti ) {
   if( acc_inv != accInverseMatrix->getValue() )
     accInverseMatrix->setValue( acc_inv, id );
 }
+#endif

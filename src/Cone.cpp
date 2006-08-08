@@ -133,6 +133,7 @@ void Cone::render() {
 }
 
 
+#ifdef USE_HAPTICS
 void Cone::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -141,4 +142,5 @@ void Cone::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif
 

@@ -154,6 +154,7 @@ void Box::render() {
   glEnd();
 }
 
+#ifdef USE_HAPTICS
 void Box::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -163,3 +164,4 @@ void Box::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

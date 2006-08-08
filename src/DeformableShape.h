@@ -125,10 +125,12 @@ namespace H3D {
                      Inst< SFCoordinateNode > _restingCoord   = 0,
                      Inst< SFCoordinateNode > _deformedCoor   = 0,
                      Inst< SFCoordinateDeformer > _deformer   = 0 );
-    
+
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. The deformation parameters are updated
     /// in the CoordinateDeformer in coordinateDeformer field.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// The origCoord field contains the coordinates that the 
     /// X3DComposedGeometryNode had when it was added to the 

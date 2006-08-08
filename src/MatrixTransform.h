@@ -127,8 +127,10 @@ namespace H3D {
 
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// The transformation matrix.
     /// 

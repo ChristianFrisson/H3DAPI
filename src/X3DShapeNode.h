@@ -160,8 +160,10 @@ namespace H3D {
     /// Render the shape using OpenGL.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. Calls traverseSG on appeance and geometry.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// The field containing the X3DAppearance node to be used when
     /// rendering the shape.

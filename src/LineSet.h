@@ -95,9 +95,11 @@ namespace H3D {
              Inst< SFCoordinateNode > _coord          = 0,
              Inst< MFInt32          > _vertexCount    = 0 );
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
+#ifdef USE_HAPTICS
+		/// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti ); 
+#endif
 
     /// Render the LineSet with OpenGL
     virtual void render();

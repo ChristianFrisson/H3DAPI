@@ -298,6 +298,7 @@ void TriangleFanSet::render() {
   } 
 }
 
+#ifdef USE_HAPTICS
 void TriangleFanSet::traverseSG( TraverseInfo &ti ) {
   X3DCoordinateNode *coord_node = coord->getValue();
   if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
@@ -312,7 +313,7 @@ void TriangleFanSet::traverseSG( TraverseInfo &ti ) {
   }
  
 }
-
+#endif
 
 void TriangleFanSet::AutoNormal::update() {
   bool normals_per_vertex = 

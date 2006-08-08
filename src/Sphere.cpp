@@ -29,7 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Sphere.h"
+#ifdef USE_HAPTICS
 #include "HapticSphere.h"
+#endif
 
 using namespace H3D;
 
@@ -90,6 +92,7 @@ void Sphere::render() {
   glPopMatrix();
 } 
 
+#ifdef USE_HAPTICS
 void Sphere::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
     ti.addHapticShapeToAll( new HapticSphere( radius->getValue(),
@@ -99,3 +102,4 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
                                               ti.getAccForwardMatrix() ) );
   }
 }
+#endif

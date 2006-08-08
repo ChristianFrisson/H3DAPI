@@ -85,9 +85,11 @@ namespace H3D {
     /// Renders the TriangleSet2D using OpenGL.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
+#endif
 
     /// The vertices field specifies the triangles to be displayed. 
     /// The number of vertices provided shall be evenly divisible by three.

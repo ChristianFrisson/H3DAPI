@@ -249,6 +249,7 @@ void IndexedTriangleSet::render() {
   } 
 }
 
+#ifdef USE_HAPTICS
 void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -258,6 +259,7 @@ void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif
 
 
 void IndexedTriangleSet::AutoNormal::update() {

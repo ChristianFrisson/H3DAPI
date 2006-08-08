@@ -26,7 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "HLCustomObject.h"
 
 #include "HapticShape.h"
@@ -51,3 +52,4 @@ void HLCustomObject::hlRender( HLHapticsDevice *hd ) {
   hlEndShape();
 #endif
 };
+#endif

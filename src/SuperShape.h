@@ -114,10 +114,12 @@ namespace H3D {
         /(4.f*n1*powf(powf(cosf((m*phi)/4.f)/a, n2) 
                      + powf(sinf((m*phi)/4.f)/b, n3), (1 + n1)/n1));
     }
-  
+
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
+#endif
     
     // Fields
     auto_ptr< SFFloat  > ss1_m;

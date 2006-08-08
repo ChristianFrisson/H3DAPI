@@ -153,6 +153,7 @@ void Cylinder::render() {
 
 
 
+#ifdef USE_HAPTICS
 void Cylinder::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -161,3 +162,4 @@ void Cylinder::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

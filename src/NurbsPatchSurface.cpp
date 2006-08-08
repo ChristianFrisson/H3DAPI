@@ -29,7 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "NurbsPatchSurface.h"
+#ifdef USE_HAPTICS
 #include "HLFeedbackShape.h"
+#endif
 
 using namespace H3D;
 
@@ -125,6 +127,7 @@ void NurbsPatchSurface::renderBetweenBeginEnd(
 
 }
 
+#ifdef USE_HAPTICS
 void NurbsPatchSurface::traverseSG( TraverseInfo &ti ) {
 	if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 		ti.addHapticShapeToAll( new HLFeedbackShape( this,
@@ -132,3 +135,4 @@ void NurbsPatchSurface::traverseSG( TraverseInfo &ti ) {
 			ti.getAccForwardMatrix() ) );
 	}
 }
+#endif

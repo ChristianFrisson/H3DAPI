@@ -95,9 +95,11 @@ namespace H3D {
               Inst< SFColorNode      > _color          = 0,
               Inst< SFCoordinateNode > _coord          = 0 );
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti ); 
+#endif
     
     /// Render the LineSet with OpenGL
     virtual void render();

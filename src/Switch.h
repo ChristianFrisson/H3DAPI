@@ -95,8 +95,10 @@ namespace H3D {
     /// Only render the child defined by whichChoice,
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Only traverse the childe defined by whichChoice
     virtual void traverseSG( TraverseInfo &ti ); 
+#endif
 
     /// The whichChoice field specifies the index of the child to traverse,
     /// with the first child having index 0. If whichChoice is less than zero

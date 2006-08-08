@@ -238,6 +238,7 @@ namespace H3D {
     /// necessary operation that are needed.
     virtual void postRender() {}
 
+#ifdef USE_HAPTICS
     /// Perform haptic rendering for the given HapticShape instances. 
     /// HapticShape objects that are to be be rendered haptically must be 
     /// rendered with this function each scenegraph loop. 
@@ -251,6 +252,7 @@ namespace H3D {
     /// \param objects The haptic objects to render.
     ///
     virtual void renderEffects( const HapticEffectVector &effects ) {};
+#endif
     
     /// The position of the device given in the coordinate system of the 
     /// device.

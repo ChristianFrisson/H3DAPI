@@ -26,7 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "HLShape.h"
 #include "X3DGeometryNode.h"
 #include "OpenHapticsSettings.h"
@@ -111,4 +112,5 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
   return true;
 }
 
+#endif
 #endif

@@ -63,9 +63,11 @@ namespace H3D {
                   Inst< SFInt32     > _deviceIndex = 0,
                   Inst< SFNode      >  _metadata = 0 );
 
+#ifdef USE_HAPTICS
     /// Adds the effect if within startDistance and removes it when 
     /// going outside escapeDistance.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
 
     /// The position of the spring.

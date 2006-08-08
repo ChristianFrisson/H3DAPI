@@ -209,6 +209,7 @@ void PythonScript::loadScript( const string &script ) {
 }
 
 
+#ifdef USE_HAPTICS
 /// Traverse the scenegraph. Used in PythonScript to call a function
 /// in python once per scene graph loop.
 void PythonScript::traverseSG( TraverseInfo &ti ) {
@@ -226,6 +227,7 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
     Py_DECREF( args );
   } 
 }
+#endif
 
 void PythonScript::initialize() {
   H3DScriptNode::initialize();

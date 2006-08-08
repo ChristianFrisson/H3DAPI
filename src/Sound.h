@@ -164,9 +164,11 @@ namespace H3D {
            Inst< SFBool >  _spatialize = 0,
            Inst< ALSoundSetup > _soundSetup = 0 );
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. Saves the accForwardMatrix and calls
     /// traverseSG() for source.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// Perform the OpenAL calls to render the sound node.
     virtual void ALrender(); 

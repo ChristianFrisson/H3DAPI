@@ -31,7 +31,9 @@
 
 #include "X3DNode.h"
 #include "H3DDisplayListObject.h"
+#ifdef USE_HAPTICS
 #include "H3DSurfaceNode.h"
+#endif
 
 namespace H3D {
 
@@ -43,12 +45,17 @@ namespace H3D {
   class H3DAPI_API X3DAppearanceNode : 
     public X3DNode, public H3DDisplayListObject {
   public:
+#ifdef USE_HAPTICS
     typedef TypedSFNode< H3DSurfaceNode > SFSurface;
+#endif
 
     /// Constructor.
     X3DAppearanceNode( Inst< DisplayList > _displayList = 0,
-                       Inst< SFNode    > _metadata = 0,
-                       Inst< SFSurface > _surface  = 0 );
+                       Inst< SFNode    > _metadata = 0
+#ifdef USE_HAPTICS
+											 , Inst< SFSurface > _surface  = 0
+#endif
+											 );
 
 
     /// This function will be called by the X3DShapeNode before any rendering 
@@ -76,7 +83,8 @@ namespace H3D {
       return "appearance";
     }
 
-    /// Traversing the scene graph. The current surface will be set to the 
+#ifdef USE_HAPTICS
+		/// Traversing the scene graph. The current surface will be set to the 
     /// surface of the X3DAppearanceNode.
     ///
     virtual void traverseSG( TraverseInfo &ti );
@@ -84,6 +92,7 @@ namespace H3D {
     /// Contains the Surface node that will determine how an object will 
     /// feel haptically.
     auto_ptr< SFSurface >  surface;
+#endif
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

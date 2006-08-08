@@ -85,7 +85,8 @@ namespace H3D {
     /// the device until the initDevice() function has been called again.
     virtual void disableDevice();
 
-    /// Perform haptic rendering for the given HapticShape instances. 
+#ifdef USE_HAPTICS
+		/// Perform haptic rendering for the given HapticShape instances. 
     /// This is not supported on a H3DThreadedHapticsDevice, only 
     /// HLHapticDevice can do this.
     /// \param objects The haptic shapes to render.
@@ -98,10 +99,12 @@ namespace H3D {
     /// \param objects The haptic objects to render.
     ///
     virtual void renderEffects( const HapticEffectVector &effects );
+#endif
     
     /// Node database entry
     static H3DNodeDatabase database;
 
+#ifdef USE_HAPTICS
     /// Returns the force effects to render in the realtime loop.
     /// Should not be called from the scenegraph loop.
     inline HapticEffectVector &getCurrentForceEffects() {
@@ -113,6 +116,7 @@ namespace H3D {
     inline HapticEffectVector &getLastForceEffects() {
       return last_force_effects;
     }
+#endif
 
     /// This function is used to transfer device values, such as position, 
     /// button status etc from the realtime loop to the fields of H3DHapticsDevice,
@@ -144,6 +148,7 @@ namespace H3D {
     /// haptics loop.
     virtual void sendTorque( const Vec3f &f ) = 0;
 
+#ifdef USE_HAPTICS
     // the force effects that are currently rendered in the realtime loop.
     // Should not be changed directly from the scenegraph loop but instead
     // use the renderEffects function to set the effects.
@@ -154,6 +159,7 @@ namespace H3D {
 
     // the shapes that are currently being rendered in the realtime loop.
     HapticShapeVector current_shapes;
+#endif
 
     unsigned int nr_haptics_loops;
 

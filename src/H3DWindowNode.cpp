@@ -34,7 +34,9 @@
 #include "TimeStamp.h"
 #include "Bound.h"
 #include "H3DBoundedObject.h"
+#ifdef USE_HAPTICS
 #include "DeviceInfo.h"
+#endif
 #include "H3DDisplayListObject.h"
 #include "Exception.h"
 #include "X3DBackgroundNode.h"
@@ -206,6 +208,7 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
   
   if( include_styli ) {
     // get the Bounds of the styli of the H3DHapticsDevices.
+#ifdef USE_HAPTICS
     DeviceInfo *di = DeviceInfo::getActive();
     if( di ) {
       for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
@@ -240,6 +243,7 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
         }
       }
     }
+#endif
   }
     
   // add the child node bound.
@@ -365,11 +369,13 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
 }
 
 void renderStyli() {
-  // Render the stylus of each H3DHapticsDevice.
+#ifdef USE_HAPTICS
+	// Render the stylus of each H3DHapticsDevice.
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {
     di->renderStyli();
   }
+#endif
 }
 
 void H3DWindowNode::render( X3DChildNode *child_to_render ) {

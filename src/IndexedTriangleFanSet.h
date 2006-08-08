@@ -157,10 +157,12 @@ namespace H3D {
 			   Inst< AutoNormal       > _autoNormal      = 0,
 			   Inst< MFInt32          > _set_index       = 0,
 			   Inst< MFInt32          > _index           = 0 );
-    
+
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
+#endif
 
     /// Renders the IndexedTriangleFanSet with OpenGL.
     virtual void render();

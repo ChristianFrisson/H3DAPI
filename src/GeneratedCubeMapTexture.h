@@ -119,9 +119,11 @@ namespace H3D {
     virtual void updateCubeMapTextures( X3DChildNode *n,
                                         Viewpoint *vp );
 
+#ifdef USE_HAPTICS
     /// Saves the accumulatedForwardMatrix in the local_to_global
     /// member variable.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// Updates the cube map textures of all instances of 
     /// GeneratedCubeMapTexture. The update field will be checked to 

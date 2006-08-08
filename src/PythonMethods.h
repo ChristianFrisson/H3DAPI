@@ -104,7 +104,9 @@ namespace H3D {
 
     PyObject* pythonGetCurrentScenes( PyObject *self, PyObject *arg );
 
+#ifdef USE_HAPTICS
     PyObject* pythonGetActiveDeviceInfo( PyObject *self, PyObject *arg );
+#endif
 
     PyObject* pythonGetActiveViewpoint( PyObject *self, PyObject *arg );
 

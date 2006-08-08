@@ -106,6 +106,7 @@ void X3DGroupingNode::render()     {
 
 };
 
+#ifdef USE_HAPTICS
 void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
   for( MFNode::const_iterator i = children->begin();
        i != children->end(); i++ ) {
@@ -130,6 +131,7 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
     }
   }
 }
+#endif
 
 void X3DGroupingNode::SFBound::update() {
   value = Bound::SFBoundUnion( routes_in.begin(),

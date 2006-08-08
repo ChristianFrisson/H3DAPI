@@ -29,7 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "IndexedLineSet.h"
+#ifdef USE_HAPTICS
 #include "HLFeedbackShape.h"
+#endif
 #include "X3DTextureNode.h"
 
 using namespace H3D;
@@ -190,6 +192,7 @@ void IndexedLineSet::render() {
   }
 }
 
+#ifdef USE_HAPTICS
 void IndexedLineSet::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
     ti.addHapticShapeToAll( new HLFeedbackShape( this,
@@ -198,3 +201,4 @@ void IndexedLineSet::traverseSG( TraverseInfo &ti ) {
                                                  coordIndex->size() ) );
   }
 }
+#endif

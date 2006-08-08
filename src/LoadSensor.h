@@ -56,7 +56,9 @@ namespace H3D {
                 Inst< SFTime > loadTime = 0,
                 Inst< SFFloat > progress = 0 );
 
+#ifdef USE_HAPTICS
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     auto_ptr< MFUrlObject > watchList;
     auto_ptr< SFTime  > timeOut;

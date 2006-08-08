@@ -132,6 +132,7 @@ void TriangleSet2D::render() {
   }
 }
 
+#ifdef USE_HAPTICS
 void TriangleSet2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -142,3 +143,4 @@ void TriangleSet2D::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

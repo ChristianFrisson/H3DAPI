@@ -333,6 +333,7 @@ void TriangleStripSet::render() {
   } 
 }
 
+#ifdef USE_HAPTICS
 void TriangleStripSet::traverseSG( TraverseInfo &ti ) {
   X3DCoordinateNode *coord_node = coord->getValue();
   if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
@@ -346,6 +347,7 @@ void TriangleStripSet::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif
 
 
 void TriangleStripSet::AutoNormal::update() {

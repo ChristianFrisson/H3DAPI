@@ -30,7 +30,9 @@
 
 #include "PointSet.h"
 #include "X3DTextureNode.h"
+#ifdef USE_HAPTICS
 #include "HLFeedbackShape.h"
+#endif
 
 using namespace H3D;
 
@@ -119,6 +121,7 @@ void PointSet::render() {
   }
 }
 
+#ifdef USE_HAPTICS
 void PointSet::traverseSG( TraverseInfo &ti ) {
   X3DCoordinateNode *coord_node = coord->getValue();
   if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
@@ -130,3 +133,4 @@ void PointSet::traverseSG( TraverseInfo &ti ) {
     ti.addHapticShapeToAll( fs );
   }
 }
+#endif

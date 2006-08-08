@@ -523,6 +523,7 @@ SpaceWareSensor::SpaceWareSensor(
 #endif
 }
 
+#ifdef USE_HAPTICS
 void SpaceWareSensor::traverseSG( TraverseInfo &ti ) {
   using namespace SpaceWareSensorInternal;
   // TODO: lock
@@ -572,3 +573,4 @@ void SpaceWareSensor::traverseSG( TraverseInfo &ti ) {
     }
   }
 }
+#endif

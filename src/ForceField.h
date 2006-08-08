@@ -43,6 +43,7 @@ namespace H3D {
     ForceField( Inst< SFVec3f > _force = 0,
                 Inst< SFNode  > _metadata = 0 );
 
+#ifdef USE_HAPTICS
     /// Adds a HapticForceField effect to the TraverseInfo.
     virtual void ForceField::traverseSG( TraverseInfo &ti ) {
       if( ti.hapticsEnabled() ) {
@@ -51,6 +52,7 @@ namespace H3D {
                                                       true ) );
       }
     }
+#endif
 
     /// The force to render.
     ///

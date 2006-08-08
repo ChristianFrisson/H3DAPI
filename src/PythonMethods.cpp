@@ -29,7 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "PythonMethods.h"
+#ifdef USE_HAPTICS
 #include "DeviceInfo.h"
+#endif
 #include "Viewpoint.h"
 #include "NavigationInfo.h"
 #include "StereoInfo.h"
@@ -495,9 +497,12 @@ if( check_func( value ) ) {                                         \
       { "createVRMLNodeFromString", pythonCreateVRMLNodeFromString, 0 },
       { "getRoutesIn", pythonGetRoutesIn, 0 },
       { "getRoutesOut", pythonGetRoutesOut, 0 },
-      { "getCurrentScenes", pythonGetCurrentScenes, 0 },
-      { "getActiveDeviceInfo", pythonGetActiveDeviceInfo, 0 },
-      { "getActiveViewpoint", pythonGetActiveViewpoint, 0 },
+      { "getCurrentScenes", pythonGetCurrentScenes, 0 }
+#ifdef USE_HAPTICS
+			,
+      { "getActiveDeviceInfo", pythonGetActiveDeviceInfo, 0 }
+#endif
+			, { "getActiveViewpoint", pythonGetActiveViewpoint, 0 },
       { "getActiveNavigationInfo", pythonGetActiveNavigationInfo, 0 },
       { "getActiveStereoInfo", pythonGetActiveStereoInfo, 0 },
       { "getActiveBackground", pythonGetActiveBackground, 0 },
@@ -1200,7 +1205,7 @@ call the base class __init__ function." );
     }
 
     /////////////////////////////////////////////////////////////////////////
-
+#ifdef USE_HAPTICS
     PyObject* pythonGetActiveDeviceInfo( PyObject *self, PyObject *arg ) {
       if( arg ) {
         ostringstream err;
@@ -1212,6 +1217,7 @@ call the base class __init__ function." );
 
       return PyNode_FromNode( DeviceInfo::getActive() );
     }
+#endif
     
     /////////////////////////////////////////////////////////////////////////
 

@@ -158,9 +158,11 @@ namespace H3D {
 																H3DInt32 &vSizeToUse, 
 																H3DInt32 &map2Vertex3Or4 );
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
 		virtual void traverseSG( TraverseInfo &ti );
+#endif
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

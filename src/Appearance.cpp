@@ -62,10 +62,16 @@ Appearance::Appearance( Inst< DisplayList            > _displayList,
                         Inst< SFMaterialNode         > _material,
                         Inst< SFNode                 > _metadata,
                         Inst< SFTextureNode          > _texture,
-                        Inst< SFTextureTransformNode > _textureTransform,
-                        Inst< SFSurface              > _surface,
-                        Inst< MFShaderNode           > _shaders ) :
-X3DAppearanceNode( _displayList, _metadata, _surface ),
+                        Inst< SFTextureTransformNode > _textureTransform
+#ifdef USE_HAPTICS
+												, Inst< SFSurface              > _surface
+#endif
+												, Inst< MFShaderNode           > _shaders ) :
+X3DAppearanceNode( _displayList, _metadata
+#ifdef USE_HAPTICS
+									, _surface
+#endif
+									),
 fillProperties  ( _fillProperties   ),
 lineProperties  ( _lineProperties   ),
 material        ( _material         ),
@@ -209,6 +215,7 @@ void Appearance::postRender() {
   X3DAppearanceNode::postRender();     
 }
 
+#ifdef USE_HAPTICS
 void Appearance::traverseSG( TraverseInfo &ti ) {
   X3DAppearanceNode::traverseSG( ti );     
   
@@ -232,3 +239,4 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
    if ( sn ) sn->traverseSG( ti );
   }
 }
+#endif

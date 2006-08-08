@@ -197,8 +197,10 @@ namespace H3D {
     /// Render the inlined scenegraph, if loaded.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the inline scenegraph, if loaded.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// If the load field is set to TRUE (the default field value), 
     /// the X3D file specified by the url field is loaded immediately. 

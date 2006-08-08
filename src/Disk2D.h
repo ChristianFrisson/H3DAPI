@@ -91,9 +91,11 @@ namespace H3D {
     /// Renders the Disk2D using OpenGL.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
+#endif
 
     ///  The innerRadius field specifies the inner dimension of the Disk2D. 
     /// The value of innerRadius shall be greater than or equal to zero

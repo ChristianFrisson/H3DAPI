@@ -1340,6 +1340,7 @@ void Extrusion::SFBound::update() {
 	value = bb;
 }
 
+#ifdef USE_HAPTICS
 void Extrusion::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -1350,3 +1351,4 @@ void Extrusion::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

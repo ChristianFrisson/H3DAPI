@@ -185,7 +185,7 @@ void TriangleSet::render() {
   } 
 }
 
-
+#ifdef USE_HAPTICS
 void TriangleSet::traverseSG( TraverseInfo &ti ) {
   X3DCoordinateNode *coord_node = coord->getValue();
   if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
@@ -199,6 +199,7 @@ void TriangleSet::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif
 
 void TriangleSet::AutoNormal::update() {
   X3DCoordinateNode *coord = 

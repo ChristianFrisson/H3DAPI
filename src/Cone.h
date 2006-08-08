@@ -101,8 +101,10 @@ namespace H3D {
     /// Renders the Box using OpenGL.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti ); 
+#endif
 
     /// The side field specifies whether the bottom cap of the cone is
     /// rendered.

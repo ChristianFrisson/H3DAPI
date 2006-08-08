@@ -30,7 +30,9 @@
 
 #include "NurbsTrimmedSurface.h"
 #include "Coordinate.h"
+#ifdef USE_HAPTICS
 #include "HLFeedbackShape.h"
+#endif
 #include "TextureCoordinateGenerator.h"
 
 using namespace H3D;
@@ -146,6 +148,7 @@ void NurbsTrimmedSurface::renderBetweenBeginEnd(
 		}
 }
 
+#ifdef USE_HAPTICS
 void NurbsTrimmedSurface::traverseSG( TraverseInfo &ti ) {
 	if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 		ti.addHapticShapeToAll( new HLFeedbackShape( this,
@@ -153,3 +156,4 @@ void NurbsTrimmedSurface::traverseSG( TraverseInfo &ti ) {
 			ti.getAccForwardMatrix() ) );
 	}
 }
+#endif

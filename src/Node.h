@@ -32,7 +32,9 @@
 #include "Instantiate.h"
 #include <H3DNodeDatabase.h>
 #include "RefCountedClass.h"
+#ifdef USE_HAPTICS
 #include "TraverseInfo.h"
+#endif
 #include "Console.h"
 
 //#include "FieldTemplates.h"
@@ -62,7 +64,8 @@ namespace H3D {
     /// of the scene-graph. 
     virtual void render()     { };
 
-    /// traverseSG is called onve per scenegraph loop on the scene in order to
+#ifdef USE_HAPTICS
+		/// traverseSG is called onve per scenegraph loop on the scene in order to
     /// traverse the scenegraph. During this traversal things can be updated
     /// in the node and HapticObject instances to be rendered should be added 
     /// to the TraverseInfo object.
@@ -70,6 +73,7 @@ namespace H3D {
     /// traversal.
     /// 
     virtual void traverseSG( TraverseInfo &ti ) {}
+#endif
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "children".

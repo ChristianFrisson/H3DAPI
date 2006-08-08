@@ -127,6 +127,7 @@ void MatrixTransform::render() {
   glPopMatrix();
 };
 
+#ifdef USE_HAPTICS
 /// Traverse the scenegraph. 
 void MatrixTransform::traverseSG( TraverseInfo &ti ) {
   ti.pushMatrices( matrix->getValue(),
@@ -138,6 +139,7 @@ void MatrixTransform::traverseSG( TraverseInfo &ti ) {
   X3DGroupingNode::traverseSG( ti );
   ti.popMatrices();
 }
+#endif
 
 
 void MatrixTransform::SFTransformedBound::update() {

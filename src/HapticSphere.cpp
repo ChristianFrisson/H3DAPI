@@ -26,6 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "HapticSphere.h"
 #include "HLSurface.h"
 
@@ -156,4 +158,5 @@ void HapticSphere::hlRender( HLHapticsDevice *hd) {
      hlPopMatrix();
   }
 }
+#endif
 #endif

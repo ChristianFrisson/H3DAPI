@@ -135,8 +135,12 @@ namespace H3D {
                 Inst< SFMaterialNode         > _material         = 0,
                 Inst< SFNode                 > _metadata         = 0,
                 Inst< SFTextureNode          > _texture          = 0,
-                Inst< SFTextureTransformNode > _textureTransform = 0,
-                Inst< SFSurface              > _surface          = 0,
+                Inst< SFTextureTransformNode > _textureTransform = 0
+#ifdef USE_HAPTICS
+								,
+                Inst< SFSurface              > _surface          = 0
+#endif
+								,
                 Inst< MFShaderNode           > _shaders           = 0 );
 
     /// Set up the appearance in OpenGL.
@@ -153,7 +157,9 @@ namespace H3D {
     /// the call to preRender().
     virtual void postRender();
 
+#ifdef USE_HAPTICS
     virtual void traverseSG( TraverseInfo &ti ); 
+#endif
 
 
     /// This function checks the transparency field to determine if the

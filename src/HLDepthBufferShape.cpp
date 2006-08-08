@@ -8,6 +8,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "HLDepthBufferShape.h"
 #include "GL/glew.h"
 #include "X3DChildNode.h"
@@ -72,4 +74,5 @@ void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
   }
 #endif
 }
+#endif
 #endif

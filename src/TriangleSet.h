@@ -122,9 +122,11 @@ namespace H3D {
     ///  Renders the TriangleSet with OpenGL.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
-    virtual void traverseSG( TraverseInfo &ti );  
+    virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// Auto-generated normals that are used if the normal field is NULL.
     /// Only accessable in C++.

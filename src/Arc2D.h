@@ -84,9 +84,11 @@ namespace H3D {
     /// Renders the Arc2D using OpenGL.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
+#endif
 
     /// The end angle for the arc.  The arc extends from the startAngle
     /// counterclockwise to the endAngle. 

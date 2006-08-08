@@ -29,7 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Polypoint2D.h"
+#ifdef USE_HAPTICS
 #include "HLFeedbackShape.h"
+#endif
 
 using namespace H3D;
 
@@ -74,6 +76,7 @@ void Polypoint2D::render() {
   glEnd();
 }
 
+#ifdef USE_HAPTICS
 void Polypoint2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
     ti.addHapticShapeToAll( new HLFeedbackShape( this,
@@ -82,3 +85,4 @@ void Polypoint2D::traverseSG( TraverseInfo &ti ) {
                                                  point->size() ) );
   }
 }
+#endif

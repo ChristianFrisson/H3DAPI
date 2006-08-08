@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "X3DGeometryNode.h"
+#ifdef USE_HAPTICS
 #include "HLShape.h"
 #include "HapticShape.h"
 #include "DeviceInfo.h"
@@ -36,6 +37,7 @@
 #include "OpenHapticsOptions.h"
 #include "HLDepthBufferShape.h"
 #include "HLFeedbackShape.h"
+#endif
 
 using namespace H3D;
 

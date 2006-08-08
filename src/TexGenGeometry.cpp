@@ -29,8 +29,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TexGenGeometry.h"
+#ifdef USE_HAPTICS
 #include "HLShape.h"
 #include "HapticShape.h"
+#endif
 
 using namespace H3D;
 
@@ -63,10 +65,12 @@ TexGenGeometry::TexGenGeometry(
   database.initFields( this );
 }
 
+#ifdef USE_HAPTICS
 void TexGenGeometry::traverseSG( TraverseInfo &ti ) {
   X3DGeometryNode *g = geometry->getValue();
   if( g ) g->traverseSG( ti );
 }
+#endif
 
 void TexGenGeometry::render() {
   X3DGeometryNode *g = geometry->getValue();

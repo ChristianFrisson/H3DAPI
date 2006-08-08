@@ -258,6 +258,7 @@ void SuperShape::render() {
     }
 }
 
+#ifdef USE_HAPTICS
 void SuperShape::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -267,3 +268,4 @@ void SuperShape::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif

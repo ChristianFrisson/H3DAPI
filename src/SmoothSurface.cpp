@@ -26,7 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "SmoothSurface.h"
 #include "HLObject.h"
 #include "HLHapticsDevice.h"
@@ -69,3 +70,4 @@ SmoothSurface::SmoothSurface( Inst< SFFloat >  _stiffness,
   stiffness->setValue( 0.5 );
   damping->setValue( 0 );
 }
+#endif

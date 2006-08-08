@@ -56,8 +56,10 @@ namespace H3D {
                  Inst< SFBool  > _hapticsOn      = 0,
                  Inst< SFBool  > _graphicsOn     = 0 );
 
+#ifdef USE_HAPTICS
     /// Haptics is disabled if hapticsOn is false.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
 
     /// Only renders children if graphicsOn is true. 
     virtual void render();

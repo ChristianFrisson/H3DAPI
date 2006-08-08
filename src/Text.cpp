@@ -394,6 +394,7 @@ void Text::DisplayList::callList( bool build_list ) {
   X3DGeometryNode::DisplayList::callList( build_list );
 }
 
+#ifdef USE_HAPTICS
 void Text::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
@@ -403,6 +404,7 @@ void Text::traverseSG( TraverseInfo &ti ) {
 #endif
   }
 }
+#endif
 
 
 void Text::SFBound::update() {

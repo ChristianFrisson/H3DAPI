@@ -139,8 +139,10 @@ namespace H3D {
     /// Render the children.
     virtual void render();
 
+#ifdef USE_HAPTICS
     /// Traverse the scenegraph. traverseSG() is called in all children nodes.
     virtual void traverseSG( TraverseInfo &ti );
+#endif
   
     /// if true a route will be set up between the bound field of the
     /// nodes in children and the bound field of the grouping node. 

@@ -95,7 +95,7 @@ void X3DShapeNode::render() {
     glEnable( GL_LIGHTING );
 };
 
-
+#ifdef USE_HAPTICS
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   Node *a = appearance->getValue();
   Node *g = geometry->getValue();
@@ -111,3 +111,4 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   // so we remove it when the geometry has been rendered.
   ti.setCurrentSurface( NULL );
 }
+#endif

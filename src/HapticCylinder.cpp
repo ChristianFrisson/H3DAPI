@@ -26,6 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
+#include "H3DApi.h"
+#ifdef USE_HAPTICS
 #include "HapticCylinder.h"
 #include "HLSurface.h"
 
@@ -83,4 +85,5 @@ void HapticCylinder::hlRender( HLHapticsDevice *hd ) {
     hlPopMatrix();
   }
 }
+#endif
 #endif
