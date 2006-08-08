@@ -91,7 +91,7 @@ void X3DGroupingNode::render()     {
     if ( c ) {
       c->displayList->callList();
     } else {
-      if(*i)
+      //if(*i)
         (*i)->render();
     }
   }

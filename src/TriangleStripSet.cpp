@@ -336,12 +336,14 @@ void TriangleStripSet::render() {
 void TriangleStripSet::traverseSG( TraverseInfo &ti ) {
   X3DCoordinateNode *coord_node = coord->getValue();
   if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
+#ifdef HAVE_OPENHAPTICS
     HapticShape *fs = 
       getOpenGLHapticShape( 
                            ti.getCurrentSurface(),
                            ti.getAccForwardMatrix(),
                            coord_node->nrAvailableCoords());
     ti.addHapticShapeToAll( fs );
+#endif
   }
 }
 

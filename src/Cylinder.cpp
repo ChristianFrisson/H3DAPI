@@ -155,7 +155,9 @@ void Cylinder::render() {
 
 void Cylinder::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
+#ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll(  getOpenGLHapticShape( ti.getCurrentSurface(),
                                                    ti.getAccForwardMatrix()));
+#endif
   }
 }

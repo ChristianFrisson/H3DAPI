@@ -151,8 +151,10 @@ void ArcClose2D::render() {
 
 void ArcClose2D::traverseSG( TraverseInfo &ti ) {
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
+#ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape(ti.getCurrentSurface(),
                                                  ti.getAccForwardMatrix(),
                                                  41 ) );
+#endif
   }
 }

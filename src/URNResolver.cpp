@@ -115,6 +115,10 @@ void URNResolver::loadConfigFile( const string &config_file ) {
 }
 
 string URNResolver::resolveURN( const string &urn ) {
+  if( !initialised && config_file != "" ) {
+    loadConfigFile( config_file );
+    initialised=true;
+  }
   string urn_string = toLower( urn.substr( 0, 4 ) );
   if( urn_string != "urn:" ) return urn;
   string::size_type pos = urn.find( ':', 4 );

@@ -15,6 +15,7 @@
 #include "HLHapticsDevice.h"
 
 using namespace H3D;
+#ifdef HAVE_OPENHAPTICS
 
 void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
 #ifdef HAVE_OPENHAPTICS
@@ -71,3 +72,4 @@ void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
   }
 #endif
 }
+#endif

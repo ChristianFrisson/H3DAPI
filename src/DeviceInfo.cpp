@@ -109,7 +109,9 @@ void DeviceInfo::removeFromStack() {
          i != new_top->device->end(); i++ ) {
       HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
+#ifdef HAVE_OPENHAPTICS
         hl->initHLLayer();
+#endif
       }
     }
   }
@@ -142,7 +144,9 @@ void DeviceInfo::toStackTop() {
          i != device->end(); i++ ) {
       HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
+#ifdef HAVE_OPENHAPTICS
         hl->initHLLayer();
+#endif
       }
     }
   } else {
@@ -158,7 +162,9 @@ void DeviceInfo::toStackTop() {
          i != device->end(); i++ ) {
       HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
+#ifdef HAVE_OPENHAPTICS
         hl->initHLLayer();
+#endif
       }
     }
   }
@@ -177,7 +183,9 @@ void DeviceInfo::initialize() {
          i != device->end(); i++ ) {
       HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
       if( hl ) {
+#ifdef HAVE_OPENHAPTICS
         hl->initHLLayer();
+#endif
       }
     }
   }
