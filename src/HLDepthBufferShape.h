@@ -17,7 +17,7 @@
 #include "HLShape.h"
 
 namespace H3D {
-
+#ifdef HAVE_OPENHAPTICS
   /// Class for using the render() function of an X3DGeometryNode for
   /// haptics rendering. This makes it very easy to implement simple
   /// haptics rendering of a geometry, since when the render() function
@@ -50,6 +50,7 @@ namespace H3D {
    /// Enable HL_ADAPTIVE_VIEWPORT or not
     bool use_adaptive_viewport;
   };
+#endif
 }
 
 #endif

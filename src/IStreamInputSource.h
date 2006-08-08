@@ -77,7 +77,7 @@ namespace H3D {
     protected:
       istream &is;
     public:
-      /// unimplemented copy contructors
+      /// unimplemented copy constructors
       IStreamInputSource( const IStreamInputSource & );
       /// unimplemented assignment operator
       IStreamInputSource& operator=(const IStreamInputSource&);

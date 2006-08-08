@@ -49,7 +49,7 @@ namespace H3D {
   class H3DAPI_API Node: public RefCountedClass {
   public:
  
-    /// Contructor.
+    /// Constructor.
     Node();
     
     /// Destructor.

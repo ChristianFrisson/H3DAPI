@@ -45,7 +45,7 @@ namespace H3D {
   class H3DAPI_API DeviceLog : public X3DChildNode {
   public:
 
-    /// Contructor.
+    /// Constructor.
     DeviceLog( Inst< SFNode>  _metadata = 0,
                Inst< SFString > _filename = 0 ) :
       X3DChildNode( _metadata ),

@@ -28,6 +28,7 @@ namespace H3D {
   public:
     #ifndef HAVE_OPENHAPTICS
     typedef int HLint;
+    typedef enum { HL_FRONT, HL_BACK, HL_FRONT_AND_BACK } HLenum;
     #endif
 
     /// Constructor.

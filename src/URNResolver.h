@@ -65,9 +65,9 @@ namespace H3D {
     
     /// Constructor. The config_file specifies a file containing 
     /// URN lookup rules.
-    URNResolver( const string &config_file = "" ){
-      if( config_file != "" )
-        loadConfigFile( config_file );
+    URNResolver( const string &_config_file = "" ){
+      config_file = _config_file;
+      initialised = false;
     }
 
     /// Loads a config file and adds its resolution rules to the URNResolver.
@@ -129,6 +129,8 @@ namespace H3D {
 
     typedef map< string, string, lessthan_string > URNmap;
     URNmap urn_prefix_map;
+    string config_file;
+    bool initialised;
   };
 }
 

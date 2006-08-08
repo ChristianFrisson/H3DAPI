@@ -167,7 +167,7 @@ namespace H3D {
     /// Disable the arrays that were enabled in renderTexCoordArray().
     virtual void disableTexCoordArray( X3DTextureCoordinateNode *tc );
 
-    /// Contructor.
+    /// Constructor.
     X3DComposedGeometryNode( Inst< SFNode           > _metadata        = 0,
                              Inst< SFBound          > _bound           = 0,
                              Inst< DisplayList      > _displayList     = 0,

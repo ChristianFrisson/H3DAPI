@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file PeriodicUpdate.h
-/// \brief Header file for PeriodicUpdate, template field modifier
+/// \file ThreadSafeFields.h
+/// \brief Header file for ThreadSafeFields, template field modifier
 ///
 //
 //////////////////////////////////////////////////////////////////////////////

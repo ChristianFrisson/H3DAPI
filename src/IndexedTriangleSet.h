@@ -140,7 +140,7 @@ namespace H3D {
 
     };
 
-    /// Contructor.
+    /// Constructor.
     IndexedTriangleSet( Inst< SFNode           > _metadata        = 0,
                         Inst< SFBound          > _bound           = 0,
                         Inst< DisplayList      > _displayList     = 0,
