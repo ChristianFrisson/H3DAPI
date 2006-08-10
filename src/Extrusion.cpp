@@ -104,22 +104,24 @@ Extrusion::Extrusion(
   ccw->route( displayList, id );
   convex->route( displayList, id );
   creaseAngle->route( displayList, id );
-	crossSection->route( displayList, id );
+	//crossSection->route( displayList, id );
   endCap->route( displayList, id );
   solid->route( displayList, id );
-  spine->route( displayList, id );
-	vertexVector->route( displayList, id );
+  //spine->route( displayList, id );
 
 	crossSection->route( vertexVector );
 	orientation->route( vertexVector );
 	scale->route( vertexVector );
 	spine->route( vertexVector );
 
+	vertexVector->route( displayList, id );
+
 	vertexVector->route( bound );
 }
 
 	
 void Extrusion::VertexVectors::update() {
+	value.clear();
 	const vector< Vec2f > &cross_section = 
 		static_cast< MFVec2f * >( routes_in[0] )->getValue();
 	const vector< Rotation > &orientationVectors = 
