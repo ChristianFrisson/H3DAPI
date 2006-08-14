@@ -29,19 +29,19 @@
 #ifndef __OPENHAPTICSOPTIONS_H__
 #define __OPENHAPTICSOPTIONS_H__
 
-#include "X3DRenderOptionsNode.h"
+#include "H3DOptionNode.h"
 #include "SFString.h"
 #include "SFBool.h"
 #include "SFFloat.h"
 
 namespace H3D {
 
-  /// \ingroup Nodes
+  /// \ingroup H3DNodes
   /// \class OpenHapticsOptions
   /// \brief Specifies parameters to use for when rendering an object
   /// with OpenHaptics.
   ///
-  class H3DAPI_API OpenHapticsOptions : public X3DRenderOptionsNode {
+  class H3DAPI_API OpenHapticsOptions : public H3DOptionNode {
   public:
     
     /// Constructor.

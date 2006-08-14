@@ -36,7 +36,7 @@ using namespace H3D;
 H3DNodeDatabase OpenHapticsOptions::database( "OpenHapticsOptions", 
                                       &(newInstance<OpenHapticsOptions>),
                                       typeid( OpenHapticsOptions ),
-                                      &X3DRenderOptionsNode::database );
+                                      &H3DOptionNode::database );
 
 namespace OpenHapticsOptionsInternals {
   FIELDDB_ELEMENT( OpenHapticsOptions, GLShape, INPUT_OUTPUT );
@@ -53,7 +53,7 @@ OpenHapticsOptions::OpenHapticsOptions(
                            Inst< SFBool    >  _useAdaptiveViewport,
                            Inst< SFBool    >  _useHapticCameraView,
                            Inst< SFFloat   > _maxDistance ) :
-  X3DRenderOptionsNode( _metadata ),
+  H3DOptionNode( _metadata ),
   GLShape( _GLShape ),
   touchableFace( _touchableFace ),
   useAdaptiveViewport( _useAdaptiveViewport ),

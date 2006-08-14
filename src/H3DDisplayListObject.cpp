@@ -31,16 +31,20 @@
 #include "H3DDisplayListObject.h"
 #include "Node.h"
 #include "Scene.h"
+#include "GlobalSettings.h"
+#include "GraphicsCachingOptions.h"
+#include "X3DGeometryNode.h"
 
 using namespace H3D;
 
-
 /// Constructor
 H3DDisplayListObject::DisplayList::DisplayList():
-  delay_cache_counter( 3 ),
   display_list( 0 ),
+  cache_mode( OPTIONS ),
   have_valid_display_list( false ),
   isActive( new IsActive ){
+
+  delay_cache_counter = cachingDelay();
   isActive->setValue( true );
   Scene::time->routeNoEvent( isActive );
 }
@@ -60,72 +64,8 @@ void H3DDisplayListObject::DisplayList::update() {
 
 bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken ) {
   if( delay_cache_counter == 0 ) {
-    bool have_all_needed_display_lists = true;
+    bool have_all_needed_display_lists = childrenCachesReady( cache_broken );
   
-    // Check all the fields routed to us. If field contains a 
-    // H3DDisplayListObject then we check if it is possible to build
-    // a display list for this field based on the status of the 
-    // DisplayList field in the H3DDisplayListObjects.
-    for( FieldVector::iterator i = routes_in.begin();
-         i != routes_in.end(); i++ ) {
-      SFNode *sfnode = 
-        dynamic_cast< SFNode* >( *i );
-      DisplayList *dl = dynamic_cast< DisplayList * >( *i );
-      if( sfnode || dl ) {
-        if( !dl ) {
-          H3DDisplayListObject *dlo = 
-            dynamic_cast< H3DDisplayListObject * >( sfnode->getValue() );
-          if( dlo ) {
-            dl = dlo->displayList.get();
-          }
-        }
-        if( dl ) {
-          // if the cache was just broken we cannot use the isActive field 
-          // any longer since a DisplayList can be activated when 
-          // rebuilding cache.
-          if( cache_broken ) {
-            if( !dl->haveValidDisplayList() ) {
-              have_all_needed_display_lists = false;
-              break;
-            }
-          } else {
-            if( dl->isActive->getValue() && 
-                !dl->haveValidDisplayList() ) {
-              have_all_needed_display_lists = false;
-              break;
-            }
-          }
-        }
-      } else {
-        MFNode *mfnode = 
-          dynamic_cast< MFNode* >( *i );
-        if( mfnode ) {
-          for( MFNode::const_iterator n = mfnode->begin();
-               n != mfnode->end(); n++ ) {
-            H3DDisplayListObject *dlo = 
-              dynamic_cast< H3DDisplayListObject * >( *n );
-            if( dlo ) {
-              // if the cache was just broken we cannot use the isActive field 
-              // any longer since a DisplayList can be activated when 
-              // rebuilding cache.
-              if( cache_broken ) {
-                if( !dlo->displayList->haveValidDisplayList() ) {
-                  have_all_needed_display_lists = false;
-                  break;
-                }
-              } else {
-                if( dlo->displayList->isActive->getValue() && 
-                    !dlo->displayList->haveValidDisplayList() ) {
-                  have_all_needed_display_lists = false;
-                  break;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
     // create the new display list if the displayLists we are dependent 
     if( have_all_needed_display_lists ) {
       //display_list = glGenLists( 1 ); 
@@ -156,7 +96,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
 void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
   Field::propagateEvent( e );
   have_valid_display_list = false;
-  delay_cache_counter = 3;
+  delay_cache_counter = cachingDelay();
   event_fields.insert( e.ptr );
 }
 
@@ -169,10 +109,13 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
                << "\" when rendering parent of " << getFullName() << endl;
   }
 
-  if( build_list ) { 
-    if( !display_list ) 
+  bool using_caching = usingCaching(); 
+
+  if( using_caching && build_list ) { 
+    if( !display_list ) {
       display_list = glGenLists( 1 );
-    
+    }
+
     if( event.ptr ) {
       // will update the display list if events have occured
       upToDate();
@@ -187,7 +130,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     }
   } 
   
-  if ( haveValidDisplayList() ) {
+  if ( using_caching && haveValidDisplayList() ) {
     glCallList( display_list );
     GLuint err = glGetError();
     if( err != GL_NO_ERROR ) {
@@ -209,3 +152,143 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
   }  
 }
 
+bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_active_field ) {
+  bool have_all_needed_display_lists = true;
+  
+  // Check all the fields routed to us. If field contains a 
+  // H3DDisplayListObject then we check if it is possible to build
+  // a display list for this field based on the status of the 
+  // DisplayList field in the H3DDisplayListObjects.
+  for( FieldVector::iterator i = routes_in.begin();
+       i != routes_in.end(); i++ ) {
+    SFNode *sfnode = 
+      dynamic_cast< SFNode* >( *i );
+    DisplayList *dl = dynamic_cast< DisplayList * >( *i );
+    if( sfnode || dl ) {
+      if( !dl ) {
+        H3DDisplayListObject *dlo = 
+          dynamic_cast< H3DDisplayListObject * >( sfnode->getValue() );
+        if( dlo ) {
+          dl = dlo->displayList.get();
+        }
+      }
+      if( dl ) {
+        if( !dl->usingCaching() ) { 
+          if( !dl->childrenCachesReady( consider_active_field ) ) {
+            have_all_needed_display_lists = false;
+            break;
+          }
+        } else {
+          // if the cache was just broken we cannot use the isActive field 
+          // any longer since a DisplayList can be activated when 
+          // rebuilding cache.
+          if( !consider_active_field ) {
+            if( !dl->haveValidDisplayList() ) {
+              have_all_needed_display_lists = false;
+              break;
+            }
+          } else {
+            if( dl->isActive->getValue() && 
+                !dl->haveValidDisplayList() ) {
+              have_all_needed_display_lists = false;
+              break;
+            }
+          }
+        }
+      }
+    } else {
+      MFNode *mfnode = 
+        dynamic_cast< MFNode* >( *i );
+      if( mfnode ) {
+        for( MFNode::const_iterator n = mfnode->begin();
+             n != mfnode->end(); n++ ) {
+          H3DDisplayListObject *dlo = 
+            dynamic_cast< H3DDisplayListObject * >( *n );
+          if( dlo ) {
+            if( !dlo->displayList->usingCaching() ) { 
+              if( !dlo->displayList->childrenCachesReady( consider_active_field ) ) {
+                have_all_needed_display_lists = false;
+                break;
+              }
+            } else {
+              // if the cache was just broken we cannot use the isActive field 
+              // any longer since a DisplayList can be activated when 
+              // rebuilding cache.
+              if( consider_active_field ) {
+                if( !dlo->displayList->haveValidDisplayList() ) {
+                  have_all_needed_display_lists = false;
+                  break;
+                }
+              } else {
+                if( dlo->displayList->isActive->getValue() && 
+                    !dlo->displayList->haveValidDisplayList() ) {
+                  have_all_needed_display_lists = false;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return have_all_needed_display_lists;
+}
+
+
+bool H3DDisplayListObject::DisplayList::usingCaching() {
+  if( cache_mode == ON ) return true;
+  if( cache_mode == OFF ) return false;
+
+  GraphicsCachingOptions *options = NULL;
+  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
+  if( geom ) {
+    geom->getOptionNode( options );
+  }
+  if( !options ) {
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings ) {
+      default_settings->getOptionNode( options );
+    }
+  }
+
+  if( options ) {
+    if( options->useCaching->getValue() ) {
+      if( options->cacheOnlyGeometries->getValue() ) {
+        return geom != NULL;
+      } else {
+        return true;
+      } 
+    } else {
+      return false;
+    }
+  } else
+    return true;
+}
+
+
+void H3DDisplayListObject::DisplayList::breakCache() {
+  have_valid_display_list = false;
+  delay_cache_counter = cachingDelay();
+  startEvent();
+}
+
+unsigned int H3DDisplayListObject::DisplayList::cachingDelay() {
+  GraphicsCachingOptions *options = NULL;
+  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
+  if( geom ) {
+    geom->getOptionNode( options );
+  }
+  if( !options ) {
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings ) {
+      default_settings->getOptionNode( options );
+    }
+  }
+  
+  if( options ) {
+    return options->cachingDelay->getValue();
+  }
+  
+  return 3;
+}

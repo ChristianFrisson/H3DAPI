@@ -80,9 +80,9 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
       max_distance = default_settings->maxDistance->getValue();
     }
 
-    for( X3DGeometryNode::MFRenderOptionsNode::const_iterator i = 
-           geometry->renderOptions->begin();
-         i != geometry->renderOptions->end(); i++ ) {
+    for( X3DGeometryNode::MFOptionsNode::const_iterator i = 
+           geometry->options->begin();
+         i != geometry->options->end(); i++ ) {
       OpenHapticsOptions *options = dynamic_cast< OpenHapticsOptions * >( *i );
       if( options ) {
         max_distance = options->maxDistance->getValue();

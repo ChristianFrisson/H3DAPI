@@ -90,9 +90,43 @@ namespace H3D {
       };
       
     public:
+      typedef enum {
+        /// Caching is on.
+        ON, 
+        /// Caching is off.
+        OFF,
+        /// Caching is depending in the GraphicalRenderingOptions in use
+        OPTIONS
+      } CacheMode;
+        
       /// Constructor
       DisplayList();
+
+      /// Destructor.
+      ~DisplayList() {
+        if( display_list ) glDeleteLists( display_list, 1 );
+      }
       
+      /// Set the cache mode.
+      void setCacheMode( CacheMode m ) {
+        cache_mode = m;
+      }
+
+      /// Get the cache mode.
+      CacheMode setCacheMode( ) {
+        return cache_mode;
+      }
+
+      /// Returns true if caching is in use and false otherwise.
+      bool usingCaching();
+
+      /// Returns the number of loops the DisplayList must render without
+      /// receiving an event before a display is built.
+      unsigned int cachingDelay();
+
+      /// If called the display list will be rebuilt on next call to
+      void breakCache();
+
       /// Calls tryBuildDisplayList().
       virtual void update();
       
@@ -123,6 +157,8 @@ namespace H3D {
       }
 
     protected:
+      bool childrenCachesReady( bool consider_active_field );
+
       /// Returns true if we have a valid display list built that can
       /// be called.
       inline bool haveValidDisplayList() {
@@ -147,6 +183,9 @@ namespace H3D {
 
       /// OpenGL display list identifier.
       GLuint display_list;
+
+      /// The mode for caching. 
+      CacheMode cache_mode;
       
       /// True if the display list has been built successfully.
       bool have_valid_display_list;

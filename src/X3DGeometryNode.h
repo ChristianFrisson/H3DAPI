@@ -35,7 +35,7 @@
 #include "MFBool.h"
 #include "MFVec3f.h"
 #include "AutoPtrVector.h"
-#include "X3DRenderOptionsNode.h"
+#include "H3DOptionNode.h"
 #include "MFNode.h"
 #ifdef HAVE_OPENHAPTICS
 #include <HL/hl.h>
@@ -55,7 +55,7 @@ namespace H3D {
     public H3DBoundedObject,
     public H3DDisplayListObject {
   public:
-    typedef TypedMFNode< X3DRenderOptionsNode > MFRenderOptionsNode;
+    typedef TypedMFNode< H3DOptionNode > MFOptionsNode;
 
     /// Constructor.
     X3DGeometryNode( Inst< SFNode      >  _metadata = 0,
@@ -65,6 +65,21 @@ namespace H3D {
                      Inst< MFVec3f     > _force = 0,
                      Inst< MFVec3f     > _contactPoint = 0,
                      Inst< MFVec3f     > _contactNormal = 0);
+    /// Get the first option node of the type of the pointer given as argument
+    /// from the renderOptions fieeld
+    /// The option argument will contain the node afterwards, or NULL if no
+    /// option of that type exists.
+    template< class OptionNodeType >
+    void getOptionNode( typename OptionNodeType * &option ) {
+       for( MFOptionsNode::const_iterator i = options->begin();
+           i != options->end(); i++ ) {
+        OptionNodeType *options = dynamic_cast< OptionNodeType * >( *i );
+        if( options ) option = options;
+        return;
+      }
+      option = NULL;
+    }
+
  #ifdef HAVE_OPENHAPTICS   
     /// Destructor. Deletes the hl_shape_id.
     virtual ~X3DGeometryNode();
@@ -79,7 +94,7 @@ namespace H3D {
 
     /// Returns a either a HLFeedbackShape or a HLDepthBufferShape with
     /// the X3DGeometryNode. Which type depents on possible 
-    /// OpenHapticsOptions nodes in the renderOptions field and
+    /// OpenHapticsOptions nodes in the options field and
     /// the default settings in OpenHapticsSettings bindable node.
     HapticShape *getOpenGLHapticShape( H3DSurfaceNode *_surface,
                                        const Matrix4f &_transform,
@@ -126,7 +141,7 @@ namespace H3D {
     /// Contains nodes with options for haptics and graphics rendering.
     ///
     /// <b>Access type:</b> inputOnly
-    auto_ptr< MFRenderOptionsNode > renderOptions;
+    auto_ptr< MFOptionsNode > options;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
