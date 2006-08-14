@@ -59,6 +59,11 @@ namespace H3D {
                       Inst< SFImage > _image     = 0,
                       Inst< SFBool  > _interpolate = 0 );
 
+    /// Destructor.
+    ~X3DTexture2DNode() {
+      if( texture_id ) glDeleteTextures( 1, &texture_id );
+    }
+
     /// Performs the OpenGL rendering required to install the image
     /// as a texture.
     virtual void render();
