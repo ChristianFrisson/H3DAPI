@@ -32,6 +32,7 @@
 #include "X3DAppearanceNode.h"
 #include "FillProperties.h"
 #include "LineProperties.h"
+#include "RenderProperties.h"
 #include "X3DMaterialNode.h"
 #include "X3DTextureNode.h"
 #include "X3DTextureTransformNode.h"
@@ -69,6 +70,17 @@ namespace H3D {
   /// - The fillProperties field, if specified, shall contain a FillProperties
   ///   node. If fillProperties is NULL or unspecified, the fillProperties 
   ///   field has no effect.
+  ///
+  /// - The shaders field contains a listing, in order of preference, of nodes
+  ///   that describe programmable shaders that replace the fixed rendering 
+  ///   requirements with user-provided functionality. If the field is not
+  ///   empty, one shader node is selected and the fixed rendering requirements
+  ///   defined by this specification are ignored.
+  ///
+  /// - The renderProperties field, if specified, shall contain a 
+  ///   RenderProperties node. If renderProperties is NULL or unspecified, 
+  ///   the renderProperties field has no effect (this field is not part of the
+  ///   X3D specification)
   ///
   /// \par Internal routes:
   /// \dotfile Appearance.dot
@@ -128,6 +140,15 @@ namespace H3D {
                              true >
     MFShaderNode;
 
+    /// The SFRenderProperties field is dependent on the displayList field
+    /// of the containing X3DShaderNode node.
+    typedef DependentSFNode< RenderProperties, 
+                             FieldRef< H3DDisplayListObject,
+                                       H3DDisplayListObject::DisplayList,
+                                       &H3DDisplayListObject::displayList >, 
+                             true >
+    SFRenderProperties;
+
     /// Constructor.
     Appearance( Inst< DisplayList            > _displayList = 0,
                 Inst< SFFillProperties       > _fillProperties   = 0,
@@ -141,7 +162,8 @@ namespace H3D {
                 Inst< SFSurface              > _surface          = 0
 #endif
 								,
-                Inst< MFShaderNode           > _shaders           = 0 );
+                Inst< MFShaderNode           > _shaders           = 0,
+                Inst< SFRenderProperties     > _renderProperties  = 0 );
 
     /// Set up the appearance in OpenGL.
     virtual void render();
@@ -224,8 +246,22 @@ namespace H3D {
     /// \dotfile Appearance_shader.dot
     auto_ptr< MFShaderNode >  shaders;
 
+    /// The renderProperties field, if specified, shall contain a 
+    /// RenderProperties node. If renderProperties is NULL or unspecified, 
+    /// the renderProperties field has no effect (this field is not part of the
+    /// X3D specification)
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value: </b> RenderProperties
+    /// 
+    /// \dotfile Appearance_renderProperties.dot
+    auto_ptr< SFRenderProperties > renderProperties;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+  protected:
+    static AutoRef< RenderProperties > default_render_properties;
   };
 }
 

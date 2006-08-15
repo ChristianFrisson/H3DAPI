@@ -53,8 +53,10 @@ namespace AppearanceInternals {
   FIELDDB_ELEMENT( Appearance, texture, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Appearance, textureTransform, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Appearance, shaders, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( Appearance, renderProperties, INPUT_OUTPUT );
 }
 
+AutoRef< RenderProperties > Appearance::default_render_properties;
 
 Appearance::Appearance( Inst< DisplayList            > _displayList,
                         Inst< SFFillProperties       > _fillProperties,
@@ -66,7 +68,8 @@ Appearance::Appearance( Inst< DisplayList            > _displayList,
 #ifdef USE_HAPTICS
 												, Inst< SFSurface              > _surface
 #endif
-												, Inst< MFShaderNode           > _shaders ) :
+												, Inst< MFShaderNode           > _shaders,
+                        Inst< SFRenderProperties     > _renderProperties ) :
 X3DAppearanceNode( _displayList, _metadata
 #ifdef USE_HAPTICS
 									, _surface
@@ -77,18 +80,27 @@ lineProperties  ( _lineProperties   ),
 material        ( _material         ),
 texture         ( _texture          ),
 textureTransform( _textureTransform ),
-shaders          ( _shaders           ) {
+shaders          ( _shaders           ),
+renderProperties( _renderProperties ) {
   
   type_name = "Appearance";
   
   database.initFields( this );
   
+  if( !default_render_properties.get() )
+    default_render_properties.reset( new RenderProperties );
+
+  renderProperties->setValue( default_render_properties.get() );
+
   fillProperties->route( displayList );
   lineProperties->route( displayList );
   material->route( displayList );
   texture->route( displayList );
   textureTransform->route( displayList );
   shaders->route( displayList );
+  renderProperties->route( displayList );
+  
+
 }
 
 void Appearance::render()     {
@@ -96,6 +108,7 @@ void Appearance::render()     {
   
   X3DMaterialNode *m = material->getValue();
   if ( m ) m->displayList->callList();
+  else glColor4f( 1, 1, 1, 1 );
 
   X3DTextureNode *t = texture->getValue();
   if ( t ) t->displayList->callList();
@@ -135,6 +148,10 @@ void Appearance::render()     {
       break;
     }
   }
+
+  RenderProperties *rp = renderProperties->getValue();
+  if ( rp ) rp->displayList->callList();
+
 };
 
 
@@ -150,42 +167,47 @@ void Appearance::preRender() {
     glPushAttrib( GL_LIGHTING_BIT );
     glDisable( GL_LIGHTING );
   }
-
+  
   X3DTextureNode *t = texture->getValue();
   if ( t ) t->preRender();
-
+  
   LineProperties *lp = lineProperties->getValue();
   if ( lp ) lp->preRender();
-
+  
   FillProperties *fp = fillProperties->getValue();
   if ( fp ) fp->preRender();
-
+  
   X3DTextureTransformNode *tt = textureTransform->getValue();
   if ( tt ) tt->preRender();
-
+  
   for( MFShaderNode::const_iterator i = shaders->begin();
        i != shaders->end();
        i++ ) {
-   X3DShaderNode *s = static_cast< X3DShaderNode * >( *i );
-   if ( s ) {
-     if( s->isSupported() ) {
-       s->setSelected( true );
-       s->preRender();
-       break;
-     } else {
-       Console(3) << "Warning: Shader node \"" << s->getName() 
-                  << "\" does not support the \"" << s->language->getValue() 
-                  << "\" language. Shader will be ignored." << endl;
-       s->setSelected( false );
-     }
-   }
- }
+    X3DShaderNode *s = static_cast< X3DShaderNode * >( *i );
+    if ( s ) {
+      if( s->isSupported() ) {
+        s->setSelected( true );
+        s->preRender();
+        break;
+      } else {
+        Console(3) << "Warning: Shader node \"" << s->getName() 
+                   << "\" does not support the \"" << s->language->getValue() 
+                   << "\" language. Shader will be ignored." << endl;
+        s->setSelected( false );
+      }
+    }
+  }
+  RenderProperties *rp = renderProperties->getValue();
+  if ( rp ) rp->preRender();
 }
 
 /// This function will be called by the X3DShapeNode after the geometry
 /// has been rendered to restore the states to what it was before 
 /// the call to preRender().
 void Appearance::postRender() {
+  RenderProperties *rp = renderProperties->getValue();
+  if ( rp ) rp->postRender();
+
   for( MFShaderNode::const_iterator i = shaders->begin();
        i != shaders->end();
        i++ ) {
@@ -238,5 +260,7 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
    X3DShaderNode *sn = static_cast< X3DShaderNode * >( *i );
    if ( sn ) sn->traverseSG( ti );
   }
+  RenderProperties *rp = renderProperties->getValue();
+  if ( rp ) rp->traverseSG( ti );
 }
 #endif

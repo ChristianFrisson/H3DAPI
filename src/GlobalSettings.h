@@ -52,6 +52,11 @@ namespace H3D {
                     Inst< SFTime    >  _bindTime        = 0,
                     Inst< SFBool    >  _isBound         = 0,
                     Inst< MFOptionNode >  _options         = 0 );
+    
+    /// Destructor.
+    ~GlobalSettings() {
+      removeFromStack();
+    }
 
     /// Convenience function to get the top of the DeviceInfo stack.
     static inline GlobalSettings *getActive() {
@@ -67,8 +72,10 @@ namespace H3D {
        for( MFOptionNode::const_iterator i = options->begin();
            i != options->end(); i++ ) {
         OptionNodeType *options = dynamic_cast< OptionNodeType * >( *i );
-        if( options ) option = options;
-        return;
+        if( options ) {
+          option = options;
+          return;
+        }
       }
       option = NULL;
     }

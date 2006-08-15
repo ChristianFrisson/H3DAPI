@@ -81,18 +81,14 @@ void X3DShapeNode::render() {
   X3DAppearanceNode *a = appearance->getValue();
   X3DGeometryNode *g = geometry->getValue();
   
-  GLboolean lighting_on;
-  glGetBooleanv( GL_LIGHTING, &lighting_on );
   if ( a ) {
     a->preRender();
     a->displayList->callList();
-  } else {
-    glDisable( GL_LIGHTING );
-  }
+  } 
+
   if ( g ) g->displayList->callList();
   if( a ) a->postRender();
-  else if( lighting_on )
-    glEnable( GL_LIGHTING );
+
 };
 
 #ifdef USE_HAPTICS

@@ -74,9 +74,11 @@ namespace H3D {
        for( MFOptionsNode::const_iterator i = options->begin();
            i != options->end(); i++ ) {
         OptionNodeType *options = dynamic_cast< OptionNodeType * >( *i );
-        if( options ) option = options;
-        return;
-      }
+        if( options ) {
+          option = options;
+          return;
+        }
+       }
       option = NULL;
     }
 

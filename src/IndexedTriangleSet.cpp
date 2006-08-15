@@ -103,8 +103,6 @@ void IndexedTriangleSet::render() {
   bool tex_coords_per_vertex = tex_coord_node && !tex_coord_gen;
   const vector< int > &indices  = index->getValue();
  
-  glShadeModel( GL_SMOOTH ); 
-
   if( coordinate_node ) {
     // enable backface culling if solid is true
     if( solid->getValue() ) {

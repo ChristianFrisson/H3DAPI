@@ -442,8 +442,6 @@ void Extrusion::render() {
 				glFrontFace( GL_CW );
 		}
 
-		glShadeModel( GL_SMOOTH ); 
-
 		// enable backface culling if solid is true
 		if( solid->getValue() ) {
 			glEnable( GL_CULL_FACE );

@@ -307,8 +307,6 @@ void ElevationGrid::render() {
     unsigned int quad_index = 0;
     unsigned int vertex_index = 0;
 
-    glShadeModel( GL_SMOOTH ); 
-
     // enable backface culling if solid is true
     if( solid->getValue() ) {
       glEnable( GL_CULL_FACE );

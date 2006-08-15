@@ -34,6 +34,8 @@
 #include "TimeStamp.h"
 #include "Bound.h"
 #include "H3DBoundedObject.h"
+#include "GlobalSettings.h"
+#include "DefaultAppearance.h"
 #ifdef USE_HAPTICS
 #include "DeviceInfo.h"
 #endif
@@ -60,6 +62,7 @@ using namespace H3D;
 H3DNodeDatabase H3DWindowNode::database( "H3DWindowNode", 
                                          NULL, 
                                          typeid( H3DWindowNode ) );
+
 
 namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, width, INPUT_OUTPUT );
@@ -184,7 +187,7 @@ void H3DWindowNode::initialize() {
   glEnable( GL_DEPTH_TEST );
   glDepthFunc( GL_LESS );
   glDepthMask( GL_TRUE );
-  glEnable( GL_LIGHTING );
+  glDisable( GL_LIGHTING );
   glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
   GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
@@ -404,12 +407,21 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   
   glEnable( GL_DEPTH_TEST ); 
-  glEnable( GL_LIGHTING );
+  glDisable( GL_LIGHTING );
   glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
   GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, no_ambient);
   
+  DefaultAppearance *def_app = NULL;
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) {
+    default_settings->getOptionNode( def_app );
+  }
+
+  if( def_app && def_app->defaultAppearance->getValue() ) {
+    def_app->defaultAppearance->getValue()->displayList->callList();
+  }
 
   // enable headlight
   NavigationInfo *nav_info = NavigationInfo::getActive();

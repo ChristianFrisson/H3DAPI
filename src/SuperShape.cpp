@@ -138,7 +138,6 @@ SuperShape::SuperShape(
 
 void SuperShape::render() {
   X3DGeometryNode::render();
-  glShadeModel( GL_SMOOTH ); 
   glEnable( GL_CULL_FACE );
   //glEnable( GL_COLOR_MATERIAL );
 

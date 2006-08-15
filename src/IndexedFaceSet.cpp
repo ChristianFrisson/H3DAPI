@@ -149,7 +149,6 @@ void IndexedFaceSet::render() {
   const vector< int > &normal_index    = normalIndex->getValue();
   const vector< int > &tex_coord_index = texCoordIndex->getValue();
 
-  glShadeModel( GL_SMOOTH ); 
   //  glEnable( GL_AUTO_NORMAL );
 
   // we need coordinates to render 

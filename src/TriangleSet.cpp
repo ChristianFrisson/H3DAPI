@@ -87,8 +87,6 @@ void TriangleSet::render() {
     normal_node = autoNormal->getValue();
   }
 
-  glShadeModel( GL_SMOOTH ); 
-
   if( coordinate_node ) {
     // enable backface culling if solid is true
     if( solid->getValue() ) {
