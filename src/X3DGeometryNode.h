@@ -70,7 +70,7 @@ namespace H3D {
     /// The option argument will contain the node afterwards, or NULL if no
     /// option of that type exists.
     template< class OptionNodeType >
-    void getOptionNode( typename OptionNodeType * &option ) {
+    void getOptionNode( OptionNodeType * &option ) {
        for( MFOptionsNode::const_iterator i = options->begin();
            i != options->end(); i++ ) {
         OptionNodeType *options = dynamic_cast< OptionNodeType * >( *i );
