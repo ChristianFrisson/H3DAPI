@@ -101,6 +101,30 @@ class QuitAPIField: public AutoUpdate< SFString > {
     PATH + ini_file.get( GROUP, VAR ) :                 \
     DEFAULT ) )
 
+string GET_ENV_INI_DEFAULT_FILE( INIFile &ini_file,
+                            const string &ENV,
+                            const string &DISPLAY_PATH,
+                            const string &COMMON_PATH,
+                            const string &GROUP,
+                            const string &VAR ) {
+  char *env = getenv(ENV.c_str());
+  if( env ) return env;
+  
+  if( ini_file.hasOption(GROUP,VAR) ) { 
+    string option = ini_file.get( GROUP, VAR );
+    
+    ifstream inp( (DISPLAY_PATH + option).c_str() );
+    inp.close();
+    if(!inp.fail()) return DISPLAY_PATH + option;
+
+    inp.clear();
+    inp.open( (COMMON_PATH + option).c_str() );
+    inp.close();
+    if(!inp.fail()) return COMMON_PATH + option;
+  }
+  return "";
+}
+
 #define GET_INT(GROUP,VAR,DEFAULT)  \
 ( ini_file.hasOption(GROUP,VAR) ? \
   atoi(ini_file.get( GROUP, VAR ).c_str()) :    \
@@ -135,6 +159,8 @@ int main(int argc, char* argv[]) {
   help_message += "    --stylus=<file>     Use <file> as stylus model\n";
   help_message += "    --viewpoint=<file>  Use <file> as viewpoint\n";
   help_message += "    --rendermode=<mode> Use render mode <mode>\n";
+  help_message += " -s --spacemouse        Use 3DConnexion space mouse to\n";
+  help_message += "                        navigate scene.\n";
   help_message += "\n";
   help_message += " -h --help              This help message\n";
   help_message += "\n";
@@ -175,23 +201,25 @@ int main(int argc, char* argv[]) {
                          "display","type",
                          h3d_root + "/settings/common/" );
   
+  string common_path =  h3d_root + "/settings/common/";
+
   string deviceinfo_file =
-    GET_ENV_INI_DEFAULT( "H3D_DEFAULT_DEVICEINFO",
-                         settings_path + "/device/",
-                         "haptics device","device",
-                         h3d_root + "/settings/current/deviceinfo.x3d" );
+    GET_ENV_INI_DEFAULT_FILE( ini_file, "H3D_DEFAULT_DEVICEINFO",
+                              settings_path + "/device/",
+                              common_path + "/device/",
+                              "haptics device","device" );
   
   string stylus_file =
-    GET_ENV_INI_DEFAULT( "H3D_STYLUS",
-                         h3d_root + "/settings/common/stylus/",
-                         "haptics device","stylus",
-                         h3d_root + "/settings/current/stylus.x3d" );
+    GET_ENV_INI_DEFAULT_FILE( ini_file, "H3D_STYLUS",
+                              common_path + "/stylus/",
+                              common_path + "/stylus/",
+                              "haptics device","stylus" );
   
   string viewpoint_file =
-    GET_ENV_INI_DEFAULT( "H3D_DEFAULT_VIEWPOINT",
-                         settings_path + "/viewpoint/",
-                         "graphical", "viewpoint",
-                         h3d_root + "/settings/current/viewpoint.x3d" );
+    GET_ENV_INI_DEFAULT_FILE( ini_file, "H3D_DEFAULT_VIEWPOINT",
+                              settings_path + "/viewpoint/",
+                              common_path + "/viewpoint/",
+                              "graphical", "viewpoint" );
 
   string render_mode = GET4( "H3D_RENDERMODE",
                              "graphical", "rendermode",
@@ -225,6 +253,7 @@ int main(int argc, char* argv[]) {
                  << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
   }
   
+  bool use_space_mouse = false;
 
   // Command line arguments ---
   
@@ -280,7 +309,9 @@ int main(int argc, char* argv[]) {
       else if( !strncmp(argv[i]+2,"rendermode=",
                         strlen("rendermode=")) ){
         render_mode = strstr(argv[i],"=")+1; }
-      
+
+       else if( !strcmp(argv[i]+2,"spacemouse") ){
+        use_space_mouse = true; }
       else {
         Console(4) << "Unknown argument "
                    << "'" << argv[i] << "'" << endl; }
@@ -304,6 +335,10 @@ int main(int argc, char* argv[]) {
       fullscreen = false;
       break;
       
+    case 's':
+      use_space_mouse = true;
+      break;
+
     default:
       Console(4) << "Unknown argument "
                  << "'" << argv[i] << "'" << endl;
@@ -322,7 +357,8 @@ int main(int argc, char* argv[]) {
     AutoRef< KeySensor > ks( new KeySensor );
     AutoRef< MouseSensor > ms( new MouseSensor );
 #ifndef MACOSX
-    AutoRef< SpaceWareSensor > ss( new SpaceWareSensor );
+    AutoRef< SpaceWareSensor > ss;
+    if( use_space_mouse ) ss.reset( new SpaceWareSensor );
 #endif
     X3D::DEFNodes dn;
     KeyRotation *kr = new KeyRotation;
@@ -383,13 +419,15 @@ int main(int argc, char* argv[]) {
     ms->leftButton->route( kr );
     ms->motion->route( kr );
 #ifndef MACOSX
-    ss->instantRotation->route( kr );
+    if( use_space_mouse )
+      ss->instantRotation->route( kr );
 #endif
     kr->route( t->rotation );
 
     AutoRef< Group > g( new Group );
 #ifndef MACOSX
-    g->children->push_back(ss.get());
+    if( use_space_mouse )
+      g->children->push_back(ss.get());
 #endif    
     // create a Viewpoint if it does not exist.
     if( !Viewpoint::getActive() && viewpoint_file.size() ) {
