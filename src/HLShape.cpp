@@ -30,7 +30,7 @@
 #ifdef USE_HAPTICS
 #include "HLShape.h"
 #include "X3DGeometryNode.h"
-#include "OpenHapticsSettings.h"
+#include "GlobalSettings.h"
 #include "OpenHapticsOptions.h"
 #include "HapticShape.h"
 
@@ -75,19 +75,21 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
   Bound *b = geometry->bound->getValue();
   if( b ) {
     H3DFloat max_distance = 0.01;
-    OpenHapticsSettings *default_settings = OpenHapticsSettings::getActive();
-    if( default_settings ) {
-      max_distance = default_settings->maxDistance->getValue();
-    }
+    OpenHapticsOptions *options = NULL;
 
-    for( X3DGeometryNode::MFOptionsNode::const_iterator i = 
-           geometry->options->begin();
-         i != geometry->options->end(); i++ ) {
-      OpenHapticsOptions *options = dynamic_cast< OpenHapticsOptions * >( *i );
-      if( options ) {
-        max_distance = options->maxDistance->getValue();
+    geometry->getOptionNode( options );
+    
+    if( !options ) {
+      GlobalSettings *default_settings = GlobalSettings::getActive();
+      if( default_settings ) {
+        default_settings->getOptionNode( options );
       }
     }
+    
+    if( options ) {
+      max_distance = options->maxDistance->getValue();
+    }
+
     if( max_distance < 0 ) return true;
 
     Vec3f local_pos = m * pos;
