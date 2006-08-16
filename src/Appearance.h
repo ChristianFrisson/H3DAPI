@@ -252,16 +252,12 @@ namespace H3D {
     /// X3D specification)
     ///
     /// <b>Access type:</b> inputOutput
-    /// <b>Default value: </b> RenderProperties
     /// 
     /// \dotfile Appearance_renderProperties.dot
     auto_ptr< SFRenderProperties > renderProperties;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-
-  protected:
-    static AutoRef< RenderProperties > default_render_properties;
   };
 }
 

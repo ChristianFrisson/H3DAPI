@@ -44,7 +44,7 @@ namespace DefaultAppearanceInternals {
 
 DefaultAppearance::DefaultAppearance( 
                            Inst< SFNode>  _metadata,
-                           Inst< SFAppearanceNode > _defaultAppearance ) :
+                           Inst< SFAppearance > _defaultAppearance ) :
   H3DOptionNode( _metadata ),
   defaultAppearance( _defaultAppearance ) {
   

@@ -60,7 +60,6 @@ namespace H3D {
     /// Constructor.
     RenderProperties( Inst< SFNode      >  _metadata   = 0 ,
                       Inst< DisplayList > _displayList      = 0,
-                      Inst< SFBool      > _lightingEnabled  = 0,
                       Inst< SFBool      > _depthTestEnabled = 0,
                       Inst< SFBool      > _smoothShading    = 0 );
 
@@ -88,16 +87,6 @@ namespace H3D {
     virtual string defaultXMLContainerField() {
       return "renderProperties";
     }
-    
-    /// The lightingEnabled field specifies if the geometry should take 
-    /// lighting into account when calculating colors. If false the color
-    /// for each vertex will be used directly.
-    /// 
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> true \n
-    /// 
-    /// \dotfile RenderProperties_lightingEnabled.dot 
-    auto_ptr< SFBool  >  lightingEnabled;
 
     /// The depthTestEnabled field specifies if depth test should be enabled
     /// or not. If depth test is disabled geometries will be drawn over the 

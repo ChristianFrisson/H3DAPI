@@ -40,6 +40,8 @@ H3DNodeDatabase X3DShapeNode::database(
         &X3DChildNode::database 
         );
 
+bool X3DShapeNode::disable_lighting_if_no_app = true;
+
 namespace X3DShapeNodeInternals {
   FIELDDB_ELEMENT( X3DShapeNode, appearance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DShapeNode, geometry, INPUT_OUTPUT );
@@ -81,14 +83,21 @@ void X3DShapeNode::render() {
   X3DAppearanceNode *a = appearance->getValue();
   X3DGeometryNode *g = geometry->getValue();
   
+  GLboolean lighting_on;
+
   if ( a ) {
     a->preRender();
     a->displayList->callList();
-  } 
-
+  } else {
+    if( X3DShapeNode::disable_lighting_if_no_app ) {
+      glGetBooleanv( GL_LIGHTING, &lighting_on );
+      glDisable( GL_LIGHTING );
+    }
+  }
   if ( g ) g->displayList->callList();
   if( a ) a->postRender();
-
+  else if(  X3DShapeNode::disable_lighting_if_no_app && lighting_on )
+    glEnable( GL_LIGHTING );
 };
 
 #ifdef USE_HAPTICS

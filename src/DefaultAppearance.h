@@ -30,7 +30,7 @@
 #define __DEFAULTAPPEARANCE_H__
 
 #include "H3DOptionNode.h"
-#include "X3DAppearanceNode.h"
+#include "Appearance.h"
 #include "DependentNodeFields.h"
 
 namespace H3D {
@@ -46,23 +46,23 @@ namespace H3D {
     /// SFAppearanceNode is dependent on the displayList field of its
     /// encapsulated X3DAppearanceNode node, i.e. an event from that
     /// field will trigger an event from the SFAppearanceNode as well.
-    typedef DependentSFNode< X3DAppearanceNode,
+    typedef DependentSFNode< Appearance,
                              FieldRef<H3DDisplayListObject, 
                                       H3DDisplayListObject::DisplayList,
                                       &H3DDisplayListObject::displayList >, 
                              true > 
-    SFAppearanceNode;
+    SFAppearance;
 
     
     /// Constructor.
     DefaultAppearance( Inst< SFNode  > _metadata = 0,
-                       Inst< SFAppearanceNode > _defaultAppearance = 0 );
+                       Inst< SFAppearance > _defaultAppearance = 0 );
     
     /// The default appearance node.
     ///
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFAppearanceNode > defaultAppearance;
+    auto_ptr< SFAppearance > defaultAppearance;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

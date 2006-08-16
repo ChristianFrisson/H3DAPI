@@ -36,6 +36,7 @@
 #include "H3DBoundedObject.h"
 #include "GlobalSettings.h"
 #include "DefaultAppearance.h"
+#include "X3DShapeNode.h"
 #ifdef USE_HAPTICS
 #include "DeviceInfo.h"
 #endif
@@ -187,7 +188,7 @@ void H3DWindowNode::initialize() {
   glEnable( GL_DEPTH_TEST );
   glDepthFunc( GL_LESS );
   glDepthMask( GL_TRUE );
-  glDisable( GL_LIGHTING );
+  glEnable( GL_LIGHTING );
   glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
   GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
@@ -407,20 +408,29 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   
   glEnable( GL_DEPTH_TEST ); 
-  glDisable( GL_LIGHTING );
+  glEnable( GL_LIGHTING );
   glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
   GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, no_ambient);
   
+  X3DShapeNode::disable_lighting_if_no_app = true;
+
   DefaultAppearance *def_app = NULL;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) {
     default_settings->getOptionNode( def_app );
   }
 
-  if( def_app && def_app->defaultAppearance->getValue() ) {
-    def_app->defaultAppearance->getValue()->displayList->callList();
+  
+  if( def_app ) {
+    Appearance *app = def_app->defaultAppearance->getValue();
+    if( app ) {
+      app->displayList->callList();
+      if( app->material->getValue() ) {
+        X3DShapeNode::disable_lighting_if_no_app = false;
+      }
+    }
   }
 
   // enable headlight

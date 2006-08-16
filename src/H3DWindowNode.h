@@ -221,6 +221,7 @@ namespace H3D {
 #endif
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
   protected:
 #if WIN32
     HGLRC rendering_context;

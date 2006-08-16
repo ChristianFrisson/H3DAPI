@@ -40,7 +40,6 @@ H3DNodeDatabase RenderProperties::database(
                                          &X3DAppearanceChildNode::database );
 
 namespace RenderPropertiesInternals {
-  FIELDDB_ELEMENT( RenderProperties, lightingEnabled, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, depthTestEnabled, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, smoothShading, INPUT_OUTPUT );
 }
@@ -48,33 +47,24 @@ namespace RenderPropertiesInternals {
 
 RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
                                     Inst< DisplayList > _displayList,
-                                    Inst< SFBool      > _lightingEnabled,
                                     Inst< SFBool      > _depthTestEnabled,
                                     Inst< SFBool      > _smoothShading ) :
   X3DAppearanceChildNode( _displayList, _metadata ),
-  lightingEnabled       ( _lightingEnabled ),
   depthTestEnabled      ( _depthTestEnabled ),
   smoothShading         ( _smoothShading ) {
 
   type_name = "RenderProperties";
   database.initFields( this );
   
-  lightingEnabled->setValue( true );
   depthTestEnabled->setValue( true );
   smoothShading->setValue( true );
 
-  lightingEnabled->route( displayList );
   depthTestEnabled->route( displayList );
   smoothShading->route( displayList );
 }
 
 
 void RenderProperties::render() {
-  if( lightingEnabled->getValue() ) {
-    glEnable( GL_LIGHTING );
-  } else {
-    glDisable( GL_LIGHTING );
-  }
 
   if( depthTestEnabled->getValue() ) {
     glEnable( GL_DEPTH_TEST );

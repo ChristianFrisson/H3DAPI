@@ -36,6 +36,7 @@
 #include "LineProperties.h"
 #include "MultiTexture.h"
 #include "Console.h"
+#include "X3DShapeNode.h"
 
 using namespace H3D;
 
@@ -55,8 +56,6 @@ namespace AppearanceInternals {
   FIELDDB_ELEMENT( Appearance, shaders, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Appearance, renderProperties, INPUT_OUTPUT );
 }
-
-AutoRef< RenderProperties > Appearance::default_render_properties;
 
 Appearance::Appearance( Inst< DisplayList            > _displayList,
                         Inst< SFFillProperties       > _fillProperties,
@@ -87,11 +86,6 @@ renderProperties( _renderProperties ) {
   
   database.initFields( this );
   
-  if( !default_render_properties.get() )
-    default_render_properties.reset( new RenderProperties );
-
-  renderProperties->setValue( default_render_properties.get() );
-
   fillProperties->route( displayList );
   lineProperties->route( displayList );
   material->route( displayList );
@@ -164,8 +158,10 @@ void Appearance::preRender() {
   X3DMaterialNode *m = material->getValue();
   if ( m ) m->preRender();
   else {
-    glPushAttrib( GL_LIGHTING_BIT );
-    glDisable( GL_LIGHTING );
+    if( X3DShapeNode::disable_lighting_if_no_app ) {
+      glPushAttrib( GL_LIGHTING_BIT );
+      glDisable( GL_LIGHTING );
+    }
   }
   
   X3DTextureNode *t = texture->getValue();
@@ -232,7 +228,7 @@ void Appearance::postRender() {
 
   X3DMaterialNode *m = material->getValue();
   if ( m ) m->postRender();
-  else glPopAttrib();
+  else if( X3DShapeNode::disable_lighting_if_no_app ) glPopAttrib();
 
   X3DAppearanceNode::postRender();     
 }

@@ -194,6 +194,12 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// Set to true if lighting should be disabled when no Appearance
+    /// or Material node has been specified as per X3D spec. Will be set
+    /// to false in e.g. H3DWindowNode if a default Material node has 
+    /// been specified in a DefaultAppearance option node.
+    static bool disable_lighting_if_no_app;
   };
 }
 
