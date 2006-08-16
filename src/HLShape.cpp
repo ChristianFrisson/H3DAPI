@@ -100,9 +100,12 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
     Vec3f scale ( ( m3 * Vec3f(1,0,0) ).length(),
                   ( m3 * Vec3f(0,1,0) ).length(),
                   ( m3 * Vec3f(0,0,1) ).length() );
-    f.x *= scale.x;
-    f.y *= scale.y;
-    f.z *= scale.z;
+    if( H3DAbs( f.x ) > Constants::f_epsilon ) f.x /= scale.x;
+    else f.x = 0;
+    if( H3DAbs( f.y ) > Constants::f_epsilon ) f.y /= scale.y;
+    else f.y = 0;
+    if( H3DAbs( f.z) > Constants::f_epsilon ) f.z /= scale.z;
+    else f.z = 0;
     
     H3DFloat l = f.length();
     
