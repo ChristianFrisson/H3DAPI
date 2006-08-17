@@ -301,13 +301,16 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
     return new HLDepthBufferShape( this,
                                    _surface,
                                    _transform,
-                                   touchable_face );
+                                   touchable_face,
+                                   camera_view,
+                                   adaptive_viewport );
   } else {
     return new HLFeedbackShape( this,
                                 _surface,
                                 _transform,
                                 _nr_vertices,
-                                touchable_face );
+                                touchable_face,
+                                camera_view );
   }
 }
 
