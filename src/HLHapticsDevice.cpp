@@ -448,6 +448,7 @@ void HLHapticsDevice::disableDevice() {
 }
 
 void HLHapticsDevice::updateDeviceValues() {
+	H3DHapticsDevice::updateDeviceValues();
 
   // update real-time reference to DeviecLog
 	DeviceLog * dl = static_cast< DeviceLog* >( deviceLog->getValue() );
