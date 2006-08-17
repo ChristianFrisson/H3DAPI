@@ -138,9 +138,9 @@ namespace H3D {
     /// function to render the geometry correctly, but MUST use the callList()
     /// function in DisplayList.
     class H3DAPI_API DisplayList: public X3DGeometryNode::DisplayList {
-    protected: 
+    public: 
       /// Perform front face code outside the display list.
-      virtual void callList( bool build_list );
+      virtual void callList( bool build_list = true );
     };
 
     /// Start texture coordinate generation. Texture coordinates will be

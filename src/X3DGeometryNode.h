@@ -69,9 +69,9 @@ namespace H3D {
     /// Display list is extended in order to set front sidedness of 
     /// triangles outside the display list. 
     class H3DAPI_API DisplayList: public BugWorkaroundDisplayList {
-    protected:
+    public:
       /// Perform front face code outside the display list.
-      virtual void callList( bool build_list );
+      virtual void callList( bool build_list = true );
     };
 
     /// Constructor.
