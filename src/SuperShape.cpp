@@ -138,7 +138,8 @@ SuperShape::SuperShape(
 
 void SuperShape::render() {
   X3DGeometryNode::render();
-  glEnable( GL_CULL_FACE );
+
+  useBackFaceCulling( true );
   //glEnable( GL_COLOR_MATERIAL );
 
   float long_step =  2 * 3.14159f / resolution->getValue();

@@ -50,7 +50,8 @@ namespace H3D {
                         Inst< SFString  >  _touchableFace  = 0,
                         Inst< SFBool    >  _useAdaptiveViewport = 0,
                         Inst< SFBool    >  _useHapticCameraView = 0,
-                        Inst< SFFloat   >  _maxDistance  = 0 );
+                        Inst< SFFloat   >  _maxDistance  = 0,
+                        Inst< SFFloat   > _lookAheadFactor = 0 );
     
     /// Specifies the OpenHaptics shape type to use when 
     /// rendering shapes using OpenGL. If "FEEDBACK_BUFFER" feedback 
@@ -70,10 +71,12 @@ namespace H3D {
 
     /// Specifies which sides of the shapes to render haptically. If "BACK"
     /// only the back side of can be felt, "FRONT" only front side and 
-    /// "FRONT_AND_BACK" both sides.
+    /// "FRONT_AND_BACK" both sides. "AS_GRAPHICS" will render the sides
+    /// that are visible graphically.
     ///
-    /// <b>Valid values: </b> "BACK", "FRONT" or "FRONT_AND_BACK" \n
-    /// <b>Default value: </b> "FRONT_AND_BACK" \n
+    /// <b>Valid values: </b> "AS_GRAPHICS", "BACK", "FRONT" or 
+    /// "FRONT_AND_BACK" \n
+    /// <b>Default value: </b> "AS_GRAPHICS" \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFString  > touchableFace;
 
@@ -127,6 +130,17 @@ namespace H3D {
     /// <b>Default value: </b> 0.01 \n
     /// <b>Access type: </b> inputOutput \n    
     auto_ptr< SFFloat > maxDistance;
+
+    /// When determining if a geometry should be rendered haptically
+    /// the bounding box will be tested for intersection with a 
+    /// sphere with radius maxDistance moving along the line segment
+    /// from the current proxy position to another position. The other
+    /// position is calculated as p = current_proxy_pos + 
+    /// (current_proxy_pos - previous_proxy_pos) * lookAheadFactor. 
+    ///
+    /// <b>Default value: </b> 3 \n
+    /// <b>Access type: </b> inputOutput \n    
+    auto_ptr< SFFloat > lookAheadFactor;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

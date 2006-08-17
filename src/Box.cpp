@@ -69,9 +69,9 @@ Box::Box(
 void Box::render() {
   if( solid->getValue() ) {
     glCullFace( GL_BACK );
-    glEnable( GL_CULL_FACE );
+    useBackFaceCulling( true );
   } else {
-    glDisable( GL_CULL_FACE );
+    useBackFaceCulling( false );
   }
   H3DFloat x = size->getValue().x / 2;
   H3DFloat y = size->getValue().y / 2;

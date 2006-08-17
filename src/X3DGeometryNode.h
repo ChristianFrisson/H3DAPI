@@ -57,6 +57,23 @@ namespace H3D {
   public:
     typedef TypedMFNode< H3DOptionNode > MFOptionsNode;
 
+    /// This is just a dummy class to get around a bug in Visual C++ 7.1
+    /// If the X3DGeometry::DisplayList inherits directly from 
+    /// H3DDisplayListObject::Display list the application will crash
+    /// if trying to call H3DDisplayListObject::DisplayList::callList
+    /// By using an intermediate class the bug dissappears.
+    class H3DAPI_API BugWorkaroundDisplayList: 
+      public H3DDisplayListObject::DisplayList {
+    };
+
+    /// Display list is extended in order to set front sidedness of 
+    /// triangles outside the display list. 
+    class H3DAPI_API DisplayList: public BugWorkaroundDisplayList {
+    protected:
+      /// Perform front face code outside the display list.
+      virtual void callList( bool build_list );
+    };
+
     /// Constructor.
     X3DGeometryNode( Inst< SFNode      >  _metadata = 0,
                      Inst< SFBound     > _bound = 0,
@@ -65,6 +82,31 @@ namespace H3D {
                      Inst< MFVec3f     > _force = 0,
                      Inst< MFVec3f     > _contactPoint = 0,
                      Inst< MFVec3f     > _contactNormal = 0);
+
+    /// This function should be used by the render() function to disable
+    /// or enable back face culling. DO NOT USE glEnable/glDisable to do
+    /// this, since it will cause problems with OpenHaptics.
+    inline void useBackFaceCulling( bool enabled ) {
+      use_back_face_culling = enabled;
+    }
+
+    /// Returns if back face culling is in use or not.
+    inline bool usingBackFaceCulling() {
+      return use_back_face_culling;
+    }
+
+    /// Control if back face culling is allowed or not. Used when rendering
+    /// HLFeedbackBuffer or HLDepthBuffer shapes in order not to have 
+    /// back face culling on when rendering shapes with OpenHaptics.
+    inline void allowBackFaceCulling( bool allow ) {
+      allow_back_face_culling = allow;
+    }
+
+    /// Returns true if back face culling is allowed, false otherwise.
+    inline bool allowingBackFaceCulling() {
+      return allow_back_face_culling;
+    }
+
     /// Get the first option node of the type of the pointer given as argument
     /// from the renderOptions fieeld
     /// The option argument will contain the node afterwards, or NULL if no
@@ -149,6 +191,7 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+
   #ifdef HAVE_OPENHAPTICS
     /// HL event callback function for when the geometry is touched.
     static void HLCALLBACK touchCallback( HLenum event,
@@ -185,6 +228,9 @@ namespace H3D {
     };
     
     AutoPtrVector< CallbackData > callback_data; 
+
+    bool use_back_face_culling, allow_back_face_culling;
+
   #endif
   };
 }

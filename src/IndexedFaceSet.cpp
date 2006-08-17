@@ -155,10 +155,10 @@ void IndexedFaceSet::render() {
   if( coords ) {
     // enable backface culling if solid is true
     if( solid->getValue() ) {
-      glEnable( GL_CULL_FACE );
+      useBackFaceCulling( true );
       glCullFace( GL_BACK );
     } else {
-      glDisable( GL_CULL_FACE );
+      useBackFaceCulling( false );
     }
     
     // no X3DTextureCoordinateNode, so we generate texture coordinates

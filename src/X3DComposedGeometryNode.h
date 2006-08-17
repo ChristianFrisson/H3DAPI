@@ -137,7 +137,8 @@ namespace H3D {
     /// having it outside the display list is that you cannot call the render()
     /// function to render the geometry correctly, but MUST use the callList()
     /// function in DisplayList.
-    class H3DAPI_API DisplayList: public H3DDisplayListObject::DisplayList {
+    class H3DAPI_API DisplayList: public X3DGeometryNode::DisplayList {
+    protected: 
       /// Perform front face code outside the display list.
       virtual void callList( bool build_list );
     };

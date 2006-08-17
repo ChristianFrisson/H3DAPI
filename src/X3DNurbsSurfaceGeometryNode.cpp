@@ -333,11 +333,11 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 
 		// enable backface culling if solid is true
 		if( solid->getValue() ) {
-			glEnable( GL_CULL_FACE );
+      useBackFaceCulling( true );
 			glCullFace( GL_BACK );
 		} 
 		else
-			glDisable( GL_CULL_FACE );
+      useBackFaceCulling( false );
 
 		gluNurbsProperty( nurbs_object, GLU_DISPLAY_MODE, GLU_FILL );
 		gluBeginSurface( nurbs_object );

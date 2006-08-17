@@ -22,7 +22,8 @@ using namespace H3D;
 void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
 #ifdef HAVE_OPENHAPTICS
   HLSurface *s = dynamic_cast< HLSurface * >( surface );
-  if( s && closeEnoughToBound( hd->proxyPosition->getValue(), 
+  if( s && closeEnoughToBound( hd->proxyPosition->getValue(),  
+                               hd->getPreviousProxyPosition(),
                                transform.inverse(), 
                                geometry ) ) {
     hlMatrixMode( HL_VIEWTOUCH );
@@ -62,10 +63,13 @@ void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
     } else if( negative_scaling )
       glFrontFace( GL_CW );
 
+    bool previous_allow = geometry->allowingBackFaceCulling();
+    geometry->allowBackFaceCulling( false );
     hlBeginShape( HL_SHAPE_DEPTH_BUFFER, getShapeId( hd ) );
     glClear( GL_DEPTH_BUFFER_BIT );
     geometry->displayList->callList( false );
     hlEndShape();
+    geometry->allowBackFaceCulling( previous_allow );
     glFrontFace( front_face );
 #if HL_VERSION_MAJOR_NUMBER >= 2
     hlPopAttrib();

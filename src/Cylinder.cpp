@@ -94,10 +94,12 @@ void Cylinder::render() {
   bool is_solid = solid->getValue();
   int nr_faces = 120;
 
-  if( is_solid )
-    glEnable( GL_CULL_FACE );
-  else 
-    glDisable( GL_CULL_FACE );
+  if( is_solid ) {
+    glCullFace( GL_BACK );
+    useBackFaceCulling( true );
+  } else {
+    useBackFaceCulling( false );
+  }
 
   // render side
   if ( side->getValue() ) {
@@ -146,9 +148,6 @@ void Cylinder::render() {
     glEnd();
   }
     
-  if( is_solid )
-    glDisable( GL_CULL_FACE );
-
 };
 
 

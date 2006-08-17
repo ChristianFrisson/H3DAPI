@@ -309,10 +309,10 @@ void ElevationGrid::render() {
 
     // enable backface culling if solid is true
     if( solid->getValue() ) {
-      glEnable( GL_CULL_FACE );
       glCullFace( GL_BACK );
+      useBackFaceCulling( true );
     } else {
-      glDisable( GL_CULL_FACE );
+      useBackFaceCulling( false );
     }
 
     if ( color_node ) {

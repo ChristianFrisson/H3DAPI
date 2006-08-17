@@ -39,6 +39,7 @@ void HLCustomObject::hlRender( HLHapticsDevice *hd ) {
 #ifdef HAVE_OPENHAPTICS
   HapticShape *hs = dynamic_cast< HapticShape * >( this );
   if( hs && !closeEnoughToBound( hd->proxyPosition->getValue(), 
+                                 hd->getPreviousProxyPosition(),
                                  hs->transform.inverse(), 
                                  hs->geometry ) ) {
     return;

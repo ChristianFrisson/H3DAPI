@@ -69,7 +69,9 @@ X3DGeometryNode::X3DGeometryNode(
   force( _force ),
   contactPoint( _contactPoint ),
   contactNormal( _contactNormal ),
-  options( new MFOptionsNode ) {
+  options( new MFOptionsNode ),
+  use_back_face_culling( false ),
+  allow_back_face_culling( true ) {
 
   type_name = "X3DGeometryNode";
   
@@ -281,7 +283,10 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
     if( face == "FRONT" ) touchable_face = HL_FRONT;
     else if( face == "BACK" ) touchable_face = HL_BACK;
     else if( face == "FRONT_AND_BACK" ) touchable_face = HL_FRONT_AND_BACK;
-    else {
+    else if( face == "AS_GRAPHICS" ) {
+      if( usingBackFaceCulling() ) touchable_face = HL_FRONT;
+      else touchable_face = HL_FRONT_AND_BACK;
+    } else {
       Console(4) << "Warning: Invalid default OpenHaptics touchable face: "
                  << face 
                  << ". Must be \"FRONT\", \"BACK\" or \"FRONT_AND_BACK\" "
@@ -295,13 +300,36 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
   if( type == 1 ) {
     return new HLDepthBufferShape( this,
                                    _surface,
-                                   _transform );
+                                   _transform,
+                                   touchable_face );
   } else {
     return new HLFeedbackShape( this,
                                 _surface,
                                 _transform,
-                                _nr_vertices );
+                                _nr_vertices,
+                                touchable_face );
   }
 }
 
 #endif
+
+void X3DGeometryNode::DisplayList::callList( bool build_list ) {
+    
+  X3DGeometryNode *geom = 
+    static_cast< X3DGeometryNode * >( owner );
+    
+  GLboolean culling_enabled;
+  glGetBooleanv( GL_CULL_FACE, &culling_enabled );
+
+  if( geom->usingBackFaceCulling() && geom->allowingBackFaceCulling() ) {
+    glEnable( GL_CULL_FACE );
+  } else {
+    glDisable( GL_CULL_FACE );
+  }
+
+  BugWorkaroundDisplayList::callList( build_list );
+
+  if( culling_enabled ) glEnable( GL_CULL_FACE );
+  else glDisable( GL_CULL_FACE );
+  
+  }

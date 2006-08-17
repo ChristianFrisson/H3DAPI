@@ -313,10 +313,10 @@ void Text::render() {
   if( font ) {
     // enable backface culling if solid is true
     if( solid->getValue() ) {
-      glEnable( GL_CULL_FACE );
+      useBackFaceCulling( true );
       glCullFace( GL_BACK );
     } else {
-      glDisable( GL_CULL_FACE );
+      useBackFaceCulling( false );
     }
     
     // we will make changes to the transformation matrices so we save

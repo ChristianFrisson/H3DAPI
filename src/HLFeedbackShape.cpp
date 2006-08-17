@@ -22,6 +22,7 @@ void HLFeedbackShape::hlRender( HLHapticsDevice *hd ) {
 #ifdef HAVE_OPENHAPTICS
   HLSurface *s = dynamic_cast< HLSurface * >( surface );
   if( s && closeEnoughToBound( hd->proxyPosition->getValue(), 
+                               hd->getPreviousProxyPosition(), 
                                transform.inverse(), 
                                geometry ) ) {
     hlMatrixMode( HL_VIEWTOUCH );
@@ -62,9 +63,13 @@ void HLFeedbackShape::hlRender( HLHapticsDevice *hd ) {
     } else {
       hlHinti(  HL_SHAPE_FEEDBACK_BUFFER_VERTICES, 65536 );
     }
+
+    bool previous_allow = geometry->allowingBackFaceCulling();
+    geometry->allowBackFaceCulling( false );
     hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, getShapeId( hd ) );
     geometry->displayList->callList( false );
     hlEndShape();
+    geometry->allowBackFaceCulling( previous_allow );
     
     glFrontFace( front_face );
 #if HL_VERSION_MAJOR_NUMBER >= 2

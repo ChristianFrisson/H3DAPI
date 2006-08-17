@@ -74,9 +74,9 @@ Rectangle2D::Rectangle2D( Inst< SFNode      > _metadata,
 void Rectangle2D::render() {
   if( solid->getValue() ) {
     glCullFace( GL_BACK );
-    glEnable( GL_CULL_FACE );
+    useBackFaceCulling( true );
   } else {
-    glDisable( GL_CULL_FACE );
+    useBackFaceCulling( false );
   }
   H3DFloat half_x = size->getValue().x / 2;
   H3DFloat half_y = size->getValue().y / 2;

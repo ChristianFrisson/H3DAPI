@@ -75,9 +75,9 @@ void TriangleSet2D::render() {
 
   if( solid->getValue() ) {
     glCullFace( GL_BACK );
-    glEnable( GL_CULL_FACE );
+    useBackFaceCulling( true );
   } else {
-    glDisable( GL_CULL_FACE );
+    useBackFaceCulling( false );
   }
 
   BoxBound *bb = dynamic_cast< BoxBound * >( bound->getValue() );

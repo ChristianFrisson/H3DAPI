@@ -76,9 +76,9 @@ void Sphere::render() {
   ///
   if( solid->getValue() ) {
     glCullFace( GL_BACK );
-    glEnable( GL_CULL_FACE );
+    useBackFaceCulling( true );
   } else {
-    glDisable( GL_CULL_FACE );
+    useBackFaceCulling( false );
   }
   if( !gl_quadric ) {
     gl_quadric = gluNewQuadric();
