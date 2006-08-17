@@ -106,7 +106,22 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
                   ( m3 * Vec3f(0,1,0) ).length(),
                   ( m3 * Vec3f(0,0,1) ).length() );
 
-    if( bb ) {
+    // check if the point is close enough to the point.
+    Vec3f f = (b->closestPoint( local_pos ) - local_pos);
+    
+    if( H3DAbs( f.x ) > Constants::f_epsilon ) f.x /= scale.x;
+    else f.x = 0;
+    if( H3DAbs( f.y ) > Constants::f_epsilon ) f.y /= scale.y;
+    else f.y = 0;
+    if( H3DAbs( f.z) > Constants::f_epsilon ) f.z /= scale.z;
+    else f.z = 0;
+      
+    H3DFloat l = f.length();
+    
+    if( l < max_distance ) return true;
+
+    // look ahead to include geometries in the direction the proxy is moving
+    if( bb && look_ahead_factor != 0 ) {
       // expand the bounding box in order for the line segment 
       // intersection test to be with a line with the radius of 
       // max_distance
@@ -122,19 +137,7 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
       return expanded_box_bound.lineSegmentIntersect( local_pos, end_pos );
       
     } else {
-      Vec3f f = (b->closestPoint( local_pos ) - local_pos);
-      
-      
-      if( H3DAbs( f.x ) > Constants::f_epsilon ) f.x /= scale.x;
-      else f.x = 0;
-      if( H3DAbs( f.y ) > Constants::f_epsilon ) f.y /= scale.y;
-      else f.y = 0;
-      if( H3DAbs( f.z) > Constants::f_epsilon ) f.z /= scale.z;
-      else f.z = 0;
-      
-      H3DFloat l = f.length();
-
-      return( l < max_distance );
+      return false;
     }
   }
   cerr << "NO BOUND" << endl;

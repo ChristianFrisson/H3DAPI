@@ -211,7 +211,7 @@ namespace H3D {
       H3DFloat ady = H3DAbs( d.y );
       if( H3DAbs( m.y ) > e.y + ady ) return false;
       H3DFloat adz = H3DAbs( d.z );
-      if( H3DAbs( m.z ) > e.x + adz ) return false;
+      if( H3DAbs( m.z ) > e.z + adz ) return false;
 
       adx += Constants::f_epsilon;
       ady += Constants::f_epsilon;
