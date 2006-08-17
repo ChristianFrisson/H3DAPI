@@ -170,7 +170,6 @@ namespace H3D {
       }
     };
 
-
     /// Constructor.
     H3DHapticsDevice( Inst< SFVec3f         > _devicePosition         = 0,
                    Inst< SFRotation      > _deviceOrientation      = 0,
@@ -196,6 +195,9 @@ namespace H3D {
       if( thread )
         delete thread;
     }
+
+    /// Get the proxy position from the previous loop.
+    inline Vec3f getPreviousProxyPosition() { return previuos_proxy_pos; }
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "appearance".
@@ -225,7 +227,9 @@ namespace H3D {
     /// This function is used to transfer device values, such as position, 
     /// button status etc from the realtime loop to the fields of H3DHapticsDevice,
     /// and possible vice versa.
-    virtual void updateDeviceValues() {}
+    virtual void updateDeviceValues() {
+      previuos_proxy_pos = proxyPosition->getValue();
+    }
 
     /// This function is called at the start of each scenegraph loop before any
     /// calls to other HapticDevice functions and can be used to perform any 
@@ -392,6 +396,8 @@ namespace H3D {
     /// Node database entry
     static H3DNodeDatabase database;
   protected:
+    Vec3f previuos_proxy_pos;
+
     /// The thread that this haptics device loop is run in.
     PeriodicThreadBase *thread;
   };
