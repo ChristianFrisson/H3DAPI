@@ -1119,7 +1119,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               if( !field ) {
                 Console(3) << "WARNING: Couldn't find field named \"" << name 
                            << "\" in " << qname << " node " 
-                           << getLocationString() << " this not is hidden" << endl;
+                           << getLocationString() << endl;
               } else {
                 ParsableField *pfield = 
                   dynamic_cast< ParsableField * >( field );
