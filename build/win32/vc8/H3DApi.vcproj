@@ -312,6 +312,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\DefaultAppearance.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\DeformableShape.cpp"
 				>
 			</File>
@@ -325,6 +329,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\DirectionalLight.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\DirectShowDecoder.cpp"
 				>
 			</File>
 			<File
@@ -400,7 +408,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\GlobalSettings.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\GLUTWindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\GraphicsCachingOptions.cpp"
 				>
 			</File>
 			<File
@@ -440,6 +456,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\H3DOptionNode.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\H3DScriptNode.cpp"
 				>
 			</File>
@@ -452,6 +472,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\H3DVideoClipDecoderNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DVideoTextureNode.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\H3DWindowNode.cpp"
 				>
 			</File>
@@ -461,6 +489,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSphere.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\HLCustomObject.cpp"
 				>
 			</File>
 			<File
@@ -684,10 +716,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\OpenHapticsSettings.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\OrientationInterpolator.cpp"
 				>
 			</File>
@@ -768,6 +796,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\RenderProperties.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\ResourceResolver.cpp"
 				>
 			</File>
@@ -808,11 +840,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\SimpleMovieTexture.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\SmoothSurface.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\Sound.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SpaceballSensor.cpp"
 				>
 			</File>
 			<File
@@ -1084,10 +1124,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DRenderOptionsNode.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\X3DSAX2Handlers.cpp"
 				>
 			</File>
@@ -1226,10 +1262,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\Child.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\Circle2D.h"
 				>
 			</File>
@@ -1302,6 +1334,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\DefaultAppearance.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\DEFNodes.h"
 				>
 			</File>
@@ -1323,6 +1359,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\DirectionalLight.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\DirectShowDecoder.h"
 				>
 			</File>
 			<File
@@ -1410,7 +1450,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\GlobalSettings.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\GLUTWindow.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\GraphicsCachingOptions.h"
 				>
 			</File>
 			<File
@@ -1478,6 +1526,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\H3DOptionNode.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\H3DRenderStateObject.h"
 				>
 			</File>
@@ -1511,6 +1563,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DTypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DVideoClipDecoderNode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DVideoTextureNode.h"
 				>
 			</File>
 			<File
@@ -1818,6 +1878,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\MovieTexture.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\MultiTexture.h"
 				>
 			</File>
@@ -1867,10 +1931,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\OpenHapticsOptions.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\OpenHapticsSettings.h"
 				>
 			</File>
 			<File
@@ -1979,6 +2039,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\RefCountSField.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\RenderProperties.h"
 				>
 			</File>
 			<File
@@ -2106,11 +2170,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\SimpleMovieTexture.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\SmoothSurface.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\Sound.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\SpaceballSensor.h"
 				>
 			</File>
 			<File
@@ -2251,6 +2323,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\TypedFieldTypesTmpl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\unistd.h"
 				>
 			</File>
 			<File
@@ -2423,10 +2499,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DPrototypeInstance.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\X3DRenderOptionsNode.h"
 				>
 			</File>
 			<File

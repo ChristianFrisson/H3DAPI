@@ -189,6 +189,12 @@
 				RelativePath="..\..\..\src\Console.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Contour2D.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\ContourPolyline2D.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordBoundField.cpp">
 			</File>
 			<File
@@ -471,9 +477,6 @@
 				RelativePath="..\..\..\src\MouseSensor.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MovieTexture.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\src\MultiTexture.cpp">
 			</File>
 			<File
@@ -495,7 +498,16 @@
 				RelativePath="..\..\..\src\NormalInterpolator.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\NurbsCurve2D.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsPatchSurface.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\NurbsTextureCoordinate.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsTrimmedSurface.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\OggFileReader.cpp">
@@ -795,6 +807,9 @@
 				RelativePath="..\..\..\src\X3DNormalNode.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\X3DNurbsControlCurveNode.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3DNurbsSurfaceGeometryNode.cpp">
 			</File>
 			<File
@@ -911,9 +926,6 @@
 				RelativePath="..\..\..\src\Box.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Child.h">
-			</File>
-			<File
 				RelativePath="..\..\..\src\Circle2D.h">
 			</File>
 			<File
@@ -944,6 +956,12 @@
 				RelativePath="..\..\..\src\Console.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Contour2D.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\ContourPolyline2D.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\CoordBoundField.h">
 			</File>
 			<File
@@ -960,6 +978,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Cylinder.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\DefaultAppearance.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\DEFNodes.h">
@@ -1046,7 +1067,13 @@
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\GlobalSettings.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\GLUTWindow.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\GraphicsCachingOptions.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Group.h">
@@ -1095,6 +1122,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DNodeDatabase.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DOptionNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DRenderStateObject.h">
@@ -1382,13 +1412,22 @@
 				RelativePath="..\..\..\src\NormalInterpolator.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\NurbsCurve2D.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsPatchSurface.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsTextureCoordinate.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\NurbsTrimmedSurface.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\OggFileReader.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\OpenHapticsOptions.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\OpenHapticsSettings.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\OrientationInterpolator.h">
@@ -1802,6 +1841,9 @@
 				RelativePath="..\..\..\src\X3DNormalNode.h">
 			</File>
 			<File
+				RelativePath="..\..\..\src\X3DNurbsControlCurveNode.h">
+			</File>
+			<File
 				RelativePath="..\..\..\src\X3DNurbsSurfaceGeometryNode.h">
 			</File>
 			<File
@@ -1812,9 +1854,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DPrototypeInstance.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\X3DRenderOptionsNode.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DSAX2Handlers.h">
