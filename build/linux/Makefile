@@ -109,19 +109,21 @@ update:
 	$(MAKE) depend
 
 sources:
-	ls $(H3D_HOME)/src/*.cpp $(H3D_HOME)/src/Types/*.cpp > Makefile.sources
+	ls $(H3D_HOME)/src/*.cpp $(H3D_HOME)/src/Types/*.cpp $(H3D_HOME)/src/*.cc> Makefile.sources
 	echo -n "SOURCES=" > Makefile.sources2
 	cat Makefile.sources \
 	  | sed 's/.cpp/.cpp \\/g' \
+	  | sed 's/.cc/.cc \\/g' \
 	  >> Makefile.sources2
 	mv Makefile.sources2 Makefile.sources
 
 objects:
-	ls $(H3D_HOME)/src/*.cpp $(H3D_HOME)/src/Types/*.cpp > Makefile.objects
+	ls $(H3D_HOME)/src/*.cpp $(H3D_HOME)/src/Types/*.cpp $(H3D_HOME)/src/*.cc > Makefile.objects
 	echo -n "OBJECTS=" > Makefile.objects2
 	cat Makefile.objects \
 	  | grep -v "H3DLoad.cpp" \
 	  | sed 's/.cpp/.o \\/g' \
+	  | sed 's/.cc/.o \\/g' \
 	  >> Makefile.objects2
 	mv Makefile.objects2 Makefile.objects
 
