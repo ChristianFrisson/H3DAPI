@@ -38,38 +38,36 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class TimeTrigger
   /// \brief TimeTrigger is a trigger node that generates
-	/// time events upon receiving boolean events.
-	/// The triggerTime event is generated when the TimeTrigger receives 
-	/// a set_boolean event. The value of triggerTime shall be the time at which
-	/// set_boolean is received. The value of set_boolean shall be ignored.
+  /// time events upon receiving boolean events.
+  /// The triggerTime event is generated when the TimeTrigger receives 
+  /// a set_boolean event. The value of triggerTime shall be the time at which
+  /// set_boolean is received. The value of set_boolean shall be ignored.
   ///
   /// \par Internal routes:
   /// \dotfile TimeTrigger.dot
   
-	class TimeTrigger : public X3DTriggerNode {
+  class TimeTrigger : public X3DTriggerNode {
   public:
 
-		/// The SetTriggerTime class is specialize to set the vaule of
-		/// the triggerTime field to the current time.
+    /// The SetTriggerTime class is specialize to set the vaule of
+    /// the triggerTime field to the current time.
     class SetTriggerTime: public AutoUpdate< TypedField < SFTime, SFBool > > {
     protected:
       virtual void update() {
-        TimeTrigger *bf = 
-          static_cast< TimeTrigger * >( getOwner() );
-				TimeStamp theTime;
-				value = theTime;
+	TimeStamp theTime;
+	value = theTime;
       }
     };
 
-		friend class SetTriggerTime;
+    friend class SetTriggerTime;
 
     /// Constructor.
-    TimeTrigger( Inst< SFNode					> _metadata			= 0,
-								 Inst< SFBool					> _set_boolean  = 0,
-								 Inst< SetTriggerTime > _triggerTime	= 0 );
+    TimeTrigger( Inst< SFNode > _metadata            = 0,
+		 Inst< SFBool > _set_boolean         = 0,
+		 Inst< SetTriggerTime > _triggerTime = 0 );
 
-		/// When an event is received store the current 
-		/// time in triggerTime.
+    /// When an event is received store the current 
+    /// time in triggerTime.
     /// 
     /// <b>Access type:</b> inputOnly \n
     /// 
@@ -77,13 +75,13 @@ namespace H3D {
     auto_ptr< SFBool > set_boolean;
 
     /// Contains the current time when an event has been generated
-		///
-		/// <b>Access type:</b> outputOnly \n
+    ///
+    /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile TimeTrigger_triggerTime.dot
     auto_ptr< SetTriggerTime > triggerTime;
 
-		/// The H3DNodedatabase for this node.
+    /// The H3DNodedatabase for this node.
     static H3DNodeDatabase database;
   };
 }

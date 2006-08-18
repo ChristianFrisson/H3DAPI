@@ -226,7 +226,6 @@ void X3DSoundSourceNode::TimeHandler::update() {
       } else {
         if( sound_source->reader.get() && processed > 0 ) {
           // All sound souces have processed at least one buffer
-          bool buffer_updated = false;
           ALuint buffer_id;
         
           // Unqueue from all sound sources

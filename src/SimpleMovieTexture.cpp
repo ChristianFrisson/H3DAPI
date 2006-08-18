@@ -86,7 +86,6 @@ SimpleMovieTexture::SimpleMovieTexture(
   decoderManager( new DecoderManager ) {
   type_name = "SimpleMovieTexture";
   database.initFields( this );
-  HRESULT hr = S_OK;
   
   decoderManager->setOwner( this );
   
