@@ -40,6 +40,12 @@ namespace H3D {
   namespace TypedFieldTypeCheck {
     template< class Type > struct AnyType;
         
+    /// 
+    /// An exception thrown when a field is of the wrong type
+    /// when it is checked. Internal to the H3D::TypedFieldCheck classes.
+    /// 
+    H3D_VALUE_EXCEPTION( string, InvalidType );
+
     /// The Any template can be used in the RequiredArgTypes or 
     /// OptionalArgTypes arguments of a TypedField template instantiation.
     /// It defines that a routed Field can be any of the types specified 

@@ -49,12 +49,6 @@ namespace H3D {
   namespace TypedFieldTypeCheck {
 
     /// 
-    /// An exception thrown when a field is of the wrong type
-    /// when it is checked. Internal to the H3D::TypedFieldCheck classes.
-    /// 
-    H3D_VALUE_EXCEPTION( string, InvalidType );
-
-    /// 
     /// InvalidTemplateArguments
     /// An exception thrown when the template argument list does not
     /// follow the rules defined in TypedField.  
