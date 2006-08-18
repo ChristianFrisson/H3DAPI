@@ -39,7 +39,9 @@ namespace H3D {
     H3DFunctionNode( Inst< SFNode>  _metadata = 0 );
 
     /// Get the value as unsigned byte
-    virtual unsigned char getChar(unsigned char x) = 0;
+    virtual unsigned char getChar(unsigned char x) {
+       return (unsigned char)( 255.0f*get((H3D::H3DFloat)(x/255.0f)) );
+    };
     ///
     virtual H3DFloat get(H3DFloat x) = 0;
     
