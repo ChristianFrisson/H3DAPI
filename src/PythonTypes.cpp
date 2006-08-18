@@ -111,6 +111,9 @@ namespace H3D {
     { "getFieldList", (PyCFunction) PyNode::getFieldList, 0 },
     { "addField", (PyCFunction) PyNode::addField, 0 },
     { "getField", (PyCFunction) PyNode::getSingleField, 0 },
+    { "getName", (PyCFunction) PyNode::getName, 0 },
+    { "setName", (PyCFunction) PyNode::setName, 0 },
+    { "getTypeName", (PyCFunction) PyNode::getTypeName, 0 },
     {NULL, NULL}
   };
   
@@ -291,6 +294,40 @@ self, name, field_type, access_type )" );
     else
       s << "<invalid Node>";
     return PyString_FromString( s.str().c_str() );
+  }
+
+  PyObject* PyNode::getName( PyObject *myself ) {
+    PyNode *n = (PyNode*)myself;
+    if( n->ptr)
+      return PyString_FromString( n->ptr->getName().c_str() );
+    else {
+      Py_INCREF( Py_None );
+      return Py_None;
+    }
+  }
+
+  PyObject* PyNode::getTypeName( PyObject *myself ) {
+    PyNode *n = (PyNode*)myself;
+    if( n->ptr)
+      return PyString_FromString( n->ptr->getTypeName().c_str() );
+    else {
+      Py_INCREF( Py_None );
+      return Py_None;
+    }
+  }
+
+  PyObject* PyNode::setName( PyObject *self, PyObject *args ) {
+    if(!args || ! PyString_Check( args ) ) {
+      PyErr_SetString( PyExc_ValueError, 
+                       "Invalid argument(s) to function H3D.Node.setName( self, name )" );
+      return 0;
+    }
+    PyNode *n = (PyNode*)self;
+    if (n->ptr) {
+      n->ptr->setName( PyString_AsString( args ) );
+    }
+    Py_INCREF( Py_None );
+    return Py_None;
   }
 
   PyObject* PyNode::getField( PyObject *myself, char* arg ) {

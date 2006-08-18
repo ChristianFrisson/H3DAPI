@@ -130,6 +130,15 @@ namespace H3D {
     /// Get the list of fields available in this Node.
     static PyObject* getFieldList( PyObject *myself );
 
+    /// Get the name of this node.
+    static PyObject* getName( PyObject *myself );
+
+    /// Get the type name of this node, i.e. "Group"
+    static PyObject* getTypeName( PyObject *myself );
+
+    /// Set the name of this node.
+    static PyObject* setName( PyObject *self, PyObject *args );
+
     /// Get a field from the node database.
     static PyObject* getSingleField( PyObject *self, PyObject *args );
 
