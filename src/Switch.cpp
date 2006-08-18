@@ -73,8 +73,9 @@ void Switch::render() {
     dynamic_cast< H3DDisplayListObject * >(child_node);
   if( dlo )
     dlo->displayList->callList();
-  else 
-    child_node->render();
+  else {
+    if( child_node ) child_node->render();
+  }
 }
 
 void Switch::SFBound::update() {
