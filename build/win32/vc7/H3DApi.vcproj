@@ -207,6 +207,9 @@
 				RelativePath="..\..\..\src\Cylinder.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\DefaultAppearance.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\DeformableShape.cpp">
 			</File>
 			<File
@@ -276,7 +279,13 @@
 				RelativePath="..\..\..\src\GeneratedCubeMapTexture.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\GlobalSettings.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\GLUTWindow.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\GraphicsCachingOptions.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\Group.cpp">
@@ -304,6 +313,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DNodeDatabase.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DOptionNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\H3DScriptNode.cpp">
@@ -492,9 +504,6 @@
 				RelativePath="..\..\..\src\OpenHapticsOptions.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\OpenHapticsSettings.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\src\OrientationInterpolator.cpp">
 			</File>
 			<File
@@ -553,6 +562,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Rectangle2D.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\RenderProperties.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\ResourceResolver.cpp">
@@ -793,9 +805,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DPrototypeInstance.cpp">
-			</File>
-			<File
-				RelativePath="..\..\..\src\X3DRenderOptionsNode.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DSAX2Handlers.cpp">
@@ -1461,6 +1470,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\RefCountSField.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\RenderProperties.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\ResourceResolver.h">
