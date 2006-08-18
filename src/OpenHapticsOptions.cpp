@@ -70,7 +70,7 @@ OpenHapticsOptions::OpenHapticsOptions(
   touchableFace->setValue( "AS_GRAPHICS" );
   useAdaptiveViewport->setValue( true );
   useHapticCameraView->setValue( true );
-  maxDistance->setValue( 0.01 );
+  maxDistance->setValue( 0.01f );
   lookAheadFactor->setValue( 3 );
 }
 
