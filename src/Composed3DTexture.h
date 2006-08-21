@@ -69,16 +69,16 @@ namespace H3D {
                  Inst< SFBool          > _repeatR   = 0,
                  Inst< SFBool          > _scaleToP2 = 0,
                  Inst< SFImage         > _image     = 0,
-                 Inst< SFBool          > _interpolate = 0,
-                 Inst< MFTexture2DNode > _texture   = 0);
+                 Inst< MFTexture2DNode > _texture   = 0,
+                 Inst< SFTextureProperties > _textureProperties = 0 );
 
     /// Ignores the image given, and uses the textures
     /// in the texture field to create a 3d texture instead.
-    void glTexImage( Image *i, GLenum texture_target, 
-                     bool scale_to_power_of_two );
+    virtual void glTexImage( Image *i, GLenum texture_target, 
+                             bool scale_to_power_of_two );
     
     /// Renders the texture with OpenGL. 
-    void render() ;
+    virtual void render() ;
 
     /// The 2d textures to compose into a 3d texture.
     /// 

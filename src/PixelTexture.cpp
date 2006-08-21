@@ -51,9 +51,9 @@ PixelTexture::PixelTexture(
                            Inst< SFBool       >  _repeatT,
                            Inst< SFBool       >  _scaleToP2,
                            Inst< SFImage > _image,
-                           Inst< SFBool  > _interpolate ) :
+                           Inst< SFTextureProperties > _textureProperties ) :
   X3DTexture2DNode( _displayList, _metadata, _repeatS, _repeatT,
-                    _scaleToP2, _image, _interpolate ) {
+                    _scaleToP2, _image, _textureProperties ) {
   type_name = "PixelTexture";
   database.initFields( this );
 }

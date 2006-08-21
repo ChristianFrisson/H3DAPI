@@ -84,8 +84,8 @@ namespace H3D {
                   Inst< SFBool   >  _repeatT         = 0,
                   Inst< SFBool   >  _scaleToP2       = 0,
                   Inst< SFImage  > _image            = 0,
-                  Inst< SFBool   > _interpolate      = 0,
-                  Inst< MFImageLoader > _imageLoader = 0 );
+                  Inst< MFImageLoader > _imageLoader = 0,
+                  Inst< SFTextureProperties > _textureProperties = 0 );
 
     /// render() is overridden to include the url in error messages.
     virtual void render();

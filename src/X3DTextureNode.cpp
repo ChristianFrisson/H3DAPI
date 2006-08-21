@@ -280,21 +280,33 @@ GLuint X3DTextureNode::renderImage( Image *image,
 
       stringstream msg;
 
+      GLint border_width;
+      glGetTexLevelParameteriv( texture_target, GL_TEXTURE_BORDER, 0, &border_width );
+      
+      string m;
+      if( border_width == 0 ) {
+        m = "(expecting power of 2)";
+      } else {
+        m = "(must be 2^k + 2*border_width for some integer k)(border_width=1)";
+      }
+
+      H3DInt32 total_border = border_width * 2;
+
       // check that the dimensions of the image is a power of 2.
       bool invalid_dimensions = false;
-      if( !isPowerOfTwo( image->width() ) ) {
+      if( !isPowerOfTwo( image->width() - total_border ) ) {
         msg <<" Width " <<image->width() 
-            <<" (expecting power of 2) ";
+            << m;
         invalid_dimensions = true;
       }
-      if( !isPowerOfTwo( image->height() ) ) {
+      if( !isPowerOfTwo( image->height() - total_border ) ) {
         msg <<" Height " <<image->height() 
-            <<" (expecting power of 2)";
+            << m;
         invalid_dimensions = true;
       }
-      if( !isPowerOfTwo( image->depth() ) ) {
+      if( !isPowerOfTwo( image->depth() - total_border ) ) {
         msg <<" Depth " <<image->depth() 
-            <<" (expecting power of 2))";
+            <<m ;
         invalid_dimensions = true;
       }
       if( invalid_dimensions ) {

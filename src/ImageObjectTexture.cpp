@@ -49,11 +49,11 @@ ImageObjectTexture::ImageObjectTexture( Inst< DisplayList > _displayList,
                                         Inst< SFBool  > _repeatT,
                                         Inst< SFBool  > _repeatR,
                                         Inst< SFBool  > _scaleToP2,
-                                        Inst< SFImage > _image,
-                                        Inst< SFBool  > _interpolate, 
-                                        Inst< SFImageObject > _imageObject ): 
+                                        Inst< SFImage > _image, 
+                                        Inst< SFImageObject > _imageObject,
+                                        Inst< SFTextureProperties > _textureProperties): 
   X3DTexture3DNode( _displayList, _metadata, _repeatS, _repeatT, _repeatR,
-                    _scaleToP2, _image, _interpolate ),
+                    _scaleToP2, _image, _textureProperties ),
   imageObject( _imageObject ) {
 
   type_name = "ImageObjectTexture";

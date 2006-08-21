@@ -60,7 +60,7 @@ SimpleMovieTexture::SimpleMovieTexture(
                                    Inst< SFBool  > _repeatT,
                                    Inst< SFBool  > _scaleToP2,
                                    Inst< SFImage > _image,
-                                   Inst< SFBool  > _interpolate,
+                                   Inst< SFTextureProperties > _textureProperties,
                                    Inst< SFBool > _play,
                                    Inst< SFBool  > _stop,
                                    Inst< SFBool > _pause,
@@ -72,7 +72,7 @@ SimpleMovieTexture::SimpleMovieTexture(
                                    Inst< SFInt32     > _height,
                                    Inst< MFString >  _url ):
   H3DVideoTextureNode( _displayList, _metadata, _repeatS, _repeatT, _scaleToP2,
-                       _image, _interpolate ),
+                       _image, _textureProperties ),
   X3DUrlObject( _url ),
   play( _play ),
   stop( _stop ),

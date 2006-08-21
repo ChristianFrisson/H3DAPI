@@ -52,10 +52,10 @@ Composed3DTexture::Composed3DTexture(
                            Inst< SFBool      >  _repeatR,
                            Inst< SFBool      >  _scaleToP2,
                            Inst< SFImage     > _image,
-                           Inst< SFBool      > _interpolate,
-                           Inst< MFTexture2DNode > _texture ) :
+                           Inst< MFTexture2DNode > _texture,
+                           Inst< SFTextureProperties > _textureProperties ) :
   X3DTexture3DNode( _displayList, _metadata, _repeatS, _repeatT,
-                    _repeatR, _scaleToP2, _image, _interpolate ),
+                    _repeatR, _scaleToP2, _image, _textureProperties ),
   texture( _texture ) {
   type_name = "Composed3DTexture";
   database.initFields( this );
@@ -242,31 +242,7 @@ void Composed3DTexture::render()     {
     }     
   }
   
-  // set up texture parameters 
-  if ( repeatS->getValue() )
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-  else
-    glTexParameteri( GL_TEXTURE_3D, 
-                     GL_TEXTURE_WRAP_S, 
-                     GL_CLAMP_TO_EDGE );
-  if ( repeatT->getValue() )
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-  else
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, 
-                     GL_CLAMP_TO_EDGE );
-  if ( repeatR->getValue() )
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT );
-  else
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, 
-                     GL_CLAMP_TO_EDGE );
-   if( interpolate->getValue() ) {
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-  } else {
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-  }
+  renderTextureProperties();
 }
 
 

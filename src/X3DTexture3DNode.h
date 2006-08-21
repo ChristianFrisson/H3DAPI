@@ -31,6 +31,8 @@
 
 #include "X3DTextureNode.h"
 #include "H3DImageObject.h"
+#include "TextureProperties.h"
+#include "DependentNodeFields.h"
 
 namespace H3D {
   /// \ingroup AbstractNodes
@@ -44,6 +46,13 @@ namespace H3D {
     public H3DImageObject {
   public:
        
+    /// The SFTextureProperties is dependent on the propertyChanged field of
+    /// the contained TextureProperties.
+    typedef  DependentSFNode< FieldRef<TextureProperties,
+                                       Field,
+                                       &TextureProperties::propertyChanged > > 
+    SFTextureProperties;
+
     /// Constructor.
     X3DTexture3DNode( Inst< DisplayList > _displayList = 0,
                       Inst< SFNode  > _metadata  = 0,
@@ -52,7 +61,7 @@ namespace H3D {
                       Inst< SFBool  > _repeatR   = 0,
                       Inst< SFBool  > _scaleToP2 = 0,
                       Inst< SFImage > _image     = 0,
-                      Inst< SFBool  > _interpolate = 0 );
+                      Inst< SFTextureProperties > _textureProperties = 0 );
 
     
     /// Destructor.
@@ -63,6 +72,12 @@ namespace H3D {
     /// Performs the OpenGL rendering required to install the image
     /// as a texture.
     virtual void render();
+
+    /// Render all OpenGL texture properties.
+    virtual void renderTextureProperties();
+
+    /// Returns the internal OpenGL format to use given an Image
+    virtual GLint glInternalFormat( Image *image );
 
     /// Virtual function for making all OpenGL calls that are needed to
     /// enable texturing for the texture.
@@ -170,14 +185,13 @@ namespace H3D {
     /// \dotfile X3DTexture3DNode_image.dot 
     auto_ptr< SFBool > scaleToPowerOfTwo;
     
-    /// If true the texture values will be interpolated when applied to a
-    /// geometry.
+    /// The textureProperties field contains a TextureProperties node
+    /// which allows fine control over a texture's application.
     /// 
     /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> TRUE \n
     ///
-    /// \dotfile X3DTexture3DNode_interpolate.dot 
-    auto_ptr< SFBool >  interpolate;
+    /// \dotfile X3DTexture2DNode_textureProperties.dot 
+    auto_ptr< SFTextureProperties >  textureProperties;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

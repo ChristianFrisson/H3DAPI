@@ -52,10 +52,10 @@ ImageTexture::ImageTexture(
                            Inst< SFBool        > _repeatT,
                            Inst< SFBool        > _scaleToP2,
                            Inst< SFImage       > _image,
-                           Inst< SFBool   > _interpolate,
-                           Inst< MFImageLoader > _imageLoader ) :
+                           Inst< MFImageLoader > _imageLoader,
+                           Inst< SFTextureProperties > _textureProperties ) :
   X3DTexture2DNode( _displayList, _metadata, _repeatS, _repeatT,
-                    _scaleToP2, _image, _interpolate ),
+                    _scaleToP2, _image, _textureProperties ),
   X3DUrlObject( _url ),
   imageLoader( _imageLoader ) {
 

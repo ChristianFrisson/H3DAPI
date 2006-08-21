@@ -64,8 +64,8 @@ namespace H3D {
                         Inst< SFBool  > _repeatR   = 0,
                         Inst< SFBool  > _scaleToP2 = 0,
                         Inst< SFImage > _image     = 0,
-                        Inst< SFBool  > _interpolate = 0, 
-                        Inst< SFImageObject > _imageObject = 0 );
+                        Inst< SFImageObject > _imageObject = 0,
+                        Inst< SFTextureProperties > _textureProperties = 0 );
     
     /// The H3DImageObject which image we want to use as data.
     /// 

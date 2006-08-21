@@ -61,7 +61,7 @@ namespace H3D {
                  Inst< SFBool       > _repeatT      = 0,
                  Inst< SFBool       > _scaleToP2    = 0,
                  Inst< SFImage      > _image        = 0,
-                 Inst< SFBool       > _interpolate  = 0,
+                 Inst< SFTextureProperties > _textureProperties = 0,
                  Inst< SFBool       > _play         = 0,
                  Inst< SFBool       > _stop         = 0,
                  Inst< SFBool       > _pause        = 0,

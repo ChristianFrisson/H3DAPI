@@ -49,7 +49,9 @@ namespace H3D {
                  Inst< SFBool      > _repeatT     = 0,
                  Inst< SFBool      > _scaleToP2   = 0,
                  Inst< SFImage     > _image       = 0,
-                 Inst< SFBool      > _interpolate = 0 ):
+                 Inst< SFTextureProperties > _textureProperties = 0 ):
+      X3DTexture2DNode( _displayList, _metadata, _repeatS, _repeatT,
+                        _scaleToP2, _image, _textureProperties ),
       frame_bytes_allocated( 0 ) {}
 
 #ifdef USE_HAPTICS
