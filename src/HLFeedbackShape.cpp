@@ -67,7 +67,7 @@ void HLFeedbackShape::hlRender( HLHapticsDevice *hd ) {
     bool previous_allow = geometry->allowingBackFaceCulling();
     geometry->allowBackFaceCulling( false );
     hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, getShapeId( hd ) );
-    geometry->hlRender();
+    geometry->hlRender( hd );
     hlEndShape();
     geometry->allowBackFaceCulling( previous_allow );
     
