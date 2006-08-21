@@ -67,7 +67,7 @@ void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
     geometry->allowBackFaceCulling( false );
     hlBeginShape( HL_SHAPE_DEPTH_BUFFER, getShapeId( hd ) );
     glClear( GL_DEPTH_BUFFER_BIT );
-    geometry->displayList->callList( false );
+    geometry->hlRender();
     hlEndShape();
     geometry->allowBackFaceCulling( previous_allow );
     glFrontFace( front_face );

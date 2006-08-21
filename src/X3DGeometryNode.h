@@ -83,6 +83,15 @@ namespace H3D {
                      Inst< MFVec3f     > _contactPoint = 0,
                      Inst< MFVec3f     > _contactNormal = 0);
 
+    /// This function will be called when rendering the geometry as a 
+    /// feedback shape or depth buffer shape for OpenHaptics and can be used 
+    /// to have other OpenGL calls for the OpenHaptics rendering than
+    /// for graphics rendering. By default it is the same is in the graphics
+    /// rendering.
+    virtual void hlRender() {
+      displayList->callList( false );
+    }
+
     /// This function should be used by the render() function to disable
     /// or enable back face culling. DO NOT USE glEnable/glDisable to do
     /// this, since it will cause problems with OpenHaptics.
