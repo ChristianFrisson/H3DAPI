@@ -88,7 +88,7 @@ namespace H3D {
     /// to have other OpenGL calls for the OpenHaptics rendering than
     /// for graphics rendering. By default it is the same is in the graphics
     /// rendering.
-    virtual void hlRender( HLHapticsDevice *hd ) {
+    virtual void hlRender( HLHapticsDevice *hd, Matrix4f &transform ) {
       displayList->callList( false );
     }
 

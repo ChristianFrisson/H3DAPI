@@ -67,10 +67,11 @@ class KeyRotation : public TypedField< SFRotation,
         value = Rotation( 0,1,0,0.1f ) * value;
       }
     }
-    
-    else if( event.ptr == routes_in[3] ) {
-      Rotation r = static_cast< SFRotation * >(routes_in[3])->getValue();
-      value = r * value;
+    else if( routes_in.size() > 3 ) {
+      if( event.ptr == routes_in[3] ) {
+        Rotation r = static_cast< SFRotation * >(routes_in[3])->getValue();
+        value = r * value;
+      }
     }
   }
 };
