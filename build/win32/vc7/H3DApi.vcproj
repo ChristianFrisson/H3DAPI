@@ -351,6 +351,9 @@
 				RelativePath="..\..\..\src\HapticSphere.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HaptikHapticsDevice.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HLCustomObject.cpp">
 			</File>
 			<File
@@ -1194,6 +1197,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSpring.h">
+			</File>
+			<File
+				RelativePath="..\..\..\src\HaptikHapticsDevice.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\HLCustomObject.h">
