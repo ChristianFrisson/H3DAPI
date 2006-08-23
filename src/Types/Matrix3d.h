@@ -101,6 +101,16 @@ namespace H3D {
         return Vec3d( m[i][0], m[i][1], m[i][2] ); 
       }
 
+      /// Get an element in the matrix.
+      inline H3DDouble getElement( int i, int j ) const { 
+        return m[i][j];
+      }
+
+      /// Set an element in the matrix.
+      inline void setElement( int i, int j, H3DDouble v ) { 
+        m[i][j] = v;
+      }
+
       /// Get the euler angles( yaw, pitch, roll ) representation of 
       /// the rotation matrix. The Matrix3d must be a rotation matrix.
       Vec3d toEulerAngles();

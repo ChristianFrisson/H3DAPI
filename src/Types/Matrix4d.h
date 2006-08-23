@@ -127,6 +127,16 @@ namespace H3D {
         return Vec4d( m[0][i], m[1][i], m[2][i], m[3][i] ); 
       }
 
+      /// Get an element in the matrix.
+      inline H3DDouble getElement( int i, int j ) const { 
+        return m[i][j];
+      }
+
+      /// Set an element in the matrix.
+      inline void setElement( int i, int j, H3DDouble v ) { 
+        m[i][j] = v;
+      }
+
 			/// Returns the scale and rotation part of the Matrix4d.
 			inline Matrix3d getScaleRotationPart() const {
 				return Matrix3d( m[0][0], m[0][1], m[0][2],
