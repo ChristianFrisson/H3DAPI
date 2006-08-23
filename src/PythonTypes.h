@@ -193,6 +193,10 @@ namespace H3D {
     /// Normalize the vector to be of length 1. If the vector is of 
     /// zero length nothing will be done. args is ignored.
     static PyObject* normalizeSafe( PyObject *self, PyObject *args );
+
+    /// Returns the dot product between two vectors.
+    static PyObject* dotProduct( PyObject *self, PyObject *args );
+
   };
   
   //////////////////////////////////////////////////////
@@ -255,6 +259,9 @@ namespace H3D {
     /// Normalize the vector to be of length 1. If the vector is of 
     /// zero length nothing will be done. args is ignored.
     static PyObject* normalizeSafe( PyObject *self, PyObject *args );
+
+    /// Returns the dot product between two vectors.
+    static PyObject* dotProduct( PyObject *self, PyObject *args );
   };
   
   //////////////////////////////////////////////////////
@@ -307,6 +314,12 @@ namespace H3D {
     /// Normalize the vector to be of length 1. If the vector is of 
     /// zero length nothing will be done. args is ignored.
     static PyObject* normalizeSafe( PyObject *self, PyObject *args );
+
+    /// Returns the dot product between two vectors.
+    static PyObject* dotProduct( PyObject *self, PyObject *args );
+
+    /// Returns the dot product between two vectors.
+    static PyObject* crossProduct( PyObject *self, PyObject *args );
 
   };
   
@@ -366,6 +379,11 @@ namespace H3D {
     /// Normalize the vector to be of length 1. If the vector is of 
     /// zero length nothing will be done.
     static PyObject* normalizeSafe( PyObject *self, PyObject *args );
+    /// Returns the dot product between two vectors.
+    static PyObject* dotProduct( PyObject *self, PyObject *args );
+
+    /// Returns the dot product between two vectors.
+    static PyObject* crossProduct( PyObject *self, PyObject *args );
   };
   
   //////////////////////////////////////////////////////
@@ -425,13 +443,24 @@ namespace H3D {
     return PyObject_TypeCheck(o,&PyVec4d_Type);
   }
 
+  namespace PythonInternals {
+    /// Returns true if its argument is a PyVec3d or PyVec3f.
+    inline bool PyVec4d4f_Check( PyObject *o) {
+      return PyObject_TypeCheck(o,&PyVec4d_Type) ||
+        PyObject_TypeCheck( o, &PyVec4f_Type );
+    }
+    
+    /// Returns an Vec4d representation of the contents of o.
+    Vec4d PyVec4d4f_AsVec4d( PyObject *o );
+  }
+
   /// \class PyVec4d
   /// \brief Python C Type wrapper around Vec4d
   struct PyVec4d : public PyVecTypeWrapper< Vec4d, 
                    &PyVec4d_Type,
                    PyVec4d_Name,
-                   PyVec4d_Check,
-                   PyVec4d_AsVec4d, 
+                   PythonInternals::PyVec4d4f_Check,
+                   PythonInternals::PyVec4d4f_AsVec4d, 
                    PyVec4d_FromVec4d > {
     
     /// Python type initialisation: will set the Vec4d value from a
@@ -476,6 +505,12 @@ namespace H3D {
     /// Get the euler angles( yaw, pitch, roll ) representation of 
     /// the Rotation. 
     static PyObject *toEulerAngles( PyObject *self, PyObject *args );
+
+    /// Spherical linear interpolation between two Rotations.
+    static PyObject *slerp( PyObject *self, PyObject *args );
+
+    /// Multiplies two Matrix3f objects
+    static PyObject* mul( PyObject *rota, PyObject *rotb );
   };
   
   //////////////////////////////////////////////////////
@@ -512,6 +547,9 @@ namespace H3D {
     /// a python string argument list
     static int init(PyQuaternion *self, PyObject *args, PyObject *kwds);
     
+    /// Multiplies two Matrix3f objects
+    static PyObject* mul( PyObject *rota, PyObject *rotb );
+
     /// Get the euler angles( yaw, pitch, roll ) representation of 
     /// the Rotation. 
     static PyObject *toEulerAngles( PyObject *self, PyObject *args );
@@ -527,7 +565,13 @@ namespace H3D {
     static PyObject* conjugate( PyObject *self, PyObject *args );
 
     /// Returns the inverse of the Quaternion.
-    static PyObject* inverse( PyObject *self, PyObject *args );    
+    static PyObject* inverse( PyObject *self, PyObject *args ); 
+
+    /// Spherical linear interpolation between two Quaternions.
+    static PyObject* slerp( PyObject *self, PyObject *args ); 
+
+    /// dotProduct() returns the cos(angle) between two quaternions
+    static PyObject* dotProduct( PyObject *self, PyObject *args ); 
   };
 
   //////////////////////////////////////////////////////
@@ -572,11 +616,27 @@ namespace H3D {
     /// Returns the inverse of the matrix.
     static PyObject* inverse( PyObject *self, PyObject *args );
 
+    /// Returns the transpose of the matrix.
+    static PyObject* transpose( PyObject *self, PyObject *args );
+
+    /// Get the euler angles( yaw, pitch, roll ) representation of 
+    /// the rotation matrix. The Matrix3f must be a rotation matrix.
+    static PyObject* toEulerAngles( PyObject *self, PyObject *args );
+
+      /// Get the scaling part of the matrix for each axis.
+    static PyObject* getScalePart( PyObject *self, PyObject *args );
+
     /// Get a row of the matrix.
     static PyObject* getRow( PyObject *self, PyObject *args );
 
     /// Get a column of the matrix.
     static PyObject* getColumn( PyObject *self, PyObject *args );
+
+    /// Get an element in the matrix.
+    static PyObject* getElement( PyObject *self, PyObject *args );
+
+    /// Set an element in the matrix.
+    static PyObject* setElement( PyObject *self, PyObject *args );
   };
     
   //////////////////////////////////////////////////////
@@ -632,6 +692,9 @@ namespace H3D {
     /// Returns the inverse of the matrix.
     static PyObject* inverse( PyObject *self, PyObject *args );
 
+   /// Returns the inverse of the matrix.
+    static PyObject* transpose( PyObject *self, PyObject *args );
+
     /// Get a row of the matrix.
     static PyObject* getRow( PyObject *self, PyObject *args );
 
@@ -643,6 +706,15 @@ namespace H3D {
 
     /// Returns the rotation part of the Matrix4f.
     static PyObject* getRotationPart( PyObject *self, PyObject *args );
+
+    /// Returns the scaling part of the Matrix4f.
+    static PyObject* getScalePart( PyObject *self, PyObject *args );
+
+    /// Get an element in the matrix.
+    static PyObject* getElement( PyObject *self, PyObject *args );
+
+    /// Set an element in the matrix.
+    static PyObject* setElement( PyObject *self, PyObject *args );
   };
 
 
@@ -664,15 +736,27 @@ namespace H3D {
 
   /// Returns true if its argument is a PyMatrix3d.
   inline bool PyMatrix3d_Check( PyObject *o) {
-    return PyObject_TypeCheck(o,&PyMatrix3f_Type);
+    return PyObject_TypeCheck(o,&PyMatrix3d_Type);
   }
+
+  namespace PythonInternals {
+    /// Returns true if its argument is a PyVec3d or PyVec3f.
+    inline bool PyMatrix3d3f_Check( PyObject *o) {
+      return PyObject_TypeCheck(o,&PyMatrix3d_Type) ||
+        PyObject_TypeCheck( o, &PyMatrix3f_Type );
+    }
+    
+    /// Returns an Vec3d representation of the contents of o.
+    Matrix3d PyMatrix3d3f_AsMatrix3d( PyObject *o );
+  }
+
   /// \class PyMatrix3d
   /// \brief Python C Type wrapper around Matrix3d
   struct PyMatrix3d : public PyNumberTypeWrapper< Matrix3d, 
                       &PyMatrix3d_Type,
                       PyMatrix3d_Name,
-                      PyMatrix3d_Check,
-                      PyMatrix3d_AsMatrix3d, 
+                      PythonInternals::PyMatrix3d3f_Check,
+                      PythonInternals::PyMatrix3d3f_AsMatrix3d, 
                       PyMatrix3d_FromMatrix3d > {
     
     /// Python type initialisation: will set the Matrix3d value from a
@@ -688,11 +772,27 @@ namespace H3D {
     /// Returns the inverse of the matrix.
     static PyObject* inverse( PyObject *self, PyObject *args );
 
+    /// Returns the transpose of the matrix.
+    static PyObject* transpose( PyObject *self, PyObject *args );
+
+    /// Get the euler angles( yaw, pitch, roll ) representation of 
+    /// the rotation matrix. The Matrix3f must be a rotation matrix.
+    static PyObject* toEulerAngles( PyObject *self, PyObject *args );
+
+      /// Get the scaling part of the matrix for each axis.
+    static PyObject* getScalePart( PyObject *self, PyObject *args );
+
     /// Get a row of the matrix.
     static PyObject* getRow( PyObject *self, PyObject *args );
 
     /// Get a column of the matrix.
     static PyObject* getColumn( PyObject *self, PyObject *args );
+
+    /// Get an element in the matrix.
+    static PyObject* getElement( PyObject *self, PyObject *args );
+
+    /// Set an element in the matrix.
+    static PyObject* setElement( PyObject *self, PyObject *args );
   };
     
   //////////////////////////////////////////////////////
@@ -715,13 +815,25 @@ namespace H3D {
   inline bool PyMatrix4d_Check( PyObject *o) {
     return PyObject_TypeCheck(o,&PyMatrix4d_Type);
   }
+
+  namespace PythonInternals {
+    /// Returns true if its argument is a PyVec3d or PyVec3f.
+    inline bool PyMatrix4d4f_Check( PyObject *o) {
+      return PyObject_TypeCheck(o,&PyMatrix4d_Type) ||
+        PyObject_TypeCheck( o, &PyMatrix4f_Type );
+    }
+    
+    /// Returns an Vec4d representation of the contents of o.
+    Matrix4d PyMatrix4d4f_AsMatrix4d( PyObject *o );
+  }
+
   /// \class PyMatrix4d
   /// \brief Python C Type wrapper around Matrix4d
   struct PyMatrix4d : public PyNumberTypeWrapper< Matrix4d, 
                       &PyMatrix4d_Type,
                       PyMatrix4d_Name,
-                      PyMatrix4d_Check,
-                      PyMatrix4d_AsMatrix4d, 
+                      PythonInternals::PyMatrix4d4f_Check,
+                      PythonInternals::PyMatrix4d4f_AsMatrix4d, 
                       PyMatrix4d_FromMatrix4d > {
     
     
@@ -748,6 +860,9 @@ namespace H3D {
     /// Returns the inverse of the matrix.
     static PyObject* inverse( PyObject *self, PyObject *args );
 
+    /// Returns the inverse of the matrix.
+    static PyObject* transpose( PyObject *self, PyObject *args );
+
     /// Get a row of the matrix.
     static PyObject* getRow( PyObject *self, PyObject *args );
 
@@ -759,6 +874,15 @@ namespace H3D {
 
     /// Returns the rotation part of the Matrix4d.
     static PyObject* getRotationPart( PyObject *self, PyObject *args );
+
+    /// Returns the scaling part of the Matrix4d.
+    static PyObject* getScalePart( PyObject *self, PyObject *args );
+
+    /// Get an element in the matrix.
+    static PyObject* getElement( PyObject *self, PyObject *args );
+
+    /// Set an element in the matrix.
+    static PyObject* setElement( PyObject *self, PyObject *args );
   };
     
   //////////////////////////////////////////////////////

@@ -98,6 +98,42 @@ namespace H3D {
       }
     }  
 
+    /// Returns an Vec4d representation of the contents of o.
+    Vec4d PyVec4d4f_AsVec4d( PyObject *o ) {
+      if( PyVec4d_Check( o ) ) {
+        return PyVec4d_AsVec4d( o );
+      } if( PyVec4f_Check( o ) ) {
+        return PyVec4f_AsVec4f( o );
+      } else {
+        throw Exception::H3DAPIException( "PyObject * is not a PyVec3d *", 
+                                          H3D_FULL_LOCATION );
+      }
+    }  
+
+    /// Returns an Matrix3d representation of the contents of o.
+    Matrix3d PyMatrix3d3f_AsMatrix3d( PyObject *o ) {
+      if( PyMatrix3d_Check( o ) ) {
+        return PyMatrix3d_AsMatrix3d( o );
+      } if( PyMatrix3f_Check( o ) ) {
+        return PyMatrix3f_AsMatrix3f( o );
+      } else {
+        throw Exception::H3DAPIException( "PyObject * is not a PyMatrix3d *", 
+                                          H3D_FULL_LOCATION );
+      }
+    }
+
+    /// Returns an Matrix4d representation of the contents of o.
+    Matrix4d PyMatrix4d4f_AsMatrix4d( PyObject *o ) {
+      if( PyMatrix4d_Check( o ) ) {
+        return PyMatrix4d_AsMatrix4d( o );
+      } if( PyMatrix4f_Check( o ) ) {
+        return PyMatrix4f_AsMatrix4f( o );
+      } else {
+        throw Exception::H3DAPIException( "PyObject * is not a PyMatrix4d *", 
+                                          H3D_FULL_LOCATION );
+      }
+    }
+    
   }
 
   // New datatypes to reflect base H3D API data types:
@@ -389,6 +425,7 @@ self, name, field_type, access_type )" );
     { "lengthSqr", PyVec2f::lengthSqr, 0 },
     { "normalize", PyVec2f::normalize, 0 },
     { "normalizeSafe", PyVec2f::normalizeSafe, 0 },
+    { "dotProduct", PyVec2f::dotProduct, 0 },
     {NULL, NULL}
   };
   
@@ -490,6 +527,18 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
 
+  PyObject* PyVec2f::dotProduct( PyObject *myself, PyObject *args ) {
+    if( !args || !PyVec2f_Check( args ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+              "invalid type given as argument to PyVec2f::dotProduct( v )." );
+      return 0;
+    }
+
+    Vec2f v = PyVec2f_AsVec2f( myself );
+    Vec2f arg = PyVec2f_AsVec2f( args );
+    return PyFloat_FromDouble( v.dotProduct( arg ) );
+  }
+
   /// Returns an Vec2f representation of the contents of o.
   Vec2f PyVec2f_AsVec2f( PyObject *o ) {
     if( PyVec2f_Check( o ) ) {
@@ -577,6 +626,7 @@ self, name, field_type, access_type )" );
     { "lengthSqr", PyVec2d::lengthSqr, 0 },
     { "normalize", PyVec2d::normalize, 0 },
     { "normalizeSafe", PyVec2d::normalizeSafe, 0 },
+    { "dotProduct", PyVec2d::dotProduct, 0 },
     {NULL, NULL}
   };
   
@@ -678,6 +728,18 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
+  PyObject* PyVec2d::dotProduct( PyObject *myself, PyObject *args ) {
+    if( !args || !PyVec2d_Check( args ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+         "invalid type given as argument to PyVec2d::dotProduct( v )." );
+      return 0;
+    }
+
+    Vec2d v = PyVec2d_AsVec2d( myself );
+    Vec2d arg = PyVec2d_AsVec2d( args );
+    return PyFloat_FromDouble( v.dotProduct( arg ) );
+  }
+
   /// Returns an Vec2d representation of the contents of o.
   Vec2d PyVec2d_AsVec2d( PyObject *o ) {
     if( PyVec2d_Check( o ) ) {
@@ -752,6 +814,8 @@ self, name, field_type, access_type )" );
     { "lengthSqr", PyVec3f::lengthSqr, 0 },
     { "normalize", PyVec3f::normalize, 0 },
     { "normalizeSafe", PyVec3f::normalizeSafe, 0 },
+    { "dotProduct", PyVec3f::dotProduct, 0 },
+    { "crossProduct", PyVec3f::crossProduct, 0 },
     {NULL, NULL}
   };
   
@@ -884,6 +948,30 @@ self, name, field_type, access_type )" );
     return 0;
   }
   
+  PyObject* PyVec3f::dotProduct( PyObject *myself, PyObject *args ) {
+    if( !args || !PyVec3f_Check( args ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+         "invalid type given as argument to PyVec3f::dotProduct( v )." );
+      return 0;
+    }
+
+    Vec3f v = PyVec3f_AsVec3f( myself );
+    Vec3f arg = PyVec3f_AsVec3f( args );
+    return PyFloat_FromDouble( v.dotProduct( arg ) );
+  }
+
+  PyObject* PyVec3f::crossProduct( PyObject *myself, PyObject *args ) {
+    if( !args || !PyVec3f_Check( args ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+         "invalid type given as argument to PyVec3f::crossProduct( v )." );
+      return 0;
+    }
+
+    Vec3f v = PyVec3f_AsVec3f( myself );
+    Vec3f arg = PyVec3f_AsVec3f( args );
+    return PyVec3f_FromVec3f( v.crossProduct( arg ) );
+  }
+
   PyObject* PyVec3f::mod( PyObject *veca, PyObject *vecb ) {
      if( PyVec3f_Check( veca ) && PyVec3f_Check( vecb ) ){
       Vec3f c = PyVec3f_AsVec3f( veca ) % PyVec3f_AsVec3f( vecb );
@@ -935,6 +1023,8 @@ self, name, field_type, access_type )" );
     { "lengthSqr", PyVec3d::lengthSqr, 0 },
     { "normalize", PyVec3d::normalize, 0 },
     { "normalizeSafe", PyVec3d::normalizeSafe, 0 },
+    { "dotProduct", PyVec3d::dotProduct, 0 },
+    { "crossProduct", PyVec3d::crossProduct, 0 },
     {NULL, NULL}
   };
   
@@ -1052,6 +1142,30 @@ self, name, field_type, access_type )" );
     Vec3d *part = (Vec3d *)(PyVec3d *)( o );
     *part = v;
     return o;
+  }
+
+  PyObject* PyVec3d::dotProduct( PyObject *myself, PyObject *args ) {
+    if( !args || !PyVec3d_Check( args ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+         "invalid type given as argument to PyVec3d::dotProduct( v )." );
+      return 0;
+    }
+
+    Vec3d v = PyVec3d_AsVec3d( myself );
+    Vec3d arg = PyVec3d_AsVec3d( args );
+    return PyFloat_FromDouble( v.dotProduct( arg ) );
+  }
+
+  PyObject* PyVec3d::crossProduct( PyObject *myself, PyObject *args ) {
+    if( !args || !PyVec3d_Check( args ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+         "invalid type given as argument to PyVec3d::crossProduct( v )." );
+      return 0;
+    }
+
+    Vec3d v = PyVec3d_AsVec3d( myself );
+    Vec3d arg = PyVec3d_AsVec3d( args );
+    return PyVec3d_FromVec3d( v.crossProduct( arg ) );
   }
 
   int PyVec3d::init(PyVec3d *self, PyObject *args, PyObject *kwds)  {
@@ -1396,6 +1510,11 @@ self, name, field_type, access_type )" );
     { "inverse", (PyCFunction)PyMatrix3f::inverse, 0 },
     { "getRow", (PyCFunction)PyMatrix3f::getRow, 0 },
     { "getColumn", (PyCFunction)PyMatrix3f::getColumn, 0 },
+    { "getElement", (PyCFunction)PyMatrix3f::getElement, 0 },    
+    { "setElement", (PyCFunction)PyMatrix3f::setElement, 0 },
+    { "getScalePart", (PyCFunction)PyMatrix3f::getScalePart, 0 },
+    { "transpose", (PyCFunction)PyMatrix3f::transpose, 0 },
+    { "toEulerAngles", (PyCFunction)PyMatrix3f::toEulerAngles, 0 },
     {NULL, NULL}
   };
   
@@ -1504,6 +1623,62 @@ self, name, field_type, access_type )" );
     }
   }  
 
+  PyObject* PyMatrix3f::getElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.getElement( i, j )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix3f m = PyMatrix3f_AsMatrix3f( myself );
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    return PyFloat_FromDouble( m.getElement( PyInt_AsLong( i ), 
+                                             PyInt_AsLong( j ) ) );
+  }
+
+  PyObject* PyMatrix3f::setElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 3  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.setElement( i, j, v )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix3f *m = (Matrix3f *)(PyMatrix3f *)(myself);
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+    PyObject *v = PyTuple_GetItem( args, 2 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
+        !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    long r = PyInt_AsLong( i );
+    long c = PyInt_AsLong( j );
+        
+    if( PyFloat_Check( v ) ) {
+      m->setElement( r, c, (H3DFloat)PyFloat_AsDouble( v ) );
+      // int type
+    } else if( PyInt_Check( v ) ) {
+      m->setElement( r, c, (H3DFloat)PyInt_AsLong( v ) );
+      // long type
+    } else if( PyLong_Check( v ) ) {
+      m->setElement( r, c, (H3DFloat) PyLong_AsLong( v ) );
+    } 
+    Py_INCREF( Py_None );
+    return Py_None;
+  }
+
   /// Creates a new PyMatrix3f object based on the value of v.
   PyObject *PyMatrix3f_FromMatrix3f( const Matrix3f &v) {
     PyObject *o = PyType_GenericAlloc( &PyMatrix3f_Type, 1 );
@@ -1530,6 +1705,9 @@ self, name, field_type, access_type )" );
       } else if( PyMatrix3f_Check( o ) ) {
         Matrix3f m = PyMatrix3f_AsMatrix3f( o );
         *self_m = m;
+      } else if( PyMatrix3d_Check( o ) ) {
+        Matrix3d m = PyMatrix3d_AsMatrix3d( o );
+        *self_m = (Matrix3f) m;
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix3f constructor." );
@@ -1560,9 +1738,15 @@ self, name, field_type, access_type )" );
       if( PyMatrix3f_Check( b ) ) {
         Matrix3f mb = PyMatrix3f_AsMatrix3f( b );
         return PyMatrix3f_FromMatrix3f( ma * mb );
+      } else if( PyMatrix3d_Check( b ) ) {
+        Matrix3d mb = PyMatrix3d_AsMatrix3d( b );
+        return PyMatrix3d_FromMatrix3d( ma * mb );
       } else if( PyVec3f_Check( b ) ) {
         Vec3f vb = PyVec3f_AsVec3f( b );
         return PyVec3f_FromVec3f( ma * vb );
+      } else if( PyVec3d_Check( b ) ) {
+        Vec3d vb = PyVec3d_AsVec3d( b );
+        return PyVec3d_FromVec3d( ma * vb );
       }
     }
 
@@ -1585,6 +1769,21 @@ self, name, field_type, access_type )" );
   PyObject* PyMatrix3f::inverse( PyObject *myself, PyObject *args ) {
     Matrix3f m = PyMatrix3f_AsMatrix3f( myself );
     return PyMatrix3f_FromMatrix3f( m.inverse() );
+  }
+
+  PyObject* PyMatrix3f::transpose( PyObject *myself, PyObject *args ) {
+    Matrix3f m = PyMatrix3f_AsMatrix3f( myself );
+    return PyMatrix3f_FromMatrix3f( m.transpose() );
+  }
+
+  PyObject* PyMatrix3f::toEulerAngles( PyObject *myself, PyObject *args ) {
+    Matrix3f m = PyMatrix3f_AsMatrix3f( myself );
+    return PyVec3f_FromVec3f( m.toEulerAngles() );
+  }
+
+  PyObject* PyMatrix3f::getScalePart( PyObject *myself, PyObject *args ) {
+    Matrix3f m = PyMatrix3f_AsMatrix3f( myself );
+    return PyVec3f_FromVec3f( m.getScalePart() );
   }
 
   PyObject* PyMatrix3f::getRow( PyObject *myself, PyObject *args ) {
@@ -1618,10 +1817,14 @@ self, name, field_type, access_type )" );
     { "setToIdentity", (PyCFunction)PyMatrix4f::setToIdentity, 0 },
     { "transformInverse", (PyCFunction)PyMatrix4f::transformInverse, 0 },
     { "inverse", (PyCFunction)PyMatrix4f::inverse, 0 },
+    { "transpose", (PyCFunction)PyMatrix4f::transpose, 0 },
     { "getRow", (PyCFunction)PyMatrix4f::getRow, 0 },
     { "getColumn", (PyCFunction)PyMatrix4f::getColumn, 0 },
     { "getScaleRotationPart", (PyCFunction)PyMatrix4f::getScaleRotationPart, 0 },
     { "getRotationPart", (PyCFunction)PyMatrix4f::getRotationPart, 0 },
+    { "getScalePart", (PyCFunction)PyMatrix4f::getScalePart, 0 },
+    { "getElement", (PyCFunction)PyMatrix4f::getElement, 0 },    
+    { "setElement", (PyCFunction)PyMatrix4f::setElement, 0 },
     {NULL, NULL}
   };
   
@@ -1756,6 +1959,9 @@ self, name, field_type, access_type )" );
       } else if( PyMatrix4f_Check( o ) ) {
         Matrix4f m = PyMatrix4f_AsMatrix4f( o );
         *self_m = m;
+      } else if( PyMatrix4d_Check( o ) ) {
+        Matrix4d m = PyMatrix4d_AsMatrix4d( o );
+        *self_m = (Matrix4f) m;
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix4f constructor." );
@@ -1800,6 +2006,15 @@ self, name, field_type, access_type )" );
       } else if( PyVec3f_Check( b ) ) {
         Vec3f vb = PyVec3f_AsVec3f( b );
         return PyVec3f_FromVec3f( ma * vb );
+      } else if( PyMatrix4d_Check( b ) ) {
+        Matrix4d mb = PyMatrix4d_AsMatrix4d( b );
+        return PyMatrix4d_FromMatrix4d( ma * mb );
+      } else if( PyVec4d_Check( b ) ) {
+        Vec4d vb = PyVec4d_AsVec4d( b );
+        return PyVec4d_FromVec4d( ma * vb );
+      } else if( PyVec3d_Check( b ) ) {
+        Vec3d vb = PyVec3d_AsVec3d( b );
+        return PyVec3d_FromVec3d( ma * vb );
       }
     }
 
@@ -1809,6 +2024,63 @@ self, name, field_type, access_type )" );
       PyMatrix4f_Check,
       PyMatrix4f_AsMatrix4f, 
       PyMatrix4f_FromMatrix4f >::mul( a, b );
+  }
+
+
+  PyObject* PyMatrix4f::getElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.getElement( i, j )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix4f m = PyMatrix4f_AsMatrix4f( myself );
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    return PyFloat_FromDouble( m.getElement( PyInt_AsLong( i ), 
+                                             PyInt_AsLong( j ) ) );
+  }
+
+  PyObject* PyMatrix4f::setElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 3  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.setElement( i, j, v )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix4f *m = (Matrix4f *)(PyMatrix4f *)(myself);
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+    PyObject *v = PyTuple_GetItem( args, 2 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
+        !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    long r = PyInt_AsLong( i );
+    long c = PyInt_AsLong( j );
+        
+    if( PyFloat_Check( v ) ) {
+      m->setElement( r, c, (H3DFloat) PyFloat_AsDouble( v ) );
+      // int type
+    } else if( PyInt_Check( v ) ) {
+      m->setElement( r, c, (H3DFloat) PyInt_AsLong( v ) );
+      // long type
+    } else if( PyLong_Check( v ) ) {
+      m->setElement( r, c, (H3DFloat) PyLong_AsLong( v ) );
+    } 
+    Py_INCREF( Py_None );
+    return Py_None;
   }
 
   PyObject* PyMatrix4f::setToIdentity( PyObject *myself, PyObject *args ) {
@@ -1827,6 +2099,16 @@ self, name, field_type, access_type )" );
   PyObject* PyMatrix4f::inverse( PyObject *myself, PyObject *args ) {
     Matrix4f m = PyMatrix4f_AsMatrix4f( myself );
     return PyMatrix4f_FromMatrix4f( m.inverse() );
+  }
+
+  PyObject* PyMatrix4f::transpose( PyObject *myself, PyObject *args ) {
+    Matrix4f m = PyMatrix4f_AsMatrix4f( myself );
+    return PyMatrix4f_FromMatrix4f( m.transpose() );
+  }
+
+  PyObject* PyMatrix4f::getScalePart( PyObject *myself, PyObject *args ) {
+    Matrix4f m = PyMatrix4f_AsMatrix4f( myself );
+    return PyVec3f_FromVec3f( m.getScalePart() );
   }
 
   PyObject* PyMatrix4f::getRow( PyObject *myself, PyObject *args ) {
@@ -1867,6 +2149,7 @@ self, name, field_type, access_type )" );
   ///////////////////////////////////////////////////////////////////
   /// MATRIX3D
   /// 
+
   static PyMethodDef PyMatrix3d_methods[] = {
     { "__repr__", (PyCFunction) PyMatrix3d::repr, 0 },
     { "__str__", (PyCFunction) PyMatrix3d::repr, 0 },
@@ -1874,6 +2157,11 @@ self, name, field_type, access_type )" );
     { "inverse", (PyCFunction)PyMatrix3d::inverse, 0 },
     { "getRow", (PyCFunction)PyMatrix3d::getRow, 0 },
     { "getColumn", (PyCFunction)PyMatrix3d::getColumn, 0 },
+    { "getScalePart", (PyCFunction)PyMatrix3d::getScalePart, 0 },
+    { "transpose", (PyCFunction)PyMatrix3d::transpose, 0 },
+    { "toEulerAngles", (PyCFunction)PyMatrix3d::toEulerAngles, 0 },
+    { "getElement", (PyCFunction)PyMatrix3d::getElement, 0 },    
+    { "setElement", (PyCFunction)PyMatrix3d::setElement, 0 },
     {NULL, NULL}
   };
   
@@ -2008,6 +2296,9 @@ self, name, field_type, access_type )" );
       } else if( PyMatrix3d_Check( o ) ) {
         Matrix3d m = PyMatrix3d_AsMatrix3d( o );
         *self_m = m;
+      } else if( PyMatrix3f_Check( o ) ) {
+        Matrix3f m = PyMatrix3f_AsMatrix3f( o );
+        *self_m = m;
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix3d constructor." );
@@ -2038,6 +2329,12 @@ self, name, field_type, access_type )" );
       if( PyMatrix3d_Check( b ) ) {
         Matrix3d mb = PyMatrix3d_AsMatrix3d( b );
         return PyMatrix3d_FromMatrix3d( ma * mb );
+      } else if( PyMatrix3f_Check( b ) ) {
+        Matrix3f mb = PyMatrix3f_AsMatrix3f( b );
+        return PyMatrix3d_FromMatrix3d( ma * mb );
+      } else if( PyVec3f_Check( b ) ) {
+        Vec3f vb = PyVec3f_AsVec3f( b );
+        return PyVec3d_FromVec3d( ma * vb );
       } else if( PyVec3d_Check( b ) ) {
         Vec3d vb = PyVec3d_AsVec3d( b );
         return PyVec3d_FromVec3d( ma * vb );
@@ -2052,6 +2349,62 @@ self, name, field_type, access_type )" );
       PyMatrix3d_FromMatrix3d >::mul( a, b );
   }
 
+  PyObject* PyMatrix3d::getElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.getElement( i, j )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix3d m = PyMatrix3d_AsMatrix3d( myself );
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    return PyFloat_FromDouble( m.getElement( PyInt_AsLong( i ), 
+                                             PyInt_AsLong( j ) ) );
+  }
+
+  PyObject* PyMatrix3d::setElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 3  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.setElement( i, j, v )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix3d *m = (Matrix3d *)(PyMatrix3d *)(myself);
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+    PyObject *v = PyTuple_GetItem( args, 2 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
+        !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    long r = PyInt_AsLong( i );
+    long c = PyInt_AsLong( j );
+        
+    if( PyFloat_Check( v ) ) {
+      m->setElement( r, c, PyFloat_AsDouble( v ) );
+      // int type
+    } else if( PyInt_Check( v ) ) {
+      m->setElement( r, c, PyInt_AsLong( v ) );
+      // long type
+    } else if( PyLong_Check( v ) ) {
+      m->setElement( r, c, PyLong_AsLong( v ) );
+    } 
+    Py_INCREF( Py_None );
+    return Py_None;
+  }
+
   PyObject* PyMatrix3d::setToIdentity( PyObject *myself, PyObject *args ) {
     PyMatrix3d *v = (PyMatrix3d*)myself;
     Matrix3d *m = (Matrix3d*)v;
@@ -2063,6 +2416,21 @@ self, name, field_type, access_type )" );
   PyObject* PyMatrix3d::inverse( PyObject *myself, PyObject *args ) {
     Matrix3d m = PyMatrix3d_AsMatrix3d( myself );
     return PyMatrix3d_FromMatrix3d( m.inverse() );
+  }
+
+  PyObject* PyMatrix3d::transpose( PyObject *myself, PyObject *args ) {
+    Matrix3d m = PyMatrix3d_AsMatrix3d( myself );
+    return PyMatrix3d_FromMatrix3d( m.transpose() );
+  }
+
+  PyObject* PyMatrix3d::toEulerAngles( PyObject *myself, PyObject *args ) {
+    Matrix3d m = PyMatrix3d_AsMatrix3d( myself );
+    return PyVec3d_FromVec3d( m.toEulerAngles() );
+  }
+
+  PyObject* PyMatrix3d::getScalePart( PyObject *myself, PyObject *args ) {
+    Matrix3d m = PyMatrix3d_AsMatrix3d( myself );
+    return PyVec3d_FromVec3d( m.getScalePart() );
   }
 
   PyObject* PyMatrix3d::getRow( PyObject *myself, PyObject *args ) {
@@ -2096,10 +2464,14 @@ self, name, field_type, access_type )" );
     { "setToIdentity", (PyCFunction)PyMatrix4d::setToIdentity, 0 },
     { "transformInverse", (PyCFunction)PyMatrix4d::transformInverse, 0 },
     { "inverse", (PyCFunction)PyMatrix4d::inverse, 0 },
+    { "transpose", (PyCFunction)PyMatrix4d::transpose, 0 },
     { "getRow", (PyCFunction)PyMatrix4d::getRow, 0 },
     { "getColumn", (PyCFunction)PyMatrix4d::getColumn, 0 },
     { "getScaleRotationPart", (PyCFunction)PyMatrix4d::getScaleRotationPart, 0 },
     { "getRotationPart", (PyCFunction)PyMatrix4d::getRotationPart, 0 },
+    { "getScalePart", (PyCFunction)PyMatrix4d::getScalePart, 0 },
+    { "getElement", (PyCFunction)PyMatrix4d::getElement, 0 },    
+    { "setElement", (PyCFunction)PyMatrix4d::setElement, 0 },
     {NULL, NULL}
   };
   
@@ -2234,6 +2606,9 @@ self, name, field_type, access_type )" );
       } else if( PyMatrix4d_Check( o ) ) {
         Matrix4d m = PyMatrix4d_AsMatrix4d( o );
         *self_m = m;
+      } else if( PyMatrix4f_Check( o ) ) {
+        Matrix4f m = PyMatrix4f_AsMatrix4f( o );
+        *self_m = m;
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix4d constructor." );
@@ -2278,6 +2653,15 @@ self, name, field_type, access_type )" );
       } else if( PyVec3d_Check( b ) ) {
         Vec3d vb = PyVec3d_AsVec3d( b );
         return PyVec3d_FromVec3d( ma * vb );
+      } else if( PyMatrix4f_Check( b ) ) {
+        Matrix4f mb = PyMatrix4f_AsMatrix4f( b );
+        return PyMatrix4d_FromMatrix4d( ma * mb );
+      } else if( PyVec4f_Check( b ) ) {
+        Vec4f vb = PyVec4f_AsVec4f( b );
+        return PyVec4d_FromVec4d( ma * vb );
+      } else if( PyVec3f_Check( b ) ) {
+        Vec3f vb = PyVec3f_AsVec3f( b );
+        return PyVec3d_FromVec3d( ma * vb );
       }
     }
 
@@ -2287,6 +2671,62 @@ self, name, field_type, access_type )" );
       PyMatrix4d_Check,
       PyMatrix4d_AsMatrix4d, 
       PyMatrix4d_FromMatrix4d >::mul( a, b );
+  }
+
+  PyObject* PyMatrix4d::getElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.getElement( i, j )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix4d m = PyMatrix4d_AsMatrix4d( myself );
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    return PyFloat_FromDouble( m.getElement( PyInt_AsLong( i ), 
+                                             PyInt_AsLong( j ) ) );
+  }
+
+  PyObject* PyMatrix4d::setElement( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 3  ) {
+        ostringstream err;
+        err << "Invalid number of arguments  PyMatrix.setElement( i, j, v )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+    Matrix4d *m = (Matrix4d *)(PyMatrix4d *)(myself);
+    PyObject *i = PyTuple_GetItem( args, 0 );
+    PyObject *j = PyTuple_GetItem( args, 1 );
+    PyObject *v = PyTuple_GetItem( args, 2 );
+
+    if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
+        !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+      return 0;
+    }
+
+    long r = PyInt_AsLong( i );
+    long c = PyInt_AsLong( j );
+        
+    if( PyFloat_Check( v ) ) {
+      m->setElement( r, c, PyFloat_AsDouble( v ) );
+      // int type
+    } else if( PyInt_Check( v ) ) {
+      m->setElement( r, c, PyInt_AsLong( v ) );
+      // long type
+    } else if( PyLong_Check( v ) ) {
+      m->setElement( r, c, PyLong_AsLong( v ) );
+    }  
+    Py_INCREF( Py_None );
+    return Py_None;
   }
 
   PyObject* PyMatrix4d::setToIdentity( PyObject *myself, PyObject *args ) {
@@ -2305,6 +2745,16 @@ self, name, field_type, access_type )" );
   PyObject* PyMatrix4d::inverse( PyObject *myself, PyObject *args ) {
     Matrix4d m = PyMatrix4d_AsMatrix4d( myself );
     return PyMatrix4d_FromMatrix4d( m.inverse() );
+  }
+
+  PyObject* PyMatrix4d::transpose( PyObject *myself, PyObject *args ) {
+    Matrix4d m = PyMatrix4d_AsMatrix4d( myself );
+    return PyMatrix4d_FromMatrix4d( m.transpose() );
+  }
+
+  PyObject* PyMatrix4d::getScalePart( PyObject *myself, PyObject *args ) {
+    Matrix4d m = PyMatrix4d_AsMatrix4d( myself );
+    return PyVec3d_FromVec3d( m.getScalePart() );
   }
 
   PyObject* PyMatrix4d::getRow( PyObject *myself, PyObject *args ) {
@@ -2348,7 +2798,8 @@ self, name, field_type, access_type )" );
   static PyMethodDef PyRotation_methods[] = {
     { "__repr__", (PyCFunction) PyRotation::repr, 0 },
     { "__str__", (PyCFunction) PyRotation::repr, 0 },
-    { "toEulerAngles", PyRotation::toEulerAngles, 0 },
+    { "toEulerAngles", (PyCFunction) PyRotation::toEulerAngles, 0 },
+    { "slerp", (PyCFunction) PyRotation::slerp, 0 },
     {NULL, NULL}
   };
   
@@ -2357,6 +2808,7 @@ self, name, field_type, access_type )" );
     {"y", T_FLOAT, offsetof(PyRotation, axis.y), 0,"y"},
     {"z", T_FLOAT, offsetof(PyRotation, axis.z), 0,"z"},
     {"a", T_FLOAT, offsetof(PyRotation, angle), 0,"a"},
+    {"angle", T_FLOAT, offsetof(PyRotation, angle), 0,"angle"}, 
     {NULL}  /* Sentinel */
   };
   
@@ -2468,14 +2920,36 @@ self, name, field_type, access_type )" );
     *part = v;
     return o;
   }
-  
+   
+  PyObject* PyRotation::slerp( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+      PyErr_SetString(PyExc_TypeError, 
+                      "invalid number of arguments given Rotation::slerp( Quat, t )." );
+      return 0;
+    }
+
+    PyObject *q = PyTuple_GetItem( args, 0 );
+    PyObject *t = PyTuple_GetItem( args, 1 );
+
+    if( !PyRotation_Check( q ) || !PyFloat_Check( q ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+           "invalid type given as arguments to Rotation::slerp( Quat, t )." );
+      return 0;
+    }
+
+    Rotation quat1 = PyRotation_AsRotation( myself );
+    Rotation quat2 = PyRotation_AsRotation( q );
+    H3DFloat arg = (H3DFloat) PyFloat_AsDouble( t );
+    return PyQuaternion_FromQuaternion( quat1.slerp( quat2, arg ) );
+  }
+
   int PyRotation::init(PyRotation *self, PyObject *args, PyObject *kwds)  {
     int args_size =  PyTuple_Size( args );
     Rotation *self_r = (Rotation *)self;
     if( args_size == 0 ) {
       *self_r = Rotation();
     } else if( args_size == 1 ) {
-      // from Quaternion, Rotation and Matrix3f
+      // from Quaternion, Rotation, Matrix3d and Matrix3f
       PyObject *o = PyTuple_GetItem( args, 0 );
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
@@ -2483,13 +2957,19 @@ self, name, field_type, access_type )" );
       } else if( PyQuaternion_Check( o ) ) {
         Quaternion q = PyQuaternion_AsQuaternion( o );
         *self_r = q;
+      } else if( PyMatrix3d_Check( o ) ) {
+        Matrix3f m = PyMatrix3f_AsMatrix3f( o );
+        *self_r = (Rotation)m;
       } else if( PyMatrix3f_Check( o ) ) {
         Matrix3f m = PyMatrix3f_AsMatrix3f( o );
         *self_r = (Rotation)m;
       } else if( PyVec3f_Check( o ) ) {
         Vec3f v = PyVec3f_AsVec3f( o );
         *self_r = Rotation( v );
-      } else {
+      } else if( PyVec3d_Check( o ) ) {
+        Vec3d v = PyVec3d_AsVec3d( o );
+        *self_r = Rotation( v );
+      }else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Rotation constructor." );
         return -1;
@@ -2527,6 +3007,26 @@ self, name, field_type, access_type )" );
     return 0;
   }
 
+  PyObject* PyRotation::mul( PyObject *a, PyObject *b ) {
+    if( PyRotation_Check( a ) ) {
+      Rotation ma = PyRotation_AsRotation( a );
+      if( PyVec3f_Check( b ) ) {
+        Vec3f vb = PyVec3f_AsVec3f( b );
+        return PyVec3f_FromVec3f( ma * vb );
+      } else if( PyVec3d_Check( b ) ) {
+        Vec3d vb = PyVec3d_AsVec3d( b );
+        return PyVec3d_FromVec3d( ma * vb );
+      }
+    }
+
+    return PyNumberTypeWrapper< Rotation, 
+      &PyRotation_Type,
+      PyRotation_Name,
+      PyRotation_Check,
+      PyRotation_AsRotation, 
+      PyRotation_FromRotation >::mul( a, b );
+  }
+
   PyObject* PyRotation::toEulerAngles( PyObject *myself, PyObject *args ) {
     Rotation r = PyRotation_AsRotation( myself );
     return (PyObject *)PyVec3f_FromVec3f( r.toEulerAngles() );
@@ -2544,6 +3044,8 @@ self, name, field_type, access_type )" );
     { "normalize", (PyCFunction) PyQuaternion::normalize, 0 },
     { "conjugate", (PyCFunction) PyQuaternion::conjugate, 0 },
     { "inverse", (PyCFunction) PyQuaternion::inverse, 0 },
+    { "slerp", (PyCFunction) PyQuaternion::slerp, 0 },
+    { "dotProduct", (PyCFunction) PyQuaternion::dotProduct, 0 },
     {NULL, NULL}
   };
   
@@ -2646,6 +3148,26 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
+  PyObject* PyQuaternion::mul( PyObject *a, PyObject *b ) {
+    if( PyQuaternion_Check( a ) ) {
+      Quaternion ma = PyQuaternion_AsQuaternion( a );
+      if( PyVec3f_Check( b ) ) {
+        Vec3f vb = PyVec3f_AsVec3f( b );
+        return PyVec3f_FromVec3f( ma * vb );
+      } else if( PyVec3d_Check( b ) ) {
+        Vec3d vb = PyVec3d_AsVec3d( b );
+        return PyVec3d_FromVec3d( ma * vb );
+      }
+    }
+
+    return PyNumberTypeWrapper< Quaternion, 
+      &PyQuaternion_Type,
+      PyQuaternion_Name,
+      PyQuaternion_Check,
+      PyQuaternion_AsQuaternion, 
+      PyQuaternion_FromQuaternion >::mul( a, b );
+  }
+
   /// Returns an Quaternion representation of the contents of o.
   Quaternion PyQuaternion_AsQuaternion( PyObject *o ) {
     if( PyQuaternion_Check( o ) ) {
@@ -2704,6 +3226,39 @@ self, name, field_type, access_type )" );
     quat->normalize();
     Py_INCREF( myself );
     return myself;
+  }
+
+  PyObject* PyQuaternion::dotProduct( PyObject *myself, PyObject *args ) {
+    if( !args || !PyQuaternion_Check( args ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+                      "invalid type given as argument to Quaternion::dotProduct." );
+      return 0;
+    }
+    Quaternion quat = PyQuaternion_AsQuaternion( myself );
+    Quaternion arg = PyQuaternion_AsQuaternion( args );
+    return PyFloat_FromDouble( quat.dotProduct( arg ) );
+  }
+
+  PyObject* PyQuaternion::slerp( PyObject *myself, PyObject *args ) {
+    if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+      PyErr_SetString(PyExc_TypeError, 
+                      "invalid number of arguments given Quaternion::slerp( Quat, t )." );
+      return 0;
+    }
+
+    PyObject *q = PyTuple_GetItem( args, 0 );
+    PyObject *t = PyTuple_GetItem( args, 1 );
+
+    if( !PyQuaternion_Check( q ) || !PyFloat_Check( q ) ) {
+      PyErr_SetString(PyExc_TypeError, 
+           "invalid type given as arguments to Quaternion::slerp( Quat, t )." );
+      return 0;
+    }
+
+    Quaternion quat1 = PyQuaternion_AsQuaternion( myself );
+    Quaternion quat2 = PyQuaternion_AsQuaternion( q );
+    H3DFloat arg = (H3DFloat) PyFloat_AsDouble( t );
+    return PyQuaternion_FromQuaternion( quat1.slerp( quat2, arg ) );
   }
 
   PyObject* PyQuaternion::norm( PyObject *myself, PyObject *args ) {
