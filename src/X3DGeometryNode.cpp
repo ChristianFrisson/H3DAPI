@@ -253,7 +253,7 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
   int type = -1;
   bool adaptive_viewport = true;
   bool camera_view = true;
-  HLenum touchable_face = HL_FRONT_AND_BACK;
+  HLenum touchable_face = usingBackFaceCulling() ? HL_FRONT : HL_FRONT_AND_BACK;;
 
   OpenHapticsOptions *openhaptics_options = NULL;
 
