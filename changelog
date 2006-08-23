@@ -1,3 +1,45 @@
+Changes for version 1.5:
+
+New nodes:
+BooleanSequencer
+BooleanTrigger
+Contour2D
+ContourPolyLine2D
+DefaultAppearance
+DHDHapticsDevice
+DirectShowDecoder
+Extrusion
+HaptikHapticsDevice
+GlobalSettings
+GraphicsCachingOptions
+IntegerSequencer
+IntegerTrigger
+NurbsCurve2D
+NurbsPatchSurface
+NurbsTextureCoordinate
+NurbsTrimmedSurface
+OpenHapticsOptions
+SimpleMovieTexture
+TextureProperties
+TimeTrigger
+TwoSidedMaterial
+
+- Fixed types interface to Python so that you now can e.g. add a Vec3f to
+an Vec3d. Also added missing functions from the Python variants.
+- Fixed some fallthrough problems. 
+- Fixed so that geometries are not rendered haptically unless the proxy is close enough. What close enough is is decided by OpenHapticsSettings ndoe
+- Fixed a bug where the alpha channel BGRA textures was ignored. Also fixed so that FreeImageLoader can load 32 bit RGB PNG images
+- Haptics was missing from cone, now fixed.
+- Added nodes for controlling parameters for geometries, such as 
+  GraphicsCachingOptions and OpenHapticsOptions
+- Added X3D/VRML parser.
+- Allowing commas to be whitespace in X3D parser, as per X3D spec.
+- Fixed a bug in IndexedFaceSet that cause errors when specifying normalPerVertex TRUE, a normalIndex and a Normal node in the normal field.
+- Added support for multiple devices for the force, isTouched, contactPoint and contactNormal fields in X3DGeometryNode
+- Fixed some bugs with threading.
+- Lots of other smaller bugfixes. See svn changelog at www.h3d.org:8080
+for details.
+	
 Changes for version 1.4:
 
 New nodes:
