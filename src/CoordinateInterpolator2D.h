@@ -61,6 +61,9 @@ namespace H3D {
     Types< SFFloat, MFFloat, MFVec2f > > {
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend struct MFValue;
+#endif
 
     /// Construtor.
     CoordinateInterpolator2D( Inst< SFNode  > _metadata      = 0,

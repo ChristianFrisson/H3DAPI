@@ -33,7 +33,7 @@
 #include <GL/glew.h>
 
 #ifdef HAVE_CG
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "cg.lib" )
 #pragma comment( lib, "cgGL.lib" )
 #endif

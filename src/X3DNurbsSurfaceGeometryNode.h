@@ -175,7 +175,9 @@ namespace H3D {
 				}
 			}
 		};
+#ifdef __BORLANDC__
     friend class TexCoordOrNurbsTex;
+#endif
 
 		/// Destructor
 		~X3DNurbsSurfaceGeometryNode() { 

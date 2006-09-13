@@ -80,6 +80,9 @@ namespace H3D {
       CreateNodeFunc create_func;
       SupportsFileFunc supports_func;
     };
+#ifdef __BORLANDC__
+    friend struct DecoderRegistration;
+#endif
 
     /// Constructor.
     H3DVideoClipDecoderNode():

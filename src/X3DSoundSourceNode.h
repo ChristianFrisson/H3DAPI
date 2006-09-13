@@ -40,7 +40,7 @@
 #ifdef WIN32
 #include <al.h>
 #include <alc.h>
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "OpenAL32.lib" )
 #endif
 #elif defined( MACOSX )
@@ -75,6 +75,9 @@ namespace H3D {
     protected:
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend class TimeHandler;
+#endif
 
     /// Field that calls ALrender() when a field routed to it
     /// has generated an event.

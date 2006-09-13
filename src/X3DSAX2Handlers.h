@@ -43,7 +43,7 @@
 #include "AutoPtrVector.h"
 #include "X3D.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "xerces-c_2.lib" )
 #endif
 

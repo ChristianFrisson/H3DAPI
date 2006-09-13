@@ -36,7 +36,7 @@
 #define OS_WIN32
 
 #ifdef HAVE_3DXWARE
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "siapp.lib" )
 #pragma comment( lib, "spwmath.lib" )
 #endif

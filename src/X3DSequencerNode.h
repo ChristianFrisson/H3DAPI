@@ -205,6 +205,9 @@ namespace H3D {
 				}
 			}
 		};
+#ifdef __BORLANDC__
+    template< class TheType, class KeyValuesIn > friend class ValueChanged;
+#endif
 
     /// Constructor.
     X3DSequencerNode(	Inst< SFNode           > _metadata			= 0,

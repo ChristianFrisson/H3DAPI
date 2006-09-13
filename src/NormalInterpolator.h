@@ -67,6 +67,9 @@ namespace H3D {
                                                    MFVec3f > >{
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend struct MFValue;
+#endif
 
     /// Constructor.
     NormalInterpolator( Inst< SFNode  > _metadata      = 0,

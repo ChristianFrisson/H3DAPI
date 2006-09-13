@@ -64,6 +64,9 @@ namespace H3D {
       /// depending on the current time.
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend class TimeHandler;
+#endif
 
     /// The StartTime field is a specialization of the SFTime field
     /// so that the value cannot be changed when the isActive field 
@@ -143,6 +146,9 @@ namespace H3D {
         } 
       }
     };
+#ifdef __BORLANDC__
+    friend class StopTime;
+#endif
 
     /// Constructor.
     X3DTimeDependentNode( Inst< SFNode > _metadata    = 0,

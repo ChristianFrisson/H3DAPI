@@ -70,8 +70,9 @@ namespace H3D {
 					bf->toggle->setValue( !( bf->toggle->getValue() ) );
       }
     };
-
+#ifdef __BORLANDC__
     friend class SetBoolean;
+#endif
 
     /// Constructor.
     BooleanToggle( Inst< SFNode     > _metadata    = 0,

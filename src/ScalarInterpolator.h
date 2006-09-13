@@ -58,6 +58,9 @@ namespace H3D {
                                                    MFFloat > >{
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend struct SFValue;
+#endif
 
     /// Construtor.
     ScalarInterpolator( Inst< SFNode  >  _metadata      = 0,

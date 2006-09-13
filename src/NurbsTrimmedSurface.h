@@ -77,7 +77,9 @@ namespace H3D {
 				}
 			}
 		};
+#ifdef __BORLANDC__
     friend class AddContour;
+#endif
 
 		/// This field class checks whether the given node
 		/// is of the right type (Contour2D). 
@@ -106,7 +108,9 @@ namespace H3D {
 				MFNode::onRemove( n );
 			}
 		};
+#ifdef __BORLANDC__
     friend class RemoveContour;
+#endif
 
 		/// This field class checks whether the given node
 		/// is of the right type (Contour2D) for adding or removing. 
@@ -142,8 +146,9 @@ namespace H3D {
 				MFNode::onRemove( n );
 			}
 		};
+#ifdef __BORLANDC__
     friend class CheckContour;
-    
+#endif
 		/// Constructor.
     NurbsTrimmedSurface( Inst< SFNode      >  _metadata = 0,
 												 Inst< SFBound     > _bound = 0,

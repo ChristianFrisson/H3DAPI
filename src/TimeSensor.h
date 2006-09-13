@@ -142,6 +142,9 @@ namespace H3D {
       /// The time that have elapsed in the current cycle.
       H3DTime elapsed_cycle_time;
     };
+#ifdef __BORLANDC__
+    friend class TimeHandler;
+#endif
 
     /// The CycleInterval has the same conditions for update
     /// as the StartTime so use that field class definition.

@@ -60,6 +60,9 @@ namespace H3D {
                                                    MFVec3f > >{
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend struct SFValue;
+#endif
     
     /// Constructor.
     PositionInterpolator( Inst< SFNode  > _metadata      = 0,

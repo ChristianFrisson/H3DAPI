@@ -54,8 +54,9 @@ namespace H3D {
         value = true;
       }
     };
-
+#ifdef __BORLANDC__
     friend class SetBoolean;
+#endif
 
     /// Constructor.
     BooleanTrigger( Inst< SFNode > _metadata				= 0,

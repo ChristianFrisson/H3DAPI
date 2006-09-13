@@ -58,8 +58,9 @@ namespace H3D {
           !static_cast< SFBool * >( event.ptr )->getValue( bf->id );
       }
     };
-
+#ifdef __BORLANDC__
     friend class NegateSFBool;
+#endif
 
     /// The SetBoolean class is specialize to set the value of either
     /// the inputTrue or inputFalse field in the BooleanFilter node
@@ -90,8 +91,9 @@ namespace H3D {
           bf->inputFalse->setValue( false, bf->id );
       }
     };
-
+#ifdef __BORLANDC__
     friend class SetBoolean;
+#endif
 
     /// Constructor.
     BooleanFilter( Inst< SFNode       > _metadata    = 0,

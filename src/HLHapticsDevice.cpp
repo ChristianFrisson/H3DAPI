@@ -33,7 +33,7 @@
 #include "GL/glew.h"
 
 #ifdef HAVE_OPENHAPTICS
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "hd.lib" )
 #pragma comment( lib, "hl.lib" )
 #pragma comment( lib, "hdu.lib" )

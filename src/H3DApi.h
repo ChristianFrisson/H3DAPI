@@ -108,19 +108,26 @@
 // this file see H3DAPI_API functions as being imported from a DLL,
 // whereas this DLL sees symbols defined with this macro as being
 // exported.
-#ifdef WIN32
+#if defined(WIN32) || defined(__WIN32__)
 #include <windows.h>
 #ifdef H3DAPI_EXPORTS
 #define H3DAPI_API __declspec(dllexport)
 #else
 #define H3DAPI_API __declspec(dllimport)
 #endif
-#ifdef _MSC_VER
-// disable dll-interface warnings for stl-exports 
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+// disable dll-interface warnings for stl-exports
 #pragma warning( disable: 4251 )
 #endif
 
 
+#endif
+
+// Borland uses strnicmp.
+#ifdef __BORLANDC__
+#define _strnicmp strnicmp
+#define __timeb64 timeb
+#define _ftime64 ftime
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)

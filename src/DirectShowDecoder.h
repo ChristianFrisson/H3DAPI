@@ -60,7 +60,7 @@
 #undef RESTORE_DEBUG
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "strmbase.lib" )
 #endif
 

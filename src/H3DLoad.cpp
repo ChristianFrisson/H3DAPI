@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
 
   ostream *console_ostream = 0;
   string ostream_str = GET4("H3D_CONSOLE_OSTREAM",
-                            "console","ostream","cerr");
+                            "console","ostream",(string)"cerr");
   if ( ostream_str == "cerr" )
     console_ostream = &cerr;
   else if( ostream_str == "cout" )
@@ -224,7 +224,7 @@ int main(int argc, char* argv[]) {
 
   string render_mode = GET4( "H3D_RENDERMODE",
                              "graphical", "rendermode",
-                             "MONO" );
+                             (string)"MONO" );
   
   int width = GET_INT("graphical", "width", 640 );
   int height = GET_INT("graphical", "height", 480 );

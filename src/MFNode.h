@@ -47,7 +47,8 @@ namespace H3D {
     
     class const_iterator: public RefCountMField< Node >::const_iterator {
     public:
-      const_iterator( RefCountMField< Node >::const_iterator i ):
+      typedef RefCountMField< Node >::const_iterator base_const_iterator;
+      const_iterator( base_const_iterator i ):
         RefCountMField< Node >::const_iterator( i ) {
       }
       
@@ -65,8 +66,9 @@ namespace H3D {
     class const_reverse_iterator: 
       public RefCountMField< Node >::const_reverse_iterator {
     public:
+      typedef RefCountMField< Node >::const_reverse_iterator base_const_reverse_iterator;
       /// Constructor.
-      const_reverse_iterator( RefCountMField< Node >::const_reverse_iterator i ):
+      const_reverse_iterator( base_const_reverse_iterator i ):
         RefCountMField< Node >::const_reverse_iterator( i ) {
 	
       }

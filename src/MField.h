@@ -350,7 +350,7 @@ namespace H3D {
 
     /// Get the value of an element of the MField.
     /// \param i The index of the element.
-    inline virtual typename MField<Type>::const_reference 
+    inline virtual typename vector<Type>::const_reference
     getValueByIndex( typename BaseMField::size_type i, int id = 0 ) {
 #ifdef DEBUG
       Console(1) << "MField(" << name << ")::getValue()" << endl;

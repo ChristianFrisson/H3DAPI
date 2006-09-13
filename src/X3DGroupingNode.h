@@ -83,7 +83,9 @@ namespace H3D {
     private:
       friend class X3DGroupingNode;
     };
+#ifdef __BORLANDC__
     friend class MFChild;
+#endif
     
     /// SFBound is specialized to update from the SFBound fields 
     /// routed to it. The resulting Bound object is the union of 

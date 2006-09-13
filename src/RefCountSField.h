@@ -147,9 +147,9 @@ namespace H3D {
       /// The RefCountSField that contains the instance.
       RefCountSField *rc_field;
     };
-      
-    friend class RefCountSFieldAutoRefVector;
-      
+#ifdef __BORLANDC__
+    friend class RefCountSFieldAutoRef;
+#endif
     /// This function will be called when the value of RefCountSField
     /// changes. As soon as the value changes onRemove will
     /// be called on the old value and onAdd will be called

@@ -52,6 +52,9 @@ namespace H3D {
     SFBool, MFString, SFFloat > > {
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend class DecoderManager;
+#endif
 
     /// Constructor.
     SimpleMovieTexture ( 

@@ -37,7 +37,7 @@
 #include "SFBool.h"
 #include "SFTime.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "OpenGL32.lib" )
 #pragma comment( lib, "glu32.lib" )
 #pragma comment( lib, "glew32.lib" )

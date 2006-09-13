@@ -39,7 +39,7 @@
 #endif
 #ifdef FREEGLUT
 #include <GL/freeglut.h>
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "freeglut.lib" )
 #endif
 #endif

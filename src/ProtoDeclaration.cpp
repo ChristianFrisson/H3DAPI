@@ -80,7 +80,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
               }
               catch( const X3D::Convert::X3DFieldConversionError &e ) {
                 Console(3) << "Could not convert \"" 
-                     << ( (*i).value.size() < 100 ? (*i).value: "value" )
+                     << ( (*i).value.size() < 100 ? (*i).value: (string)"value" )
                      << "\" to " << e.value << " for field \"" 
                      << f->getFullName() << "\"." << endl;
               }

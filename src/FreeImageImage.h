@@ -34,7 +34,7 @@
 #include "Exception.h"
 
 #ifdef HAVE_FREEIMAGE
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "FreeImage.lib" )
 #endif
 

@@ -265,7 +265,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
           stringstream s;
           s << "Could not convert \"" 
             << ( XMLString::stringLen( field_value ) < 100 ? 
-                 toString( field_value ): "value" ) 
+                 toString( field_value ): (string)"value" )
             << "\" to " << e.value << " for field \"" 
             << f->getFullName() << "\".";
           throw X3D::XMLParseError( s.str(), "", 
@@ -808,8 +808,8 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
       } catch( const Convert::X3DFieldConversionError &e ) {
         stringstream s;
         s << "Could not convert \"" 
-          << ( XMLString::stringLen( url ) < 100 ? 
-               toString( url ): "value" ) 
+          << ( XMLString::stringLen( url ) < 100 ?
+               toString( url ): (string)"value" )
           << "\" to " << e.value << " for attribute \"" 
           << url << "\".";
         throw X3D::XMLParseError( s.str(), "", 
@@ -917,8 +917,8 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
       catch( const Convert::X3DFieldConversionError &e ) {
         stringstream s;
         s << "Could not convert \"" 
-          << ( XMLString::stringLen( value ) < 100 ? 
-               toString( value ): "value" ) 
+          << ( XMLString::stringLen( value ) < 100 ?
+               toString( value ): (string)"value" )
           << "\" to " << e.value << " for field \"" 
           << name << "\".";
         throw X3D::XMLParseError( s.str(), "", 
@@ -1083,8 +1083,8 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
           }
         }
         string container_field = new_node ?
-          new_node->defaultXMLContainerField(): "" ;  
-	
+          new_node->defaultXMLContainerField():(string)"" ;
+
         if( new_node ) {
           int nr_attrs = attrs.getLength();
           for( int i = 0; i < nr_attrs; i++ ) {
@@ -1147,8 +1147,8 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                   catch( const Convert::X3DFieldConversionError &e ) {
                     stringstream s;
                     s << "Could not convert \"" 
-                      << ( XMLString::stringLen( attr_value ) < 100 ? 
-                           toString( attr_value ): "value" ) 
+                      << ( XMLString::stringLen( attr_value ) < 100 ?
+                           toString( attr_value ): (string)"value" ) 
                       << "\" to " << e.value << " for field \"" 
                       << name << "\".";
                     throw X3D::XMLParseError( s.str(), "", 

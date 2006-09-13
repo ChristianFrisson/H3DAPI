@@ -58,8 +58,9 @@ namespace H3D {
 	value = theTime;
       }
     };
-
+#ifdef __BORLANDC__
     friend class SetTriggerTime;
+#endif
 
     /// Constructor.
     TimeTrigger( Inst< SFNode > _metadata            = 0,

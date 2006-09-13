@@ -80,6 +80,9 @@ namespace H3D {
                                                    MFRotation > >{
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend struct SFValue;
+#endif
 
     /// Constructor.
     OrientationInterpolator( Inst< SFNode     > _metadata      = 0,

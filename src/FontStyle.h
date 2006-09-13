@@ -37,7 +37,7 @@
 #include "SFFloat.h"
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "ftgl_dynamic_MTD.lib" )
 #endif
 #include <FTGLTextureFont.h>

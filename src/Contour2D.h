@@ -87,7 +87,9 @@ namespace H3D {
 				}
 			}
 		};
+#ifdef __BORLANDC__
     friend class AddTheChildren;
+#endif
 
 		/// This field class checks whether the given node
 		/// is of the right type (ContourPolyline2D or NurbsCurve2D). 
@@ -119,7 +121,9 @@ namespace H3D {
 				MFNode::onRemove( n );
 			}
 		};
+#ifdef __BORLANDC__
     friend class RemoveTheChildren;
+#endif
 
 		/// This field class checks whether the given Node
 		/// is of the right type (ContourPolyline2D or NurbsCurve2D)
@@ -162,7 +166,9 @@ namespace H3D {
 				MFNode::onRemove( n );
 			}
 		};
+#ifdef __BORLANDC__
     friend class CheckTheChildren;
+#endif
 
 		/// Make the check of the curve and call OpenGL routines to render it.
 		void renderTrimmedCurve( GLUnurbsObj *nurbs_object );

@@ -76,7 +76,9 @@ namespace H3D {
       CreateNodeFunc create_func;
       SupportsFileFunc supports_func;
     };
-
+#ifdef __BORLANDC__
+    friend struct FileReaderRegistration;
+#endif
     /// Load a sound file from the given url that will be used to
     /// generate PCM data.
     virtual unsigned int load( const string &_url ) = 0;

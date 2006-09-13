@@ -214,7 +214,7 @@ namespace H3D {
     /// instances share rendering context by default.
     void shareRenderingContext( H3DWindowNode *w );
 
-#if WIN32
+#ifdef WIN32
     HGLRC getRenderingContext() {
       return rendering_context;
     }
@@ -223,7 +223,7 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-#if WIN32
+#ifdef WIN32
     HGLRC rendering_context;
 #endif
     X3DChildNode *last_render_child;

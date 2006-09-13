@@ -11,6 +11,9 @@
 #define __X3D_H__
 
 #include <iostream>
+#ifdef __BORLANDC__
+#include <mem.h>
+#endif
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 #include "H3DApi.h"

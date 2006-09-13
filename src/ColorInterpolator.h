@@ -74,6 +74,9 @@ namespace H3D {
       
       virtual void update();
     };
+#ifdef __BORLANDC__
+    friend class SFValue;
+#endif
 
     /// Constructor.
     ColorInterpolator( Inst< SFNode  > _metadata      = 0,

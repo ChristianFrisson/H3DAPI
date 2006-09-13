@@ -33,7 +33,7 @@
 #include "H3DSoundFileNode.h"
 
 #ifdef HAVE_LIBVORBIS
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "vorbisfile.lib" )
 #endif
 #include <vorbis/vorbisfile.h>

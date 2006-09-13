@@ -480,7 +480,7 @@ void FontStyle::buildFonts() {
        n != family->end();
        n++ ) {
     const char *font_name = (*n).c_str();
-    if( strcmp( font_name, "SANS" ) == 0 ) {
+    if( std::strcmp( font_name, "SANS" ) == 0 ) {
       font_name = DEFAULT_SANS_FONT;
     } else if( strcmp( font_name, "SERIF" ) == 0 ) {
       font_name = DEFAULT_SERIF_FONT;

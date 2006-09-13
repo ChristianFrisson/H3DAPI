@@ -78,6 +78,9 @@ namespace H3D {
       CreateNodeFunc create_func;
       SupportsFileFunc supports_func;
     };
+#ifdef __BORLANDC__
+    friend struct FileReaderRegistration;
+#endif
 
     /// Constructor.
     H3DImageLoaderNode() {

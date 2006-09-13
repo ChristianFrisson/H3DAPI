@@ -40,7 +40,15 @@ namespace H3D {
     /// Exception thrown when there is an error loading a dynamic
     /// link library.
     H3D_VALUE_EXCEPTION( std::string, CouldNotLoadDynamicLibrary );
-
+ #ifdef __BORLANDC__
+    #if __WIN32__
+    typedef HMODULE LIBHANDLE;
+    typedef FARPROC SYMBOLPTR;
+    #else
+    typedef void * LIBHANDLE;
+    typedef void * SYMBOLPTR;
+    #endif
+#else
     #if WIN32
     typedef HMODULE LIBHANDLE;
     typedef FARPROC SYMBOLPTR;
@@ -48,6 +56,7 @@ namespace H3D {
     typedef void * LIBHANDLE;
     typedef void * SYMBOLPTR;
     #endif
+#endif
 
     /// Load a dynamic link library in order to get access to its' symbols.
     /// \param lib_name The name of the dynamic link library to load.

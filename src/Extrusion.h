@@ -139,6 +139,9 @@ namespace H3D {
                                 MFVec3f > > {
       virtual void update();
 		};
+#ifdef __BORLANDC__
+    friend class VertexVectors;
+#endif
 
     /// Render the Extrusion with OpenGL.
     virtual void render();

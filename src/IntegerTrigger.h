@@ -60,8 +60,9 @@ namespace H3D {
         value =  bf->integerKey->getValue();
       }
     };
-
+#ifdef __BORLANDC__
 		friend class SetTriggerValue;
+#endif
 
     /// Constructor.
     IntegerTrigger( Inst< SFNode					> _metadata			= 0,

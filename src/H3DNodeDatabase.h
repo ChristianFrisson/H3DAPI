@@ -265,6 +265,9 @@ namespace H3D {
       /// The database which fields this iterator iterates through.
       H3DNodeDatabase * ndb;
     };
+#ifdef __BORLANDC__
+    friend class FieldDBConstIterator;
+#endif
 
 
     /// Constructor.
