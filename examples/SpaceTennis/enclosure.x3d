@@ -1,0 +1,343 @@
+<Group>
+  
+  <DirectionalLight DEF="LIGHT" intensity="0.2"  direction="0 0 -1" />
+
+  <PointLight DEF="POINT_LIGHT" ambientIntensity="0.2" location="0 0.2 -0.3"/>
+  
+  <ForceField DEF="GRAVITY"/>
+  <ForceField DEF="FORCE"/>
+  
+  <Sound  intensity="1" DEF="SOUND" >
+    <AudioClip DEF="BALL1" url="HIT_BALL.wav"/>
+  </Sound>
+  
+  <Sound  intensity="0.5" DEF="SOUND2" >
+   <AudioClip DEF="CROWD" url="crowd.wav"/>
+  </Sound>
+
+  <Sound  intensity="0.3" DEF="SOUND3" >
+   <AudioClip DEF="WALL" url="wall.wav"/>
+  </Sound>  
+
+  <!-- Score -->
+  <Transform translation="0.15 0.13 0.01 "> 
+    <Shape> 
+      <Appearance> 
+        <Material DEF="MAT" /> 
+      </Appearance> 
+      <Text DEF="SCORE_TEXT" string='"0"'  >
+        <FontStyle size="0.03" justify="BEGIN"  />
+      </Text>
+    </Shape>
+  </Transform>
+
+  <ToggleGroup DEF="INSTRUCTIONS_TOGGLE" graphicsOn="TRUE">
+    <Transform translation="0 0 0.01" >
+      <Shape> 
+        <Appearance> 
+          <Material DEF="MAT" /> 
+        </Appearance> 
+        <Text DEF="BONUS_TEXT" string='"Welcome to the Space Tennis Arena","Use your racket to bounce the ball" ,"Press button to serve"'  >
+          <FontStyle size="0.03" justify="MIDDLE"  />
+        </Text>
+      </Shape>
+    </Transform>
+  </ToggleGroup>
+
+  <ToggleGroup DEF="BONUS_TOGGLE" graphicsOn="FALSE">
+    <Transform translation="-0.18  -0.18 0" >
+      <Shape> 
+        <Appearance> 
+          <Material DEF="MAT" /> 
+        </Appearance> 
+        <Text DEF="BONUS_TEXT" string='"Bonus Time:"'  >
+          <FontStyle size="0.03" justify="BEGIN"  />
+        </Text>
+      </Shape>
+    </Transform>
+  </ToggleGroup>
+
+  <ToggleGroup DEF="LEVEL_TOGGLE" graphicsOn="FALSE">
+    <Transform translation="0.0 0 0.01" >
+      <Shape> 
+        <Appearance> 
+          <Material DEF="MAT" /> 
+        </Appearance> 
+        <Text DEF="LEVEL_TEXT" string='"Level Completed!"'  >
+          <FontStyle size="0.05" justify="MIDDLE"  />
+        </Text>
+      </Shape>
+    </Transform>
+  </ToggleGroup>
+  
+   <ToggleGroup DEF="FINALSCORE_TOGGLE" graphicsOn="FALSE">
+    <Transform translation="-0.08 0.1 0.0" >
+      <Shape> 
+        <Appearance> 
+          <Material DEF="MAT" /> 
+        </Appearance> 
+        <Text DEF="FINAL_TEXT" string='"Final Score:"'  >
+          <FontStyle size="0.04" justify="FIRST"  />
+        </Text>
+      </Shape>
+    </Transform>
+  </ToggleGroup>
+  
+  <!-- Ball -->
+  <DynamicTransform DEF="TX_BALL" position="0 0 -0.3">
+  <Transform DEF="RACKET_TRANS" translation="0 0 0">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT_BALL"/>
+       <?FrictionalSurface /?>
+       <ImageTexture url="ball3.jpg" />      
+    </Appearance>
+    <Sphere DEF="BALL" radius="0.03" />
+  </Shape>
+ 
+  </Transform>
+  </DynamicTransform>
+  
+  <!-- Rackets-->  
+  <DynamicTransform DEF="R_T2">
+  <Transform DEF="RACKET_TRANS2" translation="0  0 -0.7">
+   <Shape>
+    <Appearance>
+      <Material transparency="0" diffuseColor="0.2 0.2 0.2" />
+      <?ImageTexture DEF="RACKET_TEX" url="racket2.jpg" /?>
+    </Appearance>
+    <Box DEF="RACKET2" size="0.1 0.1 0.05" />
+   </Shape>
+   <Transform translation="0 0 0.03" >
+    <Shape>
+      <Appearance>
+        <Material diffuseColor="0 0 0" />
+      </Appearance>
+      <Text DEF="TEXT_RACKET" string='"GOAL", "KEEPER"' >
+        <FontStyle DEF="FONT"  size="0.028" justify='"MIDDLE", "MIDDLE"'/>
+      </Text>
+    </Shape>
+  </Transform> 
+  </Transform>
+  </DynamicTransform>
+  
+  <DynamicTransform DEF="R_T">
+   <Shape>
+    <Appearance>
+      <Material transparency="0.3" diffuseColor="0.5 0.5 0.5" />
+      <ImageTexture  url="racketArrows.jpg" />
+    </Appearance>
+    <Box DEF="RACKET" size="0.11 0.075 0.0005" />
+   </Shape>
+  </DynamicTransform>
+  
+  <!-- Lives-->
+  <ToggleGroup DEF="LIFE1_TOGGLE" graphicsOn="TRUE">
+  <Transform DEF="TRANS_LIVES" translation = "-0.10  -0.15 0">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT"/>
+       <?FrictionalSurface /?>
+       <ImageTexture url="ball3.jpg" />      
+    </Appearance>
+    <Sphere DEF="LIFE" radius="0.02" />
+  </Shape>
+  </Transform>
+  </ToggleGroup>
+
+   <ToggleGroup DEF="LIFE2_TOGGLE" graphicsOn="TRUE"> 
+   <Transform DEF="TRANS_LIVES" translation = "-0.14  -0.15 0">
+   <Shape>
+    <Appearance>
+      <Material DEF="MAT"/>
+       <?FrictionalSurface /?>
+       <ImageTexture url="ball3.jpg" />      
+    </Appearance>
+    <Sphere DEF="LIFE" radius="0.02" />
+  </Shape>
+  </Transform>
+  </ToggleGroup>
+  
+  <ToggleGroup DEF="LIFE3_TOGGLE" graphicsOn="TRUE">
+  <Transform DEF="TRANS_LIVES" translation = "-0.18  -0.15 0">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT"/>
+       <?FrictionalSurface /?>
+       <ImageTexture url="ball3.jpg" />      
+    </Appearance>
+    <Sphere DEF="LIFE" radius="0.02" />
+  </Shape>
+  </Transform>
+  </ToggleGroup>
+  
+    <!-- Lost Lives-->
+  
+  <Transform DEF="TRANS_LIVES1" translation = "-0.10  -0.15 0">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT" diffuseColor="0.5 0.5 0.5"/>
+       <?FrictionalSurface /?>
+       <?ImageTexture url="earth.jpg" /?>      
+    </Appearance>
+    <Sphere DEF="LIFE" radius="0.005" />
+  </Shape>
+  </Transform>
+  
+
+   
+   <Transform DEF="TRANS_LIVES" translation = "-0.14  -0.15 0">
+   <Shape>
+    <Appearance>
+      <Material DEF="MAT" diffuseColor="0.5 0.5 0.5"/>
+       <?FrictionalSurface /?>
+       <?ImageTexture url="earth.jpg" /?>      
+    </Appearance>
+    <Sphere DEF="LIFE" radius="0.005" />
+  </Shape>
+  </Transform>
+ 
+  
+ 
+  <Transform DEF="TRANS_LIVES" translation = "-0.18  -0.15 0">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT" diffuseColor="0.5 0.5 0.5"/>
+       <?FrictionalSurface /?>
+       <?ImageTexture url="earth.jpg" /?>      
+    </Appearance>
+    <Sphere DEF="LIFE" radius="0.005" />
+  </Shape>
+  </Transform>
+  
+  
+  <Group>
+  <DirectionalLight direction="1 -0.5 0" />
+  <DirectionalLight direction="-1 0.5 0" />
+  
+  	<!-- Fixed sideWalls -->
+   <Transform translation="0.25 0.0 -0.45">
+       <Shape>
+         <Appearance>
+          <Material DEF="WALL1" transparency="0"  diffuseColor="0.7 0.9 0.7" />
+		  <TextureTransform scale="1 1" />		  
+		  <ImageTexture url="court.jpg" />
+		  <FrictionalSurface  />
+         </Appearance>
+       <Box solid="false" DEF="W1" size="0.00005 0.4 0.8" />
+       </Shape>
+   </Transform>
+   
+   
+    <Transform translation="-0.25 0.0 -0.45">
+       <Shape>
+         <Appearance>
+          <Material DEF="WALL2" transparency="0" diffuseColor="0.7 0.9 0.7"/>
+		  <TextureTransform scale="1 1" />		  
+		  <ImageTexture url="court.jpg" />
+         </Appearance>
+       <Box solid="false" DEF="W2" size="0.0005 0.4 0.8" />
+       </Shape>
+   </Transform>
+   
+    <Transform translation="0.0 0.2 -0.45">
+       <Shape>
+         <Appearance>
+          <Material DEF="WALL3" transparency="0" diffuseColor="0.7 0.9 0.7"/>
+		  <TextureTransform scale="1 1" />		  
+		  <ImageTexture url="court.jpg" /> 
+         </Appearance>
+       <Box solid="false" DEF="W3" size="0.5 0.0005 0.8" />
+       </Shape>
+   </Transform>
+   
+   <Transform translation="0.0 -0.2 -0.45">
+       <Shape>
+         <Appearance>
+          <Material DEF="WALL4" transparency="0" diffuseColor="0.7 0.9 0.7"/>
+		  <TextureTransform scale="1 1" />		  
+		  <ImageTexture url="court.jpg" /> 
+         </Appearance>
+       <Box solid="false" DEF="W3" size="0.5 0.0005 0.8" />
+       </Shape>
+   </Transform>
+   
+      <Transform translation="0.0 0.0 -0.85">
+       <Shape>
+         <Appearance>
+          <Material DEF="WALL4" transparency="0" diffuseColor="0.7 0.9 0.7"/>
+		  <TextureTransform scale="1 1" />		  
+		  <ImageTexture url="goal2.jpg" /> 
+         </Appearance>
+       <Box solid="false" DEF="W3" size="0.5 0.4 0.0005" />
+       </Shape>
+   </Transform>
+   
+   <Transform translation="0.0 0.0 -2">
+       <Shape>
+         <Appearance>
+          <Material DEF="WALLBCKGRND" />
+		  <TextureTransform scale="1 1" />		  
+		  <ImageTexture url="stars.jpg" /> 
+         </Appearance>
+       <Box solid="false" DEF="W5" size="3 2 0.0005" />
+       </Shape>
+   </Transform>
+   
+  </Group> 
+ 
+     <!-- References-->
+  <ToggleGroup DEF="REF1_TOGGLE" graphicsOn="FALSE">
+  <Transform DEF="TRANS_REF1" translation = "-0.10  -0.15 0">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT" diffuseColor="0.5 0.5 0.5"/>
+       <?FrictionalSurface /?>
+            
+    </Appearance>
+    <Sphere DEF="REF1" radius="0.005" />
+  </Shape>
+  </Transform>
+  </ToggleGroup>
+
+   <ToggleGroup DEF="REF2_TOGGLE" graphicsOn="FALSE"> 
+   <Transform DEF="TRANS_REF2" translation = "-0.14  -0.15 0">
+   <Shape>
+    <Appearance>
+      <Material DEF="MAT" diffuseColor="0.5 0.5 0.5"/>
+       <?FrictionalSurface /?>    
+    </Appearance>
+    <Sphere DEF="LIFE" radius="0.005" />
+  </Shape>
+  </Transform>
+  </ToggleGroup>
+  
+  <ToggleGroup DEF="REF3_TOGGLE" graphicsOn="TRUE">
+  <Transform DEF="TRANS_REF3" translation = "0.0 -0.2 -0.7">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT" transparency="0.5" diffuseColor="0 0 0"/>
+       <?FrictionalSurface /?>
+           
+    </Appearance>
+    <Box DEF="SHADOW2" size="0.1 0.001 0.05" />
+  </Shape>
+  </Transform>
+  </ToggleGroup>
+  
+   <ToggleGroup DEF="REF4_TOGGLE" graphicsOn="TRUE">
+  <Transform DEF="TRANS_REF4" translation = "0.0  -0.2 -0.3">
+  <Shape>
+    <Appearance>
+      <Material DEF="MAT4" transparency="0.5" diffuseColor="0 0 0"/>
+       <?FrictionalSurface /?>
+           
+    </Appearance>
+    <Cylinder DEF="SHADOW" radius="0.03" height="0.001" />
+  </Shape>
+  </Transform>
+  </ToggleGroup>
+  
+
+
+</Group>

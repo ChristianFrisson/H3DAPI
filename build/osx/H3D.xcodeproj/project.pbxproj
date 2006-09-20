@@ -380,6 +380,66 @@
 		4D0D867508CD8D5F0071A598 /* HDU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D0A01EF08A79C2700A71D46 /* HDU.framework */; };
 		4D0D867608CD8D5F0071A598 /* HL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D0A01F008A79C2700A71D46 /* HL.framework */; };
 		4D0D867708CD8D5F0071A598 /* HLU.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D0A01F108A79C2700A71D46 /* HLU.framework */; };
+		4D1AB5E00AA5980A000B2803 /* SimpleMovieTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5D70AA5980A000B2803 /* SimpleMovieTexture.cpp */; };
+		4D1AB5E10AA5980A000B2803 /* H3DVideoClipDecoderNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5D80AA5980A000B2803 /* H3DVideoClipDecoderNode.cpp */; };
+		4D1AB5E20AA5980A000B2803 /* H3DOptionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5D90AA5980A000B2803 /* H3DOptionNode.cpp */; };
+		4D1AB5E30AA5980A000B2803 /* DHDHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5DA0AA5980A000B2803 /* DHDHapticsDevice.cpp */; };
+		4D1AB5E40AA5980A000B2803 /* TwoSidedMaterial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5DB0AA5980A000B2803 /* TwoSidedMaterial.cpp */; };
+		4D1AB5E50AA5980A000B2803 /* TextureProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5DC0AA5980A000B2803 /* TextureProperties.cpp */; };
+		4D1AB5E60AA5980A000B2803 /* RenderProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5DD0AA5980A000B2803 /* RenderProperties.cpp */; };
+		4D1AB5E70AA5980A000B2803 /* GraphicsCachingOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5DE0AA5980A000B2803 /* GraphicsCachingOptions.cpp */; };
+		4D1AB5E80AA5980A000B2803 /* DefaultAppearance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5DF0AA5980A000B2803 /* DefaultAppearance.cpp */; };
+		4D1AB5ED0AA59856000B2803 /* DirectShowDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5E90AA59856000B2803 /* DirectShowDecoder.cpp */; };
+		4D1AB5EE0AA59856000B2803 /* GlobalSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5EA0AA59856000B2803 /* GlobalSettings.cpp */; };
+		4D1AB5EF0AA59856000B2803 /* H3DVideoTextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5EB0AA59856000B2803 /* H3DVideoTextureNode.cpp */; };
+		4D1AB5F00AA59856000B2803 /* HaptikHapticsDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D1AB5EC0AA59856000B2803 /* HaptikHapticsDevice.cpp */; };
+		4D3D22550A36E4DF00B0573F /* X3DTriggerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22410A36E4DE00B0573F /* X3DTriggerNode.cpp */; };
+		4D3D22560A36E4DF00B0573F /* TimeTrigger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22420A36E4DE00B0573F /* TimeTrigger.cpp */; };
+		4D3D22570A36E4DF00B0573F /* NurbsPatchSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22430A36E4DE00B0573F /* NurbsPatchSurface.cpp */; };
+		4D3D22580A36E4DF00B0573F /* BooleanSequencer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22440A36E4DE00B0573F /* BooleanSequencer.cpp */; };
+		4D3D22590A36E4DF00B0573F /* X3DNurbsControlCurveNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22450A36E4DE00B0573F /* X3DNurbsControlCurveNode.cpp */; };
+		4D3D225A0A36E4DF00B0573F /* OpenHapticsOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22460A36E4DE00B0573F /* OpenHapticsOptions.cpp */; };
+		4D3D225B0A36E4DF00B0573F /* NurbsTrimmedSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22470A36E4DE00B0573F /* NurbsTrimmedSurface.cpp */; };
+		4D3D225C0A36E4DF00B0573F /* NurbsTextureCoordinate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22480A36E4DE00B0573F /* NurbsTextureCoordinate.cpp */; };
+		4D3D225D0A36E4DF00B0573F /* X3DSequencerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22490A36E4DE00B0573F /* X3DSequencerNode.cpp */; };
+		4D3D225F0A36E4DF00B0573F /* VrmlParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D224B0A36E4DE00B0573F /* VrmlParser.cpp */; };
+		4D3D22600A36E4DF00B0573F /* IntegerTrigger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D224C0A36E4DE00B0573F /* IntegerTrigger.cpp */; };
+		4D3D22610A36E4DF00B0573F /* ContourPolyline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D224D0A36E4DE00B0573F /* ContourPolyline2D.cpp */; };
+		4D3D22620A36E4DF00B0573F /* Contour2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D224E0A36E4DE00B0573F /* Contour2D.cpp */; };
+		4D3D22630A36E4DF00B0573F /* BooleanToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D224F0A36E4DE00B0573F /* BooleanToggle.cpp */; };
+		4D3D22640A36E4DF00B0573F /* VrmlDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22500A36E4DE00B0573F /* VrmlDriver.cpp */; };
+		4D3D22650A36E4DF00B0573F /* NurbsCurve2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22510A36E4DE00B0573F /* NurbsCurve2D.cpp */; };
+		4D3D22660A36E4DF00B0573F /* IntegerSequencer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22520A36E4DE00B0573F /* IntegerSequencer.cpp */; };
+		4D3D22670A36E4DF00B0573F /* BooleanTrigger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D22530A36E4DE00B0573F /* BooleanTrigger.cpp */; };
+		4D3D227F0A36E52500B0573F /* Vrml.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22690A36E52500B0573F /* Vrml.h */; };
+		4D3D22800A36E52500B0573F /* VrmlParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D226A0A36E52500B0573F /* VrmlParser.h */; };
+		4D3D22810A36E52500B0573F /* TimeTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D226B0A36E52500B0573F /* TimeTrigger.h */; };
+		4D3D22820A36E52500B0573F /* NurbsTextureCoordinate.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D226C0A36E52500B0573F /* NurbsTextureCoordinate.h */; };
+		4D3D22830A36E52500B0573F /* NurbsPatchSurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D226D0A36E52500B0573F /* NurbsPatchSurface.h */; };
+		4D3D22840A36E52500B0573F /* Extrusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D226E0A36E52500B0573F /* Extrusion.cpp */; };
+		4D3D22850A36E52500B0573F /* X3DSequencerNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D226F0A36E52500B0573F /* X3DSequencerNode.h */; };
+		4D3D22860A36E52500B0573F /* X3DRenderOptionsNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22700A36E52500B0573F /* X3DRenderOptionsNode.h */; };
+		4D3D22870A36E52500B0573F /* X3DNurbsControlCurveNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22710A36E52500B0573F /* X3DNurbsControlCurveNode.h */; };
+		4D3D22880A36E52500B0573F /* NurbsTrimmedSurface.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22720A36E52500B0573F /* NurbsTrimmedSurface.h */; };
+		4D3D22890A36E52500B0573F /* IntegerSequencer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22730A36E52500B0573F /* IntegerSequencer.h */; };
+		4D3D228A0A36E52500B0573F /* Contour2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22740A36E52500B0573F /* Contour2D.h */; };
+		4D3D228B0A36E52500B0573F /* X3DTriggerNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22750A36E52500B0573F /* X3DTriggerNode.h */; };
+		4D3D228C0A36E52500B0573F /* IntegerTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22760A36E52500B0573F /* IntegerTrigger.h */; };
+		4D3D228D0A36E52500B0573F /* BooleanToggle.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22770A36E52500B0573F /* BooleanToggle.h */; };
+		4D3D228E0A36E52500B0573F /* BooleanSequencer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22780A36E52500B0573F /* BooleanSequencer.h */; };
+		4D3D228F0A36E52500B0573F /* OpenHapticsSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D22790A36E52500B0573F /* OpenHapticsSettings.h */; };
+		4D3D22900A36E52500B0573F /* OpenHapticsOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D227A0A36E52500B0573F /* OpenHapticsOptions.h */; };
+		4D3D22910A36E52500B0573F /* NurbsCurve2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D227B0A36E52500B0573F /* NurbsCurve2D.h */; };
+		4D3D22920A36E52500B0573F /* Extrusion.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D227C0A36E52500B0573F /* Extrusion.h */; };
+		4D3D22930A36E52500B0573F /* BooleanTrigger.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D227D0A36E52500B0573F /* BooleanTrigger.h */; };
+		4D3D22940A36E52500B0573F /* ContourPolyline2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D227E0A36E52500B0573F /* ContourPolyline2D.h */; };
+		4D3D23450A36FB5D00B0573F /* lex.yy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D233F0A36FB5D00B0573F /* lex.yy.cc */; };
+		4D3D23460A36FB5D00B0573F /* vrml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D23400A36FB5D00B0573F /* vrml.hpp */; };
+		4D3D23470A36FB5D00B0573F /* vrml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D3D23410A36FB5D00B0573F /* vrml.cpp */; };
+		4D3D23480A36FB5D00B0573F /* stack.hh in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D23420A36FB5D00B0573F /* stack.hh */; };
+		4D3D23490A36FB5D00B0573F /* position.hh in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D23430A36FB5D00B0573F /* position.hh */; };
+		4D3D234A0A36FB5D00B0573F /* location.hh in Headers */ = {isa = PBXBuildFile; fileRef = 4D3D23440A36FB5D00B0573F /* location.hh */; };
+		4D3D234D0A36FBE200B0573F /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D3D234C0A36FBE200B0573F /* libcurl.a */; };
 		4D4C503C090E24E400AD15B0 /* X3DNurbsSurfaceGeometryNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D4C5038090E24E400AD15B0 /* X3DNurbsSurfaceGeometryNode.cpp */; };
 		4D4C503D090E24E400AD15B0 /* X3DParametricGeometryNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D4C5039090E24E400AD15B0 /* X3DParametricGeometryNode.cpp */; };
 		4D4C503E090E24E400AD15B0 /* GeneratedCubeMapTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D4C503A090E24E400AD15B0 /* GeneratedCubeMapTexture.cpp */; };
@@ -516,6 +576,7 @@
 		4D91D7BE09D19CED0053D977 /* X3DBindableNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D0AFFE908A797D500A71D46 /* X3DBindableNode.cpp */; };
 		4D91D7C909D19D370053D977 /* URNResolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D91D7C709D19D370053D977 /* URNResolver.cpp */; };
 		4D91D7CA09D19D370053D977 /* URNResolver.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D91D7C809D19D370053D977 /* URNResolver.h */; };
+		4DDA51290A8222FC000184BF /* HLCustomObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4DDA51280A8222FC000184BF /* HLCustomObject.cpp */; };
 		4DEC79E0092A216C00CB721D /* DynamicTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEC79D9092A216C00CB721D /* DynamicTransform.h */; };
 		4DEC79E1092A216C00CB721D /* X3DNurbsSurfaceGeometryNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEC79DA092A216C00CB721D /* X3DNurbsSurfaceGeometryNode.h */; };
 		4DEC79E2092A216C00CB721D /* X3DParametricGeometryNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DEC79DB092A216C00CB721D /* X3DParametricGeometryNode.h */; };
@@ -981,6 +1042,66 @@
 		4D0AFFFD08A797D500A71D46 /* X3DGroupingNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DGroupingNode.h; path = ../../src/X3DGroupingNode.h; sourceTree = SOURCE_ROOT; };
 		4D0AFFFE08A797D500A71D46 /* X3DInterpolatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DInterpolatorNode.cpp; path = ../../src/X3DInterpolatorNode.cpp; sourceTree = SOURCE_ROOT; };
 		4D0AFFFF08A797D500A71D46 /* X3DInterpolatorNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DInterpolatorNode.h; path = ../../src/X3DInterpolatorNode.h; sourceTree = SOURCE_ROOT; };
+		4D1AB5D70AA5980A000B2803 /* SimpleMovieTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleMovieTexture.cpp; path = ../../src/SimpleMovieTexture.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5D80AA5980A000B2803 /* H3DVideoClipDecoderNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = H3DVideoClipDecoderNode.cpp; path = ../../src/H3DVideoClipDecoderNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5D90AA5980A000B2803 /* H3DOptionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = H3DOptionNode.cpp; path = ../../src/H3DOptionNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5DA0AA5980A000B2803 /* DHDHapticsDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DHDHapticsDevice.cpp; path = ../../src/DHDHapticsDevice.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5DB0AA5980A000B2803 /* TwoSidedMaterial.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TwoSidedMaterial.cpp; path = ../../src/TwoSidedMaterial.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5DC0AA5980A000B2803 /* TextureProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TextureProperties.cpp; path = ../../src/TextureProperties.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5DD0AA5980A000B2803 /* RenderProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = RenderProperties.cpp; path = ../../src/RenderProperties.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5DE0AA5980A000B2803 /* GraphicsCachingOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GraphicsCachingOptions.cpp; path = ../../src/GraphicsCachingOptions.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5DF0AA5980A000B2803 /* DefaultAppearance.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DefaultAppearance.cpp; path = ../../src/DefaultAppearance.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5E90AA59856000B2803 /* DirectShowDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DirectShowDecoder.cpp; path = ../../src/DirectShowDecoder.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5EA0AA59856000B2803 /* GlobalSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GlobalSettings.cpp; path = ../../src/GlobalSettings.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5EB0AA59856000B2803 /* H3DVideoTextureNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = H3DVideoTextureNode.cpp; path = ../../src/H3DVideoTextureNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D1AB5EC0AA59856000B2803 /* HaptikHapticsDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = HaptikHapticsDevice.cpp; path = ../../src/HaptikHapticsDevice.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22410A36E4DE00B0573F /* X3DTriggerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DTriggerNode.cpp; path = ../../src/X3DTriggerNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22420A36E4DE00B0573F /* TimeTrigger.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TimeTrigger.cpp; path = ../../src/TimeTrigger.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22430A36E4DE00B0573F /* NurbsPatchSurface.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = NurbsPatchSurface.cpp; path = ../../src/NurbsPatchSurface.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22440A36E4DE00B0573F /* BooleanSequencer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = BooleanSequencer.cpp; path = ../../src/BooleanSequencer.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22450A36E4DE00B0573F /* X3DNurbsControlCurveNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DNurbsControlCurveNode.cpp; path = ../../src/X3DNurbsControlCurveNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22460A36E4DE00B0573F /* OpenHapticsOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = OpenHapticsOptions.cpp; path = ../../src/OpenHapticsOptions.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22470A36E4DE00B0573F /* NurbsTrimmedSurface.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = NurbsTrimmedSurface.cpp; path = ../../src/NurbsTrimmedSurface.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22480A36E4DE00B0573F /* NurbsTextureCoordinate.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = NurbsTextureCoordinate.cpp; path = ../../src/NurbsTextureCoordinate.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22490A36E4DE00B0573F /* X3DSequencerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DSequencerNode.cpp; path = ../../src/X3DSequencerNode.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D224B0A36E4DE00B0573F /* VrmlParser.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VrmlParser.cpp; path = ../../src/VrmlParser.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D224C0A36E4DE00B0573F /* IntegerTrigger.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IntegerTrigger.cpp; path = ../../src/IntegerTrigger.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D224D0A36E4DE00B0573F /* ContourPolyline2D.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ContourPolyline2D.cpp; path = ../../src/ContourPolyline2D.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D224E0A36E4DE00B0573F /* Contour2D.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Contour2D.cpp; path = ../../src/Contour2D.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D224F0A36E4DE00B0573F /* BooleanToggle.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = BooleanToggle.cpp; path = ../../src/BooleanToggle.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22500A36E4DE00B0573F /* VrmlDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VrmlDriver.cpp; path = ../../src/VrmlDriver.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22510A36E4DE00B0573F /* NurbsCurve2D.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = NurbsCurve2D.cpp; path = ../../src/NurbsCurve2D.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22520A36E4DE00B0573F /* IntegerSequencer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IntegerSequencer.cpp; path = ../../src/IntegerSequencer.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22530A36E4DE00B0573F /* BooleanTrigger.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = BooleanTrigger.cpp; path = ../../src/BooleanTrigger.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D22690A36E52500B0573F /* Vrml.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Vrml.h; path = ../../src/Vrml.h; sourceTree = SOURCE_ROOT; };
+		4D3D226A0A36E52500B0573F /* VrmlParser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VrmlParser.h; path = ../../src/VrmlParser.h; sourceTree = SOURCE_ROOT; };
+		4D3D226B0A36E52500B0573F /* TimeTrigger.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TimeTrigger.h; path = ../../src/TimeTrigger.h; sourceTree = SOURCE_ROOT; };
+		4D3D226C0A36E52500B0573F /* NurbsTextureCoordinate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NurbsTextureCoordinate.h; path = ../../src/NurbsTextureCoordinate.h; sourceTree = SOURCE_ROOT; };
+		4D3D226D0A36E52500B0573F /* NurbsPatchSurface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NurbsPatchSurface.h; path = ../../src/NurbsPatchSurface.h; sourceTree = SOURCE_ROOT; };
+		4D3D226E0A36E52500B0573F /* Extrusion.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Extrusion.cpp; path = ../../src/Extrusion.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D226F0A36E52500B0573F /* X3DSequencerNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DSequencerNode.h; path = ../../src/X3DSequencerNode.h; sourceTree = SOURCE_ROOT; };
+		4D3D22700A36E52500B0573F /* X3DRenderOptionsNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DRenderOptionsNode.h; path = ../../src/X3DRenderOptionsNode.h; sourceTree = SOURCE_ROOT; };
+		4D3D22710A36E52500B0573F /* X3DNurbsControlCurveNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DNurbsControlCurveNode.h; path = ../../src/X3DNurbsControlCurveNode.h; sourceTree = SOURCE_ROOT; };
+		4D3D22720A36E52500B0573F /* NurbsTrimmedSurface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NurbsTrimmedSurface.h; path = ../../src/NurbsTrimmedSurface.h; sourceTree = SOURCE_ROOT; };
+		4D3D22730A36E52500B0573F /* IntegerSequencer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IntegerSequencer.h; path = ../../src/IntegerSequencer.h; sourceTree = SOURCE_ROOT; };
+		4D3D22740A36E52500B0573F /* Contour2D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Contour2D.h; path = ../../src/Contour2D.h; sourceTree = SOURCE_ROOT; };
+		4D3D22750A36E52500B0573F /* X3DTriggerNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DTriggerNode.h; path = ../../src/X3DTriggerNode.h; sourceTree = SOURCE_ROOT; };
+		4D3D22760A36E52500B0573F /* IntegerTrigger.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IntegerTrigger.h; path = ../../src/IntegerTrigger.h; sourceTree = SOURCE_ROOT; };
+		4D3D22770A36E52500B0573F /* BooleanToggle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BooleanToggle.h; path = ../../src/BooleanToggle.h; sourceTree = SOURCE_ROOT; };
+		4D3D22780A36E52500B0573F /* BooleanSequencer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BooleanSequencer.h; path = ../../src/BooleanSequencer.h; sourceTree = SOURCE_ROOT; };
+		4D3D22790A36E52500B0573F /* OpenHapticsSettings.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = OpenHapticsSettings.h; path = ../../src/OpenHapticsSettings.h; sourceTree = SOURCE_ROOT; };
+		4D3D227A0A36E52500B0573F /* OpenHapticsOptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = OpenHapticsOptions.h; path = ../../src/OpenHapticsOptions.h; sourceTree = SOURCE_ROOT; };
+		4D3D227B0A36E52500B0573F /* NurbsCurve2D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NurbsCurve2D.h; path = ../../src/NurbsCurve2D.h; sourceTree = SOURCE_ROOT; };
+		4D3D227C0A36E52500B0573F /* Extrusion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Extrusion.h; path = ../../src/Extrusion.h; sourceTree = SOURCE_ROOT; };
+		4D3D227D0A36E52500B0573F /* BooleanTrigger.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BooleanTrigger.h; path = ../../src/BooleanTrigger.h; sourceTree = SOURCE_ROOT; };
+		4D3D227E0A36E52500B0573F /* ContourPolyline2D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ContourPolyline2D.h; path = ../../src/ContourPolyline2D.h; sourceTree = SOURCE_ROOT; };
+		4D3D233F0A36FB5D00B0573F /* lex.yy.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = lex.yy.cc; path = ../../src/lex.yy.cc; sourceTree = SOURCE_ROOT; };
+		4D3D23400A36FB5D00B0573F /* vrml.hpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; name = vrml.hpp; path = ../../src/vrml.hpp; sourceTree = SOURCE_ROOT; };
+		4D3D23410A36FB5D00B0573F /* vrml.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vrml.cpp; path = ../../src/vrml.cpp; sourceTree = SOURCE_ROOT; };
+		4D3D23420A36FB5D00B0573F /* stack.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; name = stack.hh; path = ../../src/stack.hh; sourceTree = SOURCE_ROOT; };
+		4D3D23430A36FB5D00B0573F /* position.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; name = position.hh; path = ../../src/position.hh; sourceTree = SOURCE_ROOT; };
+		4D3D23440A36FB5D00B0573F /* location.hh */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.h; name = location.hh; path = ../../src/location.hh; sourceTree = SOURCE_ROOT; };
+		4D3D234C0A36FBE200B0573F /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = "../../../External/curl-7.15.1/lib/libcurl.a"; sourceTree = SOURCE_ROOT; };
 		4D4C5038090E24E400AD15B0 /* X3DNurbsSurfaceGeometryNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DNurbsSurfaceGeometryNode.cpp; path = ../../src/X3DNurbsSurfaceGeometryNode.cpp; sourceTree = SOURCE_ROOT; };
 		4D4C5039090E24E400AD15B0 /* X3DParametricGeometryNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = X3DParametricGeometryNode.cpp; path = ../../src/X3DParametricGeometryNode.cpp; sourceTree = SOURCE_ROOT; };
 		4D4C503A090E24E400AD15B0 /* GeneratedCubeMapTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GeneratedCubeMapTexture.cpp; path = ../../src/GeneratedCubeMapTexture.cpp; sourceTree = SOURCE_ROOT; };
@@ -1109,6 +1230,7 @@
 		4D91D7B109D18EB80053D977 /* LocalFog.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = LocalFog.h; path = ../../src/LocalFog.h; sourceTree = SOURCE_ROOT; };
 		4D91D7C709D19D370053D977 /* URNResolver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = URNResolver.cpp; path = ../../src/URNResolver.cpp; sourceTree = SOURCE_ROOT; };
 		4D91D7C809D19D370053D977 /* URNResolver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = URNResolver.h; path = ../../src/URNResolver.h; sourceTree = SOURCE_ROOT; };
+		4DDA51280A8222FC000184BF /* HLCustomObject.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = HLCustomObject.cpp; path = ../../src/HLCustomObject.cpp; sourceTree = SOURCE_ROOT; };
 		4DEC79D9092A216C00CB721D /* DynamicTransform.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DynamicTransform.h; path = ../../src/DynamicTransform.h; sourceTree = SOURCE_ROOT; };
 		4DEC79DA092A216C00CB721D /* X3DNurbsSurfaceGeometryNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DNurbsSurfaceGeometryNode.h; path = ../../src/X3DNurbsSurfaceGeometryNode.h; sourceTree = SOURCE_ROOT; };
 		4DEC79DB092A216C00CB721D /* X3DParametricGeometryNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = X3DParametricGeometryNode.h; path = ../../src/X3DParametricGeometryNode.h; sourceTree = SOURCE_ROOT; };
@@ -1199,6 +1321,7 @@
 				4D5DCBEB091BB133007BCF50 /* libvorbisfile.a in Frameworks */,
 				4D6904B00920E913003CE7AD /* Cg.framework in Frameworks */,
 				4D5AEE2E092A0FCD007DE64E /* Xerces.framework in Frameworks */,
+				4D3D234D0A36FBE200B0573F /* libcurl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1229,6 +1352,7 @@
 		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				4D3D234C0A36FBE200B0573F /* libcurl.a */,
 				4D5AEE2B092A0FCD007DE64E /* Xerces.framework */,
 				4D6904A10920E913003CE7AD /* Cg.framework */,
 				4D5DCBEA091BB133007BCF50 /* libvorbisfile.a */,
@@ -1263,6 +1387,47 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				4D1AB5E90AA59856000B2803 /* DirectShowDecoder.cpp */,
+				4D1AB5EA0AA59856000B2803 /* GlobalSettings.cpp */,
+				4D1AB5EB0AA59856000B2803 /* H3DVideoTextureNode.cpp */,
+				4D1AB5EC0AA59856000B2803 /* HaptikHapticsDevice.cpp */,
+				4D1AB5D70AA5980A000B2803 /* SimpleMovieTexture.cpp */,
+				4D1AB5D80AA5980A000B2803 /* H3DVideoClipDecoderNode.cpp */,
+				4D1AB5D90AA5980A000B2803 /* H3DOptionNode.cpp */,
+				4D1AB5DA0AA5980A000B2803 /* DHDHapticsDevice.cpp */,
+				4D1AB5DB0AA5980A000B2803 /* TwoSidedMaterial.cpp */,
+				4D1AB5DC0AA5980A000B2803 /* TextureProperties.cpp */,
+				4D1AB5DD0AA5980A000B2803 /* RenderProperties.cpp */,
+				4D1AB5DE0AA5980A000B2803 /* GraphicsCachingOptions.cpp */,
+				4D1AB5DF0AA5980A000B2803 /* DefaultAppearance.cpp */,
+				4DDA51280A8222FC000184BF /* HLCustomObject.cpp */,
+				4D3D233F0A36FB5D00B0573F /* lex.yy.cc */,
+				4D3D23400A36FB5D00B0573F /* vrml.hpp */,
+				4D3D23410A36FB5D00B0573F /* vrml.cpp */,
+				4D3D23420A36FB5D00B0573F /* stack.hh */,
+				4D3D23430A36FB5D00B0573F /* position.hh */,
+				4D3D23440A36FB5D00B0573F /* location.hh */,
+				4D91D71E09D1839D0053D977 /* SFNode.cpp */,
+				4D91D74E09D1839D0053D977 /* GLUTWindow.cpp */,
+				4D3D226E0A36E52500B0573F /* Extrusion.cpp */,
+				4D3D22410A36E4DE00B0573F /* X3DTriggerNode.cpp */,
+				4D3D22420A36E4DE00B0573F /* TimeTrigger.cpp */,
+				4D3D22430A36E4DE00B0573F /* NurbsPatchSurface.cpp */,
+				4D3D22440A36E4DE00B0573F /* BooleanSequencer.cpp */,
+				4D3D22450A36E4DE00B0573F /* X3DNurbsControlCurveNode.cpp */,
+				4D3D22460A36E4DE00B0573F /* OpenHapticsOptions.cpp */,
+				4D3D22470A36E4DE00B0573F /* NurbsTrimmedSurface.cpp */,
+				4D3D22480A36E4DE00B0573F /* NurbsTextureCoordinate.cpp */,
+				4D3D22490A36E4DE00B0573F /* X3DSequencerNode.cpp */,
+				4D3D224B0A36E4DE00B0573F /* VrmlParser.cpp */,
+				4D3D224C0A36E4DE00B0573F /* IntegerTrigger.cpp */,
+				4D3D224D0A36E4DE00B0573F /* ContourPolyline2D.cpp */,
+				4D3D224E0A36E4DE00B0573F /* Contour2D.cpp */,
+				4D3D224F0A36E4DE00B0573F /* BooleanToggle.cpp */,
+				4D3D22500A36E4DE00B0573F /* VrmlDriver.cpp */,
+				4D3D22510A36E4DE00B0573F /* NurbsCurve2D.cpp */,
+				4D3D22520A36E4DE00B0573F /* IntegerSequencer.cpp */,
+				4D3D22530A36E4DE00B0573F /* BooleanTrigger.cpp */,
 				4D91D7C709D19D370053D977 /* URNResolver.cpp */,
 				4D91D7AC09D18EB80053D977 /* GaussianFunction.cpp */,
 				4D91D7AD09D18EB80053D977 /* H3DFunctionNode.cpp */,
@@ -1480,6 +1645,27 @@
 		4D0AFE9508A7975100A71D46 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				4D3D22690A36E52500B0573F /* Vrml.h */,
+				4D3D226A0A36E52500B0573F /* VrmlParser.h */,
+				4D3D226B0A36E52500B0573F /* TimeTrigger.h */,
+				4D3D226C0A36E52500B0573F /* NurbsTextureCoordinate.h */,
+				4D3D226D0A36E52500B0573F /* NurbsPatchSurface.h */,
+				4D3D226F0A36E52500B0573F /* X3DSequencerNode.h */,
+				4D3D22700A36E52500B0573F /* X3DRenderOptionsNode.h */,
+				4D3D22710A36E52500B0573F /* X3DNurbsControlCurveNode.h */,
+				4D3D22720A36E52500B0573F /* NurbsTrimmedSurface.h */,
+				4D3D22730A36E52500B0573F /* IntegerSequencer.h */,
+				4D3D22740A36E52500B0573F /* Contour2D.h */,
+				4D3D22750A36E52500B0573F /* X3DTriggerNode.h */,
+				4D3D22760A36E52500B0573F /* IntegerTrigger.h */,
+				4D3D22770A36E52500B0573F /* BooleanToggle.h */,
+				4D3D22780A36E52500B0573F /* BooleanSequencer.h */,
+				4D3D22790A36E52500B0573F /* OpenHapticsSettings.h */,
+				4D3D227A0A36E52500B0573F /* OpenHapticsOptions.h */,
+				4D3D227B0A36E52500B0573F /* NurbsCurve2D.h */,
+				4D3D227C0A36E52500B0573F /* Extrusion.h */,
+				4D3D227D0A36E52500B0573F /* BooleanTrigger.h */,
+				4D3D227E0A36E52500B0573F /* ContourPolyline2D.h */,
 				4D91D7C809D19D370053D977 /* URNResolver.h */,
 				4D91D7AF09D18EB80053D977 /* LoadSensor.h */,
 				4D91D7B109D18EB80053D977 /* LocalFog.h */,
@@ -1498,7 +1684,6 @@
 				4D91D71B09D1839D0053D977 /* SFString.h */,
 				4D91D71C09D1839D0053D977 /* SFRotation.h */,
 				4D91D71D09D1839D0053D977 /* SFQuaternion.h */,
-				4D91D71E09D1839D0053D977 /* SFNode.cpp */,
 				4D91D71F09D1839D0053D977 /* SFMatrix4f.h */,
 				4D91D72009D1839D0053D977 /* SFMatrix4d.h */,
 				4D91D72109D1839D0053D977 /* SFMatrix3f.h */,
@@ -1539,7 +1724,6 @@
 				4D91D74809D1839D0053D977 /* H3DWindowNode.h */,
 				4D91D74A09D1839D0053D977 /* H3DExports.h */,
 				4D91D74D09D1839D0053D977 /* GLUTWindow.h */,
-				4D91D74E09D1839D0053D977 /* GLUTWindow.cpp */,
 				4D91D75009D1839D0053D977 /* Fog.h */,
 				4D91D75209D1839D0053D977 /* ElevationGrid.h */,
 				4D91D75409D1839D0053D977 /* DeformableShape.h */,
@@ -2135,6 +2319,31 @@
 				4D91D7B509D18EB80053D977 /* LoadSensor.h in Headers */,
 				4D91D7B709D18EB80053D977 /* LocalFog.h in Headers */,
 				4D91D7CA09D19D370053D977 /* URNResolver.h in Headers */,
+				4D3D227F0A36E52500B0573F /* Vrml.h in Headers */,
+				4D3D22800A36E52500B0573F /* VrmlParser.h in Headers */,
+				4D3D22810A36E52500B0573F /* TimeTrigger.h in Headers */,
+				4D3D22820A36E52500B0573F /* NurbsTextureCoordinate.h in Headers */,
+				4D3D22830A36E52500B0573F /* NurbsPatchSurface.h in Headers */,
+				4D3D22850A36E52500B0573F /* X3DSequencerNode.h in Headers */,
+				4D3D22860A36E52500B0573F /* X3DRenderOptionsNode.h in Headers */,
+				4D3D22870A36E52500B0573F /* X3DNurbsControlCurveNode.h in Headers */,
+				4D3D22880A36E52500B0573F /* NurbsTrimmedSurface.h in Headers */,
+				4D3D22890A36E52500B0573F /* IntegerSequencer.h in Headers */,
+				4D3D228A0A36E52500B0573F /* Contour2D.h in Headers */,
+				4D3D228B0A36E52500B0573F /* X3DTriggerNode.h in Headers */,
+				4D3D228C0A36E52500B0573F /* IntegerTrigger.h in Headers */,
+				4D3D228D0A36E52500B0573F /* BooleanToggle.h in Headers */,
+				4D3D228E0A36E52500B0573F /* BooleanSequencer.h in Headers */,
+				4D3D228F0A36E52500B0573F /* OpenHapticsSettings.h in Headers */,
+				4D3D22900A36E52500B0573F /* OpenHapticsOptions.h in Headers */,
+				4D3D22910A36E52500B0573F /* NurbsCurve2D.h in Headers */,
+				4D3D22920A36E52500B0573F /* Extrusion.h in Headers */,
+				4D3D22930A36E52500B0573F /* BooleanTrigger.h in Headers */,
+				4D3D22940A36E52500B0573F /* ContourPolyline2D.h in Headers */,
+				4D3D23460A36FB5D00B0573F /* vrml.hpp in Headers */,
+				4D3D23480A36FB5D00B0573F /* stack.hh in Headers */,
+				4D3D23490A36FB5D00B0573F /* position.hh in Headers */,
+				4D3D234A0A36FB5D00B0573F /* location.hh in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2531,6 +2740,41 @@
 				4D91D7B609D18EB80053D977 /* LocalFog.cpp in Sources */,
 				4D91D7BE09D19CED0053D977 /* X3DBindableNode.cpp in Sources */,
 				4D91D7C909D19D370053D977 /* URNResolver.cpp in Sources */,
+				4D3D22550A36E4DF00B0573F /* X3DTriggerNode.cpp in Sources */,
+				4D3D22560A36E4DF00B0573F /* TimeTrigger.cpp in Sources */,
+				4D3D22570A36E4DF00B0573F /* NurbsPatchSurface.cpp in Sources */,
+				4D3D22580A36E4DF00B0573F /* BooleanSequencer.cpp in Sources */,
+				4D3D22590A36E4DF00B0573F /* X3DNurbsControlCurveNode.cpp in Sources */,
+				4D3D225A0A36E4DF00B0573F /* OpenHapticsOptions.cpp in Sources */,
+				4D3D225B0A36E4DF00B0573F /* NurbsTrimmedSurface.cpp in Sources */,
+				4D3D225C0A36E4DF00B0573F /* NurbsTextureCoordinate.cpp in Sources */,
+				4D3D225D0A36E4DF00B0573F /* X3DSequencerNode.cpp in Sources */,
+				4D3D225F0A36E4DF00B0573F /* VrmlParser.cpp in Sources */,
+				4D3D22600A36E4DF00B0573F /* IntegerTrigger.cpp in Sources */,
+				4D3D22610A36E4DF00B0573F /* ContourPolyline2D.cpp in Sources */,
+				4D3D22620A36E4DF00B0573F /* Contour2D.cpp in Sources */,
+				4D3D22630A36E4DF00B0573F /* BooleanToggle.cpp in Sources */,
+				4D3D22640A36E4DF00B0573F /* VrmlDriver.cpp in Sources */,
+				4D3D22650A36E4DF00B0573F /* NurbsCurve2D.cpp in Sources */,
+				4D3D22660A36E4DF00B0573F /* IntegerSequencer.cpp in Sources */,
+				4D3D22670A36E4DF00B0573F /* BooleanTrigger.cpp in Sources */,
+				4D3D22840A36E52500B0573F /* Extrusion.cpp in Sources */,
+				4D3D23450A36FB5D00B0573F /* lex.yy.cc in Sources */,
+				4D3D23470A36FB5D00B0573F /* vrml.cpp in Sources */,
+				4DDA51290A8222FC000184BF /* HLCustomObject.cpp in Sources */,
+				4D1AB5E00AA5980A000B2803 /* SimpleMovieTexture.cpp in Sources */,
+				4D1AB5E10AA5980A000B2803 /* H3DVideoClipDecoderNode.cpp in Sources */,
+				4D1AB5E20AA5980A000B2803 /* H3DOptionNode.cpp in Sources */,
+				4D1AB5E30AA5980A000B2803 /* DHDHapticsDevice.cpp in Sources */,
+				4D1AB5E40AA5980A000B2803 /* TwoSidedMaterial.cpp in Sources */,
+				4D1AB5E50AA5980A000B2803 /* TextureProperties.cpp in Sources */,
+				4D1AB5E60AA5980A000B2803 /* RenderProperties.cpp in Sources */,
+				4D1AB5E70AA5980A000B2803 /* GraphicsCachingOptions.cpp in Sources */,
+				4D1AB5E80AA5980A000B2803 /* DefaultAppearance.cpp in Sources */,
+				4D1AB5ED0AA59856000B2803 /* DirectShowDecoder.cpp in Sources */,
+				4D1AB5EE0AA59856000B2803 /* GlobalSettings.cpp in Sources */,
+				4D1AB5EF0AA59856000B2803 /* H3DVideoTextureNode.cpp in Sources */,
+				4D1AB5F00AA59856000B2803 /* HaptikHapticsDevice.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2592,7 +2836,10 @@
 				INFOPLIST_FILE = Info.plist;
 				INIT_ROUTINE = "";
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(LIBRARY_SEARCH_PATHS)",
+					"$(SRCROOT)/../../../External/curl-7.15.1/lib",
+				);
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
@@ -2652,7 +2899,10 @@
 				INFOPLIST_FILE = Info.plist;
 				INIT_ROUTINE = "";
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(LIBRARY_SEARCH_PATHS)",
+					"$(SRCROOT)/../../../External/curl-7.15.1/lib",
+				);
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (
@@ -2709,7 +2959,10 @@
 				INFOPLIST_FILE = Info.plist;
 				INIT_ROUTINE = "";
 				INSTALL_PATH = "$(HOME)/Library/Frameworks";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(LIBRARY_SEARCH_PATHS)",
+					"$(SRCROOT)/../../../External/curl-7.15.1/lib",
+				);
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (

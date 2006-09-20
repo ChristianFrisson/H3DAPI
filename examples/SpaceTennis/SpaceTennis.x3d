@@ -1,0 +1,7 @@
+<Group  DEF="G" >
+  <Viewpoint position="0 0 0.6" />
+  <PythonScript DEF="SpaceTennis" url="SpaceTennis.py" />
+  <PythonScript url="SpaceTennisStart.py" >
+    <Group USE="G" containerField="references" />
+  </PythonScript>
+</Group>

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DirectShow\BaseClasses&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -68,7 +68,7 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
 				IgnoreDefaultLibraryNames=""
-				DelayLoadDLLs=""
+				DelayLoadDLLs="dhd.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 				SubSystem="2"
@@ -125,7 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DirectShow\BaseClasses&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FTGL\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\src;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype-2.1.9\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;NDEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -149,7 +149,7 @@
 				OutputFile="$(OutDir)/H3DApi.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
-				DelayLoadDLLs=""
+				DelayLoadDLLs="dhd.dll"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="0"
@@ -328,6 +328,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\DHDHapticsDevice.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\DirectionalLight.cpp"
 				>
 			</File>
@@ -489,6 +493,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSphere.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\HaptikHapticsDevice.cpp"
 				>
 			</File>
 			<File
@@ -920,6 +928,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\TextureProperties.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\TextureTransform.cpp"
 				>
 			</File>
@@ -973,6 +985,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\TriangleStripSet.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\TwoSidedMaterial.cpp"
 				>
 			</File>
 			<File
@@ -1358,6 +1374,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\DHDHapticsDevice.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\DirectionalLight.h"
 				>
 			</File>
@@ -1603,6 +1623,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\HapticSpring.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\HaptikHapticsDevice.h"
 				>
 			</File>
 			<File
@@ -2250,6 +2274,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\TextureProperties.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\TextureTransform.h"
 				>
 			</File>
@@ -2307,6 +2335,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\TriangleStripSet.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\TwoSidedMaterial.h"
 				>
 			</File>
 			<File

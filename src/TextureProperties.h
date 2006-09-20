@@ -39,8 +39,8 @@
 
 namespace H3D {
   /// \ingroup X3DNodes
-  /// \brief TextureProperties allows fine control over a texture's application.  ///
-  ///
+  /// \class TextureProperties
+  /// \brief TextureProperties allows fine control over a texture's application.
   /// This node can be used to set the texture properties for a node with a
   /// textureProperties field. A texture with a TextureProperties node will
   /// ignore the repeatS and repeatT fields on the texture.
@@ -79,8 +79,8 @@ namespace H3D {
   ///
   /// - "AVG_PIXEL"	Select the weighted average of the four texture elements
   ///   that are closest to the center of the pixel being textured.	
-  /// - "DEFAULT"	Select the browser-specified default magnification mode.
-	///    In H3D API the same as AVG_PIXEL.
+  /// - "DEFAULT"	Select the browser-specified default magnification mode. In 
+  ///   H3D API the same as AVG_PIXEL.
   /// - "FASTEST"	Select the fastest method available.	
   /// - "NEAREST_PIXEL"	Select the pixel that is nearest to the center
   ///   of the pixel being textured.	

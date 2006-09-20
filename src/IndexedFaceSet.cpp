@@ -229,7 +229,7 @@ void IndexedFaceSet::render() {
       }
       
       // render all vertices for this face.
-      for(; coord_index[i] != -1 && i < coord_index.size(); i++ ) {
+      for(;  i < coord_index.size() && coord_index[i] != -1; i++ ) {
         // Set up texture coordinates.
         if( tex_coords_per_vertex ) {
           int tci;

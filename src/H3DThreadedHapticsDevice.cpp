@@ -165,7 +165,7 @@ H3DThreadedHapticsDevice::H3DThreadedHapticsDevice(
 void H3DThreadedHapticsDevice::initDevice() {
   if( !initialized->getValue() ) {
 #ifdef WIN32
-    thread = new HapticThread(  THREAD_PRIORITY_TIME_CRITICAL, 1000 );
+    thread = new HapticThread(  THREAD_PRIORITY_ABOVE_NORMAL, 1000 );
 #else
     thread = new HapticThread( 0, 1000 );
 #endif

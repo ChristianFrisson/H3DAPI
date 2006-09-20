@@ -353,7 +353,14 @@ void Transform::Matrix::update() {
   }
 }
 
-
+void Transform::render() {
+  Vec3f s = scale->getValue();
+  if( H3DAbs( s.x ) > Constants::f_epsilon &&
+      H3DAbs( s.y ) > Constants::f_epsilon &&
+      H3DAbs( s.z ) > Constants::f_epsilon ){
+    MatrixTransform::render(); 
+  }
+}
 
 
 

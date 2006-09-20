@@ -238,9 +238,8 @@ namespace H3D {
     
     AutoPtrVector< CallbackData > callback_data; 
 
+#endif
     bool use_back_face_culling, allow_back_face_culling;
-
-  #endif
   };
 }
 

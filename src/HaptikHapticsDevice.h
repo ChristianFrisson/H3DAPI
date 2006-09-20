@@ -226,7 +226,7 @@ namespace H3D {
     virtual void sendTorque( const Vec3f &f );
 
     /// Change the used Haptik device to the one with the given id.
-    virtual void changeHaptikDevice( UINT32 new_id );
+    virtual void changeHaptikDevice( unsigned int new_id );
 
 #ifdef HAVE_HAPTIK
     RSLib::Haptik haptik;

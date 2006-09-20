@@ -123,7 +123,7 @@ Vec3f DHDHapticsDevice::getVelocity() {
 }
 
 bool DHDHapticsDevice::getButtonStatus() {
-#ifdef DHD_API
+#ifdef HAVE_DHDAPI
   if( device_id != -1 ) {
     return dhdGetButton( 0, device_id ) == DHD_ON;
   } 
@@ -134,7 +134,7 @@ bool DHDHapticsDevice::getButtonStatus() {
 /// Get the orientation of the haptics device. Only to be called in the 
 /// haptics loop.
 Rotation DHDHapticsDevice::getOrientation() {
-#ifdef DHD_API
+#ifdef HAVE_DHDAPI
   if( device_id != -1 ) {
     Vec3d r;
     dhdGetOrientationRad( &r.z, &r.x, &r.y, device_id );
@@ -147,7 +147,7 @@ Rotation DHDHapticsDevice::getOrientation() {
 /// Send the force to render on the haptics device. Only to be called in the 
 /// haptics loop.
 void DHDHapticsDevice::sendForce( const Vec3f &f ) {
-#ifdef DHD_API
+#ifdef HAVE_DHDAPI
   if( device_id != -1 ) {
     dhdSetForce( f.z, f.x, f.y, device_id );
   }
@@ -157,7 +157,7 @@ void DHDHapticsDevice::sendForce( const Vec3f &f ) {
 /// Send the torque to render on the haptics device. Only to be called in the 
 /// haptics loop.
 void DHDHapticsDevice::sendTorque( const Vec3f &f ) {
-#ifdef DHD_API
+#ifdef HAVE_DHDAPI
   if( device_id != -1 ) {
     dhdSetTorque( f.z, f.x, f.y, device_id );
   }

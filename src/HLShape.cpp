@@ -69,6 +69,9 @@ HLShape::~HLShape() {
   }
 }
 
+
+#endif
+
 bool HLShape::closeEnoughToBound( const Vec3f &pos, 
                                   const Vec3f &previous_pos,
                                   const Matrix4f &m, 
@@ -144,5 +147,4 @@ bool HLShape::closeEnoughToBound( const Vec3f &pos,
   return true;
 }
 
-#endif
 #endif

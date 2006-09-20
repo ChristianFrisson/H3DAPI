@@ -116,6 +116,10 @@ namespace H3D {
 
     PyObject* pythonGetActiveBackground( PyObject *self, PyObject *arg );
 
+    PyObject* pythonGetActiveFog( PyObject *self, PyObject *arg );
+
+    PyObject* pythonGetActiveGlobalSettings( PyObject *self, PyObject *arg );
+
     PyObject* pythonEraseElementFromMField( PyObject *self, PyObject *arg );
 
     PyObject* pythonPushBackElementInMField( PyObject *self, PyObject *arg );

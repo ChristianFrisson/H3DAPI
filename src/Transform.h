@@ -124,6 +124,8 @@ namespace H3D {
                Inst< SFMatrix4f > _accumulatedInverse = 0  );
 
 
+    virtual void render();
+
     virtual H3DNodeDatabase *getDatabase() { return &database; }
     
     

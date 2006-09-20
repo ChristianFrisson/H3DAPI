@@ -35,6 +35,9 @@
 #include "Viewpoint.h"
 #include "NavigationInfo.h"
 #include "StereoInfo.h"
+#include "Fog.h"
+#include "GlobalSettings.h"
+#include "X3DSAX2Handlers.h"
 #include "X3DBackgroundNode.h" 
 #include "X3DTypeFunctions.h"
 #include "PythonTypes.h"
@@ -203,7 +206,7 @@ if( check_func( value ) ) {                                         \
       return 0;                                                \
     }                                                          \
   }                                                          \
-  static_cast<field_type *>(field)->swap(fv);                  
+  static_cast<field_type *>(field)->setValue(fv);                  
 
 
     // This macro is used in order to apply some macro where the values
@@ -504,6 +507,8 @@ if( check_func( value ) ) {                                         \
 #endif
 			, { "getActiveViewpoint", pythonGetActiveViewpoint, 0 },
       { "getActiveNavigationInfo", pythonGetActiveNavigationInfo, 0 },
+      { "getActiveFog", pythonGetActiveFog, 0 },
+      { "getActiveGlobalSettings", pythonGetActiveGlobalSettings, 0 },
       { "getActiveStereoInfo", pythonGetActiveStereoInfo, 0 },
       { "getActiveBackground", pythonGetActiveBackground, 0 },
       { "eraseElementFromMField", pythonEraseElementFromMField, 0 },
@@ -995,8 +1000,16 @@ call the base class __init__ function." );
       }
       char *filename = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      Node *n = X3D::createX3DFromURL( filename, &dm );
-      return PythonInternals::createX3DHelp( n, &dm );
+      try{
+        Node *n = X3D::createX3DFromURL( filename, &dm );
+        return PythonInternals::createX3DHelp( n, &dm );
+      }
+      catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D from URL: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1010,8 +1023,16 @@ call the base class __init__ function." );
       }
       char *s = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      Node *n = X3D::createX3DFromString( s, &dm );
-      return PythonInternals::createX3DHelp( n, &dm );
+      try{
+        Node *n = X3D::createX3DFromString( s, &dm );
+        return PythonInternals::createX3DHelp( n, &dm );
+      }
+      catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D from string: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1025,8 +1046,16 @@ call the base class __init__ function." );
       }
       char *filename = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      AutoRef< Node > n = X3D::createX3DNodeFromURL( filename, &dm );
-      return PythonInternals::createX3DHelp( n.get(), &dm );
+      try{
+        AutoRef< Node > n = X3D::createX3DNodeFromURL( filename, &dm );
+        return PythonInternals::createX3DHelp( n.get(), &dm );
+      }
+      catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D Node from URL: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     PyObject* pythonCreateX3DNodeFromString( PyObject *self, PyObject *arg ) {
@@ -1038,8 +1067,16 @@ call the base class __init__ function." );
       }
       char *s = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      AutoRef< Node > n = X3D::createX3DNodeFromString( s, &dm );
-      return PythonInternals::createX3DHelp( n.get(), &dm );
+      try{
+        AutoRef< Node > n = X3D::createX3DNodeFromString( s, &dm );
+        return PythonInternals::createX3DHelp( n.get(), &dm );
+      }
+      catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D Node from string: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1053,8 +1090,15 @@ call the base class __init__ function." );
       }
       char *filename = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      Node *n = X3D::createX3DFromURL( filename, &dm );
-      return PythonInternals::createX3DHelp( n, &dm );
+      try {
+        Node *n = X3D::createX3DFromURL( filename, &dm );
+        return PythonInternals::createX3DHelp( n, &dm );
+      } catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D Node from string: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1068,8 +1112,15 @@ call the base class __init__ function." );
       }
       char *s = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      Node *n = X3D::createVRMLFromString( s, &dm );
-      return PythonInternals::createX3DHelp( n, &dm );
+      try {
+        Node *n = X3D::createVRMLFromString( s, &dm );
+        return PythonInternals::createX3DHelp( n, &dm );
+      } catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D Node from string: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1083,8 +1134,15 @@ call the base class __init__ function." );
       }
       char *filename = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      AutoRef< Node > n = X3D::createVRMLNodeFromURL( filename, &dm );
-      return PythonInternals::createX3DHelp( n.get(), &dm );
+      try {
+        AutoRef< Node > n = X3D::createVRMLNodeFromURL( filename, &dm );
+        return PythonInternals::createX3DHelp( n.get(), &dm );
+      } catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D Node from string: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     PyObject* pythonCreateVRMLNodeFromString( PyObject *self, PyObject *arg ) {
@@ -1096,8 +1154,15 @@ call the base class __init__ function." );
       }
       char *s = PyString_AsString( arg );
       X3D::DEFNodes dm;
-      AutoRef< Node > n = X3D::createVRMLNodeFromString( s, &dm );
-      return PythonInternals::createX3DHelp( n.get(), &dm );
+      try {
+        AutoRef< Node > n = X3D::createVRMLNodeFromString( s, &dm );
+        return PythonInternals::createX3DHelp( n.get(), &dm );
+      } catch(H3D::X3D::XMLParseError &e){
+        ostringstream err;
+        err << "Error creating X3D Node from string: " << e.message;
+        PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
+        return 0;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -1231,6 +1296,34 @@ call the base class __init__ function." );
       }
 
       return PyNode_FromNode( Viewpoint::getActive() );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject* pythonGetActiveFog( PyObject *self, PyObject *arg ) {
+     if( arg ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.getActiveFog()."
+            << "Function does not take any arguments.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      return PyNode_FromNode( Fog::getActive() );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject* pythonGetActiveGlobalSettings( PyObject *self, PyObject *arg ) {
+     if( arg ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.getActiveGlobalSettings()."
+            << "Function does not take any arguments.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      return PyNode_FromNode( GlobalSettings::getActive() );
     }
 
     /////////////////////////////////////////////////////////////////////////

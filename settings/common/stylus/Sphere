@@ -1,0 +1,10 @@
+<Group>
+  <Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
+    <Shape>
+      <Appearance>
+        <Material/>
+      </Appearance>
+      <Sphere radius="0.0025" />
+    </Shape>
+  </Transform>
+</Group>

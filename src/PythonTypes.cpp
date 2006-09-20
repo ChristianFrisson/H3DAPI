@@ -3209,6 +3209,26 @@ self, name, field_type, access_type )" );
                         "invalid type given to Quaternion constructor." );
         return -1;
       }
+    } else if( args_size == 2 ) {
+      Quaternion *self_q = (Quaternion *)self;
+      PyObject *o0 = PyTuple_GetItem( args, 0 );
+      PyObject *o1 = PyTuple_GetItem( args, 1 );
+      if( PyVec3f_Check( o0 ) ) {
+        Vec3f v0 = PyVec3f_AsVec3f( o0 );
+        if( PyFloat_Check( o1 ) ) {
+          *self_q = Quaternion( v0, (H3DFloat) PyFloat_AsDouble( o1 ) );
+        } else if( PyInt_Check( o1 ) ) {
+          *self_q = Quaternion( v0, (H3DFloat) PyInt_AsLong( o1 ) );
+        } else {
+          PyErr_SetString(PyExc_TypeError, 
+                          "invalid type given to Quaternion constructor." );
+          return -1;
+        }
+      } else {
+        PyErr_SetString(PyExc_TypeError, 
+                        "invalid type given to Quaternion constructor." );
+        return -1;
+      }
     } else {
       static char *kwlist[] = {"x", "y", "z", "w", NULL};
       if (! PyArg_ParseTupleAndKeywords(args, kwds, "|ffff", kwlist, 

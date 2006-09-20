@@ -294,7 +294,7 @@ void HaptikHapticsDevice::SelectDevice::update() {
 #endif
 }
 
-void HaptikHapticsDevice::changeHaptikDevice( UINT32 device_id ) {
+void HaptikHapticsDevice::changeHaptikDevice( unsigned int device_id ) {
 #ifdef HAVE_HAPTIK
   if( haptik_device ) {
     RSLib::HaptikDeviceInfo info;
