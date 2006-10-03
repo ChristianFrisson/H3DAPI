@@ -64,12 +64,12 @@ void HLFeedbackShape::hlRender( HLHapticsDevice *hd ) {
       hlHinti(  HL_SHAPE_FEEDBACK_BUFFER_VERTICES, 65536 );
     }
 
-    bool previous_allow = geometry->allowingBackFaceCulling();
-    geometry->allowBackFaceCulling( false );
+    bool previous_allow = geometry->allowingCulling();
+    geometry->allowCulling( false );
     hlBeginShape( HL_SHAPE_FEEDBACK_BUFFER, getShapeId( hd ) );
     geometry->hlRender( hd, transform );
     hlEndShape();
-    geometry->allowBackFaceCulling( previous_allow );
+    geometry->allowCulling( previous_allow );
     
     glFrontFace( front_face );
 #if HL_VERSION_MAJOR_NUMBER >= 2

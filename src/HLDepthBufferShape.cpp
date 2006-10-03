@@ -63,13 +63,13 @@ void HLDepthBufferShape::hlRender( HLHapticsDevice *hd ) {
     } else if( negative_scaling )
       glFrontFace( GL_CW );
 
-    bool previous_allow = geometry->allowingBackFaceCulling();
-    geometry->allowBackFaceCulling( false );
+    bool previous_allow = geometry->allowingCulling();
+    geometry->allowCulling( false );
     hlBeginShape( HL_SHAPE_DEPTH_BUFFER, getShapeId( hd ) );
     glClear( GL_DEPTH_BUFFER_BIT );
     geometry->hlRender( hd, transform );
     hlEndShape();
-    geometry->allowBackFaceCulling( previous_allow );
+    geometry->allowCulling( previous_allow );
     glFrontFace( front_face );
 #if HL_VERSION_MAJOR_NUMBER >= 2
     hlPopAttrib();
