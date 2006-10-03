@@ -50,6 +50,8 @@ namespace X3DShapeNodeInternals {
   FIELDDB_ELEMENT( X3DShapeNode, bboxSize, INITIALIZE_ONLY );
 }
 
+X3DShapeNode::GeometryRenderMode X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL;
+
 X3DShapeNode::X3DShapeNode( 
                            Inst< SFAppearanceNode > _appearance,
                            Inst< SFGeometryNode   > _geometry,
@@ -57,9 +59,11 @@ X3DShapeNode::X3DShapeNode(
                            Inst< SFNode           > _metadata,
                            Inst< SFBound          > _bound,
                            Inst< SFVec3f          > _bboxCenter,
-                           Inst< SFVec3f          > _bboxSize ) :
+                           Inst< SFVec3f          > _bboxSize,
+                           Inst< DisplayList      > _displayList ) :
   X3DChildNode( _metadata ),
   X3DBoundedObject( _bound, _bboxCenter, _bboxSize ),
+  H3DDisplayListObject( _displayList ),
   appearance( _appearance ),
   geometry  ( _geometry   ),
   hapticGeometry( _hapticGeometry ),
@@ -94,7 +98,41 @@ void X3DShapeNode::render() {
       glDisable( GL_LIGHTING );
     }
   }
-  if ( g ) g->displayList->callList();
+  if ( g ) {
+    if( geometry_render_mode == ALL ) {
+      g->displayList->callList();
+    } else if( geometry_render_mode == SOLID ) {
+      // only render non-transparent objects
+      if( !a || !a->isTransparent() ) {
+        g->displayList->callList();
+      }
+    }
+    else if( a && a->isTransparent() ) {
+      if( geometry_render_mode == TRANSPARENT_ONLY ) {
+        g->displayList->callList();
+      } else if( geometry_render_mode == TRANSPARENT_FRONT ) {
+        GLenum previous_cull_face = g->getCullFace();
+        bool previous_culling = g->usingCulling();
+        if( !previous_culling || previous_cull_face != GL_FRONT ) { 
+          g->setCullFace( GL_BACK );
+          g->useCulling( true );
+          g->displayList->callList();
+          g->setCullFace( previous_cull_face );
+          g->useCulling( previous_culling );
+        }
+      } else if( geometry_render_mode == TRANSPARENT_BACK ) {
+        GLenum previous_cull_face = g->getCullFace();
+        bool previous_culling = g->usingCulling();
+        if( !previous_culling || previous_cull_face != GL_BACK ) { 
+          g->setCullFace( GL_FRONT );
+          g->useCulling( true );
+          g->displayList->callList();
+          g->setCullFace( previous_cull_face );
+          g->useCulling( previous_culling );
+        }
+      } 
+    }
+  }
   if( a ) a->postRender();
   else if(  X3DShapeNode::disable_lighting_if_no_app && lighting_on )
     glEnable( GL_LIGHTING );
@@ -102,10 +140,16 @@ void X3DShapeNode::render() {
 
 #ifdef USE_HAPTICS
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
-  Node *a = appearance->getValue();
+  X3DAppearanceNode *a = appearance->getValue();
   Node *g = geometry->getValue();
   Node *hg = hapticGeometry->getValue();
-  if ( a ) a->traverseSG( ti );
+  if ( a ) {
+    a->traverseSG( ti );
+    if( a->isTransparent() && a->usingMultiPassTransparency() ) {
+      ti.setMultiPassTransparency( true );
+      displayList->breakCache();
+    }
+  } 
   if( hg ) ti.disableHaptics();
   if ( g ) g->traverseSG( ti );
   if( hg ) {
@@ -117,3 +161,10 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   ti.setCurrentSurface( NULL );
 }
 #endif
+
+void X3DShapeNode::DisplayList::callList( bool build_list ) {
+  if( X3DShapeNode::geometry_render_mode != ALL ) {
+    breakCache();
+  }
+  BugWorkaroundDisplayList::callList( build_list );
+}

@@ -70,7 +70,8 @@ namespace H3D {
       haptics_devices( _haptics_devices ),
       haptic_shapes( _haptics_devices.size() ),
       haptic_effects( _haptics_devices.size() ),
-      haptics_enabled( true ) {
+      haptics_enabled( true ),
+      multi_pass_transparency( false ) {
       // put two unit matrices on the transform stack.
       transform_stack.push( TransformInfo( Matrix4f(), Matrix4f () ) );
     }
@@ -214,6 +215,21 @@ namespace H3D {
       haptics_enabled = true;
     }
 
+    
+    /// If multi pass transparency is set to true the scene will be rendered
+    /// three times graphically, once for all solid objects, once for the back
+    /// side of transparent objects and once for the front face of 
+    /// transparent objects. This is in order to avoid artifacts for 
+    /// transparent objects when rendered int the wrong order.
+    inline void setMultiPassTransparency( bool b ) {
+      multi_pass_transparency = b;
+    }
+
+    /// See if multi pass transparency objects have been encountered.
+    inline bool getMultiPassTransparency() {
+      return multi_pass_transparency;
+    }
+
     /// Check whether haptics is enabled or not. If disabled the
     /// addHapticsShapes() functions will have no effect. Geometry
     /// nodes that add shapes should check that haptics is enabled 
@@ -275,6 +291,7 @@ namespace H3D {
     vector< HapticShapeVector > haptic_shapes;
     vector< HapticEffectVector > haptic_effects;
     bool haptics_enabled;
+    bool multi_pass_transparency;
   };
 
 };

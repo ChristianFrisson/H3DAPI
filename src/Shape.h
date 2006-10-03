@@ -67,12 +67,14 @@ namespace H3D {
            Inst< SFNode           > _metadata       = 0,
            Inst< SFBound          > _bound          = 0,
            Inst< SFVec3f          > _bboxCenter     = 0,
-           Inst< SFVec3f          > _bboxSize       = 0 );
+           Inst< SFVec3f          > _bboxSize       = 0,
+           Inst< DisplayList      > _displayList    = 0 );
 
 
     virtual H3DNodeDatabase *getDatabase() { return &database; }
 
     static H3DNodeDatabase database;
+
   };
 }
 

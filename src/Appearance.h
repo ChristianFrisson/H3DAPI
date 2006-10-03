@@ -193,6 +193,15 @@ namespace H3D {
       else
         return false;
     }
+
+    /// This function checks if multi-pass transparency should be used or not
+    /// (see RenderProperties_multiPassTransparency)
+    virtual bool usingMultiPassTransparency() {
+      RenderProperties *rp = renderProperties->getValue();
+      if ( rp )
+        return rp->multiPassTransparency->getValue();
+      return default_using_multi_pass_transparency;
+    }
     
     /// If specified it ontains a FillProperties node that specifies 
     /// additional properties to be applied to all polygonal areas.

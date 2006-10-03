@@ -70,8 +70,9 @@ X3DGeometryNode::X3DGeometryNode(
   contactPoint( _contactPoint ),
   contactNormal( _contactNormal ),
   options( new MFOptionsNode ),
-  use_back_face_culling( false ),
-  allow_back_face_culling( true ) {
+  use_culling( false ),
+  allow_culling( true ),
+  cull_face( GL_BACK ) {
 
   type_name = "X3DGeometryNode";
   
@@ -253,7 +254,14 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
   int type = -1;
   bool adaptive_viewport = true;
   bool camera_view = true;
-  HLenum touchable_face = usingBackFaceCulling() ? HL_FRONT : HL_FRONT_AND_BACK;;
+  HLenum touchable_face;
+  
+  if( usingCulling() ) {
+      if( getCullFace() == GL_FRONT ) touchable_face = HL_BACK;
+      else touchable_face = HL_FRONT;
+  } else {
+      touchable_face = HL_FRONT_AND_BACK;
+  }
 
   OpenHapticsOptions *openhaptics_options = NULL;
 
@@ -284,8 +292,7 @@ HapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
     else if( face == "BACK" ) touchable_face = HL_BACK;
     else if( face == "FRONT_AND_BACK" ) touchable_face = HL_FRONT_AND_BACK;
     else if( face == "AS_GRAPHICS" ) {
-      if( usingBackFaceCulling() ) touchable_face = HL_FRONT;
-      else touchable_face = HL_FRONT_AND_BACK;
+// default values are the same as graphics
     } else {
       Console(4) << "Warning: Invalid default OpenHaptics touchable face: "
                  << face 
@@ -324,15 +331,23 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
   GLboolean culling_enabled;
   glGetBooleanv( GL_CULL_FACE, &culling_enabled );
 
-  if( geom->usingBackFaceCulling() && geom->allowingBackFaceCulling() ) {
+  GLint cull_face;
+  glGetIntegerv( GL_CULL_FACE_MODE, &cull_face );
+
+  if( geom->usingCulling() && geom->allowingCulling() ) {
     glEnable( GL_CULL_FACE );
   } else {
     glDisable( GL_CULL_FACE );
   }
 
+  glCullFace( geom->getCullFace() );
+
   BugWorkaroundDisplayList::callList( build_list );
 
+  // restore previous values for culling
   if( culling_enabled ) glEnable( GL_CULL_FACE );
   else glDisable( GL_CULL_FACE );
   
-  }
+  glCullFace( cull_face );
+
+}

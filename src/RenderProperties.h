@@ -61,7 +61,8 @@ namespace H3D {
     RenderProperties( Inst< SFNode      >  _metadata   = 0 ,
                       Inst< DisplayList > _displayList      = 0,
                       Inst< SFBool      > _depthTestEnabled = 0,
-                      Inst< SFBool      > _smoothShading    = 0 );
+                      Inst< SFBool      > _smoothShading    = 0,
+                      Inst< SFBool      > _multiPassTransparency = 0 );
 
     /// This function will be called by the X3DShapeNode before any rendering 
     /// of geometry and before the call to the render function. So this is the
@@ -107,6 +108,21 @@ namespace H3D {
     /// 
     /// \dotfile RenderProperties_smoothShading.dot 
     auto_ptr< SFBool > smoothShading;
+
+    /// If the multiPassTransparency field is true, and we have a transparent
+    /// shape, the entire scene will be rendered three times, once with all
+    /// non-transparant objects drawn, once with all transparant objects drawn
+    /// with front face culled and once with all transparent objects with back
+    /// face culled. This will avoid many artifact of transparency caused
+    /// by rendering objects in the wrong order, however it requires three
+    /// traversals of the scenegraph. If set to false, transparent objects
+    /// will just be drawn in the order they appear in the scene graph.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    /// 
+    /// \dotfile RenderProperties_multiPassTransparency.dot 
+    auto_ptr< SFBool > multiPassTransparency;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

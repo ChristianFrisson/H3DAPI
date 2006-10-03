@@ -42,25 +42,30 @@ H3DNodeDatabase RenderProperties::database(
 namespace RenderPropertiesInternals {
   FIELDDB_ELEMENT( RenderProperties, depthTestEnabled, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, smoothShading, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, multiPassTransparency, INPUT_OUTPUT );
 }
 
 
 RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
                                     Inst< DisplayList > _displayList,
                                     Inst< SFBool      > _depthTestEnabled,
-                                    Inst< SFBool      > _smoothShading ) :
+                                    Inst< SFBool      > _smoothShading,
+                                    Inst< SFBool      > _multiPassTransparency ) :
   X3DAppearanceChildNode( _displayList, _metadata ),
   depthTestEnabled      ( _depthTestEnabled ),
-  smoothShading         ( _smoothShading ) {
+  smoothShading         ( _smoothShading ),
+  multiPassTransparency( _multiPassTransparency ) {
 
   type_name = "RenderProperties";
   database.initFields( this );
   
   depthTestEnabled->setValue( true );
   smoothShading->setValue( true );
+  multiPassTransparency->setValue( true );
 
   depthTestEnabled->route( displayList );
   smoothShading->route( displayList );
+  multiPassTransparency->route( displayList );
 }
 
 

@@ -75,6 +75,12 @@ namespace H3D {
     virtual bool isTransparent() {
       return false;
     }
+
+    /// This function checks if multi-pass transparency should be used or not
+    /// (see RenderProperties_multiPassTransparency)
+    virtual bool usingMultiPassTransparency() {
+      return default_using_multi_pass_transparency;
+    }
         
     /// Returns the default xml containerField attribute value.
     /// For this node it is "appearance".
@@ -96,6 +102,24 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// Set the default value for usage of multi pass transparancy. This
+    /// is the value that will be used if the inherited appearance node
+    /// does not contain any information about using multipass transparency
+    inline static void setDefaultUsingMultiPassTransparency( bool b ) {
+      default_using_multi_pass_transparency = b;
+    }
+
+    /// Get the default value for usage of multi pass transparancy.
+    inline static bool getDefaultUsingMultiPassTransparency() {
+      return default_using_multi_pass_transparency;
+    }
+
+  protected:
+    /// The default value to use for multipass transparency, if the 
+    /// inherited appearance node does not contain any information about
+    /// using multipass transparency
+    static bool default_using_multi_pass_transparency;
   };
 }
 

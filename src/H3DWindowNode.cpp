@@ -48,6 +48,7 @@
 #include "StereoInfo.h"
 #include "GeneratedCubeMapTexture.h"
 #include "Fog.h"
+#include "X3DShapeNode.h"
 
 #include <GL/glew.h>
 
@@ -430,6 +431,14 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       if( app->material->getValue() ) {
         X3DShapeNode::disable_lighting_if_no_app = false;
       }
+
+      RenderProperties *rp = app->renderProperties->getValue();
+      if( rp ) {
+        X3DAppearanceNode::setDefaultUsingMultiPassTransparency( 
+          rp->multiPassTransparency->getValue() );
+      } else {
+        X3DAppearanceNode::setDefaultUsingMultiPassTransparency( true );
+      }
     }
   }
 
@@ -643,10 +652,28 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
     
-    renderStyli();
     // render the scene
-    if( dlo )  dlo->displayList->callList();
-    else child_to_render->render();
+    if( multi_pass_transparency ) {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+      
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+      
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+    } else {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+    }
 
     // RIGHT EYE
     glMatrixMode(GL_PROJECTION);
@@ -720,9 +747,28 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
 
-    renderStyli();    
-    if( dlo )  dlo->displayList->callList();
-    else child_to_render->render();
+    // render the scene
+    if( multi_pass_transparency ) {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+      
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+      
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+    } else {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+    }
 
     if( stereo_mode == RenderMode::RED_BLUE_STEREO ||
         stereo_mode == RenderMode::RED_CYAN_STEREO )
@@ -817,10 +863,28 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
     glMultMatrixf( vp_inv_transform );
     
-    renderStyli();
+    if( multi_pass_transparency ) {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+      
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+      
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+    } else {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+      renderStyli();
+      if( dlo )  dlo->displayList->callList();
+      else child_to_render->render();
+    }
 
-    if( dlo )  dlo->displayList->callList();
-    else child_to_render->render();
     swapBuffers();
   }
   glPopAttrib();

@@ -123,6 +123,22 @@ namespace H3D {
 
     };
 
+    /// This is just a dummy class to get around a bug in Visual C++ 7.1
+    /// If the X3DGeometry::DisplayList inherits directly from 
+    /// H3DDisplayListObject::Display list the application will crash
+    /// if trying to call H3DDisplayListObject::DisplayList::callList
+    /// By using an intermediate class the bug dissappears.
+    class H3DAPI_API BugWorkaroundDisplayList: 
+      public H3DDisplayListObject::DisplayList {
+    };
+
+    /// Display list is extended in 
+    class H3DAPI_API DisplayList: public BugWorkaroundDisplayList {
+    public: 
+      /// Perform front face code outside the display list.
+      virtual void callList( bool build_list = true );
+    };
+
 
     /// Constructor.
     X3DShapeNode( Inst< SFAppearanceNode > _appearance     = 0,
@@ -131,7 +147,8 @@ namespace H3D {
                   Inst< SFNode           > _metadata       = 0,
                   Inst< SFBound          > _bound          = 0,
                   Inst< SFVec3f          > _bboxCenter     = 0,
-                  Inst< SFVec3f          > _bboxSize       = 0
+                  Inst< SFVec3f          > _bboxSize       = 0,
+                  Inst< DisplayList      > _displayList    = 0
                   );
 
     
@@ -164,6 +181,21 @@ namespace H3D {
     /// Traverse the scenegraph. Calls traverseSG on appeance and geometry.
     virtual void traverseSG( TraverseInfo &ti );
 #endif
+
+    typedef enum {
+      /// render only transparent objects
+      TRANSPARENT_ONLY,
+      /// render only the front face of transparent objects
+      TRANSPARENT_FRONT,
+      /// render only the back face of transparent objects
+      TRANSPARENT_BACK,
+      /// render only noon-transparent objects
+      SOLID,
+      /// render all objects
+      ALL
+    } GeometryRenderMode;
+
+    static GeometryRenderMode geometry_render_mode;
 
     /// The field containing the X3DAppearance node to be used when
     /// rendering the shape.

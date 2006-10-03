@@ -226,6 +226,18 @@ namespace H3D {
 #ifdef WIN32
     HGLRC rendering_context;
 #endif
+    /// If multi pass transparency is set to true the scene will be rendered
+    /// three times graphically, once for all solid objects, once for the back
+    /// side of transparent objects and once for the front face of 
+    /// transparent objects. This is in order to avoid artifacts for 
+    /// transparent objects when rendered int the wrong order. 
+    inline void setMultiPassTransparency( bool b ) {
+      multi_pass_transparency = b;
+    }
+
+    friend class Scene; 
+
+    bool multi_pass_transparency;
     X3DChildNode *last_render_child;
     static bool GLEW_init;
     int window_id;

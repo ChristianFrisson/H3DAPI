@@ -108,12 +108,12 @@ namespace H3D {
       }
       
       /// Set the cache mode.
-      void setCacheMode( CacheMode m ) {
+      void setCacheMode( CacheMode m  ) {
         cache_mode = m;
       }
 
       /// Get the cache mode.
-      CacheMode setCacheMode( ) {
+      CacheMode getCacheMode( ) {
         return cache_mode;
       }
 

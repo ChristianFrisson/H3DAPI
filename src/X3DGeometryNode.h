@@ -93,27 +93,45 @@ namespace H3D {
     }
 
     /// This function should be used by the render() function to disable
-    /// or enable back face culling. DO NOT USE glEnable/glDisable to do
+    /// or enable face culling. DO NOT USE glEnable/glDisable to do
     /// this, since it will cause problems with OpenHaptics.
-    inline void useBackFaceCulling( bool enabled ) {
-      use_back_face_culling = enabled;
+    inline void useCulling( bool enabled ) {
+      use_culling = enabled;
     }
 
-    /// Returns if back face culling is in use or not.
-    inline bool usingBackFaceCulling() {
-      return use_back_face_culling;
+    /// Returns if face culling is in use or not.
+    inline bool usingCulling() {
+      return use_culling;
     }
 
-    /// Control if back face culling is allowed or not. Used when rendering
+    /// Control if face culling is allowed or not. Used when rendering
     /// HLFeedbackBuffer or HLDepthBuffer shapes in order not to have 
     /// back face culling on when rendering shapes with OpenHaptics.
-    inline void allowBackFaceCulling( bool allow ) {
-      allow_back_face_culling = allow;
+    inline void allowCulling( bool allow ) {
+      allow_culling = allow;
+    } 
+
+    /// Enabling/disabling back face culling. Same as doing  
+    /// useCulling( enabled ); setCullFace( GL_BACK );
+    inline void useBackFaceCulling( bool enabled ) {
+      useCulling( enabled );
+      setCullFace( GL_BACK );
     }
 
     /// Returns true if back face culling is allowed, false otherwise.
-    inline bool allowingBackFaceCulling() {
-      return allow_back_face_culling;
+    inline bool allowingCulling() {
+      return allow_culling;
+    }
+
+    /// Set which side of a polygon to cull. Valid values are GL_FRONT
+    /// or GL_BACK
+    inline void setCullFace( GLenum face ) {
+      cull_face = face;
+    }
+
+    /// Get which face will be culled if culling is enabled.
+    inline GLenum getCullFace() {
+      return cull_face;
     }
 
     /// Get the first option node of the type of the pointer given as argument
@@ -239,7 +257,8 @@ namespace H3D {
     AutoPtrVector< CallbackData > callback_data; 
 
 #endif
-    bool use_back_face_culling, allow_back_face_culling;
+    bool use_culling, allow_culling;
+    GLenum cull_face;
   };
 }
 

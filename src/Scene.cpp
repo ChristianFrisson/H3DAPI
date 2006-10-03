@@ -41,6 +41,7 @@
 #endif
 #include "PeriodicUpdate.h"
 #include "GLUTWindow.h"
+#include "X3DShapeNode.h"
 
 using namespace H3D;
 
@@ -107,6 +108,19 @@ void Scene::idle() {
     X3DChildNode *c = static_cast< X3DChildNode * >( sceneRoot->getValue() );
     if( c )
       c->traverseSG( *ti );
+
+    /// traverse the stylus of all haptics devices
+    DeviceInfo *di = DeviceInfo::getActive();
+    if( di ) {
+      for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
+           i != di->device->end(); i++ ) {
+        H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
+        Node *stylus = hd->stylus->getValue();
+        if( stylus ) {
+          stylus->traverseSG( *ti );
+        }
+      }
+    }
       
     // render the HapticShapes and HapticForceEffets in the TraverseInfo 
     // instance on the H3DHapticsDevices.
@@ -148,8 +162,10 @@ void Scene::idle() {
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
        w != window->end(); w++ ) {
-    static_cast< H3DWindowNode * >(*w)->
-      render( static_cast< X3DChildNode * >( sceneRoot->getValue() ) );
+    H3DWindowNode *window = static_cast< H3DWindowNode * >(*w);
+    window->setMultiPassTransparency( 
+                       last_traverseinfo->getMultiPassTransparency() );
+    window->render( static_cast< X3DChildNode * >( sceneRoot->getValue() ) );
   }
 
   // update the eventSink

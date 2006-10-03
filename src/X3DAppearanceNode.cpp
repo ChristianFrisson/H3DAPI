@@ -37,6 +37,8 @@ H3DNodeDatabase X3DAppearanceNode::database( "X3DAppearanceNode",
                                              typeid( X3DAppearanceNode ),
                                              &X3DNode::database );
 
+bool X3DAppearanceNode::default_using_multi_pass_transparency = true;
+
 namespace X3DAppearanceNodeInternals {
 #ifdef USE_HAPTICS
   FIELDDB_ELEMENT( X3DAppearanceNode, surface, INPUT_OUTPUT );

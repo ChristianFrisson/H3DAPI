@@ -55,9 +55,10 @@ Shape::Shape(
              Inst<    SFNode >  _metadata,
              Inst<    SFBound              > _bound,  
              Inst< SFVec3f>  _bboxCenter,
-             Inst< SFVec3f>  _bboxSize ) :
+             Inst< SFVec3f>  _bboxSize,
+             Inst< DisplayList      > _displayList ) :
   X3DShapeNode( _appearance, _geometry, _hapticGeometry,_metadata,
-                _bound,_bboxCenter, _bboxSize ) {
+                _bound,_bboxCenter, _bboxSize, _displayList ) {
 
   displayList->touch();
   type_name = "Shape";
