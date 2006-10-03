@@ -103,14 +103,7 @@ void IndexedTriangleFanSet::render() {
   const vector< int > &indices  = index->getValue();
  
   if( coordinate_node ) {
-    // enable backface culling if solid is true
-    if( solid->getValue() ) {
-      useBackFaceCulling( true );
-      glCullFace( GL_BACK );
-    } else {
-      useBackFaceCulling( false );
-    }
-    
+ 
     // no X3DTextureCoordinateNode, so we generate texture coordinates
     // based on the bounding box according to the X3D specification.
     if( !tex_coords_per_vertex ) {
@@ -280,6 +273,10 @@ void IndexedTriangleFanSet::render() {
 
 #ifdef USE_HAPTICS
 void IndexedTriangleFanSet::traverseSG( TraverseInfo &ti ) {
+  // use backface culling if solid is true
+  if( solid->getValue() ) useBackFaceCulling( true );
+  else useBackFaceCulling( false );
+
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( 

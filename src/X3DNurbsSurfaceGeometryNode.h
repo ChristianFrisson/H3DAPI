@@ -210,6 +210,9 @@ namespace H3D {
 		/// Render the X3DNurbsSurfaceGeometryNode with OpenGL.
 		virtual void render();
 
+    /// Traverse the scenegraph. 
+    virtual void traverseSG( TraverseInfo &ti );  
+
 		/// Function called by render to specify what differs between 
 		/// NurbsPatchSurface and NurbsTrimmedSurface,
 		virtual void renderBetweenBeginEnd(

@@ -71,15 +71,6 @@ Sphere::Sphere(
 
 
 void Sphere::render() {
-  // Render both sides of the sphere if solid is false, inside is not rendered
-  // if solid is true.
-  ///
-  if( solid->getValue() ) {
-    glCullFace( GL_BACK );
-    useBackFaceCulling( true );
-  } else {
-    useBackFaceCulling( false );
-  }
   if( !gl_quadric ) {
     gl_quadric = gluNewQuadric();
     gluQuadricTexture( gl_quadric, GL_TRUE );
@@ -94,6 +85,10 @@ void Sphere::render() {
 
 #ifdef USE_HAPTICS
 void Sphere::traverseSG( TraverseInfo &ti ) {
+  // use backface culling if solid is true
+  if( solid->getValue() ) useBackFaceCulling( true );
+  else useBackFaceCulling( false );
+
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
     ti.addHapticShapeToAll( new HapticSphere( radius->getValue(),
                                               solid->getValue(),

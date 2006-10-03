@@ -129,10 +129,10 @@ void NurbsPatchSurface::renderBetweenBeginEnd(
 
 #ifdef USE_HAPTICS
 void NurbsPatchSurface::traverseSG( TraverseInfo &ti ) {
+  X3DNurbsSurfaceGeometryNode::traverseSG( ti );
 	if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-		ti.addHapticShapeToAll( new HLFeedbackShape( this,
-			ti.getCurrentSurface(),
-			ti.getAccForwardMatrix() ) );
+		ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
+                                                  ti.getAccForwardMatrix()) );
 	}
 }
 #endif

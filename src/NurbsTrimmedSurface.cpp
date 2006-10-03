@@ -151,9 +151,9 @@ void NurbsTrimmedSurface::renderBetweenBeginEnd(
 #ifdef USE_HAPTICS
 void NurbsTrimmedSurface::traverseSG( TraverseInfo &ti ) {
 	if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-		ti.addHapticShapeToAll( new HLFeedbackShape( this,
-			ti.getCurrentSurface(),
-			ti.getAccForwardMatrix() ) );
-	}
+		ti.addHapticShapeToAll(  getOpenGLHapticShape( ti.getCurrentSurface(),
+                                                   ti.getAccForwardMatrix() ) );
+  }
+  X3DNurbsSurfaceGeometryNode::traverseSG( ti );
 }
 #endif

@@ -73,13 +73,6 @@ void TriangleSet2D::render() {
   // render the points
   const vector< Vec2f > &v = vertices->getValue();
 
-  if( solid->getValue() ) {
-    glCullFace( GL_BACK );
-    useBackFaceCulling( true );
-  } else {
-    useBackFaceCulling( false );
-  }
-
   BoxBound *bb = dynamic_cast< BoxBound * >( bound->getValue() );
   MultiTexture *mt = 
     dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
@@ -134,6 +127,10 @@ void TriangleSet2D::render() {
 
 #ifdef USE_HAPTICS
 void TriangleSet2D::traverseSG( TraverseInfo &ti ) {
+  // use backface culling if solid is true
+  if( solid->getValue() ) useBackFaceCulling( true );
+  else useBackFaceCulling( false );
+
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( 

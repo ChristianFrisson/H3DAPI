@@ -84,13 +84,6 @@ void Disk2D::render() {
 
   angle_increment = (H3DFloat) Constants::pi*2 / nr_segments;
 
-  if( solid->getValue() ) {
-    glCullFace( GL_BACK );
-    useBackFaceCulling( true );
-  } else {
-    useBackFaceCulling( false );
-  }
-
   if( inner_radius == 0 ) {
     // draw a filled circle
     glBegin( GL_TRIANGLE_FAN );
@@ -176,6 +169,11 @@ void Disk2D::render() {
 
 #ifdef USE_HAPTICS
 void Disk2D::traverseSG( TraverseInfo &ti ) {
+  if( solid->getValue() ) {
+    useBackFaceCulling( true );
+  } else {
+    useBackFaceCulling( false );
+  }
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),

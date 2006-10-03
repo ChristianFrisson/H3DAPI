@@ -139,7 +139,6 @@ SuperShape::SuperShape(
 void SuperShape::render() {
   X3DGeometryNode::render();
 
-  useBackFaceCulling( true );
   //glEnable( GL_COLOR_MATERIAL );
 
   float long_step =  2 * 3.14159f / resolution->getValue();
@@ -260,6 +259,7 @@ void SuperShape::render() {
 
 #ifdef USE_HAPTICS
 void SuperShape::traverseSG( TraverseInfo &ti ) {
+  useBackFaceCulling( true );
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( 

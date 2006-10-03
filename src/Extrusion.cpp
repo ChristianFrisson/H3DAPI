@@ -442,13 +442,6 @@ void Extrusion::render() {
 				glFrontFace( GL_CW );
 		}
 
-		// enable backface culling if solid is true
-		if( solid->getValue() ) {
-			glCullFace( GL_BACK );
-      useBackFaceCulling( true );
-		} else
-      useBackFaceCulling( false );
-
 		// check if the spine is closed
 		if( coinc( spineVectors.front(), spineVectors.back() ) )
 			closedSpine = true;
@@ -1342,6 +1335,10 @@ void Extrusion::SFBound::update() {
 
 #ifdef USE_HAPTICS
 void Extrusion::traverseSG( TraverseInfo &ti ) {
+  // enable backface culling if solid is true
+  if( solid->getValue() ) useBackFaceCulling( true );
+  else useBackFaceCulling( false );
+
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( 

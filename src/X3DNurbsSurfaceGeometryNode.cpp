@@ -331,14 +331,6 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 
 		glEnable( GL_AUTO_NORMAL );
 
-		// enable backface culling if solid is true
-		if( solid->getValue() ) {
-      useBackFaceCulling( true );
-			glCullFace( GL_BACK );
-		} 
-		else
-      useBackFaceCulling( false );
-
 		gluNurbsProperty( nurbs_object, GLU_DISPLAY_MODE, GLU_FILL );
 		gluBeginSurface( nurbs_object );
 
@@ -369,4 +361,13 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 		if( texKnotV != NULL )
 			delete [] texKnotV;
 	}
+}
+
+void X3DNurbsSurfaceGeometryNode::traverseSG( TraverseInfo &ti ) {
+  if( solid->getValue() ) {
+    useBackFaceCulling( true );
+  } else {
+    useBackFaceCulling( false );
+  }
+  X3DParametricGeometryNode::traverseSG( ti );
 }

@@ -72,12 +72,6 @@ Rectangle2D::Rectangle2D( Inst< SFNode      > _metadata,
 }
 
 void Rectangle2D::render() {
-  if( solid->getValue() ) {
-    glCullFace( GL_BACK );
-    useBackFaceCulling( true );
-  } else {
-    useBackFaceCulling( false );
-  }
   H3DFloat half_x = size->getValue().x / 2;
   H3DFloat half_y = size->getValue().y / 2;
   
@@ -99,6 +93,10 @@ void Rectangle2D::render() {
 
 #ifdef USE_HAPTICS
 void Rectangle2D::traverseSG( TraverseInfo &ti ) {
+  // use backface culling if solid is true
+  if( solid->getValue() ) useBackFaceCulling( true );
+  else useBackFaceCulling( false );
+
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( 

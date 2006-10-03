@@ -311,14 +311,6 @@ void Text::render() {
     static_cast< X3DFontStyleNode * >( fontStyle->getValue() );
  
   if( font ) {
-    // enable backface culling if solid is true
-    if( solid->getValue() ) {
-      useBackFaceCulling( true );
-      glCullFace( GL_BACK );
-    } else {
-      useBackFaceCulling( false );
-    }
-    
     // we will make changes to the transformation matrices so we save
     // the current matrices.
     glPushMatrix();
@@ -396,6 +388,10 @@ void Text::DisplayList::callList( bool build_list ) {
 
 #ifdef USE_HAPTICS
 void Text::traverseSG( TraverseInfo &ti ) {
+  // use backface culling if solid is true
+  if( solid->getValue() ) useBackFaceCulling( true );
+  else useBackFaceCulling( false );
+
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( 

@@ -153,14 +153,6 @@ void IndexedFaceSet::render() {
 
   // we need coordinates to render 
   if( coords ) {
-    // enable backface culling if solid is true
-    if( solid->getValue() ) {
-      useBackFaceCulling( true );
-      glCullFace( GL_BACK );
-    } else {
-      useBackFaceCulling( false );
-    }
-    
     // no X3DTextureCoordinateNode, so we generate texture coordinates
     // based on the bounding box according to the X3D specification.
     if( !tex_coords_per_vertex )
@@ -531,6 +523,10 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
 
 #ifdef USE_HAPTICS
 void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
+  // use backface culling if solid is true
+  if( solid->getValue() ) useBackFaceCulling( true );
+  else useBackFaceCulling( false );
+
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
 #ifdef HAVE_OPENHAPTICS
     ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
