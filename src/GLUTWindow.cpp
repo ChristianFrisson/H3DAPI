@@ -128,10 +128,13 @@ void GLUTWindow::initWindow() {
   // set up GLUT callback functions
   glutDisplayFunc ( GLUTWindowInternals::displayFunc  );
   glutReshapeFunc ( GLUTWindowInternals::reshapeFunc  );
+  // Only if FREEGLUT and WIN32 is defined the H3DWindowsNode callback is used
+#if !( defined(FREEGLUT) && defined(WIN32) )
   glutKeyboardFunc( X3DKeyDeviceSensorNode::glutKeyboardDownCallback );
   glutSpecialFunc( X3DKeyDeviceSensorNode::glutSpecialDownCallback );
   glutKeyboardUpFunc( X3DKeyDeviceSensorNode::glutKeyboardUpCallback );
   glutSpecialUpFunc( X3DKeyDeviceSensorNode::glutSpecialUpCallback );
+#endif
   glutMouseFunc( MouseSensor::glutMouseCallback );
   glutMotionFunc( MouseSensor::glutMotionCallback );
   glutPassiveMotionFunc( MouseSensor::glutMotionCallback );
@@ -139,7 +142,15 @@ void GLUTWindow::initWindow() {
   glutMouseWheelFunc( MouseSensor::glutMouseWheelCallback );
   glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, 
                  GLUT_ACTION_GLUTMAINLOOP_RETURNS );
-#endif    
+#if WIN32
+  // Subclassing this window. Seems to work as it should.
+  // It seems to work even if two GLUTWindow instances
+  // are created but this may be system dependent.
+  hWnd = FindWindow( "FREEGLUT", "H3D" );
+  wpOrigProc = (WNDPROC) SetWindowLong(hWnd, 
+                GWL_WNDPROC, (LONG) WindowProc);
+#endif
+#endif
 }
 
 

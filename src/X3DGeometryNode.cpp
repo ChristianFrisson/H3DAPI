@@ -146,12 +146,17 @@ void HLCALLBACK X3DGeometryNode::touchCallback( HLenum event,
   // fields.
   X3DGeometryNode::motionCallback( event, object, thread, cache, userdata );
 
-  if( device_index > (int)geometry->isTouched->size() -1 )
-    geometry->isTouched->resize( device_index + 1, false, geometry->id );
-  
-  geometry->isTouched->setValue( device_index, 
-                                 true,  
+ if( device_index > (int)geometry->isTouched->size() -1 ) {
+    vector< bool > tempIsTouched = geometry->isTouched->getValue();
+    tempIsTouched.resize( device_index + 1, false );
+    tempIsTouched[device_index] = true;
+    geometry->isTouched->setValue( tempIsTouched,  
                                  geometry->id );  
+  }
+  else   
+    geometry->isTouched->setValue( device_index, 
+                                 true,  
+                                 geometry->id );
 }
 
 void HLCALLBACK X3DGeometryNode::untouchCallback( HLenum event,
