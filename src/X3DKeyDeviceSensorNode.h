@@ -91,6 +91,29 @@ namespace H3D {
     static void glutSpecialUpCallback( int key, 
                                        int x, int y );
 
+    virtual void keyboardDown( int key, bool special_key ) = 0;
+
+    virtual void keyboardUp( int key, bool special_key ) = 0;
+
+    /// Call this function from a window whenever the window get a 
+    /// character event
+    static void keyboardDownCallback( unsigned char key );
+
+    /// Call this function from a window whenever the window get a key event.
+    static void keyboardSpecialDownCallback( int key );
+    
+    /// Call this function from a window whenever the window get a 
+    /// character event
+    static void keyboardUpCallback( unsigned char key );    
+
+    /// Call this function from a window whenever the window get a key event.
+    static void keyboardSpecialUpCallback( int key );
+
+#ifdef WIN32
+    /// Handle key messages
+    static void keyMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+#endif
+
   private:
     /// The instances of X3DKeyDeviceSensorNode that has been created.
     static list< X3DKeyDeviceSensorNode * > instances;  

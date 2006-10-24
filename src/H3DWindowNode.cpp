@@ -52,6 +52,10 @@
 
 #include <GL/glew.h>
 
+#ifdef WIN32
+#include "X3DKeyDeviceSensorNode.h"
+#endif
+
 using namespace H3D;
 
 
@@ -108,12 +112,16 @@ H3DWindowNode::H3DWindowNode(
   type_name = "H3DWindowNode";
   database.initFields( this );
 
+  windowInstance = GetModuleHandle( NULL );
+
   width->setValue( 800 );
   height->setValue( 600 );
   fullscreen->setValue( false );
   mirrored->setValue( false );
   renderMode->setValue( "MONO" );
   time->setValue( TimeStamp::now() );
+
+  wpOrigProc = (WNDPROC)DefWindowProc;
 
   windows.insert( this );
 }
@@ -938,3 +946,67 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
                              H3D_FULL_LOCATION );
   }
 }
+
+#ifdef WIN32
+// The following callback and message function is not used
+// unless you make your own subclass to H3DWindowNode
+// that uses Windows window handling. The intent is that
+// this code should be used no matter if you use
+// an external window such as GLUT.
+LRESULT CALLBACK H3DWindowNode::WindowProc(HWND _hWnd, 
+                                           UINT uMsg, 
+                                           WPARAM wParam, 
+                                           LPARAM lParam)
+{
+  // Find this window instance
+  H3DWindowNode *thisWindow = 0;
+  for( set< H3DWindowNode *>::iterator pos = windows.begin();
+    pos != windows.end();
+    pos++ ) {
+    if( (*pos)->hWnd == _hWnd )
+      thisWindow = *pos;
+  }
+
+  // If we have a window call Message otherwise call
+  // the default window procedure.
+  if( thisWindow ) {
+    return thisWindow->Message(_hWnd, uMsg, wParam, lParam);
+  }
+  return DefWindowProc(_hWnd, uMsg, wParam, lParam);
+}
+
+// Message Handler
+LRESULT H3DWindowNode::Message(HWND _hWnd,
+                               UINT uMsg,
+                               WPARAM wParam,
+                               LPARAM lParam)
+{  
+  // Evaluate Window Message
+	switch (uMsg)
+	{    
+    case WM_SYSCOMMAND:				// Intercept System Commands
+      // Check System Calls (according to msdn the & with 0xFFF0
+      // is needed to obtain the correct result)
+			switch (wParam & 0xFFF0)
+			{
+        case SC_KEYMENU:
+          // If the Window does not have a menu
+          // then we do not want the default behaviour for SC_KEYMENU
+          // cause that means that the keySensor does not
+          // register buttons which do not generate characters.
+          // Therefore we return if there is no menu.
+          HMENU theMenu = GetMenu( _hWnd );
+          if( !theMenu )
+            return 0;
+        break;
+			}
+		break;
+  }
+  // Process keymessages, this function does not return any value.
+  X3DKeyDeviceSensorNode::keyMessage(uMsg, wParam, lParam );
+
+  // Call the original windows Procedure.
+	return CallWindowProc(wpOrigProc, _hWnd, uMsg, 
+        wParam, lParam); 
+}
+#endif

@@ -130,6 +130,12 @@ namespace H3D {
                                    int modifiers,
                                    bool special_key );
 
+    /// Function called when key is pressed. 
+    virtual void keyboardDown( int key, bool special_key );
+
+    /// Function called when key is released. 
+    virtual void keyboardUp( int key, bool special_key );
+
     /// The actionKeyPress fields contains an integer that specifies
     /// which action key was the last one to be pressed. Info on the
     /// values can be found in the 

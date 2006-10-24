@@ -218,14 +218,36 @@ namespace H3D {
     HGLRC getRenderingContext() {
       return rendering_context;
     }
+
+    /// Class Conversion Operator For Window Handle 
+    /// (H3DWindowNode Can Be Used As A Window Handle)
+    operator HWND() { return hWnd; }
 #endif
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   protected:
 #ifdef WIN32
     HGLRC rendering_context;
+    HWND	hWnd;
+    HINSTANCE windowInstance;
+
+    // WindowProc calls the Window Procedure stored in wpOrigProc
+    // Default is DefWindowProc
+    WNDPROC wpOrigProc;
+
+    /// Whenever a subclass to H3DWindowNode is created
+    /// this callback is a subclass callback. The only function
+    /// of this callback is to send the right events to KeySensor.
+    /// When the events are processed it calls the Window Procedure
+    /// stored in wpOrigProc.
+    static LRESULT CALLBACK WindowProc(HWND _hWnd, UINT uMsg, 
+                                       WPARAM wParam, LPARAM lParam);
+    /// Handles messages. Called by WindowProc.
+    LRESULT	Message(HWND _hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
+
     /// If multi pass transparency is set to true the scene will be rendered
     /// three times graphically, once for all solid objects, once for the back
     /// side of transparent objects and once for the front face of 
