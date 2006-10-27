@@ -112,7 +112,9 @@ H3DWindowNode::H3DWindowNode(
   type_name = "H3DWindowNode";
   database.initFields( this );
 
+#ifdef WIN32
   windowInstance = GetModuleHandle( NULL );
+#endif
 
   width->setValue( 800 );
   height->setValue( 600 );
@@ -121,7 +123,9 @@ H3DWindowNode::H3DWindowNode(
   renderMode->setValue( "MONO" );
   time->setValue( TimeStamp::now() );
 
+#ifdef WIN32
   wpOrigProc = (WNDPROC)DefWindowProc;
+#endif
 
   windows.insert( this );
 }
