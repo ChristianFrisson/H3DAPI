@@ -465,7 +465,9 @@ int main(int argc, char* argv[]) {
 
   catch (const Exception::H3DException &e) {
     Console(4) << e << endl;
+    return 1;
   }
 
+  return 0;
 }
 
