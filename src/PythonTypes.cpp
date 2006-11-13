@@ -631,8 +631,8 @@ self, name, field_type, access_type )" );
   };
   
   static PyMemberDef PyVec2d_members[] = {
-    {"x", T_FLOAT, offsetof(PyVec2d, x), 0,"x"},
-    {"y", T_FLOAT, offsetof(PyVec2d, y), 0,"y"},
+    {"x", T_DOUBLE, offsetof(PyVec2d, x), 0,"x"},
+    {"y", T_DOUBLE, offsetof(PyVec2d, y), 0,"y"},
     {NULL}  /* Sentinel */
   };
   
@@ -1029,9 +1029,9 @@ self, name, field_type, access_type )" );
   };
   
   static PyMemberDef PyVec3d_members[] = {
-    {"x", T_FLOAT, offsetof(PyVec3d, x), 0,"x"},
-    {"y", T_FLOAT, offsetof(PyVec3d, y), 0,"y"},
-    {"z", T_FLOAT, offsetof(PyVec3d, z), 0,"z"},
+    {"x", T_DOUBLE, offsetof(PyVec3d, x), 0,"x"},
+    {"y", T_DOUBLE, offsetof(PyVec3d, y), 0,"y"},
+    {"z", T_DOUBLE, offsetof(PyVec3d, z), 0,"z"},
     {NULL}  /* Sentinel */
   };
   
@@ -1370,10 +1370,10 @@ self, name, field_type, access_type )" );
   };
   
   static PyMemberDef PyVec4d_members[] = {
-    {"x", T_FLOAT, offsetof(PyVec4d, x), 0,"x"},
-    {"y", T_FLOAT, offsetof(PyVec4d, y), 0,"y"},
-    {"z", T_FLOAT, offsetof(PyVec4d, z), 0,"z"},
-    {"w", T_FLOAT, offsetof(PyVec4d, w), 0,"w"},
+    {"x", T_DOUBLE, offsetof(PyVec4d, x), 0,"x"},
+    {"y", T_DOUBLE, offsetof(PyVec4d, y), 0,"y"},
+    {"z", T_DOUBLE, offsetof(PyVec4d, z), 0,"z"},
+    {"w", T_DOUBLE, offsetof(PyVec4d, w), 0,"w"},
     {NULL}  /* Sentinel */
   };
   
