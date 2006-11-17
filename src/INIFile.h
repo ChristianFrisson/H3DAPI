@@ -43,12 +43,12 @@ namespace H3D {
     INIFile( std::istream& in );
     
     // Get a value as a string.
-    std::string INIFile::get( std::string group, 
-                              std::string name ) const;
+    std::string get( std::string group, 
+                     std::string name ) const;
 
     // Get a value as a boolean
-    bool INIFile::getBoolean( std::string group, 
-                              std::string name ) const;
+    bool getBoolean( std::string group, 
+                     std::string name ) const;
 
     // Check if a value exists.
     bool hasOption( std::string group, 

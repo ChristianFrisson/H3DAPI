@@ -45,7 +45,7 @@ namespace H3D {
 
 #ifdef USE_HAPTICS
     /// Adds a HapticForceField effect to the TraverseInfo.
-    virtual void ForceField::traverseSG( TraverseInfo &ti ) {
+    virtual void traverseSG( TraverseInfo &ti ) {
       if( ti.hapticsEnabled() ) {
         ti.addForceEffectToAll( new HapticForceField( ti.getAccForwardMatrix(),
                                                       force->getValue(),
