@@ -58,9 +58,11 @@ Color::Color(
 /// Perform the OpenGL commands to render all verties as a vertex
 /// array.
 void Color::renderArray() {
-  glEnableClientState(GL_COLOR_ARRAY);
-  glColorPointer(3, GL_FLOAT, 0,
+  if( !color->empty() ) {
+    glEnableClientState(GL_COLOR_ARRAY);
+    glColorPointer(3, GL_FLOAT, 0,
                   &(*color->begin()) );
+  }
 }
 
 /// Disable the array state enabled in renderArray().

@@ -58,9 +58,11 @@ ColorRGBA::ColorRGBA(
 /// Perform the OpenGL commands to render all verties as a vertex
 /// array.
 void ColorRGBA::renderArray() {
-  glEnableClientState(GL_COLOR_ARRAY);
-  glColorPointer(4, GL_FLOAT, 0,
+  if( !color->empty() ) {
+    glEnableClientState(GL_COLOR_ARRAY);
+    glColorPointer(4, GL_FLOAT, 0,
                   &(*color->begin()) );
+  }
 }
 
 /// Disable the array state enabled in renderArray().

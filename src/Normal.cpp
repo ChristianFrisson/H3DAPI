@@ -60,9 +60,11 @@ Normal::Normal(
 /// Perform the OpenGL commands to render all verties as a vertex
 /// array.
 void Normal::renderArray() {
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glNormalPointer( GL_FLOAT, 0,
+  if( !vector->empty() ) {
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glNormalPointer( GL_FLOAT, 0,
                    &(*vector->begin()) );
+  }
 }
 
 /// Disable the array state enabled in renderArray().

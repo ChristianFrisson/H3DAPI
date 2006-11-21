@@ -47,6 +47,32 @@ namespace H3D {
   /// 
   class H3DAPI_API X3DKeyDeviceSensorNode : public X3DSensorNode {
   public:
+
+    typedef enum {
+      F1    = 1,
+      F2    = 2,
+      F3    = 3,
+      F4    = 4,
+      F5    = 5,
+      F6    = 6,
+      F7    = 7,
+      F8    = 8,
+      F9    = 9,
+      F10   = 10,
+      F11   = 11,
+      F12   = 12,
+      HOME  = 13,
+      END   = 14,
+      PGUP  = 15,
+      PGDN  = 16,
+      UP    = 17,
+      DOWN  = 18,
+      LEFT  = 19,
+      RIGHT = 20,
+	    ALT = 21,
+	    CONTROL = 22,
+	    SHIFT = 23
+    } ActionKeys;
     
     /// Constructor. 
     X3DKeyDeviceSensorNode( Inst< SFBool > _enabled  = 0,
@@ -58,41 +84,13 @@ namespace H3D {
     /// Virtual function called when a key is pressed.
     /// \param key The value of the key pressed, either ascii character
     /// or function key value depending on special_key argument. 
-    /// See KeyDevice.cpp for example usage.
-    /// \param modifiers State of modifier keys (alt, shift, ctrl)
     /// \param special_key true if function key is pressed, false otherwise
-    virtual void glutKeyboardUp( int key, 
-                                 int modifiers, 
-                                 bool special_key ) = 0;
-
-    /// Virtual function called when a key is released.
-    /// \param key he value of the key pressed, either ascii character
-    /// or function key value depending on special_key argument. 
-    /// See KeyDevice.cpp for example usage.
-    /// \param modifiers State of modifier keys (alt, shift, ctrl)
-    /// \param special_key true if function key is pressed, false otherwise
-    virtual void glutKeyboardDown( int key, 
-                                   int modifiers, 
-                                   bool special_key ) = 0;
-
-    /// GLUT callback function for glutKeyboardFunc.
-    static void glutKeyboardDownCallback( unsigned char key, 
-                                          int x, int y );
-    
-    /// GLUT callback function for glutSpecialFunc.
-    static void glutSpecialDownCallback( int key, 
-                                         int x, int y );
-
-    /// GLUT callback function for glutKeyboardUpFunc.
-    static void glutKeyboardUpCallback( unsigned char key, 
-                                          int x, int y );
-    
-    /// GLUT callback function for glutSpecialUpFunc.
-    static void glutSpecialUpCallback( int key, 
-                                       int x, int y );
-
     virtual void keyboardDown( int key, bool special_key ) = 0;
 
+    /// Virtual function called when a key is released.
+    /// \param key The value of the key pressed, either ascii character
+    /// or function key value depending on special_key argument. 
+    /// \param special_key true if function key is pressed, false otherwise
     virtual void keyboardUp( int key, bool special_key ) = 0;
 
     /// Call this function from a window whenever the window get a 
@@ -108,11 +106,6 @@ namespace H3D {
 
     /// Call this function from a window whenever the window get a key event.
     static void keyboardSpecialUpCallback( int key );
-
-#ifdef WIN32
-    /// Handle key messages
-    static void keyMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-#endif
 
   private:
     /// The instances of X3DKeyDeviceSensorNode that has been created.

@@ -76,6 +76,24 @@ namespace H3D {
       return window_id;
     }
 
+#if !( defined(FREEGLUT) && defined(WIN32) )
+    /// GLUT callback function for glutKeyboardFunc.
+    static void glutKeyboardDownCallback( unsigned char key, 
+                                          int x, int y );
+    
+    /// GLUT callback function for glutSpecialFunc.
+    static void glutSpecialDownCallback( int key, 
+                                         int x, int y );
+
+    /// GLUT callback function for glutKeyboardUpFunc.
+    static void glutKeyboardUpCallback( unsigned char key, 
+                                          int x, int y );
+    
+    /// GLUT callback function for glutSpecialUpFunc.
+    static void glutSpecialUpCallback( int key, 
+                                       int x, int y );
+#endif
+
     /// Initialize GLUT. 
     static void initGLUT();
     

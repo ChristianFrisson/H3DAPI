@@ -141,6 +141,26 @@ namespace H3D {
     /// This function is called when the window has to redraw itself.
     virtual void display();
 
+    /// This function should be called by a window when a key is pressed.
+	/// When special is true the key is a special key 
+	/// enumerated in X3DKeyDeviceSensorNode.h
+	/// The window handles the translation from its internal 
+	/// behaviour to ASCII and the special numbers.
+    /// \param key Specifies the key that is pressed.
+    /// \param special True when the key is a special key, and
+    /// false when it is not.
+    virtual void onKeyDown( int key, bool special );
+
+    /// This function should be called by a window when a key is released.
+    /// When special is true the key is a special key 
+	/// enumerated in X3DKeyDeviceSensorNode.h
+    /// The window handles the translation from its internal 
+	/// behaviour to ASCII and the special numbers.
+    /// \param key Specifies the key that is released
+    /// \param special True when the key is a special key, and
+    /// false when it is not.
+    virtual void onKeyUp( int key, bool special );
+
     /// Calculate the far and near clipping planes from the bounding
     /// box of a X3DChildNode. The far and near planes will be calculated
     /// on contain the node but nothing else. Requires the bounding box 

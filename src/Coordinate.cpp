@@ -58,9 +58,11 @@ Coordinate::Coordinate(
 /// Perform the OpenGL commands to render all verties as a vertex
 /// array.
 void Coordinate::renderArray() {
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(3, GL_FLOAT, 0,
-                  &(*point->begin()) );
+  if( !point->empty() ) {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0,
+                    &(*point->begin()) );
+  }
 }
 
 /// Disable the array state enabled in renderAttay().

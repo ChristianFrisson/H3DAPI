@@ -80,14 +80,16 @@ void FloatVertexAttribute::render( int value_index ) {
 /// Perform the OpenGL commands to set the vertex attributes
 /// as a an vertex attribute array.
 void FloatVertexAttribute::renderArray() {
-  if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
-    glEnableVertexAttribArrayARB( attrib_index );
-    glVertexAttribPointerARB( attrib_index,
-			      numComponents->getValue(),
-			      GL_FLOAT,
-			      GL_FALSE,
-			      0,
-			      &(*value->begin() ) );
+  if( !value->empty() ) {
+    if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
+      glEnableVertexAttribArrayARB( attrib_index );
+      glVertexAttribPointerARB( attrib_index,
+        numComponents->getValue(),
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        &(*value->begin() ) );
+    }
   }
 }
 

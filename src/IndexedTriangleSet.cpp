@@ -103,7 +103,7 @@ void IndexedTriangleSet::render() {
   bool tex_coords_per_vertex = tex_coord_node && !tex_coord_gen;
   const vector< int > &indices  = index->getValue();
  
-  if( coordinate_node ) {
+  if( coordinate_node && !indices.empty() ) {
     
     // no X3DTextureCoordinateNode, so we generate texture coordinates
     // based on the bounding box according to the X3D specification.

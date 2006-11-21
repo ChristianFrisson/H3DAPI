@@ -67,20 +67,24 @@ void TextureCoordinate4D::renderForTextureUnit( int index,
 }
 
 void TextureCoordinate4D::renderArray() {
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glTexCoordPointer(4, GL_FLOAT, 0,
-                    &(*point->begin()) );
+  if( !point->empty() ) {
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(4, GL_FLOAT, 0,
+                      &(*point->begin()) );
+  }
 }
 
 
 void TextureCoordinate4D::renderArrayForTextureUnit( unsigned int texture_unit ) {
-  GLint saved_texture;
-  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
-  glClientActiveTexture( GL_TEXTURE0_ARB + texture_unit );
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glTexCoordPointer(4, GL_FLOAT, 0,
-                    &(*point->begin()) );
-  glClientActiveTexture( saved_texture );
+  if( !point->empty() ) {
+    GLint saved_texture;
+    glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
+    glClientActiveTexture( GL_TEXTURE0_ARB + texture_unit );
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(4, GL_FLOAT, 0,
+                      &(*point->begin()) );
+    glClientActiveTexture( saved_texture );
+  }
 }
 
 /// Disable the array state enabled in renderAttay().

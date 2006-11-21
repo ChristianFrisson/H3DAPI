@@ -84,28 +84,6 @@ namespace H3D {
   /// hierarchy.
   class H3DAPI_API KeySensor : public X3DKeyDeviceSensorNode {
   public:
-    typedef enum {
-      F1    = 1,
-      F2    = 2,
-      F3    = 3,
-      F4    = 4,
-      F5    = 5,
-      F6    = 6,
-      F7    = 7,
-      F8    = 8,
-      F9    = 9,
-      F10   = 10,
-      F11   = 11,
-      F12   = 12,
-      HOME  = 13,
-      END   = 14,
-      PGUP  = 15,
-      PGDN  = 16,
-      UP    = 17,
-      DOWN  = 18,
-      LEFT  = 19,
-      RIGHT = 20
-    } ActionKeys;
 
     /// Constructor.
     KeySensor( Inst< SFBool>  _enabled  = 0,
@@ -119,16 +97,6 @@ namespace H3D {
                Inst<  SFString>  _keyPress = 0,
                Inst<  SFString>  _keyRelease = 0
                );
-
-    /// Function called when key is released. 
-    virtual void glutKeyboardUp( int stroke, 
-                                 int modifiers, 
-                                 bool special_key );
-
-    /// Function called when key is released.
-    virtual void glutKeyboardDown( int stroke, 
-                                   int modifiers,
-                                   bool special_key );
 
     /// Function called when key is pressed. 
     virtual void keyboardDown( int key, bool special_key );
