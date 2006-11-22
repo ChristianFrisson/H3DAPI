@@ -91,29 +91,7 @@ MouseSensor::~MouseSensor() {
   instances.remove( this );
 }
 
-void MouseSensor::addGLUTMouseButtonAction( int button, int state ) { 
-  switch( button ) {
-  case GLUT_LEFT_BUTTON:
-    leftButton->setValue( state == GLUT_DOWN, id );
-    break;
-  case GLUT_RIGHT_BUTTON:
-    rightButton->setValue( state == GLUT_DOWN, id );
-    break;
-  case GLUT_MIDDLE_BUTTON:
-    middleButton->setValue( state == GLUT_DOWN, id );
-    break;
-  }
-}
-
-void MouseSensor::addGLUTMouseWheelAction( int wheel, int direction ) { 
-  if( direction == 1 ) {
-    scrollUp->setValue( true, id );
-  } else {
-    scrollDown->setValue( true, id );
-  }
-}
-
-void MouseSensor::addGLUTMouseMotionAction( int x, int y ) { 
+void MouseSensor::mouseMotionAction( int x, int y ) {
   const Vec2f &last_pos = position->getValue();
   Vec2f new_pos = Vec2f( (H3DFloat) x, (H3DFloat) y );
   Vec2f diff = new_pos - last_pos;
@@ -123,28 +101,48 @@ void MouseSensor::addGLUTMouseMotionAction( int x, int y ) {
   }
 }
 
-void MouseSensor::glutMouseCallback( int button, int state,
-                                     int x, int y ) {
-  for( list< MouseSensor * >::iterator i = instances.begin();
-       i != instances.end();
-       i++ ) {
-    (*i)->addGLUTMouseButtonAction( button, state );
+void MouseSensor::mouseButtonAction( int button, int state ) {
+  switch( button ) {
+    case LEFT_BUTTON:
+      leftButton->setValue( state == DOWN, id );
+    break;
+    case MIDDLE_BUTTON:
+      middleButton->setValue( state == DOWN, id );
+    break;
+    case RIGHT_BUTTON:
+      rightButton->setValue( state == DOWN, id );
+    break;
   }
 }
 
-void MouseSensor::glutMotionCallback( int x, int y ) {
-  for( list< MouseSensor * >::iterator i = instances.begin();
-       i != instances.end();
-       i++ ) {
-    (*i)->addGLUTMouseMotionAction( x, y );
+void MouseSensor::mouseWheelAction( int direction ) {
+  if( direction == FROM ) {
+    scrollUp->setValue( true, id );
+  } else if( direction == TOWARDS ) {
+    scrollDown->setValue( true, id );
   }
 }
 
-void MouseSensor::glutMouseWheelCallback( int wheel, int direction,
-                                          int x, int y ) {
+void MouseSensor::buttonCallback( int button, int state ) {
   for( list< MouseSensor * >::iterator i = instances.begin();
        i != instances.end();
        i++ ) {
-    (*i)->addGLUTMouseWheelAction( wheel, direction );
+    (*i)->mouseButtonAction( button, state );
+  }
+}
+    
+void MouseSensor::motionCallback( int x, int y ) {
+  for( list< MouseSensor * >::iterator i = instances.begin();
+       i != instances.end();
+       i++ ) {
+    (*i)->mouseMotionAction( x, y );
+  }
+}
+
+void MouseSensor::wheelCallback( int direction ) {
+  for( list< MouseSensor * >::iterator i = instances.begin();
+       i != instances.end();
+       i++ ) {
+    (*i)->mouseWheelAction( direction );
   }
 }

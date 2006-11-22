@@ -94,6 +94,25 @@ namespace H3D {
                                        int x, int y );
 #endif
 
+#ifndef WIN32
+    /// glut callback function. Calls onMouseButtonAction with the
+    /// button and state translated to the enumerated values in KeySensor.h
+    static void glutMouseCallback( int button, int state, 
+                                   int x, int y );
+    
+    /// glut callback function. Calls onMouseMotionAction
+    static void glutMotionCallback( int x, int y );
+#endif
+
+#if defined(FREEGLUT) && !defined(WIN32)
+    /// glut callback function for mouse scroll wheel.
+    /// Calls onMouseWheelAction with direction translated to the
+    /// values in KeySensor.h
+    static void glutMouseWheelCallback( int wheel, 
+                                        int direction, int x, int y );
+#endif
+
+
     /// Initialize GLUT. 
     static void initGLUT();
     
@@ -105,5 +124,4 @@ namespace H3D {
     int window_id;
   };
 }
-
 #endif

@@ -32,7 +32,9 @@
 #if !( defined(FREEGLUT) && defined(WIN32) )
 #include "X3DKeyDeviceSensorNode.h"
 #endif
+#ifndef WIN32
 #include "MouseSensor.h"
+#endif
 #include <GL/glew.h>
 #ifdef MACOSX
 #include <GLUT/glut.h>
@@ -137,14 +139,18 @@ void GLUTWindow::initWindow() {
   glutKeyboardUpFunc( glutKeyboardUpCallback );
   glutSpecialUpFunc( glutSpecialUpCallback );
 #endif
-  glutMouseFunc( MouseSensor::glutMouseCallback );
-  glutMotionFunc( MouseSensor::glutMotionCallback );
-  glutPassiveMotionFunc( MouseSensor::glutMotionCallback );
+#ifndef WIN32
+  glutMouseFunc( glutMouseCallback );
+  glutMotionFunc( glutMotionCallback );
+  glutPassiveMotionFunc( glutMotionCallback );
+#endif
 #ifdef FREEGLUT
-  glutMouseWheelFunc( MouseSensor::glutMouseWheelCallback );
+#ifndef WIN32
+  glutMouseWheelFunc( glutMouseWheelCallback );
+#endif
   glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, 
                  GLUT_ACTION_GLUTMAINLOOP_RETURNS );
-#if WIN32
+#ifdef WIN32
   // Subclassing this window. Seems to work as it should.
   // It seems to work even if two GLUTWindow instances
   // are created but this may be system dependent.
@@ -195,26 +201,56 @@ void GLUTWindow::glutSpecialDownCallback( int key,
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     switch( key ) {
-      case GLUT_KEY_F1: window->onKeyDown( X3DKeyDeviceSensorNode::F1, true ); break;
-      case GLUT_KEY_F2: window->onKeyDown( X3DKeyDeviceSensorNode::F2, true ); break;
-      case GLUT_KEY_F3: window->onKeyDown( X3DKeyDeviceSensorNode::F3, true ); break;
-      case GLUT_KEY_F4: window->onKeyDown( X3DKeyDeviceSensorNode::F4, true ); break;
-      case GLUT_KEY_F5: window->onKeyDown( X3DKeyDeviceSensorNode::F5, true ); break;
-      case GLUT_KEY_F6: window->onKeyDown( X3DKeyDeviceSensorNode::F6, true ); break;
-      case GLUT_KEY_F7: window->onKeyDown( X3DKeyDeviceSensorNode::F7, true ); break;
-      case GLUT_KEY_F8: window->onKeyDown( X3DKeyDeviceSensorNode::F8, true ); break;
-      case GLUT_KEY_F9: window->onKeyDown( X3DKeyDeviceSensorNode::F9, true ); break;
-      case GLUT_KEY_F10: window->onKeyDown( X3DKeyDeviceSensorNode::F10, true ); break;
-      case GLUT_KEY_F11: window->onKeyDown( X3DKeyDeviceSensorNode::F11, true ); break;
-      case GLUT_KEY_F12: window->onKeyDown( X3DKeyDeviceSensorNode::F12, true ); break;
-      case GLUT_KEY_HOME: window->onKeyDown( X3DKeyDeviceSensorNode::HOME, true ); break;
-      case GLUT_KEY_END: window->onKeyDown( X3DKeyDeviceSensorNode::END, true ); break;
-      case GLUT_KEY_PAGE_UP: window->onKeyDown( X3DKeyDeviceSensorNode::PGUP, true ); break;
-      case GLUT_KEY_PAGE_DOWN: window->onKeyDown( X3DKeyDeviceSensorNode::PGDN, true ); break;
-      case GLUT_KEY_UP: window->onKeyDown( X3DKeyDeviceSensorNode::UP, true ); break;
-      case GLUT_KEY_DOWN: window->onKeyDown( X3DKeyDeviceSensorNode::DOWN, true ); break;
-      case GLUT_KEY_LEFT: window->onKeyDown( X3DKeyDeviceSensorNode::LEFT, true ); break;
-      case GLUT_KEY_RIGHT: window->onKeyDown( X3DKeyDeviceSensorNode::RIGHT, true ); break;
+      case GLUT_KEY_F1: window->onKeyDown( X3DKeyDeviceSensorNode::F1, true );
+        break;
+      case GLUT_KEY_F2: window->onKeyDown( X3DKeyDeviceSensorNode::F2, true );
+        break;
+      case GLUT_KEY_F3: window->onKeyDown( X3DKeyDeviceSensorNode::F3, true );
+        break;
+      case GLUT_KEY_F4: window->onKeyDown( X3DKeyDeviceSensorNode::F4, true );
+        break;
+      case GLUT_KEY_F5: window->onKeyDown( X3DKeyDeviceSensorNode::F5, true );
+        break;
+      case GLUT_KEY_F6: window->onKeyDown( X3DKeyDeviceSensorNode::F6, true );
+        break;
+      case GLUT_KEY_F7: window->onKeyDown( X3DKeyDeviceSensorNode::F7, true );
+        break;
+      case GLUT_KEY_F8: window->onKeyDown( X3DKeyDeviceSensorNode::F8, true );
+        break;
+      case GLUT_KEY_F9: window->onKeyDown( X3DKeyDeviceSensorNode::F9, true );
+        break;
+      case GLUT_KEY_F10: window->onKeyDown( X3DKeyDeviceSensorNode::F10,
+                                            true );
+        break;
+      case GLUT_KEY_F11: window->onKeyDown( X3DKeyDeviceSensorNode::F11,
+                                            true );
+        break;
+      case GLUT_KEY_F12: window->onKeyDown( X3DKeyDeviceSensorNode::F12,
+                                            true );
+        break;
+      case GLUT_KEY_HOME: window->onKeyDown( X3DKeyDeviceSensorNode::HOME,
+                                             true );
+        break;
+      case GLUT_KEY_END: window->onKeyDown( X3DKeyDeviceSensorNode::END,
+                                            true );
+        break;
+      case GLUT_KEY_PAGE_UP: window->onKeyDown( X3DKeyDeviceSensorNode::PGUP,
+                                                true );
+        break;
+      case GLUT_KEY_PAGE_DOWN: window->onKeyDown( X3DKeyDeviceSensorNode::PGDN,
+                                                  true );
+        break;
+      case GLUT_KEY_UP: window->onKeyDown( X3DKeyDeviceSensorNode::UP, true );
+        break;
+      case GLUT_KEY_DOWN: window->onKeyDown( X3DKeyDeviceSensorNode::DOWN,
+                                             true );
+        break;
+      case GLUT_KEY_LEFT: window->onKeyDown( X3DKeyDeviceSensorNode::LEFT,
+                                             true );
+        break;
+      case GLUT_KEY_RIGHT: window->onKeyDown( X3DKeyDeviceSensorNode::RIGHT,
+                                              true );
+        break;
       default: {}
     }
   }
@@ -233,28 +269,102 @@ void GLUTWindow::glutSpecialUpCallback( int key,
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     switch( key ) {
-      case GLUT_KEY_F1: window->onKeyUp( X3DKeyDeviceSensorNode::F1, true ); break;
-      case GLUT_KEY_F2: window->onKeyUp( X3DKeyDeviceSensorNode::F2, true ); break;
-      case GLUT_KEY_F3: window->onKeyUp( X3DKeyDeviceSensorNode::F3, true ); break;
-      case GLUT_KEY_F4: window->onKeyUp( X3DKeyDeviceSensorNode::F4, true ); break;
-      case GLUT_KEY_F5: window->onKeyUp( X3DKeyDeviceSensorNode::F5, true ); break;
-      case GLUT_KEY_F6: window->onKeyUp( X3DKeyDeviceSensorNode::F6, true ); break;
-      case GLUT_KEY_F7: window->onKeyUp( X3DKeyDeviceSensorNode::F7, true ); break;
-      case GLUT_KEY_F8: window->onKeyUp( X3DKeyDeviceSensorNode::F8, true ); break;
-      case GLUT_KEY_F9: window->onKeyUp( X3DKeyDeviceSensorNode::F9, true ); break;
-      case GLUT_KEY_F10: window->onKeyUp( X3DKeyDeviceSensorNode::F10, true ); break;
-      case GLUT_KEY_F11: window->onKeyUp( X3DKeyDeviceSensorNode::F11, true ); break;
-      case GLUT_KEY_F12: window->onKeyUp( X3DKeyDeviceSensorNode::F12, true ); break;
-      case GLUT_KEY_HOME: window->onKeyUp( X3DKeyDeviceSensorNode::HOME, true ); break;
-      case GLUT_KEY_END: window->onKeyUp( X3DKeyDeviceSensorNode::END, true ); break;
-      case GLUT_KEY_PAGE_UP: window->onKeyUp( X3DKeyDeviceSensorNode::PGUP, true ); break;
-      case GLUT_KEY_PAGE_DOWN: window->onKeyUp( X3DKeyDeviceSensorNode::PGDN, true ); break;
-      case GLUT_KEY_UP: window->onKeyUp( X3DKeyDeviceSensorNode::UP, true ); break;
-      case GLUT_KEY_DOWN: window->onKeyUp( X3DKeyDeviceSensorNode::DOWN, true ); break;
-      case GLUT_KEY_LEFT: window->onKeyUp( X3DKeyDeviceSensorNode::LEFT, true ); break;
-      case GLUT_KEY_RIGHT: window->onKeyUp( X3DKeyDeviceSensorNode::RIGHT, true ); break;
+      case GLUT_KEY_F1: window->onKeyUp( X3DKeyDeviceSensorNode::F1, true );
+        break;
+      case GLUT_KEY_F2: window->onKeyUp( X3DKeyDeviceSensorNode::F2, true );
+        break;
+      case GLUT_KEY_F3: window->onKeyUp( X3DKeyDeviceSensorNode::F3, true );
+        break;
+      case GLUT_KEY_F4: window->onKeyUp( X3DKeyDeviceSensorNode::F4, true );
+        break;
+      case GLUT_KEY_F5: window->onKeyUp( X3DKeyDeviceSensorNode::F5, true );
+        break;
+      case GLUT_KEY_F6: window->onKeyUp( X3DKeyDeviceSensorNode::F6, true );
+        break;
+      case GLUT_KEY_F7: window->onKeyUp( X3DKeyDeviceSensorNode::F7, true );
+        break;
+      case GLUT_KEY_F8: window->onKeyUp( X3DKeyDeviceSensorNode::F8, true );
+        break;
+      case GLUT_KEY_F9: window->onKeyUp( X3DKeyDeviceSensorNode::F9, true );
+        break;
+      case GLUT_KEY_F10: window->onKeyUp( X3DKeyDeviceSensorNode::F10, true );
+        break;
+      case GLUT_KEY_F11: window->onKeyUp( X3DKeyDeviceSensorNode::F11, true );
+        break;
+      case GLUT_KEY_F12: window->onKeyUp( X3DKeyDeviceSensorNode::F12, true );
+        break;
+      case GLUT_KEY_HOME: window->onKeyUp( X3DKeyDeviceSensorNode::HOME,
+                                           true );
+        break;
+      case GLUT_KEY_END: window->onKeyUp( X3DKeyDeviceSensorNode::END,
+                                          true );
+        break;
+      case GLUT_KEY_PAGE_UP: window->onKeyUp( X3DKeyDeviceSensorNode::PGUP,
+                                              true );
+        break;
+      case GLUT_KEY_PAGE_DOWN: window->onKeyUp( X3DKeyDeviceSensorNode::PGDN,
+                                                true );
+        break;
+      case GLUT_KEY_UP: window->onKeyUp( X3DKeyDeviceSensorNode::UP, true );
+        break;
+      case GLUT_KEY_DOWN: window->onKeyUp( X3DKeyDeviceSensorNode::DOWN,
+                                           true );
+        break;
+      case GLUT_KEY_LEFT: window->onKeyUp( X3DKeyDeviceSensorNode::LEFT,
+                                           true );
+        break;
+      case GLUT_KEY_RIGHT: window->onKeyUp( X3DKeyDeviceSensorNode::RIGHT,
+                                            true );
+        break;
       default: {}
     }
+  }
+}
+#endif
+
+#ifndef WIN32
+void GLUTWindow::glutMouseCallback( int button, int state, 
+                                   int x, int y ) {
+  GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
+  if( window ) {
+    switch( button ) {
+      case GLUT_LEFT_BUTTON:
+        window->onMouseButtonAction( MouseSensor::LEFT_BUTTON, 
+                                     state == GLUT_DOWN ? 
+                                     MouseSensor::DOWN : MouseSensor::UP );
+        break;
+      case GLUT_MIDDLE_BUTTON:
+        window->onMouseButtonAction( MouseSensor::MIDDLE_BUTTON,
+                                     state == GLUT_DOWN ?
+                                     MouseSensor::DOWN : MouseSensor::UP );
+        break;
+      case GLUT_RIGHT_BUTTON:
+        window->onMouseButtonAction( MouseSensor::RIGHT_BUTTON,
+                                     state == GLUT_DOWN ?
+                                     MouseSensor::DOWN : MouseSensor::UP );
+        break;
+      default: {}
+    }
+  }
+}
+    
+void GLUTWindow::glutMotionCallback( int x, int y ) {
+  GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
+  if( window ) {
+    window->onMouseMotionAction( x, y );
+  }
+}
+#endif
+
+#if defined(FREEGLUT) && !defined(WIN32)
+void GLUTWindow::glutMouseWheelCallback( int wheel, 
+                                        int direction, int x, int y ) {
+  GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
+  if( window ) {
+    if( direction == 1 )
+      window->onMouseWheelAction( MouseSensor::FROM );
+    else
+      window->onMouseWheelAction( MouseSensor::TOWARDS );
   }
 }
 #endif

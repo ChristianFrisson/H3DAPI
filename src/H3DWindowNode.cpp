@@ -54,6 +54,7 @@
 
 #ifdef WIN32
 #include "X3DKeyDeviceSensorNode.h"
+#include "MouseSensor.h"
 #endif
 
 using namespace H3D;
@@ -967,6 +968,18 @@ void H3DWindowNode::onKeyUp( int key, bool special ) {
     X3DKeyDeviceSensorNode::keyboardUpCallback( key );
 }
 
+void H3DWindowNode::onMouseButtonAction( int button, int state ) {
+  MouseSensor::buttonCallback( button, state );
+}
+
+void H3DWindowNode::onMouseMotionAction( int x, int y ) {
+  MouseSensor::motionCallback( x, y );
+}
+
+void H3DWindowNode::onMouseWheelAction( int direction ) {
+  MouseSensor::wheelCallback( direction );
+}
+
 #ifdef WIN32
 // The following callback and message function is not used
 // unless you make your own subclass to H3DWindowNode
@@ -1046,7 +1059,8 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
         case VK_LEFT: onKeyDown( X3DKeyDeviceSensorNode::LEFT, true ); break;
         case VK_RIGHT: onKeyDown( X3DKeyDeviceSensorNode::RIGHT, true ); break;
         case VK_MENU: onKeyDown( X3DKeyDeviceSensorNode::ALT, true ); break;
-        case VK_CONTROL: onKeyDown( X3DKeyDeviceSensorNode::CONTROL, true ); break;
+        case VK_CONTROL: onKeyDown( X3DKeyDeviceSensorNode::CONTROL, true );
+          break;
         case VK_SHIFT: onKeyDown( X3DKeyDeviceSensorNode::SHIFT, true ); break;
         default: { }
       }
@@ -1076,7 +1090,8 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
         case VK_LEFT: onKeyUp( X3DKeyDeviceSensorNode::LEFT, true ); break;
         case VK_RIGHT: onKeyUp( X3DKeyDeviceSensorNode::RIGHT, true ); break;
         case VK_MENU: onKeyUp( X3DKeyDeviceSensorNode::ALT, true ); break;
-        case VK_CONTROL: onKeyUp( X3DKeyDeviceSensorNode::CONTROL, true ); break;
+        case VK_CONTROL: onKeyUp( X3DKeyDeviceSensorNode::CONTROL, true ); 
+          break;
         case VK_SHIFT: onKeyUp( X3DKeyDeviceSensorNode::SHIFT, true ); break;
         default: {
           int key = wParam;
@@ -1111,6 +1126,52 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
     case WM_MENUCHAR:
       if( GetKeyState( VK_MENU ) >= 0 )
         onKeyDown( wParam, false );
+    break;
+
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONDBLCLK:
+      MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
+                                      MouseSensor::DOWN );
+    break;
+
+    case WM_LBUTTONUP:
+      MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
+                                      MouseSensor::UP );
+    break;
+
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONDBLCLK:
+      MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
+                                      MouseSensor::DOWN );
+    break;
+
+    case WM_MBUTTONUP:
+      MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
+                                      MouseSensor::UP );
+    break;
+
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONDBLCLK:
+      MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
+                                      MouseSensor::DOWN );
+    break;
+
+    case WM_RBUTTONUP:
+      MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
+                                      MouseSensor::UP );
+    break;
+
+    case WM_MOUSEMOVE:
+      MouseSensor::motionCallback( LOWORD(lParam),
+                                   HIWORD(lParam) );
+    break;
+
+    // WM_MOUSEWHEEL = 0x020A not defined unless 
+    // _WIN32_WINNT or _WIN32_WINDOWS are defined before including windows.h
+    case 0x020A:
+      short upOrDown = HIWORD( wParam );
+      MouseSensor::wheelCallback( upOrDown > 0 ? 
+                          MouseSensor::FROM : MouseSensor::TOWARDS );
     break;
   }
 

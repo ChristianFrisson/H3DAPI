@@ -32,12 +32,6 @@
 
 #include "X3DSensorNode.h"
 #include <list>
-#include <GL/glew.h>
-#ifdef MACOSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
 #include "SFVec2f.h"
 
 
@@ -45,14 +39,19 @@ namespace H3D {
 
   /// \ingroup H3DNodes
   /// \class MouseSensor
-  /// \brief A sensor node for reading mouse values. 
-  ///
-  /// The scrollUp and scrollDown fields will only be usable if you
-  /// are compiling against freeglut instead of GLUT.
-  /// 
-  ///
+  /// \brief A sensor node for reading mouse values.
   class H3DAPI_API MouseSensor : public X3DSensorNode {
   public:
+
+    typedef enum {
+      LEFT_BUTTON = 1,   // The left mouse button;
+      MIDDLE_BUTTON = 2, // The middle mouse button;
+      RIGHT_BUTTON = 3,  // The right mouse button;
+      DOWN = 4,          // The button is pressed
+      UP = 5,            // The button is released
+      FROM = 6,          // The wheel is scrolled from the user
+      TOWARDS = 7        // The wheel is scrolled towards the user
+    } MouseKeys;
 
     /// Constructor.
     MouseSensor( Inst< SFBool  > _enabled      = 0,
@@ -72,30 +71,29 @@ namespace H3D {
 
     /// Will be called when the mouse has moved. The x and y parameters 
     /// indicate the mouse location in window relative coordinates.
-    void addGLUTMouseMotionAction( int x, int y );
+    virtual void mouseMotionAction( int x, int y );
 
     /// Will be called  when a mouse button event occurs.
-    /// \param button is one of GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, or
-    /// GLUT_RIGHT_BUTTON. 
-    /// \param state is either GLUT_UP or GLUT_DOWN indicating whether 
+    /// \param button is one of LEFT_BUTTON, MIDDLE_BUTTON, or
+    /// RIGHT_BUTTON. 
+    /// \param state is either UP or DOWN indicating whether 
     /// the callback was due to a release or press respectively.
-    virtual void addGLUTMouseButtonAction( int button, int state );
+    virtual void mouseButtonAction( int button, int state );
 
-    /// Will be called  when a mouse scroll wheel event occurs.
-    virtual void addGLUTMouseWheelAction( int wheel, int direction );
+    /// Will be called when a mouse scroll wheel event occurs.
+    /// direction is one of FROM or TOWARDS
+    virtual void mouseWheelAction( int direction );
 
-    /// glut callback function. Calls addGLUTMouseButtonAction() on all
+    /// Calls mouseButtonAction() on all
     /// MouseSensor instances.
-    static void glutMouseCallback( int button, int state, 
-                                   int x, int y );
+    static void buttonCallback( int button, int state );
     
-    /// glut callback function. Calls addGLUTMouseMotionAction() on all
+    /// Calls mouseMotionAction() on all
     /// MouseSensor instances.
-    static void glutMotionCallback( int x, int y );
+    static void motionCallback( int x, int y );
 
-    /// glut callback function for mouse scroll wheel. 
-    static void glutMouseWheelCallback( int wheel, 
-                                        int direction, int x, int y );
+    /// Calls mouseWheelAction() on all MouseSensor instances.
+    static void wheelCallback( int direction );
     
     /// The position of the mouse in window relative coordinates.
     /// 
