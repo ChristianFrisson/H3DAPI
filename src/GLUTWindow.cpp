@@ -28,13 +28,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "GLUTWindow.h"
-#if !( defined(FREEGLUT) && defined(WIN32) )
-#include "X3DKeyDeviceSensorNode.h"
-#endif
-#ifndef WIN32
-#include "MouseSensor.h"
-#endif
 #include <GL/glew.h>
 #ifdef MACOSX
 #include <GLUT/glut.h>
@@ -43,6 +36,15 @@
 #endif
 #ifdef FREEGLUT
 #include <GL/freeglut.h>
+
+#include "GLUTWindow.h"
+#if !( defined(FREEGLUT) && defined(WIN32) )
+#include "X3DKeyDeviceSensorNode.h"
+#endif
+#ifndef WIN32
+#include "MouseSensor.h"
+#endif
+
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "freeglut.lib" )
 #endif

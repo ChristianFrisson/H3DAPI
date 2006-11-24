@@ -52,10 +52,8 @@
 
 #include <GL/glew.h>
 
-#ifdef WIN32
 #include "X3DKeyDeviceSensorNode.h"
 #include "MouseSensor.h"
-#endif
 
 using namespace H3D;
 
