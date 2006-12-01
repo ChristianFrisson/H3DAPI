@@ -56,6 +56,11 @@ namespace H3D {
     ColorRGBA( Inst< MFColorRGBA>  _color    = 0,
                Inst< SFNode     >  _metadata = 0 );
 
+    /// Get the color at index i.
+    virtual RGBA getColor( unsigned int i ) {
+      return color->getValueByIndex( i );
+    }
+
     /// Perform the OpenGL commands to render a color given the index
     /// of the color. Installs the normal as a glColor4f.
     virtual void render( int index ) {

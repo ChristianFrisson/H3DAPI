@@ -43,6 +43,9 @@ namespace H3D {
     /// Constructor.
     X3DColorNode( Inst< SFNode>  _metadata = 0 );
 
+    /// Get the color at index i.
+    virtual RGBA getColor( unsigned int i ) = 0;
+
     /// Perform the OpenGL commands to render a color given the index
     /// of the color.
     virtual void render( int index ) {}
