@@ -81,6 +81,7 @@ void ExplosionEmitter::generateParticles( ParticleSystem *ps,
                              dir );
       p.size = ps->particleSize->getValue();
       p.type = ps->getCurrentParticleType(); 
+      p.surface_area = surfaceArea->getValue();
       p.total_time_to_live = 20;
       p.time_lived = 0;
       p.geometry.reset( ps->geometry->getValue() );

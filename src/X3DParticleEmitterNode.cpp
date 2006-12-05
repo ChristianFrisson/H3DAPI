@@ -31,6 +31,8 @@
 #include "X3DParticleEmitterNode.h"
 #include "Viewpoint.h"
 #include "X3DTextureNode.h"
+#include "ParticleSystem.h"
+#include "MultiTexture.h"
 
 using namespace H3D;
 
@@ -69,28 +71,35 @@ X3DParticleEmitterNode::X3DParticleEmitterNode(
   surfaceArea->setValue( 0 );
 }
 
-void X3DParticleEmitterNode::Particle::render( 
-               X3DColorNode *color_ramp,
-               const vector< H3DFloat > color_key,
-               TextureCoordinate *tex_coord,
-               const vector< H3DFloat > tex_coord_key  ) {
+void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
+ 
+  X3DColorNode *color_ramp = ps->colorRamp->getValue();
+  const vector< H3DFloat > color_key = ps->colorKey->getValue(); 
+  TextureCoordinate *tex_coord_ramp = ps->texCoordRamp->getValue();
+  const vector< H3DFloat > tex_coord_key = ps->texCoordKey->getValue();
   if( isDead() ) return;
-  glEnable( GL_BLEND );
+  glEnable( GL_BLEND ); 
   glEnable( GL_ALPHA_TEST );
   glAlphaFunc( GL_NOTEQUAL, 0 );
   //glDisable( GL_DEPTH_TEST );
   RGBA color;
   bool have_color_value = false;
-  if( color_ramp ) {
+
+  int tex_coord_index = -1;
+
+  if( tex_coord_ramp && tex_coord_key.size() > 0) {
+    H3DFloat weight;
+    tex_coord_index = lookupKey( time_lived, 
+                                 weight, tex_coord_key );
+  }
+
+  if( color_ramp  && color_key.size() > 0 ) {
     H3DFloat weight;
     int key_index = lookupKey( time_lived, 
                                weight, color_key );
-    if( key_index > 3 ) {
-      key_index = lookupKey( time_lived, 
-                             weight, color_key );
-    }
     
-    if( color_key.size() > 0 && key_index >= 0 ) {
+    if( key_index >= 0 && 
+        key_index < color_ramp->nrAvailableColors()  ) {
       have_color_value = true;
       if (weight<=0) 
         color = color_ramp->getColor( 0 );
@@ -121,7 +130,7 @@ void X3DParticleEmitterNode::Particle::render(
       
     }
   }
-  glColor3f( 1, 1, 0 );        
+  glColor3f( 1, 1, 1 );        
 
   if( type == POINT ) {
     // Save the old state of GL_LIGHTING 
@@ -150,10 +159,6 @@ void X3DParticleEmitterNode::Particle::render(
     glGetBooleanv( GL_LIGHTING, &lighting_enabled );
     glDisable( GL_LIGHTING );
 
-    // disable texturing
-    X3DTextureNode *texture = X3DTextureNode::getActiveTexture();
-    if( texture ) texture->disableTexturing();
-
     glEnable( GL_BLEND );
 
     if( have_color_value ) {
@@ -163,17 +168,58 @@ void X3DParticleEmitterNode::Particle::render(
     Vec3f line_dir = velocity;
     line_dir.normalizeSafe();
     line_dir = line_dir * size.y /2;
+
+    bool specify_tex_coord = false;
+    unsigned int t0, t1;
+    Vec3f p0 = position - line_dir;
+    Vec3f p1 = position + line_dir;
+
+    // Check that we have enough tex coords
+    if( tex_coord_index != -1 ) {
+      if( tex_coord_ramp->nrAvailableTexCoords() >= tex_coord_key.size() * 2 ) {
+        specify_tex_coord = true;
+        if( p0.lengthSqr() < p1.lengthSqr() ) {
+          t0 = tex_coord_index * 2;
+          t1 = tex_coord_index * 2 + 1;
+        } else {
+          t0 = tex_coord_index * 2 + 1;
+          t1 = tex_coord_index * 2;
+        }
+      } else {
+        // TODO: warning
+      }
+    }
+
+
+      // disable texturing
+    X3DTextureNode *texture = X3DTextureNode::getActiveTexture();
+    if( texture && !specify_tex_coord ) texture->disableTexturing();
+
     glBegin( GL_LINES );
-    glVertex3f( position.x - line_dir.x, 
-                position.y - line_dir.y,
-                position.z - line_dir.z );
-    glVertex3f( position.x + line_dir.x, 
-                position.y + line_dir.y,
-                position.z + line_dir.z );
+    if( specify_tex_coord ) {
+      renderTexCoord( t0, tex_coord_ramp );
+    }
+    glVertex3f( p0.x, p0.y, p0.z );
+    if( specify_tex_coord ) {
+      renderTexCoord( t1, tex_coord_ramp );
+    }
+    glVertex3f( p1.x, p1.y, p1.z );
     glEnd();
     if( lighting_enabled ) glEnable( GL_LIGHTING );
-    if( texture ) texture->enableTexturing();
+    if( texture && !specify_tex_coord ) texture->enableTexturing();
   } else if( type == QUAD || type == TRIANGLE ) {
+
+    bool specify_tex_coord = false;
+    
+    // Check that we have enough tex coords
+    if( tex_coord_index != -1 ) {
+      if( tex_coord_ramp->nrAvailableTexCoords() >= tex_coord_key.size() * 4 ) {
+        specify_tex_coord = true;
+      } else {
+        // TODO: warning
+      }
+    }
+    
     // TODO: fix color material
     glEnable( GL_COLOR_MATERIAL );
     Vec3f t = Vec3f( size.x / 2, size.y/2, 0 );
@@ -184,14 +230,22 @@ void X3DParticleEmitterNode::Particle::render(
       glColor4f( color.r, color.g, color.b, color.a ); 
     }
     glBegin( GL_QUADS );
-    glTexCoord2f( 1, 1 );
-    glVertex3f  ( max_corner.x, max_corner.y, max_corner.z );
-    glTexCoord2f( 0, 1 );
-    glVertex3f  ( min_corner.x, max_corner.y, max_corner.z );
-    glTexCoord2f( 0, 0 );
+    if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4, tex_coord_ramp );
+    else renderTexCoord( Vec3f( 0, 0, 0 ) );
     glVertex3f  ( min_corner.x, min_corner.y, max_corner.z );
-    glTexCoord2f( 1, 0 );
+
+    if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4 + 1, tex_coord_ramp );
+    else renderTexCoord( Vec3f( 1, 0, 0 ) );
     glVertex3f  ( max_corner.x, min_corner.y, max_corner.z );
+
+    if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4 + 2, tex_coord_ramp );
+    else renderTexCoord( Vec3f( 1, 1, 0 ) );
+    glVertex3f  ( max_corner.x, max_corner.y, max_corner.z );
+
+    if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4 + 3, tex_coord_ramp );
+    else renderTexCoord( Vec3f( 0, 1, 0 ) );
+    glVertex3f  ( min_corner.x, max_corner.y, max_corner.z );
+
     glEnd();
   } else if( type == SPRITE ) {
     Viewpoint *vp = Viewpoint::getActive();
@@ -235,13 +289,13 @@ void X3DParticleEmitterNode::Particle::render(
       glColor4f( color.r, color.g, color.b, color.a ); 
     }
     glBegin( GL_QUADS );
-    glTexCoord2f( 1, 1 );
+    renderTexCoord( Vec3f( 1, 1, 0 ) );
     glVertex3f  ( max_corner.x, max_corner.y, max_corner.z );
-    glTexCoord2f( 0, 1 );
+    renderTexCoord( Vec3f( 0, 1, 0 ) );
     glVertex3f  ( min_corner.x, max_corner.y, max_corner.z );
-    glTexCoord2f( 0, 0 );
+    renderTexCoord( Vec3f( 0, 0, 0 ) );
     glVertex3f  ( min_corner.x, min_corner.y, max_corner.z );
-    glTexCoord2f( 1, 0 );
+    renderTexCoord( Vec3f( 1, 0, 0 ) );
     glVertex3f  ( max_corner.x, min_corner.y, max_corner.z );
     glEnd();
     glPopMatrix();
@@ -258,3 +312,28 @@ void X3DParticleEmitterNode::Particle::render(
 }
 
 
+void X3DParticleEmitterNode::Particle::renderTexCoord( const Vec3f &tc ) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
+  if( mt ) {
+    size_t texture_units = mt->texture->size();
+    for( unsigned int i = 0; i < texture_units; i++ ) {
+      glMultiTexCoord3f( GL_TEXTURE0_ARB + i, tc.x, tc.y, tc.z );
+    }
+  } else {
+    glTexCoord3f( tc.x, tc.y, tc.z );
+  }
+}
+
+void X3DParticleEmitterNode::Particle::renderTexCoord( unsigned int index, X3DTextureCoordinateNode *tc) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
+  if( mt ) {
+    size_t texture_units = mt->texture->size();
+    for( unsigned int i = 0; i < texture_units; i++ ) {
+      tc->renderForTextureUnit( index, GL_TEXTURE0_ARB + i );
+    }
+  } else {
+    tc->render( index );
+  }
+}

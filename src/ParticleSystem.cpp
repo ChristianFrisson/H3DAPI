@@ -132,8 +132,7 @@ void ParticleSystem::render() {
     if( geometry_render_mode == ALL ) {
       for( Particles::iterator p = particles.begin(); 
            p != particles.end(); p++ ) {
-        (*p).render( colorRamp->getValue(), colorKey->getValue(),
-                     texCoordRamp->getValue(), texCoordKey->getValue() );
+        (*p).render( this );
       }
     } else if( geometry_render_mode == SOLID ) {
       // only render non-transparent objects
@@ -145,8 +144,7 @@ void ParticleSystem::render() {
                 cerr << "f";
              }
              a = (*p).distance_from_viewer;
-          (*p).render( colorRamp->getValue(), colorKey->getValue(),
-                       texCoordRamp->getValue(), texCoordKey->getValue() );
+          (*p).render( this );
         }
       }
     }
@@ -154,8 +152,7 @@ void ParticleSystem::render() {
       if( geometry_render_mode == TRANSPARENT_ONLY ) {
         for( Particles::iterator p = particles.begin(); 
              p != particles.end(); p++ ) {
-          (*p).render( colorRamp->getValue(), colorKey->getValue(),
-                       texCoordRamp->getValue(), texCoordKey->getValue() );
+          (*p).render( this );
         }
       } else if( geometry_render_mode == TRANSPARENT_FRONT ) {
         GLenum previous_cull_face = g->getCullFace();
@@ -165,8 +162,7 @@ void ParticleSystem::render() {
           //g->useCulling( true );
           for( Particles::iterator p = particles.begin(); 
              p != particles.end(); p++ ) {
-             (*p).render( colorRamp->getValue(), colorKey->getValue(),
-                       texCoordRamp->getValue(), texCoordKey->getValue() );
+             (*p).render( this );
            }
           //g->setCullFace( previous_cull_face );
           //g->useCulling( previous_culling );
@@ -179,8 +175,7 @@ void ParticleSystem::render() {
           //g->useCulling( true );
           for( Particles::iterator p = particles.begin(); 
              p != particles.end(); p++ ) {
-             (*p).render( colorRamp->getValue(), colorKey->getValue(),
-                       texCoordRamp->getValue(), texCoordKey->getValue() );
+             (*p).render( this );
           }
           //g->setCullFace( previous_cull_face );
           //g->useCulling( previous_culling );
@@ -206,6 +201,15 @@ void ParticleSystem::initialize() {
 
 void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   X3DShapeNode::traverseSG( ti );
+  
+  X3DParticleEmitterNode *emitter_node = emitter->getValue();
+
+  if( emitter_node ) emitter_node->traverseSG( ti );
+
+  for( MFPhysicsModelNode::const_iterator pm = physics->begin();
+       pm != physics->end(); pm++ ) {
+    if( *pm )(*pm)->traverseSG( ti );
+  }
 
   if( !enabled->getValue() ) {
     particle_system_time = 0;
@@ -214,7 +218,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   }
   
   // generate new particles
-  X3DParticleEmitterNode *emitter_node = emitter->getValue();
+
   
   TimeStamp current_time;
   H3DTime dt = current_time - last_time;
@@ -273,6 +277,54 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   }
 
   particles.sort();
+
+  if( particles.size() > 0 && 
+      bboxSize->getValue() == Vec3f( -1, -1, -1 )) {
+
+    BoxBound *bb = dynamic_cast< BoxBound * >( bound->getValue() );
+    if( !bb ) bb = new BoxBound;
+    
+    Particles::iterator p = particles.begin(); 
+    Vec3f min, max;
+    min = max = (*p).position;
+    p++;
+    for( ; p != particles.end(); ++p ) {
+      if( (*p).position.x < min.x ) min.x = (*p).position.x;
+      if( (*p).position.y < min.y ) min.y = (*p).position.y;
+      if( (*p).position.z < min.z ) min.z = (*p).position.z;
+      if( (*p).position.x > max.x ) max.x = (*p).position.x;
+      if( (*p).position.y > max.y ) max.y = (*p).position.y;
+      if( (*p).position.z > max.z ) max.z = (*p).position.z;
+    }
+    H3DFloat ps = 0;
+
+    if( geometryType->getValue() == "GEOMETRY" ) {
+      if( (*p).geometry.get() ) {
+        X3DGeometryNode *g = (*p).geometry.get();
+        BoxBound *bb = dynamic_cast< BoxBound * >( bound->getValue() );
+        if( bb ) {
+          Vec3f center = bb->center->getValue();
+          Vec3f half_size = bb->size->getValue();
+          Vec3f min = center - half_size;
+          Vec3f max = center + half_size;
+          ps = H3DMax( H3DAbs( min.x ), H3DAbs( min.y ) );
+          ps = H3DMax( ps, H3DAbs( min.z ) );
+          ps = H3DMax( ps, H3DAbs( max.x ) );
+          ps = H3DMax( ps, H3DAbs( max.y ) );
+          ps = H3DMax( ps, H3DAbs( min.z ) );
+        }
+      }
+    } else {
+      Vec2f particle_size = particleSize->getValue();
+      ps= H3DMax( particle_size.x, particle_size.y );
+    }
+
+    Vec3f s = max - min;
+    bb->center->setValue( min + s / 2.0 );
+    bb->size->setValue( s  + Vec3f( ps, ps, ps ) );
+    bound->setValue( bb, id );
+  }
+
 
   last_time = current_time;
 }

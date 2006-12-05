@@ -377,10 +377,10 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    typedef std::list< X3DParticleEmitterNode::Particle > Particles;
   protected:
     H3DTime particle_system_time;
     H3DTime last_time;
-    typedef std::list< X3DParticleEmitterNode::Particle > Particles;
     Particles particles;
     bool update_bound;
   };

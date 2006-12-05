@@ -144,10 +144,7 @@ namespace H3D {
         return -1;  // something must have gone wrong to get here
       }   
 
-      virtual void render( X3DColorNode *color_ramp,
-                           const vector< H3DFloat > color_key,
-                           TextureCoordinate *tex_coord,
-                           const vector< H3DFloat > tex_coord_key  );
+      virtual void render( ParticleSystem *ps );
 
       inline bool isDead() {
         return time_lived > total_time_to_live;
@@ -170,6 +167,9 @@ namespace H3D {
       AutoRef< X3DGeometryNode > geometry;
       Matrix4f global_to_local;
       H3DFloat distance_from_viewer;
+    protected:
+      void renderTexCoord( const Vec3f &tc );
+      void renderTexCoord( unsigned int i, X3DTextureCoordinateNode *tc );
     };
  
     virtual void generateParticles( ParticleSystem *ps,
@@ -222,6 +222,7 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
   };
 }
 

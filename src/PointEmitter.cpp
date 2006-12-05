@@ -80,9 +80,15 @@ void PointEmitter::generateParticles( ParticleSystem *ps,
   H3DFloat particles_to_emit = emission_rate * dt;
 
   while( particles_to_emit >= 1 ) {
-    Vec3f dir( ParticleSystem::getRandomValue( -1, 1 ), 
-               ParticleSystem::getRandomValue( -1, 1 ), 
-               ParticleSystem::getRandomValue( -1, 1 ) ); 
+    
+    Vec3f dir = direction->getValue();
+
+    /// TODO: this is not random direction, fix it
+    if( dir == Vec3f( 0, 0, 0 ) ) {
+      dir = Vec3f( ParticleSystem::getRandomValue( -1, 1 ), 
+                   ParticleSystem::getRandomValue( -1, 1 ), 
+                   ParticleSystem::getRandomValue( -1, 1 ) ); 
+    }
     
     dir.normalizeSafe();
     dir *= ParticleSystem::getVariationValue( speed->getValue(), 
@@ -91,6 +97,7 @@ void PointEmitter::generateParticles( ParticleSystem *ps,
                            dir );
     p.size = ps->particleSize->getValue();
     p.type = ps->getCurrentParticleType(); 
+    p.surface_area = surfaceArea->getValue();
     p.total_time_to_live = 
        ParticleSystem::getVariationValue( ps->particleLifetime->getValue(), 
                                           ps->lifetimeVariation->getValue() );
@@ -101,9 +108,13 @@ void PointEmitter::generateParticles( ParticleSystem *ps,
   }
 
   if( rand() < RAND_MAX * particles_to_emit ) {
-    Vec3f dir( ParticleSystem::getRandomValue( -1, 1 ), 
-               ParticleSystem::getRandomValue( -1, 1 ), 
-               ParticleSystem::getRandomValue( -1, 1 ) ); 
+    Vec3f dir = direction->getValue();
+
+    if( dir == Vec3f( 0, 0, 0 ) ) {
+      dir = Vec3f( ParticleSystem::getRandomValue( -1, 1 ), 
+                   ParticleSystem::getRandomValue( -1, 1 ), 
+                   ParticleSystem::getRandomValue( -1, 1 ) ); 
+    }
     dir.normalizeSafe();
     dir *= ParticleSystem::getVariationValue( speed->getValue(), 
                                               variation->getValue() );
@@ -111,6 +122,7 @@ void PointEmitter::generateParticles( ParticleSystem *ps,
                            dir );
     p.size = ps->particleSize->getValue();
     p.type = ps->getCurrentParticleType(); 
+    p.surface_area = surfaceArea->getValue();
     p.total_time_to_live = 
        ParticleSystem::getVariationValue( ps->particleLifetime->getValue(), 
                                           ps->lifetimeVariation->getValue() );

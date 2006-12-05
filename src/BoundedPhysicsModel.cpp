@@ -21,50 +21,48 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file GravityPhysicsModel.cpp
-/// \brief CPP file for GravityPhysicsModel, X3D scene-graph node
+/// \file BoundedPhysicsModel.cpp
+/// \brief CPP file for BoundedPhysicsModel, X3D scene-graph node
 ///
 //
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "GravityPhysicsModel.h"
+#include "BoundedPhysicsModel.h"
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-H3DNodeDatabase GravityPhysicsModel::database( 
-                                   "GravityPhysicsModel", 
-                                   &(newInstance< GravityPhysicsModel >), 
-                                   typeid( GravityPhysicsModel ),
+H3DNodeDatabase BoundedPhysicsModel::database( 
+                                   "BoundedPhysicsModel", 
+                                   &(newInstance< BoundedPhysicsModel >), 
+                                   typeid( BoundedPhysicsModel ),
                                    &X3DParticlePhysicsModelNode::database );
 
-namespace GravityPhysicsModelInternals {
-  FIELDDB_ELEMENT( GravityPhysicsModel, gravity, INPUT_OUTPUT );
+namespace BoundedPhysicsModelInternals {
+  FIELDDB_ELEMENT( BoundedPhysicsModel, geometry, INPUT_OUTPUT );
 }
 
-GravityPhysicsModel::GravityPhysicsModel( 
+BoundedPhysicsModel::BoundedPhysicsModel( 
                       Inst< SFNode  > _metadata,
                       Inst< SFBool  > _enabled,
-                      Inst< SFVec3f > _gravity ):
+                      Inst< SFGeometryNode > _geometry ):
   X3DParticlePhysicsModelNode( _metadata, _enabled ),
-  gravity( _gravity ) {
+  geometry( _geometry ) {
 
-  type_name = "GravityPhysicsModel";
+  type_name = "BoundedPhysicsModel";
   database.initFields( this );
-
-  gravity->setValue( Vec3f( 0, -9.8, 0 ) );
 }
 
 
-void GravityPhysicsModel::updateParticleValues( 
-                          const X3DParticleEmitterNode::Particle &last_particle,
-                          X3DParticleEmitterNode::Particle &particle,
-                          H3DTime last_time,
-                          H3DTime current_time ) {
-  if( !enabled->getValue() || particle.mass == 0 ) return;
-  H3DTime dt = current_time - last_time;
-  particle.velocity = particle.velocity + gravity->getValue() * dt;
+void BoundedPhysicsModel::updateParticleValues( 
+                       const X3DParticleEmitterNode::Particle &last_particle,
+                       X3DParticleEmitterNode::Particle &particle,
+                       H3DTime last_time,
+                       H3DTime current_time ) {
+  X3DGeometryNode *geom = geometry->getValue();
+  if( !enabled->getValue() || !geom ) return;
+
   
 }
 
