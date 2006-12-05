@@ -42,6 +42,7 @@ H3DNodeDatabase CoordinateInterpolator2D::database(
 namespace CoordinateInterpolator2DInternals {
   FIELDDB_ELEMENT( CoordinateInterpolator2D, metadata, INPUT_OUTPUT );
   FIELDDB_ELEMENT( CoordinateInterpolator2D, value_changed, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( CoordinateInterpolator2D, keyValue, INPUT_OUTPUT );
 }
 
 
@@ -76,7 +77,7 @@ void CoordinateInterpolator2D::MFValue::update() {
   vector< Vec2f > key_values = static_cast<MFVec2f*>(routes_in[2])->getValue();
   int value_size = key_values.size() / key_size;
   value.resize( value_size );
-  
+
   if ( key_size > 0 && key_index >= 0 ) {
     if (weight<=0) 
       for (int x = 0; x < value_size; x++ )

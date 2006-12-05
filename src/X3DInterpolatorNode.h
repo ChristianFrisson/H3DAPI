@@ -114,7 +114,7 @@ namespace H3D {
       }
       if ( f >= keys[keys.size()-1] ) {
         w = 1;
-        return keys.size();
+        return keys.size() - 1;
       }
       for( int i = keys.size()-1; i >= 0; i--) {
         if ( f > keys[i] ) {
