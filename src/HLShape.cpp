@@ -53,18 +53,31 @@ HLuint HLShape::getShapeId( HLHapticsDevice *hd ) {
     haptic_shape->geometry->getHLShapeId( hd,
                        HLShape::getFreeShapeIdIndex( haptic_shape->geometry,
                                                      hd ) );
+  //cerr << "add: " << shape_id << " " << this << endl;
   hl_shape_map.insert( make_pair( shape_id, this ) );
   shape_ids.push_back( shape_id );
   return shape_id;
 }
 
 HLShape::~HLShape() {
+  // Removes all instances of this HLShape from
+  // the hl_shape_map vector. The assumption is made
+  // that there is only one pointer to this object stored
+  // in hl_shape_map for each id in shape_ids
   for( vector< HLuint >::iterator i = shape_ids.begin();
        i != shape_ids.end();
        i++ ) {
     HLShape::HLShapeMap::iterator hl = hl_shape_map.find( *i );
     if( (*hl).second == this ) {
       hl_shape_map.erase( hl );
+    }
+    else {
+      for( ; hl != hl_shape_map.end(); hl++ ) {
+        if( (*hl).second == this && *i == (*hl).first ) {
+          hl_shape_map.erase( hl );
+          break;
+        }
+      }
     }
   }
 }
