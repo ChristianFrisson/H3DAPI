@@ -53,7 +53,6 @@ HLuint HLShape::getShapeId( HLHapticsDevice *hd ) {
     haptic_shape->geometry->getHLShapeId( hd,
                        HLShape::getFreeShapeIdIndex( haptic_shape->geometry,
                                                      hd ) );
-  //cerr << "add: " << shape_id << " " << this << endl;
   hl_shape_map.insert( make_pair( shape_id, this ) );
   shape_ids.push_back( shape_id );
   return shape_id;
