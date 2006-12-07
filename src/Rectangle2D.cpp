@@ -79,13 +79,13 @@ void Rectangle2D::render() {
   
   glNormal3f  ( 0, 0, 1 );
 
-  glTexCoord2f( 1, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( half_x, half_y, 0 );
-  glTexCoord2f( 0, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( -half_x, half_y, 0 );
-  glTexCoord2f( 0, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 0, 0 ) );
   glVertex3f  ( -half_x, -half_y, 0 );
-  glTexCoord2f( 1, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 0, 0 ) );
   glVertex3f  ( half_x, -half_y, 0 );
   
   glEnd();

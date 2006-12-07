@@ -29,9 +29,10 @@
 #ifndef __X3DTEXTURECOORDINATENODE_H__
 #define __X3DTEXTURECOORDINATENODE_H__
 
-#include "X3DGeometricPropertyNode.h"
+#include <X3DGeometricPropertyNode.h>
 
 namespace H3D {
+  class X3DTextureNode;
 
   /// \ingroup AbstractNodes
   /// \class X3DTextureCoordinateNode
@@ -46,20 +47,32 @@ namespace H3D {
     /// Constructor.
     X3DTextureCoordinateNode( Inst< SFNode>  _metadata = 0 );
 
+    /// Render the texture coordinate for all texture units used by
+    /// the texture in X3DTextureNode::getActiveTexture.
+    static void renderTexCoordForActiveTexture( const Vec3f &tc );
+
+    /// Render the texture coordinate for all texture units used by
+    /// the given texture .
+    static void renderTexCoordForTexture( const Vec3f &tc, X3DTextureNode *t );
+
     /// Perform the OpenGL commands to render a texture coordinate given the 
     /// index of the texture coordinate.
     virtual void render( int index ) {}
 
-    /// Render the texture transform for the currently active  texture unit.
+    /// Render the texture coordinate for the currently active  texture unit.
     virtual void renderForTextureUnit( int index,
                                        unsigned int texture_unit ) {}
     
-    /// Render the texture transform for the texture units between and
+    /// Render the texture coordinate for the texture units between and
     /// inluding start_unit and end_unit.
     virtual void renderForTextureUnits( int index,
                                         unsigned int start_unit,
                                         unsigned int end_unit );
     
+    /// Render the texture coordinate for all texture units used by
+    /// the texture in X3DTextureNode::getActiveTexture.
+    inline void renderForActiveTexture( int index );
+
     /// Returns the default xml containerField attribute value.
     /// For this node it is "texCoord".
     virtual string defaultXMLContainerField() {

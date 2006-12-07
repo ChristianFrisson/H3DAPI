@@ -29,10 +29,11 @@
 #ifndef __TEXTUREBACKGROUND_H__
 #define __TEXTUREBACKGROUND_H__
 
-#include "X3DBackgroundNode.h"
-#include "X3DTextureNode.h"
-#include "DependentNodeFields.h"
-#include "SFFloat.h"
+#include <X3DBackgroundNode.h>
+#include <X3DTextureNode.h>
+#include <X3DTextureCoordinateNode.h>
+#include <DependentNodeFields.h>
+#include <SFFloat.h>
 
 namespace H3D {
 
@@ -162,6 +163,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    inline void renderTexCoordForTexture( const Vec3f &tc, 
+                                          X3DTextureNode *t ) {
+      X3DTextureCoordinateNode::renderTexCoordForTexture( tc, t );
+    }
   };
 }
 

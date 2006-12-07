@@ -249,26 +249,6 @@ namespace H3D {
     /// Stop texture coordinate generation.
     virtual void stopTexGen( TextureCoordinateGenerator *tex_coord_gen );
 
-    /// Render the texure coordinate with the given index from the 
-    /// tc argument. If the currently active texture is a MultiTexture
-    /// the texture coordinate will be rendered for the texture units of
-    /// all textures in MultiTexture. tc must not be NULL. 
-    virtual void renderTexCoord( int index, X3DTextureCoordinateNode *tc );
-
-    /// Render the given texure coordinate. 
-    /// If the currently active texture is a MultiTexture
-    /// the texture coordinate will be rendered for the texture units of
-    /// all textures in MultiTexture. tc must not be NULL. 
-    virtual void renderTexCoord( const Vec3f &tc );
-
-    /// Render the X3DTextureCoordinate as an array. If the currently 
-    /// active texture is a MultiTexture it will be rendered for the
-    /// texture units of all textures in MultiTexture. tc must not be NULL. 
-    virtual void renderTexCoordArray( X3DTextureCoordinateNode *tc );
-
-    /// Disable the arrays that were enabled in renderTexCoordArray().
-    virtual void disableTexCoordArray( X3DTextureCoordinateNode *tc );
-
     /// Render the ElevationGrid with OpenGL.
     virtual void render();
 

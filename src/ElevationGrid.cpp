@@ -194,90 +194,6 @@ void ElevationGrid::DisplayList::callList( bool build_list ) {
   glFrontFace( front_face );
 }
 
-void ElevationGrid::renderTexCoord( int index, 
-                                    X3DTextureCoordinateNode *tc ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-  MultiTextureCoordinate *mtc = 
-    dynamic_cast< MultiTextureCoordinate * >( tc );
-
-  if( tc ) {
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      tc->renderForTextureUnits( index, 0, texture_units -1 );
-    } else {
-      if( mtc ) {
-        tc->renderForTextureUnit( index, 0 );
-      }  else  {
-        tc->render( index );
-      }
-    }
-  } else {
-    stringstream s;
-    s << "Trying to call renderTexCoord( int index, X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL.";
-    throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-  }
-}
-
-void ElevationGrid::renderTexCoord( const Vec3f &tc ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-  if( mt ) {
-    size_t texture_units = mt->texture->size();
-    for( unsigned int i = 0; i < texture_units; i++ ) {
-      glMultiTexCoord3f( GL_TEXTURE0_ARB + i, tc.x, tc.y, tc.z );
-    }
-  } else {
-    glTexCoord3f( tc.x, tc.y, tc.z );
-  }
-}
-
-
-void ElevationGrid::renderTexCoordArray(  
-                                      X3DTextureCoordinateNode *tc ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-  MultiTextureCoordinate *mtc = 
-    dynamic_cast< MultiTextureCoordinate * >( tc );
-
-  if( tc ) {
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      tc->renderArrayForTextureUnits( 0, texture_units -1 );
-    } else if( mtc ) {
-      tc->renderArrayForTextureUnit( 0 );
-    } else {
-      tc->renderArray();
-    }
-  } else {
-    stringstream s;
-    s << "Trying to call renderTexCoordArray( X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL.";
-    throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-  }
-}
-
-void ElevationGrid::disableTexCoordArray(  
-                                      X3DTextureCoordinateNode *tc ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-
-  if( tc ) {
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      tc->disableArrayForTextureUnits( 0, texture_units -1 );
-    } else {
-      tc->disableArray();
-    }
-  } else {
-    stringstream s;
-    s << "Trying to call disableTexCoordArray( X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL.";
-    throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-  }
-}
-
 void ElevationGrid::render() {
   X3DGeometryNode::render();
   H3DInt32 xdim = xDimension->getValue();
@@ -356,11 +272,11 @@ void ElevationGrid::render() {
  
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
-            renderTexCoord( vertex_index, tex_coord_node );
+            tex_coord_node->renderForActiveTexture( vertex_index );
           } else {
-            renderTexCoord( Vec3f( x / (float)(xdim - 1), 
-                                   z / (float)(zdim - 1), 
-                                   0 ) );
+            renderTexCoordForActiveTexture( Vec3f( x / (float)(xdim - 1), 
+                                                   z / (float)(zdim - 1), 
+                                                   0 ) );
           }
         }
             
@@ -390,11 +306,11 @@ void ElevationGrid::render() {
 
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
-            renderTexCoord( vertex_index, tex_coord_node );
+            tex_coord_node->renderForActiveTexture( vertex_index );
           } else {
-            renderTexCoord( Vec3f( x / (float)(xdim - 1), 
-                                   (z+1) / (float) (zdim - 1) ,
-                                   0 ) );
+            renderTexCoordForActiveTexture( Vec3f( x / (float)(xdim - 1), 
+                                                   (z+1) / (float) (zdim - 1),
+                                                   0 ) );
           }
         }
 
@@ -423,11 +339,11 @@ void ElevationGrid::render() {
 
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
-            renderTexCoord( vertex_index, tex_coord_node );
+            tex_coord_node->renderForActiveTexture( vertex_index );
           } else {
-            renderTexCoord( Vec3f( (x+1) / (float)(xdim - 1), 
-                                   (z+1) / (float) (zdim - 1), 
-                                   0 ) );
+            renderTexCoordForActiveTexture( Vec3f( (x+1) / (float)(xdim - 1), 
+                                                   (z+1) / (float) (zdim - 1), 
+                                                   0 ) );
           }
         }
 
@@ -456,11 +372,11 @@ void ElevationGrid::render() {
 
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
-            renderTexCoord( vertex_index, tex_coord_node );
+            tex_coord_node->renderForActiveTexture( vertex_index );
           } else {
-            renderTexCoord( Vec3f( (x+1) / (float)(xdim - 1), 
-                                   z / (float) (zdim - 1), 
-                                   0 ) );
+            renderTexCoordForActiveTexture( Vec3f( (x+1) / (float)(xdim - 1), 
+                                                   z / (float) (zdim - 1), 
+                                                   0 ) );
           }
         }
 

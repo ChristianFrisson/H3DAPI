@@ -71,6 +71,36 @@ Sphere::Sphere(
 
 
 void Sphere::render() {
+  /*
+  H3DFloat alpha, beta, increment_alpha, increment_beta;
+  H3DFloat alpha_parts = 50, beta_parts = 50;
+
+  H3DFloat increment_alpha = (H3DFloat) Constants::pi*2 / alpha_parts;
+  H3DFloat increment_beta = (H3DFloat) Constants::pi*2 / beta_parts;
+
+  H3DFloat r = radius->getValue();
+
+  
+
+  // draw a circle with lines
+  H3DFloat x, y;
+  glBegin( GL_LINE_STRIP );
+  int i = 0;
+  for ( ; i < nr_segments; i++ ) {
+    theta = i * angle_increment;
+    x = r * H3DCos(theta);
+    y = r * H3DSin(theta);
+    glVertex2f (x, y);
+  }
+  
+  theta = 0;
+  x = r * H3DCos(theta);
+  y = r * H3DSin(theta);
+  
+  glVertex2f(x, y);
+  glEnd ();
+
+  */
   if( !gl_quadric ) {
     gl_quadric = gluNewQuadric();
     gluQuadricTexture( gl_quadric, GL_TRUE );

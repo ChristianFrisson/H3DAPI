@@ -668,7 +668,9 @@ void Extrusion::render() {
 
 			for( int i = nrOfCrossSectionPoints - 1; i >= 0; i-- )
 			{
-				glTexCoord2d( textureCoordinatesCaps[i].x, textureCoordinatesCaps[i].y );
+				renderTexCoordForActiveTexture( Vec3f( textureCoordinatesCaps[i].x, 
+                                               textureCoordinatesCaps[i].y,
+                                               0 ) );
 				if( useCreaseAngle ) {
 					theNormal = normalVector[i];
 					glNormal3f( theNormal.x, theNormal.y, theNormal.z );
@@ -698,7 +700,9 @@ void Extrusion::render() {
 
 				glBegin( GL_QUADS );
 
-				glTexCoord2d( uTextureCoordinates[j], vTextureCoordinates[i] );
+				renderTexCoordForActiveTexture( Vec3f( uTextureCoordinates[j], 
+                                               vTextureCoordinates[i],
+                                               0 ) );
 				if( useCreaseAngle ) {
 					if( crease_angle < Constants::pi )
 						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 ];
@@ -709,7 +713,9 @@ void Extrusion::render() {
 				point = vertexvec[ lower ];
 				glVertex3f( point.x, point.y, point.z );
 
-				glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[i] );
+				renderTexCoordForActiveTexture( Vec3f( uTextureCoordinates[ j + 1 ], 
+                                               vTextureCoordinates[i],
+                                               0 ) );
 				if( useCreaseAngle ) {
 					if( crease_angle < Constants::pi )
 						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 1 ];
@@ -720,7 +726,9 @@ void Extrusion::render() {
 				point = vertexvec[ lower + 1 ];
 				glVertex3f( point.x, point.y, point.z );
 
-				glTexCoord2d( uTextureCoordinates[ j + 1 ], vTextureCoordinates[ i + 1 ] );
+				renderTexCoordForActiveTexture( Vec3f( uTextureCoordinates[ j + 1 ], 
+                                               vTextureCoordinates[ i + 1 ],
+                                               0 ) );
 				if( useCreaseAngle ) {
 					if( crease_angle < Constants::pi )
 						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 2 ];
@@ -731,7 +739,9 @@ void Extrusion::render() {
 				point = vertexvec[ upper + 1 ];
 				glVertex3f( point.x, point.y, point.z );
 
-				glTexCoord2d( uTextureCoordinates[j], vTextureCoordinates[ i + 1 ] );
+				renderTexCoordForActiveTexture( Vec3f( uTextureCoordinates[j], 
+                                               vTextureCoordinates[ i + 1 ],
+                                               0 ) );
 				if( useCreaseAngle ) {
 					if( crease_angle < Constants::pi )
 						theNormal = normalVector[ ifCapsAdd +  quad_index * 4 + 3 ];
@@ -762,7 +772,9 @@ void Extrusion::render() {
 
 			for(int i = 0; i < nrOfCrossSectionPoints; i++ )
 			{
-				glTexCoord2d( textureCoordinatesCaps[i].x, textureCoordinatesCaps[i].y );
+				renderTexCoordForActiveTexture( Vec3f( textureCoordinatesCaps[i].x, 
+                                               textureCoordinatesCaps[i].y,
+                                               0 ) );
 				if( useCreaseAngle ) {
 					theNormal = 
 						normalVector[ normalVector.size() - nrOfCrossSectionPoints + i ];

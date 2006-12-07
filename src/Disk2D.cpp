@@ -88,7 +88,7 @@ void Disk2D::render() {
     // draw a filled circle
     glBegin( GL_TRIANGLE_FAN );
     glNormal3f( 0.f, 0.f, 1.f );
-    glTexCoord2f( 0.5f, 0.5f );
+    renderTexCoordForActiveTexture( Vec3f( 0.5f, 0.5f, 0 ) );
     glVertex2f( 0, 0 );
     H3DFloat x, y;
     int i = 0;
@@ -96,14 +96,18 @@ void Disk2D::render() {
       theta = i * angle_increment;
       x = outer_radius * H3DCos(theta);
       y = outer_radius * H3DSin(theta);
-      glTexCoord2f( x /(outer_radius*2) + 0.5f, y / (outer_radius*2) + 0.5f );
+      renderTexCoordForActiveTexture( Vec3f( x /(outer_radius*2) + 0.5f, 
+                                             y / (outer_radius*2) + 0.5f,
+                                             0 ) );
       glVertex2f (x, y);
     }
     
     theta = 0;
     x = outer_radius * H3DCos(theta);
     y = outer_radius * H3DSin(theta);
-    glTexCoord2f( x /(outer_radius*2) + 0.5f, y / (outer_radius*2) + 0.5f );
+    renderTexCoordForActiveTexture( Vec3f( x /(outer_radius*2) + 0.5f, 
+                                           y / (outer_radius*2) + 0.5f,
+                                           0 ) );
     glVertex2f (x, y);
     
     glEnd ();
@@ -146,20 +150,26 @@ void Disk2D::render() {
         outer_start_point = Vec2f( outer_x, outer_y );
       }
       
-      glTexCoord2f( inner_x / (outer_radius*2) + 0.5f,
-                    inner_y / (outer_radius*2) + 0.5f) ;
+      renderTexCoordForActiveTexture( Vec3f( inner_x / (outer_radius*2) + 0.5f,
+                                             inner_y / (outer_radius*2) + 0.5f,
+                                             0 ) ) ;
       glVertex2f (inner_x, inner_y);
-      glTexCoord2f( outer_x / (outer_radius*2) + 0.5f,
-                    outer_y / (outer_radius*2) + 0.5f );
+      renderTexCoordForActiveTexture( Vec3f( outer_x / (outer_radius*2) + 0.5f,
+                                             outer_y / (outer_radius*2) + 0.5f,
+                                             0 ) );
       glVertex2f (outer_x, outer_y);
     }
     
     if( i != 0 ) {
-      glTexCoord2f( inner_start_point.x / (outer_radius*2) + 0.5f,
-                    inner_start_point.y / (outer_radius*2) + 0.5f) ;
+      renderTexCoordForActiveTexture( 
+                Vec3f( inner_start_point.x / (outer_radius*2) + 0.5f,
+                       inner_start_point.y / (outer_radius*2) + 0.5f,
+                       0 ) );
       glVertex2f (inner_start_point.x, inner_start_point.y);
-      glTexCoord2f( outer_start_point.x / (outer_radius*2) + 0.5f,
-                    outer_start_point.y / (outer_radius*2) + 0.5f) ;
+      renderTexCoordForActiveTexture( 
+                Vec3f( outer_start_point.x / (outer_radius*2) + 0.5f,
+                       outer_start_point.y / (outer_radius*2) + 0.5f,
+                       0 ) ) ;
       glVertex2f (outer_start_point.x, outer_start_point.y);
     }
     

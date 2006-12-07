@@ -30,6 +30,8 @@
 
 #include "X3DTextureCoordinateNode.h"
 #include "GL/glew.h"
+#include "MultiTexture.h"
+#include "X3DTextureNode.h"
 
 using namespace H3D;
 
@@ -67,4 +69,37 @@ void X3DTextureCoordinateNode::disableArrayForTextureUnits(
     disableArrayForTextureUnit( i );
   }
   glClientActiveTexture( saved_texture );
+}
+
+void X3DTextureCoordinateNode::renderTexCoordForActiveTexture( const Vec3f &tc ) {
+  renderTexCoordForTexture( tc, X3DTextureNode::getActiveTexture() );
+}
+
+void X3DTextureCoordinateNode::renderTexCoordForTexture( const Vec3f &tc,
+                                            X3DTextureNode *t) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( t );
+  if( mt ) {
+    size_t texture_units = mt->texture->size();
+    for( unsigned int i = 0; i < texture_units; i++ ) {
+      glMultiTexCoord3f( GL_TEXTURE0_ARB + i, tc.x, tc.y, tc.z );
+    }
+  } else {
+    glTexCoord3f( tc.x, tc.y, tc.z );
+  }
+}
+
+/// Render the texture coordinate for all texture units used by
+/// the texture in X3DTextureNode::getActiveTexture.
+void X3DTextureCoordinateNode::renderForActiveTexture( int index ) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
+  if( mt ) {
+    size_t texture_units = mt->texture->size();
+    for( unsigned int i = 0; i < texture_units; i++ ) {
+      renderForTextureUnit( index, i );
+    }
+  } else {
+    renderForTextureUnit( index, 0 );
+  }
 }

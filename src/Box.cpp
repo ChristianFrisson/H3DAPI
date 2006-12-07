@@ -76,73 +76,72 @@ void Box::render() {
   // +z
   glNormal3f  ( 0, 0, 1 );
 
-  glTexCoord2f( 1, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( x, y, z );
-  glTexCoord2f( 0, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( -x, y, z );
-  glTexCoord2f( 0, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 0, 0 ) );
   glVertex3f  ( -x, -y, z );
-  glTexCoord2f( 1, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 0, 0 ) );
   glVertex3f  ( x, -y, z );
   
   // -z
   glNormal3f  ( 0, 0, -1 );
-
-  glTexCoord2f( 0, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 0, 0 ) );
   glVertex3f  ( x, -y, -z );
-  glTexCoord2f( 1, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 0, 0 ) );
   glVertex3f  ( -x, -y, -z );
-  glTexCoord2f( 1, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( -x, y, -z );
-  glTexCoord2f( 0, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( x, y, -z );
   
   // +y
   glNormal3f  ( 0, 1, 0 );
 
-  glTexCoord2f( 1, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 0, 0 ) );
   glVertex3f  ( x, y, z );
-  glTexCoord2f( 1, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( x, y, -z );
-  glTexCoord2f( 0, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( -x, y, -z );
-  glTexCoord2f( 0, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 0, 0 ) );
   glVertex3f  ( -x, y, z );
 
   // -y
   glNormal3f  ( 0, -1, 0 );
 
-  glTexCoord2f( 0, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( -x, -y, z );
-  glTexCoord2f( 0, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 0, 0 ) );
   glVertex3f  ( -x, -y, -z );
-  glTexCoord2f( 1, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 0, 0 ) );
   glVertex3f  ( x, -y, -z );
-  glTexCoord2f( 1, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( x, -y, z );
   
   // +x
   glNormal3f  ( 1, 0, 0 );
 
-  glTexCoord2f( 0, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( x, y, z );
-  glTexCoord2f( 0, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 0, 0 ) );
   glVertex3f  ( x, -y, z );
-  glTexCoord2f( 1, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 0, 0 ) );
   glVertex3f  ( x, -y, -z );
-  glTexCoord2f( 1, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( x, y, -z );
   
   // -x
   glNormal3f  ( -1, 0, 0 );
 
-  glTexCoord2f( 0, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( -x, y, -z );
-  glTexCoord2f( 0, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 0, 0, 0 ) );
   glVertex3f  ( -x, -y, -z );
-  glTexCoord2f( 1, 0 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 0, 0 ) );
   glVertex3f  ( -x, -y, z );
-  glTexCoord2f( 1, 1 );
+  renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( -x, y, z );
   
   glEnd();

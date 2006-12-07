@@ -35,6 +35,7 @@
 #include "MFBool.h"
 #include "MFVec3f.h"
 #include "AutoPtrVector.h"
+#include "X3DTextureCoordinateNode.h"
 #include "H3DOptionNode.h"
 #include "MFNode.h"
 #ifdef HAVE_OPENHAPTICS
@@ -218,6 +219,10 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+
+    inline void renderTexCoordForActiveTexture( const Vec3f &tc ) {
+      X3DTextureCoordinateNode::renderTexCoordForActiveTexture( tc );
+    }
 
   #ifdef HAVE_OPENHAPTICS
     /// HL event callback function for when the geometry is touched.

@@ -101,9 +101,9 @@ void Cone::render() {
       H3DFloat cosa = cos( angle );
       
       glNormal3f( -sina, atan( l_radius / l_height ) , -cosa );
-      glTexCoord2f( ratio, 1 );
+      renderTexCoordForActiveTexture( Vec3f( ratio, 1, 0 ) );
       glVertex3f( 0, l_height / 2, 0 );
-      glTexCoord2f( ratio, 0 );
+      renderTexCoordForActiveTexture( Vec3f( ratio, 0, 0 ) );
       glVertex3f( -l_radius * sina, -l_height / 2, -l_radius * cosa );
     }
     glEnd();
@@ -117,7 +117,7 @@ void Cone::render() {
       float angle = (float)( i * (Constants::pi*2) / (float) nr_faces);
       float sina = sin( angle );
       float cosa = cos( angle );
-      glTexCoord2f( 0.5f - 0.5f * sina, 0.5f + 0.5f * cosa );
+      renderTexCoordForActiveTexture( Vec3f( 0.5f - 0.5f * sina, 0.5f + 0.5f * cosa, 0 ) );
       glVertex3f( -l_radius * sina, -l_height / 2, -l_radius * cosa );
     }
     glEnd();
