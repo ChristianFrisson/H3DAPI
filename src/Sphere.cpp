@@ -71,46 +71,74 @@ Sphere::Sphere(
 
 
 void Sphere::render() {
-  /*
-  H3DFloat alpha, beta, increment_alpha, increment_beta;
-  H3DFloat alpha_parts = 50, beta_parts = 50;
+  H3DFloat theta_parts = 50, phi_parts = 25;
 
-  H3DFloat increment_alpha = (H3DFloat) Constants::pi*2 / alpha_parts;
-  H3DFloat increment_beta = (H3DFloat) Constants::pi*2 / beta_parts;
+  H3DFloat inc_theta = (H3DFloat) Constants::pi*2 / theta_parts;
+  H3DFloat inc_phi =   (H3DFloat) Constants::pi / phi_parts;
 
   H3DFloat r = radius->getValue();
-
   
+  H3DFloat double_pi = (H3DFloat) Constants::pi * 2;
 
-  // draw a circle with lines
-  H3DFloat x, y;
-  glBegin( GL_LINE_STRIP );
-  int i = 0;
-  for ( ; i < nr_segments; i++ ) {
-    theta = i * angle_increment;
-    x = r * H3DCos(theta);
-    y = r * H3DSin(theta);
-    glVertex2f (x, y);
+  glBegin( GL_QUADS );
+
+  for (unsigned int p = 0; p < phi_parts; p++ ) {
+    for (unsigned int t = 0; t < theta_parts; t++ ) {
+      H3DFloat phi = p * inc_phi;
+      H3DFloat theta = t * inc_theta;
+      H3DFloat next_phi = phi + inc_phi;
+      bool at_seam = t == theta_parts - 1;
+      H3DFloat next_theta = ( at_seam ? 0 :theta + inc_theta );
+      
+      H3DFloat x, y, z;
+      
+      x = - H3DSin( phi ) * H3DSin( theta );
+      y = H3DCos( phi );
+      z = - H3DSin( phi ) * H3DCos( theta );
+      
+      glNormal3f( x, y, z );
+      renderTexCoordForActiveTexture( 
+                          Vec3f( (H3DFloat) (theta / double_pi), 
+                                 (H3DFloat) (1 - phi/ Constants::pi),
+                                 0 ) );
+      glVertex3f( x * r, y * r, z * r );
+
+      x = - H3DSin( next_phi ) * H3DSin( theta );
+      y = H3DCos( next_phi );
+      z = - H3DSin( next_phi ) * H3DCos( theta );
+
+      glNormal3f( x, y, z );
+      renderTexCoordForActiveTexture( 
+                          Vec3f( (H3DFloat) (theta / double_pi), 
+                                 (H3DFloat) (1 - next_phi/ Constants::pi ),
+                                 0 ) );
+      glVertex3f( x * r, y * r, z * r );
+
+      x = - H3DSin( next_phi ) * H3DSin( next_theta );
+      y = H3DCos( next_phi );
+      z = - H3DSin( next_phi ) * H3DCos( next_theta );
+
+      glNormal3f( x, y, z );
+      renderTexCoordForActiveTexture( 
+                     Vec3f( at_seam ? 1 : (H3DFloat) (next_theta / double_pi ), 
+                            (H3DFloat)(1 - next_phi/ Constants::pi),
+                            0 ) );
+      glVertex3f( x * r, y * r, z * r );
+
+      x = - H3DSin( phi ) * H3DSin( next_theta );
+      y = H3DCos( phi );
+      z = - H3DSin( phi ) * H3DCos( next_theta );
+
+      glNormal3f( x, y, z );
+      renderTexCoordForActiveTexture( 
+                   Vec3f( at_seam ? 1 : (H3DFloat)(next_theta / double_pi), 
+                          (H3DFloat)(1 - phi/ Constants::pi),
+                          0 ) );
+      glVertex3f( x * r, y * r, z * r );
+    }
   }
-  
-  theta = 0;
-  x = r * H3DCos(theta);
-  y = r * H3DSin(theta);
-  
-  glVertex2f(x, y);
-  glEnd ();
 
-  */
-  if( !gl_quadric ) {
-    gl_quadric = gluNewQuadric();
-    gluQuadricTexture( gl_quadric, GL_TRUE );
-  }
-  glPushMatrix();
-  // we have to rotate the sphere in order to get the texturing
-  // according to X3D spec.
-  glRotatef( -90, 1, 0, 0 );
-  gluSphere( gl_quadric, radius->getValue(), 50, 50 );
-  glPopMatrix();
+  glEnd();
 } 
 
 #ifdef USE_HAPTICS
