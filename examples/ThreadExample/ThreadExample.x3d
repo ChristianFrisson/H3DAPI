@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Group>
+  <Shape>
+    <Appearance>
+      <Material/>
+    </Appearance>
+    <ThreadExample points="0 0 0, 0.1 0.0 0.1, 0.15 0.1 0"
+                   animationDirection="1.0 0.2 0"
+                   limit="0.2 0.2 0.2"
+                   speed="0.05 0.05 0.05"/>
+  </Shape>
+</Group>
