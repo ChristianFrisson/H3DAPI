@@ -262,7 +262,7 @@ void GLUTWindow::glutKeyboardUpCallback( unsigned char key,
                                    int x, int y ) {
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
-    window->onKeyDown( key, false );
+    window->onKeyUp( key, false );
   }
 }
 
