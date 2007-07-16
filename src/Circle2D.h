@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __CIRCLE2D_H__
 #define __CIRCLE2D_H__
 
-#include "X3DGeometryNode.h"
-#include "SFFloat.h"
+#include <X3DGeometryNode.h>
+#include <SFFloat.h>
 
 namespace H3D {
 
@@ -75,12 +75,11 @@ namespace H3D {
    
     /// Renders the Circle2D using OpenGL.
     virtual void render();
-
-#ifdef USE_HAPTICS
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
-    virtual void traverseSG( TraverseInfo &ti );  
-#endif
+    
+    /// The number of lines rendered by this geometry.
+    virtual int nrLines() {
+      return 40;
+    }
 
     /// The radius field specifies the radius of the circle.
     ///

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __SWITCH_H__
 #define __SWITCH_H__
 
-#include "X3DGroupingNode.h"
-#include "SFInt32.h"
+#include <X3DGroupingNode.h>
+#include <SFInt32.h>
 
 namespace H3D {
 
@@ -95,10 +95,8 @@ namespace H3D {
     /// Only render the child defined by whichChoice,
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Only traverse the childe defined by whichChoice
     virtual void traverseSG( TraverseInfo &ti ); 
-#endif
 
     /// The whichChoice field specifies the index of the child to traverse,
     /// with the first child having index 0. If whichChoice is less than zero

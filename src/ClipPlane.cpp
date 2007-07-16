@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,10 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ClipPlane.h"
-#ifdef USE_HAPTICS
-#include "H3DHapticsDevice.h"
-#endif
+#include <ClipPlane.h>
+#include <H3DHapticsDevice.h>
 
 using namespace H3D;
 
@@ -50,7 +48,7 @@ namespace ClipPlaneInternals {
 }
 
 int ClipPlane::nr_active_clip_planes = 0;
-int ClipPlane::max_nr_clip_planes = -1;
+GLint ClipPlane::max_nr_clip_planes = -1;
 
 ClipPlane::ClipPlane( Inst< SFNode  >  _metadata,
                       Inst< SFBool  >  _enabled,
@@ -80,7 +78,6 @@ ClipPlane::ClipPlane( Inst< SFNode  >  _metadata,
   plane->route( displayList );
 }
 
-#ifdef USE_HAPTICS
 void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
   haptics_enabled = ti.hapticsEnabled();
   if( clipHaptics->getValue() && ti.getHapticsDevices().size() > 0 ) {
@@ -92,16 +89,13 @@ void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
       ti.disableHaptics();
   }
 }
-#endif
 
-#ifdef USE_HAPTICS
 void ClipPlane::disableHapticsState( TraverseInfo &ti ) {
   if( haptics_enabled )
     ti.enableHaptics();
   else
     ti.disableHaptics();
 }
-#endif
 
 void ClipPlane::enableGraphicsState() { 
   if( max_nr_clip_planes == -1 )

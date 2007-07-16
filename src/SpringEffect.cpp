@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,8 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "SpringEffect.h" 
-#include "H3DHapticsDevice.h"
+#include <SpringEffect.h> 
+#include <H3DHapticsDevice.h>
 
 using namespace H3D;
 
@@ -65,7 +65,7 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
   escapeDistance( _escapeDistance ),
   active( _active ),
   deviceIndex( _deviceIndex ),
-  haptic_spring( new HapticSpring( Matrix4f(), 1 ) ) {
+  haptic_spring( new HAPI::HapticSpring( Matrix4f(), 1 ) ) {
   
   type_name = "SpringEffect";
 
@@ -86,7 +86,6 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
 // which can cause the spring to be added even though it should not.
 int counter = 0;
 
-#ifdef USE_HAPTICS
 void SpringEffect::traverseSG( TraverseInfo &ti ) {
   if( counter < 5 ) {
     counter++;
@@ -105,23 +104,38 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
           active->setValue( false, id );
           force->setValue( Vec3f( 0, 0, 0 ) );
         } else {
-          haptic_spring->setPosition( spring_pos );
-          haptic_spring->setSpringConstant( springConstant->getValue() );
-          haptic_spring->transform = ti.getAccForwardMatrix();
+          haptic_spring->setPosition( spring_pos * 1000 );
+          haptic_spring->setSpringConstant( springConstant->getValue() / 1000 );
+          haptic_spring->transform = Matrix4f( 1e3, 0, 0, 0,
+                                                   0, 1e3, 0, 0,
+                                                   0, 0, 1e3, 0,
+                                                   0, 0, 0, 1 ) *
+                                     (ti.getAccForwardMatrix() *
+                                     Matrix4f( 1e-3, 0, 0, 0,
+                                               0, 1e-3, 0, 0,
+                                               0, 0, 1e-3, 0,
+                                               0, 0, 0, 1 ));
           ti.addForceEffect( device_index, haptic_spring.get() );
-          Vec3f f = haptic_spring->getLatestForce();
+          Vec3f f = (Vec3f) haptic_spring->getLatestForce();
           force->setValue( f );
         }
       } else {
         if( distance <= startDistance->getValue() ) {
           active->setValue( true, id );
-          haptic_spring->setPosition( spring_pos );
-          haptic_spring->setSpringConstant( springConstant->getValue() );
-          haptic_spring->transform = ti.getAccForwardMatrix();
+          haptic_spring->setPosition( spring_pos * 1000 );
+          haptic_spring->setSpringConstant( springConstant->getValue() / 1000 );
+          haptic_spring->transform = Matrix4f( 1e3, 0, 0, 0,
+                                                   0, 1e3, 0, 0,
+                                                   0, 0, 1e3, 0,
+                                                   0, 0, 0, 1 ) *
+                                     (ti.getAccForwardMatrix() *
+                                     Matrix4f( 1e-3, 0, 0, 0,
+                                               0, 1e-3, 0, 0,
+                                               0, 0, 1e-3, 0,
+                                               0, 0, 0, 1 ));
           ti.addForceEffect( device_index, haptic_spring.get() );
         }
       }
     }
   }
 }
-#endif

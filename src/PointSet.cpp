@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "PointSet.h"
-#include "X3DTextureNode.h"
-#ifdef USE_HAPTICS
-#include "HLFeedbackShape.h"
-#endif
+#include <PointSet.h>
+#include <X3DTextureNode.h>
+#include <HLFeedbackShape.h>
 
 using namespace H3D;
 
@@ -46,22 +44,26 @@ H3DNodeDatabase PointSet::database(
 namespace PointSetInternals {
   FIELDDB_ELEMENT( PointSet, color, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PointSet, coord, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PointSet, fogCoord, INPUT_OUTPUT );
 }
 
 PointSet::PointSet(  Inst< SFNode           > _metadata,
                      Inst< SFBound          > _bound,
                      Inst< DisplayList      > _displayList,
                      Inst< SFColorNode      > _color,
-                     Inst< SFCoordinateNode > _coord ):
+                     Inst< SFCoordinateNode > _coord,
+                     Inst< SFFogCoordinate  > _fogCoord  ):
   X3DGeometryNode( _metadata, _bound, _displayList ),
   color   ( _color    ),
-  coord   ( _coord    ) {
+  coord   ( _coord    ),
+  fogCoord( _fogCoord ){
 
   type_name = "PointSet";
   database.initFields( this );
 
   color->route( displayList );
   coord->route( displayList );
+  fogCoord->route( displayList );
 
   coord->route( bound );
 
@@ -109,6 +111,7 @@ void PointSet::render() {
       }
       // Render the vertices.
       coordinate_node->render( i );
+       if( fogCoord->getValue()) fogCoord->getValue()->render(i);
     }
     // end GL_POLY_LINE
     glEnd();
@@ -121,16 +124,3 @@ void PointSet::render() {
   }
 }
 
-#ifdef USE_HAPTICS
-void PointSet::traverseSG( TraverseInfo &ti ) {
-  X3DCoordinateNode *coord_node = coord->getValue();
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
-    HLFeedbackShape *fs = 
-      new HLFeedbackShape( this,
-                           ti.getCurrentSurface(),
-                           ti.getAccForwardMatrix(),
-                           coord_node->nrAvailableCoords());
-    ti.addHapticShapeToAll( fs );
-  }
-}
-#endif

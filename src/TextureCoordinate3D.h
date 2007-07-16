@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __TEXTURECOORDINATE3D_H__
 #define __TEXTURECOORDINATE3D_H__
 
-#include "X3DTextureCoordinateNode.h"
+#include <X3DTextureCoordinateNode.h>
 #include <GL/glew.h>
-#include "MFVec3f.h"
+#include <MFVec3f.h>
 
 namespace H3D {
 
@@ -50,6 +50,12 @@ namespace H3D {
     TextureCoordinate3D( Inst< SFNode >  _metadata = 0,
                          Inst< MFVec3f>  _point   = 0 );
 
+
+    /// Returns true.
+    virtual bool supportsExplicitTexCoords() {
+      return true;
+    } 
+
     /// Perform the OpenGL commands to render a texture coordinate given the 
     /// index of the texture coordinate. Installs the texture coordinate
     /// as a glTexCoord2f
@@ -63,15 +69,8 @@ namespace H3D {
     /// array.
     virtual void renderArray();
 
-    /// Perform the OpenGL commands to render all texture coordinates as 
-    /// an array for the given texture unit.
-    virtual void renderArrayForTextureUnit( unsigned int texture_unit );
-
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
-
-    /// Disable the array state enabled in renderArrayForTextureUnit().
-    virtual void disableArrayForTextureUnit( unsigned int texture_unit );
 
     /// Returns the number of texture coordinates this node can render.
     virtual unsigned int nrAvailableTexCoords() {

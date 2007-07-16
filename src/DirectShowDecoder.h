@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #ifndef __DIRECTSHOWDECODER_H__
 #define __DIRECTSHOWDECODER_H__
 
-#include "FieldTemplates.h"
-#include "SFTime.h"
+#include <FieldTemplates.h>
+#include <SFTime.h>
 
 #ifdef HAVE_DSHOW
 
@@ -64,7 +64,7 @@
 #pragma comment( lib, "strmbase.lib" )
 #endif
 
-#include "H3DVideoClipDecoderNode.h"
+#include <H3DVideoClipDecoderNode.h>
 
 namespace H3D {
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "WindPhysicsModel.h"
-#include "ParticleSystem.h"
+#include <WindPhysicsModel.h>
+#include <ParticleSystem.h>
 
 using namespace H3D;
 
@@ -84,10 +84,7 @@ void WindPhysicsModel::updateParticleValues(
 
   /// TODO: what should happen really with turbulation
   if( dir == Vec3f( 0, 0, 0 ) ) {
-    dir = Vec3f( ParticleSystem::getRandomValue( -1, 1 ), 
-                 ParticleSystem::getRandomValue( -1, 1 ), 
-                 ParticleSystem::getRandomValue( -1, 1 ) ); 
-    dir.normalizeSafe();
+    dir = ParticleSystem::getRandomPointOnUnitSphere();
   } else if( turbulence->getValue() > 0 ) {
 
     // Don't know how turbulence should work.
@@ -162,7 +159,7 @@ void WindPhysicsModel::updateParticleValues(
 
   // from X3D spec.
   H3DFloat pressure = 
-    H3DPow( (H3DFloat) 10, 2 * H3DLog( wind_speed ) ) * 0.64615;
+    H3DPow( (H3DFloat) 10.0f, 2.0f * H3DLog( wind_speed ) ) * 0.64615f;
   
   H3DFloat force = particle.surface_area * pressure;
   H3DFloat acceleration = force / particle.mass;

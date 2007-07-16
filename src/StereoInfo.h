@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __STEREOINFO_H__
 #define __STEREOINFO_H__
 
-#include "X3DBindableNode.h"
-#include "SFFloat.h"
+#include <X3DBindableNode.h>
+#include <SFFloat.h>
 
 namespace H3D {
   /// \ingroup H3DNodes

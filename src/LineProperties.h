@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __LINEPROPERTIES_H__
 #define __LINEPROPERTIES_H__
 
-#include "X3DAppearanceChildNode.h"
-#include "SFInt32.h"
-#include "SFFloat.h"
+#include <X3DAppearanceChildNode.h>
+#include <SFInt32.h>
+#include <SFFloat.h>
 
 namespace H3D {
 

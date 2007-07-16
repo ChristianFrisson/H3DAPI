@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ExplosionEmitter.h"
-#include "ParticleSystem.h"
+#include <ExplosionEmitter.h>
+#include <ParticleSystem.h>
 
 using namespace H3D;
 
@@ -71,21 +71,9 @@ void ExplosionEmitter::generateParticles( ParticleSystem *ps,
     H3DInt32 particles_to_emit = ps->maxParticles->getValue();
 
     while( particles_to_emit >= 1 ) {
-      Vec3f dir( ParticleSystem::getRandomValue( -1, 1 ), 
-                 ParticleSystem::getRandomValue( -1, 1 ), 
-                 ParticleSystem::getRandomValue( -1, 1 ) ); 
-      
-      dir.normalizeSafe();
-      dir *= speed->getValue();
-      Particle p = Particle( Vec3f( 0, 0, 0 ),
-                             dir );
-      p.size = ps->particleSize->getValue();
-      p.type = ps->getCurrentParticleType(); 
-      p.surface_area = surfaceArea->getValue();
-      p.total_time_to_live = 20;
-      p.time_lived = 0;
-      p.geometry.reset( ps->geometry->getValue() );
-      p.mass = mass->getValue();
+      Vec3f dir = ParticleSystem::getRandomPointOnUnitSphere();      
+      Particle p = newParticle( ps, Vec3f( 0, 0, 0 ),
+                                dir );
       particles.push_back( p );
       particles_to_emit--;
     }

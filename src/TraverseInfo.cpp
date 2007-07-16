@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,26 +28,33 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DSurfaceNode.h"
-#include "X3DGeometryNode.h"
-#include "H3DHapticsDevice.h"
-#include "TraverseInfo.h"
+#include <H3DSurfaceNode.h>
+#include <X3DGeometryNode.h>
+#include <H3DHapticsDevice.h>
+#include <TraverseInfo.h>
 
 using namespace H3D;
 
-void TraverseInfo::addHapticShapeToAll( HapticShape *shape ) {
+void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
   shape->ref();
   if( hapticsEnabled() ) {
-    for( vector< HapticShapeVector >::iterator i = haptic_shapes.begin();
+    for( vector< vector< HapticShapeVector > >::iterator i = haptic_shapes.begin();
          i != haptic_shapes.end();
          i++ ) {
-      (*i).push_back( shape );
+      if( shape->shape_id == -1 ) {
+        X3DGeometryNode *geometry = 
+          static_cast< X3DGeometryNode * >( shape->userdata );
+        shape->shape_id = 
+          geometry->getHapticShapeId( geometry_count[ geometry ] );
+        geometry_count[ geometry ]++;
+      }
+      (*i)[current_layer].push_back( shape );
     }
   } 
   shape->unref();
 }
 
-void TraverseInfo::addForceEffectToAll( HapticForceEffect *effect ) {
+void TraverseInfo::addForceEffectToAll( HAPI::HAPIForceEffect *effect ) {
   effect->ref();
   if( hapticsEnabled() ) {
     for( vector< HapticEffectVector >::iterator i = 
@@ -61,7 +68,7 @@ void TraverseInfo::addForceEffectToAll( HapticForceEffect *effect ) {
 }
 
 void TraverseInfo::addForceEffect( int device_index, 
-                                   HapticForceEffect *effect ) {
+                                   HAPI::HAPIForceEffect *effect ) {
   if( device_index < 0 || device_index >= (int)haptics_devices.size() ) {
     stringstream s;
     s << "TraverseInfo only has " << (unsigned int) haptics_devices.size() 
@@ -79,7 +86,7 @@ void TraverseInfo::addForceEffect( int device_index,
 }
 
 void TraverseInfo::addHapticShape( int device_index, 
-                                   HapticShape *shape ) {
+                                   HAPI::HAPIHapticShape *shape ) {
   if( device_index < 0 || device_index >= (int)haptics_devices.size() ) {
     stringstream s;
     s << "TraverseInfo only has " << (unsigned int) haptics_devices.size() 
@@ -88,9 +95,16 @@ void TraverseInfo::addHapticShape( int device_index,
                                      s.str(),
                                      H3D_FULL_LOCATION );
   }
-  if( hapticsEnabled() )
-    haptic_shapes[device_index].push_back( shape );
-  else {
+  if( hapticsEnabled() ) {
+    if( shape->shape_id == -1 ) {
+        X3DGeometryNode *geometry = 
+          static_cast< X3DGeometryNode * >( shape->userdata );
+        shape->shape_id = 
+          geometry->getHapticShapeId( geometry_count[ geometry ] );
+        geometry_count[ geometry ]++;
+      }
+    haptic_shapes[device_index][current_layer].push_back( shape );
+  } else {
     shape->ref();
     shape->unref();
   }

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "GeneratedCubeMapTexture.h"
-#include "X3DBackgroundNode.h"
-#ifdef USE_HAPTICS
-#include "DeviceInfo.h"
-#endif
+#include <GeneratedCubeMapTexture.h>
+#include <X3DBackgroundNode.h>
+#include <DeviceInfo.h>
 
 using namespace H3D;
 
@@ -128,15 +126,13 @@ void GeneratedCubeMapTexture::disableTexturing() {
   glDisable( GL_TEXTURE_CUBE_MAP_ARB );
 }
 
-#ifdef USE_HAPTICS
 void GeneratedCubeMapTexture::traverseSG( TraverseInfo &ti ) {
   X3DEnvironmentTextureNode::traverseSG( ti );
   local_to_global = ti.getAccForwardMatrix();
 }
-#endif
 
 void GeneratedCubeMapTexture::updateCubeMapTextures( X3DChildNode *n,
-                                                     Viewpoint *vp ) {
+                                                     X3DViewpointNode *vp ) {
   if( !textures_initialized )
     initializeTextures();
 
@@ -164,7 +160,7 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
                                              const Vec3f & camera_dir,
                                              const Vec3f & camera_up,
                                              X3DChildNode *n,
-                                             Viewpoint *vp ) {
+                                             X3DViewpointNode *vp ) {
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -186,7 +182,7 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
 
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  Rotation vp_orientation = vp->orientation->getValue();
+  Rotation vp_orientation = vp->getFullOrn();
   Rotation vp_rot = 
     (Rotation)vp->accForwardMatrix->getValue().getRotationPart();
 
@@ -227,13 +223,11 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
              c_ref.x, c_ref.y, c_ref.z, 
              c_up.x, c_up.y, c_up.z );
 
-#ifdef USE_HAPTICS
 	// Render the stylus of all haptics devices.
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {
     di->renderStyli();
   }
-#endif
 
   // Render the scene.
   H3DDisplayListObject *dlo = 
@@ -253,7 +247,7 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
 /// GeneratedCubeMapTexture. The update field will be checked to 
 /// see if an update is required. 
 void GeneratedCubeMapTexture::updateAllCubeMapTextures( X3DChildNode *n,
-                                                        Viewpoint *vp ) {
+                                                        X3DViewpointNode *vp ) {
   for( list< GeneratedCubeMapTexture * >::iterator i = instances.begin();
        i != instances.end(); i++ ) {
     GeneratedCubeMapTexture *cubemap = 

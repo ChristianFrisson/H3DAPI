@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,9 +26,9 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "H3DApi.h"
-#ifdef USE_HAPTICS
-#include "FrictionalSurface.h"
+#include <H3DApi.h>
+#include <FrictionalSurface.h>
+#include <FrictionSurface.h>
 
 using namespace H3D;
 
@@ -44,30 +44,69 @@ namespace FritionalSurfaceInternals {
   FIELDDB_ELEMENT( FrictionalSurface, staticFriction, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrictionalSurface, dynamicFriction, INPUT_OUTPUT );
 }
-  
-void FrictionalSurface::hlRender( HLHapticsDevice *hd ) {
-#ifdef HAVE_OPENHAPTICS
-  SmoothSurface::hlRender( hd );
-  hlMaterialf(HL_FRONT_AND_BACK, 
-              HL_DYNAMIC_FRICTION, 
-              dynamicFriction->getValue() );
-  hlMaterialf(HL_FRONT_AND_BACK, 
-              HL_STATIC_FRICTION, 
-              staticFriction->getValue() );
-#endif
-}
 
-FrictionalSurface::FrictionalSurface( Inst< SFFloat >  _stiffness,
-                                      Inst< SFFloat >  _damping,
-                                      Inst< SFFloat >  _staticFriction,
-                                      Inst< SFFloat >  _dynamicFriction ):
+FrictionalSurface::FrictionalSurface( 
+        Inst< UpdateStiffness > _stiffness,
+        Inst< UpdateDamping > _damping,
+        Inst< UpdateStaticFriction > _staticFriction,
+        Inst< UpdateDynamicFriction > _dynamicFriction ):
   SmoothSurface( _stiffness, _damping ),
   staticFriction( _staticFriction ),
-  dynamicFriction( _dynamicFriction ) {
+  dynamicFriction( _dynamicFriction ),
+  in_static_contact( true ) {
   type_name = "FrictionalSurface";
   database.initFields( this );
   
   staticFriction->setValue( 0.1f );
   dynamicFriction->setValue( 0.4f );
 }
-#endif
+
+void FrictionalSurface::initialize() {
+  hapi_surface.reset(
+    new HAPI::FrictionSurface( stiffness->getValue() * conversion_to_HAPI,
+                               damping->getValue() * conversion_to_HAPI,
+                               staticFriction->getValue(),
+                               dynamicFriction->getValue() ) );
+}
+
+void FrictionalSurface::UpdateStaticFriction::
+      setValue( const H3DFloat &f, int id ) {
+  SFFloat::setValue( f, id );
+  FrictionalSurface *fs = 
+    static_cast< FrictionalSurface * >( getOwner() );
+  if( fs->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
+      ->static_friction = f;
+  }
+}
+
+void FrictionalSurface::UpdateStaticFriction::update() {
+  SFFloat::update();
+  FrictionalSurface *fs = 
+    static_cast< FrictionalSurface * >( getOwner() );
+  if( fs->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
+      ->static_friction = value;
+  }
+}
+
+void FrictionalSurface::UpdateDynamicFriction::
+    setValue( const H3DFloat &f, int id ) {
+  SFFloat::setValue( f, id );
+  FrictionalSurface *fs = 
+    static_cast< FrictionalSurface * >( getOwner() );
+  if( fs->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
+      ->dynamic_friction = f;
+  }
+}
+
+void FrictionalSurface::UpdateDynamicFriction::update() {
+  SFFloat::update();
+  FrictionalSurface *fs = 
+    static_cast< FrictionalSurface * >( getOwner() );
+  if( fs->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
+      ->dynamic_friction = value;
+  }
+}

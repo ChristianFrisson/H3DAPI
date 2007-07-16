@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __H3DVIDEOTEXTURENODE_H__
 #define __H3DVIDEOTEXTURENODE_H__
 
-#include "X3DTexture2DNode.h"
-#include "H3DVideoClipDecoderNode.h"
+#include <X3DTexture2DNode.h>
+#include <H3DVideoClipDecoderNode.h>
 
 namespace H3D {
   /// \ingroup AbstractNodes 
@@ -54,7 +54,6 @@ namespace H3D {
                         _scaleToP2, _image, _textureProperties ),
       frame_bytes_allocated( 0 ) {}
 
-#ifdef USE_HAPTICS
     /// Traverse the senegraph. 
     virtual void traverseSG( TraverseInfo &ti ) {
       // break the display list cache if we have a new frame
@@ -62,7 +61,6 @@ namespace H3D {
         repeatS->touch();
       X3DTexture2DNode::traverseSG( ti );
     }
-#endif
 
     /// Render the texture.
     virtual void render();

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __X3DBOUNDEDOBJECT_H__
 #define __X3DBOUNDEDOBJECT_H__
 
-#include "H3DBoundedObject.h"
+#include <H3DBoundedObject.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface

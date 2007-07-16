@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __TRIANGLESET2D_H__
 #define __TRIANGLESET2D_H__
 
-#include "X3DGeometryNode.h"
-#include "MFVec2f.h"
+#include <X3DGeometryNode.h>
+#include <MFVec2f.h>
 
 namespace H3D {
 
@@ -85,11 +85,14 @@ namespace H3D {
     /// Renders the TriangleSet2D using OpenGL.
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
+
+    /// The number of triangles renderered in this geometry.
+    virtual int nrTriangles() {
+      return vertices->size() / 3;
+    }
 
     /// The vertices field specifies the triangles to be displayed. 
     /// The number of vertices provided shall be evenly divisible by three.

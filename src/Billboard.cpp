@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Billboard.h"
-#include "Viewpoint.h"
+#include <Billboard.h>
+#include <X3DViewpointNode.h>
 
 using namespace H3D;
 
@@ -131,17 +131,30 @@ void Billboard::SFMatrix4f::update() {
   }
 }
 
-#ifdef USE_HAPTICS
 void Billboard::traverseSG( TraverseInfo &ti ) {
-  Viewpoint *vp = Viewpoint::getActive();
-  Matrix4f vp_to_local = 
+  X3DViewpointNode *vp = X3DViewpointNode::getActive();
+  Matrix4f vp_to_local;
+  Vec3f vp_pos;
+  Vec3f vp_y_axis;
+  if( vp ) {
+    vp_to_local = 
     ti.getAccInverseMatrix() *
     vp->accForwardMatrix->getValue();
   
-  Vec3f vp_pos = vp_to_local * vp->position->getValue();
-  Vec3f vp_y_axis = 
+    vp_pos = vp_to_local * vp->getFullPos();
+    vp_y_axis = 
     vp_to_local.getScaleRotationPart() * 
-    (vp->orientation->getValue() *  Vec3f( 0, 1, 0 ) );
+    (vp->getFullOrn() *  Vec3f( 0, 1, 0 ) );
+  }
+  else {
+    vp_to_local = 
+    ti.getAccInverseMatrix();
+  
+    vp_pos = vp_to_local * Vec3f( 0, 0, 10 );
+    vp_y_axis = 
+    vp_to_local.getScaleRotationPart() * 
+    Vec3f( 0, 1, 0 );
+  }
   vp_y_axis.normalizeSafe();
   // set the vpPosition and vpUp fields if the value has changed.
   if( vp_pos != vpPosition->getValue() )
@@ -150,5 +163,4 @@ void Billboard::traverseSG( TraverseInfo &ti ) {
     vpUp->setValue( vp_y_axis );
   MatrixTransform::traverseSG( ti );
 }
-#endif
 

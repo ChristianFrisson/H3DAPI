@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,12 +26,12 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "PythonTypes.h"
-#include "PythonMethods.h"
-#include "PythonScript.h"
-#include "X3DTypes.h"
-#include "X3DFieldConversion.h"
-#include "H3DDynamicFieldsObject.h"
+#include <PythonTypes.h>
+#include <PythonMethods.h>
+#include <PythonScript.h>
+#include <X3DTypes.h>
+#include <X3DFieldConversion.h>
+#include <H3DDynamicFieldsObject.h>
 
 #ifdef HAVE_PYTHON
 

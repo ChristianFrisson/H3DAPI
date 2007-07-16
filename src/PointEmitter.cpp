@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "PointEmitter.h"
-#include "ParticleSystem.h"
+#include <PointEmitter.h>
+#include <ParticleSystem.h>
 
 using namespace H3D;
 
@@ -79,56 +79,24 @@ void PointEmitter::generateParticles( ParticleSystem *ps,
 
   H3DFloat particles_to_emit = emission_rate * dt;
 
-  while( particles_to_emit >= 1 ) {
-    
+  while( particles_to_emit > 0 ) {
+    // if the number of particles to emit is a fraction of
+    // a particle only add it with the possibility of that fraction.
+    // e.g. if particles_to_emit is 0.1, there is a 10 % chance that
+    // a particle will be emitted.
+    if( particles_to_emit < 1 && 
+        rand() > RAND_MAX * particles_to_emit ) break;
+
     Vec3f dir = direction->getValue();
 
-    /// TODO: this is not random direction, fix it
+    // special case: if 0,0,0 use random direction
     if( dir == Vec3f( 0, 0, 0 ) ) {
-      dir = Vec3f( ParticleSystem::getRandomValue( -1, 1 ), 
-                   ParticleSystem::getRandomValue( -1, 1 ), 
-                   ParticleSystem::getRandomValue( -1, 1 ) ); 
+      dir = ParticleSystem::getRandomPointOnUnitSphere();
     }
     
-    dir.normalizeSafe();
-    dir *= ParticleSystem::getVariationValue( speed->getValue(), 
-                                              variation->getValue() );
-    Particle p = Particle( position->getValue(),
-                           dir );
-    p.size = ps->particleSize->getValue();
-    p.type = ps->getCurrentParticleType(); 
-    p.surface_area = surfaceArea->getValue();
-    p.total_time_to_live = 
-       ParticleSystem::getVariationValue( ps->particleLifetime->getValue(), 
-                                          ps->lifetimeVariation->getValue() );
-    p.geometry.reset( ps->geometry->getValue() );
-    p.mass = mass->getValue();
+    Particle p = newParticle( ps, position->getValue(), dir );
     particles.push_back( p );
     particles_to_emit--;
-  }
-
-  if( rand() < RAND_MAX * particles_to_emit ) {
-    Vec3f dir = direction->getValue();
-
-    if( dir == Vec3f( 0, 0, 0 ) ) {
-      dir = Vec3f( ParticleSystem::getRandomValue( -1, 1 ), 
-                   ParticleSystem::getRandomValue( -1, 1 ), 
-                   ParticleSystem::getRandomValue( -1, 1 ) ); 
-    }
-    dir.normalizeSafe();
-    dir *= ParticleSystem::getVariationValue( speed->getValue(), 
-                                              variation->getValue() );
-    Particle p = Particle( position->getValue(),
-                           dir );
-    p.size = ps->particleSize->getValue();
-    p.type = ps->getCurrentParticleType(); 
-    p.surface_area = surfaceArea->getValue();
-    p.total_time_to_live = 
-       ParticleSystem::getVariationValue( ps->particleLifetime->getValue(), 
-                                          ps->lifetimeVariation->getValue() );
-    p.geometry.reset( ps->geometry->getValue() );
-    p.mass = mass->getValue();
-    particles.push_back( p );
   }
 }
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #ifndef __H3DIMAGELOADERNODE_H__
 #define __H3DIMAGELOADERNODE_H__
 
-#include "Image.h"
-#include "Node.h"
+#include <Image.h>
+#include <Node.h>
 #include <list>
 
 namespace H3D {
@@ -67,8 +67,8 @@ namespace H3D {
       supports_func( _supports ) {
 		  
         if( !H3DImageLoaderNode::initialized ) {
-          H3DImageLoaderNode::registered_file_readers = 
-            new list< FileReaderRegistration >;
+          H3DImageLoaderNode::registered_file_readers.reset(
+            new list< FileReaderRegistration > );
           initialized = true;
         }
         H3DImageLoaderNode::registerFileReader( *this );
@@ -125,8 +125,88 @@ namespace H3D {
       registered_file_readers->push_back( fr );
     }
 
+    // Creating a new auto_ptr local for this node, because 
+    // registrated_file_reader caused a memory leak and because
+    // of the order of setting the static variables the autp_ptr's
+    // constructor resets the auto_ptr to 0 eventhough the 
+    // registrated_file_reader has been initilazed, and therefore
+    // cause an error making it imposible to use the standard auto_ptr.
+    template<class T>
+    class local_auto_ptr{
+    private:
+      T* ap;    // refers to the actual owned object (if any)
+    public:
+      typedef T element_type;
+
+      // constructor
+      explicit local_auto_ptr (T* ptr = 0) {
+        if(!initialized){
+          ap=ptr;
+        }
+      }
+      
+      // copy constructors (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr (local_auto_ptr& rhs) throw() : ap(rhs.release()) { }
+
+      template<class Y>
+      local_auto_ptr (local_auto_ptr<Y>& rhs) throw() : ap(rhs.release()) { }
+      
+      // assignments (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr& operator= (local_auto_ptr& rhs) throw(){
+        if(!initialized){  
+          reset(rhs.release());
+          return *this;
+        }
+      }
+      template<class Y>
+      local_auto_ptr& operator= (local_auto_ptr<Y>& rhs) throw(){
+        if(!initialized){
+          reset(rhs.release());
+          return *this;
+        }
+      }
+
+      // destructor
+      ~local_auto_ptr() throw(){
+        delete ap;
+      }
+
+      // value access
+      T* get() const throw(){
+        return ap;
+      }
+      T& operator*() const throw(){
+        return *ap;
+      }
+      T* operator->() const throw(){
+        return ap;
+      }
+
+      // release ownership
+      T* release() throw(){
+        if(!initialized){
+          T* tmp(ap);
+          ap = 0;
+          return tmp;
+        }
+      }
+
+      // reset value
+      void reset (T* ptr=0) throw(){
+        if(!initialized){
+          if (ap != ptr){
+            delete ap;
+            ap = ptr;
+          }
+        }
+      }
+    };
+
   protected:
-    static list< FileReaderRegistration > *registered_file_readers;
+    static local_auto_ptr< list< FileReaderRegistration > > registered_file_readers;
+    //static list< FileReaderRegistration > *registered_file_readers;
     static bool initialized;
   };
 }

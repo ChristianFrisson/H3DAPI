@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __FORCEFIELD_H__
 #define __FORCEFIELD_H__
 
-#include "H3DForceEffect.h" 
-#include "HapticForceField.h"
-#include "SFVec3f.h"
+#include <H3DForceEffect.h> 
+#include <HapticForceField.h>
+#include <SFVec3f.h>
 
 namespace H3D {
   /// \ingroup H3DNodes 
@@ -43,16 +43,23 @@ namespace H3D {
     ForceField( Inst< SFVec3f > _force = 0,
                 Inst< SFNode  > _metadata = 0 );
 
-#ifdef USE_HAPTICS
     /// Adds a HapticForceField effect to the TraverseInfo.
     virtual void traverseSG( TraverseInfo &ti ) {
       if( ti.hapticsEnabled() ) {
-        ti.addForceEffectToAll( new HapticForceField( ti.getAccForwardMatrix(),
-                                                      force->getValue(),
-                                                      true ) );
+        ti.addForceEffectToAll( new HAPI::HapticForceField(
+                                         Matrix4f( 1e3, 0, 0, 0,
+                                                   0, 1e3, 0, 0,
+                                                   0, 0, 1e3, 0,
+                                                   0, 0, 0, 1 ) *
+                                         (ti.getAccForwardMatrix() *
+                                         Matrix4f( 1e-3, 0, 0, 0,
+                                                   0, 1e-3, 0, 0,
+                                                   0, 0, 1e-3, 0,
+                                                   0, 0, 0, 1 )),
+                                               force->getValue(),
+                                                         true ) );
       }
     }
-#endif
 
     /// The force to render.
     ///

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,10 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "PackagedShader.h"
-#include "X3DTexture2DNode.h"
-#include "X3DTexture3DNode.h"
-#include "ShaderFunctions.h"
+#include <PackagedShader.h>
+#include <X3DTexture2DNode.h>
+#include <X3DTexture3DNode.h>
+#include <ShaderFunctions.h>
+#include "ResourceResolver.h"
 
 using namespace H3D;
 
@@ -65,6 +66,8 @@ PackagedShader::PackagedShader( Inst< DisplayList  > _displayList,
 {
   type_name = "PackagedShader";
   database.initFields( this );
+
+  addInlinePrefix("cg");
 
   activate->route( displayList, id );
 }
@@ -164,8 +167,9 @@ void PackagedShader::initCGShaderProgram() {
   if( cgGLIsProfileSupported( cg_vertex_profile ) &&
       cgGLIsProfileSupported( cg_fragment_profile )) {
     for( MFString::const_iterator i = url->begin(); 
-         i != url->end(); i++ ) {       
-      string resolved_url = resolveURLAsFile( *i );
+         i != url->end(); i++ ) {  
+      bool is_tmp_file;
+      string resolved_url = resolveURLAsFile( *i, &is_tmp_file );
       if( resolved_url != "" ) {
         setURLUsed( *i );
         cg_vertex_program = cgCreateProgramFromFile( cg_context,
@@ -189,6 +193,8 @@ void PackagedShader::initCGShaderProgram() {
                                                        resolved_url.c_str(),
                                                        cg_fragment_profile,
                                                        "frag_main", NULL);
+        if( is_tmp_file ) 
+          ResourceResolver::releaseTmpFileName( resolved_url );
         err = cgGetError();
         if( err != CG_NO_ERROR ) {
           Console(3) << "Warning: Shader program error when compiling fragment "

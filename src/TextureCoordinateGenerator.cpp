@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "TextureCoordinateGenerator.h"
+#include <TextureCoordinateGenerator.h>
 #include "GL/glew.h"
 
 using namespace H3D;
@@ -62,46 +62,13 @@ TextureCoordinateGenerator::TextureCoordinateGenerator(
   mode->setValue( "GL_SPHERE" );
 }
 
-void TextureCoordinateGenerator::render( int index ) {
-  throw Exception::H3DAPIException("Should not be called", 
-                                   H3D_FULL_LOCATION ); 
-}
-
-void TextureCoordinateGenerator::renderForTextureUnit( int index,
-                                  unsigned int texture_unit ) {
-  throw Exception::H3DAPIException("Should not be called", 
-                                   H3D_FULL_LOCATION ); 
-}
-
-void TextureCoordinateGenerator::renderArray() {
-  throw Exception::H3DAPIException("Should not be called", 
-                                   H3D_FULL_LOCATION ); 
-}
-
-
-void TextureCoordinateGenerator::renderArrayForTextureUnit( 
-                                  unsigned int texture_unit ) {
-  throw Exception::H3DAPIException("Should not be called", 
-                                   H3D_FULL_LOCATION ); 
-}
-
-/// Disable the array state enabled in renderAttay().
-void TextureCoordinateGenerator::disableArray() {
-  throw Exception::H3DAPIException("Should not be called", 
-                                   H3D_FULL_LOCATION ); 
-}
-
-void TextureCoordinateGenerator::disableArrayForTextureUnit( unsigned int texture_unit ) {
-  throw Exception::H3DAPIException("Should not be called", 
-                                   H3D_FULL_LOCATION ); 
-}
-
 void TextureCoordinateGenerator::startTexGen() {  
   
   const string &gen_mode = mode->getValue();
   const vector< H3DFloat > &params = parameter->getValue();
 
-  if( gen_mode == "GL_SPHERE" ) {
+  if( gen_mode == "GL_SPHERE" ||
+      gen_mode == "SPHERE" ) {
     glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
     glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
     glEnable( GL_TEXTURE_GEN_S );

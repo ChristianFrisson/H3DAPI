@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ComposedCubeMapTexture.h"
+#include <ComposedCubeMapTexture.h>
 
 using namespace H3D;
 
@@ -95,68 +95,121 @@ void ComposedCubeMapTexture::render() {
     if( back_tex && front_tex && left_tex && 
         right_tex && top_tex && bottom_tex ) {
       unsigned int dim;
-      bool textures_ok = true;
-      Image *i = back_tex->image->getValue();
-      if( i ) { 
-        dim = i->width();
-        textures_ok = textures_ok && ( i->height() == dim );
-        i = front_tex->image->getValue();
-        textures_ok = i && textures_ok && i->width() == dim && 
-          i->height() == dim;
-        i = left_tex->image->getValue();
-        textures_ok = i && textures_ok && i->width() == dim && 
-          i->height() == dim;
-        i = right_tex->image->getValue();
-        textures_ok = i && textures_ok && i->width() == dim && 
-          i->height() == dim;
-        i = top_tex->image->getValue();
-        textures_ok = i && textures_ok && i->width() == dim && 
-          i->height() == dim;
-        i = bottom_tex->image->getValue();
-        textures_ok = i && textures_ok && i->width() == dim && 
-          i->height() == dim;
-	  } else {
-        textures_ok = false;
-	  }
+      bool have_all_textures = true;
+      bool invalid_dims = false;
+      bool first_image = true;
 
-      if( textures_ok ) {
-        
+      Image *back_image =  back_tex->image->getValue();
+      Image *front_image =  front_tex->image->getValue();
+      Image *left_image =  left_tex->image->getValue();
+      Image *right_image =  right_tex->image->getValue();
+      Image *top_image =  top_tex->image->getValue();
+      Image *bottom_image =  bottom_tex->image->getValue();
+
+      have_all_textures = 
+        back_image && front_image &&
+        left_image && right_image && 
+        top_image && bottom_image;
+
+      if( back_image ) { 
+        if( first_image ) {
+          first_image = false;
+          dim = back_image->width();
+        }
+        if( back_image->height() != dim ) invalid_dims = true;
+      } 
+
+      if( front_image ) { 
+        if( first_image ) {
+          first_image = false;
+          dim = front_image->width();
+        }
+        if( front_image->height() != dim || front_image->width() != dim ) 
+          invalid_dims = true;
+      } 
+
+      if( left_image ) { 
+        if( first_image ) {
+          first_image = false;
+          dim = left_image->width();
+        }
+        if( left_image->height() != dim || left_image->width() != dim ) 
+          invalid_dims = true;
+      } 
+
+      if( right_image ) { 
+        if( first_image ) {
+          first_image = false;
+          dim = right_image->width();
+        }
+        if( right_image->height() != dim || right_image->width() != dim ) 
+          invalid_dims = true;
+      } 
+
+      if( top_image ) { 
+        if( first_image ) {
+          first_image = false;
+          dim = top_image->width();
+        }
+        if( top_image->height() != dim || top_image->width() != dim ) 
+          invalid_dims = true;
+      } 
+
+      if( bottom_image ) { 
+        if( first_image ) {
+          first_image = false;
+          dim = bottom_image->width();
+        }
+        if( bottom_image->height() != dim || bottom_image->width() != dim ) 
+          invalid_dims = true;
+      } 
+
+      if( !invalid_dims ) {
         glBindTexture( GL_TEXTURE_CUBE_MAP_ARB, cube_map_id );
-        if( displayList->hasCausedEvent( back ) ) {
+        if( displayList->hasCausedEvent( back ) && 
+            back_tex->image->getValue() ) {
           back_tex->glTexImage( back_tex->image->getValue(), 
                                 GL_TEXTURE_CUBE_MAP_POSITIVE_Z, false );
         }
-        if( displayList->hasCausedEvent( front ) ) {
+        if( displayList->hasCausedEvent( front ) && 
+            front_tex->image->getValue() ) {
           front_tex->glTexImage( front_tex->image->getValue(), 
                                  GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, false );
         }
-        if( displayList->hasCausedEvent( left ) ) {
+        if( displayList->hasCausedEvent( left ) && 
+            left_tex->image->getValue() ) {
           left_tex->glTexImage( left_tex->image->getValue(), 
                                 GL_TEXTURE_CUBE_MAP_NEGATIVE_X, false );
         }
-        if( displayList->hasCausedEvent( right ) ) {
+        if( displayList->hasCausedEvent( right ) && 
+            right_tex->image->getValue()) {
           right_tex->glTexImage( right_tex->image->getValue(), 
                                  GL_TEXTURE_CUBE_MAP_POSITIVE_X, false );
         }
-        if( displayList->hasCausedEvent( top ) ) {
+        if( displayList->hasCausedEvent( top ) && 
+            top_tex->image->getValue()) {
           top_tex->glTexImage( top_tex->image->getValue(), 
                                GL_TEXTURE_CUBE_MAP_POSITIVE_Y, false );
         }
-        if( displayList->hasCausedEvent( bottom ) ) {
+        if( displayList->hasCausedEvent( bottom ) && 
+            bottom_tex->image->getValue()) {
           bottom_tex->glTexImage( bottom_tex->image->getValue(), 
                                   GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, false );
         }
-        enableTexturing();
         
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-        glTexParameteri( GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, 
-                         GL_CLAMP_TO_EDGE);
-        glTexParameteri( GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T,
-                         GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, 
-                        GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, 
-                        GL_LINEAR);
+        if( have_all_textures ) {
+          enableTexturing();
+          
+          glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+          glTexParameteri( GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, 
+                           GL_CLAMP_TO_EDGE);
+          glTexParameteri( GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T,
+                           GL_CLAMP_TO_EDGE);
+          glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, 
+                          GL_LINEAR);
+          glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, 
+                          GL_LINEAR);
+        } 
       } else {
         glBindTexture( GL_TEXTURE_CUBE_MAP_ARB, 0 );
         Console(3) << "Warning: Invalid cube map textures in \"" << getName()

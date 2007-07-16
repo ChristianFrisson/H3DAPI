@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DNodeDatabase.h"
-#include "Node.h"
+#include <H3DNodeDatabase.h>
+#include <Node.h>
 
 using namespace H3D;
 
@@ -64,6 +64,18 @@ parent( _parent ) {
     initialized = true;
   }
 }
+
+// Ulrika Added after Penny's comments**
+H3DNodeDatabase::~H3DNodeDatabase(void){
+  if(initialized = true){
+    delete database;
+    database = 0;
+  }
+  for(FieldDBType::const_iterator i = fields.begin(); i !=fields.end(); i++){
+    delete (*i).second; // MATT added this to fix some memory leaks
+  }
+}
+//***
 
 
 Node *H3DNodeDatabase::createNode( const string &name ) {
@@ -205,5 +217,18 @@ H3DNodeDatabase::FieldDBConstIterator::FieldDBConstIterator(
         status = END;
       }
     }
+  }
+}
+
+
+void H3DNodeDatabase::clearDynamicFields() {
+  for( FieldDBType::iterator i = fields.begin(); i != fields.end();  ) {
+    DynamicFieldDBElement *fdb = 
+      dynamic_cast< DynamicFieldDBElement * >( (*i).second );
+    FieldDBType::iterator to_erase = i;
+    i++;
+    if( fdb ) {
+      fields.erase( to_erase );
+    } 
   }
 }

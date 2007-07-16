@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DSoundSourceNode.h"
+#include <X3DSoundSourceNode.h>
 
 using namespace H3D;
 
@@ -91,7 +91,7 @@ void X3DSoundSourceNode::initALBuffers( bool stream ) {
     alBufferData( al_buffers[0], al_format, 
                   buffer, reader->totalDataSize(), 
                   reader->samplesPerSecond() );
-    delete buffer;
+    delete[] buffer;
     for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
          i != parent_sound_nodes.end(); i++ ) {
       if( loop->getValue() )
@@ -110,7 +110,7 @@ void X3DSoundSourceNode::initALBuffers( bool stream ) {
                     buffer, bytes_read, 
                     reader->samplesPerSecond() );
     }
-    delete buffer;
+    delete[] buffer;
     
     for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
          i != parent_sound_nodes.end(); i++ ) {

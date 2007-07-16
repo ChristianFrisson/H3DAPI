@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __CONTOUR2D_H__
 #define __CONTOUR2D_H__
 
-#include "X3DNode.h"
-#include "MFNode.h"
-#include "NurbsCurve2D.h"
-#include "ContourPolyline2D.h"
+#include <X3DNode.h>
+#include <MFNode.h>
+#include <NurbsCurve2D.h>
+#include <ContourPolyline2D.h>
 #include "GL/glew.h"
 
 namespace H3D {

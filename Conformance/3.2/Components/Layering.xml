@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Layering">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <AggregationAndTransformation level="1"/>
+    </Prerequisites>
+    <Node name="Layer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="LayerSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Viewport">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+</Component>

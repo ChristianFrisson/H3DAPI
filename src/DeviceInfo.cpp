@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,11 +27,9 @@
 //
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "H3DApi.h"
-#ifdef USE_HAPTICS
-#include "DeviceInfo.h"
+#include <H3DApi.h>
+#include <DeviceInfo.h>
 #include <GL/glew.h>
-#include "HLHapticsDevice.h"
 
 using namespace H3D;
 
@@ -41,6 +39,7 @@ X3DBindableNode< DeviceInfo >::StackType X3DBindableNode< DeviceInfo >::stack =
 X3DBindableNode< DeviceInfo >::StackType();
 #endif
 
+list<DeviceInfo *> DeviceInfo::deviceinfos;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase DeviceInfo::database( "DeviceInfo", 
@@ -66,6 +65,7 @@ DeviceInfo::DeviceInfo(
   database.initFields( this );
 
   toStackTop();
+  deviceinfos.push_back( this );
 }
 
 void DeviceInfo::renderStyli() {
@@ -73,7 +73,7 @@ void DeviceInfo::renderStyli() {
        i != device->end(); i++ ) {
     H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
     Node *stylus = hd->stylus->getValue();
-    if( stylus ) {
+    if( stylus && hd->initialized->getValue() ) {
       const Vec3f &pos = hd->weightedProxyPosition->getValue();
       const Rotation &rot = hd->trackerOrientation->getValue();
       glPushMatrix();
@@ -93,7 +93,7 @@ void DeviceInfo::removeFromStack() {
        i != device->end(); i++ ) {
     H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
     if( hd ) {
-      hd->disableDevice();
+      hd->releaseDevice();
     }
   }
   DeviceInfo *new_top = 
@@ -104,15 +104,6 @@ void DeviceInfo::removeFromStack() {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd ) {
         hd->initDevice();
-      }
-    }
-    for( MFDevice::const_iterator i = new_top->device->begin();
-         i != new_top->device->end(); i++ ) {
-      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
-      if( hl ) {
-#ifdef HAVE_OPENHAPTICS
-        hl->initHLLayer();
-#endif
       }
     }
   }
@@ -129,7 +120,7 @@ void DeviceInfo::toStackTop() {
            i != active->device->end(); i++ ) {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
         if( hd ) {
-          hd->disableDevice();
+          hd->releaseDevice();
         }
       }
     }
@@ -141,15 +132,6 @@ void DeviceInfo::toStackTop() {
         hd->initDevice();
       }
     }
-    for( MFDevice::const_iterator i = device->begin();
-         i != device->end(); i++ ) {
-      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
-      if( hl ) {
-#ifdef HAVE_OPENHAPTICS
-        hl->initHLLayer();
-#endif
-      }
-    }
   } else {
     X3DBindableNode::toStackTop();
     for( MFDevice::const_iterator i = device->begin();
@@ -159,36 +141,17 @@ void DeviceInfo::toStackTop() {
         hd->initDevice();
       }
     }
-    for( MFDevice::const_iterator i = device->begin();
-         i != device->end(); i++ ) {
-      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
-      if( hl ) {
-#ifdef HAVE_OPENHAPTICS
-        hl->initHLLayer();
-#endif
-      }
-    }
   }
 }
 
 void DeviceInfo::initialize() {
   if( isStackTop() ) {
-    for( MFDevice::const_iterator i = device->begin();
+    /*for( MFDevice::const_iterator i = device->begin();
          i != device->end(); i++ ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
       }
-    }
-    for( MFDevice::const_iterator i = device->begin();
-         i != device->end(); i++ ) {
-      HLHapticsDevice *hl = dynamic_cast< HLHapticsDevice * >( *i );
-      if( hl ) {
-#ifdef HAVE_OPENHAPTICS
-        hl->initHLLayer();
-#endif
-      }
-    }
+    }*/
   }
 }
-#endif

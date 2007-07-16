@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #ifndef __X3DTEXTURENODE_H__
 #define __X3DTEXTURENODE_H__
 
-#include "X3DAppearanceChildNode.h"
-#include "Image.h"
+#include <X3DAppearanceChildNode.h>
+#include <Image.h>
 #include "GL/glew.h"
 
 namespace H3D {
@@ -147,6 +147,15 @@ namespace H3D {
                              bool scale_to_power_of_two ){
       throw glTexImageFunctionNotDefined( "", H3D_FULL_LOCATION ); 
     }
+
+    /// If set to true all images that are read from an url will be 
+    /// downloaded in a separate
+    /// thread allowing the program to continue execution while waiting
+    /// for the textures to download. The textures will then be applied
+    /// as soon as they are downloaded.
+    ///
+    /// By default it is set to true.
+    static bool load_images_in_separate_thread;
 
   protected:
     // The glTexImage functions needs each line of image data to be 4 byte 

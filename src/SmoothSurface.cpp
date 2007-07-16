@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,11 +26,9 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "H3DApi.h"
-#ifdef USE_HAPTICS
-#include "SmoothSurface.h"
-#include "HLObject.h"
-#include "HLHapticsDevice.h"
+#include <H3DApi.h>
+#include <SmoothSurface.h>
+#include <FrictionSurface.h>
 
 using namespace H3D;
 
@@ -46,28 +44,61 @@ namespace SmoothSurfaceInternals {
   FIELDDB_ELEMENT( SmoothSurface, damping, INPUT_OUTPUT );
 }
 
-
-void SmoothSurface::hlRender( HLHapticsDevice *hd ) {
-#ifdef HAVE_OPENHAPTICS
-  hlMakeCurrent( hd->getHapticContext() );
-  hlTouchModel( HL_CONTACT );
-  hlMaterialf(HL_FRONT_AND_BACK, HL_STIFFNESS, stiffness->getValue() );
-  hlMaterialf(HL_FRONT_AND_BACK, HL_DAMPING, damping->getValue() );
-  hlMaterialf(HL_FRONT_AND_BACK, HL_DYNAMIC_FRICTION, 0 );
-  hlMaterialf(HL_FRONT_AND_BACK, HL_STATIC_FRICTION, 0 );
-
-#endif
-}
-
 /// Constructor.
-SmoothSurface::SmoothSurface( Inst< SFFloat >  _stiffness,
-                              Inst< SFFloat >  _damping ):
+SmoothSurface::SmoothSurface( Inst< UpdateStiffness >  _stiffness,
+                              Inst< UpdateDamping >  _damping ):
   stiffness( _stiffness ),
-  damping( _damping ) {
+  damping( _damping ),
+  conversion_to_HAPI( 0.7 ) {
   type_name = "SmoothSurface";
   database.initFields( this );
   
   stiffness->setValue( 0.5 );
   damping->setValue( 0 );
 }
-#endif
+
+void SmoothSurface::initialize() {
+  hapi_surface.reset(
+    new HAPI::FrictionSurface( stiffness->getValue() * conversion_to_HAPI,
+                               damping->getValue() * conversion_to_HAPI ) );
+}
+
+void SmoothSurface::UpdateStiffness::setValue( const H3DFloat &f, int id ){
+  SFFloat::setValue( f, id );
+  SmoothSurface *ss = 
+    static_cast< SmoothSurface * >( getOwner() );
+  if( ss->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
+      ->stiffness = f * ss->conversion_to_HAPI;
+  }
+}
+
+void SmoothSurface::UpdateStiffness::update() {
+  SFFloat::update();
+  SmoothSurface *ss = 
+    static_cast< SmoothSurface * >( getOwner() );
+  if( ss->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
+      ->stiffness = value * ss->conversion_to_HAPI;
+  }
+}
+
+void SmoothSurface::UpdateDamping::setValue( const H3DFloat &f, int id ){
+  SFFloat::setValue( f, id );
+  SmoothSurface *ss = 
+    static_cast< SmoothSurface * >( getOwner() );
+  if( ss->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
+      ->damping = f * ss->conversion_to_HAPI;
+  }
+}
+
+void SmoothSurface::UpdateDamping::update() {
+  SFFloat::update();
+  SmoothSurface *ss = 
+    static_cast< SmoothSurface * >( getOwner() );
+  if( ss->hapi_surface.get() ) {
+    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
+      ->damping = value * ss->conversion_to_HAPI;
+  }
+}

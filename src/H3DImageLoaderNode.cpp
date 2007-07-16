@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,13 +28,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DImageLoaderNode.h"
+#include <H3DImageLoaderNode.h>
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-list< H3DImageLoaderNode::FileReaderRegistration > 
-*H3DImageLoaderNode::registered_file_readers; 
+H3DImageLoaderNode::local_auto_ptr<list< H3DImageLoaderNode::
+FileReaderRegistration> >H3DImageLoaderNode::registered_file_readers; 
 
 bool H3DImageLoaderNode::initialized = false; 
 

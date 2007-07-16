@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __MATRIXTRANSFORM_H__
 #define __MATRIXTRANSFORM_H__
 
-#include "X3DGroupingNode.h"
+#include <X3DGroupingNode.h>
 
 namespace H3D {
 
@@ -127,10 +127,60 @@ namespace H3D {
 
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti );
-#endif
+
+    /// Detect intersection between a line segment and this Node.
+    /// Transforms the line into correct coordinate system and also transforms
+    /// the result if there is a result. Calls lineIntersect for its children.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line
+    /// \param theNodes A vector of pairs of pointer and index to
+    /// differ between different places in the scene graph for the same Node.
+    /// This can happen due to the DEF/USE feature of X3D.
+    /// \param current_matrix The current matrix that transforms from the local
+    /// coordinate space where this Node resides in the scenegraph to 
+    /// global space.
+    /// \param geometry_transforms A vector of matrices from the local
+    /// coordinate space to global space for each node that the
+    /// line intersects.
+    /// \param pt_device_affect Flag telling a node if it is affected by a
+    /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
+    /// when using the DEF/USE feature of X3D.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect( 
+      const Vec3f &from, 
+      const Vec3f &to,    
+      vector< HAPI::Bounds::IntersectionInfo > &result,
+      vector< pair< Node *, H3DInt32 > > &theNodes,
+      const Matrix4f &current_matrix,
+      vector< Matrix4f > &geometry_transforms,
+      bool pt_device_affect = false );
+
+    /// Find closest point on Node to p. Transforms point
+    /// p and calls closestPoint for all children.
+    /// \param p The point to find the closest point to.
+    /// \param closest_point Return parameter for each closest point
+    /// \param normal Return parameter for normal at each closest point.
+    /// \param tex_coord Return paramater for each texture coordinate at
+    /// closest point
+    virtual void closestPoint( const Vec3f &p,
+                               vector< Vec3f > &closest_point,
+                               vector< Vec3f > &normal,
+                               vector< Vec3f > &tex_coord );
+
+    /// Detect collision between a moving sphere and the Node.
+    /// Transforms points and radius (if non-uniform scaling the biggest
+    /// of the scale parameters is chosen)
+    /// \param The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersect( H3DFloat radius,
+                                        const Vec3f &from, 
+                                        const Vec3f &to );
 
     /// The transformation matrix.
     /// 

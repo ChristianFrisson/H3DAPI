@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Cone.h"
+#include <Cone.h>
 
 using namespace H3D;
 
@@ -87,7 +87,6 @@ void Cone::render() {
   
   const H3DFloat l_radius = bottomRadius->getValue();
   const H3DFloat l_height = height->getValue();
-  bool is_solid = solid->getValue();
   int nr_faces = 120;
   
   // render side
@@ -125,19 +124,12 @@ void Cone::render() {
 }
 
 
-#ifdef USE_HAPTICS
 void Cone::traverseSG( TraverseInfo &ti ) {
+  X3DGeometryNode::traverseSG( ti );
   if( solid->getValue() ) {
     useBackFaceCulling( true );
   } else {
     useBackFaceCulling( false );
   }
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll(  getOpenGLHapticShape( ti.getCurrentSurface(),
-                                                   ti.getAccForwardMatrix()));
-#endif
-  }
 }
-#endif
 

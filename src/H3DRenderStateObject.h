@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __H3DRENDERSTATEOBJECT_H__
 #define __H3DRENDERSTATEOBJECT_H__
 
-#include "H3DApi.h"
+#include <H3DApi.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface
@@ -55,7 +55,6 @@ namespace H3D {
     /// function.
     virtual void disableGraphicsState() {}
 
-#ifdef USE_HAPTICS
     /// Enable the states that you want to before all other nodes of a 
     /// X3DGroupingNode's children field are traversed with traverseSG.
     virtual void enableHapticsState( TraverseInfo &ti ) {}
@@ -63,7 +62,6 @@ namespace H3D {
     /// Reset the states that were changed in the enableHapticsState() 
     /// function
     virtual void disableHapticsState( TraverseInfo &ti ) {}
-#endif
   };
 }
 

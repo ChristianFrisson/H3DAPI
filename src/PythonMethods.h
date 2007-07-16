@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __PYTHONMETHODS_H__
 #define __PYTHONMETHODS_H__
-#include "Field.h"
-#include "X3DTypes.h"
-#include "X3DFieldConversion.h"
-#include "X3DTypeFunctions.h"
+#include <Field.h>
+#include <X3DTypes.h>
+#include <X3DFieldConversion.h>
+#include <X3DTypeFunctions.h>
 
 #ifdef HAVE_PYTHON
 #if defined(_MSC_VER)
@@ -104,9 +104,7 @@ namespace H3D {
 
     PyObject* pythonGetCurrentScenes( PyObject *self, PyObject *arg );
 
-#ifdef USE_HAPTICS
     PyObject* pythonGetActiveDeviceInfo( PyObject *self, PyObject *arg );
-#endif
 
     PyObject* pythonGetActiveViewpoint( PyObject *self, PyObject *arg );
 

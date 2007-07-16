@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,14 +28,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "DynamicTransform.h"
+#include <DynamicTransform.h>
 #ifdef MACOSX
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
-#include "RK4.h"
-#include "Scene.h"
+#include <RK4.h>
+#include <Scene.h>
 
 using namespace H3D;
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Arc2D.h"
+#include <Arc2D.h>
 
 using namespace H3D;
 
@@ -112,14 +112,4 @@ void Arc2D::render() {
   glEnd ();
 }
 
-#ifdef USE_HAPTICS
-void Arc2D::traverseSG( TraverseInfo &ti ) {
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
-                                                  ti.getAccForwardMatrix(),
-                                                  40 ) );
-#endif
-  }
-}
-#endif
+

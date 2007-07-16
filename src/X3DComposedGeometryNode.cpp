@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DComposedGeometryNode.h"
-#include "MultiTexture.h"
-#include "MultiTextureCoordinate.h"
+#include <X3DComposedGeometryNode.h>
+#include <MultiTexture.h>
+#include <MultiTextureCoordinate.h>
 
 using namespace H3D;
 
@@ -51,6 +51,7 @@ namespace X3DComposedGeometryNodeInternals {
   FIELDDB_ELEMENT( X3DComposedGeometryNode, normalPerVertex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DComposedGeometryNode, solid, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DComposedGeometryNode, attrib, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DComposedGeometryNode, fogCoord, INPUT_OUTPUT );
 }
 
 X3DComposedGeometryNode::X3DComposedGeometryNode( 
@@ -65,7 +66,8 @@ X3DComposedGeometryNode::X3DComposedGeometryNode(
                               Inst< SFBool                  > _colorPerVertex,
                               Inst< SFBool                  > _normalPerVertex,
                               Inst< SFBool                  > _solid,
-			      Inst< MFVertexAttributeNode   > _attrib ) :
+			                        Inst< MFVertexAttributeNode   > _attrib, 
+                              Inst< SFFogCoordinate           > _fogCoord ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   color          ( _color            ),
   coord          ( _coord            ),
@@ -75,7 +77,8 @@ X3DComposedGeometryNode::X3DComposedGeometryNode(
   colorPerVertex ( _colorPerVertex   ),
   normalPerVertex( _normalPerVertex  ),
   solid          ( _solid            ),
-  attrib         ( _attrib           ) {
+  attrib         ( _attrib           ),
+  fogCoord         ( _fogCoord           ){
 
   type_name = "X3DComposedGeometryNode";
 
@@ -95,6 +98,7 @@ X3DComposedGeometryNode::X3DComposedGeometryNode(
   normalPerVertex->route( displayList );
   solid->route( displayList );
   attrib->route( displayList );
+  fogCoord->route( displayList );
 }
 
 
@@ -130,8 +134,8 @@ void X3DComposedGeometryNode::DisplayList::callList( bool build_list ) {
 }
 
 void X3DComposedGeometryNode::startTexGen( 
-                            TextureCoordinateGenerator *tex_coord_gen ) {
-  if( !tex_coord_gen ) {
+                            X3DTextureCoordinateNode *tex_coord_node ) {
+  if( !tex_coord_node ) {
     BoxBound *box_bound = 
       dynamic_cast< BoxBound * >( bound->getValue() );
     if( box_bound ) {
@@ -246,26 +250,15 @@ void X3DComposedGeometryNode::startTexGen(
       throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
     }
   }  else {
-    MultiTexture *mt = 
-      dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; i++ ) {
-        glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
-        tex_coord_gen->startTexGen();
-      }
-    } else {
-      tex_coord_gen->startTexGen();
-    }
-    
+    tex_coord_node->startTexGenForActiveTexture();
   }    
 }
 
 void X3DComposedGeometryNode::stopTexGen( 
-                       TextureCoordinateGenerator *tex_coord_gen ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-  if( !tex_coord_gen ) {
+                       X3DTextureCoordinateNode *tex_coord_node ) {
+  if( !tex_coord_node ) {
+    MultiTexture *mt = 
+      dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
     if( mt ) {
       size_t texture_units = mt->texture->size();
       for( size_t i = 0; i < texture_units; i++ ) {
@@ -280,84 +273,21 @@ void X3DComposedGeometryNode::stopTexGen(
       glDisable( GL_TEXTURE_GEN_R );
     }
   } else {
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; i++ ) {
-        glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
-        tex_coord_gen->stopTexGen();
-      }
-    } else {
-      tex_coord_gen->stopTexGen();
-    }
+    tex_coord_node->stopTexGenForActiveTexture();
   }
 }
 
 void X3DComposedGeometryNode::renderTexCoord( int index, 
                                               X3DTextureCoordinateNode *tc ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-  MultiTextureCoordinate *mtc = 
-    dynamic_cast< MultiTextureCoordinate * >( tc );
-
-  if( tc ) {
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      tc->renderForTextureUnits( index, 0, texture_units -1 );
-    } else {
-      if( mtc ) {
-        tc->renderForTextureUnit( index, 0 );
-      }  else  {
-        tc->render( index );
-      }
-    }
-  } else {
-    stringstream s;
-    s << "Trying to call renderTexCoord( int index, X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL.";
-    throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-  }
+  tc->renderForActiveTexture( index );
 }
 
 void X3DComposedGeometryNode::renderTexCoordArray(  
                                       X3DTextureCoordinateNode *tc ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-  MultiTextureCoordinate *mtc = 
-    dynamic_cast< MultiTextureCoordinate * >( tc );
-
-  if( tc ) {
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      tc->renderArrayForTextureUnits( 0, texture_units -1 );
-    } else if( mtc ) {
-      tc->renderArrayForTextureUnit( 0 );
-    } else {
-      tc->renderArray();
-    }
-  } else {
-    stringstream s;
-    s << "Trying to call renderTexCoordArray( X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL.";
-    throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-  }
+  tc->renderArrayForActiveTexture();
 }
 
 void X3DComposedGeometryNode::disableTexCoordArray(  
                                       X3DTextureCoordinateNode *tc ) {
-  MultiTexture *mt = 
-    dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-
-  if( tc ) {
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      tc->disableArrayForTextureUnits( 0, texture_units -1 );
-    } else {
-      tc->disableArray();
-    }
-  } else {
-    stringstream s;
-    s << "Trying to call disableTexCoordArray( X3DTextureCoordinateNode *tc) "
-      << " when tc is NULL.";
-    throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-  }
+  tc->disableArrayForActiveTexture();
 }

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __H3DDYNAMICFIELDSOBJECT_H__
 #define __H3DDYNAMICFIELDSOBJECT_H__
 
-#include "H3DNodeDatabase.h"
-#include "AutoPtrVector.h"
-#include "Node.h"
+#include <H3DNodeDatabase.h>
+#include <AutoPtrVector.h>
+#include <Node.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface
@@ -83,6 +83,12 @@ namespace H3D {
     /// Get an iterator pointing to the end of the dynamic fields.
     inline field_iterator endField() {
       return dynamic_fields.end();
+    }
+
+    /// Remove all dynamic fields that have been previously added.
+    inline void clearFields() {
+      database->clearDynamicFields();
+      dynamic_fields.clear();
     }
 
     /// Remove a field from the Node.

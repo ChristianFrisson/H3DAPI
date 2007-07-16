@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,11 +29,11 @@
 #ifndef __NURBSTEXTURECOORDINATE_H__
 #define __NURBSTEXTURECOORDINATE_H__
 
-#include "X3DGeometricPropertyNode.h"
-#include "MFVec2f.h"
-#include "MFFloat.h"
-#include "SFInt32.h"
-#include "MFDouble.h"
+#include <X3DGeometricPropertyNode.h>
+#include <MFVec2f.h>
+#include <MFFloat.h>
+#include <SFInt32.h>
+#include <MFDouble.h>
 #include "GL/glew.h"
 
 namespace H3D {

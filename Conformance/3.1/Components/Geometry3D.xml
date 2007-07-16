@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Geometry3D">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="Box">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Cone">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Cylinder">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Sphere">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="IndexedFaceSet">
+      <ccw support="optional"/>
+      <set_colorIndex support="optional"/>
+      <set_normalIndex support="optional"/>
+      <normal support="optional"/>
+      <convex support="optional"/>
+      <creaseAngle support="partial"/>
+      <normalIndex support="optional"/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="ElevationGrid">
+      <ccw support="optional"/>
+    </Node>
+  </Level_3>
+  <Level_4>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="IndexedFaceSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ElevationGrid">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Extrusion">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_4>
+</Component>

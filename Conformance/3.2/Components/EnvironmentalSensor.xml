@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="EnvironmentalSensor">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="1"/>
+      <Navigation level="1"/>
+    </Prerequisites>
+    <Node name="ProximitySensor">
+      <position_changed support="optional"/>
+      <orientation_changed support="optional"/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="1"/>
+      <Navigation level="1"/>
+    </Prerequisites>
+    <Node name="ProximitySensor">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="VisibilitySensor">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="1"/>
+      <Navigation level="1"/>
+    </Prerequisites>
+    <Node name="TransformSensor">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+</Component>

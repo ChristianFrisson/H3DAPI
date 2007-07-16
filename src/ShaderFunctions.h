@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __SHADERFUNCTIONS_H__
 #define __SHADERFUNCTIONS_H__
 
-#include "H3DDynamicFieldsObject.h"
+#include <H3DDynamicFieldsObject.h>
 #include <GL/glew.h>
 
 #ifdef HAVE_CG

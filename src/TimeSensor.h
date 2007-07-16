@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __TIMESENSOR_H__
 #define __TIMESENSOR_H__
 
-#include "X3DTimeDependentNode.h"
-#include "SFFloat.h"
+#include <X3DTimeDependentNode.h>
+#include <SFFloat.h>
 
 namespace H3D {
 

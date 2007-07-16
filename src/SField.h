@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,9 +27,9 @@
 #ifndef __SFIELD_H__
 #define __SFIELD_H__
 
-#include "X3DFieldConversion.h"
-#include "TypedField.h"
-#include "Node.h"
+#include <X3DFieldConversion.h>
+#include <TypedField.h>
+#include <Node.h>
 
 namespace H3D {
 

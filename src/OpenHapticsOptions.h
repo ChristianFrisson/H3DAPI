@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __OPENHAPTICSOPTIONS_H__
 #define __OPENHAPTICSOPTIONS_H__
 
-#include "H3DOptionNode.h"
-#include "SFString.h"
-#include "SFBool.h"
-#include "SFFloat.h"
+#include <H3DOptionNode.h>
+#include <SFString.h>
+#include <SFBool.h>
+#include <SFFloat.h>
 
 namespace H3D {
 
@@ -47,11 +47,9 @@ namespace H3D {
     /// Constructor.
     OpenHapticsOptions( Inst< SFNode >  _metadata = 0,
                         Inst< SFString > _GLShape = 0,
-                        Inst< SFString  >  _touchableFace  = 0,
-                        Inst< SFBool    >  _useAdaptiveViewport = 0,
-                        Inst< SFBool    >  _useHapticCameraView = 0,
-                        Inst< SFFloat   >  _maxDistance  = 0,
-                        Inst< SFFloat   > _lookAheadFactor = 0 );
+                        Inst< SFBool   >  _useAdaptiveViewport = 0,
+                        Inst< SFBool   >  _useHapticCameraView = 0,
+                        Inst< SFBool   > _forceFullGeometryRender = 0 );
     
     /// Specifies the OpenHaptics shape type to use when 
     /// rendering shapes using OpenGL. If "FEEDBACK_BUFFER" feedback 
@@ -68,17 +66,6 @@ namespace H3D {
     /// <b>Default value: </b> "FEEDBACK_BUFFER" \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFString > GLShape;
-
-    /// Specifies which sides of the shapes to render haptically. If "BACK"
-    /// only the back side of can be felt, "FRONT" only front side and 
-    /// "FRONT_AND_BACK" both sides. "AS_GRAPHICS" will render the sides
-    /// that are visible graphically.
-    ///
-    /// <b>Valid values: </b> "AS_GRAPHICS", "BACK", "FRONT" or 
-    /// "FRONT_AND_BACK" \n
-    /// <b>Default value: </b> "AS_GRAPHICS" \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFString  > touchableFace;
 
     /// The default setting for use of adaptive viewport.
     /// When using depth buffer shapes, performance may be improved by 
@@ -122,25 +109,18 @@ namespace H3D {
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n    
     auto_ptr< SFBool > useHapticCameraView;
-
-    /// The maximum distance in metres the proxy can be from a geometry's
-    /// bounding box for the geometry to be rendered haptically. A negative
-    /// value indicates that geometries should always be rendered. 
+    
+    /// If set to true all X3DGeometryNodes will be rendered fully using
+    /// OpenHaptics. If false, only the triangles rendered depending
+    /// on the options in HapticsOptions will be rendered. If you want to 
+    /// make sure that all triangles are sent to OpenHaptics to be rendered
+    /// you should set this to true. Observe however that if you set this to
+    /// true, you have to use the OpenHapticsRenderer or you will get no 
+    /// haptics at all on the geometry.
     ///
-    /// <b>Default value: </b> 0.01 \n
-    /// <b>Access type: </b> inputOutput \n    
-    auto_ptr< SFFloat > maxDistance;
-
-    /// When determining if a geometry should be rendered haptically
-    /// the bounding box will be tested for intersection with a 
-    /// sphere with radius maxDistance moving along the line segment
-    /// from the current proxy position to another position. The other
-    /// position is calculated as p = current_proxy_pos + 
-    /// (current_proxy_pos - previous_proxy_pos) * lookAheadFactor. 
-    ///
-    /// <b>Default value: </b> 3 \n
-    /// <b>Access type: </b> inputOutput \n    
-    auto_ptr< SFFloat > lookAheadFactor;
+    /// <b>Default value: </b> false \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool > forceFullGeometryRender;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

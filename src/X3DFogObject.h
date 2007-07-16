@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __X3DFOGOBJECT_H__
 #define __X3DFOGOBJECT_H__
 
-#include "SFColor.h"
-#include "SFString.h"
-#include "SFFloat.h"
+#include <SFColor.h>
+#include <SFString.h>
+#include <SFFloat.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface

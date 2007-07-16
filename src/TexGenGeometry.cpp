@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "TexGenGeometry.h"
-#ifdef USE_HAPTICS
-#include "HLShape.h"
-#include "HapticShape.h"
-#endif
+#include <TexGenGeometry.h>
 
 using namespace H3D;
 
@@ -63,14 +59,15 @@ TexGenGeometry::TexGenGeometry(
 
   type_name = "TexGenGeometry";
   database.initFields( this );
+  
+  geometry->route( displayList );
+  texCoord->route( displayList );
 }
 
-#ifdef USE_HAPTICS
 void TexGenGeometry::traverseSG( TraverseInfo &ti ) {
   X3DGeometryNode *g = geometry->getValue();
   if( g ) g->traverseSG( ti );
 }
-#endif
 
 void TexGenGeometry::render() {
   X3DGeometryNode *g = geometry->getValue();

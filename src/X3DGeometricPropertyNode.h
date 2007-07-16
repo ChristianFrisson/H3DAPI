@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __X3DGEOMETRICPROPERTYNODE_H__
 #define __X3DGEOMETRICPROPERTYNODE_H__
 
-#include "X3DNode.h"
-#include "FieldTemplates.h"
+#include <X3DNode.h>
+#include <FieldTemplates.h>
 
 namespace H3D {
 

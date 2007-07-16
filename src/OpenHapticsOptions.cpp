@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "OpenHapticsOptions.h"
+#include <OpenHapticsOptions.h>
 
 using namespace H3D;
 
@@ -40,38 +40,30 @@ H3DNodeDatabase OpenHapticsOptions::database( "OpenHapticsOptions",
 
 namespace OpenHapticsOptionsInternals {
   FIELDDB_ELEMENT( OpenHapticsOptions, GLShape, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( OpenHapticsOptions, touchableFace, INPUT_OUTPUT );
   FIELDDB_ELEMENT( OpenHapticsOptions, useAdaptiveViewport, INPUT_OUTPUT );
   FIELDDB_ELEMENT( OpenHapticsOptions, useHapticCameraView, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( OpenHapticsOptions, maxDistance, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( OpenHapticsOptions, lookAheadFactor, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( OpenHapticsOptions, forceFullGeometryRender, INPUT_OUTPUT );
 }
 
 OpenHapticsOptions::OpenHapticsOptions( 
                            Inst< SFNode>  _metadata,
                            Inst< SFString > _GLShape,
-                           Inst< SFString  >  _touchableFace,
                            Inst< SFBool    >  _useAdaptiveViewport,
                            Inst< SFBool    >  _useHapticCameraView,
-                           Inst< SFFloat   > _maxDistance,
-                           Inst< SFFloat   > _lookAheadFactor ) :
+                           Inst< SFBool    > _forceFullGeometryRender ) :
   H3DOptionNode( _metadata ),
   GLShape( _GLShape ),
-  touchableFace( _touchableFace ),
   useAdaptiveViewport( _useAdaptiveViewport ),
   useHapticCameraView( _useHapticCameraView ),
-  maxDistance( _maxDistance ),
-  lookAheadFactor( _lookAheadFactor ) {
+  forceFullGeometryRender( _forceFullGeometryRender ) {
   type_name = "OpenHapticsOptions";
 
   database.initFields( this );
 
   GLShape->setValue( "FEEDBACK_BUFFER" );
-  touchableFace->setValue( "AS_GRAPHICS" );
   useAdaptiveViewport->setValue( true );
   useHapticCameraView->setValue( true );
-  maxDistance->setValue( 0.01f );
-  lookAheadFactor->setValue( 3 );
+  forceFullGeometryRender->setValue( false );
 }
 
 

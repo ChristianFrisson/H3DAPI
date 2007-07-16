@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,23 +29,26 @@
 #ifndef __TRAVERSEINFO_H__
 #define __TRAVERSEINFO_H__
 
-#include "H3DTypes.h"
-#include "HapticForceEffect.h"
-#include "HapticShape.h"
-#include "AutoRefVector.h"
+#include <H3DTypes.h>
+#include <HAPIForceEffect.h>
+#include <HAPIHapticShape.h>
+#include <AutoRefVector.h>
 #include <sstream>
 #include <stack>
+#include <map>
 
 using namespace std;
 
 namespace H3D {
   // forward declarations
-  class HapticShape;
+  class HAPI::HAPIHapticShape;
   class H3DSurfaceNode;
   class H3DHapticsDevice;
+  class X3DGeometryNode;
+  class X3DPointingDeviceSensorNode;
 
-  typedef AutoRefVector< HapticShape > HapticShapeVector;
-  typedef AutoRefVector< HapticForceEffect > HapticEffectVector;
+  typedef AutoRefVector< HAPI::HAPIHapticShape > HapticShapeVector;
+  typedef AutoRefVector< HAPI::HAPIForceEffect > HapticEffectVector;
 
   /// TraverseInfo is a structure that is passed along when traversing the 
   /// scene graph. It contains information needed during the traversing, 
@@ -66,14 +69,49 @@ namespace H3D {
     /// to render HapticShapes on.
     /// 
     TraverseInfo( const vector< H3DHapticsDevice * > &_haptics_devices ) :
+      current_layer( 0 ),
       current_surface( NULL ),
       haptics_devices( _haptics_devices ),
       haptic_shapes( _haptics_devices.size() ),
       haptic_effects( _haptics_devices.size() ),
       haptics_enabled( true ),
       multi_pass_transparency( false ) {
+      
+      initializeLayers( 1 );
+
       // put two unit matrices on the transform stack.
       transform_stack.push( TransformInfo( Matrix4f(), Matrix4f () ) );
+    }
+
+    /// Returns the number of haptics layers that are available and initialized.
+    /// If you need more you will have to use the initializeLayers() function
+    inline unsigned int nrLayers() {
+      if( haptic_shapes.size() > 0 ) {
+        return haptic_shapes[0].size();
+      } else {
+        return 0;
+      }
+    }
+
+    /// Make sure that the TraverseInfo object have enough resources allocated
+    /// for the given amount of haptic layers.
+    inline void initializeLayers( unsigned int nr_layers ) {
+      for( unsigned int i = 0; i < haptic_shapes.size(); i++ ) {
+        if( haptic_shapes[i].size() < nr_layers )
+          haptic_shapes[i].resize( nr_layers );
+      }
+    }
+
+    /// Set the currently active haptic layer. The currently active haptic layer
+    /// determines which layer later calls to addHapticShape and addHapticShapeToAll
+    /// should add the shapes to.
+    inline void setCurrentLayer( unsigned int layer ) {
+      current_layer = layer;
+    }
+
+    /// Get the currently active haptic layer.
+    inline unsigned int getCurrentLayer() {
+      return current_layer;
     }
 
     /// Returns the index of the given H3DHapticsDevice. -1 is returned
@@ -94,14 +132,16 @@ namespace H3D {
     /// shape on.
     /// \param shape The HapticShape to render.
     ///
-    void addHapticShape( int device_index, HapticShape *shape );
+    void addHapticShape( int device_index, 
+                         HAPI::HAPIHapticShape *shape );
 
     /// Adds a HapticShape to be rendered by a H3DHapticsDevice.
     /// Shapes will only be added if hapticsEnabled() is true. 
     /// \param hd The H3DHapticsDevice to render the shape on.
     /// \param shape The HapticShape to render.
     ///
-    inline void addHapticShape( H3DHapticsDevice *hd, HapticShape *shape ) {
+    inline void addHapticShape( H3DHapticsDevice *hd, 
+                                HAPI::HAPIHapticShape *shape ) {
       int device_index = getHapticsDeviceIndex( hd );
       addHapticShape( device_index, shape );
     }
@@ -110,12 +150,12 @@ namespace H3D {
     /// Shapes will only be added if hapticsEnabled() is true. 
     /// \param shape The HapticShape to render.
     ///
-    void addHapticShapeToAll( HapticShape *shape );
+    void addHapticShapeToAll( HAPI::HAPIHapticShape *shape );
 
     /// Get the HapticShapes that has been added for the H3DHapticsDevice
     /// with the given device_index.
     ///
-    inline const HapticShapeVector &getHapticShapes(int device_index){
+    inline const HapticShapeVector &getHapticShapes(int device_index ){
       if( device_index < 0 || device_index >= (int)haptics_devices.size() ) {
         stringstream s;
         s << "TraverseInfo only has " << (unsigned int) haptics_devices.size() 
@@ -124,43 +164,43 @@ namespace H3D {
                                          s.str(),
                                          H3D_FULL_LOCATION );
       }
-      return haptic_shapes[ device_index ];
+      return haptic_shapes[ device_index ][ current_layer ];
     }
 
     /// Get the HapticShapes that has been added for the given H3DHapticsDevice
     ///
     inline const HapticShapeVector 
-      &getHapticShapes( H3DHapticsDevice * hd ) {
+    &getHapticShapes( H3DHapticsDevice * hd ) {
       int device_index = getHapticsDeviceIndex( hd );
       return getHapticShapes( device_index );
     }
 
-    /// Adds a HapticForceEffect to be rendered by a H3DHapticsDevice.
+    /// Adds a HAPIForceEffect to be rendered by a H3DHapticsDevice.
     /// Effects will only be added if hapticsEnabled() is true. 
     /// \param device_index The index of the H3DHapticsDevice to render the 
     /// shape on.
-    /// \param effect The HapticForceEffect to render.
+    /// \param effect The HAPIForceEffect to render.
     ///
-    void addForceEffect( int device_index, HapticForceEffect *effect );
+    void addForceEffect( int device_index, HAPI::HAPIForceEffect *effect );
 
-    /// Adds a HapticForceEffect to be rendered by a H3DHapticsDevice.
+    /// Adds a HAPIForceEffect to be rendered by a H3DHapticsDevice.
     /// Shapes will only be added if hapticsEnabled() is true. 
     /// \param hd The H3DHapticsDevice to render the shape on.
-    /// \param effect The HapticForceEffect to render.
+    /// \param effect The HAPIForceEffect to render.
     ///
     inline void addForceEffect( H3DHapticsDevice *hd, 
-                                HapticForceEffect *effect ) {
+                                HAPI::HAPIForceEffect *effect ) {
       int device_index = getHapticsDeviceIndex( hd );
       addForceEffect( device_index, effect );
     }
     
-    /// Adds a HapticForceEffect to be rendered by all H3DHapticsDevices.
+    /// Adds a HAPIForceEffect to be rendered by all H3DHapticsDevices.
     /// Effects will only be added if hapticsEnabled() is true. 
-    /// \param effect The HapticForceEffect to render.
+    /// \param effect The HAPIForceEffect to render.
     ///
-    void addForceEffectToAll( HapticForceEffect *effect );
+    void addForceEffectToAll( HAPI::HAPIForceEffect *effect );
 		
-    /// Get the HapticForceEffects that has been added for the H3DHapticsDevice
+    /// Get the HAPIForceEffects that has been added for the H3DHapticsDevice
     /// with the given device_index.
     ///
     inline const HapticEffectVector 
@@ -176,7 +216,7 @@ namespace H3D {
       return haptic_effects[ device_index ];
     }
     
-    /// Get the HapticForceEffects that has been added for the given 
+    /// Get the HAPIForceEffects that has been added for the given 
     /// H3DHapticsDevice
     inline const HapticEffectVector
       &getForceEffects( H3DHapticsDevice * hd ) {
@@ -275,6 +315,8 @@ namespace H3D {
       return transform_stack.top().acc_inv;
     }
 
+    vector< X3DPointingDeviceSensorNode * > current_pt_dev_sensors;
+
   protected:
     class TransformInfo {
     public:
@@ -286,12 +328,16 @@ namespace H3D {
     };
     stack< TransformInfo > transform_stack;
     
+    unsigned int current_layer;
     H3DSurfaceNode *current_surface;
     vector< H3DHapticsDevice * > haptics_devices;
-    vector< HapticShapeVector > haptic_shapes;
+    vector< vector< HapticShapeVector > > haptic_shapes;
     vector< HapticEffectVector > haptic_effects;
     bool haptics_enabled;
     bool multi_pass_transparency;
+
+    typedef std::map< X3DGeometryNode *, int > GeometryCountMap;
+    GeometryCountMap geometry_count;
   };
 
 };

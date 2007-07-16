@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,10 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "IndexedFaceSet.h"
-#include "Normal.h"
-#include "TextureCoordinateGenerator.h"
-
+#include <IndexedFaceSet.h>
+#include <Normal.h>
 
 using namespace H3D;
 
@@ -67,7 +65,7 @@ IndexedFaceSet::IndexedFaceSet(
                     Inst< SFBool       > _colorPerVertex,
                     Inst< SFBool       >  _normalPerVertex,
                     Inst< SFBool       > _solid,
-		    Inst< MFVertexAttributeNode > _attrib,
+		                Inst< MFVertexAttributeNode > _attrib,
                     Inst< AutoNormal   > _autoNormal,
                     Inst< SFBool       > _convex,
                     Inst< SFFloat      > _creaseAngle,
@@ -78,10 +76,11 @@ IndexedFaceSet::IndexedFaceSet(
                     Inst< MFInt32      > _colorIndex,
                     Inst< MFInt32      > _coordIndex,
                     Inst< MFInt32      > _normalIndex,
-                    Inst< MFInt32      > _texCoordIndex ): 
+                    Inst< MFInt32      > _texCoordIndex,
+                    Inst< SFFogCoordinate         > _fogCoord ): 
   X3DComposedGeometryNode( _metadata, _bound, _displayList, _color, _coord,  _normal, 
                            _texCoord, _ccw, _colorPerVertex, 
-                           _normalPerVertex, _solid, _attrib ),
+                           _normalPerVertex, _solid, _attrib, _fogCoord ),
   set_colorIndex   ( _set_colorIndex    ),
   set_coordIndex   ( _set_coordIndex    ),
   set_normalIndex  ( _set_normalIndex   ),
@@ -133,8 +132,7 @@ void IndexedFaceSet::render() {
   //  X3DCoordinateNode *coords = static_cast< X3DCoordinateNode * >( coord->getValue() );
   X3DCoordinateNode *coords = getCoord();
   X3DTextureCoordinateNode *tex_coords = texCoord->getValue();
-  TextureCoordinateGenerator *tex_coord_gen = 
-    dynamic_cast< TextureCoordinateGenerator * >( tex_coords );
+
   X3DColorNode *colors = color->getValue();
   X3DNormalNode *normals = normal->getValue();
   bool using_auto_normals = normals == NULL;
@@ -142,7 +140,8 @@ void IndexedFaceSet::render() {
     normals = autoNormal->getValue();
   }
 
-  bool tex_coords_per_vertex = tex_coords && !tex_coord_gen;
+  bool tex_coord_gen = !tex_coords || (tex_coords && tex_coords->supportsTexGen());
+  bool tex_coords_per_vertex = tex_coords && tex_coords->supportsExplicitTexCoords();
 
   const vector< int > &color_index     = colorIndex->getValue();
   const vector< int > &coord_index     = coordIndex->getValue();
@@ -153,10 +152,11 @@ void IndexedFaceSet::render() {
 
   // we need coordinates to render 
   if( coords ) {
-    // no X3DTextureCoordinateNode, so we generate texture coordinates
+    // if no X3DTextureCoordinateNode, we generate texture coordinates
     // based on the bounding box according to the X3D specification.
-    if( !tex_coords_per_vertex )
-      startTexGen( tex_coord_gen );
+    // also if X3DTextureCoordinateNode is generated based the texture
+    // coordinate generation will start
+    if( tex_coord_gen ) startTexGen( tex_coords );
 
     // if we have a color node we use the color from that instead
     // of the previously installed Material node.
@@ -307,7 +307,11 @@ void IndexedFaceSet::render() {
             }
           }
         }
-        
+        // Set up fogCoordinates
+        if(fogCoord->getValue()){
+           fogCoord->getValue()->render(coord_index[i]);
+        }
+
         // Render the vertices.
         coords->render( coord_index[ i ] );
         vertex_count++;
@@ -317,8 +321,8 @@ void IndexedFaceSet::render() {
     }
 
     // disable texture coordinate generation.
-    if( !tex_coords_per_vertex ) 
-      stopTexGen( tex_coord_gen );
+    if( tex_coord_gen ) stopTexGen( tex_coords );
+
     if ( colors ) {
       glDisable( GL_COLOR_MATERIAL );
     } 
@@ -394,7 +398,8 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
                              Vec3f( 0, 0, 0 ) );
     normals.clear();
 
-    std::map< int, vector< Vec3f > > point_to_face_normal_map;
+    std::vector< vector< int > > point_to_face_normal_map;
+    point_to_face_normal_map.resize( coord->nrAvailableCoords() );
 
     H3DFloat cos_crease_angle = H3DCos( crease_angle );
 
@@ -404,14 +409,14 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
          face < normals_per_face->nrAvailableNormals(); face++ ) {
       while( i < coord_index.size() && coord_index[i] != -1 ) {    
         int index = coord_index[i++];
-        Vec3f face_normal = normals_per_face->getNormal( face );
-        point_to_face_normal_map[ index ].push_back( face_normal );
+        vector< int > &v =point_to_face_normal_map[ index ];
+        v.push_back( face );
       }
       i++;
     }
 
     i = 0;
-
+    
     // the normal for the vertex is the average of all normals of the faces
     // which normal angle from the current face is less than the crease angle
     for( unsigned int face = 0; 
@@ -421,14 +426,15 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
         Vec3f face_normal = normals_per_face->getNormal( face );
         Vec3f point_normal( 0, 0, 0 );
 
-        const vector< Vec3f > &face_normals = 
+        const vector< int > &face_normals = 
           point_to_face_normal_map[ index ];
         
-        for( vector< Vec3f >::const_iterator n = face_normals.begin();
+        for( vector< int >::const_iterator n = face_normals.begin();
              n != face_normals.end(); n++ ) {
           // a < b <=> cos(a) > cos(b)
-          if( face_normal * (*n) > cos_crease_angle ) {
-            point_normal += *n;
+          Vec3f nn = normals_per_face->getNormal( *n );
+          if( face_normal * nn > cos_crease_angle ) {
+            point_normal += nn;
           }
         }
         point_normal.normalizeSafe();
@@ -521,19 +527,12 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
   return normal;
 }
 
-#ifdef USE_HAPTICS
 void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
   // use backface culling if solid is true
   if( solid->getValue() ) useBackFaceCulling( true );
   else useBackFaceCulling( false );
 
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
-                                                  ti.getAccForwardMatrix(),
-                                                  coordIndex->size() ) );
-#endif
-  }
+  X3DComposedGeometryNode::traverseSG( ti );
 }
-#endif
+
 

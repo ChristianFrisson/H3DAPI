@@ -5,12 +5,22 @@
 //
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "X3D.h"
-#include "X3DSAX2Handlers.h"
-#include "IStreamInputSource.h"
-#include "ResourceResolver.h"
-#include "VrmlParser.h"
+#include <X3D.h>
+#include <X3DSAX2Handlers.h>
+#include <IStreamInputSource.h>
+#include <ResourceResolver.h>
+#include <VrmlParser.h>
 #include <sstream>
+#include <zlib.h>
+
+#ifdef HAVE_ZLIB
+#ifdef _MSC_VER
+#pragma comment( lib, "zdll.lib" )
+#endif
+
+#define ZIP_MAGIC_NR 0x8B1F
+
+#endif
 
 using namespace H3D;
 
@@ -120,16 +130,74 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   string path = urn.substr( 0, pos + 1 );
   string old_base = ResourceResolver::getBaseURL();
 
-  string resolved_url = ResourceResolver::resolveURLAsFile( url );
+  bool is_tmp_file;
+  string resolved_url = ResourceResolver::resolveURLAsFile( url, 
+                                                            &is_tmp_file );
+
+#ifdef WIN32
+  // needed when running H3DAPI as a plugin to a web-browser
+  // and if url points to a local file.
+  // Needed for plugin for IE
+  string remove_string = "file:///";
+  if( path.find( remove_string ) == 0 ) {
+    path = path.substr( remove_string.size(), pos + 1 );
+  }
+
+  // Needed for plugin for Netscape ( tested on Opera )
+  remove_string = "file://localhost/";
+  if( path.find( remove_string ) == 0 ) {
+    path = path.substr( remove_string.size(), pos + 1 );
+  }
+#endif
+
   ResourceResolver::setBaseURL( path ); 
 
   if( resolved_url == "" )
     parser->parse( url.c_str() );
   else {
+    // determines if resolved_url file should be deleted or not
+    bool delete_file = false;
+
+#ifdef HAVE_ZLIB
+    // check if zip-file
+    ifstream ifs( resolved_url.c_str(), ios::binary );
+    unsigned short magic_nr;
+    ifs.read( (char *)&magic_nr, sizeof( unsigned short ) );
+    bool file_exists = ifs.good();
+    ifs.close();
+
+    // then unpack it
+    if( file_exists && magic_nr == ZIP_MAGIC_NR ) {
+      string tmp_file = ResourceResolver::getTmpFileName();
+      if( tmp_file != "" ) { 
+        gzFile in  = gzopen( resolved_url.c_str(),"rb");
+        ofstream ofs( tmp_file.c_str(), ios::binary );
+        if( in && ofs.good() ) {
+          char buf[ 16384 ];	
+          int len = 0;
+          while( (len = gzread( in, buf, sizeof(buf))) != 0 ) {
+            ofs.write( buf, len );
+          }
+          gzclose(in);
+          ofs.close();
+          if( is_tmp_file ) 
+            ResourceResolver::releaseTmpFileName( resolved_url );
+          resolved_url = tmp_file;
+          is_tmp_file = true;
+        }
+      }
+    }
+#endif
+
+  
     XERCES_CPP_NAMESPACE_USE
     ifstream istest( resolved_url.c_str() );
-    if ( isVRML( istest ) )
-      return createVRMLNodeFromURL( resolved_url, dn );
+    if ( isVRML( istest ) ) {
+      AutoRef< Node > n = createVRMLNodeFromURL( resolved_url, dn );
+      if( is_tmp_file ) 
+        ResourceResolver::releaseTmpFileName( resolved_url );
+      return n;
+    }
     // else...
     ifstream is( resolved_url.c_str() );
     XMLCh *url_ch = new XMLCh[ url.size() + 1 ];
@@ -138,9 +206,12 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
     }
     url_ch[ url.size() ] = '\0'; 
     parser->parse( IStreamInputSource( is, url_ch ) );
-    delete url_ch;
-	is.close();
+    delete[] url_ch;
+    is.close();
+   
   }
+  if( is_tmp_file ) 
+   ResourceResolver::releaseTmpFileName( resolved_url );
   ResourceResolver::setBaseURL( old_base );
   return handler.getResultingNode();
 }

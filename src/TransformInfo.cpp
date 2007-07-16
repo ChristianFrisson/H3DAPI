@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "TransformInfo.h"
+#include <TransformInfo.h>
 
 using namespace H3D;
 
@@ -55,7 +55,6 @@ TransformInfo::TransformInfo( Inst< SFNode     > _metadata,
   database.initFields( this );
 }
 
-#ifdef USE_HAPTICS
 void TransformInfo::traverseSG( TraverseInfo &ti ) {
   X3DChildNode::traverseSG( ti );
 
@@ -68,4 +67,3 @@ void TransformInfo::traverseSG( TraverseInfo &ti ) {
   if( acc_inv != accInverseMatrix->getValue() )
     accInverseMatrix->setValue( acc_inv, id );
 }
-#endif

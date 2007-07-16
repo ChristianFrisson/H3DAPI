@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __GROUP_H__
 #define __GROUP_H__
 
-#include "X3DGroupingNode.h"
+#include <X3DGroupingNode.h>
 
 namespace H3D {
 

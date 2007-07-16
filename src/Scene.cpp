@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,20 +28,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Scene.h"
-#include "TimeStamp.h"
-#ifdef USE_HAPTICS
-#include "DeviceInfo.h"
-#endif
+#include <Scene.h>
+#include <TimeStamp.h>
+#include <DeviceInfo.h>
 #include <GL/glew.h>
 #ifdef MACOSX
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
-#include "PeriodicUpdate.h"
-#include "GLUTWindow.h"
-#include "X3DShapeNode.h"
+#include <PeriodicUpdate.h>
+#include <GLUTWindow.h>
+#include <X3DShapeNode.h>
+
+#include <X3DPointingDeviceSensorNode.h>
+#include <X3DGroupingNode.h>
+#include <ProfilesAndComponents.h>
+#include <H3DNavigation.h>
 
 using namespace H3D;
 
@@ -50,6 +53,9 @@ using namespace H3D;
 //
 // Initialize static members
 //
+
+H3DUtil::MutexLock Scene::callback_lock;
+Scene::CallbackList Scene::callbacks;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase Scene::database( 
@@ -65,8 +71,11 @@ namespace SceneInternals {
 
 
 set< Scene* > Scene::scenes;
-SFTime *Scene::time = new SFTime( TimeStamp() );
-Scene::EventSink *Scene::eventSink = new EventSink;
+auto_ptr< SFTime > Scene::time(new SFTime( TimeStamp() ) );
+auto_ptr< Scene::EventSink > Scene::eventSink(new EventSink);
+
+//SFTime *Scene::time = new SFTime( TimeStamp() );
+//Scene::EventSink *Scene::eventSink = new EventSink;
 
 namespace SceneInternal {
   void idle() {
@@ -83,11 +92,10 @@ namespace SceneInternal {
 void Scene::idle() {
   // calculate and set frame rate
   TimeStamp t;
-  frameRate->setValue( 1 / ( t - last_time ), id );
+  frameRate->setValue( 1.0f / ( t - last_time ), id );
   last_time = t;
   time->setValue( t, id );
 
-#ifdef USE_HAPTICS
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {
     vector< H3DHapticsDevice * > hds;
@@ -99,15 +107,24 @@ void Scene::idle() {
       if( hd->initialized->getValue() ) { 
         hd->preRender();
         hd->updateDeviceValues();
+      } else {
+        hd->initDevice();
+        if( hd->initialized->getValue() ) {
+          hd->preRender();
+          hd->updateDeviceValues();
+        }
       }
       hds.push_back( hd );
     }
 
+    X3DPointingDeviceSensorNode::clearGeometryNodes();
     // traverse the scene graph to collect the HapticObject instances to render.
     TraverseInfo *ti = new TraverseInfo( hds );
     X3DChildNode *c = static_cast< X3DChildNode * >( sceneRoot->getValue() );
     if( c )
       c->traverseSG( *ti );
+
+    X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( c );
 
     /// traverse the stylus of all haptics devices
     DeviceInfo *di = DeviceInfo::getActive();
@@ -128,7 +145,10 @@ void Scene::idle() {
     for( unsigned int i = 0; i < nr_devices; i++ ) {
       H3DHapticsDevice *hd = ti->getHapticsDevice( i );
       if( hd->initialized->getValue() ) {
-        hd->renderShapes( ti->getHapticShapes( i ) );
+        for( unsigned int l = 0; l < ti->nrLayers(); l++ ) {
+          ti->setCurrentLayer( l );
+          hd->renderShapes( ti->getHapticShapes( i ), l );
+        }
         hd->renderEffects( ti->getForceEffects( i ) );
         hd->postRender();
       }
@@ -136,7 +156,7 @@ void Scene::idle() {
 
     // remove the TraverseInfo instance from the last loop. TraverseInfo 
     // instances must be kept alive until its HapticShapes and 
-    // HapticForceEffects are not rendered anymore, which in this case is
+    // HAPIForceEffects are not rendered anymore, which in this case is
     // one scenegraph loop.
     if( last_traverseinfo )
       delete last_traverseinfo;
@@ -146,18 +166,19 @@ void Scene::idle() {
     // Haptics is disabled though to avoid unnecessary calculations.
     TraverseInfo *ti = new TraverseInfo( vector< H3DHapticsDevice * >() );
     ti->disableHaptics();
+    X3DPointingDeviceSensorNode::clearGeometryNodes();
     X3DChildNode *c = static_cast< X3DChildNode *>( sceneRoot->getValue() );
     if( c )
       c->traverseSG( *ti );
+    X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( c );
     // remove the TraverseInfo instance from the last loop. TraverseInfo 
     // instances must be kept alive until its HapticShapes and 
-    // HapticForceEffects are not rendered anymore, which in this case is 
+    // HAPIForceEffects are not rendered anymore, which in this case is 
     // one scenegraph loop.
     if( last_traverseinfo )
       delete last_traverseinfo;
     last_traverseinfo = ti;
   }
-#endif
   
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
@@ -170,6 +191,19 @@ void Scene::idle() {
 
   // update the eventSink
   eventSink->upToDate();
+
+  callback_lock.lock();
+  // execute callbacks
+  for( CallbackList::iterator i = callbacks.begin();
+       i != callbacks.end(); ) {
+    CallbackCode c = (*i).first( (*i).second );
+    if( c == CALLBACK_DONE ) {
+      i = callbacks.erase( i );
+    } else {
+      i++;
+    }
+  }
+  callback_lock.unlock();
 }
 
 
@@ -185,12 +219,8 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   sceneRoot( _sceneRoot ),
   window   ( _window    ),
   frameRate( _frameRate ),
-  active( true )
-#ifdef USE_HAPTICS
-	,
-  last_traverseinfo( NULL )
-#endif
-	{
+  active( true ),
+  last_traverseinfo( NULL )	{
   
   scenes.insert( this );
   
@@ -205,16 +235,50 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
 Scene::~Scene() {
   scenes.erase( this );
 
-#ifdef USE_HAPTICS
   if( last_traverseinfo )
     delete last_traverseinfo;
-#endif
+
+  ProfilesAndComponents::destroy();
 }
 
 void Scene::mainLoop() {
   GLUTWindow::initGLUT();
   glutIdleFunc( SceneInternal::idle );
   glutMainLoop();
+}
+
+void Scene::replaceWorld( AutoRef< Node > new_world,
+                          X3DViewpointNode * new_vp ) {
+  for( set< Scene * >::iterator i = Scene::scenes.begin();
+       i != Scene::scenes.end();
+       i++ ) {
+    if( (*i)->isActive() ) {
+      //TODO: traverse scene to see if the Anchor belongs in it.
+      // right now it assumes just one scene.
+      X3DGroupingNode * scene_root = dynamic_cast< X3DGroupingNode * >
+        ( (*i)->sceneRoot->getValue() );
+      if( scene_root ) {
+        for(unsigned int j = 0; j < scene_root->children->size(); j++ ) {
+          X3DGroupingNode * temp_gr = dynamic_cast< X3DGroupingNode * >
+            ( scene_root->children->getValueByIndex( j ) );
+        }
+        scene_root->children->clear();
+      }
+      (*i)->sceneRoot->setValue( new_world.get() );
+      if( new_vp ) {
+        new_vp->set_bind->setValue( true );
+      }
+      else {
+        const X3DViewpointNode::ViewpointList vp_list
+          = X3DViewpointNode::getAllViewpoints();
+        if( !vp_list.empty() ) {
+          vp_list.front()->set_bind->setValue( true );
+        }
+      }
+      H3DNavigation::enableDevice( H3DNavigation::MOUSE );
+      break;
+    }
+  }
 }
 
 void Scene::EventSink::update() {

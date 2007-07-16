@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,11 +29,11 @@
 #ifndef __SHADERPROGRAM_H__
 #define __SHADERPROGRAM_H__
 
-#include "X3DNode.h"
-#include "X3DUrlObject.h"
-#include "X3DProgrammableShaderObject.h"
-#include "H3DDisplayListObject.h"
-#include "SFString.h"
+#include <X3DNode.h>
+#include <X3DUrlObject.h>
+#include <X3DProgrammableShaderObject.h>
+#include <H3DDisplayListObject.h>
+#include <SFString.h>
 
 #ifdef HAVE_CG
 #include <GL/glew.h>

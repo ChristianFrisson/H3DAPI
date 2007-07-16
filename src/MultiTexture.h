@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,11 +30,11 @@
 #define __MULTITEXTURE_H__
 
 #include <iostream>
-#include "X3DTextureNode.h"
-#include "DependentNodeFields.h"
-#include "SFFloat.h"
-#include "SFColor.h"
-#include "MFString.h"
+#include <X3DTextureNode.h>
+#include <DependentNodeFields.h>
+#include <SFFloat.h>
+#include <SFColor.h>
+#include <MFString.h>
 
 namespace H3D {
   /// \ingroup X3DNodes 

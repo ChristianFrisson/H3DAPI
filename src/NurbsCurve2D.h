@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __NURBSCURVE2D_H__
 #define __NURBSCURVE2D_H__
 
-#include "X3DNurbsControlCurveNode.h"
-#include "SFInt32.h"
-#include "MFDouble.h"
-#include "SFBool.h"
+#include <X3DNurbsControlCurveNode.h>
+#include <SFInt32.h>
+#include <MFDouble.h>
+#include <SFBool.h>
 
 namespace H3D {
 

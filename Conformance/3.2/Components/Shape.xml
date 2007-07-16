@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Shape">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Rendering level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="Appearance">
+      <textureTransform support="optional"/>
+      <lineProperties support="no"/>
+      <fillProperties support="no"/>
+      <shaders support="no"/>
+    </Node>
+    <Node name="Material">
+      <ambientIntensity support="optional"/>
+      <shininess support="optional"/>
+      <specularColour support="optional"/>
+      <emissiveColour support="partial"/>
+      <diffuseColor support="partial"/>
+      <transparency support="partial"/>
+    </Node>
+    <Node name="Shape">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Rendering level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="Appearance">
+      <fillProperties support="no"/>
+      <shaders support="no"/>
+    </Node>
+    <Node name="LineProperties">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Material">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Rendering level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="Appearance">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="FillProperties">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+  <Level_4>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="TwoSidedMaterial">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_4>
+</Component>

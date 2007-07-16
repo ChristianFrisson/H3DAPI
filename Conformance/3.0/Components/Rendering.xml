@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Rendering">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="Color">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ColorRGBA">
+      <color support="partial"/>
+    </Node>
+    <Node name="Coordinate">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="IndexedLineSet">
+      <set_colorIndex support="optional"/>
+      <set_coordIndex support="optional"/>
+    </Node>
+    <Node name="LineSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PointSet">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="Normal">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="IndexedLineSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="IndexedTriangleFanSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="IndexedTriangleSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="IndexedTriangleStripSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TriangleFanSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TriangleSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TriangleStripSet">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+  <Level_4>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="ColorRGBA">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_4>
+</Component>

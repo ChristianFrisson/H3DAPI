@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __COORDINATE_H__
 #define __COORDINATE_H__
 
-#include "X3DCoordinateNode.h"
-#include "FieldTemplates.h"
+#include <X3DCoordinateNode.h>
+#include <FieldTemplates.h>
 #include <GL/glew.h>
-#include "MFVec3f.h"
+#include <MFVec3f.h>
 
 namespace H3D {
 

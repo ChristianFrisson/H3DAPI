@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,7 +30,7 @@
 #ifndef __OGGFILEREADER_H__
 #define __OGGFILEREADER_H__
 
-#include "H3DSoundFileNode.h"
+#include <H3DSoundFileNode.h>
 
 #ifdef HAVE_LIBVORBIS
 #if defined(_MSC_VER) || defined(__BORLANDC__)
@@ -49,11 +49,14 @@ namespace H3D {
   public:
 
     /// Constructor.
-    OggFileReader() {}
+    OggFileReader() {
+      should_clear = false;
+    }
 
     /// Destructor.
     ~OggFileReader() {
-      ov_clear( &ogg_file );
+      if( should_clear )
+        ov_clear( &ogg_file );
     }
 
     /// Load a sound file from the given url that will be used to
@@ -110,6 +113,10 @@ namespace H3D {
 
   protected:
     OggVorbis_File ogg_file;
+    // used to know if ov_clear should be called
+    // there was a problem when creating and destroying OggFileReader
+    // without using it.
+    bool should_clear;
     vorbis_info* info;
     vorbis_comment *comment;
     string url;

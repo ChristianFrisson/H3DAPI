@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __AUDIOCLIP_H__
 #define __AUDIOCLIP_H__
 
-#include "X3DSoundSourceNode.h"
-#include "X3DUrlObject.h"
+#include <X3DSoundSourceNode.h>
+#include <X3DUrlObject.h>
 
 namespace H3D {
 

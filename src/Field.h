@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,10 +31,10 @@
 #include <string>
 #include <set>
 #include <vector>
-#include "H3DApi.h"
-#include "H3DTypes.h"
-#include "TimeStamp.h"
-#include "X3DTypes.h"
+#include <H3DApi.h>
+#include <H3DTypes.h>
+#include <TimeStamp.h>
+#include <X3DTypes.h>
 
 using namespace std;
 

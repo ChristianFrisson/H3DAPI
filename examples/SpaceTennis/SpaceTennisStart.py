@@ -143,7 +143,7 @@ def BuildGUI( root ):
   sb = StartButton( root )
    
 
-root = Tk( "Tk", "H3DLoad.exe" )
+root = Tk( None, "" )
 root.geometry("+100+100")
 fr = Frame( root )
 fr.pack( padx=50, pady=10 )

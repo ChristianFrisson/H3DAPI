@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,10 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ShaderProgram.h"
-#include "X3DTexture2DNode.h"
-#include "X3DTexture3DNode.h"
-#include "ShaderFunctions.h"
+#include <ShaderProgram.h>
+#include <X3DTexture2DNode.h>
+#include <X3DTexture3DNode.h>
+#include <ShaderFunctions.h>
+#include "ResourceResolver.h"
 
 using namespace H3D;
 
@@ -157,7 +158,8 @@ void ShaderProgram::initCGShaderProgram() {
   if( cgGLIsProfileSupported( cg_profile ) ) {
     for( MFString::const_iterator i = url->begin(); 
          i != url->end(); i++ ) { 
-      string resolved_url = resolveURLAsFile( *i );
+      bool is_tmp_file;
+      string resolved_url = resolveURLAsFile( *i, &is_tmp_file );
       if( resolved_url != "" ) {
         setURLUsed( *i );
         cg_program = cgCreateProgramFromFile( cg_context,
@@ -178,6 +180,7 @@ void ShaderProgram::initCGShaderProgram() {
         }
         break;
       }
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( resolved_url ); 
     }
 
     if( getURLUsed() == "" ) {

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __COMPOSEDSHADER_H__
 #define __COMPOSEDSHADER_H__
 
-#include "X3DShaderNode.h"
-#include "ShaderPart.h"
-#include "X3DProgrammableShaderObject.h"
-#include "DependentNodeFields.h"
+#include <X3DShaderNode.h>
+#include <ShaderPart.h>
+#include <X3DProgrammableShaderObject.h>
+#include <DependentNodeFields.h>
 
 namespace H3D {
 

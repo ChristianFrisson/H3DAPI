@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,12 +29,12 @@
 #ifndef __DEVICE_LOG_H__
 #define __DEVICE_LOG_H__
 
-#include "X3DChildNode.h"
-#include "SFString.h"
+#include <X3DChildNode.h>
+#include <SFString.h>
 #ifdef WIN32
 #include <Windows.h>
 #endif
-#include "TimeStamp.h"
+#include <TimeStamp.h>
 using namespace std;
 
 namespace H3D {

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -22,16 +22,20 @@
 //
 //
 /// \file SuperShape.h
-/// \brief UNIMPLEMENTED: Header file for SuperShape, X3D scene-graph node
+/// \brief Header file for SuperShape, X3D scene-graph node. Not in X3D-spec.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SUPERSHAPE_H__
 #define __SUPERSHAPE_H__
 
-#include "X3DGeometryNode.h"
-#include "SFFloat.h"
-#include "SFInt32.h"
+#include <X3DGeometryNode.h>
+#include <SFFloat.h>
+#include <SFInt32.h>
+#include <DependentNodeFields.h>
+#include <X3DCoordinateNode.h>
+#include <CoordBoundField.h>
+#include <X3DNormalNode.h>
 
 /// H3D API namespace
 namespace H3D {
@@ -39,10 +43,94 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \class SuperShape
   /// \brief The SuperShape node implements a SuperShape!
+  ///
+  /// A SuperShape is an implementation of the SuperFormula. The SuperFormula
+  /// is a formula that can be used to describe geometric shapes found in
+  /// nature. For information about the parameters defining the SuperShape
+  /// see 2d-equation on
+  /// http://local.wasp.uwa.edu.au/~pbourke/surfaces_curves/supershape3d/
+  /// This geometryNode implements a 3D-version of the SuperFormula by using
+  /// two functions. The parameter names for one function is ss1_x and for the
+  /// other it is ss2. Experiment with values to see what they do.
   class H3DAPI_API SuperShape : public X3DGeometryNode {
   public:
     
+    /// The SFNormalNode is dependent on the propertyChanged field of the 
+    /// contained X3DNormalNode.
+    typedef DependentSFNode< X3DNormalNode,
+                             FieldRef< X3DGeometricPropertyNode,
+                                       Field,
+                                       &X3DNormalNode::propertyChanged > > 
+    SFNormalNode;
+
+    /// The SFCoordinateNode is a class that contain a X3DCoordinateNode.
+    /// It updates itself from the fields routed to it. The fields routed to
+    /// it are all the fields defining the SuperShape shape.
+    ///
+    /// routes_in[0] is the ss1_m field of the SuperShape node.
+    /// routes_in[1] is the ss1_a field of the SuperShape node.
+    /// routes_in[2] is the ss1_b field of the SuperShape node.
+    /// routes_in[3] is the ss1_n1 field of the SuperShape node.
+    /// routes_in[4] is the ss1_n2 field of the SuperShape node.
+    /// routes_in[5] is the ss1_n3 field of the SuperShape node.
+    /// routes_in[6] is the ss2_m field of the SuperShape node.
+    /// routes_in[7] is the ss2_a field of the SuperShape node.
+    /// routes_in[8] is the ss2_b field of the SuperShape node.
+    /// routes_in[9] is the ss2_n1 field of the SuperShape node.
+    /// routes_in[10] is the ss2_n2 field of the SuperShape node.
+    /// routes_in[11] is the ss2_n3 field of the SuperShape node.
+    /// routes_in[12] is the resolution field of the SuperShape node.
+    ///
+    class SFCoordinateNode: public TypedField< DependentSFNode< X3DCoordinateNode,
+                             FieldRef< X3DGeometricPropertyNode,
+                                       Field,
+                                       &X3DCoordinateNode::propertyChanged > >, Types< SFFloat, SFFloat,
+                                                              SFFloat, SFFloat,
+                                                              SFFloat, SFFloat,
+                                                              SFFloat, SFFloat,
+                                                              SFFloat, SFFloat,
+                                                              SFFloat, SFFloat,
+                                                              SFInt32 > > {
+      /// Update the bound from the fields routed to it
+      virtual void update();
+
+      // Function used internally to define supershape.
+      H3DFloat R( H3DFloat phi, H3DFloat m, H3DFloat a, H3DFloat b,
+                  H3DFloat n1, H3DFloat n2, H3DFloat n3 ) {
+        H3DFloat t2 = m*phi/4.0f;
+        H3DFloat t3 = cosf(t2);
+        H3DFloat t6 = H3DAbs(t3/a);
+        H3DFloat t7 = powf(t6,n2);
+        H3DFloat t8 = sinf(t2);
+        H3DFloat t11 = H3DAbs(t8/b);
+        H3DFloat t12 = powf(t11,n3);
+        H3DFloat t14 = powf(t7+t12,-1/n1);
+        return t14;
+        //return powf(powf(fabsf(cosf((alpha*m)/4.)/a), n2) 
+        //            + powf(fabsf(sinf((alpha*m)/4.)/b),n3), -1/n1);
+      }
+
+      // Function used internally to define supershape.
+      Vec3f SS( H3DFloat theta, H3DFloat phi, H3DFloat sm, H3DFloat sa,
+              H3DFloat sb, H3DFloat sn1, H3DFloat sn2, H3DFloat sn3,
+              H3DFloat tm, H3DFloat ta, H3DFloat tb, H3DFloat tn1,
+              H3DFloat tn2, H3DFloat tn3 ) { 
+        H3DFloat r1theta = R( theta, sm, sa, sb, sn1, sn2, sn3 );
+        H3DFloat r2phi = R( phi, tm, ta, tb, tn1, tn2, tn3 );
+
+        H3DFloat x = r1theta * cosf(theta) * r2phi * cosf(phi);
+        H3DFloat y = r1theta * sin(theta) * r2phi * cosf(phi);
+        H3DFloat z = r2phi * sin(phi);
+
+        return Vec3f( x, y, z);
+      }
+    };
+
+    /// The bound field for SuperShape is a CoordBoundField.
+    typedef CoordBoundField SFBound;
+
     SuperShape( Inst< SFNode   >  _metadata = 0,
+                Inst< SFBound     > _bound = 0,
                 Inst< SFFloat  > _ss1_m  = 0,
                 Inst< SFFloat  > _ss1_a  = 0,
                 Inst< SFFloat  > _ss1_b  = 0,
@@ -59,86 +147,113 @@ namespace H3D {
 
     virtual void render();
 
-    float R( float phi, float m, float a, float b, 
-             float n1, float n2, float n3 ) {
-      float t2 = m*phi/4.0f;
-      float t3 = cosf(t2);
-      float t6 = H3DAbs(t3/a);
-      float t7 = powf(t6,n2);
-      float t8 = sinf(t2);
-      float t11 = H3DAbs(t8/b);
-      float t12 = powf(t11,n3);
-      float t14 = powf(t7+t12,-1/n1);
-      return t14;
-      //return powf(powf(fabsf(cosf((alpha*m)/4.)/a), n2) 
-      //            + powf(fabsf(sinf((alpha*m)/4.)/b),n3), -1/n1);
-    }
-  
-    Vec3f SS( float theta, float phi, 
-              float sm, float sa, float sb, float sn1, float sn2, float sn3,
-              float tm, float ta, float tb, float tn1, float tn2, float tn3 ) { 
-      float r1theta = R( theta, sm, sa, sb, sn1, sn2, sn3 );
-      float r2phi = R( phi, tm, ta, tb, tn1, tn2, tn3 );
-    
-      float x = r1theta * cosf(theta) * r2phi * cosf(phi);
-      float y = r1theta * sin(theta) * r2phi * cosf(phi);
-      float z = r2phi * sin(phi);
-
-      return Vec3f( x, y, z);
+    /// The number of triangles renderered in this geometry.
+    virtual int nrTriangles() {
+      H3DInt32 res = resolution->getValue();
+      if( res < 0 ) return 0;
+      else return res * res * 2;
     }
 
-    Vec3f SSd( float theta, float phi, 
-              float sm, float sa, float sb, float sn1, float sn2, float sn3,
-              float tm, float ta, float tb, float tn1, float tn2, float tn3 ) { 
-      float r1theta = R( theta, sm, sa, sb, sn1, sn2, sn3 );
-      float r2phi = R( phi, tm, ta, tb, tn1, tn2, tn3 );
-    
-      float dx1 = cosf(theta)-r1theta*sinf(theta);
-      float dy1 = sinf(theta)+r1theta*cosf(theta);
-
-      float dy2 = cosf(phi)-r2phi*sinf(phi);
-      float dz2 = sinf(phi)+r2phi*cosf(phi);
-      //float z = r2phi * sin(phi);
-
-      return Vec3f( dx1, dy1*dy2, dz2);
-    }
-
-    float SSdz( float theta, float phi, float m, float a, float b, 
-                float n1, float n2, float n3 ) {
-      return (4*n1*cosf(phi)*(powf(cosf((m*phi)/4.f)/a, n2) 
-                              + powf(sinf((m*phi)/4.f)/b, n3)) 
-              + m*sinf(phi)*(-(n3*(1/tanf((m*phi)/4.f))
-                               *powf(sinf((m*phi)/4.f)/b, n3)) 
-                             + n2*powf(cosf((m*phi)/4.f)/a, n2)
-                             *tanf((m*phi)/4.f)))
-        /(4.f*n1*powf(powf(cosf((m*phi)/4.f)/a, n2) 
-                     + powf(sinf((m*phi)/4.f)/b, n3), (1 + n1)/n1));
-    }
-
-#ifdef USE_HAPTICS
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
+    /// Traverse the scenegraph. A HapticShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
     
     // Fields
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 4 \n
     auto_ptr< SFFloat  > ss1_m;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 1 \n
     auto_ptr< SFFloat  > ss1_a;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 1 \n
     auto_ptr< SFFloat  > ss1_b;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 100 \n
     auto_ptr< SFFloat  > ss1_n1;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 100 \n
     auto_ptr< SFFloat  > ss1_n2;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 100 \n
     auto_ptr< SFFloat  > ss1_n3;
 
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 4 \n
     auto_ptr< SFFloat  > ss2_m;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 1 \n
     auto_ptr< SFFloat  > ss2_a;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 1 \n
     auto_ptr< SFFloat  > ss2_b;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 100 \n
     auto_ptr< SFFloat  > ss2_n1;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 100 \n
     auto_ptr< SFFloat  > ss2_n2;
+
+    /// Parameter to define supershape.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 100 \n
     auto_ptr< SFFloat  > ss2_n3;
 
+    /// Parameter to define the resolution of the supershape.
+    /// A higher value generally give a shape that more closely follows the
+    /// values generate by the implicit SuperFormula than a lower value.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 128 \n
     auto_ptr< SFInt32  > resolution;
 
     static H3DNodeDatabase database;
+  protected:
+
+    /// Start texture coordinate generation. Texture coordinates will be
+    /// generated for all texture units used by the currently active texture.
+    /// Texture coordinates will be generated 
+    /// from the bounding box of the geometry
+    void startTexGen();
+
+    /// Stop texture coordinate generation.
+    void stopTexGen();
+
+    auto_ptr< SFCoordinateNode > coord;
+    auto_ptr< SFNormalNode > normal;
+
   };
 }
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ToggleGroup.h"
+#include <ToggleGroup.h>
 
 using namespace H3D;
 
@@ -73,7 +73,6 @@ void ToggleGroup::render() {
     X3DGroupingNode::render();
 }
 
-#ifdef USE_HAPTICS
 void ToggleGroup::traverseSG( TraverseInfo &ti ) {
   bool is_enabled = ti.hapticsEnabled();
   if( is_enabled && !hapticsOn->getValue() ) {
@@ -84,4 +83,3 @@ void ToggleGroup::traverseSG( TraverseInfo &ti ) {
     X3DGroupingNode::traverseSG( ti );
   }
 }
-#endif

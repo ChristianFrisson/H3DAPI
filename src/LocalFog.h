@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __LOCALFOG_H__
 #define __LOCALFOG_H__
 
-#include "X3DChildNode.h"
-#include "X3DFogObject.h"
-#include "H3DRenderStateObject.h"
+#include <X3DChildNode.h>
+#include <X3DFogObject.h>
+#include <H3DRenderStateObject.h>
 
 namespace H3D {
   /// \ingroup X3DNodes

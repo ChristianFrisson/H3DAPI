@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "LoadSensor.h"
+#include <LoadSensor.h>
 
 using namespace H3D;
 
@@ -73,7 +73,6 @@ LoadSensor::LoadSensor( Inst< SFBool > _enabled ,
   progress->setValue( 0, id );
 }
 
-#ifdef USE_HAPTICS
 void LoadSensor::traverseSG( TraverseInfo &ti ) {
   X3DNetworkSensorNode::traverseSG( ti );
   
@@ -123,5 +122,4 @@ void LoadSensor::traverseSG( TraverseInfo &ti ) {
     }
   }
 }
-#endif
  

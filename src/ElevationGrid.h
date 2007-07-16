@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,15 +29,16 @@
 #ifndef __ELEVATIONGRID_H__
 #define __ELEVATIONGRID_H__
 
-#include "X3DGeometryNode.h"
-#include "X3DCoordinateNode.h"
-#include "TextureCoordinateGenerator.h"
-#include "X3DColorNode.h"
-#include "X3DNormalNode.h"
-#include "X3DVertexAttributeNode.h"
-#include "DependentNodeFields.h"
-#include "SFInt32.h"
-#include "SFFloat.h"
+#include <X3DGeometryNode.h>
+#include <X3DCoordinateNode.h>
+#include <TextureCoordinateGenerator.h>
+#include <X3DColorNode.h>
+#include <X3DNormalNode.h>
+#include <X3DVertexAttributeNode.h>
+#include <DependentNodeFields.h>
+#include <SFInt32.h>
+#include <SFFloat.h>
+#include <FogCoordinate.h>
 
 namespace H3D {
 
@@ -143,7 +144,16 @@ namespace H3D {
                 FieldRef< X3DGeometricPropertyNode,
                           Field,
                           &X3DVertexAttributeNode::propertyChanged > > 
-    MFVertexAttributeNode;    
+    MFVertexAttributeNode;
+    
+    /// The SFFogCoordinate is dependent on the propertyChanged
+    /// field of the contained FogCoordinate.
+    typedef DependentSFNode< 
+                FogCoordinate,
+                FieldRef< X3DGeometricPropertyNode,
+                          Field,
+                          &FogCoordinate::propertyChanged > > 
+    SFFogCoordinate;
 
     /// Specialized field for automatically generating normals from
     /// coordinates.
@@ -251,12 +261,18 @@ namespace H3D {
 
     /// Render the ElevationGrid with OpenGL.
     virtual void render();
+    
+    /// The number of triangles renderered in this geometry.
+    virtual int nrTriangles() {
+      H3DInt32 x_dim = xDimension->getValue();
+      H3DInt32 z_dim = zDimension->getValue();
+      if( x_dim < 2 || z_dim < 2 ) return 0;
+      else return (x_dim - 1) * (z_dim - 1 ) * 2;
+    }
 
-#ifdef USE_HAPTICS
 		/// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
 
     /// Constructor.
     ElevationGrid( Inst< SFNode           > _metadata        = 0,
@@ -276,7 +292,8 @@ namespace H3D {
                    Inst< SFInt32          > _zDimension      = 0,
                    Inst< SFFloat          > _xSpacing        = 0,
                    Inst< SFFloat          > _zSpacing        = 0,
-                   Inst< MFFloat          > _height          = 0 );
+                   Inst< MFFloat          > _height          = 0,
+                   Inst< SFFogCoordinate  > _fogCoord        = 0 );
 
     /// Contains an X3DColorNode whose colors are applied to the
     /// ElevationGrid. If the color field is NULL, the
@@ -431,6 +448,15 @@ namespace H3D {
     ///
     /// \dotfile ElevationGrid_autoNormal.dot 
     auto_ptr< AutoNormal  >  autoNormal;
+
+    /// If the fogCoord field is not empty, it shall contain a list 
+    /// of per-vertex depth values for calculating fog depth.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile FogCoordinate_fogCoord.dot 
+    auto_ptr< SFFogCoordinate > fogCoord;
+
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

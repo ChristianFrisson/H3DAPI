@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,26 +29,63 @@
 #ifndef __H3DFUNCTIONNODE_H__
 #define __H3DFUNCTIONNODE_H__
 
-#include "X3DNode.h"
+#include <X3DNode.h>
+#include <MFDouble.h>
+#include <SFDouble.h>
 
 namespace H3D {
+
+  /// \ingroup H3DNodes 
+  /// \class H3DFunctionNode
+  /// \brief Base class for nodes evaluating function.
+  /// The function is a function R^n -> R.
+  /// 
   class H3DAPI_API H3DFunctionNode : public X3DNode {
   public:
-    
-    /// Constructor.
-    H3DFunctionNode( Inst< SFNode>  _metadata = 0 );
 
-    /// Get the value as unsigned byte
-    virtual unsigned char getChar(unsigned char x) {
-       return (unsigned char)( 255.0f*get((H3D::H3DFloat)(x/255.0f)) );
+    /// Field class that calculates the function value for the given input.
+    /// routes_in[0] is the input field
+    class H3DAPI_API Value: public TypedField< SFDouble, MFDouble > {
+    protected:
+      virtual void update();
     };
-    ///
-    virtual H3DFloat get(H3DFloat x) = 0;
-    
+
+    /// Constructor.
+    H3DFunctionNode( Inst< SFNode   >  _metadata = 0,
+                     Inst< MFDouble  > _input     = 0,
+                     Inst< Value    > _output     = 0 );
+
+    /// Evaluate the function for the given input.
+    virtual H3DDouble evaluate( H3DDouble *input ) = 0;
+
+    /// Shortcut for functions just taking one input 
+    inline H3DDouble evaluate( H3DDouble input ) {
+      return evaluate( &input ); 
+    }
+
+    /// Same as evaluate(). For backwards compatability.
+    inline H3DDouble get( H3DDouble input ) {
+      return evaluate( &input ); 
+    }
+
+    /// Returns the number of input values the function takes.
+    virtual unsigned int nrInputValues() = 0;
+
     virtual string defaultXMLContainerField() {
       return "function";
     }
     
+    /// Input value to the function to evaluate.
+    /// 
+    ///  <b>Access type:</b> inputOnly \n
+    auto_ptr< MFDouble > input;
+
+    /// Output value from the function when evaluated for the input values
+    /// given in the input field.
+    /// 
+    ///  <b>Access type:</b> inputOnly \n
+    auto_ptr< Value > output;
+
     /// Field that indicated whether the function has changed. Since
     /// H3DFunctionNode is an abstract type we do not know anything
     /// about which fields will be available. Subclasses must route in

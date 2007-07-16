@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -25,8 +25,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Field.h"
-#include "Node.h"
+#include <Field.h>
+#include <Node.h>
 #include <algorithm>
 
 #ifdef DEBUG

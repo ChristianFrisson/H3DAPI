@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="CADGeometry">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="IndexedQuadSet">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="QuadSet">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="CADAssembly">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CADFace">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CADLayer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CADPart">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+</Component>

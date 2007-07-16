@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __DEVICEINFO_H__
 #define __DEVICEINFO_H__
 
-#include "X3DBindableNode.h"
-#include "H3DHapticsDevice.h"
-#include "MFNode.h"
+#include <X3DBindableNode.h>
+#include <H3DHapticsDevice.h>
+#include <MFNode.h>
 
 namespace H3D {
   /// \ingroup H3DNodes
@@ -73,7 +73,17 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< MFDevice >  device;
 
+    typedef list< DeviceInfo * > DeviceInfoList;
+    
+    /// Returns a list of all current DeviceInfo instances.
+    static const DeviceInfoList &getAllDeviceInfos() {
+      return deviceinfos;
+    }
+
     static H3DNodeDatabase database;
+
+  protected:
+    static DeviceInfoList deviceinfos;
   };
 }
 

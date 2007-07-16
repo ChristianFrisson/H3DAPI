@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DAppearanceNode.h"
+#include <X3DAppearanceNode.h>
 
 using namespace H3D;
 
@@ -40,23 +40,15 @@ H3DNodeDatabase X3DAppearanceNode::database( "X3DAppearanceNode",
 bool X3DAppearanceNode::default_using_multi_pass_transparency = true;
 
 namespace X3DAppearanceNodeInternals {
-#ifdef USE_HAPTICS
   FIELDDB_ELEMENT( X3DAppearanceNode, surface, INPUT_OUTPUT );
-#endif
 }
 
 X3DAppearanceNode::X3DAppearanceNode( Inst< DisplayList > _displayList,
-                                      Inst< SFNode>  _metadata
-#ifdef USE_HAPTICS
-																			,
-                                      Inst< SFSurface>  _surface
-#endif
-																			) :
+                                      Inst< SFNode>  _metadata,
+                                      Inst< SFSurface>  _surface ) :
   X3DNode( _metadata ),
-  H3DDisplayListObject( _displayList )
-#ifdef USE_HAPTICS
-	,	surface( _surface )
-#endif
+  H3DDisplayListObject( _displayList ),
+  surface( _surface )
 	{
 
   type_name = "X3DAppearanceNode";
@@ -66,9 +58,7 @@ X3DAppearanceNode::X3DAppearanceNode( Inst< DisplayList > _displayList,
   displayList->setOwner( this );
 }
 
-#ifdef USE_HAPTICS
 void X3DAppearanceNode::traverseSG( TraverseInfo &ti ) {
   ti.setCurrentSurface(static_cast< H3DSurfaceNode * >( surface->getValue() ) ); 
 }
-#endif
 

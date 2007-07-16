@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "GravityPhysicsModel.h"
+#include <GravityPhysicsModel.h>
 
 using namespace H3D;
 
@@ -53,7 +53,7 @@ GravityPhysicsModel::GravityPhysicsModel(
   type_name = "GravityPhysicsModel";
   database.initFields( this );
 
-  gravity->setValue( Vec3f( 0, -9.8, 0 ) );
+  gravity->setValue( Vec3f( 0, -9.8f, 0 ) );
 }
 
 

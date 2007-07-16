@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __DIRECTIONALLIGHT_H__
 #define __DIRECTIONALLIGHT_H__
 
-#include "X3DLightNode.h"
-#include "SFVec3f.h"
+#include <X3DLightNode.h>
+#include <SFVec3f.h>
 
 namespace H3D {
 

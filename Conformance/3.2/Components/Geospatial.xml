@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Geospatial">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Networking level="1"/>
+      <Grouping level="3"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+      <Geometry3D level="1"/>
+      <Interpolation  level="1"/>
+      <PointDeviceSensor level="1"/>
+      <Navigation level="1"/>
+    </Prerequisites>
+    <Node name="GeoCoordinate">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoElevationGrid">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoLocation">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoLOD">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoMetadata">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoOrigin">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoPositionInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoTouchSensor">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeoViewpoint">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Networking level="1"/>
+      <Grouping level="3"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+      <Geometry3D level="1"/>
+      <Interpolation level="1"/>
+      <EnvironmentalSensor level="1"/>
+      <Navigation level="1"/>
+    </Prerequisites>
+    <Node name="GeoProximitySensor">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+</Component>

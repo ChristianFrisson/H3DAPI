@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __TEXTURETRANSFORM_H__
 #define __TEXTURETRANSFORM_H__
 
-#include "X3DTextureTransform2DNode.h"
+#include <X3DTextureTransform2DNode.h>
 
 namespace H3D {
   /// \ingroup X3DNodes 

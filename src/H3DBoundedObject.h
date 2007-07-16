@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,11 +29,11 @@
 #ifndef __H3DBOUNDEDOBJECT_H__
 #define __H3DBOUNDEDOBJECT_H__
 
-#include "H3DApi.h"
-#include "FieldTemplates.h"
-#include "Bound.h"
-#include "RefCountSField.h"
-#include "Instantiate.h"
+#include <H3DApi.h>
+#include <FieldTemplates.h>
+#include <Bound.h>
+#include <RefCountSField.h>
+#include <Instantiate.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface

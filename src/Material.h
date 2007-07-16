@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
-#include "X3DMaterialNode.h"
-#include "SFFloat.h"
-#include "SFColor.h"
+#include <X3DMaterialNode.h>
+#include <SFFloat.h>
+#include <SFColor.h>
 
 namespace H3D {
 

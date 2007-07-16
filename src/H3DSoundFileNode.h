@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __H3DSOUNDFILENODE_H__
 #define __H3DSOUNDFILENODE_H__
 
-#include "H3DSoundStreamNode.h"
+#include <H3DSoundStreamNode.h>
 #include <list>
 
 namespace H3D {
@@ -50,7 +50,7 @@ namespace H3D {
 
     /// Function ptr type for  
     typedef bool ( *SupportsFileFunc)( const string &url ); 
-    
+
     template< class N >
     static H3DSoundFileNode *newSoundFileNode() { return new N; };
 
@@ -59,19 +59,18 @@ namespace H3D {
     public:
       /// Constructor.
       FileReaderRegistration( const string &_name,
-                              CreateNodeFunc _create, 
-                              SupportsFileFunc _supports ):
+        CreateNodeFunc _create, 
+        SupportsFileFunc _supports ):
       name( _name ),
-      create_func( _create ),
-      supports_func( _supports ) {
-        if( !H3DSoundFileNode::initialized ) {
-          H3DSoundFileNode::registered_file_readers = 
-            new list< FileReaderRegistration >;
-          initialized = true;
-        }
-        H3DSoundFileNode::registerFileReader( *this );
-      }
-
+        create_func( _create ),
+        supports_func( _supports ) {
+          if( !H3DSoundFileNode::initialized) {
+            H3DSoundFileNode::registered_file_readers.reset(
+              new list< FileReaderRegistration > );
+            initialized = true;
+          }
+          H3DSoundFileNode::registerFileReader( *this );
+          }
       string name;
       CreateNodeFunc create_func;
       SupportsFileFunc supports_func;
@@ -82,7 +81,7 @@ namespace H3D {
     /// Load a sound file from the given url that will be used to
     /// generate PCM data.
     virtual unsigned int load( const string &_url ) = 0;
-    
+
     /// Given an url to a file, it returns an instance of a H3DSoundFileNode
     /// class that can handle that file type. If no such class is registered
     /// NULL is returns.
@@ -95,19 +94,99 @@ namespace H3D {
     /// \param supports A function to determine if the class supports a
     /// given file type.
     static void registerFileReader( const string &name,
-                                    CreateNodeFunc create, 
-                                    SupportsFileFunc supports ) {
-      registerFileReader( FileReaderRegistration( name, create, supports ) );
+      CreateNodeFunc create, 
+      SupportsFileFunc supports ) {
+        registerFileReader( FileReaderRegistration( name, create, supports ) );
     }
 
     /// Register a file reader that can then be returned by 
     /// getSupportedFileReader().
     static void registerFileReader( const FileReaderRegistration &fr ) {
+      list< FileReaderRegistration > *j = registered_file_readers.get();
       registered_file_readers->push_back( fr );
     }
+    
+    // Creating a new auto_ptr local for this node, because 
+    // registrated_file_reader caused a memory leak and because
+    // of the order of setting the static variables the autp_ptr's
+    // constructor resets the auto_ptr to 0 eventhough the 
+    // registrated_file_reader has been initilazed, and therefore
+    // cause an error making it imposible to use the standard auto_ptr.
+    template<class T>
+    class local_auto_ptr{
+    private:
+      T* ap;    // refers to the actual owned object (if any)
+    public:
+      typedef T element_type;
+
+      // constructor
+      explicit local_auto_ptr (T* ptr = 0) {
+        if(!initialized){
+          ap=ptr;
+        }
+      }
+      
+      // copy constructors (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr (local_auto_ptr& rhs) throw() : ap(rhs.release()) { }
+
+      template<class Y>
+      local_auto_ptr (local_auto_ptr<Y>& rhs) throw() : ap(rhs.release()) { }
+      
+      // assignments (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr& operator= (local_auto_ptr& rhs) throw(){
+        if(!initialized){  
+          reset(rhs.release());
+          return *this;
+        }
+      }
+      template<class Y>
+      local_auto_ptr& operator= (local_auto_ptr<Y>& rhs) throw(){
+        if(!initialized){
+          reset(rhs.release());
+          return *this;
+        }
+      }
+
+      // destructor
+      ~local_auto_ptr() throw(){
+        delete ap;
+      }
+
+      // value access
+      T* get() const throw(){
+        return ap;
+      }
+      T& operator*() const throw(){
+        return *ap;
+      }
+      T* operator->() const throw(){
+        return ap;
+      }
+
+      // release ownership
+      T* release() throw(){
+        if(!initialized){
+          T* tmp(ap);
+          ap = 0;
+          return tmp;
+        }
+      }
+
+      // reset value
+      void reset (T* ptr=0) throw(){
+        if(!initialized){
+          if (ap != ptr){
+            delete ap;
+            ap = ptr;
+          }
+        }
+      }
+    };
 
   protected:
-    static list< FileReaderRegistration > *registered_file_readers;
+    static  local_auto_ptr<list< FileReaderRegistration > > registered_file_readers;
     static bool initialized;
   };
 }

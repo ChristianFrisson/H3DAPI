@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DParticleEmitterNode.h"
-#include "Viewpoint.h"
-#include "X3DTextureNode.h"
-#include "ParticleSystem.h"
-#include "MultiTexture.h"
+#include <X3DParticleEmitterNode.h>
+#include <X3DViewpointNode.h>
+#include <X3DTextureNode.h>
+#include <ParticleSystem.h>
+#include <MultiTexture.h>
 
 using namespace H3D;
 
@@ -99,7 +99,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
                                weight, color_key );
     
     if( key_index >= 0 && 
-        key_index < color_ramp->nrAvailableColors()  ) {
+        key_index < (int)color_ramp->nrAvailableColors()  ) {
       have_color_value = true;
       if (weight<=0) 
         color = color_ramp->getColor( 0 );
@@ -248,7 +248,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
 
     glEnd();
   } else if( type == SPRITE ) {
-    Viewpoint *vp = Viewpoint::getActive();
+    X3DViewpointNode *vp = X3DViewpointNode::getActive();
     Matrix4f vp_to_local = Matrix4f( 1, 0, 0, -position.x,
                                   0, 1, 0, -position.y,
                                   0, 0, 1, -position.z,
@@ -256,10 +256,10 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       global_to_local *
       vp->accForwardMatrix->getValue();
     
-    Vec3f vp_position =  vp_to_local * vp->position->getValue();
+    Vec3f vp_position =  vp_to_local * vp->getFullPos();
     Vec3f vp_y_axis = 
       vp_to_local.getScaleRotationPart() * 
-      (vp->orientation->getValue() *  Vec3f( 0, 1, 0 ) );
+      (vp->getFullOrn() *  Vec3f( 0, 1, 0 ) );
     vp_y_axis.normalizeSafe();
     Vec3f particle_to_viewer = vp_to_local.getRotationPart() * Vec3f( 0, 0, 1); //vp_position;// - position;
     Vec3f X = vp_y_axis % particle_to_viewer;
@@ -336,4 +336,23 @@ void X3DParticleEmitterNode::Particle::renderTexCoord( unsigned int index, X3DTe
   } else {
     tc->render( index );
   }
+}
+
+X3DParticleEmitterNode::Particle 
+X3DParticleEmitterNode::newParticle( ParticleSystem *ps, 
+                                     const Vec3f &pos, 
+                                     const Vec3f &dir ) {
+  Vec3f vel = dir * ParticleSystem::getVariationValue( speed->getValue(), 
+                                                       variation->getValue() );
+  Particle p = Particle( pos,
+                         vel );
+  p.size = ps->particleSize->getValue();
+  p.type = ps->getCurrentParticleType(); 
+  p.surface_area = surfaceArea->getValue();
+  p.total_time_to_live = 
+    ParticleSystem::getVariationValue( ps->particleLifetime->getValue(), 
+                                       ps->lifetimeVariation->getValue() );
+  p.geometry.reset( ps->geometry->getValue() );
+  p.mass = mass->getValue();
+  return p;
 }

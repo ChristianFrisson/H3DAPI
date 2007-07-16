@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #ifndef __COORDINATEINTERPOLATOR_H__
 #define __COORDINATEINTERPOLATOR_H__
 
-#include "X3DInterpolatorNode.h"
-#include "MFVec3f.h"
+#include <X3DInterpolatorNode.h>
+#include <MFVec3f.h>
 
 namespace H3D {
 
@@ -66,16 +66,19 @@ namespace H3D {
         H3DFloat weight;
         int key_index = static_cast<CoordinateInterpolator*>(owner)->lookupKey( fraction, weight );
         vector< Vec3f > key_values = static_cast<MFVec3f*>(routes_in[2])->getValue();
-        int value_size = key_values.size() / key_size;
+        int value_size = 0;
+        if( key_size != 0 )
+          value_size = key_values.size() / key_size;
         value.resize( value_size );
 
-		if ( key_size > 0 && key_index >= 0 ) {
+	if ( key_index >= 0 && 
+	     (key_index + 2)* value_size - 1 < (int)key_values.size() ) {
           if (weight<=0) 
             for (int x = 0; x < value_size; x++ )
-              value[x] = key_values[ x ];
+              value[x] = key_values[ key_index*value_size + x ];
           else if (weight>=1)
             for (int x = 0; x < value_size; x++ )
-              value[x] = key_values[ (key_size-1)*value_size + x];
+              value[x] = key_values[ (key_index+1)*value_size + x];
           else { // else, interpolate linearly
             for (int x = 0; x < value_size; x++ ) {
               Vec3f a = key_values[ key_index*value_size + x ];

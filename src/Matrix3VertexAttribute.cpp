@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Matrix3VertexAttribute.h"
+#include <Matrix3VertexAttribute.h>
 #include "GL/glew.h"
 
 using namespace H3D;
@@ -96,7 +96,7 @@ void Matrix3VertexAttribute::renderArray() {
 			      GL_FALSE,
 			      0,
 			      data );
-    delete data;
+    delete[] data;
     // TODO: bind name
   }
 }

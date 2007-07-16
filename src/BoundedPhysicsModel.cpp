@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "BoundedPhysicsModel.h"
+#include <BoundedPhysicsModel.h>
 
 using namespace H3D;
 
@@ -63,7 +63,26 @@ void BoundedPhysicsModel::updateParticleValues(
   X3DGeometryNode *geom = geometry->getValue();
   if( !enabled->getValue() || !geom ) return;
 
+  HAPI::Bounds::BinaryBoundTree *tree = geom->boundTree->getValue();
+  if( !tree ) return;
   
+  HAPI::Bounds::IntersectionInfo intersection;
+  if( tree->lineIntersect( last_particle.position * 1000,
+                           particle.position * 1000,
+                           intersection ) ) {
+    Vec3f neg_v = -particle.velocity;
+    Vec3f v_par = (Vec3f) ((neg_v * intersection.normal) * intersection.normal); 
+    Vec3f v_perp = neg_v - v_par;
+    
+    particle.velocity = v_par - v_perp;
+    Vec3f n = (Vec3f ) (
+      intersection.face == HAPI::Bounds::FRONT ? 
+      intersection.normal : -intersection.normal );
+    particle.position = 
+      (Vec3f) intersection.point/1000 + 
+      1e-7 * n;
+    
+  }
 }
 
 

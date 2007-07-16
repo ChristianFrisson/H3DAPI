@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="NURBS">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Interpolation level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="CoordinateDouble">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsCurve">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsOrientationInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsPatchSurface">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsPositionInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsSurfaceInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsTextureCoordinate">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Interpolation level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="NurbsSet">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Interpolation level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="NurbsCurve2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ContourPolyline2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsSweptSurface">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsSwungSurface">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+  <Level_4>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Interpolation level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="Contour2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NurbsTrimmedSurface">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_4>
+</Component>

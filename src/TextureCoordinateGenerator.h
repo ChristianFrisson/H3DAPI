@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __TEXTURECOORDINATEGENERATOR_H__
 #define __TEXTURECOORDINATEGENERATOR_H__
 
-#include "X3DTextureCoordinateNode.h"
-#include "SFString.h"
-#include "MFFloat.h"
+#include <X3DTextureCoordinateNode.h>
+#include <SFString.h>
+#include <MFFloat.h>
 
 namespace H3D {
 
@@ -91,37 +91,10 @@ namespace H3D {
                                 Inst< SFString > _mode      = 0,
                                 Inst< MFFloat  > _parameter = 0 );
     
-    /// This function should not be called. Throws an exception. Use
-    /// startTexGen() to start hardware texture coordinate generation.
-    virtual void render( int index );
-
-    /// This function should not be called. Throws an exception. Use
-    /// startTexGen() to start hardware texture coordinate generation.
-    virtual void renderForTextureUnit( int index,
-                                       unsigned int texture_unit );
-
-    /// This function should not be called. Throws an exception. Use
-    /// startTexGen() to start hardware texture coordinate generation.
-    virtual void renderArray();
-
-    /// This function should not be called. Throws an exception. Use
-    /// startTexGen() to start hardware texture coordinate generation.
-    virtual void renderArrayForTextureUnit( unsigned int texture_unit );
-
-    /// This function should not be called. Throws an exception. Use
-    /// startTexGen() to start hardware texture coordinate generation.
-    virtual void disableArray();
-
-    /// This function should not be called. Throws an exception. Use
-    /// startTexGen() to start hardware texture coordinate generation.
-    virtual void disableArrayForTextureUnit( unsigned int texture_unit );
-
-    /// Returns 0 since only startTexGen() should be used to start
-    /// hardware texture coordinate generation. None of the indexed
-    /// render functions should be used.
-    virtual unsigned int nrAvailableTexCoords() {
-      return 0;
-    }
+    /// Returns true
+    virtual bool supportsTexGen() {
+      return true;
+    } 
 
     /// Start hardware texture coordinate generation. Algorithm depends
     /// on the value of the mode field.

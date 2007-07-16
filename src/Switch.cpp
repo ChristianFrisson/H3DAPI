@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Switch.h"
+#include <Switch.h>
 
 using namespace H3D;
 
@@ -85,11 +85,9 @@ void Switch::SFBound::update() {
     value = static_cast< SFBound * >( routes_in[choice+1] )->getValue();
 }
 
-#ifdef USE_HAPTICS
 void Switch::traverseSG( TraverseInfo &ti ) {
   int choice = whichChoice->getValue();
   if( choice < 0 || (size_t)choice > children->size() - 1 ) return;
   X3DChildNode *child_node = children->getValueByIndex( choice );
   if( child_node ) child_node->traverseSG( ti );
 }
-#endif

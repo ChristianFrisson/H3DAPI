@@ -12,18 +12,19 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release\obj"
+			Name="Release using DLL|Win32"
+			OutputDirectory="..\..\..\..\bin"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
 				InlineFunctionExpansion="2"
 				ImproveFloatingPointConsistency="TRUE"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;..\..\..\src;..\..\..\..\HAPI\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;"
 				PreprocessorDefinitions="NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -41,11 +42,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="H3DAPI.lib"
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir);$(H3D_EXTERNAL_ROOT)\lib"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -72,9 +72,9 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug\obj"
+			Name="Debug using DLL|Win32"
+			OutputDirectory="..\..\..\..\bin"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -83,7 +83,7 @@
 				Optimization="0"
 				ImproveFloatingPointConsistency="TRUE"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="..\..\..\..\H3DUtil\src;..\..\..\src;..\..\..\..\HAPI\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;"
 				PreprocessorDefinitions="_DEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32"
 				RuntimeLibrary="2"
 				DisableLanguageExtensions="FALSE"
@@ -100,13 +100,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="H3DAPI.lib"
-				OutputFile="$(OutDir)/H3DLoad.exe"
+				OutputFile="$(OutDir)/H3DLoad_d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir);$(H3D_EXTERNAL_ROOT)\lib"
+				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\lib;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				ProgramDatabaseFile="$(OutDir)/H3DLoad_d.pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -141,5 +140,8 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="DevPartner_IsInstrumented"
+			Value="0"/>
 	</Globals>
 </VisualStudioProject>

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
 
-#include "H3DApi.h"
-#include "H3DTypes.h"
-#include "RefCountedClass.h"
+#include <H3DApi.h>
+#include <H3DTypes.h>
+#include <RefCountedClass.h>
 #include <assert.h>
 
 /// H3D API namespace
@@ -41,6 +41,10 @@ namespace H3D {
   ///
   class H3DAPI_API Image: public RefCountedClass {
   public:
+    /// Constructor.
+    Image():
+      byte_alignment( 1 ) {}
+
     /// Type that defines what format each pixel in the image is
     /// on.
     typedef enum {
@@ -85,7 +89,70 @@ namespace H3D {
     /// deallocating that memory.
     virtual void *getImageData() = 0;
 
+    /// Sample the image at a given normalized position(texture coordinate), 
+    /// i.e. coordinates between 0 and 1. Pixel data will be trilinearly
+    /// interpolated to  calculate the result.
+    ///
+    /// \param value Where to put the return value.
+    /// \param x The position in x(width) to sample(0-1).
+    /// \param y The position in y(height) to sample(0-1).
+    /// \param z The position in z(depth) to sample(0-1).
+    void getSample( void *value, 
+                    H3DFloat x = 0, 
+                    H3DFloat y = 0, 
+                    H3DFloat z = 0 );
 
+    /// Sample the image at a given normalized position(texture coordinate), 
+    /// i.e. coordinates between 0 and 1. Pixel data will be trilinearly
+    /// interpolated to  calculate the result.
+    ///
+    /// \param x The position in x(width) to sample(0-1).
+    /// \param y The position in y(height) to sample(0-1).
+    /// \param z The position in z(depth) to sample(0-1).
+    inline H3D::RGBA getSample( H3DFloat x = 0, 
+                                H3DFloat y = 0, 
+                                H3DFloat z = 0 ) {
+      unsigned int byte_rem = bitsPerPixel() % 8;
+      unsigned int bytes_per_pixel = bitsPerPixel() / 8;
+      
+      assert( byte_rem == 0 );
+      
+      char *pixel_data = new char[bytes_per_pixel];
+      getSample( pixel_data, x, y, z );
+      H3D::RGBA rgba = imageValueToRGBA( pixel_data );
+      delete [] pixel_data;
+      return rgba;
+    }
+ 
+    /// Set the pixel at a given position given an RGBA struct. 
+    /// If an LUMINANCE image, the R component is used as value. 
+    ///
+    /// \param x The position in x(width).
+    /// \param y The position in y(height).
+    /// \param z The position in z(depth).
+    void setPixel( const H3D::RGBA &value, int x = 0, int y = 0, int z = 0 );
+
+    /// Get the pixel at a given position as an RGBA struct. 
+    /// If an LUMINANCE image, the value is copied to RGB channels and 
+    /// alpha set to 1.
+    /// \param x The position in x(width).
+    /// \param y The position in y(height).
+    /// \param z The position in z(depth).
+    H3D::RGBA getPixel( int x = 0, int y = 0, int z = 0 );
+
+    /// Convert a RGBA value to a value of the same type as the image data.
+    void RGBAToImageValue( const H3D::RGBA &rgba, void *value );
+
+    /// Convert an image value to an RGBA value.
+    H3D::RGBA imageValueToRGBA( void *value );
+
+    /// Get the value of a pixel/voxel. The size of data written in value
+    /// as output depends on the type of the image.
+    ///
+    /// \param value Where to put the return value.
+    /// \param x The position in x(width) to sample.
+    /// \param y The position in y(height) to sample.
+    /// \param z The position in z(depth) to sample.
     virtual void getElement( void *value, int x = 0, int y = 0, int z = 0 ) {
       unsigned int byte_rem = bitsPerPixel() % 8;
       unsigned int bytes_per_pixel = bitsPerPixel() / 8;
@@ -102,6 +169,8 @@ namespace H3D {
               bytes_per_pixel );
     }
     
+    /// Set the value of a pixel/voxel. The size of data read from value
+    /// depends on the type of the image.
     virtual void setElement( void *value, int x = 0, int y = 0, int z = 0 ) {
       unsigned int byte_rem = bitsPerPixel() % 8;
       unsigned int bytes_per_pixel = bitsPerPixel() / 8;
@@ -114,6 +183,15 @@ namespace H3D {
               value, 
               bytes_per_pixel );
     }
+
+    /// Gets the byte alignment for the start of each pixel row in memory.
+    /// Valid values are 1, 2, 4 and 8.
+    virtual int byteAlignment() {
+      return byte_alignment;
+    }
+
+	protected:
+	  int byte_alignment;
   };
 }
 

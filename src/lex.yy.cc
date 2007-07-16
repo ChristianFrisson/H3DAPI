@@ -3824,7 +3824,7 @@ static yyconst long int yy_rule_linenum[30] =
 #define INITIAL 0
 #line 3 "vrml.l"
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -3854,7 +3854,7 @@ static yyconst long int yy_rule_linenum[30] =
 //  uncompressed lookup table and opt for speed over size.
 //
 
-#include "VrmlDriver.h"
+#include <VrmlDriver.h>
 #include "vrml.hpp"
 #define YYLMAX 65535
 #define YY_NO_UNPUT 1
@@ -4388,7 +4388,7 @@ yyFlexLexer::yyFlexLexer( istream* arg_yyin, ostream* arg_yyout )
 
 yyFlexLexer::~yyFlexLexer()
 	{
-	delete yy_state_buf;
+	delete[] yy_state_buf;
 	yy_delete_buffer( yy_current_buffer );
 	}
 

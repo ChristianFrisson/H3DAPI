@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __TIMETRIGGER_H__
 #define __TIMETRIGGER_H__
 
-#include "X3DTriggerNode.h"
-#include "SFBool.h"
-#include "SFTime.h"
+#include <X3DTriggerNode.h>
+#include <SFBool.h>
+#include <SFTime.h>
 
 namespace H3D {
 

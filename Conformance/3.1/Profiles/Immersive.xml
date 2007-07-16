@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Profile name="Immersive">
+  <Component name="Core" level="2"/>
+  <Component name="Time" level="1"/>
+  <Component name="Networking" level="3"/>
+  <Component name="Grouping" level="2"/>
+  <Component name="Rendering" level="3"/>
+  <Component name="Shape" level="2"/>
+  <Component name="Geometry3D" level="4"/>
+  <Component name="Geometry2D" level="1"/>
+  <Component name="Text" level="1"/>
+  <Component name="Sound" level="1"/>
+  <Component name="Lighting" level="2"/>
+  <Component name="Texturing" level="3"/>
+  <Component name="Interpolation" level="2"/>
+  <Component name="PointingDeviceSensor" level="1"/>
+  <Component name="KeyDeviceSensor" level="2"/>
+  <Component name="EnvironmentalSensor" level="2"/>
+  <Component name="Navigation" level="2"/>
+  <Component name="EnvironmentalEffects" level="2"/>
+  <Component name="Scripting" level="1"/>
+  <Component name="EventUtilities" level="1"/>
+</Profile>

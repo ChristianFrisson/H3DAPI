@@ -1,18 +1,20 @@
 <Group>
-  <Transform rotation="1 0 0 -0.5">
-    <DeformableShape DEF="DEFORM_SHAPE" >
-      <CoordinateDeformer >
-        <GaussianFunction width="0.05" containerField="distanceToDepth"/>
-      </CoordinateDeformer>
-      <Appearance DEF="LOCAL_APP" >
-        <ImageTexture url="plastic_2.jpg" />
-        <Material/>
-        <SmoothSurface stiffness="0.1" />
-      </Appearance>
-      <Rectangle2D size="0.4 0.4" DEF="HAPTIC_GEOM" solid="FALSE"
-                   containerField="hapticGeometry" />
-    </DeformableShape>
-  </Transform>
+  <Collision enabled="false">
+    <Transform rotation="1 0 0 -0.5">
+      <DeformableShape DEF="DEFORM_SHAPE" >
+        <CoordinateDeformer >
+          <GaussianFunction width="0.05" containerField="distanceToDepth"/>
+        </CoordinateDeformer>
+        <Appearance DEF="LOCAL_APP" >
+          <ImageTexture url="plastic_2.jpg" />
+          <Material/>
+          <SmoothSurface stiffness="0.1" />
+        </Appearance>
+        <Rectangle2D size="0.4 0.4" DEF="HAPTIC_GEOM" solid="FALSE"
+                     containerField="hapticGeometry" />
+      </DeformableShape>
+    </Transform>
+  </Collision>
 
   <PythonScript DEF="PS" url="deform.py" >
     <DeformableShape USE="DEFORM_SHAPE" containerField="references" />

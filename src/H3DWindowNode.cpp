@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,32 +28,33 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "AutoPtrVector.h"
-#include "H3DWindowNode.h"
-#include "Viewpoint.h"
-#include "TimeStamp.h"
-#include "Bound.h"
-#include "H3DBoundedObject.h"
-#include "GlobalSettings.h"
-#include "DefaultAppearance.h"
-#include "X3DShapeNode.h"
-#ifdef USE_HAPTICS
-#include "DeviceInfo.h"
-#endif
-#include "H3DDisplayListObject.h"
-#include "Exception.h"
-#include "X3DBackgroundNode.h"
-#include "MatrixTransform.h"
-#include "NavigationInfo.h"
-#include "StereoInfo.h"
-#include "GeneratedCubeMapTexture.h"
-#include "Fog.h"
-#include "X3DShapeNode.h"
-
+#include <AutoPtrVector.h>
+#include <H3DWindowNode.h>
+#include <Viewpoint.h>
+#include <TimeStamp.h>
+#include <Bound.h>
+#include <H3DBoundedObject.h>
+#include <GlobalSettings.h>
+#include <DefaultAppearance.h>
+#include <X3DShapeNode.h>
+#include <DeviceInfo.h>
+#include <H3DDisplayListObject.h>
+#include <Exception.h>
+#include <X3DBackgroundNode.h>
+#include <MatrixTransform.h>
+#include <NavigationInfo.h>
+#include <StereoInfo.h>
+#include <GeneratedCubeMapTexture.h>
+#include <Fog.h>
+#include <X3DShapeNode.h>
+#include <Scene.h>
+#include <DebugOptions.h>
 #include <GL/glew.h>
 
-#include "X3DKeyDeviceSensorNode.h"
-#include "MouseSensor.h"
+#include <X3DKeyDeviceSensorNode.h>
+#include <MouseSensor.h>
+
+#include <H3DNavigation.h>
 
 using namespace H3D;
 
@@ -106,7 +107,8 @@ H3DWindowNode::H3DWindowNode(
   rebuild_stencil_mask( false ),
   stencil_mask( NULL ),
   stencil_mask_height( 0 ),
-  stencil_mask_width( 0 ) {
+  stencil_mask_width( 0 ),
+  last_loop_mirrored( false ) {
   
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -127,12 +129,22 @@ H3DWindowNode::H3DWindowNode(
 #endif
 
   windows.insert( this );
+
+
+  default_nav = "EXAMINE";
+  default_avatar.push_back( 0.25f );
+  default_avatar.push_back( 1.6f );
+  default_avatar.push_back( 0.75f );
+  default_speed = 1;
+  default_collision = true;
+  H3DNavigationDevices::setNavTypeForAll( default_nav );
 }
 
 H3DWindowNode::~H3DWindowNode() {
   if( stencil_mask )
     free( stencil_mask );
   windows.erase( this );
+  H3DNavigation::destroy();
 }
 
 void H3DWindowNode::shareRenderingContext( H3DWindowNode *w ) {
@@ -205,13 +217,109 @@ void H3DWindowNode::initialize() {
   glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
   GLfloat no_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, no_ambient);
+  glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+  glPixelStorei( GL_PACK_ALIGNMENT, 1 );
   Node::initialize();
+}
+
+void renderStyli() {
+	// Render the stylus of each H3DHapticsDevice.
+  DeviceInfo *di = DeviceInfo::getActive();
+  if( di ) {
+    di->renderStyli();
+  }
+}
+
+void renderHapticTriangles() {
+  Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
+  if( !scene ) return;
+
+  TraverseInfo *ti = scene->getLastTraverseInfo();
+  if( !ti ) return;
+
+  bool global_render_triangles = false;
+
+  DebugOptions *debug_options = NULL;
+  
+  if( !debug_options ) {
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings ) {
+      default_settings->getOptionNode( debug_options );
+    }
+    if( debug_options ) 
+      global_render_triangles = 
+        debug_options->drawHapticTriangles->getValue();
+  }
+
+  unsigned int current_layer = ti->getCurrentLayer();
+
+  for( unsigned int di = 0; di < ti->getHapticsDevices().size(); di++ ) {
+    for( unsigned int l = 0; l < ti->nrLayers(); l++ ) {
+      ti->setCurrentLayer( l );
+      const HapticShapeVector &shapes = ti->getHapticShapes( di );
+      for( HapticShapeVector::const_iterator i = shapes.begin();
+           i != shapes.end(); i++ ) {
+        bool render_triangles = global_render_triangles;
+        X3DGeometryNode *geom = 
+          static_cast< X3DGeometryNode * >( (*i)->userdata );
+        if( geom ) {
+          debug_options = NULL;
+          geom->getOptionNode( debug_options );
+          if( debug_options ) {
+            render_triangles = debug_options->drawHapticTriangles->getValue();
+          }
+        }
+        if( render_triangles ) {
+          glMatrixMode( GL_MODELVIEW );
+          glPushMatrix();
+          glScalef( 1e-3, 1e-3, 1e-3 );   
+          glPushAttrib( GL_CURRENT_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT );
+          glDisable( GL_LIGHTING );
+          glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+          glColor3f( 1, 1, 1 );
+          (*i)->glRender();
+          glPopAttrib();
+          glPopMatrix();
+        }
+      }
+    }
+  }
+
+  ti->setCurrentLayer( current_layer );
+}
+
+void H3DWindowNode::renderChild( X3DChildNode *c ) {
+  H3DDisplayListObject *dlo = 
+    dynamic_cast< H3DDisplayListObject * >( c );
+
+  renderHapticTriangles(); 
+  if( multi_pass_transparency ) {
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
+    renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else c->render();
+    
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+    renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else c->render();
+    
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+    renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else c->render();
+  } else {
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+    renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else c->render();
+  }
 }
 
 bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
                                          H3DFloat &clip_near,
                                          X3DChildNode *child_to_render,
-                                         Viewpoint *vp,
+                                         X3DViewpointNode *vp,
                                          bool include_styli ) {
 
   // calculate the far and near clipping planes from the union of the 
@@ -224,7 +332,6 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
   
   if( include_styli ) {
     // get the Bounds of the styli of the H3DHapticsDevices.
-#ifdef USE_HAPTICS
     DeviceInfo *di = DeviceInfo::getActive();
     if( di ) {
       for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
@@ -259,7 +366,6 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
         }
       }
     }
-#endif
   }
     
   // add the child node bound.
@@ -290,8 +396,8 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
     
   BoxBound *bound =  dynamic_cast< BoxBound * >( total_bound.get() );
   if( bound ) {
-    Vec3f vp_position = vp->position->getValue();
-    Rotation vp_orientation = vp->orientation->getValue();
+    Vec3f vp_position = vp->getFullPos();
+    Rotation vp_orientation = vp->getFullOrn();
     const Matrix4f &vp_frw_m = vp->accForwardMatrix->getValue();
 
     const Vec3f &bb_center = bound->center->getValue();
@@ -384,16 +490,6 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
   return false;
 }
 
-void renderStyli() {
-#ifdef USE_HAPTICS
-	// Render the stylus of each H3DHapticsDevice.
-  DeviceInfo *di = DeviceInfo::getActive();
-  if( di ) {
-    di->renderStyli();
-  }
-#endif
-}
-
 void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   if( !child_to_render ) return;
   
@@ -405,9 +501,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   // set fullscreen mode
   setFullscreen( fullscreen->getValue() );
-
-  H3DDisplayListObject *dlo = 
-    dynamic_cast< H3DDisplayListObject * >( child_to_render );
 
   glPushAttrib( GL_ENABLE_BIT );
 
@@ -463,18 +556,19 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     AutoRef< Viewpoint > vp_ref;
   // get the viewpoint. If the H3DWindowNode viewpoint field is set use that
   // otherwise use the stack top of the Viewpoint bindable stack.
-  Viewpoint *vp = static_cast< Viewpoint * >( viewpoint->getValue() );
+  X3DViewpointNode *vp =
+    static_cast< X3DViewpointNode * >( viewpoint->getValue() );
   if( !vp ) 
-    vp = Viewpoint::getActive();
+    vp = static_cast< X3DViewpointNode * >(X3DViewpointNode::getActive());
   if ( ! vp ) {
     vp = new Viewpoint;
-    vp_ref.reset( vp );
+    vp_ref.reset( static_cast<Viewpoint *>(vp) );
   }
 
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
 
-  Vec3f vp_position = vp->position->getValue();
-  Rotation vp_orientation = vp->orientation->getValue();
+  Vec3f vp_position = vp->getFullPos();
+  Rotation vp_orientation = vp->getFullOrn();
   const Matrix4f &vp_inv_m = vp->accInverseMatrix->getValue();
   Rotation vp_inv_rot = (Rotation)vp_inv_m.getRotationPart();
   //const Matrix4f &vp_frw_m = vp->accForwardMatrix->getValue();
@@ -512,33 +606,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
     rebuild_stencil_mask = false;
   }
-
-  H3DFloat fov_h, fov_v;
-  H3DFloat lwidth = (H3DFloat) width->getValue();
-  H3DFloat lheight = (H3DFloat) height->getValue();
-  H3DFloat field_of_view = vp->fieldOfView->getValue();
-  H3DFloat aspect_ratio = lwidth / lheight;
-  
-  // calculate the horizontal and vertical field of view components
-  // as defined by the X3D spec for Viewpoint.
-  if ( field_of_view > Constants::pi )
-    field_of_view = (H3DFloat) Constants::pi;
-  if ( lwidth < lheight ) {
-    // width is smallest
-    fov_h = field_of_view;
-    fov_v = 2 * atan( ( lheight * tan(fov_h/2) ) / lwidth );
-    if ( fov_v > Constants::pi ) {
-      fov_v = (H3DFloat) Constants::pi;
-      fov_h = 2 * atan( ( lwidth / lheight ) * tan(fov_v/2) );        
-    }
-  } else {
-    fov_v = field_of_view;
-    fov_h = 2 * atan( ( lwidth / lheight ) * tan(fov_v/2) );
-    if ( fov_h > Constants::pi ) {
-      fov_h = field_of_view;
-      fov_v = 2 * atan( ( lheight * tan(fov_h/2) ) / lwidth );        
-    }
-  }
   
   H3DFloat clip_near = 0.01f;  // near viewing plane at 1cm
   H3DFloat clip_far  = 10.f; // far viewing plane at 10m
@@ -568,6 +635,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   H3DFloat half_interocular_distance = interocular_distance / 2;
 
+  bool mirror_in_y = mirrored->getValue();
+    
+  if( mirror_in_y != last_loop_mirrored ) 
+    H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+
+  last_loop_mirrored = mirror_in_y;
+
   if( renderMode->isStereoMode() ) {
     // make sure the focal plane is between the near and far 
     // clipping planes.
@@ -587,25 +661,35 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     H3DFloat frustum_shift = 
       half_interocular_distance * clip_near / focal_distance; 
 
-    H3DFloat top    = clip_near * tan(fov_v/2);
-    H3DFloat bottom = -top;
+    H3DFloat top, bottom, right, left;
 
-    H3DFloat right  = aspect_ratio * top;
-    H3DFloat left   = -right;
+    vp->windowFromfieldOfView( (H3DFloat) width->getValue(),
+                               (H3DFloat) height->getValue(),
+                               clip_near,
+                               top, bottom, right, left );
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    if( mirrored->getValue() ) {
+
+    if( mirror_in_y ) {
       glScalef( 1, -1, 1 );
       glFrontFace( GL_CW );
     } else {
       glFrontFace( GL_CCW );
     }
     
-    glFrustum( left + frustum_shift,
+    //TODO: correct the stereo for ORTHO (if possible)
+    if( dynamic_cast< Viewpoint * >(vp) ) {
+      glFrustum( left + frustum_shift,
+                 right + frustum_shift,
+                 bottom, top, 
+                 clip_near, clip_far );
+    } else {
+      glOrtho( left + frustum_shift,
                right + frustum_shift,
-               bottom, top, 
+               bottom, top,
                clip_near, clip_far );
+    }
     
     glDrawBuffer(GL_BACK_LEFT);
     
@@ -664,42 +748,30 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glMultMatrixf( vp_inv_transform );
     
     // render the scene
-    if( multi_pass_transparency ) {
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-      
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-      
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-    } else {
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-    }
+    renderChild( child_to_render );
 
     // RIGHT EYE
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    if( mirrored->getValue() ) {
+    if( mirror_in_y ) {
       glScalef( 1, -1, 1 );
       glFrontFace( GL_CW );
     } else {
       glFrontFace( GL_CCW );
     }
-    glFrustum( left - frustum_shift,
+    //TODO: correct the stereo for ORTHO (if possible)
+    if( dynamic_cast< Viewpoint * >(vp) ) {
+      glFrustum( left - frustum_shift,
+                 right - frustum_shift,
+                 bottom, top, 
+                 clip_near, clip_far );
+    } else {
+      glOrtho( left - frustum_shift,
                right - frustum_shift,
-               bottom, top, 
+               bottom, top,
                clip_near, clip_far );
+    }
     
     if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
       glDrawBuffer(GL_BACK_RIGHT);
@@ -759,27 +831,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glMultMatrixf( vp_inv_transform );
 
     // render the scene
-    if( multi_pass_transparency ) {
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-      
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-      
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-    } else {
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-    }
+    renderChild( child_to_render );
 
     if( stereo_mode == RenderMode::RED_BLUE_STEREO ||
         stereo_mode == RenderMode::RED_CYAN_STEREO )
@@ -832,21 +884,28 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     swapBuffers();
   } else {
     // MONO
-    H3DFloat top    = clip_near * tan(fov_v/2);
-    H3DFloat bottom = -top;
-    H3DFloat right  = aspect_ratio * top;
-    H3DFloat left   = -right;
+    H3DFloat top, bottom, right, left;
+
+    vp->windowFromfieldOfView( (H3DFloat) width->getValue(),
+                               (H3DFloat) height->getValue(),
+                               clip_near,
+                               top, bottom, right, left );
     
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    if( mirrored->getValue() ) {
+    if( mirror_in_y ) {
       glScalef( 1, -1, 1 );
       glFrontFace( GL_CW );
     } else {
       glFrontFace( GL_CCW );
     }
-    glFrustum(left,right,bottom,top,clip_near,clip_far);
+    if( dynamic_cast< Viewpoint * >(vp) ) {
+      glFrustum(left,right,bottom,top,clip_near,clip_far);
+    }
+    else {
+      glOrtho( left, right, bottom, top, clip_near, clip_far );
+    }
     
     glMatrixMode(GL_MODELVIEW);
     glDrawBuffer(GL_BACK);
@@ -874,31 +933,25 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
     glMultMatrixf( vp_inv_transform );
     
-    if( multi_pass_transparency ) {
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-      
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-      
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-    } else {
-      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
-      renderStyli();
-      if( dlo )  dlo->displayList->callList();
-      else child_to_render->render();
-    }
+    renderChild( child_to_render );
 
     swapBuffers();
   }
   glPopAttrib();
+
+  // TODO: This should only be done once per scene.
+  // two windows in the same scene will probably
+  // give some strange results.
+  if( nav_info )
+    nav_info->doNavigation( vp, child_to_render );
+  else {
+    H3DNavigation::doNavigation( default_nav,
+                                 vp, child_to_render,
+                                 default_collision,
+                                 default_avatar,
+                                 default_speed );
+    H3DNavigationDevices::setNavTypeForAll( default_nav );
+  }
 }
 
 void H3DWindowNode::reshape( int w, int h ) {

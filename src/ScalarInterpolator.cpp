@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ScalarInterpolator.h"
+#include <ScalarInterpolator.h>
 
 using namespace H3D;
 
@@ -75,11 +75,11 @@ void ScalarInterpolator::SFValue::update() {
   H3DFloat weight;
   int key_index = interpolator->lookupKey( fraction, 
                                            weight );
-  if( key_size > 0 && key_index >= 0 ) {
+  if( key_index >= 0 && key_index + 1 < (int)key_values.size() ) {
     if (weight<=0) 
-      value = key_values.front();
+      value = key_values[key_index];
     else if (weight>=1)
-      value = key_values.back();
+      value = key_values[key_index+1];
     else {
       H3DFloat a = key_values[ key_index ];
       H3DFloat b = key_values[ key_index+1 ];

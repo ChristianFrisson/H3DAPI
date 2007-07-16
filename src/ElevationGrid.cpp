@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,10 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ElevationGrid.h"
-#include "MultiTexture.h"
-#include "MultiTextureCoordinate.h"
-#include "Normal.h"
+#include <ElevationGrid.h>
+#include <MultiTexture.h>
+#include <MultiTextureCoordinate.h>
+#include <Normal.h>
 
 using namespace H3D;
 
@@ -56,6 +56,7 @@ namespace ElevationGridInternals {
   FIELDDB_ELEMENT( ElevationGrid, xSpacing, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, zSpacing, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ElevationGrid, fogCoord, INPUT_OUTPUT );
 }
 
 ElevationGrid::ElevationGrid( 
@@ -76,7 +77,8 @@ ElevationGrid::ElevationGrid(
                               Inst< SFInt32          > _zDimension,
                               Inst< SFFloat          > _xSpacing,
                               Inst< SFFloat          > _zSpacing,
-                              Inst< MFFloat          > _height ) :
+                              Inst< MFFloat          > _height,
+                              Inst< SFFogCoordinate  > _fogCoord  ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   color          ( _color            ),
   normal         ( _normal           ),
@@ -92,7 +94,8 @@ ElevationGrid::ElevationGrid(
   xSpacing       ( _xSpacing         ),
   zSpacing       ( _zSpacing         ),
   height         ( _height           ),
-  autoNormal     ( _autoNormal       ) {
+  autoNormal     ( _autoNormal       ),
+  fogCoord       ( _fogCoord    ) {
 
   type_name = "ElevationGrid";
 
@@ -121,6 +124,7 @@ ElevationGrid::ElevationGrid(
   xSpacing->route( displayList );
   zSpacing->route( displayList );
   height->route( displayList );
+  fogCoord->route( displayList );
 
   xDimension->route( bound );
   zDimension->route( bound );
@@ -136,6 +140,7 @@ ElevationGrid::ElevationGrid(
   height->route( autoNormal );
   ccw->route( autoNormal );
   creaseAngle->route( autoNormal );
+
 }
 
 void ElevationGrid::AutoNormal::update() {
@@ -303,7 +308,9 @@ void ElevationGrid::render() {
         if( color_node && color_per_vertex ) {
           color_node->render( vertex_index );
         }
-
+        if( fogCoord->getValue()){
+          fogCoord->getValue()->render(vertex_index);
+        }
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
             tex_coord_node->renderForActiveTexture( vertex_index );
@@ -336,7 +343,9 @@ void ElevationGrid::render() {
         if( color_node && color_per_vertex ) {
           color_node->render( vertex_index );
         }
-
+        if( fogCoord->getValue()){
+          fogCoord->getValue()->render(vertex_index);
+        }
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
             tex_coord_node->renderForActiveTexture( vertex_index );
@@ -369,7 +378,9 @@ void ElevationGrid::render() {
         if( color_node && color_per_vertex ) {
           color_node->render( vertex_index );
         }
-
+        if( fogCoord->getValue()){
+          fogCoord->getValue()->render(vertex_index);
+        }
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
             tex_coord_node->renderForActiveTexture( vertex_index );
@@ -821,19 +832,12 @@ void ElevationGrid::SFBound::update() {
   value = bb;
 }
 
-#ifdef USE_HAPTICS
 void ElevationGrid::traverseSG( TraverseInfo &ti ) {
+  X3DGeometryNode::traverseSG( ti );
   if( solid->getValue() ) {
     useBackFaceCulling( true );
   } else {
     useBackFaceCulling( false );
   }
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll( getOpenGLHapticShape(
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix() ) );
-#endif
-  }
 }
-#endif
+

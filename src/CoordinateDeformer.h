@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __COORDINATEDEFORMER_H__
 #define __COORDINATEDEFORMER_H__
 
-#include "H3DCoordinateDeformerNode.h"
-#include "H3DFunctionNode.h"
-#include "SFFloat.h"
-#include "MFBool.h"
+#include <H3DCoordinateDeformerNode.h>
+#include <H3DFunctionNode.h>
+#include <SFFloat.h>
+#include <MFBool.h>
 
 namespace H3D {
 

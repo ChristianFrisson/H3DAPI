@@ -11,12 +11,12 @@
 #define __VRMLPARSER_H__
 
 #include <iostream>
-#include "H3DApi.h"
-#include "Group.h"
-#include "DEFNodes.h"
-#include "AutoRef.h"
-#include "ProtoDeclaration.h"
-#include "X3D.h"
+#include <H3DApi.h>
+#include <Group.h>
+#include <DEFNodes.h>
+#include <AutoRef.h>
+#include <ProtoDeclaration.h>
+#include <X3D.h>
 
 using namespace std;
 

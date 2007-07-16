@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __DEFAULTAPPEARANCE_H__
 #define __DEFAULTAPPEARANCE_H__
 
-#include "H3DOptionNode.h"
-#include "Appearance.h"
-#include "DependentNodeFields.h"
+#include <H3DOptionNode.h>
+#include <Appearance.h>
+#include <DependentNodeFields.h>
 
 namespace H3D {
 

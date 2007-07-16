@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,18 +29,26 @@
 #ifndef __H3DHAPTICSDEVICE_H__
 #define __H3DHAPTICSDEVICE_H__
 
-#include "H3DApi.h"
-#include "FieldTemplates.h"
-#include "HapticShape.h"
-#include "HapticForceEffect.h"
-#include "SFNode.h"
-#include "Threads.h"
-#include "SFRotation.h"
-#include "SFFloat.h"
-#include "SFInt32.h"
-#include "SFBool.h"
-#include "SFMatrix4f.h"
-#include "SFVec3f.h"
+// H3D includes
+#include <FieldTemplates.h>
+#include <SFNode.h>
+#include <SFRotation.h>
+#include <SFFloat.h>
+#include <SFInt32.h>
+#include <SFBool.h>
+#include <SFMatrix4f.h>
+#include <SFVec3f.h>
+#include <MFVec3f.h>
+#include <H3DHapticsRendererNode.h>
+
+// H3DUtil includes
+#include <Threads.h>
+
+// HAPI includes
+#include <HAPIHapticShape.h>
+#include <HAPIHapticsDevice.h>
+#include <HAPIForceEffect.h>
+
 
 namespace H3D {
 
@@ -56,7 +64,13 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile H3DHapticsDevice.dot
   class H3DAPI_API H3DHapticsDevice: public Node {
+  protected:
+    auto_ptr< HAPI::HAPIHapticsDevice > hapi_device;
+
   public:
+
+    typedef HAPI::HAPIHapticsDevice::ErrorCode ErrorCode;
+    typedef HAPI::HAPIHapticsDevice::DeviceState DeviceState;
 
     /// Saves the value of the field in a variable that can be accessed
     /// from the realtime loop.
@@ -79,11 +93,11 @@ namespace H3D {
 
       /// The value of the PosCalibration field to be accessed from 
       /// the realtime loop.
-      Matrix4f rt_pos_calibration;
+      Matrix4d rt_pos_calibration;
       
       /// The inverse of the part of rt_pos_calibration that involves
       /// rotation.
-      Matrix3f rt_inv_pos_rotation;
+      Matrix3d rt_inv_pos_rotation;
     };
 
     /// Saves the value of the field in a variable that can be accessed
@@ -112,16 +126,22 @@ namespace H3D {
     /// and position_calibration fields. 
     /// TrackerPosition = positionCalibration * devicePosition 
     ///
-    /// routes_in[0] is the positionCalibration field
-    /// routes_in[1] is the devicePosition field
+    /// - routes_in[0] is the positionCalibration field
+    /// - routes_in[1] is the devicePosition field
     ///
     class H3DAPI_API TrackerPosition: 
       public TypedField< SFVec3f, Types< SFMatrix4f, SFVec3f > > {
       
       /// value = position_calibration * device_position.
       virtual void update() {
-        const Matrix4f &m  = 
-          static_cast< SFMatrix4f * >( routes_in[0] )->getValue();
+        H3DHapticsDevice *hd = static_cast< H3DHapticsDevice *>(owner);
+        Matrix4f m;
+        if( hd->followViewpoint->getValue() ) {
+          m = hd->adjustedPositionCalibration->getValue();
+        }
+        else {
+          m = static_cast< SFMatrix4f * >( routes_in[0] )->getValue();
+        }
         const Vec3f &d_pos = 
           static_cast< SFVec3f * >( routes_in[1] )->getValue();
         value = m * d_pos;
@@ -132,15 +152,23 @@ namespace H3D {
     /// and orientation_calibration fields. 
     /// TrackerOrientation = orientationCalibration * deviceOrientation 
     ///
-    /// routes_in[0] is the orientationCalibration
-    /// routes_in[1] is the deviceOrientaiton
+    /// - routes_in[0] is the orientationCalibration
+    /// - routes_in[1] is the deviceOrientaiton
     ///
     class H3DAPI_API TrackerOrientation: 
       public TypedField< SFRotation, Types< SFRotation, SFRotation > > {
 
       virtual void update() {
-        const Rotation &cal  = 
+        H3DHapticsDevice *hd = static_cast< H3DHapticsDevice *>(owner);
+        Rotation cal;
+        if( hd->followViewpoint->getValue() ) {
+          cal = hd->adjustedOrnCalibration->getValue();
+        }
+        else {
+          cal  = 
           static_cast< SFRotation * >( routes_in[0] )->getValue();
+        }
+
         const Rotation &d_orn = 
           static_cast< SFRotation * >( routes_in[1] )->getValue();
         value = cal * d_orn;
@@ -153,9 +181,9 @@ namespace H3D {
     /// If the weightting factor is 1 if will be the proxy position, if 0 the
     /// tracker position. 
     /// 
-    /// routes_in[0] is the proxy position
-    /// routes_in[1] is the tracker position.
-    /// routes_in[2] is the weighting factor.
+    /// - routes_in[0] is the proxy position
+    /// - routes_in[1] is the tracker position.
+    /// - routes_in[2] is the weighting factor.
     ///
     class H3DAPI_API WeightedProxy:
       public TypedField< SFVec3f, Types< SFVec3f, SFVec3f, SFFloat > > {
@@ -170,30 +198,94 @@ namespace H3D {
       }
     };
 
+    /// SFHapticsRendererNode extends TypedSFNode< H3DHapticsRendererNode >
+    /// in order to change the haptics renderer for the used HAPIHapticsDevice
+    /// when changing H3DHapticsRendererNode.
+    class H3DAPI_API SFHapticsRendererNode: 
+      public TypedSFNode< H3DHapticsRendererNode > {
+      virtual void onAdd( Node *n ) {
+        TypedSFNode< H3DHapticsRendererNode >::onAdd( n );
+        H3DHapticsRendererNode *renderer = 
+          static_cast< H3DHapticsRendererNode * >( n );
+        H3DHapticsDevice *device = 
+          static_cast< H3DHapticsDevice * >( getOwner() );
+        if( renderer && device->hapi_device.get() ) {
+          for( unsigned int i = 0; i < device->hapi_device->nrLayers(); i++ )
+            device->hapi_device->setHapticsRenderer( 
+                                     renderer->getHapticsRenderer( i ) );
+        }
+      }
+      virtual void onRemove( Node *n ) {
+        H3DHapticsRendererNode *renderer = static_cast< H3DHapticsRendererNode * >( n );
+        H3DHapticsDevice *device = static_cast< H3DHapticsDevice * >( getOwner() );
+        if( renderer && device->hapi_device.get() ) {
+          for( unsigned int i = 0; i < device->hapi_device->nrLayers(); i++ )
+            device->hapi_device->setHapticsRenderer( NULL, i );
+        }
+        TypedSFNode< H3DHapticsRendererNode >::onRemove( n );
+      }
+
+    };
+
+
+    /// SetEnabled specializes SFBool to go into reset mode when a true event
+    /// is received.
+    class H3DAPI_API SetEnabled: public OnValueChangeSField< SFBool > {
+      virtual void onValueChange( const bool &v ) {
+        H3DHapticsDevice *hd = 
+          static_cast< H3DHapticsDevice * >( getOwner() );
+        if( v ) hd->enableDevice();
+        else hd->disableDevice();
+      }
+    };
+
+    /// The MainButton class masks out the bit 0 from the incoming integer.
+    ///
+    /// inputs[0] is the buttons field
+    class H3DAPI_API MainButton: public TypedField< SFBool, SFInt32 > {
+      virtual void update() {
+        H3DInt32 buttons   = 
+          static_cast< SFInt32 * >( routes_in[0] )->getValue();
+        value = (buttons & 0x01) != 0;
+      }
+    }; 
+
+    /// The SecondaryButton class masks out bit 1 from the incoming integer.
+    /// inputs[0] is the buttons field
+    class H3DAPI_API SecondaryButton: public TypedField< SFBool, SFInt32 > {
+      virtual void update() {
+        H3DInt32 buttons   = 
+          static_cast< SFInt32 * >( routes_in[0] )->getValue();
+        value = (buttons & 0x10) != 0;
+      }
+    }; 
+
     /// Constructor.
     H3DHapticsDevice( Inst< SFVec3f         > _devicePosition         = 0,
-                   Inst< SFRotation      > _deviceOrientation      = 0,
-                   Inst< TrackerPosition > _trackerPosition        = 0,
-                   Inst< TrackerOrientation > _trackerOrientation  = 0,
-                   Inst< PosCalibration  > _positionCalibration    = 0,
-                   Inst< OrnCalibration  > _orientationCalibration = 0,
-                   Inst< SFVec3f         > _proxyPosition          = 0,
-                   Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
-                   Inst< SFFloat         > _proxyWeighting         = 0,
-                   Inst< SFBool          > _main_button            = 0,
-                   Inst< SFVec3f         > _force                  = 0,
-                   Inst< SFVec3f         > _torque                 = 0,
-                   Inst< SFInt32         > _inputDOF               = 0,
-                   Inst< SFInt32         > _outputDOF              = 0,
-                   Inst< SFInt32         > _hapticsRate            = 0,
-                   Inst< SFNode          > _stylus                 = 0,
-                   Inst< SFBool          > _initialized            = 0 );
+                      Inst< SFRotation      > _deviceOrientation      = 0,
+                      Inst< TrackerPosition > _trackerPosition        = 0,
+                      Inst< TrackerOrientation > _trackerOrientation  = 0,
+                      Inst< PosCalibration  > _positionCalibration    = 0,
+                      Inst< OrnCalibration  > _orientationCalibration = 0,
+                      Inst< SFVec3f         > _proxyPosition          = 0,
+                      Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
+                      Inst< SFFloat         > _proxyWeighting         = 0,
+                      Inst< MainButton      > _main_button            = 0,
+                      Inst< SecondaryButton > _secondary_button       = 0,
+                      Inst< SFInt32         > _buttons                = 0,
+                      Inst< SFVec3f         > _force                  = 0,
+                      Inst< SFVec3f         > _torque                 = 0,
+                      Inst< SFInt32         > _inputDOF               = 0,
+                      Inst< SFInt32         > _outputDOF              = 0,
+                      Inst< SFInt32         > _hapticsRate            = 0,
+                      Inst< SFNode          > _stylus                 = 0,
+                      Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
+                      Inst< MFVec3f         > _proxyPositions         = 0,
+                      Inst< SFBool          > _followViewpoint        = 0 );
 
-    /// Destructor. Stops haptics rendering and remove callback functions.
+    /// Destuctor.
     virtual ~H3DHapticsDevice() {
-      disableDevice();
-      if( thread )
-        delete thread;
+      releaseDevice();
     }
 
     /// Get the proxy position from the previous loop.
@@ -207,29 +299,33 @@ namespace H3D {
 
     /// Does all the initialization needed for the device before starting to
     /// use it.
-    virtual void initDevice() {
-      initialized->setValue( true );
-    }
-
-    /// Get the thread that is used to run this haptics device.
-    inline PeriodicThreadBase *getThread() { return thread; }
-
-    /// Reset the device.
-    virtual void resetDevice() {}
+    virtual ErrorCode initDevice();
 
     /// Perform cleanup and let go of all device resources that are allocated.
     /// After a call to this function no haptic rendering can be performed on
     /// the device until the initDevice() function has been called again.
-    virtual void disableDevice() {
-      initialized->setValue( false );
+    virtual ErrorCode releaseDevice();
+
+    /// Enable the device. Positions can be read and force can be sent.
+    virtual ErrorCode enableDevice();
+
+    /// Temporarily disable the device. Forces sent will be ignored and
+    /// positions and orientation will stay the same as previous values.
+    virtual ErrorCode disableDevice();
+
+    /// Get the thread that is used to run this haptics device.
+    inline H3DUtil::PeriodicThreadBase *getThread() { 
+      if( hapi_device.get() ) {
+        return hapi_device->getThread();
+      } else {
+        return NULL;
+      }
     }
 
     /// This function is used to transfer device values, such as position, 
     /// button status etc from the realtime loop to the fields of H3DHapticsDevice,
     /// and possible vice versa.
-    virtual void updateDeviceValues() {
-      previuos_proxy_pos = proxyPosition->getValue();
-    }
+    virtual void updateDeviceValues();
 
     /// This function is called at the start of each scenegraph loop before any
     /// calls to other HapticDevice functions and can be used to perform any 
@@ -242,21 +338,20 @@ namespace H3D {
     /// necessary operation that are needed.
     virtual void postRender() {}
 
-#ifdef USE_HAPTICS
     /// Perform haptic rendering for the given HapticShape instances. 
     /// HapticShape objects that are to be be rendered haptically must be 
     /// rendered with this function each scenegraph loop. 
     /// \param objects The haptic shapes to render.
-    ///
-    virtual void renderShapes( const HapticShapeVector &shapes ) {};
+    /// \param layer The haptic layer to render them in.
+    virtual void renderShapes( const HapticShapeVector &shapes, 
+                               unsigned int layer = 0 );
 
-    /// Perform haptic rendering for the given HapticForceEffect instances. 
-    /// HapticForceEffect objects that are to be be rendered haptically must
+    /// Perform haptic rendering for the given HAPIForceEffect instances. 
+    /// HAPIForceEffect objects that are to be be rendered haptically must
     /// be rendered with this function each scenegraph loop.
     /// \param objects The haptic objects to render.
     ///
-    virtual void renderEffects( const HapticEffectVector &effects ) {};
-#endif
+    virtual void renderEffects( const HapticEffectVector &effects );
     
     /// The position of the device given in the coordinate system of the 
     /// device.
@@ -295,6 +390,15 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_positionCalibration.dot
     auto_ptr< PosCalibration > positionCalibration;
+    
+    /// The calibration matrix between devicePosition and trackerPosition
+    /// adjusted with the movement of the viewpoint.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> Unit matrix \n
+    /// 
+    /// \dotfile H3DHapticsDevice_adjustedPositionCalibration.dot
+    auto_ptr< PosCalibration > adjustedPositionCalibration;
 
     /// The calibration rotation between deviceOrientation and 
     /// trackerOrientation.
@@ -305,7 +409,16 @@ namespace H3D {
     /// \dotfile H3DHapticsDevice_orientationCalibration.dot
     auto_ptr< OrnCalibration > orientationCalibration;
 
-    /// The position of the proxy used in the haptic rendering. 
+    /// The calibration rotation between deviceOrientation and 
+    /// trackerOrientation adjusted with the movement of the viewpoint.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> Rotation( 1, 0, 0, 0 ) \n
+    /// 
+    /// \dotfile H3DHapticsDevice_orientationCalibration.dot
+    auto_ptr< OrnCalibration > adjustedOrnCalibration;
+
+    /// The position of the proxy used in the haptic rendering(layer 0). 
     ///
     /// <b>Access type:</b> outputOnly \n
     /// 
@@ -332,12 +445,31 @@ namespace H3D {
     /// \dotfile H3DHapticsDevice_proxyWeighting.dot
     auto_ptr< SFFloat >   proxyWeighting;
 
-    /// The state of the main button. true means that the button is pressed.
+    /// The state of the main button(button 0). 
+    /// true means that the button is pressed.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile H3DHapticsDevice_mainButton.dot
-    auto_ptr< SFBool >   mainButton;
+    auto_ptr< MainButton >   mainButton;
+
+    /// The state of the secondary button (button 1).
+    /// true means that the button is pressed.
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile H3DHapticsDevice_mainButton.dot
+    auto_ptr< SecondaryButton >   secondaryButton;
+
+    /// The state of all buttons. Bit 0 is button 0, bit 1 is button 1,..
+    /// A 1 in the bit position indicates that the button is pressed.
+    /// Use mainButton and secondaryButton fields for quick access to
+    /// button 0 and 1
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile H3DHapticsDevice_buttons
+    auto_ptr< SFInt32 > buttons;
 
     /// The approximation of the force that has been rendered during the last 
     /// scenegraph loop.
@@ -392,14 +524,89 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_initialized.dot
     auto_ptr< SFBool > initialized;
+
+    /// Specifies the haptics rendering algorithm to use to generate forces
+    /// from geometric shapes.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// 
+    /// \dotfile H3DHapticsDevice_hapticsRenderer.dot
+    auto_ptr< SFHapticsRendererNode > hapticsRenderer;
+
+    /// The positions of the proxies for each layer used in haptic
+    /// rendering(layer 0). 
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile H3DHapticsDevice_proxyPositions.dot
+    auto_ptr< MFVec3f >   proxyPositions;
+
+    /// Enable/disable the device. A disabled device does not update its 
+    /// positions and does not generate any forces.
+    ///
+    /// <b>Access type:</b> inputOnly \n
+    /// 
+    /// \dotfile H3DHapticsDevice_enabled.dot
+    auto_ptr< SetEnabled > set_enabled;
+
+    /// true if the device is enabled, e.g. positions and forces are updated 
+    /// and sent
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// <b>Default value:</b> false \n
+    /// 
+    /// \dotfile H3DHapticsDevice_enabled.dot
+    auto_ptr< SFBool > enabled;
+
+    /// true if the device should follow the viewpoint.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    /// 
+    /// \dotfile H3DHapticsDevice_followViewpoint.dot
+    auto_ptr< SFBool > followViewpoint;
     
     /// Node database entry
     static H3DNodeDatabase database;
   protected:
     Vec3f previuos_proxy_pos;
 
-    /// The thread that this haptics device loop is run in.
-    PeriodicThreadBase *thread;
+    // true if we have a default_vp_pos
+    bool vp_initialized;
+
+    // the position in global coordinates of the viewpoint which should
+    // be used as default reference if the haptic device should follow
+    // viewpoint movement.
+    Matrix4f default_vp_pos_mtx;
+    Vec3f default_vp_pos;
+
+    // the orientation in global coordinates of the viewpoint which should
+    // be used as default reference if the haptic device should follow
+    // viewpoint movement.
+    Matrix4f default_vp_orn_mtx;
+
+    // The time of the last call to updateDeviceValues.
+    TimeStamp last_update_values;
+
+    /// The time for the last call to the changeForceEffects callback 
+    /// function.
+    TimeStamp last_effect_change;
+    
+    /// The time between the previous two calls to changeForceEffects.
+    TimeStamp last_loop_time;
+
+    /// Callcack function to transfer the force effect vector to the 
+    /// haptics loop.
+    static H3DUtil::PeriodicThread::CallbackCode changeForceEffects( void *_data ); 
+    /// Callcack function to transfer the shapes vector for the 
+    /// haptics loop.
+    static H3DUtil::PeriodicThread::CallbackCode changeHapticShapes( void *_data ); 
+
+    // TODO
+    HAPI::HAPIHapticsRenderer::Contacts last_contacts;
+
+    bool error_msg_printed;
+
   };
 }
 

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Shaders">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="FloatVertexAttribute">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ComposedShader">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ShaderPart">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ProgramShader">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ShaderProgram">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Matrix3VertexAttribute">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Matrix4VertexAttribute">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PackagedShader">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+</Component>

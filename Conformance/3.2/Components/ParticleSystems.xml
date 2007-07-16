@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="ParticleSystems">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="ConeEmitter">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ExplosionEmitter">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GravityPhysicsModel">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ParticleSystem">
+      <geometryType support="partially"/>
+      <geometry support="no"/>
+    </Node>
+    <Node name="PointEmitter">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PolylineEmitter">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="WindPhysicsModel">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="BoundedPhysicsModel">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ParticleSystem">
+      <geometryType support="partially"/>
+      <geometry support="no"/>
+    </Node>
+    <Node name="SurfaceEmitter">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="VolumeEmitter">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+      <Texturing level="1"/>
+    </Prerequisites>
+    <Node name="ParticleSystem">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+</Component>

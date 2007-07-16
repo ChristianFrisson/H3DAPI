@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,32 +29,34 @@
 #ifndef __X3DGEOMETRYNODE_H__
 #define __X3DGEOMETRYNODE_H__
 
-#include "X3DChildNode.h"
-#include "H3DBoundedObject.h"
-#include "H3DDisplayListObject.h"
-#include "MFBool.h"
-#include "MFVec3f.h"
-#include "AutoPtrVector.h"
-#include "X3DTextureCoordinateNode.h"
-#include "H3DOptionNode.h"
-#include "MFNode.h"
-#ifdef HAVE_OPENHAPTICS
-#include <HL/hl.h>
-#endif
+// H3Dapi includes
+#include <X3DChildNode.h>
+#include <H3DBoundedObject.h>
+#include <H3DDisplayListObject.h>
+#include <MFBool.h>
+#include <MFVec3f.h>
+#include <H3DOptionNode.h>
+#include <MFNode.h>
+#include <X3DTextureCoordinateNode.h>
+#include <OpenHapticsOptions.h>
+
+// HAPI includes
+#include <HAPIGLShape.h>
+#include <HapticTriangleSet.h>
+
+// H3DUtil includes
+#include <AutoPtrVector.h>
 
 namespace H3D {
-
-  class HLHapticsDevice;
 
   /// \ingroup AbstractNodes
   /// \class X3DGeometryNode
   /// This is the base node type for all geometry in X3D. 
-  ///
-  /// 
   class H3DAPI_API X3DGeometryNode : 
     public X3DChildNode,
     public H3DBoundedObject,
-    public H3DDisplayListObject {
+    public H3DDisplayListObject,
+    public HAPI::HAPIGLShape {
   public:
     typedef TypedMFNode< H3DOptionNode > MFOptionsNode;
 
@@ -75,6 +77,12 @@ namespace H3D {
       virtual void callList( bool build_list = true );
     };
 
+    /// The HAPIBoundTree constructs a 
+    class H3DAPI_API SFBoundTree: 
+      public RefCountSField< HAPI::Bounds::BinaryBoundTree > {
+      virtual void update();
+    };
+
     /// Constructor.
     X3DGeometryNode( Inst< SFNode      >  _metadata = 0,
                      Inst< SFBound     > _bound = 0,
@@ -82,15 +90,69 @@ namespace H3D {
                      Inst< MFBool      > _isTouched = 0,
                      Inst< MFVec3f     > _force = 0,
                      Inst< MFVec3f     > _contactPoint = 0,
-                     Inst< MFVec3f     > _contactNormal = 0);
+                     Inst< MFVec3f     > _contactNormal = 0,
+                     Inst< MFVec3f     > _contactTexCoord = 0,
+                     Inst< SFBoundTree > _boundTree = 0 );
 
-    /// This function will be called when rendering the geometry as a 
-    /// feedback shape or depth buffer shape for OpenHaptics and can be used 
-    /// to have other OpenGL calls for the OpenHaptics rendering than
-    /// for graphics rendering. By default it is the same is in the graphics
-    /// rendering.
-    virtual void hlRender( HLHapticsDevice *hd, Matrix4f &transform ) {
+    virtual void traverseSG( TraverseInfo &ti );
+
+    /// Detect intersection between a line segment and this geometry.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line
+    /// \param theNodes A vector of pairs of pointer and index to
+    /// differ between different places in the scene graph for the same Node.
+    /// This can happen due to the DEF/USE feature of X3D.
+    /// \param current_matrix The current matrix that transforms from the local
+    /// coordinate space where this Node resides in the scenegraph to 
+    /// global space.
+    /// \param geometry_transforms A vector of matrices from the local
+    /// coordinate space to global space for each node that the
+    /// line intersects.
+    /// \param pt_device_affect Flag telling a node if it is affected by a
+    /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
+    /// when using the DEF/USE feature of X3D.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect( 
+      const Vec3f &from,
+      const Vec3f &to,    
+      vector< HAPI::Bounds::IntersectionInfo > &result,
+      vector< pair< Node *, H3DInt32 > > &theNodes,
+      const Matrix4f &current_matrix,
+      vector< Matrix4f > &geometry_transforms,
+      bool pt_device_affect = false );
+
+    /// Find closest point on this geometry to point p.
+    /// \param p The point to find the closest point to.
+    /// \param closest_point Return parameter for each closest point
+    /// \param normal Return parameter for normal at each closest point.
+    /// \param tex_coord Return paramater for each texture coordinate at
+    /// closest point
+    virtual void closestPoint( const Vec3f &p,
+                               vector< Vec3f > &closest_point,
+                               vector< Vec3f > &normal,
+                               vector< Vec3f > &tex_coord );
+
+    /// Detect collision between a moving sphere and the geometry.
+    /// \param The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersect( H3DFloat radius,
+                                        const Vec3f &from, 
+                                        const Vec3f &to );
+
+    /// Function overridden from HAPIGLShape. Just call the 
+    /// displayList->callList per default
+    virtual void glRender() {
+      bool previous_allow = allowingCulling();
+      bool prev_draw = draw_debug_options;
+      allowCulling( false );
+      draw_debug_options = false;
       displayList->callList( false );
+      draw_debug_options = prev_draw;
+      allowCulling( previous_allow );
     }
 
     /// This function should be used by the render() function to disable
@@ -152,25 +214,24 @@ namespace H3D {
       option = NULL;
     }
 
- #ifdef HAVE_OPENHAPTICS   
-    /// Destructor. Deletes the hl_shape_id.
-    virtual ~X3DGeometryNode();
- 
     /// Get a shape id to be used for rendering of this geometry with HLAPI for
     /// the given haptics device.
     /// Since the geometry can appear in several places in the scene graph
     /// it can contain several shape ids (one for each place). Which one to
     /// get is determined by the index argument.
-    HLuint getHLShapeId( HLHapticsDevice *hd,
-                         unsigned int index );
+    int getHapticShapeId( unsigned int index );
 
+ #ifdef HAVE_OPENHAPTICS   
+    /// Destructor. Deletes the hl_shape_id.
+    virtual ~X3DGeometryNode();
+ 
     /// Returns a either a HLFeedbackShape or a HLDepthBufferShape with
     /// the X3DGeometryNode. Which type depents on possible 
     /// OpenHapticsOptions nodes in the options field and
     /// the default settings in OpenHapticsSettings bindable node.
-    HapticShape *getOpenGLHapticShape( H3DSurfaceNode *_surface,
-                                       const Matrix4f &_transform,
-                                       HLint _nr_vertices = -1 );
+    HAPI::HAPIHapticShape *getOpenGLHapticShape( H3DSurfaceNode *_surface,
+                                                 const Matrix4f &_transform,
+                                                 int _nr_vertices = -1 );
 #endif
     /// Returns the default xml containerField attribute value.
     /// For this node it is "geometry".
@@ -178,7 +239,31 @@ namespace H3D {
     virtual string defaultXMLContainerField() {
       return "geometry";
     }
-   
+    
+    /// Overriden from HAPIGLShape to use the bound field in he X3DGeometryNode.
+    /// An axis aligned bounding box containing  all the primitives rendered by 
+    /// the glRender function. If no such bounding box is available, size
+    /// should be set to Vec3( -1, -1, -1 )
+    virtual void getBound( HAPI::Vec3 &center, HAPI::Vec3& size ) {
+      BoxBound *b = dynamic_cast< BoxBound * >( bound->getValue() );
+      if( b ) {
+        center = b->center->getValue();
+        size = b->size->getValue();
+      } else {
+        HAPIGLShape::getBound( center, size );
+      }
+    }
+
+    /// Resets flags used to get correct behaviour for lineIntersect
+    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
+    virtual void resetNodeDefUseId();
+
+    /// Increase an integer used to get correct behaviour for lineIntersect
+    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
+    /// \param pt_device_affect A flag which is true if the node is affected
+    /// by a X3DPointingDeviceSensorNode.
+    virtual void incrNodeDefUseId( bool pt_device_affect );
+
     /// Tells if a HapticsDevice has been in contact with the geometry
     /// in the last scenegraph loop. The field contains a boolean for 
     /// each HapticsDevice with the index as specified in the DeviceInfo node.
@@ -202,6 +287,15 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactPoint;
 
+    /// The texture coordinate of last the contact points of the HapticDevices
+    /// on the geometry.
+    /// The field contains a contact point for each HapticsDevice with the index
+    /// as specified in the DeviceInfo node. The value will be an empty vector
+    /// before the first contact.
+    ///
+    /// <b>Access type:</b> outputOnly
+    auto_ptr< MFVec3f >  contactTexCoord;
+
     /// The normal at the last contact points of the HapticDevices on the
     /// geometry.
     /// The field contains a normal for each of the points in contactPoint. 
@@ -209,6 +303,8 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactNormal;
+
+    auto_ptr< SFBoundTree > boundTree;
 
     /// Contains nodes with options for haptics and graphics rendering.
     ///
@@ -224,46 +320,23 @@ namespace H3D {
       X3DTextureCoordinateNode::renderTexCoordForActiveTexture( tc );
     }
 
-  #ifdef HAVE_OPENHAPTICS
-    /// HL event callback function for when the geometry is touched.
-    static void HLCALLBACK touchCallback( HLenum event,
-                                          HLuint object,
-                                          HLenum thread,
-                                          HLcache *cache,
-                                          void *userdata );
+    void createAndAddHapticShapes( TraverseInfo &ti,
+                                   H3DHapticsDevice *hd,
+                                   H3DInt32 hd_index,
+                                   OpenHapticsOptions *openhaptics_options );
 
-    /// HL event callback function for when the geometry is not touched
-    /// any longer. 
-    static void HLCALLBACK untouchCallback( HLenum event,
-                                            HLuint object,
-                                            HLenum thread,
-                                            HLcache *cache,
-                                            void *userdata );
+    /// identifiers for the shapes geometry.
+    vector< int > haptic_shape_ids;
 
-    /// HL event callback function for when the proxy moves while in
-    /// contact with the geometry.
-    static void HLCALLBACK motionCallback( HLenum event,
-                                           HLuint object,
-                                           HLenum thread,
-                                           HLcache *cache,
-                                           void *userdata );
+    // only interested in adress, what it points to will be invalid
+    TraverseInfo * last_ti_ptr;
+    // id for the number of times its traverseSG is called per scene graph loop
+    H3DInt32 current_geom_id;
 
-    typedef map< HLHapticsDevice *, vector< HLuint > > ShapeIdMap;
-
-    /// HL identifiers for the geometry.
-    ShapeIdMap hl_shape_ids;
-
-    struct CallbackData {
-      CallbackData( X3DGeometryNode *g, int i ): geometry( g ), device_index( i ) {}
-      X3DGeometryNode *geometry;
-      int device_index;
-    };
-    
-    AutoPtrVector< CallbackData > callback_data; 
-
-#endif
     bool use_culling, allow_culling;
+    bool draw_debug_options;
     GLenum cull_face;
+    friend class H3DHapticsDevice;
   };
 }
 

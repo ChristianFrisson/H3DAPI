@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DPrototypeInstance.h"
-#include "H3DDisplayListObject.h"
+#include <X3DPrototypeInstance.h>
+#include <H3DDisplayListObject.h>
 
 using namespace H3D;
 
@@ -59,11 +59,9 @@ void X3DPrototypeInstance::render() {
   }
 }
  
-#ifdef USE_HAPTICS
 void X3DPrototypeInstance::traverseSG( TraverseInfo &ti ) {
   if( prototyped_node.get() )
     prototyped_node.get()->traverseSG( ti );
 }
-#endif
 
 

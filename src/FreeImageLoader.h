@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,11 +31,11 @@
 #ifndef __FREEIMAGELOADER_H__
 #define __FREEIMAGELOADER_H__
 
-#include "H3DImageLoaderNode.h"
+#include <H3DImageLoaderNode.h>
 
 #ifdef HAVE_FREEIMAGE
 
-#include "FreeImageImage.h"
+#include <FreeImageImage.h>
 
 namespace H3D {
   /// \ingroup H3DNodes

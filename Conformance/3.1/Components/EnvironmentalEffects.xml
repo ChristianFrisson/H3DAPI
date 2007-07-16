@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="EnvironmentalEffects">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="Background">
+      <groundAngle support="optional"/>
+      <groundColor support="optional"/>
+      <backURL support="optional"/>
+      <frontURL support="optional"/>
+      <leftURL support="optional"/>
+      <rightURL support="optional"/>
+      <topURL support="optional"/>
+      <skyAngle support="optional"/>
+      <skyColor support="partial"/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="Background">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Fog">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="TextureBackground">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+  <Level_4>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="FogCoordinate">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="LocalFog">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_4>
+</Component>

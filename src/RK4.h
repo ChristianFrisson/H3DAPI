@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __RK4_H__
 #define __RK4_H__
 
-#include "H3DTypes.h"
+#include <H3DTypes.h>
 
 using namespace std;
 

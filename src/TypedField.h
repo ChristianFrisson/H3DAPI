@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #define __TYPEDFIELD_H__
 
 #include <sstream>
-#include "TypedFieldCheck.h"
+#include <TypedFieldCheck.h>
 
 namespace H3D {
   using namespace TypedFieldTypeCheck;

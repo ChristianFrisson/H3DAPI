@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "NurbsTextureCoordinate.h"
+#include <NurbsTextureCoordinate.h>
 
 using namespace H3D;
 
@@ -139,7 +139,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
 	const vector< H3DFloat > &theWeights = weight->getValue();
 	const vector< Vec2f > &noWeights = controlPoint->getValue();
 
-	if( noWeights.size() != u_dimension * v_dimension )  {
+	if( noWeights.size() != (unsigned int) (u_dimension * v_dimension ) ){
 		Console(3) << "Warning: The size of controlPoint does not match "
 							 << "vDimension * uDimension in NurbsTextureCoordinate node( "
 							 << getName() << "). Node will not be rendered. " << endl;
@@ -162,7 +162,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
 
 	// check the knots in the u direction.
 	bool generateUniform = true;
-	if( uk.size() == u_dimension + u_order )  {
+	if( uk.size() == (unsigned int)(u_dimension + u_order) )  {
 		generateUniform = false;
 		H3DInt32 consecutiveKnots = 0;
 		for( unsigned int i = 0; i < uk.size(); i++ ){
@@ -194,7 +194,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
 
 	// check the knots in the v direction.
 	generateUniform = true;
-	if( vk.size() == v_dimension + v_order )  {
+	if( vk.size() == (unsigned int)(v_dimension + v_order) )  {
 		generateUniform = false;
 		H3DInt32 consecutiveKnots = 0;
 		for( unsigned int i = 0; i < vk.size(); i++ ){

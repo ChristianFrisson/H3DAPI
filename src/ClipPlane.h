@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __CLIPPLANE_H__
 #define __CLIPPLANE_H__
 
-#include "X3DChildNode.h"
-#include "H3DDisplayListObject.h"
-#include "H3DRenderStateObject.h"
-#include "SFVec4d.h"
+#include <X3DChildNode.h>
+#include <H3DDisplayListObject.h>
+#include <H3DRenderStateObject.h>
+#include <SFVec4d.h>
 
 namespace H3D {
 
@@ -75,14 +75,12 @@ namespace H3D {
     /// Turn the clip plane off.
     virtual void disableGraphicsState();
 
-#ifdef USE_HAPTICS
     /// Disable haptics if device position is on the clipped side
     /// of the clip plane.
     virtual void enableHapticsState( TraverseInfo &ti );
 
     /// Reenable haptics.
     virtual void disableHapticsState( TraverseInfo &ti );
-#endif
   
     /// Specifies if the clipping plane should be enabled or not.
     ///

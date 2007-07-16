@@ -1,3 +1,83 @@
+Changes for version 2.0 alpha:
+
+New X3D nodes:
+Anchor (prototype)
+Collision
+ConeEmitter
+CylinderSensor
+ExplosionEmitter
+FogCoordinate
+ForceDimensionDevice
+GravityPhysicsModel
+LOD
+NurbsCurve
+OrthoViewpoint
+ParticleSystem
+PlaneSensor
+PointEmitter
+ProximitySensor
+SphereSensor
+SplinePositionInterpolator	
+SplinePositionInterpolator2D 
+SplineScalarInterpolator
+StringSensor
+SurfaceEmitter
+TouchSensor
+ViewpointGroup
+VisibilitySensor
+WindPhysicsModel( maybe)
+	
+New H3D nodes:
+DebugOptions
+FunctionPlotTexture
+GeometryBoundTreeOptions
+GodObjectRenderer
+HapticLayeredGroup
+HapticsOptions
+MagnetGeometryEffect
+OpenHapticsSurface
+RuspiniRenderer
+SensAbleDevice
+TransferFunctionTexture
+ViscosityEffect
+
+- Changed so that all haptics effects, haptics device handling goes
+through the new haptics library HAPI.
+- Moved linear algebra, threads and other common classes to H3DUtil
+library.
+- Transparency rendering has been improved, but there is a performance
+penalty when rendering transparent objects. Using the RenderProperties
+node the new functionallity can be toggle on or off. Default is on. 
+- Support for different navigation types(WALK, FLY, LOOKAT, EXAMINE) and
+navigation with haptics device, mouse, keyboard and space mouse.
+- All geometry nodes have lineIntersect and closestPoint functions.
+- Fixed some TimeSensor bugs.
+- Image files are now loaded in separate threads by default.
+- Fixed a bug with use of MultiTextureCoordinate without any nodes in its
+texCoord field and if using TextureCoordinateGenereator in them.
+- Fixed a bug with some stereo modes where the stencil mask was not
+updated when the stereo mode was changed.
+- Fixed bug in interpolator nodes that produced the wrong value in some cases.
+- Fixed some problems with the LibCurlResolver which would return a html
+page on a 404 response code.
+- Fixed a problem with MFString values in prototype definitions.
+- Fixed so that X3DUrlObjects can accept inline urls such as "glsl: ...". 
+- Updated H3DLoad to be able to switch navigation type and viewpoint
+easily.
+- Fixed a bug when using double versions of linear algebra types in
+Python(e.g. Vec3d)
+- MultiTexture can now be used for all geometry types.
+
+	
+Compatability issues:
+- DHDHapticsDevice -> ForceDimensionDevice
+- HLHapticsDevice -> SensAbleDevice
+- The interface to force effects have changed and HAPI structures must be
+used.
+- If you have implemented your own geometry...
+- culling
+
+	
 Changes for version 1.5:
 
 New nodes:

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Sound.h"
+#include <Sound.h>
 
 using namespace H3D;
 
@@ -139,7 +139,6 @@ Sound::Sound(
 #endif
 }
 
-#ifdef USE_HAPTICS
 void Sound::traverseSG( TraverseInfo &ti ) {
   X3DSoundSourceNode *sound_source = source->getValue();
   if( sound_source ) {
@@ -147,7 +146,6 @@ void Sound::traverseSG( TraverseInfo &ti ) {
   }
   accForwardMatrix->setValue( ti.getAccForwardMatrix() );
 }
-#endif
 
 void Sound::ALrender() {
 #ifdef HAVE_OPENAL
@@ -156,14 +154,15 @@ void Sound::ALrender() {
   Vec3f listener_pos = Vec3f( 0, 0, 0 );
 
   // set up listener properties.
-  Viewpoint *vp = Viewpoint::getActive();
+  X3DViewpointNode *vp = X3DViewpointNode::getActive();
   if( vp ) {
     const Matrix4f &vp_to_global =  vp->accForwardMatrix->getValue();
     const Matrix3f &vp_to_global_rot = vp_to_global.getRotationPart();
-    listener_pos = vp_to_global * vp->position->getValue(); 
-    Vec3f listener_up  = vp_to_global_rot * vp->orientation->getValue() * 
+    listener_pos = vp_to_global * vp->getFullPos(); 
+    Rotation vp_orn = vp->getFullOrn();
+    Vec3f listener_up  = vp_to_global_rot * vp_orn * 
       Vec3f( 0, 1, 0 ); 
-    Vec3f listener_lookat  = vp_to_global_rot * vp->orientation->getValue()
+    Vec3f listener_lookat  = vp_to_global_rot * vp_orn
       * Vec3f( 0, 0, -1 ); 
     alListener3f( AL_POSITION, 
                   listener_pos.x, listener_pos.y, listener_pos.z ); 

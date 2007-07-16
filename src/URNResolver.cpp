@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,10 +27,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "URNResolver.h"
-#include "Console.h"
+#include <URNResolver.h>
+#include <Console.h>
 
 using namespace H3D;
+using namespace H3DUtil;
 
 void URNResolver::loadConfigFile( const string &config_file ) {
   ifstream is( config_file.c_str() );

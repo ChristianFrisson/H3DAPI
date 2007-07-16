@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __PIXELIMAGE_H__
 #define __PIXELIMAGE_H__
 
-#include "Image.h"
+#include <Image.h>
 #include <vector>
 
 namespace H3D {
@@ -46,26 +46,20 @@ namespace H3D {
                 PixelComponentType _pixel_component_type,
                 unsigned char *data,
                 bool copy_data = false,
-                const Vec3f &_pixel_size = Vec3f( 0, 0, 0 ) ):
-      w( _width ),
-      h( _height ),
-      d( _depth ),
-      bits_per_pixel( _bits_per_pixel ),
-      pixel_type( _pixel_type ),
-      pixel_component_type( _pixel_component_type ),
-      pixel_size( _pixel_size ){
-      if( copy_data ) {
-        unsigned int size = (w * h * d * bits_per_pixel)/8;
-        image_data = new unsigned char[ size ];
-        memcpy( image_data, data, size );
-      }
-      else 
-        image_data = data;
-    }
+                const Vec3f &_pixel_size = Vec3f( 0, 0, 0 ) );
+
+    /// Constructor.
+    /// A new PixelImage with the given dimensions is created by 
+    /// resampling the given image. Trilinear interpolation is used
+    /// to get new pixel values.
+    PixelImage( Image *image,
+                unsigned int new_width,
+                unsigned int new_height,
+                unsigned int new_depth );
 
     ~PixelImage() {
       if( image_data )
-        delete image_data;
+        delete[] image_data;
     }
 
     /// Returns the width of the image in pixels.

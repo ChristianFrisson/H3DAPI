@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __X3DTIMEDEPENDENTNODE_H__
 #define __X3DTIMEDEPENDENTNODE_H__
 
-#include "X3DChildNode.h"
-#include "SFTime.h"
-#include "SFBool.h"
+#include <X3DChildNode.h>
+#include <SFTime.h>
+#include <SFBool.h>
 
 namespace H3D {
 
@@ -102,38 +102,7 @@ namespace H3D {
     /// and stopTime <= startTime as according to the X3D spec.
     class StopTime: public SFTime {
     public:
-      /// Overrides the setValue function so that the value is not changed
-      /// if the owner X3DTimeDependentNode is active and 
-      /// stopTime <= startTime. 
-      virtual void setValue( const H3DDouble &time, int id = 0 ) {
-        X3DTimeDependentNode *time_node = 
-          static_cast< X3DTimeDependentNode * >( getOwner() );
-        if( !time_node->isActive->getValue() ||
-            time > 
-            time_node->startTime->getValue()) {
-          SFTime::setValue( time, id );
-          // Setting the time to the current time on an active time node
-          // will cause it to deactivate.
-          if( time_node->isActive->getValue() &&
-              time_node->timeHandler->getValue() == time ) {
-            time_node->timeHandler->deactivate( time );
-          } 
-        }
-      }
-
-    protected:
-     /// Overrides the setValue function so that the value is not changed
-      /// if the owner X3DTimeDependentNode is active and 
-      /// stopTime <= startTime. 
-      virtual void propagateEvent( Event e ) {
-        X3DTimeDependentNode *time_node = 
-          static_cast< X3DTimeDependentNode * >( getOwner() );
-        if( !time_node->isActive->getValue() ||
-            time_node->stopTime->getValue() > time_node->startTime->getValue()) {
-          SFTime::propagateEvent( e );
-        }
-      }
-
+     
       /// Update is overriden to deactivate the time node if the 
       /// value of the field updates to the to the current time.
       virtual void update() {

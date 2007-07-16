@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,12 +29,14 @@
 #ifndef __INDEXEDTRIANGLESET_H__
 #define __INDEXEDTRIANGLESET_H__
 
-#include "X3DComposedGeometryNode.h"
-#include "DependentNodeFields.h"
-#include "X3DCoordinateNode.h"
-#include "X3DColorNode.h"
-#include "CoordBoundField.h"
-#include "MFInt32.h"
+#include <X3DComposedGeometryNode.h>
+#include <DependentNodeFields.h>
+#include <X3DCoordinateNode.h>
+#include <X3DColorNode.h>
+#include <CoordBoundField.h>
+#include <MFInt32.h>
+#include <SFInt32.h>
+#include <HapticTriangleTree.h>
 
 namespace H3D {
 
@@ -152,19 +154,23 @@ namespace H3D {
                         Inst< SFBool           > _colorPerVertex  = 0,
                         Inst< SFBool           > _normalPerVertex = 0,
                         Inst< SFBool           > _solid           = 0,
-			Inst< MFVertexAttributeNode > _attrib     = 0,
+			                  Inst< MFVertexAttributeNode > _attrib     = 0,
                         Inst< AutoNormal       > _autoNormal      = 0,
                         Inst< MFInt32          > _set_index       = 0,
-                        Inst< MFInt32          > _index           = 0 );
-
-#ifdef USE_HAPTICS
+                        Inst< MFInt32          > _index           = 0,
+                        Inst< SFFogCoordinate  > _fogCoord        =0 );
+ 
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
 
     /// Renders the IndexedTriangleSet with OpenGL.
     virtual void render();
+
+    /// The number of triangles renderered in this geometry.
+    virtual int nrTriangles() {
+      return index->size() / 3;
+    }
 
     /// Auto-generated normals that are used if the normal field is NULL.
     /// Only accessable in C++.
@@ -192,6 +198,8 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+     auto_ptr< SFInt32 > depth;
   };
 }
 

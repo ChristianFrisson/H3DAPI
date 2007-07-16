@@ -16,7 +16,7 @@ import random
 import math
 import sys
 import os.path
-import thread, winsound
+import thread
 
 bonustime=15
 
@@ -166,35 +166,39 @@ class SpaceTennisGame:
       elif mom.z < 0:
         rackPos = self.dn["R_T2"].position.getValue()
         ballPos = pos
-        ballDiff = ballPos - rackPos
+        ballDiff = ballPos  - rackPos
+        xPos = rackPos.x + ballDiff.x*self.opponentSpeed*0.5 
+        yPos = rackPos.y + ballDiff.y*self.opponentSpeed
+        
         #make sure the opponent doesnt move outside of the play area
-        if rackPos.x < -0.175:
-          rackPos.x = -0.175
-        elif rackPos.x > 0.175:
-          rackPos.x = 0.175
-        if rackPos.y < -0.125:
-          rackPos.y = -0.125
-        elif rackPos.y > 0.125:
-          rackPos.y = 0.125
-        self.dn["R_T2"].position.setValue( Vec3f(rackPos.x + ballDiff.x*self.opponentSpeed*dt*0.5, 
-                                                 rackPos.y + ballDiff.y*self.opponentSpeed, 
-                                                 0 ))         
+        if xPos < -0.175:
+          xPos = -0.175
+        elif xPos > 0.175:
+          xPos = 0.175
+        if yPos < -0.125:
+          yPos = -0.125
+        elif yPos > 0.125:
+          yPos = 0.125
+        
+        self.dn["R_T2"].position.setValue( Vec3f(xPos, yPos ,0 ))         
       else:
-        rackPos = self.dn["R_T2"].position.getValue()
+        rackPos = self.dn["R_T2"].position.getValue() 
         ballPos = pos
         ballDiff = ballPos - rackPos
+        xPos = rackPos.x + ballDiff.x*self.opponentSpeed/3*0.5 
+        yPos = rackPos.y + ballDiff.y*self.opponentSpeed/3
+        
         #make sure the opponent doesnt move outside of the play area
-        if rackPos.x < -0.175:
-          rackPos.x = -0.175
-        elif rackPos.x > 0.175:
-          rackPos.x = 0.175
-        if rackPos.y < -0.125:
-          rackPos.y = -0.125
-        elif rackPos.y > 0.125:
-          rackPos.y = 0.125		  
-        self.dn["R_T2"].position.setValue( Vec3f(rackPos.x + ballDiff.x*self.opponentSpeed/3*dt*0.5, 
-                                                 rackPos.y + ballDiff.y*self.opponentSpeed/3, 
-                                                 0 ))        
+        if xPos< -0.175:
+          xPos = -0.175
+        elif xPos > 0.175:
+          xPos = 0.175
+        if yPos < -0.125:
+          yPos = -0.125
+        elif yPos > 0.125:
+          yPos = 0.125		  
+      
+        self.dn["R_T2"].position.setValue( Vec3f(xPos, yPos, 0 ))        
       
       opponentPos = self.dn["R_T2"].position.getValue()
 

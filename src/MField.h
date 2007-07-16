@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -32,9 +32,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "TypedField.h"
-#include "Node.h"
-#include "X3DFieldConversion.h"
+#include <TypedField.h>
+#include <Node.h>
+#include <X3DFieldConversion.h>
 
 using namespace std;
 

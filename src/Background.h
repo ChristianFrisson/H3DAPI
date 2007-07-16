@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __BACKGROUND_H__
 #define __BACKGROUND_H__
 
-#include "X3DBackgroundNode.h"
-#include "ImageTexture.h"
+#include <X3DBackgroundNode.h>
+#include <ImageTexture.h>
 
 namespace H3D {
 

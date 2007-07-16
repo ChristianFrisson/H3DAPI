@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __BILLBOARD_H__
 #define __BILLBOARD_H__
 
-#include "MatrixTransform.h"
+#include <MatrixTransform.h>
 
 namespace H3D {
 
@@ -119,11 +119,9 @@ namespace H3D {
                Inst< SFMatrix4f          > _matrix           = 0, 
                Inst< SFVec3f             > _axisOfRotation   = 0 );
 
-#ifdef USE_HAPTICS
     /// Set the matrix field in order to set the matrix field to perform
     /// the rotation required by the Billboard.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
 
     /// The axisOfRotation field specifies which axis to use to perform
     /// the rotation. This axis is defined in the local coordinate system.

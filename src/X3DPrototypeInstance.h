@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __X3DPROTOTYPEINSTANCE_H__
 #define __X3DPROTOTYPEINSTANCE_H__
 
-#include "X3DNode.h"
-#include "H3DDynamicFieldsObject.h"
+#include <X3DNode.h>
+#include <H3DDynamicFieldsObject.h>
 
 // forward declaration for Bison VRML parser.
 namespace yy {
@@ -66,10 +66,8 @@ namespace H3D {
     /// Renders prototyped_node.
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Traverses prototyped_node.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
     
     /// Set the node that is the internal scenegraph of the prototype.
     virtual void setPrototypedNode( Node *n ) {

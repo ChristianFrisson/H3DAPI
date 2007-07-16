@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="RigidBodyPhysics">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Geometry3D  level="1"/>
+    </Prerequisites>
+    <Node name="CollidableOffset">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CollidableShape">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CollisionCollection">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CollisionSensor">
+      <contacts_changed support="optional"/>
+    </Node>
+    <Node name="CollisionSpace">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Geometry3D  level="1"/>
+    </Prerequisites>
+    <Node name="BallJoint">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CollisionSensor">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Contact">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DoubleAxisHingeJoint">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MotorJoint">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="RigidBody">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="RigidBodyCollection">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SingleAxisHingeJoint">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SliderJoint">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="UniversalJoint">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+</Component>

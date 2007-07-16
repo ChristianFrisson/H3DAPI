@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __TOGGLEGROUP_H__
 #define __TOGGLEGROUP_H__
 
-#include "X3DGroupingNode.h"
+#include <X3DGroupingNode.h>
 
 namespace H3D {
 
@@ -56,10 +56,8 @@ namespace H3D {
                  Inst< SFBool  > _hapticsOn      = 0,
                  Inst< SFBool  > _graphicsOn     = 0 );
 
-#ifdef USE_HAPTICS
     /// Haptics is disabled if hapticsOn is false.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
 
     /// Only renders children if graphicsOn is true. 
     virtual void render();

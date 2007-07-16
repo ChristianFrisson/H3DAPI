@@ -33,13 +33,9 @@
 #ifndef __H3DApi_H__
 #define __H3DApi_H__
 
-/// Undef if you do not have OpenHaptics(www.sensable.com) installed. 
-/// Haptics will then be disabled.
-#define HAVE_OPENHAPTICS
-
-/// Undef if you do not want to use haptics at all.
-/// HAVE_OPENHAPTICS must also be undef.
-#define USE_HAPTICS
+/// Undef if you do not have zlib(http://www.zlib.net/) installed. 
+/// Required for support for parsing zipped x3d files.
+#define HAVE_ZLIB
 
 /// Undef if you do not have OpenAL(www.openal.org) installed. Sounds will
 /// then be disabled.
@@ -80,6 +76,9 @@
 /// ImageTexture nodes will not be able to read image files.
 #define HAVE_FREEIMAGE
 
+// Define this if you are linking Freeimage as a static library
+//#define FREEIMAGE_LIB
+
 /// Undef if you do not have libcurl(http://sourceforge.net/projects/curl/)
 /// installed. URLs using protocols like http and ftp will then not be 
 /// supported. Only local filenames can be used. 
@@ -91,14 +90,12 @@
 #define HAVE_DSHOW
 #endif
 
-/// Undef if you do not have the DHD-API from ForceDimension. Needed
-/// for the DHDHapticsDevice, e.g. support for Omega and Delta haptics
-/// devices
-#define HAVE_DHDAPI
+#define XML_USE_WIN32_TRANSCODER
+#define XML_USE_INMEM_MESSAGELOADER
+#define XML_USE_NETACCESSOR_WINSOCK
 
-/// Undef if you do not have Haptik(www.haptiklibrary.org). Needed
-/// for the HaptikHapticsDevice
-//#define HAVE_HAPTIK
+// define this if you are linking Xerces as a static library
+//#define XML_LIBRARY
 
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL
@@ -110,6 +107,11 @@
 // exported.
 #if defined(WIN32) || defined(__WIN32__)
 #include <windows.h>
+
+#ifdef H3DAPI_LIB
+#define H3DAPI_API
+#else
+
 #ifdef H3DAPI_EXPORTS
 #define H3DAPI_API __declspec(dllexport)
 #else
@@ -118,9 +120,11 @@
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 // disable dll-interface warnings for stl-exports
 #pragma warning( disable: 4251 )
+//#pragma warning( disable: 4275 )
+
 #endif
 
-
+#endif
 #endif
 
 // Borland uses strnicmp.
@@ -142,8 +146,13 @@
 #define HAVE_SYS_TIME_H
 #endif
 
-
 namespace H3D {
+  /// Initialize H3D API(only needed if using H3D API as a static library). 
+  void initializeH3D();
+
+  /// Deinitialize H3D API(only needed if using H3D API as a static library). 
+  void deinitializeH3D();
+
   /// Function for determining if the machine we are running on is uses
   /// little endian byte order or not.
   inline bool isLittleEndian() {

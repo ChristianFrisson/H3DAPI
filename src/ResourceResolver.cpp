@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,17 +27,19 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ResourceResolver.h"
+#include <ResourceResolver.h>
 
 using namespace H3D;
+using namespace H3DUtil;
 
 auto_ptr< URNResolver > ResourceResolver::urn_resolver( NULL );
 AutoPtrVector< ResourceResolver > ResourceResolver::resolvers; 
 
 string ResourceResolver::baseURL( "" );
+ResourceResolver::TmpFileNameList ResourceResolver::tmp_files;
 
-
-string ResourceResolver::resolveURLAsFile( const string &urn ) {
+string ResourceResolver::resolveURLAsFile( const string &urn,
+                                           bool *is_tmp_file ) {
   string filename = urn;
   if( urn_resolver.get() ) {
     filename = urn_resolver->resolveURN( urn );
@@ -50,14 +52,19 @@ string ResourceResolver::resolveURLAsFile( const string &urn ) {
     // if is a local file, just return the file name
     ifstream is( full_url.c_str() );
     is.close();
-    if( !is.fail() ) 
+    if( !is.fail() ) {
+      if( is_tmp_file ) *is_tmp_file = false;
       return full_url;
+    }
     
     // otherwise try the resolvers.
     for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
 	 i != resolvers.end(); i++ ) {
       string resolved_name = (*i)->resolveURLAsTmpFile( full_url );
-      if( resolved_name != "" ) return resolved_name;
+      if( resolved_name != "" ) {
+        if( is_tmp_file ) *is_tmp_file = true;
+        return resolved_name;
+      }
     }
   }
   
@@ -66,14 +73,42 @@ string ResourceResolver::resolveURLAsFile( const string &urn ) {
   // if is a local file, just return the file name
   ifstream is( filename.c_str() );
   is.close();
-  if( !is.fail() ) 
+  if( !is.fail() ) {
+    if( is_tmp_file ) *is_tmp_file = false;
     return filename;
+  }
   
   // otherwise try the resolvers.
   for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
        i != resolvers.end(); i++ ) {
     string resolved_name = (*i)->resolveURLAsTmpFile( filename );
-    if( resolved_name != "" ) return resolved_name;
+    if( resolved_name != "" ) {
+      if( is_tmp_file ) *is_tmp_file = true;
+      return resolved_name;
+    }
   }
+  if( is_tmp_file ) *is_tmp_file = false;
   return "";
+}
+
+string ResourceResolver::getTmpFileName() {
+  char tmp_file[ L_tmpnam ];
+  if( tmpnam( tmp_file ) ) {
+    tmp_files.push_back( tmp_file );
+    return tmp_file;
+  } else {
+    return "";
+  } 
+}
+
+bool ResourceResolver::releaseTmpFileName( const string &file ) {
+  for( list< string >::iterator i = tmp_files.begin();
+       i != tmp_files.end(); i++ ) {
+    if( file == (*i) ) {
+      remove( (*i).c_str() );
+      tmp_files.erase( i );
+      return true;
+    }
+  }
+  return false;
 }

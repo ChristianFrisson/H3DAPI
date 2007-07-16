@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #ifndef __H3DIMAGEOBJECT_H__
 #define __H3DIMAGEOBJECT_H__
 
-#include "X3DAppearanceChildNode.h"
-#include "Image.h"
+#include <X3DAppearanceChildNode.h>
+#include <Image.h>
 #include "GL/glew.h"
 
 namespace H3D {

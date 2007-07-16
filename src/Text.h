@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,11 +29,11 @@
 #ifndef __TEXT_H__
 #define __TEXT_H__
 
-#include "X3DGeometryNode.h"
-#include "X3DFontStyleNode.h"
-#include "MFFloat.h"
-#include "SFFloat.h"
-#include "MFString.h"
+#include <X3DGeometryNode.h>
+#include <X3DFontStyleNode.h>
+#include <MFFloat.h>
+#include <SFFloat.h>
+#include <MFString.h>
 
 namespace H3D {
 
@@ -86,10 +86,10 @@ namespace H3D {
     /// The SFBound field is specialized to update itself from the
     /// values in the fields of the Text node.
     /// 
-    /// routes_in[0] is the fontStyle field.
-    /// routes_in[1] is the length field.
-    /// routes_in[2] is the maxExtent field.
-    /// routes_in[3] is the string field.
+    /// - routes_in[0] is the fontStyle field.
+    /// - routes_in[1] is the length field.
+    /// - routes_in[2] is the maxExtent field.
+    /// - routes_in[3] is the string field.
     class H3DAPI_API SFBound: 
       public TypedField< X3DGeometryNode::SFBound,
       Types< SFFontStyleNode, MFFloat, SFFloat, MFString > >{
@@ -126,11 +126,42 @@ namespace H3D {
     /// Render the text with OpenGL.
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti ); 
-#endif
+
+    /// The number of triangles renderered in this geometry, we don't know
+    /// so return -1
+    virtual int nrTriangles() {
+      return -1;
+    }
+
+    /// Detect intersection between a line segment and the texts bounding box.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line
+    /// \param theNodes A vector of pairs of pointer and index to
+    /// differ between different places in the scene graph for the same Node.
+    /// This can happen due to the DEF/USE feature of X3D.
+    /// \param current_matrix The current matrix that transforms from the local
+    /// coordinate space where this Node resides in the scenegraph to 
+    /// global space.
+    /// \param geometry_transforms A vector of matrices from the local
+    /// coordinate space to global space for each node that the
+    /// line intersects.
+    /// \param pt_device_affect Flag telling a node if it is affected by a
+    /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
+    /// when using the DEF/USE feature of X3D.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect( 
+      const Vec3f &from,
+      const Vec3f &to,    
+      vector< HAPI::Bounds::IntersectionInfo > &result,
+      vector< pair< Node *, H3DInt32 > > &theNodes,
+      const Matrix4f &current_matrix,
+      vector< Matrix4f > &geometry_transforms,
+      bool pt_device_affect = false );
 
     /// The style the text should be rendered with. See X3DFontStyleNode.
     ///

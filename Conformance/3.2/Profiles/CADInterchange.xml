@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Profile name="CADInterchange ">
+  <Component name="Core" level="1"/>
+  <Component name="Networking" level="1"/>
+  <Component name="Grouping" level="1"/>
+  <Component name="Rendering" level="4"/>
+  <Component name="Shape" level="2"/>
+  <Component name="Lighting" level="1"/>
+  <Component name="Texturing" level="2"/>
+  <Component name="Navigation" level="2"/>
+  <Component name="Shaders" level="1"/>
+  <Component name="CADGeometry" level="2"/>
+</Profile>

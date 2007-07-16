@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,11 +30,11 @@
 #ifndef __FONTSTYLE_H__
 #define __FONTSTYLE_H__
 
-#include "X3DFontStyleNode.h"
-#include "SFString.h"
-#include "MFString.h"
-#include "SFBool.h"
-#include "SFFloat.h"
+#include <X3DFontStyleNode.h>
+#include <SFString.h>
+#include <MFString.h>
+#include <SFBool.h>
+#include <SFFloat.h>
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 #if defined(_MSC_VER) || defined(__BORLANDC__)
@@ -210,6 +210,7 @@ namespace H3D {
     /// Render the character.
     virtual void renderChar( unsigned char c ) {
       char t[2];  t[0]=c; t[1]='\0';
+      glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
       H3DFloat s = size->getValue();
       H3DFloat default_size = font->Ascender() - font->Descender();
@@ -229,6 +230,7 @@ namespace H3D {
         glDisable( GL_ALPHA_TEST );
         glDisable( GL_TEXTURE_2D);
       }
+      glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
     }
     

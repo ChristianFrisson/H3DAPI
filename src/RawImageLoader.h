@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __RAWIMAGELOADER_H__
 #define __RAWIMAGELOADER_H__
 
-#include "H3DImageLoaderNode.h"
-#include "SFInt32.h"
-#include "SFString.h"
-#include "SFVec3f.h"
+#include <H3DImageLoaderNode.h>
+#include <SFInt32.h>
+#include <SFString.h>
+#include <SFVec3f.h>
 
 namespace H3D {
 

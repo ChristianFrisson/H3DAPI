@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __RECTANGLE2D_H__
 #define __RECTANGLE2D_H__
 
-#include "X3DGeometryNode.h"
-#include "SFVec2f.h"
+#include <X3DGeometryNode.h>
+#include <SFVec2f.h>
 
 namespace H3D {
 
@@ -86,11 +86,14 @@ namespace H3D {
     /// Renders the rectangle2D using OpenGL.
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
+
+    /// The number of triangles rendered by this geometry
+    virtual int nrTriangles() {
+      return 2;
+    }
 
     /// The size field specifies the extents of the box along the X-, and
     /// Y-axes respectively and each component value shall be greater than 

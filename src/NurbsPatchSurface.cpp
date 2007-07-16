@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,10 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "NurbsPatchSurface.h"
-#ifdef USE_HAPTICS
-#include "HLFeedbackShape.h"
-#endif
+#include <NurbsPatchSurface.h>
+#include <HLFeedbackShape.h>
 
 using namespace H3D;
 
@@ -127,12 +125,3 @@ void NurbsPatchSurface::renderBetweenBeginEnd(
 
 }
 
-#ifdef USE_HAPTICS
-void NurbsPatchSurface::traverseSG( TraverseInfo &ti ) {
-  X3DNurbsSurfaceGeometryNode::traverseSG( ti );
-	if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-		ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
-                                                  ti.getAccForwardMatrix()) );
-	}
-}
-#endif

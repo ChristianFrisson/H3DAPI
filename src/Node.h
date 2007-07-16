@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,13 +29,11 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
-#include "Instantiate.h"
+#include <Instantiate.h>
 #include <H3DNodeDatabase.h>
-#include "RefCountedClass.h"
-#ifdef USE_HAPTICS
-#include "TraverseInfo.h"
-#endif
-#include "Console.h"
+#include <RefCountedClass.h>
+#include <TraverseInfo.h>
+#include <Console.h>
 
 //#include "FieldTemplates.h"
 
@@ -64,7 +62,6 @@ namespace H3D {
     /// of the scene-graph. 
     virtual void render()     { };
 
-#ifdef USE_HAPTICS
 		/// traverseSG is called onve per scenegraph loop on the scene in order to
     /// traverse the scenegraph. During this traversal things can be updated
     /// in the node and HapticObject instances to be rendered should be added 
@@ -73,7 +70,70 @@ namespace H3D {
     /// traversal.
     /// 
     virtual void traverseSG( TraverseInfo &ti ) {}
-#endif
+
+    /// Detect intersection between a line segment and the Node.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line
+    /// \param theNodes A vector of pairs of pointer and index to
+    /// differ between different places in the scene graph for the same Node.
+    /// This can happen due to the DEF/USE feature of X3D.
+    /// \param current_matrix The current matrix that transforms from the local
+    /// coordinate space where this Node resides in the scenegraph to 
+    /// global space.
+    /// \param geometry_transforms A vector of matrices from the local
+    /// coordinate space to global space for each node that the
+    /// line intersects.
+    /// \param pt_device_affect Flag telling a node if it is affected by a
+    /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
+    /// when using the DEF/USE feature of X3D.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect( 
+      const Vec3f &from, 
+      const Vec3f &to,    
+      vector< HAPI::Bounds::IntersectionInfo > &result,
+      vector< pair< Node *, H3DInt32 > > &theNodes,
+      const Matrix4f &current_matrix,
+      vector< Matrix4f > &geometry_transforms,
+      bool pt_device_affect = false ) {
+      return false;
+    }
+
+    /// Find closest point on Node to p.
+    /// \param p The point to find the closest point to.
+    /// \param closest_point Return parameter for each closest point
+    /// \param normal Return parameter for normal at each closest point.
+    /// \param tex_coord Return paramater for each texture coordinate at
+    /// closest point.
+    virtual void closestPoint( const Vec3f &p,
+                               vector< Vec3f > &closest_point,
+                               vector< Vec3f > &normal,
+                               vector< Vec3f > &tex_coord ){}
+
+    /// Detect collision between a moving sphere and the Node.
+    /// Only nodes to which collision is possible will return true
+    /// \param The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersect( H3DFloat radius,
+                                        const Vec3f &from, 
+                                        const Vec3f &to ){
+    return false;
+    }
+
+    /// Resets flags used to get correct behaviour for lineIntersect
+    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
+    /// Does nothing for most nodes.
+    virtual void resetNodeDefUseId() { };
+
+    /// Increase an integer used to get correct behaviour for lineIntersect
+    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
+    /// Does nothing for most nodes.
+    /// \param pt_device_affect A flag which is true if the node is affected
+    /// by a X3DPointingDeviceSensorNode.
+    virtual void incrNodeDefUseId( bool pt_device_affect ){};
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "children".

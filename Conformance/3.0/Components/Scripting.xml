@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Scripting">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+    </Prerequisites>
+    <Node name="Script">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+</Component>

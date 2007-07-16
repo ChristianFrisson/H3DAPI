@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="H3DLoad"
 	ProjectGUID="{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}"
 	RootNamespace="H3DLoad"
@@ -15,8 +15,8 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="Release"
+			Name="Release DLL|Win32"
+			OutputDirectory="..\..\..\..\bin"
 			IntermediateDirectory="Release\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -55,6 +55,7 @@
 				ObjectFile="$(IntDir)/"
 				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
 				WarningLevel="3"
+				DebugInformationFormat="3"
 				CompileAs="0"
 			/>
 			<Tool
@@ -71,10 +72,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="H3DAPI.lib"
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir);$(H3D_EXTERNAL_ROOT)\lib"
+				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 				SubSystem="1"
 			/>
@@ -104,8 +105,8 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory="Debug"
+			Name="Debug DLL|Win32"
+			OutputDirectory="..\..\..\..\bin"
 			IntermediateDirectory="Debug\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -131,8 +132,9 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src;$(NOINHERIT)"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_DEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32"
+				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src;$(NOINHERIT)"
+				PreprocessorDefinitions="_CRTDBG_MAP_ALLOC ;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
 				TreatWChar_tAsBuiltInType="false"
@@ -158,14 +160,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="H3DAPI.lib"
-				OutputFile="$(OutDir)/H3DLoad.exe"
+				AdditionalOptions="/MACHINE:I386 /NODEFAULTLIB:msvcrt"
+				OutputFile="$(OutDir)/H3DLoad_d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir);$(H3D_EXTERNAL_ROOT)\lib"
+				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="1"
 			/>
 			<Tool

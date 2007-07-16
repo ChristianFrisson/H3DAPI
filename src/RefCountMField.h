@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 #ifndef __REFCOUNTMFIELD_H__
 #define __REFCOUNTMFIELD_H__
 
-#include "MField.h"
-#include "MFNodeAutoRefVector.h"
+#include <MField.h>
+#include <MFNodeAutoRefVector.h>
 
 namespace H3D {
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __RENDERPROPERTIES_H__
 #define __RENDERPROPERTIES_H__
 
-#include "X3DAppearanceChildNode.h"
-#include "SFColor.h"
-#include "SFInt32.h"
+#include <X3DAppearanceChildNode.h>
+#include <SFColor.h>
+#include <SFInt32.h>
 
 namespace H3D {
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,8 +26,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "MFNode.h"
-#include "X3DPrototypeInstance.h"
+#include <MFNode.h>
+#include <X3DPrototypeInstance.h>
 using namespace H3D;
 
 

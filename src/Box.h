@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __BOX_H__
 #define __BOX_H__
 
-#include "X3DGeometryNode.h"
+#include <X3DGeometryNode.h>
 
 namespace H3D {
 
@@ -66,13 +66,13 @@ namespace H3D {
   class H3DAPI_API Box : public X3DGeometryNode {
   public:
 
-    /// SFBound is specialized update itself from the radius field 
+    /// SFBound is specialized update itself from the size field 
     /// of the Box node.
     ///
     /// routes_in[0] is the size field of the Box node.  
     ///
     class SFBound: public X3DGeometryNode::SFBound {
-      /// Update the bound from the radius field. 
+      /// Update the bound from the size field. 
       virtual void update() {
         Vec3f b = static_cast< SFVec3f * >( routes_in[0] )->getValue();
         BoxBound *bb = new BoxBound;
@@ -90,11 +90,14 @@ namespace H3D {
     /// Renders the Box using OpenGL.
     virtual void render();
 
-#ifdef USE_HAPTICS
+    /// The number of triangles rendered by this geometry.
+    virtual int nrTriangles() {
+      return 12;
+    }
+
 		/// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
 
     ///  The size field specifies the extents of the box along the X-, Y-,
     /// and Z-axes respectively.

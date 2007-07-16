@@ -2,21 +2,23 @@
 //    All Rights Reserved
 //
 
+#include <X3DSAX2Handlers.h>
+#include <FieldTemplates.h>
+#include <iostream>
+#include <sstream>
+#include <H3DNodeDatabase.h>
+#include <MFNode.h>
+#include <Group.h>
+#include <H3DDynamicFieldsObject.h>
+#include <X3DTypeFunctions.h>
+#include <Inline.h>
+#include <H3DExports.h>
+#include <ProfilesAndComponents.h>
+
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/SAXException.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
-#include "X3DSAX2Handlers.h"
-#include "FieldTemplates.h"
-#include <iostream>
-#include <sstream>
-#include <H3DNodeDatabase.h>
-#include "MFNode.h"
-#include "Group.h"
-#include "H3DDynamicFieldsObject.h"
-#include "X3DTypeFunctions.h"
-#include "Inline.h"
-#include "H3DExports.h"
 
 using namespace std;
 using namespace H3D;
@@ -45,7 +47,7 @@ namespace H3D {
     unsigned int str_len = XMLString::stringLen( xmls );
     string s( str_len, 'a' );
     for( unsigned int i = 0; i < str_len; i++)
-      s[i] = xmls[i];
+      s[i] = (char)xmls[i];
     return s;
   }
 }
@@ -695,7 +697,17 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
         stringstream s;
         s << "<" << localname << " ";
         for( unsigned int i = 0; i < attrs.getLength(); i++ ) {
-          s << attrs.getQName( i ) << "=\"" << attrs.getValue( i ) << "\" ";
+          // make sure that MFString are correct. All attribute values
+          // are enclosed in "..", unless the string itself starts with "
+          // then they are inclosed in '..'
+          const XMLCh *v = attrs.getValue( i );
+          char quote = '"';
+          if( v ) {
+            unsigned int ci = 0;
+            while( v[ci] != '\0' && isspace( v[ci] ) ) ci++;
+            if( v[ci] == '"' ) quote = '\'';
+          }
+          s << attrs.getQName( i ) << "=" << quote << v << quote << " ";
         }
         s << ">" << endl;
         proto_declaration->setProtoBody( proto_declaration->getProtoBody() + 
@@ -947,7 +959,6 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                                    const XMLCh* const localname, 
                                    const XMLCh* const qname,
                                    const Attributes& attrs) {
-  
   // we are inside a ProtoDeclare element, so use protoStartElement 
   // instead of the normal  element handling.
   if( proto_declaration ) {
@@ -966,8 +977,38 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
       throw X3D::XMLParseError( "X3D element only allowed at toplevel.", "", 
                                 toString( locator->getSystemId() ),
                                 locator->getLineNumber()  );
-    else
+    else {
+      //cerr << "localname " << localname << endl;
+      int nr_attrs = attrs.getLength();
+      string profile_name;
+      string version;
+      for( int i = 0; i < nr_attrs; i++ ) {
+        string name = toString( attrs.getQName( i ) );
+        if( name == "profile" ) {
+          profile_name = toString( attrs.getValue(i) );
+          //cerr << name << " " << attrs.getValue(i) << endl;
+
+        }
+        else if( name == "version" ) {
+          version = toString( attrs.getValue( i ) );
+        }
+      }
+
+      if( !profile_set ) {
+        string tmp_err_msg;
+        if( ProfilesAndComponents::setProfile( profile_name,
+          tmp_err_msg,
+          version ) ) {
+            profile_set = true;
+        }
+        else {
+          throw X3D::XMLParseError( tmp_err_msg, "", 
+            toString( locator->getSystemId() ),
+            locator->getLineNumber()  );
+        }
+      }
       return;
+    }
   }
 
   // special element Scene works as a Group node so we use a Group node.
@@ -977,6 +1018,9 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                                 toString( locator->getSystemId() ),
                                 locator->getLineNumber()  );
     else {
+      if( profile_set ) {
+        ProfilesAndComponents::setMainProfileDone( profile_set );
+      }
       node_stack.push( NodeElement( new Group ) );
       return;
     }
@@ -1040,7 +1084,54 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
       } else if( localname_string == "field" ) {
         handleFieldElement( attrs, parent );
       } else if( localname_string == "head" ) {
-        node_stack.push( NodeElement( NULL ) );
+        inside_head = true;
+        //node_stack.push( NodeElement( NULL ) );
+      } else if( localname_string == "component" ) {
+        if( !inside_head || !profile_set || meta_set ) {
+          throw X3D::XMLParseError(
+            ( string( "component element only allowed inside head element" ) +
+              string( " before any meta element." ) ).c_str(),
+            "",
+            toString( locator->getSystemId() ),
+            locator->getLineNumber()  );
+        }
+        else {
+          int nr_attrs = attrs.getLength();
+          string component_name;
+          int level = 0;
+          for( int i = 0; i < nr_attrs; i++ ) {
+            string name = toString( attrs.getQName( i ) );
+            if( name == "name" ) {
+              component_name = toString( attrs.getValue(i) );
+              //cerr << name << " " << attrs.getValue(i) << endl;
+            }
+            else if( name == "level" ) {
+              level = atoi( (char * )attrs.getValue(i) );
+            }
+          }
+
+          string tmp_err_msg;
+          if( !ProfilesAndComponents::addComponent( component_name, level,
+            tmp_err_msg ) ) {
+              throw X3D::XMLParseError( tmp_err_msg, "", 
+                toString( locator->getSystemId() ),
+                locator->getLineNumber()  );
+          }
+        }
+      } else if( localname_string == "meta" ) {
+        if( !inside_head || !profile_set ) {
+          throw X3D::XMLParseError(
+            ( string("meta element only allowed in head element immediately " )
+              + string( "after any eventual component definitions are set." )
+              ).c_str(),
+            "",
+            toString( locator->getSystemId() ),
+            locator->getLineNumber()  );
+        }
+        else {
+          meta_set = true;
+          //handleComponentAttributes( attrs );
+        }
       } else {
         const XMLCh *use_name = attrs.getValue( gUSE );
         bool proto_instance = false;
@@ -1215,11 +1306,21 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
 
   // skip special element X3D.
   if( localname_string == "X3D" ) {
+    profile_set = false;
     return;
   }
+
+  if( localname_string == "head" ) {
+    inside_head = false;
+    return;
+  }
+
+  if( localname_string == "component"
+      || localname_string == "meta" )
+    return;
   
 
-  if( localname_string == "IS" ) {
+  if( localname_string == "IS" && defining_proto_connections ) {
     defining_proto_connections = false;
     return;
   }
@@ -1228,6 +1329,7 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
   Node *new_node = new_node_element.getNode();
 
   node_stack.pop();
+
   Node *parent = NULL;
   if( node_stack.size() > 0 ) 
     parent = node_stack.top().getNode();
@@ -1311,5 +1413,3 @@ void X3DSAX2Handlers::warning(const SAXParseException& e) {
              << ", line " << e.getLineNumber()
              << ", char " << e.getColumnNumber() << ")" << endl;
 }
-
-

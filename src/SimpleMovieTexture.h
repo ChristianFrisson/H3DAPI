@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,11 +29,11 @@
 #ifndef __SIMPLEMOVIETEXTURE_H__
 #define __SIMPLEMOVIETEXTURE_H__
 
-#include "H3DVideoTextureNode.h"
-#include "X3DUrlObject.h"
-#include "SFFloat.h"
-#include "SFTime.h"
-#include "SFInt32.h"
+#include <H3DVideoTextureNode.h>
+#include <X3DUrlObject.h>
+#include <SFFloat.h>
+#include <SFTime.h>
+#include <SFInt32.h>
 
 namespace H3D {
   /// \ingroup H3DNodes 

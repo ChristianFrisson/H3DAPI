@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,9 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Inline.h"
-#include "X3D.h"
-#include "X3DSAX2Handlers.h"
+#include <Inline.h>
+#include <X3D.h>
+#include <X3DSAX2Handlers.h>
+#include "ResourceResolver.h"
 
 using namespace H3D;
 
@@ -89,7 +90,6 @@ void Inline::render() {
   }
 }
 
-#ifdef USE_HAPTICS
 void Inline::traverseSG( TraverseInfo &ti ) {
   if( load->getValue() ) {
     for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
@@ -98,20 +98,28 @@ void Inline::traverseSG( TraverseInfo &ti ) {
     }
   }
 }
-#endif
 
 void Inline::LoadedScene::update() {
   Inline *inline_node = static_cast< Inline * >( getOwner() );
   value.clear();
-  inline_node->exported_nodes.clear();
+  
+  // should be temporary fix, when creating and deleting a Inline node without
+  // doing anything with it there is a problem with calling clear() 
+  // ( the call to map< const string, Node * >::begin() in DEFNodes.h
+  // is the problem.
+  if( !inline_node->exported_nodes.empty() )
+    inline_node->exported_nodes.clear();
   bool load = static_cast< SFBool * >( routes_in[0] )->getValue();
   if( load ) {
     MFString *urls = static_cast< MFString * >( routes_in[1] );
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-      string url = inline_node->resolveURLAsFile( *i );
+      bool is_tmp_file;
+      string url = inline_node->resolveURLAsFile( *i, &is_tmp_file );
       if( url != "" ) {
         try {
-          Group *g = X3D::createX3DFromURL( url, NULL, &inline_node->exported_nodes );
+          Group *g = X3D::createX3DFromURL( url, NULL, 
+                                            &inline_node->exported_nodes );
+          if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
           value.push_back( g );
           inline_node->setURLUsed( *i );
         } catch( const X3D::XMLParseError &e ) {

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __X3DSOUNDSOURCENODE_H__
 #define __X3DSOUNDSOURCENODE_H__
 
-#include "X3DTimeDependentNode.h"
-#include "X3DSoundNode.h"
-#include "PeriodicUpdate.h"
-#include "H3DSoundStreamNode.h"
+#include <X3DTimeDependentNode.h>
+#include <X3DSoundNode.h>
+#include <PeriodicUpdate.h>
+#include <H3DSoundStreamNode.h>
 #include <list>
 #include <fstream>
 

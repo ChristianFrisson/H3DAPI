@@ -187,6 +187,21 @@ def AutoUpdate( base_class ):
     auto_update_classes[base_class] = AutoUpdateBase
     return AutoUpdateBase
 
+periodic_update_classes = {}
 
-
-
+def PeriodicUpdate( base_class ):
+  class PeriodicUpdateBase( base_class ):
+    def __init__( self ):
+      print "calling init"
+      base_class.__init__( self, 0 )
+      print "set up route"
+      self.route( eventSink )
+  
+  global periodic_update_classes
+  if( periodic_update_classes.has_key( base_class ) ):
+    print "class found, use old"
+    return periodic_update_classes[base_class]
+  else:
+    periodic_update_classes[base_class] = PeriodicUpdateBase
+    print "class not found, create new"
+    return PeriodicUpdateBase

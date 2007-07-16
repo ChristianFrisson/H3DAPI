@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __LIBCURLRESOLVER_H__
 #define __LIBCURLRESOLVER_H__
 
-#include "H3DApi.h"
+#include <H3DApi.h>
 
 #ifdef HAVE_LIBCURL
 #include <string>
@@ -37,7 +37,7 @@
 #include <fstream>
 #include <list>
 #include <curl/curl.h>
-#include "ResourceResolver.h"
+#include <ResourceResolver.h>
 
 using namespace std;
 
@@ -55,15 +55,6 @@ namespace H3D {
     /// Constructor.       
     LibCurlResolver() {}
 
-    /// Destuctor. Removes all temp files that was used by the 
-    /// resolver.
-    virtual ~LibCurlResolver() {
-      for( list< string >::iterator i = temp_files.begin();
-           i != temp_files.end(); i++ ) {
-        remove( (*i).c_str() );
-      }
-    }
-
     /// Resolve a URL and download it to a tmp-file. The tmp-file
     /// name is returned. If the URL could not be downloaded "" is
     /// returned.
@@ -77,7 +68,6 @@ namespace H3D {
       return size * nmemb;
     }
 
-    list< string > temp_files;
   };
 }
 

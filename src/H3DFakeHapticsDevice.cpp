@@ -33,39 +33,43 @@ using namespace H3D;
 
 H3DNodeDatabase H3DFakeHapticsDevice::database
 ( "H3DFakeHapticsDevice", 
-  &(newInstance< H3DFakeHapticsDevice >),
+  NULL,
   typeid( H3DFakeHapticsDevice ),
-  &H3DThreadedHapticsDevice::database ); 
+  &H3DHapticsDevice::database ); 
 
 /// Constructor.
 H3DFakeHapticsDevice::H3DFakeHapticsDevice( 
-         Inst< ThreadSafeSField< SFVec3f > > _devicePosition,
-         Inst< ThreadSafeSField< SFRotation > > _deviceOrientation      ,
-         Inst< TrackerPosition > _trackerPosition        ,
-         Inst< TrackerOrientation > _trackerOrientation  ,
-         Inst< PosCalibration  > _positionCalibration    ,
-         Inst< OrnCalibration  > _orientationCalibration ,
-         Inst< SFVec3f         > _proxyPosition          ,
-         Inst< WeightedProxy   > _weightedProxyPosition  ,     
-         Inst< SFFloat         > _proxyWeighting         ,
-         Inst< ThreadSafeSField< SFBool > > _mainButton  ,
-         Inst< ThreadSafeSField< SFVec3f > > _force      ,
-         Inst< ThreadSafeSField< SFVec3f > > _torque     ,
-         Inst< SFInt32         > _inputDOF               ,
-         Inst< SFInt32         > _outputDOF              ,
-         Inst< SFInt32         > _hapticsRate            ,
-         Inst< SFNode          > _stylus                 ,
-         Inst< SFBool          > _initialized            ,
-         Inst< ThreadSafeSField< SFVec3f >        > _set_devicePosition     ,
-         Inst< ThreadSafeSField< SFRotation >     > _set_deviceOrientation  ,
-         Inst< ThreadSafeSField< SFBool >         > _set_mainButton ):
-  H3DThreadedHapticsDevice( _devicePosition, _deviceOrientation, 
-                            _trackerPosition, _trackerOrientation,
-                            _positionCalibration, _orientationCalibration,
-                            _proxyPosition, _weightedProxyPosition,
-                            _proxyWeighting, _mainButton, _force,
-                            _torque, _inputDOF, _outputDOF, _hapticsRate,
-                            _stylus, _initialized ),
+          Inst< SFVec3f         > _devicePosition         ,
+	  Inst< SFRotation      > _deviceOrientation      ,
+	  Inst< TrackerPosition > _trackerPosition        ,
+	  Inst< TrackerOrientation > _trackerOrientation  ,
+	  Inst< PosCalibration  > _positionCalibration    ,
+	  Inst< OrnCalibration  > _orientationCalibration ,
+	  Inst< SFVec3f         > _proxyPosition          ,
+	  Inst< WeightedProxy   > _weightedProxyPosition  ,     
+	  Inst< SFFloat         > _proxyWeighting         ,
+	  Inst< MainButton      > _main_button            ,
+	  Inst< SecondaryButton > _secondary_button       ,
+	  Inst< SFInt32         > _buttons                ,
+	  Inst< SFVec3f         > _force                  ,
+	  Inst< SFVec3f         > _torque                 ,
+	  Inst< SFInt32         > _inputDOF               ,
+	  Inst< SFInt32         > _outputDOF              ,
+	  Inst< SFInt32         > _hapticsRate            ,
+	  Inst< SFNode          > _stylus                 ,
+	  Inst< SFHapticsRendererNode > _hapticsRenderer  ,
+	  Inst< MFVec3f         > _proxyPositions         ,
+	  Inst< SFBool          > _followViewpoint        ,
+	  Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     ,
+	  Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  ,
+	  Inst< ThreadSafeSField< SFBool > > _set_mainButton          ):
+  H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
+		    _trackerOrientation, _positionCalibration, 
+		    _orientationCalibration, _proxyPosition,
+		    _weightedProxyPosition, _proxyWeighting, _main_button,
+                    _secondary_button, _buttons,
+		    _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
+		    _stylus, _hapticsRenderer, _proxyPositions, _followViewpoint ),
   set_devicePosition( _set_devicePosition ),
   set_deviceOrientation( _set_deviceOrientation ),
   set_mainButton( _set_mainButton ) {
@@ -80,32 +84,26 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
   set_mainButton->setOwner( this );
   set_mainButton->setName( "set_mainButton" );
 
+  H3DFakeHapticsDevice::FakeHapticsDevice *fd = 
+    new H3DFakeHapticsDevice::FakeHapticsDevice;
+
+  fd->owner = this;
+  
+  hapi_device.reset( fd );
+
   inputDOF->setValue( 6, id );
   outputDOF->setValue( 0, id );
 }
 
-H3DFakeHapticsDevice::~H3DFakeHapticsDevice() {
-  disableDevice();
+void H3DFakeHapticsDevice::FakeHapticsDevice::updateDeviceValues( 
+                DeviceValues &dv, HAPI::HAPITime dt ) {
+  dv.position = owner->set_devicePosition->getValue();
+  dv.orientation = owner->set_deviceOrientation->getValue();
+  dv.button_status = owner->set_mainButton->getValue();
 }
 
-Vec3f H3DFakeHapticsDevice::getPosition() {
-  // devicePosition is thread safe so we can use getValue()
-  return set_devicePosition->getValue();
-}
 
-Vec3f H3DFakeHapticsDevice::getVelocity() {
-  return Vec3f();
-}
 
-Rotation H3DFakeHapticsDevice::getOrientation() {
-  // deviceOrientation is thread safe so we can use getValue()
-  return set_deviceOrientation->getValue();
-}
-
-bool H3DFakeHapticsDevice::getButtonStatus() {
-  // mainButton is thread safe so we can use getValue()
-  return set_mainButton->getValue();
-}
 
 
 

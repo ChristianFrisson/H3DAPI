@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,12 +29,12 @@
 #ifndef __TRIANGLEFANSET_H__
 #define __TRIANGLEFANSET_H__
 
-#include "X3DComposedGeometryNode.h"
-#include "DependentNodeFields.h"
-#include "X3DCoordinateNode.h"
-#include "X3DColorNode.h"
-#include "CoordBoundField.h"
-#include "MFInt32.h"
+#include <X3DComposedGeometryNode.h>
+#include <DependentNodeFields.h>
+#include <X3DCoordinateNode.h>
+#include <X3DColorNode.h>
+#include <CoordBoundField.h>
+#include <MFInt32.h>
 
 namespace H3D {
 
@@ -154,18 +154,25 @@ namespace H3D {
                     Inst< SFBool           > _colorPerVertex  = 0,
                     Inst< SFBool           > _normalPerVertex = 0,
                     Inst< SFBool           > _solid           = 0,
-		    Inst< MFVertexAttributeNode > _attrib     = 0,
+		                Inst< MFVertexAttributeNode > _attrib     = 0,
                     Inst< AutoNormal       > _autoNormal      = 0,
-                    Inst< MFInt32          > _fanCount      = 0 );
+                    Inst< MFInt32          > _fanCount        = 0,
+                    Inst< SFFogCoordinate  > _fogCoord        =0);
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
 
     /// Renders the TriangleFanSet with OpenGL.
     virtual void render();
+
+    /// An upper bound of the number of triangles renderered in this geometry.
+    virtual int nrTriangles() {
+      X3DCoordinateNode *coord_node = coord->getValue();
+      if( coord_node ) 
+        return coord_node->nrAvailableCoords();
+      else return 0;
+    }
 
     /// Auto-generated normals that are used if the normal field is NULL.
     /// Only accessable in C++.

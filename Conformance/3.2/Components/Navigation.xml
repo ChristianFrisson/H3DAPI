@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Navigation">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="NavigationInfo">
+      <avatarSize support="optional"/>
+      <speed support="optional"/>
+      <type support="partial"/>
+      <visibilityLimit support="optional"/>
+    </Node>
+    <Node name="Viewpoint">
+      <fieldOfView support="optional"/>
+      <description support="optional"/>
+      <retainUserOffsets support="optional"/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Environmental_sensor  level="2"/>
+    </Prerequisites>
+    <Node name="Billboard">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Collision">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="LOD">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NavigationInfo">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Viewpoint">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Environmental_sensor  level="2"/>
+    </Prerequisites>
+    <Node name="OrthoViewpoint">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ViewpointGroup">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+</Component>

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "PositionInterpolator.h"
+#include <PositionInterpolator.h>
 
 using namespace H3D;
 
@@ -74,11 +74,11 @@ void PositionInterpolator::SFValue::update() {
   H3DFloat weight;
   int key_index = interpolator->lookupKey( fraction, 
                                            weight );
-  if( key_size > 0 && key_index >= 0 ) {
+  if( key_index >= 0 && key_index + 1 < (int)key_values.size() ) {
     if (weight<=0) 
-      value = key_values.front();
+      value = key_values[key_index];
     else if (weight>=1)
-      value = key_values.back();
+      value = key_values[key_index+1];
     else {
       Vec3f a = key_values[ key_index ];
       Vec3f b = key_values[ key_index+1 ];

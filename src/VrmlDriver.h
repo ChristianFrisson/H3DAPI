@@ -2,11 +2,11 @@
 #define __VRMLDRIVER__H__
 
 #include <string>
-#include "Group.h"
-#include "DEFNodes.h"
-#include "FlexLexer.h"
-#include "ProtoDeclaration.h"
-#include "PrototypeVector.h"
+#include <Group.h>
+#include <DEFNodes.h>
+#include <FlexLexer.h>
+#include <ProtoDeclaration.h>
+#include <PrototypeVector.h>
 
 using namespace std;
 

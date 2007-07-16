@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="DIS">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="3"/>
+      <Networking level="3"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+      <Geometry3D level="1"/>
+      <Interpolation level="1"/>
+      <PointingDeviceSensor level="1"/>
+      <Navigation level="1"/>
+    </Prerequisites>
+    <Node name="EspduTransform">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ReceiverPDU">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SignalPDU">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TransmitterPDU">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Time level="1"/>
+      <Grouping level="3"/>
+      <Networking level="3"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+      <Geometry3D level="1"/>
+      <Interpolation level="1"/>
+      <PointingDeviceSensor level="1"/>
+      <Navigation level="1"/>
+    </Prerequisites>
+    <Node name="DISEntityManager">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DISEntityTypeMapping">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+</Component>

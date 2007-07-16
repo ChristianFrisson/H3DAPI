@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,10 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Polyline2D.h"
-#ifdef USE_HAPTICS
-#include "HLFeedbackShape.h"
-#endif
+#include <Polyline2D.h>
+#include <HLFeedbackShape.h>
 
 using namespace H3D;
 
@@ -76,13 +74,4 @@ void Polyline2D::render() {
   glEnd();
 }
 
-#ifdef USE_HAPTICS
-void Polyline2D::traverseSG( TraverseInfo &ti ) {
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 lineSegments->size() ) );
-  }
-}
-#endif
+

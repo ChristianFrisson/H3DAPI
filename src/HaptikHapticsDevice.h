@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,9 @@
 #ifndef __HAPTIKHAPTICSDEVICE_H__
 #define __HAPTIKHAPTICSDEVICE_H__
 
-#include "H3DThreadedHapticsDevice.h"
-#include "MFString.h"
+#include <H3DHapticsDevice.h>
+#include <MFString.h>
+#include <PeriodicUpdate.h>
 #ifdef HAVE_HAPTIK
 #include <RSLib/Haptik.hpp>
 #endif 
@@ -71,7 +72,7 @@ namespace H3D {
   /// 
   /// \par Internal routes:
   /// \dotfile HaptikHapticsDevice.dot
-  class H3DAPI_API HaptikHapticsDevice: public H3DThreadedHapticsDevice {
+  class H3DAPI_API HaptikHapticsDevice: public H3DHapticsDevice {
   public:
 
     /// The SelectDevice field changes the haptics device to use depending
@@ -87,23 +88,25 @@ namespace H3D {
 
     /// Constructor.
     HaptikHapticsDevice( 
-            Inst< ThreadSafeSField< SFVec3f > > _devicePosition = 0,
-            Inst< ThreadSafeSField< SFRotation > > _deviceOrientation   = 0,
-            Inst< TrackerPosition > _trackerPosition        = 0,
-            Inst< TrackerOrientation > _trackerOrientation  = 0,
-            Inst< PosCalibration  > _positionCalibration    = 0,
-            Inst< OrnCalibration  > _orientationCalibration = 0,
-            Inst< SFVec3f         > _proxyPosition          = 0,
-            Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
-            Inst< SFFloat         > _proxyWeighting         = 0,
-            Inst< ThreadSafeSField< SFBool > > _main_button = 0,
-            Inst< ThreadSafeSField< SFVec3f > > _force      = 0,
-            Inst< ThreadSafeSField< SFVec3f > > _torque     = 0,
-            Inst< SFInt32         > _inputDOF               = 0,
-            Inst< SFInt32         > _outputDOF              = 0,
-            Inst< SFInt32         > _hapticsRate            = 0,
-            Inst< SFNode          > _stylus                 = 0,
-            Inst< SFBool          > _initialized            = 0,
+            Inst< SFVec3f            > _devicePosition         = 0,
+            Inst< SFRotation         > _deviceOrientation      = 0,
+            Inst< TrackerPosition    > _trackerPosition        = 0,
+            Inst< TrackerOrientation > _trackerOrientation     = 0,
+            Inst< PosCalibration     > _positionCalibration    = 0,
+            Inst< OrnCalibration     > _orientationCalibration = 0,
+            Inst< SFVec3f            > _proxyPosition          = 0,
+            Inst< WeightedProxy      > _weightedProxyPosition  = 0,     
+            Inst< SFFloat            > _proxyWeighting         = 0,
+            Inst< MainButton         > _main_button            = 0,
+            Inst< SecondaryButton    > _secondary_button       = 0,
+            Inst< SFInt32            > _buttons                = 0,
+            Inst< SFVec3f            > _force                  = 0,
+            Inst< SFVec3f            > _torque                 = 0,
+            Inst< SFInt32            > _inputDOF               = 0,
+            Inst< SFInt32            > _outputDOF              = 0,
+            Inst< SFInt32            > _hapticsRate            = 0,
+            Inst< SFNode             > _stylus                 = 0,
+            Inst< SFFloat            > _proxyRadius            = 0,
             Inst< MFString        > _deviceName             = 0,
             Inst< MFString        > _modelName              = 0,     
             Inst< MFString        > _manufacturer           = 0,
@@ -111,31 +114,13 @@ namespace H3D {
             Inst< SFInt32         > _set_selectedDevice     = 0,
             Inst< SFString        > _preferredDeviceType    = 0 );
     
+    /// Creates a HaptikHapticsDevice in the hapi_device.
+    virtual void initialize();
+
     /// Destructor. Stops haptics rendering and remove callback functions.
     virtual ~HaptikHapticsDevice() {
       disableDevice();
-      if( thread ) {
-        delete thread;
-        thread = NULL;
-      }
-      
-#ifdef HAVE_HAPTIK
-      if( haptik_device ) {
-        RSLib::IHaptikDeviceInterface t = haptik_device;
-        haptik_device = NULL;
-        t->Release();
-      }
-#endif
     }
-
-    /// Does all the initialization needed for the device before starting to
-    /// use it.
-    virtual void initDevice();
-
-    /// Perform cleanup and let go of all device resources that are allocated.
-    /// After a call to this function no haptic rendering can be performed on
-    /// the device until the initDevice() function has been called again.
-    virtual void disableDevice();
 
     /// The deviceName field contains the name of each haptics device that is 
     /// available.
@@ -201,30 +186,6 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-    /// Get the position of the haptics device. Only to be called in the 
-    /// haptics loop.
-    virtual Vec3f getPosition();
-
-    /// Get the velocity of the haptics device. Only to be called in the 
-    /// haptics loop.
-    virtual Vec3f getVelocity();
-
-    /// Get the orientation of the haptics device. Only to be called in the 
-    /// haptics loop.
-    virtual Rotation getOrientation();
-
-    /// Get the button status of the haptics device. Only to be called in the 
-    /// haptics loop.
-    virtual bool getButtonStatus();
-
-    /// Send the force to render on the haptics device. Only to be called in the 
-    /// haptics loop.
-    virtual void sendForce( const Vec3f &f );
-
-    /// Send the torque to render on the haptics device. Only to be called in the 
-    /// haptics loop.
-    virtual void sendTorque( const Vec3f &f );
-
     /// Change the used Haptik device to the one with the given id.
     virtual void changeHaptikDevice( unsigned int new_id );
 

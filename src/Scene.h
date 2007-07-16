@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,11 @@
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
-#include "X3DChildNode.h"
-#include "H3DWindowNode.h"
+#include <X3DChildNode.h>
+#include <H3DWindowNode.h>
+
+// HAPI includes
+#include <Threads.h>
 
 namespace H3D {
 
@@ -56,6 +59,11 @@ namespace H3D {
     /// Destructor.
     ~Scene();
 
+    /// Returns the TraverseInfo from the previous sceneRoot traversal.
+    inline TraverseInfo * getLastTraverseInfo() {
+      return last_traverseinfo;
+    }
+
     /// Set whether this Scene instance should be active or not. If
     /// a Scene is not active it will not be rendered at all. 
     void setActive( bool _active ) {
@@ -75,6 +83,10 @@ namespace H3D {
     /// Before this function is called at least one instance
     /// of Scene must have created and be active. 
     static void mainLoop();
+
+    /// Static function to replace a scene with another scene
+    static void replaceWorld( AutoRef< Node > new_world,
+                              X3DViewpointNode * new_vp );
     
     /// The scene graph to render in this scene.
     ///
@@ -94,7 +106,8 @@ namespace H3D {
     /// Current time within the simulation, updated during each graphic loop.
     ///
     /// <b>Access type: </b> outputOnly
-    static SFTime *time;
+    static auto_ptr< SFTime > time;
+    //static SFTime *time;
   
     /// All instances of Scene that has been created.
     static set< Scene* > scenes;
@@ -102,7 +115,32 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    /// Return code for callback functions. 
+    typedef enum {
+      /// The callback is done and should not be called any more.
+      CALLBACK_DONE,
+      /// The callback should be rescheduled and called the next loop 
+      /// again.
+      CALLBACK_CONTINUE
+    } CallbackCode;
+
+    /// Callback function type.
+    typedef CallbackCode (*CallbackFunc)(void *data); 
+
+    static void addCallback( CallbackFunc func, void *data ) {
+      callback_lock.lock();
+      callbacks.push_back( make_pair( func, data ) );
+      callback_lock.unlock();
+    }
+
+    
   protected:
+    static H3DUtil::MutexLock callback_lock;
+
+    typedef std::list< std::pair< CallbackFunc, void * > > CallbackList;
+    // A list of the callback functions to run.
+    static CallbackList callbacks;
+    
     /// The EventSink class makes all fields up-to-date what are routed 
     /// to it, with the exception of PeriodicUpdateFields. These are
     /// only updated when the timeToUpdate() function returs true.
@@ -110,22 +148,24 @@ namespace H3D {
     public:
       /// Constructor.
       EventSink() {
-        setName( "Scene::eventSink" );
+        setName( "Scene::eventSink" ); 
       }
+      ~EventSink(){
+    }  
     protected:
       virtual void update();
     };
+   
   public:
-    static EventSink *eventSink;
+    static auto_ptr<EventSink> eventSink;
+    //static EventSink *eventSink;
 
   private:
     bool active;
     // the time of the start of the last loop.
     TimeStamp last_time;
-#ifdef USE_HAPTICS
     // the TraverseInfo instance from the previous scenegraph loop.
     TraverseInfo *last_traverseinfo;
-#endif
   };
 }
 

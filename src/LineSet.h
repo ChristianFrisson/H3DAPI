@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,12 +29,13 @@
 #ifndef __LINESET_H__
 #define __LINESET_H__
 
-#include "X3DGeometryNode.h"
-#include "DependentNodeFields.h"
-#include "X3DCoordinateNode.h"
-#include "X3DColorNode.h"
-#include "CoordBoundField.h"
-#include "MFInt32.h"
+#include <X3DGeometryNode.h>
+#include <DependentNodeFields.h>
+#include <X3DCoordinateNode.h>
+#include <X3DColorNode.h>
+#include <CoordBoundField.h>
+#include <MFInt32.h>
+#include <FogCoordinate.h>
 
 namespace H3D {
 
@@ -84,6 +85,15 @@ namespace H3D {
                                        &X3DColorNode::propertyChanged > > 
     SFColorNode;
 
+    /// The SFFogCoordinate is dependent on the propertyChanged
+    /// field of the contained FogCoordinate.
+    typedef DependentSFNode< 
+                FogCoordinate,
+                FieldRef< X3DGeometricPropertyNode,
+                          Field,
+                          &FogCoordinate::propertyChanged > > 
+    SFFogCoordinate; 
+
     /// The bound field for LineSet is a CoordBoundField.
     typedef CoordBoundField SFBound;
 
@@ -93,13 +103,18 @@ namespace H3D {
              Inst< DisplayList      > _displayList    = 0,
              Inst< SFColorNode      > _color          = 0,
              Inst< SFCoordinateNode > _coord          = 0,
-             Inst< MFInt32          > _vertexCount    = 0 );
+             Inst< MFInt32          > _vertexCount    = 0,
+             Inst< SFFogCoordinate  > _fogCoord       = 0 );
 
-#ifdef USE_HAPTICS
-		/// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
-    virtual void traverseSG( TraverseInfo &ti ); 
-#endif
+    /// The number of lines rendered by this geometry.
+    virtual int nrLines() {
+      X3DCoordinateNode *coord_node = coord->getValue();
+      if( coord_node ) {
+        unsigned int size = coord_node->nrAvailableCoords();
+        if( size > 1 )return size - 1;
+      }
+      return 0;
+    }
 
     /// Render the LineSet with OpenGL
     virtual void render();
@@ -131,6 +146,14 @@ namespace H3D {
     ///
     /// \dotfile LineSet_coord.dot 
     auto_ptr< MFInt32 >  vertexCount;
+    
+    /// If the fogCoord field is not empty, it shall contain a list 
+    /// of per-vertex depth values for calculating fog depth.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile FogCoordinate_fogCoord.dot 
+    auto_ptr< SFFogCoordinate > fogCoord;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

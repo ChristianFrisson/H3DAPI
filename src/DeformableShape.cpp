@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "DeformableShape.h"
-#include "Coordinate.h"
-#ifdef USE_HAPTICS
-#include "H3DHapticsDevice.h"
-#endif
+#include <DeformableShape.h>
+#include <Coordinate.h>
+#include <H3DHapticsDevice.h>
 
 using namespace H3D;
 
@@ -77,7 +75,6 @@ DeformableShape::DeformableShape(
   deformedCoord->setValue( new Coordinate, id );
 }
 
-#ifdef USE_HAPTICS
 void DeformableShape::traverseSG( TraverseInfo &ti ) {
   X3DShapeNode::traverseSG( ti );
   X3DComposedGeometryNode *graphics_geom = dynamic_cast< X3DComposedGeometryNode * >( geometry->getValue() );
@@ -136,5 +133,4 @@ void DeformableShape::traverseSG( TraverseInfo &ti ) {
     }
   }
 }
-#endif
 

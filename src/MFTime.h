@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,8 +27,8 @@
 #ifndef __MFTIME_H__
 #define __MFTIME_H__
 
-#include "MField.h"
-#include "MFDouble.h"
+#include <MField.h>
+#include <MFDouble.h>
 
 namespace H3D {
 

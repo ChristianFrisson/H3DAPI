@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __POLYPOINT2D_H__
 #define __POLYPOINT2D_H__
 
-#include "X3DGeometryNode.h"
-#include "MFVec2f.h"
+#include <X3DGeometryNode.h>
+#include <MFVec2f.h>
 
 namespace H3D {
 
@@ -78,11 +78,10 @@ namespace H3D {
     /// Renders the Polypoint2D using OpenGL.
     virtual void render();
 
-#ifdef USE_HAPTICS
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
-    virtual void traverseSG( TraverseInfo &ti );  
-#endif
+    /// The number of points rendered by this geometry.
+    virtual int nrPoints() {
+      return point->size();
+    }
 
     /// The point field specifies the vertices to be displayed.
     ///

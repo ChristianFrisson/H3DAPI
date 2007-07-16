@@ -1,7 +1,7 @@
 
 %{
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,7 +31,7 @@
 //  uncompressed lookup table and opt for speed over size.
 //
 
-#include "VrmlDriver.h"
+#include <VrmlDriver.h>
 #include "vrml.hpp"
 #define YYLMAX 65535
 %}

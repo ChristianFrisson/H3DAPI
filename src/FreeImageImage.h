@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __FREEIMAGEIMAGE_H__
 #define __FREEIMAGEIMAGE_H__
 
-#include "H3DApi.h"
-#include "Image.h"
-#include "Exception.h"
+#include <H3DApi.h>
+#include <Image.h>
+#include <Exception.h>
 
 #ifdef HAVE_FREEIMAGE
 #if defined(_MSC_VER) || defined(__BORLANDC__)
@@ -58,7 +58,14 @@ namespace H3D {
     /// \param _bitmap The FreeImage bitmap we want to encapsulate.
     ///
     FreeImageImage( FIBITMAP *_bitmap ):
-      bitmap( _bitmap ){}
+      bitmap( _bitmap ){
+      byte_alignment = 4;
+    }
+
+    /// Destructor.
+    ~FreeImageImage() {
+      if( bitmap ) FreeImage_Unload( bitmap );
+    }
 
     /// Returns the width of the image in pixels.
     virtual unsigned int width() {
@@ -120,7 +127,7 @@ namespace H3D {
     }
 
   protected:
-    FIBITMAP *bitmap;
+    FIBITMAP * bitmap;
   };
 
     

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __X3DNURBSCONTROLCURVENODE_H__
 #define __X3DNURBSCONTROLCURVENODE_H__
 
-#include "X3DNode.h"
-#include "MFVec2d.h"
+#include <X3DNode.h>
+#include <MFVec2d.h>
 
 namespace H3D {
 

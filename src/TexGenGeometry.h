@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __TEXGENGEOMETRY_H__
 #define __TEXGENGEOMETRY_H__
 
-#include "X3DGeometryNode.h"
-#include "TextureCoordinateGenerator.h"
-#include "DependentNodeFields.h"
+#include <X3DGeometryNode.h>
+#include <TextureCoordinateGenerator.h>
+#include <DependentNodeFields.h>
 
 namespace H3D {
 
@@ -105,10 +105,15 @@ namespace H3D {
     /// Starts texture coord generation and renders the geometry.
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
+
+    /// The number of triangles renderered in this geometry.
+    virtual int nrTriangles() {
+      X3DGeometryNode *g = geometry->getValue();
+      if( g ) return g->nrTriangles();
+      else return 0;
+    }
 
     /// The geometry field contains the X3DGeometryNode that we want to 
     /// generate texture coordinates for.

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ShaderPart.h"
+#include <ShaderPart.h>
+#include "ResourceResolver.h"
 #include <fstream>
 
 using namespace H3D;
@@ -60,6 +61,7 @@ ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
   shaderString->setOwner( this );
   shaderString->setName( "shaderString" );
 
+  addInlinePrefix( "glsl" );
   
   type->setValue( "VERTEX", id );
   url->route( shaderString );
@@ -124,7 +126,8 @@ void ShaderPart::SFShaderString::update() {
   ShaderPart *shader_part = static_cast< ShaderPart * >( getOwner() ); 
   MFString *urls = static_cast< MFString * >( routes_in[0] );
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-    string url = shader_part->resolveURLAsFile( *i );
+    bool is_tmp_file;
+    string url = shader_part->resolveURLAsFile( *i, &is_tmp_file );
     if( url != "" ) {
       ifstream is( url.c_str() );
       if( is.good() ) {
@@ -148,7 +151,8 @@ void ShaderPart::SFShaderString::update() {
         return;
       }
       is.close();
-    }
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+     }
   }
   Console(4) << "None of the urls in ShaderPart with url [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  

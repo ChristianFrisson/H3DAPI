@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,14 +28,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DShaderNode.h"
+#include <X3DShaderNode.h>
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase X3DShaderNode::database( 
                                    "X3DShaderNode", 
-                                   &(newInstance<X3DShaderNode>), 
+                                   NULL, 
                                    typeid( X3DShaderNode ),
                                    &X3DAppearanceChildNode::database );
 

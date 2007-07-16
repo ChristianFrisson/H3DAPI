@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "MultiTextureCoordinate.h"
+#include <MultiTextureCoordinate.h>
 
 using namespace H3D;
 
@@ -53,88 +53,36 @@ MultiTextureCoordinate::MultiTextureCoordinate(
   database.initFields( this );
 }
 
-void MultiTextureCoordinate::renderForTextureUnits( int index,
-                                                    unsigned int start_unit,
-                                                    unsigned int end_unit ) {
-  
-  // the maximum index that can be used in texCoord for rendering
-  unsigned int max_index = texCoord->size() - 1;
-
-  if( end_unit > max_index ) {
-    unsigned int start_index =  start_unit + end_unit - max_index;
-    X3DTextureCoordinateNode *tt = 
-      static_cast< X3DTextureCoordinateNode * >( texCoord->back() );
-    if( tt ) tt->renderForTextureUnits( index,
-                                        start_index,
-                                        end_unit );
-    end_unit = start_index - 1; 
-  }
-  
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
-    X3DTextureCoordinateNode *tt = texCoord->getValueByIndex( i );
-    if( tt ) tt->renderForTextureUnit( index, i );
-  }	  
-}
-
 void MultiTextureCoordinate::renderForTextureUnit( int index,
                                                    unsigned int texture_unit ) {
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return;
+
+  unsigned int i = H3DMin( nr_nodes - 1, texture_unit );
   X3DTextureCoordinateNode *tc = 
-    texCoord->getValueByIndex( texture_unit );
+    texCoord->getValueByIndex( i );
   if( tc ) tc->renderForTextureUnit( index, texture_unit );
 }
 
 void MultiTextureCoordinate::renderArrayForTextureUnit( unsigned int texture_unit ){
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return;
+
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
   X3DTextureCoordinateNode *tc = 
-    texCoord->getValueByIndex( texture_unit );
+    texCoord->getValueByIndex( index );
   if( tc ) tc->renderArrayForTextureUnit( texture_unit );
 }
 
-void MultiTextureCoordinate::renderArrayForTextureUnits( unsigned int start_unit,
-                                                         unsigned int end_unit ) {
-  
-  // the maximum index that can be used in texCoord for rendering
-  unsigned int max_index = texCoord->size() - 1;
-
-  if( end_unit > max_index ) {
-    unsigned int start_index =  start_unit + end_unit - max_index;
-    X3DTextureCoordinateNode *tc = 
-      static_cast< X3DTextureCoordinateNode * >( texCoord->back() );
-    if( tc ) tc->renderArrayForTextureUnits( start_unit,
-                                             end_unit );
-    end_unit = start_index - 1; 
-  }
-  
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
-    X3DTextureCoordinateNode *tc = texCoord->getValueByIndex( i );
-    if( tc ) tc->renderArrayForTextureUnit( i );
-  }	  
-}
 
 void MultiTextureCoordinate::disableArrayForTextureUnit( unsigned int texture_unit ){
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return;
+
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
   X3DTextureCoordinateNode *tc = 
-    texCoord->getValueByIndex( texture_unit );
+    texCoord->getValueByIndex( index );
   if( tc ) tc->disableArrayForTextureUnit( texture_unit );
-}
-
-void MultiTextureCoordinate::disableArrayForTextureUnits( unsigned int start_unit,
-                                                          unsigned int end_unit ) {
-  
-  // the maximum index that can be used in texCoord for disableing
-  unsigned int max_index = texCoord->size() - 1;
-
-  if( end_unit > max_index ) {
-    unsigned int start_index =  start_unit + end_unit - max_index;
-    X3DTextureCoordinateNode *tt = 
-      static_cast< X3DTextureCoordinateNode * >( texCoord->back() );
-    if( tt ) tt->disableArrayForTextureUnits( start_unit,
-                                              end_unit );
-    end_unit = start_index - 1; 
-  }
-  
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
-    X3DTextureCoordinateNode *tt = texCoord->getValueByIndex( i );
-    if( tt ) tt->disableArrayForTextureUnit( i );
-  }	  
 }
 
 void MultiTextureCoordinate::render( int index ) {
@@ -146,16 +94,19 @@ void MultiTextureCoordinate::render( int index ) {
 }
 
 unsigned int MultiTextureCoordinate::nrAvailableTexCoords() {
-  MFTextureCoordinateNode::const_iterator i = texCoord->begin();
-  if( i == texCoord->end() ) return 0;
-  unsigned int available_coords = 
-    static_cast< X3DTextureCoordinateNode * >(*i)->nrAvailableTexCoords();
-  i++;
-  for( ;
+  unsigned int available_coords = -1;
+
+  for( MFTextureCoordinateNode::const_iterator i = texCoord->begin();
        i != texCoord->end();
        i++ ) {
-    available_coords = 
-      H3DMin( available_coords, static_cast< X3DTextureCoordinateNode * >(*i)->nrAvailableTexCoords() );
+    X3DTextureCoordinateNode *tc = static_cast< X3DTextureCoordinateNode * >(*i);
+    
+    if( tc->supportsExplicitTexCoords() ) { 
+      unsigned int nr_coords = tc->nrAvailableTexCoords();
+      if( available_coords == -1 ) available_coords = nr_coords;
+      else available_coords = 
+             H3DMin( available_coords, nr_coords );
+    }
   }
   return available_coords;
 }
@@ -168,3 +119,61 @@ void MultiTextureCoordinate::renderArray() {
   throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
 }
 
+bool MultiTextureCoordinate::supportsExplicitTexCoords() {
+
+  for( MFTextureCoordinateNode::const_iterator i = texCoord->begin();
+       i != texCoord->end();
+       i++ ) {
+    X3DTextureCoordinateNode *tc = static_cast< X3DTextureCoordinateNode * >(*i);
+    if( tc->supportsExplicitTexCoords() ) return true;
+  }
+  return false;
+}
+
+bool MultiTextureCoordinate::supportsTexGen() {
+
+  for( MFTextureCoordinateNode::const_iterator i = texCoord->begin();
+       i != texCoord->end();
+       i++ ) {
+    X3DTextureCoordinateNode *tc = static_cast< X3DTextureCoordinateNode * >(*i);
+    if( tc->supportsTexGen() ) return true;
+  }
+  return false;
+}
+
+
+void MultiTextureCoordinate::startTexGenForTextureUnit( unsigned int texture_unit ){
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return;
+
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
+  X3DTextureCoordinateNode *tc = 
+    texCoord->getValueByIndex( index );
+  if( tc ) tc->startTexGenForTextureUnit( texture_unit );
+}
+
+void MultiTextureCoordinate::stopTexGenForTextureUnit( unsigned int texture_unit ){
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return;
+
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
+  X3DTextureCoordinateNode *tc = 
+    texCoord->getValueByIndex( index );
+  if( tc ) tc->stopTexGenForTextureUnit( texture_unit );
+}
+
+void MultiTextureCoordinate::startTexGen() {
+  stringstream s;
+  s << "Cannot use startTexGen() function in MultiTextureCoordinate. Use "
+    << "startTexGenForTextureUnit() instead to specify which texture "
+    << "unit to render for. ";
+  throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
+}
+
+void MultiTextureCoordinate::stopTexGen() {
+  stringstream s;
+  s << "Cannot use stopTexGen() function in MultiTextureCoordinate. Use "
+    << "stopTexGenForTextureUnit() instead to specify which texture "
+    << "unit to render for. ";
+  throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
+}

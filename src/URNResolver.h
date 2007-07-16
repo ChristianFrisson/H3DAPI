@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __URNRESOLVER_H__
 #define __URNRESOLVER_H__
 
-#include "H3DApi.h"
+#include <H3DApi.h>
 #include <map>
 #include <fstream>
 #include <iostream>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="H-Anim">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Geometry3D level="2"/>
+      <Geometry2D level="2"/>
+      <Shape level="1"/>
+      <Texturing level="1"/>
+      <Navigation level="2"/>
+    </Prerequisites>
+    <Node name="HAnimDisplacer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="HAnimHumanoid">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="HAnimJoint">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="HAnimSegment">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="HAnimSite">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+</Component>

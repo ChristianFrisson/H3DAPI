@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,9 +31,9 @@
 #define __COLORINTERPOLATOR_H__
 
 
-#include "X3DInterpolatorNode.h"
-#include "SFColor.h"
-#include "MFColor.h"
+#include <X3DInterpolatorNode.h>
+#include <SFColor.h>
+#include <MFColor.h>
 
 namespace H3D {
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "SpaceWareSensor.h"
+
+#include <SpaceWareSensor.h>
 
 #ifdef WIN32
 
@@ -45,7 +46,6 @@ extern "C" {
 #include <siapp.h>
   extern  SpwRetVal SpwErrorVal;
 }
-#endif // HAVE_3DXWARE
 
 #include <process.h>
 
@@ -59,11 +59,13 @@ extern "C" {
 #include <X11/keysym.h>
 #define IBM
 extern "C" {
-#include "xdrvlib.h"
+#include <xdrvlib.h>
 }
 #endif // __linux
+#endif // HAVE_3DXWARE
 
 using namespace H3D;
+SpaceWareSensor * SpaceWareSensor::sws_instance = 0;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase SpaceWareSensor::database( 
@@ -94,6 +96,9 @@ namespace SpaceWareSensorInternal {
   FIELDDB_ELEMENT( SpaceWareSensor, buttons, OUTPUT_ONLY );
   FIELDDB_ELEMENT( SpaceWareSensor, latestButtonPress, OUTPUT_ONLY );
   FIELDDB_ELEMENT( SpaceWareSensor, latestButtonRelease, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( SpaceWareSensor, accumulateTimeDependent, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( SpaceWareSensor, resetAccumulatedTranslation, INPUT_ONLY );
+  FIELDDB_ELEMENT( SpaceWareSensor, resetAccumulatedRotation, INPUT_ONLY );
 
   H3D_API_EXCEPTION( CouldNotInitSpaceWare );
   H3D_API_EXCEPTION( CreateWindowError );
@@ -445,7 +450,10 @@ SpaceWareSensor::SpaceWareSensor(
               Inst< SFFloat               > _rotationScale,
               Inst< SFInt32               > _buttons,
               Inst< SFInt32               > _latestButtonPress,
-              Inst< SFInt32               > _latestButtonRelease ) :
+              Inst< SFInt32               > _latestButtonRelease,
+              Inst< SFBool                > _accumulateTimeDependent,
+     Inst< ResetAccumulatedTranslation > _resetAccumulatedTranslation,
+     Inst< ResetAccumulatedRotation > _resetAccumulatedRotation ) :
   X3DSensorNode( _enabled, _metadata, _isActive ),
   rawTranslation( _rawTranslation ),
   rawYaw( _rawYaw ),
@@ -467,6 +475,9 @@ SpaceWareSensor::SpaceWareSensor(
   buttons( _buttons ),
   latestButtonPress( _latestButtonPress ),
   latestButtonRelease( _latestButtonRelease ),
+  accumulateTimeDependent( _accumulateTimeDependent ),
+  resetAccumulatedTranslation( _resetAccumulatedTranslation ),
+  resetAccumulatedRotation(_resetAccumulatedRotation ),
   thread_motion_event( false ) {
 
   type_name = "SpaceWareSensor";
@@ -485,6 +496,11 @@ SpaceWareSensor::SpaceWareSensor(
   buttons->setValue( 0, id  );
   latestButtonPress->setValue( 0, id  );
   latestButtonRelease->setValue( 0, id  );
+
+  accumulateTimeDependent->setValue( true );
+
+  resetAccumulatedTranslation->setValue( Vec3f(), id );
+  resetAccumulatedRotation->setValue( Rotation(), id );
 
   rawTranslation->route( instantTranslation, id  );
   translationScale->route( instantTranslation, id  );
@@ -508,7 +524,7 @@ SpaceWareSensor::SpaceWareSensor(
 
 #ifdef HAVE_3DXWARE
   thread_handle.reset( 
-     new SimpleThread( SpaceWareSensorInternal::spaceWareThread, 
+    new H3DUtil::SimpleThread( SpaceWareSensorInternal::spaceWareThread, 
                        this ) );
 #endif 
 
@@ -521,9 +537,10 @@ SpaceWareSensor::SpaceWareSensor(
              << endl;
 #endif
 #endif
+  if( !sws_instance )
+    sws_instance = this;
 }
 
-#ifdef USE_HAPTICS
 void SpaceWareSensor::traverseSG( TraverseInfo &ti ) {
   using namespace SpaceWareSensorInternal;
   // TODO: lock
@@ -573,4 +590,5 @@ void SpaceWareSensor::traverseSG( TraverseInfo &ti ) {
     }
   }
 }
-#endif
+
+

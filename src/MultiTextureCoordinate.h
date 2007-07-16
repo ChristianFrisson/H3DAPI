@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __MULTITEXTURECOORDINATE_H__
 #define __MULTITEXTURECOORDINATE_H__
 
-#include "X3DTextureCoordinateNode.h"
-#include "MFNode.h"
+#include <X3DTextureCoordinateNode.h>
+#include <MFNode.h>
 
 namespace H3D {
 
@@ -77,6 +77,14 @@ namespace H3D {
     MultiTextureCoordinate( Inst< SFNode                  > _metadata = 0,
                             Inst< MFTextureCoordinateNode > _texCoord = 0 );
 
+    /// Returns true if any of the nodes in the texCoord field supports
+    /// explicit coordinates
+    virtual bool supportsExplicitTexCoords();
+
+    /// Returns true if any of the nodes in the texCoord field supports
+    /// texture coordinate generation
+    virtual bool supportsTexGen();
+
     /// This function all is not allowed. Use renderForTextureUnit() or 
     /// renderForTextureUnits() instead. Call will raise an exception.
     virtual void render( int index );
@@ -85,12 +93,6 @@ namespace H3D {
     virtual void renderForTextureUnit( int index,
                                        unsigned int texture_unit );
     
-    /// Render the texture transform for the texture units between and
-    /// inluding start_unit and end_unit.
-    virtual void renderForTextureUnits( int index,
-                                        unsigned int start_unit,
-                                        unsigned int end_unit );
-
     /// Returns the number of texture coordinates this node can render.
     virtual unsigned int nrAvailableTexCoords();
 
@@ -102,18 +104,21 @@ namespace H3D {
     /// an array for the given texture unit.
     virtual void renderArrayForTextureUnit( unsigned int texture_unit );
     
-    /// Perform the OpenGL commands to render all texture coordinates as 
-    /// an array for the texture units between and
-    /// inluding start_unit and end_unit.
-    virtual void renderArrayForTextureUnits( unsigned int start_unit,
-                                             unsigned int end_unit );
-
     /// Disable the array state enabled in renderArrayForTextureUnit().
     virtual void disableArrayForTextureUnit( unsigned int texture_unit );
 
-    /// Disable the array state enabled in renderArrayForTextureUnits().
-    virtual void disableArrayForTextureUnits( unsigned int start_unit,
-                                              unsigned int end_unit );
+    /// Start hardware texture coordinate generation. 
+    virtual void startTexGen();
+
+    /// Start hardware texture coordinate generation. 
+    virtual void stopTexGen();
+
+    /// Start hardware texture coordinate generation for the given texture
+    /// unit.
+    virtual void startTexGenForTextureUnit( unsigned int texture_unit);
+
+    /// Stop the texture coordinate generation started with startTexGen().
+    virtual void stopTexGenForTextureUnit( unsigned int texture_unit );
 
     /// The X3DTextureCoordinate nodes to use for each texture unit.
     /// 

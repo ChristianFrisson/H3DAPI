@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __PERIODIC_UPDATE_H__
 #define __PERIODIC_UPDATE_H__
 
-#include "Scene.h"
+#include <Scene.h>
 
 namespace H3D {
 

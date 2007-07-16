@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Cylinder.h"
+#include <Cylinder.h>
  
 using namespace H3D;
 
@@ -91,7 +91,6 @@ void Cylinder::render() {
   
   const float l_radius = radius->getValue();
   const float l_height = height->getValue();
-  bool is_solid = solid->getValue();
   int nr_faces = 120;
 
   // render side
@@ -127,7 +126,7 @@ void Cylinder::render() {
     }
     glEnd();
   }
-    
+  
   // render bottom
   if ( bottom->getValue() ) {
     glBegin( GL_POLYGON );
@@ -142,23 +141,16 @@ void Cylinder::render() {
     }
     glEnd();
   }
-    
+
 };
 
 
-
-#ifdef USE_HAPTICS
 void Cylinder::traverseSG( TraverseInfo &ti ) {
+  X3DGeometryNode::traverseSG( ti );
   if( solid->getValue() ) {
     useBackFaceCulling( true );
   } else {
     useBackFaceCulling( false );
   }
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll(  getOpenGLHapticShape( ti.getCurrentSurface(),
-                                                   ti.getAccForwardMatrix()));
-#endif
-  }
 }
-#endif
+

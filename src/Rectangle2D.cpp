@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Rectangle2D.h"
+#include <Rectangle2D.h>
 
 using namespace H3D;
 
@@ -91,19 +91,10 @@ void Rectangle2D::render() {
   glEnd();
 }
 
-#ifdef USE_HAPTICS
 void Rectangle2D::traverseSG( TraverseInfo &ti ) {
+  X3DGeometryNode::traverseSG( ti );
   // use backface culling if solid is true
   if( solid->getValue() ) useBackFaceCulling( true );
   else useBackFaceCulling( false );
-
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll( getOpenGLHapticShape( 
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 4 ) );
-#endif
-  }
 }
-#endif
+

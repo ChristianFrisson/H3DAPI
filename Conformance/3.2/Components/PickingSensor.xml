@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="PickingSensor">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="LinePicker">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PickableGroup">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PointPicker">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="PrimitivePicker">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="VolumePicker">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+</Component>

@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,8 +31,8 @@
 #ifndef __H3DNODEDATABSE_H__
 #define __H3DNODEDATABSE_H__
 
-#include "H3DApi.h"
-#include "Field.h"
+#include <H3DApi.h>
+#include <Field.h>
 #include <iostream>
 #include <string>
 #include <map>
@@ -280,6 +280,7 @@ namespace H3D {
     /// instead act as base classes for other nodes.
 	  H3DNodeDatabase( const type_info &_ti,
                      H3DNodeDatabase *_parent = 0 );
+    ~H3DNodeDatabase(void);
     
     /// Search the node database for an entry with a matching type_info structure
     static H3DNodeDatabase *lookupTypeId( const type_info &t );
@@ -303,6 +304,9 @@ namespace H3D {
 	  /// initialise the given Node using the contents of the database - 
     /// initialise field names, field owner pointers and access restrictors.
     void initFields( Node* ) const;
+
+    /// Remove all DynamicFieldDBElements from the database
+    void clearDynamicFields();
     
 	private:
     /// Help function for getField.

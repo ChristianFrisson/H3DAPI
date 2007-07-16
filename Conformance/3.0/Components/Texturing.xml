@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Texturing">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="ImageTexture">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PixelTexture">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TextureCoordinate">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TextureTransform">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="MultiTexture">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MultiTextureCoordinate">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MultiTextureTransform">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TextureCoordinateGenerator">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="MovieTexture">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+</Component>

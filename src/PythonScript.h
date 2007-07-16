@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __PYTHONSCRIPT_H__
 #define __PYTHONSCRIPT_H__
 
-#include "Exception.h"
-#include "H3DScriptNode.h"
-#include "MFNode.h"
+#include <Exception.h>
+#include <H3DScriptNode.h>
+#include <MFNode.h>
 
 #ifdef HAVE_PYTHON
 
@@ -63,11 +63,9 @@ namespace H3D {
     /// the H3DNodeDatabase service.
     virtual Field *lookupField( const string &name );
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. Used in PythonScript to call a function
     /// in python once per scene graph loop.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
     
     virtual void initialiseParser();
 

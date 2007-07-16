@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DTextureNode.h"
+#include <X3DTextureNode.h>
 #include <assert.h>
 
 using namespace H3D;
@@ -36,6 +36,7 @@ using namespace H3D;
 H3D_API_EXCEPTION( UnsupportedPixelComponentType );
 H3D_VALUE_EXCEPTION( Image::PixelType, UnsupportedPixelType );
 
+bool X3DTextureNode::load_images_in_separate_thread = true;
 X3DTextureNode *X3DTextureNode::active_texture = NULL;
 
 GLint X3DTextureNode::glInternalFormat( Image *i ) {

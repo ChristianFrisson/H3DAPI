@@ -13,7 +13,7 @@
                       0.38 0.38 0.8 0.482745 0.482745 0.82745 0.5 0.5 0.8'/> 
 
   <!-- Disable the headlight since we want an overhead light -->
-  <NavigationInfo headlight="FALSE" />
+  <NavigationInfo headlight="FALSE" type="NONE" />
   
   <!-- Position a light overhead, slightly off-centered -->
   <DirectionalLight direction="0.1 -1 0.1" />

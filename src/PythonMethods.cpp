@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,24 +28,22 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "PythonMethods.h"
-#ifdef USE_HAPTICS
-#include "DeviceInfo.h"
-#endif
-#include "Viewpoint.h"
-#include "NavigationInfo.h"
-#include "StereoInfo.h"
-#include "Fog.h"
-#include "GlobalSettings.h"
-#include "X3DSAX2Handlers.h"
-#include "X3DBackgroundNode.h" 
-#include "X3DTypeFunctions.h"
-#include "PythonTypes.h"
-#include "MFNode.h"
-#include "X3D.h"
-#include "VrmlParser.h"
-#include "Scene.h"
-#include "ResourceResolver.h"
+#include <PythonMethods.h>
+#include <DeviceInfo.h>
+#include <X3DViewpointNode.h>
+#include <NavigationInfo.h>
+#include <StereoInfo.h>
+#include <Fog.h>
+#include <GlobalSettings.h>
+#include <X3DSAX2Handlers.h>
+#include <X3DBackgroundNode.h> 
+#include <X3DTypeFunctions.h>
+#include <PythonTypes.h>
+#include <MFNode.h>
+#include <X3D.h>
+#include <VrmlParser.h>
+#include <Scene.h>
+#include <ResourceResolver.h>
 #include <sstream>
 #include <cctype>
 
@@ -500,12 +498,9 @@ if( check_func( value ) ) {                                         \
       { "createVRMLNodeFromString", pythonCreateVRMLNodeFromString, 0 },
       { "getRoutesIn", pythonGetRoutesIn, 0 },
       { "getRoutesOut", pythonGetRoutesOut, 0 },
-      { "getCurrentScenes", pythonGetCurrentScenes, 0 }
-#ifdef USE_HAPTICS
-			,
-      { "getActiveDeviceInfo", pythonGetActiveDeviceInfo, 0 }
-#endif
-			, { "getActiveViewpoint", pythonGetActiveViewpoint, 0 },
+      { "getCurrentScenes", pythonGetCurrentScenes, 0 },
+      { "getActiveDeviceInfo", pythonGetActiveDeviceInfo, 0 },
+      { "getActiveViewpoint", pythonGetActiveViewpoint, 0 },
       { "getActiveNavigationInfo", pythonGetActiveNavigationInfo, 0 },
       { "getActiveFog", pythonGetActiveFog, 0 },
       { "getActiveGlobalSettings", pythonGetActiveGlobalSettings, 0 },
@@ -559,11 +554,13 @@ if( check_func( value ) ) {                                         \
 
       if ( PythonInternals::H3DInterface_dict == NULL )
         PyErr_Print();
-      PyObject *time = (PyObject*)fieldAsPythonObject( Scene::time, false );
+      PyObject *time = (PyObject*)fieldAsPythonObject( Scene::time.get(), false );
+      //PyObject *time = (PyObject*)fieldAsPythonObject( Scene::time, false );
       PyDict_SetItem( PythonInternals::H3DInterface_dict, 
                       PyString_FromString( "time" ), 
                       time );
-      PyObject *event_sink = (PyObject*)fieldAsPythonObject( Scene::eventSink, false );
+      PyObject *event_sink = (PyObject*)fieldAsPythonObject( Scene::eventSink.get(), false );
+      //PyObject *event_sink = (PyObject*)fieldAsPythonObject( Scene::eventSink, false );
       PyDict_SetItem( PythonInternals::H3DInterface_dict, 
                       PyString_FromString( "eventSink" ), 
                       event_sink );
@@ -1270,7 +1267,6 @@ call the base class __init__ function." );
     }
 
     /////////////////////////////////////////////////////////////////////////
-#ifdef USE_HAPTICS
     PyObject* pythonGetActiveDeviceInfo( PyObject *self, PyObject *arg ) {
       if( arg ) {
         ostringstream err;
@@ -1282,7 +1278,6 @@ call the base class __init__ function." );
 
       return PyNode_FromNode( DeviceInfo::getActive() );
     }
-#endif
     
     /////////////////////////////////////////////////////////////////////////
 
@@ -1295,7 +1290,7 @@ call the base class __init__ function." );
         return 0;
       }
 
-      return PyNode_FromNode( Viewpoint::getActive() );
+      return PyNode_FromNode( X3DViewpointNode::getActive() );
     }
 
     /////////////////////////////////////////////////////////////////////////

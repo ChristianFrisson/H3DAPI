@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Image3DTexture.h"
+#include <Image3DTexture.h>
+#include "ResourceResolver.h"
 
 using namespace H3D;
 
@@ -67,42 +68,46 @@ Image3DTexture::Image3DTexture(
   imageLoader->route( image );
 }
 
-void Image3DTexture::SFImage::update() {
+Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
+                                           const vector< string > &urls,
+                                           const NodeVector &image_loaders ) {
 
-  Image3DTexture *texture = static_cast< Image3DTexture * >( getOwner() );
-  MFImageLoader *image_loaders = 
-    static_cast< MFImageLoader * >( routes_in[1] );
-  MFString *urls = static_cast< MFString * >( routes_in[0] );
-
-  if( image_loaders->size() ) { 
-    for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-      for( MFImageLoader::const_iterator il = image_loaders->begin();
-           il != image_loaders->end();
+  if( image_loaders.size() ) { 
+    for( vector<string>::const_iterator i = urls.begin(); 
+         i != urls.end(); ++i ) {
+      for( NodeVector::const_iterator il = image_loaders.begin();
+           il != image_loaders.end();
            il++ ) {
-        string url = texture->resolveURLAsFile( *i );
+        bool is_tmp_file;
+        string url = texture->resolveURLAsFile( *i, &is_tmp_file );
         Image *image = 
           static_cast< H3DImageLoaderNode * >(*il)->loadImage( url );
+        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
         if( image ) {
-          value = image;
           texture->setURLUsed( *i );
-          return;
+          return image;
         }
       }
     }
   }
-
-  for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-    string url = texture->resolveURLAsFile( *i );
-    H3DImageLoaderNode *il = H3DImageLoaderNode::getSupportedFileReader( url );
+  
+  for( vector<string>::const_iterator i = urls.begin(); 
+       i != urls.end(); ++i ) {
+    bool is_tmp_file;
+    string url = texture->resolveURLAsFile( *i, &is_tmp_file );
+	  H3DImageLoaderNode *il = H3DImageLoaderNode::getSupportedFileReader( url );
     if( il ) {
-      value = il->loadImage( url );
       texture->setURLUsed( *i );
-      return;
+      Image *image = il->loadImage( url );
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+      return image;
     }
+    if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
   }
 
-  Console(4) << "Warning: None of the urls in ImageTexture with url [";
-  for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
+  Console(4) << "Warning: None of the urls in Image3DTexture with url [";
+  for( vector<string>::const_iterator i = urls.begin(); 
+       i != urls.end(); ++i ) {  
     Console(4) << " \"" << *i << "\"";
   }
   Console(4) << "] could be loaded. Either they don't exist or the file format "
@@ -110,7 +115,47 @@ void Image3DTexture::SFImage::update() {
              << "(in " << getOwner()->getName() << ")" << endl;
 
   texture->setURLUsed( "" );
-  value = NULL;
+  return( NULL );
+}
+
+Scene::CallbackCode Image3DTexture::SFImage::loadImageCB( void *data ) {
+  CBData *input = static_cast< CBData * >( data );
+  input->texture->image->setValue( input->image );
+  return Scene::CALLBACK_DONE;
+}
+
+void *Image3DTexture::SFImage::loadImageThreadFunc( void * data ) {
+  ThreadFuncData *input = static_cast< ThreadFuncData * >( data );
+  SFImage *sfimage = static_cast< SFImage * >( input->texture->image.get() );
+  Image *image = sfimage->loadImage( input->texture,
+                                     input->urls,
+                                     input->image_loaders );
+                                  
+  sfimage->cb_data.texture = input->texture;
+  sfimage->cb_data.image = image;
+  Scene::addCallback( loadImageCB, &sfimage->cb_data );
+  return NULL;
+}
+
+void Image3DTexture::SFImage::update() {
+  Image3DTexture *texture = static_cast< Image3DTexture * >( getOwner() );
+  MFImageLoader *image_loaders = static_cast< MFImageLoader * >( routes_in[1] );
+  MFString *urls = static_cast< MFString * >( routes_in[0] );
+
+  if( Image3DTexture::load_images_in_separate_thread ) {
+    value = NULL;
+    // delete the old thread
+    texture->load_thread.reset( NULL );
+    
+    thread_data.texture = texture;
+    thread_data.urls = urls->getValue();
+    thread_data.image_loaders = image_loaders->getValue();
+
+    texture->load_thread.reset( new H3DUtil::SimpleThread( &loadImageThreadFunc, 
+                                                   (void *)&thread_data ) );
+  } else {
+    value = loadImage( texture, urls->getValue(), image_loaders->getValue() );
+  }
 }
 
 void Image3DTexture::render() {

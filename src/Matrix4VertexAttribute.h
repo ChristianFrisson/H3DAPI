@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __MATRIX4VERTEXATTRIBUTE_H__
 #define __MATRIX4VERTEXATTRIBUTE_H__
 
-#include "X3DVertexAttributeNode.h"
-#include "MFMatrix4f.h"
+#include <X3DVertexAttributeNode.h>
+#include <MFMatrix4f.h>
 
 namespace H3D {
 

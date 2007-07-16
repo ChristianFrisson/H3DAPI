@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,7 +30,7 @@
 #define __SPACEBALLSENSOR_H__
 
 
-#include "X3DSensorNode.h"
+#include <X3DSensorNode.h>
 #include <list>
 #include <GL/glew.h>
 #ifdef MACOSX
@@ -39,8 +39,8 @@
 #include <GL/glut.h>
 #endif
 
-#include "SFVec3f.h"
-#include "MFBool.h"
+#include <SFVec3f.h>
+#include <MFBool.h>
 
 
 

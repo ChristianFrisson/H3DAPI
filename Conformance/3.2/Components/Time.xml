@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Time">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+    </Prerequisites>
+    <Node name="TimeSensor">
+      <pause support="optional"/>
+      <isPaused support="optional"/>
+      <resumeTime support="optional"/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+    </Prerequisites>
+    <Node name="TimeSensor">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+</Component>

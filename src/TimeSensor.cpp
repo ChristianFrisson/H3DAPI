@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "TimeSensor.h"
+#include <TimeSensor.h>
 
 using namespace H3D;
 
@@ -90,10 +90,14 @@ void TimeSensor::TimeHandler::activate( H3DTime time ) {
   time_node->cycleTime->setValue( start_time, time_node->id );
   X3DTimeDependentNode::TimeHandler::activate( time );
   elapsed_cycle_time = time_node->elapsedTime->getValue();
-  time_node->fraction_changed->setValue( 
-	                          (H3DFloat)( elapsed_cycle_time / 
-                                         time_node->cycleInterval->getValue() ),
-                                         time_node->id );
+  if( elapsed_cycle_time > time_node->cycleInterval->getValue() ) {
+    time_node->fraction_changed->setValue( 1, time_node->id );
+  } else {
+    time_node->fraction_changed->setValue( 
+                           (H3DFloat)( elapsed_cycle_time / 
+                                       time_node->cycleInterval->getValue() ),
+                           time_node->id );
+  }
   time_node->time->setValue( time, time_node->id );
 }
 
@@ -108,12 +112,14 @@ void TimeSensor::TimeHandler::update() {
     if( time_node->isActive->getValue() ) {
       if( !time_node->isPaused->getValue() ) {
         elapsed_cycle_time = elapsed_cycle_time + time - value;
-        if( time > cycle_time + cycle_interval ) {
+        if( elapsed_cycle_time >= cycle_interval ) {
           if( time_node->loop->getValue() ) {
             // maybe make sure the not two intervals have
             H3DTime paused_time = (time - cycle_time ) - elapsed_cycle_time;
             H3DTime new_cycle_time = 
-              cycle_time +  cycle_interval - paused_time;
+              cycle_time +  paused_time;
+            new_cycle_time += cycle_interval * 
+              H3DFloor( (time - new_cycle_time) / cycle_interval);
             time_node->cycleTime->setValue( new_cycle_time, time_node->id ); 
             elapsed_cycle_time = time - new_cycle_time;
           } else {

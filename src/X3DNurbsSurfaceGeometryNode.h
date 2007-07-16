@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,15 +29,15 @@
 #ifndef __X3DNURBSSURFACEGEOMETRYNODE_H__
 #define __X3DNURBSSURFACEGEOMETRYNODE_H__
 
-#include "X3DParametricGeometryNode.h"
-#include "DependentNodeFields.h"
-#include "X3DCoordinateNode.h"
-#include "X3DTextureCoordinateNode.h"
-#include "NurbsTextureCoordinate.h"
-#include "CoordBoundField.h"
-#include "SFInt32.h"
-#include "MFDouble.h"
-#include "TextureCoordinateGenerator.h"
+#include <X3DParametricGeometryNode.h>
+#include <DependentNodeFields.h>
+#include <X3DCoordinateNode.h>
+#include <X3DTextureCoordinateNode.h>
+#include <NurbsTextureCoordinate.h>
+#include <CoordBoundField.h>
+#include <SFInt32.h>
+#include <MFDouble.h>
+#include <TextureCoordinateGenerator.h>
 
 namespace H3D {
 
@@ -212,6 +212,12 @@ namespace H3D {
 
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti );  
+
+    /// The number of triangles renderered in this geometry, we don't know
+    /// so return -1
+    virtual int nrTriangles() {
+      return -1;
+    }
 
 		/// Function called by render to specify what differs between 
 		/// NurbsPatchSurface and NurbsTrimmedSurface,

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Viewpoint.h"
+#include <Viewpoint.h>
 
 using namespace H3D;
 
@@ -37,17 +37,10 @@ H3DNodeDatabase Viewpoint::database(
                                     "Viewpoint", 
                                     &(newInstance<Viewpoint>), 
                                     typeid( Viewpoint ),
-                                    &X3DBindableNode::database );
+                                    &X3DViewpointNode::database );
 
 namespace ViewpointInternals {
-  FIELDDB_ELEMENT( Viewpoint, centerOfRotation, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Viewpoint, description, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Viewpoint, fieldOfView, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Viewpoint, jump, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Viewpoint, orientation, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Viewpoint, position, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Viewpoint, accForwardMatrix, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( Viewpoint, accInverseMatrix, OUTPUT_ONLY );
 }
 
 
@@ -61,30 +54,56 @@ Viewpoint::Viewpoint(
                      Inst< SFNode     > _metadata,
                      Inst< SFRotation > _orientation,
                      Inst< SFVec3f    > _position,
+                     Inst< SFBool    >  _retainUserOffsets,
                      Inst< SFTime     > _bindTime,
                      Inst< SFBool     > _isBound,
                      Inst< SFMatrix4f > _accForwardMatrix,
                      Inst< SFMatrix4f > _accInverseMatrix ) :
-  X3DBindableNode( "Viewpoint", _set_bind, _metadata, _bindTime, _isBound ),
-  centerOfRotation( _centerOfRotation ),
-  description     ( _description      ),
-  fieldOfView     ( _fieldOfView      ),
-  jump            ( _jump             ),
-  orientation     ( _orientation      ),
-  position        ( _position         ),
-  accForwardMatrix( _accForwardMatrix ),
-  accInverseMatrix( _accInverseMatrix ) {
+  X3DViewpointNode( _set_bind, _centerOfRotation, _description, _jump,
+                    _metadata, _orientation, _position,
+                    _retainUserOffsets, _bindTime, _isBound,
+                    _accForwardMatrix, _accInverseMatrix ),
+  fieldOfView     ( _fieldOfView      ) {
   
   type_name = "Viewpoint";
   database.initFields( this );
 
-  centerOfRotation->setValue( Vec3f( 0, 0, 0 ) );
-  orientation->setValue( Rotation( 0, 0, 1, 0 ) );
-  position->setValue( Vec3f( 0, 0, 10 ) );
   fieldOfView->setValue( (H3DFloat)Constants::pi/4 );
-  // need to give the id since the fields are output only.
-  accForwardMatrix->setValue( Matrix4f(), id );
-  accInverseMatrix->setValue( Matrix4f(), id );
 }
 
+bool Viewpoint::windowFromfieldOfView( H3DFloat width, H3DFloat height,
+                                       H3DFloat clip_near,
+                                       H3DFloat &top, H3DFloat &bottom,
+                                       H3DFloat &right, H3DFloat &left ) {
+  H3DFloat fov_h, fov_v;
+  H3DFloat field_of_view = fieldOfView->getValue();
+  H3DFloat aspect_ratio = width / height;
+  
+  // calculate the horizontal and vertical field of view components
+  // as defined by the X3D spec for Viewpoint.
+  if ( field_of_view > Constants::pi )
+    field_of_view = (H3DFloat) Constants::pi;
+  if ( width < height ) {
+    // width is smallest
+    fov_h = field_of_view;
+    fov_v = 2 * atan( ( height * tan(fov_h/2) ) / width );
+    if ( fov_v > Constants::pi ) {
+      fov_v = (H3DFloat) Constants::pi;
+      fov_h = 2 * atan( ( aspect_ratio ) * tan(fov_v/2) );        
+    }
+  } else {
+    fov_v = field_of_view;
+    fov_h = 2 * atan( ( aspect_ratio ) * tan(fov_v/2) );
+    if ( fov_h > Constants::pi ) {
+      fov_h = field_of_view;
+      fov_v = 2 * atan( ( height * tan(fov_h/2) ) / width );        
+    }
+  }
 
+  top    = clip_near * tan(fov_v/2);
+  bottom = -top;
+
+  right  = aspect_ratio * top;
+  left   = -right;
+  return true;
+}

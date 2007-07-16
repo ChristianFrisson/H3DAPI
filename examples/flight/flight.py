@@ -15,7 +15,13 @@ import random
 # Seed the Python random number generator
 random.seed()
 
-
+# Shut off followViewpoint for devices so trackerposition does not
+# give wrong values when viewpoint changes.
+di = getActiveDeviceInfo()
+if( di ):
+  devices = di.device.getValue()
+  for d in devices:
+    d.followViewpoint.setValue( 0 )
 
 # Terrain clas
 # A simple implementation of the diamond-square fractal algorithm for

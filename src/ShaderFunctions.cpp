@@ -1,51 +1,51 @@
 
-#include "ShaderFunctions.h"
-#include "FieldTemplates.h"
-#include "SFNode.h"
-#include "MFNode.h"
-#include "X3DTexture2DNode.h"
-#include "X3DTexture3DNode.h"
-#include "X3DEnvironmentTextureNode.h"
-#include "SFFloat.h"
-#include "MFFloat.h"
-#include "SFDouble.h"
-#include "MFDouble.h"
-#include "SFTime.h"
-#include "MFTime.h"
-#include "SFInt32.h"
-#include "MFInt32.h"
-#include "SFVec2f.h"
-#include "MFVec2f.h"
-#include "SFVec3f.h"
-#include "MFVec3f.h"
-#include "SFVec4f.h"
-#include "MFVec4f.h"
-#include "SFVec2d.h"
-#include "MFVec2d.h"
-#include "SFVec3d.h"
-#include "MFVec3d.h"
-#include "SFVec4d.h"
-#include "MFVec4d.h"
-#include "SFBool.h"
-#include "MFBool.h"
-#include "SFString.h"
-#include "MFString.h"
-#include "SFColor.h"
-#include "MFColor.h"
-#include "SFColorRGBA.h"
-#include "MFColorRGBA.h"
-#include "SFRotation.h"
-#include "MFRotation.h"
-#include "SFQuaternion.h"
-#include "MFQuaternion.h"
-#include "SFMatrix3f.h"
-#include "MFMatrix3f.h"
-#include "SFMatrix3d.h"
-#include "MFMatrix3d.h"
-#include "SFMatrix4f.h"
-#include "MFMatrix4f.h"
-#include "SFMatrix4d.h"
-#include "MFMatrix4d.h"
+#include <ShaderFunctions.h>
+#include <FieldTemplates.h>
+#include <SFNode.h>
+#include <MFNode.h>
+#include <X3DTexture2DNode.h>
+#include <X3DTexture3DNode.h>
+#include <X3DEnvironmentTextureNode.h>
+#include <SFFloat.h>
+#include <MFFloat.h>
+#include <SFDouble.h>
+#include <MFDouble.h>
+#include <SFTime.h>
+#include <MFTime.h>
+#include <SFInt32.h>
+#include <MFInt32.h>
+#include <SFVec2f.h>
+#include <MFVec2f.h>
+#include <SFVec3f.h>
+#include <MFVec3f.h>
+#include <SFVec4f.h>
+#include <MFVec4f.h>
+#include <SFVec2d.h>
+#include <MFVec2d.h>
+#include <SFVec3d.h>
+#include <MFVec3d.h>
+#include <SFVec4d.h>
+#include <MFVec4d.h>
+#include <SFBool.h>
+#include <MFBool.h>
+#include <SFString.h>
+#include <MFString.h>
+#include <SFColor.h>
+#include <MFColor.h>
+#include <SFColorRGBA.h>
+#include <MFColorRGBA.h>
+#include <SFRotation.h>
+#include <MFRotation.h>
+#include <SFQuaternion.h>
+#include <MFQuaternion.h>
+#include <SFMatrix3f.h>
+#include <MFMatrix3f.h>
+#include <SFMatrix3d.h>
+#include <MFMatrix3d.h>
+#include <SFMatrix4f.h>
+#include <MFMatrix4f.h>
+#include <SFMatrix4d.h>
+#include <MFMatrix4d.h>
 
 using namespace H3D;
 
@@ -425,7 +425,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFBool *f = dynamic_cast< MFBool * >( field ) ) {
     GLint *v = toIntArray( f->getValue() );
     glUniform1ivARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFInt32 *f = dynamic_cast< SFInt32 * >( field ) ) {
     glUniform1iARB( location, f->getValue() );
   } else if( MFInt32 *f = dynamic_cast< MFInt32 * >( field ) ) {
@@ -435,19 +435,19 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFFloat *f = dynamic_cast< MFFloat * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform1fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFDouble *f = dynamic_cast< SFDouble * >( field ) ) {
     glUniform1fARB( location, (GLfloat)f->getValue() );
   } else if( MFDouble *f = dynamic_cast< MFDouble * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform1fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFTime *f = dynamic_cast< SFTime * >( field ) ) {
     glUniform1fARB( location, (GLfloat)f->getValue() );
   } else if( MFTime *f = dynamic_cast< MFTime * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform1fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec2f *f = dynamic_cast< SFVec2f * >( field ) ) {
     const Vec2f &v = f->getValue(); 
     glUniform2fARB( location, 
@@ -456,7 +456,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFVec2f *f = dynamic_cast< MFVec2f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform2fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec3f *f = dynamic_cast< SFVec3f * >( field ) ) {
     const Vec3f &v = f->getValue(); 
     glUniform3fARB( location, 
@@ -466,7 +466,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFVec3f *f = dynamic_cast< MFVec3f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform3fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec4f *f = dynamic_cast< SFVec4f * >( field ) ) {
     const Vec4f &v = f->getValue(); 
     glUniform4fARB( location, 
@@ -477,7 +477,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFVec4f *f = dynamic_cast< MFVec4f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform4fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec2d *f = dynamic_cast< SFVec2d * >( field ) ) {
     const Vec2d &v = f->getValue(); 
     glUniform2fARB( location, 
@@ -486,7 +486,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFVec2d *f = dynamic_cast< MFVec2d * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform2fvARB( location, f->size(), v );
-    delete v;
+    delete[] v; //this one penny had not changed
   } else if( SFVec3d *f = dynamic_cast< SFVec3d * >( field ) ) {
     const Vec3d &v = f->getValue(); 
     glUniform3fARB( location, 
@@ -496,7 +496,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFVec3d *f = dynamic_cast< MFVec3d * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform3fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec4d *f = dynamic_cast< SFVec4d * >( field ) ) {
     const Vec4d &v = f->getValue(); 
     glUniform4fARB( location, 
@@ -507,7 +507,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFVec4d *f = dynamic_cast< MFVec4d * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform4fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFRotation *f = dynamic_cast< SFRotation * >( field ) ) {
     const Rotation &r = f->getValue(); 
     glUniform4fARB( location, 
@@ -518,7 +518,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFRotation *f = dynamic_cast< MFRotation * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform4fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFColor *f = dynamic_cast< SFColor * >( field ) ) {
     const RGB &r = f->getValue(); 
     glUniform3fARB( location, 
@@ -528,7 +528,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFColor *f = dynamic_cast< MFColor * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform4fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFColorRGBA *f = dynamic_cast< SFColorRGBA * >( field ) ) {
     const RGBA &r = f->getValue(); 
     glUniform4fARB( location, 
@@ -539,7 +539,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFColorRGBA *f = dynamic_cast< MFColorRGBA * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniform4fvARB( location, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFMatrix3f *f = dynamic_cast< SFMatrix3f * >( field ) ) {
     const Matrix3f &m = f->getValue(); 
     glUniformMatrix3fvARB( location, 
@@ -549,7 +549,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFMatrix3f *f = dynamic_cast< MFMatrix3f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniformMatrix3fvARB( location, f->size(), false, v );
-    delete v;
+    delete[] v;
   } else if( SFMatrix4f *f = dynamic_cast< SFMatrix4f * >( field ) ) {
     const Matrix4f &m = f->getValue(); 
     glUniformMatrix4fvARB( location, 
@@ -559,7 +559,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( MFMatrix4f *f = dynamic_cast< MFMatrix4f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     glUniformMatrix4fvARB( location, f->size(), false, v );
-    delete v;
+    delete[] v;
   } else if( SFNode *f = dynamic_cast< SFNode * >( field ) ) {
     Node *n = f->getValue(); 
     if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
@@ -588,7 +588,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
                 dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
         v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
       } else {
-        delete v;
+        delete[] v;
         return false;
       }
     }
@@ -676,38 +676,38 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   } else if( MFBool *f = dynamic_cast< MFBool * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray1f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFInt32 *f = dynamic_cast< SFInt32 * >( field ) ) {
     cgGLSetParameter1f( param, (GLfloat)f->getValue() );
   } else if( MFInt32 *f = dynamic_cast< MFInt32 * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray1f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFFloat *f = dynamic_cast< SFFloat * >( field ) ) {
     cgGLSetParameter1f( param, f->getValue() );
   } else if( MFFloat *f = dynamic_cast< MFFloat * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray1f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFDouble *f = dynamic_cast< SFDouble * >( field ) ) {
     cgGLSetParameter1f( param, (GLfloat)f->getValue() );
   } else if( MFDouble *f = dynamic_cast< MFDouble * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray1f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFTime *f = dynamic_cast< SFTime * >( field ) ) {
     cgGLSetParameter1d( param, f->getValue() );
   } else if( MFTime *f = dynamic_cast< MFTime * >( field ) ) {
     GLdouble *v = toDoubleArray( f->getValue() );
     cgGLSetParameterArray1d( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec2f *f = dynamic_cast< SFVec2f * >( field ) ) {
     const Vec2f &v = f->getValue(); 
     cgGLSetParameter2f( param, (GLfloat)v.x, (GLfloat)v.y );
   } else if( MFVec2f *f = dynamic_cast< MFVec2f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray2f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec3f *f = dynamic_cast< SFVec3f * >( field ) ) {
     const Vec3f &v = f->getValue(); 
     cgGLSetParameter3f( param, 
@@ -717,7 +717,7 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   } else if( MFVec3f *f = dynamic_cast< MFVec3f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray3f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec4f *f = dynamic_cast< SFVec4f * >( field ) ) {
     const Vec4f &v = f->getValue(); 
     cgGLSetParameter4f( param, 
@@ -728,28 +728,28 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   } else if( MFVec4f *f = dynamic_cast< MFVec4f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray4f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec2d *f = dynamic_cast< SFVec2d * >( field ) ) {
     const Vec2d &v = f->getValue(); 
     cgGLSetParameter2d( param, v.x, v.y );
   } else if( MFVec2d *f = dynamic_cast< MFVec2d * >( field ) ) {
     GLdouble *v = toDoubleArray( f->getValue() );
     cgGLSetParameterArray2d( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec3d *f = dynamic_cast< SFVec3d * >( field ) ) {
     const Vec3d &v = f->getValue(); 
     cgGLSetParameter3d( param, v.x, v.y, v.z );
   } else if( MFVec3d *f = dynamic_cast< MFVec3d * >( field ) ) {
     GLdouble *v = toDoubleArray( f->getValue() );
     cgGLSetParameterArray3d( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFVec4d *f = dynamic_cast< SFVec4d * >( field ) ) {
     const Vec4d &v = f->getValue(); 
     cgGLSetParameter4d( param, v.x, v.y, v.z, v.w  );
   } else if( MFVec4d *f = dynamic_cast< MFVec4d * >( field ) ) {
     GLdouble *v = toDoubleArray( f->getValue() );
     cgGLSetParameterArray4d( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFRotation *f = dynamic_cast< SFRotation * >( field ) ) {
     const Rotation &r = f->getValue(); 
     cgGLSetParameter4f( param, 
@@ -760,7 +760,7 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   } else if( MFRotation *f = dynamic_cast< MFRotation * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray4f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFColor *f = dynamic_cast< SFColor * >( field ) ) {
     const RGB &r = f->getValue(); 
     cgGLSetParameter3f( param, 
@@ -770,7 +770,7 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   } else if( MFColor *f = dynamic_cast< MFColor * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray4f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFColorRGBA *f = dynamic_cast< SFColorRGBA * >( field ) ) {
     const RGBA &r = f->getValue(); 
     cgGLSetParameter4f( param, 
@@ -781,21 +781,21 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   } else if( MFColorRGBA *f = dynamic_cast< MFColorRGBA * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetParameterArray4f( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFMatrix3f *f = dynamic_cast< SFMatrix3f * >( field ) ) {
     const Matrix3f &m = f->getValue(); 
     cgGLSetMatrixParameterfr( param, m[0] );
   } else if( MFMatrix3f *f = dynamic_cast< MFMatrix3f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetMatrixParameterArrayfr( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFMatrix4f *f = dynamic_cast< SFMatrix4f * >( field ) ) {
     const Matrix4f &m = f->getValue(); 
     cgGLSetMatrixParameterfr( param, m[0] );
   } else if( MFMatrix4f *f = dynamic_cast< MFMatrix4f * >( field ) ) {
     GLfloat *v = toFloatArray( f->getValue() );
     cgGLSetMatrixParameterArrayfr( param, 0, f->size(), v );
-    delete v;
+    delete[] v;
   } else if( SFNode *f = dynamic_cast< SFNode * >( field ) ) {
     Node *n = f->getValue(); 
     if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {

@@ -9,7 +9,7 @@
 
 #ifndef __PROTOTYPEVECTOR_H__
 #define __PROTOTYPEVECTOR_H__
-#include "ProtoDeclaration.h"
+#include <ProtoDeclaration.h>
 
 using namespace std;
 

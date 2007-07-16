@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,7 +30,7 @@
 #include <string>
 #include <iostream>
 #include <map>
-#include "H3DApi.h"
+#include <H3DApi.h>
 
 namespace H3D {
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,9 +31,9 @@
 
 #include <iostream>
 #include <deque>
-#include "X3DChildNode.h"
-#include "SFBool.h"
-#include "SFTime.h"
+#include <X3DChildNode.h>
+#include <SFBool.h>
+#include <SFTime.h>
 
 namespace H3D {
 
@@ -112,7 +112,7 @@ namespace H3D {
 
     /// The SFSetBind field calls toStackTop() and removeFromStack() on the 
     /// X3DBindableNode it is in depending on the value that it is set to.
-    struct H3DAPI_API SFSetBind : public SFBool {
+    struct H3DAPI_API SFSetBind : public AutoUpdate< SFBool > {
       virtual inline void update() {
         SFBool::update();
         if( value )

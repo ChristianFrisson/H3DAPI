@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __X3DKEYDEVICESENSORNODE_H__
 #define __X3DKEYDEVICESENSORNODE_H__
 
-#include "X3DSensorNode.h"
+#include <X3DSensorNode.h>
 #include <list>
 #include <GL/glew.h>
 #ifdef MACOSX

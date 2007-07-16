@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __FOG_H__
 #define __FOG_H__
 
-#include "X3DBindableNode.h"
-#include "X3DFogObject.h"
+#include <X3DBindableNode.h>
+#include <X3DFogObject.h>
 
 namespace H3D {
   /// \ingroup X3DNodes
@@ -75,7 +75,6 @@ namespace H3D {
     /// Render the global fog with OpenGL.
     virtual void renderFog();
 
-#ifdef USE_HAPTICS
 		/// Traverse the scenegraph. Saves the accumulated inverse
     /// matrix for later use when transforming the Viewpoint in
     /// GLWindow.
@@ -84,8 +83,7 @@ namespace H3D {
       Vec3f scaled_v = m * Vec3f( 0, 0, 1 );
       scale_local_to_global = scaled_v.length();
     }
-#endif
-
+   
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:

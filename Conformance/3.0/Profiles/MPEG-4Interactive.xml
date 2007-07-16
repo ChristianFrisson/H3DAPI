@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Profile name="MPEG-4Interactive">
+  <Component name="Core" level="1"/>
+  <Component name="Time" level="1"/>
+  <Component name="Networking" level="2"/>
+  <Component name="Grouping" level="2"/>
+  <Component name="Rendering" level="1"/>
+  <Component name="Shape" level="1"/>
+  <Component name="Geometry3D" level="2"/>
+  <Component name="Lighting" level="2"/>
+  <Component name="Texturing" level="1"/>
+  <Component name="Interpolation" level="2"/>
+  <Component name="PointingDeviceSensor" level="1"/>
+  <Component name="EnvironmentalSensor" level="1"/>
+  <Component name="Navigation" level="1"/>
+  <Component name="EnvironmentalEffects" level="1"/>
+</Profile>

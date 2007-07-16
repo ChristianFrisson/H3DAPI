@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,7 +27,7 @@
 #ifndef __MFNODEAUTOREFVECTOR_H__
 #define __MFNODEAUTOREFVECTOR_H__
 
-#include "AutoRefVector.h"
+#include <AutoRefVector.h>
 
 namespace H3D {
 

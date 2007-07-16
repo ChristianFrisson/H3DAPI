@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #ifndef __COORDBOUNDFIELD_H__
 #define __COORDBOUNDFIELD_H__
 
-#include "H3DBoundedObject.h"
-#include "X3DCoordinateNode.h"
+#include <H3DBoundedObject.h>
+#include <X3DCoordinateNode.h>
 
 namespace H3D {
 

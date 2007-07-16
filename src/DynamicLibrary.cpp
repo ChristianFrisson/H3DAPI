@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "DynamicLibrary.h"
+#include <DynamicLibrary.h>
 #ifndef WIN32
 #include <dlfcn.h>
 #endif

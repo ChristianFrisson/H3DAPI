@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,13 +28,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DSoundFileNode.h"
+#include <H3DSoundFileNode.h>
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-list< H3DSoundFileNode::FileReaderRegistration > 
-*H3DSoundFileNode::registered_file_readers; 
+H3DSoundFileNode::local_auto_ptr<list< H3DSoundFileNode::FileReaderRegistration
+> >H3DSoundFileNode::registered_file_readers; 
+
 
 bool H3DSoundFileNode::initialized = false; 
 

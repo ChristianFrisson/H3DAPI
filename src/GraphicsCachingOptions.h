@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __GRAPHICSCACHINGOPTIONS_H__
 #define __GRAPHICSCACHINGOPTIONS_H__
 
-#include "H3DOptionNode.h"
-#include "SFBool.h"
-#include "SFInt32.h"
-#include "X3DGeometryNode.h"
+#include <H3DOptionNode.h>
+#include <SFBool.h>
+#include <SFInt32.h>
+#include <X3DGeometryNode.h>
 
 namespace H3D {
 

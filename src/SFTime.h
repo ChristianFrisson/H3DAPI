@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,8 +27,8 @@
 #ifndef __SFTIME_H__
 #define __SFTIME_H__
 
-#include "SField.h"
-#include "SFDouble.h"
+#include <SField.h>
+#include <SFDouble.h>
 
 namespace H3D {
 

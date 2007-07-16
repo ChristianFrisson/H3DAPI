@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,12 +30,12 @@
 #define __PYTHONTYPES_H__
 
 
-#include "Exception.h"
-#include "X3DTypes.h"
-#include "X3DFieldConversion.h"
-#include "Node.h"
-#include "H3DApi.h"
-#include "PyTypeWrapper.h"
+#include <Exception.h>
+#include <X3DTypes.h>
+#include <X3DFieldConversion.h>
+#include <Node.h>
+#include <H3DApi.h>
+#include <PyTypeWrapper.h>
 
 #ifdef HAVE_PYTHON
 

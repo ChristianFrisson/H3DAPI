@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __PACKAGEDSHADER_H__
 #define __PACKAGEDSHADER_H__
 
-#include "X3DShaderNode.h"
-#include "X3DProgrammableShaderObject.h"
-#include "X3DUrlObject.h"
+#include <X3DShaderNode.h>
+#include <X3DProgrammableShaderObject.h>
+#include <X3DUrlObject.h>
 #include <GL/glew.h>
 
 #ifdef HAVE_CG

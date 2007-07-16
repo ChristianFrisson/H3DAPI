@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Box.h"
+#include <Box.h>
 
 using namespace H3D;
 
@@ -95,7 +95,7 @@ void Box::render() {
   glVertex3f  ( -x, y, -z );
   renderTexCoordForActiveTexture( Vec3f( 0, 1, 0 ) );
   glVertex3f  ( x, y, -z );
-  
+
   // +y
   glNormal3f  ( 0, 1, 0 );
 
@@ -143,23 +143,16 @@ void Box::render() {
   glVertex3f  ( -x, -y, z );
   renderTexCoordForActiveTexture( Vec3f( 1, 1, 0 ) );
   glVertex3f  ( -x, y, z );
-  
+
   glEnd();
 }
 
-#ifdef USE_HAPTICS
 void Box::traverseSG( TraverseInfo &ti ) {
   if( solid->getValue() ) {
     useBackFaceCulling( true );
   } else {
     useBackFaceCulling( false );
   }
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
-                                                  ti.getAccForwardMatrix(),
-                                                  24 ) );
-#endif
-  }
+  X3DGeometryNode::traverseSG( ti );
+  
 }
-#endif

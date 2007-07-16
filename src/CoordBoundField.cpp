@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "CoordBoundField.h"
-#include "Coordinate.h"
+#include <CoordBoundField.h>
+#include <Coordinate.h>
 using namespace H3D;
 
 //TODO: Fix so that it works for all X3DCoordinateNode

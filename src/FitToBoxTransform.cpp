@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "FitToBoxTransform.h"
+#include <FitToBoxTransform.h>
 
 using namespace H3D;
 
@@ -122,5 +122,6 @@ void FitToBoxTransform::SFMatrix4f::update() {
       value = Matrix4f();
     }
   }
+  //cerr << value << endl;
 }
 

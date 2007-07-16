@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "ParticleSystem.h"
+#include <ParticleSystem.h>
 
-#include "Viewpoint.h"
+#include <X3DViewpointNode.h>
 
 using namespace H3D;
+
+list<ParticleSystem *> ParticleSystem::particlesystems;
 
 H3DNodeDatabase ParticleSystem::database( 
         "ParticleSystem", 
@@ -98,8 +100,8 @@ ParticleSystem::ParticleSystem(
   physics( _physics ),
   texCoordRamp( _texCoordRamp ),
   texCoordKey( _texCoordKey ),
-  update_bound( false ),
-  particle_system_time( 0 ) {
+  particle_system_time( 0 ),
+  update_bound( false ) {
   
   type_name = "ParticleSystem";
   database.initFields( this );
@@ -113,6 +115,7 @@ ParticleSystem::ParticleSystem(
   geometryType->setValue( "QUAD" );
 
   last_time = TimeStamp();
+  particlesystems.push_back( this );
 }
 
 
@@ -120,8 +123,6 @@ void ParticleSystem::render() {
   X3DChildNode::render();
   X3DAppearanceNode *a = appearance->getValue();
   X3DGeometryNode *g = geometry->getValue();
-
-  GLboolean lighting_on;
 
   if ( a ) {
     a->preRender();
@@ -218,7 +219,6 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   }
   
   // generate new particles
-
   
   TimeStamp current_time;
   H3DTime dt = current_time - last_time;
@@ -234,15 +234,16 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   
   vector< Particles::iterator > to_remove;
   
-  Viewpoint *vp = Viewpoint::getActive();
+  X3DViewpointNode *vp = X3DViewpointNode::getActive();
   Matrix4f vp_to_local = ti.getAccInverseMatrix() *
     vp->accForwardMatrix->getValue();
   
   Matrix3f vp_to_local_rot = vp_to_local.getRotationPart();
     
-  Vec3f vp_position =  vp_to_local * vp->position->getValue();
-  Vec3f vp_up = vp_to_local_rot * (vp->orientation->getValue() *  Vec3f( 0, 1, 0 ) );
-  Vec3f vp_lookat = vp_to_local_rot * (vp->orientation->getValue() *  Vec3f( 0, 0, -1 ) );
+  Vec3f vp_position =  vp_to_local * vp->getFullPos();
+  Rotation vp_orn = vp->getFullOrn();
+  Vec3f vp_up = vp_to_local_rot * ( vp_orn *  Vec3f( 0, 1, 0 ) );
+  Vec3f vp_lookat = vp_to_local_rot * ( vp_orn *  Vec3f( 0, 0, -1 ) );
 
   for( Particles::iterator p = particles.begin(); 
        p != particles.end(); p++ ) {
@@ -278,6 +279,8 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
 
   particles.sort();
 
+
+  // update bounding box
   if( particles.size() > 0 && 
       bboxSize->getValue() == Vec3f( -1, -1, -1 )) {
 
@@ -301,7 +304,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
     if( geometryType->getValue() == "GEOMETRY" ) {
       if( (*p).geometry.get() ) {
         X3DGeometryNode *g = (*p).geometry.get();
-        BoxBound *bb = dynamic_cast< BoxBound * >( bound->getValue() );
+        BoxBound *bb = dynamic_cast< BoxBound * >( g->bound->getValue() );
         if( bb ) {
           Vec3f center = bb->center->getValue();
           Vec3f half_size = bb->size->getValue();
@@ -343,12 +346,29 @@ H3DFloat ParticleSystem::getVariationValue( H3DFloat main_value,
 
 }
 
+Vec3f ParticleSystem::getRandomPointOnUnitSphere() {
+  H3DFloat x1 = getRandomValue( -1, 1 );
+  H3DFloat x2 = getRandomValue( -1, 1 );
+
+  H3DFloat x1_sqr = x1 * x1;
+  H3DFloat x2_sqr = x2 * x2;
+  while( x1*x1 + x2*x2 >= 1 ) {
+    x2 = getRandomValue( -1, 1 );
+    x2_sqr = x2 * x2;
+  }
+
+  H3DFloat s = H3DSqrt( 1 - x1_sqr - x2_sqr );
+  return Vec3f( 2 * x1 * s,
+                2 * x2 * s,
+                1 - 2*(x1_sqr + x2_sqr ) );
+}
+
 X3DParticleEmitterNode::Particle::ParticleType
 ParticleSystem::getCurrentParticleType() {
   const string &geom_type = geometryType->getValue();
   if( geom_type == "LINE" ) 
     return X3DParticleEmitterNode::Particle::LINE;
-  else if( geom_type == "POINT" ) 
+  else if( geom_type == "POINT" )
     return X3DParticleEmitterNode::Particle::POINT;
   else if( geom_type == "QUAD" ) 
     return X3DParticleEmitterNode::Particle::QUAD;

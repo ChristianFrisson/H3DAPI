@@ -1,4 +1,5 @@
 <Group  DEF="G" >
+  <NavigationInfo type = "NONE" />
   <Viewpoint position="0 0 0.6" />
   <PythonScript DEF="SpaceTennis" url="SpaceTennis.py" />
   <PythonScript url="SpaceTennisStart.py" >

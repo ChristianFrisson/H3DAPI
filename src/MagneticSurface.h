@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,9 @@
 #ifndef __MAGNETICSURFACE_H__
 #define __MAGNETICSURFACE_H__
 
-#include "FrictionalSurface.h"
+#include <H3DSurfaceNode.h>
+#include <SFFloat.h>
+#include <FieldTemplates.h>
 
 namespace H3D {
 
@@ -43,18 +45,114 @@ namespace H3D {
   /// within which forces are generated to pull the proxy towards the
   /// surface. If the device is pulled outside this distance from the
   /// surface it will be freed from the magnetic attraction.
-  class H3DAPI_API MagneticSurface:  public FrictionalSurface {
+  class H3DAPI_API MagneticSurface:  public H3DSurfaceNode {
   public:
 
+    /// Specialized field which sets the stiffness variable in
+    /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the
+    /// stiffness field of SmoothSurface is changed.
+		///
+    /// routes_in[0] is the stiffness field
+    class H3DAPI_API UpdateStiffness: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
+    /// Specialized field which sets the damping variable in
+    /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the damping
+    /// field of MagneticSurface is changed.
+		///
+    /// routes_in[0] is the damping field
+    class H3DAPI_API UpdateDamping: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
+    /// Specialized field which sets the static_friction variable in
+    /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the staticFriction
+    /// field of MagneticSurface is changed.
+		///
+    /// routes_in[0] is the staticFriction field
+    class H3DAPI_API UpdateStaticFriction: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
+    /// Specialized field which sets the dynamic_friction variable in
+    /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the dynamicFriction
+    /// field of MagneticSurface is changed.
+		///
+    /// routes_in[0] is the dynamicFriction field
+    class H3DAPI_API UpdateDynamicFriction: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
+    /// Specialized field which sets the snap_distance variable in
+    /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the snapDistance
+    /// field of MagneticSurface is changed.
+		///
+    /// routes_in[0] is the snapDistance field
+    class H3DAPI_API UpdateSnapDistance: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
     /// Constructor.
-    MagneticSurface( Inst< SFFloat > _stiffness       = 0,
-                     Inst< SFFloat > _damping         = 0,
-                     Inst< SFFloat > _staticFriction  = 0,
-                     Inst< SFFloat > _dynamicFriction = 0,
-                     Inst< SFFloat > _snapDistance    = 0 );
-  
-    /// Renders the surface using hlMaterialf calls
-    virtual void hlRender( HLHapticsDevice *hd );
+    MagneticSurface( Inst< UpdateStiffness > _stiffness       = 0,
+                     Inst< UpdateDamping > _damping         = 0,
+                     Inst< UpdateStaticFriction > _staticFriction  = 0,
+                     Inst< UpdateDynamicFriction > _dynamicFriction = 0,
+                     Inst< UpdateSnapDistance > _snapDistance    = 0 );
+
+    void initialize();
+
+    /// The stiffness of the surface. Should be a value between 0 and 1
+    /// where 1 is the maximum stiffness the haptics device can handle.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> 0.5 \n
+    /// <b>Value range: </b> [0-1]
+    auto_ptr< UpdateStiffness > stiffness;
+
+    /// The velocity based damping of the surface. Should be a value between
+    /// 0 and 1 where 1 is the maximum damping the haptics device can handle.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> 0 \n
+    /// <b>Value range: </b> [0-1]
+    auto_ptr< UpdateDamping > damping;
+
+    /// The friction that is experienced upon initial movement when resting on 
+    /// the surface.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> 0.1 \n
+    /// <b>Value range: </b> [0-1]
+    auto_ptr< UpdateStaticFriction > staticFriction;
+
+    /// The friction that is experienced when moving along the surface 
+    /// the surface.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> 0.4 \n
+    /// <b>Value range: </b> [0-1]
+    auto_ptr< UpdateDynamicFriction > dynamicFriction;
 
     /// The distance from the surface within which forces are generated
     /// to pull the proxy towards the surface. If the device is pulled
@@ -63,7 +161,7 @@ namespace H3D {
     ///
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> 0.01 \n
-    auto_ptr< SFFloat > snapDistance;
+    auto_ptr< UpdateSnapDistance > snapDistance;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

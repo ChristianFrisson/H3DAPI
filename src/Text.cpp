@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Text.h"
-#include "FontStyle.h"
+#include <Text.h>
+#include <FontStyle.h>
 
 using namespace H3D;
 
@@ -200,6 +200,7 @@ void Text::moveToNewLine( const string &text, X3DFontStyleNode *font ) {
 
 void Text::renderTextLine( const string& text,
                            X3DFontStyleNode *font ) {
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   X3DFontStyleNode::Alignment alignment = font->getAlignment();
   bool left_to_right = font->isLeftToRight();
@@ -243,6 +244,7 @@ void Text::renderTextLine( const string& text,
     break;
   }
   }
+  glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
 }
 
@@ -313,6 +315,7 @@ void Text::render() {
   if( font ) {
     // we will make changes to the transformation matrices so we save
     // the current matrices.
+    glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
     font->buildFonts();
@@ -343,6 +346,7 @@ void Text::render() {
         if( line != text.begin() )
           moveToNewLine( *line, font );
       
+      glMatrixMode(GL_MODELVIEW);
       glPushMatrix();   
       
       // if we have values in the length field we scale in order to have
@@ -364,6 +368,7 @@ void Text::render() {
       // render the line of text in the style of the font.
       renderTextLine( *line, font );
 
+      glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
 
       // translate to the next line. What the next line is depends on the 
@@ -372,6 +377,7 @@ void Text::render() {
         moveToNewLine( *line, font );
       
     }
+    glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
   }
 }
@@ -386,22 +392,12 @@ void Text::DisplayList::callList( bool build_list ) {
   X3DGeometryNode::DisplayList::callList( build_list );
 }
 
-#ifdef USE_HAPTICS
 void Text::traverseSG( TraverseInfo &ti ) {
+  X3DGeometryNode::traverseSG( ti );
   // use backface culling if solid is true
   if( solid->getValue() ) useBackFaceCulling( true );
   else useBackFaceCulling( false );
-
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll( getOpenGLHapticShape( 
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix() ) );
-#endif
-  }
 }
-#endif
-
 
 void Text::SFBound::update() {
   X3DFontStyleNode *font_style = 
@@ -470,4 +466,31 @@ void Text::SFBound::update() {
     bb->center->setValue( box_center );
     value = bb;
   }
+}
+
+bool Text::lineIntersect(
+                  const Vec3f &from, 
+                  const Vec3f &to,    
+                  vector< HAPI::Bounds::IntersectionInfo > &result,
+                  vector< pair< Node *, H3DInt32 > > &theNodes,
+                  const Matrix4f &current_matrix,
+                  vector< Matrix4f > &geometry_transforms,
+                  bool pt_device_affect ) {
+  if( pt_device_affect )
+    current_geom_id++;
+  
+  bool returnValue = false;
+  Bound * the_bound = bound->getValue();
+  if( the_bound ) {
+      returnValue = the_bound->lineSegmentIntersect( from, to );
+      if( returnValue ) {
+        HAPI::Bounds::IntersectionInfo tempresult;
+        tempresult.point = Vec3f( 0, 0, 0 );
+        tempresult.normal = Vec3f( 0, 0, 1 );
+        result.push_back( tempresult );
+        theNodes.push_back( make_pair( this, current_geom_id ) );
+        geometry_transforms.push_back( current_matrix );
+      }
+  }
+  return returnValue;
 }

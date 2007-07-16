@@ -1,0 +1,170 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file Anchor.h
+/// \brief Header file for Anchor, X3D scene-graph node
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+#ifndef __ANCHOR_H__
+#define __ANCHOR_H__
+
+#include <X3DGroupingNode.h>
+#include <SFString.h>
+#include <MFString.h>
+
+namespace H3D {
+
+  /// \ingroup X3DNodes
+  /// \class Anchor
+  /// \brief The Anchor grouping node retrieves the content of a URL when the
+  /// user activates (e.g., clicks) some geometry contained within the Anchor
+  /// node's children. If the URL points to a valid X3D file, that world
+  /// replaces the world of which the Anchor node is a part (except when the
+  /// parameter field, described below, alters this behaviour). If non-X3D data
+  /// is retrieved, the browser shall determine how to handle that data;
+  /// typically, it will be passed to an appropriate non-X3D browser.
+  ///
+  /// Exactly how a user activates geometry contained by the Anchor node
+  /// depends on the pointing device and is determined by the X3D browser.
+  /// Typically, clicking with the pointing device will result in the new scene
+  /// replacing the current scene. An Anchor node with an empty url does
+  /// nothing when its children are chosen. For a description of how multiple
+  /// Anchors and pointing-device sensors are resolved on activation see the
+  /// Pointing Device Sensor Component in the X3D specification.
+  ///
+  /// The description field in the Anchor node specifies a textual description
+  /// of the Anchor node. This may be used by browser-specific user interfaces
+  /// that wish to present users with more detailed information about the
+  /// Anchor.
+  ///
+  /// The parameter  field may be used to supply any additional information to
+  /// be interpreted by the browser. Each string shall consist of
+  /// "keyword=value" pairs. For example, some browsers allow the specification
+  /// of a "target" for a link to display a link in another part of an HTML
+  /// document. The parameter field is then:
+  ///
+  /// Anchor { \n
+  ///  parameter [ "target=name_of_frame" ]; \n
+  ///  ... \n
+  /// }\n
+  ///
+  /// An Anchor node may be used to bind the initial Viewpoint node in a world
+  /// by specifying a URL ending with "#ViewpointName" where "ViewpointName" is
+  /// the DEF name of a viewpoint defined in the X3D file.
+  ///
+  /// EXAMPLE \n
+  ///
+  /// Anchor { \n
+  ///   url "http://www.school.edu/X3D/someScene.wrl#OverView";\n
+  ///     children  Shape { geometry Box {} };\n
+  /// }\n
+  ///
+  /// specifies an anchor that loads the X3D file "someScene.wrl" and binds the
+  /// initial user view to the Viewpoint node named "OverView" when the Anchor
+  /// node's geometry (Box) is activated. If the named Viewpoint node is not
+  /// found in the X3D file, the X3D file is loaded using the default Viewpoint
+  /// node binding stack rules.
+  ///
+  /// If the url field is specified in the form "#ViewpointName"
+  /// (i.e., no file name), the Viewpoint node with the given name
+  /// ("ViewpointName") in the Anchor's run-time name scope(s) shall be bound
+  /// (set_bind TRUE). The results are undefined if there are multiple
+  /// Viewpoints with the same name in the Anchor's run-time name scope(s).
+  /// The results are undefined if the Anchor node is not part of any run-time
+  /// name scope or is part of more than one run-time name scope.
+  /// ( RUN-TIME scope not implemented, if the name exist the first created
+  /// X3DViewpoint with the correct name will be used )
+  ///  
+  /// For example:
+  ///
+  /// Anchor { \n
+  ///   url "#Doorway"; \n
+  ///   children Shape { geometry Sphere {} }; \n
+  /// } \n
+  ///
+  /// binds the viewer to the viewpoint defined by the "Doorway" viewpoint in
+  /// the current world when the sphere is activated. In this case, if the
+  /// Viewpoint is not found, no action occurs on activation.
+
+  class H3DAPI_API Anchor : public X3DGroupingNode {
+  public:
+
+    /// 
+    class H3DAPI_API GeometrySelected: public AutoUpdate < SFBool > {
+    protected:
+      // 
+      virtual void update();
+    };
+#ifdef __BORLANDC__
+    friend class GeometrySelected;
+#endif
+
+    /// Constructor.
+    Anchor( Inst< MFChild  > _addChildren    = 0,
+            Inst< MFChild  > _removeChildren = 0,
+            Inst< MFChild > _children        = 0,
+            Inst< SFString > _description    = 0,
+            Inst< SFNode  > _metadata        = 0,
+            Inst< SFBound > _bound           = 0,
+            Inst< MFString > _parameter      = 0,
+            Inst< MFString > _url            = 0,
+            Inst< SFVec3f > _bboxCenter      = 0,
+            Inst< SFVec3f > _bboxSize        = 0 );
+
+    ~Anchor();
+
+    /// The description field in the Anchor node specifies a textual
+    /// description of the Anchor node.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile Anchor_description.dot
+    auto_ptr< SFString >  description;
+
+    /// The parameter  field may be used to supply any additional information
+    /// to be interpreted by the browser. Each string shall consist of
+    /// "keyword=value" pairs.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile Anchor_parameter.dot
+    auto_ptr< MFString >  parameter;
+
+    /// Contains path to file (or name of Viewpoint) used when clicking on a
+    /// geometry in the children field.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile Anchor_url.dot
+    auto_ptr< MFString >  url;
+
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database;
+  protected:
+    auto_ptr< GeometrySelected > on_click;
+    auto_ptr< X3DPointingDeviceSensorNode > intern_pdsn;
+  };
+}
+
+#endif

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __METADATAINTEGER_H__
 #define __METADATAINTEGER_H__
 
-#include "X3DMetadataObject.h"
-#include "X3DNode.h"
-#include "MFInt32.h"
+#include <X3DMetadataObject.h>
+#include <X3DNode.h>
+#include <MFInt32.h>
 
 namespace H3D {
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __CONE_H__
 #define __CONE_H__
 
-#include "X3DGeometryNode.h"
-#include "SFFloat.h"
+#include <X3DGeometryNode.h>
+#include <SFFloat.h>
 
 namespace H3D {
 
@@ -101,10 +101,13 @@ namespace H3D {
     /// Renders the Box using OpenGL.
     virtual void render();
 
-#ifdef USE_HAPTICS
+    /// The number of triangles rendered by this geometry.
+    virtual int nrTriangles() {
+      return 560;
+    }
+
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti ); 
-#endif
 
     /// The side field specifies whether the bottom cap of the cone is
     /// rendered.

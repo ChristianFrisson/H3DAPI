@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Component name="H3DAPI">
+  <Level_1>
+    <Node name="AnyDevice">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="AudioFileReader">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CoordinateDeformer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DebugOptions">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DefaultAppearance">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DeformableShape">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DeviceInfo">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DeviceLog">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="DynamicTransform">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="FitToBoxTransform">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ForceDimensionDevice">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ForceField">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="FreeImageLoader">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="FrictionalSurface">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="FunctionPlotTexture">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GLUTWindow">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GaussianFunction">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeneralFunction">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GeometryBoundTreeOptions">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GlobalSettings">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GodObjectRenderer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="GraphicsCachingOptions">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="HapticLayeredGroup">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="HapticsOptions">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ImageObjectTexture">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ImportLibrary">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MagneticGeometryEffect">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MagneticSurface">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MatrixTransform">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MouseSensor">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OggFileReader">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OpenHapticsOptions">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OpenHapticsRenderer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OpenHapticsSurface">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PointNormalClipPlane">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PythonScript">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="RawImageLoader">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="RenderProperties">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="RuspiniRenderer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Scene">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SensAbleDevice">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Shape">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SimpleMovieTexture">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SmoothSurface">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SpaceWareSensor">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SpaceballSensor">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SpringEffect">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="StereoInfo">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SuperShape">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TexGenGeometry">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ToggleGroup">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TransferFunctionTexture">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TransformInfo">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ViscosityEffect">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+</Component>

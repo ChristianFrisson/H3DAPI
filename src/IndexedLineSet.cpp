@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "IndexedLineSet.h"
-#ifdef USE_HAPTICS
-#include "HLFeedbackShape.h"
-#endif
-#include "X3DTextureNode.h"
+#include <IndexedLineSet.h>
+#include <HLFeedbackShape.h>
+#include <X3DTextureNode.h>
 
 using namespace H3D;
 
@@ -50,6 +48,7 @@ namespace IndexedLineSetInternals {
   FIELDDB_ELEMENT( IndexedLineSet, colorIndex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( IndexedLineSet, colorPerVertex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( IndexedLineSet, coordIndex, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( IndexedLineSet, fogCoord, INPUT_OUTPUT );
 }
 
 IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
@@ -61,7 +60,8 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
                                 Inst< SFCoordinateNode  >  _coord,
                                 Inst< MFInt32 >  _colorIndex,
                                 Inst< SFBool  >  _colorPerVertex,
-                                Inst< MFInt32 >  _coordIndex ) :
+                                Inst< MFInt32 >  _coordIndex, 
+                                Inst< SFFogCoordinate > _fogCoord  ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   set_colorIndex ( _set_colorIndex ),
   set_coordIndex ( _set_coordIndex ),
@@ -69,7 +69,8 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
   coord          ( _coord          ),
   colorIndex     ( _colorIndex     ),
   colorPerVertex ( _colorPerVertex ),
-  coordIndex     ( _coordIndex     ) {
+  coordIndex     ( _coordIndex     ),
+  fogCoord       ( _fogCoord       ){
 
   type_name = "IndexedLineSet";
   database.initFields( this );
@@ -81,6 +82,7 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
   colorIndex->route( displayList );
   colorPerVertex->route( displayList );
   coordIndex->route( displayList );
+  fogCoord->route( displayList );
 
   set_colorIndex->route( colorIndex, id );
   set_coordIndex->route( coordIndex, id );
@@ -152,7 +154,7 @@ void IndexedLineSet::render() {
         }
         color_node->render( ci );
       }
-    
+
       // render all vertices for this polyline.
       for(; i < coord_index.size() && coord_index[i] != -1;  i ++ ) {
         // Set up colors if colors are specified per vertex.
@@ -177,6 +179,10 @@ void IndexedLineSet::render() {
       
         // Render the vertices.
         coordinate_node->render( coord_index[ i ] );
+        if( fogCoord->getValue()){
+          fogCoord->getValue()->render(coord_index[ i ]);
+        }
+
       }
       // end GL_POLY_LINE
       glEnd();
@@ -192,13 +198,3 @@ void IndexedLineSet::render() {
   }
 }
 
-#ifdef USE_HAPTICS
-void IndexedLineSet::traverseSG( TraverseInfo &ti ) {
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( new HLFeedbackShape( this,
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 coordIndex->size() ) );
-  }
-}
-#endif

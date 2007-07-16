@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __METADATADOUBLE_H__
 #define __METADATADOUBLE_H__
 
-#include "X3DMetadataObject.h"
-#include "X3DNode.h"
-#include "MFDouble.h"
+#include <X3DMetadataObject.h>
+#include <X3DNode.h>
+#include <MFDouble.h>
 
 namespace H3D {
 

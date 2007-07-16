@@ -1,9 +1,11 @@
 <DeviceInfo>
-     <HLHapticsDevice 
+    <PhantomDevice  
         positionCalibration=
-"-0.000999991 4.30925e-006 1.52423e-009 0.024
- -2.95451e-006 -0.000685357 -0.000728201 0.384497
- -3.13695e-006 -0.000728194 0.000685364 0.2364991
+"-0.999991 4.30925e-003 1.52423e-006 0.024
+ -2.95451e-003 -0.685357 -0.728201 0.384497
+ -3.13695e-003 -0.728194 0.685364 0.2364991
 0 0 0 1" 
-		 orientationCalibration=" -1  0  0  0.78   " />
+		 orientationCalibration=" -1  0  0  0.78   " >
+		 <OpenHapticsRenderer/>
+	</PhantomDevice>
 </DeviceInfo>

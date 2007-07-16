@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,13 +29,15 @@
 #ifndef __X3DCOMPOSEDGEOMETRYNODE_H__
 #define __X3DCOMPOSEDGEOMETRYNODE_H__
 
-#include "X3DGeometryNode.h"
-#include "X3DCoordinateNode.h"
-#include "TextureCoordinateGenerator.h"
-#include "X3DColorNode.h"
-#include "X3DNormalNode.h"
-#include "X3DVertexAttributeNode.h"
-#include "DependentNodeFields.h"
+#include <X3DGeometryNode.h>
+#include <X3DCoordinateNode.h>
+#include <TextureCoordinateGenerator.h>
+#include <X3DColorNode.h>
+#include <X3DNormalNode.h>
+#include <X3DVertexAttributeNode.h>
+#include <DependentNodeFields.h>
+#include <FogCoordinate.h>
+
 
 namespace H3D {
 
@@ -82,6 +84,9 @@ namespace H3D {
   /// If the attrib field is not empty it shall contain a list of
   /// X3DVertexAttributeNode instances with per-vertex attribute
   /// information for programmable shaders.
+  ///
+  /// If the fogCoord field is not empty, it shall contain a list 
+  /// of per-vertex depth values for calculating fog depth.
   /// 
   /// \par Internal routes:
   /// \dotfile X3DComposedGeometryNode.dot 
@@ -129,6 +134,16 @@ namespace H3D {
                           &X3DVertexAttributeNode::propertyChanged > > 
     MFVertexAttributeNode;    
 
+    
+   /// The SFFogCoordinate is dependent on the propertyChanged
+    /// field of the contained FogCoordinate.
+    typedef DependentSFNode< 
+                FogCoordinate,
+                FieldRef< X3DGeometricPropertyNode,
+                          Field,
+                          &FogCoordinate::propertyChanged > > 
+    SFFogCoordinate;   
+
     /// Display list is extended in order to set front sidedness of 
     /// triangles outside the display list. This is due to that the 
     /// front face value depends the previous value of front face. If we did 
@@ -149,10 +164,10 @@ namespace H3D {
     /// from the bounding box of the geometry as defined in the X3D 
     /// specification. If tex_coord_gen is not NULL then we use the 
     /// TextureCoordinateGenerator to define the texture coordinate generation.
-    virtual void startTexGen( TextureCoordinateGenerator *tex_coord_gen );
+    virtual void startTexGen( X3DTextureCoordinateNode *tex_coord );
 
     /// Stop texture coordinate generation.
-    virtual void stopTexGen( TextureCoordinateGenerator *tex_coord_gen );
+    virtual void stopTexGen( X3DTextureCoordinateNode *tex_coord );
 
     /// Render the texure coordinate with the given index from the 
     /// tc argument. If the currently active texture is a MultiTexture
@@ -180,7 +195,8 @@ namespace H3D {
                              Inst< SFBool           > _colorPerVertex  = 0,
                              Inst< SFBool           > _normalPerVertex = 0,
                              Inst< SFBool           > _solid           = 0,
-			     Inst< MFVertexAttributeNode > _attrib     = 0 );
+			                       Inst< MFVertexAttributeNode > _attrib     = 0,
+                             Inst< SFFogCoordinate     > _fogCoord     =0 );
 
     /// Contains an X3DColorNode whose colors are applied to the
     /// X3DComposedGeometryNode. If the color field is NULL, the
@@ -277,6 +293,14 @@ namespace H3D {
     ///
     /// \dotfile X3DComposedGeometryNode_attrib.dot 
     auto_ptr< MFVertexAttributeNode > attrib;
+
+    /// If the fogCoord field is not empty, it shall contain a list 
+    /// of per-vertex depth values for calculating fog depth.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile FogCoordinate_fogCoord.dot 
+    auto_ptr< SFFogCoordinate > fogCoord;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

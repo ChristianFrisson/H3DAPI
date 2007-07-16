@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #define __THREAD_SAFE_FIELDS_H__
 
 #include <assert.h>
-#include "PeriodicUpdate.h"
-#include "Threads.h"
+#include <PeriodicUpdate.h>
+#include <Threads.h>
 
 namespace H3D {
   
@@ -59,23 +59,23 @@ namespace H3D {
     /// Set the value of the field. 
     inline virtual void setValue( const typename BaseField::value_type &v,
                                   int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if( H3DUtil::HapticThread::inHapticThread() ) {
         rt_value = v;
         rt_value_changed = true;
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert( H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::setValue( v, id );;
         void * param[] = { &this->value, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+        H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
 
     /// Get the value of the field.
     inline virtual const typename BaseField::value_type &getValue( int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if( H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value;
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert( H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::getValue( id );
       }
     }
@@ -83,11 +83,11 @@ namespace H3D {
     /// Make sure that the field is up-to-date. upToDate() is specialized to 
     /// transfer the rt_value to the field if it has been changed.
     virtual void upToDate() {
-      assert( ThreadBase::inMainThread() );
+      assert( H3DUtil::ThreadBase::inMainThread() );
       
       if( rt_value_changed ) {
         void * param[] = { &rt_value, &this->value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+        H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
         this->startEvent();
       } else {
         PeriodicUpdate< BaseField >::upToDate();
@@ -97,24 +97,24 @@ namespace H3D {
   protected:
     /// Callback function to transfer copy a value between two
     /// pointers of the same type.
-    static PeriodicThread::CallbackCode transferValue( void * _data ) {
+    static H3DUtil::PeriodicThread::CallbackCode transferValue( void * _data ) {
       void * * data = static_cast< void * * >( _data );
       typename BaseField::value_type *new_value = 
         static_cast< typename BaseField::value_type * >( data[0] );
       typename BaseField::value_type *rt_value = 
         static_cast< typename BaseField::value_type * >( data[1] );
       *rt_value = *new_value;
-      return PeriodicThread::CALLBACK_DONE;
+      return H3DUtil::PeriodicThread::CALLBACK_DONE;
     }
 
     /// The update function is specialized to synchronize with the
     /// haptics threads and copy the new value of the field to the
     /// rt_value member in a thread safe way.
     inline virtual void update() {
-      assert( ThreadBase::inMainThread() );
+      assert( H3DUtil::ThreadBase::inMainThread() );
       PeriodicUpdate< BaseField >::update();;
       void * param[] = { &this->value, &rt_value };
-      HapticThread::synchronousHapticCB( transferValue, param );
+      H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
     }
     
     /// The copy of the field value to be used in the haptics threads.
@@ -150,23 +150,23 @@ namespace H3D {
     /// Set the value of the field. 
     inline virtual void setValue( typename BaseField::value_type v,
                                   int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if( H3DUtil::HapticThread::inHapticThread() ) {
         rt_value.reset( v );
         rt_value_changed = true;
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::setValue( v, id );
         void * param[] = { v, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
 
     /// Get the value of the field.
     virtual typename BaseField::typed_value_type getValue( int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return static_cast< typename BaseField::typed_value_type >( rt_value.get() );
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::getValue( id );
       }
     }
@@ -174,11 +174,11 @@ namespace H3D {
     /// Make sure that the field is up-to-date. upToDate() is specialized to 
     /// transfer the rt_value to the field if it has been changed.
     virtual void upToDate() {
-      assert( ThreadBase::inMainThread() );
+      assert(  H3DUtil::ThreadBase::inMainThread() );
       
       if( rt_value_changed ) {
         void * param[] = { rt_value.get(), &this->value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
         this->startEvent();
       } else {
         PeriodicUpdate< BaseField >::upToDate();
@@ -186,22 +186,22 @@ namespace H3D {
     }
 
   protected:
-    static PeriodicThread::CallbackCode transferValue( void * _data ) {
+    static H3DUtil::PeriodicThread::CallbackCode transferValue( void * _data ) {
       void * * data = static_cast< void * * >( _data );
       typename BaseField::value_type new_value = 
         static_cast< typename BaseField::value_type >( data[0] );
       AutoRef< typename BaseField::class_type > *rt_value = 
         static_cast< AutoRef< typename BaseField::class_type> * >( data[1] );
       rt_value->reset( new_value );
-      return PeriodicThread::CALLBACK_DONE;
+      return H3DUtil::PeriodicThread::CALLBACK_DONE;
   }
 
     /// onAdd is extended to change the rt_image value in a thread safe way.
     virtual void onAdd( typename BaseField::value_type i ) {
-      assert( ThreadBase::inMainThread() );
+      assert(  H3DUtil::ThreadBase::inMainThread() );
       PeriodicUpdate< BaseField >::onAdd( i );
       void * param[] = { i, &rt_value };
-      HapticThread::synchronousHapticCB( transferValue, param );
+       H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
     }
     
     /// The reference for the haptics loop.
@@ -238,14 +238,14 @@ namespace H3D {
     inline virtual void setValue( 
                  const vector< typename BaseField::value_type > &v,
                  int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         rt_value = v;
         rt_value_changed = true;
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::setValue( v, id );
         void * param[] = { &this->value, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
 
@@ -255,89 +255,89 @@ namespace H3D {
     inline virtual void setValue( typename BaseField::size_type i,
                                   const typename BaseField::value_type &t,
                                   int id = 0  ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         rt_value[i] = t;
         rt_value_changed = true;
       } else {
         // TODO: don't copy the entire rt_value vector, just change the current one.
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::setValue( i, t, id );
         void * param[] = { &this->value, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
 
     /// Swaps the contents of two vectors.
     inline virtual void swap( typename BaseField::vector_type &x, int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         rt_value.swap( x );
         rt_value_changed = true;
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::swap( x, id );
         void * param[] = { &this->value, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
 
     /// Inserts a new element at the end.
     inline virtual void push_back( const typename BaseField::value_type &x,
                                    int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         rt_value.push_back( x );
         rt_value_changed = true;
       } else {
         // TODO: don't copy the entire rt_value vector, just change the current one.
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::push_back( x, id );
         void * param[] = { &this->value, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
 
     /// Removed the last element.
     void pop_back( int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         rt_value.pop_back();
         rt_value_changed = true;
       } else {
         // TODO: don't copy the entire rt_value vector, just change the current one.
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::pop_back( id );
         void * param[] = { &this->value, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
     
     /// Erases all of the elements.
     inline virtual void clear( int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         rt_value.clear();
         rt_value_changed = true;
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         PeriodicUpdate< BaseField >::clear( id );
         void * param[] = { &this->value, &rt_value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
       }
     }
 
     /// Returns a const_iterator pointing to the beginning of the vector.
     inline virtual typename BaseField::const_iterator begin( int id = 0 ) { 
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.begin();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::begin( id );
       }
     }
     
     /// Returns a const_iterator pointing to the end of the vector.
     inline virtual typename BaseField::const_iterator end( int id = 0 ) { 
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.end();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::end( id );
       }
     }
@@ -345,40 +345,40 @@ namespace H3D {
     /// Returns a const_reverse_iterator pointing to the beginning of the
     /// reversed vector.
     inline virtual typename BaseField::const_reverse_iterator rbegin( int id = 0 ) { 
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.rbegin();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::rbegin( id );
       }
     }
     /// Returns a const_reverse_iterator pointing to the end of the reversed 
     /// vector.
     inline virtual typename BaseField::const_reverse_iterator rend( int id = 0 ) { 
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.rend();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::rend( id );
       }
     }
 
     /// Returns the size of the vector.
     inline virtual typename BaseField::size_type size() { 
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.size();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::size();
       }
     }
 
     /// Returns the largest possible size of the vector.
     inline virtual typename BaseField::size_type max_size() {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.max_size();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::max_size();
       }
     }
@@ -386,59 +386,59 @@ namespace H3D {
     /// Number of elements for which memory has been allocated. capacity() 
     /// is always greater than or equal to size().
     inline virtual typename BaseField::size_type capacity() {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.capacity();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::capacity();
       }
     }
 
     /// true if the vector's size is 0.
     inline virtual bool empty() { 
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.empty();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::empty();
       }
     }
     /// Returns the n'th element.
     inline virtual typename BaseField::const_reference operator[]( typename BaseField::size_type n ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value[n];
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::operator[]( n );
       }
     }
 
     /// Returns the first element.
     inline virtual typename BaseField::const_reference front( int id = 0 ) { 
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.front();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::front( id );
       }
     }
 
     /// Returns the last element.
     inline virtual typename BaseField::const_reference back( int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.back();
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::back( id );
       }
     }
 
     /// Gets the value of the field.
     inline virtual const typename BaseField::vector_type &getValue( int id = 0 ) {
-      if( HapticThread::inHapticThread() ) {
+      if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value;
       } else {
-        assert( ThreadBase::inMainThread() );
+        assert(  H3DUtil::ThreadBase::inMainThread() );
         return PeriodicUpdate< BaseField >::getValue( id );
       }
     }
@@ -446,11 +446,11 @@ namespace H3D {
     /// Make sure that the field is up-to-date. upToDate() is specialized to 
     /// transfer the rt_value to the field if it has been changed.
     virtual void upToDate() {
-      assert( ThreadBase::inMainThread() );
+      assert(  H3DUtil::ThreadBase::inMainThread() );
       
       if( rt_value_changed ) {
         void * param[] = { &rt_value, &this->value };
-        HapticThread::synchronousHapticCB( transferValue, param );
+         H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
         this->startEvent();
       } else {
         PeriodicUpdate< BaseField >::upToDate();
@@ -460,24 +460,24 @@ namespace H3D {
   protected:
     /// Callback function to transfer copy a value between two
     /// pointers of the same type.
-    static PeriodicThread::CallbackCode transferValue( void * _data ) {
+    static H3DUtil::PeriodicThread::CallbackCode transferValue( void * _data ) {
       void * * data = static_cast< void * * >( _data );
       typename BaseField::vector_type *new_value = 
         static_cast< typename BaseField::vector_type * >( data[0] );
       typename BaseField::vector_type *rt_value = 
         static_cast< typename BaseField::vector_type * >( data[1] );
       *rt_value = *new_value;
-      return PeriodicThread::CALLBACK_DONE;
+      return H3DUtil::PeriodicThread::CALLBACK_DONE;
     }
 
     /// The update function is specialized to synchronize with the
     /// haptics threads and copy the new value of the field to the
     /// rt_value member in a thread safe way.
     inline virtual void update() {
-      assert( ThreadBase::inMainThread() );
+      assert(  H3DUtil::ThreadBase::inMainThread() );
       PeriodicUpdate< BaseField >::update();;
       void * param[] = { &this->value, &rt_value };
-      HapticThread::synchronousHapticCB( transferValue, param );
+       H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
     }
             
     /// The copy of the field value to be used in the haptics threads.

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,7 +27,7 @@
 #ifndef __MFMATRIX3F_H__
 #define __MFMATRIX3F_H__
 
-#include "MField.h"
+#include <MField.h>
 
 namespace H3D {
 

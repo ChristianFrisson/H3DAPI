@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,13 +29,13 @@
 #ifndef __H3DDISPLAYLISTOBJECT_H__
 #define __H3DDISPLAYLISTOBJECT_H__
 
-#include "H3DApi.h"
-#include "Field.h"
-#include "Instantiate.h"
+#include <H3DApi.h>
+#include <Field.h>
+#include <Instantiate.h>
 #include "GL/glew.h"
-#include "FieldTemplates.h"
-#include "SFBool.h"
-#include "SFTime.h"
+#include <FieldTemplates.h>
+#include <SFBool.h>
+#include <SFTime.h>
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "OpenGL32.lib" )
@@ -120,6 +120,9 @@ namespace H3D {
       /// Returns true if caching is in use and false otherwise.
       bool usingCaching();
 
+      /// Force a rebuild of all display lists created.
+      static void rebuildAllDisplayLists();
+
       /// Returns the number of loops the DisplayList must render without
       /// receiving an event before a display is built.
       unsigned int cachingDelay();
@@ -193,6 +196,10 @@ namespace H3D {
       /// The isActive field is true if the callList() function has been called
       /// in the last scenegraph loop, and false otherwise.
       auto_ptr< IsActive > isActive;
+
+      /// This field is routed to all instances of DisplayList and can be used 
+      /// to force a rebuild of all display lists.
+      static auto_ptr< Field > break_list_field; 
 
       friend class H3DDisplayListObject;
     };

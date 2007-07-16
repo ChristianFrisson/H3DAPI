@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "IndexedTriangleFanSet.h"
-#include "Normal.h"
+#include <IndexedTriangleFanSet.h>
+#include <Normal.h>
 
 using namespace H3D;
 
@@ -61,11 +61,12 @@ IndexedTriangleFanSet::IndexedTriangleFanSet(
                               Inst< MFVertexAttributeNode   > _attrib,
                               Inst< AutoNormal              > _autoNormal,
                               Inst< MFInt32                 > _set_index,
-                              Inst< MFInt32                 > _index ) :
+                              Inst< MFInt32                 > _index,
+                              Inst< SFFogCoordinate         > _fogCoord ) :
   X3DComposedGeometryNode( _metadata, _bound, _displayList, 
                            _color, _coord, _normal, _texCoord, 
                            _ccw, _colorPerVertex, _normalPerVertex, 
-                           _solid, _attrib ),
+                           _solid, _attrib, _fogCoord ),
   autoNormal( _autoNormal ),
   set_index( _set_index ),
   index( _index ) {
@@ -90,8 +91,6 @@ IndexedTriangleFanSet::IndexedTriangleFanSet(
 void IndexedTriangleFanSet::render() {
   X3DCoordinateNode *coordinate_node = coord->getValue();
   X3DTextureCoordinateNode *tex_coord_node = texCoord->getValue();
-  TextureCoordinateGenerator *tex_coord_gen = 
-    dynamic_cast< TextureCoordinateGenerator * >( tex_coord_node );
   X3DColorNode *color_node = color->getValue();
   X3DNormalNode *normal_node = normal->getValue();
 
@@ -99,17 +98,21 @@ void IndexedTriangleFanSet::render() {
     normal_node = autoNormal->getValue();
   }
 
-  bool tex_coords_per_vertex = tex_coord_node && !tex_coord_gen;
+  bool tex_coord_gen = 
+    !tex_coord_node || (tex_coord_node && tex_coord_node->supportsTexGen());
+  bool tex_coords_per_vertex = 
+    tex_coord_node && tex_coord_node->supportsExplicitTexCoords();
+
   const vector< int > &indices  = index->getValue();
  
   if( coordinate_node ) {
  
     // no X3DTextureCoordinateNode, so we generate texture coordinates
     // based on the bounding box according to the X3D specification.
-    if( !tex_coords_per_vertex ) {
-      startTexGen( tex_coord_gen );
-    } else if( coordinate_node->nrAvailableCoords() > 
-               tex_coord_node->nrAvailableTexCoords() ) {
+    if( tex_coord_gen ) startTexGen( tex_coord_node );
+    if( tex_coords_per_vertex && 
+        coordinate_node->nrAvailableCoords() > 
+        tex_coord_node->nrAvailableTexCoords() ) {
       stringstream s;
       s << "Must contain at least as many elements as coord (" 
         << coordinate_node->nrAvailableCoords() << ") in \"" 
@@ -159,6 +162,7 @@ void IndexedTriangleFanSet::render() {
       normal_node->renderArray();
       if( color_node ) color_node->renderArray();
       if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
+      if( fogCoord->getValue()) fogCoord->getValue()->renderArray();
       // Set up shader vertex attributes.
       for( unsigned int attrib_index = 0;
            attrib_index < attrib->size(); attrib_index++ ) {
@@ -187,6 +191,7 @@ void IndexedTriangleFanSet::render() {
       normal_node->disableArray();
       if( color_node ) color_node->disableArray();
       if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
+      if( fogCoord->getValue()) fogCoord->getValue()->disableArray();
       // Set up shader vertex attributes.
       for( unsigned int attrib_index = 0;
            attrib_index < attrib->size(); attrib_index++ ) {
@@ -220,6 +225,7 @@ void IndexedTriangleFanSet::render() {
             if( color_node ) color_node->render( indices[fan_root] );
             if( tex_coords_per_vertex ) renderTexCoord( indices[fan_root],
                                                         tex_coord_node );
+            if( fogCoord->getValue()) fogCoord->getValue()->render(indices[fan_root]);
             // Set up shader vertex attributes.
             for( unsigned int attrib_index = 0;
                  attrib_index < attrib->size(); attrib_index++ ) {
@@ -233,6 +239,7 @@ void IndexedTriangleFanSet::render() {
             if( color_node ) color_node->render( indices[i+1] );
             if( tex_coords_per_vertex ) renderTexCoord( indices[i+1],
                                                         tex_coord_node );
+            if( fogCoord->getValue()) fogCoord->getValue()->render(indices[i+1]);
             // Set up shader vertex attributes.
             for( unsigned int attrib_index = 0;
                  attrib_index < attrib->size(); attrib_index++ ) {
@@ -246,6 +253,7 @@ void IndexedTriangleFanSet::render() {
             if( color_node ) color_node->render( indices[i+2] );
             if( tex_coords_per_vertex ) renderTexCoord( indices[i+2],
                                                         tex_coord_node );
+            if( fogCoord->getValue()) fogCoord->getValue()->render(indices[i+2]);
             // Set up shader vertex attributes.
             for( unsigned int attrib_index = 0;
                  attrib_index < attrib->size(); attrib_index++ ) {
@@ -261,9 +269,7 @@ void IndexedTriangleFanSet::render() {
       }
     }
     // disable texture coordinate generation.
-    if( !tex_coords_per_vertex ) {
-      stopTexGen( tex_coord_gen );
-    }
+    if( tex_coord_gen ) stopTexGen( tex_coord_node );
 
     if ( color_node ) {
       glDisable( GL_COLOR_MATERIAL );
@@ -271,23 +277,12 @@ void IndexedTriangleFanSet::render() {
   } 
 }
 
-#ifdef USE_HAPTICS
 void IndexedTriangleFanSet::traverseSG( TraverseInfo &ti ) {
+  X3DComposedGeometryNode::traverseSG( ti );
   // use backface culling if solid is true
   if( solid->getValue() ) useBackFaceCulling( true );
   else useBackFaceCulling( false );
-
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-#ifdef HAVE_OPENHAPTICS
-    ti.addHapticShapeToAll( getOpenGLHapticShape( 
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 index->size() ) );
-#endif
-  }
 }
-#endif
-
 
 void IndexedTriangleFanSet::AutoNormal::update() {
   bool normals_per_vertex = 

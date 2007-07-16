@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,11 +29,11 @@
 #ifndef __X3DLIGHTNODE_H__
 #define __X3DLIGHTNODE_H__
 
-#include "X3DChildNode.h"
-#include "H3DDisplayListObject.h"
-#include "H3DRenderStateObject.h"
-#include "SFFloat.h"
-#include "SFColor.h"
+#include <X3DChildNode.h>
+#include <H3DDisplayListObject.h>
+#include <H3DRenderStateObject.h>
+#include <SFFloat.h>
+#include <SFColor.h>
 
 namespace H3D {
 

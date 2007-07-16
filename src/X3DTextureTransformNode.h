@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __X3DTEXTURETRANSFORMNODE_H__
 #define __X3DTEXTURETRANSFORMNODE_H__
 
-#include "X3DAppearanceChildNode.h"
+#include <X3DAppearanceChildNode.h>
 namespace H3D {
   /// \ingroup AbstractNodes
   /// \class X3DTextureTransformNode

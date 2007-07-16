@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,7 +27,7 @@
 #ifndef __SFROTATION_H__
 #define __SFROTATION_H__
 
-#include "SField.h"
+#include <SField.h>
 
 namespace H3D {
 

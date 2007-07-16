@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,15 +28,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Appearance.h"
+#include <Appearance.h>
 #include "GL/glew.h"
-#include "X3DTextureTransformNode.h"
-#include "X3DTextureNode.h"
-#include "X3DMaterialNode.h"
-#include "LineProperties.h"
-#include "MultiTexture.h"
-#include "Console.h"
-#include "X3DShapeNode.h"
+#include <X3DTextureTransformNode.h>
+#include <X3DTextureNode.h>
+#include <X3DMaterialNode.h>
+#include <LineProperties.h>
+#include <MultiTexture.h>
+#include <Console.h>
+#include <X3DShapeNode.h>
 
 using namespace H3D;
 
@@ -63,17 +63,11 @@ Appearance::Appearance( Inst< DisplayList            > _displayList,
                         Inst< SFMaterialNode         > _material,
                         Inst< SFNode                 > _metadata,
                         Inst< SFTextureNode          > _texture,
-                        Inst< SFTextureTransformNode > _textureTransform
-#ifdef USE_HAPTICS
-												, Inst< SFSurface              > _surface
-#endif
-												, Inst< MFShaderNode           > _shaders,
+                        Inst< SFTextureTransformNode > _textureTransform,
+                        Inst< SFSurface              > _surface,
+                        Inst< MFShaderNode           > _shaders,
                         Inst< SFRenderProperties     > _renderProperties ) :
-X3DAppearanceNode( _displayList, _metadata
-#ifdef USE_HAPTICS
-									, _surface
-#endif
-									),
+X3DAppearanceNode( _displayList, _metadata, _surface ),
 fillProperties  ( _fillProperties   ),
 lineProperties  ( _lineProperties   ),
 material        ( _material         ),
@@ -121,10 +115,10 @@ void Appearance::render()     {
   X3DTextureTransformNode *tt = textureTransform->getValue();
   if ( tt ) {
     MultiTexture *mt = dynamic_cast< MultiTexture * >( t );
-    if( mt ) 
+    if( mt && mt->texture->size() > 0 ) 
       tt->renderForTextureUnits( 0, mt->texture->size() - 1 );
     else
-      tt->render();
+      tt->renderForTextureUnit( 0 );
   } else {
     GLint saved_mode;
     glGetIntegerv( GL_MATRIX_MODE, &saved_mode );
@@ -233,7 +227,6 @@ void Appearance::postRender() {
   X3DAppearanceNode::postRender();     
 }
 
-#ifdef USE_HAPTICS
 void Appearance::traverseSG( TraverseInfo &ti ) {
   X3DAppearanceNode::traverseSG( ti );     
   
@@ -259,4 +252,3 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
   RenderProperties *rp = renderProperties->getValue();
   if ( rp ) rp->traverseSG( ti );
 }
-#endif

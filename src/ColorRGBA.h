@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __COLORRGBA_H__
 #define __COLORRGBA_H__
 
-#include "X3DColorNode.h"
-#include "FieldTemplates.h"
+#include <X3DColorNode.h>
+#include <FieldTemplates.h>
 #include <GL/glew.h>
-#include "MFColorRGBA.h"
+#include <MFColorRGBA.h>
 
 namespace H3D {
   /// \ingroup X3DNodes

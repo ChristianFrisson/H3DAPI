@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,13 +30,13 @@
 #define __SPACEWARESENSOR_H__
 
 
-#include "X3DSensorNode.h"
+#include <X3DSensorNode.h>
 #include <list>
-#include "SFVec3f.h"
-#include "SFFloat.h"
-#include "SFInt32.h"
-#include "SFRotation.h"
-#include "Threads.h"
+#include <SFVec3f.h>
+#include <SFFloat.h>
+#include <SFInt32.h>
+#include <SFRotation.h>
+#include <Threads.h>
 
 namespace H3D {
 
@@ -91,13 +91,69 @@ namespace H3D {
     /// values routed to it, i.e. each time a field generates an event the 
     /// value of that field is multiplied with the current rotation.
     ///
-    struct H3DAPI_API AccumulateRotation: 
+    struct H3DAPI_API AccumulateRotation:
       public AutoUpdate< SFRotation > {
+        AccumulateRotation() { last_time = TimeStamp(); }
+      
+      virtual void setValue( const Rotation &r, int id = 0 ) {
+        SFRotation::setValue( r, id );
+        last_time = TimeStamp();
+      }
+
       virtual void update() {
+        H3DTime current_time = TimeStamp();
+        H3DTime time_scale = 1;
+        if( static_cast< SpaceWareSensor * >(owner)->accumulateTimeDependent->getValue() )
+          time_scale = current_time - last_time;
+        last_time = current_time;
         Rotation r = static_cast< SFRotation * >( event.ptr )->getValue();
-        value = r * value;
+        value = ( r * time_scale ) * value;
+      }
+      protected:
+      H3DTime last_time;
+    };
+
+    /// This class is an AutoUpdate class that sets the field
+    /// accumulatedRotation to its input value and also sets
+    /// accumulatedYaw, accumulatedPitch and accumulatedRoll to
+    /// a value dependent on input value
+    ///
+    class H3DAPI_API ResetAccumulatedRotation: 
+      public AutoUpdate< SFRotation > {
+
+     public:
+      virtual void setValue( const Rotation &r, int id = 0 ) {
+        SFRotation::setValue( r );
+        SpaceWareSensor * sws = static_cast< SpaceWareSensor * >(owner);
+        sws->accumulatedRotation->setValue( r, sws->id );
+        Rotation temp_r = r;
+        Vec3f euler_angles = temp_r.toEulerAngles();
+        sws->accumulatedYaw->setValue(
+          Rotation( 1, 0, 0, euler_angles.x ), sws->id );
+        sws->accumulatedPitch->setValue(
+          Rotation( 0, 1, 0, euler_angles.y ), sws->id );
+        sws->accumulatedRoll->setValue(
+          Rotation( 0, 0, 1, euler_angles.z ), sws->id );        
+      }
+      
+    protected:
+      virtual void update() {
+        SFRotation::update();
+        SpaceWareSensor * sws = static_cast< SpaceWareSensor * >(owner);
+        sws->accumulatedRotation->setValue( value, sws->id );
+        Rotation temp_r = value;
+        Vec3f euler_angles = temp_r.toEulerAngles();
+        sws->accumulatedYaw->setValue(
+          Rotation( 1, 0, 0, euler_angles.x ), sws->id );
+        sws->accumulatedPitch->setValue(
+          Rotation( 0, 1, 0, euler_angles.y ), sws->id );
+        sws->accumulatedRoll->setValue(
+          Rotation( 0, 0, 1, euler_angles.z ), sws->id );     
       }
     };
+#ifdef __BORLANDC__
+    friend class ResetAccumulatedRotation;
+#endif
 
     /// This class is an AutoUpdate class that accumulates the Vec3f
     /// values routed to it, i.e. each time a field generates an event the 
@@ -105,11 +161,47 @@ namespace H3D {
     ///
     struct H3DAPI_API AccumulateTranslation: 
       public AutoUpdate< SFVec3f > {
+      AccumulateTranslation() { last_time = TimeStamp(); }
+
+      virtual void setValue( const Vec3f &v, int id = 0 ) {
+        SFVec3f::setValue( v, id );
+        last_time = TimeStamp();
+      }
+      
       virtual void update() {
+        H3DTime current_time = TimeStamp();
+        H3DTime time_scale = 1;
+        if( static_cast< SpaceWareSensor * >(owner)->accumulateTimeDependent->getValue() )
+          time_scale = ( current_time - last_time ) * 0.025f;
+        last_time = current_time;
         const Vec3f &v = static_cast< SFVec3f * >( event.ptr )->getValue();
-        value = value + v;
+        value = value + v * time_scale;
+      }
+    protected:
+      H3DTime last_time;
+    };
+
+    /// This class is an AutoUpdate class that sets the field
+    /// accumulatedTranslation to its input value
+    ///
+    class H3DAPI_API ResetAccumulatedTranslation: 
+      public AutoUpdate< SFVec3f > {
+    public:
+      virtual void setValue( const Vec3f &v, int id = 0 ) {
+        SFVec3f::setValue( v );
+        SpaceWareSensor * sws = static_cast< SpaceWareSensor * >(owner);
+        sws->accumulatedTranslation->setValue( v, sws->id );
+      }
+    protected: 
+      virtual void update() {
+        SFVec3f::update();
+        SpaceWareSensor * sws = static_cast< SpaceWareSensor * >(owner);
+        sws->accumulatedTranslation->setValue( value, sws->id );
       }
     };
+#ifdef __BORLANDC__
+    friend class ResetAccumulatedTranslation;
+#endif
   
     /// Constructor.
     SpaceWareSensor( 
@@ -135,8 +227,16 @@ namespace H3D {
                     Inst< SFFloat               > _rotationScale = 0,
                     Inst< SFInt32               > _buttons = 0,
                     Inst< SFInt32               > _latestButtonPress = 0,
-                    Inst< SFInt32               > _latestButtonRelease = 0
+                    Inst< SFInt32               > _latestButtonRelease = 0,
+                    Inst< SFBool                > _accumulateTimeDependent = 0,
+          Inst< ResetAccumulatedTranslation > _resetAccumulatedTranslation = 0,
+          Inst< ResetAccumulatedRotation > _resetAccumulatedRotation = 0
                     );
+
+    ~SpaceWareSensor() {
+      if( this == sws_instance )
+        sws_instance = 0;
+    }
 
     /// Contains the current translation as reported by the device.
     ///
@@ -210,7 +310,7 @@ namespace H3D {
     /// <b>Access type: </b> outputOnly \n
     /// 
     /// \dotfile SpaceWareSensor_instantRotation.dot
-    auto_ptr< ScaleRotation>      instantRotation;
+    auto_ptr< ScaleRotation>     instantRotation;
 
     /// The sum of all instantTranslation values.
     ///
@@ -290,11 +390,32 @@ namespace H3D {
     /// \dotfile SpaceWareSensor_latestButtonRelease.dot
     auto_ptr< SFInt32 > latestButtonRelease;
 
-#ifdef USE_HAPTICS
+    /// If true the Accumulated-fields depends on time passed since
+    /// last time accumulated was updated instead of frame rate.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// 
+    /// \dotfile SpaceWareSensor_latestButtonRelease.dot
+    auto_ptr< SFBool > accumulateTimeDependent;
+
+    /// Resets the value of accumulatedTranslation to its own value
+    ///
+    /// <b>Access type: </b> inputOnly \n
+    /// 
+    /// \dotfile SpaceWareSensor_latestButtonRelease.dot
+    auto_ptr< ResetAccumulatedTranslation > resetAccumulatedTranslation;
+
+    /// Resets the value of accumulatedRotation to its own value.
+    /// Also resets accumulatedYaw, accumulatedPitch and accumulatedRoll
+    ///
+    /// <b>Access type: </b> inputOnly \n
+    /// 
+    /// \dotfile SpaceWareSensor_latestButtonRelease.dot
+    auto_ptr< ResetAccumulatedRotation > resetAccumulatedRotation;
+
     /// Transfers the values from the device communication thread to
     /// the scenegraph thread.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
 
     // This data structure is used to transfer button data from the 
     // device communication thread to the scene graph thread.
@@ -319,10 +440,14 @@ namespace H3D {
    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    // instance of the first SpaceWareSensor created
+    // used if the spacewaresensor should be used to navigate the scene
+    static SpaceWareSensor *sws_instance;
+
   private:
 #ifdef HAVE_3DXWARE
     // the handle of the communication thread.
-    auto_ptr< SimpleThread > thread_handle;
+    auto_ptr< H3DUtil::SimpleThread > thread_handle;
 #endif
   };
 }

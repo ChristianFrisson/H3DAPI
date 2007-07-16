@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -32,8 +32,8 @@
 #define __DYNAMICLIBRARY_H__
 
 #include <string>
-#include "H3DApi.h"
-#include "Exception.h"
+#include <H3DApi.h>
+#include <Exception.h>
 
 namespace H3D {
   struct H3DAPI_API DynamicLibrary {

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __INTEGERSEQUENCER_H__
 #define __INTEGERSEQUENCER_H__
 
-#include "X3DSequencerNode.h"
-#include "MFInt32.h"
-#include "SFInt32.h"
+#include <X3DSequencerNode.h>
+#include <MFInt32.h>
+#include <SFInt32.h>
 
 namespace H3D {
 

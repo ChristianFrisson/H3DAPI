@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __CONTOURPOLYLINE2D_H__
 #define __CONTOURPOLYLINE2D_H__
 
-#include "X3DNurbsControlCurveNode.h"
-#include "MFVec2d.h"
+#include <X3DNurbsControlCurveNode.h>
+#include <MFVec2d.h>
 
 namespace H3D {
 

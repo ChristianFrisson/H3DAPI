@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Grouping">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+    </Prerequisites>
+    <Node name="Group">
+      <addChildren support="optional"/>
+      <removeChildren support="optional"/>
+    </Node>
+    <Node name="Transform">
+      <addChildren support="optional"/>
+      <removeChildren support="optional"/>
+    </Node>
+    <Node name="WorldInfo">
+      <info support="no"/>
+      <title support="no"/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+    </Prerequisites>
+    <Node name="Group">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Transform">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Switch">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="WorldInfo">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+    </Prerequisites>
+    <Node name="StaticGroup">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+</Component>

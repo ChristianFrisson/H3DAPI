@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __BOOLEANSEQUENCER_H__
 #define __BOOLEANSEQUENCER_H__
 
-#include "X3DSequencerNode.h"
-#include "MFBool.h"
+#include <X3DSequencerNode.h>
+#include <MFBool.h>
 
 namespace H3D {
 

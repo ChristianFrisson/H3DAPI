@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DFogObject.h"
-#include "ResourceResolver.h"
+#include <X3DFogObject.h>
+#include <ResourceResolver.h>
 
 using namespace H3D;
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,11 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "LineSet.h"
-#include "X3DTextureNode.h"
-#ifdef USE_HAPTICS
-#include "HLFeedbackShape.h"
-#endif
+#include <LineSet.h>
+#include <X3DTextureNode.h>
+#include <HLFeedbackShape.h>
 
 using namespace H3D;
 
@@ -47,6 +45,8 @@ namespace LineSetInternals {
   FIELDDB_ELEMENT( LineSet, color, INPUT_OUTPUT );
   FIELDDB_ELEMENT( LineSet, coord, INPUT_OUTPUT );
   FIELDDB_ELEMENT( LineSet, vertexCount, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( LineSet, fogCoord, INPUT_OUTPUT );
+
 }
 
 
@@ -55,11 +55,13 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
                   Inst< DisplayList      > _displayList,
                   Inst< SFColorNode      > _color,
                   Inst< SFCoordinateNode > _coord,
-                  Inst< MFInt32          > _vertexCount ) :
+                  Inst< MFInt32          > _vertexCount, 
+                  Inst< SFFogCoordinate  > _fogCoord  ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   color          ( _color       ),
   coord          ( _coord       ),
-  vertexCount    ( _vertexCount ) {
+  vertexCount    ( _vertexCount ),
+  fogCoord       ( _fogCoord    ){
 
   type_name = "LineSet";
   database.initFields( this );
@@ -67,6 +69,7 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
   color->route( displayList );
   coord->route( displayList );
   vertexCount->route( displayList );
+  fogCoord->route( displayList );
 
   coord->route( bound );
 }
@@ -124,6 +127,9 @@ void LineSet::render() {
           
         // Render the vertices.
         coordinate_node->render( vertex_counter );
+        if( fogCoord->getValue()){
+          fogCoord->getValue()->render(vertex_counter);
+        }
       }
       // end GL_POLY_LINE
       glEnd();
@@ -137,16 +143,3 @@ void LineSet::render() {
   }
 }
 
-#ifdef USE_HAPTICS
-void LineSet::traverseSG( TraverseInfo &ti ) {
-  X3DCoordinateNode *coord_node = coord->getValue();
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() && coord_node ) {
-    HLFeedbackShape *fs = 
-      new HLFeedbackShape( this,
-                           ti.getCurrentSurface(),
-                           ti.getAccForwardMatrix(),
-                           coord_node->nrAvailableCoords());
-    ti.addHapticShapeToAll( fs );
-  }
-}
-#endif

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __FLOATVERTEXATTRIBUTE_H__
 #define __FLOATVERTEXATTRIBUTE_H__
 
-#include "X3DVertexAttributeNode.h"
-#include "MFFloat.h"
-#include "SFInt32.h"
+#include <X3DVertexAttributeNode.h>
+#include <MFFloat.h>
+#include <SFInt32.h>
 
 namespace H3D {
   /// \ingroup X3DNodes

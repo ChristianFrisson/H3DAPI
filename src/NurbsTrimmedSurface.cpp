@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,12 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "NurbsTrimmedSurface.h"
-#include "Coordinate.h"
-#ifdef USE_HAPTICS
-#include "HLFeedbackShape.h"
-#endif
-#include "TextureCoordinateGenerator.h"
+#include <NurbsTrimmedSurface.h>
+#include <Coordinate.h>
+#include <HLFeedbackShape.h>
+#include <TextureCoordinateGenerator.h>
 
 using namespace H3D;
 
@@ -148,12 +146,3 @@ void NurbsTrimmedSurface::renderBetweenBeginEnd(
 		}
 }
 
-#ifdef USE_HAPTICS
-void NurbsTrimmedSurface::traverseSG( TraverseInfo &ti ) {
-	if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-		ti.addHapticShapeToAll(  getOpenGLHapticShape( ti.getCurrentSurface(),
-                                                   ti.getAccForwardMatrix() ) );
-  }
-  X3DNurbsSurfaceGeometryNode::traverseSG( ti );
-}
-#endif

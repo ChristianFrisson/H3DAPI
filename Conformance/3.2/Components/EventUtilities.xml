@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="EventUtilities">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+    </Prerequisites>
+    <Node name="BooleanFilter">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="BooleanSequencer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="BooleanToggle">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="BooleanTrigger">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="IntegerSequencer">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="IntegerTrigger">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TimeTrigger">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+</Component>

@@ -66,7 +66,7 @@ namespace yy
 #line 6 "vrml.bison"
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -99,14 +99,14 @@ namespace yy
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include "H3DApi.h"
-#include "Node.h"
-#include "Group.h"
-#include "DEFNodes.h"
-#include "Inline.h"
-#include "H3DExports.h"
-#include "X3D.h"
-#include "X3DTypeFunctions.h"
+#include <H3DApi.h>
+#include <Node.h>
+#include <Group.h>
+#include <DEFNodes.h>
+#include <Inline.h>
+#include <H3DExports.h>
+#include <X3D.h>
+#include <X3DTypeFunctions.h>
 
 using namespace H3D;
 using namespace X3D;
@@ -114,8 +114,8 @@ using namespace X3D;
 // For H3D API purposes, we include a copy of FlexLexer.h so that
 // users don't need a copy of Flex installed just to compile the
 // API.
-#include "FlexLexer.h"
-#include "VrmlDriver.h"
+#include <FlexLexer.h>
+#include <VrmlDriver.h>
 
 #include <iostream>
 #include <sstream>

@@ -9,8 +9,8 @@
 #ifndef __DEFNODES_H__
 #define __DEFNODES_H__
 
-#include "Exception.h"
-#include "Node.h"
+#include <Exception.h>
+#include <Node.h>
 #include <map>
 #include <string>
 
@@ -105,6 +105,10 @@ namespace H3D {
           // unref the node that is removed
           (*i).second->unref();
 	map< const string, Node * >::clear();
+      }
+
+      bool empty() {
+        return map< const string, Node * >::empty();
       }
 
       /// Get the node by its DEF name.

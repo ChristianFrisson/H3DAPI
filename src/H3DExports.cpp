@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -24,22 +24,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DExports.h"
-#ifdef USE_HAPTICS
-#include "DeviceInfo.h"
-#include "FakeHapticsDevice.h"
-#endif
+#include <H3DExports.h>
+#include <DeviceInfo.h>
+#include <H3DHapticsDevice.h>
 
 using namespace H3D;
 
 namespace H3DExportsInternal {
-#ifdef USE_HAPTICS
   static AutoRef< H3DHapticsDevice > no_device( NULL ); 
-#endif
 }
 
 Node *H3DExports::getH3DExportNode( const string &name ) {
-#ifdef USE_HAPTICS
   if( name == "HDEV" ) {
     DeviceInfo *di = DeviceInfo::getActive();
     if( di && di->device->size() > 0 ) 
@@ -53,7 +48,6 @@ Node *H3DExports::getH3DExportNode( const string &name ) {
       return H3DExportsInternal::no_device.get();
     }
   }
-#endif
   
   return NULL;
 }

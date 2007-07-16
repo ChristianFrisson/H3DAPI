@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #define __SOUND_H__
 
 
-#include "X3DSoundNode.h"
-#include "X3DSoundSourceNode.h"
+#include <X3DSoundNode.h>
+#include <X3DSoundSourceNode.h>
 
 namespace H3D {
 
@@ -164,11 +164,9 @@ namespace H3D {
            Inst< SFBool >  _spatialize = 0,
            Inst< ALSoundSetup > _soundSetup = 0 );
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. Saves the accForwardMatrix and calls
     /// traverseSG() for source.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
 
     /// Perform the OpenAL calls to render the sound node.
     virtual void ALrender(); 

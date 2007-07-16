@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "GaussianFunction.h"
+#include <GaussianFunction.h>
 
 using namespace H3D;
 
@@ -62,8 +62,8 @@ GaussianFunction::GaussianFunction( Inst< SFNode  > _metadata,
   width->setValue( 1 );
 }
 
-H3DFloat GaussianFunction::get(H3D::H3DFloat x) {
-  H3DFloat diff = x - center->getValue();
-  H3DFloat w = width->getValue();
+H3DDouble GaussianFunction::evaluate( H3DDouble *x ) {
+  H3DDouble diff = x[0] - center->getValue();
+  H3DDouble w = width->getValue();
   return amplitude->getValue() * H3DExp( -(diff*diff )/( w * w ) );
 }

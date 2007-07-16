@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,15 +29,15 @@
 #ifndef __APPEARANCE_H__
 #define __APPEARANCE_H__
 
-#include "X3DAppearanceNode.h"
-#include "FillProperties.h"
-#include "LineProperties.h"
-#include "RenderProperties.h"
-#include "X3DMaterialNode.h"
-#include "X3DTextureNode.h"
-#include "X3DTextureTransformNode.h"
-#include "X3DShaderNode.h"
-#include "DependentNodeFields.h"
+#include <X3DAppearanceNode.h>
+#include <FillProperties.h>
+#include <LineProperties.h>
+#include <RenderProperties.h>
+#include <X3DMaterialNode.h>
+#include <X3DTextureNode.h>
+#include <X3DTextureTransformNode.h>
+#include <X3DShaderNode.h>
+#include <DependentNodeFields.h>
 
 namespace H3D {
 
@@ -156,12 +156,8 @@ namespace H3D {
                 Inst< SFMaterialNode         > _material         = 0,
                 Inst< SFNode                 > _metadata         = 0,
                 Inst< SFTextureNode          > _texture          = 0,
-                Inst< SFTextureTransformNode > _textureTransform = 0
-#ifdef USE_HAPTICS
-								,
-                Inst< SFSurface              > _surface          = 0
-#endif
-								,
+                Inst< SFTextureTransformNode > _textureTransform = 0,
+                Inst< SFSurface              > _surface          = 0,
                 Inst< MFShaderNode           > _shaders           = 0,
                 Inst< SFRenderProperties     > _renderProperties  = 0 );
 
@@ -179,10 +175,7 @@ namespace H3D {
     /// the call to preRender().
     virtual void postRender();
 
-#ifdef USE_HAPTICS
     virtual void traverseSG( TraverseInfo &ti ); 
-#endif
-
 
     /// This function checks the transparency field to determine if the
     /// material requires that the geometry is rendered with transparency

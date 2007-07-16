@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,9 +30,9 @@
 #define __X3DKEYSENSOR_H__
 
 
-#include "X3DKeyDeviceSensorNode.h"
-#include "SFInt32.h"
-#include "SFString.h"
+#include <X3DKeyDeviceSensorNode.h>
+#include <SFInt32.h>
+#include <SFString.h>
 
 namespace H3D {
 

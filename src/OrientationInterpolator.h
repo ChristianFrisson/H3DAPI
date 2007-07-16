@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __ORIENTATIONINTERPOLATOR_H__
 #define __ORIENTATIONINTERPOLATOR_H__
 
-#include "X3DInterpolatorNode.h"
-#include "SFRotation.h"
-#include "MFRotation.h"
+#include <X3DInterpolatorNode.h>
+#include <SFRotation.h>
+#include <MFRotation.h>
 
 namespace H3D {
 

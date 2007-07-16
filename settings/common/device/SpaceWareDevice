@@ -1,3 +1,5 @@
 <DeviceInfo>
-  <SpaceWareHapticsDevice />
+  <SpaceWareHapticsDevice >
+	<GodObjectRenderer/>
+  </SpaceWareHapticsDevice >
 </DeviceInfo>

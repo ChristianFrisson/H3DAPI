@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 #ifndef __DEPENDENTNODEFIELDS_H__
 #define __DEPENDENTNODEFIELDS_H__
 
-#include "SFNode.h"
-#include "MFNode.h"
+#include <SFNode.h>
+#include <MFNode.h>
 
 namespace H3D {
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,13 +29,13 @@
 #ifndef __TEXTUREPROPERTIES_H__
 #define __TEXTUREPROPERTIES_H__
 
-#include "X3DNode.h"
-#include "H3DDisplayListObject.h"
-#include "SFInt32.h"
-#include "SFBool.h"
-#include "SFString.h"
-#include "SFFloat.h"
-#include "SFColorRGBA.h"
+#include <X3DNode.h>
+#include <H3DDisplayListObject.h>
+#include <SFInt32.h>
+#include <SFBool.h>
+#include <SFString.h>
+#include <SFFloat.h>
+#include <SFColorRGBA.h>
 
 namespace H3D {
   /// \ingroup X3DNodes

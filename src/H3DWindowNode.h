@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __H3DWINDOWNODE_H__
 #define __H3DWINDOWNODE_H__
 
-#include "Viewpoint.h"
-#include "MFNode.h"
-#include "SFInt32.h"
-#include "DefaultAppearance.h"
+#include <X3DViewpointNode.h>
+#include <MFNode.h>
+#include <SFInt32.h>
+#include <DefaultAppearance.h>
 
 namespace H3D {
 
@@ -49,7 +49,7 @@ namespace H3D {
   class H3DAPI_API H3DWindowNode : public Node {
   public:
     
-    typedef TypedSFNode< Viewpoint > SFViewpoint;
+    typedef TypedSFNode< X3DViewpointNode > SFViewpoint;
 
     /// The mode for rendering specified as a string.
     class RenderMode: public SFString {
@@ -87,6 +87,30 @@ namespace H3D {
         /// eye in cyan. 
         RED_CYAN_STEREO
       } Mode;
+
+      /// setValue is specialized so that the stecil mask is rebuilt if
+      /// the mode choosen is one that requires a stencil mask
+      virtual void setValue( const string &v,  int id = 0 ) {
+        SFString::setValue( v, id );
+        if( value == "VERTICAL_INTERLACED" ||
+            value == "HORIZONTAL_INTERLACED" ||
+            value == "VERTICAL_INTERLACED_GREEN_SHIFT" ) {
+          H3DWindowNode *window = static_cast< H3DWindowNode * >( getOwner() );
+          window->rebuild_stencil_mask = true;
+        }
+      }
+
+      /// update is specialized so that the stecil mask is rebuilt if
+      /// the mode choosen is one that requires a stencil mask
+      virtual void update() {
+        SFString::update();
+        if( value == "VERTICAL_INTERLACED" ||
+            value == "HORIZONTAL_INTERLACED" ||
+            value == "VERTICAL_INTERLACED_GREEN_SHIFT" ) {
+          H3DWindowNode *window = static_cast< H3DWindowNode * >( getOwner() );
+          window->rebuild_stencil_mask = true;
+        }
+      }
 
       /// Returns true if the current render mode is a stereo mode.
       inline bool isStereoMode() { 
@@ -195,7 +219,7 @@ namespace H3D {
     bool calculateFarAndNearPlane( H3DFloat &far,
                                    H3DFloat &near,
                                    X3DChildNode *child,
-                                   Viewpoint *vp,
+                                   X3DViewpointNode *vp,
                                    bool include_stylus );
 
     /// The width in pixels of the window.
@@ -264,6 +288,12 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+
+    string default_nav;
+    vector< H3DFloat > default_avatar;
+    H3DFloat default_speed;
+    bool default_collision;
+
   protected:
 #ifdef WIN32
     HGLRC rendering_context;
@@ -294,6 +324,11 @@ namespace H3D {
       multi_pass_transparency = b;
     }
 
+    // Render the child node. Will be called after all viewports etc has
+    // been set up in order to render the child and everything else that
+    // needs to be rendered.
+    void renderChild( X3DChildNode *c );
+
     friend class Scene; 
 
     bool multi_pass_transparency;
@@ -304,6 +339,8 @@ namespace H3D {
     unsigned char *stencil_mask;
     unsigned int stencil_mask_height;
     unsigned int stencil_mask_width;
+    bool last_loop_mirrored;
+
   };
 }
 

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Profile name="Full">
+  <Component name="Core" level="2"/>
+  <Component name="Time" level="2"/>
+  <Component name="Networking" level="3"/>
+  <Component name="Grouping" level="3"/>
+  <Component name="Rendering" level="4"/>
+  <Component name="Shape" level="3"/>
+  <Component name="Geometry3D" level="4"/>
+  <Component name="Geometry2D" level="2"/>
+  <Component name="Text" level="1"/>
+  <Component name="Sound" level="1"/>
+  <Component name="Lighting" level="3"/>
+  <Component name="Texturing" level="3"/>
+  <Component name="Interpolation" level="3"/>
+  <Component name="PointingDeviceSensor" level="1"/>
+  <Component name="KeyDeviceSensor" level="2"/>
+  <Component name="EnvironmentalSensor" level="2"/>
+  <Component name="Navigation" level="2"/>
+  <Component name="EnvironmentalEffects" level="3"/>
+  <Component name="Geospatial" level="1"/>
+  <Component name="H-Anim" level="1"/>
+  <Component name="NURBS" level="4"/>
+  <Component name="DIS" level="1"/>
+  <Component name="Scripting" level="1"/>
+  <Component name="EventUtilities" level="1"/>
+</Profile>

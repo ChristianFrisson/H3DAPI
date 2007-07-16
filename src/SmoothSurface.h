@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __SMOOTHSURFACE_H__
 #define __SMOOTHSURFACE_H__
 
-#include "H3DSurfaceNode.h"
-#include "HLSurface.h"
-#include "SFFloat.h"
+#include <H3DSurfaceNode.h>
+#include <SFFloat.h>
+#include <FieldTemplates.h>
 
 namespace H3D {
 
@@ -41,15 +41,40 @@ namespace H3D {
   /// can be specified. The stiffness is specified as a value between 0 and 1
   /// where 1 is the maximum stiffness the device can handle.
   ///
-  class H3DAPI_API SmoothSurface: public H3DSurfaceNode, public HLSurface {
+  class H3DAPI_API SmoothSurface: public H3DSurfaceNode {
   public:
 
+    /// Specialized field which sets the stiffness variable in
+    /// FrictionSurface when the stiffness field of SmoothSurface
+    /// is changed.
+		///
+    /// routes_in[0] is the stiffness field
+    class H3DAPI_API UpdateStiffness: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
+    /// Specialized field which sets the damping variable in
+    /// FrictionSurface when the damping field of SmoothSurface
+    /// is changed.
+		///
+    /// routes_in[0] is the damping field
+    class H3DAPI_API UpdateDamping: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
     /// Constructor.
-    SmoothSurface( Inst< SFFloat >  _stiffness = 0,
-                   Inst< SFFloat >  _damping   = 0 );
-  
-    /// Renders the surface using hlMaterialf calls
-    virtual void hlRender( HLHapticsDevice *hd );
+    SmoothSurface( Inst< UpdateStiffness > _stiffness = 0,
+                   Inst< UpdateDamping >   _damping   = 0 );
+
+    void initialize();
 
     /// The stiffness of the surface. Should be a value between 0 and 1
     /// where 1 is the maximum stiffness the haptics device can handle.
@@ -57,7 +82,7 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> 0.5 \n
     /// <b>Value range: </b> [0-1]
-    auto_ptr< SFFloat > stiffness;
+    auto_ptr< UpdateStiffness > stiffness;
 
     /// The velocity based damping of the surface. Should be a value between
     /// 0 and 1 where 1 is the maximum damping the haptics device can handle.
@@ -65,10 +90,17 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> 0 \n
     /// <b>Value range: </b> [0-1]
-    auto_ptr< SFFloat > damping;
+    auto_ptr< UpdateDamping > damping;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+  protected:
+    /// Conversion variable used to convert from H3DAPI values 0-1 to 
+    /// N/mm which is used in HAPI. Needed for backward compability.
+    /// H3DAPI used to only be working with OpenHaptics.
+    H3DDouble conversion_to_HAPI;
+
   };
 }
 

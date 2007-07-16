@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,19 +29,21 @@
 #ifndef __X3DSAX2HANDLERS_H__
 #define __X3DSAX2HANDLERS_H__
 
+
+#include <stack>
+#include <list>
+#include <Field.h>
+#include <Node.h>
+#include <Exception.h>
+#include <DEFNodes.h>
+#include <AutoRef.h>
+#include <ProtoDeclaration.h>
+#include <AutoPtrVector.h>
+#include <X3D.h>
+
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/sax/Locator.hpp>
-#include <stack>
-#include <list>
-#include "Field.h"
-#include "Node.h"
-#include "Exception.h"
-#include "DEFNodes.h"
-#include "AutoRef.h"
-#include "ProtoDeclaration.h"
-#include "AutoPtrVector.h"
-#include "X3D.h"
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "xerces-c_2.lib" )
@@ -80,7 +82,10 @@ namespace H3D {
         DEF_map( dn ),
         exported_nodes( _exported_nodes ),
         proto_declarations( _proto_declarations ),
-        locator( NULL ){
+        locator( NULL ),
+        profile_set( false ),
+        meta_set( false ),
+        inside_head(false){
         if( !DEF_map ) {
           DEF_map = new DEFNodes();
         }
@@ -337,6 +342,14 @@ namespace H3D {
       /// the location of any document handler event in the XML source 
       /// document.
       Locator *locator;
+
+      /// Set after a profile is found
+      /// (either in the X3D tag or in a PROFILE statement)
+      bool profile_set;
+
+      /// Set after a META is set
+      bool meta_set;
+      bool inside_head;
         
     };
   } 

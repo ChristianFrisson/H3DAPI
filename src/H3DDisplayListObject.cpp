@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,14 +28,20 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DDisplayListObject.h"
-#include "Node.h"
-#include "Scene.h"
-#include "GlobalSettings.h"
-#include "GraphicsCachingOptions.h"
-#include "X3DGeometryNode.h"
+#include <H3DDisplayListObject.h>
+#include <Node.h>
+#include <Scene.h>
+#include <GlobalSettings.h>
+#include <GraphicsCachingOptions.h>
+#include <X3DGeometryNode.h>
 
 using namespace H3D;
+
+auto_ptr< Field > H3DDisplayListObject::DisplayList::break_list_field( new Field );
+
+void H3DDisplayListObject::DisplayList::rebuildAllDisplayLists() {
+  break_list_field->touch();
+}
 
 /// Constructor
 H3DDisplayListObject::DisplayList::DisplayList():
@@ -47,6 +53,8 @@ H3DDisplayListObject::DisplayList::DisplayList():
   delay_cache_counter = cachingDelay();
   isActive->setValue( true );
   Scene::time->routeNoEvent( isActive );
+
+  break_list_field->route( this );
 }
 
 H3DDisplayListObject::H3DDisplayListObject( 

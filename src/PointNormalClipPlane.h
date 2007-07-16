@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __POINTNORMALCLIPPLANE_H__
 #define __POINTNORMALCLIPPLANE_H__
 
-#include "ClipPlane.h"
-#include "SFVec3f.h"
+#include <ClipPlane.h>
+#include <SFVec3f.h>
 
 namespace H3D {
 

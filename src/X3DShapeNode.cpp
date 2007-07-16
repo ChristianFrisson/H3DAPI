@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DShapeNode.h"
-#include "X3DTextureNode.h"
+#include <X3DShapeNode.h>
+#include <X3DTextureNode.h>
 
 using namespace H3D;
 
@@ -138,7 +138,6 @@ void X3DShapeNode::render() {
     glEnable( GL_LIGHTING );
 };
 
-#ifdef USE_HAPTICS
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   X3DAppearanceNode *a = appearance->getValue();
   Node *g = geometry->getValue();
@@ -160,11 +159,47 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   // so we remove it when the geometry has been rendered.
   ti.setCurrentSurface( NULL );
 }
-#endif
 
 void X3DShapeNode::DisplayList::callList( bool build_list ) {
   if( X3DShapeNode::geometry_render_mode != ALL ) {
     breakCache();
   }
   BugWorkaroundDisplayList::callList( build_list );
+}
+
+bool X3DShapeNode::lineIntersect(
+                           const Vec3f &from,
+                           const Vec3f &to,
+                           vector< HAPI::Bounds::IntersectionInfo > &result,
+                           vector< pair< Node *, H3DInt32 > > &theNodes,
+                           const Matrix4f &current_matrix,
+                           vector< Matrix4f > &geometry_transforms,
+                           bool pt_device_affect ) {
+  return geometry->getValue()->lineIntersect( from, to, result,
+                                              theNodes,
+                                              current_matrix,
+                                              geometry_transforms,
+                                              pt_device_affect );
+}
+
+void X3DShapeNode::closestPoint(
+                  const Vec3f &p,
+                  vector< Vec3f > &closest_point,
+                  vector< Vec3f > &normal,
+                  vector< Vec3f > &tex_coord ) {
+  geometry->getValue()->closestPoint( p, closest_point, normal, tex_coord );
+}
+
+bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,
+                                          const Vec3f &from, 
+                                          const Vec3f &to ) {
+  return geometry->getValue()->movingSphereIntersect( radius, from, to );
+}
+
+void X3DShapeNode::resetNodeDefUseId() {
+  geometry->getValue()->resetNodeDefUseId();
+}
+
+void X3DShapeNode::incrNodeDefUseId( bool pt_device_affect ) {
+  geometry->getValue()->incrNodeDefUseId( pt_device_affect );
 }

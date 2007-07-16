@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __X3DNORMALNODE_H__
 #define __X3DNORMALNODE_H__
 
-#include "X3DGeometricPropertyNode.h"
+#include <X3DGeometricPropertyNode.h>
 
 namespace H3D {
 

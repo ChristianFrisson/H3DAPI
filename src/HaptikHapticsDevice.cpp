@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -27,14 +27,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "HaptikHapticsDevice.h"
+#include <HaptikHapticsDevice.h>
 
 using namespace H3D;
 
 H3DNodeDatabase HaptikHapticsDevice::database( "HaptikHapticsDevice", 
                                                &(newInstance<HaptikHapticsDevice>),
                                                typeid( HaptikHapticsDevice ),
-                                               &H3DThreadedHapticsDevice::database ); 
+                                               &H3DHapticsDevice::database ); 
 
 namespace HaptikHapticsDeviceInternals {
   FIELDDB_ELEMENT( HaptikHapticsDevice, deviceName, OUTPUT_ONLY );
@@ -48,35 +48,38 @@ namespace HaptikHapticsDeviceInternals {
 
 /// Constructor.
 HaptikHapticsDevice::HaptikHapticsDevice( 
-               Inst< ThreadSafeSField< SFVec3f > > _devicePosition,
-               Inst< ThreadSafeSField< SFRotation > > _deviceOrientation,
-               Inst< TrackerPosition > _trackerPosition        ,
-               Inst< TrackerOrientation > _trackerOrientation  ,
-               Inst< PosCalibration  > _positionCalibration    ,
-               Inst< OrnCalibration  > _orientationCalibration ,
-               Inst< SFVec3f         > _proxyPosition          ,
-               Inst< WeightedProxy   > _weightedProxyPosition  ,     
-               Inst< SFFloat         > _proxyWeighting         ,
-               Inst< ThreadSafeSField< SFBool > > _mainButton  ,
-               Inst< ThreadSafeSField< SFVec3f > > _force      ,
-               Inst< ThreadSafeSField< SFVec3f > > _torque     ,
-               Inst< SFInt32         > _inputDOF               ,
-               Inst< SFInt32         > _outputDOF              ,
-               Inst< SFInt32         > _hapticsRate            ,
-               Inst< SFNode          > _stylus                 ,
-               Inst< SFBool          > _initialized            ,
+               Inst< SFVec3f         > _devicePosition,
+               Inst< SFRotation      > _deviceOrientation,
+               Inst< TrackerPosition > _trackerPosition,
+               Inst< TrackerOrientation > _trackerOrientation,
+               Inst< PosCalibration  > _positionCalibration,
+               Inst< OrnCalibration  > _orientationCalibration,
+               Inst< SFVec3f         > _proxyPosition,
+               Inst< WeightedProxy   > _weightedProxyPosition,     
+               Inst< SFFloat         > _proxyWeighting,
+               Inst< MainButton      > _mainButton,
+               Inst< SecondaryButton > _secondary_button,
+               Inst< SFInt32         > _buttons,
+               Inst< SFVec3f         > _force,
+               Inst< SFVec3f         > _torque,
+               Inst< SFInt32         > _inputDOF,
+               Inst< SFInt32         > _outputDOF,
+               Inst< SFInt32         > _hapticsRate,
+               Inst< SFNode          > _stylus,
+               Inst< SFFloat         > _proxyRadius,
                Inst< MFString        > _deviceName             ,
                Inst< MFString        > _modelName              ,     
                Inst< MFString        > _manufacturer           ,
                Inst< SelectDevice    > _selectedDevice         ,
                Inst< SFInt32         > _set_selectedDevice     ,
                Inst< SFString        > _preferredDeviceType ) :
-  H3DThreadedHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
-                            _trackerOrientation, _positionCalibration, 
-                            _orientationCalibration, _proxyPosition,
-                            _weightedProxyPosition, _proxyWeighting, _mainButton,
-                            _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
-                            _stylus, _initialized ),
+  H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
+                    _trackerOrientation, _positionCalibration, 
+                    _orientationCalibration, _proxyPosition,
+                    _weightedProxyPosition, _proxyWeighting, _mainButton,
+                    _secondary_button, _buttons,
+                    _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
+                    _stylus ),
   deviceName( _deviceName ),
   modelName( _modelName ),
   manufacturer( _manufacturer ),
@@ -109,129 +112,14 @@ HaptikHapticsDevice::HaptikHapticsDevice(
   preferredDeviceType->route( selectedDevice, id );
 }
 
-
-void HaptikHapticsDevice::initDevice() {
+void HaptikHapticsDevice::initialize() {
 #ifdef HAVE_HAPTIK
-  if( !initialized->getValue() ) {
-    selectedDevice->upToDate();
-    if (haptik.numberOfDevices == 0) {
-      cerr << "No devices found in HaptikHapticsDevice node. " 
-           <<" Check Haptik configuration file!" << endl;
-      return;
-    }
-
-    if (haptik_device == NULL) {
-      cerr << "Warning: HaptikHapticsDevice could not be initialized. "
-           << "Make sure that the selected device is connected." << endl;
-      return;
-    }
-    haptik_device->Init();
-    haptik_device->Start();
-  }
-#endif
-  H3DThreadedHapticsDevice::initDevice();
-}
-
-void HaptikHapticsDevice::disableDevice() {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
-    haptik_device->Stop();
-  }
-#endif
-  H3DThreadedHapticsDevice::disableDevice();
-}
-
-
-/// Get the position of the haptics device. Only to be called in the 
-/// haptics loop.
-Vec3f HaptikHapticsDevice::getPosition() {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
-    RSLib::HaptikData data;
-    haptik_device->Read( data );
-    return Vec3f( data.position.x, data.position.y, data.position.z );
-  }
-#endif
-  return Vec3f( 0, 0, 0 );
-}
-
-/// Get the velocity of the haptics device. Only to be called in the 
-/// haptics loop.
-Vec3f HaptikHapticsDevice::getVelocity() {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
-    RSLib::HaptikData data;
-    haptik_device->Read( data );
-    return Vec3f( data.velocity.x, data.velocity.y, data.velocity.z );
-  } 
-#endif
-  return Vec3f( 0, 0, 0 );
-}
-
-bool HaptikHapticsDevice::getButtonStatus() {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
-    RSLib::HaptikData data;
-    haptik_device->Read( data );
-    return (bool)data.Button( 0 );
-  }
-#endif
-  return false;
-}
-
-/// Get the orientation of the haptics device. Only to be called in the 
-/// haptics loop.
-Rotation HaptikHapticsDevice::getOrientation() {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
-    RSLib::HaptikData data;
-    haptik_device->Read( data );
-    RSLib::Math::Vector4 &r0 = data.matrix.Row( 0 );
-    RSLib::Math::Vector4 &r1 = data.matrix.Row( 1 );
-    RSLib::Math::Vector4 &r2 = data.matrix.Row( 2 );
-    Matrix3f m( r0.x, r1.x, r2.x,
-                r0.y, r1.y, r2.y,
-                r0.z, r1.z, r2.z );
-    return Rotation( m );
-  }
-#endif
-  return Rotation( 1, 0, 0, 0 );
-}
-
-/// Send the force to render on the haptics device. Only to be called in the 
-/// haptics loop.
-void HaptikHapticsDevice::sendForce( const Vec3f &f ) {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
-    RSLib::HaptikData data;
-    data.forceFeedback.x = f.x;
-    data.forceFeedback.y = f.y;
-    data.forceFeedback.z = f.z;
-    data.torqueFeedback.x = last_torque.x;
-    data.torqueFeedback.y = last_torque.y;
-    data.torqueFeedback.z = last_torque.z;
-    last_force = (Vec3f)f;
-    haptik_device->Write( data );
-  }
-#endif
-}
-
-/// Send the torque to render on the haptics device. Only to be called in the 
-/// haptics loop.
-void HaptikHapticsDevice::sendTorque( const Vec3f &f ) {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
-    RSLib::HaptikData data;
-    haptik_device->Read( data );
-    data.forceFeedback.x = last_force.x;
-    data.forceFeedback.y = last_force.y;
-    data.forceFeedback.z = last_force.z;
-    data.torqueFeedback.x = f.x;
-    data.torqueFeedback.y = f.y;
-    data.torqueFeedback.z = f.z;
-    last_torque = (Vec3f)f;
-    haptik_device->Write( data );
-  }
+  hapi_device.reset( new HAPI::HaptikDevice );
+#else
+  Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
+	     << " OpenHaptics support. Recompile HAPI with "
+	     << "HAVE_OPENHAPTICS defined"
+	     << " in order to use it." << endl;
 #endif
 }
 

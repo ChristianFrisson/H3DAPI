@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,12 +26,12 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __PIXEL3DTEXTURE_H__
-#define __PIXEL3DTEXTURE_H__
+#ifndef __COMPOSED3DTEXTURE_H__
+#define __COMPOSED3DTEXTURE_H__
 
-#include "X3DTexture3DNode.h"
-#include "DependentNodeFields.h"
-#include "X3DTexture2DNode.h"
+#include <X3DTexture3DNode.h>
+#include <DependentNodeFields.h>
+#include <X3DTexture2DNode.h>
 
 namespace H3D {
   /// \ingroup X3DNodes 
@@ -51,6 +51,7 @@ namespace H3D {
   /// \dotfile Composed3DTexture.dot  
   class H3DAPI_API Composed3DTexture : public X3DTexture3DNode {
   public:
+    
     /// The MFTexture2DNode field is dependent on the displayList field
     /// of the containing X3DTextureNode node.
     typedef DependentMFNode< X3DTexture2DNode, 
@@ -59,6 +60,12 @@ namespace H3D {
                                        &H3DDisplayListObject::displayList >, 
                              true >
     MFTexture2DNode;
+
+    class H3DAPI_API SFImage: 
+    public TypedField< X3DTexture3DNode::SFImage, MFTexture2DNode > {
+    protected:
+      virtual void update();
+    };
 
     /// Constructor.
     Composed3DTexture( 
@@ -71,14 +78,6 @@ namespace H3D {
                  Inst< SFImage         > _image     = 0,
                  Inst< MFTexture2DNode > _texture   = 0,
                  Inst< SFTextureProperties > _textureProperties = 0 );
-
-    /// Ignores the image given, and uses the textures
-    /// in the texture field to create a 3d texture instead.
-    virtual void glTexImage( Image *i, GLenum texture_target, 
-                             bool scale_to_power_of_two );
-    
-    /// Renders the texture with OpenGL. 
-    virtual void render() ;
 
     /// The 2d textures to compose into a 3d texture.
     /// 

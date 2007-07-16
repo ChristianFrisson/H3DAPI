@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __GAUSSIANFUNCTION_H__
 #define __GAUSSIANFUNCTION_H__
 
-#include "H3DFunctionNode.h"
-#include "SFFloat.h"
+#include <H3DFunctionNode.h>
+#include <SFFloat.h>
 
 namespace H3D {
   /// \ingroup H3DNodes
@@ -43,12 +43,11 @@ namespace H3D {
                       Inst< SFFloat > _amplitude = 0,
                       Inst< SFFloat > _width     = 0 );    
 
-    /// Get the value as unsigned byte
-    inline unsigned char getChar(unsigned char x){
-      return (unsigned char)( 255.0f*get((H3DFloat)(x/255.0f)) );
-    }
-    /// Get the value as H3DFloat 
-    H3D::H3DFloat get(H3DFloat x);
+    /// Evaluate the function for the given input.
+    virtual H3DDouble evaluate( H3DDouble *input );
+
+    /// Returns the number of input values the function takes.
+    virtual unsigned int nrInputValues() { return 1; };
 
     /// The amplitude of the gaussian.
     /// 

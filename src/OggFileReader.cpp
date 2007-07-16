@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "OggFileReader.h"
+#include <OggFileReader.h>
 #include <fstream>
 
 #ifdef HAVE_LIBVORBIS
@@ -81,6 +81,8 @@ unsigned int OggFileReader::read( char *buffer, unsigned int size ) {
   while( bytes_read < size ) {
     int res = ov_read(&ogg_file, buffer + bytes_read, 
                       size - bytes_read, !isLittleEndian(), 2, 1, & section);
+    if( !should_clear )
+      should_clear = true;
     if( res <= 0 ) break;
     else  bytes_read += res;
   }
@@ -98,6 +100,8 @@ unsigned int OggFileReader::load( const string &_url ) {
   ifstream *is= new ifstream( url.c_str(), ios::binary );
   if( is->good() ) {
     if( ov_open_callbacks( is, &ogg_file, NULL, 0, cb ) < 0 ) {
+      if( !should_clear )
+        should_clear = true;
       is->close();
       delete is;
       return 0;

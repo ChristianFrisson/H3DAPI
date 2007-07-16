@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,14 +28,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include "ProtoDeclaration.h"
-#include "X3D.h"
-#include "X3DTypeFunctions.h"
-#include "X3DFieldConversion.h"
-#include "X3DSAX2Handlers.h"
-#include "IStreamInputSource.h"
-#include "VrmlDriver.h"
-#include "VrmlParser.h"
+#include <ProtoDeclaration.h>
+#include <X3D.h>
+#include <X3DTypeFunctions.h>
+#include <X3DFieldConversion.h>
+#include <X3DSAX2Handlers.h>
+#include <IStreamInputSource.h>
+#include <VrmlDriver.h>
+#include <VrmlParser.h>
 
 
 using namespace H3D;

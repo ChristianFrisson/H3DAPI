@@ -54,26 +54,30 @@ namespace H3D {
 
     /// Constructor.
     SpaceWareHapticsDevice( 
-         Inst< ThreadSafeSField< SFVec3f > > _devicePosition = 0,
-         Inst< ThreadSafeSField< SFRotation > > _deviceOrientation = 0,
-         Inst< TrackerPosition > _trackerPosition        = 0,
-         Inst< TrackerOrientation > _trackerOrientation  = 0,
-         Inst< PosCalibration  > _positionCalibration    = 0,
-         Inst< OrnCalibration  > _orientationCalibration = 0,
-         Inst< SFVec3f         > _proxyPosition          = 0,
-         Inst< WeightedProxy   > _weightedProxyPosition  = 0,    
-         Inst< SFFloat         > _proxyWeighting         = 0,
-         Inst< ThreadSafeSField< SFBool >  > _main_button  = 0,
-         Inst< ThreadSafeSField< SFVec3f > > _force      = 0,
-         Inst< ThreadSafeSField< SFVec3f > > _torque     = 0,
-         Inst< SFInt32         > _inputDOF               = 0,
-         Inst< SFInt32         > _outputDOF              = 0,
-         Inst< SFInt32         > _hapticsRate            = 0,
-         Inst< SFNode          > _stylus                 = 0,
-         Inst< SFBool          > _initialized            = 0,
-         Inst< ThreadSafeSField< SFVec3f >         > _set_devicePosition     = 0,
-         Inst< ThreadSafeSField< SFRotation >     > _set_deviceOrientation  = 0,
-         Inst< SetMainButton   > _set_mainButton         = 0,
+         Inst< SFVec3f         > _devicePosition         = 0,
+			  Inst< SFRotation      > _deviceOrientation      = 0,
+			  Inst< TrackerPosition > _trackerPosition        = 0,
+			  Inst< TrackerOrientation > _trackerOrientation  = 0,
+			  Inst< PosCalibration  > _positionCalibration    = 0,
+			  Inst< OrnCalibration  > _orientationCalibration = 0,
+			  Inst< SFVec3f         > _proxyPosition          = 0,
+			  Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
+			  Inst< SFFloat         > _proxyWeighting         = 0,
+			  Inst< MainButton      > _main_button            = 0,
+			  Inst< SecondaryButton > _secondary_button       = 0,
+			  Inst< SFInt32         > _buttons                = 0,
+			  Inst< SFVec3f         > _force                  = 0,
+			  Inst< SFVec3f         > _torque                 = 0,
+			  Inst< SFInt32         > _inputDOF               = 0,
+			  Inst< SFInt32         > _outputDOF              = 0,
+			  Inst< SFInt32         > _hapticsRate            = 0,
+			  Inst< SFNode          > _stylus                 = 0,
+			  Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
+			  Inst< MFVec3f         > _proxyPositions         = 0,
+			  Inst< SFBool          > _followViewpoint        = 0,
+			  Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
+			  Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
+         Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0,
          Inst< SFFloat         > _posSensitivity         = 0,
          Inst< SFFloat         > _ornSensitivity         = 0);
 
@@ -82,10 +86,8 @@ namespace H3D {
     virtual void updateDeviceValues() {
       H3DFakeHapticsDevice::updateDeviceValues();
       vector< H3DHapticsDevice * > hds;
-#ifdef USE_HAPTICS
       TraverseInfo ti( hds );
       spaceware_sensor->traverseSG( ti );
-#endif
     }
     
     /// Node database entry

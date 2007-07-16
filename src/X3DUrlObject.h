@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __X3DURLOBJECT_H__
 #define __X3DURLOBJECT_H__
 
-#include "Node.h"
-#include "FieldTemplates.h"
-#include "MFString.h"
+#include <Node.h>
+#include <FieldTemplates.h>
+#include <MFString.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface
@@ -106,11 +106,21 @@ namespace H3D {
       return url_base;
     }
 
-    string resolveURLAsFile( const string &url );
+    /// Get the url as a local file. 
+    string resolveURLAsFile( const string &url, 
+                             bool *is_tmp_file = NULL );
+
+    /// Remove a tmpfile with the given name.
+    /// Returns true on success, or false if no such file exists
+    /// or the removal failed.
+    bool removeTmpFile( const string &file );
     
     /// The urls in decreasing order of preference.
     auto_ptr< MFString >  url;
   protected:
+    /// Add a inline prefix that this node supports.
+    void addInlinePrefix( const string &s );
+
     /// If loadStatus() returns LOADED this string should contain
     /// the url that is loaded. All subclasses of X3DUrlObject should
     /// set this when successfully loaded a file.
@@ -120,6 +130,10 @@ namespace H3D {
     /// will start from this. Will be set to ResourceResolver::getBaseURL()
     /// when created.
     string url_base;
+
+    /// A list of inline prefixes that are supported by this url object.
+    /// E.g. "glsl", "python", etc
+    list< string > supported_inline_prefixes;
   };
 }
 

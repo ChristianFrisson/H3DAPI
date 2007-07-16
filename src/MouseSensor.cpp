@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,12 +28,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "MouseSensor.h"
+#include <MouseSensor.h>
 
 using namespace H3D;
 
 list< MouseSensor * > MouseSensor::instances = 
 list< MouseSensor * >();
+bool MouseSensor::invalid_instance_ptr = false;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase MouseSensor::database( 
@@ -89,45 +90,62 @@ MouseSensor::MouseSensor( Inst< SFBool>  _enabled,
 
 MouseSensor::~MouseSensor() {
   instances.remove( this );
+  invalid_instance_ptr = true;
 }
 
 void MouseSensor::mouseMotionAction( int x, int y ) {
-  const Vec2f &last_pos = position->getValue();
-  Vec2f new_pos = Vec2f( (H3DFloat) x, (H3DFloat) y );
-  Vec2f diff = new_pos - last_pos;
-  if( diff * diff > Constants::f_epsilon ) {
-    position->setValue( new_pos, id );
-    motion->setValue( diff, id );
+  if( enabled->getValue() ) {
+    const Vec2f &last_pos = position->getValue();
+    Vec2f new_pos = Vec2f( (H3DFloat) x, (H3DFloat) y );
+    Vec2f diff = new_pos - last_pos;
+    if( diff * diff > Constants::f_epsilon ) {
+      position->setValue( new_pos, id );
+      motion->setValue( diff, id );
+    }
   }
 }
 
 void MouseSensor::mouseButtonAction( int button, int state ) {
-  switch( button ) {
+  if( enabled->getValue() ) {
+    switch( button ) {
     case LEFT_BUTTON:
       leftButton->setValue( state == DOWN, id );
-    break;
+      break;
     case MIDDLE_BUTTON:
       middleButton->setValue( state == DOWN, id );
-    break;
+      break;
     case RIGHT_BUTTON:
       rightButton->setValue( state == DOWN, id );
-    break;
+      break;
+    }
   }
 }
 
 void MouseSensor::mouseWheelAction( int direction ) {
-  if( direction == FROM ) {
-    scrollUp->setValue( true, id );
-  } else if( direction == TOWARDS ) {
-    scrollDown->setValue( true, id );
+  if( enabled->getValue() ) {
+    if( direction == FROM ) {
+      scrollUp->setValue( true, id );
+    } else if( direction == TOWARDS ) {
+      scrollDown->setValue( true, id );
+    }
   }
 }
 
 void MouseSensor::buttonCallback( int button, int state ) {
+  invalid_instance_ptr = false;
+  list< MouseSensor * >::iterator end_iterator = instances.end();
   for( list< MouseSensor * >::iterator i = instances.begin();
-       i != instances.end();
+       i != end_iterator;
        i++ ) {
     (*i)->mouseButtonAction( button, state );
+    if( invalid_instance_ptr ) {
+      if( instances.empty() ) {
+        break;
+      }
+      i = instances.begin();
+      end_iterator = instances.end();
+      invalid_instance_ptr = false;
+    }
   }
 }
     

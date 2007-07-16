@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __CYLINDER_H__
 #define __CYLINDER_H__
 
-#include "X3DGeometryNode.h"
-#include "SFFloat.h"
+#include <X3DGeometryNode.h>
+#include <SFFloat.h>
 
 namespace H3D {
 
@@ -105,11 +105,13 @@ namespace H3D {
     /// Renders the Cylinder with OpenGL.
     virtual void render();
 
-#ifdef USE_HAPTICS
     /// Traverse the scenegraph. Adds a HapticCylinder if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );    
-#endif
 
+    /// The number of triangles rendered by this geometry.
+    virtual int nrTriangles() {
+      return 720;
+    }
     /// Specifies if the bottom of the Cylinder should be rendered or not.
     ///
     /// <b>Access type:</b> inputOutput \n

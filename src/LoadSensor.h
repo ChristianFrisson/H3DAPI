@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,11 +29,11 @@
 #ifndef __LOADSENSOR_H__
 #define __LOADSENSOR_H__
 
-#include "X3DNetworkSensorNode.h"
-#include "X3DUrlObject.h"
-#include "MFNode.h"
-#include "SFTime.h"
-#include "SFFloat.h"
+#include <X3DNetworkSensorNode.h>
+#include <X3DUrlObject.h>
+#include <MFNode.h>
+#include <SFTime.h>
+#include <SFFloat.h>
 
 namespace H3D {
 
@@ -56,9 +56,7 @@ namespace H3D {
                 Inst< SFTime > loadTime = 0,
                 Inst< SFFloat > progress = 0 );
 
-#ifdef USE_HAPTICS
     virtual void traverseSG( TraverseInfo &ti );
-#endif
 
     auto_ptr< MFUrlObject > watchList;
     auto_ptr< SFTime  > timeOut;

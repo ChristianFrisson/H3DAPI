@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,9 +29,9 @@
 #ifndef __WORLDINFO_H__
 #define __WORLDINFO_H__
 
-#include "X3DInfoNode.h"
-#include "MFString.h"
-#include "SFString.h"
+#include <X3DInfoNode.h>
+#include <MFString.h>
+#include <SFString.h>
 
 namespace H3D {
 

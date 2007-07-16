@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "X3DUrlObject.h"
-#include "ResourceResolver.h"
+#include <X3DUrlObject.h>
+#include <ResourceResolver.h>
 
 using namespace H3D;
 
@@ -43,10 +43,29 @@ X3DUrlObject::X3DUrlObject(
 }
 
 
-string X3DUrlObject::resolveURLAsFile( const string &url ) {
+string X3DUrlObject::resolveURLAsFile( const string &url,
+                                       bool *is_tmp_file ) {
+  for( list< string >::const_iterator i = supported_inline_prefixes.begin();
+       i != supported_inline_prefixes.end(); i++ ) {
+    if( url.compare( 0, (*i).size(), *i ) == 0 ) {
+      string tmp_file = ResourceResolver::getTmpFileName();
+      if( tmp_file != "" ) {
+        ofstream os( tmp_file.c_str() );
+        os << url.substr((*i).size(), url.size()-1);
+        os.close();
+        if( is_tmp_file ) *is_tmp_file = true;
+        return tmp_file;
+      }
+    }
+  }
+
   string old_base = ResourceResolver::getBaseURL();
   ResourceResolver::setBaseURL( url_base );
-  string result = ResourceResolver::resolveURLAsFile( url );
+  string result = ResourceResolver::resolveURLAsFile( url, is_tmp_file );
   ResourceResolver::setBaseURL( old_base );
   return result;
+}
+
+void X3DUrlObject::addInlinePrefix( const string &s ) {
+  supported_inline_prefixes.push_back( s + ":" );
 }

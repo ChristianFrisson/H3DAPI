@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Followers">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="ColorDamper">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="CoordinateDamper">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OrientationChaser">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OrientationDamper">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PositionChaser">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PositionChaser2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PositionDamper">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PositionDamper2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ScalerChaser">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TexCoordDamper">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+</Component>

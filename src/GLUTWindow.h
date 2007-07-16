@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,17 @@
 #ifndef __GLUTWINDOW_H__
 #define __GLUTWINDOW_H__
 
-#include "H3DWindowNode.h"
+#include <GL/glew.h>
+#ifdef MACOSX
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+#ifdef FREEGLUT
+#include <GL/freeglut.h>
+#endif
+
+#include <H3DWindowNode.h>
 
 namespace H3D {
 

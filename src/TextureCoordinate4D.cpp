@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "TextureCoordinate4D.h"
+#include <TextureCoordinate4D.h>
 
 using namespace H3D;
 
@@ -74,28 +74,9 @@ void TextureCoordinate4D::renderArray() {
   }
 }
 
-
-void TextureCoordinate4D::renderArrayForTextureUnit( unsigned int texture_unit ) {
-  if( !point->empty() ) {
-    GLint saved_texture;
-    glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
-    glClientActiveTexture( GL_TEXTURE0_ARB + texture_unit );
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glTexCoordPointer(4, GL_FLOAT, 0,
-                      &(*point->begin()) );
-    glClientActiveTexture( saved_texture );
-  }
-}
-
 /// Disable the array state enabled in renderAttay().
 void TextureCoordinate4D::disableArray() {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-void TextureCoordinate4D::disableArrayForTextureUnit( unsigned int texture_unit ) {
-  GLint saved_texture;
-  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
-  glClientActiveTexture( GL_TEXTURE0_ARB + texture_unit );
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glClientActiveTexture( saved_texture );
-}
+

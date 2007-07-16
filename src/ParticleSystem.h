@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -227,6 +227,9 @@ namespace H3D {
     /// Returns a random value in the given range.
     static H3DFloat getRandomValue( H3DFloat min, H3DFloat max );
 
+    /// Returns a random point on the unit sphere.
+    static Vec3f getRandomPointOnUnitSphere();
+
     /// The createParticles field is used to control whether any further new 
     /// particles should be created. This allows the user to stop production
     /// of new particles, but keep those already existing in the scene to 
@@ -234,6 +237,7 @@ namespace H3D {
     /// immediately remove all particles. 
     /// 
     /// <b>Access type:</b> inputOutput
+    ///
     /// <b>Default value:</b> TRUE
     /// 
     /// \dotfile ParticleSystem_createParticles.dot
@@ -249,6 +253,7 @@ namespace H3D {
     /// set to FALSE. 
     /// 
     /// <b>Access type:</b> inputOutput
+    ///
     /// <b>Default value:</b> TRUE
     /// 
     /// \dotfile ParticleSystem_enabled.dot
@@ -274,7 +279,7 @@ namespace H3D {
     /// \dotfile ParticleSystem_maxParticles.dot
     auto_ptr< SFInt32 > maxParticles;
 
-    /// The particleLifetime field controls the lifetime of a particle
+    /// \brief The particleLifetime field controls the lifetime of a particle
     /// i.e. the time in seconds the particle exists from the point
     /// it is being emitted. See also the lifetimeVariation field.
     /// 
@@ -349,7 +354,7 @@ namespace H3D {
     /// \dotfile ParticleSystem_geometryType.dot
     auto_ptr< SFString > geometryType;
 
-    /// The physics field contains the physics models that should affect
+    /// \brief The physics field contains the physics models that should affect
     /// the particles after they have been created, e.g. gravity and wind
     /// effects.
     /// 
@@ -378,11 +383,20 @@ namespace H3D {
     static H3DNodeDatabase database;
 
     typedef std::list< X3DParticleEmitterNode::Particle > Particles;
+
+    typedef list< ParticleSystem * > ParticleSystemList;
+
+    /// Returns a list of all current ParticleSystem instances.
+    static const ParticleSystemList &getAllParticleSystems() {
+      return particlesystems;
+    }
+
   protected:
     H3DTime particle_system_time;
     H3DTime last_time;
     Particles particles;
     bool update_bound;
+    static ParticleSystemList particlesystems;
   };
 }
 

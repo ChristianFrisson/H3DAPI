@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Lighting">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="DirectionalLight">
+      <direction support="partial"/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="PointLight">
+      <radius support="optional"/>
+      <attenuation support="partial"/>
+    </Node>
+    <Node name="SpotLight">
+      <beamWidth support="optional"/>
+      <radius support="optional"/>
+      <attenuation support="partial"/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="DirectionalLight">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PointLight">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SpotLight">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+</Component>

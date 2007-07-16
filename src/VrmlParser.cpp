@@ -5,12 +5,12 @@
 //
 //
 //////////////////////////////////////////////////////////////////////////////
-#include "VrmlParser.h"
-#include "IStreamInputSource.h"
-#include "ResourceResolver.h"
+#include <VrmlParser.h>
+#include <IStreamInputSource.h>
+#include <ResourceResolver.h>
 #include <sstream>
-#include "PrototypeVector.h"
-#include "VrmlDriver.h"
+#include <PrototypeVector.h>
+#include <VrmlDriver.h>
 
 using namespace H3D;
 using namespace X3D;
@@ -88,7 +88,9 @@ Group* X3D::createVRMLFromURL( const string &url,
   string path = urn.substr( 0, pos + 1 );
   string old_base = ResourceResolver::getBaseURL();
 
-  string resolved_url = ResourceResolver::resolveURLAsFile( url );
+  bool is_tmp_file;
+  string resolved_url = ResourceResolver::resolveURLAsFile( url, 
+                                                            &is_tmp_file );
   ResourceResolver::setBaseURL( path ); 
 
   if( resolved_url == "" ) {
@@ -107,6 +109,7 @@ Group* X3D::createVRMLFromURL( const string &url,
       g->children->push_back( c );
   } 
   ResourceResolver::setBaseURL( old_base );
+  if( is_tmp_file ) ResourceResolver::releaseTmpFileName( resolved_url );
   return g;
 }
 
@@ -160,7 +163,9 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
   string path = urn.substr( 0, pos + 1 );
   string old_base = ResourceResolver::getBaseURL();
 
-  string resolved_url = ResourceResolver::resolveURLAsFile( url );
+  bool is_tmp_file;
+  string resolved_url = ResourceResolver::resolveURLAsFile( url, 
+                                                            &is_tmp_file );
   ResourceResolver::setBaseURL( path ); 
 
   if( resolved_url == "" ) {
@@ -177,6 +182,7 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
       g.reset( c->children->front() );
   } 
   ResourceResolver::setBaseURL( old_base );
+  if( is_tmp_file ) ResourceResolver::releaseTmpFileName( resolved_url );
   return g;
 }
 

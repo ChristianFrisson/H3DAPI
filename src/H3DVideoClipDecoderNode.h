@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,8 +30,8 @@
 #ifndef __H3DVIDEOCLIPDECODERNODE_H__
 #define __H3DVIDEOCLIPDECODERNODE_H__
 
-#include "Node.h"
-#include "Image.h"
+#include <Node.h>
+#include <Image.h>
 #include <list>
 
 namespace H3D {
@@ -69,8 +69,8 @@ namespace H3D {
       supports_func( _supports ) {
 		  
         if( !H3DVideoClipDecoderNode::initialized ) {
-          H3DVideoClipDecoderNode::registered_decoders = 
-            new list< DecoderRegistration >;
+          H3DVideoClipDecoderNode::registered_decoders.reset( 
+            new list< DecoderRegistration >);
           initialized = true;
         }
         H3DVideoClipDecoderNode::registerDecoder( *this );
@@ -181,8 +181,90 @@ namespace H3D {
       registered_decoders->push_back( fr );
     }
 
+    
+    // Creating a new auto_ptr local for this node, because 
+    // registered_decoders caused a memory leak and because
+    // of the order of setting the static variables the autp_ptr's
+    // constructor resets the auto_ptr to 0 eventhough the 
+    // registered_decoders has been initilazed, and therefore
+    // cause an error making it imposible to use the standard auto_ptr.
+    template<class T>
+    class local_auto_ptr{
+    private:
+      T* ap;    // refers to the actual owned object (if any)
+    public:
+      typedef T element_type;
+
+      // constructor
+      explicit local_auto_ptr (T* ptr = 0) {
+        if(!initialized){
+          ap=ptr;
+        }
+      }
+      
+      // copy constructors (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr (local_auto_ptr& rhs) throw() : ap(rhs.release()) { }
+
+      template<class Y>
+      local_auto_ptr (local_auto_ptr<Y>& rhs) throw() : ap(rhs.release()) { }
+      
+      // assignments (with implicit conversion)
+      // - note: nonconstant parameter
+      local_auto_ptr& operator= (local_auto_ptr& rhs) throw(){
+        if(!initialized){  
+          reset(rhs.release());
+          return *this;
+        }
+      }
+      template<class Y>
+      local_auto_ptr& operator= (local_auto_ptr<Y>& rhs) throw(){
+        if(!initialized){
+          reset(rhs.release());
+          return *this;
+        }
+      }
+
+      // destructor
+      ~local_auto_ptr() throw(){
+        delete ap;
+      }
+
+      // value access
+      T* get() const throw(){
+        return ap;
+      }
+      T& operator*() const throw(){
+        return *ap;
+      }
+      T* operator->() const throw(){
+        return ap;
+      }
+
+      // release ownership
+      T* release() throw(){
+        if(!initialized){
+          T* tmp(ap);
+          ap = 0;
+          return tmp;
+        }
+      }
+
+      // reset value
+      void reset (T* ptr=0) throw(){
+        if(!initialized){
+          if (ap != ptr){
+            delete ap;
+            ap = ptr;
+          }
+        }
+      }
+    };
+
   protected:
-    static list< DecoderRegistration > *registered_decoders;
+    static local_auto_ptr< list< DecoderRegistration > > registered_decoders;
+    //static list< DecoderRegistration > *registered_decoders;
+
     static bool initialized;
     PlayStatus status;
   };

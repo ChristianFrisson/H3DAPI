@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __X3DVERTEXATTRIBUTENODE_H__
 #define __X3DVERTEXATTRIBUTENODE_H__
 
-#include "X3DGeometricPropertyNode.h"
-#include "SFString.h"
+#include <X3DGeometricPropertyNode.h>
+#include <SFString.h>
 
 namespace H3D {
   /// \class X3DVertexAttributeNode

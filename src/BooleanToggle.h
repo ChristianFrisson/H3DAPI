@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,8 +29,8 @@
 #ifndef __BOOLEANTOGGLE_H__
 #define __BOOLEANTOGGLE_H__
 
-#include "X3DChildNode.h"
-#include "SFBool.h"
+#include <X3DChildNode.h>
+#include <SFBool.h>
 
 namespace H3D {
 

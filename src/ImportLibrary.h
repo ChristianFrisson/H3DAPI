@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,9 +30,9 @@
 #ifndef __IMAGETEXTURE_H__
 #define __IMAGETEXTURE_H__
 
-#include "X3DChildNode.h"
-#include "X3DUrlObject.h"
-#include "MFString.h"
+#include <X3DChildNode.h>
+#include <X3DUrlObject.h>
+#include <MFString.h>
 
 namespace H3D {
   /// \ingroup H3DNodes 

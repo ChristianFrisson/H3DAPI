@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Geometry2D">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="Polyline2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Polypoint2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Rectangle2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="TriangleSet2D">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Rendering level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="Arc2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ArcClose2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Circle2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="Disk2D">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+</Component>

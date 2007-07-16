@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="Interpolation">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="CoordinateInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OrientationInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PositionInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ScalarInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="ColorInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="NormalInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="CoordinateInterpolator2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="PositionInterpolator2D">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+  <Level_4>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="EaseInEaseOut">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SplinePositionInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SplinePositionInterpolator2D">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SplineScalarInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_4>
+  <Level_5>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+    </Prerequisites>
+    <Node name="SquadOrientationInterpolator">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_5>
+</Component>

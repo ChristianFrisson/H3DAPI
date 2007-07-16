@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -28,13 +28,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DVideoClipDecoderNode.h"
+#include <H3DVideoClipDecoderNode.h>
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-list< H3DVideoClipDecoderNode::DecoderRegistration > 
-*H3DVideoClipDecoderNode::registered_decoders; 
+H3DVideoClipDecoderNode::local_auto_ptr<list< H3DVideoClipDecoderNode::
+DecoderRegistration> >H3DVideoClipDecoderNode::registered_decoders; 
+
+//list< H3DVideoClipDecoderNode::DecoderRegistration > 
+//*H3DVideoClipDecoderNode::registered_decoders; 
 
 bool H3DVideoClipDecoderNode::initialized = false; 
 

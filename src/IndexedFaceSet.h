@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,10 +30,10 @@
 #ifndef __INDEXEDFACESET_H__
 #define __INDEXEDFACESET_H__
 
-#include "X3DComposedGeometryNode.h"
-#include "CoordBoundField.h"
-#include "MFInt32.h"
-#include "SFFloat.h"
+#include <X3DComposedGeometryNode.h>
+#include <CoordBoundField.h>
+#include <MFInt32.h>
+#include <SFFloat.h>
 
 namespace H3D {
 
@@ -282,7 +282,8 @@ namespace H3D {
                     Inst< MFInt32      > _colorIndex         = 0,
                     Inst< MFInt32      > _coordIndex         = 0,
                     Inst< MFInt32      > _normalIndex        = 0,
-                    Inst< MFInt32      > _texCoordIndex      = 0 );
+                    Inst< MFInt32      > _texCoordIndex      = 0, 
+                    Inst< SFFogCoordinate > _fogCoord        = 0);
 
     virtual X3DCoordinateNode *getCoord() {
       return static_cast< X3DCoordinateNode * >( coord->getValue() );
@@ -291,11 +292,14 @@ namespace H3D {
     /// Renders the IndexedFaceSet using GL_POLYGONs.
     virtual void render();
 
-#ifdef USE_HAPTICS
+    /// An upper bound on the number of triangles.
+    virtual int nrTriangles() {
+      return coordIndex->size();
+    }
+
     /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
-#endif
 
     /// Field for setting the value of the colorIndex field.
     /// <b>Access type:</b> inputOnly 

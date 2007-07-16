@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,10 +29,10 @@
 #ifndef __X3DSEQUENCERNODE_H__
 #define __X3DSEQUENCERNODE_H__
 
-#include "X3DChildNode.h"
-#include "SFBool.h"
-#include "SFFloat.h"
-#include "MFFloat.h"
+#include <X3DChildNode.h>
+#include <SFBool.h>
+#include <SFFloat.h>
+#include <MFFloat.h>
 
 namespace H3D {
 
@@ -115,94 +115,99 @@ namespace H3D {
 				}
 			}
 			virtual void update() {
-				X3DSequencerNode * sN = 
-          static_cast< X3DSequencerNode * >( TheType::getOwner() );
+        if( TheType::routes_in[0] == TheType::event.ptr ||
+            TheType::routes_in[1] == TheType::event.ptr ||
+            TheType::routes_in[2] == TheType::event.ptr ) {
+        
+          X3DSequencerNode * sN = 
+            static_cast< X3DSequencerNode * >( TheType::getOwner() );
 
-				bool notMonotonically = false;
+          bool notMonotonically = false;
 
-				const typename KeyValuesIn::vector_type &key_value = 
-					static_cast<  KeyValuesIn * >( TheType::routes_in[4] )->getValue();
+          const typename KeyValuesIn::vector_type &key_value = 
+            static_cast<  KeyValuesIn * >( TheType::routes_in[4] )->getValue();
 
-				const vector< H3DFloat > &keys = 
-					static_cast< MFFloat * >( TheType::routes_in[3] )->getValue();
+          const vector< H3DFloat > &keys = 
+            static_cast< MFFloat * >( TheType::routes_in[3] )->getValue();
 
-				if( keys.empty() ) {
-					Console(3) << "Warning: The key array is empty in " <<
-						"X3DSequencerNode ( " << TheType::getName() << 
-						"). Node will not be used. " << endl;
-					return;
-				}
+          if( keys.empty() ) {
+            Console(3) << "Warning: The key array is empty in " <<
+              "X3DSequencerNode ( " << TheType::getName() << 
+              "). Node will not be used. " << endl;
+            return;
+          }
 
-				if( key_value.empty() ) {
-					Console(3) << "Warning: The keyValue array is empty in " <<
-						"X3DSequencerNode ( " << TheType::getName() << 
-						"). Node will not be used. " << endl;
-					return;
-				}
+          if( key_value.empty() ) {
+            Console(3) << "Warning: The keyValue array is empty in " <<
+              "X3DSequencerNode ( " << TheType::getName() << 
+              "). Node will not be used. " << endl;
+            return;
+          }
 
-				if( keys.size() != key_value.size() ) {
-					Console(3) << "Warning: The key and keyValue arrays mismatch in " <<
-						"X3DSequencerNode ( " << TheType::getName() << 
-						"). Node will not be used. " << endl;
-					return;
-				}
+          if( keys.size() != key_value.size() ) {
+            Console(3) << "Warning: The key and keyValue arrays mismatch in " <<
+              "X3DSequencerNode ( " << TheType::getName() << 
+              "). Node will not be used. " << endl;
+            return;
+          }
 
-				// The keys shall be monotonically non-decreasing,
-				// otherwise the results are undefined.
-				for( int i = 0; i < (int)keys.size() - 1; i++ ) {
-					if( keys[i] > keys[ i + 1 ] )
-						notMonotonically = true;
-				}
+          // The keys shall be monotonically non-decreasing,
+          // otherwise the results are undefined.
+          for( int i = 0; i < (int)keys.size() - 1; i++ ) {
+            if( keys[i] > keys[ i + 1 ] )
+              notMonotonically = true;
+          }
 
-				if( notMonotonically ) {
-					Console(3) << "Warning: The key array is not monotonically " <<
-						"non-decreasing in X3DSequencerNode ( " << TheType::getName() << 
-						"). Node will not be used. " << endl;
-					return;
-				}
+          if( notMonotonically ) {
+            Console(3) << "Warning: The key array is not monotonically " <<
+              "non-decreasing in X3DSequencerNode ( " << TheType::getName() << 
+              "). Node will not be used. " << endl;
+            return;
+          }
 
-				// next value
-				if( TheType::routes_in[0] == TheType::event.ptr ) {
-					currentPosition++;
-					if( currentPosition > ( H3DInt32 )key_value.size() - 1 )
-						currentPosition = 0;
+          // next value
+          if( TheType::routes_in[0] == TheType::event.ptr ) {
+            currentPosition++;
+            if( currentPosition > ( H3DInt32 )key_value.size() - 1 )
+              currentPosition = 0;
 
-					TheType::value = key_value[ currentPosition ];
-				}
-				// previous value
-				else if( TheType::routes_in[1] == TheType::event.ptr ) {
-					currentPosition--;
-					if( currentPosition < 0 )
-						currentPosition = key_value.size() - 1;
+            TheType::value = key_value[ currentPosition ];
+          }
+          // previous value
+          else if( TheType::routes_in[1] == TheType::event.ptr ) {
+            currentPosition--;
+            if( currentPosition < 0 )
+              currentPosition = key_value.size() - 1;
 
-					TheType::value = key_value[ currentPosition ];
-				}
-				// if set_fraction is used or anything else changes.
-				else if( TheType::routes_in[2] == TheType::event.ptr ) {
-					fractionInitialized = true;
-					const H3DFloat &setFraction = 
-						static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
-					TheType::value = evaluateValueChanged(key_value, keys, setFraction);
-				}
-				else if( TheType::routes_in[3] == TheType::event.ptr ) {
-					if( fractionInitialized ) {
-						const H3DFloat &setFraction = 
-						static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
-						TheType::value = evaluateValueChanged(key_value, keys, setFraction);
-					}
-				}
-				else if ( TheType::routes_in[4] == TheType::event.ptr ) {
-					if( fractionInitialized ) {
-						const H3DFloat &setFraction = 
-						static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
-						TheType::value = evaluateValueChanged(key_value, keys, setFraction);
-					}
+            TheType::value = key_value[ currentPosition ];
+          }
+          // if set_fraction is used or anything else changes.
+          else if( TheType::routes_in[2] == TheType::event.ptr ) {
+            fractionInitialized = true;
+            const H3DFloat &setFraction = 
+              static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
+            TheType::value = evaluateValueChanged(key_value, keys, setFraction);
+          }
+          else if( TheType::routes_in[3] == TheType::event.ptr ) {
+            if( fractionInitialized ) {
+              const H3DFloat &setFraction = 
+                static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
+              TheType::value = evaluateValueChanged(key_value, keys, setFraction);
+            }
+          }
+          else if ( TheType::routes_in[4] == TheType::event.ptr ) {
+            if( fractionInitialized ) {
+              const H3DFloat &setFraction = 
+                static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
+              TheType::value = evaluateValueChanged(key_value, keys, setFraction);
+            }
 
-					if( currentPosition > ( H3DInt32 )key_value.size() - 1 ) {
-						currentPosition = key_value.size() - 1;
-						TheType::value = key_value[ currentPosition ];
-					}
-				}
+            if( currentPosition > ( H3DInt32 )key_value.size() - 1 ) {
+              currentPosition = key_value.size() - 1;
+              TheType::value = key_value[ currentPosition ];
+            }
+          }
+        }
 			}
 		};
 #ifdef __BORLANDC__

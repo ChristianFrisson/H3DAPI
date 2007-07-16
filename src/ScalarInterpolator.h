@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __SCALARINTERPOLATOR_H__
 #define __SCALARINTERPOLATOR_H__
 
-#include "X3DInterpolatorNode.h"
+#include <X3DInterpolatorNode.h>
 
 namespace H3D {
 

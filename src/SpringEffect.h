@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,12 +29,12 @@
 #ifndef __SPRINGEFFECT_H__
 #define __SPRINGEFFECT_H__
 
-#include "H3DForceEffect.h" 
-#include "HapticSpring.h"
-#include "SFVec3f.h"
-#include "SFBool.h"
-#include "SFFloat.h"
-#include "SFInt32.h"
+#include <H3DForceEffect.h> 
+#include <HapticSpring.h>
+#include <SFVec3f.h>
+#include <SFBool.h>
+#include <SFFloat.h>
+#include <SFInt32.h>
 
 namespace H3D {
   /// \ingroup H3DNodes 
@@ -63,11 +63,9 @@ namespace H3D {
                   Inst< SFInt32     > _deviceIndex = 0,
                   Inst< SFNode      >  _metadata = 0 );
 
-#ifdef USE_HAPTICS
     /// Adds the effect if within startDistance and removes it when 
     /// going outside escapeDistance.
     virtual void traverseSG( TraverseInfo &ti );
-#endif
 
 
     /// The position of the spring.
@@ -121,7 +119,7 @@ namespace H3D {
     static H3DNodeDatabase database;
     
     /// Internal haptic spring instance
-    AutoRef< HapticSpring > haptic_spring;
+    AutoRef< HAPI::HapticSpring > haptic_spring;
   };
 }
 

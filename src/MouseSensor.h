@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,9 +30,9 @@
 #define __MOUSESENSOR_H__
 
 
-#include "X3DSensorNode.h"
+#include <X3DSensorNode.h>
 #include <list>
-#include "SFVec2f.h"
+#include <SFVec2f.h>
 
 
 namespace H3D {
@@ -136,7 +136,8 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   private:
-    static list< MouseSensor * > instances;  
+    static list< MouseSensor * > instances;
+    static bool invalid_instance_ptr;
   };
 }
 

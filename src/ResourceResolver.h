@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,11 +30,13 @@
 #ifndef __RESOURCERESOLVER_H__
 #define __RESOURCERESOLVER_H__
 
-#include "H3DApi.h"
+#include <H3DApi.h>
 #include <string>
+#include <list>
 using namespace std;
-#include "URNResolver.h"
-#include "AutoPtrVector.h"
+#include <URNResolver.h>
+#include <AutoPtrVector.h>
+
 
 
 namespace H3D {
@@ -44,6 +46,17 @@ namespace H3D {
   /// resolving them.
   class H3DAPI_API ResourceResolver {
   public:
+
+    /// List of tmpfile names
+    class TmpFileNameList: public list< string > {
+    public:
+      ~TmpFileNameList() {
+        for( list< string >::iterator i = begin();
+           i != end(); i++ ) {
+		  std::remove( (*i).c_str() );
+        }
+      }
+    };
 
     /// Destructor.
     virtual ~ResourceResolver() {}
@@ -80,13 +93,26 @@ namespace H3D {
     }
 
     /// Returns a local filename that contains the resource specified
-    /// by urn.
-    static string resolveURLAsFile( const string &urn );
+    /// by urn. The boolean pointed to by the is_tmp_file argument 
+    /// is set to true if the resolved file is a temporary file.
+    static string resolveURLAsFile( const string &urn,
+                                    bool *is_tmp_file = NULL );
+
+    /// Returns a new unique filename that can be used to create a temporary
+    /// file. The filename should be released as soon as it is not needed
+    /// any more with the releaseTmpFileName function. 
+    static string getTmpFileName();
+
+    /// Remove a temporary file. Returns true on success or false if the 
+    /// tmpfile does not exist or have not been allocated with the 
+    /// getTmpFileName function. 
+    static bool releaseTmpFileName( const string &file );
 
   protected:
     static auto_ptr< URNResolver > urn_resolver;
-    static AutoPtrVector< ResourceResolver > resolvers;
+    static H3DUtil::AutoPtrVector< ResourceResolver > resolvers;
     static string baseURL;
+    static TmpFileNameList tmp_files;
   };
 }
 
