@@ -258,9 +258,6 @@
 				RelativePath="..\..\..\src\Disk2D.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DynamicLibrary.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\src\DynamicTransform.cpp">
 			</File>
 			<File
@@ -1134,9 +1131,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Disk2D.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\DynamicLibrary.h">
 			</File>
 			<File
 				RelativePath="..\..\..\src\DynamicTransform.h">
