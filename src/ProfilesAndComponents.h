@@ -95,7 +95,7 @@ namespace H3D {
                     string name, int &place );
 
     // Temporary solution to know which profiles H3DAPI supports.
-    std::vector< std::string > profiles_supported;
+    map< std::string, std::vector< std::string > > profiles_supported;
     ProfileSAX2Handlers::myX3DProfile used_profile;
     std::string version;
     bool main_profile_set;

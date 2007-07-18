@@ -119,7 +119,7 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
 	ks.reset ( new KeySensor );
 	ms.reset ( new MouseSensor );
 	#ifndef MACOSX
-	ss.reset (new SpaceWareSensor);
+	ss.reset (0);
 	#endif
 	t.reset ( new Transform );
 	default_stylus.reset (new Node);

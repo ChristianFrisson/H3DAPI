@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Component name="VolumeRendering">
+  <Level_1>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="OctTree">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="OpacityMapVolumeStyle">
+      <transferFunction support="partial"/>
+    </Node>
+    <Node name="VolumeData">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_1>
+  <Level_2>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+    </Prerequisites>
+    <Node name="BoundaryEnhancementVolumeStyle">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ComposedVolumeStyle">
+      <ordered support="partial"/>
+    </Node>
+    <Node name="EdgeEnhancementVolumeStyle">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="MIPVolumeStyle">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SegmentedVolumeData">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="SilhouetteEnhancementVolumeStyle">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ToneMappedVolumeStype">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_2>
+  <Level_3>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+      <Lighting level="2"/>
+    </Prerequisites>
+    <Node name="ISOSurfaceVolumeStyle">
+      <shadows support="optional"/>
+      <phaseFunction support="optional"/>
+    </Node>
+    <Node name="CartoonVolumeStyle">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="ComposedVolumeStyle">
+      <All_fields_fully_supported/>
+    </Node>
+    <Node name="StippleVolumeStype">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_3>
+  <Level_4>
+    <Prerequisites>
+      <Core level="1"/>
+      <Grouping level="1"/>
+      <Shape level="1"/>
+      <Rendering level="1"/>
+      <Lighting level="2"/>
+    </Prerequisites>
+    <Node name="ISOSurfaceVolumeStyle">
+      <All_fields_fully_supported/>
+    </Node>
+  </Level_4>
+</Component>

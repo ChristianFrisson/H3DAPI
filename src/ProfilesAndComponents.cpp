@@ -74,12 +74,28 @@ namespace ProfilesAndComponentsInternal {
 ProfilesAndComponents::ProfilesAndComponents(): main_profile_set( false ) {
   // Hard coded which profiles and components that are supported
   // by H3DAPI.
-  profiles_supported.push_back("Core");
-  profiles_supported.push_back("Interchange");
+  profiles_supported["3.0"].push_back("Core");
+  profiles_supported["3.0"].push_back("Interchange");
   // TODO: verify that immersive is supported since it is not yet
   // supported when coding this.
-  profiles_supported.push_back("Immersive");
-  profiles_supported.push_back("Interactive");
+  profiles_supported["3.0"].push_back("Immersive");
+  profiles_supported["3.0"].push_back("Interactive");
+
+  profiles_supported["3.1"].push_back("Core");
+  profiles_supported["3.1"].push_back("Interchange");
+  // TODO: verify that immersive is supported since it is not yet
+  // supported when coding this.
+  profiles_supported["3.1"].push_back("Immersive");
+  profiles_supported["3.1"].push_back("Interactive");
+
+  profiles_supported["3.2"].push_back("Core");
+  profiles_supported["3.2"].push_back("Interchange");
+  // TODO: verify that immersive is supported since it is not yet
+  // supported when coding this.
+  profiles_supported["3.2"].push_back("Immersive");
+  profiles_supported["3.2"].push_back("Interactive");
+  // TODO: verify that Medicalinterchange is supported.
+  profiles_supported["3.2"].push_back("MedicalInterchange");
 
   components_supported["3.0"]["Core"] = 2;
   components_supported["3.0"]["DIS"] = 0;
@@ -172,6 +188,9 @@ ProfilesAndComponents::ProfilesAndComponents(): main_profile_set( false ) {
   components_supported["3.2"]["Texturing"] = 3;
   components_supported["3.2"]["Texturing3D"] = 2;
   components_supported["3.2"]["Time"] = 2;
+
+  //TODO: verify support for VolumeRendering
+  components_supported["3.2"]["VolumeRendering"] = 3;
 }
 
 void ProfilesAndComponents::destroy() {
@@ -216,9 +235,9 @@ bool ProfilesAndComponents::setProfileInternal( string profile,
 
   // Try to find the profile file definition in list of 
   // supported profiles.
-  if( find( profiles_supported.begin(),
-    profiles_supported.end(),
-    profile ) != profiles_supported.end() ) {
+  if( find( profiles_supported[_version].begin(),
+    profiles_supported[_version].end(),
+    profile ) != profiles_supported[_version].end() ) {
       ProfileSAX2Handlers handler;
       parser->setContentHandler(&handler);
       parser->setErrorHandler(&handler);
@@ -302,7 +321,7 @@ bool ProfilesAndComponents::setProfileInternal( string profile,
         return false;
       }
   }
-  err_msg = "Profile " + profile +
+  err_msg = "Profile " + profile + " for version " + _version +
     " is currently not supported by H3DAPI.\n";
   return false;
 }

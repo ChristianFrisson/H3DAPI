@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Profile name="MedicalInterchange">
+  <Component name="Core" level="1"/>
+  <Component name="Time" level="1"/>
+  <Component name="Networking" level="1"/>
+  <Component name="Grouping" level="1"/>
+  <Component name="Rendering" level="3"/>
+  <Component name="Shape" level="3"/>
+  <Component name="Geometry3D" level="1"/>
+  <Component name="Geometry2D" level="2"/>
+  <Component name="Text" level="1"/>
+  <Component name="Lighting" level="1"/>
+  <Component name="Texturing" level="2"/>
+  <Component name="Navigation" level="1"/>
+  <Component name="EnvironmentalEffects" level="1"/>
+  <Component name="Texturing3D" level="2"/>
+  <Component name="VolumeRendering" level="3"/>
+</Profile>
