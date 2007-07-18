@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="H3DApi"
 	ProjectGUID="{71C03655-AF1F-426E-9F63-5C415390A8CA}"
 	RootNamespace="H3DApi"
@@ -362,10 +362,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Disk2D.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\DynamicLibrary.cpp"
 				>
 			</File>
 			<File
@@ -1548,10 +1544,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\Disk2D.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\src\DynamicLibrary.h"
 				>
 			</File>
 			<File
