@@ -1041,7 +1041,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
     if( pi ) {
       // parent is X3DPrototypeInstance that was created with a ProtoInstance element.
       // Only fieldValue elements are allowed.
-      if( localname_string ==  "fieldValue" ) {
+      if( localname_string !=  "fieldValue" ) {
         Console(3) << "WARNING: Only fieldValue elements allowed in ProtoInstance element "
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
@@ -1197,11 +1197,6 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               string s = toString( attrs.getValue( i ) );
               container_field = s; 
             } else if( proto_instance ) {
-              if( name == "name" ) {
-                Console(3) << "WARNING: Attribute name \"" << name 
-                     << "\" not allowed in ProtoInstance element. "
-                     << getLocationString() << endl;
-              }
             } else if( use_name ) {
               // node is defined by USE, so we ignore all fields that are not
               // USE, class, DEF, or containerField
