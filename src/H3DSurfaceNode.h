@@ -55,7 +55,7 @@ namespace H3D {
       return hapi_surface.get();
     }
   protected:
-    auto_ptr< HAPI::HAPISurfaceObject > hapi_surface;
+    AutoRef< HAPI::HAPISurfaceObject > hapi_surface;
   };
 }
 

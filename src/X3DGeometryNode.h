@@ -316,6 +316,13 @@ namespace H3D {
 
   protected:
 
+    /// Function sent to HAPIHapticsShape created to allow for deletion of
+    /// X3DGeometryNode at the correct time. The X3DGeometryNode is not
+    /// automatically refernced counted when sent to HAPIHapticShape.
+    static void cleanUpFunction( void *userdata) {
+      static_cast< X3DGeometryNode * >(userdata)->unref();
+    }
+
     inline void renderTexCoordForActiveTexture( const Vec3f &tc ) {
       X3DTextureCoordinateNode::renderTexCoordForActiveTexture( tc );
     }

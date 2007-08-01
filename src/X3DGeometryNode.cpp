@@ -198,17 +198,25 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_s
 		                                     this,
                                          _surface->getSurface(),
                                          _transform,
+                                         &X3DGeometryNode::cleanUpFunction,
                                          touchable_face,
                                          camera_view,
                                          adaptive_viewport );
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HLDepthBufferShape is destructed.
+    ref();
   } else {
     return new HAPI::HLFeedbackShape( this,
 		                                  this,
                                       _surface->getSurface(),
                                       _transform,
+                                      &X3DGeometryNode::cleanUpFunction,
                                       _nr_vertices,
                                       touchable_face,
                                       camera_view );
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HLFeedbackShape is destructed.
+    ref();
   }
 }
 
@@ -535,8 +543,12 @@ void X3DGeometryNode::createAndAddHapticShapes(
                 0, 1e-3, 0, 0,
                 0, 0, 1e-3, 0,
                 0, 0, 0, 1 )),
+      &X3DGeometryNode::cleanUpFunction,
       -1,
       touchable_face );
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HapticTriangleSet is destructed.
+    ref();
 
 
 #ifdef HAVE_OPENHAPTICS
@@ -588,8 +600,12 @@ void X3DGeometryNode::createAndAddHapticShapes(
                 0, 1e-3, 0, 0,
                 0, 0, 1e-3, 0,
                 0, 0, 0, 1 )),
+      &X3DGeometryNode::cleanUpFunction,
       -1,
       touchable_face );
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HapticLineSet is destructed.
+    ref();
 
 
 #ifdef HAVE_OPENHAPTICS
@@ -642,8 +658,12 @@ void X3DGeometryNode::createAndAddHapticShapes(
                 0, 1e-3, 0, 0,
                 0, 0, 1e-3, 0,
                 0, 0, 0, 1 )),
+      &X3DGeometryNode::cleanUpFunction,
       -1,
       touchable_face);
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HapticPointSet is destructed.
+    ref();
 
 
 #ifdef HAVE_OPENHAPTICS

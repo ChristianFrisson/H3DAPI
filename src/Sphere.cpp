@@ -233,8 +233,10 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
                                             0, 1e-3, 0, 0,
                                             0, 0, 1e-3, 0,
                                             0, 0, 0, 1 ) ),
+                                  &X3DGeometryNode::cleanUpFunction,
                                   -1,
                                   touchable_face );
+      ref();
 
 #ifdef HAVE_OPENHAPTICS
       if( dynamic_cast< OpenHapticsRenderer * >( hd_renderer ) ) {
