@@ -107,7 +107,6 @@
 		96E9DC5D0B8C6D7C00B4BE63 /* DirectionalLight.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DB020B8C6D7C00B4BE63 /* DirectionalLight.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96E9DC5E0B8C6D7C00B4BE63 /* DirectShowDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DB030B8C6D7C00B4BE63 /* DirectShowDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96E9DC5F0B8C6D7C00B4BE63 /* Disk2D.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DB040B8C6D7C00B4BE63 /* Disk2D.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		96E9DC600B8C6D7C00B4BE63 /* DynamicLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DB050B8C6D7C00B4BE63 /* DynamicLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96E9DC610B8C6D7C00B4BE63 /* DynamicTransform.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DB060B8C6D7C00B4BE63 /* DynamicTransform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96E9DC620B8C6D7C00B4BE63 /* ElevationGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DB070B8C6D7C00B4BE63 /* ElevationGrid.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		96E9DC630B8C6D7C00B4BE63 /* ExplosionEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E9DB080B8C6D7C00B4BE63 /* ExplosionEmitter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -448,7 +447,6 @@
 		96E9DEC10B8C6DA900B4BE63 /* DirectionalLight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DDB60B8C6DA900B4BE63 /* DirectionalLight.cpp */; };
 		96E9DEC20B8C6DA900B4BE63 /* DirectShowDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DDB70B8C6DA900B4BE63 /* DirectShowDecoder.cpp */; };
 		96E9DEC30B8C6DA900B4BE63 /* Disk2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DDB80B8C6DA900B4BE63 /* Disk2D.cpp */; };
-		96E9DEC40B8C6DA900B4BE63 /* DynamicLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DDB90B8C6DA900B4BE63 /* DynamicLibrary.cpp */; };
 		96E9DEC50B8C6DA900B4BE63 /* DynamicTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DDBA0B8C6DA900B4BE63 /* DynamicTransform.cpp */; };
 		96E9DEC60B8C6DA900B4BE63 /* ElevationGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DDBB0B8C6DA900B4BE63 /* ElevationGrid.cpp */; };
 		96E9DEC70B8C6DA900B4BE63 /* ExplosionEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96E9DDBC0B8C6DA900B4BE63 /* ExplosionEmitter.cpp */; };
@@ -796,7 +794,6 @@
 		96E9DB020B8C6D7C00B4BE63 /* DirectionalLight.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = DirectionalLight.h; path = ../../src/DirectionalLight.h; sourceTree = SOURCE_ROOT; };
 		96E9DB030B8C6D7C00B4BE63 /* DirectShowDecoder.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = DirectShowDecoder.h; path = ../../src/DirectShowDecoder.h; sourceTree = SOURCE_ROOT; };
 		96E9DB040B8C6D7C00B4BE63 /* Disk2D.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = Disk2D.h; path = ../../src/Disk2D.h; sourceTree = SOURCE_ROOT; };
-		96E9DB050B8C6D7C00B4BE63 /* DynamicLibrary.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = DynamicLibrary.h; path = ../../src/DynamicLibrary.h; sourceTree = SOURCE_ROOT; };
 		96E9DB060B8C6D7C00B4BE63 /* DynamicTransform.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = DynamicTransform.h; path = ../../src/DynamicTransform.h; sourceTree = SOURCE_ROOT; };
 		96E9DB070B8C6D7C00B4BE63 /* ElevationGrid.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = ElevationGrid.h; path = ../../src/ElevationGrid.h; sourceTree = SOURCE_ROOT; };
 		96E9DB080B8C6D7C00B4BE63 /* ExplosionEmitter.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = ExplosionEmitter.h; path = ../../src/ExplosionEmitter.h; sourceTree = SOURCE_ROOT; };
@@ -1139,7 +1136,6 @@
 		96E9DDB60B8C6DA900B4BE63 /* DirectionalLight.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = DirectionalLight.cpp; path = ../../src/DirectionalLight.cpp; sourceTree = SOURCE_ROOT; };
 		96E9DDB70B8C6DA900B4BE63 /* DirectShowDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = DirectShowDecoder.cpp; path = ../../src/DirectShowDecoder.cpp; sourceTree = SOURCE_ROOT; };
 		96E9DDB80B8C6DA900B4BE63 /* Disk2D.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = Disk2D.cpp; path = ../../src/Disk2D.cpp; sourceTree = SOURCE_ROOT; };
-		96E9DDB90B8C6DA900B4BE63 /* DynamicLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = DynamicLibrary.cpp; path = ../../src/DynamicLibrary.cpp; sourceTree = SOURCE_ROOT; };
 		96E9DDBA0B8C6DA900B4BE63 /* DynamicTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = DynamicTransform.cpp; path = ../../src/DynamicTransform.cpp; sourceTree = SOURCE_ROOT; };
 		96E9DDBB0B8C6DA900B4BE63 /* ElevationGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = ElevationGrid.cpp; path = ../../src/ElevationGrid.cpp; sourceTree = SOURCE_ROOT; };
 		96E9DDBC0B8C6DA900B4BE63 /* ExplosionEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = ExplosionEmitter.cpp; path = ../../src/ExplosionEmitter.cpp; sourceTree = SOURCE_ROOT; };
@@ -1552,7 +1548,6 @@
 				96D455900BE0BFFA001E8F3F /* VisibilitySensor.h */,
 				96D455910BE0BFFA001E8F3F /* X3DEnvironmentalSensorNode.cpp */,
 				96D455920BE0BFFA001E8F3F /* X3DEnvironmentalSensorNode.h */,
-				96E9DDB90B8C6DA900B4BE63 /* DynamicLibrary.cpp */,
 				96E9DDBA0B8C6DA900B4BE63 /* DynamicTransform.cpp */,
 				96E9DDBB0B8C6DA900B4BE63 /* ElevationGrid.cpp */,
 				96E9DDBC0B8C6DA900B4BE63 /* ExplosionEmitter.cpp */,
@@ -1836,7 +1831,6 @@
 				96E9DB020B8C6D7C00B4BE63 /* DirectionalLight.h */,
 				96E9DB030B8C6D7C00B4BE63 /* DirectShowDecoder.h */,
 				96E9DB040B8C6D7C00B4BE63 /* Disk2D.h */,
-				96E9DB050B8C6D7C00B4BE63 /* DynamicLibrary.h */,
 				96E9DB060B8C6D7C00B4BE63 /* DynamicTransform.h */,
 				96E9DB070B8C6D7C00B4BE63 /* ElevationGrid.h */,
 				96E9DB080B8C6D7C00B4BE63 /* ExplosionEmitter.h */,
@@ -2201,7 +2195,6 @@
 				96E9DC5D0B8C6D7C00B4BE63 /* DirectionalLight.h in Headers */,
 				96E9DC5E0B8C6D7C00B4BE63 /* DirectShowDecoder.h in Headers */,
 				96E9DC5F0B8C6D7C00B4BE63 /* Disk2D.h in Headers */,
-				96E9DC600B8C6D7C00B4BE63 /* DynamicLibrary.h in Headers */,
 				96E9DC610B8C6D7C00B4BE63 /* DynamicTransform.h in Headers */,
 				96E9DC620B8C6D7C00B4BE63 /* ElevationGrid.h in Headers */,
 				96E9DC630B8C6D7C00B4BE63 /* ExplosionEmitter.h in Headers */,
@@ -2673,7 +2666,6 @@
 				96E9DEC10B8C6DA900B4BE63 /* DirectionalLight.cpp in Sources */,
 				96E9DEC20B8C6DA900B4BE63 /* DirectShowDecoder.cpp in Sources */,
 				96E9DEC30B8C6DA900B4BE63 /* Disk2D.cpp in Sources */,
-				96E9DEC40B8C6DA900B4BE63 /* DynamicLibrary.cpp in Sources */,
 				96E9DEC50B8C6DA900B4BE63 /* DynamicTransform.cpp in Sources */,
 				96E9DEC60B8C6DA900B4BE63 /* ElevationGrid.cpp in Sources */,
 				96E9DEC70B8C6DA900B4BE63 /* ExplosionEmitter.cpp in Sources */,

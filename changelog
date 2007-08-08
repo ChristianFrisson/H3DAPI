@@ -25,7 +25,7 @@ SurfaceEmitter
 TouchSensor
 ViewpointGroup
 VisibilitySensor
-WindPhysicsModel( maybe)
+WindPhysicsModel
 	
 New H3D nodes:
 DebugOptions
@@ -67,6 +67,8 @@ easily.
 - Fixed a bug when using double versions of linear algebra types in
 Python(e.g. Vec3d)
 - MultiTexture can now be used for all geometry types.
+- Fixed bugs that gave warning messages when using the Prototype features 
+of X3D.
 
 	
 Compatability issues:
@@ -74,8 +76,15 @@ Compatability issues:
 - HLHapticsDevice -> SensAbleDevice
 - The interface to force effects have changed and HAPI structures must be
 used.
-- If you have implemented your own geometry...
-- culling
+- If you have implemented your own geometry nodes there are some
+changes. For once you do not need to add any haptics geometries in your
+new node in order to be able to touch it. Instead this is done
+automatically in X3DGeometryNode. 
+- If you want to use face culling in your geometry node please use the
+useBackFaceCulling/useCulling/setCullFace functions in X3DGeometryNode
+in the traverseSG function instead of specifying OpenGL calls directly in
+render() to do it. This is needed in order for everything to work properly
+when generating triangles to use for haptics.
 
 	
 Changes for version 1.5:

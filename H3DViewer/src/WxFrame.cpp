@@ -691,6 +691,19 @@ void WxFrame::clearData () {
 		Disconnect(FRAME_VIEWPOINT + i,wxEVT_COMMAND_MENU_SELECTED,
                wxCommandEventHandler(WxFrame::ChangeViewpoint));
 	}
+  viewpointMenu->Destroy( FRAME_RESET_VIEWPOINT ); 
+  
+  // Find all separators and remove them, if the item is not a separator
+  // something is wrong but not enough to quit.
+  while( viewpointMenu->GetMenuItemCount() != 0 ) {
+    wxMenuItem * temp_menu_item = viewpointMenu->FindItemByPosition( 0 );
+    if( temp_menu_item->IsSeparator() ) {
+      viewpointMenu->Destroy( temp_menu_item->GetId() );
+    } else {
+      Console(4) << "Viewpoint menu might look strange from now on." << endl;
+      break;
+    }
+  }
 
 	//Delete items from navigation menu & disconnect events
 	for (int j = 0; j <= navTypeCount; j++) {

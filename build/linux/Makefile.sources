@@ -41,7 +41,6 @@ SOURCES=../../src/Anchor.cpp \
 ../../src/DirectionalLight.cpp \
 ../../src/DirectShowDecoder.cpp \
 ../../src/Disk2D.cpp \
-../../src/DynamicLibrary.cpp \
 ../../src/DynamicTransform.cpp \
 ../../src/ElevationGrid.cpp \
 ../../src/ExplosionEmitter.cpp \

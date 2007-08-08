@@ -41,7 +41,6 @@ OBJECTS=../../src/Anchor.o \
 ../../src/DirectionalLight.o \
 ../../src/DirectShowDecoder.o \
 ../../src/Disk2D.o \
-../../src/DynamicLibrary.o \
 ../../src/DynamicTransform.o \
 ../../src/ElevationGrid.o \
 ../../src/ExplosionEmitter.o \

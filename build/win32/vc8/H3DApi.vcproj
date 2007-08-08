@@ -1207,6 +1207,14 @@
 			<File
 				RelativePath="..\..\..\src\X3DGeometryNode.cpp"
 				>
+				<FileConfiguration
+					Name="Release DLL|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\src\X3DGroupingNode.cpp"

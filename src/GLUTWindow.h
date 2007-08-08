@@ -29,6 +29,8 @@
 #ifndef __GLUTWINDOW_H__
 #define __GLUTWINDOW_H__
 
+#include <H3DWindowNode.h>
+
 #include <GL/glew.h>
 #ifdef MACOSX
 #include <GLUT/glut.h>
@@ -38,8 +40,6 @@
 #ifdef FREEGLUT
 #include <GL/freeglut.h>
 #endif
-
-#include <H3DWindowNode.h>
 
 namespace H3D {
 

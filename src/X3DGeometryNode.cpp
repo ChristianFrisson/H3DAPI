@@ -194,6 +194,9 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_s
   }
 
   if( type == 1 ) {
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HLDepthBufferShape is destructed.
+    ref();
     return new HAPI::HLDepthBufferShape( this,
 		                                     this,
                                          _surface->getSurface(),
@@ -202,10 +205,10 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_s
                                          touchable_face,
                                          camera_view,
                                          adaptive_viewport );
-    // Increase ref-count to have cleanupfunction decrease
-    // it when the HLDepthBufferShape is destructed.
-    ref();
   } else {
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HLFeedbackShape is destructed.
+    ref();
     return new HAPI::HLFeedbackShape( this,
 		                                  this,
                                       _surface->getSurface(),
@@ -214,9 +217,6 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_s
                                       _nr_vertices,
                                       touchable_face,
                                       camera_view );
-    // Increase ref-count to have cleanupfunction decrease
-    // it when the HLFeedbackShape is destructed.
-    ref();
   }
 }
 

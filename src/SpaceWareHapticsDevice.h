@@ -77,7 +77,7 @@ namespace H3D {
 			  Inst< SFBool          > _followViewpoint        = 0,
 			  Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
 			  Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
-         Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0,
+         Inst< SetMainButton > _set_mainButton         = 0,
          Inst< SFFloat         > _posSensitivity         = 0,
          Inst< SFFloat         > _ornSensitivity         = 0);
 

@@ -67,7 +67,7 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
           Inst< SFBool          > _followViewpoint        ,
           Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     ,
           Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  ,
-          Inst< ThreadSafeSField< SFBool > > _set_mainButton,
+          Inst< SetMainButton > _set_mainButton,
           Inst< SFFloat         > _posSensitivity,
           Inst< SFFloat         > _ornSensitivity ) :
   H3DFakeHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,

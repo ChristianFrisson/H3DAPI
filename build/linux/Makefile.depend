@@ -3418,15 +3418,6 @@
 ../../src/Disk2D.o: ../../src/X3DGeometricPropertyNode.h
 ../../src/Disk2D.o: ../../src/OpenHapticsOptions.h ../../src/SFString.h
 ../../src/Disk2D.o: ../../src/SFFloat.h ../../../HAPI/src/HapticTriangleSet.h
-../../src/DynamicLibrary.o: ../../src/DynamicLibrary.h ../../src/H3DApi.h
-../../src/DynamicLibrary.o: ../../../H3DUtil/src/Exception.h
-../../src/DynamicLibrary.o: ../../../H3DUtil/src/H3DUtil.h
-../../src/DynamicLibrary.o: /usr/include/dlfcn.h /usr/include/features.h
-../../src/DynamicLibrary.o: /usr/include/sys/cdefs.h
-../../src/DynamicLibrary.o: /usr/include/bits/wordsize.h
-../../src/DynamicLibrary.o: /usr/include/gnu/stubs.h
-../../src/DynamicLibrary.o: /usr/include/gnu/stubs-32.h
-../../src/DynamicLibrary.o: /usr/include/bits/dlfcn.h
 ../../src/DynamicTransform.o: ../../src/DynamicTransform.h
 ../../src/DynamicTransform.o: ../../src/MatrixTransform.h
 ../../src/DynamicTransform.o: ../../src/X3DGroupingNode.h
