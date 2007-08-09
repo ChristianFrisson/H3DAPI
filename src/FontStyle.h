@@ -38,7 +38,12 @@
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 #if defined(_MSC_VER) || defined(__BORLANDC__)
+#ifdef LINK_STATIC_EXTERNALS
+#pragma comment( lib, "ftgl_static_MTD.lib" )
+#pragma comment( lib, "freetype235.lib" )
+#else
 #pragma comment( lib, "ftgl_dynamic_MTD.lib" )
+#endif
 #endif
 #include <FTGLTextureFont.h>
 #endif

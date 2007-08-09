@@ -76,9 +76,6 @@
 /// ImageTexture nodes will not be able to read image files.
 #define HAVE_FREEIMAGE
 
-// Define this if you are linking Freeimage as a static library
-//#define FREEIMAGE_LIB
-
 /// Undef if you do not have libcurl(http://sourceforge.net/projects/curl/)
 /// installed. URLs using protocols like http and ftp will then not be 
 /// supported. Only local filenames can be used. 
@@ -94,8 +91,18 @@
 #define XML_USE_INMEM_MESSAGELOADER
 #define XML_USE_NETACCESSOR_WINSOCK
 
+//#define LINK_STATIC_EXTERNALS
+
+#ifdef LINK_STATIC_EXTERNALS
 // define this if you are linking Xerces as a static library
-//#define XML_LIBRARY
+#define XML_LIBRARY
+// Define this if you are linking Freeimage as a static library
+#define FREEIMAGE_LIB
+#define FTGL_LIBRARY_STATIC
+#define GLEW_STATIC
+#define CURL_STATICLIB
+#define FREEGLUT_STATIC
+#endif
 
 // The following ifdef block is the standard way of creating macros
 // which make exporting from a DLL simpler. All files within this DLL

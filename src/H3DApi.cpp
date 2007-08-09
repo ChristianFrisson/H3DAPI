@@ -43,7 +43,11 @@
 
 #ifdef HAVE_FREEIMAGE
 #if defined(_MSC_VER) || defined(__BORLANDC__)
+#ifdef LINK_STATIC_EXTERNALS
+#pragma comment( lib, "FreeImage_static.lib" )
+#else
 #pragma comment( lib, "FreeImage.lib" )
+#endif
 #endif
 #endif
 

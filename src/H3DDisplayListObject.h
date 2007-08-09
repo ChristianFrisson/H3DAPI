@@ -40,7 +40,12 @@
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #pragma comment( lib, "OpenGL32.lib" )
 #pragma comment( lib, "glu32.lib" )
+
+#ifdef LINK_STATIC_EXTERNALS
+#pragma comment( lib, "glew32_static.lib" )
+#else
 #pragma comment( lib, "glew32.lib" )
+#endif
 #endif
 
 namespace H3D {

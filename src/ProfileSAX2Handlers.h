@@ -36,6 +36,8 @@
 #include <vector>
 #include <string>
 
+#include <H3DApi.h>
+
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 #include <xercesc/sax2/Attributes.hpp>
@@ -43,7 +45,13 @@
 #include <xercesc/sax/Locator.hpp>
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
+#ifdef LINK_STATIC_EXTERNALS
+#pragma comment( lib, "xerces-c_static_2.lib" )
+#pragma comment( lib, "ws2_32.lib" )
+#pragma comment( lib, "advapi32.lib" )
+#else
 #pragma comment( lib, "xerces-c_2.lib" )
+#endif
 #endif
 
 XERCES_CPP_NAMESPACE_USE

@@ -34,7 +34,12 @@
 
 #ifdef HAVE_LIBVORBIS
 #if defined(_MSC_VER) || defined(__BORLANDC__)
+#ifdef LINK_STATIC_EXTERNALS
+#pragma comment( lib, "vorbisfile_static.lib" )
+#pragma comment( lib, "ogg_static.lib" )
+#else
 #pragma comment( lib, "vorbisfile.lib" )
+#endif
 #endif
 #include <vorbis/vorbisfile.h>
 
