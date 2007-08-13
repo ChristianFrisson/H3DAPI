@@ -551,7 +551,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // enable headlight
   NavigationInfo *nav_info = NavigationInfo::getActive();
   GLint headlight_index = -1;
-  if( nav_info && nav_info->headlight->getValue() ) {
+  if( !nav_info || nav_info->headlight->getValue() ) {
     glPushAttrib( GL_LIGHTING_BIT );
     headlight_index =
       X3DLightNode::getLightIndex( "Headlight in H3DWindowNode" );
