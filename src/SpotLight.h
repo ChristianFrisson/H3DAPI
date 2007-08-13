@@ -94,6 +94,7 @@ namespace H3D {
                Inst< SFFloat>  _ambientIntensity = 0,
                Inst< SFColor>  _color            = 0,
                Inst< SFFloat>  _intensity        = 0,
+               Inst< SFBool >  _global           = 0,
                Inst< SFBool >  _on               = 0,
                Inst< SFVec3f>  _attenuation      = 0,
                Inst< SFFloat>  _beamWidth        = 0,

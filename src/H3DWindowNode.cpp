@@ -56,6 +56,8 @@
 
 #include <H3DNavigation.h>
 
+#include <X3DLightNode.h>
+
 using namespace H3D;
 
 
@@ -548,10 +550,24 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   // enable headlight
   NavigationInfo *nav_info = NavigationInfo::getActive();
-  if( nav_info && !nav_info->headlight->getValue() )
-    glDisable( GL_LIGHT0 );
-  else 
-    glEnable(GL_LIGHT0);
+  GLint headlight_index = -1;
+  if( nav_info && nav_info->headlight->getValue() ) {
+    glPushAttrib( GL_LIGHTING_BIT );
+    headlight_index =
+      X3DLightNode::getLightIndex( "Headlight in H3DWindowNode" );
+    glEnable( GL_LIGHT0 + (GLuint)(headlight_index) );
+  }
+
+  Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
+  TraverseInfo *ti = scene->getLastTraverseInfo();
+  if( ti ) {
+    for( TraverseInfo::RefCountedVector::const_iterator i = 
+                            ti->x3dlightnode_vector.begin();
+         i != ti->x3dlightnode_vector.end();
+         i++ ) {
+      static_cast< X3DLightNode * >(*i)->enableGraphicsState();
+    }
+  }
 
     AutoRef< Viewpoint > vp_ref;
   // get the viewpoint. If the H3DWindowNode viewpoint field is set use that
@@ -951,6 +967,19 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                                  default_avatar,
                                  default_speed );
     H3DNavigationDevices::setNavTypeForAll( default_nav );
+  }
+
+  if( ti ) {
+    for( TraverseInfo::RefCountedVector::const_iterator i = 
+                            ti->x3dlightnode_vector.begin();
+         i != ti->x3dlightnode_vector.end();
+         i++ ) {
+      static_cast< X3DLightNode * >(*i)->disableGraphicsState();
+    }
+  }
+  if( headlight_index != -1 ) {
+    glPopAttrib();
+    X3DLightNode::decreaseLightIndex();
   }
 }
 

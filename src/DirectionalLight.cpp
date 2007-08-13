@@ -48,8 +48,10 @@ DirectionalLight::DirectionalLight(
                                    Inst< SFColor>  _color,
                                    Inst< SFFloat>  _intensity,
                                    Inst< SFBool >  _on,
+                                   Inst< SFBool >  _global,
                                    Inst< SFVec3f>  _direction ) :
-  X3DLightNode( _metadata,_ambientIntensity, _color, _intensity, _on ),
+  X3DLightNode( _metadata,_ambientIntensity, _color, _global, 
+                _intensity, _on ),
   direction( _direction ) {
 
   type_name = "DirectionalLight";
@@ -65,13 +67,22 @@ DirectionalLight::DirectionalLight(
 }
 
 void DirectionalLight::enableGraphicsState() {
-  X3DLightNode::enableGraphicsState();
-  if( light_index + 1 <= (GLuint) max_lights ) {
-    Vec3f p = direction->getValue();
-    p = -1.0 * p;
-    GLfloat dir[] = { p.x, p.y, p.z, 0 };
-    glLightfv( GL_LIGHT0+light_index, GL_POSITION, dir );
-  }
+  if ( ( act_global && graphics_state_counter < traverse_sg_counter ) ||
+       ( !global->getValue() && on->getValue() ) ) {
+    X3DLightNode::enableGraphicsState();
+    if( light_index + 1 <= (GLuint) max_lights ) {
+      Vec3f p = direction->getValue();
+      if( act_global ) {
+        p = global_light_transforms[ graphics_state_counter ]
+        .getScaleRotationPart() * p;
+      }
+      p = -1.0 * p;
+      GLfloat dir[] = { p.x, p.y, p.z, 0 };
+      glLightfv( GL_LIGHT0+light_index, GL_POSITION, dir );
+    }
+  } else
+    had_light_index.push_back( false );
+  graphics_state_counter++;
 }
 
 

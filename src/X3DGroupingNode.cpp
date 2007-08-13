@@ -86,7 +86,6 @@ void X3DGroupingNode::render()     {
     }
   }
   
-  //cerr << "X3DGroupingNode::render() children" << endl;
   for( MFNode::const_iterator i = children->begin();
        i != children->end(); i++ ) {
     H3DDisplayListObject *c = dynamic_cast< H3DDisplayListObject* >( *i );

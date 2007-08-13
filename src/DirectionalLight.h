@@ -61,6 +61,7 @@ namespace H3D {
                       Inst< SFColor>  _color            = 0,
                       Inst< SFFloat>  _intensity        = 0,
                       Inst< SFBool >  _on               = 0,
+                      Inst< SFBool >  _global           = 0,
                       Inst< SFVec3f>  _direction        = 0 );
 
     /// Turn the light on.

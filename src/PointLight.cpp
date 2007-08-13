@@ -54,8 +54,10 @@ PointLight::PointLight(
                        Inst< SFBool  > _on,
                        Inst< SFVec3f > _attenuation,
                        Inst< SFVec3f > _location,
+                       Inst< SFBool >  _global,
                        Inst< SFFloat > _radius ) :
-  X3DLightNode( _metadata,_ambientIntensity, _color, _intensity, _on ),
+  X3DLightNode( _metadata,_ambientIntensity, _color, _global,
+                _intensity, _on ),
   attenuation     ( _attenuation      ),
   location        ( _location         ),
   radius          ( _radius           ) {
@@ -65,6 +67,7 @@ PointLight::PointLight(
 
   attenuation->setValue( Vec3f( 1, 0, 0 ) );
   location->setValue( Vec3f( 0, 0, 0 ) );
+  global->setValue( true );
   radius->setValue( 100 );
 
   attenuation->route( displayList );
@@ -73,17 +76,25 @@ PointLight::PointLight(
 }
 
 void PointLight::enableGraphicsState() {
-  X3DLightNode::enableGraphicsState();
-  if( light_index + 1 <= (GLuint)max_lights ) {
-    
-    Vec3f p = location->getValue();
-    GLfloat pos_v[] = { p.x, p.y, p.z, 1 };
-    glLightfv( GL_LIGHT0+light_index, GL_POSITION, pos_v );
-    
-    // set attenuation values
-    Vec3f att = attenuation->getValue();
-    glLightf(GL_LIGHT0+light_index, GL_CONSTANT_ATTENUATION, att.x );
-    glLightf(GL_LIGHT0+light_index, GL_LINEAR_ATTENUATION, att.y );
-    glLightf(GL_LIGHT0+light_index, GL_QUADRATIC_ATTENUATION, att.z );
-  }
+  if ( ( act_global && graphics_state_counter < traverse_sg_counter ) ||
+       ( !global->getValue() && on->getValue() ) ) {
+    X3DLightNode::enableGraphicsState();
+    if( light_index + 1 <= (GLuint)max_lights ) {
+
+      Vec3f p = location->getValue();
+      if( act_global ) {
+        p = global_light_transforms[ graphics_state_counter ] * p;
+      }
+      GLfloat pos_v[] = { p.x, p.y, p.z, 1 };
+      glLightfv( GL_LIGHT0+light_index, GL_POSITION, pos_v );
+
+      // set attenuation values
+      Vec3f att = attenuation->getValue();
+      glLightf(GL_LIGHT0+light_index, GL_CONSTANT_ATTENUATION, att.x );
+      glLightf(GL_LIGHT0+light_index, GL_LINEAR_ATTENUATION, att.y );
+      glLightf(GL_LIGHT0+light_index, GL_QUADRATIC_ATTENUATION, att.z );
+    }
+  } else
+    had_light_index.push_back( false );
+  graphics_state_counter++;
 }

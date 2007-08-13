@@ -316,6 +316,10 @@ namespace H3D {
     }
 
     vector< X3DPointingDeviceSensorNode * > current_pt_dev_sensors;
+    
+    /// Used to get all the X3DLightNodes that are global.
+    typedef AutoRefVector< RefCountedClass > RefCountedVector;
+    RefCountedVector x3dlightnode_vector;
 
   protected:
     class TransformInfo {

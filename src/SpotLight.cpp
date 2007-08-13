@@ -54,6 +54,7 @@ SpotLight::SpotLight(
                      Inst< SFFloat > _ambientIntensity,
                      Inst< SFColor > _color,
                      Inst< SFFloat > _intensity,
+                     Inst< SFBool >  _global,
                      Inst< SFBool  > _on,
                      Inst< SFVec3f > _attenuation,
                      Inst< SFFloat > _beamWidth,
@@ -61,7 +62,7 @@ SpotLight::SpotLight(
                      Inst< SFVec3f > _direction,
                      Inst< SFVec3f > _location,
                      Inst< SFFloat > _radius ) :
-  X3DLightNode( _metadata,_ambientIntensity, _color, 
+  X3DLightNode( _metadata,_ambientIntensity, _color, _global,
                 _intensity, _on ),
   attenuation     ( _attenuation      ),
   beamWidth       ( _beamWidth        ),
@@ -79,6 +80,7 @@ SpotLight::SpotLight(
   direction->setValue( Vec3f( 0, 0, -1 ) );
   location->setValue( Vec3f( 0, 0, 0 ) );
   radius->setValue( 100 );
+  global->setValue( true );
 
   direction->route( displayList );
   attenuation->route( displayList );
@@ -91,33 +93,45 @@ SpotLight::SpotLight(
 }
 
 void SpotLight::enableGraphicsState() {
-  X3DLightNode::enableGraphicsState();
-  if( light_index + 1 <= (GLuint)max_lights ) {
-    
-    // location
-    Vec3f l = location->getValue();
-    GLfloat loc_v[] = { l.x, l.y, l.z, 1 };
-    glLightfv( GL_LIGHT0+light_index, GL_POSITION, loc_v );
-    
-    // set attenuation values
-    Vec3f att = attenuation->getValue();
-    glLightf(GL_LIGHT0+light_index, GL_CONSTANT_ATTENUATION, att.x );
-    glLightf(GL_LIGHT0+light_index, GL_LINEAR_ATTENUATION, att.y );
-    glLightf(GL_LIGHT0+light_index, GL_QUADRATIC_ATTENUATION, att.z );
-    
-    // direction
-    Vec3f d = direction->getValue();  
-    GLfloat dir_v[] = { d.x, d.y, d.z };
-    glLightfv( GL_LIGHT0+light_index, GL_SPOT_DIRECTION, dir_v );
-    
-    H3DFloat angle = cutOffAngle->getValue();
-    H3DFloat beam = beamWidth->getValue();
-    glLightf( GL_LIGHT0+light_index, GL_SPOT_CUTOFF, 
-              (GLfloat)(angle * 180.0f / Constants::pi ));
-    // The exponential dropoff is not right/spec compliant...
-    glLightf( GL_LIGHT0+light_index, GL_SPOT_EXPONENT, 
-              beam < angle ? 1.0f : 0.0f );
-  }
+  if ( ( act_global && graphics_state_counter < traverse_sg_counter ) ||
+       ( !global->getValue() && on->getValue() ) ) {
+    X3DLightNode::enableGraphicsState();
+    if( light_index + 1 <= (GLuint)max_lights ) {
+
+      // location
+      Vec3f l = location->getValue();
+      if( act_global ) {
+        l = global_light_transforms[ graphics_state_counter ] * l;
+      }
+      GLfloat loc_v[] = { l.x, l.y, l.z, 1 };
+      glLightfv( GL_LIGHT0+light_index, GL_POSITION, loc_v );
+
+      // set attenuation values
+      Vec3f att = attenuation->getValue();
+      glLightf(GL_LIGHT0+light_index, GL_CONSTANT_ATTENUATION, att.x );
+      glLightf(GL_LIGHT0+light_index, GL_LINEAR_ATTENUATION, att.y );
+      glLightf(GL_LIGHT0+light_index, GL_QUADRATIC_ATTENUATION, att.z );
+
+      // direction
+      Vec3f d = direction->getValue();  
+      if( act_global ) {
+        d = global_light_transforms[ graphics_state_counter ]
+        .getScaleRotationPart() * d;
+      }
+      GLfloat dir_v[] = { d.x, d.y, d.z };
+      glLightfv( GL_LIGHT0+light_index, GL_SPOT_DIRECTION, dir_v );
+
+      H3DFloat angle = cutOffAngle->getValue();
+      H3DFloat beam = beamWidth->getValue();
+      glLightf( GL_LIGHT0+light_index, GL_SPOT_CUTOFF, 
+        (GLfloat)(angle * 180.0f / Constants::pi ));
+      // The exponential dropoff is not right/spec compliant...
+      glLightf( GL_LIGHT0+light_index, GL_SPOT_EXPONENT, 
+        beam < angle ? 1.0f : 0.0f );
+    }
+  } else
+    had_light_index.push_back( false );
+  graphics_state_counter++;
 }
 
 

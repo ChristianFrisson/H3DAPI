@@ -54,6 +54,14 @@ namespace H3D {
   /// is disabled and will not affect any nodes in the scene. If the value
   /// is TRUE, then the light will affect other nodes.
   ///
+  /// Each light type defines a global field that determines whether the light
+  /// is global or scoped. Global lights illuminate all objects that fall
+  /// within their volume of lighting influence. Scoped lights only illuminate
+  /// objects that are in the same transformation hierarchy as the light; i.e.,
+  /// only the children and descendants of its enclosing parent group are
+  /// illuminated. This allows the creation of realistic effects such as lights
+  /// that illuminate a single room.
+  ///
   /// \par Internal routes:
   /// \dotfile X3DLightNode.dot
   class H3DAPI_API X3DLightNode : 
@@ -66,6 +74,7 @@ namespace H3D {
     X3DLightNode( Inst< SFNode >  _metadata         = 0,
                   Inst< SFFloat>  _ambientIntensity = 0,
                   Inst< SFColor>  _color            = 0,
+                  Inst< SFBool >  _global           = 0,
                   Inst< SFFloat>  _intensity        = 0,
                   Inst< SFBool >  _on               = 0 );
 
@@ -74,7 +83,20 @@ namespace H3D {
 
     /// Turn the light off.
     virtual void disableGraphicsState();
-  
+
+    /// Traverse the scenegraph. Stores pointer to X3DLightNode and
+    /// transformation matrices for those that are global.
+    virtual void traverseSG( TraverseInfo &ti );
+
+    /// returns an index that can be used to enable light.
+    /// \param name_for_error contains the name to print in case
+    /// the light index should be ignored.
+    static GLuint getLightIndex( string name_for_error );
+
+    /// must be called if getLightIndex have been called outside
+    /// X3DLightNode.
+    static void decreaseLightIndex() { global_light_index--; }
+
     /// Specifies the intensity of the ambient emission from the light.
     ///
     /// <b>Access type:</b> inputOutput \n
@@ -93,6 +115,16 @@ namespace H3D {
     /// 
     /// \dotfile X3DLightNode_color.dot
     auto_ptr< SFColor >  color;
+
+    /// The global field specifies whether the X3DLightNode affects all
+    /// geometries in the scene or only those geometries that are in the
+    /// same parent group or any descendant to the parent group.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> FALSE \n
+    /// 
+    /// \dotfile X3DLightNode_global.dot
+    auto_ptr< SFBool  >  global;
 
     /// The intensity field specifies the brightness of the direct emission
     /// from the light.
@@ -118,9 +150,28 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+    /// Light index for this node, used to enable light.
     GLuint light_index;
-    GLint max_lights;
-    static GLuint global_light_index;
+    static GLint max_lights;
+    static GLint global_light_index;
+
+    /// only interested in adress, what it points to will be invalid
+    TraverseInfo * last_ti_ptr;
+
+    /// count how many times this X3DLightNodes traverseSG function
+    /// is called.
+    H3DInt32 traverse_sg_counter;
+    /// count nr of times enableGraphicsState is called.
+    H3DInt32 graphics_state_counter;
+
+    vector< Matrix4f > global_light_transforms;
+
+    /// used if the light should act as a global light.
+    bool act_global;
+
+    /// true if a light index was created for each call to
+    /// enableGraphicsState for this X3DLightNode
+    list< bool > had_light_index;
   };
 }
 
