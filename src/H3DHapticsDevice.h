@@ -432,7 +432,7 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile H3DHapticsDevice_weightedProxyPosition.dot
-    auto_ptr< SFVec3f >   weightedProxyPosition;
+    auto_ptr< WeightedProxy >   weightedProxyPosition;
 
     /// The weighting between proxyPosition and trackerPosition when
     /// calculating weightedProxyPosition. The value should be 
