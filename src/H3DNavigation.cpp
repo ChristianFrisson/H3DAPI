@@ -334,3 +334,46 @@ void H3DNavigation::enableDevice( int device ) {
     }
   }
 }
+
+bool H3DNavigation::isEnabled( int device ) {
+  if( instance )
+  {
+    switch( device ) {
+      case ALL: {
+        if( !instance->mouse_nav.get() || !instance->mouse_nav->isEnabled() ) {
+           return false;
+        }
+        if( !instance->keyboard_nav.get() )
+          return false;
+        if( !instance->haptic_device_nav.get() )
+          return false;
+        if( !instance->sws_navigation.get() )
+          return false;
+        return true;
+      }
+      case MOUSE: {
+        if( !instance->mouse_nav.get() || !instance->mouse_nav->isEnabled() ) {
+           return false;
+        }
+        return true;
+      }
+      case KEYBOARD: {
+        if( instance->keyboard_nav.get() )
+          return true;
+        return false;
+      }
+      case HAPTICSDEVICE: {
+        if( instance->haptic_device_nav.get() )
+          return true;
+        return false;
+      }
+      case SWS: {
+        if( instance->sws_navigation.get() )
+          return true;
+        return false;
+      }
+      default: { return false; }
+    }
+  }
+  return false;
+}

@@ -138,6 +138,11 @@ namespace H3D {
     /// virtual function to enable routes for this device.
     virtual void enableDevice();
 
+    inline bool isEnabled() { 
+      if( mouseSensor.get() && mouseSensor->enabled->getValue() ) return true;
+      return false;
+    }
+
   protected:
     auto_ptr< CalculateMouseMoveInfo > calculateMouseMoveInfo;
     auto_ptr< MouseSensor > mouseSensor;

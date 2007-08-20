@@ -63,6 +63,8 @@ namespace H3D {
     /// Use values in the enum NavigationDevices to enable a certain device
     static void enableDevice( int device );
 
+    static bool isEnabled( int device );
+
   private:
     /// Takes care of navigation
     void navigate( string navigation_type, X3DViewpointNode * vp,

@@ -25,6 +25,7 @@
 #include <ResourceResolver.h>
 #include <PythonScript.h>
 #include <NavigationInfo.h>
+#include <H3DNavigation.h>
 
 using namespace std;
 using namespace H3D;
@@ -49,46 +50,80 @@ class ChangeViewport : public AutoUpdate< SFInt32> {
     //int no_of_viewpoints = vp_list.size();
     typedef X3DViewpointNode::ViewpointList::iterator ListIterator;
 
-    if( key == KeySensor::HOME ) {
-      // Goes to the initial viewpoint
-      (*vp_list.begin())->set_bind->setValue(true);
-      cerr << "home " << endl;
-    }
-    if( key == KeySensor::END ) {
-      //Goes to the final viewpoint 
-      (vp_list.back())->set_bind->setValue(true);
-    }
-    if( key == KeySensor::PGDN ) {
-      // Goes to the next viewpoint, if the active viewpoint is the
-      // last one the next viewpoint is set to the first viewpoint
-      ListIterator it = find(vp_list.begin(),vp_list.end(),active_vp);
-      //Checks if the active viewpoint exists
-      if(it!=vp_list.end()){
-        it++;
-        //Checks if the active viewpoint is the last one
-        if(it==vp_list.end()){
-          (*vp_list.begin())->set_bind->setValue(true);
-        }
-        else{
-          (*it)->set_bind->setValue(true);
-        }
+    switch( key ) {
+      case KeySensor::HOME:  {
+        // Goes to the initial viewpoint
+        (*vp_list.begin())->set_bind->setValue(true);
+        break;
       }
-    }
-    if( key == KeySensor::PGUP ) {
-      // Goes to the previous viewpoint, if the active viewpoint is the
-      // first one the previous viewpoint is set to the last viewpoint
-      ListIterator it = find(vp_list.begin(),vp_list.end(),active_vp);
-      //Checks if the active viewpoint exists
-      if(it!=vp_list.end()){
-        //Checks if the ative viewpoint is the first one
-        if(it==vp_list.begin()){
-          (vp_list.back())->set_bind->setValue(true);
-        }
-        else{
-           it--;
-          (*it)->set_bind->setValue(true);
-        }
+      case KeySensor::END: {
+        //Goes to the final viewpoint 
+        (vp_list.back())->set_bind->setValue(true);
+        break;        
       }
+      case KeySensor::PGDN: {
+        // Goes to the next viewpoint, if the active viewpoint is the
+        // last one the next viewpoint is set to the first viewpoint
+        ListIterator it = find(vp_list.begin(),vp_list.end(),active_vp);
+        //Checks if the active viewpoint exists
+        if(it!=vp_list.end()) {
+          it++;
+          //Checks if the active viewpoint is the last one
+          if(it==vp_list.end()){
+            (*vp_list.begin())->set_bind->setValue(true);
+          }
+          else{
+            (*it)->set_bind->setValue(true);
+          }
+        }
+        break;
+      }
+      case KeySensor::PGUP: {
+        // Goes to the previous viewpoint, if the active viewpoint is the
+        // first one the previous viewpoint is set to the last viewpoint
+        ListIterator it = find(vp_list.begin(),vp_list.end(),active_vp);
+        //Checks if the active viewpoint exists
+        if(it!=vp_list.end()){
+          //Checks if the ative viewpoint is the first one
+          if(it==vp_list.begin()){
+            (vp_list.back())->set_bind->setValue(true);
+          }
+          else{
+            it--;
+            (*it)->set_bind->setValue(true);
+          }
+        }        
+        break;
+      }
+      case KeySensor::F1: {
+        if( H3DNavigation::isEnabled( H3DNavigation::MOUSE ) )
+          H3DNavigation::disableDevice( H3DNavigation::MOUSE );
+        else
+          H3DNavigation::enableDevice( H3DNavigation::MOUSE );
+        break;
+      }
+      case KeySensor::F2: {
+        if( H3DNavigation::isEnabled( H3DNavigation::KEYBOARD ) )
+          H3DNavigation::disableDevice( H3DNavigation::KEYBOARD );
+        else
+          H3DNavigation::enableDevice( H3DNavigation::KEYBOARD );
+        break;
+      }
+      case KeySensor::F3: {
+        if( H3DNavigation::isEnabled( H3DNavigation::HAPTICSDEVICE ) )
+          H3DNavigation::disableDevice( H3DNavigation::HAPTICSDEVICE );
+        else
+          H3DNavigation::enableDevice( H3DNavigation::HAPTICSDEVICE );
+        break;
+      }
+      case KeySensor::F4: {
+        if( H3DNavigation::isEnabled( H3DNavigation::SWS ) )
+          H3DNavigation::disableDevice( H3DNavigation::SWS );
+        else
+          H3DNavigation::enableDevice( H3DNavigation::SWS );
+        break;
+      }
+      default: {}
     }
   }
 };
@@ -243,9 +278,18 @@ int main(int argc, char* argv[]) {
   help_message += "To set navitationType: \n";
   help_message += " w                      Set navigationType to WALK\n";
   help_message += " f                      Set navigationType to FLY\n";
-  help_message += " l                      Set navigationType to LOOTAT\n";
+  help_message += " l                      Set navigationType to LOOKAT\n";
   help_message += " e                      Set navigationType to EXAMINE\n";
   help_message += " n                      Set navigationType to NONE\n";
+  help_message += "To set devices used for navigation: \n";
+  help_message += " F1                     Enable/Disable mouse.";
+  help_message += " Default is enabled.\n";
+  help_message += " F2                     Enable/Disable keyboard.";
+  help_message += " Default is enabled.\n";
+  help_message += " F3                     Enable/Disable haptics device.";
+  help_message += " Default is disabled.\n";
+  help_message += " F4                     Enable/Disable SpaceWareSensor.";
+  help_message += " Default is disabled.\n";
   help_message += "\n";
   
 

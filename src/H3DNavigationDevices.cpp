@@ -65,13 +65,11 @@ void MouseNavigation::resetAll() {
 }
 
 void MouseNavigation::disableDevice() {
-  mouseSensor->leftButton->unroute( calculateMouseMoveInfo );
-  mouseSensor->motion->unroute( calculateMouseMoveInfo );
+  mouseSensor->enabled->setValue( false );
 }
 
 void MouseNavigation::enableDevice() {
-  mouseSensor->leftButton->routeNoEvent( calculateMouseMoveInfo );
-  mouseSensor->motion->routeNoEvent( calculateMouseMoveInfo );
+  mouseSensor->enabled->setValue( true );
 }
 
 void MouseNavigation::CalculateMouseMoveInfo::update( ) {
@@ -259,11 +257,14 @@ HapticDeviceNavigation::HapticDeviceNavigation() :
   calculateHapticDeviceMoveInfo->the_owner = this;
   calculateHapticDeviceMoveInfo->setValue( false );
   DeviceInfo *di = DeviceInfo::getActive();
-  if( !di->device->empty() ) {
+  if( di && !di->device->empty() ) {
     H3DHapticsDevice *hd =
       static_cast< H3DHapticsDevice * >(di->device->getValueByIndex( 0 ) );
     hd->mainButton->route( calculateHapticDeviceMoveInfo );
     calculateHapticDeviceMoveInfo->route( shouldGetInfo );
+  } else {
+    Console(4) << "No haptics devices in the scene. "
+               << "Navigation with haptics device will not be used." << endl;
   }
 }
 
@@ -379,6 +380,9 @@ SWSNavigation::SWSNavigation() :
     sws->instantPitch->route( calculateSWSMoveInfo );
     calculateSWSMoveInfo->route( shouldGetInfo );
   }
+  else
+    Console(4) << "There is no SpaceWareSensor in the scene. "
+    << "Navigation with SpaceWareSensor will not be used. " << endl;
 }
 
 void SWSNavigation::resetAll() {
