@@ -146,12 +146,12 @@ void DeviceInfo::toStackTop() {
 
 void DeviceInfo::initialize() {
   if( isStackTop() ) {
-    /*for( MFDevice::const_iterator i = device->begin();
+    for( MFDevice::const_iterator i = device->begin();
          i != device->end(); i++ ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
       }
-    }*/
+    }
   }
 }
