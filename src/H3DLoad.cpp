@@ -123,6 +123,14 @@ class ChangeViewport : public AutoUpdate< SFInt32> {
           H3DNavigation::enableDevice( H3DNavigation::SWS );
         break;
       }
+      case KeySensor::F5: {
+        X3DViewpointNode * vp = X3DViewpointNode::getActive();
+        if ( vp ) {
+          vp->rel_orn = Rotation();
+          vp->rel_pos = Vec3f();
+        }
+        break;
+      }
       default: {}
     }
   }
@@ -290,6 +298,8 @@ int main(int argc, char* argv[]) {
   help_message += " Default is disabled.\n";
   help_message += " F4                     Enable/Disable SpaceWareSensor.";
   help_message += " Default is disabled.\n";
+  help_message += " F5                     Reset current active viewpoint to ";
+  help_message += "its starting position.\n";
   help_message += "\n";
   
 

@@ -137,7 +137,7 @@ public:
   wxMenuBar  *menuBar;
   //Menu Bar Items
   wxMenu     *fileMenu, *rendererMenu, *deviceMenu, *viewpointMenu,
-             *navigationMenu, *advancedMenu, *helpMenu;
+             *navigationMenu, *advancedMenu, *helpMenu, *navigationDevices;
   //Submenu items
   wxMenu     *hapticsRenderer, *renderMode;
   //File History Menu
@@ -168,6 +168,7 @@ public:
   void ChangeViewpoint (wxCommandEvent & event);
   void ResetViewpoint (wxCommandEvent & event);
   void ChangeNavigation (wxCommandEvent & event);
+  void ChangeNavigationDevice (wxCommandEvent & event);
   void ChangeRenderer (wxCommandEvent & event);
   void ToggleHaptics  (wxCommandEvent & event);
   void OnSettings( wxCommandEvent & event);
@@ -276,7 +277,11 @@ enum
   FRAME_ABOUT,
   FRAME_HELP,
   FRAME_SETTINGS,
-  FRAME_RESET_VIEWPOINT
+  FRAME_RESET_VIEWPOINT,
+  FRAME_MOUSE_NAV,
+  FRAME_KEYBOARD_NAV,
+  FRAME_SWS_NAV,
+  FRAME_HAPTICSDEVICE_NAV
 };
 
 

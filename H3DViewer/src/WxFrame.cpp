@@ -71,6 +71,8 @@
 #include <HapticsRenderers.h>
 #include <HAPIHapticsRenderer.h>
 
+#include <H3DNavigation.h>
+
 using namespace std;
 using namespace H3D;
 
@@ -108,6 +110,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   viewpointCount(0),
   navTypeCount(0),
   deviceCount(0),
+  navigationDevices(0),
 wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
 {
   wxAcceleratorEntry entries[1];
@@ -320,6 +323,8 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
 	EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
 	EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
 	EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
+  EVT_MENU_RANGE (FRAME_MOUSE_NAV, FRAME_HAPTICSDEVICE_NAV,
+                  WxFrame::ChangeNavigationDevice)
   EVT_MENU_RANGE (FRAME_OPENHAPTICS, FRAME_RUSPINI, WxFrame::ChangeRenderer)
   EVT_MENU (FRAME_DEVICECONTROL, WxFrame::ToggleHaptics)
 	EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
@@ -693,7 +698,7 @@ void WxFrame::clearData () {
 	}
   viewpointMenu->Destroy( FRAME_RESET_VIEWPOINT ); 
   
-  // Find all separators and remove them, if the item is not a separator
+  // Find all separators and destroy them, if the item is not a separator
   // something is wrong but not enough to quit.
   while( viewpointMenu->GetMenuItemCount() != 0 ) {
     wxMenuItem * temp_menu_item = viewpointMenu->FindItemByPosition( 0 );
@@ -713,6 +718,17 @@ void WxFrame::clearData () {
 		Disconnect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED,
                wxCommandEventHandler(WxFrame::ChangeNavigation));
 	}
+
+  // Find all separators and destroy them, if the item is not a separator
+  // then just remove it.
+  while( navigationMenu->GetMenuItemCount() != 0 ) {
+    wxMenuItem * temp_menu_item = navigationMenu->FindItemByPosition( 0 );
+    if( temp_menu_item->IsSeparator() ) {
+      navigationMenu->Destroy( temp_menu_item->GetId() );
+    } else {
+      navigationMenu->Remove( temp_menu_item->GetId() );
+    }
+  }
 
   deviceMenu->Destroy(FRAME_DEVICECONTROL);
 
@@ -883,6 +899,37 @@ void WxFrame::RenderMode(wxCommandEvent & event)
 			break;
 	}
 	glwindow->renderMode->setValue( renderMode.c_str());
+}
+
+void WxFrame::ChangeNavigationDevice( wxCommandEvent & event ) {
+  
+  switch ( event.GetId() ) {
+    case FRAME_MOUSE_NAV:
+      if( H3DNavigation::isEnabled( H3DNavigation::MOUSE ) )
+        H3DNavigation::disableDevice( H3DNavigation::MOUSE );
+      else
+        H3DNavigation::enableDevice( H3DNavigation::MOUSE );
+      break;
+    case FRAME_KEYBOARD_NAV:
+      if( H3DNavigation::isEnabled( H3DNavigation::KEYBOARD ) )
+        H3DNavigation::disableDevice( H3DNavigation::KEYBOARD );
+      else
+        H3DNavigation::enableDevice( H3DNavigation::KEYBOARD );
+      break;
+    case FRAME_SWS_NAV:
+      if( H3DNavigation::isEnabled( H3DNavigation::SWS ) )
+        H3DNavigation::disableDevice( H3DNavigation::SWS );
+      else
+        H3DNavigation::enableDevice( H3DNavigation::SWS );
+      break;
+    case FRAME_HAPTICSDEVICE_NAV:
+      if( H3DNavigation::isEnabled( H3DNavigation::HAPTICSDEVICE ) )
+        H3DNavigation::disableDevice( H3DNavigation::HAPTICSDEVICE );
+      else
+        H3DNavigation::enableDevice( H3DNavigation::HAPTICSDEVICE );
+      break;
+    default: {}
+  }
 }
 
 //Choose Haptics Renderer
@@ -1339,6 +1386,24 @@ void WxFrame::buildNavMenu () {
     //mynav->setNavType("EXAMINE");
     glwindow->default_nav = "EXAMINE";
   }
+
+  navigationMenu->AppendSeparator();
+  if( !navigationDevices ) {
+    navigationDevices = new wxMenu;
+    navigationDevices->AppendCheckItem(FRAME_MOUSE_NAV, "Mouse", 
+      "Mouse can be used to navigate scene");
+    navigationDevices->Check( FRAME_MOUSE_NAV, true );
+    navigationDevices->AppendCheckItem(FRAME_KEYBOARD_NAV, "Keyboard",
+                              "Keyboard can be used to navigate scene");
+    navigationDevices->Check( FRAME_KEYBOARD_NAV, true );
+    navigationDevices->AppendCheckItem(FRAME_SWS_NAV, "SpaceWareSensor", 
+      "SpaceWareSensor can be used to navigate scene.");
+    navigationDevices->AppendCheckItem( FRAME_HAPTICSDEVICE_NAV,
+                                        "Haptics Device",
+                          "A haptics device can be used to navigate scene");
+  }
+  navigationMenu->AppendSubMenu( navigationDevices, "Navigation Devices",
+                  "Toggle on an off which devices to use for navigation" );
 }
 
 
