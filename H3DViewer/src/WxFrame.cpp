@@ -38,7 +38,7 @@
 #include "WxWidgetsWindow.h"
 
 #include <wx/wx.h>
-#include "envini.h"
+#include "Envini.h"
 
 // ---------------------------------------------------------------------------
 //  Includes (to open X3D files)
