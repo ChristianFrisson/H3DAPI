@@ -142,8 +142,21 @@ PythonScript::PythonScript( Inst< MFString > _url,
 }
 
 PythonScript::~PythonScript() {
-  if( module )
-    Py_DECREF( (PyObject *)module );
+  // Clearing the dictionary
+  PyDict_Clear( static_cast< PyObject * >(module_dict) );
+
+  // Removing the PythonScript modulew with this name from database.
+  // This might cause multiple instances of PythonScript to behave strange.
+  // A user should never declare two pythonscripts with the same name but
+  // different functionality. Name is what it is set to through DEF statement.
+  // TODO: only remove from database if this is the last PythonScript instance
+  // with this name.
+  PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
+  if( PyDict_DelItemString( temp_sys_module_dict, (char*)name.c_str() ) == -1 
+    ) {
+    Console(4) << "Did not manage to remove the python module " << name
+               << " from the sys.modules database. " << endl;
+  }
 }
 
 void PythonScript::initialiseParser() {
