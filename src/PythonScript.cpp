@@ -93,6 +93,7 @@ H3DNodeDatabase PythonScript::database(
 
 namespace PythonScriptInternals {
   FIELDDB_ELEMENT( PythonScript, references, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( PythonScript, moduleName, INITIALIZE_ONLY );
 }
 
 void PythonScript::setargv( int _argc, char *_argv[] ) {
@@ -122,9 +123,11 @@ Field *PythonScript::lookupField( const string &name ) {
 
 
 PythonScript::PythonScript( Inst< MFString > _url,
-                            Inst< MFNode    > _references ) : 
+                            Inst< MFNode    > _references,
+                            Inst< SFString > _moduleName ) : 
   H3DScriptNode( _url ),
   references( _references ),
+  moduleName( _moduleName ),
   module( NULL ),
   module_dict( NULL ) {
   type_name = "PythonScript";
@@ -145,16 +148,13 @@ PythonScript::~PythonScript() {
   // Clearing the dictionary
   PyDict_Clear( static_cast< PyObject * >(module_dict) );
 
-  // Removing the PythonScript modulew with this name from database.
-  // This might cause multiple instances of PythonScript to behave strange.
-  // A user should never declare two pythonscripts with the same name but
-  // different functionality. Name is what it is set to through DEF statement.
-  // TODO: only remove from database if this is the last PythonScript instance
-  // with this name.
+  // Removing the PythonScript module module_name from database.
+  // If it is already removed then there are two PythonScripts in the
+  // scene using the same module_name ( or DEF ).
   PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
-  if( PyDict_DelItemString( temp_sys_module_dict, (char*)name.c_str() ) == -1 
-    ) {
-    Console(4) << "Did not manage to remove the python module " << name
+  if( PyDict_DelItemString( temp_sys_module_dict,
+                            (char*)module_name.c_str() ) == -1 ) {
+    Console(4) << "Could not remove the python module " << module_name
                << " from the sys.modules database. " << endl;
   }
 }
@@ -249,7 +249,21 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
 
 void PythonScript::initialize() {
   H3DScriptNode::initialize();
-  module = PyImport_AddModule( (char*)name.c_str() );
+
+  module_name = moduleName->getValue();
+  if( module_name == "" )
+    module_name = name;
+
+  PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
+  if( PyDict_GetItemString( temp_sys_module_dict,
+                            (char*)module_name.c_str() ) ) {
+    Console(4) << "The module " << module_name << " already exists. "
+               << "It will be overridden which might cause strange behaviour. "
+               << "Check the DEF of PythonsScript "
+               << "in the scene if this behaviour is undesired." << endl;
+  }
+
+  module = PyImport_AddModule( (char*)module_name.c_str() );
   module_dict = PyModule_GetDict( static_cast< PyObject * >( module ) );
   bool script_loaded = false;
   for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {

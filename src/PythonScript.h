@@ -32,6 +32,7 @@
 #include <Exception.h>
 #include <H3DScriptNode.h>
 #include <MFNode.h>
+#include <SFString.h>
 
 #ifdef HAVE_PYTHON
 
@@ -44,7 +45,8 @@ namespace H3D {
   struct H3DAPI_API PythonScript : public H3DScriptNode {
     ///Constructor.
     PythonScript( Inst< MFString > _url = 0,
-                  Inst< MFNode    > _references = 0 );
+                  Inst< MFNode    > _references = 0,
+                  Inst< SFString > _moduleName = 0 );
     
     virtual Field* getField( const string&name ) {
       Field *f = H3DScriptNode::getField( name );
@@ -87,6 +89,14 @@ namespace H3D {
     /// graph that can then be access through the 'references' variable
     /// in the Python script.    
     auto_ptr< MFNode > references;
+
+    /// Specify a specific moduleName for the pythonscript. This name should
+    /// be unique among all PythonScript nodes in the scene. It should also
+    /// differ from previously existing python modules. If this field is empty
+    /// the DEF-name of the PythonScript will be used. An automatically
+    /// generated name will be used if moduleName is empty and the node does
+    /// not have a DEF name.
+    auto_ptr< SFString > moduleName;
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
@@ -95,6 +105,7 @@ namespace H3D {
     void * module_dict;
     static int argc;
     static char** argv;
+    string module_name;
  };
 }
 
