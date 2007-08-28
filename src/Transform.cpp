@@ -341,14 +341,16 @@ void Transform::Matrix::update() {
   bool has_rotation = r.angle != 0;
 
   if( has_scaling ) {
-    if( has_rotation )
+    if( has_rotation ) {
+      r.axis.normalizeSafe();
       TransformInternal::fullTransform( t, r, s, so, c, value );
-    else
+    } else
       TransformInternal::transformNoRotation( t, s, so, c, value );
   } else {
-    if( has_rotation )
+    if( has_rotation ) {
+      r.axis.normalizeSafe();
       TransformInternal::transformNoScale( t, r, c, value );
-    else
+    } else
       TransformInternal::transformNoScaleOrRotation( t, value );
   }
 }
