@@ -50,7 +50,7 @@
 #include <ResourceResolver.h>
 #include <Console.h>
 #include <NavigationInfo.h>
-
+#include <X3D.h>
 #include "ConsoleDialog.h"
 
 using namespace std;
@@ -60,11 +60,13 @@ using namespace H3D;
 //  Property Sheet Dialog
 // ---------------------------------------------------------------------------
 
+class WxFrame;
+
 class SettingsDialog: public wxPropertySheetDialog
 {
 DECLARE_CLASS(SettingsDialog)
 public:
-    SettingsDialog(wxWindow* parent, GlobalSettings *gs );
+    SettingsDialog(wxWindow* parent, GlobalSettings *gs, WxFrame *f );
     ~SettingsDialog();
 
   void handleSettingsChange (wxCommandEvent & event);
@@ -74,6 +76,7 @@ public:
 
   wxPanel* CreateGeneralSettingsPage(wxWindow* parent, GlobalSettings *gs );
   wxPanel* CreateOpenHapticsSettingsPage(wxWindow* parent, GlobalSettings *gs);
+  wxPanel* CreateRuspiniSettingsPage(wxWindow* parent, GlobalSettings *gs);
   wxPanel* CreateDebugSettingsPage(wxWindow* parent, GlobalSettings *gs);
   
   
@@ -94,6 +97,7 @@ protected:
         ID_USE_DISPLAY_LISTS,
         ID_CACHE_ONLY_GEOMS,
         ID_CACHING_DELAY,
+        ID_PROXY_RADIUS,
         ID_BOUND_TYPE,
         ID_MAX_DISTANCE,
         ID_TOUCHABLE_FACE,
@@ -111,11 +115,31 @@ protected:
     };
 
     wxImageList*    m_imageList;
+  WxFrame *wx_frame;
     bool boundTree;
     int treeDepth;
 
 DECLARE_EVENT_TABLE()
 };
+
+
+class FrameRateDialog: public wxDialog {
+  DECLARE_CLASS(FrameRateDialog)
+  public:
+  FrameRateDialog(wxWindow* parent );
+  
+  void updateFrameRates();
+  void updateMenuItems();
+
+  wxBoxSizer *topsizer;
+  wxStaticText *graphics_rate;
+  wxStaticText *haptics_rate;
+  wxStaticText *haptics_time;
+//  vector< wxStaticText * > haptics_rate;
+DECLARE_EVENT_TABLE()
+};
+
+
 
 // ---------------------------------------------------------------------------
 //  WxFrame Definition
@@ -164,6 +188,7 @@ public:
   void MirrorScene	(wxCommandEvent & event);
   void RenderMode	(wxCommandEvent & event);
   void ShowConsole	(wxCommandEvent & event);
+  void ShowFrameRate	(wxCommandEvent & event);
   void GetSelection (wxMenuEvent & event);
   void ChangeViewpoint (wxCommandEvent & event);
   void ResetViewpoint (wxCommandEvent & event);
@@ -185,7 +210,11 @@ public:
   void LoadSettings ();
   void buildNavMenu();
   void readSettingsFromINIFile( const string &filename,GlobalSettings *gs );
+  void setProxyRadius( float r );
 
+  void updateFrameRates() {
+    frameRates->updateFrameRates();
+  }
 private:
 	wxString currentFilename;
 	wxString currentPath;
@@ -222,10 +251,17 @@ private:
 	AutoRef< Node > device_info;
 	AutoRef< Node > viewpoint;
 	AutoRef< Node > default_stylus;
-	AutoRef< Group > g;
+  AutoRef< Group > g;
+
+  float original_proxy_radius;
+  float current_proxy_radius;
+  X3D::DEFNodes default_stylus_dn;
 
 	consoleDialog *  theConsole;
+	FrameRateDialog *  frameRates;
 	SettingsDialog * settings;
+
+  friend class SettingsDialog;
 
 protected:
   DECLARE_EVENT_TABLE()
@@ -244,6 +280,7 @@ enum
   FRAME_RESTORE,
   FRAME_MIRROR,
   FRAME_CONSOLE,
+  FRAME_FRAMERATE,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,
   FRAME_NAVIGATION = 6500,

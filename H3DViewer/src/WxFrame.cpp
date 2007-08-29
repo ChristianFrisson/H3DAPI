@@ -125,7 +125,7 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
 	ss.reset (0);
 	#endif
 	t.reset ( new Transform );
-	default_stylus.reset (new Node);
+	default_stylus.reset (NULL);
 	viewpoint.reset (NULL);
 	device_info.reset (NULL);
 	g.reset ( new Group );
@@ -145,7 +145,7 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
   theConsole = new consoleDialog(this, wxID_ANY, console_string, 
                                  wxDefaultPosition, wxDefaultSize,
                                  wxDEFAULT_DIALOG_STYLE);
-
+  frameRates = new FrameRateDialog( this );
 
   defaultvp = (X3DViewpointNode *) NULL;
   mydevice = (DeviceInfo *) NULL;
@@ -210,7 +210,7 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
   LoadSettings();
 
   //Create settings dialog
-  settings = new SettingsDialog(this, global_settings.get() );
+  settings = new SettingsDialog(this, global_settings.get(), this );
 
   //Submenus for Renderer Menu
   //hapticsRenderer
@@ -276,6 +276,8 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
   advancedMenu = new wxMenu;
   advancedMenu->Append(FRAME_CONSOLE, "Show Console",
                        "Show the message console");
+  advancedMenu->Append(FRAME_FRAMERATE, "Show frame rates",
+                       "Show the frame rates of graphics and haptics loop");
   
   //Help Menu
   helpMenu = new wxMenu;
@@ -319,6 +321,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
 	EVT_MENU (FRAME_MIRROR, WxFrame::MirrorScene)
   EVT_MENU_RANGE (FRAME_MONO, FRAME_REDCYAN, WxFrame::RenderMode)
 	EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
+	EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
 	EVT_MENU_HIGHLIGHT (FRAME_SELECTION, WxFrame::GetSelection)
 	EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
 	EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
@@ -419,6 +422,10 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       else if( i == 1 ) gbto->boundType->setValue( "AABB" );
       else if( i == 2 ) gbto->boundType->setValue( "SPHERE" );
     }
+  }
+
+  if( id == ID_PROXY_RADIUS ) {
+    wx_frame->setProxyRadius( atof( event.GetString() ) );
   }
 }
 
@@ -546,7 +553,16 @@ bool WxFrame::loadFile( const string &filename) {
     DeviceInfo *di = DeviceInfo::getActive();
     if( di && stylus_file.size() ) {
       try {
-        default_stylus = X3D::createX3DNodeFromURL( stylus_file );
+        default_stylus = X3D::createX3DNodeFromURL( stylus_file, 
+                                                    &default_stylus_dn );
+        Node *proxy = default_stylus_dn.getNode("PROXY");
+        if( proxy ) {
+          SFFloat *radius = 
+            dynamic_cast< SFFloat * >( proxy->getField("radius") );
+          if( radius ) 
+            original_proxy_radius = radius->getValue();
+          setProxyRadius( original_proxy_radius );
+        }
       } catch( const Exception::H3DException &e ) {
         Console( 4 ) << "Warning: Could not create default stylus "
                      << "from file \"" << stylus_file << "\": "
@@ -942,6 +958,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
         static_cast < H3DHapticsDevice *> 
             (*nv)->hapticsRenderer->setValue(new OpenHapticsRenderer);
        }
+      setProxyRadius( original_proxy_radius );
       break;
     case FRAME_CHAI3D:
 #ifdef HAVE_CHAI3D
@@ -950,6 +967,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
           static_cast < H3DHapticsDevice *> 
             (*nv)->hapticsRenderer->setValue(new Chai3DRenderer);
         }
+        setProxyRadius( original_proxy_radius );
 #endif
       break;
     case FRAME_GODOBJECT:
@@ -958,6 +976,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
           static_cast < H3DHapticsDevice *> (*nv)->
               hapticsRenderer->setValue(new GodObjectRenderer);
         }
+      setProxyRadius( original_proxy_radius );
 	    break;
     case FRAME_RUSPINI:
         for (NodeVector::const_iterator nv = allDevices.begin(); 
@@ -965,6 +984,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
             static_cast < H3DHapticsDevice *> (*nv)->
               hapticsRenderer->setValue(new RuspiniRenderer);
         }
+        setProxyRadius( current_proxy_radius );
 		  break;
   }
 }
@@ -988,6 +1008,19 @@ void WxFrame::ToggleHaptics (wxCommandEvent & event) {
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
   theConsole->Show();
+}
+
+void WxFrame::ShowFrameRate(wxCommandEvent & event)
+{
+  //frameRates = new FrameRateDialog( this );
+  //frameRates->updateMenuItems();
+
+  // set labels to make sure they are the right size when shown
+  // (otherwise some numbers may not be displayed)
+  frameRates->graphics_rate->SetLabel( "100" );
+  frameRates->haptics_rate->SetLabel( "1000" );
+  frameRates->haptics_time->SetLabel( "100" );
+  frameRates->Show();
 }
 
 //Change Viewpoint
@@ -1419,10 +1452,108 @@ bool WxFrame::validateNavType (string a) {
 
 
 void WxFrame::OnSettings (wxCommandEvent & event) {
-  settings = new SettingsDialog(this, global_settings.get() );
+  //settings = new SettingsDialog(this, global_settings.get() );
   settings->Show();
 }
 
+
+IMPLEMENT_CLASS(FrameRateDialog, wxDialog)
+
+BEGIN_EVENT_TABLE(FrameRateDialog, wxDialog)
+END_EVENT_TABLE()
+
+FrameRateDialog::FrameRateDialog(wxWindow* win ) :
+  wxDialog (win, wxID_ANY, "Frame rates", wxDefaultPosition, wxDefaultSize,
+            wxDEFAULT_DIALOG_STYLE) {
+  graphics_rate = NULL;
+  haptics_rate = NULL;
+
+  topsizer = new wxBoxSizer( wxVERTICAL );
+  updateMenuItems();
+
+	SetSizer( topsizer );      // use the sizer for layout
+
+	topsizer->SetSizeHints( this );   // set size hints to honour minimum size
+}
+
+void FrameRateDialog::updateMenuItems() {
+  unsigned int nr_devices = 0;
+  DeviceInfo *di = DeviceInfo::getActive();
+  if( di ) {
+    nr_devices = di->device->size();
+  }
+
+  topsizer = new wxBoxSizer( wxVERTICAL );
+
+  wxBoxSizer* framerate_sizer = new wxBoxSizer( wxHORIZONTAL );
+  framerate_sizer->Add( new wxStaticText( this, wxID_ANY, _("&Graphics:")), 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5);
+  graphics_rate = new wxStaticText( this, wxID_ANY, _("&1000"), 
+                                    wxDefaultPosition, 
+                                    wxDefaultSize,wxALIGN_RIGHT|wxST_NO_AUTORESIZE );
+  framerate_sizer->Add( graphics_rate, 0,
+                        wxALL|wxALIGN_RIGHT, 5);
+  
+  framerate_sizer->Add( new wxStaticText( this, wxID_ANY, _("&Haptics:")), 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5);
+  haptics_rate = new wxStaticText( this, wxID_ANY, _("&1000"), 
+                                   wxDefaultPosition, 
+                                   wxDefaultSize,wxALIGN_RIGHT|wxST_NO_AUTORESIZE );
+  framerate_sizer->Add( haptics_rate, 0,
+                        wxALL|wxALIGN_RIGHT, 5);
+
+  framerate_sizer->Add( new wxStaticText( this, wxID_ANY, _("&Haptics time(10-5 s):")), 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5);
+  haptics_time = new wxStaticText( this, wxID_ANY, _("&100"), 
+                                   wxDefaultPosition, 
+                                   wxDefaultSize,wxALIGN_RIGHT|wxST_NO_AUTORESIZE );
+  framerate_sizer->Add( haptics_time, 0,
+                        wxALL|wxALIGN_RIGHT, 5);
+
+  topsizer->Add(framerate_sizer, 0,
+                wxALL|wxALIGN_CENTER_VERTICAL, 5 );    
+
+}
+
+void FrameRateDialog::updateFrameRates() {
+  unsigned int nr_devices = 0;
+  DeviceInfo *di = DeviceInfo::getActive();
+  if( di ) {
+    nr_devices = di->device->size();
+  }
+
+  //  if( nr_devices != haptics_rate.size() ) {
+  //    updateMenuItems();
+  //  }
+
+  /*  wxBoxSizer * topsizer = new wxBoxSizer( wxVERTICAL );
+  wxBoxSizer* framerate_sizer = new wxBoxSizer( wxHORIZONTAL );
+  framerate_sizer->Add( new wxStaticText( this, wxID_ANY, _("&Graphics:")), 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5);
+  framerate_sizer->Add( new wxStaticText( this, wxID_ANY, _("&64")), 0,
+                        wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+	topsizer->Add(framerate_sizer, 0,
+                wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+
+                SetSizer( topsizer ); */
+  Scene *scene = *Scene::scenes.begin();
+  
+  stringstream s;
+  s  <<  (int)scene->frameRate->getValue();
+
+  graphics_rate->SetLabel( s.str() );
+  if( di && di->device->size() > 0 ) {
+    H3DHapticsDevice *hd = di->device->getValueByIndex( 0 );
+    stringstream hs;
+    hs  <<  (int)hd->hapticsRate->getValue();
+    haptics_rate->SetLabel( hs.str() );
+
+    stringstream hts;
+    hts << (int)(hd->hapticsLoopTime->getValue() * 1e5 );
+    haptics_time->SetLabel( hts.str() );
+  }
+}
 
 // ----------------------------------------------------------------------------
 // SettingsDialog
@@ -1450,6 +1581,8 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
   EVT_CHECKBOX( ID_HAPTIC_CAMERA, SettingsDialog::handleSettingsChange)
   EVT_CHECKBOX( ID_FULL_GEOMETRY_RENDER, SettingsDialog::handleSettingsChange )
   
+  EVT_TEXT( ID_PROXY_RADIUS, SettingsDialog::handleSettingsChange )
+
   EVT_SPINCTRL (ID_MAX_TRIANGLES, SettingsDialog::handleSpinEvent)
   EVT_CHOICE( ID_BOUND_TYPE, SettingsDialog::handleSettingsChange )
 
@@ -1458,8 +1591,11 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
 
 END_EVENT_TABLE()
 
-SettingsDialog::SettingsDialog(wxWindow* win, GlobalSettings *gs )
+  SettingsDialog::SettingsDialog(wxWindow* win, GlobalSettings *gs, WxFrame *w ):
+    wx_frame( w )
 {
+
+
     SetExtraStyle(wxDIALOG_EX_CONTEXTHELP|wxWS_EX_VALIDATE_RECURSIVELY);
 
     int tabImage1 = -1;
@@ -1485,10 +1621,12 @@ SettingsDialog::SettingsDialog(wxWindow* win, GlobalSettings *gs )
 
     wxPanel* generalSettings = CreateGeneralSettingsPage(notebook, gs );
     wxPanel* openhaptics_settings = CreateOpenHapticsSettingsPage(notebook,gs);
+    wxPanel* ruspini_settings = CreateRuspiniSettingsPage(notebook,gs);
     wxPanel* debug_settings = CreateDebugSettingsPage(notebook, gs);
 
     notebook->AddPage(generalSettings, _("General"), true, tabImage1);
     notebook->AddPage(openhaptics_settings, _("OpenHaptics"), false,tabImage2);
+    notebook->AddPage(ruspini_settings, _("Ruspini"), false,tabImage2);
     notebook->AddPage(debug_settings, _("Debug"), false, tabImage3);
 
     LayoutDialog();
@@ -1663,6 +1801,34 @@ wxPanel* SettingsDialog::CreateOpenHapticsSettingsPage(wxWindow* parent,
     item0->Add(shape_sizer, 0, wxGROW|wxALL, 5);
 
     topSizer->Add( item0, 1, wxGROW|wxALIGN_CENTRE|wxALL, 5 );
+
+    panel->SetSizer(topSizer);
+    topSizer->Fit(panel);
+
+    return panel;
+}
+
+wxPanel* SettingsDialog::CreateRuspiniSettingsPage( wxWindow* parent,
+                                                    GlobalSettings *gs) {
+    wxPanel* panel = new wxPanel(parent, wxID_ANY);
+
+    wxBoxSizer *topSizer = new wxBoxSizer( wxHORIZONTAL );
+ 
+    topSizer->Add(new wxStaticText(panel, wxID_ANY,
+                                    _("&Proxy radius(m):")), 
+                   0,
+                   wxALL, 5);
+
+    wxTextCtrl* proxy_radius_text = new wxTextCtrl(panel, 
+                                                   ID_PROXY_RADIUS,
+                                                   wxEmptyString,
+                                                   wxDefaultPosition,
+                                                   wxSize(40, wxDefaultCoord));
+    //    stringstream ss;
+    //    ss << wx_frame->current_proxy_radius;
+    proxy_radius_text->SetValue( "0.025" ); //ss.str().c_str() );
+    topSizer->Add(proxy_radius_text, 0,
+                            wxALL, 5);
 
     panel->SetSizer(topSizer);
     topSizer->Fit(panel);
@@ -2033,4 +2199,29 @@ void SettingsDialog::OnCancel (wxCommandEvent & event) {
   static_cast< WxFrame* >(this->GetParent())->LoadSettings();
   H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
   this->Show(false);
+}
+
+void WxFrame::setProxyRadius( float r ) {
+  current_proxy_radius = r;
+
+  for (NodeVector::const_iterator nv = allDevices.begin(); 
+       nv != allDevices.end(); nv++) {
+    RuspiniRenderer *renderer = 
+		dynamic_cast< RuspiniRenderer * >( 
+          static_cast < H3DHapticsDevice *> (*nv)->
+		  hapticsRenderer->getValue() );
+
+    if( renderer ) {
+      renderer->proxyRadius->setValue( current_proxy_radius );
+     }
+  }
+
+  Node *proxy = default_stylus_dn.getNode("PROXY");
+  if( proxy ) {
+    SFFloat *radius = 
+      dynamic_cast< SFFloat * >( proxy->getField("radius") );
+    if( radius ) 
+      radius->setValue( current_proxy_radius );
+  }
+
 }

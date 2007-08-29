@@ -34,6 +34,8 @@
 #include <MouseSensor.h>
 #endif
 
+#include "WxFrame.h"
+
 
 using namespace H3D;
 
@@ -156,6 +158,7 @@ myOwner( _myOwner )
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
+  static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
   event.RequestMore();
 }
 
