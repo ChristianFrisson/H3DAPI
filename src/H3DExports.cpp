@@ -35,7 +35,7 @@ namespace H3DExportsInternal {
 }
 
 Node *H3DExports::getH3DExportNode( const string &name ) {
-  if( name == "HDEV" ) {
+  if( name == "HDEV" || name == "HDEV0" ) {
     DeviceInfo *di = DeviceInfo::getActive();
     if( di && di->device->size() > 0 ) 
       return di->device->getValueByIndex( 0 );
@@ -47,7 +47,30 @@ Node *H3DExports::getH3DExportNode( const string &name ) {
         H3DExportsInternal::no_device.reset( new H3DHapticsDevice );
       return H3DExportsInternal::no_device.get();
     }
+  } else if( name == "HDEV1" ) {
+    DeviceInfo *di = DeviceInfo::getActive();
+    if( di && di->device->size() > 1 ) 
+      return di->device->getValueByIndex( 1 );
+    else {
+      Console(3) << "Warning: No device exists in DeviceInfo when " 
+                 << "trying to IMPORT from HDEV1 from H3D_EXPORTS. "
+                 << "Using dummy device instead. " << endl;
+      if( !H3DExportsInternal::no_device.get() )
+        H3DExportsInternal::no_device.reset( new H3DHapticsDevice );
+      return H3DExportsInternal::no_device.get();
+    }
+  }  else if( name == "HDEV2" ) {
+    DeviceInfo *di = DeviceInfo::getActive();
+    if( di && di->device->size() > 2 ) 
+      return di->device->getValueByIndex( 2 );
+    else {
+      Console(3) << "Warning: No device exists in DeviceInfo when " 
+                 << "trying to IMPORT from HDEV2 from H3D_EXPORTS. "
+                 << "Using dummy device instead. " << endl;
+      if( !H3DExportsInternal::no_device.get() )
+        H3DExportsInternal::no_device.reset( new H3DHapticsDevice );
+      return H3DExportsInternal::no_device.get();
+    }
   }
-  
   return NULL;
 }
