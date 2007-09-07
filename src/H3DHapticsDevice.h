@@ -39,6 +39,7 @@
 #include <SFMatrix4f.h>
 #include <SFVec3f.h>
 #include <MFVec3f.h>
+#include <SFTime.h>
 #include <H3DHapticsRendererNode.h>
 
 // H3DUtil includes
@@ -507,7 +508,14 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_hapticsRate.dot
     auto_ptr< SFInt32 >   hapticsRate;
-    
+
+    /// The time spent in the last haptics loop(in seconds)
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile H3DHapticsDevice_hapticsLoopTime.dot
+    auto_ptr< SFTime > hapticsLoopTime;
+        
     /// The Node used as the visual representation of the stylus.
     ///
     /// <b>Access type:</b> outputOnly \n

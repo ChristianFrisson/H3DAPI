@@ -109,6 +109,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   outputDOF( _outputDOF ),
   followViewpoint( _followViewpoint ),
   hapticsRate( _hapticsRate ),
+  hapticsLoopTime( new SFTime ),
   stylus( _stylus ),
   initialized( new SFBool ),
   hapticsRenderer( _hapticsRenderer ),
@@ -128,6 +129,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   enabled->setValue( false, id );
   proxyWeighting->setValue( 0.95f );
   buttons->setValue( 0, id );
+  hapticsRate->setValue( 0, id );
 
   positionCalibration->route( trackerPosition, id );
   devicePosition->route( trackerPosition, id );
@@ -238,6 +240,7 @@ void H3DHapticsDevice::updateDeviceValues() {
   if( hapi_device.get() ) {
     H3DInt32 hr = hapi_device->getHapticsRate();
     hapticsRate->setValue( hr, id );
+    hapticsLoopTime->setValue( hapi_device->getTimeSpentInLastLoop() ,id );
     HAPI::HAPIHapticsDevice::DeviceValues dv = 
       hapi_device->getRawDeviceValues();
     // convert to metres
