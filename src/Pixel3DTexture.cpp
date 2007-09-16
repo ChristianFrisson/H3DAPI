@@ -39,6 +39,12 @@ H3DNodeDatabase Pixel3DTexture::database(
                                        typeid( Pixel3DTexture ),
                                        &X3DTexture3DNode::database );
 
+H3DNodeDatabase Pixel3DTexture::database2( 
+                                       "PixelTexture3D", 
+                                       &(newInstance<Pixel3DTexture>), 
+                                       typeid( Pixel3DTexture ),
+                                       &X3DTexture3DNode::database );
+
 namespace Pixel3DTextureInternals {
   FIELDDB_ELEMENT( Pixel3DTexture, image, INPUT_OUTPUT );
 }

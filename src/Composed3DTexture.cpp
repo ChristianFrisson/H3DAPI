@@ -39,6 +39,15 @@ H3DNodeDatabase Composed3DTexture::database(
                                        typeid( Composed3DTexture ),
                                        &X3DTexture3DNode::database );
 
+// alias. Namechange after spec. change.
+H3DNodeDatabase Composed3DTexture::database2( 
+                                       "ComposedTexture3D", 
+                                       &(newInstance<Composed3DTexture>), 
+                                       typeid( Composed3DTexture ),
+                                       &X3DTexture3DNode::database );
+
+
+
 namespace Composed3DTextureInternals {
   FIELDDB_ELEMENT( Composed3DTexture, texture, INPUT_OUTPUT );
 }

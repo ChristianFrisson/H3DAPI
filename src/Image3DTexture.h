@@ -153,6 +153,9 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database2;
+
   protected:
     /// The thread used for downloading images when 
     /// load_images_in_separate_thread is true.
