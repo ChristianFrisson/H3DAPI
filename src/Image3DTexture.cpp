@@ -95,8 +95,9 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
        i != urls.end(); ++i ) {
     bool is_tmp_file;
     string url = texture->resolveURLAsFile( *i, &is_tmp_file );
-	  H3DImageLoaderNode *il = H3DImageLoaderNode::getSupportedFileReader( url );
-    if( il ) {
+	  auto_ptr< H3DImageLoaderNode > 
+      il( H3DImageLoaderNode::getSupportedFileReader( url ) );
+    if( il.get() ) {
       texture->setURLUsed( *i );
       Image *image = il->loadImage( url );
       if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
