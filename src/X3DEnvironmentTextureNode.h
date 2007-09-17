@@ -58,7 +58,8 @@ namespace H3D {
   public:
     /// Constructor.
     X3DEnvironmentTextureNode( Inst< DisplayList > _displayList = 0,
-                                Inst< SFNode>  _metadata = 0 ) :
+                               Inst< SFNode>  _metadata = 0 ) :
+      X3DTextureNode( _displayList, _metadata ),
       cube_map_id( 0 ),
       texture_unit( 0 ) {}
 
