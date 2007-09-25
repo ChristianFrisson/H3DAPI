@@ -48,8 +48,7 @@ namespace SmoothSurfaceInternals {
 SmoothSurface::SmoothSurface( Inst< UpdateStiffness >  _stiffness,
                               Inst< UpdateDamping >  _damping ):
   stiffness( _stiffness ),
-  damping( _damping ),
-  conversion_to_HAPI( 0.7 ) {
+  damping( _damping )  {
   type_name = "SmoothSurface";
   database.initFields( this );
   

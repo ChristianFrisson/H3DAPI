@@ -1826,7 +1826,7 @@ wxPanel* SettingsDialog::CreateRuspiniSettingsPage( wxWindow* parent,
                                                    wxSize(40, wxDefaultCoord));
     //    stringstream ss;
     //    ss << wx_frame->current_proxy_radius;
-    proxy_radius_text->SetValue( "0.025" ); //ss.str().c_str() );
+    proxy_radius_text->SetValue( "0.0025" ); //ss.str().c_str() );
     topSizer->Add(proxy_radius_text, 0,
                             wxALL, 5);
 

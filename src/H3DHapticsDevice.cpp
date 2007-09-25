@@ -46,6 +46,7 @@ namespace H3DHapticsDeviceInternals {
   FIELDDB_ELEMENT( H3DHapticsDevice, enabled, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, set_enabled, INPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, deviceOrientation, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DHapticsDevice, devicePosition, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, trackerPosition, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, trackerOrientation, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, positionCalibration, INPUT_OUTPUT );
@@ -223,7 +224,8 @@ void H3DHapticsDevice::renderShapes(
       H3DHapticsRendererNode *h3d_renderer = hapticsRenderer->getValue();
       if( h3d_renderer ) {
         hapi_device->setHapticsRenderer( 
-                                  h3d_renderer->getHapticsRenderer( layer ), layer );
+                                  h3d_renderer->getHapticsRenderer( layer ),
+                                  layer );
       }
     }
     hapi_device->setShapes( shapes, layer );
@@ -285,8 +287,15 @@ void H3DHapticsDevice::updateDeviceValues() {
       adjustedPositionCalibration->
         setValue( adjust_matrix * positionCalibration->getValue() );
 
-      hapi_device->setPositionCalibration(Matrix4f( 1e3, 0, 0, 0, 0, 1e3, 0, 0, 0, 0, 1e3,0, 0, 0, 0, 1 ) *
-        adjustedPositionCalibration->rt_pos_calibration * Matrix4f( 1e-3, 0, 0, 0, 0, 1e-3, 0, 0, 0, 0, 1e-3,0, 0, 0, 0, 1 ));
+      hapi_device->setPositionCalibration( Matrix4f( 1e3, 0, 0, 0,
+                                                     0, 1e3, 0, 0,
+                                                     0, 0, 1e3, 0,
+                                                     0, 0, 0, 1 ) *
+                            adjustedPositionCalibration->rt_pos_calibration *
+                                           Matrix4f( 1e-3, 0, 0, 0,
+                                                     0, 1e-3, 0, 0,
+                                                     0, 0, 1e-3, 0,
+                                                     0, 0, 0, 1 ) );
       
       // Create adjusted OrnCalibration and send to HAPI
       adjustedOrnCalibration->setValue(
@@ -297,7 +306,15 @@ void H3DHapticsDevice::updateDeviceValues() {
     }
     else {
       hapi_device->
-        setPositionCalibration( Matrix4f( 1e3, 0, 0, 0, 0, 1e3, 0, 0, 0, 0, 1e3,0, 0, 0, 0, 1 ) * positionCalibration->rt_pos_calibration * Matrix4f( 1e-3, 0, 0, 0, 0, 1e-3, 0, 0, 0, 0, 1e-3,0, 0, 0, 0, 1 ));
+        setPositionCalibration( Matrix4f( 1e3, 0, 0, 0,
+                                          0, 1e3, 0, 0,
+                                          0, 0, 1e3, 0,
+                                          0, 0, 0, 1 ) *
+                                positionCalibration->rt_pos_calibration *
+                                Matrix4f( 1e-3, 0, 0, 0,
+                                          0, 1e-3, 0, 0,
+                                          0, 0, 1e-3, 0,
+                                          0, 0, 0, 1 ) );
       hapi_device->setOrientationCalibration(
         orientationCalibration->rt_orn_calibration );
     }
@@ -350,21 +367,27 @@ void H3DHapticsDevice::updateDeviceValues() {
       HAPI::HAPIHapticsRenderer::Contacts contacts;
       if( renderer ) {
         contacts = renderer->getContacts();
-        all_contacts.insert( all_contacts.end(), contacts.begin(), contacts.end() );
+        all_contacts.insert( all_contacts.end(),
+                             contacts.begin(),
+                             contacts.end() );
       }
       for( HAPI::HAPIHapticsRenderer::Contacts::iterator i = contacts.begin();
            i != contacts.end(); i++ ) {
-        X3DGeometryNode *geom = static_cast< X3DGeometryNode * >((*i).first->userdata );
+        X3DGeometryNode *geom =
+          static_cast< X3DGeometryNode * >( (*i).first->userdata );
       
         // make sure all fields have the right size
         if( device_index > (int)geom->force->size() -1 )
           geom->force->resize( device_index + 1, Vec3f( 0, 0, 0 ), geom->id );
         if( device_index > (int)geom->contactPoint->size() -1 )
-          geom->contactPoint->resize( device_index + 1, Vec3f( 0, 0, 0 ), geom->id );
+          geom->contactPoint->resize( device_index + 1, Vec3f( 0, 0, 0 ),
+                                      geom->id );
         if( device_index > (int)geom->contactNormal->size() -1 )
-          geom->contactNormal->resize( device_index + 1, Vec3f( 1, 0, 0 ), geom->id );
+          geom->contactNormal->resize( device_index + 1, Vec3f( 1, 0, 0 ),
+                                       geom->id );
          if( device_index > (int)geom->contactTexCoord->size() -1 )
-          geom->contactTexCoord->resize( device_index + 1, Vec3f( 0, 0, 0 ), geom->id );
+          geom->contactTexCoord->resize( device_index + 1, Vec3f( 0, 0, 0 ),
+                                         geom->id );
         if( device_index > (int)geom->isTouched->size() -1 )
           geom->isTouched->resize( device_index + 1, false, geom->id );
         
@@ -384,8 +407,11 @@ void H3DHapticsDevice::updateDeviceValues() {
         if( geom->contactNormal->getValueByIndex( device_index ) != n ) 
           geom->contactNormal->setValue( device_index, n, geom->id ); 
 
-        if( geom->contactTexCoord->getValueByIndex( device_index ) != ci.tex_coord ) 
-          geom->contactTexCoord->setValue( device_index, (Vec3f) ci.tex_coord, geom->id ); 
+        if( geom->contactTexCoord->getValueByIndex( device_index ) !=
+            ci.tex_coord ) 
+          geom->contactTexCoord->setValue( device_index,
+                                           (Vec3f) ci.tex_coord,
+                                           geom->id ); 
         
         Vec3f f( global_vec_to_local * ci.force_global );
 
@@ -399,10 +425,12 @@ void H3DHapticsDevice::updateDeviceValues() {
       }
     }
 
-    for( HAPI::HAPIHapticsRenderer::Contacts::iterator j = last_contacts.begin();
+    for( HAPI::HAPIHapticsRenderer::Contacts::iterator j =
+          last_contacts.begin();
          j != last_contacts.end(); j++ ) {
       bool still_in_contact = false;
-      for( HAPI::HAPIHapticsRenderer::Contacts::iterator i = all_contacts.begin();
+      for( HAPI::HAPIHapticsRenderer::Contacts::iterator i =
+            all_contacts.begin();
            i != all_contacts.end(); i++ ) {
         if( (*i).first->userdata == (*j).first->userdata ) {
           still_in_contact = true;

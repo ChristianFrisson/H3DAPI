@@ -29,6 +29,8 @@
 #ifndef __PIXELIMAGE_H__
 #define __PIXELIMAGE_H__
 
+#include <H3DApi.h>
+#include <H3DTypes.h>
 #include <Image.h>
 #include <vector>
 

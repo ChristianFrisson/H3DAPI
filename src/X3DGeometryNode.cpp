@@ -60,6 +60,7 @@ namespace X3DGeometryNodeInternals {
   FIELDDB_ELEMENT( X3DGeometryNode, contactPoint, OUTPUT_ONLY );
   FIELDDB_ELEMENT( X3DGeometryNode, contactNormal, OUTPUT_ONLY );
   FIELDDB_ELEMENT( X3DGeometryNode, options, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DGeometryNode, contactTexCoord, OUTPUT_ONLY );
 }
 
 X3DGeometryNode::X3DGeometryNode( 
@@ -137,7 +138,8 @@ X3DGeometryNode::~X3DGeometryNode() {/*
   }*/
 }
 
-HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape( H3DSurfaceNode *_surface,
+HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
+                                                    H3DSurfaceNode *_surface,
                                                     const Matrix4f &_transform,
                                                     HLint _nr_vertices ) {
   int type = -1;

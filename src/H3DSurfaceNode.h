@@ -45,7 +45,7 @@ namespace H3D {
   public:
 
     /// Constructor.
-    H3DSurfaceNode() : hapi_surface( 0 ) {}
+    H3DSurfaceNode() : hapi_surface( 0 ), conversion_to_HAPI( 0.7 ) {}
   
     virtual string defaultXMLContainerField() {
       return "surface";
@@ -56,6 +56,11 @@ namespace H3D {
     }
   protected:
     AutoRef< HAPI::HAPISurfaceObject > hapi_surface;
+
+    /// Conversion variable used to convert from H3DAPI values 0-1 to 
+    /// N/mm which is used in HAPI. Needed for backward compability.
+    /// H3DAPI used to only be working with OpenHaptics.
+    H3DDouble conversion_to_HAPI;
   };
 }
 

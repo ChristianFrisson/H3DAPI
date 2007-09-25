@@ -94,13 +94,6 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-
-  protected:
-    /// Conversion variable used to convert from H3DAPI values 0-1 to 
-    /// N/mm which is used in HAPI. Needed for backward compability.
-    /// H3DAPI used to only be working with OpenHaptics.
-    H3DDouble conversion_to_HAPI;
-
   };
 }
 
