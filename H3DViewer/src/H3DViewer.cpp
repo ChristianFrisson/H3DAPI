@@ -139,6 +139,8 @@ bool MyApp::OnInit()
   SetVendorName(_T("SenseGraphics AB"));
   SetAppName(_T("H3D Viewer"));
 
+  Console.setShowLevel( false );
+
   //initializeH3D();
 
   // create a window to display
