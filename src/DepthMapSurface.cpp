@@ -60,7 +60,7 @@ DepthMapSurface::DepthMapSurface(
   
   type_name = "DepthMapSurface";
   database.initFields( this );
-  maxDepth->setValue( 1.0 );
+  maxDepth->setValue( 0.001 );
   whiteIsOut->setValue( true );
 
   setImagePtr->setOwner( this );

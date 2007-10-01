@@ -264,6 +264,10 @@ namespace H3D {
     /// by a X3DPointingDeviceSensorNode.
     virtual void incrNodeDefUseId( bool pt_device_affect );
 
+    /// Changes behaviour of X3DGeometryNode to be a thread safe
+    /// RefCountedClass.
+    virtual void initialize();
+
     /// Tells if a HapticsDevice has been in contact with the geometry
     /// in the last scenegraph loop. The field contains a boolean for 
     /// each HapticsDevice with the index as specified in the DeviceInfo node.
@@ -315,7 +319,6 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-
     /// Function sent to HAPIHapticsShape created to allow for deletion of
     /// X3DGeometryNode at the correct time. The X3DGeometryNode is not
     /// automatically refernced counted when sent to HAPIHapticShape.

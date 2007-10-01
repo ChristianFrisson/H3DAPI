@@ -54,7 +54,7 @@ H3DVariableDepthSurface::H3DVariableDepthSurface(
 
   type_name = "H3DVariableDepthSurface";
   database.initFields( this );
-  stiffness->setValue( 0.3 );
+  stiffness->setValue( 0.5 );
   staticFriction->setValue( 0.1 );
   dynamicFriction->setValue( 0.4 );
 }

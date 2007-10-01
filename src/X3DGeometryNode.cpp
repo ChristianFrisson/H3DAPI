@@ -101,6 +101,14 @@ X3DGeometryNode::X3DGeometryNode(
   displayList->route( boundTree );
 }
 
+void X3DGeometryNode::initialize() {
+  // The introduction of a ref_count_lock_pointer is changed here
+  // in order to not have to change the constructor definition of
+  // every single node.
+  use_ref_count_lock = true;
+  // deleted by RefCountedClass destructor.
+  ref_count_lock_pointer = new MutexLock();
+}
 
 int X3DGeometryNode::getHapticShapeId( unsigned int index ) {
 
@@ -531,7 +539,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
   }
 
   if( tris.size() > 0 )  {
-    //cerr << tris.size();// << endl;
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HapticTriangleSet is destructed.
+    ref();
     HAPI::HapticTriangleSet * tri_set = 
       new HAPI::HapticTriangleSet( tris ,
       this,
@@ -548,9 +558,6 @@ void X3DGeometryNode::createAndAddHapticShapes(
       &X3DGeometryNode::cleanUpFunction,
       -1,
       touchable_face );
-    // Increase ref-count to have cleanupfunction decrease
-    // it when the HapticTriangleSet is destructed.
-    ref();
 
 
 #ifdef HAVE_OPENHAPTICS
@@ -589,6 +596,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
   }
 
   if( lines.size() > 0 )  {
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HapticLineSet is destructed.
+    ref();
     HAPI::HapticLineSet * lin_set = 
       new HAPI::HapticLineSet( lines ,
       this,
@@ -605,9 +615,6 @@ void X3DGeometryNode::createAndAddHapticShapes(
       &X3DGeometryNode::cleanUpFunction,
       -1,
       touchable_face );
-    // Increase ref-count to have cleanupfunction decrease
-    // it when the HapticLineSet is destructed.
-    ref();
 
 
 #ifdef HAVE_OPENHAPTICS
@@ -646,7 +653,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
   }
 
   if( points.size() > 0 )  {
-    //cerr << lines.size();// << endl;
+    // Increase ref-count to have cleanupfunction decrease
+    // it when the HapticPointSet is destructed.
+    ref();
     HAPI::HapticPointSet * pt_set = 
       new HAPI::HapticPointSet( points ,
       this,
@@ -663,9 +672,6 @@ void X3DGeometryNode::createAndAddHapticShapes(
       &X3DGeometryNode::cleanUpFunction,
       -1,
       touchable_face);
-    // Increase ref-count to have cleanupfunction decrease
-    // it when the HapticPointSet is destructed.
-    ref();
 
 
 #ifdef HAVE_OPENHAPTICS
