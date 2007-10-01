@@ -169,6 +169,7 @@ void PythonScript::loadScript( const string &script ) {
   PyDict_SetItem( (PyObject *)module_dict, 
                   PyString_FromString( "references" ), 
                   ref );
+  Py_DECREF( ref );
 
   if (PyDict_GetItemString( static_cast< PyObject * >(module_dict), "__builtins__") == NULL) {
     if (PyDict_SetItemString( static_cast< PyObject * >(module_dict), "__builtins__",
@@ -202,7 +203,7 @@ void PythonScript::loadScript( const string &script ) {
                                 static_cast< PyObject * >(module_dict), 
                                 static_cast< PyObject * >(module_dict) );
     if ( r == NULL ) {
-      Console( 3 ) << "In file \"" << script << "\":" << endl;
+      Console( 3 ) << "Python error in file \"" << script << "\":" << endl;
       PyErr_Print();
     }
     delete[] buffer;
@@ -248,23 +249,28 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
 }
 
 void PythonScript::initialize() {
+
   H3DScriptNode::initialize();
 
   module_name = moduleName->getValue();
   if( module_name == "" )
     module_name = name;
 
-  PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
+  PyObject *temp_sys_module_dict = PyImport_GetModuleDict(); // borrowed ref
   if( PyDict_GetItemString( temp_sys_module_dict,
-                            (char*)module_name.c_str() ) ) {
+                            (char*)module_name.c_str() ) ) { // borrowed ref
     Console(4) << "The module " << module_name << " already exists. "
                << "It will be overridden which might cause strange behaviour. "
                << "Check the DEF of PythonsScript "
                << "in the scene if this behaviour is undesired." << endl;
   }
 
-  module = PyImport_AddModule( (char*)module_name.c_str() );
-  module_dict = PyModule_GetDict( static_cast< PyObject * >( module ) );
+
+  module = PyImport_AddModule( (char*)module_name.c_str() ); // borrowed ref
+  module_dict = 
+    PyModule_GetDict( static_cast< PyObject * >( module ) ); // borrowed ref
+
+
   bool script_loaded = false;
   for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {
     bool is_tmp_file;

@@ -55,15 +55,52 @@ using namespace PythonInternals;
 namespace H3D {
   namespace PythonInternals {
 
+    class PythonAutoRef{
+    private:
+      PyObject* ap;    // refers to the actual owned object (if any)
+    public:
+      typedef PyObject element_type;
+
+      // constructor
+      explicit PythonAutoRef (PyObject* ptr = 0) {
+        ap=ptr;
+      }
+      
+      // destructor
+      ~PythonAutoRef() throw(){
+        if( ap ) Py_DECREF( ap );
+      }
+
+      // value access
+      PyObject* get() const throw(){
+        return ap;
+      }
+      PyObject& operator*() const throw(){
+        return *ap;
+      }
+      PyObject* operator->() const throw(){
+        return ap;
+      }
+
+      // reset value
+      void reset (PyObject* ptr=0) throw(){
+        if (ap != ptr){
+          if( ap ) Py_DECREF( ap );
+          ap = ptr;
+        }
+      }
+    };
 
 
 
     H3D_VALUE_EXCEPTION( string, UnableToCreatePythonField );
 
-    PyObject *H3D_module = 0;
-    PyObject *H3D_dict = 0;
-    PyObject *H3DInterface_module = 0;
-    PyObject *H3DInterface_dict = 0;
+    PythonAutoRef H3D_module( NULL );
+    PythonAutoRef H3DInterface_module( NULL );
+
+    // borrowed references so do not need autoref
+    PyObject * H3D_dict =  NULL;
+    PyObject * H3DInterface_dict = NULL;
 
     // Macro used by pythonCreateField to create a new PythonField depending
     // on the field type.
@@ -520,29 +557,36 @@ if( check_func( value ) ) {                                         \
     };
     
     PyMODINIT_FUNC initH3D() {
-      H3D_module = Py_InitModule( "H3D", H3DMethods );
-      H3D_dict = PyModule_GetDict( H3D_module );
 
-      PyNode::installType( H3D_module );     
-      PyVec2f::installType( H3D_module );     
-      PyVec2d::installType( H3D_module );     
-      PyVec3f::installType( H3D_module );     
-      PyVec3d::installType( H3D_module );     
-      PyVec4f::installType( H3D_module );     
-      PyVec4d::installType( H3D_module );     
-      PyRGB::installType( H3D_module );     
-      PyRGBA::installType( H3D_module );     
-      PyRotation::installType( H3D_module );      
-      PyQuaternion::installType( H3D_module );
-      PyMatrix3f::installType( H3D_module );     
-      PyMatrix4f::installType( H3D_module );
-      PyMatrix3d::installType( H3D_module );     
-      PyMatrix4d::installType( H3D_module );
+      H3D_module.reset( Py_InitModule( "H3D", H3DMethods ) );
+      H3D_dict = PyModule_GetDict( H3D_module.get() );
+
+
+      PyNode::installType( H3D_module.get() );     
+      PyVec2f::installType( H3D_module.get() );     
+      PyVec2d::installType( H3D_module.get() );     
+      PyVec3f::installType( H3D_module.get() );     
+      PyVec3d::installType( H3D_module.get() );     
+      PyVec4f::installType( H3D_module.get() );     
+      PyVec4d::installType( H3D_module.get() );     
+      PyRGB::installType( H3D_module.get() );     
+      PyRGBA::installType( H3D_module.get() );     
+      PyRotation::installType( H3D_module.get() );      
+      PyQuaternion::installType( H3D_module.get() );
+      PyMatrix3f::installType( H3D_module.get() );     
+      PyMatrix4f::installType( H3D_module.get() );
+      PyMatrix3d::installType( H3D_module.get() );     
+      PyMatrix4d::installType( H3D_module.get() );
+      PyConsole::installType( H3D_module.get() );
+
+
       PythonInternals::insertFieldTypes( H3D_dict );
 
-      PythonInternals::H3DInterface_module = 
-        PyImport_ImportModule( "H3DInterface" );
-      if ( PythonInternals::H3DInterface_module == NULL ) {
+
+
+      PythonInternals::H3DInterface_module.reset( 
+        PyImport_ImportModule( "H3DInterface" ) );
+      if ( PythonInternals::H3DInterface_module.get() == NULL ) {
         PyErr_Print();
         Console(4) << "PythonScript::initialiseParser() - ";
         Console(4) << "  Error importing H3DInterface module, check that you have a valid PYTHONPATH environment variable and try again." << endl;
@@ -550,7 +594,7 @@ if( check_func( value ) ) {                                         \
       }
 
       PythonInternals::H3DInterface_dict = 
-        PyModule_GetDict( PythonInternals::H3DInterface_module );
+        PyModule_GetDict( PythonInternals::H3DInterface_module.get() );
 
       if ( PythonInternals::H3DInterface_dict == NULL )
         PyErr_Print();
@@ -559,12 +603,14 @@ if( check_func( value ) ) {                                         \
       PyDict_SetItem( PythonInternals::H3DInterface_dict, 
                       PyString_FromString( "time" ), 
                       time );
+	  Py_DECREF( time );
       PyObject *event_sink = (PyObject*)fieldAsPythonObject( Scene::eventSink.get(), false );
       //PyObject *event_sink = (PyObject*)fieldAsPythonObject( Scene::eventSink, false );
       PyDict_SetItem( PythonInternals::H3DInterface_dict, 
                       PyString_FromString( "eventSink" ), 
                       event_sink );
-      
+	  Py_DECREF( event_sink );
+
     };
   
     void fieldDestructor( void *f ) {

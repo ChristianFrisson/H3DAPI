@@ -1,6 +1,13 @@
 
 from H3D import *
 
+import sys
+
+Console = H3DConsole()
+
+sys.stdout = Console
+sys.stderr = Console
+
 ###################################################################
 #
 # Base types; Vec2f, Vec3f, Vec2d, Vec2d, etc, etc, etc

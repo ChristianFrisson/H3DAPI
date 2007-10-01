@@ -954,6 +954,49 @@ namespace H3D {
     /// python string argument list
     static int init(PyRGBA *self, PyObject *args, PyObject *kwds);
   };
+
+  //////////////////////////////////////////////////////
+  // Python C declarations for PyConsole type(interface to Console)
+  //////////////////////////////////////////////////////
+  extern H3DAPI_API PyTypeObject PyConsole_Type;
+
+  struct PyConsole: public PyType {
+    /// Install type in the given python module. Must be called if the
+    /// type is to be used in a module.
+    static void installType( PyObject* H3D_module ) {
+      if (PyType_Ready( &PyConsole_Type ) < 0 )
+        return; // THROW ERROR!?
+      
+      Py_INCREF( &PyConsole_Type );
+      PyModule_AddObject( H3D_module, 
+                          "H3DConsole", 
+                          (PyObject *)&PyConsole_Type );
+    }
+  
+    /// create() a new instance of Type using Python to allocate
+    /// the memory and initialise the PyObject headers - to be called
+    /// by PythonScript's internals.
+    static PyObject* create() {
+      return PyType_GenericAlloc( &PyConsole_Type, 1 ); 
+    } 
+    
+    /// Python type deallocation
+    static void dealloc( PyObject *self ) {
+      self->ob_type->tp_free( self );
+    }
+
+    static PyObject* write( PyObject *self, PyObject *to_write );
+  };
+
+  /// Returns which is the name the PyVec3f is to be installed
+  /// as in Python.
+  inline string PyConsole_Name() { return "Console"; }   
+
+  /// Returns true if its argument is a PyVec3f.
+  inline bool PyConsole_Check( PyObject *o) {
+    return PyObject_TypeCheck(o,&PyConsole_Type);
+  }
+  
     
 }
   
