@@ -96,6 +96,7 @@ FalconDevice::FalconDevice(
 }
 
 void FalconDevice::initialize() {
+  H3DHapticsDevice::initialize();
 #ifdef HAVE_FALCONAPI
   hapi_device.reset( new HAPI::FalconHapticsDevice( deviceName->getValue() ) );
 #else

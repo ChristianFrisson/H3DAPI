@@ -74,6 +74,7 @@ QuanserDevice::QuanserDevice(
 }
 
 void QuanserDevice::initialize() {
+  H3DHapticsDevice::initialize();
 #ifdef HAVE_QUANSERAPI
   hapi_device.reset( new HAPI::QuanserDevice() );
 #else

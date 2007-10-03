@@ -113,6 +113,7 @@ HaptikHapticsDevice::HaptikHapticsDevice(
 }
 
 void HaptikHapticsDevice::initialize() {
+  H3DHapticsDevice::initialize();
 #ifdef HAVE_HAPTIK
   hapi_device.reset( new HAPI::HaptikDevice );
 #else

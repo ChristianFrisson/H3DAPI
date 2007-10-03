@@ -124,6 +124,7 @@ PhantomDevice::PhantomDevice(
 }
 
 void PhantomDevice::initialize() {
+  H3DHapticsDevice::initialize();
 #ifdef HAVE_OPENHAPTICS
   hapi_device.reset( new HAPI::PhantomHapticsDevice( deviceName->getValue() ) );
 #else
