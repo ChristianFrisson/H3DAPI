@@ -67,7 +67,7 @@ TouchSensor::TouchSensor(
 }
 
 void TouchSensor::onIsOver( bool newValue,
-                           HAPI::Bounds::IntersectionInfo &result,
+                           IntersectionInfo &result,
                            int pt_id ) {
   if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
     X3DPointingDeviceSensorNode::onIsOver( newValue,

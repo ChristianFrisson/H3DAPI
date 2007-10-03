@@ -74,7 +74,7 @@ void SurfaceEmitter::generateParticles( ParticleSystem *ps,
 
   H3DFloat particles_to_emit = (H3DFloat)(emission_rate * dt);
 
-  vector< HAPI::Bounds::Triangle > tris;
+  vector< HAPI::Collision::Triangle > tris;
   tris.reserve( 200 );
   geom->boundTree->getValue()->getAllTriangles( tris );
 
@@ -94,7 +94,7 @@ void SurfaceEmitter::generateParticles( ParticleSystem *ps,
     unsigned int triangle_index = (unsigned int)
       ParticleSystem::getRandomValue( 0, 
                                       tris.size() - 1e-7f  );
-    const HAPI::Bounds::Triangle &triangle = tris[ triangle_index ];
+    const HAPI::Collision::Triangle &triangle = tris[ triangle_index ];
     
     Vec3f ab = (Vec3f)(triangle.b - triangle.a);
     Vec3f ac = (Vec3f)(triangle.c - triangle.a);

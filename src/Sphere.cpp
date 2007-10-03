@@ -188,13 +188,13 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
       HapticsOptions *haptics_options = NULL;
       getOptionNode( haptics_options );
 
-      HAPI::Bounds::FaceType touchable_face;
+      HAPI::Collision::FaceType touchable_face;
 
       if( usingCulling() ) {
-        if( getCullFace() == GL_FRONT ) touchable_face = HAPI::Bounds::BACK;
-        else touchable_face = HAPI::Bounds::FRONT;
+        if( getCullFace() == GL_FRONT ) touchable_face = HAPI::Collision::BACK;
+        else touchable_face = HAPI::Collision::FRONT;
       } else {
-        touchable_face = HAPI::Bounds::FRONT_AND_BACK;
+        touchable_face = HAPI::Collision::FRONT_AND_BACK;
       }
 
       if( !haptics_options ) {
@@ -206,10 +206,10 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
 
       if( haptics_options ) {
         const string &face = haptics_options->touchableFace->getValue();
-        if( face == "FRONT" ) touchable_face = HAPI::Bounds::FRONT;
-        else if( face == "BACK" ) touchable_face = HAPI::Bounds::BACK;
+        if( face == "FRONT" ) touchable_face = HAPI::Collision::FRONT;
+        else if( face == "BACK" ) touchable_face = HAPI::Collision::BACK;
         else if( face == "FRONT_AND_BACK" ) 
-          touchable_face = HAPI::Bounds::FRONT_AND_BACK;
+          touchable_face = HAPI::Collision::FRONT_AND_BACK;
         else if( face == "AS_GRAPHICS" ) {
           // default values are the same as graphics
         } else {
@@ -269,16 +269,16 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
 bool Sphere::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
-                  vector< HAPI::Bounds::IntersectionInfo > &result,
+                  vector< IntersectionInfo > &result,
                   vector< pair< Node *, H3DInt32 > > &theNodes,
                   const Matrix4f &current_matrix,
                   vector< Matrix4f > &geometry_transforms,
                   bool pt_device_affect ) {
   if( pt_device_affect )
     current_geom_id++;
-  HAPI::Bounds::IntersectionInfo tempresult;
-  HAPI::Bounds::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
-                                    radius->getValue() * 1000.0f );
+  IntersectionInfo tempresult;
+  HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
+                                       radius->getValue() * 1000.0f );
   bool returnValue =
     temp_sphere.lineIntersect( 1000*from, 1000*to, tempresult );
   if( returnValue ) {
@@ -297,7 +297,7 @@ void Sphere::closestPoint(
                   vector< Vec3f > &normal,
                   vector< Vec3f > &tex_coord ) {
   Vec3d temp_closest_point, temp_normal, temp_tex_coord;
-  HAPI::Bounds::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
+  HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
                                     radius->getValue() * 1000.0f );
   temp_sphere.closestPoint( p * 1000, temp_closest_point, 
                             temp_normal, temp_tex_coord );
@@ -309,7 +309,7 @@ void Sphere::closestPoint(
 bool Sphere::movingSphereIntersect( H3DFloat _radius,
                                     const Vec3f &from, 
                                     const Vec3f &to ) {
-  HAPI::Bounds::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
+  HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
                                     radius->getValue() * 1000.0f );
   return temp_sphere.movingSphereIntersect( _radius * 1000.0f,
                                             from * 1000.0f,

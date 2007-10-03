@@ -101,7 +101,7 @@ namespace H3D {
     /// Called to generate isOver events and other events (dependent on isOver)
     // if they should be generated.
     virtual void onIsOver( bool newValue,
-                           HAPI::Bounds::IntersectionInfo &result,
+                           IntersectionInfo &result,
                            int pt_id );
   };
 }

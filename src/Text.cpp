@@ -471,7 +471,7 @@ void Text::SFBound::update() {
 bool Text::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
-                  vector< HAPI::Bounds::IntersectionInfo > &result,
+                  vector< IntersectionInfo > &result,
                   vector< pair< Node *, H3DInt32 > > &theNodes,
                   const Matrix4f &current_matrix,
                   vector< Matrix4f > &geometry_transforms,
@@ -484,7 +484,7 @@ bool Text::lineIntersect(
   if( the_bound ) {
       returnValue = the_bound->lineSegmentIntersect( from, to );
       if( returnValue ) {
-        HAPI::Bounds::IntersectionInfo tempresult;
+        IntersectionInfo tempresult;
         tempresult.point = Vec3f( 0, 0, 0 );
         tempresult.normal = Vec3f( 0, 0, 1 );
         result.push_back( tempresult );

@@ -158,7 +158,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
         }
       }  
 
-      vector< HAPI::Bounds::IntersectionInfo > result;
+      vector< IntersectionInfo > result;
       vector< pair< Node *, H3DInt32 > > theNodes;
       vector< Matrix4f > matrix_vector;
       Matrix4f temp_matrix;
@@ -194,7 +194,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
       }
       else {
         for( unsigned int i = 0; i < instances.size(); i++ ) {
-          HAPI::Bounds::IntersectionInfo result;
+          IntersectionInfo result;
           int geometryIndex = -1;
           instances[i]->onIsOver( false, result, geometryIndex );
         }

@@ -84,8 +84,8 @@ PlaneSensor::~PlaneSensor() {
 }
 
 void PlaneSensor::onIsOver( bool newValue,
-                           HAPI::Bounds::IntersectionInfo &result,
-                           int pt_id ) {
+                            IntersectionInfo &result,
+                            int pt_id ) {
   if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
     X3DPointingDeviceSensorNode::onIsOver( newValue,
                                            result,

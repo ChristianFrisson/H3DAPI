@@ -63,10 +63,10 @@ void BoundedPhysicsModel::updateParticleValues(
   X3DGeometryNode *geom = geometry->getValue();
   if( !enabled->getValue() || !geom ) return;
 
-  HAPI::Bounds::BinaryBoundTree *tree = geom->boundTree->getValue();
+  HAPI::Collision::BinaryBoundTree *tree = geom->boundTree->getValue();
   if( !tree ) return;
   
-  HAPI::Bounds::IntersectionInfo intersection;
+  HAPI::Collision::IntersectionInfo intersection;
   if( tree->lineIntersect( last_particle.position * 1000,
                            particle.position * 1000,
                            intersection ) ) {
@@ -76,7 +76,7 @@ void BoundedPhysicsModel::updateParticleValues(
     
     particle.velocity = v_par - v_perp;
     Vec3f n = (Vec3f ) (
-      intersection.face == HAPI::Bounds::FRONT ? 
+      intersection.face == HAPI::Collision::FRONT ? 
       intersection.normal : -intersection.normal );
     particle.position = 
       (Vec3f) intersection.point/1000 + 

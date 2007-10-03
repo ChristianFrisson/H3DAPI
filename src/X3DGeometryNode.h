@@ -79,7 +79,7 @@ namespace H3D {
 
     /// The HAPIBoundTree constructs a 
     class H3DAPI_API SFBoundTree: 
-      public RefCountSField< HAPI::Bounds::BinaryBoundTree > {
+      public RefCountSField< HAPI::Collision::BinaryBoundTree > {
       virtual void update();
     };
 
@@ -117,7 +117,7 @@ namespace H3D {
     virtual bool lineIntersect( 
       const Vec3f &from,
       const Vec3f &to,    
-      vector< HAPI::Bounds::IntersectionInfo > &result,
+      vector< IntersectionInfo > &result,
       vector< pair< Node *, H3DInt32 > > &theNodes,
       const Matrix4f &current_matrix,
       vector< Matrix4f > &geometry_transforms,

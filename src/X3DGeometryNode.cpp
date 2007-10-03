@@ -153,13 +153,13 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
   int type = -1;
   bool adaptive_viewport = true;
   bool camera_view = true;
-  HAPI::Bounds::FaceType touchable_face;
+  HAPI::Collision::FaceType touchable_face;
   
   if( usingCulling() ) {
-    if( getCullFace() == GL_FRONT ) touchable_face = HAPI::Bounds::BACK;
-    else touchable_face = HAPI::Bounds::FRONT;
+    if( getCullFace() == GL_FRONT ) touchable_face = HAPI::Collision::BACK;
+    else touchable_face = HAPI::Collision::FRONT;
   } else {
-    touchable_face = HAPI::Bounds::FRONT_AND_BACK;
+    touchable_face = HAPI::Collision::FRONT_AND_BACK;
   }
 
   OpenHapticsOptions *openhaptics_options = NULL;
@@ -271,7 +271,7 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
     }
     
     if( render_depth >= 0 ) {
-      HAPI::Bounds::BinaryBoundTree *tree = geom->boundTree->getValue();
+      HAPI::Collision::BinaryBoundTree *tree = geom->boundTree->getValue();
       if( tree ) {
         glMatrixMode( GL_MODELVIEW );
         glPushMatrix();
@@ -301,9 +301,9 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
 /// The HAPIBoundTree constructs a 
 void X3DGeometryNode::SFBoundTree::update() { 
   X3DGeometryNode *geometry = static_cast< X3DGeometryNode * >( getOwner() );
-  vector< HAPI::Bounds::Triangle > triangles;
-  vector< HAPI::Bounds::LineSegment > lines;
-  vector< HAPI::Bounds::Point > points;
+  vector< HAPI::Collision::Triangle > triangles;
+  vector< HAPI::Collision::LineSegment > lines;
+  vector< HAPI::Collision::Point > points;
   HAPI::FeedbackBufferCollector::collectPrimitives( geometry, 
                                                     Matrix4f( 1e3f, 0, 0, 0,
                                                               0, 1e3f, 0, 0,
@@ -326,17 +326,17 @@ void X3DGeometryNode::SFBoundTree::update() {
     const string &type = options->boundType->getValue();
     H3DInt32 max_triangles = options->maxTrianglesInLeaf->getValue();
     if( type == "AABB" ) {
-      value = new HAPI::Bounds::AABBTree( triangles,
+      value = new HAPI::Collision::AABBTree( triangles,
                                           lines,
                                           points,
                                           max_triangles );
     } else if( type == "OBB" ) {
-      value = new HAPI::Bounds::OBBTree( triangles,
+      value = new HAPI::Collision::OBBTree( triangles,
                                          lines,
                                          points,
                                          max_triangles );
     } else if( type == "SPHERE" ) {
-      value = new HAPI::Bounds::SphereBoundTree( triangles,
+      value = new HAPI::Collision::SphereBoundTree( triangles,
                                                  lines,
                                                  points,
                                                  max_triangles );
@@ -347,14 +347,14 @@ void X3DGeometryNode::SFBoundTree::update() {
                  << "(in active GeometryBoundTreeOptions node for \" "
                  << geometry->getName() << "\" node). Using AABB instead." 
                  << endl;
-      value = new HAPI::Bounds::AABBTree( triangles,
+      value = new HAPI::Collision::AABBTree( triangles,
                                           lines,
                                           points,
                                           max_triangles );
     }
 
   } else {
-    value = new HAPI::Bounds::AABBTree( triangles, lines, points );
+    value = new HAPI::Collision::AABBTree( triangles, lines, points );
   }
 
 }
@@ -418,11 +418,11 @@ void X3DGeometryNode::createAndAddHapticShapes(
                                   H3DInt32 hd_index,
                                   OpenHapticsOptions *openhaptics_options) {
 
-  vector< HAPI::Bounds::Triangle > tris;
+  vector< HAPI::Collision::Triangle > tris;
   tris.reserve( 200 );
-  vector< HAPI::Bounds::LineSegment > lines;
+  vector< HAPI::Collision::LineSegment > lines;
   lines.reserve( 200 );
-  vector< HAPI::Bounds::Point > points;
+  vector< HAPI::Collision::Point > points;
   points.reserve( 200 );
 
   HapticsOptions *haptics_options = NULL;
@@ -430,14 +430,14 @@ void X3DGeometryNode::createAndAddHapticShapes(
 
   H3DFloat radius = (H3DFloat) 0.015;
   H3DFloat lookahead_factor = 3;
-  HAPI::Bounds::FaceType touchable_face;
+  HAPI::Collision::FaceType touchable_face;
   bool use_bound_tree = true;
 
   if( usingCulling() ) {
-    if( getCullFace() == GL_FRONT ) touchable_face = HAPI::Bounds::BACK;
-    else touchable_face = HAPI::Bounds::FRONT;
+    if( getCullFace() == GL_FRONT ) touchable_face = HAPI::Collision::BACK;
+    else touchable_face = HAPI::Collision::FRONT;
   } else {
-    touchable_face = HAPI::Bounds::FRONT_AND_BACK;
+    touchable_face = HAPI::Collision::FRONT_AND_BACK;
   }
 
   if( !haptics_options ) {
@@ -449,10 +449,10 @@ void X3DGeometryNode::createAndAddHapticShapes(
 
   if( haptics_options ) {
     const string &face = haptics_options->touchableFace->getValue();
-    if( face == "FRONT" ) touchable_face = HAPI::Bounds::FRONT;
-    else if( face == "BACK" ) touchable_face = HAPI::Bounds::BACK;
+    if( face == "FRONT" ) touchable_face = HAPI::Collision::FRONT;
+    else if( face == "BACK" ) touchable_face = HAPI::Collision::BACK;
     else if( face == "FRONT_AND_BACK" ) 
-      touchable_face = HAPI::Bounds::FRONT_AND_BACK;
+      touchable_face = HAPI::Collision::FRONT_AND_BACK;
     else if( face == "AS_GRAPHICS" ) {
       // default values are the same as graphics
     } else {
@@ -714,14 +714,14 @@ void X3DGeometryNode::createAndAddHapticShapes(
 bool X3DGeometryNode::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
-                  vector< HAPI::Bounds::IntersectionInfo > &result,
+                  vector< IntersectionInfo > &result,
                   vector< pair< Node *, H3DInt32 > > &theNodes,
                   const Matrix4f &current_matrix,
                   vector< Matrix4f > &geometry_transforms,
                   bool pt_device_affect ) {
   if( pt_device_affect )
     current_geom_id++;
-  HAPI::Bounds::IntersectionInfo tempresult;
+  IntersectionInfo tempresult;
   bool returnValue =
     boundTree->getValue()->lineIntersect( 1000*from, 1000*to, tempresult );
   if( returnValue ) {

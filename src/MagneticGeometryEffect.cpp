@@ -124,7 +124,7 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                 lookahead_factor =
                 haptics_options->lookAheadFactor->getValue();
 
-              vector< HAPI::Bounds::Triangle > tris;
+              vector< HAPI::Collision::Triangle > tris;
               tris.reserve( 200 );
               Matrix4f to_local = ti.getAccInverseMatrix();
               Vec3f scale = to_local.getScalePart();

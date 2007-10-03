@@ -49,6 +49,8 @@ namespace H3D {
   class H3DAPI_API Node: public RefCountedClass {
   public:
  
+    typedef HAPI::Collision::IntersectionInfo IntersectionInfo;
+
     /// Constructor.
     Node();
     
@@ -92,7 +94,7 @@ namespace H3D {
     virtual bool lineIntersect( 
       const Vec3f &from, 
       const Vec3f &to,    
-      vector< HAPI::Bounds::IntersectionInfo > &result,
+      vector< IntersectionInfo > &result,
       vector< pair< Node *, H3DInt32 > > &theNodes,
       const Matrix4f &current_matrix,
       vector< Matrix4f > &geometry_transforms,

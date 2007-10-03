@@ -142,7 +142,7 @@ void MatrixTransform::traverseSG( TraverseInfo &ti ) {
 bool MatrixTransform::lineIntersect(
                              const Vec3f &from, 
                              const Vec3f &to,    
-                             vector< HAPI::Bounds::IntersectionInfo > &result,
+                             vector< IntersectionInfo > &result,
                              vector< pair< Node *, H3DInt32 > > &theNodes,
                              const Matrix4f &current_matrix,
                              vector< Matrix4f > &geometry_transforms,

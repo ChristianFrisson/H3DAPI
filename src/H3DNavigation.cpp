@@ -177,7 +177,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
       Vec3f far_plane_pos =
         Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
 
-      vector< HAPI::Bounds::IntersectionInfo > result;
+      vector< Node::IntersectionInfo > result;
       vector< pair< Node *, H3DInt32 > > theNodes;
       Matrix4f temp_matrix;
       vector< Matrix4f > transform_matrices;

@@ -250,7 +250,7 @@ namespace H3D {
     /// Called to generate isOver events if they should be
     /// generated.
     virtual void onIsOver( bool newValue, 
-      HAPI::Bounds::IntersectionInfo &result, int pt_id ) {
+      IntersectionInfo &result, int pt_id ) {
       if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
         if( newValue != isOver->getValue() )
           isOver->setValue( newValue, id );
