@@ -1,5 +1,5 @@
 <Group>
-  <Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
+  <Transform>
     <Shape>
       <Appearance>
         <Material/>
