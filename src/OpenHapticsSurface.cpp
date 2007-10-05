@@ -63,14 +63,11 @@ OpenHapticsSurface::OpenHapticsSurface(
 }
 
 void OpenHapticsSurface::initialize() {
-  hapi_surface.reset(
-    new HAPI::OpenHapticsRenderer::OpenHapticsSurface(
-                                          stiffness->getValue(),
-                                          damping->getValue(),
-                                          staticFriction->getValue(),
-                                          dynamicFriction->getValue(),
-                                          magnetic->getValue(),
-                                          snapDistance->getValue() * 1000 ) );
+  MagneticSurface::initialize();
+  HAPI::OpenHapticsRenderer::OpenHapticsSurface * open_haptics_surface =
+    static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
+    ( hapi_surface.get() );
+  open_haptics_surface->magnetic = magnetic->getValue();
 }
 
 void OpenHapticsSurface::UpdateMagnetic::

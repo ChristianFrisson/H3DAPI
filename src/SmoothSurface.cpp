@@ -57,6 +57,7 @@ SmoothSurface::SmoothSurface( Inst< UpdateStiffness >  _stiffness,
 }
 
 void SmoothSurface::initialize() {
+  H3DSurfaceNode::initialize();
   hapi_surface.reset(
     new HAPI::FrictionSurface( stiffness->getValue() * conversion_to_HAPI,
                                damping->getValue() * conversion_to_HAPI ) );

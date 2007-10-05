@@ -66,7 +66,7 @@ DepthMapSurface::DepthMapSurface(
   setImagePtr->setOwner( this );
 }
  void DepthMapSurface::initialize() {
-
+   H3DVariableDepthSurface::initialize();
    X3DTexture2DNode * height_map = 
      static_cast< X3DTexture2DNode * >( depthMap->getValue() );
    Image * temp_image = 0;

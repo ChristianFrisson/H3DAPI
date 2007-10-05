@@ -73,6 +73,7 @@ MagneticSurface::MagneticSurface(
 }
 
 void MagneticSurface::initialize() {
+  H3DSurfaceNode::initialize();
 #ifdef HAVE_OPENHAPTICS
   hapi_surface.reset(
     new HAPI::OpenHapticsRenderer::OpenHapticsSurface(

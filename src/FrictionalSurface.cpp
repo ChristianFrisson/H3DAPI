@@ -62,11 +62,11 @@ FrictionalSurface::FrictionalSurface(
 }
 
 void FrictionalSurface::initialize() {
-  hapi_surface.reset(
-    new HAPI::FrictionSurface( stiffness->getValue() * conversion_to_HAPI,
-                               damping->getValue() * conversion_to_HAPI,
-                               staticFriction->getValue(),
-                               dynamicFriction->getValue() ) );
+  SmoothSurface::initialize();
+  HAPI::FrictionSurface *friction_surface =
+    static_cast< HAPI::FrictionSurface * >( hapi_surface.get() );
+  friction_surface->static_friction = staticFriction->getValue();
+  friction_surface->dynamic_friction = dynamicFriction->getValue();
 }
 
 void FrictionalSurface::UpdateStaticFriction::
