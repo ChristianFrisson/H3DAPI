@@ -102,12 +102,15 @@ void DeformableShape::traverseSG( TraverseInfo &ti ) {
       vector< Vec3f > new_resting_coords( resting_coord->point->size() );
       vector< Vec3f > new_deformed_coords( resting_coord->point->size() );
 
+      const vector< bool > &is_touched = haptics_geom->isTouched->getValue();
+      int i = 0;
       vector< Vec3f > penetration_points;
       const vector< H3DHapticsDevice *> &haptics_devices = 
         ti.getHapticsDevices();
       for( vector< H3DHapticsDevice *>::const_iterator hd = 
              haptics_devices.begin();
-           hd != haptics_devices.end(); hd++ ) {
+           hd != haptics_devices.end() && i < is_touched.size();
+           hd++, i++ ) {
         penetration_points.push_back( ti.getAccInverseMatrix() * 
                                       (*hd)->weightedProxyPosition->getValue() );
       }
