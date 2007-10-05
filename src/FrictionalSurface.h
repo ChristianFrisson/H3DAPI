@@ -43,8 +43,6 @@ namespace H3D {
     /// Specialized field which sets the static_friction variable in
     /// FrictionSurface when the staticFriction field of FrictionalSurface
     /// is changed.
-		///
-    /// routes_in[0] is the staticFriction field
     class H3DAPI_API UpdateStaticFriction: public AutoUpdate< SFFloat > {
     public:
       virtual void setValue( const H3DFloat &f, int id = 0 );
@@ -56,8 +54,6 @@ namespace H3D {
     /// Specialized field which sets the dynamic_friction variable in
     /// FrictionSurface when the dynamicFriction field of FrictionalSurface
     /// is changed.
-		///
-    /// routes_in[0] is the dynamicFriction field
     class H3DAPI_API UpdateDynamicFriction: public AutoUpdate< SFFloat > {
     public:
       virtual void setValue( const H3DFloat &f, int id = 0 );

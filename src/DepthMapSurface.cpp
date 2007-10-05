@@ -47,12 +47,14 @@ namespace DepthMapSurfaceInternals {
 
 DepthMapSurface::DepthMapSurface(
                     Inst< UpdateStiffness       > _stiffness,
+                    Inst< UpdateDamping         > _damping,
 									  Inst< UpdateStaticFriction  > _staticFriction,
 									  Inst< UpdateDynamicFriction > _dynamicFriction,
 									  Inst< SFTexture2DNode       > _depthMap,
 									  Inst< SFFloat               > _maxDepth,
                     Inst< SFBool                > _whiteIsOut ):
-  H3DVariableDepthSurface( _stiffness, _staticFriction, _dynamicFriction ),
+  H3DVariableDepthSurface( _stiffness, _damping,
+                           _staticFriction, _dynamicFriction ),
   depthMap( _depthMap ),
   maxDepth( _maxDepth ),
   whiteIsOut( _whiteIsOut ),
@@ -75,6 +77,7 @@ DepthMapSurface::DepthMapSurface(
 
    hapi_surface.reset( new HAPI::DepthMapHAPISurface( 
                           stiffness->getValue() * conversion_to_HAPI,
+                          damping->getValue() * conversion_to_HAPI,
                           staticFriction->getValue(),
                           dynamicFriction->getValue(),
                           temp_image,

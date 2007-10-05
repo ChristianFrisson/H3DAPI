@@ -40,21 +40,25 @@ H3DNodeDatabase H3DVariableDepthSurface::database(
 
 namespace H3DVariableDepthSurfaceInternals {
   FIELDDB_ELEMENT( H3DVariableDepthSurface, stiffness,        INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DVariableDepthSurface, damping,          INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DVariableDepthSurface, staticFriction,   INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DVariableDepthSurface, dynamicFriction,  INPUT_OUTPUT );
 }
 
 H3DVariableDepthSurface::H3DVariableDepthSurface(
                     Inst< UpdateStiffness       > _stiffness,
+                    Inst< UpdateDamping         > _damping,
 									  Inst< UpdateStaticFriction  > _staticFriction,
 									  Inst< UpdateDynamicFriction > _dynamicFriction ):
   stiffness( _stiffness ),
+  damping( _damping ),
   staticFriction( _staticFriction ),
   dynamicFriction( _dynamicFriction ) {
 
   type_name = "H3DVariableDepthSurface";
   database.initFields( this );
   stiffness->setValue( 0.5 );
+  damping->setValue( 0 );
   staticFriction->setValue( 0.1 );
   dynamicFriction->setValue( 0.4 );
 }
@@ -77,6 +81,27 @@ void H3DVariableDepthSurface::UpdateStiffness::update() {
   if( hvds->hapi_surface.get() ) {
     static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
       ->stiffness = value * hvds->conversion_to_HAPI;
+  }
+}
+
+void H3DVariableDepthSurface::
+  UpdateDamping::setValue( const H3DFloat &f, int id ) {
+  SFFloat::setValue( f, id );
+  H3DVariableDepthSurface *hvds = 
+    static_cast< H3DVariableDepthSurface * >( getOwner() );
+  if( hvds->hapi_surface.get() ) {
+    static_cast< HAPI::HAPIVariableDepthSurface * >
+      ( hvds->hapi_surface.get() )->damping = f * hvds->conversion_to_HAPI;
+  }
+}
+
+void H3DVariableDepthSurface::UpdateDamping::update() {
+  SFFloat::update();
+  H3DVariableDepthSurface *hvds = 
+    static_cast< H3DVariableDepthSurface * >( getOwner() );
+  if( hvds->hapi_surface.get() ) {
+    static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
+      ->damping = value * hvds->conversion_to_HAPI;
   }
 }
 

@@ -66,6 +66,7 @@ namespace H3DHapticsDeviceInternals {
   FIELDDB_ELEMENT( H3DHapticsDevice, hapticsRenderer, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, proxyPositions, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, followViewpoint, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DHapticsDevice, deviceVelocity, OUTPUT_ONLY );
 }
 
 
@@ -91,7 +92,8 @@ H3DHapticsDevice::H3DHapticsDevice(
                Inst< SFNode          > _stylus                 ,
                Inst< SFHapticsRendererNode > _hapticsRenderer,
                Inst< MFVec3f         > _proxyPositions,
-               Inst< SFBool          > _followViewpoint ):
+               Inst< SFBool          > _followViewpoint,
+               Inst< SFVec3f         > _deviceVelocity ):
   devicePosition( _devicePosition ),
   deviceOrientation( _deviceOrientation ),
   trackerPosition( _trackerPosition ),
@@ -109,6 +111,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   inputDOF( _inputDOF ),
   outputDOF( _outputDOF ),
   followViewpoint( _followViewpoint ),
+  deviceVelocity( _deviceVelocity ),
   hapticsRate( _hapticsRate ),
   hapticsLoopTime( new SFTime ),
   stylus( _stylus ),
@@ -246,7 +249,8 @@ void H3DHapticsDevice::updateDeviceValues() {
     HAPI::HAPIHapticsDevice::DeviceValues dv = 
       hapi_device->getRawDeviceValues();
     // convert to metres
-    devicePosition->setValue( (Vec3f)dv.position * 1e-3, id);
+    devicePosition->setValue( (Vec3f)dv.position * 1e-3, id );
+    deviceVelocity->setValue( (Vec3f)dv.velocity * 1e-3, id );
     deviceOrientation->setValue( dv.orientation, id);
     force->setValue( (Vec3f)dv.force, id);
     torque->setValue( (Vec3f)dv.torque, id);

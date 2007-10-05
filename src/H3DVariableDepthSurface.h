@@ -45,9 +45,18 @@ namespace H3D {
     /// Specialized field which sets the stiffness variable in
     /// HAPIVariableDepthSurface when the stiffness field of
     /// H3DVariableDepthSurface is changed.
-		///
-    /// routes_in[0] is the stiffness field
     class H3DAPI_API UpdateStiffness: public AutoUpdate< SFFloat > {
+    public:
+      virtual void setValue( const H3DFloat &f, int id = 0 );
+
+    protected:
+      virtual void update();
+    };
+
+    /// Specialized field which sets the damping variable in
+    /// HAPIVariableDepthSurface when the damping field of 
+    /// H3DVariableDepthSurface is changed.
+    class H3DAPI_API UpdateDamping: public AutoUpdate< SFFloat > {
     public:
       virtual void setValue( const H3DFloat &f, int id = 0 );
 
@@ -58,8 +67,6 @@ namespace H3D {
     /// Specialized field which sets the static_friction variable in
     /// HAPIVariableDepthSurface when the staticFriction field of 
     /// H3DVariableDepthSurface is changed.
-		///
-    /// routes_in[0] is the staticFriction field
     class H3DAPI_API UpdateStaticFriction: public AutoUpdate< SFFloat > {
     public:
       virtual void setValue( const H3DFloat &f, int id = 0 );
@@ -71,8 +78,6 @@ namespace H3D {
     /// Specialized field which sets the dynamic_friction variable in
     /// HAPIVariableDepthSurface when the dynamicFriction field of
     /// H3DVariableDepthSurface is changed.
-		///
-    /// routes_in[0] is the dynamicFriction field
     class H3DAPI_API UpdateDynamicFriction: public AutoUpdate< SFFloat > {
     public:
       virtual void setValue( const H3DFloat &f, int id = 0 );
@@ -84,6 +89,7 @@ namespace H3D {
     /// Constructor.
     H3DVariableDepthSurface(
                      Inst< UpdateStiffness       > _stiffness       = 0,
+                     Inst< UpdateDamping         > _damping         = 0,
                      Inst< UpdateStaticFriction  > _staticFriction  = 0,
                      Inst< UpdateDynamicFriction > _dynamicFriction = 0 );
    
@@ -94,6 +100,14 @@ namespace H3D {
     /// <b>Default value: </b> 0.3 \n
     /// <b>Value range: </b> [0-1]
     auto_ptr< UpdateStiffness > stiffness;
+
+    /// The velocity based damping of the surface. Should be a value between
+    /// 0 and 1 where 1 is the maximum damping the haptics device can handle.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> 0 \n
+    /// <b>Value range: </b> [0-1]
+    auto_ptr< UpdateDamping > damping;
 
     /// The friction that is experienced upon initial movement when resting on 
     /// the surface.

@@ -282,7 +282,8 @@ namespace H3D {
                       Inst< SFNode          > _stylus                 = 0,
                       Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
                       Inst< MFVec3f         > _proxyPositions         = 0,
-                      Inst< SFBool          > _followViewpoint        = 0 );
+                      Inst< SFBool          > _followViewpoint        = 0,
+                      Inst< SFVec3f         > _deviceVelocity         = 0 );
 
     /// Destuctor.
     virtual ~H3DHapticsDevice() {
@@ -573,6 +574,13 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_followViewpoint.dot
     auto_ptr< SFBool > followViewpoint;
+
+    /// The velocity
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile H3DHapticsDevice_deviceVelocity.dot
+    auto_ptr< SFVec3f >    deviceVelocity;
     
     /// Node database entry
     static H3DNodeDatabase database;

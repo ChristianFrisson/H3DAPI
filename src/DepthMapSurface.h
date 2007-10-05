@@ -83,10 +83,11 @@ namespace H3D {
 
     /// Constructor.
     DepthMapSurface( Inst< UpdateStiffness       > _stiffness       = 0,
+                     Inst< UpdateDamping         > _damping         = 0,
                      Inst< UpdateStaticFriction  > _staticFriction  = 0,
                      Inst< UpdateDynamicFriction > _dynamicFriction = 0,
                      Inst< SFTexture2DNode       > _depthMap        = 0,
-                     Inst< SFFloat               > _maxDepth  = 0,
+                     Inst< SFFloat               > _maxDepth        = 0,
                      Inst< SFBool                > _whiteIsOut      = 0 );
    
     /// Initialize the variables. Creates the HAPISurfaceObject used for this
