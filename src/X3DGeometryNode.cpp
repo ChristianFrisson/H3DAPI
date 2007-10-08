@@ -208,25 +208,28 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
     // it when the HLDepthBufferShape is destructed.
     ref();
     return new HAPI::HLDepthBufferShape( this,
-		                                     this,
-                                         _surface->getSurface(),
-                                         _transform,
-                                         &X3DGeometryNode::cleanUpFunction,
-                                         touchable_face,
-                                         camera_view,
-                                         adaptive_viewport );
+                                      _transform,
+                                      _surface->getSurface(),
+                                      touchable_face,
+                                      camera_view,
+                                      adaptive_viewport,
+                                      this,
+                                      -1,
+                                      &X3DGeometryNode::cleanUpFunction );
   } else {
     // Increase ref-count to have cleanupfunction decrease
     // it when the HLFeedbackShape is destructed.
     ref();
     return new HAPI::HLFeedbackShape( this,
-		                                  this,
-                                      _surface->getSurface(),
                                       _transform,
-                                      &X3DGeometryNode::cleanUpFunction,
-                                      _nr_vertices,
+                                      _surface->getSurface(),
                                       touchable_face,
-                                      camera_view );
+                                      camera_view,
+									  adaptive_viewport,
+                                      _nr_vertices,
+                                      this,
+                                      -1,
+                                      &X3DGeometryNode::cleanUpFunction );
   }
 }
 
@@ -543,22 +546,23 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticTriangleSet is destructed.
     ref();
     HAPI::HapticTriangleSet * tri_set = 
-      new HAPI::HapticTriangleSet( tris ,
-      this,
-      ti.getCurrentSurface()->getSurface(),
-      Matrix4f( 1e3, 0, 0, 0,
-                0, 1e3, 0, 0,
-                0, 0, 1e3, 0,
-                0, 0, 0, 1 ) *
-      (ti.getAccForwardMatrix() *
-      Matrix4f( 1e-3, 0, 0, 0,
-                0, 1e-3, 0, 0,
-                0, 0, 1e-3, 0,
-                0, 0, 0, 1 )),
-      &X3DGeometryNode::cleanUpFunction,
-      -1,
-      touchable_face );
-
+      new HAPI::HapticTriangleSet(  Matrix4f( 1e3, 0, 0, 0,
+                                              0, 1e3, 0, 0,
+                                              0, 0, 1e3, 0,
+                                              0, 0, 0, 1 ) *
+                                    (ti.getAccForwardMatrix() *
+                                     Matrix4f( 1e-3, 0, 0, 0,
+                                               0, 1e-3, 0, 0,
+                                               0, 0, 1e-3, 0,
+                                               0, 0, 0, 1 )),
+                                    tris ,
+                                    ti.getCurrentSurface()->getSurface(),
+									HAPI::HapticTriangleSet::NOT_CONVEX,
+                                    touchable_face,
+                                    this,
+                                    -1,
+                                    &X3DGeometryNode::cleanUpFunction
+                                    );
 
 #ifdef HAVE_OPENHAPTICS
     if( openhaptics_options ) {
@@ -600,21 +604,21 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticLineSet is destructed.
     ref();
     HAPI::HapticLineSet * lin_set = 
-      new HAPI::HapticLineSet( lines ,
-      this,
-      ti.getCurrentSurface()->getSurface(),
-      Matrix4f( 1e3, 0, 0, 0,
-                0, 1e3, 0, 0,
-                0, 0, 1e3, 0,
-                0, 0, 0, 1 ) *
-      (ti.getAccForwardMatrix() *
-      Matrix4f( 1e-3, 0, 0, 0,
-                0, 1e-3, 0, 0,
-                0, 0, 1e-3, 0,
-                0, 0, 0, 1 )),
-      &X3DGeometryNode::cleanUpFunction,
-      -1,
-      touchable_face );
+      new HAPI::HapticLineSet( Matrix4f( 1e3, 0, 0, 0,
+                                         0, 1e3, 0, 0,
+                                         0, 0, 1e3, 0,
+                                         0, 0, 0, 1 ) *
+                               (ti.getAccForwardMatrix() *
+                                Matrix4f( 1e-3, 0, 0, 0,
+                                          0, 1e-3, 0, 0,
+                                          0, 0, 1e-3, 0,
+                                          0, 0, 0, 1 )),
+                               lines,
+                               ti.getCurrentSurface()->getSurface(),
+                               touchable_face,
+                               this,
+                               -1,
+                               &X3DGeometryNode::cleanUpFunction );
 
 
 #ifdef HAVE_OPENHAPTICS
@@ -657,21 +661,22 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticPointSet is destructed.
     ref();
     HAPI::HapticPointSet * pt_set = 
-      new HAPI::HapticPointSet( points ,
-      this,
-      ti.getCurrentSurface()->getSurface(),
-      Matrix4f( 1e3, 0, 0, 0,
-                0, 1e3, 0, 0,
-                0, 0, 1e3, 0,
-                0, 0, 0, 1 ) *
-      (ti.getAccForwardMatrix() *
-      Matrix4f( 1e-3, 0, 0, 0,
-                0, 1e-3, 0, 0,
-                0, 0, 1e-3, 0,
-                0, 0, 0, 1 )),
-      &X3DGeometryNode::cleanUpFunction,
-      -1,
-      touchable_face);
+      new HAPI::HapticPointSet(  Matrix4f( 1e3, 0, 0, 0,
+                                           0, 1e3, 0, 0,
+                                           0, 0, 1e3, 0,
+                                           0, 0, 0, 1 ) *
+                                 (ti.getAccForwardMatrix() *
+                                  Matrix4f( 1e-3, 0, 0, 0,
+                                            0, 1e-3, 0, 0,
+                                            0, 0, 1e-3, 0,
+                                            0, 0, 0, 1 )),
+                                 points ,
+                                 ti.getCurrentSurface()->getSurface(),
+                                 touchable_face,
+                                 this,
+                                 -1,
+                                 &X3DGeometryNode::cleanUpFunction 
+                                 );
 
 
 #ifdef HAVE_OPENHAPTICS

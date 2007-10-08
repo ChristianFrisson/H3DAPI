@@ -148,20 +148,10 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                   local_proxy + movement * lookahead_factor,
                   tris );
               HapticTriangleSet *haptic_triangle_set =
-                new HapticTriangleSet( tris, 0, 0, Matrix4() );
+                new HapticTriangleSet( tris, NULL );
               ti.addForceEffect( i,
-                new HapticShapeConstraint( Matrix4f( 1e3f, 0.0f, 0.0f, 0.0f,
-                                                     0.0f, 1e3f, 0.0f, 0.0f,
-                                                     0.0f, 0.0f, 1e3f, 0.0f,
-                                                     0.0f, 0.0f, 0.0f, 1.0f ) *
-                                          (ti.getAccForwardMatrix() *
-                                           Matrix4f( 1e-3f, 0.0f, 0.0f, 0.0f,
-                                                     0.0f, 1e-3f, 0.0f, 0.0f,
-                                                     0.0f, 0.0f, 1e-3f, 0.0f,
-                                                    0.0f, 0.0f, 0.0f, 1.0f ) ),
-                                           false,
-                                           haptic_triangle_set,
-                                         springConstant->getValue() / 1000 ) );
+                new HapticShapeConstraint( haptic_triangle_set,
+                                           springConstant->getValue() / 1000 ) );
             }
           }
         }

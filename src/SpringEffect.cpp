@@ -65,7 +65,7 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
   escapeDistance( _escapeDistance ),
   active( _active ),
   deviceIndex( _deviceIndex ),
-  haptic_spring( new HAPI::HapticSpring( Matrix4f(), 1 ) ) {
+  haptic_spring( new HAPI::HapticSpring( true ) ) {
   
   type_name = "SpringEffect";
 
@@ -104,17 +104,8 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
           active->setValue( false, id );
           force->setValue( Vec3f( 0, 0, 0 ) );
         } else {
-          haptic_spring->setPosition( spring_pos * 1000 );
+          haptic_spring->setPosition( (ti.getAccForwardMatrix() * spring_pos )* 1000 );
           haptic_spring->setSpringConstant( springConstant->getValue() / 1000 );
-          haptic_spring->transform = Matrix4f( 1e3, 0, 0, 0,
-                                                   0, 1e3, 0, 0,
-                                                   0, 0, 1e3, 0,
-                                                   0, 0, 0, 1 ) *
-                                     (ti.getAccForwardMatrix() *
-                                     Matrix4f( 1e-3, 0, 0, 0,
-                                               0, 1e-3, 0, 0,
-                                               0, 0, 1e-3, 0,
-                                               0, 0, 0, 1 ));
           ti.addForceEffect( device_index, haptic_spring.get() );
           Vec3f f = (Vec3f) haptic_spring->getLatestForce();
           force->setValue( f );
@@ -122,17 +113,8 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
       } else {
         if( distance <= startDistance->getValue() ) {
           active->setValue( true, id );
-          haptic_spring->setPosition( spring_pos * 1000 );
+          haptic_spring->setPosition( (ti.getAccForwardMatrix() * spring_pos ) * 1000 );
           haptic_spring->setSpringConstant( springConstant->getValue() / 1000 );
-          haptic_spring->transform = Matrix4f( 1e3, 0, 0, 0,
-                                                   0, 1e3, 0, 0,
-                                                   0, 0, 1e3, 0,
-                                                   0, 0, 0, 1 ) *
-                                     (ti.getAccForwardMatrix() *
-                                     Matrix4f( 1e-3, 0, 0, 0,
-                                               0, 1e-3, 0, 0,
-                                               0, 0, 1e-3, 0,
-                                               0, 0, 0, 1 ));
           ti.addForceEffect( device_index, haptic_spring.get() );
         }
       }

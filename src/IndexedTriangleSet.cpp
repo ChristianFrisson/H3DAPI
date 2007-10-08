@@ -30,9 +30,7 @@
 
 #include <IndexedTriangleSet.h>
 #include <Normal.h>
-#include <HapticTriangleTree.h>
 #include <H3DHapticsDevice.h>
-#include <HapticTriangle.h>
 #include <DeviceInfo.h>
 #include <H3DSurfaceNode.h>
 

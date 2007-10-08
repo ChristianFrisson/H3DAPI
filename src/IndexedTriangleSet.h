@@ -36,7 +36,7 @@
 #include <CoordBoundField.h>
 #include <MFInt32.h>
 #include <SFInt32.h>
-#include <HapticTriangleTree.h>
+
 
 namespace H3D {
 

@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Sphere.h>
-#include <HapticSphere.h>
 #include <H3DSurfaceNode.h>
 
 #include <HapticsOptions.h>
@@ -39,6 +38,9 @@
 #include <X3DPointingDeviceSensorNode.h>
 #include <HapticsRenderers.h>
 #include <H3DHapticsDevice.h>
+
+// HAPI includes
+#include <HapticPrimitive.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <OpenHapticsRenderer.h>
@@ -219,23 +221,25 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
             << "(in active HapticsOptions node\" )" << endl;
         }
       }
-
-      HAPI::HapticSphere * haptic_sphere = new HAPI::HapticSphere(
-                                  radius->getValue() * 1000,
-                                  this,
-                                  ti.getCurrentSurface()->getSurface(),
-                                  Matrix4f( 1e3, 0, 0, 0,
-                                            0, 1e3, 0, 0,
-                                            0, 0, 1e3, 0,
-                                            0, 0, 0, 1 ) *
-                                  (ti.getAccForwardMatrix() *
-                                  Matrix4f( 1e-3, 0, 0, 0,
-                                            0, 1e-3, 0, 0,
-                                            0, 0, 1e-3, 0,
-                                            0, 0, 0, 1 ) ),
-                                  &X3DGeometryNode::cleanUpFunction,
-                                  -1,
-                                  touchable_face );
+      
+      HAPI::HapticPrimitive * haptic_sphere = 
+        new HAPI::HapticPrimitive(
+                Matrix4f( 1e3, 0, 0, 0,
+                         0, 1e3, 0, 0,
+                         0, 0, 1e3, 0,
+                         0, 0, 0, 1 ) *
+               (ti.getAccForwardMatrix() *
+                Matrix4f( 1e-3, 0, 0, 0,
+                          0, 1e-3, 0, 0,
+                          0, 0, 1e-3, 0,
+                          0, 0, 0, 1 ) ),
+                new HAPI::Collision::Sphere( Vec3f( 0, 0, 0 ),
+                                             radius->getValue() * 1000 ),
+                ti.getCurrentSurface()->getSurface(),
+                touchable_face,
+                this,
+                -1,
+                &X3DGeometryNode::cleanUpFunction );
       ref();
 
 #ifdef HAVE_OPENHAPTICS
