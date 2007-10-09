@@ -40,7 +40,7 @@
 #include <H3DHapticsDevice.h>
 
 // HAPI includes
-#include <HapticPrimitive.h>
+#include <HAPI/HapticPrimitive.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <OpenHapticsRenderer.h>

@@ -34,7 +34,7 @@
 #include <Node.h>
 
 // HAPI includes
-#include <HAPIHapticsRenderer.h>
+#include <HAPI/HAPIHapticsRenderer.h>
 
 namespace H3D {
 

@@ -30,7 +30,7 @@
 #define __FORCEFIELD_H__
 
 #include <H3DForceEffect.h> 
-#include <HapticForceField.h>
+#include <HAPI/HapticForceField.h>
 #include <SFVec3f.h>
 
 namespace H3D {

@@ -29,7 +29,7 @@
 
 
 #include <PhantomDevice.h>
-#include <PhantomHapticsDevice.h>
+#include <HAPI/PhantomHapticsDevice.h>
 
 using namespace H3D;
 

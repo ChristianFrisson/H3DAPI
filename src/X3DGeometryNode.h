@@ -41,8 +41,8 @@
 #include <OpenHapticsOptions.h>
 
 // HAPI includes
-#include <HAPIGLShape.h>
-#include <HapticTriangleSet.h>
+#include <HAPI/HAPIGLShape.h>
+#include <HAPI/HapticTriangleSet.h>
 
 // H3DUtil includes
 #include <AutoPtrVector.h>

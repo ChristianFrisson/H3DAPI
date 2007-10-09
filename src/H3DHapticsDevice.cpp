@@ -28,13 +28,15 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3DHapticsDevice.h>
-#include <PhantomHapticsDevice.h>
 #include <X3DGeometryNode.h>
 #include <DeviceInfo.h>
-#include <OpenHapticsRenderer.h>
-#include <GodObjectRenderer.h>
-#include <HAPIHapticsRenderer.h>
 #include <X3DViewpointNode.h>
+
+#include <OpenHapticsRenderer.h>
+#include <HAPI/GodObjectRenderer.h>
+#include <HAPI/PhantomHapticsDevice.h>
+#include <HAPI/HAPIHapticsRenderer.h>
+
 using namespace H3D;
 
 H3DNodeDatabase H3DHapticsDevice::database( "H3DHapticsDevice", 
@@ -249,8 +251,7 @@ void H3DHapticsDevice::updateDeviceValues() {
     HAPI::HAPIHapticsDevice::DeviceValues dv = 
       hapi_device->getRawDeviceValues();
     // convert to metres
-    devicePosition->setValue( (Vec3f)dv.position * 1e-3, id );
-    deviceVelocity->setValue( (Vec3f)dv.velocity * 1e-3, id );
+    devicePosition->setValue( (Vec3f)dv.position * 1e-3, id);
     deviceOrientation->setValue( dv.orientation, id);
     force->setValue( (Vec3f)dv.force, id);
     torque->setValue( (Vec3f)dv.torque, id);

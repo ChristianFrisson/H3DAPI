@@ -32,21 +32,19 @@
 #include <H3DSurfaceNode.h>
 #include <GlobalSettings.h>
 #include <GeometryBoundTreeOptions.h>
-
+#include <X3DPointingDeviceSensorNode.h>
 #include <HapticsOptions.h>
-#include <HAPIHapticShape.h>
 #include <DeviceInfo.h>
-#include <HapticTriangleSet.h>
+#include <DebugOptions.h>
+
 #include <HLDepthBufferShape.h>
 #include <HLFeedbackShape.h>
 
-#include <DebugOptions.h>
-
-#include <FeedbackBufferCollector.h>
-
-#include <X3DPointingDeviceSensorNode.h>
-#include <HapticLineSet.h>
-#include <HapticPointSet.h>
+#include <HAPI/HAPIHapticShape.h>
+#include <HAPI/FeedbackBufferCollector.h>
+#include <HAPI/HapticTriangleSet.h>
+#include <HAPI/HapticLineSet.h>
+#include <HAPI/HapticPointSet.h>
 
 using namespace H3D;
 

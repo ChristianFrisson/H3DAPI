@@ -46,9 +46,9 @@
 #include <Threads.h>
 
 // HAPI includes
-#include <HAPIHapticShape.h>
-#include <HAPIHapticsDevice.h>
-#include <HAPIForceEffect.h>
+#include <HAPI/HAPIHapticShape.h>
+#include <HAPI/HAPIHapticsDevice.h>
+#include <HAPI/HAPIForceEffect.h>
 
 
 namespace H3D {

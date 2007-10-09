@@ -30,7 +30,7 @@
 
 #include <ForceDimensionDevice.h>
 #ifdef HAVE_DHDAPI
-#include <ForceDimensionHapticsDevice.h>
+#include <HAPI/ForceDimensionHapticsDevice.h>
 #endif
 
 using namespace H3D;

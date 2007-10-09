@@ -30,7 +30,7 @@
 #define __SPRINGEFFECT_H__
 
 #include <H3DForceEffect.h> 
-#include <HapticSpring.h>
+#include <HAPI/HapticSpring.h>
 #include <SFVec3f.h>
 #include <SFBool.h>
 #include <SFFloat.h>

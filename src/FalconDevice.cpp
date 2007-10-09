@@ -29,7 +29,7 @@
 
 
 #include <FalconDevice.h>
-#include <FalconHapticsDevice.h>
+#include <HAPI/FalconHapticsDevice.h>
 
 using namespace H3D;
 

@@ -30,8 +30,8 @@
 #define __TRAVERSEINFO_H__
 
 #include <H3DTypes.h>
-#include <HAPIForceEffect.h>
-#include <HAPIHapticShape.h>
+#include <HAPI/HAPIForceEffect.h>
+#include <HAPI/HAPIHapticShape.h>
 #include <AutoRefVector.h>
 #include <sstream>
 #include <stack>

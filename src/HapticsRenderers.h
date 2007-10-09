@@ -38,8 +38,8 @@
 
 // HAPI includes
 #include <OpenHapticsRenderer.h>
-#include <RuspiniRenderer.h>
-#include <GodObjectRenderer.h>
+#include <HAPI/RuspiniRenderer.h>
+#include <HAPI/GodObjectRenderer.h>
 #ifdef HAVE_CHAI3D
 #include <Chai3DRenderer.h>
 #endif

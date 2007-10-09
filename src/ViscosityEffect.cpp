@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <ViscosityEffect.h> 
 #include <H3DHapticsDevice.h>
-#include <HapticViscosity.h>
+#include <HAPI/HapticViscosity.h>
 
 using namespace H3D;
 

@@ -32,7 +32,7 @@
 #include "H3DHapticsDevice.h"
 #include "ThreadSafeFields.h"
 
-#include <HAPIHapticsDevice.h>
+#include <HAPI/HAPIHapticsDevice.h>
 
 namespace H3D {
   /// \ingroup AbstractNodes  

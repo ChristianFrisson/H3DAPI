@@ -34,7 +34,7 @@
 #include <SFString.h>
 
 //HAPI includes
-#include <ParsedFunction.h>
+#include <HAPI/ParsedFunction.h>
 
 #ifdef HAVE_FPARSER
 

@@ -31,7 +31,7 @@
 
 #include <H3DApi.h>
 #include <Node.h>
-#include <HAPISurfaceObject.h>
+#include <HAPI/HAPISurfaceObject.h>
 
 namespace H3D {
 

@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include "DepthMapSurface.h"
-#include <DepthMapHAPISurface.h>
+#include <HAPI/DepthMapHAPISurface.h>
 
 using namespace H3D;
 

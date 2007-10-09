@@ -29,7 +29,7 @@
 
 
 #include <AnyDevice.h> 
-#include <AnyHapticsDevice.h>
+#include <HAPI/AnyHapticsDevice.h>
 
 using namespace H3D;
 
