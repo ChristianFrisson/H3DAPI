@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include "DepthMapSurface.h"
-#include <HAPI/DepthMapHAPISurface.h>
+#include <HAPI/DepthMapSurface.h>
 
 using namespace H3D;
 
@@ -75,7 +75,7 @@ DepthMapSurface::DepthMapSurface(
    if( height_map )
      temp_image = height_map->image->getValue();
 
-   hapi_surface.reset( new HAPI::DepthMapHAPISurface( 
+   hapi_surface.reset( new HAPI::DepthMapSurface( 
                           stiffness->getValue() * conversion_to_HAPI,
                           damping->getValue() * conversion_to_HAPI,
                           staticFriction->getValue(),
@@ -91,8 +91,8 @@ DepthMapSurface::DepthMapSurface(
      static_cast< X3DTexture2DNode::SFImage * >(routes_in[0])->getValue();
    DepthMapSurface *hms = 
      static_cast< DepthMapSurface * >( getOwner() );
-   HAPI::DepthMapHAPISurface * hapi_surface = 
-     static_cast< HAPI::DepthMapHAPISurface * >( hms->hapi_surface.get() );
+   HAPI::DepthMapSurface * hapi_surface = 
+     static_cast< HAPI::DepthMapSurface * >( hms->hapi_surface.get() );
    if( hapi_surface )
      hapi_surface->setImage( image );
  }
@@ -111,8 +111,8 @@ DepthMapSurface::DepthMapSurface(
    DepthMapSurface *o = static_cast< DepthMapSurface* >( owner );
    if( c ) {
      c->image->unroute( o->setImagePtr );
-     HAPI::DepthMapHAPISurface * hapi_surface = 
-       static_cast< HAPI::DepthMapHAPISurface * >( o->hapi_surface.get() );
+     HAPI::DepthMapSurface * hapi_surface = 
+       static_cast< HAPI::DepthMapSurface * >( o->hapi_surface.get() );
      if( hapi_surface )
        hapi_surface->setImage( 0 );
    }
