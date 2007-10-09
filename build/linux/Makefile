@@ -48,7 +48,7 @@ INCLUDES  += -I$(H3DUTIL_HOME)/src
 
 #HAPI
 CXXLIBS   += -lHAPI
-INCLUDES  += -I$(HAPI_HOME)/src
+INCLUDES  += -I$(HAPI_HOME)/include
 INCLUDES  += -I$(HAPI_HOME)/OpenHapticsRenderer
 
 #libcurl

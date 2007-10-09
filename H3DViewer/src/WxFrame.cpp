@@ -69,7 +69,7 @@
 #include <OpenHapticsOptions.h>
 
 #include <HapticsRenderers.h>
-#include <HAPIHapticsRenderer.h>
+#include <HAPI/HAPIHapticsRenderer.h>
 
 #include <H3DNavigation.h>
 
