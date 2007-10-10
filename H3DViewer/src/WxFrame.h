@@ -48,7 +48,7 @@
 #include <DeviceInfo.h>
 #include <INIFile.h>
 #include <ResourceResolver.h>
-#include <Console.h>
+#include <H3DUtil/Console.h>
 #include <NavigationInfo.h>
 #include <X3D.h>
 #include "ConsoleDialog.h"

@@ -34,7 +34,7 @@
 #ifdef WIN32
 #include <Windows.h>
 #endif
-#include <TimeStamp.h>
+#include <H3DUtil/TimeStamp.h>
 using namespace std;
 
 namespace H3D {

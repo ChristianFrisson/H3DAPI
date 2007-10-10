@@ -31,7 +31,7 @@
 
 #include <string>
 #include <Field.h>
-#include <Exception.h>
+#include <H3DUtil/Exception.h>
 #include <TypedFieldTypesTmpl.h>
 #include <TypedFieldAnyTmpl.h>
 

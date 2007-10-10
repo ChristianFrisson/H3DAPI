@@ -35,7 +35,7 @@
 #include <list>
 using namespace std;
 #include <URNResolver.h>
-#include <AutoPtrVector.h>
+#include <H3DUtil/AutoPtrVector.h>
 
 
 

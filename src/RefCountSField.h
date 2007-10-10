@@ -28,8 +28,8 @@
 #ifndef __REFCOUNTSFIELD_H__
 #define __REFCOUNTSFIELD_H__
 
-#include <AutoRef.h>
-#include <RefCountedClass.h>
+#include <H3DUtil/AutoRef.h>
+#include <H3DUtil/RefCountedClass.h>
 #include <Field.h>
 
 namespace H3D {

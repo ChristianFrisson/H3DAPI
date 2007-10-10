@@ -31,7 +31,7 @@
 
 #include <assert.h>
 #include <PeriodicUpdate.h>
-#include <Threads.h>
+#include <H3DUtil/Threads.h>
 
 namespace H3D {
   

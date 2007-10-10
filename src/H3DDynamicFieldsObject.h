@@ -30,7 +30,7 @@
 #define __H3DDYNAMICFIELDSOBJECT_H__
 
 #include <H3DNodeDatabase.h>
-#include <AutoPtrVector.h>
+#include <H3DUtil/AutoPtrVector.h>
 #include <Node.h>
 
 namespace H3D {

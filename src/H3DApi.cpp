@@ -29,7 +29,7 @@
 #include <FreeImage.h>
 #endif
 #include <xercesc/util/PlatformUtils.hpp>
-#include <Exception.h>
+#include <H3DUtil/Exception.h>
 #ifdef LINUX
 #include <fontconfig/fontconfig.h>
 #endif

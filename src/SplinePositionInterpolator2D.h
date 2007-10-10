@@ -33,7 +33,7 @@
 #include <SFVec2f.h>
 #include <MFVec2f.h>
 #include <SFBool.h>
-#include <H3DMath.h>
+#include <H3DUtil/H3DMath.h>
 
 
 namespace H3D {

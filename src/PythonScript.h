@@ -29,7 +29,7 @@
 #ifndef __PYTHONSCRIPT_H__
 #define __PYTHONSCRIPT_H__
 
-#include <Exception.h>
+#include <H3DUtil/Exception.h>
 #include <H3DScriptNode.h>
 #include <MFNode.h>
 #include <SFString.h>

@@ -33,7 +33,7 @@
 #include <vector>
 #include <H3DApi.h>
 #include <H3DTypes.h>
-#include <TimeStamp.h>
+#include <H3DUtil/TimeStamp.h>
 #include <X3DTypes.h>
 
 using namespace std;

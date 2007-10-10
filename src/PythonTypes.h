@@ -30,7 +30,7 @@
 #define __PYTHONTYPES_H__
 
 
-#include <Exception.h>
+#include <H3DUtil/Exception.h>
 #include <X3DTypes.h>
 #include <X3DFieldConversion.h>
 #include <Node.h>

@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <URNResolver.h>
-#include <Console.h>
+#include <H3DUtil/Console.h>
 
 using namespace H3D;
 using namespace H3DUtil;

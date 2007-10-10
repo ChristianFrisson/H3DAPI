@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Scene.h>
-#include <TimeStamp.h>
+#include <H3DUtil/TimeStamp.h>
 #include <DeviceInfo.h>
 #include <GL/glew.h>
 #ifdef MACOSX

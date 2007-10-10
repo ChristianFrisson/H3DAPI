@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <ImportLibrary.h>
-#include <DynamicLibrary.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 using namespace H3D;
 

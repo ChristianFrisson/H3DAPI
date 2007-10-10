@@ -45,7 +45,7 @@
 #include <HAPI/HapticTriangleSet.h>
 
 // H3DUtil includes
-#include <AutoPtrVector.h>
+#include <H3DUtil/AutoPtrVector.h>
 
 namespace H3D {
 

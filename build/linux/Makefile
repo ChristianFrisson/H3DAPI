@@ -44,7 +44,7 @@ LDFLAGS    =
 
 #H3DUtil
 CXXLIBS   += -lH3DUtil
-INCLUDES  += -I$(H3DUTIL_HOME)/src
+INCLUDES  += -I$(H3DUTIL_HOME)/include
 
 #HAPI
 CXXLIBS   += -lHAPI

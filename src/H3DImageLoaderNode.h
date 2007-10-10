@@ -30,7 +30,7 @@
 #ifndef __H3DIMAGELOADERNODE_H__
 #define __H3DIMAGELOADERNODE_H__
 
-#include <Image.h>
+#include <H3DUtil/Image.h>
 #include <Node.h>
 #include <list>
 

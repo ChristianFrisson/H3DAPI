@@ -31,7 +31,7 @@
 #define __H3DVIDEOCLIPDECODERNODE_H__
 
 #include <Node.h>
-#include <Image.h>
+#include <H3DUtil/Image.h>
 #include <list>
 
 namespace H3D {

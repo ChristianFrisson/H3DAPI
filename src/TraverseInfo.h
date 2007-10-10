@@ -32,7 +32,7 @@
 #include <H3DTypes.h>
 #include <HAPI/HAPIForceEffect.h>
 #include <HAPI/HAPIHapticShape.h>
-#include <AutoRefVector.h>
+#include <H3DUtil/AutoRefVector.h>
 #include <sstream>
 #include <stack>
 #include <map>

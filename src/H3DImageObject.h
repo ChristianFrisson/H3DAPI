@@ -31,7 +31,7 @@
 #define __H3DIMAGEOBJECT_H__
 
 #include <X3DAppearanceChildNode.h>
-#include <Image.h>
+#include <H3DUtil/Image.h>
 #include "GL/glew.h"
 
 namespace H3D {

@@ -43,7 +43,7 @@
 #include <H3DHapticsRendererNode.h>
 
 // H3DUtil includes
-#include <Threads.h>
+#include <H3DUtil/Threads.h>
 
 // HAPI includes
 #include <HAPI/HAPIHapticShape.h>

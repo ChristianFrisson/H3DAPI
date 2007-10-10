@@ -28,10 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <AutoPtrVector.h>
 #include <H3DWindowNode.h>
 #include <Viewpoint.h>
-#include <TimeStamp.h>
 #include <Bound.h>
 #include <H3DBoundedObject.h>
 #include <GlobalSettings.h>
@@ -39,7 +37,6 @@
 #include <X3DShapeNode.h>
 #include <DeviceInfo.h>
 #include <H3DDisplayListObject.h>
-#include <Exception.h>
 #include <X3DBackgroundNode.h>
 #include <MatrixTransform.h>
 #include <NavigationInfo.h>
@@ -49,14 +46,18 @@
 #include <X3DShapeNode.h>
 #include <Scene.h>
 #include <DebugOptions.h>
-#include <GL/glew.h>
-
 #include <X3DKeyDeviceSensorNode.h>
 #include <MouseSensor.h>
-
 #include <H3DNavigation.h>
-
 #include <X3DLightNode.h>
+
+#include <H3DUtil/TimeStamp.h>
+#include <H3DUtil/Exception.h>
+#include <H3DUtil/AutoPtrVector.h>
+
+#include <GL/glew.h>
+
+
 
 using namespace H3D;
 

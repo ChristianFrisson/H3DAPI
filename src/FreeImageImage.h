@@ -30,8 +30,8 @@
 #define __FREEIMAGEIMAGE_H__
 
 #include <H3DApi.h>
-#include <Image.h>
-#include <Exception.h>
+#include <H3DUtil/Image.h>
+#include <H3DUtil/Exception.h>
 
 #ifdef HAVE_FREEIMAGE
 #if defined(_MSC_VER) || defined(__BORLANDC__)

@@ -27,7 +27,7 @@
 #ifndef __H3DTYPES_H__
 #define __H3DTYPES_H__
 
-#include <LinAlgTypes.h>
+#include <H3DUtil/LinAlgTypes.h>
 
 namespace H3D {
   /*

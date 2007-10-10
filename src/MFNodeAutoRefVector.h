@@ -27,7 +27,7 @@
 #ifndef __MFNODEAUTOREFVECTOR_H__
 #define __MFNODEAUTOREFVECTOR_H__
 
-#include <AutoRefVector.h>
+#include <H3DUtil/AutoRefVector.h>
 
 namespace H3D {
 

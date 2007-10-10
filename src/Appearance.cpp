@@ -35,10 +35,11 @@
 #include <X3DMaterialNode.h>
 #include <LineProperties.h>
 #include <MultiTexture.h>
-#include <Console.h>
 #include <X3DShapeNode.h>
 #include <X3DTexture2DNode.h>
 #include <X3DTexture3DNode.h>
+
+#include <H3DUtil/Console.h>
 
 using namespace H3D;
 

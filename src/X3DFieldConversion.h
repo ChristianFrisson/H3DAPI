@@ -11,7 +11,7 @@
 #define __X3DFIELDCONVERSION_H__
 
 #include <sstream>
-#include <Exception.h>
+#include <H3DUtil/Exception.h>
 #include <H3DTypes.h>
 #include <PixelImage.h>
 

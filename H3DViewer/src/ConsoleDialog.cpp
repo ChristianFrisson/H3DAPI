@@ -33,7 +33,7 @@
 // ---------------------------------------------------------------------------
 
 #include "ConsoleDialog.h"
-#include <Console.h>
+#include <H3DUtil/Console.h>
 
 using namespace std;
 

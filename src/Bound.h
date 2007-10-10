@@ -32,11 +32,12 @@
 
 #include <H3DApi.h>
 #include <FieldTemplates.h>
-#include <RefCountedClass.h>
 #include <RefCountSField.h>
-#include <Exception.h>
 #include <SFVec3f.h>
 #include <SFMatrix4f.h>
+
+#include <H3DUtil/RefCountedClass.h>
+#include <H3DUtil/Exception.h>
 
 namespace H3D {
   /// The Bound class is the abstract base class for all classes specifying

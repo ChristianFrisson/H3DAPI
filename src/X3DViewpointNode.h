@@ -31,7 +31,7 @@
 
 #include <X3DBindableNode.h>
 #include <FieldTemplates.h>
-#include <Exception.h>
+#include <H3DUtil/Exception.h>
 #include <SFVec3f.h>
 #include <SFString.h>
 #include <SFFloat.h>

@@ -9,7 +9,7 @@
 #ifndef __DEFNODES_H__
 #define __DEFNODES_H__
 
-#include <Exception.h>
+#include <H3DUtil/Exception.h>
 #include <Node.h>
 #include <map>
 #include <string>

@@ -31,9 +31,9 @@
 
 #include <Instantiate.h>
 #include <H3DNodeDatabase.h>
-#include <RefCountedClass.h>
 #include <TraverseInfo.h>
-#include <Console.h>
+#include <H3DUtil/RefCountedClass.h>
+#include <H3DUtil/Console.h>
 
 //#include "FieldTemplates.h"
 

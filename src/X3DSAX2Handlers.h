@@ -34,12 +34,13 @@
 #include <list>
 #include <Field.h>
 #include <Node.h>
-#include <Exception.h>
 #include <DEFNodes.h>
-#include <AutoRef.h>
 #include <ProtoDeclaration.h>
-#include <AutoPtrVector.h>
 #include <X3D.h>
+
+#include <H3DUtil/Exception.h>
+#include <H3DUtil/AutoRef.h>
+#include <H3DUtil/AutoPtrVector.h>
 
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>

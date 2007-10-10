@@ -60,7 +60,7 @@
 #include <DeviceInfo.h>
 #include <INIFile.h>
 #include <ResourceResolver.h>
-#include <Console.h>
+#include <H3DUtil/Console.h>
 
 #include <GraphicsCachingOptions.h>
 #include <DebugOptions.h>

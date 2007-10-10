@@ -31,7 +31,7 @@
 
 #include <H3DApi.h>
 #include <H3DTypes.h>
-#include <Image.h>
+#include <H3DUtil/Image.h>
 #include <vector>
 
 namespace H3D {

@@ -18,7 +18,7 @@
 #include <H3DApi.h>
 #include <Group.h>
 #include <DEFNodes.h>
-#include <AutoRef.h>
+#include <H3DUtil/AutoRef.h>
 #include <PrototypeVector.h>
 
 #include <xercesc/sax2/XMLReaderFactory.hpp>

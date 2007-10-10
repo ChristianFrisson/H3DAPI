@@ -138,7 +138,7 @@ void SplinePositionInterpolator::SFValue::update() {
           T.push_back(key_velocity[i]*(D/a.length()) );
         }
       }
-      specified = "true";
+      specified = true;
     }
 
 

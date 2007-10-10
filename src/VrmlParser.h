@@ -14,7 +14,7 @@
 #include <H3DApi.h>
 #include <Group.h>
 #include <DEFNodes.h>
-#include <AutoRef.h>
+#include <H3DUtil/AutoRef.h>
 #include <ProtoDeclaration.h>
 #include <X3D.h>
 

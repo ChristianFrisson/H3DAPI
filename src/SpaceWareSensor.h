@@ -36,7 +36,7 @@
 #include <SFFloat.h>
 #include <SFInt32.h>
 #include <SFRotation.h>
-#include <Threads.h>
+#include <H3DUtil/Threads.h>
 
 namespace H3D {
 

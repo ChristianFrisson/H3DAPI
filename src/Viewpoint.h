@@ -31,12 +31,12 @@
 
 #include <X3DViewpointNode.h>
 #include <FieldTemplates.h>
-#include <Exception.h>
 #include <SFVec3f.h>
 #include <SFString.h>
 #include <SFFloat.h>
 #include <SFRotation.h>
 #include <SFMatrix4f.h>
+#include <H3DUtil/Exception.h>
 
 namespace H3D {
   /// \ingroup X3DNodes

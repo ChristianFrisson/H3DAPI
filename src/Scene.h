@@ -33,7 +33,7 @@
 #include <H3DWindowNode.h>
 
 // HAPI includes
-#include <Threads.h>
+#include <H3DUtil/Threads.h>
 
 namespace H3D {
 
