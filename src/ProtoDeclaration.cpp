@@ -28,14 +28,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <ProtoDeclaration.h>
-#include <X3D.h>
-#include <X3DTypeFunctions.h>
-#include <X3DFieldConversion.h>
-#include <X3DSAX2Handlers.h>
-#include <IStreamInputSource.h>
-#include <VrmlDriver.h>
-#include <VrmlParser.h>
+#include <H3D/ProtoDeclaration.h>
+#include <H3D/X3D.h>
+#include <H3D/X3DTypeFunctions.h>
+#include <H3D/X3DFieldConversion.h>
+#include <H3D/X3DSAX2Handlers.h>
+#include <H3D/IStreamInputSource.h>
+#include <H3D/VrmlDriver.h>
+#include <H3D/VrmlParser.h>
 
 
 using namespace H3D;

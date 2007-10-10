@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <OrientationInterpolator.h>
+#include <H3D/OrientationInterpolator.h>
 
 using namespace H3D;
 

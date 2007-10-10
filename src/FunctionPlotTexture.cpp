@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <FunctionPlotTexture.h>
+#include <H3D/FunctionPlotTexture.h>
 
 using namespace H3D;
 

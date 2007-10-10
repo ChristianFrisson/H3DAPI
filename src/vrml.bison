@@ -38,14 +38,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <H3DApi.h>
-#include <Node.h>
-#include <Group.h>
-#include <DEFNodes.h>
-#include <Inline.h>
-#include <H3DExports.h>
-#include <X3D.h>
-#include <X3DTypeFunctions.h>
+#include <H3D/H3DApi.h>
+#include <H3D/Node.h>
+#include <H3D/Group.h>
+#include <H3D/DEFNodes.h>
+#include <H3D/Inline.h>
+#include <H3D/H3DExports.h>
+#include <H3D/X3D.h>
+#include <H3D/X3DTypeFunctions.h>
 
 using namespace H3D;
 using namespace X3D;
@@ -53,8 +53,8 @@ using namespace X3D;
 // For H3D API purposes, we include a copy of FlexLexer.h so that
 // users don't need a copy of Flex installed just to compile the
 // API.
-#include <FlexLexer.h>
-#include <VrmlDriver.h>
+#include <H3D/FlexLexer.h>
+#include <H3D/VrmlDriver.h>
 
 #include <iostream>
 #include <sstream>

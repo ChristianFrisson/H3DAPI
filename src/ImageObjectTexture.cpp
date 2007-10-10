@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ImageObjectTexture.h>
+#include <H3D/ImageObjectTexture.h>
 
 using namespace H3D;
 

@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <AnyDevice.h> 
+#include <H3D/AnyDevice.h> 
 #include <HAPI/AnyHapticsDevice.h>
 
 using namespace H3D;

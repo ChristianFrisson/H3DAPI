@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TransferFunctionTexture.h>
+#include <H3D/TransferFunctionTexture.h>
 
 using namespace H3D;
 

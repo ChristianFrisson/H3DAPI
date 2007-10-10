@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DShapeNode.h>
-#include <X3DTextureNode.h>
+#include <H3D/X3DShapeNode.h>
+#include <H3D/X3DTextureNode.h>
 
 using namespace H3D;
 

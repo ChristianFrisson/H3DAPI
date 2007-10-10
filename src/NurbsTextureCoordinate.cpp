@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <NurbsTextureCoordinate.h>
+#include <H3D/NurbsTextureCoordinate.h>
 
 using namespace H3D;
 

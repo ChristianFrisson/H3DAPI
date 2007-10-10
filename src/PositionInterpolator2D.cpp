@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <PositionInterpolator2D.h>
+#include <H3D/PositionInterpolator2D.h>
 
 using namespace H3D;
 

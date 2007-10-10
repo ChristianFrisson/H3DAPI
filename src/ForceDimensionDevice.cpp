@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <ForceDimensionDevice.h>
+#include <H3D/ForceDimensionDevice.h>
 #ifdef HAVE_DHDAPI
 #include <HAPI/ForceDimensionHapticsDevice.h>
 #endif

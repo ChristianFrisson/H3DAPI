@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <FogCoordinate.h>
+#include <H3D/FogCoordinate.h>
 #include "GL/glew.h"
 
 using namespace H3D;

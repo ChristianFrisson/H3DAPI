@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DTouchSensorNode.h>
+#include <H3D/X3DTouchSensorNode.h>
 
 using namespace H3D;
 

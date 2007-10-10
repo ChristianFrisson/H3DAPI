@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ShaderPart.h>
-#include "ResourceResolver.h"
+#include <H3D/ShaderPart.h>
+#include "H3D/ResourceResolver.h"
 #include <fstream>
 
 using namespace H3D;

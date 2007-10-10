@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <RawImageLoader.h>
+#include <H3D/RawImageLoader.h>
 #include <fstream>
 
 using namespace H3D;

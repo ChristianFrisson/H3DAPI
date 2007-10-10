@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DPointingDeviceSensorNode.h>
-#include <H3DNavigation.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/H3DNavigation.h>
 
 using namespace H3D;
 

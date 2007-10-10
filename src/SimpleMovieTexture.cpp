@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <SimpleMovieTexture.h>
+#include <H3D/SimpleMovieTexture.h>
 
 using namespace H3D;
 

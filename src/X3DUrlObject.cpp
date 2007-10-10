@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DUrlObject.h>
-#include <ResourceResolver.h>
+#include <H3D/X3DUrlObject.h>
+#include <H3D/ResourceResolver.h>
 
 using namespace H3D;
 

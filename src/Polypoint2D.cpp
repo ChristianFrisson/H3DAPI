@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Polypoint2D.h>
+#include <H3D/Polypoint2D.h>
 #include <HLFeedbackShape.h>
 
 using namespace H3D;

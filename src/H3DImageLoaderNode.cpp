@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DImageLoaderNode.h>
+#include <H3D/H3DImageLoaderNode.h>
 
 using namespace H3D;
 

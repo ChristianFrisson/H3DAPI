@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "SpaceWareHapticsDevice.h"
+#include "H3D/SpaceWareHapticsDevice.h"
 
 using namespace H3D;
 

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <iostream>
 using namespace std;
-#include <unistd.h>
+//#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -44,8 +44,8 @@ using namespace std;
 #ifdef __TURBOC__
  #pragma warn -rch
  #pragma warn -use
-#include <io.h>
-#include <stdlib.h>
+#include <H3D/io.h>
+#include <H3D/stdlib.h>
 #define YY_USE_CONST
 #define YY_USE_PROTOS
 #endif
@@ -239,7 +239,7 @@ typedef char YY_CHAR;
 
 #define FLEX_DEBUG
 
-#include <FlexLexer.h>
+#include <H3D/FlexLexer.h>
 static yyconst long yy_nxt[][128] =
     {
     {
@@ -3854,7 +3854,7 @@ static yyconst long int yy_rule_linenum[30] =
 //  uncompressed lookup table and opt for speed over size.
 //
 
-#include <VrmlDriver.h>
+#include <H3D/VrmlDriver.h>
 #include "vrml.hpp"
 #define YYLMAX 65535
 #define YY_NO_UNPUT 1
@@ -3909,7 +3909,7 @@ YY_MALLOC_DECL
 #else
 #if __STDC__
 #ifndef __cplusplus
-#include <stdlib.h>
+#include <H3D/stdlib.h>
 #endif
 #else
 /* Just try to get by without declaring the routines.  This will fail

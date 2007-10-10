@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DNetworkSensorNode.h>
+#include <H3D/X3DNetworkSensorNode.h>
 
 using namespace H3D;
 

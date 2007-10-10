@@ -25,8 +25,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Field.h>
-#include <Node.h>
+#include <H3D/Field.h>
+#include <H3D/Node.h>
 #include <algorithm>
 
 #ifdef DEBUG

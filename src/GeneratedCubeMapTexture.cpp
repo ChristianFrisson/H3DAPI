@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <GeneratedCubeMapTexture.h>
-#include <X3DBackgroundNode.h>
-#include <DeviceInfo.h>
+#include <H3D/GeneratedCubeMapTexture.h>
+#include <H3D/X3DBackgroundNode.h>
+#include <H3D/DeviceInfo.h>
 
 using namespace H3D;
 

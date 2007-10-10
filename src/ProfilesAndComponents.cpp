@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ProfilesAndComponents.h>
+#include <H3D/ProfilesAndComponents.h>
 #include <algorithm>
 #include <iostream>
 #include <sstream>

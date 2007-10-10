@@ -28,28 +28,28 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DWindowNode.h>
-#include <Viewpoint.h>
-#include <Bound.h>
-#include <H3DBoundedObject.h>
-#include <GlobalSettings.h>
-#include <DefaultAppearance.h>
-#include <X3DShapeNode.h>
-#include <DeviceInfo.h>
-#include <H3DDisplayListObject.h>
-#include <X3DBackgroundNode.h>
-#include <MatrixTransform.h>
-#include <NavigationInfo.h>
-#include <StereoInfo.h>
-#include <GeneratedCubeMapTexture.h>
-#include <Fog.h>
-#include <X3DShapeNode.h>
-#include <Scene.h>
-#include <DebugOptions.h>
-#include <X3DKeyDeviceSensorNode.h>
-#include <MouseSensor.h>
-#include <H3DNavigation.h>
-#include <X3DLightNode.h>
+#include <H3D/H3DWindowNode.h>
+#include <H3D/Viewpoint.h>
+#include <H3D/Bound.h>
+#include <H3D/H3DBoundedObject.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/DefaultAppearance.h>
+#include <H3D/X3DShapeNode.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/H3DDisplayListObject.h>
+#include <H3D/X3DBackgroundNode.h>
+#include <H3D/MatrixTransform.h>
+#include <H3D/NavigationInfo.h>
+#include <H3D/StereoInfo.h>
+#include <H3D/GeneratedCubeMapTexture.h>
+#include <H3D/Fog.h>
+#include <H3D/X3DShapeNode.h>
+#include <H3D/Scene.h>
+#include <H3D/DebugOptions.h>
+#include <H3D/X3DKeyDeviceSensorNode.h>
+#include <H3D/MouseSensor.h>
+#include <H3D/H3DNavigation.h>
+#include <H3D/X3DLightNode.h>
 
 #include <H3DUtil/TimeStamp.h>
 #include <H3DUtil/Exception.h>

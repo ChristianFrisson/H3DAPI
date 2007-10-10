@@ -29,7 +29,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DInterpolatorNode.h>
+#include <H3D/X3DInterpolatorNode.h>
 
 using namespace H3D;
 

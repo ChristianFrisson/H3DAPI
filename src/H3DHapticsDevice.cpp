@@ -27,10 +27,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DHapticsDevice.h>
-#include <X3DGeometryNode.h>
-#include <DeviceInfo.h>
-#include <X3DViewpointNode.h>
+#include <H3D/H3DHapticsDevice.h>
+#include <H3D/X3DGeometryNode.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/X3DViewpointNode.h>
 
 #include <OpenHapticsRenderer.h>
 #include <HAPI/GodObjectRenderer.h>

@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DPrototypeInstance.h>
-#include <H3DDisplayListObject.h>
+#include <H3D/X3DPrototypeInstance.h>
+#include <H3D/H3DDisplayListObject.h>
 
 using namespace H3D;
 

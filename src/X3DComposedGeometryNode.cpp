@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DComposedGeometryNode.h>
-#include <MultiTexture.h>
-#include <MultiTextureCoordinate.h>
+#include <H3D/X3DComposedGeometryNode.h>
+#include <H3D/MultiTexture.h>
+#include <H3D/MultiTextureCoordinate.h>
 
 using namespace H3D;
 

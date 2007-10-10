@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DBackgroundNode.h>
+#include <H3D/X3DBackgroundNode.h>
 #include <assert.h>
 
 using namespace H3D;

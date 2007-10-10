@@ -28,22 +28,22 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <PythonMethods.h>
-#include <DeviceInfo.h>
-#include <X3DViewpointNode.h>
-#include <NavigationInfo.h>
-#include <StereoInfo.h>
-#include <Fog.h>
-#include <GlobalSettings.h>
-#include <X3DSAX2Handlers.h>
-#include <X3DBackgroundNode.h> 
-#include <X3DTypeFunctions.h>
-#include <PythonTypes.h>
-#include <MFNode.h>
-#include <X3D.h>
-#include <VrmlParser.h>
-#include <Scene.h>
-#include <ResourceResolver.h>
+#include <H3D/PythonMethods.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/X3DViewpointNode.h>
+#include <H3D/NavigationInfo.h>
+#include <H3D/StereoInfo.h>
+#include <H3D/Fog.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/X3DSAX2Handlers.h>
+#include <H3D/X3DBackgroundNode.h> 
+#include <H3D/X3DTypeFunctions.h>
+#include <H3D/PythonTypes.h>
+#include <H3D/MFNode.h>
+#include <H3D/X3D.h>
+#include <H3D/VrmlParser.h>
+#include <H3D/Scene.h>
+#include <H3D/ResourceResolver.h>
 #include <sstream>
 #include <cctype>
 

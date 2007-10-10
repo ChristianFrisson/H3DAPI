@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Matrix3VertexAttribute.h>
+#include <H3D/Matrix3VertexAttribute.h>
 #include "GL/glew.h"
 
 using namespace H3D;

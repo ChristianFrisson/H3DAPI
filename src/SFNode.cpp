@@ -26,8 +26,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <SFNode.h>
-#include <X3DPrototypeInstance.h>
+#include <H3D/SFNode.h>
+#include <H3D/X3DPrototypeInstance.h>
 using namespace H3D;
 
 

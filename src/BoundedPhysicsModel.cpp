@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <BoundedPhysicsModel.h>
+#include <H3D/BoundedPhysicsModel.h>
 
 using namespace H3D;
 

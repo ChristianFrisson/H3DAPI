@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <FalconDevice.h>
+#include <H3D/FalconDevice.h>
 #include <HAPI/FalconHapticsDevice.h>
 
 using namespace H3D;

@@ -28,12 +28,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DDisplayListObject.h>
-#include <Node.h>
-#include <Scene.h>
-#include <GlobalSettings.h>
-#include <GraphicsCachingOptions.h>
-#include <X3DGeometryNode.h>
+#include <H3D/H3DDisplayListObject.h>
+#include <H3D/Node.h>
+#include <H3D/Scene.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/X3DGeometryNode.h>
 
 using namespace H3D;
 

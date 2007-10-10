@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <SplinePositionInterpolator.h>
+#include <H3D/SplinePositionInterpolator.h>
 
 using namespace H3D;
 

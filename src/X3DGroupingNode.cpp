@@ -28,11 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DGroupingNode.h>
-#include <H3DRenderStateObject.h>
-#include <MatrixTransform.h>
-#include <X3DPointingDeviceSensorNode.h>
-#include <X3DShapeNode.h>
+#include <H3D/X3DGroupingNode.h>
+#include <H3D/H3DRenderStateObject.h>
+#include <H3D/MatrixTransform.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/X3DShapeNode.h>
 
 using namespace H3D;
 

@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TextureMatrixTransform.h>
+#include <H3D/TextureMatrixTransform.h>
 #include "GL/glew.h"
 
 using namespace H3D;

@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DTimeDependentNode.h>
-#include <Scene.h>
+#include <H3D/X3DTimeDependentNode.h>
+#include <H3D/Scene.h>
 
 using namespace H3D;
 

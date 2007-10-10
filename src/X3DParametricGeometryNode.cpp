@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DParametricGeometryNode.h>
+#include <H3D/X3DParametricGeometryNode.h>
 
 using namespace H3D;
 

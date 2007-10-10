@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <FloatVertexAttribute.h>
+#include <H3D/FloatVertexAttribute.h>
 #include "GL/glew.h"
 
 using namespace H3D;

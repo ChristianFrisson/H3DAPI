@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <SplineScalarInterpolator.h>
+#include <H3D/SplineScalarInterpolator.h>
 
 using namespace H3D;
 

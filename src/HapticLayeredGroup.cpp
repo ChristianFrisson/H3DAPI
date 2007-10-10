@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <HapticLayeredGroup.h>
-#include <H3DRenderStateObject.h>
+#include <H3D/HapticLayeredGroup.h>
+#include <H3D/H3DRenderStateObject.h>
 
 using namespace H3D;
 

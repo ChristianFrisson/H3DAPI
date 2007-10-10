@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DNurbsControlCurveNode.h>
+#include <H3D/X3DNurbsControlCurveNode.h>
 
 using namespace H3D;
 

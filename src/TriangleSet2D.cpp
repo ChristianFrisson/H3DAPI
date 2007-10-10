@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TriangleSet2D.h>
-#include <MultiTexture.h>
+#include <H3D/TriangleSet2D.h>
+#include <H3D/MultiTexture.h>
 
 using namespace H3D;
 

@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <H3DVideoTextureNode.h>
+#include <H3D/H3DVideoTextureNode.h>
 
 using namespace H3D;
 

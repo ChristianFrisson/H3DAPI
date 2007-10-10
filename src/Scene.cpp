@@ -28,23 +28,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Scene.h>
+#include <H3D/Scene.h>
 #include <H3DUtil/TimeStamp.h>
-#include <DeviceInfo.h>
+#include <H3D/DeviceInfo.h>
 #include <GL/glew.h>
 #ifdef MACOSX
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
-#include <PeriodicUpdate.h>
-#include <GLUTWindow.h>
-#include <X3DShapeNode.h>
+#include <H3D/PeriodicUpdate.h>
+#include <H3D/GLUTWindow.h>
+#include <H3D/X3DShapeNode.h>
 
-#include <X3DPointingDeviceSensorNode.h>
-#include <X3DGroupingNode.h>
-#include <ProfilesAndComponents.h>
-#include <H3DNavigation.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/X3DGroupingNode.h>
+#include <H3D/ProfilesAndComponents.h>
+#include <H3D/H3DNavigation.h>
 
 using namespace H3D;
 

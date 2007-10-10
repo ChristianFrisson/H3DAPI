@@ -5,11 +5,11 @@
 //
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <X3D.h>
-#include <X3DSAX2Handlers.h>
-#include <IStreamInputSource.h>
-#include <ResourceResolver.h>
-#include <VrmlParser.h>
+#include <H3D/X3D.h>
+#include <H3D/X3DSAX2Handlers.h>
+#include <H3D/IStreamInputSource.h>
+#include <H3D/ResourceResolver.h>
+#include <H3D/VrmlParser.h>
 #include <sstream>
 #include <zlib.h>
 

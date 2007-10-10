@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <AudioClip.h>
-#include <H3DSoundFileNode.h>
-#include <ResourceResolver.h>
+#include <H3D/AudioClip.h>
+#include <H3D/H3DSoundFileNode.h>
+#include <H3D/ResourceResolver.h>
 
 using namespace H3D;
 

@@ -27,8 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <DirectShowDecoder.h>
-#include <Scene.h>
+#include <H3D/DirectShowDecoder.h>
+#include <H3D/Scene.h>
 
 #ifdef HAVE_DSHOW
 

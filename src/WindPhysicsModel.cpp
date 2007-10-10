@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <WindPhysicsModel.h>
-#include <ParticleSystem.h>
+#include <H3D/WindPhysicsModel.h>
+#include <H3D/ParticleSystem.h>
 
 using namespace H3D;
 

@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <GravityPhysicsModel.h>
+#include <H3D/GravityPhysicsModel.h>
 
 using namespace H3D;
 

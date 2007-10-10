@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <FontStyle.h>
+#include <H3D/FontStyle.h>
 #if defined(__APPLE__) && defined(__MACH__)
 #include <AGL/agl.h>
 #endif
@@ -45,7 +45,7 @@
 #endif
 #ifdef LINUX
 #include <fontconfig/fontconfig.h>
-#include <string.h>
+#include <H3D/string.h>
 #endif
 #endif
 

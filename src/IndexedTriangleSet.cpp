@@ -28,11 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <IndexedTriangleSet.h>
-#include <Normal.h>
-#include <H3DHapticsDevice.h>
-#include <DeviceInfo.h>
-#include <H3DSurfaceNode.h>
+#include <H3D/IndexedTriangleSet.h>
+#include <H3D/Normal.h>
+#include <H3D/H3DHapticsDevice.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/H3DSurfaceNode.h>
 
 
 

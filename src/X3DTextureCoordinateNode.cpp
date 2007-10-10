@@ -28,10 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DTextureCoordinateNode.h>
+#include <H3D/X3DTextureCoordinateNode.h>
 #include "GL/glew.h"
-#include <MultiTexture.h>
-#include <X3DTextureNode.h>
+#include <H3D/MultiTexture.h>
+#include <H3D/X3DTextureNode.h>
 
 using namespace H3D;
 

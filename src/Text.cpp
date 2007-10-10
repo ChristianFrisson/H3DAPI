@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Text.h>
-#include <FontStyle.h>
+#include <H3D/Text.h>
+#include <H3D/FontStyle.h>
 
 using namespace H3D;
 

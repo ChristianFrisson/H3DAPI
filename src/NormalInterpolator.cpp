@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <NormalInterpolator.h>
+#include <H3D/NormalInterpolator.h>
 
 using namespace H3D;
 

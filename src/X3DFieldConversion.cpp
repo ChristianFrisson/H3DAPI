@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <X3DFieldConversion.h>
+#include <H3D/X3DFieldConversion.h>
 
 using namespace H3D;
 using namespace X3D;

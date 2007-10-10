@@ -26,12 +26,12 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <PythonTypes.h>
-#include <PythonMethods.h>
-#include <PythonScript.h>
-#include <X3DTypes.h>
-#include <X3DFieldConversion.h>
-#include <H3DDynamicFieldsObject.h>
+#include <H3D/PythonTypes.h>
+#include <H3D/PythonMethods.h>
+#include <H3D/PythonScript.h>
+#include <H3D/X3DTypes.h>
+#include <H3D/X3DFieldConversion.h>
+#include <H3D/H3DDynamicFieldsObject.h>
 
 #ifdef HAVE_PYTHON
 
@@ -53,7 +53,7 @@
 #include <Python/moduleobject.h>
 #include <Python/structmember.h>
 #else
-#include <Python.h>
+#include <python.h>
 #include <pythonrun.h>
 #include <ceval.h>
 #include <moduleobject.h>

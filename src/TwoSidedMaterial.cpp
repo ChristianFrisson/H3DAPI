@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TwoSidedMaterial.h>
-#include <X3DTexture2DNode.h>
-#include <X3DTexture3DNode.h>
+#include <H3D/TwoSidedMaterial.h>
+#include <H3D/X3DTexture2DNode.h>
+#include <H3D/X3DTexture3DNode.h>
 
 using namespace H3D;
 

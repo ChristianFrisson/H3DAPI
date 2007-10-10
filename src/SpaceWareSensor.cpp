@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <SpaceWareSensor.h>
+#include <H3D/SpaceWareSensor.h>
 
 #ifdef WIN32
 
@@ -59,7 +59,7 @@ extern "C" {
 #include <X11/keysym.h>
 #define IBM
 extern "C" {
-#include <xdrvlib.h>
+#include <H3D/xdrvlib.h>
 }
 #endif // __linux
 #endif // HAVE_3DXWARE

@@ -29,7 +29,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <PointNormalClipPlane.h>
+#include <H3D/PointNormalClipPlane.h>
 
 using namespace H3D;
 

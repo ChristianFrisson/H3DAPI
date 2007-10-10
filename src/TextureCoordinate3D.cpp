@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TextureCoordinate3D.h>
+#include <H3D/TextureCoordinate3D.h>
 
 using namespace H3D;
 

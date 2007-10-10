@@ -31,8 +31,8 @@
 //  uncompressed lookup table and opt for speed over size.
 //
 
-#include <VrmlDriver.h>
-#include "vrml.hpp"
+#include <H3D/VrmlDriver.h>
+#include <H3D/vrml.hpp>
 #define YYLMAX 65535
 %}
 

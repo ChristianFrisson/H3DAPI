@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <SurfaceEmitter.h>
-#include <ParticleSystem.h>
+#include <H3D/SurfaceEmitter.h>
+#include <H3D/ParticleSystem.h>
 
 using namespace H3D;
 

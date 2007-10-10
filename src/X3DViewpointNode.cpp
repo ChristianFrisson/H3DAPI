@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DViewpointNode.h>
-#include <ViewpointGroup.h>
-#include <NavigationInfo.h>
+#include <H3D/X3DViewpointNode.h>
+#include <H3D/ViewpointGroup.h>
+#include <H3D/NavigationInfo.h>
 
 using namespace H3D;
 

@@ -28,10 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <NurbsTrimmedSurface.h>
-#include <Coordinate.h>
+#include <H3D/NurbsTrimmedSurface.h>
+#include <H3D/Coordinate.h>
 #include <HLFeedbackShape.h>
-#include <TextureCoordinateGenerator.h>
+#include <H3D/TextureCoordinateGenerator.h>
 
 using namespace H3D;
 

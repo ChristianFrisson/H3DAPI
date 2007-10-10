@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DGeometricPropertyNode.h>
+#include <H3D/X3DGeometricPropertyNode.h>
 
 using namespace H3D;
 

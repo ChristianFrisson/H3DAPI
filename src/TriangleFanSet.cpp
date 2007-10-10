@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TriangleFanSet.h>
-#include <Normal.h>
+#include <H3D/TriangleFanSet.h>
+#include <H3D/Normal.h>
 
 using namespace H3D;
 

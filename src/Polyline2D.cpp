@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Polyline2D.h>
+#include <H3D/Polyline2D.h>
 #include <HLFeedbackShape.h>
 
 using namespace H3D;

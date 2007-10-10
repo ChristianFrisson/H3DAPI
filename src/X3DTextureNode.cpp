@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DTextureNode.h>
+#include <H3D/X3DTextureNode.h>
 #include <assert.h>
 
 using namespace H3D;

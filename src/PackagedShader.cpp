@@ -28,11 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <PackagedShader.h>
-#include <X3DTexture2DNode.h>
-#include <X3DTexture3DNode.h>
-#include <ShaderFunctions.h>
-#include "ResourceResolver.h"
+#include <H3D/PackagedShader.h>
+#include <H3D/X3DTexture2DNode.h>
+#include <H3D/X3DTexture3DNode.h>
+#include <H3D/ShaderFunctions.h>
+#include "H3D/ResourceResolver.h"
 
 using namespace H3D;
 

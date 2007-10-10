@@ -27,8 +27,8 @@
 //
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <H3DApi.h>
-#include <DeviceInfo.h>
+#include <H3D/H3DApi.h>
+#include <H3D/DeviceInfo.h>
 #include <GL/glew.h>
 
 using namespace H3D;

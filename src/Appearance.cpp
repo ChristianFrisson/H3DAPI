@@ -28,16 +28,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Appearance.h>
+#include <H3D/Appearance.h>
 #include "GL/glew.h"
-#include <X3DTextureTransformNode.h>
-#include <X3DTextureNode.h>
-#include <X3DMaterialNode.h>
-#include <LineProperties.h>
-#include <MultiTexture.h>
-#include <X3DShapeNode.h>
-#include <X3DTexture2DNode.h>
-#include <X3DTexture3DNode.h>
+#include <H3D/X3DTextureTransformNode.h>
+#include <H3D/X3DTextureNode.h>
+#include <H3D/X3DMaterialNode.h>
+#include <H3D/LineProperties.h>
+#include <H3D/MultiTexture.h>
+#include <H3D/X3DShapeNode.h>
+#include <H3D/X3DTexture2DNode.h>
+#include <H3D/X3DTexture3DNode.h>
 
 #include <H3DUtil/Console.h>
 

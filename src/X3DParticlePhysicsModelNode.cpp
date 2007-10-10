@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DParticlePhysicsModelNode.h>
+#include <H3D/X3DParticlePhysicsModelNode.h>
 
 using namespace H3D;
 

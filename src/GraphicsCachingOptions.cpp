@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <GraphicsCachingOptions.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 

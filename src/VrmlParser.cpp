@@ -5,12 +5,12 @@
 //
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <VrmlParser.h>
-#include <IStreamInputSource.h>
-#include <ResourceResolver.h>
+#include <H3D/VrmlParser.h>
+#include <H3D/IStreamInputSource.h>
+#include <H3D/ResourceResolver.h>
 #include <sstream>
-#include <PrototypeVector.h>
-#include <VrmlDriver.h>
+#include <H3D/PrototypeVector.h>
+#include <H3D/VrmlDriver.h>
 
 using namespace H3D;
 using namespace X3D;

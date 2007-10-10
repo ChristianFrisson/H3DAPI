@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <OpenHapticsSurface.h>
+#include <H3D/OpenHapticsSurface.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <OpenHapticsRenderer.h>

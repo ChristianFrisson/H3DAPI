@@ -28,10 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ElevationGrid.h>
-#include <MultiTexture.h>
-#include <MultiTextureCoordinate.h>
-#include <Normal.h>
+#include <H3D/ElevationGrid.h>
+#include <H3D/MultiTexture.h>
+#include <H3D/MultiTextureCoordinate.h>
+#include <H3D/Normal.h>
 
 using namespace H3D;
 

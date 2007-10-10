@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <CoordinateDeformer.h>
+#include <H3D/CoordinateDeformer.h>
 
 using namespace H3D;
 

@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <OpenHapticsOptions.h>
+#include <H3D/OpenHapticsOptions.h>
 
 using namespace H3D;
 

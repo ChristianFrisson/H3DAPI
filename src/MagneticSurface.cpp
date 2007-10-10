@@ -26,9 +26,9 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <H3DApi.h>
-#include <MagneticSurface.h>
-#include <H3DHapticsDevice.h>
+#include <H3D/H3DApi.h>
+#include <H3D/MagneticSurface.h>
+#include <H3D/H3DHapticsDevice.h>
 #ifdef HAVE_OPENHAPTICS
 #include <OpenHapticsRenderer.h>
 #endif

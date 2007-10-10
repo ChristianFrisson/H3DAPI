@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <GLUTWindow.h>
+#include <H3D/GLUTWindow.h>
 
 #include <GL/glew.h>
 #ifdef MACOSX
@@ -48,10 +48,10 @@
 #endif
 
 #if !( defined(FREEGLUT) && defined(WIN32) )
-#include <X3DKeyDeviceSensorNode.h>
+#include <H3D/X3DKeyDeviceSensorNode.h>
 #endif
 #ifndef WIN32
-#include <MouseSensor.h>
+#include <H3D/MouseSensor.h>
 #endif
 
 using namespace H3D;

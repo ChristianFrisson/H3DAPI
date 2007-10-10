@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DNurbsSurfaceGeometryNode.h>
-#include <Coordinate.h>
+#include <H3D/X3DNurbsSurfaceGeometryNode.h>
+#include <H3D/Coordinate.h>
 
 using namespace H3D;
 

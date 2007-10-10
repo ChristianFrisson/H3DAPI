@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <LocalFog.h>
+#include <H3D/LocalFog.h>
 #include <GL/glew.h>
 
 using namespace H3D;

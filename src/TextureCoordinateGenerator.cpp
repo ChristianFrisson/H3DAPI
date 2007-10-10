@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TextureCoordinateGenerator.h>
+#include <H3D/TextureCoordinateGenerator.h>
 #include "GL/glew.h"
 
 using namespace H3D;

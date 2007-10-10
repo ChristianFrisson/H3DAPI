@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DEnvironmentalSensorNode.h>
+#include <H3D/X3DEnvironmentalSensorNode.h>
 
 using namespace H3D;
 

@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <CoordBoundField.h>
-#include <Coordinate.h>
+#include <H3D/CoordBoundField.h>
+#include <H3D/Coordinate.h>
 using namespace H3D;
 
 //TODO: Fix so that it works for all X3DCoordinateNode

@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <PhantomDevice.h>
+#include <H3D/PhantomDevice.h>
 #include <HAPI/PhantomHapticsDevice.h>
 
 using namespace H3D;

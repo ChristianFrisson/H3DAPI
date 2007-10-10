@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ClipPlane.h>
-#include <H3DHapticsDevice.h>
+#include <H3D/ClipPlane.h>
+#include <H3D/H3DHapticsDevice.h>
 
 using namespace H3D;
 

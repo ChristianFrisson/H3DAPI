@@ -29,7 +29,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <FreeImageLoader.h>
+#include <H3D/FreeImageLoader.h>
 
 #ifdef HAVE_FREEIMAGE
 using namespace H3D;

@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ComposedCubeMapTexture.h>
+#include <H3D/ComposedCubeMapTexture.h>
 
 using namespace H3D;
 

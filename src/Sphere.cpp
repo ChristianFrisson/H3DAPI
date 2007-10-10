@@ -28,16 +28,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Sphere.h>
-#include <H3DSurfaceNode.h>
+#include <H3D/Sphere.h>
+#include <H3D/H3DSurfaceNode.h>
 
-#include <HapticsOptions.h>
-#include <GlobalSettings.h>
-#include <OpenHapticsOptions.h>
+#include <H3D/HapticsOptions.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/OpenHapticsOptions.h>
 
-#include <X3DPointingDeviceSensorNode.h>
-#include <HapticsRenderers.h>
-#include <H3DHapticsDevice.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/HapticsRenderers.h>
+#include <H3D/H3DHapticsDevice.h>
 
 // HAPI includes
 #include <HAPI/HapticPrimitive.h>

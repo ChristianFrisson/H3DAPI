@@ -28,14 +28,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DGeometryNode.h>
-#include <H3DSurfaceNode.h>
-#include <GlobalSettings.h>
-#include <GeometryBoundTreeOptions.h>
-#include <X3DPointingDeviceSensorNode.h>
-#include <HapticsOptions.h>
-#include <DeviceInfo.h>
-#include <DebugOptions.h>
+#include <H3D/X3DGeometryNode.h>
+#include <H3D/H3DSurfaceNode.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GeometryBoundTreeOptions.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/HapticsOptions.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/DebugOptions.h>
 
 #include <HLDepthBufferShape.h>
 #include <HLFeedbackShape.h>

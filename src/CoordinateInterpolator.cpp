@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <CoordinateInterpolator.h>
+#include <H3D/CoordinateInterpolator.h>
 
 using namespace H3D;
 

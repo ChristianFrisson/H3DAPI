@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DSoundSourceNode.h>
+#include <H3D/X3DSoundSourceNode.h>
 
 using namespace H3D;
 

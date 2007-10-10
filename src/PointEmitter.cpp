@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <PointEmitter.h>
-#include <ParticleSystem.h>
+#include <H3D/PointEmitter.h>
+#include <H3D/ParticleSystem.h>
 
 using namespace H3D;
 

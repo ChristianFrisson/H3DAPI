@@ -28,10 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Inline.h>
-#include <X3D.h>
-#include <X3DSAX2Handlers.h>
-#include "ResourceResolver.h"
+#include <H3D/Inline.h>
+#include <H3D/X3D.h>
+#include <H3D/X3DSAX2Handlers.h>
+#include "H3D/ResourceResolver.h"
 
 using namespace H3D;
 

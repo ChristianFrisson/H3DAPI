@@ -26,8 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <H3DApi.h>
-#include <FrictionalSurface.h>
+#include <H3D/H3DApi.h>
+#include <H3D/FrictionalSurface.h>
 #include <HAPI/FrictionSurface.h>
 
 using namespace H3D;

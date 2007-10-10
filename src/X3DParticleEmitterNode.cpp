@@ -28,11 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DParticleEmitterNode.h>
-#include <X3DViewpointNode.h>
-#include <X3DTextureNode.h>
-#include <ParticleSystem.h>
-#include <MultiTexture.h>
+#include <H3D/X3DParticleEmitterNode.h>
+#include <H3D/X3DViewpointNode.h>
+#include <H3D/X3DTextureNode.h>
+#include <H3D/ParticleSystem.h>
+#include <H3D/MultiTexture.h>
 
 using namespace H3D;
 

@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ImageTexture.h>
-#include <ResourceResolver.h>
+#include <H3D/ImageTexture.h>
+#include <H3D/ResourceResolver.h>
 
 using namespace H3D;
 

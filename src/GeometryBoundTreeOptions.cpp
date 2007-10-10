@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <GeometryBoundTreeOptions.h>
+#include <H3D/GeometryBoundTreeOptions.h>
 
 using namespace H3D;
 

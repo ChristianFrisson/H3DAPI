@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DNavigationDevices.h>
-#include <DeviceInfo.h>
-#include <SpaceWareSensor.h>
+#include <H3D/H3DNavigationDevices.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/SpaceWareSensor.h>
 
 using namespace H3D;
 

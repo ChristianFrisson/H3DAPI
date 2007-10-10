@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DNavigation.h>
-#include <X3DGeometryNode.h>
-#include <Scene.h>
+#include <H3D/H3DNavigation.h>
+#include <H3D/X3DGeometryNode.h>
+#include <H3D/Scene.h>
 
 using namespace H3D;
 

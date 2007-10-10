@@ -1,5 +1,5 @@
 
-#include <VrmlDriver.h>
+#include <H3D/VrmlDriver.h>
 #include "vrml.hpp"
 
 PrototypeVector *VrmlDriver::global_proto_vector=NULL;

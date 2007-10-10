@@ -27,7 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "H3DFakeHapticsDevice.h"
+#include "H3D/H3DFakeHapticsDevice.h"
 
 using namespace H3D;
 

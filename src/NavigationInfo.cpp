@@ -28,9 +28,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <NavigationInfo.h>
-#include <Scene.h>
-#include <H3DNavigation.h>
+#include <H3D/NavigationInfo.h>
+#include <H3D/Scene.h>
+#include <H3D/H3DNavigation.h>
 
 using namespace H3D;
 

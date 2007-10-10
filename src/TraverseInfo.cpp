@@ -28,10 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DSurfaceNode.h>
-#include <X3DGeometryNode.h>
-#include <H3DHapticsDevice.h>
-#include <TraverseInfo.h>
+#include <H3D/H3DSurfaceNode.h>
+#include <H3D/X3DGeometryNode.h>
+#include <H3D/H3DHapticsDevice.h>
+#include <H3D/TraverseInfo.h>
 
 using namespace H3D;
 

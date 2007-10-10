@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <MultiTextureTransform.h>
+#include <H3D/MultiTextureTransform.h>
 
 using namespace H3D;
 

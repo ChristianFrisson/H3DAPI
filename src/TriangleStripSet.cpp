@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TriangleStripSet.h>
-#include <Normal.h>
+#include <H3D/TriangleStripSet.h>
+#include <H3D/Normal.h>
 
 using namespace H3D;
 

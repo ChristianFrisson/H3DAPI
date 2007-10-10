@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <NurbsCurve.h>
-#include <Coordinate.h>
+#include <H3D/NurbsCurve.h>
+#include <H3D/Coordinate.h>
 
 
 using namespace H3D;

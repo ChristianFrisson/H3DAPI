@@ -2,10 +2,10 @@
 //    All Rights Reserved
 //
 #include <stdlib.h>
-#include <ProfileSAX2Handlers.h>
+#include <H3D/ProfileSAX2Handlers.h>
 #include <iostream>
 #include <sstream>
-#include <H3DNodeDatabase.h>
+#include <H3D/H3DNodeDatabase.h>
 
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax/SAXParseException.hpp>

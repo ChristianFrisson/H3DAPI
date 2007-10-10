@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DAppearanceChildNode.h>
+#include <H3D/X3DAppearanceChildNode.h>
 
 using namespace H3D;
 

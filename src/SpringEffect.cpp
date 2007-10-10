@@ -26,8 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <SpringEffect.h> 
-#include <H3DHapticsDevice.h>
+#include <H3D/SpringEffect.h> 
+#include <H3D/H3DHapticsDevice.h>
 
 using namespace H3D;
 

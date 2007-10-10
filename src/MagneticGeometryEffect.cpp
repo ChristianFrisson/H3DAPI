@@ -26,9 +26,9 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <MagneticGeometryEffect.h> 
-#include <H3DHapticsDevice.h>
-#include <HapticsOptions.h>
+#include <H3D/MagneticGeometryEffect.h> 
+#include <H3D/H3DHapticsDevice.h>
+#include <H3D/HapticsOptions.h>
 #include <HAPI/HapticShapeConstraint.h>
 #include <HAPI/HapticTriangleSet.h>
 

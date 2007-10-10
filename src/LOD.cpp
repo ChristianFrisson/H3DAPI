@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <LOD.h>
-#include <X3DViewpointNode.h>
+#include <H3D/LOD.h>
+#include <H3D/X3DViewpointNode.h>
 
 using namespace H3D;
 

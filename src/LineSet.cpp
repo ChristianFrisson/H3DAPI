@@ -28,9 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <LineSet.h>
-#include <X3DTextureNode.h>
-#include <HLFeedbackShape.h>
+#include <H3D/LineSet.h>
+#include <H3D/X3DTextureNode.h>
 
 using namespace H3D;
 

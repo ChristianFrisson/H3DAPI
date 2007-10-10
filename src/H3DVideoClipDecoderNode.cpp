@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DVideoClipDecoderNode.h>
+#include <H3D/H3DVideoClipDecoderNode.h>
 
 using namespace H3D;
 

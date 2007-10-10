@@ -28,8 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <NurbsPatchSurface.h>
-#include <HLFeedbackShape.h>
+#include <H3D/NurbsPatchSurface.h>
 
 using namespace H3D;
 

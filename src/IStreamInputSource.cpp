@@ -25,8 +25,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <IStreamInputSource.h>
-#include <IStreamInputStream.h>
+#include <H3D/IStreamInputSource.h>
+#include <H3D/IStreamInputStream.h>
 
 using namespace H3D;
 

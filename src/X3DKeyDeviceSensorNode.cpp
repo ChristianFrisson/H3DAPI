@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DKeyDeviceSensorNode.h>
+#include <H3D/X3DKeyDeviceSensorNode.h>
 
 using namespace H3D;
 

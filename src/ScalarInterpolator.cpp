@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ScalarInterpolator.h>
+#include <H3D/ScalarInterpolator.h>
 
 using namespace H3D;
 

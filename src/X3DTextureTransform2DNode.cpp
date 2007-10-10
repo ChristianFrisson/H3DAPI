@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <X3DTextureTransform2DNode.h>
+#include <H3D/X3DTextureTransform2DNode.h>
 
 using namespace H3D;
 

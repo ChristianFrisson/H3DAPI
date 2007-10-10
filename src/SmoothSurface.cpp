@@ -26,8 +26,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <H3DApi.h>
-#include <SmoothSurface.h>
+#include <H3D/H3DApi.h>
+#include <H3D/SmoothSurface.h>
 #include <HAPI/FrictionSurface.h>
 
 using namespace H3D;

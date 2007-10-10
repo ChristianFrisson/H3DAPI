@@ -26,7 +26,7 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <H3DVariableDepthSurface.h>
+#include <H3D/H3DVariableDepthSurface.h>
 #include <HAPI/DepthMapSurface.h>
 
 using namespace H3D;

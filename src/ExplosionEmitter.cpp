@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ExplosionEmitter.h>
-#include <ParticleSystem.h>
+#include <H3D/ExplosionEmitter.h>
+#include <H3D/ParticleSystem.h>
 
 using namespace H3D;
 

@@ -24,7 +24,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DApi.h>
+#include <H3D/H3DApi.h>
 #ifdef HAVE_FREEIMAGE
 #include <FreeImage.h>
 #endif
@@ -36,10 +36,10 @@
 
 #ifdef HAVE_LIBCURL
 #include <curl/curl.h>
-#include <LibCurlResolver.h>
+#include <H3D/LibCurlResolver.h>
 #endif
 
-#include <ResourceResolver.h>
+#include <H3D/ResourceResolver.h>
 
 #ifdef HAVE_FREEIMAGE
 #if defined(_MSC_VER) || defined(__BORLANDC__)

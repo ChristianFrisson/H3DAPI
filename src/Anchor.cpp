@@ -28,12 +28,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Anchor.h>
-#include <TouchSensor.h>
-#include <X3D.h>
+#include <H3D/Anchor.h>
+#include <H3D/TouchSensor.h>
+#include <H3D/X3D.h>
 //#include "X3DViewpointNode.h"
-#include <NavigationInfo.h>
-#include <Scene.h>
+#include <H3D/NavigationInfo.h>
+#include <H3D/Scene.h>
 
 using namespace H3D;
 

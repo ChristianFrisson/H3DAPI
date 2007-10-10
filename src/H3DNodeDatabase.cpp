@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3DNodeDatabase.h>
-#include <Node.h>
+#include <H3D/H3DNodeDatabase.h>
+#include <H3D/Node.h>
 
 using namespace H3D;
 

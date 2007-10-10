@@ -28,7 +28,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <OggFileReader.h>
+#include <H3D/OggFileReader.h>
 #include <fstream>
 
 #ifdef HAVE_LIBVORBIS

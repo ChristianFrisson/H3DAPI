@@ -28,8 +28,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Collision.h>
-#include <Scene.h>
+#include <H3D/Collision.h>
+#include <H3D/Scene.h>
 
 using namespace H3D;
 

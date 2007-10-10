@@ -28,14 +28,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <DynamicTransform.h>
+#include <H3D/DynamicTransform.h>
 #ifdef MACOSX
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
-#include <RK4.h>
-#include <Scene.h>
+#include <H3D/RK4.h>
+#include <H3D/Scene.h>
 
 using namespace H3D;
 
