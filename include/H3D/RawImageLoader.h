@@ -62,6 +62,10 @@ namespace H3D {
   /// The pixelSize field is an optional field that specifies the size
   /// of each pixel in meters. This can be used for e.g. volume rendering
   /// components to know the image size in space.
+  /// 
+  /// This loader can also automatically detect and decompress gzip
+  /// packaged data
+  /// 
   class H3DAPI_API RawImageLoader : public H3DImageLoaderNode {
   public:
     /// Constructor.

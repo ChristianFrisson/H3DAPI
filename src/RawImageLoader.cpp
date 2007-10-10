@@ -31,6 +31,10 @@
 #include <H3D/RawImageLoader.h>
 #include <fstream>
 
+#ifdef HAVE_ZLIB
+# include <zlib.h>
+#endif
+
 using namespace H3D;
 
 H3DNodeDatabase RawImageLoader::database( 
@@ -116,18 +120,80 @@ Image *RawImageLoader::loadImage(  const string &url ) {
 	  return NULL;
   }
     
+  unsigned int expected_size = 
+    width->getValue() * height->getValue() * depth->getValue() * 
+    bitsPerPixel->getValue() / 8;
+
+  unsigned char * data = new unsigned char[expected_size];
+  
   ifstream is( url.c_str(), ios::in | ios::binary );
   if( !is.good() ) {
     return NULL;
   }
   
-  unsigned int bytes_to_read = 
-    width->getValue() * height->getValue() * depth->getValue() * 
-    bitsPerPixel->getValue() / 8;
-
-  unsigned char * data = new unsigned char[ bytes_to_read ];
-  is.read( (char *)data, bytes_to_read );
+  is.read( (char *)data, expected_size );
+  int actual_size = is.gcount();
   is.close();
+  
+#ifdef HAVE_ZLIB
+  
+  if( actual_size < expected_size ){
+    
+    unsigned char * data2 = new unsigned char[expected_size];
+    unsigned long int uncompressed_size = expected_size;
+    
+    int err;
+    z_stream strm = {
+      data, actual_size, 0,
+      data2, expected_size, 0
+    };
+    
+    err = inflateInit2(&strm,47);
+    
+    if( err == Z_MEM_ERROR ){
+      Console(3) << "Warning: zlib memory error." << endl;
+      delete[] data, data2;
+      return NULL;
+    }
+    if( err == Z_VERSION_ERROR ){
+      Console(3) << "Warning: zlib version error." << endl;
+      delete[] data, data2;
+      return NULL;
+    }
+    
+    err = inflate(&strm,Z_FINISH);
+    
+    if( err == Z_DATA_ERROR ){
+      Console(3) << "Warning: zlib unrecognizable data error." << endl;
+      delete[] data, data2;
+      return NULL;
+    }
+    if( err == Z_STREAM_ERROR ){
+      Console(3) << "Warning: zlib stream error." << endl;
+      delete[] data, data2;
+      return NULL;
+    }
+    if( err == Z_BUF_ERROR ){
+      Console(3) << "Warning: zlib out of memory error." << endl;
+      delete[] data, data2;
+      return NULL;
+    }
+    
+    err = inflateEnd(&strm);
+    
+    if( err == Z_STREAM_ERROR ){
+      Console(3) << "Warning: zlib stream error." << endl;
+      delete[] data, data2;
+      return NULL;
+    }
+    
+    Console(2) << "Inflated compressed raw file." << endl;
+    delete[] data;
+    data = data2;
+  }
+  
+#endif
+  
   return new PixelImage( width->getValue(),
                          height->getValue(),
                          depth->getValue(),
