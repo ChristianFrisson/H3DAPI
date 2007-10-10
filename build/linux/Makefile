@@ -38,7 +38,7 @@ HAPI_HOME         = ../../../HAPI
 
 CXX        = g++
 SHARED     = -shared -export-dynamic
-INCLUDES   = -I$(H3D_HOME)/src
+INCLUDES   = -I$(H3D_HOME)/include
 CXXFLAGS   = -Wall -g $(INCLUDES)
 LDFLAGS    = 
 
