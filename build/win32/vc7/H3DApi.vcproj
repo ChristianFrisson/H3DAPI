@@ -998,1096 +998,1090 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\..\src\Anchor.h">
+				RelativePath="..\..\..\include\H3d\Anchor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\AnyDevice.h">
+				RelativePath="..\..\..\include\H3d\AnyDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Appearance.h">
+				RelativePath="..\..\..\include\H3d\Appearance.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Arc2D.h">
+				RelativePath="..\..\..\include\H3d\Arc2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ArcClose2D.h">
+				RelativePath="..\..\..\include\H3d\ArcClose2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\AudioClip.h">
+				RelativePath="..\..\..\include\H3d\AudioClip.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\AudioFileReader.h">
+				RelativePath="..\..\..\include\H3d\AudioFileReader.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Background.h">
+				RelativePath="..\..\..\include\H3d\Background.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Billboard.h">
+				RelativePath="..\..\..\include\H3d\Billboard.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\BooleanFilter.h">
+				RelativePath="..\..\..\include\H3d\BooleanFilter.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\BooleanSequencer.h">
+				RelativePath="..\..\..\include\H3d\BooleanSequencer.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\BooleanToggle.h">
+				RelativePath="..\..\..\include\H3d\BooleanToggle.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\BooleanTrigger.h">
+				RelativePath="..\..\..\include\H3d\BooleanTrigger.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Bound.h">
+				RelativePath="..\..\..\include\H3d\Bound.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\BoundedPhysicsModel.h">
+				RelativePath="..\..\..\include\H3d\BoundedPhysicsModel.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Box.h">
+				RelativePath="..\..\..\include\H3d\Box.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Circle2D.h">
+				RelativePath="..\..\..\include\H3d\Circle2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ClipPlane.h">
+				RelativePath="..\..\..\include\H3d\ClipPlane.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Collision.h">
+				RelativePath="..\..\..\include\H3d\Collision.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Color.h">
+				RelativePath="..\..\..\include\H3d\Color.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ColorInterpolator.h">
+				RelativePath="..\..\..\include\H3d\ColorInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ColorRGBA.h">
+				RelativePath="..\..\..\include\H3d\ColorRGBA.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Composed3DTexture.h">
+				RelativePath="..\..\..\include\H3d\Composed3DTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ComposedCubeMapTexture.h">
+				RelativePath="..\..\..\include\H3d\ComposedCubeMapTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ComposedShader.h">
+				RelativePath="..\..\..\include\H3d\ComposedShader.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Cone.h">
+				RelativePath="..\..\..\include\H3d\Cone.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ConeEmitter.h">
+				RelativePath="..\..\..\include\H3d\ConeEmitter.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Contour2D.h">
+				RelativePath="..\..\..\include\H3d\Contour2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ContourPolyline2D.h">
+				RelativePath="..\..\..\include\H3d\ContourPolyline2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\CoordBoundField.h">
+				RelativePath="..\..\..\include\H3d\CoordBoundField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Coordinate.h">
+				RelativePath="..\..\..\include\H3d\Coordinate.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\CoordinateDeformer.h">
+				RelativePath="..\..\..\include\H3d\CoordinateDeformer.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\CoordinateInterpolator.h">
+				RelativePath="..\..\..\include\H3d\CoordinateInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\CoordinateInterpolator2D.h">
+				RelativePath="..\..\..\include\H3d\CoordinateInterpolator2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Cylinder.h">
+				RelativePath="..\..\..\include\H3d\Cylinder.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\CylinderSensor.h">
+				RelativePath="..\..\..\include\H3d\CylinderSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DebugOptions.h">
+				RelativePath="..\..\..\include\H3d\DebugOptions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DefaultAppearance.h">
+				RelativePath="..\..\..\include\H3d\DefaultAppearance.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DEFNodes.h">
+				RelativePath="..\..\..\include\H3d\DEFNodes.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DeformableShape.h">
+				RelativePath="..\..\..\include\H3d\DeformableShape.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DependentNodeFields.h">
+				RelativePath="..\..\..\include\H3d\DependentNodeFields.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DepthMapSurface.h">
+				RelativePath="..\..\..\include\H3d\DepthMapSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DeviceInfo.h">
+				RelativePath="..\..\..\include\H3d\DeviceInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DeviceLog.h">
+				RelativePath="..\..\..\include\H3d\DeviceLog.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DirectionalLight.h">
+				RelativePath="..\..\..\include\H3d\DirectionalLight.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DirectShowDecoder.h">
+				RelativePath="..\..\..\include\H3d\DirectShowDecoder.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Disk2D.h">
+				RelativePath="..\..\..\include\H3d\Disk2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\DynamicTransform.h">
+				RelativePath="..\..\..\include\H3d\DynamicTransform.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ElevationGrid.h">
+				RelativePath="..\..\..\include\H3d\ElevationGrid.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ExplosionEmitter.h">
+				RelativePath="..\..\..\include\H3d\ExplosionEmitter.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Extrusion.h">
+				RelativePath="..\..\..\include\H3d\Extrusion.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FakeHapticsDevice.h">
+				RelativePath="..\..\..\include\H3d\FakeHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FalconDevice.h">
+				RelativePath="..\..\..\include\H3d\FalconDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Field.h">
+				RelativePath="..\..\..\include\H3d\Field.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FieldTemplates.h">
+				RelativePath="..\..\..\include\H3d\FieldTemplates.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FillProperties.h">
+				RelativePath="..\..\..\include\H3d\FillProperties.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FitToBoxTransform.h">
+				RelativePath="..\..\..\include\H3d\FitToBoxTransform.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FlexLexer.h">
+				RelativePath="..\..\..\include\H3d\FlexLexer.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FloatVertexAttribute.h">
+				RelativePath="..\..\..\include\H3d\FloatVertexAttribute.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Fog.h">
+				RelativePath="..\..\..\include\H3d\Fog.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FogCoordinate.h">
+				RelativePath="..\..\..\include\H3d\FogCoordinate.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FontStyle.h">
+				RelativePath="..\..\..\include\H3d\FontStyle.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ForceDimensionDevice.h">
+				RelativePath="..\..\..\include\H3d\ForceDimensionDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ForceField.h">
+				RelativePath="..\..\..\include\H3d\ForceField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FreeImageImage.h">
+				RelativePath="..\..\..\include\H3d\FreeImageImage.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FreeImageLoader.h">
+				RelativePath="..\..\..\include\H3d\FreeImageLoader.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FrictionalSurface.h">
+				RelativePath="..\..\..\include\H3d\FrictionalSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\FunctionPlotTexture.h">
+				RelativePath="..\..\..\include\H3d\FunctionPlotTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GaussianFunction.h">
+				RelativePath="..\..\..\include\H3d\GaussianFunction.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GeneralFunction.h">
+				RelativePath="..\..\..\include\H3d\GeneralFunction.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GeneratedCubeMapTexture.h">
+				RelativePath="..\..\..\include\H3d\GeneratedCubeMapTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GeometryBoundTreeOptions.h">
+				RelativePath="..\..\..\include\H3d\GeometryBoundTreeOptions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GlobalSettings.h">
+				RelativePath="..\..\..\include\H3d\GlobalSettings.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GLUTWindow.h">
+				RelativePath="..\..\..\include\H3d\GLUTWindow.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GraphicsCachingOptions.h">
+				RelativePath="..\..\..\include\H3d\GraphicsCachingOptions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\GravityPhysicsModel.h">
+				RelativePath="..\..\..\include\H3d\GravityPhysicsModel.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Group.h">
+				RelativePath="..\..\..\include\H3d\Group.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DApi.h">
+				RelativePath="..\..\..\include\H3d\H3DApi.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DBoundedObject.h">
+				RelativePath="..\..\..\include\H3d\H3DBoundedObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DCoordinateDeformerNode.h">
+				RelativePath="..\..\..\include\H3d\H3DCoordinateDeformerNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DDisplayListObject.h">
+				RelativePath="..\..\..\include\H3d\H3DDisplayListObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DDynamicFieldsObject.h">
+				RelativePath="..\..\..\include\H3d\H3DDynamicFieldsObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DExports.h">
+				RelativePath="..\..\..\include\H3d\H3DExports.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DFakeHapticsDevice.h">
+				RelativePath="..\..\..\include\H3d\H3DFakeHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DForceEffect.h">
+				RelativePath="..\..\..\include\H3d\H3DForceEffect.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DFunctionNode.h">
+				RelativePath="..\..\..\include\H3d\H3DFunctionNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DHapticsDevice.h">
+				RelativePath="..\..\..\include\H3d\H3DHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DHapticsRendererNode.h">
+				RelativePath="..\..\..\include\H3d\H3DHapticsRendererNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DImageLoaderNode.h">
+				RelativePath="..\..\..\include\H3d\H3DImageLoaderNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DImageObject.h">
+				RelativePath="..\..\..\include\H3d\H3DImageObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DNavigation.h">
+				RelativePath="..\..\..\include\H3d\H3DNavigation.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DNavigationDevices.h">
+				RelativePath="..\..\..\include\H3d\H3DNavigationDevices.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DNodeDatabase.h">
+				RelativePath="..\..\..\include\H3d\H3DNodeDatabase.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DOptionNode.h">
+				RelativePath="..\..\..\include\H3d\H3DOptionNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DRenderStateObject.h">
+				RelativePath="..\..\..\include\H3d\H3DRenderStateObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DScriptNode.h">
+				RelativePath="..\..\..\include\H3d\H3DScriptNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DSoundFileNode.h">
+				RelativePath="..\..\..\include\H3d\H3DSoundFileNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DSoundStreamNode.h">
+				RelativePath="..\..\..\include\H3d\H3DSoundStreamNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DSurfaceNode.h">
+				RelativePath="..\..\..\include\H3d\H3DSurfaceNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DTypes.h">
+				RelativePath="..\..\..\include\H3d\H3DTypes.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DVariableDepthSurface.h">
+				RelativePath="..\..\..\include\H3d\H3DVariableDepthSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DVideoClipDecoderNode.h">
+				RelativePath="..\..\..\include\H3d\H3DVideoClipDecoderNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DVideoTextureNode.h">
+				RelativePath="..\..\..\include\H3d\H3DVideoTextureNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\H3DWindowNode.h">
+				RelativePath="..\..\..\include\H3d\H3DWindowNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticLayeredGroup.h">
+				RelativePath="..\..\..\include\H3d\HapticLayeredGroup.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticsOptions.h">
+				RelativePath="..\..\..\include\H3d\HapticsOptions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HapticsRenderers.h">
+				RelativePath="..\..\..\include\H3d\HapticsRenderers.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\HaptikHapticsDevice.h">
+				RelativePath="..\..\..\include\H3d\HaptikHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Image3DTexture.h">
+				RelativePath="..\..\..\include\H3d\Image3DTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ImageObjectTexture.h">
+				RelativePath="..\..\..\include\H3d\ImageObjectTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ImageTexture.h">
+				RelativePath="..\..\..\include\H3d\ImageTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ImportLibrary.h">
+				RelativePath="..\..\..\include\H3d\ImportLibrary.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IndexedFaceSet.h">
+				RelativePath="..\..\..\include\H3d\IndexedFaceSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IndexedLineSet.h">
+				RelativePath="..\..\..\include\H3d\IndexedLineSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IndexedTriangleFanSet.h">
+				RelativePath="..\..\..\include\H3d\IndexedTriangleFanSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IndexedTriangleSet.h">
+				RelativePath="..\..\..\include\H3d\IndexedTriangleSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IndexedTriangleStripSet.h">
+				RelativePath="..\..\..\include\H3d\IndexedTriangleStripSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\INIFile.h">
+				RelativePath="..\..\..\include\H3d\INIFile.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Inline.h">
+				RelativePath="..\..\..\include\H3d\Inline.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Instantiate.h">
+				RelativePath="..\..\..\include\H3d\Instantiate.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IntegerSequencer.h">
+				RelativePath="..\..\..\include\H3d\IntegerSequencer.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IntegerTrigger.h">
+				RelativePath="..\..\..\include\H3d\IntegerTrigger.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IStreamInputSource.h">
+				RelativePath="..\..\..\include\H3d\IStreamInputSource.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\IStreamInputStream.h">
+				RelativePath="..\..\..\include\H3d\IStreamInputStream.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\KeySensor.h">
+				RelativePath="..\..\..\include\H3d\KeySensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\LibCurlResolver.h">
+				RelativePath="..\..\..\include\H3d\LibCurlResolver.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\LineProperties.h">
+				RelativePath="..\..\..\include\H3d\LineProperties.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\LineSet.h">
+				RelativePath="..\..\..\include\H3d\LineSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\LoadSensor.h">
+				RelativePath="..\..\..\include\H3d\LoadSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\LocalFog.h">
+				RelativePath="..\..\..\include\H3d\LocalFog.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\LOD.h">
+				RelativePath="..\..\..\include\H3d\LOD.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MagneticGeometryEffect.h">
+				RelativePath="..\..\..\include\H3d\MagneticGeometryEffect.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MagneticSurface.h">
+				RelativePath="..\..\..\include\H3d\MagneticSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Material.h">
+				RelativePath="..\..\..\include\H3d\Material.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Matrix3VertexAttribute.h">
+				RelativePath="..\..\..\include\H3d\Matrix3VertexAttribute.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Matrix4VertexAttribute.h">
+				RelativePath="..\..\..\include\H3d\Matrix4VertexAttribute.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MatrixTransform.h">
+				RelativePath="..\..\..\include\H3d\MatrixTransform.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MetadataDouble.h">
+				RelativePath="..\..\..\include\H3d\MetadataDouble.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MetadataFloat.h">
+				RelativePath="..\..\..\include\H3d\MetadataFloat.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MetadataInteger.h">
+				RelativePath="..\..\..\include\H3d\MetadataInteger.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MetadataSet.h">
+				RelativePath="..\..\..\include\H3d\MetadataSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MetadataString.h">
+				RelativePath="..\..\..\include\H3d\MetadataString.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFBool.h">
+				RelativePath="..\..\..\include\H3d\MFBool.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFColor.h">
+				RelativePath="..\..\..\include\H3d\MFColor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFColorRGBA.h">
+				RelativePath="..\..\..\include\H3d\MFColorRGBA.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFDouble.h">
+				RelativePath="..\..\..\include\H3d\MFDouble.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFFloat.h">
+				RelativePath="..\..\..\include\H3d\MFFloat.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MField.h">
+				RelativePath="..\..\..\include\H3d\MField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFInt32.h">
+				RelativePath="..\..\..\include\H3d\MFInt32.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFMatrix3d.h">
+				RelativePath="..\..\..\include\H3d\MFMatrix3d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFMatrix3f.h">
+				RelativePath="..\..\..\include\H3d\MFMatrix3f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFMatrix4d.h">
+				RelativePath="..\..\..\include\H3d\MFMatrix4d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFMatrix4f.h">
+				RelativePath="..\..\..\include\H3d\MFMatrix4f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFNode.h">
+				RelativePath="..\..\..\include\H3d\MFNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFNodeAutoRefVector.h">
+				RelativePath="..\..\..\include\H3d\MFNodeAutoRefVector.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFQuaternion.h">
+				RelativePath="..\..\..\include\H3d\MFQuaternion.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFRotation.h">
+				RelativePath="..\..\..\include\H3d\MFRotation.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFString.h">
+				RelativePath="..\..\..\include\H3d\MFString.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFTime.h">
+				RelativePath="..\..\..\include\H3d\MFTime.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFVec2d.h">
+				RelativePath="..\..\..\include\H3d\MFVec2d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFVec2f.h">
+				RelativePath="..\..\..\include\H3d\MFVec2f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFVec3d.h">
+				RelativePath="..\..\..\include\H3d\MFVec3d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFVec3f.h">
+				RelativePath="..\..\..\include\H3d\MFVec3f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFVec4d.h">
+				RelativePath="..\..\..\include\H3d\MFVec4d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MFVec4f.h">
+				RelativePath="..\..\..\include\H3d\MFVec4f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MouseSensor.h">
+				RelativePath="..\..\..\include\H3d\MouseSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MovieTexture.h">
+				RelativePath="..\..\..\include\H3d\MovieTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MultiTexture.h">
+				RelativePath="..\..\..\include\H3d\MultiTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MultiTextureCoordinate.h">
+				RelativePath="..\..\..\include\H3d\MultiTextureCoordinate.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\MultiTextureTransform.h">
+				RelativePath="..\..\..\include\H3d\MultiTextureTransform.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\NavigationInfo.h">
+				RelativePath="..\..\..\include\H3d\NavigationInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Node.h">
+				RelativePath="..\..\..\include\H3d\Node.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Normal.h">
+				RelativePath="..\..\..\include\H3d\Normal.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\NormalInterpolator.h">
+				RelativePath="..\..\..\include\H3d\NormalInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\NurbsCurve.h">
+				RelativePath="..\..\..\include\H3d\NurbsCurve.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\NurbsCurve2D.h">
+				RelativePath="..\..\..\include\H3d\NurbsCurve2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\NurbsPatchSurface.h">
+				RelativePath="..\..\..\include\H3d\NurbsPatchSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\NurbsTextureCoordinate.h">
+				RelativePath="..\..\..\include\H3d\NurbsTextureCoordinate.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\NurbsTrimmedSurface.h">
+				RelativePath="..\..\..\include\H3d\NurbsTrimmedSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\OggFileReader.h">
+				RelativePath="..\..\..\include\H3d\OggFileReader.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\OpenHapticsOptions.h">
+				RelativePath="..\..\..\include\H3d\OpenHapticsOptions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\OpenHapticsSurface.h">
+				RelativePath="..\..\..\include\H3d\OpenHapticsSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\OrientationInterpolator.h">
+				RelativePath="..\..\..\include\H3d\OrientationInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\OrthoViewpoint.h">
+				RelativePath="..\..\..\include\H3d\OrthoViewpoint.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PackagedShader.h">
+				RelativePath="..\..\..\include\H3d\PackagedShader.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ParticleSystem.h">
+				RelativePath="..\..\..\include\H3d\ParticleSystem.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PeriodicUpdate.h">
+				RelativePath="..\..\..\include\H3d\PeriodicUpdate.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PhantomDevice.h">
+				RelativePath="..\..\..\include\H3d\PhantomDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Pixel3DTexture.h">
+				RelativePath="..\..\..\include\H3d\Pixel3DTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PixelImage.h">
+				RelativePath="..\..\..\include\H3d\PixelImage.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PixelTexture.h">
+				RelativePath="..\..\..\include\H3d\PixelTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PlaneSensor.h">
+				RelativePath="..\..\..\include\H3d\PlaneSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PointEmitter.h">
+				RelativePath="..\..\..\include\H3d\PointEmitter.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PointLight.h">
+				RelativePath="..\..\..\include\H3d\PointLight.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PointNormalClipPlane.h">
+				RelativePath="..\..\..\include\H3d\PointNormalClipPlane.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PointSet.h">
+				RelativePath="..\..\..\include\H3d\PointSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Polyline2D.h">
+				RelativePath="..\..\..\include\H3d\Polyline2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Polypoint2D.h">
+				RelativePath="..\..\..\include\H3d\Polypoint2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PositionInterpolator.h">
+				RelativePath="..\..\..\include\H3d\PositionInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PositionInterpolator2D.h">
+				RelativePath="..\..\..\include\H3d\PositionInterpolator2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ProfilesAndComponents.h">
+				RelativePath="..\..\..\include\H3d\ProfilesAndComponents.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ProfileSAX2Handlers.h">
+				RelativePath="..\..\..\include\H3d\ProfileSAX2Handlers.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ProgramShader.h">
+				RelativePath="..\..\..\include\H3d\ProgramShader.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ProtoDeclaration.h">
+				RelativePath="..\..\..\include\H3d\ProtoDeclaration.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PrototypeInstance.h">
+				RelativePath="..\..\..\include\H3d\PrototypeInstance.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PrototypeVector.h">
+				RelativePath="..\..\..\include\H3d\PrototypeVector.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ProximitySensor.h">
+				RelativePath="..\..\..\include\H3d\ProximitySensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PythonMethods.h">
+				RelativePath="..\..\..\include\H3d\PythonMethods.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PythonScript.h">
+				RelativePath="..\..\..\include\H3d\PythonScript.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PythonTypes.h">
+				RelativePath="..\..\..\include\H3d\PythonTypes.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PyTypeWrapper.h">
+				RelativePath="..\..\..\include\H3d\PyTypeWrapper.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\QuanserDevice.h">
+				RelativePath="..\..\..\include\H3d\QuanserDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\RawImageLoader.h">
+				RelativePath="..\..\..\include\H3d\RawImageLoader.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Rectangle2D.h">
+				RelativePath="..\..\..\include\H3d\Rectangle2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\RefCountMField.h">
+				RelativePath="..\..\..\include\H3d\RefCountMField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\RefCountSField.h">
+				RelativePath="..\..\..\include\H3d\RefCountSField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\RenderProperties.h">
+				RelativePath="..\..\..\include\H3d\RenderProperties.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ResourceResolver.h">
+				RelativePath="..\..\..\include\H3d\ResourceResolver.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\RK4.h">
+				RelativePath="..\..\..\include\H3d\RK4.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ScalarInterpolator.h">
+				RelativePath="..\..\..\include\H3d\ScalarInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Scene.h">
+				RelativePath="..\..\..\include\H3d\Scene.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Script.h">
+				RelativePath="..\..\..\include\H3d\Script.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFBool.h">
+				RelativePath="..\..\..\include\H3d\SFBool.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFColor.h">
+				RelativePath="..\..\..\include\H3d\SFColor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFColorRGBA.h">
+				RelativePath="..\..\..\include\H3d\SFColorRGBA.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFDouble.h">
+				RelativePath="..\..\..\include\H3d\SFDouble.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFFloat.h">
+				RelativePath="..\..\..\include\H3d\SFFloat.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SField.h">
+				RelativePath="..\..\..\include\H3d\SField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFInt32.h">
+				RelativePath="..\..\..\include\H3d\SFInt32.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFMatrix3d.h">
+				RelativePath="..\..\..\include\H3d\SFMatrix3d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFMatrix3f.h">
+				RelativePath="..\..\..\include\H3d\SFMatrix3f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFMatrix4d.h">
+				RelativePath="..\..\..\include\H3d\SFMatrix4d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFMatrix4f.h">
+				RelativePath="..\..\..\include\H3d\SFMatrix4f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFNode.h">
+				RelativePath="..\..\..\include\H3d\SFNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFQuaternion.h">
+				RelativePath="..\..\..\include\H3d\SFQuaternion.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFRotation.h">
+				RelativePath="..\..\..\include\H3d\SFRotation.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFString.h">
+				RelativePath="..\..\..\include\H3d\SFString.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFTime.h">
+				RelativePath="..\..\..\include\H3d\SFTime.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFVec2d.h">
+				RelativePath="..\..\..\include\H3d\SFVec2d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFVec2f.h">
+				RelativePath="..\..\..\include\H3d\SFVec2f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFVec3d.h">
+				RelativePath="..\..\..\include\H3d\SFVec3d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFVec3f.h">
+				RelativePath="..\..\..\include\H3d\SFVec3f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFVec4d.h">
+				RelativePath="..\..\..\include\H3d\SFVec4d.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SFVec4f.h">
+				RelativePath="..\..\..\include\H3d\SFVec4f.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ShaderFunctions.h">
+				RelativePath="..\..\..\include\H3d\ShaderFunctions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ShaderPart.h">
+				RelativePath="..\..\..\include\H3d\ShaderPart.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ShaderProgram.h">
+				RelativePath="..\..\..\include\H3d\ShaderProgram.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Shape.h">
+				RelativePath="..\..\..\include\H3d\Shape.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SimpleMovieTexture.h">
+				RelativePath="..\..\..\include\H3d\SimpleMovieTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SmoothSurface.h">
+				RelativePath="..\..\..\include\H3d\SmoothSurface.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Sound.h">
+				RelativePath="..\..\..\include\H3d\Sound.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SpaceballSensor.h">
+				RelativePath="..\..\..\include\H3d\SpaceballSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SpaceWareHapticsDevice.h">
+				RelativePath="..\..\..\include\H3d\SpaceWareHapticsDevice.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SpaceWareSensor.h">
+				RelativePath="..\..\..\include\H3d\SpaceWareSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Sphere.h">
+				RelativePath="..\..\..\include\H3d\Sphere.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SphereSensor.h">
+				RelativePath="..\..\..\include\H3d\SphereSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SplinePositionInterpolator.h">
+				RelativePath="..\..\..\include\H3d\SplinePositionInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SplinePositionInterpolator2D.h">
+				RelativePath="..\..\..\include\H3d\SplinePositionInterpolator2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SplineScalarInterpolator.h">
+				RelativePath="..\..\..\include\H3d\SplineScalarInterpolator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SpotLight.h">
+				RelativePath="..\..\..\include\H3d\SpotLight.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SpringEffect.h">
+				RelativePath="..\..\..\include\H3d\SpringEffect.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\StereoInfo.h">
+				RelativePath="..\..\..\include\H3d\StereoInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\StringSensor.h">
+				RelativePath="..\..\..\include\H3d\StringSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SuperShape.h">
+				RelativePath="..\..\..\include\H3d\SuperShape.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\SurfaceEmitter.h">
+				RelativePath="..\..\..\include\H3d\SurfaceEmitter.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Switch.h">
+				RelativePath="..\..\..\include\H3d\Switch.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TexGenGeometry.h">
+				RelativePath="..\..\..\include\H3d\TexGenGeometry.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Text.h">
+				RelativePath="..\..\..\include\H3d\Text.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureBackground.h">
+				RelativePath="..\..\..\include\H3d\TextureBackground.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureCoordinate.h">
+				RelativePath="..\..\..\include\H3d\TextureCoordinate.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureCoordinate3D.h">
+				RelativePath="..\..\..\include\H3d\TextureCoordinate3D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureCoordinate4D.h">
+				RelativePath="..\..\..\include\H3d\TextureCoordinate4D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureCoordinateGenerator.h">
+				RelativePath="..\..\..\include\H3d\TextureCoordinateGenerator.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureMatrixTransform.h">
+				RelativePath="..\..\..\include\H3d\TextureMatrixTransform.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureProperties.h">
+				RelativePath="..\..\..\include\H3d\TextureProperties.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureTransform.h">
+				RelativePath="..\..\..\include\H3d\TextureTransform.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TextureTransform3D.h">
+				RelativePath="..\..\..\include\H3d\TextureTransform3D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ThreadSafeFields.h">
+				RelativePath="..\..\..\include\H3d\ThreadSafeFields.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TimeSensor.h">
+				RelativePath="..\..\..\include\H3d\TimeSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TimeTrigger.h">
+				RelativePath="..\..\..\include\H3d\TimeTrigger.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ToggleGroup.h">
+				RelativePath="..\..\..\include\H3d\ToggleGroup.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TouchSensor.h">
+				RelativePath="..\..\..\include\H3d\TouchSensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TransferFunctionTexture.h">
+				RelativePath="..\..\..\include\H3d\TransferFunctionTexture.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Transform.h">
+				RelativePath="..\..\..\include\H3d\Transform.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TransformInfo.h">
+				RelativePath="..\..\..\include\H3d\TransformInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TraverseInfo.h">
+				RelativePath="..\..\..\include\H3d\TraverseInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TriangleFanSet.h">
+				RelativePath="..\..\..\include\H3d\TriangleFanSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TriangleSet.h">
+				RelativePath="..\..\..\include\H3d\TriangleSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TriangleSet2D.h">
+				RelativePath="..\..\..\include\H3d\TriangleSet2D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TriangleStripSet.h">
+				RelativePath="..\..\..\include\H3d\TriangleStripSet.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TwoSidedMaterial.h">
+				RelativePath="..\..\..\include\H3d\TwoSidedMaterial.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TypedField.h">
+				RelativePath="..\..\..\include\H3d\TypedField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TypedFieldAnyTmpl.h">
+				RelativePath="..\..\..\include\H3d\TypedFieldAnyTmpl.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TypedFieldCheck.h">
+				RelativePath="..\..\..\include\H3d\TypedFieldCheck.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\TypedFieldTypesTmpl.h">
+				RelativePath="..\..\..\include\H3d\TypedFieldTypesTmpl.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\unistd.h">
+				RelativePath="..\..\..\include\H3d\URNResolver.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\URNResolver.h">
+				RelativePath="..\..\..\include\H3d\Viewpoint.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\Viewpoint.h">
+				RelativePath="..\..\..\include\H3d\ViewpointGroup.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ViewpointGroup.h">
+				RelativePath="..\..\..\include\H3d\ViscosityEffect.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\ViscosityEffect.h">
+				RelativePath="..\..\..\include\H3d\VisibilitySensor.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\VisibilitySensor.h">
+				RelativePath="..\..\..\include\H3d\VrmlDriver.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\vrml.hpp">
+				RelativePath="..\..\..\include\H3d\VrmlParser.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\VrmlDriver.h">
+				RelativePath="..\..\..\include\H3d\WindPhysicsModel.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\VrmlParser.h">
+				RelativePath="..\..\..\include\H3d\WorldInfo.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\WindPhysicsModel.h">
+				RelativePath="..\..\..\include\H3d\X3D.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\WorldInfo.h">
+				RelativePath="..\..\..\include\H3d\X3DAppearanceChildNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3D.h">
+				RelativePath="..\..\..\include\H3d\X3DAppearanceNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DAppearanceChildNode.h">
+				RelativePath="..\..\..\include\H3d\X3DBackgroundNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DAppearanceNode.h">
+				RelativePath="..\..\..\include\H3d\X3DBindableNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DBackgroundNode.h">
+				RelativePath="..\..\..\include\H3d\X3DBoundedObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DBindableNode.h">
+				RelativePath="..\..\..\include\H3d\X3DChildNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DBoundedObject.h">
+				RelativePath="..\..\..\include\H3d\X3DColorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DChildNode.h">
+				RelativePath="..\..\..\include\H3d\X3DComposedGeometryNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DColorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DCoordinateNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DComposedGeometryNode.h">
+				RelativePath="..\..\..\include\H3d\X3DDragSensorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DCoordinateNode.h">
+				RelativePath="..\..\..\include\H3d\X3DEnvironmentalSensorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DDragSensorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DEnvironmentTextureNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DEnvironmentalSensorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DFieldConversion.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DEnvironmentTextureNode.h">
+				RelativePath="..\..\..\include\H3d\X3DFogObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DFieldConversion.h">
+				RelativePath="..\..\..\include\H3d\X3DFontStyleNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DFogObject.h">
+				RelativePath="..\..\..\include\H3d\X3DGeometricPropertyNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DFontStyleNode.h">
+				RelativePath="..\..\..\include\H3d\X3DGeometryNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DGeometricPropertyNode.h">
+				RelativePath="..\..\..\include\H3d\X3DGroupingNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DGeometryNode.h">
+				RelativePath="..\..\..\include\H3d\X3DInfoNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DGroupingNode.h">
+				RelativePath="..\..\..\include\H3d\X3DInterpolatorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DInfoNode.h">
+				RelativePath="..\..\..\include\H3d\X3DKeyDeviceSensorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DInterpolatorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DLightNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DKeyDeviceSensorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DMaterialNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DLightNode.h">
+				RelativePath="..\..\..\include\H3d\X3DMetadataObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DMaterialNode.h">
+				RelativePath="..\..\..\include\H3d\X3DNetworkSensorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DMetadataObject.h">
+				RelativePath="..\..\..\include\H3d\X3DNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DNetworkSensorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DNormalNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DNode.h">
+				RelativePath="..\..\..\include\H3d\X3DNurbsControlCurveNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DNormalNode.h">
+				RelativePath="..\..\..\include\H3d\X3DNurbsSurfaceGeometryNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DNurbsControlCurveNode.h">
+				RelativePath="..\..\..\include\H3d\X3DParametricGeometryNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DNurbsSurfaceGeometryNode.h">
+				RelativePath="..\..\..\include\H3d\X3DParticleEmitterNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DParametricGeometryNode.h">
+				RelativePath="..\..\..\include\H3d\X3DParticlePhysicsModelNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DParticleEmitterNode.h">
+				RelativePath="..\..\..\include\H3d\X3DPointingDeviceSensorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DParticlePhysicsModelNode.h">
+				RelativePath="..\..\..\include\H3d\X3DProgrammableShaderObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DPointingDeviceSensorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DPrototypeInstance.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DProgrammableShaderObject.h">
+				RelativePath="..\..\..\include\H3d\X3DSAX2Handlers.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DPrototypeInstance.h">
+				RelativePath="..\..\..\include\H3d\X3DScriptNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DSAX2Handlers.h">
+				RelativePath="..\..\..\include\H3d\X3DSensorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DScriptNode.h">
+				RelativePath="..\..\..\include\H3d\X3DSequencerNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DSensorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DShaderNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DSequencerNode.h">
+				RelativePath="..\..\..\include\H3d\X3DShapeNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DShaderNode.h">
+				RelativePath="..\..\..\include\H3d\X3DSoundNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DShapeNode.h">
+				RelativePath="..\..\..\include\H3d\X3DSoundSourceNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DSoundNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTexture2DNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DSoundSourceNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTexture3DNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTexture2DNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTextureCoordinateNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTexture3DNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTextureNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTextureCoordinateNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTextureTransform2DNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTextureNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTextureTransformNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTextureTransform2DNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTimeDependentNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTextureTransformNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTouchSensorNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTimeDependentNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTriggerNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTouchSensorNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTypeFunctions.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTriggerNode.h">
+				RelativePath="..\..\..\include\H3d\X3DTypes.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTypeFunctions.h">
+				RelativePath="..\..\..\include\H3d\X3DUrlObject.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DTypes.h">
+				RelativePath="..\..\..\include\H3d\X3DVertexAttributeNode.h">
 			</File>
 			<File
-				RelativePath="..\..\..\src\X3DUrlObject.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\X3DVertexAttributeNode.h">
-			</File>
-			<File
-				RelativePath="..\..\..\src\X3DViewpointNode.h">
+				RelativePath="..\..\..\include\H3d\X3DViewpointNode.h">
 			</File>
 		</Filter>
 		<File
