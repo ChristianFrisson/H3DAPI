@@ -63,7 +63,7 @@
 #include <Python/moduleobject.h>
 #include <Python/structmember.h>
 #else
-#include <python.h>
+#include <Python.h>
 #include <pythonrun.h>
 #include <ceval.h>
 #include <moduleobject.h>

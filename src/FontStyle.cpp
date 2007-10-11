@@ -45,7 +45,7 @@
 #endif
 #ifdef LINUX
 #include <fontconfig/fontconfig.h>
-#include <H3D/string.h>
+#include <string.h>
 #endif
 #endif
 
