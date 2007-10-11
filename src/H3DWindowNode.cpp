@@ -264,7 +264,7 @@ void renderHapticTriangles() {
            i != shapes.end(); i++ ) {
         bool render_triangles = global_render_triangles;
         X3DGeometryNode *geom = 
-          static_cast< X3DGeometryNode * >( (*i)->userdata );
+          static_cast< X3DGeometryNode * >( (*i)->getUserData() );
         if( geom ) {
           debug_options = NULL;
           geom->getOptionNode( debug_options );

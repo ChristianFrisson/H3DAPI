@@ -41,11 +41,11 @@ void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
     for( vector< vector< HapticShapeVector > >::iterator i = haptic_shapes.begin();
          i != haptic_shapes.end();
          i++ ) {
-      if( shape->shape_id == -1 ) {
+      if( shape->getShapeId() == -1 ) {
         X3DGeometryNode *geometry = 
-          static_cast< X3DGeometryNode * >( shape->userdata );
-        shape->shape_id = 
-          geometry->getHapticShapeId( geometry_count[ geometry ] );
+          static_cast< X3DGeometryNode * >( shape->getUserData() );
+        shape->setShapeId(
+          geometry->getHapticShapeId( geometry_count[ geometry ] ));
         geometry_count[ geometry ]++;
       }
       (*i)[current_layer].push_back( shape );
@@ -96,11 +96,11 @@ void TraverseInfo::addHapticShape( int device_index,
                                      H3D_FULL_LOCATION );
   }
   if( hapticsEnabled() ) {
-    if( shape->shape_id == -1 ) {
+    if( shape->getShapeId() == -1 ) {
         X3DGeometryNode *geometry = 
-          static_cast< X3DGeometryNode * >( shape->userdata );
-        shape->shape_id = 
-          geometry->getHapticShapeId( geometry_count[ geometry ] );
+          static_cast< X3DGeometryNode * >( shape->getUserData() );
+        shape->setShapeId( 
+          geometry->getHapticShapeId( geometry_count[ geometry ] ) );
         geometry_count[ geometry ]++;
       }
     haptic_shapes[device_index][current_layer].push_back( shape );

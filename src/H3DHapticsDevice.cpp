@@ -379,7 +379,7 @@ void H3DHapticsDevice::updateDeviceValues() {
       for( HAPI::HAPIHapticsRenderer::Contacts::iterator i = contacts.begin();
            i != contacts.end(); i++ ) {
         X3DGeometryNode *geom =
-          static_cast< X3DGeometryNode * >( (*i).first->userdata );
+          static_cast< X3DGeometryNode * >( (*i).first->getUserData() );
       
         // make sure all fields have the right size
         if( device_index > (int)geom->force->size() -1 )
@@ -399,7 +399,7 @@ void H3DHapticsDevice::updateDeviceValues() {
         HAPI::HAPISurfaceObject::ContactInfo ci = (*i).second;
 
         // TODO: shpould be able to do it in a faster/better way.
-        Matrix4d global_to_local = (*i).first->transform.inverse();
+        Matrix4d global_to_local = (*i).first->getInverse();
         Matrix3d global_vec_to_local = global_to_local.getRotationPart();
 
         Vec3f cp( ( global_to_local * ci.globalSurfaceContactPoint() )* 1e-3 );
@@ -437,14 +437,14 @@ void H3DHapticsDevice::updateDeviceValues() {
       for( HAPI::HAPIHapticsRenderer::Contacts::iterator i =
             all_contacts.begin();
            i != all_contacts.end(); i++ ) {
-        if( (*i).first->userdata == (*j).first->userdata ) {
+        if( (*i).first->getUserData() == (*j).first->getUserData() ) {
           still_in_contact = true;
           break;
         }
       }
       if( !still_in_contact ) {
         X3DGeometryNode *geom = 
-          static_cast< X3DGeometryNode * >((*j).first->userdata );
+          static_cast< X3DGeometryNode * >((*j).first->getUserData() );
         geom->isTouched->setValue( device_index, false, geom->id );
         geom->force->setValue( device_index, Vec3f(), geom->id );
       }
