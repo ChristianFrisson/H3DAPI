@@ -407,18 +407,18 @@ void H3DHapticsDevice::updateDeviceValues() {
         if( geom->contactPoint->getValueByIndex( device_index ) != cp )
           geom->contactPoint->setValue( device_index, cp, geom->id );
 
-        Vec3f n( global_vec_to_local * ci.y_axis );
+        Vec3f n( global_vec_to_local * ci.yAxis() );
 
         if( geom->contactNormal->getValueByIndex( device_index ) != n ) 
           geom->contactNormal->setValue( device_index, n, geom->id ); 
 
         if( geom->contactTexCoord->getValueByIndex( device_index ) !=
-            ci.tex_coord ) 
+            ci.contactPointTexCoord() ) 
           geom->contactTexCoord->setValue( device_index,
-                                           (Vec3f) ci.tex_coord,
+                                           (Vec3f) ci.contactPointTexCoord(),
                                            geom->id ); 
         
-        Vec3f f( global_vec_to_local * ci.force_global );
+        Vec3f f( global_vec_to_local * ci.globalForce() );
 
         if( geom->force->getValueByIndex( device_index ) != f ) 
           geom->force->setValue(device_index, f, geom->id ); 
