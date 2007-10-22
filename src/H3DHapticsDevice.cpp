@@ -213,8 +213,11 @@ H3DHapticsDevice::ErrorCode H3DHapticsDevice::releaseDevice() {
 
 void H3DHapticsDevice::renderEffects( 
                          const HapticEffectVector &effects ) {
+  TimeStamp now_time;
+  H3DTime dt = now_time - last_effect_change;
+  last_effect_change = now_time;
   if( hapi_device.get() )
-    hapi_device->setEffects( effects );
+    hapi_device->setEffects( effects, dt );
 }
 
 void H3DHapticsDevice::renderShapes( 
@@ -297,9 +300,9 @@ void H3DHapticsDevice::updateDeviceValues() {
                                                      0, 0, 1e3, 0,
                                                      0, 0, 0, 1 ) *
                             adjustedPositionCalibration->rt_pos_calibration *
-                                           Matrix4f( 1e-3, 0, 0, 0,
-                                                     0, 1e-3, 0, 0,
-                                                     0, 0, 1e-3, 0,
+                                           Matrix4f( 1e-3f, 0, 0, 0,
+                                                     0, 1e-3f, 0, 0,
+                                                     0, 0, 1e-3f, 0,
                                                      0, 0, 0, 1 ) );
       
       // Create adjusted OrnCalibration and send to HAPI
@@ -316,9 +319,9 @@ void H3DHapticsDevice::updateDeviceValues() {
                                           0, 0, 1e3, 0,
                                           0, 0, 0, 1 ) *
                                 positionCalibration->rt_pos_calibration *
-                                Matrix4f( 1e-3, 0, 0, 0,
-                                          0, 1e-3, 0, 0,
-                                          0, 0, 1e-3, 0,
+                                Matrix4f( 1e-3f, 0, 0, 0,
+                                          0, 1e-3f, 0, 0,
+                                          0, 0, 1e-3f, 0,
                                           0, 0, 0, 1 ) );
       hapi_device->setOrientationCalibration(
         orientationCalibration->rt_orn_calibration );

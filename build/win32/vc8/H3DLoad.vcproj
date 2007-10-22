@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="H3DLoad"
 	ProjectGUID="{6A2D73A4-3E06-4324-8C03-B3441F4B2DA2}"
 	RootNamespace="H3DLoad"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src"
+				AdditionalIncludeDirectories="..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\include"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -53,7 +53,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CompileAs="0"
@@ -75,8 +75,8 @@
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="1"
 			/>
 			<Tool
@@ -132,7 +132,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\src;$(NOINHERIT)"
+				AdditionalIncludeDirectories="..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\include"
 				PreprocessorDefinitions="_CRTDBG_MAP_ALLOC ;_CRT_SECURE_NO_DEPRECATE;_DEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -142,7 +142,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CompileAs="0"

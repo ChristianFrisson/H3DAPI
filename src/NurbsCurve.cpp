@@ -205,16 +205,16 @@ void NurbsCurve::render( ) {
   GLfloat tess_step;
 
   if(tess_val>0){
-    tess_step= (tess_val+1);
+    tess_step= (GLfloat)(tess_val+1);
     gluNurbsProperty(theNurb, GLU_U_STEP , tess_step);
   }
   else if(tess_val<0){
-    tess_step = (((-tess_val)*no_of_control_points)+1);
+    tess_step = (GLfloat)(((-tess_val)*no_of_control_points)+1);
     gluNurbsProperty(theNurb, GLU_U_STEP , tess_step);
 
   }
   else if(tess_val==0){
-    H3DInt32 tess_step = ((2*no_of_control_points)+1);
+    tess_step = (GLfloat)((2*no_of_control_points)+1);
     gluNurbsProperty(theNurb, GLU_U_STEP , tess_step);
   }
 

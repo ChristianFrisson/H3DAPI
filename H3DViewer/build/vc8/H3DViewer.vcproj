@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="H3DViewer"
 	ProjectGUID="{FB794093-CA26-4DBF-A7DF-1A62B7C872D5}"
 	RootNamespace="WxLoad"
@@ -42,8 +42,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer;..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\src&quot;"
-				PreprocessorDefinitions="_NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32;__WXMSW__"
+				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
+				PreprocessorDefinitions="_NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
 				StringPooling="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="2"
@@ -54,7 +54,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CompileAs="0"
@@ -78,8 +78,8 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs=""
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 			/>
 			<Tool
@@ -135,7 +135,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer;..\..\..\..\HAPI\src;..\..\..\..\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\src&quot;"
+				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -145,7 +145,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CompileAs="0"
@@ -172,7 +172,7 @@
 				IgnoreDefaultLibraryNames=""
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>

@@ -48,8 +48,7 @@ namespace H3D {
       if( ti.hapticsEnabled() ) {
         ti.addForceEffectToAll( new HAPI::HapticForceField( 
                                  ti.getAccForwardMatrix().getRotationPart() *
-                                               force->getValue(),
-                                                         true ) );
+                                               force->getValue() ) );
       }
     }
 

@@ -103,7 +103,7 @@ void DeformableShape::traverseSG( TraverseInfo &ti ) {
       vector< Vec3f > new_deformed_coords( resting_coord->point->size() );
 
       const vector< bool > &is_touched = haptics_geom->isTouched->getValue();
-      int i = 0;
+      unsigned int i = 0;
       vector< Vec3f > penetration_points;
       const vector< H3DHapticsDevice *> &haptics_devices = 
         ti.getHapticsDevices();

@@ -604,19 +604,8 @@ namespace H3D {
     // The time of the last call to updateDeviceValues.
     TimeStamp last_update_values;
 
-    /// The time for the last call to the changeForceEffects callback 
-    /// function.
+    /// The time for the last call to the renderEffects function.
     TimeStamp last_effect_change;
-    
-    /// The time between the previous two calls to changeForceEffects.
-    TimeStamp last_loop_time;
-
-    /// Callcack function to transfer the force effect vector to the 
-    /// haptics loop.
-    static H3DUtil::PeriodicThread::CallbackCode changeForceEffects( void *_data ); 
-    /// Callcack function to transfer the shapes vector for the 
-    /// haptics loop.
-    static H3DUtil::PeriodicThread::CallbackCode changeHapticShapes( void *_data ); 
 
     // TODO
     HAPI::HAPIHapticsRenderer::Contacts last_contacts;

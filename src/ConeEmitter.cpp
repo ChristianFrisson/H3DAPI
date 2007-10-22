@@ -66,7 +66,7 @@ ConeEmitter::ConeEmitter(
 
   position->setValue( Vec3f( 0, 0, 0 ) );
   direction->setValue( Vec3f( 0, 1, 0 ) );
-  angle->setValue( Constants::pi / 4.0f );
+  angle->setValue( (H3DFloat)Constants::pi / 4.0f );
 }
 
 void ConeEmitter::generateParticles( ParticleSystem *ps,
@@ -81,7 +81,7 @@ void ConeEmitter::generateParticles( ParticleSystem *ps,
 
   H3DTime dt = now - last_time;
 
-  H3DFloat particles_to_emit = emission_rate * dt;
+  H3DFloat particles_to_emit = emission_rate * (H3DFloat)dt;
 
   while( particles_to_emit > 0 ) {
     // if the number of particles to emit is a fraction of
@@ -102,7 +102,7 @@ void ConeEmitter::generateParticles( ParticleSystem *ps,
                                                     angle->getValue() / 2 ) ) *
       dir;
     dir = Rotation( direction->getValue(), 
-                    ParticleSystem::getRandomValue( 0, Constants::pi * 2.0f ) ) *
+                    ParticleSystem::getRandomValue( 0, (H3DFloat)Constants::pi * 2.0f ) ) *
       dir;
                     
 

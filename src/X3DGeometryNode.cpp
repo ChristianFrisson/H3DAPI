@@ -549,9 +549,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
                                               0, 0, 1e3, 0,
                                               0, 0, 0, 1 ) *
                                     (ti.getAccForwardMatrix() *
-                                     Matrix4f( 1e-3, 0, 0, 0,
-                                               0, 1e-3, 0, 0,
-                                               0, 0, 1e-3, 0,
+                                     Matrix4f( 1e-3f, 0, 0, 0,
+                                               0, 1e-3f, 0, 0,
+                                               0, 0, 1e-3f, 0,
                                                0, 0, 0, 1 )),
                                     tris ,
                                     ti.getCurrentSurface()->getSurface(),
@@ -607,9 +607,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
                                          0, 0, 1e3, 0,
                                          0, 0, 0, 1 ) *
                                (ti.getAccForwardMatrix() *
-                                Matrix4f( 1e-3, 0, 0, 0,
-                                          0, 1e-3, 0, 0,
-                                          0, 0, 1e-3, 0,
+                                Matrix4f( 1e-3f, 0, 0, 0,
+                                          0, 1e-3f, 0, 0,
+                                          0, 0, 1e-3f, 0,
                                           0, 0, 0, 1 )),
                                lines,
                                ti.getCurrentSurface()->getSurface(),
@@ -664,9 +664,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
                                            0, 0, 1e3, 0,
                                            0, 0, 0, 1 ) *
                                  (ti.getAccForwardMatrix() *
-                                  Matrix4f( 1e-3, 0, 0, 0,
-                                            0, 1e-3, 0, 0,
-                                            0, 0, 1e-3, 0,
+                                  Matrix4f( 1e-3f, 0, 0, 0,
+                                            0, 1e-3f, 0, 0,
+                                            0, 0, 1e-3f, 0,
                                             0, 0, 0, 1 )),
                                  points ,
                                  ti.getCurrentSurface()->getSurface(),

@@ -229,9 +229,9 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
                          0, 0, 1e3, 0,
                          0, 0, 0, 1 ) *
                (ti.getAccForwardMatrix() *
-                Matrix4f( 1e-3, 0, 0, 0,
-                          0, 1e-3, 0, 0,
-                          0, 0, 1e-3, 0,
+                Matrix4f( 1e-3f, 0, 0, 0,
+                          0, 1e-3f, 0, 0,
+                          0, 0, 1e-3f, 0,
                           0, 0, 0, 1 ) ),
                 new HAPI::Collision::Sphere( Vec3f( 0, 0, 0 ),
                                              radius->getValue() * 1000 ),

@@ -89,13 +89,13 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
 
   if( tex_coord_ramp && tex_coord_key.size() > 0) {
     H3DFloat weight;
-    tex_coord_index = lookupKey( time_lived, 
+    tex_coord_index = lookupKey( (H3DFloat)time_lived, 
                                  weight, tex_coord_key );
   }
 
   if( color_ramp  && color_key.size() > 0 ) {
     H3DFloat weight;
-    int key_index = lookupKey( time_lived, 
+    int key_index = lookupKey( (H3DFloat)time_lived, 
                                weight, color_key );
     
     if( key_index >= 0 && 

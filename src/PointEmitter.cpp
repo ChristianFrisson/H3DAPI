@@ -77,7 +77,7 @@ void PointEmitter::generateParticles( ParticleSystem *ps,
 
   H3DTime dt = now - last_time;
 
-  H3DFloat particles_to_emit = emission_rate * dt;
+  H3DFloat particles_to_emit = emission_rate * (H3DFloat)dt;
 
   while( particles_to_emit > 0 ) {
     // if the number of particles to emit is a fraction of

@@ -59,8 +59,8 @@ H3DVariableDepthSurface::H3DVariableDepthSurface(
   database.initFields( this );
   stiffness->setValue( 0.5 );
   damping->setValue( 0 );
-  staticFriction->setValue( 0.1 );
-  dynamicFriction->setValue( 0.4 );
+  staticFriction->setValue( 0.1f );
+  dynamicFriction->setValue( 0.4f );
 }
 
 void H3DVariableDepthSurface::UpdateStiffness::

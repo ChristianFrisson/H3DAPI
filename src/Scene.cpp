@@ -92,7 +92,7 @@ namespace SceneInternal {
 void Scene::idle() {
   // calculate and set frame rate
   TimeStamp t;
-  frameRate->setValue( 1.0f / ( t - last_time ), id );
+  frameRate->setValue( 1.0f / (H3DFloat)( t - last_time ), id );
   last_time = t;
   time->setValue( t, id );
 

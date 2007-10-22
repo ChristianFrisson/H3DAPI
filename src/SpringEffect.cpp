@@ -65,7 +65,7 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
   escapeDistance( _escapeDistance ),
   active( _active ),
   deviceIndex( _deviceIndex ),
-  haptic_spring( new HAPI::HapticSpring( true ) ) {
+  haptic_spring( new HAPI::HapticSpring() ) {
   
   type_name = "SpringEffect";
 
