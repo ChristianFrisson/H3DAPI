@@ -43,7 +43,7 @@
 #include <HAPI/HapticPrimitive.h>
 
 #ifdef HAVE_OPENHAPTICS
-#include <OpenHapticsRenderer.h>
+#include <HAPI/OpenHapticsRenderer.h>
 #endif
 
 using namespace H3D;

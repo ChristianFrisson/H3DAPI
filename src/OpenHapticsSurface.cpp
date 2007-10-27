@@ -30,7 +30,7 @@
 #include <H3D/OpenHapticsSurface.h>
 
 #ifdef HAVE_OPENHAPTICS
-#include <OpenHapticsRenderer.h>
+#include <HAPI/OpenHapticsRenderer.h>
 
 using namespace H3D;
 

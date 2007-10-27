@@ -30,7 +30,7 @@
 #include <H3D/MagneticSurface.h>
 #include <H3D/H3DHapticsDevice.h>
 #ifdef HAVE_OPENHAPTICS
-#include <OpenHapticsRenderer.h>
+#include <HAPI/OpenHapticsRenderer.h>
 #endif
 
 using namespace H3D;
