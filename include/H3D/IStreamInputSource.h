@@ -30,6 +30,8 @@
 
 #include <H3D/H3DApi.h>
 
+#ifdef HAVE_XERCES
+
 #include <xercesc/sax/InputSource.hpp>
 #include <iostream>
 
@@ -87,4 +89,5 @@ namespace H3D {
   };
 }
 
+#endif
 #endif

@@ -21,11 +21,16 @@
 #include <H3DUtil/AutoRef.h>
 #include <H3D/PrototypeVector.h>
 
+#ifdef HAVE_XERCES
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
+XERCES_CPP_NAMESPACE_USE
+#else
+typedef char XMLCh;
+#endif
 
 using namespace std;
-XERCES_CPP_NAMESPACE_USE
+
 
 namespace H3D {
   namespace X3D {
@@ -126,7 +131,9 @@ namespace H3D {
            DEFNodes *exported_nodes = NULL,
            PrototypeVector *prototypes = NULL );
 
+#ifdef HAVE_XERCES
     SAX2XMLReader* getNewXMLParser();
+#endif
     
     /// Write the scene graph part of the node given in X3D/XML format
     /// to the given ostream.

@@ -29,7 +29,6 @@
 #ifndef __X3DSAX2HANDLERS_H__
 #define __X3DSAX2HANDLERS_H__
 
-
 #include <stack>
 #include <list>
 #include <H3D/Field.h>
@@ -41,6 +40,8 @@
 #include <H3DUtil/Exception.h>
 #include <H3DUtil/AutoRef.h>
 #include <H3DUtil/AutoPtrVector.h>
+
+#ifdef HAVE_XERCES
 
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
@@ -54,10 +55,12 @@
 #else
 #pragma comment( lib, "xerces-c_2.lib" )
 #endif
+XERCES_CPP_NAMESPACE_USE
+#endif
+
 #endif
 
 
-XERCES_CPP_NAMESPACE_USE
 namespace H3D {
   namespace X3D {
     /// 
@@ -66,6 +69,8 @@ namespace H3D {
     /// 
     H3D_API_EXCEPTION( XMLParseError );
 
+
+#ifdef HAVE_XERCES
     /// This class implements the SAX2 ContentHandler and ErrorHandler 
     /// interface in order to build an H3D scenegraph from a X3D XML file.
     ///
@@ -359,6 +364,8 @@ namespace H3D {
       bool inside_head;
         
     };
+#endif
   } 
 }
 #endif
+

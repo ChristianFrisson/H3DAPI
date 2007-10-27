@@ -27,6 +27,10 @@
 
 #ifndef __ISTREAMINPUTSTREAM_H__
 #define __ISTREAMINPUTSTREAM_H__
+
+#include <H3D/H3DApi.h>
+
+#ifdef HAVE_XERCES
 #include <xercesc/util/BinInputStream.hpp>
 #include <iostream>
 
@@ -58,4 +62,5 @@ namespace H3D {
   }
 }
 
+#endif
 #endif

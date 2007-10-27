@@ -2,7 +2,10 @@
 //    All Rights Reserved
 //
 
+
 #include <H3D/X3DSAX2Handlers.h>
+
+#ifdef HAVE_XERCES
 #include <H3D/FieldTemplates.h>
 #include <iostream>
 #include <sstream>
@@ -1408,3 +1411,6 @@ void X3DSAX2Handlers::warning(const SAXParseException& e) {
              << ", line " << e.getLineNumber()
              << ", char " << e.getColumnNumber() << ")" << endl;
 }
+
+
+#endif

@@ -37,11 +37,11 @@
 #include <H3D/FieldTemplates.h>
 
 // HAPI includes
-#include <OpenHapticsRenderer.h>
+#include <HAPI/OpenHapticsRenderer.h>
 #include <HAPI/RuspiniRenderer.h>
 #include <HAPI/GodObjectRenderer.h>
 #ifdef HAVE_CHAI3D
-#include <Chai3DRenderer.h>
+#include <HAPI/Chai3DRenderer.h>
 #endif
 
 namespace H3D {

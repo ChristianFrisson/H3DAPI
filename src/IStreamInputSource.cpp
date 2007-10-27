@@ -30,6 +30,10 @@
 
 using namespace H3D;
 
+#ifdef HAVE_XERCES
+
 BinInputStream* X3D::IStreamInputSource::makeStream() const {
   return new (getMemoryManager()) IStreamInputStream( is );
 }
+
+#endif

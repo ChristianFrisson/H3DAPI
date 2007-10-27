@@ -45,7 +45,7 @@
 #pragma comment( lib, "ftgl_dynamic_MTD.lib" )
 #endif
 #endif
-#include <FTGLTextureFont.h>
+#include <FTGL/FTGLTextureFont.h>
 #endif
 
 namespace H3D {

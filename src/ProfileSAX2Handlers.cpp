@@ -1,8 +1,12 @@
 //    H3D API.   Copyright 2004, Daniel Evestedt, Mark Dixon
 //    All Rights Reserved
 //
+
+
 #include <stdlib.h>
 #include <H3D/ProfileSAX2Handlers.h>
+
+#ifdef HAVE_XERCES
 #include <iostream>
 #include <sstream>
 #include <H3D/H3DNodeDatabase.h>
@@ -199,4 +203,4 @@ void ProfileSAX2Handlers::warning(const SAXParseException& e) {
              << ", char " << e.getColumnNumber() << ")" << endl;
 }
 
-
+#endif

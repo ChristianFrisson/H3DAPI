@@ -34,10 +34,10 @@
 #endif
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
-#include <FTGLTextureFont.h>
-#include <FTGLPolygonFont.h>
-#include <FTGLOutlineFont.h>
-#include <FTGLExtrdFont.h>
+#include <FTGL/FTGLTextureFont.h>
+#include <FTGL/FTGLPolygonFont.h>
+#include <FTGL/FTGLOutlineFont.h>
+#include <FTGL/FTGLExtrdFont.h>
 #if defined(__APPLE__) && defined(__MACH__)
 #include <freetype/ftmac.h>
 #else

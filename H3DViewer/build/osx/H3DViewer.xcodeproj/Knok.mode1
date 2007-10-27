@@ -204,10 +204,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>96FA01320C26C35400C1F160</string>
+						<string>9665CD140CD3C91D00DFBD6A</string>
 						<key>history</key>
 						<array>
-							<string>96FA012E0C26C33500C1F160</string>
+							<string>96FA01320C26C35400C1F160</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -260,6 +260,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -302,7 +304,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>2</integer>
+									<integer>4</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -371,8 +373,6 @@
 							<string>0pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -409,9 +409,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>96FA01190C26BDB500C1F160</string>
+				<string>9665CD120CD3C91D00DFBD6A</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>96FA011A0C26BDB500C1F160</string>
+				<string>9665CD130CD3C91D00DFBD6A</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -545,12 +545,11 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>96FA01250C26BDB500C1F160</string>
+		<string>9665CD1B0CD3C91D00DFBD6A</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>/Users/Knok/devel/release/H3DAPI/H3DViewer/build/osx/H3DViewer.xcodeproj</string>
-		<string>96FA01300C26C35400C1F160</string>
-		<string>96E9E0D00B8C9B1100B4BE63</string>
 		<string>1C0AD2B3069F1EA900FABCE6</string>
+		<string>/Users/Knok/devel/H3D/H3DAPI/H3DViewer/build/osx/H3DViewer.xcodeproj</string>
+		<string>96FA01300C26C35400C1F160</string>
 	</array>
 	<key>WindowString</key>
 	<string>624 346 799 402 0 0 1440 878 </string>
@@ -674,8 +673,8 @@
 										<string>yes</string>
 										<key>sizes</key>
 										<array>
-											<string>{{0, 0}, {452, 262}}</string>
-											<string>{{452, 0}, {647, 262}}</string>
+											<string>{{0, 0}, {450, 262}}</string>
+											<string>{{450, 0}, {649, 262}}</string>
 										</array>
 									</dict>
 									<key>VerticalSplitView</key>
@@ -738,14 +737,14 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
-				<string>96FA011F0C26BDB500C1F160</string>
+				<string>9665CD150CD3C91D00DFBD6A</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>96FA01200C26BDB500C1F160</string>
-				<string>96FA01210C26BDB500C1F160</string>
-				<string>96FA01220C26BDB500C1F160</string>
-				<string>96FA01230C26BDB500C1F160</string>
-				<string>96FA01240C26BDB500C1F160</string>
-				<string>96FA01250C26BDB500C1F160</string>
+				<string>9665CD160CD3C91D00DFBD6A</string>
+				<string>9665CD170CD3C91D00DFBD6A</string>
+				<string>9665CD180CD3C91D00DFBD6A</string>
+				<string>9665CD190CD3C91D00DFBD6A</string>
+				<string>9665CD1A0CD3C91D00DFBD6A</string>
+				<string>9665CD1B0CD3C91D00DFBD6A</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debug</string>
@@ -1002,9 +1001,9 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C0AD2B3069F1EA900FABCE6</string>
-				<string>96FA01260C26BDB500C1F160</string>
+				<string>9665CD1C0CD3C91D00DFBD6A</string>
 				<string>1CD0528B0623707200166675</string>
-				<string>96FA01270C26BDB500C1F160</string>
+				<string>9665CD1D0CD3C91D00DFBD6A</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.run</string>

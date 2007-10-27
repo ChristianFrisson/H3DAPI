@@ -27,6 +27,8 @@
 
 #include <H3D/IStreamInputStream.h>
 
+#ifdef HAVE_XERCES
+
 using namespace H3D;
 
 unsigned int X3D::IStreamInputStream::curPos() const {
@@ -39,3 +41,5 @@ unsigned int X3D::IStreamInputStream::readBytes(
   is.read( (char *) to_fill, max_to_read );
   return is.gcount();
 }
+
+#endif

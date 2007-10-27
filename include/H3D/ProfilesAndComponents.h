@@ -35,6 +35,8 @@
 #include <vector>
 #include <map>
 
+#ifdef HAVE_XERCES
+
 namespace H3D {
   
   /// ProfilesAndComponents is a Singleton class used for taking care of
@@ -114,4 +116,5 @@ namespace H3D {
 
 }
 
+#endif
 #endif

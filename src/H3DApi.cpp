@@ -28,7 +28,10 @@
 #ifdef HAVE_FREEIMAGE
 #include <FreeImage.h>
 #endif
+#ifdef HAVE_XERCES
 #include <xercesc/util/PlatformUtils.hpp>
+#endif
+
 #include <H3DUtil/Exception.h>
 #ifdef LINUX
 #include <fontconfig/fontconfig.h>
@@ -55,14 +58,17 @@ using namespace H3D;
 
 /// Initialize H3D API(only needed if using H3D API as a static library). 
 void H3D::initializeH3D() {
-  XERCES_CPP_NAMESPACE_USE
+
 #ifdef HAVE_FREEIMAGE
     FreeImage_Initialise();
 #endif
 #ifdef LINUX
     FcInit();
 #endif 
+#ifdef HAVE_XERCES
+  XERCES_CPP_NAMESPACE_USE
   XMLPlatformUtils::Initialize();
+#endif
   /*
     string urn_config_file = "index.urn";
     char *buffer = getenv( "H3D_URN_CONFIG_FILE" );
@@ -81,14 +87,17 @@ void H3D::initializeH3D() {
 
   /// Deinitialize H3D API(only needed if using H3D API as a static library). 
 void H3D::deinitializeH3D() {
-  XERCES_CPP_NAMESPACE_USE
 #ifdef HAVE_FREEIMAGE
   FreeImage_DeInitialise();
 #endif
 #ifdef HAVE_LIBCURL
   curl_global_cleanup();
 #endif
+
+#ifdef HAVE_XERCES
+  XERCES_CPP_NAMESPACE_USE
   XMLPlatformUtils::Terminate();
+#endif
 }
 
 

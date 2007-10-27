@@ -35,36 +35,36 @@
 
 /// Undef if you do not have xerces-c(http://xerces.apache.org/xerces-c/) 
 /// installed. Required for parsing xml based x3d files.
-#define HAVE_XERCES
+#cmakedefine HAVE_XERCES
 
 /// Undef if you do not have zlib(http://www.zlib.net/) installed. 
 /// Required for support for parsing zipped x3d files.
-#define HAVE_ZLIB
+#cmakedefine HAVE_ZLIB
 
 /// Undef if you do not have OpenAL(www.openal.org) installed. Sounds will
 /// then be disabled.
-#define HAVE_OPENAL
+#cmakedefine HAVE_OPENAL
 
 /// Undef if you do not have libvorbis(www.vorbis.com) installed. Ogg Vorbis
 /// sound files will then not be supported.
-#define HAVE_LIBVORBIS
+#cmakedefine HAVE_LIBVORBIS
 
 ///Undef if you do not have libaudiofile(www.68k.org/~michael/audiofile)
 /// installed. Most sound files will then not be supported.
-#define HAVE_LIBAUDIOFILE
+#cmakedefine HAVE_LIBAUDIOFILE
 
 /// Undef if you do not have the NVIDIA CG Toolkit
 /// (developer.nvidia.com/object/cg_toolkit.html) installed. 
 /// CG shader nodes will then not be supported.
-#define HAVE_CG
+#cmakedefine HAVE_CG
 
 /// Undef if you do not have FTGL(homepages.paradise.net.nz/henryj/code)
 /// installed. Text nodes will then not be supported.
-#define HAVE_FTGL
+#cmakedefine HAVE_FTGL
 
 /// Undef if you do not have FreeType(www.freetype.org)
 /// installed. Text nodes will then not be supported.
-#define HAVE_FREETYPE
+#cmakedefine HAVE_FREETYPE
 
 /// Undef if you do not have 3dxware(www.3dconnexion.com) installed.
 /// SpaceWareSensor node will then not be supported.
@@ -74,16 +74,16 @@
 
 /// Undef if you do not have Python(www.python.org) installed.
 /// PythonScript node will then not be supported.
-#define HAVE_PYTHON
+#cmakedefine HAVE_PYTHON
 
 /// Undef if you do not have FreeImage(freeimage.sourceforge.net) installed.
 /// ImageTexture nodes will not be able to read image files.
-#define HAVE_FREEIMAGE
+#cmakedefine HAVE_FREEIMAGE
 
 /// Undef if you do not have libcurl(http://sourceforge.net/projects/curl/)
 /// installed. URLs using protocols like http and ftp will then not be 
 /// supported. Only local filenames can be used. 
-#define HAVE_LIBCURL
+#cmakedefine HAVE_LIBCURL
 
 /// Undef if you do not have DirectShow available. Needed for the 
 /// DirectShowDecoder node.

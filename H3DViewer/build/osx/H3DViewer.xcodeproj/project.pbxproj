@@ -36,7 +36,7 @@
 		20286C33FDCF999611CA2CEA /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		5048396D09E3307300765E4B /* H3DViewerProj.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; path = H3DViewerProj.xcconfig; sourceTree = "<group>"; };
 		5048396E09E3307300765E4B /* H3DViewerTarget.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; path = H3DViewerTarget.xcconfig; sourceTree = "<group>"; };
-		508344B209E5C41E0093A071 /* H3DViewer Debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "H3DViewer Debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		508344B209E5C41E0093A071 /* .app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = .app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D0C4E960486CD37000505A6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
 		96CCB68B0B96228400DA703A /* H3D.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = H3D.framework; path = ../../../../../../Library/Frameworks/H3D.framework; sourceTree = SOURCE_ROOT; };
 		96CCB68C0B96228400DA703A /* H3DUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = H3DUtil.framework; path = ../../../../../../Library/Frameworks/H3DUtil.framework; sourceTree = SOURCE_ROOT; };
@@ -91,7 +91,7 @@
 		195DF8CFFE9D517E11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				508344B209E5C41E0093A071 /* H3DViewer Debug.app */,
+				508344B209E5C41E0093A071 /* .app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -190,7 +190,7 @@
 			name = H3DViewer;
 			productInstallPath = "$(HOME)/Applications";
 			productName = H3DViewer;
-			productReference = 508344B209E5C41E0093A071 /* H3DViewer Debug.app */;
+			productReference = 508344B209E5C41E0093A071 /* .app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

@@ -29,6 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/ProfilesAndComponents.h>
+
+#ifdef HAVE_XERCES
+
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -441,3 +444,5 @@ bool ProfilesAndComponents::findComponent(
   }
   return false;
 }
+
+#endif

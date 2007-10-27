@@ -6,14 +6,18 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <H3D/X3D.h>
+
+#ifdef HAVE_XERCES
 #include <H3D/X3DSAX2Handlers.h>
 #include <H3D/IStreamInputSource.h>
+#endif
+
 #include <H3D/ResourceResolver.h>
 #include <H3D/VrmlParser.h>
 #include <sstream>
-#include <zlib.h>
 
 #ifdef HAVE_ZLIB
+#include <zlib.h>
 #ifdef _MSC_VER
 #pragma comment( lib, "zdll.lib" )
 #endif
@@ -24,6 +28,7 @@
 
 using namespace H3D;
 
+#ifdef HAVE_XERCES
 
 SAX2XMLReader* X3D::getNewXMLParser() {
   SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Never;
@@ -56,6 +61,8 @@ SAX2XMLReader* X3D::getNewXMLParser() {
   }
   return parser;
 }
+
+#endif
 
 Group* X3D::createX3DFromString( const string &str,
                                  DEFNodes *dn,
@@ -103,6 +110,7 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
   if ( isVRML( str ) )
     return createVRMLNodeFromString( str, dn );
   else {
+#ifdef HAVE_XERCES
     auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
     X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
     stringstream s;
@@ -111,6 +119,11 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
     parser->setErrorHandler(&handler); 
     parser->parse( IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
     return handler.getResultingNode();
+#else
+  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+	     << "are not supported" << endl;
+  return AutoRef< Node >(NULL);
+#endif
   }
 }
 
@@ -118,11 +131,7 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
                                            DEFNodes *dn,
 					   DEFNodes *exported_nodes,
 					   PrototypeVector *prototypes ) {
-  auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
-  X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
-  parser->setContentHandler(&handler);
-  parser->setErrorHandler(&handler); 
-  
+
   URNResolver *urn_resolver = ResourceResolver::getURNResolver();
   string urn = url;
   if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
@@ -152,9 +161,19 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
 
   ResourceResolver::setBaseURL( path ); 
 
-  if( resolved_url == "" )
+#ifdef HAVE_XERCES
+  auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
+  X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
+  parser->setContentHandler(&handler);
+  parser->setErrorHandler(&handler); 
+#endif
+
+  if( resolved_url == "" ) {
+#ifdef HAVE_XERCES
     parser->parse( url.c_str() );
-  else {
+#endif
+
+  } else {
     // determines if resolved_url file should be deleted or not
     bool delete_file = false;
 
@@ -189,15 +208,18 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
     }
 #endif
 
-  
-    XERCES_CPP_NAMESPACE_USE
+
     ifstream istest( resolved_url.c_str() );
     if ( isVRML( istest ) ) {
       AutoRef< Node > n = createVRMLNodeFromURL( resolved_url, dn );
       if( is_tmp_file ) 
         ResourceResolver::releaseTmpFileName( resolved_url );
+      ResourceResolver::setBaseURL( old_base );
       return n;
     }
+
+#ifdef HAVE_XERCES
+    XERCES_CPP_NAMESPACE_USE
     // else...
     ifstream is( resolved_url.c_str() );
     XMLCh *url_ch = new XMLCh[ url.size() + 1 ];
@@ -208,12 +230,19 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
     parser->parse( IStreamInputSource( is, url_ch ) );
     delete[] url_ch;
     is.close();
-   
+#endif   
   }
   if( is_tmp_file ) 
-   ResourceResolver::releaseTmpFileName( resolved_url );
+    ResourceResolver::releaseTmpFileName( resolved_url );
   ResourceResolver::setBaseURL( old_base );
+
+#ifdef HAVE_XERCES
   return handler.getResultingNode();
+#else
+  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+	     << "are not supported" << endl;
+  return AutoRef< Node >(NULL);
+#endif
 }
 
 AutoRef< Node > X3D::createX3DNodeFromStream( istream &is, 
@@ -221,12 +250,18 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
 					      DEFNodes *exported_nodes,
 					      PrototypeVector *prototypes,
                                               const XMLCh *const system_id ) {
+#ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
   X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
   parser->parse( IStreamInputSource( is, system_id ) );
   return handler.getResultingNode();
+#else
+  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+	     << "are not supported" << endl;
+  return AutoRef< Node >( NULL );
+#endif
 }
 
 void X3D::writeNodeAsX3D( ostream& os, 

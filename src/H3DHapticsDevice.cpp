@@ -32,7 +32,7 @@
 #include <H3D/DeviceInfo.h>
 #include <H3D/X3DViewpointNode.h>
 
-#include <OpenHapticsRenderer.h>
+#include <HAPI/OpenHapticsRenderer.h>
 #include <HAPI/GodObjectRenderer.h>
 #include <HAPI/PhantomHapticsDevice.h>
 #include <HAPI/HAPIHapticsRenderer.h>

@@ -29,6 +29,8 @@
 #ifndef __PROFILEX3DSAX2HANDLERS_H__
 #define __PROFILEX3DSAX2HANDLERS_H__
 
+#include <H3D/H3DApi.h>
+#ifdef HAVE_XERCES
 
 #include <stack>
 #include <list>
@@ -36,13 +38,12 @@
 #include <vector>
 #include <string>
 
-#include <H3D/H3DApi.h>
-
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/sax/Locator.hpp>
+
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #ifdef LINK_STATIC_EXTERNALS
@@ -194,4 +195,5 @@ using namespace std;
       Locator *locator;
         
     };
+#endif
 #endif

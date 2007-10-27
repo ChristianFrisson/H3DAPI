@@ -231,8 +231,9 @@ Scene::~Scene() {
 
   if( last_traverseinfo )
     delete last_traverseinfo;
-
+#ifdef HAVE_XERCES
   ProfilesAndComponents::destroy();
+#endif
 }
 
 void Scene::mainLoop() {

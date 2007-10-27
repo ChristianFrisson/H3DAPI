@@ -32,7 +32,9 @@
 #include <H3D/X3D.h>
 #include <H3D/X3DTypeFunctions.h>
 #include <H3D/X3DFieldConversion.h>
+#ifdef HAVE_XERCES
 #include <H3D/X3DSAX2Handlers.h>
+#endif
 #include <H3D/IStreamInputSource.h>
 #include <H3D/VrmlDriver.h>
 #include <H3D/VrmlParser.h>
@@ -123,6 +125,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
       proto->setPrototypedNode( n.get() );
       return proto;
     } else {
+#ifdef HAVE_XERCES
       auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
       X3D::X3DSAX2Handlers handler;
       handler.proto_instance = proto;
@@ -134,6 +137,9 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
       AutoRef< Node > n = handler.getResultingNode();
       proto->setPrototypedNode( n.get() );
       return proto;
+#else
+      return NULL;
+#endif
     }
   } catch( const Exception::H3DException &e ) {
     Console(3) << "Could not create X3DPrototypeInstance of " << name << endl;

@@ -116,16 +116,23 @@ void Inline::LoadedScene::update() {
       bool is_tmp_file;
       string url = inline_node->resolveURLAsFile( *i, &is_tmp_file );
       if( url != "" ) {
-        try {
+#ifdef HAVE_XERCES
+        try 
+#endif
+	  {
           Group *g = X3D::createX3DFromURL( url, NULL, 
                                             &inline_node->exported_nodes );
           if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
           value.push_back( g );
           inline_node->setURLUsed( *i );
-        } catch( const X3D::XMLParseError &e ) {
+        } 
+#ifdef HAVE_XERCES
+	catch( const X3D::XMLParseError &e ) {
           Console(3) << "Warning: Error when parsing \"" << *i << "\" in \"" 
                      << getOwner()->getName() << "\" (" << e << ")." << endl;
         } 
+#endif
+       
         return;
       }
     }

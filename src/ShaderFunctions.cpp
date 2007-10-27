@@ -429,7 +429,9 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( SFInt32 *f = dynamic_cast< SFInt32 * >( field ) ) {
     glUniform1iARB( location, f->getValue() );
   } else if( MFInt32 *f = dynamic_cast< MFInt32 * >( field ) ) {
-    glUniform1ivARB( location, f->size(), &(f->getValue()[0]) );
+    GLint *v = toIntArray( f->getValue() );
+    glUniform1ivARB( location, f->size(), v );
+    delete[] v;
   } else if( SFFloat *f = dynamic_cast< SFFloat * >( field ) ) {
     glUniform1fARB( location, f->getValue() );
   } else if( MFFloat *f = dynamic_cast< MFFloat * >( field ) ) {

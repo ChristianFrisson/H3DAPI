@@ -105,16 +105,17 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 203865190;
-			PBXWorkspaceStateSaveDate = 203865190;
+			PBXPerProjectTemplateStateSaveDate = 215206145;
+			PBXWorkspaceStateSaveDate = 215206145;
 		};
 		perUserProjectItems = {
-			96FA01170C26BDA600C1F160 /* PBXTextBookmark */ = 96FA01170C26BDA600C1F160 /* PBXTextBookmark */;
-			96FA011D0C26BDB500C1F160 /* PBXTextBookmark */ = 96FA011D0C26BDB500C1F160 /* PBXTextBookmark */;
-			96FA01280C26BDCF00C1F160 /* PBXTextBookmark */ = 96FA01280C26BDCF00C1F160 /* PBXTextBookmark */;
-			96FA012A0C26BDF600C1F160 /* PBXTextBookmark */ = 96FA012A0C26BDF600C1F160 /* PBXTextBookmark */;
-			96FA012E0C26C33500C1F160 /* PBXTextBookmark */ = 96FA012E0C26C33500C1F160 /* PBXTextBookmark */;
-			96FA01320C26C35400C1F160 /* PBXTextBookmark */ = 96FA01320C26C35400C1F160 /* PBXTextBookmark */;
+			9665CD140CD3C91D00DFBD6A /* PBXTextBookmark */ = 9665CD140CD3C91D00DFBD6A /* PBXTextBookmark */;
+			96FA01170C26BDA600C1F160 = 96FA01170C26BDA600C1F160 /* PBXTextBookmark */;
+			96FA011D0C26BDB500C1F160 = 96FA011D0C26BDB500C1F160 /* PBXTextBookmark */;
+			96FA01280C26BDCF00C1F160 = 96FA01280C26BDCF00C1F160 /* PBXTextBookmark */;
+			96FA012A0C26BDF600C1F160 = 96FA012A0C26BDF600C1F160 /* PBXTextBookmark */;
+			96FA012E0C26C33500C1F160 = 96FA012E0C26C33500C1F160 /* PBXTextBookmark */;
+			96FA01320C26C35400C1F160 = 96FA01320C26C35400C1F160 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 96E9E0790B8C92F000B4BE63 /* Source Control */;
 		userBuildSettings = {
@@ -133,6 +134,16 @@
 			sepNavVisRect = "{{0, 0}, {711, 429}}";
 			sepNavWindowFrame = "{{176, 168}, {750, 558}}";
 		};
+	};
+	9665CD140CD3C91D00DFBD6A /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 96FA00EB0C26BB7300C1F160 /* WxFrame.cpp */;
+		name = "WxFrame.cpp: 1034";
+		rLen = 0;
+		rLoc = 35205;
+		rType = 0;
+		vrLen = 851;
+		vrLoc = 34507;
 	};
 	96E9E0700B8C92D200B4BE63 /* H3DViewer */ = {
 		isa = PBXExecutable;
@@ -197,9 +208,9 @@
 	};
 	96FA00EB0C26BB7300C1F160 /* WxFrame.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {711, 27048}}";
+			sepNavIntBoundsRect = "{{0, 0}, {711, 31164}}";
 			sepNavSelRange = "{35205, 0}";
-			sepNavVisRect = "{{0, 14606}, {711, 429}}";
+			sepNavVisRect = "{{0, 14089}, {711, 429}}";
 			sepNavWindowFrame = "{{83, 224}, {750, 558}}";
 		};
 	};

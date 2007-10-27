@@ -37,8 +37,8 @@
 #include <H3D/DeviceInfo.h>
 #include <H3D/DebugOptions.h>
 
-#include <HLDepthBufferShape.h>
-#include <HLFeedbackShape.h>
+#include <HAPI/HLDepthBufferShape.h>
+#include <HAPI/HLFeedbackShape.h>
 
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/FeedbackBufferCollector.h>

@@ -30,7 +30,6 @@
 
 #include <H3D/PointSet.h>
 #include <H3D/X3DTextureNode.h>
-#include <HLFeedbackShape.h>
 
 using namespace H3D;
 
