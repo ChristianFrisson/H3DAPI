@@ -1540,16 +1540,16 @@ void FrameRateDialog::updateFrameRates() {
   stringstream s;
   s  <<  (int)scene->frameRate->getValue();
 
-  graphics_rate->SetLabel( s.str() );
+  graphics_rate->SetLabel( wxString( s.str().c_str() ) );
   if( di && di->device->size() > 0 ) {
     H3DHapticsDevice *hd = di->device->getValueByIndex( 0 );
     stringstream hs;
     hs  <<  (int)hd->hapticsRate->getValue();
-    haptics_rate->SetLabel( hs.str() );
+    haptics_rate->SetLabel( wxString( hs.str().c_str() ) );
 
     stringstream hts;
     hts << (int)(hd->hapticsLoopTime->getValue() * 1e5 );
-    haptics_time->SetLabel( hts.str() );
+    haptics_time->SetLabel( wxString(hts.str().c_str()) );
   }
 }
 

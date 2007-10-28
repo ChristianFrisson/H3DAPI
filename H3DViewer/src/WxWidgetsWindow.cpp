@@ -30,8 +30,8 @@
 
 #include "WxWidgetsWindow.h"
 #ifndef WIN32
-#include <X3DKeyDeviceSensorNode.h>
-#include <MouseSensor.h>
+#include <H3D/X3DKeyDeviceSensorNode.h>
+#include <H3D/MouseSensor.h>
 #endif
 
 #include "WxFrame.h"
