@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
+				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
 				PreprocessorDefinitions="_NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
 				StringPooling="true"
 				BasicRuntimeChecks="0"
@@ -135,7 +135,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
+				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
