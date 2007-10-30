@@ -57,11 +57,20 @@
 using namespace std;
 using namespace H3D;
 
-inline const char * toCStr( const wxString &s ) {
+inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
-  return s.mb_str().data();
+  char *b = new char[s.size()+1];
+  const wchar_t *wb = s.c_str();
+  for( unsigned int i = 0; i < s.size(); i++ ) {
+    b[i] = (char)(wb[i]);
+  }
+  
+  b[s.size()] = '\0';
+  string sb(b);
+  delete[] b;
+  return sb;
 #else
-  return s.mb_str();
+  return string( s.c_str() );
 #endif
 }  
 
@@ -155,10 +164,10 @@ bool MyApp::OnInit()
   WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
                                     wxDefaultPosition, wxSize(800, 600));
 
-	theWxFrame->Show(true);
+  theWxFrame->Show(true);
 
   if(cmd_line_filename != wxString()){
-    theWxFrame->loadFile(toCStr(cmd_line_filename));
+    theWxFrame->loadFile(toStr(cmd_line_filename));
   }
 
   //This next line is used to set the icon file h3d.ico, when created.

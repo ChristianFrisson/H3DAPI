@@ -66,11 +66,13 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   attribList[3] = 24;
   attribList[4] = WX_GL_STENCIL_SIZE;
   attribList[5] = 8;
+
+  // TODO: FIX stereo mode
 #ifdef MACOSX
   // TODO: stereo mode does not work with mac
   attribList[6] = 0;
 #else
-  attribList[6] = WX_GL_STEREO;
+  //  attribList[6] = WX_GL_STEREO;
   attribList[7] = 0;
 #endif
  

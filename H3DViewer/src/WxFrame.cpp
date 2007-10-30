@@ -74,13 +74,22 @@
 using namespace std;
 using namespace H3D;
 
-inline const char * toCStr( const wxString &s ) {
+inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
-  return s.mb_str().data();
+  char *b = new char[s.size()+1];
+  const wchar_t *wb = s.c_str();
+  for( unsigned int i = 0; i < s.size(); i++ ) {
+    b[i] = (char)(wb[i]);
+  }
+  
+  b[s.size()] = '\0';
+  string sb(b);
+  delete[] b;
+  return sb;
 #else
-  return s.mb_str();
+  return string( s.c_str() );
 #endif
-}  
+}
 
 
 AutoRef< GlobalSettings > global_settings;
@@ -804,7 +813,7 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
   wxString filename(recentFiles->GetHistoryFile(event.GetId() - wxID_FILE1));
   if (filename != wxT("")) {
     clearData();
-    loadFile( toCStr( filename ) );
+    loadFile( toStr( filename ) );
   }
 }
 
@@ -1066,10 +1075,10 @@ void WxFrame::ResetViewpoint(wxCommandEvent & event)
 void WxFrame::ChangeNavigation (wxCommandEvent & event)
 {
   if (mynav) {
-    mynav->setNavType ( toCStr((navigationMenu->GetLabel(selection)) ) );
+    mynav->setNavType ( toStr((navigationMenu->GetLabel(selection)) ) );
   }
   else {
-    glwindow->default_nav = toCStr( navigationMenu->GetLabel(selection));
+    glwindow->default_nav = toStr( navigationMenu->GetLabel(selection));
   }
 }
 
@@ -1263,11 +1272,11 @@ void WxFrame::LoadSettings () {
       wxString touchableFace;
       h3dConfig->Read(wxT("useBoundTree"), &useBoundTree);
       h3dConfig->Read(wxT("touchableFace"), &touchableFace);
-      ho->touchableFace->setValue(toCStr(touchableFace));
+      ho->touchableFace->setValue(toStr(touchableFace));
       ho->maxDistance->setValueFromString(
-                    toCStr( h3dConfig->Read(wxT("maxDistance"))));
+                    toStr( h3dConfig->Read(wxT("maxDistance"))));
       ho->lookAheadFactor->setValueFromString(
-                    toCStr( h3dConfig->Read(wxT("lookAheadFactor"))));
+                    toStr( h3dConfig->Read(wxT("lookAheadFactor"))));
       ho->useBoundTree->setValue(useBoundTree);
     }
   }
@@ -1298,7 +1307,7 @@ void WxFrame::LoadSettings () {
       int maxTrianglesinLeaf;
       h3dConfig->Read(wxT("boundType"), &boundType);
       h3dConfig->Read(wxT("maxTrianglesinLeaf"), &maxTrianglesinLeaf);
-      gbto->boundType->setValue(toCStr(boundType));
+      gbto->boundType->setValue(toStr(boundType));
       gbto->maxTrianglesInLeaf->setValue(maxTrianglesinLeaf);
     }
   }
