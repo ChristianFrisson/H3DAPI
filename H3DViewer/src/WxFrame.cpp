@@ -74,6 +74,14 @@
 using namespace std;
 using namespace H3D;
 
+inline const char * toCStr( const wxString &s ) {
+  if( wxUSE_UNICODE ) {
+    return s.mb_str().data();
+  } else {
+    return s.mb_str();
+  }
+}  
+
 
 AutoRef< GlobalSettings > global_settings;
 
@@ -796,7 +804,7 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
   wxString filename(recentFiles->GetHistoryFile(event.GetId() - wxID_FILE1));
   if (filename != wxT("")) {
     clearData();
-    loadFile( filename.mb_str().data() );
+    loadFile( toCStr( filename ) );
   }
 }
 
@@ -1058,10 +1066,10 @@ void WxFrame::ResetViewpoint(wxCommandEvent & event)
 void WxFrame::ChangeNavigation (wxCommandEvent & event)
 {
   if (mynav) {
-    mynav->setNavType ((navigationMenu->GetLabel(selection)).mb_str().data());
+    mynav->setNavType ( toCStr((navigationMenu->GetLabel(selection)) ) );
   }
   else {
-    glwindow->default_nav = (navigationMenu->GetLabel(selection)).mb_str().data();
+    glwindow->default_nav = toCStr( navigationMenu->GetLabel(selection));
   }
 }
 
@@ -1255,11 +1263,11 @@ void WxFrame::LoadSettings () {
       wxString touchableFace;
       h3dConfig->Read(wxT("useBoundTree"), &useBoundTree);
       h3dConfig->Read(wxT("touchableFace"), &touchableFace);
-      ho->touchableFace->setValue(touchableFace.mb_str().data());
+      ho->touchableFace->setValue(toCStr(touchableFace));
       ho->maxDistance->setValueFromString(
-                       h3dConfig->Read(wxT("maxDistance")).mb_str().data());
+                    toCStr( h3dConfig->Read(wxT("maxDistance"))));
       ho->lookAheadFactor->setValueFromString(
-                           h3dConfig->Read(wxT("lookAheadFactor")).mb_str().data());
+                    toCStr( h3dConfig->Read(wxT("lookAheadFactor"))));
       ho->useBoundTree->setValue(useBoundTree);
     }
   }
@@ -1290,7 +1298,7 @@ void WxFrame::LoadSettings () {
       int maxTrianglesinLeaf;
       h3dConfig->Read(wxT("boundType"), &boundType);
       h3dConfig->Read(wxT("maxTrianglesinLeaf"), &maxTrianglesinLeaf);
-      gbto->boundType->setValue(boundType.mb_str().data());
+      gbto->boundType->setValue(toCStr(boundType));
       gbto->maxTrianglesInLeaf->setValue(maxTrianglesinLeaf);
     }
   }
