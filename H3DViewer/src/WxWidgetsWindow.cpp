@@ -75,7 +75,7 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 #endif
  
   if( !theWindow ) {
-     theWindow = new wxFrame( NULL, wxID_ANY, "WxFrame", wxDefaultPosition,
+     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"), wxDefaultPosition,
                               wxSize( width->getValue(), height->getValue() ));
   }
 

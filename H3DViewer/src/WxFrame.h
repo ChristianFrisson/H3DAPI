@@ -153,7 +153,7 @@ public:
   WxFrame( wxWindow *_parent, wxWindowID _id, const wxString& _title,
               const wxPoint& _pos, const wxSize& _size,
               long _style = wxDEFAULT_FRAME_STYLE,
-              const wxString& name = "H3D Player" );
+              const wxString& name = wxT("H3D Player") );
 
   //Pointer to WxWidgetsWindow
   WxWidgetsWindow *glwindow;
@@ -172,7 +172,7 @@ public:
   //Config object to save information (settings, file history etc...)
   wxConfigBase *h3dConfig;
 
-  bool loadFile( const string &file );
+  bool loadFile( const std::string &file );
   void clearData();
 
   /***************Member Functions*****************/

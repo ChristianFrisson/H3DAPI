@@ -51,10 +51,10 @@ namespace H3D {
     {
     public:
       MyWxGLCanvas(WxWidgetsWindow *_myOwner, wxWindow* _parent,
-        wxWindowID _id, const wxPoint& _pos, const wxSize& _size, int*
-        _attribList = 0, long _style=0, 
-        const wxString& _name="MyWxGLCanvas",
-        const wxPalette& _palette = wxNullPalette );
+                   wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
+                   int* _attribList = 0, long _style=0, 
+                   const wxString& _name = wxT("MyWxGLCanvas"),
+                   const wxPalette& _palette = wxNullPalette );
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
       void OnEraseBackground(wxEraseEvent& WXUNUSED(event));

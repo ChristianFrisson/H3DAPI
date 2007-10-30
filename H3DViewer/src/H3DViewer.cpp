@@ -124,7 +124,8 @@ bool MyApp::OnExceptionInMainLoop() {
     return false;
   }
   catch (const Exception::H3DException &e) {
-     wxMessageBox(e.message.c_str(), "Error", wxOK | wxICON_EXCLAMATION);
+     wxMessageBox( wxString(e.message.c_str(),wxConvLibc),
+                   wxT("Error"), wxOK | wxICON_EXCLAMATION);
     return false;
   }
   wxApp::OnExceptionInMainLoop();  
@@ -144,12 +145,14 @@ bool MyApp::OnInit()
   //initializeH3D();
 
   // create a window to display
-  WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, "H3DViewer",
-                                          wxDefaultPosition, wxSize(800, 600));
+  WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
+                                    wxDefaultPosition, wxSize(800, 600));
 
 	theWxFrame->Show(true);
 
-  if(cmd_line_filename != "") theWxFrame->loadFile(string(cmd_line_filename));
+  if(cmd_line_filename != wxString()){
+    theWxFrame->loadFile(cmd_line_filename.mb_str().data());
+  }
 
   //This next line is used to set the icon file h3d.ico, when created.
 	//theWxframe->SetIcon(wxIcon(_T("h3d_icn")));
