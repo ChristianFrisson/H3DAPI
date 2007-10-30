@@ -75,11 +75,11 @@ using namespace std;
 using namespace H3D;
 
 inline const char * toCStr( const wxString &s ) {
-  if( wxUSE_UNICODE ) {
-    return s.mb_str().data();
-  } else {
-    return s.mb_str();
-  }
+# if(wxUSE_UNICODE)
+  return s.mb_str().data();
+#else
+  return s.mb_str();
+#endif
 }  
 
 

@@ -57,6 +57,13 @@
 using namespace std;
 using namespace H3D;
 
+inline const char * toCStr( const wxString &s ) {
+# if(wxUSE_UNICODE)
+  return s.mb_str().data();
+#else
+  return s.mb_str();
+#endif
+}  
 
 H3D_API_EXCEPTION( QuitAPIException );
 
@@ -151,7 +158,7 @@ bool MyApp::OnInit()
 	theWxFrame->Show(true);
 
   if(cmd_line_filename != wxString()){
-    theWxFrame->loadFile(cmd_line_filename.mb_str().data());
+    theWxFrame->loadFile(toCStr(cmd_line_filename));
   }
 
   //This next line is used to set the icon file h3d.ico, when created.
