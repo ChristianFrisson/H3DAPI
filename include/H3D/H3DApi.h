@@ -56,7 +56,7 @@
 /// Undef if you do not have the NVIDIA CG Toolkit
 /// (developer.nvidia.com/object/cg_toolkit.html) installed. 
 /// CG shader nodes will then not be supported.
-/* #undef HAVE_CG */
+#define HAVE_CG
 
 /// Undef if you do not have FTGL(homepages.paradise.net.nz/henryj/code)
 /// installed. Text nodes will then not be supported.
@@ -64,7 +64,7 @@
 
 /// Undef if you do not have FreeType(www.freetype.org)
 /// installed. Text nodes will then not be supported.
-/* #undef HAVE_FREETYPE */
+#define HAVE_FREETYPE
 
 /// Undef if you do not have 3dxware(www.3dconnexion.com) installed.
 /// SpaceWareSensor node will then not be supported.
