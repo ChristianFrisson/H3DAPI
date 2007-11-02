@@ -16,7 +16,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release DLL|Win32"
-			OutputDirectory="..\..\..\..\bin"
+			OutputDirectory="..\..\..\..\..\bin"
 			IntermediateDirectory="Release\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -74,7 +74,7 @@
 				AdditionalOptions="/MACHINE:I386"
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="1"
@@ -106,7 +106,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug DLL|Win32"
-			OutputDirectory="..\..\..\..\bin"
+			OutputDirectory="..\..\..\..\..\bin"
 			IntermediateDirectory="Debug\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
@@ -163,7 +163,7 @@
 				AdditionalOptions="/MACHINE:I386 /NODEFAULTLIB:msvcrt"
 				OutputFile="$(OutDir)/H3DLoad_d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
