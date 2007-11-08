@@ -102,9 +102,8 @@ X3DGeometryNode::X3DGeometryNode(
 void X3DGeometryNode::initialize() {
   // The introduction of a ref_count_lock_pointer is changed here
   // in order to not have to change the constructor definition of
-  // every single node.
-  use_ref_count_lock = true;
-  // deleted by RefCountedClass destructor.
+  // every single node. The ref_count_lock_pointer is deleted by the
+  // RefCountedClass destructor.
   ref_count_lock_pointer = new MutexLock();
 }
 
