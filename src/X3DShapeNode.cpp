@@ -175,11 +175,15 @@ bool X3DShapeNode::lineIntersect(
                            const Matrix4f &current_matrix,
                            vector< Matrix4f > &geometry_transforms,
                            bool pt_device_affect ) {
-  return geometry->getValue()->lineIntersect( from, to, result,
-                                              theNodes,
-                                              current_matrix,
-                                              geometry_transforms,
-                                              pt_device_affect );
+  X3DGeometryNode *tmp_geom = geometry->getValue();
+  if( tmp_geom )
+    return geometry->getValue()->lineIntersect( from, to, result,
+                                                theNodes,
+                                                current_matrix,
+                                                geometry_transforms,
+                                                pt_device_affect );
+  else
+    return false;
 }
 
 void X3DShapeNode::closestPoint(
@@ -187,19 +191,29 @@ void X3DShapeNode::closestPoint(
                   vector< Vec3f > &closest_point,
                   vector< Vec3f > &normal,
                   vector< Vec3f > &tex_coord ) {
-  geometry->getValue()->closestPoint( p, closest_point, normal, tex_coord );
+  X3DGeometryNode *tmp_geom = geometry->getValue();
+  if( tmp_geom )
+    geometry->getValue()->closestPoint( p, closest_point, normal, tex_coord );
 }
 
 bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,
                                           const Vec3f &from, 
                                           const Vec3f &to ) {
-  return geometry->getValue()->movingSphereIntersect( radius, from, to );
+  X3DGeometryNode *tmp_geom = geometry->getValue();
+  if( tmp_geom )
+    return geometry->getValue()->movingSphereIntersect( radius, from, to );
+  else
+    return false;
 }
 
 void X3DShapeNode::resetNodeDefUseId() {
-  geometry->getValue()->resetNodeDefUseId();
+  X3DGeometryNode *tmp_geom = geometry->getValue();
+  if( tmp_geom )
+    geometry->getValue()->resetNodeDefUseId();
 }
 
 void X3DShapeNode::incrNodeDefUseId( bool pt_device_affect ) {
-  geometry->getValue()->incrNodeDefUseId( pt_device_affect );
+  X3DGeometryNode *tmp_geom = geometry->getValue();
+  if( tmp_geom )
+    geometry->getValue()->incrNodeDefUseId( pt_device_affect );
 }
