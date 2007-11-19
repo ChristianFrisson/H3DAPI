@@ -396,6 +396,9 @@
 				RelativePath="..\..\..\src\HapticLayeredGroup.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\HapticMasterDevice.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\HapticsOptions.cpp">
 			</File>
 			<File
@@ -580,6 +583,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\PixelTexture.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\PlanarReflector.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\PlaneSensor.cpp">
