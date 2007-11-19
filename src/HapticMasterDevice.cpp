@@ -38,6 +38,7 @@ H3DNodeDatabase HapticMasterDevice::database( "HapticMasterDevice",
                                           typeid( HapticMasterDevice ),
                                           &H3DHapticsDevice::database ); 
 namespace HapticMasterDeviceInternals {
+  FIELDDB_ELEMENT( HapticMasterDevice, deviceName, INITIALIZE_ONLY );
 }
 
 /// Constructor.
@@ -60,24 +61,28 @@ HapticMasterDevice::HapticMasterDevice(
                Inst< SFInt32         > _outputDOF,
                Inst< SFInt32         > _hapticsRate,
                Inst< SFNode          > _stylus,
-               Inst< SFFloat         > _proxyRadius ) :
+               Inst< SFFloat         > _proxyRadius,
+               Inst< SFString        > _deviceName ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
               _trackerOrientation, _positionCalibration, 
               _orientationCalibration, _proxyPosition,
               _weightedProxyPosition, _proxyWeighting, _mainButton,
                     _secondary_button, _buttons,
               _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
-              _stylus ) { 
+              _stylus ),
+  deviceName( _deviceName ) { 
 
   type_name = "HapticMasterDevice";  
   database.initFields( this );
   hapi_device.reset(0);
+
+  deviceName->setValue( "vmd" );
 }
 
 void HapticMasterDevice::initialize() {
   H3DHapticsDevice::initialize();
 #ifdef HAVE_HAPTIC_MASTER_API
-  hapi_device.reset( new HAPI::HapticMasterDevice() );
+  hapi_device.reset( new HAPI::HapticMasterDevice( deviceName->getValue()) );
 #else
   Console(4) << "Cannot use HapticMasterDevice. HAPI compiled without"
 	     << " HapticMaster support. Recompile HAPI with "

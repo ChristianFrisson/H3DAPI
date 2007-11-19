@@ -41,6 +41,10 @@ namespace H3D {
   /// \class HapticMasterDevice
   /// \brief A HapticMasterDevice is a node for handling communication
   /// with the HapticMaster haptics device from Moog/FCS.
+  /// Remember that in order to use a HapticMaster you will have to have a 
+  /// servers.db file in the current directory when running a program
+  /// specifying the address of the haptics device. See the user manual
+  /// of your Haptics Master for more details.
   class H3DAPI_API HapticMasterDevice: public H3DHapticsDevice {
   public:
 
@@ -64,7 +68,8 @@ namespace H3D {
             Inst< SFInt32            > _outputDOF              = 0,
             Inst< SFInt32            > _hapticsRate            = 0,
             Inst< SFNode             > _stylus                 = 0,
-            Inst< SFFloat            > _proxyRadius            = 0 );
+            Inst< SFFloat            > _proxyRadius            = 0,
+            Inst< SFString           > _deviceName             = 0 );
     
     /// Creates a PhantomHapticsDevice in the hapi_device
     /// with name deviceName
@@ -72,6 +77,9 @@ namespace H3D {
 
     /// Node database entry
     static H3DNodeDatabase database;
+
+    /// The name of the device as specified in the servers.db file.
+    auto_ptr< SFString > deviceName;
   };
 }
 
