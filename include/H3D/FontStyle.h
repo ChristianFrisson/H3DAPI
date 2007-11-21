@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
@@ -38,7 +37,7 @@
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 #if defined(_MSC_VER) || defined(__BORLANDC__)
-#ifdef LINK_STATIC_EXTERNALS
+#ifdef H3D_LINK_STATIC_EXTERNALS
 #pragma comment( lib, "ftgl_static_MTD.lib" )
 #pragma comment( lib, "freetype235.lib" )
 #else

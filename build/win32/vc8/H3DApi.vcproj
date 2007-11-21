@@ -806,10 +806,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\PixelImage.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\PixelTexture.cpp"
 				>
 			</File>
@@ -1632,10 +1628,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\H3D\FreeImageImage.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\include\H3D\FreeImageLoader.h"
 				>
 			</File>
@@ -2129,10 +2121,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3D\Pixel3DTexture.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\H3D\PixelImage.h"
 				>
 			</File>
 			<File

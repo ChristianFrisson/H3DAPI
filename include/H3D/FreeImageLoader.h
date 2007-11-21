@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
@@ -35,7 +34,7 @@
 
 #ifdef HAVE_FREEIMAGE
 
-#include <H3D/FreeImageImage.h>
+#include <H3DUtil/LoadImageFunctions.h>
 
 namespace H3D {
   /// \ingroup H3DNodes
@@ -54,27 +53,7 @@ namespace H3D {
     /// Load the image using the FreeImage library. A new FreeImageImage
     /// is returned. NULL if not successfully loaded.
     virtual Image *loadImage( const string &url ) {
-        
-      FREE_IMAGE_FORMAT format = FreeImage_GetFileType( url.c_str() );
-      if( format == FIF_UNKNOWN ) {
-        format = FreeImage_GetFIFFromFilename( url.c_str() );
-      }
-
-      if( format != FIF_UNKNOWN && FreeImage_FIFSupportsReading( format ) ) { 
-        FIBITMAP *bm = FreeImage_Load( format, url.c_str() );
-        
-        if( bm ) {
-          // Take care of the case of 32 bit RGB images( alpha ignored ) that seems to
-          // happen once in a while with png images
-          if( FreeImage_GetColorType( bm ) == FIC_RGB && FreeImage_GetBPP( bm ) == 32 ) {
-            FIBITMAP *old = bm;
-            bm = FreeImage_ConvertTo24Bits( bm );
-            FreeImage_Unload( old );
-          }
-          return new FreeImageImage( bm );
-        } 
-      }
-      return NULL;
+      return H3DUtil::LoadImageFunctions::loadFreeImage( url );
     }
     
     /// TODO: Implement 

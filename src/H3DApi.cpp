@@ -25,9 +25,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/H3DApi.h>
-#ifdef HAVE_FREEIMAGE
-#include <FreeImage.h>
-#endif
 #ifdef HAVE_XERCES
 #include <xercesc/util/PlatformUtils.hpp>
 #endif
@@ -45,8 +42,9 @@
 #include <H3D/ResourceResolver.h>
 
 #ifdef HAVE_FREEIMAGE
+#include <FreeImage.h>
 #if defined(_MSC_VER) || defined(__BORLANDC__)
-#ifdef LINK_STATIC_EXTERNALS
+#ifdef H3DUTIL_LINK_STATIC_EXTERNALS
 #pragma comment( lib, "FreeImage_static.lib" )
 #else
 #pragma comment( lib, "FreeImage.lib" )
@@ -116,7 +114,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
   case DLL_THREAD_DETACH:
     break;
   case DLL_PROCESS_DETACH:
-    //deinitializeH3D();
+    deinitializeH3D();
     break;
   }
   return TRUE;

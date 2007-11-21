@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
@@ -32,6 +31,7 @@
 #include <H3D/FreeImageLoader.h>
 
 #ifdef HAVE_FREEIMAGE
+#include <H3DUtil/FreeImageImage.h>
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.

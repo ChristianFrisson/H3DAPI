@@ -23,7 +23,7 @@
 //
 /// \file H3DImageLoaderNode.h
 /// \brief Header file for H3DImageLoaderNode, the abstract base
-/// class for all image loaders for different file formats.
+/// class for all image loaders nodes for different file formats.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ namespace H3D {
     typedef H3DImageLoaderNode*( *CreateNodeFunc)(); 
 
     /// Function ptr type for  
-    typedef bool ( *SupportsFileFunc)( const string &url ); 
+    typedef bool ( *SupportsFileFunc)( const string &url );
     
     template< class N >
     static H3DImageLoaderNode *newImageLoaderNode() { return new N; };
@@ -102,9 +102,9 @@ namespace H3D {
       return "imageLoader";
     }
 
-        /// Given an url to a file, it returns an instance of a H3DSoundFileNode
+    /// Given an url to a file, it returns an instance of a H3DImageLoaderNode
     /// class that can handle that file type. If no such class is registered
-    /// NULL is returns.
+    /// NULL is returned.
     static H3DImageLoaderNode *getSupportedFileReader( const string &url );
 
     /// Register a file reader that can then be returned by 
@@ -127,10 +127,10 @@ namespace H3D {
 
     // Creating a new auto_ptr local for this node, because 
     // registrated_file_reader caused a memory leak and because
-    // of the order of setting the static variables the autp_ptr's
+    // of the order of setting the static variables the auto_ptr's
     // constructor resets the auto_ptr to 0 eventhough the 
-    // registrated_file_reader has been initilazed, and therefore
-    // cause an error making it imposible to use the standard auto_ptr.
+    // registered_file_readers has been initilazed, and therefore
+    // cause an error making it impossible to use the standard auto_ptr.
     template<class T>
     class local_auto_ptr{
     private:

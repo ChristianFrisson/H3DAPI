@@ -42,7 +42,7 @@
 using namespace std;
 
 #if defined(_MSC_VER) || defined(__BORLANDC__)
-#ifdef LINK_STATIC_EXTERNALS
+#ifdef H3D_LINK_STATIC_EXTERNALS
 #pragma comment( lib, "libcurl_static.lib" )
 #else
 #pragma comment( lib, "libcurl.lib" )

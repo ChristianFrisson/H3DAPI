@@ -32,7 +32,7 @@
 
 using namespace H3D;
 
-// Add this node to the H3DNodeDatabase system.
+// initialize static variables.
 H3DImageLoaderNode::local_auto_ptr<list< H3DImageLoaderNode::
 FileReaderRegistration> >H3DImageLoaderNode::registered_file_readers; 
 

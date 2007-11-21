@@ -579,9 +579,6 @@
 				RelativePath="..\..\..\src\Pixel3DTexture.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\src\PixelImage.cpp">
-			</File>
-			<File
 				RelativePath="..\..\..\src\PixelTexture.cpp">
 			</File>
 			<File
@@ -1196,9 +1193,6 @@
 				RelativePath="..\..\..\include\H3d\ForceField.h">
 			</File>
 			<File
-				RelativePath="..\..\..\include\H3d\FreeImageImage.h">
-			</File>
-			<File
 				RelativePath="..\..\..\include\H3d\FreeImageLoader.h">
 			</File>
 			<File
@@ -1569,9 +1563,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3d\Pixel3DTexture.h">
-			</File>
-			<File
-				RelativePath="..\..\..\include\H3d\PixelImage.h">
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3d\PixelTexture.h">

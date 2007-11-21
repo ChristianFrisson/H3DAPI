@@ -13,7 +13,7 @@
 #include <sstream>
 #include <H3DUtil/Exception.h>
 #include <H3D/H3DTypes.h>
-#include <H3D/PixelImage.h>
+#include <H3DUtil/PixelImage.h>
 
 using namespace std;
 

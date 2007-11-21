@@ -41,7 +41,7 @@
 #pragma comment( lib, "OpenGL32.lib" )
 #pragma comment( lib, "glu32.lib" )
 
-#ifdef LINK_STATIC_EXTERNALS
+#ifdef H3D_LINK_STATIC_EXTERNALS
 #pragma comment( lib, "glew32_static.lib" )
 #else
 #pragma comment( lib, "glew32.lib" )
