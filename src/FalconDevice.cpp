@@ -64,6 +64,7 @@ FalconDevice::FalconDevice(
                Inst< SFInt32         > _inputDOF,
                Inst< SFInt32         > _outputDOF,
                Inst< SFInt32         > _hapticsRate,
+               Inst< SFInt32         > _desiredHapticsRate,
                Inst< SFNode          > _stylus,
                Inst< SFHapticsRendererNode > _hapticsRenderer,
                Inst< MFVec3f         > _proxyPositions,
@@ -75,8 +76,8 @@ FalconDevice::FalconDevice(
               _orientationCalibration, _proxyPosition,
               _weightedProxyPosition, _proxyWeighting, _mainButton,
               _secondary_button, _buttons,_force, _torque, _inputDOF,
-              _outputDOF, _hapticsRate, _stylus, _hapticsRenderer,
-              _proxyPositions, _followViewpoint ),
+              _outputDOF, _hapticsRate, _desiredHapticsRate, _stylus,
+              _hapticsRenderer, _proxyPositions, _followViewpoint ),
     deviceName( _deviceName ),
     deviceModelType ( new SFString ),
   maxWorkspaceDimensions( new MFVec3f ){ 

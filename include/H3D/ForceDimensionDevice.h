@@ -91,6 +91,7 @@ namespace H3D {
             Inst< SFInt32            > _inputDOF               = 0,
             Inst< SFInt32            > _outputDOF              = 0,
             Inst< SFInt32            > _hapticsRate            = 0,
+            Inst< SFInt32            > _desiredHapticsRate     = 0,
             Inst< SFNode             > _stylus                 = 0,
             Inst< SFHapticsRendererNode > _hapticsRenderer     = 0,
             Inst< MFVec3f            > _proxyPositions         = 0,

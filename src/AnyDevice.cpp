@@ -59,6 +59,7 @@ AnyDevice::AnyDevice(
                Inst< SFInt32         > _inputDOF,
                Inst< SFInt32         > _outputDOF,
                Inst< SFInt32         > _hapticsRate,
+               Inst< SFInt32         > _desiredHapticsRate,
                Inst< SFNode          > _stylus,
                Inst< SFFloat         > _proxyRadius ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
@@ -67,7 +68,7 @@ AnyDevice::AnyDevice(
               _weightedProxyPosition, _proxyWeighting, _mainButton,
                     _secondary_button, _buttons,
               _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
-              _stylus ) {
+              _desiredHapticsRate, _stylus ) {
 
   type_name = "AnyDevice";  
   database.initFields( this );

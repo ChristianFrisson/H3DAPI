@@ -62,6 +62,7 @@ FakeHapticsDevice::FakeHapticsDevice(
 	  Inst< SFInt32         > _inputDOF               ,
 	  Inst< SFInt32         > _outputDOF              ,
 	  Inst< SFInt32         > _hapticsRate            ,
+    Inst< SFInt32         > _desiredHapticsRate     ,
 	  Inst< SFNode          > _stylus                 ,
 	  Inst< SFHapticsRendererNode > _hapticsRenderer  ,
 	  Inst< MFVec3f         > _proxyPositions         ,
@@ -75,7 +76,8 @@ FakeHapticsDevice::FakeHapticsDevice(
 			_weightedProxyPosition, _proxyWeighting, _main_button,
 			_secondary_button, _buttons,
 			_force, _torque, _inputDOF, _outputDOF, _hapticsRate,
-			_stylus, _hapticsRenderer, _proxyPositions, _followViewpoint,
+      _desiredHapticsRate, _stylus, _hapticsRenderer, _proxyPositions,
+      _followViewpoint,
 			_set_devicePosition, _set_deviceOrientation, _set_mainButton) {
 
   type_name = "FakeHapticsDevice";  

@@ -41,6 +41,7 @@ namespace H3D {
   /// \class FalconDevice
   /// \brief A FalconDevice is a node for handling communication
   /// with a haptics device from Novint, such as the Falcon Novint.
+  /// Note: The value of desiredHapticsRate is ignored for this node.
   class H3DAPI_API FalconDevice: public H3DHapticsDevice {
   public:
 
@@ -63,6 +64,7 @@ namespace H3D {
             Inst< SFInt32            > _inputDOF               = 0,
             Inst< SFInt32            > _outputDOF              = 0,
             Inst< SFInt32            > _hapticsRate            = 0,
+            Inst< SFInt32            > _desiredHapticsRate     = 0,
             Inst< SFNode             > _stylus                 = 0,
             Inst< SFHapticsRendererNode > _hapticsRenderer     = 0,
             Inst< MFVec3f            > _proxyPositions         = 0,

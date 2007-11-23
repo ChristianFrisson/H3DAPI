@@ -64,6 +64,7 @@ namespace H3DHapticsDeviceInternals {
   FIELDDB_ELEMENT( H3DHapticsDevice, inputDOF, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, outputDOF, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, hapticsRate, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DHapticsDevice, desiredHapticsRate, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, stylus, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, hapticsRenderer, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, proxyPositions, INPUT_OUTPUT );
@@ -91,6 +92,7 @@ H3DHapticsDevice::H3DHapticsDevice(
                Inst< SFInt32         > _inputDOF               ,
                Inst< SFInt32         > _outputDOF              ,
                Inst< SFInt32         > _hapticsRate            ,
+               Inst< SFInt32         > _desiredHapticsRate     ,
                Inst< SFNode          > _stylus                 ,
                Inst< SFHapticsRendererNode > _hapticsRenderer,
                Inst< MFVec3f         > _proxyPositions,
@@ -115,6 +117,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   followViewpoint( _followViewpoint ),
   deviceVelocity( _deviceVelocity ),
   hapticsRate( _hapticsRate ),
+  desiredHapticsRate( _desiredHapticsRate ),
   hapticsLoopTime( new SFTime ),
   stylus( _stylus ),
   initialized( new SFBool ),
@@ -136,6 +139,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   proxyWeighting->setValue( 0.95f );
   buttons->setValue( 0, id );
   hapticsRate->setValue( 0, id );
+  desiredHapticsRate->setValue( 1000, id );
 
   positionCalibration->route( trackerPosition, id );
   devicePosition->route( trackerPosition, id );
@@ -182,7 +186,8 @@ H3DHapticsDevice::ErrorCode H3DHapticsDevice::disableDevice() {
 H3DHapticsDevice::ErrorCode H3DHapticsDevice::initDevice() {
   if( !initialized->getValue() ) {
     if( hapi_device.get() ) {
-      HAPI::HAPIHapticsDevice::ErrorCode e = hapi_device->initDevice();
+      HAPI::HAPIHapticsDevice::ErrorCode e = hapi_device->initDevice(
+        desiredHapticsRate->getValue() );
       if( e == HAPI::HAPIHapticsDevice::SUCCESS ) {
         hapi_device->enableDevice();
         initialized->setValue( true, id );

@@ -57,8 +57,10 @@ namespace H3D {
       virtual void sendOutput( DeviceOutput &dv,
 			       HAPI::HAPITime dt ) {}
 
-      /// Implementation of initHapticsDevice using HD API.
-      virtual bool initHapticsDevice() { return true; }
+      /// Implementation of initHapticsDevice.
+      virtual bool initHapticsDevice( int _thread_frequency = 1000 ) {
+        return true;
+      }
 
       /// Releases all resources allocated in initHapticsDevice. 
       virtual bool releaseHapticsDevice() { return true; }
@@ -86,6 +88,7 @@ namespace H3D {
 			  Inst< SFInt32         > _inputDOF               = 0,
 			  Inst< SFInt32         > _outputDOF              = 0,
 			  Inst< SFInt32         > _hapticsRate            = 0,
+        Inst< SFInt32         > _desiredHapticsRate     = 0,
 			  Inst< SFNode          > _stylus                 = 0,
 			  Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
 			  Inst< MFVec3f         > _proxyPositions         = 0,

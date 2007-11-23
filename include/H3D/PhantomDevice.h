@@ -42,6 +42,13 @@ namespace H3D {
   /// \brief A PhantomDevice is a node for handling communication
   /// with a haptics device from SensAble, such as the Phantom Omni and
   /// the Phantom Desktop haptics devices.
+  /// Note: The valid values for desiredHapticsRate depends on the type of
+  /// interface and communication protocol used. PCI and EPP support 500,
+  /// 1000, and 2000 Hz. Firewire supports 500, 1000, 1600 Hz, plus some
+  /// increments in between based on the following expression:
+  /// floor(8000/N + 0.5). The first successful initialization of PhantomDevice
+  /// will decide the haptics thread rate since only one scheduler is used by
+  /// OpenHaptics even for dual device configurations.
   class H3DAPI_API PhantomDevice: public H3DHapticsDevice {
   public:
 
@@ -64,6 +71,7 @@ namespace H3D {
             Inst< SFInt32            > _inputDOF               = 0,
             Inst< SFInt32            > _outputDOF              = 0,
             Inst< SFInt32            > _hapticsRate            = 0,
+            Inst< SFInt32            > _desiredHapticsRate     = 0,
             Inst< SFNode             > _stylus                 = 0,
             Inst< SFFloat            > _proxyRadius            = 0,
             Inst< SFString           > _deviceName             = 0 );

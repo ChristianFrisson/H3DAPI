@@ -279,6 +279,7 @@ namespace H3D {
                       Inst< SFInt32         > _inputDOF               = 0,
                       Inst< SFInt32         > _outputDOF              = 0,
                       Inst< SFInt32         > _hapticsRate            = 0,
+                      Inst< SFInt32         > _desiredHapticsRate     = 0,
                       Inst< SFNode          > _stylus                 = 0,
                       Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
                       Inst< MFVec3f         > _proxyPositions         = 0,
@@ -509,6 +510,19 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_hapticsRate.dot
     auto_ptr< SFInt32 >   hapticsRate;
+
+    /// The desired update rate of the servoloop of the H3DHapticsDevice.
+    /// This only give a hint to the system of what update rate of the haptics
+    /// loop is desired. For most devices the only valid values are 1-1000.
+    /// A value of -1 indicates that the loop should be run as fast as possible
+    /// Those device nodes that does not use these default values there is a
+    /// comment in the description of the node.
+    ///
+    /// <b>Access type:</b> initializeOnly \n
+    /// <b>Default value:</b> 1000 \n
+    /// 
+    /// \dotfile H3DHapticsDevice_hapticsRate.dot
+    auto_ptr< SFInt32 >   desiredHapticsRate;
 
     /// The time spent in the last haptics loop(in seconds)
     ///
