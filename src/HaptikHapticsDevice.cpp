@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/HaptikHapticsDevice.h>
+#include <HAPI/HaptikDevice.h>
 
 using namespace H3D;
 
@@ -87,9 +88,6 @@ HaptikHapticsDevice::HaptikHapticsDevice(
   selectedDevice( _selectedDevice ),
   set_selectedDevice( _set_selectedDevice ),
   preferredDeviceType( _preferredDeviceType )
-#ifdef HAVE_HAPTIK
-  , haptik_device( NULL )
-#endif
   {
 
   type_name = "HaptikHapticsDevice";  
@@ -98,7 +96,8 @@ HaptikHapticsDevice::HaptikHapticsDevice(
   set_selectedDevice->setValue( -1 );
   preferredDeviceType->setValue( "DEFAULT_DEVICE" );
 
-#ifdef HAVE_HAPTIK
+#ifdef HAVE_HAPTIK_LIBRARY
+  RSLib::Haptik haptik;
   for(UINT32 i = 0 ; i<haptik.numberOfDevices ; i++) {
     deviceName->push_back( haptik.device[i].name, id );
     modelName->push_back( haptik.device[i].model, id );
@@ -106,7 +105,7 @@ HaptikHapticsDevice::HaptikHapticsDevice(
   }
 #else
   Console(4) << "Cannot use HaptikHapticsDevice since H3D API is compiled"
-             << "without support for it. Define HAVE_HAPTIK in H3DApi.h to "
+             << "without support for it. Define HAVE_HAPTIK_LIBRARY in H3DApi.h to "
              << " support it." << endl;
 #endif
   set_selectedDevice->routeNoEvent( selectedDevice, id );
@@ -115,7 +114,7 @@ HaptikHapticsDevice::HaptikHapticsDevice(
 
 void HaptikHapticsDevice::initialize() {
   H3DHapticsDevice::initialize();
-#ifdef HAVE_HAPTIK
+#ifdef HAVE_HAPTIK_LIBRARY
   hapi_device.reset( new HAPI::HaptikDevice );
 #else
   Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
@@ -126,7 +125,7 @@ void HaptikHapticsDevice::initialize() {
 }
 
 void HaptikHapticsDevice::SelectDevice::update() {
-#ifdef HAVE_HAPTIK
+#ifdef HAVE_HAPTIK_LIBRARY
   H3DInt32 index = static_cast< SFInt32 * >( routes_in[0] )->getValue();
   const string &preferred_device = 
     static_cast< SFString * >( routes_in[1] )->getValue();
@@ -165,17 +164,9 @@ void HaptikHapticsDevice::SelectDevice::update() {
   }
 
   // find out which index the selected device has.
-  if( hd->haptik_device ) {
-    RSLib::HaptikDeviceInfo info;
-    hd->haptik_device->GetInfo( info );
-    int dev_index = -1;
-    for(UINT32 i = 0 ; i< hd->haptik.numberOfDevices ; i++) {
-      if( hd->haptik.device[i].id == info.id ) {
-        dev_index = i;
-        break;
-      }
-    }
-    value = dev_index;
+  if( hd->hapi_device.get() ) {
+    value = static_cast< HAPI::HaptikDevice * >( hd->hapi_device.get() )
+      ->getHaptikIndex();;
   } else {
     value = -1;
   }
@@ -185,8 +176,16 @@ void HaptikHapticsDevice::SelectDevice::update() {
 }
 
 void HaptikHapticsDevice::changeHaptikDevice( unsigned int device_id ) {
-#ifdef HAVE_HAPTIK
-  if( haptik_device ) {
+#ifdef HAVE_HAPTIK_LIBRARY
+  if( hapi_device.get() ) {
+    static_cast< HAPI::HaptikDevice * >( hapi_device.get() )->
+      changeHaptikDevice( device_id );
+  } else {
+    HAPI::HaptikDevice * temp_device = new HAPI::HaptikDevice;
+    temp_device->changeHaptikDevice( device_id );
+    hapi_device.reset( temp_device );
+  }
+  /*if( haptik_device ) {
     RSLib::HaptikDeviceInfo info;
     haptik_device->GetInfo( info );
     int index = -1;
@@ -216,6 +215,6 @@ void HaptikHapticsDevice::changeHaptikDevice( unsigned int device_id ) {
   } else {
     haptik_device = 
       (RSLib::IHaptikDeviceInterface) haptik.GetDeviceInterface( device_id );
-  }
+  }*/
 #endif
 }
