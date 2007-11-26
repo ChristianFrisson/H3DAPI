@@ -21,25 +21,22 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HaptikHapticsDevice.h
-/// \brief Header file for HaptikHapticsDevice.
+/// \file HaptikDevice.h
+/// \brief Header file for HaptikDevice.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __HAPTIKHAPTICSDEVICE_H__
-#define __HAPTIKHAPTICSDEVICE_H__
+#ifndef __HAPTIKDEVICE_H__
+#define __HAPTIKDEVICE_H__
 
 #include <H3D/H3DHapticsDevice.h>
 #include <H3D/MFString.h>
 #include <H3D/PeriodicUpdate.h>
-#ifdef HAVE_HAPTIK
-#include <RSLib/Haptik.hpp>
-#endif 
 namespace H3D {
 
   /// \ingroup H3DNodes
-  /// \class HaptikHapticsDevice
-  /// \brief The HaptikHapticsDevice uses the Haptik library
+  /// \class HaptikDevice
+  /// \brief The HaptikDevice uses the Haptik library
   /// (www.haptiklibrary.org) to access haptics devices.
   /// 
   /// The deviceName, modelName and manufacturer fields contain a string
@@ -71,8 +68,8 @@ namespace H3D {
   /// - "CUBIC" - Cubic device.
   /// 
   /// \par Internal routes:
-  /// \dotfile HaptikHapticsDevice.dot
-  class H3DAPI_API HaptikHapticsDevice: public H3DHapticsDevice {
+  /// \dotfile HaptikDevice.dot
+  class H3DAPI_API HaptikDevice: public H3DHapticsDevice {
   public:
 
     /// The SelectDevice field changes the haptics device to use depending
@@ -87,7 +84,7 @@ namespace H3D {
     };
 
     /// Constructor.
-    HaptikHapticsDevice( 
+    HaptikDevice( 
             Inst< SFVec3f            > _devicePosition         = 0,
             Inst< SFRotation         > _deviceOrientation      = 0,
             Inst< TrackerPosition    > _trackerPosition        = 0,
@@ -115,11 +112,11 @@ namespace H3D {
             Inst< SFInt32         > _set_selectedDevice     = 0,
             Inst< SFString        > _preferredDeviceType    = 0 );
     
-    /// Creates a HaptikHapticsDevice in the hapi_device.
+    /// Creates a HaptikDevice in the hapi_device.
     virtual void initialize();
 
     /// Destructor. Stops haptics rendering and remove callback functions.
-    virtual ~HaptikHapticsDevice() {
+    virtual ~HaptikDevice() {
       disableDevice();
     }
 
@@ -146,7 +143,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly
     /// 
-    /// \dotfile HaptikHapticsDevice_selectedDevice.dot
+    /// \dotfile HaptikDevice_selectedDevice.dot
     auto_ptr< SelectDevice > selectedDevice;
 
     /// The set_selectedDevice field lets you choose the index of the haptics 
@@ -157,7 +154,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> -1
     /// 
-    /// \dotfile HaptikHapticsDevice_set_selectedDevice.dot
+    /// \dotfile HaptikDevice_set_selectedDevice.dot
     auto_ptr< SFInt32  > set_selectedDevice;
 
     /// The preferredDeviceType field will be used if the set_selectedDevice field
@@ -180,7 +177,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> "DEFAULT_DEVICE"
     /// 
-    /// \dotfile HaptikHapticsDevice_preferredDeviceType.dot
+    /// \dotfile HaptikDevice_preferredDeviceType.dot
     auto_ptr< SFString > preferredDeviceType;
 
     /// Node database entry
@@ -189,14 +186,6 @@ namespace H3D {
   protected:
     /// Change the used Haptik device to the one with the given id.
     virtual void changeHaptikDevice( unsigned int new_id );
-
-#ifdef HAVE_HAPTIK
-    RSLib::Haptik haptik;
-    /// The device currently in use.
-    RSLib::IHaptikDeviceInterface haptik_device;
-    Vec3f last_force;
-    Vec3f last_torque;
-#endif
   };
 }
 

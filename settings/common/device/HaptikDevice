@@ -1,4 +1,4 @@
 <DeviceInfo>
-  <HaptikHapticsDevice positionCalibration="2e-3 0 0 0 0 2e-3 0 0 0 0
-  2e-3 0 0 0 0 1" preferredDeviceType="OMNI"/>
+  <HaptikDevice positionCalibration="2 0 0 0 0 2 0 0 0 0
+  2 0 0 0 0 1" preferredDeviceType="PHANTOM_OMNI"/>
 </DeviceInfo>
