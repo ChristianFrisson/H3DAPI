@@ -128,7 +128,16 @@ void Scene::idle() {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
         Node *stylus = hd->stylus->getValue();
         if( stylus ) {
+          const Vec3f &pos = hd->weightedProxyPosition->getValue();
+          const Rotation &rot = hd->trackerOrientation->getValue();
+          Matrix4f m(rot);
+          m[0][3] = pos.x;
+          m[1][3] = pos.y;
+          m[2][3] = pos.z;
+          (*ti).pushMatrices( m,
+                           m.inverse() );
           stylus->traverseSG( *ti );
+          (*ti).popMatrices();
         }
       }
     }

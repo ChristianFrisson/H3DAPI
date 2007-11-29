@@ -63,7 +63,8 @@ X3DBackgroundNode::X3DBackgroundNode( Inst< SFSetBind > _set_bind,
   groundColor( _groundColor ),
   skyAngle( _skyAngle ),
   skyColor( _skyColor ),
-  localToGlobal( new SFMatrix4f ) {
+  localToGlobal( new SFMatrix4f ),
+  render_enabled( false ) {
   
   displayList->setOwner( this );
   displayList->setName( "displayList" );

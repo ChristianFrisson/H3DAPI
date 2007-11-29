@@ -35,6 +35,8 @@
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/DependentNodeFields.h>
 #include <H3D/H3DDisplayListObject.h>
+#include <H3D/H3DMultiPassRenderObject.h>
+#include <H3D/SFColor.h>
 
 namespace H3D {
   /// \ingroup AbstractNodes
@@ -45,8 +47,8 @@ namespace H3D {
   class H3DAPI_API PlanarReflector : 
     public X3DChildNode,
     public X3DBoundedObject,
-    public H3DDisplayListObject {
-
+    public H3DDisplayListObject,
+    public H3DMultiPassRenderObject {
   public:
     /// SFGeometryNode is dependent on the displayList field of its
     /// encapsulated X3DGeometryNode node, i.e. an event from that
@@ -113,12 +115,10 @@ namespace H3D {
                      Inst< SFVec3f          > _bboxCenter     = 0,
                      Inst< SFVec3f          > _bboxSize       = 0,
                      Inst< DisplayList      > _displayList    = 0,
-                     Inst< SFGeometryNode   > _geometry       = 0
+                     Inst< SFGeometryNode   > _geometry       = 0,
+                     Inst< SFFloat          > _reflectivity   = 0,
+                     Inst< SFColor          > _color          = 0
                      );
-
-    ~PlanarReflector() {
-      instances.remove( this );
-    }
 
     /// Sets up the bound field using the bboxCenter and bboxSize fields.
     /// If bboxSize is (-1, -1, -1) the bound will be the bound of the
@@ -142,18 +142,9 @@ namespace H3D {
       X3DChildNode::initialize();
     }
 
-    static void updateAll( X3DChildNode *n,
-                           X3DViewpointNode *vp,
-                           const Matrix4f &vp_transform ) { 
-      for( list< PlanarReflector * >::iterator i = instances.begin();
-           i != instances.end(); i++ ) {
-        (*i)->update( n, vp, vp_transform );
-      }
-    }
-
-    void update ( X3DChildNode *n,
-                  X3DViewpointNode *vp,
-                  const Matrix4f &vp_transform );
+    /// Render the mirrored scene and the mirror.
+    virtual void renderPostViewpoint ( X3DChildNode *n,
+                                       X3DViewpointNode *vp );
 
     /// Traverse the scenegraph. Calls traverseSG on appeance and geometry.
     virtual void traverseSG( TraverseInfo &ti );
@@ -224,15 +215,30 @@ namespace H3D {
     /// \dotfile PlanarReflector_geometry.dot
     auto_ptr< SFGeometryNode  >  geometry;
 
+    /// The reflectivity of the mirror. A value of 1 means total reflectivity,
+    /// i.e. the mirror itself will not be visible.
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> 0.9
+    /// <b>Value range:</b> [0-1]
+    /// 
+    /// \dotfile PlanarReflector_reflectivity.dot
+    auto_ptr< SFFloat  > reflectivity;
+
+    /// The color of the mirror. 
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> 1 1 1
+    /// 
+    /// \dotfile PlanarReflector_color.dot
+    auto_ptr< SFColor  > color;
+
     // if true a route will be set up between the bound field of the
     // geometry node in this field and the bound field of the shape. 
     bool use_geometry_bound;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-
-    // All instances of GeneratedCubeMapTexture that has been created.
-    static std::list< PlanarReflector * > instances;
 
     Matrix4f local_to_global;
   };

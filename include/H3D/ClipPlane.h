@@ -124,6 +124,8 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    /// The number of clip planes that are currently rendered.
+    static int nr_active_clip_planes;
   protected:
     /// The index of the plane when rendered by OpenGL. -1 if currently
     /// not rendered.
@@ -133,8 +135,7 @@ namespace H3D {
     /// The maximum number of clip planes the graphics hardware supports.
     /// Set in the first call to enable().
     static GLint max_nr_clip_planes;
-    /// The number of clip planes that are currently rendered.
-    static int nr_active_clip_planes;
+
     
   };
 }

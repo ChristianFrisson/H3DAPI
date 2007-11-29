@@ -34,8 +34,6 @@
 
 using namespace H3D;
 
-list< GeneratedCubeMapTexture * > GeneratedCubeMapTexture::instances;
-
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase GeneratedCubeMapTexture::database( 
                            "GeneratedCubeMapTexture", 
@@ -64,13 +62,8 @@ GeneratedCubeMapTexture::GeneratedCubeMapTexture(
 
   size->setValue( 128 );
   update->setValue( "NONE" );
-
-  instances.push_back( this );
 }
 
-GeneratedCubeMapTexture::~GeneratedCubeMapTexture() {
-  instances.remove( this );
-}
 
 void GeneratedCubeMapTexture::initializeTextures() {
   if( !cube_map_id ) {
@@ -246,29 +239,23 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
 /// Updates the cube map textures of all instances of 
 /// GeneratedCubeMapTexture. The update field will be checked to 
 /// see if an update is required. 
-void GeneratedCubeMapTexture::updateAllCubeMapTextures( X3DChildNode *n,
-                                                        X3DViewpointNode *vp ) {
-  for( list< GeneratedCubeMapTexture * >::iterator i = instances.begin();
-       i != instances.end(); i++ ) {
-    GeneratedCubeMapTexture *cubemap = 
-      static_cast< GeneratedCubeMapTexture * >( *i );
-    if( cubemap ) {
-      const string &update = cubemap->update->getValue();
-      if( update == "NEXT_FRAME_ONLY" ) {
-        cubemap->updateCubeMapTextures( n, vp );
-        cubemap->update->setValue( "NONE" );
-      } else if( update == "ALWAYS" ) {
-        cubemap->updateCubeMapTextures( n, vp );
-      } else if( update == "NONE" ) {
-        if(  cubemap->getTextureId() == 0 ) 
-          cubemap->updateCubeMapTextures( n, vp );
-      } else {
-        Console(3) << "Warning: Invalid value for \"update\" field in \""
-                   << cubemap->getName() << "\" node (\"" << update
-                   << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
-                   << " or \"ALWAYS\"" << endl;
-      }
-    }
+void GeneratedCubeMapTexture::renderPreViewpoint( X3DChildNode *n,
+                                                  X3DViewpointNode *vp ) {
+  const string &update_string = update->getValue();
+  if( update_string == "NEXT_FRAME_ONLY" ) {
+    updateCubeMapTextures( n, vp );
+    update->setValue( "NONE" );
+  } else if( update_string == "ALWAYS" ) {
+    updateCubeMapTextures( n, vp );
+  } else if( update_string == "NONE" ) {
+    if(  getTextureId() == 0 ) 
+      updateCubeMapTextures( n, vp );
+  } else {
+    Console(3) << "Warning: Invalid value for \"update\" field in \""
+               << getName() << "\" node (\"" << update_string
+               << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
+               << " or \"ALWAYS\"" << endl;
   }
 }
+
 

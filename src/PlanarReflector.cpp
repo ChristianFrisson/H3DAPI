@@ -31,6 +31,7 @@
 #include <H3D/PlanarReflector.h>
 #include <H3D/X3DTextureNode.h>
 #include <H3D/Scene.h>
+#include <H3D/X3DBackgroundNode.h>
 
 using namespace H3D;
 
@@ -43,9 +44,9 @@ H3DNodeDatabase PlanarReflector::database(
 
 namespace PlanarReflectorInternals {
   FIELDDB_ELEMENT( PlanarReflector, geometry, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlanarReflector, reflectivity, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlanarReflector, color, INPUT_OUTPUT );
 }
-
-list< PlanarReflector * > PlanarReflector::instances;
 
 PlanarReflector::PlanarReflector( 
                            Inst< SFNode           > _metadata,
@@ -53,12 +54,16 @@ PlanarReflector::PlanarReflector(
                            Inst< SFVec3f          > _bboxCenter,
                            Inst< SFVec3f          > _bboxSize,
                            Inst< DisplayList      > _displayList,
-                           Inst< SFGeometryNode   > _geometry
+                           Inst< SFGeometryNode   > _geometry,
+                           Inst< SFFloat          > _reflectivity,
+                           Inst< SFColor          > _color
 ) :
   X3DChildNode( _metadata ),
   X3DBoundedObject( _bound ),
   H3DDisplayListObject( _displayList ),
   geometry  ( _geometry   ),
+  reflectivity( _reflectivity ),
+  color( _color ),
   use_geometry_bound( false ) {
 
   type_name = "PlanarReflector";
@@ -67,17 +72,27 @@ PlanarReflector::PlanarReflector(
   displayList->setOwner( this );
   bound->setOwner( this );
   
+  reflectivity->setValue( (H3DFloat) 0.9 );
+  color->setValue( RGB( 1, 1, 1 ) );
+
+  // never generate a display list.
   Scene::time->route( displayList );
   geometry->route( displayList );
-
-  instances.push_back( this );
+  reflectivity->route( displayList );
+  color->route( displayList );
 }
 
 
-void PlanarReflector::update ( X3DChildNode *n,
-                               X3DViewpointNode *vp,
-                               const Matrix4f &vp_transform ) {
+void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
+                                            X3DViewpointNode *vp ) {
   glMatrixMode( GL_MODELVIEW );
+
+  GLfloat mv[16];
+  glGetFloatv( GL_MODELVIEW_MATRIX, mv );
+  Matrix4f vp_transform( mv[0], mv[4], mv[8], mv[12], 
+                         mv[1], mv[5], mv[9], mv[13], 
+                         mv[2], mv[6], mv[10], mv[14], 
+                         mv[3], mv[7], mv[11], mv[15] );
 
   // draw mirror geometry into stencil buffer
   glPushMatrix();
@@ -135,6 +150,36 @@ void PlanarReflector::update ( X3DChildNode *n,
   vp_transform[0][2], vp_transform[1][2], vp_transform[2][2], vp_transform[3][2],
   vp_transform[0][3], vp_transform[1][3], vp_transform[2][3], vp_transform[3][3] };
 
+  // draw background
+  X3DBackgroundNode *background = X3DBackgroundNode::getActive();
+  if( background ) {
+    GLint front_face;
+    glGetIntegerv( GL_FRONT_FACE, &front_face );
+    if( front_face == GL_CW ) {
+      // we are in mirrored mode, so we have to set the front face
+      // to the opposite in order for it to be right when mirrored.
+      glFrontFace( GL_CCW );
+    } else {
+      glFrontFace( GL_CW );
+    }
+    glPushMatrix();
+    Matrix4f tt = m * vp_transform;
+    Matrix3f rt = tt.getRotationPart();
+    GLfloat tm[16] = { rt[0][0], rt[1][0], rt[2][0], 0,
+                       rt[0][1], rt[1][1], rt[2][1], 0,
+                       rt[0][2], rt[1][2], rt[2][2], 0,
+                       0, 0, 0, 1 };
+
+    glLoadMatrixf( tm );
+    
+    glDepthMask( GL_FALSE );
+    background->renderBackground();
+    glDepthMask( GL_TRUE );
+
+    glPopMatrix();
+    glFrontFace( front_face );
+  }
+
   // set up clip plane to clip everything behind the mirror
   glMultMatrixf( t );
   int plane_index = 0;
@@ -150,7 +195,16 @@ void PlanarReflector::update ( X3DChildNode *n,
   glMultMatrixf( vp_m );
   
   // reflection matrix contains a negative scaling so we need to change front face.
-  glFrontFace( GL_CW );
+  GLint front_face;
+  glGetIntegerv( GL_FRONT_FACE, &front_face );
+  if( front_face == GL_CW ) {
+    // we are in mirrored mode, so we have to set the front face
+      // to the opposite in order for it to be right when mirrored.
+    glFrontFace( GL_CCW );
+  } else {
+    glFrontFace( GL_CW );
+  }
+
   n->render();
   glDisable( GL_CLIP_PLANE0 + plane_index );
   glPopMatrix();
@@ -163,10 +217,15 @@ void PlanarReflector::update ( X3DChildNode *n,
   glEnable( GL_BLEND );
   glDisable( GL_LIGHTING );
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glColor4f( 0.6, 0.6, 0.6, 0.1 );
+  
+  const RGB &c = color->getValue();
+
+  glColor4f( c.r, c.g, c.b, 1 - reflectivity->getValue() );
   if( g ) g->render();
   glEnable( GL_LIGHTING );
   glPopMatrix();
+
+  glFrontFace( front_face );
     /*
   glPushMatrix();
   GLfloat t[16] = { local_to_global[0][0], local_to_global[1][0], local_to_global[2][0], local_to_global[3][0],

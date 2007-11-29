@@ -85,7 +85,15 @@ namespace H3D {
         RED_BLUE_STEREO,
         /// Stereo mode where the left eye is rendered in red and the right 
         /// eye in cyan. 
-        RED_CYAN_STEREO
+        RED_CYAN_STEREO,
+
+        /// Stereo mode where the left eye is rendered as the left half 
+        /// of the screen and the right eye as the right half of the screen.
+        /// The aspect ratio is preserved in this mode, so that it can be used
+        /// when e.g. extending the desktop in order for rendering each
+        /// the left eye for one projector and the right for another.
+        VERTICAL_SPLIT_KEEP_RATIO
+
       } Mode;
 
       /// setValue is specialized so that the stecil mask is rebuilt if

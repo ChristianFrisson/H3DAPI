@@ -41,7 +41,7 @@
 #include <H3D/MatrixTransform.h>
 #include <H3D/NavigationInfo.h>
 #include <H3D/StereoInfo.h>
-#include <H3D/GeneratedCubeMapTexture.h>
+#include <H3D/H3DMultiPassRenderObject.h>
 #include <H3D/Fog.h>
 #include <H3D/X3DShapeNode.h>
 #include <H3D/Scene.h>
@@ -595,11 +595,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     vp_inv_m[0][2], vp_inv_m[1][2], vp_inv_m[2][2], 0,
     vp_inv_m[0][3], vp_inv_m[1][3], vp_inv_m[2][3], 1 };
 
-
-  GeneratedCubeMapTexture::updateAllCubeMapTextures( child_to_render, vp );
+  
+  H3DMultiPassRenderObject::renderPreViewpointAll( child_to_render, vp );
 
   glViewport( 0, 0, width->getValue(), height->getValue() );
-
+  
   if( rebuild_stencil_mask ) {
     // build up stencil buffer
     int w = width->getValue();
@@ -680,10 +680,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     H3DFloat top, bottom, right, left;
 
-    vp->windowFromfieldOfView( (H3DFloat) width->getValue(),
-                               (H3DFloat) height->getValue(),
-                               clip_near,
-                               top, bottom, right, left );
+    vp->windowFromfieldOfView( 
+              stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ? 
+              (H3DFloat) width->getValue()/2.0f :
+              (H3DFloat) width->getValue(),
+              (H3DFloat) height->getValue(),
+              clip_near,
+              top, bottom, right, left );
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -731,9 +734,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ) {
       glViewport( 0, height->getValue() / 2, 
                   width->getValue(), height->getValue() / 2 );
-    } else if( stereo_mode == RenderMode::VERTICAL_SPLIT ) {
+    } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
+               stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, 0, width->getValue() / 2, height->getValue() );
-    }
+    } 
 
     // clear the buffers before rendering
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -764,8 +768,14 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
     
+    H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
+                                                      vp );
+
     // render the scene
     renderChild( child_to_render );
+
+    H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
+                                                  vp ); 
 
     // RIGHT EYE
     glMatrixMode(GL_PROJECTION);
@@ -814,7 +824,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ) {
       glViewport( 0, 0, 
                   width->getValue(), height->getValue() / 2 );
-    } else if( stereo_mode == RenderMode::VERTICAL_SPLIT ) {
+    } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
+               stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
       glViewport( width->getValue() / 2, 0, 
                   width->getValue() / 2, height->getValue() );
     }
@@ -847,8 +858,14 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
 
+    H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
+                                                      vp );
+
     // render the scene
     renderChild( child_to_render );
+
+    H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
+                                                  vp );
 
     if( stereo_mode == RenderMode::RED_BLUE_STEREO ||
         stereo_mode == RenderMode::RED_CYAN_STEREO )
@@ -949,9 +966,12 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
     glMultMatrixf( vp_inv_transform );
-    
-    renderChild( child_to_render );
 
+    H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
+                                                      vp );
+    renderChild( child_to_render );
+    H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
+                                                  vp );
     swapBuffers();
   }
   glPopAttrib();
@@ -1009,6 +1029,8 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return QUAD_BUFFERED_STEREO;
   else if( value == "VERTICAL_SPLIT" )
     return VERTICAL_SPLIT;
+  else if( value == "VERTICAL_SPLIT_KEEP_RATIO" )
+    return VERTICAL_SPLIT_KEEP_RATIO;
   else if( value == "HORIZONTAL_SPLIT" )
     return HORIZONTAL_SPLIT;
   else if( value == "VERTICAL_INTERLACED" )
@@ -1025,7 +1047,7 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     stringstream s;
     s << "Must be one of MONO, QUAD_BUFFERED_STEREO, HORIZONTAL_INTERLACED, "
       << "VERTICAL_INTERLACED, VERTICAL_INTERLACED_GREEN_SHIFT, "
-      << "VERTICAL_SPLIT, HORIZONTAL_SPLIT, "
+      << "VERTICAL_SPLIT, VERTICAL_SPLIT_KEEP_RATIO, HORIZONTAL_SPLIT, "
       << "RED_CYAN_STEREO or RED_BLUE_STEREO. ";
     throw InvalidRenderMode( value, 
                              s.str(),

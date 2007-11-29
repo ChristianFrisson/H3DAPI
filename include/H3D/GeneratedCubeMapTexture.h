@@ -34,6 +34,7 @@
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/DependentNodeFields.h>
+#include <H3D/H3DMultiPassRenderObject.h>
 #include <list>
 #include <H3D/SFInt32.h>
 
@@ -73,9 +74,6 @@ namespace H3D {
                              Inst< SFNode      > _metadata   = 0,
                              Inst< SFString    > _update     = 0,
                              Inst< SFInt32     > _size       = 0 );
-
-    /// Destructor.
-    ~GeneratedCubeMapTexture();
 
     /// Enables cube map texturing.
     virtual void enableTexturing();
@@ -123,14 +121,13 @@ namespace H3D {
     /// member variable.
     virtual void traverseSG( TraverseInfo &ti );
 
-    /// Updates the cube map textures of all instances of 
-    /// GeneratedCubeMapTexture. The update field will be checked to 
-    /// see if an update is required. 
+    /// Updates the cube map textures of the GeneratedCubeMapTexture.
+    /// The update field will be checked to  see if an update is required. 
     /// \param n The scenegraph to render. 
     /// \param vp The viewpoint the scene is currently rendered with
     /// in the normal rendering.
-    static void updateAllCubeMapTextures( X3DChildNode *n,
-                                          X3DViewpointNode *vp );
+    virtual void renderPreViewpoint( X3DChildNode *n,
+                                     X3DViewpointNode *vp );
 
     /// The texture to use on the back face of the cube.
     ///
@@ -177,9 +174,6 @@ namespace H3D {
     /// Transformation matrix from the local coordinate system of the node
     /// to the global coordinate system.
     Matrix4f local_to_global;
-
-    /// All instances of GeneratedCubeMapTexture that has been created.
-    static list< GeneratedCubeMapTexture * > instances;
   };
 }
 
