@@ -203,14 +203,26 @@ void X3DTexture3DNode::render()     {
   glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
   Image * i = static_cast< Image * >(image->getValue());
   if( displayList->hasCausedEvent( image ) ) {
-    // the image has changed so remove the old texture and install 
-    // the new
-    glDeleteTextures( 1, &texture_id );
-    texture_id = 0;
-    if( i ) {
-      texture_id = renderImage( i, 
-                                GL_TEXTURE_3D, 
-                                scaleToPowerOfTwo->getValue() );
+
+    if( image->imageChanged() || texture_id == 0 ) {
+      // the image has changed so remove the old texture and install 
+      // the new
+      glDeleteTextures( 1, &texture_id );
+      texture_id = 0;
+      if( i ) {
+        texture_id = renderImage( i, 
+                                  GL_TEXTURE_3D, 
+                                  scaleToPowerOfTwo->getValue() );
+      } else {
+        glBindTexture(  GL_TEXTURE_3D, texture_id );
+        renderSubImage( i, GL_TEXTURE_3D, 
+                        image->xOffset(), 
+                        image->yOffset(),
+                        image->zOffset(),
+                        image->changedWidth(), 
+                        image->changedHeight(),
+                        image->changedDepth() );
+      }
       enableTexturing();
     }
   } else {
@@ -451,4 +463,39 @@ void X3DTexture3DNode::renderTextureProperties() {
   }
 }
 
+void X3DTexture3DNode::renderSubImage( Image *image, 
+                                       GLenum texture_target, 
+                                       int x_offset, 
+                                       int y_offset, 
+                                       int z_offset,
+                                       int width, 
+                                       int height,
+                                       int depth ) {
+  // todo: is there a way to do this without copying data?
+  unsigned char *image_data = (unsigned char *) image->getImageData();
+
+  unsigned int bytes_per_pixel = image->bitsPerPixel() / 8;
+
+  unsigned char *modified_data = 
+    new unsigned char[ width * height * depth * bytes_per_pixel ]; 
+  for( unsigned int z = 0; z < depth; z++ ) {
+    for( unsigned int y = 0; y < height; y++ ) {
+      memcpy( modified_data + (z * height + y ) * width * bytes_per_pixel, 
+              image_data + 
+              ( ((z + z_offset) * image->height() + (y + y_offset ) ) * 
+                image->width() + x_offset) * bytes_per_pixel,
+              width * bytes_per_pixel );
+    }
+  }
+
+  glTexSubImage3D( GL_TEXTURE_3D, 0, 
+                   x_offset, y_offset, z_offset, 
+                   width, height, depth, 
+                   glPixelFormat( image ),
+                   glPixelComponentType( image ), 
+                   modified_data );
+
+
+  delete [] modified_data;
+}
 

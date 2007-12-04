@@ -50,7 +50,7 @@ namespace H3D {
       virtual void setValueFromString( const string &s ) {
         setValue( X3D::X3DStringTo2DImage( s ) );
       }
-    };
+     };
         
     /// The SFTextureProperties is dependent on the propertyChanged field of
     /// the contained TextureProperties.
@@ -131,6 +131,11 @@ namespace H3D {
     virtual void glTexImage( Image *image, GLenum texture_target, 
                              bool scale_to_power_of_two );
       
+    /// Replaces part of the current texture from an image. 
+    virtual void renderSubImage( Image *image, GLenum texture_target, 
+                                 int xoffset, int yoffset,
+                                 int width, int height );
+
     /// If true the texture will repeat itself when the s texture coordinate
     /// is outside the range [0,1]. If false the texture will be clamped if
     /// outside the same range.

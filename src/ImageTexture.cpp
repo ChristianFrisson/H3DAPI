@@ -157,6 +157,10 @@ void ImageTexture::SFImage::update() {
   } else {
     value = loadImage( texture, urls->getValue(), image_loaders->getValue() );
   }
+
+  // reset the editing variables since we are doing a full load of a new
+  // texture
+  resetChanges();
 }
 
 void ImageTexture::render() {

@@ -207,18 +207,29 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
 
 void X3DTexture2DNode::render()     {
   glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
+
   Image * i = static_cast< Image * >(image->getValue());
   if( displayList->hasCausedEvent( image ) ) {
-     // the image has changed so remove the old texture and install 
-    // the new
-    glDeleteTextures( 1, &texture_id );
-    texture_id = 0;
-    if( i ) {
-      texture_id = renderImage( i, 
-                                GL_TEXTURE_2D, 
-                                scaleToPowerOfTwo->getValue() );
-      enableTexturing();
+    
+    if( image->imageChanged() || texture_id == 0 ) {
+      // the image has changed so remove the old texture and install 
+      // the new
+      glDeleteTextures( 1, &texture_id );
+      texture_id = 0;
+      if( i ) {
+        texture_id = renderImage( i, 
+                                  GL_TEXTURE_2D, 
+                                  scaleToPowerOfTwo->getValue() );
+       
+      }
+    } else {
+      glBindTexture(  GL_TEXTURE_2D, texture_id );
+      renderSubImage( i, GL_TEXTURE_2D, 
+                      image->xOffset(), image->yOffset(),
+                      image->changedWidth(), 
+                      image->changedHeight() );
     }
+    enableTexturing();
   } else {
     if ( texture_id ) {
       // same texture as last loop, so we just bind it.
@@ -452,4 +463,32 @@ void X3DTexture2DNode::renderTextureProperties() {
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   }
 }
+
+void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target, 
+                                       int x_offset, int y_offset,
+                                       int width, int height ) {
+  // todo: is there a way to do this without copying data?
+  unsigned char *image_data = (unsigned char *) image->getImageData();
+
+  unsigned int bytes_per_pixel = image->bitsPerPixel() / 8;
+
+  unsigned char *modified_data = 
+    new unsigned char[ width * height * bytes_per_pixel ]; 
+  for( unsigned int i = 0; i < height; i++ ) {
+    memcpy( modified_data + i * width * bytes_per_pixel, 
+            image_data + ( (i + y_offset )* image->width() + x_offset) * bytes_per_pixel,
+            width * bytes_per_pixel );
+  }
+
+  glTexSubImage2D( GL_TEXTURE_2D, 0, 
+                   x_offset, y_offset, 
+                   width, height, 
+                   glPixelFormat( image ),
+                   glPixelComponentType( image ), 
+                   modified_data );
+
+
+  delete [] modified_data;
+}
+
 
