@@ -1118,14 +1118,13 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
                                LPARAM lParam)
 {  
   // Evaluate Window Message
-	switch (uMsg)
-	{    
-    case WM_SYSCOMMAND:				// Intercept System Commands
+	switch (uMsg) {    
+    case WM_SYSCOMMAND: {				// Intercept System Commands
       // Check System Calls (according to msdn the & with 0xFFF0
       // is needed to obtain the correct result)
 			switch (wParam & 0xFFF0)
 			{
-        case SC_KEYMENU:
+      case SC_KEYMENU: {
           // If the Window does not have a menu
           // then we do not want the default behaviour for SC_KEYMENU
           // cause that means that the keySensor does not
@@ -1134,12 +1133,15 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
           HMENU theMenu = GetMenu( _hWnd );
           if( !theMenu )
             return 0;
-        break;
+          break;
+        }
+        default:{}
 			}
-		break;
+		  break;
+    }
 
     case WM_KEYDOWN:  
-    case WM_SYSKEYDOWN:
+    case WM_SYSKEYDOWN: {
       switch( wParam ) {
         case VK_F1: onKeyDown( X3DKeyDeviceSensorNode::F1, true ); break;
         case VK_F2: onKeyDown( X3DKeyDeviceSensorNode::F2, true ); break;
@@ -1167,10 +1169,11 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
         case VK_SHIFT: onKeyDown( X3DKeyDeviceSensorNode::SHIFT, true ); break;
         default: { }
       }
-    break;
+      break;
+    }
     
     case WM_KEYUP:
-    case WM_SYSKEYUP:
+    case WM_SYSKEYUP: {
       switch( wParam ) {
 	      case VK_F1: onKeyUp( X3DKeyDeviceSensorNode::F1, true ); break;
         case VK_F2: onKeyUp( X3DKeyDeviceSensorNode::F2, true ); break;
@@ -1209,7 +1212,8 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
           onKeyUp(key, false );
         }
       }
-    break;
+      break;
+    }
 
     // When using ToAscii in the function called by
     // keyboardSpecialUpCallback the dead char gets
@@ -1222,60 +1226,67 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
     case WM_SYSDEADCHAR:
     case WM_DEADCHAR:
     case WM_SYSCHAR:
-    case WM_CHAR:
-      onKeyDown( wParam, false );
-    break;
+    case WM_CHAR: onKeyDown( wParam, false ); break;
 
-    case WM_MENUCHAR:
+    case WM_MENUCHAR: {
       if( GetKeyState( VK_MENU ) >= 0 )
         onKeyDown( wParam, false );
-    break;
+      break;
+    }
 
     case WM_LBUTTONDOWN:
-    case WM_LBUTTONDBLCLK:
+    case WM_LBUTTONDBLCLK: {
       MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
                                       MouseSensor::DOWN );
-    break;
+      break;
+    }
 
-    case WM_LBUTTONUP:
+    case WM_LBUTTONUP: {
       MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
                                       MouseSensor::UP );
-    break;
+      break;
+    }
 
     case WM_MBUTTONDOWN:
-    case WM_MBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK: {
       MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
                                       MouseSensor::DOWN );
-    break;
+      break;
+    }
 
-    case WM_MBUTTONUP:
+    case WM_MBUTTONUP: {
       MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
                                       MouseSensor::UP );
-    break;
+      break;
+    }
 
     case WM_RBUTTONDOWN:
-    case WM_RBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK: {
       MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
                                       MouseSensor::DOWN );
-    break;
+      break;
+    }
 
-    case WM_RBUTTONUP:
+    case WM_RBUTTONUP: {
       MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
                                       MouseSensor::UP );
-    break;
+      break;
+    }
 
-    case WM_MOUSEMOVE:
+    case WM_MOUSEMOVE: {
       MouseSensor::motionCallback( LOWORD(lParam),
                                    HIWORD(lParam) );
-    break;
+      break;
+    }
 
     // WM_MOUSEWHEEL = 0x020A not defined unless 
     // _WIN32_WINNT or _WIN32_WINDOWS are defined before including windows.h
-    case 0x020A:
+    case 0x020A: {
       short upOrDown = HIWORD( wParam );
       MouseSensor::wheelCallback( upOrDown > 0 ? 
                           MouseSensor::FROM : MouseSensor::TOWARDS );
-    break;
+      break;
+    }
   }
 
   // Call the original windows Procedure.

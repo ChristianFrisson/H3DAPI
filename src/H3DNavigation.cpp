@@ -232,7 +232,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
             approx_center = vp_acc_inv_mtx *
               ( transform_matrices[closest ] * approx_center );
             viewing_distance = (vp_acc_inv_mtx *( transform_matrices[closest]
-            * result[closest].point ) ).length() * 2.0f;
+            * (Vec3f)result[closest].point ) ).length() * 2.0f;
           }
           Vec3f backward = vp_full_orientation * Vec3f( 0, 0, 1 );
           vp->centerOfRotation->setValue( approx_center );

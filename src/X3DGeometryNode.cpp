@@ -276,7 +276,7 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
         glMatrixMode( GL_MODELVIEW );
         glPushMatrix();
         glScalef( 1e-3f, 1e-3f, 1e-3f ); 
-        tree->render( render_depth );
+        tree->renderBounds( render_depth );
         glPopMatrix();
       }
     }
