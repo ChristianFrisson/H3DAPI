@@ -139,6 +139,11 @@ Sound::Sound(
 #endif
 }
 
+Sound::~Sound() {
+  if( al_source )
+    alDeleteSources(1, &al_source );
+}
+
 void Sound::traverseSG( TraverseInfo &ti ) {
   X3DSoundSourceNode *sound_source = source->getValue();
   if( sound_source ) {
