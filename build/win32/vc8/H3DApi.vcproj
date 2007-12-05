@@ -506,6 +506,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\H3DImageObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\H3DMultiPassRenderObject.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\H3DNavigation.cpp"
 				>
 			</File>
@@ -1733,6 +1741,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3D\H3DImageObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\H3D\H3DMultiPassRenderObject.h"
 				>
 			</File>
 			<File
