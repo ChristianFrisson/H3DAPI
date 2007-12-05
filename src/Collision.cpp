@@ -62,10 +62,10 @@ Collision::Collision( Inst< MFChild > _addChildren,
                       Inst< SFChild > _proxy) :
   X3DGroupingNode( _addChildren, _removeChildren, _children,
                    _metadata, _bound, _bboxCenter, _bboxSize ),
-  enabled        ( _enabled ),
   collideTime    ( _collideTime ),
-  isActive       ( _isActive ),
-  proxy          ( _proxy ) {
+  proxy          ( _proxy ),
+  enabled        ( _enabled ),
+  isActive       ( _isActive ) {
   
   type_name = "Collision";
   database.initFields( this );

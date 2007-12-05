@@ -103,7 +103,9 @@ H3DHapticsDevice::H3DHapticsDevice(
   trackerPosition( _trackerPosition ),
   trackerOrientation( _trackerOrientation ),
   positionCalibration( _positionCalibration ),
+  adjustedPositionCalibration( new PosCalibration ),
   orientationCalibration( _orientationCalibration ),
+  adjustedOrnCalibration( new OrnCalibration ),
   proxyPosition( _proxyPosition ),
   weightedProxyPosition( _weightedProxyPosition ),
   proxyWeighting( _proxyWeighting ),
@@ -114,8 +116,6 @@ H3DHapticsDevice::H3DHapticsDevice(
   torque( _torque ),
   inputDOF( _inputDOF ),
   outputDOF( _outputDOF ),
-  followViewpoint( _followViewpoint ),
-  deviceVelocity( _deviceVelocity ),
   hapticsRate( _hapticsRate ),
   desiredHapticsRate( _desiredHapticsRate ),
   hapticsLoopTime( new SFTime ),
@@ -125,8 +125,8 @@ H3DHapticsDevice::H3DHapticsDevice(
   proxyPositions( _proxyPositions ),
   set_enabled( new SetEnabled ),
   enabled( new SFBool ),
-  adjustedPositionCalibration( new PosCalibration ),
-  adjustedOrnCalibration( new OrnCalibration ),
+  followViewpoint( _followViewpoint ),
+  deviceVelocity( _deviceVelocity ),
   error_msg_printed( false ) {
 
   type_name = "H3DHapticsDevice";  
@@ -471,7 +471,4 @@ void H3DHapticsDevice::updateDeviceValues() {
   // TODO: lock
   //proxyPosition->setValue( (Vec3f)proxy_position, id );
 }
-
-
-
 

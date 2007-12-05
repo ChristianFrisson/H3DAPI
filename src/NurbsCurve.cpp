@@ -64,12 +64,12 @@ NurbsCurve::NurbsCurve(  Inst< SFNode >  _metadata,
                        Inst< SFBool	           > _closed):
 X3DParametricGeometryNode( _metadata, _bound, _displayList,
                           _isTouched,_force, _contactPoint, _contactNormal),
-                          controlPoint (_controlPoint ),
                           tessellation( _tessellation ),
                           weight( _weight ),
                           knot( _knot ),
                           order( _order ),
                           closed( _closed ),
+                          controlPoint (_controlPoint ),
                           theNurb( NULL ){
 
                             type_name = "NurbsCurve";
@@ -256,5 +256,4 @@ void NurbsCurve::render( ) {
   delete [] weight_float;
   delete [] knots_float;
 }
-
 

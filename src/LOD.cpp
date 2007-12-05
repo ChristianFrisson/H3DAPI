@@ -61,9 +61,10 @@ LOD::LOD(
 MatrixTransform( _addChildren, _removeChildren, _children, 
                 _metadata, _bound, _bboxCenter, _bboxSize),
                 level_changed( _level_changed ),
+		display_index(new SFInt32()),
                 center( _center ),
                 forceTransitions( _forceTransitions ),
-                range( _range ), display_index(new SFInt32()){
+                range( _range ) {
 
                   type_name = "LOD";
                   database.initFields( this );
@@ -165,6 +166,4 @@ void LOD::render(){
     children->getValueByIndex(display_index->getValue())->render(); 
   }
 }   
-
-
 

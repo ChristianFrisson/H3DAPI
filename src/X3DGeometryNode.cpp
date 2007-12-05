@@ -81,12 +81,12 @@ X3DGeometryNode::X3DGeometryNode(
   contactNormal( _contactNormal ),
   boundTree( _boundTree ),
   options( new MFOptionsNode ),
+  last_ti_ptr( 0 ),
+  current_geom_id( -1 ),
   use_culling( false ),
   allow_culling( true ),
   draw_debug_options( true ),
-  cull_face( GL_BACK ),
-  last_ti_ptr( 0 ),
-  current_geom_id( -1 ) {
+  cull_face( GL_BACK ) {
 
   type_name = "X3DGeometryNode";
   

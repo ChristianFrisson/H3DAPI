@@ -61,10 +61,10 @@ SplinePositionInterpolator::SplinePositionInterpolator(
   Inst< SFBool  >  _normalizeVelocity) :
 X3DInterpolatorNode( _metadata, _set_fraction, _key ),
 keyValue     ( _keyValue      ),
-value_changed( _value_changed ), 
 keyVelocity( _keyVelocity), 
 closed( _closed), 
-normalizeVelocity( _normalizeVelocity) {
+normalizeVelocity( _normalizeVelocity),
+value_changed( _value_changed ) {
 
   type_name = "SplinePositionInterpolator";
   database.initFields( this );
@@ -265,4 +265,3 @@ void SplinePositionInterpolator::SFValue::update() {
 
   }
 }
-

@@ -66,8 +66,8 @@ Anchor::Anchor(
   description( _description ),
   parameter( _parameter ),
   url( _url ),
-  intern_pdsn( new TouchSensor() ),
-  on_click( new GeometrySelected() ){
+  on_click( new GeometrySelected() ),
+  intern_pdsn( new TouchSensor() ) {
   
   type_name = "Anchor";
   database.initFields( this );
