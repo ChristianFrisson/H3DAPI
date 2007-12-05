@@ -164,6 +164,8 @@ namespace H3D {
            Inst< SFBool >  _spatialize = 0,
            Inst< ALSoundSetup > _soundSetup = 0 );
 
+    ~Sound();
+
     /// Traverse the scenegraph. Saves the accForwardMatrix and calls
     /// traverseSG() for source.
     virtual void traverseSG( TraverseInfo &ti );
