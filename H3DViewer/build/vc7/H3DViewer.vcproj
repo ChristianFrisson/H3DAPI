@@ -12,7 +12,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release using DLL|Win32"
-			OutputDirectory="..\..\..\..\bin"
+			OutputDirectory="..\..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
@@ -23,7 +23,7 @@
 				ImproveFloatingPointConsistency="FALSE"
 				OptimizeForProcessor="0"
 				AdditionalIncludeDirectories="&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;..\..\..\..\HAPI\Chai3DRenderer\include"
-				PreprocessorDefinitions="_NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32;__WXMSW__"
+				PreprocessorDefinitions="_NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
 				StringPooling="TRUE"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="2"
@@ -33,7 +33,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				CompileAs="0"/>
 			<Tool
@@ -46,7 +46,7 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(H3D_ROOT)\lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;..\..\..\..\bin;..\..\..\..\lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/WxLoad10_vc7_r.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -74,7 +74,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug using DLL|Win32"
-			OutputDirectory="..\..\..\..\bin"
+			OutputDirectory="..\..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
@@ -93,7 +93,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CompileAs="0"/>
@@ -109,7 +109,7 @@
 				AdditionalLibraryDirectories="..\..\..\..\lib;..\..\..\..\bin;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(H3D_ROOT)\lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/WxLoad10_vc7_d.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
