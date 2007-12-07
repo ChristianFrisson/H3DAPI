@@ -266,6 +266,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\CollisionOptions.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\Color.cpp"
 				>
 			</File>
@@ -1461,6 +1465,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3D\Collision.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\H3D\CollisionOptions.h"
 				>
 			</File>
 			<File

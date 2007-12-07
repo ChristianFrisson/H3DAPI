@@ -135,11 +135,16 @@ class ChangeViewport : public AutoUpdate< SFInt32> {
     }
   }
 };
-
-    // create a window to display
-    GLUTWindow *glwindow = new GLUTWindow;
     
 class ChangeNavType : public AutoUpdate< SFString > { 
+public:
+  ChangeNavType() : glwindow( 0 ) {}
+
+  inline void setOwnerWindow( H3DWindowNode * owner_window ) {
+    glwindow = owner_window;
+  }
+
+protected:
   virtual void update() {
     NavigationInfo *mynav =0;
     if(NavigationInfo::getActive()){
@@ -192,6 +197,8 @@ class ChangeNavType : public AutoUpdate< SFString > {
       }
     }
   }
+
+  H3DWindowNode *glwindow;
 };
 
 #define GET4(ENV,GROUP,VAR,DEFAULT) \
@@ -502,9 +509,9 @@ int main(int argc, char* argv[]) {
     if( use_space_mouse ) ss.reset( new SpaceWareSensor );
 #endif
     X3D::DEFNodes dn;
-    QuitAPIField *quit_api = new QuitAPIField;
-    ChangeViewport *change_viewpoint = new ChangeViewport;  // ###############
-    ChangeNavType *change_nav_type = new ChangeNavType;  // ###############
+    auto_ptr< QuitAPIField > quit_api( new QuitAPIField );
+    auto_ptr< ChangeViewport > change_viewpoint( new ChangeViewport );
+    auto_ptr< ChangeNavType > change_nav_type( new ChangeNavType );
     AutoRef< Node > device_info;
     AutoRef< Node > viewpoint;
     AutoRef< Scene > scene( new Scene );
@@ -553,7 +560,6 @@ int main(int argc, char* argv[]) {
 
     ks->keyPress->route( quit_api );
     ks->actionKeyPress->route( change_viewpoint );  //###########
-    ks->keyPress->route( change_nav_type );  //###########
 
 #ifndef MACOSX
     if( use_space_mouse )
@@ -576,6 +582,10 @@ int main(int argc, char* argv[]) {
 
     dn.clear();
 
+    // create a window to display
+    GLUTWindow *glwindow = new GLUTWindow;
+    change_nav_type->setOwnerWindow( glwindow );
+    ks->keyPress->route( change_nav_type );  //###########
     glwindow->fullscreen->setValue( fullscreen );
     glwindow->mirrored->setValue( mirrored );
     glwindow->renderMode->setValue( render_mode );

@@ -50,6 +50,7 @@
 #include <H3D/MouseSensor.h>
 #include <H3D/H3DNavigation.h>
 #include <H3D/X3DLightNode.h>
+#include <H3D/CollisionOptions.h>
 
 #include <H3DUtil/TimeStamp.h>
 #include <H3DUtil/Exception.h>
@@ -982,9 +983,19 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   if( nav_info )
     nav_info->doNavigation( vp, child_to_render );
   else {
+    bool use_collision = default_collision;
+    
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings ) {
+      CollisionOptions * collision_option = 0;
+      default_settings->getOptionNode( collision_option );
+      if( collision_option )
+        use_collision = collision_option->avatarCollision->getValue();
+    }
+
     H3DNavigation::doNavigation( default_nav,
                                  vp, child_to_render,
-                                 default_collision,
+                                 use_collision,
                                  default_avatar,
                                  default_speed );
     H3DNavigationDevices::setNavTypeForAll( default_nav );

@@ -111,7 +111,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
       if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
         && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
         vp->translate( translation_delta * speed * delta_time * scaling.x,
-          true, avatar_size, topNode );
+          detect_collision, avatar_size, topNode );
       }
       else {
         Console(3) << "Warning: Non-uniform scaling in the"
@@ -136,7 +136,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
       if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
         && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
         vp->translate( translation_delta * speed * delta_time * scaling.x,
-          true, avatar_size, topNode );
+          detect_collision, avatar_size, topNode );
       }
       else {
         Console(3) << "Warning: Non-uniform scaling in the"

@@ -21,45 +21,35 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file GraphicsCachingOptions.cpp
-/// \brief CPP file for GraphicsCachingOptions.
+/// \file CollisionOptions.cpp
+/// \brief CPP file for CollisionOptions.
 ///
 //
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/CollisionOptions.h>
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-H3DNodeDatabase GraphicsCachingOptions::database( "GraphicsCachingOptions", 
-                                      &(newInstance<GraphicsCachingOptions>),
-                                      typeid( GraphicsCachingOptions ),
+H3DNodeDatabase CollisionOptions::database( "CollisionOptions", 
+                                      &(newInstance<CollisionOptions>),
+                                      typeid( CollisionOptions ),
                                       &H3DOptionNode::database );
 
-namespace GraphicsCachingOptionsInternals {
-  FIELDDB_ELEMENT( GraphicsCachingOptions, useCaching, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, cachingDelay, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, cacheOnlyGeometries, INPUT_OUTPUT );
+namespace CollisionOptionsInternals {
+  FIELDDB_ELEMENT( CollisionOptions, avatarCollision, INPUT_OUTPUT );
 }
 
-GraphicsCachingOptions::GraphicsCachingOptions( 
+CollisionOptions::CollisionOptions( 
                            Inst< SFNode>  _metadata,
-                           Inst< SFBool  > _useCaching,
-                           Inst< SFInt32 > _cachingDelay,
-                           Inst< SFBool  > _cacheOnlyGeometryNodes ) :
+                           Inst< SFBool  > _avatarCollision ) :
   H3DOptionNode( _metadata ),
-  useCaching( _useCaching ),
-  cachingDelay( _cachingDelay ),
-  cacheOnlyGeometries( _cacheOnlyGeometryNodes ) {
+  avatarCollision( _avatarCollision ) {
   
-  type_name = "GraphicsCachingOptions";
+  type_name = "CollisionOptions";
   database.initFields( this );
 
-  useCaching->setValue( true );
-  cachingDelay->setValue( 5 );
-  cacheOnlyGeometries->setValue( false );
+  avatarCollision->setValue( true );
 }
-
-

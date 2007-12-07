@@ -31,6 +31,8 @@
 #include <H3D/NavigationInfo.h>
 #include <H3D/Scene.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/CollisionOptions.h>
 
 using namespace H3D;
 
@@ -194,8 +196,16 @@ void NavigationInfo::doNavigation( X3DViewpointNode * vp,
   }
 
   if( !linear_interpolate ) {
+    bool use_collision = true;
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings ) {
+      CollisionOptions * collision_option = 0;
+      default_settings->getOptionNode( collision_option );
+      if( collision_option )
+        use_collision = collision_option->avatarCollision->getValue();
+    }
     H3DNavigation::doNavigation( navigation_type, vp, topNode,
-      true, avatarSize->getValue(), speed->getValue() );
+      use_collision, avatarSize->getValue(), speed->getValue() );
   }
 
   old_vp_pos = vp_full_pos;

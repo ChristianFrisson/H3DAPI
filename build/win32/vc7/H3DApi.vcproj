@@ -183,6 +183,9 @@
 				RelativePath="..\..\..\src\Collision.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\CollisionOptions.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\Color.cpp">
 			</File>
 			<File
@@ -1062,6 +1065,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3d\Collision.h">
+			</File>
+			<File
+				RelativePath="..\..\..\include\H3d\CollisionOptions.h">
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3d\Color.h">
