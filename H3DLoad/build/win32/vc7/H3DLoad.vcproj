@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Release using DLL|Win32"
-			OutputDirectory="..\..\..\..\bin"
+			OutputDirectory="..\..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
@@ -34,7 +34,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				CompileAs="0"/>
 			<Tool
@@ -44,7 +44,7 @@
 				AdditionalOptions="/MACHINE:I386"
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="1"/>
 			<Tool
@@ -73,7 +73,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug using DLL|Win32"
-			OutputDirectory="..\..\..\..\bin"
+			OutputDirectory="..\..\..\..\..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
@@ -91,7 +91,7 @@
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/vc70.pdb"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CompileAs="0"/>
@@ -102,10 +102,10 @@
 				AdditionalOptions="/MACHINE:I386"
 				OutputFile="$(OutDir)/H3DLoad_d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\H3DUtil\lib;&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/H3DLoad_d.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
