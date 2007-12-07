@@ -234,6 +234,51 @@ namespace H3D {
   /// the associated retainUserOffsets is TRUE.
   class H3DAPI_API X3DViewpointNode : public X3DBindableNode {
   public:
+
+    /// This field is used for the position field in order to reset the
+    /// internal variables rel_pos and rel_orn used for H3DAPIs internal
+    /// navigation.
+    class H3DAPI_API SFPosition:  public SFVec3f {
+    public:
+      virtual void setValue( const Vec3f &v, int id = 0 ) {
+        SFVec3f::setValue( v, id );
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+      }
+
+    protected:
+      virtual void update() {
+        SFVec3f::update();
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+      }
+    };
+#ifdef __BORLANDC__
+    friend class SFPosition;
+#endif
+
+    /// This field is used for the orientation field in order to reset the
+    /// internal variables rel_pos and rel_orn used for H3DAPIs internal
+    /// navigation.
+    class H3DAPI_API SFOrientation:  public SFRotation {
+    public:
+      virtual void setValue( const Rotation &v, int id = 0 ) {
+        SFRotation::setValue( v, id );
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+      }
+
+    protected:
+      virtual void update() {
+        SFRotation::update();
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
+        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+      }
+    };
+#ifdef __BORLANDC__
+    friend class SFPosition;
+#endif
+
     /// Constructor.
     X3DViewpointNode( 
               Inst< SFSetBind >  _set_bind         = 0,
@@ -241,8 +286,8 @@ namespace H3D {
               Inst< SFString  >  _description      = 0,
               Inst< SFBool    >  _jump             = 0,
               Inst< SFNode    >  _metadata         = 0,
-              Inst< SFRotation>  _orientation      = 0,
-              Inst< SFVec3f   >  _position         = 0,
+              Inst< SFOrientation >  _orientation      = 0,
+              Inst< SFPosition >  _position         = 0,
               Inst< SFBool    >  _retainUserOffsets = 0,
               Inst< SFTime    >  _bindTime         = 0,
               Inst< SFBool    >  _isBound          = 0,
@@ -309,12 +354,14 @@ namespace H3D {
       return viewpoints;
     }
 
-    Vec3f getFullPos() {
+    inline Vec3f getFullPos() {
       return position->getValue() + rel_pos;
     }
 
-    Rotation getFullOrn() {
-      return orientation->getValue() * rel_orn;
+    inline Rotation getFullOrn() {
+      Rotation temp_rot = orientation->getValue();
+      temp_rot.axis.normalizeSafe();
+      return temp_rot * rel_orn;
     }
 
     /// Get the all X3DViewpointNode instances with the X3DViewpointNode
@@ -361,14 +408,14 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Rotation( 0, 0, 1, 0 ) \n
-    auto_ptr< SFRotation > orientation;
+    auto_ptr< SFOrientation > orientation;
     
     /// Specifies the position of the X3DViewpointNode the local coordinate
     /// system.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 10 ) \n
-    auto_ptr< SFVec3f    > position;
+    auto_ptr< SFPosition > position;
 
     /// The retainUserOffsets field indicates whether a viewpoint needs to
     /// retain (TRUE) or reset to zero (FALSE) any prior user navigation

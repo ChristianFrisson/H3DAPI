@@ -31,11 +31,6 @@
 
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/FieldTemplates.h>
-#include <H3D/SFVec3f.h>
-#include <H3D/SFString.h>
-#include <H3D/SFFloat.h>
-#include <H3D/SFRotation.h>
-#include <H3D/SFMatrix4f.h>
 #include <H3DUtil/Exception.h>
 
 namespace H3D {
@@ -71,8 +66,8 @@ namespace H3D {
               Inst< SFFloat   >  _fieldOfView      = 0,
               Inst< SFBool    >  _jump             = 0,
               Inst< SFNode    >  _metadata         = 0,
-              Inst< SFRotation>  _orientation      = 0,
-              Inst< SFVec3f   >  _position         = 0,
+              Inst< SFOrientation>  _orientation      = 0,
+              Inst< SFPosition >  _position         = 0,
               Inst< SFBool    >  _retainUserOffsets = 0,
               Inst< SFTime    >  _bindTime         = 0,
               Inst< SFBool    >  _isBound          = 0,
