@@ -84,7 +84,9 @@ namespace H3D {
         override_no_collision( _override_no_collision ),
         use_pt_device_affect( _use_pt_device_affect ),
         user_data( _user_data ),
-        pt_device_affect( false ) {};
+        pt_device_affect( false ) {
+          current_matrix.push( Matrix4f() );
+        };
 
       /// A vector of HAPI::IntersectionInfo that stores result of intersection
       /// such as point and normal.
@@ -94,11 +96,6 @@ namespace H3D {
       /// differ between different places in the scene graph for the same Node.
       /// This can happen due to the DEF/USE feature of X3D.
       vector< pair< Node *, H3DInt32 > > theNodes;
-
-      /// The current matrix that transforms from the local
-      /// coordinate space where this Node resides in the scenegraph to 
-      /// global space.
-      Matrix4f current_matrix;
 
       /// Flag used to know if lineintersect should be called for the children
       /// in the Collision Node regardless if it is enabled or not.
@@ -120,12 +117,32 @@ namespace H3D {
 
       inline void addTransform() {
         if( get_transforms ) {
-          geometry_transforms.push_back( current_matrix );
+          geometry_transforms.push_back( getCurrentTransform() );
         }
       }
 
       inline const vector< Matrix4f > &getGeometryTransforms() {
         return geometry_transforms;
+      }
+
+      inline const Matrix4f &getCurrentTransform() {
+        return current_matrix.top();
+      }
+
+      inline void pushTransform( const Matrix4f &matrix ) {
+        current_matrix.push( current_matrix.top() * matrix );
+      }
+
+      inline void popTransform() {
+        current_matrix.pop();
+      }
+
+      inline void transformResult() {
+        for( unsigned int i = 0; i < result.size(); i++ ) {
+          result[i].point = geometry_transforms[i] * result[i].point;
+          result[i].normal = geometry_transforms[i].getRotationPart() *
+                             result[i].normal;
+        }
       }
 
     protected:
@@ -134,6 +151,11 @@ namespace H3D {
       /// coordinate space to global space for each node that the
       /// line intersects.
       vector< Matrix4f > geometry_transforms;
+
+      /// The top of the stack is the current matrix that transforms from the
+      /// local coordinate space where this Node resides in the scenegraph to
+      /// global space.
+      stack< Matrix4f > current_matrix;
     };
 
     /// Detect intersection between a line segment and the Node.

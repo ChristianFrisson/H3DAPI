@@ -182,10 +182,11 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
         far_plane_pos,
         result ) ) {
           int closest = 0;
+          result.transformResult();
           if( result.theNodes.size() > 1 ) {
             H3DFloat closestDistance = 
-              (H3DFloat)(result.result[closest].point
-                          - near_plane_pos).lengthSqr();
+              (H3DFloat)( result.result[closest].point
+                          - near_plane_pos ).lengthSqr();
             for( unsigned int kl = 1; kl < result.theNodes.size(); kl++ ) {
               H3DFloat tempClose = 
                 (H3DFloat)( result.result[kl].point -

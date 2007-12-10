@@ -158,11 +158,12 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
         }
       }  
 
-      LineIntersectResult result( false, true, true );
+      LineIntersectResult result( true, true, true );
       if( n->lineIntersect( near_plane_pos, 
                             far_plane_pos,
                             result ) ) {
         int closest = 0;
+        result.transformResult();
         if( result.theNodes.size() > 1 ) {
           H3DFloat closestDistance = 
             (H3DFloat)( result.result[closest].point -
