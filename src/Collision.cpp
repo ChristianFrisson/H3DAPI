@@ -77,23 +77,13 @@ Collision::Collision( Inst< MFChild > _addChildren,
 bool Collision::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
-                  vector< IntersectionInfo > &result,
-                  vector< pair< Node *, H3DInt32 > > &theNodes,
-                  const Matrix4f &current_matrix,
-                  vector< Matrix4f > &geometry_transforms,
-                  bool pt_device_affect ) {
-  if( enabled->getValue() ) {
+                  LineIntersectResult &result ) {
+  if( result.override_no_collision || enabled->getValue() ) {
     X3DChildNode * temp_proxy = proxy->getValue();
     if( temp_proxy )
-      return temp_proxy->lineIntersect( from, to, result, theNodes,
-                                        current_matrix,
-                                        geometry_transforms,
-                                        pt_device_affect );
+      return temp_proxy->lineIntersect( from, to, result );
     else
-      return X3DGroupingNode::lineIntersect(  from, to, result, theNodes,
-                                              current_matrix,
-                                              geometry_transforms,
-                                              pt_device_affect );
+      return X3DGroupingNode::lineIntersect(  from, to, result );
   }
   return false;
 }

@@ -140,28 +140,12 @@ namespace H3D {
     /// \param from The start of the line segment.
     /// \param to The end of the line segment.
     /// \param result Contains info about the closest intersection for every
-    /// object that intersects the line
-    /// \param theNodes A vector of pairs of pointer and index to
-    /// differ between different places in the scene graph for the same Node.
-    /// This can happen due to the DEF/USE feature of X3D.
-    /// \param current_matrix The current matrix that transforms from the local
-    /// coordinate space where this Node resides in the scenegraph to 
-    /// global space.
-    /// \param geometry_transforms A vector of matrices from the local
-    /// coordinate space to global space for each node that the
-    /// line intersects.
-    /// \param pt_device_affect Flag telling a node if it is affected by a
-    /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
-    /// when using the DEF/USE feature of X3D.
+    /// object that intersects the line.
     /// \returns true if intersected, false otherwise.
     virtual bool lineIntersect( 
       const Vec3f &from,
       const Vec3f &to,    
-      vector< IntersectionInfo > &result,
-      vector< pair< Node *, H3DInt32 > > &theNodes,
-      const Matrix4f &current_matrix,
-      vector< Matrix4f > &geometry_transforms,
-      bool pt_device_affect = false );
+      LineIntersectResult &result );
 
     /// The style the text should be rendered with. See X3DFontStyleNode.
     ///

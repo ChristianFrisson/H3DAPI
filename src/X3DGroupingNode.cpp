@@ -163,18 +163,15 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
 bool X3DGroupingNode::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
-                  vector< IntersectionInfo > &result,
-                 vector< pair< Node *, H3DInt32 > > &theNodes,
-                  const Matrix4f &current_matrix,
-                  vector< Matrix4f > &geometry_transforms,
-                  bool pt_device_affect ) {
+                  LineIntersectResult &result ) {
   bool intersect = false;
   bool traverse_children = false;
   Bound * the_bound = bound->getValue();
-  if( !pt_device_affect ) {
+  bool old_pt_device_affect = result.pt_device_affect;
+  if( result.use_pt_device_affect && !result.pt_device_affect ) {
     for( unsigned int i = 0; i < pt_dev_sensors.size(); i++ ) {
       if( pt_dev_sensors[i]->enabled->getValue() ) {
-        pt_device_affect = true;
+        result.pt_device_affect = true;
       }
     }
   }
@@ -182,18 +179,16 @@ bool X3DGroupingNode::lineIntersect(
       the_bound->lineSegmentIntersect( from, to ) ) {
     const NodeVector &children_nodes = children->getValue();
     for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-      if( children_nodes[i]->lineIntersect( from, to, result,
-                                            theNodes,
-                                            current_matrix,
-                                            geometry_transforms,
-                                            pt_device_affect ) ) {
+      if( children_nodes[i]->lineIntersect( from, to, result ) ) {
           intersect = true;
       }
     }
   }
   else {
-    incrNodeDefUseId( pt_device_affect );
+    if( result.use_pt_device_affect )
+      incrNodeDefUseId( result.pt_device_affect );
   }
+  result.pt_device_affect = old_pt_device_affect;
   return intersect;
 }
 

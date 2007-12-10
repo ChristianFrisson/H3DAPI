@@ -73,32 +73,79 @@ namespace H3D {
     /// 
     virtual void traverseSG( TraverseInfo &ti ) {}
 
+
+    struct H3DAPI_API LineIntersectResult {
+      // Constructor.
+      LineIntersectResult( bool _get_transforms = false,
+                           bool _override_no_collision = false,
+                           bool _use_pt_device_affect = false,
+                           void *_user_data = 0 ) :
+        get_transforms( _get_transforms ),
+        override_no_collision( _override_no_collision ),
+        use_pt_device_affect( _use_pt_device_affect ),
+        user_data( _user_data ),
+        pt_device_affect( false ) {};
+
+      /// A vector of HAPI::IntersectionInfo that stores result of intersection
+      /// such as point and normal.
+      vector< IntersectionInfo > result;
+      
+      /// A vector of pairs of pointer and index to
+      /// differ between different places in the scene graph for the same Node.
+      /// This can happen due to the DEF/USE feature of X3D.
+      vector< pair< Node *, H3DInt32 > > theNodes;
+
+      /// The current matrix that transforms from the local
+      /// coordinate space where this Node resides in the scenegraph to 
+      /// global space.
+      Matrix4f current_matrix;
+
+      /// Flag used to know if lineintersect should be called for the children
+      /// in the Collision Node regardless if it is enabled or not.
+      bool override_no_collision;
+
+      /// Flag used to know if lineintersect should bother with keeping track
+      /// of X3DPointingDeviceSensorNodes.
+      bool use_pt_device_affect;
+
+      /// Flag telling a node if it is affected by a
+      /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
+      /// when using the DEF/USE feature of X3D. Should only be set by the
+      /// lineIntersect function.
+      bool pt_device_affect;
+
+      /// Optional user_data in case someone want to do add some extra feature
+      /// to lineIntersect and one or several custom made nodes.
+      void * user_data;
+
+      inline void addTransform() {
+        if( get_transforms ) {
+          geometry_transforms.push_back( current_matrix );
+        }
+      }
+
+      inline const vector< Matrix4f > &getGeometryTransforms() {
+        return geometry_transforms;
+      }
+
+    protected:
+      bool get_transforms;
+      /// A vector of matrices from the local
+      /// coordinate space to global space for each node that the
+      /// line intersects.
+      vector< Matrix4f > geometry_transforms;
+    };
+
     /// Detect intersection between a line segment and the Node.
     /// \param from The start of the line segment.
     /// \param to The end of the line segment.
     /// \param result Contains info about the closest intersection for every
-    /// object that intersects the line
-    /// \param theNodes A vector of pairs of pointer and index to
-    /// differ between different places in the scene graph for the same Node.
-    /// This can happen due to the DEF/USE feature of X3D.
-    /// \param current_matrix The current matrix that transforms from the local
-    /// coordinate space where this Node resides in the scenegraph to 
-    /// global space.
-    /// \param geometry_transforms A vector of matrices from the local
-    /// coordinate space to global space for each node that the
-    /// line intersects.
-    /// \param pt_device_affect Flag telling a node if it is affected by a
-    /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
-    /// when using the DEF/USE feature of X3D.
+    /// object that intersects the line.
     /// \returns true if intersected, false otherwise.
     virtual bool lineIntersect( 
       const Vec3f &from, 
       const Vec3f &to,    
-      vector< IntersectionInfo > &result,
-      vector< pair< Node *, H3DInt32 > > &theNodes,
-      const Matrix4f &current_matrix,
-      vector< Matrix4f > &geometry_transforms,
-      bool pt_device_affect = false ) {
+      LineIntersectResult &result ) {
       return false;
     }
 
@@ -128,7 +175,7 @@ namespace H3D {
     /// Resets flags used to get correct behaviour for lineIntersect
     /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
     /// Does nothing for most nodes.
-    virtual void resetNodeDefUseId() { };
+    virtual void resetNodeDefUseId() {};
 
     /// Increase an integer used to get correct behaviour for lineIntersect
     /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.

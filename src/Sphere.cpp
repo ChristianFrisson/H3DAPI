@@ -273,12 +273,8 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
 bool Sphere::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
-                  vector< IntersectionInfo > &result,
-                  vector< pair< Node *, H3DInt32 > > &theNodes,
-                  const Matrix4f &current_matrix,
-                  vector< Matrix4f > &geometry_transforms,
-                  bool pt_device_affect ) {
-  if( pt_device_affect )
+                  LineIntersectResult &result ) {
+  if( result.use_pt_device_affect && result.pt_device_affect )
     current_geom_id++;
   IntersectionInfo tempresult;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
@@ -288,9 +284,9 @@ bool Sphere::lineIntersect(
   if( returnValue ) {
     tempresult.point = tempresult.point / 1000;
     tempresult.normal = tempresult.normal / 1000;
-    result.push_back( tempresult );
-    theNodes.push_back( make_pair( this, current_geom_id ) );
-    geometry_transforms.push_back( current_matrix );
+    result.result.push_back( tempresult );
+    result.theNodes.push_back( make_pair( this, current_geom_id ) );
+    result.addTransform();
   }
   return returnValue;
 }

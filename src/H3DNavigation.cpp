@@ -177,23 +177,19 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
       Vec3f far_plane_pos =
         Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
 
-      vector< Node::IntersectionInfo > result;
-      vector< pair< Node *, H3DInt32 > > theNodes;
-      Matrix4f temp_matrix;
-      vector< Matrix4f > transform_matrices;
+      Node::LineIntersectResult result( true, true );
       if( topNode->lineIntersect( near_plane_pos, 
         far_plane_pos,
-        result,
-        theNodes,
-        temp_matrix,
-        transform_matrices ) ) {
+        result ) ) {
           int closest = 0;
-          if( theNodes.size() > 1 ) {
+          if( result.theNodes.size() > 1 ) {
             H3DFloat closestDistance = 
-              (H3DFloat)(result[closest].point - near_plane_pos).lengthSqr();
-            for( unsigned int kl = 1; kl < theNodes.size(); kl++ ) {
+              (H3DFloat)(result.result[closest].point
+                          - near_plane_pos).lengthSqr();
+            for( unsigned int kl = 1; kl < result.theNodes.size(); kl++ ) {
               H3DFloat tempClose = 
-                (H3DFloat)(result[kl].point - near_plane_pos).lengthSqr();
+                (H3DFloat)( result.result[kl].point -
+                            near_plane_pos).lengthSqr();
               if( tempClose < closestDistance ) {
                 closestDistance = tempClose;
                 closest = kl;
@@ -205,12 +201,15 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
           H3DFloat viewing_distance;
           BoxBound *box_bound = 0;
           H3DBoundedObject * the_bound_object =
-            dynamic_cast< H3DBoundedObject * >( theNodes[closest].first );
+            dynamic_cast< H3DBoundedObject * >
+              (result.theNodes[closest].first );
           if( the_bound_object ) {
             box_bound = dynamic_cast< BoxBound * >(
             the_bound_object->bound->getValue() );
           }
           const Matrix4f &vp_acc_inv_mtx = vp->accInverseMatrix->getValue();
+          const vector< Matrix4f > transform_matrices =
+            result.getGeometryTransforms();
 
           if( box_bound ) {
             approx_center = vp_acc_inv_mtx *
@@ -232,7 +231,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
             approx_center = vp_acc_inv_mtx *
               ( transform_matrices[closest ] * approx_center );
             viewing_distance = (vp_acc_inv_mtx *( transform_matrices[closest]
-            * (Vec3f)result[closest].point ) ).length() * 2.0f;
+            * (Vec3f)result.result[closest].point ) ).length() * 2.0f;
           }
           Vec3f backward = vp_full_orientation * Vec3f( 0, 0, 1 );
           vp->centerOfRotation->setValue( approx_center );

@@ -142,24 +142,21 @@ void MatrixTransform::traverseSG( TraverseInfo &ti ) {
 bool MatrixTransform::lineIntersect(
                              const Vec3f &from, 
                              const Vec3f &to,    
-                             vector< IntersectionInfo > &result,
-                             vector< pair< Node *, H3DInt32 > > &theNodes,
-                             const Matrix4f &current_matrix,
-                             vector< Matrix4f > &geometry_transforms,
-                             bool pt_device_affect ) {
+                             LineIntersectResult &result ) {
   Matrix4f theMatrix = matrix->getValue();
   Matrix4f theMatrixInverse = theMatrix.inverse();
 
   Vec3f local_from = theMatrixInverse * from;
   Vec3f local_to = theMatrixInverse * to;
-  H3DInt32 sizeBefore = result.size();
-  bool intersection = X3DGroupingNode::lineIntersect( 
-    local_from, local_to, result, theNodes,
-    accumulatedForward->getValue(), geometry_transforms, pt_device_affect );
+  H3DInt32 sizeBefore = result.result.size();
+  bool intersection = X3DGroupingNode::lineIntersect( local_from,
+                                                      local_to,
+                                                      result );
   if( intersection ) {
-    for( unsigned int i = sizeBefore; i < result.size(); i++ ) {
-      result[i].point = theMatrix * result[i].point;
-      result[i].normal = theMatrix.getRotationPart() * result[i].normal;
+    for( unsigned int i = sizeBefore; i < result.result.size(); i++ ) {
+      result.result[i].point = theMatrix * result.result[i].point;
+      result.result[i].normal = theMatrix.getRotationPart() *
+                                result.result[i].normal;
     }
   }
   return intersection;

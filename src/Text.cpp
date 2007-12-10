@@ -471,12 +471,8 @@ void Text::SFBound::update() {
 bool Text::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
-                  vector< IntersectionInfo > &result,
-                  vector< pair< Node *, H3DInt32 > > &theNodes,
-                  const Matrix4f &current_matrix,
-                  vector< Matrix4f > &geometry_transforms,
-                  bool pt_device_affect ) {
-  if( pt_device_affect )
+                  LineIntersectResult &result ) {
+  if( result.use_pt_device_affect && result.pt_device_affect )
     current_geom_id++;
   
   bool returnValue = false;
@@ -487,9 +483,9 @@ bool Text::lineIntersect(
         IntersectionInfo tempresult;
         tempresult.point = Vec3f( 0, 0, 0 );
         tempresult.normal = Vec3f( 0, 0, 1 );
-        result.push_back( tempresult );
-        theNodes.push_back( make_pair( this, current_geom_id ) );
-        geometry_transforms.push_back( current_matrix );
+        result.result.push_back( tempresult );
+        result.theNodes.push_back( make_pair( this, current_geom_id ) );
+        result.addTransform();
       }
   }
   return returnValue;

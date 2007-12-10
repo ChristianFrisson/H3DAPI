@@ -170,18 +170,10 @@ void X3DShapeNode::DisplayList::callList( bool build_list ) {
 bool X3DShapeNode::lineIntersect(
                            const Vec3f &from,
                            const Vec3f &to,
-                           vector< IntersectionInfo > &result,
-                           vector< pair< Node *, H3DInt32 > > &theNodes,
-                           const Matrix4f &current_matrix,
-                           vector< Matrix4f > &geometry_transforms,
-                           bool pt_device_affect ) {
+                           LineIntersectResult &result ) {
   X3DGeometryNode *tmp_geom = geometry->getValue();
   if( tmp_geom )
-    return geometry->getValue()->lineIntersect( from, to, result,
-                                                theNodes,
-                                                current_matrix,
-                                                geometry_transforms,
-                                                pt_device_affect );
+    return geometry->getValue()->lineIntersect( from, to, result );
   else
     return false;
 }

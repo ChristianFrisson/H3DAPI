@@ -158,23 +158,19 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
         }
       }  
 
-      vector< IntersectionInfo > result;
-      vector< pair< Node *, H3DInt32 > > theNodes;
-      vector< Matrix4f > matrix_vector;
-      Matrix4f temp_matrix;
+      LineIntersectResult result( false, true, true );
       if( n->lineIntersect( near_plane_pos, 
                             far_plane_pos,
-                            result,
-                            theNodes,
-                            temp_matrix,
-                            matrix_vector ) ) {
+                            result ) ) {
         int closest = 0;
-        if( theNodes.size() > 1 ) {
+        if( result.theNodes.size() > 1 ) {
           H3DFloat closestDistance = 
-            (H3DFloat)(result[closest].point - near_plane_pos).lengthSqr();
-          for( unsigned int kl = 1; kl < theNodes.size(); kl++ ) {
+            (H3DFloat)( result.result[closest].point -
+                        near_plane_pos ).lengthSqr();
+          for( unsigned int kl = 1; kl < result.theNodes.size(); kl++ ) {
             H3DFloat tempClose = 
-              (H3DFloat)(result[kl].point - near_plane_pos).lengthSqr();
+              (H3DFloat)( result.result[kl].point -
+                          near_plane_pos ).lengthSqr();
             if( tempClose < closestDistance ) {
               closestDistance = tempClose;
               closest = kl;
@@ -184,12 +180,14 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
 
         for( unsigned int i = 0; i < instances.size(); i++ ) {
           int temp_pt_id =
-            instances[i]->findGeometry( theNodes[closest] );
+            instances[i]->findGeometry( result.theNodes[closest] );
           if( temp_pt_id != -1 ){
-            instances[i]->onIsOver( true, result[closest], temp_pt_id );
+            instances[i]->onIsOver( true, result.result[closest], temp_pt_id );
           }
           else
-            instances[i]->onIsOver( false, result[closest], temp_pt_id );
+            instances[i]->onIsOver( false,
+                                    result.result[closest],
+                                    temp_pt_id );
         }
       }
       else {
