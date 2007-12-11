@@ -204,7 +204,7 @@ void X3DTexture3DNode::render()     {
   Image * i = static_cast< Image * >(image->getValue());
   if( displayList->hasCausedEvent( image ) ) {
 
-    if( image->imageChanged() || texture_id == 0 ) {
+    if( !image->imageChanged() || texture_id == 0 ) {
       // the image has changed so remove the old texture and install 
       // the new
       glDeleteTextures( 1, &texture_id );
@@ -213,18 +213,18 @@ void X3DTexture3DNode::render()     {
         texture_id = renderImage( i, 
                                   GL_TEXTURE_3D, 
                                   scaleToPowerOfTwo->getValue() );
-      } else {
-        glBindTexture(  GL_TEXTURE_3D, texture_id );
-        renderSubImage( i, GL_TEXTURE_3D, 
-                        image->xOffset(), 
-                        image->yOffset(),
-                        image->zOffset(),
-                        image->changedWidth(), 
-                        image->changedHeight(),
-                        image->changedDepth() );
-      }
-      enableTexturing();
+      } 
+    } else {
+      glBindTexture(  GL_TEXTURE_3D, texture_id );
+      renderSubImage( i, GL_TEXTURE_3D, 
+                      image->xOffset(), 
+                      image->yOffset(),
+                      image->zOffset(),
+                      image->changedWidth(), 
+                      image->changedHeight(),
+                      image->changedDepth() );
     }
+    enableTexturing();
   } else {
     if ( texture_id ) {
       // same texture as last loop, so we just bind it.
