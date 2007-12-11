@@ -140,7 +140,9 @@ bool MyApp::OnExceptionInMainLoop() {
     return false;
   }
   catch (const Exception::H3DException &e) {
-     wxMessageBox( wxString(e.message.c_str(),wxConvLibc),
+     stringstream s;
+	 s << e;
+     wxMessageBox( wxString(s.str().c_str(),wxConvLibc),
                    wxT("Error"), wxOK | wxICON_EXCLAMATION);
     return false;
   }

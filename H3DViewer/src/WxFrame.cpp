@@ -248,6 +248,8 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
                               wxT("Horizontal Split"));
   renderMode->AppendRadioItem(FRAME_VERTSPLIT, wxT("Vertical Split"),
                               wxT("Vertical Split"));
+  renderMode->AppendRadioItem(FRAME_VERTSPLITKEEPASPECT, wxT("Vertical Split Keep Aspect"),
+                              wxT("Vertical Split with aspect ratio kept the same."));
   renderMode->AppendRadioItem(FRAME_HORZINTERLACED, wxT("Horizontal Interlaced"),
                               wxT("Horizontal Interlaced"));
   renderMode->AppendRadioItem(FRAME_VERTINTERLACED, wxT("Vertical Interlaced"),
@@ -708,7 +710,9 @@ bool WxFrame::loadFile( const string &filename) {
   scene->sceneRoot->setValue( g.get() );
   }
   catch (const Exception::H3DException &e) {
-    wxMessageBox(wxString(e.message.c_str(),wxConvUTF8), wxT("Error"), wxOK | wxICON_EXCLAMATION);
+    stringstream s;
+	s << e;
+    wxMessageBox(wxString(s.str().c_str(),wxConvUTF8), wxT("Error"), wxOK | wxICON_EXCLAMATION);
     return false;
   }
   return true;
@@ -912,6 +916,9 @@ void WxFrame::RenderMode(wxCommandEvent & event)
 			break;
 		case FRAME_VERTSPLIT:
 			renderMode = "VERTICAL_SPLIT";
+			break;
+		case FRAME_VERTSPLITKEEPASPECT:
+			renderMode = "VERTICAL_SPLIT_KEEP_RATIO";
 			break;
 		case FRAME_HORZINTERLACED:
 			renderMode = "HORIZONTAL_INTERLACED";
