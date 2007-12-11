@@ -149,6 +149,33 @@ namespace H3D {
       }
     };
 
+    /// The TrackerVelocity field updates itself from the device_velocity
+    /// and velocity_calibration fields. 
+    /// TrackerVelocity = velocityCalibration * deviceVelocity 
+    ///
+    /// - routes_in[0] is the positionCalibration field
+    /// - routes_in[1] is the deviceVelocity field
+    ///
+    class H3DAPI_API TrackerVelocity: 
+      public TypedField< SFVec3f, Types< SFMatrix4f, SFVec3f > > {
+      
+      /// value = velocity_calibration * device_velocity.
+      virtual void update() {
+        H3DHapticsDevice *hd = static_cast< H3DHapticsDevice *>(owner);
+        Matrix4f m;
+        if( hd->followViewpoint->getValue() ) {
+          m = hd->adjustedPositionCalibration->getValue();
+        }
+        else {
+          m = static_cast< SFMatrix4f * >( routes_in[0] )->getValue();
+        }
+        const Vec3f &d_pos = 
+          static_cast< SFVec3f * >( routes_in[1] )->getValue();
+        
+        value = m.getScaleRotationPart() * d_pos;
+      }
+    };
+
     /// The TrackerOrientation field updates itself from the device_orientation
     /// and orientation_calibration fields. 
     /// TrackerOrientation = orientationCalibration * deviceOrientation 
@@ -284,7 +311,8 @@ namespace H3D {
                       Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
                       Inst< MFVec3f         > _proxyPositions         = 0,
                       Inst< SFBool          > _followViewpoint        = 0,
-                      Inst< SFVec3f         > _deviceVelocity         = 0 );
+                      Inst< SFVec3f         > _deviceVelocity         = 0,
+                      Inst< TrackerVelocity > _trackerVelocity         = 0);
 
     /// Destuctor.
     virtual ~H3DHapticsDevice() {
@@ -589,12 +617,22 @@ namespace H3D {
     /// \dotfile H3DHapticsDevice_followViewpoint.dot
     auto_ptr< SFBool > followViewpoint;
 
-    /// The velocity
+    /// The velocity of the device in the coordinate system of the 
+    /// device.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile H3DHapticsDevice_deviceVelocity.dot
     auto_ptr< SFVec3f >    deviceVelocity;
+
+
+    ///  The velocity of the device in the world coordinates of the API.
+    /// device.
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile H3DHapticsDevice_trackerVelocity.dot
+    auto_ptr< TrackerVelocity >  trackerVelocity;
     
     /// Node database entry
     static H3DNodeDatabase database;
