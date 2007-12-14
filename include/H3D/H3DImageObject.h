@@ -63,6 +63,7 @@ namespace H3D {
       /// to send an event that editing has been done. 
       inline virtual void endEditing() { touch(); }
 
+      /// Set the volume that has been edited manually.
       inline void setEditedArea( int _min_x, int _min_y, int _min_z,
                                  int _max_x, int _max_y, int _max_z ) {
         x_min = _min_x;
@@ -124,7 +125,7 @@ namespace H3D {
       /// Returns the minimum value in z that has been changed by the 
       /// setPixel functions.
       /// Value is only valid if imageChanged() is true.
-      inline int zMin() { return y_max; }
+      inline int zMin() { return z_min; }
 
       /// Returns the maximum value in x that has been changed by the 
       /// setPixel functions.
