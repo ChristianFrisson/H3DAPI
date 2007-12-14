@@ -62,6 +62,16 @@ namespace H3D {
       /// Call this function after doing editing to the image in order
       /// to send an event that editing has been done. 
       inline virtual void endEditing() { touch(); }
+
+      inline void setEditedArea( int _min_x, int _min_y, int _min_z,
+                                 int _max_x, int _max_y, int _max_z ) {
+        x_min = _min_x;
+        y_min = _min_y;
+        z_min = _min_z;
+        x_max = _max_x;
+        y_max = _max_y;
+        z_max = _max_z;
+      }
       
       /// Set a pixel in the image. The components from the color argument
       /// will be used depending on the image type as follows:
@@ -157,7 +167,7 @@ namespace H3D {
 
       /// Returns true if the image has been updated with the 
       /// setPixel functions.
-      inline bool imageChanged() { return x_min == -1; }
+      inline bool imageChanged() { return x_min != -1; }
 
       /// Resets all variables that keep track of what part of the
       /// image has been updated.
