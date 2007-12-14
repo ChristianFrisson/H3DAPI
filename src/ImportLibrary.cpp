@@ -59,8 +59,28 @@ void ImportLibrary::initialize() {
   for( MFString::const_iterator i = url->begin();
        i != url->end();
        i++ ) {
-    DynamicLibrary::LIBHANDLE handle = 
-      DynamicLibrary::load( resolveURLAsFile( *i) );
+    DynamicLibrary::LIBHANDLE handle;
+#ifdef WIN32
+
+#ifdef _DEBUG
+    bool ends_in_dll = (*i).find( ".dll" ) != string::npos;
+
+    if( !ends_in_dll ) {
+      // test the given name directly.
+      string filename = resolveURLAsFile( (*i) + "_d" );
+      if( filename == "" ) filename = (*i) + "_d";
+      handle = DynamicLibrary::load( filename );
+      if( handle ) return;
+    }
+#endif // _DEBUG
+
+#endif // WIN32
+
+    // test the given name directly.
+    string filename = resolveURLAsFile( *i);
+    if( filename == "" ) filename = (*i);
+    handle =  DynamicLibrary::load( filename );
+
     if( !handle )
       Console(4) << "WARNING: Could not load dynamic library \"" 
                  << *i << "\" specified in " << getName() 
