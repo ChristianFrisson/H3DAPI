@@ -143,8 +143,9 @@ bool MatrixTransform::lineIntersect(
                              const Vec3f &from, 
                              const Vec3f &to,    
                              LineIntersectResult &result ) {
-  result.pushTransform( matrix->getValue() );
-  Matrix4f theMatrixInverse = result.getCurrentTransform().inverse();
+  const Matrix4f &the_matrix = matrix->getValue();
+  result.pushTransform( the_matrix );
+  Matrix4f theMatrixInverse = the_matrix.inverse();
 
   Vec3f local_from = theMatrixInverse * from;
   Vec3f local_to = theMatrixInverse * to;
