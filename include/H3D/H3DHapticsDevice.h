@@ -328,6 +328,11 @@ namespace H3D {
       return "device";
     }
 
+    /// Get the HAPIHapticsDevice that is encapsulated by this node.
+    inline HAPI::HAPIHapticsDevice *getHAPIDevice() {
+      return hapi_device.get();
+    }
+
     /// Does all the initialization needed for the device before starting to
     /// use it.
     virtual ErrorCode initDevice();
