@@ -752,10 +752,21 @@ void X3DGeometryNode::resetNodeDefUseId() {
 
 bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
                                              const Vec3f &from, 
-                                             const Vec3f &to ) {
-  return boundTree->getValue()->movingSphereIntersect( radius * 1000.0f,
-                                                       from * 1000.0f,
-                                                       to * 1000.0f );
+                                             const Vec3f &to,
+                                             NodeIntersectResult &result ) {
+  HAPI::Collision::IntersectionInfo temp_result;
+  bool return_value = boundTree->getValue()->movingSphereIntersect(
+                                               radius * 1000.0f,
+                                               from * 1000.0f,
+                                               to * 1000.0f,
+                                               temp_result );
+  if( return_value ) {
+    result.theNodes.push_back( make_pair( this, current_geom_id ) );
+    temp_result.point = temp_result.point / 1000.0;
+    result.result.push_back( temp_result );
+    result.addTransform();
+  }
+  return return_value;
 }
 
 void X3DGeometryNode::incrNodeDefUseId( bool pt_device_affect ) {

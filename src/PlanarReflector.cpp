@@ -295,10 +295,11 @@ void PlanarReflector::closestPoint(
 }
 
 bool PlanarReflector::movingSphereIntersect( H3DFloat radius,
-                                          const Vec3f &from, 
-                                          const Vec3f &to ) {
+                                             const Vec3f &from, 
+                                             const Vec3f &to,
+                                             NodeIntersectResult &result ) {
   X3DGeometryNode *g = geometry->getValue();
-  if( g ) return g->movingSphereIntersect( radius, from, to );
+  if( g ) return g->movingSphereIntersect( radius, from, to, result );
   else return false;
 }
 

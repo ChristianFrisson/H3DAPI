@@ -156,13 +156,16 @@ namespace H3D {
     /// Detect collision between a moving sphere and the Node.
     /// Calls movingSphereIntersect for all children if the node is
     /// enabled.
-    /// \param The radius of the sphere
+    /// \param radius The radius of the sphere
     /// \param from The start position of the sphere
     /// \param to The end position of the sphere.
+    /// \param result A struct containing various results of intersections
+    /// such as which geometries intersected the moving sphere.
     /// \returns true if intersected, false otherwise.
     virtual bool movingSphereIntersect( H3DFloat radius,
                                         const Vec3f &from, 
-                                        const Vec3f &to );
+                                        const Vec3f &to,
+                                        NodeIntersectResult &result );
 
     /// TODO: implement this field.
     /// The collideTime field generates an event specifying the time when the

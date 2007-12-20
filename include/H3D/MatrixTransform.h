@@ -158,13 +158,16 @@ namespace H3D {
     /// Detect collision between a moving sphere and the Node.
     /// Transforms points and radius (if non-uniform scaling the biggest
     /// of the scale parameters is chosen)
-    /// \param The radius of the sphere
+    /// \param radius The radius of the sphere
     /// \param from The start position of the sphere
     /// \param to The end position of the sphere.
+    /// \param result A struct containing various results of intersections
+    /// such as which geometries intersected the moving sphere.
     /// \returns true if intersected, false otherwise.
     virtual bool movingSphereIntersect( H3DFloat radius,
                                         const Vec3f &from, 
-                                        const Vec3f &to );
+                                        const Vec3f &to,
+                                        NodeIntersectResult &result );
 
     /// The transformation matrix.
     /// 

@@ -285,13 +285,15 @@ void X3DGroupingNode::MFChild::onRemove( Node *n ) {
 
 bool X3DGroupingNode::movingSphereIntersect( H3DFloat radius,
                                              const Vec3f &from, 
-                                             const Vec3f &to ) {
+                                             const Vec3f &to,
+                                             NodeIntersectResult &result ) {
   const NodeVector &children_nodes = children->getValue();
+  bool hit = false;
   for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-    if( children_nodes[i]->movingSphereIntersect( radius, from, to ) )
-      return true;
+    if( children_nodes[i]->movingSphereIntersect( radius, from, to, result ) )
+      hit = true;
   }
-  return false;
+  return hit;
 }
 
 void X3DGroupingNode::incrNodeDefUseId( bool pt_device_affect ) {

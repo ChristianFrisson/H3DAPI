@@ -158,7 +158,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
         }
       }  
 
-      LineIntersectResult result( true, true, true );
+      LineIntersectResult result( true, true );
       if( n->lineIntersect( near_plane_pos, 
                             far_plane_pos,
                             result ) ) {

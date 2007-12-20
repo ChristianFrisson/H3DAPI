@@ -35,8 +35,6 @@
 #include <H3DUtil/RefCountedClass.h>
 #include <H3DUtil/Console.h>
 
-//#include "FieldTemplates.h"
-
 using namespace std;
 
 namespace H3D {
@@ -73,52 +71,28 @@ namespace H3D {
     /// 
     virtual void traverseSG( TraverseInfo &ti ) {}
 
-
-    struct H3DAPI_API LineIntersectResult {
+    struct H3DAPI_API NodeIntersectResult {
       // Constructor.
-      LineIntersectResult( bool _get_transforms = false,
-                           bool _override_no_collision = false,
-                           bool _use_pt_device_affect = false,
-                           void *_user_data = 0 ) :
-        get_transforms( _get_transforms ),
-        override_no_collision( _override_no_collision ),
-        use_pt_device_affect( _use_pt_device_affect ),
-        user_data( _user_data ),
-        pt_device_affect( false ) {
-          current_matrix.push( Matrix4f() );
-        };
+      NodeIntersectResult( void * _user_data = 0 ) :
+        user_data( _user_data ) {
+        current_matrix.push( Matrix4f() );
+      }
 
-      /// A vector of HAPI::IntersectionInfo that stores result of intersection
-      /// such as point and normal.
-      vector< IntersectionInfo > result;
-      
       /// A vector of pairs of pointer and index to
       /// differ between different places in the scene graph for the same Node.
       /// This can happen due to the DEF/USE feature of X3D.
       vector< pair< Node *, H3DInt32 > > theNodes;
 
-      /// Flag used to know if lineintersect should be called for the children
-      /// in the Collision Node regardless if it is enabled or not.
-      bool override_no_collision;
-
-      /// Flag used to know if lineintersect should bother with keeping track
-      /// of X3DPointingDeviceSensorNodes.
-      bool use_pt_device_affect;
-
-      /// Flag telling a node if it is affected by a
-      /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
-      /// when using the DEF/USE feature of X3D. Should only be set by the
-      /// lineIntersect function.
-      bool pt_device_affect;
+      /// A vector of HAPI::IntersectionInfo that stores result of intersection
+      /// such as point and normal.
+      vector< IntersectionInfo > result;
 
       /// Optional user_data in case someone want to do add some extra feature
       /// to lineIntersect and one or several custom made nodes.
       void * user_data;
 
       inline void addTransform() {
-        if( get_transforms ) {
-          geometry_transforms.push_back( getCurrentTransform() );
-        }
+        geometry_transforms.push_back( getCurrentTransform() );
       }
 
       inline const vector< Matrix4f > &getGeometryTransforms() {
@@ -146,7 +120,6 @@ namespace H3D {
       }
 
     protected:
-      bool get_transforms;
       /// A vector of matrices from the local
       /// coordinate space to global space for each node that the
       /// line intersects.
@@ -156,6 +129,32 @@ namespace H3D {
       /// local coordinate space where this Node resides in the scenegraph to
       /// global space.
       stack< Matrix4f > current_matrix;
+
+    };
+
+    struct H3DAPI_API LineIntersectResult : public NodeIntersectResult {
+      // Constructor.
+      LineIntersectResult( bool _override_no_collision = false,
+                           bool _use_pt_device_affect = false,
+                           void *_user_data = 0 ) :
+        NodeIntersectResult( _user_data ),
+        override_no_collision( _override_no_collision ),
+        use_pt_device_affect( _use_pt_device_affect ),
+        pt_device_affect( false ) {}
+
+      /// Flag used to know if lineintersect should be called for the children
+      /// in the Collision Node regardless if it is enabled or not.
+      bool override_no_collision;
+
+      /// Flag used to know if lineintersect should bother with keeping track
+      /// of X3DPointingDeviceSensorNodes.
+      bool use_pt_device_affect;
+
+      /// Flag telling a node if it is affected by a
+      /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
+      /// when using the DEF/USE feature of X3D. Should only be set by the
+      /// lineIntersect function.
+      bool pt_device_affect;
     };
 
     /// Detect intersection between a line segment and the Node.
@@ -184,14 +183,17 @@ namespace H3D {
 
     /// Detect collision between a moving sphere and the Node.
     /// Only nodes to which collision is possible will return true
-    /// \param The radius of the sphere
+    /// \param radius The radius of the sphere
     /// \param from The start position of the sphere
     /// \param to The end position of the sphere.
+    /// \param result A struct containing various results of intersections
+    /// such as which geometries intersected the moving sphere.
     /// \returns true if intersected, false otherwise.
     virtual bool movingSphereIntersect( H3DFloat radius,
                                         const Vec3f &from, 
-                                        const Vec3f &to ){
-    return false;
+                                        const Vec3f &to,
+                                        NodeIntersectResult &result ){
+      return false;
     }
 
     /// Resets flags used to get correct behaviour for lineIntersect

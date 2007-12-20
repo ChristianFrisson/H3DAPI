@@ -308,10 +308,20 @@ void Sphere::closestPoint(
 
 bool Sphere::movingSphereIntersect( H3DFloat _radius,
                                     const Vec3f &from, 
-                                    const Vec3f &to ) {
+                                    const Vec3f &to,
+                                    NodeIntersectResult &result ) {
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
-                                    radius->getValue() * 1000.0f );
-  return temp_sphere.movingSphereIntersect( _radius * 1000.0f,
-                                            from * 1000.0f,
-                                            to * 1000.0f );
+                                    radius->getValue() );
+  HAPI::Collision::IntersectionInfo temp_result;
+  bool return_value = temp_sphere.movingSphereIntersect( _radius,
+                                                         from,
+                                                         to,
+                                                         temp_result );
+  if( return_value ) {
+    result.theNodes.push_back( make_pair( this, current_geom_id ) );
+    temp_result.primitive = 0;
+    result.result.push_back( temp_result );
+    result.addTransform();
+  }
+  return return_value;
 }

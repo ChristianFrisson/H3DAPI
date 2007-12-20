@@ -105,14 +105,17 @@ void Collision::closestPoint(
 
 bool Collision::movingSphereIntersect( H3DFloat radius,
                                        const Vec3f &from, 
-                                       const Vec3f &to ) {
+                                       const Vec3f &to,
+                                       NodeIntersectResult &result ) {
   if( enabled->getValue() ) {
     bool intersect = false;
     X3DChildNode * temp_proxy = proxy->getValue();
     if( temp_proxy )
-      intersect = temp_proxy->movingSphereIntersect( radius, from, to );
+      intersect = temp_proxy->movingSphereIntersect( radius, from, to,
+                                                     result );
     else
-      intersect = X3DGroupingNode::movingSphereIntersect( radius, from, to );
+      intersect = X3DGroupingNode::movingSphereIntersect( radius, from, to,
+                                                          result );
 
     if( intersect ) {
       if( !isActive->getValue() ) {

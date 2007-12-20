@@ -52,6 +52,23 @@ namespace X3DViewpointNodeInternals {
   FIELDDB_ELEMENT( X3DViewpointNode, retainUserOffsets, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DViewpointNode, accForwardMatrix, OUTPUT_ONLY );
   FIELDDB_ELEMENT( X3DViewpointNode, accInverseMatrix, OUTPUT_ONLY );
+
+  inline bool intersectLinePlane( const Vec3f &from,
+                                  const Vec3f &to,
+                                  const Vec3f &plane_point,
+                                  const Vec3f &plane_normal,
+                                  Vec3f &p ) {
+    Vec3f ab = to - from;
+    H3DFloat denom = plane_normal * ab;
+    if( H3DAbs( denom ) < Constants::f_epsilon ) {
+      return false;
+    }
+
+    H3DFloat t = ( plane_point * plane_normal - plane_normal * from ) / denom;
+    p = from + t * ab;
+
+    return true;
+  }
 }
 
 
@@ -204,13 +221,10 @@ void X3DViewpointNode::rotateAround( Rotation rotation, bool collision,
   Vec3f new_pos = Matrix3f( rotation ) *
     ( vp_full_pos - center_of_rot ) +
     center_of_rot;
-  bool no_collision = true;
 
-  if( no_collision ) {
-    rel_pos = new_pos - vp_pos;
-    Rotation new_rotation = rotation * vp_full_orientation;
-    rel_orn = -vp_orientation * new_rotation;
-  }
+  rel_pos = new_pos - vp_pos;
+  Rotation new_rotation = rotation * vp_full_orientation;
+  rel_orn = -vp_orientation * new_rotation;
 }
 
 void X3DViewpointNode::rotateAroundSelf( Rotation rotation ) {
@@ -230,20 +244,87 @@ void X3DViewpointNode::translate( Vec3f direction, bool collision,
   const Matrix4f &acc_fr_mt = accForwardMatrix->getValue();
   Vec3f scaling = acc_fr_mt.getScalePart();
   direction = vp_full_orientation * direction;
-  //direction = direction * scaling.x;
   Vec3f new_pos = vp_full_pos + direction;
-  bool no_collision = true;
+  H3DFloat min_dist_from_plane = 1e-5f;
 
-  if( collision && !avatar_size.empty() && 
-    topNode->movingSphereIntersect( avatar_size[0],
-    acc_fr_mt * vp_full_pos,
-    acc_fr_mt * new_pos ) )
-    no_collision = false;
+  if( collision && !avatar_size.empty() ) {
+    Vec3f global_from = acc_fr_mt * vp_full_pos;
+    Vec3f global_to = acc_fr_mt * new_pos;
+    Vec3f global_direction = global_to - global_from;
+    H3DFloat max_length = global_direction.length();
+    if( max_length > Constants::f_epsilon )
+      global_direction = global_direction / max_length;
+    int max_nr_iterations = 5;
+    int counter = 0;
+    // Iterate until no collision or max_nr_iterations
+    while( counter < max_nr_iterations ) {
+      NodeIntersectResult result;
+      if( !topNode->movingSphereIntersect( avatar_size[0],
+                                           global_from,
+                                           global_to,
+                                           result ) ) {
+        // No collision, exit loop.
+        global_from = global_to;
+        break;
+      }
+      result.transformResult();
 
-  if( no_collision )
+      int closest_index = -1;
+      H3DFloat closest_t = 2;
+      for( unsigned int i = 0; i < result.result.size(); i++ ) {
+        if( result.result[i].t < closest_t ) {
+          closest_index = i;
+          closest_t = (H3DFloat)result.result[i].t;
+        }
+      }
+
+      Vec3f point_to_use = Vec3f( result.result[closest_index].point );
+      Vec3f normal_to_use = Vec3f( result.result[ closest_index ].normal );
+      normal_to_use.normalize();
+
+      // Desired movement is along the plane
+      Vec3f movement;
+      if( X3DViewpointNodeInternals::intersectLinePlane( global_from,
+                                                         global_to,
+                                                         point_to_use,
+                                                         normal_to_use,
+                                                         movement ) )
+        movement = movement - point_to_use;
+      else
+        movement = global_direction;
+
+      movement.normalizeSafe();
+      movement = (global_direction * movement ) * movement;
+      global_to = global_from + movement;
+
+      // If the new location is to close to plane move
+      // out from plane.
+      HAPI::Vec3 closest, tmp;
+      HAPI::Collision::Plane hit_plane( point_to_use, normal_to_use );
+      hit_plane.closestPoint( global_to, closest, tmp, tmp );
+      if( (Vec3f( closest ) - global_to).lengthSqr() <= avatar_size[0] ) {
+        H3DFloat dist_to_move =
+          avatar_size[0] - (Vec3f( closest ) - global_to ).length()
+          + min_dist_from_plane;
+        global_to = global_to + dist_to_move * normal_to_use;
+        movement = global_to - global_from;
+        H3DFloat mov_length = movement.lengthSqr();
+        // Do not move further than the avatar originally should have done.
+        if( mov_length > Constants::f_epsilon && 
+            mov_length > max_length * max_length ) {
+          movement = movement / H3DSqrt( mov_length );
+          movement = movement * max_length;
+          global_to = global_from + movement;
+        }
+      }
+      counter++;
+    }
+    rel_pos = acc_fr_mt.inverse() * global_from - vp_pos;
+  } else
     rel_pos = new_pos - vp_pos;
 }
 
+// used when moving without collision of any kind.
 void X3DViewpointNode::moveTo( Vec3f new_pos ) {
   rel_pos = new_pos - position->getValue();
 }
@@ -251,8 +332,9 @@ bool X3DViewpointNode::detectCollision( const vector< H3DFloat > &avatar_size,
                                         X3DChildNode * topNode ) {
   Vec3f vp_full_pos =
     accForwardMatrix->getValue() *  (position->getValue() + rel_pos );
+  NodeIntersectResult result;
   return topNode->movingSphereIntersect( avatar_size[0],
                                          vp_full_pos,
-                                         vp_full_pos );
+                                         vp_full_pos,
+                                         result );
 }
-

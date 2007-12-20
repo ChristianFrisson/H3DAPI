@@ -191,18 +191,22 @@ void MatrixTransform::SFTransformedBound::update() {
 
 bool MatrixTransform::movingSphereIntersect( H3DFloat radius,
                                              const Vec3f &from, 
-                                             const Vec3f &to ) {
-  Matrix4f theMatrix = matrix->getValue();
-  Matrix4f theMatrixInverse = theMatrix.inverse();
-  Vec3f local_from = theMatrixInverse * from;
-  Vec3f local_to = theMatrixInverse * to;
-  Vec3f scaling_values = theMatrixInverse.getScalePart();
+                                             const Vec3f &to,
+                                             NodeIntersectResult &result ) {
+  const Matrix4f &the_matrix = matrix->getValue();
+  result.pushTransform( the_matrix );
+  Matrix4f matrix_inverse = the_matrix.inverse();
+  Vec3f local_from = matrix_inverse * from;
+  Vec3f local_to = matrix_inverse * to;
+  Vec3f scaling_values = matrix_inverse.getScalePart();
   H3DFloat scale_value = scaling_values.x;
   if( scale_value < scaling_values.y )
     scale_value = scaling_values.y;
   if( scale_value < scaling_values.z )
     scale_value = scaling_values.z;
   H3DFloat local_radius = radius * scale_value;
-  return X3DGroupingNode::movingSphereIntersect( 
-    local_radius, local_from, local_to );
+  bool intersection = X3DGroupingNode::movingSphereIntersect(
+                        local_radius, local_from, local_to, result );
+  result.popTransform();
+  return intersection;
 }

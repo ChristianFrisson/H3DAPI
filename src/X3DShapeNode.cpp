@@ -190,10 +190,12 @@ void X3DShapeNode::closestPoint(
 
 bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,
                                           const Vec3f &from, 
-                                          const Vec3f &to ) {
+                                          const Vec3f &to,
+                                          NodeIntersectResult &result ) {
   X3DGeometryNode *tmp_geom = geometry->getValue();
   if( tmp_geom )
-    return geometry->getValue()->movingSphereIntersect( radius, from, to );
+    return geometry->getValue()->movingSphereIntersect( radius, from, to,
+                                                        result );
   else
     return false;
 }
