@@ -211,7 +211,7 @@ void X3DTexture2DNode::render()     {
   Image * i = static_cast< Image * >(image->getValue());
   if( displayList->hasCausedEvent( image ) ) {
     
-    if( image->imageChanged() || texture_id == 0 ) {
+    if( !image->imageChanged() || texture_id == 0 ) {
       // the image has changed so remove the old texture and install 
       // the new
       glDeleteTextures( 1, &texture_id );
