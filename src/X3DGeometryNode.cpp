@@ -81,8 +81,6 @@ X3DGeometryNode::X3DGeometryNode(
   contactNormal( _contactNormal ),
   boundTree( _boundTree ),
   options( new MFOptionsNode ),
-  last_ti_ptr( 0 ),
-  current_geom_id( -1 ),
   use_culling( false ),
   allow_culling( true ),
   draw_debug_options( true ),
@@ -361,19 +359,6 @@ void X3DGeometryNode::SFBoundTree::update() {
 
 void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
   X3DChildNode::traverseSG( ti );
-
-  // if there exist a X3DPointingDeviceSensor add this node to its
-  // geometry vector.
-  if( !ti.current_pt_dev_sensors.empty() ) {
-    if( last_ti_ptr != &ti ) {
-      current_geom_id = -1;
-      last_ti_ptr = &ti;
-    }
-    current_geom_id++;
-    for( unsigned int i = 0; i < ti.current_pt_dev_sensors.size(); i++ ) {
-      ti.current_pt_dev_sensors[i]->addGeometryNode( this, current_geom_id );
-    }
-  }
   
   if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
     bool force_full_oh = false;
@@ -717,8 +702,7 @@ bool X3DGeometryNode::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
-  if( result.use_pt_device_affect && result.pt_device_affect )
-    current_geom_id++;
+
   IntersectionInfo tempresult;
   bool returnValue =
     boundTree->getValue()->lineIntersect( 1000*from, 1000*to, tempresult );
@@ -726,8 +710,9 @@ bool X3DGeometryNode::lineIntersect(
     tempresult.point = tempresult.point / 1000;
     tempresult.normal = tempresult.normal / 1000;
     result.result.push_back( tempresult );
-    result.theNodes.push_back( make_pair( this, current_geom_id ) );
+    result.theNodes.push_back( this );
     result.addTransform();
+    result.addPtDevMap();
   }
   return returnValue;
 }
@@ -745,11 +730,6 @@ void X3DGeometryNode::closestPoint(
   tex_coord.push_back( (Vec3f)temp_tex_coord );
 }
 
-
-void X3DGeometryNode::resetNodeDefUseId() {
-  current_geom_id = -1;
-}
-
 bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
                                              const Vec3f &from, 
                                              const Vec3f &to,
@@ -761,15 +741,10 @@ bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
                                                to * 1000.0f,
                                                temp_result );
   if( return_value ) {
-    result.theNodes.push_back( make_pair( this, current_geom_id ) );
+    result.theNodes.push_back( this );
     temp_result.point = temp_result.point / 1000.0;
     result.result.push_back( temp_result );
     result.addTransform();
   }
   return return_value;
-}
-
-void X3DGeometryNode::incrNodeDefUseId( bool pt_device_affect ) {
-  if( pt_device_affect )
-    current_geom_id++;
 }

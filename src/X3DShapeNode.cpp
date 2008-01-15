@@ -199,15 +199,3 @@ bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,
   else
     return false;
 }
-
-void X3DShapeNode::resetNodeDefUseId() {
-  X3DGeometryNode *tmp_geom = geometry->getValue();
-  if( tmp_geom )
-    geometry->getValue()->resetNodeDefUseId();
-}
-
-void X3DShapeNode::incrNodeDefUseId( bool pt_device_affect ) {
-  X3DGeometryNode *tmp_geom = geometry->getValue();
-  if( tmp_geom )
-    geometry->getValue()->incrNodeDefUseId( pt_device_affect );
-}

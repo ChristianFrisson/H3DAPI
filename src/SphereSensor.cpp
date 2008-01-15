@@ -70,16 +70,14 @@ SphereSensor::SphereSensor(
   isActive->routeNoEvent( set_SphereEvents );
 }
 
-void SphereSensor::onIsOver( bool newValue,
-                           IntersectionInfo &result,
-                           int pt_id ) {
+void SphereSensor::onIsOver( IntersectionInfo *result,
+                             Matrix4f *global_to_local ) {
   if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
-    X3DPointingDeviceSensorNode::onIsOver( newValue,
-                                           result,
-                                           pt_id );
-    if( newValue ) {
-      intersection_matrix = pt_matrices[pt_id];
-      original_intersection = intersection_matrix * Vec3f( result.point );
+    X3DPointingDeviceSensorNode::onIsOver( result,
+                                           global_to_local );
+    if( new_value ) {
+      intersection_matrix = *global_to_local;
+      original_intersection = intersection_matrix * Vec3f( result->point );
     }
   }
 }

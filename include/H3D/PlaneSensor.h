@@ -196,11 +196,11 @@ namespace H3D {
 
   protected:
     auto_ptr< Set_PlaneEvents > set_PlaneEvents;
+    
     /// Called to generate isOver events and other events (dependent on isOver)
     // if they should be generated.
-    virtual void onIsOver( bool newValue,
-                           IntersectionInfo &result,
-                           int pt_id );
+    virtual void onIsOver( IntersectionInfo *result = 0,
+                           Matrix4f *global_to_local = 0 );
 
     Vec3f intersection_point;
     Matrix4f intersection_matrix;

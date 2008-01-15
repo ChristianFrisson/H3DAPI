@@ -302,13 +302,3 @@ bool PlanarReflector::movingSphereIntersect( H3DFloat radius,
   if( g ) return g->movingSphereIntersect( radius, from, to, result );
   else return false;
 }
-
-void PlanarReflector::resetNodeDefUseId() {
-  X3DGeometryNode *g = geometry->getValue();
-  if( g ) g->resetNodeDefUseId();
-}
-
-void PlanarReflector::incrNodeDefUseId( bool pt_device_affect ) {
-  X3DGeometryNode *g = geometry->getValue();
-  if( g ) g->incrNodeDefUseId( pt_device_affect );
-}

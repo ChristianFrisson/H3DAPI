@@ -36,6 +36,9 @@
 
 namespace H3D {
 
+  // Forward declaration.
+  class X3DPointingDeviceSensorNode;
+
   /// \ingroup AbstractNodes
   /// \class X3DGroupingNode
   /// This abstract node type indicates that concrete node types derived
@@ -143,16 +146,6 @@ namespace H3D {
 
     /// Traverse the scenegraph. traverseSG() is called in all children nodes.
     virtual void traverseSG( TraverseInfo &ti );
-
-    /// Resets flags used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    virtual void resetNodeDefUseId();
-
-    /// Increase an integer used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    /// \param pt_device_affect A flag which is true if the node is affected
-    /// by a X3DPointingDeviceSensorNode.
-    virtual void incrNodeDefUseId( bool pt_device_affect );
 
     /// Detect intersection between a line segment and a Node.
     /// Calls lineIntersect for all children

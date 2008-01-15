@@ -63,9 +63,7 @@ X3DPointingDeviceSensorNode::X3DPointingDeviceSensorNode(
   description ( _description  ),
   isOver( _isOver ),
   setIsEnabled( new SetIsEnabled ),
-  setIsActive( new SetIsActive ),
-  current_pt_id( -1 ),
-  last_ti_ptr( 0 ) {
+  setIsActive( new SetIsActive ) {
 
   type_name = "X3DPointingDeviceSensorNode";
   database.initFields( this );
@@ -85,9 +83,11 @@ X3DPointingDeviceSensorNode::X3DPointingDeviceSensorNode(
 
   setIsActive->setOwner(this);
   mouse_sensor->leftButton->routeNoEvent( setIsActive );
+  isOver->setValue( false, id );
   isOver->routeNoEvent( setIsActive );
 
   instances.push_back( this );
+  new_value = false;
 }
 
 /// Destructor. 
@@ -116,18 +116,6 @@ bool X3DPointingDeviceSensorNode::has2DPointingDeviceMoved( Vec2f & pos ) {
   return false;
 }
 
-void X3DPointingDeviceSensorNode::addGeometryNode(
-  Node * n, H3DInt32 geom_index ) {
-  geometry_nodes[current_pt_id].push_back( make_pair( n, geom_index ) );
-}
-
-void X3DPointingDeviceSensorNode::clearGeometryNodes() {
-  for( unsigned int i = 0; i < instances.size(); i++ ) {
-    instances[i]->geometry_nodes.clear();
-    instances[i]->pt_matrices.clear();
-  }
-}
-
 void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
   if( !instances.empty() ) {
     Vec2f theMousePos;
@@ -146,17 +134,6 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
       gluUnProject( (GLdouble) theMousePos.x, (GLdouble) theMousePos.y,
         1.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
       far_plane_pos = Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-
-      for( unsigned int i = 0; i < instances.size(); i++ ) {
-        for( PtIdGeomIdMap::iterator j = 
-             instances[i]->geometry_nodes.begin();
-             j != instances[i]->geometry_nodes.end();
-             j++ ) {
-          for( unsigned int k = 0; k < (*j).second.size(); k++ ) {
-            (*j).second[k].first->resetNodeDefUseId();
-          }
-        }
-      }  
 
       LineIntersectResult result( true, true );
       if( n->lineIntersect( near_plane_pos, 
@@ -179,54 +156,36 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
           }
         }
 
-        for( unsigned int i = 0; i < instances.size(); i++ ) {
-          int temp_pt_id =
-            instances[i]->findGeometry( result.theNodes[closest] );
-          if( temp_pt_id != -1 ){
-            instances[i]->onIsOver( true, result.result[closest], temp_pt_id );
+        for( unsigned int i = 0; i < instances.size(); i++ )
+          instances[i]->new_value = false;
+
+        LineIntersectResult::GeomX3DPtdMap::iterator found_ptds =
+          result.geom_ptd_map.find( closest );
+        if( found_ptds != result.geom_ptd_map.end() ) {
+          for( list< Node * >::iterator i =
+               (*found_ptds).second.x3dptd.begin();
+            i != (*found_ptds).second.x3dptd.end(); i++ ) {
+            static_cast< X3DPointingDeviceSensorNode * >(*i)->new_value =
+              true;
           }
+        }
+
+        for( unsigned int i = 0; i < instances.size(); i++ ) {
+          if( instances[i]->new_value )
+            instances[i]->onIsOver( &result.result[ closest ],
+              &(*found_ptds).second.global_to_local );
           else
-            instances[i]->onIsOver( false,
-                                    result.result[closest],
-                                    temp_pt_id );
+            instances[i]->onIsOver();
         }
       }
       else {
         for( unsigned int i = 0; i < instances.size(); i++ ) {
-          IntersectionInfo result;
-          int geometryIndex = -1;
-          instances[i]->onIsOver( false, result, geometryIndex );
+          instances[i]->new_value = false;
+          instances[i]->onIsOver();
         }
       }
     }
   }
-
-  for( unsigned int i = 0; i < instances.size(); i++ ) {
-    for( PtIdGeomIdMap::iterator j = 
-         instances[i]->geometry_nodes.begin();
-         j != instances[i]->geometry_nodes.end();
-         j++ ) {
-      for( unsigned int k = 0; k < (*j).second.size(); k++ ) {
-        (*j).second[k].first->resetNodeDefUseId();
-      }
-    }
-  }
-}
-
-int X3DPointingDeviceSensorNode::
-  findGeometry( pair< Node * , H3DInt32 > &geom ) {
-  if( is_enabled ) {
-    for( PtIdGeomIdMap::iterator i = geometry_nodes.begin();
-         i != geometry_nodes.end(); i++ ) {
-      for( unsigned int j = 0; j < (*i).second.size(); j++ ) {
-        if( (*i).second[j].first == geom.first &&
-            (*i).second[j].second == geom.second ) {
-          return (*i).first;
-        }
-      }
-    }
-  }
-  return -1;
 }
 
 void X3DPointingDeviceSensorNode::SetIsActive::update() {
@@ -254,22 +213,18 @@ void X3DPointingDeviceSensorNode::SetIsActive::update() {
       if( itIsActive ) {
         number_of_active++;
         H3DNavigation::disableDevice( H3DNavigation::MOUSE );
+        //H3DNavigation::disableDevice( H3DNavigation::ALL );
       }
       else {
         number_of_active--;
-        if( number_of_active == 0 )
+        if( number_of_active == 0 ) {
+          //TODO: give option to only try to enable those that actually
+          // existed before disable.
+          //H3DNavigation::enableDevice( H3DNavigation::ALL );
           H3DNavigation::enableDevice( H3DNavigation::MOUSE );
+        }
       }
       ts->isActive->setValue( itIsActive, ts->id );
     }
   }
-}
-
-H3DInt32 X3DPointingDeviceSensorNode::increaseIndex( TraverseInfo &ti ) {
-  if( last_ti_ptr != &ti ) {
-    last_ti_ptr = &ti;
-    current_pt_id = -1;
-  }
-  current_pt_id++;
-  return current_pt_id;
 }

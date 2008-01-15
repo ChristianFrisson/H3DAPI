@@ -241,16 +241,6 @@ namespace H3D {
       }
     }
 
-    /// Resets flags used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    virtual void resetNodeDefUseId();
-
-    /// Increase an integer used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    /// \param pt_device_affect A flag which is true if the node is affected
-    /// by a X3DPointingDeviceSensorNode.
-    virtual void incrNodeDefUseId( bool pt_device_affect );
-
     /// Changes behaviour of X3DGeometryNode to be a thread safe
     /// RefCountedClass.
     virtual void initialize();
@@ -324,11 +314,6 @@ namespace H3D {
 
     /// identifiers for the shapes geometry.
     vector< int > haptic_shape_ids;
-
-    // only interested in adress, what it points to will be invalid
-    TraverseInfo * last_ti_ptr;
-    // id for the number of times its traverseSG is called per scene graph loop
-    H3DInt32 current_geom_id;
 
     bool use_culling, allow_culling;
     bool draw_debug_options;

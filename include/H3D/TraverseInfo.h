@@ -45,7 +45,6 @@ namespace H3D {
   class H3DSurfaceNode;
   class H3DHapticsDevice;
   class X3DGeometryNode;
-  class X3DPointingDeviceSensorNode;
 
   typedef AutoRefVector< HAPI::HAPIHapticShape > HapticShapeVector;
   typedef AutoRefVector< HAPI::HAPIForceEffect > HapticEffectVector;
@@ -314,8 +313,6 @@ namespace H3D {
     inline const Matrix4f &getAccInverseMatrix() {
       return transform_stack.top().acc_inv;
     }
-
-    vector< X3DPointingDeviceSensorNode * > current_pt_dev_sensors;
     
     /// Used to get all the X3DLightNodes that are global.
     typedef AutoRefVector< RefCountedClass > RefCountedVector;

@@ -224,36 +224,30 @@ namespace H3D {
     /// \dotfile X3DPointingDeviceSensorNode_isOver.dot
     auto_ptr< SFBool > isOver;
 
-    /// Add the geometryNode to the vector of geometryNodes.
-    /// Called in traverseSG function of X3DGeometryNode.
-    void addGeometryNode( Node * n, H3DInt32 geom_index );
-
-    /// Returns the index of the pt_dev_sensor in which the geometry
-    /// with the correct index exist.
-    int findGeometry( pair< Node * , H3DInt32 > &geom );
-
-    /// Sets the current_matrix to m
-    void setCurrentMatrix( Matrix4f m ) {
-      pt_matrices[ current_pt_id ] = m;
-    }
-
-    H3DInt32 increaseIndex( TraverseInfo &ti );
-
+    /// Called to detect and set properties of X3DPointingDeviceSensors.
+    /// This is not done in traverseSG since that would give prolems with
+    /// DEF/USE feature and X3DPointinDevice hierarchy. It would also mean
+    /// more calls to lineIntersect.
     static void updateX3DPointingDeviceSensors( Node * n );
-    static void clearGeometryNodes();
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   protected:
 
+    /// This value is used in onIsOver. Set here instead of sending as argument
+    /// cause it is more effective to go through all instances of
+    /// X3DPointingDeviceSensorNodes twice than it is to compare pointers for
+    /// all devices to know if it should be true or not.
+    bool new_value;
+
     /// Called to generate isOver events if they should be
     /// generated.
-    virtual void onIsOver( bool newValue, 
-      IntersectionInfo &result, int pt_id ) {
+    virtual void onIsOver( IntersectionInfo *result = 0,
+                           Matrix4f *global_to_local = 0 ) {
       if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
-        if( newValue != isOver->getValue() )
-          isOver->setValue( newValue, id );
+        if( new_value != isOver->getValue() )
+          isOver->setValue( new_value, id );
       }
     }
 
@@ -277,17 +271,6 @@ namespace H3D {
     // Instances of specialized fields.
     auto_ptr< SetIsEnabled > setIsEnabled;
     auto_ptr< SetIsActive > setIsActive;
-
-    typedef map< H3DInt32, vector< pair< Node *, H3DInt32 > > >
-      PtIdGeomIdMap;
-    // Vectors for geometries and the corresponding local transformation
-    // matrix of the X3DPointingDeviceSensor for that geometry.
-    
-    PtIdGeomIdMap geometry_nodes;
-    map< H3DInt32, Matrix4f > pt_matrices;
-
-    H3DInt32 current_pt_id;
-    TraverseInfo * last_ti_ptr;
     
   private:
     // The instances of X3DPointingDeviceSensorNode that has been created.

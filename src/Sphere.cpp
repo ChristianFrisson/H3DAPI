@@ -155,20 +155,6 @@ void Sphere::render() {
 } 
 
 void Sphere::traverseSG( TraverseInfo &ti ) {
-
-  // if there exist a X3DPointingDeviceSensor add this node to its
-  // geometry vector.
-  if( !ti.current_pt_dev_sensors.empty() ) {
-    if( last_ti_ptr != &ti ) {
-      current_geom_id = -1;
-      last_ti_ptr = &ti;
-    }
-    current_geom_id++;
-    for( unsigned int i = 0; i < ti.current_pt_dev_sensors.size(); i++ ) {
-      ti.current_pt_dev_sensors[i]->addGeometryNode( this, current_geom_id );
-    }
-  }
-
   // we want to use a haptic sphere since this will be faster than 
   // using an hapticTriangleSet which is used in X3DGeometryNode::traverseSG.
   // It is at the moment implemented to not care about the openhaptics option
@@ -274,8 +260,7 @@ bool Sphere::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
-  if( result.use_pt_device_affect && result.pt_device_affect )
-    current_geom_id++;
+
   IntersectionInfo tempresult;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
                                        radius->getValue() * 1000.0f );
@@ -285,8 +270,9 @@ bool Sphere::lineIntersect(
     tempresult.point = tempresult.point / 1000;
     tempresult.normal = tempresult.normal / 1000;
     result.result.push_back( tempresult );
-    result.theNodes.push_back( make_pair( this, current_geom_id ) );
+    result.theNodes.push_back( this );
     result.addTransform();
+    result.addPtDevMap();
   }
   return returnValue;
 }
@@ -318,7 +304,7 @@ bool Sphere::movingSphereIntersect( H3DFloat _radius,
                                                          to,
                                                          temp_result );
   if( return_value ) {
-    result.theNodes.push_back( make_pair( this, current_geom_id ) );
+    result.theNodes.push_back( this );
     temp_result.primitive = 0;
     result.result.push_back( temp_result );
     result.addTransform();

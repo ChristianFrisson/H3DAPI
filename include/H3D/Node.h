@@ -78,10 +78,9 @@ namespace H3D {
         current_matrix.push( Matrix4f() );
       }
 
-      /// A vector of pairs of pointer and index to
-      /// differ between different places in the scene graph for the same Node.
-      /// This can happen due to the DEF/USE feature of X3D.
-      vector< pair< Node *, H3DInt32 > > theNodes;
+      /// A vector of pointers to nodes. Usually the X3DGeometryNodes that
+      /// caused the IntersectionInfo results.
+      vector< Node * > theNodes;
 
       /// A vector of HAPI::IntersectionInfo that stores result of intersection
       /// such as point and normal.
@@ -91,26 +90,36 @@ namespace H3D {
       /// to lineIntersect and one or several custom made nodes.
       void * user_data;
 
+      /// Adds the current transform from local coordinate space to global
+      /// coordinate space to geometry_transforms.
       inline void addTransform() {
         geometry_transforms.push_back( getCurrentTransform() );
       }
 
+      /// Get the info in geometry_transforms.
       inline const vector< Matrix4f > &getGeometryTransforms() {
         return geometry_transforms;
       }
 
+      /// Get the current matrix that transforms from local coordinate space
+      /// to global coordinate space.
       inline const Matrix4f &getCurrentTransform() {
         return current_matrix.top();
       }
 
+      /// Push onto stack of current transforms. The top is the one that is
+      /// considered the current transform in calls to getCurrentTransform().
       inline void pushTransform( const Matrix4f &matrix ) {
         current_matrix.push( current_matrix.top() * matrix );
       }
 
+      /// Remove the top on the stack of current transforms.
       inline void popTransform() {
         current_matrix.pop();
       }
 
+      /// Transforms point and normal in the IntersectionInfo vector from local
+      /// to global space.
       inline void transformResult() {
         for( unsigned int i = 0; i < result.size(); i++ ) {
           result[i].point = geometry_transforms[i] * result[i].point;
@@ -135,12 +144,11 @@ namespace H3D {
     struct H3DAPI_API LineIntersectResult : public NodeIntersectResult {
       // Constructor.
       LineIntersectResult( bool _override_no_collision = false,
-                           bool _use_pt_device_affect = false,
+                           bool _detect_pt_device = false,
                            void *_user_data = 0 ) :
         NodeIntersectResult( _user_data ),
         override_no_collision( _override_no_collision ),
-        use_pt_device_affect( _use_pt_device_affect ),
-        pt_device_affect( false ) {}
+        detect_pt_device( _detect_pt_device ) {}
 
       /// Flag used to know if lineintersect should be called for the children
       /// in the Collision Node regardless if it is enabled or not.
@@ -148,13 +156,46 @@ namespace H3D {
 
       /// Flag used to know if lineintersect should bother with keeping track
       /// of X3DPointingDeviceSensorNodes.
-      bool use_pt_device_affect;
+      bool detect_pt_device;
 
-      /// Flag telling a node if it is affected by a
-      /// X3DPointingDeviceSensorNode. Needed to allow for correct behaviour
-      /// when using the DEF/USE feature of X3D. Should only be set by the
-      /// lineIntersect function.
-      bool pt_device_affect;
+      /// Contains a list of Nodes (X3DPointingDeviceNodes) and a
+      /// transformation matrix from global space to local space of the
+      /// nodes. It is assumed that all the Nodes in the list have the same
+      /// transformation matrix.
+      struct H3DAPI_API PointingDeviceResultStruct {
+        list< Node * > x3dptd;
+        Matrix4f global_to_local;
+      };
+
+      /// Push struct to current_pt_device stack.
+      inline void pushCurrentPtDevice( PointingDeviceResultStruct &tmp ) {
+        current_pt_device.push( tmp );
+      }
+
+      /// Pop struct from current_pt_device stack
+      inline void popCurrentPtDevice() {
+        current_pt_device.pop();
+      }
+
+      /// Add current pointing device struct to geom_ptd_map.
+      inline void addPtDevMap() {
+        if( detect_pt_device && !current_pt_device.empty() ) {
+          geom_ptd_map[ result.size() - 1 ] = current_pt_device.top();
+        }
+      }
+
+      typedef map< unsigned int,
+                   PointingDeviceResultStruct > GeomX3DPtdMap;
+
+      /// Used in order to keep track of DEF/USE feature of X3D. Maps indexes
+      /// in theNodes vector to PointingDeviceResultStruct which contains
+      /// info about the X3DPointingDeviceNodes.
+      GeomX3DPtdMap geom_ptd_map;
+
+    protected:
+      /// The top of the stack contains the X3DPointingDeviceNodes that is to
+      /// be considered.
+      stack< PointingDeviceResultStruct > current_pt_device;
     };
 
     /// Detect intersection between a line segment and the Node.
@@ -195,18 +236,6 @@ namespace H3D {
                                         NodeIntersectResult &result ){
       return false;
     }
-
-    /// Resets flags used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    /// Does nothing for most nodes.
-    virtual void resetNodeDefUseId() {};
-
-    /// Increase an integer used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    /// Does nothing for most nodes.
-    /// \param pt_device_affect A flag which is true if the node is affected
-    /// by a X3DPointingDeviceSensorNode.
-    virtual void incrNodeDefUseId( bool pt_device_affect ){};
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "children".

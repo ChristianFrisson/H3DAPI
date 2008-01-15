@@ -66,25 +66,22 @@ TouchSensor::TouchSensor(
   database.initFields( this );
 }
 
-void TouchSensor::onIsOver( bool newValue,
-                           IntersectionInfo &result,
-                           int pt_id ) {
+void TouchSensor::onIsOver( IntersectionInfo *result,
+                            Matrix4f *global_to_local ) {
   if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
-    X3DPointingDeviceSensorNode::onIsOver( newValue,
-                                           result,
-                                           pt_id );
-    if( newValue ) {
-      Vec3f newNormalPoint = pt_matrices[ pt_id ]
-      * Vec3f( result.point + result.normal );
-      Vec3f newPoint =
-        pt_matrices[pt_id] * Vec3f( result.point );
+    X3DPointingDeviceSensorNode::onIsOver( result,
+                                           global_to_local );
+    if( new_value ) {
+      Vec3f newNormalPoint = *global_to_local
+      * Vec3f( result->point + result->normal );
+      Vec3f newPoint = *global_to_local * Vec3f( result->point );
       newNormalPoint = newNormalPoint - newPoint;
       newNormalPoint.normalize();
 
       hitPoint_changed->setValue( Vec3f( newPoint ), id );
       hitNormal_changed->setValue( Vec3f( newNormalPoint ), id );
-      hitTexCoord_changed->setValue( Vec2f( (H3DFloat)result.tex_coord.x,
-        (H3DFloat)result.tex_coord.y ),
+      hitTexCoord_changed->setValue( Vec2f( (H3DFloat)result->tex_coord.x,
+        (H3DFloat)result->tex_coord.y ),
         id );
     }
   }

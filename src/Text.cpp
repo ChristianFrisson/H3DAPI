@@ -472,9 +472,7 @@ bool Text::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
-  if( result.use_pt_device_affect && result.pt_device_affect )
-    current_geom_id++;
-  
+
   bool returnValue = false;
   Bound * the_bound = bound->getValue();
   if( the_bound ) {
@@ -484,8 +482,9 @@ bool Text::lineIntersect(
         tempresult.point = Vec3f( 0, 0, 0 );
         tempresult.normal = Vec3f( 0, 0, 1 );
         result.result.push_back( tempresult );
-        result.theNodes.push_back( make_pair( this, current_geom_id ) );
+        result.theNodes.push_back( this );
         result.addTransform();
+        result.addPtDevMap();
       }
   }
   return returnValue;

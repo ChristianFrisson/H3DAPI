@@ -203,7 +203,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
           BoxBound *box_bound = 0;
           H3DBoundedObject * the_bound_object =
             dynamic_cast< H3DBoundedObject * >
-              (result.theNodes[closest].first );
+              (result.theNodes[closest] );
           if( the_bound_object ) {
             box_bound = dynamic_cast< BoxBound * >(
             the_bound_object->bound->getValue() );

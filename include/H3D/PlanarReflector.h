@@ -185,16 +185,6 @@ namespace H3D {
                                         const Vec3f &to,
                                         NodeIntersectResult &result );
 
-    /// Resets flags used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    virtual void resetNodeDefUseId();
-
-    /// Increase an integer used to get correct behaviour for lineIntersect
-    /// when using the DEF/USE feature and X3DPointingDeviceSensorNode.
-    /// \param pt_device_affect A flag which is true if the node is affected
-    /// by a X3DPointingDeviceSensorNode.
-    virtual void incrNodeDefUseId( bool pt_device_affect );
-
     /// Contains the X3DGeometryNode to be rendered.
     /// 
     /// <b>Access type:</b> inputOutput
