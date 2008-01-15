@@ -41,7 +41,6 @@
 #include <H3D/GLUTWindow.h>
 #include <H3D/X3DShapeNode.h>
 
-#include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/X3DGroupingNode.h>
 #include <H3D/ProfilesAndComponents.h>
 #include <H3D/H3DNavigation.h>
@@ -111,13 +110,11 @@ void Scene::idle() {
       hds.push_back( hd );
     }
 
-    X3DPointingDeviceSensorNode::clearGeometryNodes();
     // traverse the scene graph to collect the HapticObject instances to render.
     TraverseInfo *ti = new TraverseInfo( hds );
     X3DChildNode *c = static_cast< X3DChildNode * >( sceneRoot->getValue() );
     if( c ) {
       c->traverseSG( *ti );
-      X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( c );
     }
 
     /// traverse the stylus of all haptics devices
@@ -169,11 +166,9 @@ void Scene::idle() {
     // Haptics is disabled though to avoid unnecessary calculations.
     TraverseInfo *ti = new TraverseInfo( vector< H3DHapticsDevice * >() );
     ti->disableHaptics();
-    X3DPointingDeviceSensorNode::clearGeometryNodes();
     X3DChildNode *c = static_cast< X3DChildNode *>( sceneRoot->getValue() );
     if( c ) {
       c->traverseSG( *ti );
-      X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( c );
     }
     // remove the TraverseInfo instance from the last loop. TraverseInfo 
     // instances must be kept alive until its HapticShapes and 

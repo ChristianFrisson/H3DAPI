@@ -51,6 +51,7 @@
 #include <H3D/H3DNavigation.h>
 #include <H3D/X3DLightNode.h>
 #include <H3D/CollisionOptions.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
 
 #include <H3DUtil/TimeStamp.h>
 #include <H3DUtil/Exception.h>
@@ -768,6 +769,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.y, 
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
+
+    X3DPointingDeviceSensorNode::
+      updateX3DPointingDeviceSensors( child_to_render );
     
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
@@ -858,6 +862,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.y, 
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
+
+    X3DPointingDeviceSensorNode::
+      updateX3DPointingDeviceSensors( child_to_render );
 
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
@@ -967,6 +974,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
     glMultMatrixf( vp_inv_transform );
+    
+    X3DPointingDeviceSensorNode::
+      updateX3DPointingDeviceSensors( child_to_render );
 
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
