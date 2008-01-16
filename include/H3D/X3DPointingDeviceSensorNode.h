@@ -106,10 +106,6 @@ namespace H3D {
   ///
   // TODO: Allowing for 3D pointing device. 
   // (which could be a haptics device perhaps)
-  // Maybe change behaviour for 
-  // the case when several sensors are defined under eachother
-  // read behaviour of multisensor.x3d ( in X3Ds conformance test and test)
-  // to understand.
 
   class H3DAPI_API X3DPointingDeviceSensorNode : 
     public X3DSensorNode {
@@ -121,10 +117,9 @@ namespace H3D {
     /// primary pointing device button is released if it was previously 
     /// pressed.
     ///
-    /// - routes_in[0] is the isOver field
-    /// - routes_in[1] is the leftButton field of a MouseSensor
+    /// - routes_in[0] is the leftButton field of a MouseSensor
     class H3DAPI_API SetIsActive: 
-      public AutoUpdate< TypedField < SFBool, Types< SFBool, SFBool > > > {
+      public AutoUpdate< SFBool > {
     public:
       SetIsActive() {
         left_mouse_miss = false;
@@ -240,6 +235,9 @@ namespace H3D {
     /// X3DPointingDeviceSensorNodes twice than it is to compare pointers for
     /// all devices to know if it should be true or not.
     bool new_value;
+
+    /// This value must be true for a sensor to become active.
+    bool lowest_enabled;
 
     /// Called to generate isOver events if they should be
     /// generated.

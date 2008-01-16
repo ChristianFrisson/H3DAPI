@@ -63,7 +63,9 @@ X3DPointingDeviceSensorNode::X3DPointingDeviceSensorNode(
   description ( _description  ),
   isOver( _isOver ),
   setIsEnabled( new SetIsEnabled ),
-  setIsActive( new SetIsActive ) {
+  setIsActive( new SetIsActive ),
+  new_value( false ),
+  lowest_enabled( false ) {
 
   type_name = "X3DPointingDeviceSensorNode";
   database.initFields( this );
@@ -81,13 +83,11 @@ X3DPointingDeviceSensorNode::X3DPointingDeviceSensorNode(
   enabled->routeNoEvent( setIsEnabled );
   mouse_sensor->leftButton->routeNoEvent( setIsEnabled );
 
-  setIsActive->setOwner(this);
+  setIsActive->setOwner( this );
   mouse_sensor->leftButton->routeNoEvent( setIsActive );
   isOver->setValue( false, id );
-  isOver->routeNoEvent( setIsActive );
 
   instances.push_back( this );
-  new_value = false;
 }
 
 /// Destructor. 
@@ -156,17 +156,25 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
           }
         }
 
-        for( unsigned int i = 0; i < instances.size(); i++ )
+        for( unsigned int i = 0; i < instances.size(); i++ ) {
           instances[i]->new_value = false;
+          instances[i]->lowest_enabled = false;
+        }
 
         LineIntersectResult::GeomX3DPtdMap::iterator found_ptds =
           result.geom_ptd_map.find( closest );
         if( found_ptds != result.geom_ptd_map.end() ) {
           for( list< Node * >::iterator i =
-               (*found_ptds).second.x3dptd.begin();
-            i != (*found_ptds).second.x3dptd.end(); i++ ) {
-            static_cast< X3DPointingDeviceSensorNode * >(*i)->new_value =
-              true;
+                 (*found_ptds).second.x3dptd.begin();
+               i != (*found_ptds).second.x3dptd.end(); i++ ) {
+            static_cast< X3DPointingDeviceSensorNode * >(*i)->new_value = true;
+            
+          }
+          for( list< Node * >::iterator i =
+                 (*found_ptds).second.lowest_enabled.begin();
+               i != (*found_ptds).second.lowest_enabled.end(); i++ ) {
+            static_cast< X3DPointingDeviceSensorNode * >(*i)->lowest_enabled
+              = true;
           }
         }
 
@@ -194,19 +202,21 @@ void X3DPointingDeviceSensorNode::SetIsActive::update() {
     static_cast< X3DPointingDeviceSensorNode * >( getOwner() );
   if( ts->is_enabled ) {
     bool itIsActive = false;
-    bool leftButton = 
-      static_cast< SFBool * >( routes_in[0] )->getValue();
-    bool isOver = static_cast< SFBool * >( routes_in[1] )->getValue();
-    if( leftButton ) {
-      if( !left_mouse_miss && 
-        ( isOver || ts->isActive->getValue() ) )
-        itIsActive = true;
-      else
-        left_mouse_miss = true;
-    }
-    else {
-      itIsActive = false;
-      left_mouse_miss = false;
+    if( ts->lowest_enabled ) {
+      bool leftButton = 
+        static_cast< SFBool * >( routes_in[0] )->getValue();
+      bool isOver = ts->isOver->getValue();
+      if( leftButton ) {
+        if( !left_mouse_miss && 
+          ( isOver || ts->isActive->getValue() ) )
+          itIsActive = true;
+        else
+          left_mouse_miss = true;
+      }
+      else {
+        itIsActive = false;
+        left_mouse_miss = false;
+      }
     }
 
     if( itIsActive != ts->isActive->getValue() ) {
@@ -214,6 +224,10 @@ void X3DPointingDeviceSensorNode::SetIsActive::update() {
         number_of_active++;
         H3DNavigation::disableDevice( H3DNavigation::MOUSE );
         //H3DNavigation::disableDevice( H3DNavigation::ALL );
+        for( unsigned int i = 0; i < ts->instances.size(); i++ ) {
+          if( !instances[i]->lowest_enabled )
+            instances[i]->isOver->setValue( false, instances[i]->id );
+        }
       }
       else {
         number_of_active--;

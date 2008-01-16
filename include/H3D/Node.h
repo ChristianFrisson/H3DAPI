@@ -164,12 +164,24 @@ namespace H3D {
       /// transformation matrix.
       struct H3DAPI_API PointingDeviceResultStruct {
         list< Node * > x3dptd;
+        list< Node * > lowest_enabled;
         Matrix4f global_to_local;
       };
 
       /// Push struct to current_pt_device stack.
       inline void pushCurrentPtDevice( PointingDeviceResultStruct &tmp ) {
+        PointingDeviceResultStruct temp_struct;
+        if( !current_pt_device.empty() )
+          temp_struct = current_pt_device.top();
         current_pt_device.push( tmp );
+        list< Node * > &tmp_list = current_pt_device.top().x3dptd;
+        for( list< Node * >::iterator i = tmp_list.begin();
+          i != tmp_list.end(); i++ ) {
+          current_pt_device.top().lowest_enabled.push_back( *i );
+        }
+        tmp_list.insert( tmp_list.end(),
+                         temp_struct.x3dptd.begin(),
+                         temp_struct.x3dptd.end() );
       }
 
       /// Pop struct from current_pt_device stack
