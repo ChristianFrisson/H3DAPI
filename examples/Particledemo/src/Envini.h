@@ -28,7 +28,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <INIFile.h>
+// H3D includes
+#include <H3D/INIFile.h>
+
+// std includes
 #include <fstream>
 
 using namespace std;
@@ -93,7 +96,4 @@ AutoRef< MouseSensor > ms( new MouseSensor );
 AutoRef< Transform > t( new Transform );
 AutoRef< Node > device_info;
 AutoRef< Node > viewpoint;
-#ifdef USE_HAPTICS
-AutoRef< Node > default_stylus;
-#endif
 AutoRef< Group > g( new Group );*/

@@ -42,31 +42,35 @@
 // ---------------------------------------------------------------------------
 //  Includes (to open X3D files)
 // ---------------------------------------------------------------------------
+// H3DUtil includes
+#include <H3DUtil/Console.h>
 
-#include <VrmlParser.h>
-#include <Group.h>
-#include <Transform.h>
-#include <Scene.h>
-#include <KeySensor.h>
-#include <MouseSensor.h>
+// HAPI includes
+#include <HAPI/HAPIHapticsRenderer.h>
+
+// H3D includes
+#include <H3D/VrmlParser.h>
+#include <H3D/Group.h>
+#include <H3D/Transform.h>
+#include <H3D/Scene.h>
+#include <H3D/KeySensor.h>
+#include <H3D/MouseSensor.h>
 #ifndef MACOSX
-#include <SpaceWareSensor.h>
+#include <H3D/SpaceWareSensor.h>
 #endif
-#include <Viewpoint.h>
-#include <X3DViewpointNode.h>
-#include <DeviceInfo.h>
-#include <INIFile.h>
-#include <ResourceResolver.h>
-#include <Console.h>
+#include <H3D/Viewpoint.h>
+#include <H3D/X3DViewpointNode.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/INIFile.h>
+#include <H3D/ResourceResolver.h>
 
-#include <GraphicsCachingOptions.h>
-#include <DebugOptions.h>
-#include <HapticsOptions.h>
-#include <GeometryBoundTreeOptions.h>
-#include <OpenHapticsOptions.h>
+#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/DebugOptions.h>
+#include <H3D/HapticsOptions.h>
+#include <H3D/GeometryBoundTreeOptions.h>
+#include <H3D/OpenHapticsOptions.h>
 
-#include <HapticsRenderers.h>
-#include <HAPIHapticsRenderer.h>
+#include <H3D/HapticsRenderers.h>
 
 using namespace std;
 using namespace H3D;

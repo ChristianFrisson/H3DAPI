@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="ParticleDemo"
 	ProjectGUID="{576EC026-C1F4-4876-8849-B431DA938041}"
 	RootNamespace="WxLoad"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\src;..\..\..\..\..\H3DUtil\src;..\..\..\..\..\HAPI\src;..\..\..\..\..\HAPI\OpenHapticsRenderer;C:\H3D\H3DUtil\src;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\src&quot;"
+				AdditionalIncludeDirectories="..\..\src;..\..\..\..\..\H3DUtil\include;..\..\..\..\..\HAPI\include;..\..\..\..\..\HAPI\OpenHapticsRenderer\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\..\include"
 				PreprocessorDefinitions="_NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32;__WXMSW__"
 				StringPooling="true"
 				BasicRuntimeChecks="0"
@@ -133,7 +133,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src;..\..\..\..\..\H3DUtil\src;..\..\..\..\..\HAPI\src;..\..\..\..\..\HAPI\OpenHapticsRenderer;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\src&quot;"
+				AdditionalIncludeDirectories="..\..\src;..\..\..\..\..\H3DUtil\include;..\..\..\..\..\HAPI\include;..\..\..\..\..\HAPI\OpenHapticsRenderer\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;..\..\..\..\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"

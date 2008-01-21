@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\..\..\..\HAPI\Chai3DRenderer;..\..\src;..\..\..\..\..\H3DUtil\src;..\..\..\..\..\HAPI\src;..\..\..\..\..\HAPI\OpenHapticsRenderer;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\src&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\HAPI\Chai3DRenderer\include;..\..\src;..\..\..\..\..\H3DUtil\include;..\..\..\..\..\HAPI\include;..\..\..\..\..\HAPI\OpenHapticsRenderer\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
 				PreprocessorDefinitions="_NDEBUG;_CONSOLE;WIN32;_WINDOWS;PLATFORM_WIN32;__WXMSW__"
 				StringPooling="TRUE"
 				BasicRuntimeChecks="0"
@@ -43,7 +43,7 @@
 				AdditionalDependencies="H3DUtil10_vc7.lib H3DAPI20_vc7.lib wxmsw28_gl.lib wxmsw28_core.lib wxbase28.lib wxmsw28_adv.lib HAPI10_vc7.lib OpenHapticsRenderer10_vc7.lib rpcrt4.lib comctl32.lib"
 				OutputFile="$(OutDir)/ParticleDemo_vc7.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_ROOT)\build\win32\vc7\Release&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 				SubSystem="2"/>
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\..\HAPI\Chai3DRenderer;..\..\src;..\..\..\..\..\H3DUtil\src;..\..\..\..\..\HAPI\src;..\..\..\..\..\HAPI\OpenHapticsRenderer;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\src&quot;"
+				AdditionalIncludeDirectories="..\..\..\..\..\HAPI\Chai3DRenderer\include;..\..\src;..\..\..\..\..\H3DUtil\include;..\..\..\..\..\HAPI\include;..\..\..\..\..\HAPI\OpenHapticsRenderer\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -103,7 +103,7 @@
 				OutputFile="$(OutDir)/ParticleDemo_vc7_d.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_ROOT)\build\win32\vc7\Release&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"

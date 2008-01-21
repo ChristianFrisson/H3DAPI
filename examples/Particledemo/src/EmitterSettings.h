@@ -27,6 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+// wx includes
 #include <wx/wx.h>
 #include <wx/propdlg.h> 
 #include <wx/bookctrl.h>
@@ -36,12 +37,13 @@
 #include <wx/confbase.h>
 #include <wx/tokenzr.h>
 
-#include <PointEmitter.h>
-#include <ConeEmitter.h>
-#include <ExplosionEmitter.h>
-#include <DeviceInfo.h>
-#include <ParticleSystem.h>
-#include <SurfaceEmitter.h>
+// H3D includes
+#include <H3D/PointEmitter.h>
+#include <H3D/ConeEmitter.h>
+#include <H3D/ExplosionEmitter.h>
+#include <H3D/DeviceInfo.h>
+#include <H3D/ParticleSystem.h>
+#include <H3D/SurfaceEmitter.h>
 
 using namespace std;
 using namespace H3D;

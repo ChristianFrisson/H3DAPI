@@ -27,6 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+// wx includes
 #include <wx/wx.h>
 #include <wx/propdlg.h> 
 #include <wx/bookctrl.h>
@@ -34,28 +35,34 @@
 #include <wx/spinctrl.h>
 #include <wx/config.h>
 #include <wx/confbase.h>
+
+// H3D includes
+#include <H3D/GlobalSettings.h>
+
+#include <H3D/Box.h>
+#include <H3D/Cone.h>
+#include <H3D/Cylinder.h>
+#include <H3D/Sphere.h>
+
+#include <H3D/Group.h>
+#include <H3D/Transform.h>
+#include <H3D/Scene.h>
+#include <H3D/KeySensor.h>
+#include <H3D/MouseSensor.h>
+
+#include <H3D/SpaceWareSensor.h>
+
+#include <H3D/DeviceInfo.h>
+#include <H3D/INIFile.h>
+#include <H3D/ResourceResolver.h>
+#include <H3D/ParticleSystem.h>
+#include <H3D/NavigationInfo.h>
+
+// H3DUtil includes
+#include <H3DUtil/Console.h>
+
+// ParticleDemo includes
 #include <WxWidgetsWindow.h>
-#include <GlobalSettings.h>
-
-#include <Box.h>
-#include <Cone.h>
-#include <Cylinder.h>
-#include <Sphere.h>
-
-#include <Group.h>
-#include <Transform.h>
-#include <Scene.h>
-#include <KeySensor.h>
-#include <MouseSensor.h>
-
-#include <SpaceWareSensor.h>
-
-#include <DeviceInfo.h>
-#include <INIFile.h>
-#include <ResourceResolver.h>
-#include <Console.h>
-#include <ParticleSystem.h>
-#include <NavigationInfo.h>
 #include <ConsoleDialog.h>
 #include <EmitterSettings.h>
 #include <PhysicsModels.h>

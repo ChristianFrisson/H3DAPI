@@ -32,7 +32,9 @@
 // ---------------------------------------------------------------------------
 
 #include <consoleDialog.h>
-#include <Console.h>
+
+// H3DUtil includes
+#include <H3DUtil/Console.h>
 
 using namespace std;
 

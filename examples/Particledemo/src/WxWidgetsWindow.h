@@ -30,8 +30,7 @@
 #define __WXWIDGETSWINDOW_H__
 
 #include "wx/wx.h"
-#include <H3DWindowNode.h>
-//#include "Scene.h"
+#include <H3D/H3DWindowNode.h>
 #include "wx/glcanvas.h"
 
 #if !wxUSE_GLCANVAS

@@ -27,6 +27,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+// wx includes
 #include <wx/wx.h>
 #include <wx/propdlg.h> 
 #include <wx/bookctrl.h>
@@ -36,10 +37,11 @@
 #include <wx/confbase.h>
 #include <wx/tokenzr.h>
 
-#include <ParticleSystem.h>
-#include <WindPhysicsModel.h>
-#include <BoundedPhysicsModel.h>
-#include <GravityPhysicsModel.h>
+// H3D includes
+#include <H3D/ParticleSystem.h>
+#include <H3D/WindPhysicsModel.h>
+#include <H3D/BoundedPhysicsModel.h>
+#include <H3D/GravityPhysicsModel.h>
 
 
 using namespace std;
