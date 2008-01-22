@@ -51,6 +51,8 @@
 
 #include <wx/cmdline.h>
 
+#include <VolumeData.h>
+
 // ---------------------------------------------------------------------------
 //  Required classes and definitions
 // ---------------------------------------------------------------------------
@@ -154,6 +156,10 @@ bool MyApp::OnInit()
   // call default behaviour (mandatory)
   if (!wxApp::OnInit())
     return false;
+
+  {
+    auto_ptr< VolumeData > kurt( new VolumeData() );
+  }
 
   SetVendorName(_T("SenseGraphics AB"));
   SetAppName(_T("H3D Viewer"));

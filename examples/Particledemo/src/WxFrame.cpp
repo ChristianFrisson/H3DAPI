@@ -685,15 +685,15 @@ void WxFrame::CreateGeometries()
   ////Box
   box = (Box *) NULL;
   box = new Box;
-  box->size->setValue(Vec3f(0.2, 0.2, 0.2));
+  box->size->setValue(Vec3f(0.2f, 0.2f, 0.2f));
   box->solid->setValue(true);
 
   ////Cone
   cone = (Cone *) NULL;
   cone = new Cone;
   cone->bottom->setValue(true);
-  cone->bottomRadius->setValue(0.1);
-  cone->height->setValue(0.2);
+  cone->bottomRadius->setValue(0.1f);
+  cone->height->setValue(0.2f);
   cone->side->setValue(true);
   cone->solid->setValue(true);
 
@@ -701,8 +701,8 @@ void WxFrame::CreateGeometries()
   cylinder = (Cylinder *) NULL;
   cylinder = new Cylinder;
   cylinder->bottom->setValue(true);
-  cylinder->height->setValue(0.2);
-  cylinder->radius->setValue(0.1);
+  cylinder->height->setValue(0.2f);
+  cylinder->radius->setValue(0.1f);
   cylinder->side->setValue(true);
   cylinder->solid->setValue(true);
   cylinder->top->setValue(true);
@@ -710,6 +710,6 @@ void WxFrame::CreateGeometries()
   ////Sphere
   sphere = (Sphere *) NULL;
   sphere = new Sphere;
-  sphere->radius->setValue(0.1);
+  sphere->radius->setValue(0.1f);
   sphere->solid->setValue(true);
 }

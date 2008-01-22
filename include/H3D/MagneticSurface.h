@@ -32,6 +32,7 @@
 #include <H3D/H3DSurfaceNode.h>
 #include <H3D/SFFloat.h>
 #include <H3D/FieldTemplates.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -114,11 +115,12 @@ namespace H3D {
     };
 
     /// Constructor.
-    MagneticSurface( Inst< UpdateStiffness > _stiffness       = 0,
-                     Inst< UpdateDamping > _damping         = 0,
-                     Inst< UpdateStaticFriction > _staticFriction  = 0,
+    MagneticSurface( Inst< UpdateStiffness       > _stiffness       = 0,
+                     Inst< UpdateDamping         > _damping         = 0,
+                     Inst< UpdateStaticFriction  > _staticFriction  = 0,
                      Inst< UpdateDynamicFriction > _dynamicFriction = 0,
-                     Inst< UpdateSnapDistance > _snapDistance    = 0 );
+                     Inst< UpdateSnapDistance    > _snapDistance    = 0,
+                     Inst< SFBool                > _mmStiffness     = 0 );
 
     void initialize();
 
@@ -162,6 +164,13 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> 0.01 \n
     auto_ptr< UpdateSnapDistance > snapDistance;
+
+    /// Used for backwards compability. New applications should always
+    /// have this set to false.
+    ///
+    /// <b>Access type: </b> initializeOnly \n
+    /// <b>Default value: </b> false \n
+    auto_ptr< SFBool > mmStiffness;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -32,6 +32,7 @@
 #include <H3D/H3DSurfaceNode.h>
 #include <H3D/FieldTemplates.h>
 #include <H3D/SFFloat.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -91,7 +92,8 @@ namespace H3D {
                      Inst< UpdateStiffness       > _stiffness       = 0,
                      Inst< UpdateDamping         > _damping         = 0,
                      Inst< UpdateStaticFriction  > _staticFriction  = 0,
-                     Inst< UpdateDynamicFriction > _dynamicFriction = 0 );
+                     Inst< UpdateDynamicFriction > _dynamicFriction = 0,
+                     Inst< SFBool                > _mmStiffness     = 0 );
    
     /// The stiffness of the surface. Should be a value between 0 and 1
     /// where 1 is the maximum stiffness the haptics device can handle.
@@ -124,6 +126,13 @@ namespace H3D {
     /// <b>Default value: </b> 0.4 \n
     /// <b>Value range: </b> [0-1]
     auto_ptr< UpdateDynamicFriction > dynamicFriction;
+
+    /// Used for backwards compability. New applications should always
+    /// have this set to false.
+    ///
+    /// <b>Access type: </b> initializeOnly \n
+    /// <b>Default value: </b> false \n
+    auto_ptr< SFBool > mmStiffness;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

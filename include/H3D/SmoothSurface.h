@@ -32,6 +32,7 @@
 #include <H3D/H3DSurfaceNode.h>
 #include <H3D/SFFloat.h>
 #include <H3D/FieldTemplates.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -67,8 +68,9 @@ namespace H3D {
     };
 
     /// Constructor.
-    SmoothSurface( Inst< UpdateStiffness > _stiffness = 0,
-                   Inst< UpdateDamping >   _damping   = 0 );
+    SmoothSurface( Inst< UpdateStiffness > _stiffness   = 0,
+                   Inst< UpdateDamping   > _damping     = 0,
+                   Inst< SFBool          > _mmStiffness = 0 );
 
     void initialize();
 
@@ -87,6 +89,13 @@ namespace H3D {
     /// <b>Default value: </b> 0 \n
     /// <b>Value range: </b> [0-1]
     auto_ptr< UpdateDamping > damping;
+
+    /// Used for backwards compability. New applications should always
+    /// have this set to false.
+    ///
+    /// <b>Access type: </b> initializeOnly \n
+    /// <b>Default value: </b> false \n
+    auto_ptr< SFBool > mmStiffness;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

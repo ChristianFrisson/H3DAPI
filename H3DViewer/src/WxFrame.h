@@ -112,7 +112,8 @@ protected:
         ID_DRAW_BOUNDS,
         ID_DRAW_TRIANGLES,
         ID_DRAW_BOUND_TREE,
-        ID_DRAW_TREE_DEPTH
+        ID_DRAW_TREE_DEPTH,
+        ID_USE_COLLISION_DETECTION
         
     };
 

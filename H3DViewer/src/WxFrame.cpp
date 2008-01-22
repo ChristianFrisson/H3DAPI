@@ -65,6 +65,7 @@
 #include <H3D/HapticsOptions.h>
 #include <H3D/GeometryBoundTreeOptions.h>
 #include <H3D/OpenHapticsOptions.h>
+#include <H3D/CollisionOptions.h>
 #include <H3D/H3DNavigation.h>
 #include <H3D/HapticsRenderers.h>
 
@@ -192,6 +193,7 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
   global_settings->options->push_back( new GeometryBoundTreeOptions );
   global_settings->options->push_back( new OpenHapticsOptions );
   global_settings->options->push_back( new HapticsOptions );
+  global_settings->options->push_back( new CollisionOptions );
 
   //File History
   recentFiles = (wxFileHistory *) NULL;
@@ -408,6 +410,14 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
     } else if( id == ID_USE_BOUND_TREE ) {
       ho->useBoundTree->setValue( event.IsChecked() );
     }
+  }
+
+  CollisionOptions *col_opt = 0;
+  global_settings->getOptionNode( col_opt );
+
+  if( col_opt ) {
+    if( id == ID_USE_COLLISION_DETECTION ) 
+      col_opt->avatarCollision->setValue( event.IsChecked() );
   }
 
   OpenHapticsOptions *oho = NULL;
@@ -1598,6 +1608,9 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
   EVT_TEXT(ID_LOOK_AHEAD_FACTOR, SettingsDialog::handleSettingsChange )
   EVT_CHECKBOX( ID_USE_BOUND_TREE, SettingsDialog::handleSettingsChange)
 
+  EVT_CHECKBOX( ID_USE_COLLISION_DETECTION,
+                SettingsDialog::handleSettingsChange)
+
   EVT_CHOICE( ID_OH_SHAPE_TYPE, SettingsDialog::handleSettingsChange)
   EVT_CHECKBOX( ID_ADAPTIVE_VIEWPORT, SettingsDialog::handleSettingsChange)
   EVT_CHECKBOX( ID_HAPTIC_CAMERA, SettingsDialog::handleSettingsChange)
@@ -2070,6 +2083,34 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent,
     haptics_box_sizer->Add(use_bound_tree_sizer, 0, wxGROW|wxALL, 0);
 
     item0->Add(haptics_box_sizer, 0, wxGROW|wxLEFT|wxRIGHT, 5);
+
+
+    // Collision Options
+    item0->Add(5, 5, 1, wxALL, 0);
+    wxStaticBox* collision_box = new wxStaticBox(panel, wxID_ANY,
+                                               wxT("Collision options:"));
+    wxBoxSizer* collision_box_sizer = new wxStaticBoxSizer( collision_box, 
+                                                            wxVERTICAL );
+
+    wxBoxSizer* collision_options_sizer = new wxBoxSizer( wxVERTICAL );
+    wxCheckBox* use_collision_checkbox = new wxCheckBox(panel,
+                                          ID_USE_COLLISION_DETECTION,
+                                          wxT("&Collision detection"),
+                                          wxDefaultPosition, wxDefaultSize);
+    CollisionOptions *col_opt = 0;
+    global_settings->getOptionNode( col_opt );
+    bool use_collision = false;
+    if( col_opt ) {
+      use_collision = col_opt->avatarCollision->getValue();
+    }
+    use_collision_checkbox->SetValue( use_collision );
+    collision_options_sizer->Add(use_collision_checkbox, 0,
+                             wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    collision_box_sizer->Add(collision_options_sizer, 0, wxGROW|wxALL, 0);
+
+    item0->Add(collision_box_sizer, 0, wxGROW|wxLEFT|wxRIGHT, 5);
+
+    // End Collision Options
 
     topSizer->Add( item0, 1, wxGROW|wxALIGN_CENTRE|wxALL, 5 );
     topSizer->AddSpacer(5);

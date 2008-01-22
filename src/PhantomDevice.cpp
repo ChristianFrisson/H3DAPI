@@ -128,6 +128,11 @@ void PhantomDevice::initialize() {
   H3DHapticsDevice::initialize();
 #ifdef HAVE_OPENHAPTICS
   hapi_device.reset( new HAPI::PhantomHapticsDevice( deviceName->getValue() ) );
+  // It is important to set the renderer before calling initHapticsDevice since
+  // this will partially solve the problem with random crashing on start up
+  // caused when trying to create the first hlContext after starting the
+  // hdScheduler.
+  setHapticRenderer( hapticsRenderer->getValue() );
 #else
   Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
 	     << " OpenHaptics support. Recompile HAPI with "
