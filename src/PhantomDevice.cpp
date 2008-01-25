@@ -54,8 +54,11 @@ namespace PhantomDeviceInternals {
   FIELDDB_ELEMENT( PhantomDevice, jointAngles, OUTPUT_ONLY );
   FIELDDB_ELEMENT( PhantomDevice, needsCalibration, OUTPUT_ONLY )
   FIELDDB_ELEMENT( PhantomDevice, calibrate, INPUT_ONLY )
-
 }
+
+unsigned int PhantomDevice::nr_initialized_devices = 0;
+bool PhantomDevice::started_scheduler = false;
+unsigned int PhantomDevice::render_shapes_called = 0;
 
 /// Constructor.
 PhantomDevice::PhantomDevice( 
@@ -107,7 +110,6 @@ PhantomDevice::PhantomDevice(
   type_name = "PhantomDevice";  
   database.initFields( this );
 #ifdef HAVE_OPENHAPTICS
-  //hapi_device.reset( new HAPI::PhantomHapticsDevice );
   hapi_device.reset(0);
 #else
   Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
@@ -128,11 +130,6 @@ void PhantomDevice::initialize() {
   H3DHapticsDevice::initialize();
 #ifdef HAVE_OPENHAPTICS
   hapi_device.reset( new HAPI::PhantomHapticsDevice( deviceName->getValue() ) );
-  // It is important to set the renderer before calling initHapticsDevice since
-  // this will partially solve the problem with random crashing on start up
-  // caused when trying to create the first hlContext after starting the
-  // hdScheduler.
-  setHapticRenderer( hapticsRenderer->getValue() );
 #else
   Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
 	     << " OpenHaptics support. Recompile HAPI with "
@@ -142,6 +139,9 @@ void PhantomDevice::initialize() {
 }
 
 H3DHapticsDevice::ErrorCode PhantomDevice::initDevice() {
+#ifdef HAVE_OPENHAPTICS
+  HAPI::PhantomHapticsDevice::setEnableStartScheduler( false );
+#endif
   HAPI::HAPIHapticsDevice::ErrorCode e = H3DHapticsDevice::initDevice();
 #ifdef HAVE_OPENHAPTICS
    HAPI::PhantomHapticsDevice *pd = 
@@ -164,6 +164,9 @@ H3DHapticsDevice::ErrorCode PhantomDevice::initDevice() {
     maxForce->setValue( (H3DFloat)pd->getMaxForce(), id );
     maxContinuousForce->setValue( (H3DFloat)pd->getMaxContinuousForce(), id );
     needsCalibration->setValue( pd->needsCalibration(), id );
+    nr_initialized_devices++;
+    render_shapes_called = 0;
+    started_scheduler = false;
   }
 #endif
   return e;
@@ -184,3 +187,18 @@ void PhantomDevice::updateDeviceValues() {
   }
 #endif
 }
+
+void PhantomDevice::renderShapes( const HapticShapeVector &shapes,
+                                 unsigned int layer ) {
+  H3DHapticsDevice::renderShapes( shapes, layer );
+#ifdef HAVE_OPENHAPTICS
+  if( hapi_device.get() && !started_scheduler ) {
+    render_shapes_called++;
+    if( nr_initialized_devices == render_shapes_called ) {
+      HAPI::PhantomHapticsDevice::startScheduler();
+      started_scheduler = true;
+    }
+  }
+#endif
+}
+

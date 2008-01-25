@@ -233,12 +233,16 @@ namespace H3D {
       public TypedSFNode< H3DHapticsRendererNode > {
       virtual void onAdd( Node *n ) {
         TypedSFNode< H3DHapticsRendererNode >::onAdd( n );
+        H3DHapticsRendererNode *renderer = 
+          static_cast< H3DHapticsRendererNode * >( n );
         H3DHapticsDevice *device = 
           static_cast< H3DHapticsDevice * >( getOwner() );
-        device->setHapticRenderer( 
-          static_cast< H3DHapticsRendererNode * >( n ) );
+        if( renderer && device->hapi_device.get() ) {
+          for( unsigned int i = 0; i < device->hapi_device->nrLayers(); i++ )
+            device->hapi_device->setHapticsRenderer( 
+                                     renderer->getHapticsRenderer( i ) );
+        }
       }
-
       virtual void onRemove( Node *n ) {
         H3DHapticsRendererNode *renderer = static_cast< H3DHapticsRendererNode * >( n );
         H3DHapticsDevice *device = static_cast< H3DHapticsDevice * >( getOwner() );
@@ -638,19 +642,6 @@ namespace H3D {
     /// Node database entry
     static H3DNodeDatabase database;
   protected:
-
-    // function to set renderer. Can be used by subclasses to H3DHapticsDevice
-    // if it is neccessary that a renderer (if there is one) is set before
-    // initDevice is called.
-    inline void setHapticRenderer( H3DHapticsRendererNode *h3d_renderer ) {
-      if( h3d_renderer && hapi_device.get() ) {
-        for( unsigned int i = 0; i < hapi_device->nrLayers(); i++ ) {
-          hapi_device->setHapticsRenderer( 
-            h3d_renderer->getHapticsRenderer( i ) );
-        }
-      }
-    }
-
     Vec3f previuos_proxy_pos;
 
     // true if we have a default_vp_pos

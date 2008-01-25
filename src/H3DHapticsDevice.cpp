@@ -34,7 +34,6 @@
 
 #include <HAPI/OpenHapticsRenderer.h>
 #include <HAPI/GodObjectRenderer.h>
-#include <HAPI/PhantomHapticsDevice.h>
 #include <HAPI/HAPIHapticsRenderer.h>
 
 using namespace H3D;

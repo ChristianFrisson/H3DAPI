@@ -89,6 +89,17 @@ namespace H3D {
     /// with name deviceName
     virtual void initialize();
 
+    /// Perform haptic rendering for the given HapticShape instances. 
+    /// HapticShape objects that are to be be rendered haptically must be 
+    /// rendered with this function each scenegraph loop. 
+    /// Used in PhantomDevice to determine when to start the scheduler
+    /// for OpenHaptics in order to avoid random crashes when creating
+    /// hlContext.
+    /// \param objects The haptic shapes to render.
+    /// \param layer The haptic layer to render them in.
+    virtual void renderShapes( const HapticShapeVector &shapes, 
+                               unsigned int layer = 0 );
+
     /// The name of the device, as specified in Phantom Configuration
     /// utility. If set to "", the default device will be used. 
     ///
@@ -200,6 +211,13 @@ namespace H3D {
 
     /// Node database entry
     static H3DNodeDatabase database;
+
+    protected:
+#ifdef HAVE_OPENHAPTICS
+      static unsigned int nr_initialized_devices;
+      static bool started_scheduler;
+      static unsigned int render_shapes_called;
+#endif
   };
 }
 
