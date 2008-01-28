@@ -89,11 +89,11 @@ namespace H3D {
 
     /// Constructor.
     H3DVariableDepthSurface(
-                     Inst< UpdateStiffness       > _stiffness       = 0,
-                     Inst< UpdateDamping         > _damping         = 0,
-                     Inst< UpdateStaticFriction  > _staticFriction  = 0,
-                     Inst< UpdateDynamicFriction > _dynamicFriction = 0,
-                     Inst< SFBool                > _mmStiffness     = 0 );
+                     Inst< UpdateStiffness       > _stiffness         = 0,
+                     Inst< UpdateDamping         > _damping           = 0,
+                     Inst< UpdateStaticFriction  > _staticFriction    = 0,
+                     Inst< UpdateDynamicFriction > _dynamicFriction   = 0,
+                     Inst< SFBool                > _useRelativeValues = 0 );
    
     /// The stiffness of the surface. Should be a value between 0 and 1
     /// where 1 is the maximum stiffness the haptics device can handle.
@@ -127,12 +127,14 @@ namespace H3D {
     /// <b>Value range: </b> [0-1]
     auto_ptr< UpdateDynamicFriction > dynamicFriction;
 
-    /// Used for backwards compability. New applications should always
-    /// have this set to false.
+    /// If false then values (such as stiffness) is in absolute values with
+    /// SI units or equivalent. If true the units are relative to the maximum
+    /// values that the haptics device, on which the surface is rendered on,
+    /// can handle.
     ///
     /// <b>Access type: </b> initializeOnly \n
-    /// <b>Default value: </b> false \n
-    auto_ptr< SFBool > mmStiffness;
+    /// <b>Default value: </b> true \n
+    auto_ptr< SFBool > useRelativeValues;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

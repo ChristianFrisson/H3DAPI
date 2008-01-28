@@ -48,7 +48,7 @@ namespace MagneticSurfaceInternals {
   FIELDDB_ELEMENT( MagneticSurface, staticFriction, INPUT_OUTPUT );
   FIELDDB_ELEMENT( MagneticSurface, dynamicFriction, INPUT_OUTPUT );
   FIELDDB_ELEMENT( MagneticSurface, snapDistance, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( MagneticSurface, mmStiffness,  INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( MagneticSurface, useRelativeValues,  INITIALIZE_ONLY );
 }
 
 /// Constructor.
@@ -58,17 +58,17 @@ MagneticSurface::MagneticSurface(
               Inst< UpdateStaticFriction  > _staticFriction,
               Inst< UpdateDynamicFriction > _dynamicFriction,
               Inst< UpdateSnapDistance    > _snapDistance,
-              Inst< SFBool                > _mmStiffness ):
+              Inst< SFBool                > _useRelativeValues ):
   stiffness( _stiffness ),
   damping( _damping ),
   staticFriction( _staticFriction ),
   dynamicFriction( _dynamicFriction ),
   snapDistance( _snapDistance ),
-  mmStiffness( _mmStiffness ) {
+  useRelativeValues( _useRelativeValues ) {
   type_name = "MagneticSurface";
   database.initFields( this );
 
-  mmStiffness->setValue( true );
+  useRelativeValues->setValue( true );
   stiffness->setValue( 0.5f );
   damping->setValue( 0 );
   staticFriction->setValue( (H3DFloat)0.1 );
@@ -81,7 +81,7 @@ void MagneticSurface::initialize() {
 #ifdef HAVE_OPENHAPTICS
   hapi_surface.reset(
     new HAPI::OpenHapticsRenderer::OpenHapticsSurface(
-                              mmStiffness->getValue() ?
+                              useRelativeValues->getValue() ?
                                 stiffness->getValue():
                                 stiffness->getValue() * 0.001f,
                               damping->getValue(),
@@ -98,12 +98,12 @@ void MagneticSurface::UpdateStiffness::setValue( const H3DFloat &f, int id ){
   MagneticSurface *ms = 
     static_cast< MagneticSurface * >( getOwner() );
   if( ms->hapi_surface.get() ) {
-    if( ms->mmStiffness->getValue() ) {
+    if( ms->useRelativeValues->getValue() ) {
       static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
         ( ms->hapi_surface.get() )->stiffness = f;
     } else {
       static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
-        ( ms->hapi_surface.get() )->stiffness = f * 0.001;
+        ( ms->hapi_surface.get() )->stiffness = f * 0.001f;
     }
   }
 #endif
@@ -115,7 +115,7 @@ void MagneticSurface::UpdateStiffness::update() {
   MagneticSurface *ms = 
     static_cast< MagneticSurface * >( getOwner() );
   if( ms->hapi_surface.get() ) {
-    if( ms->mmStiffness->getValue() ) {
+    if( ms->useRelativeValues->getValue() ) {
       static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
         ( ms->hapi_surface.get() )->stiffness = value;
     } else {

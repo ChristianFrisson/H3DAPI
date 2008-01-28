@@ -42,20 +42,20 @@ H3DNodeDatabase SmoothSurface::database(
 namespace SmoothSurfaceInternals {
   FIELDDB_ELEMENT( SmoothSurface, stiffness, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SmoothSurface, damping, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( SmoothSurface, mmStiffness,  INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( SmoothSurface, useRelativeValues, INITIALIZE_ONLY );
 }
 
 /// Constructor.
 SmoothSurface::SmoothSurface( Inst< UpdateStiffness > _stiffness,
                               Inst< UpdateDamping   > _damping,
-                              Inst< SFBool          > _mmStiffness ):
+                              Inst< SFBool          > _useRelativeValues ):
   stiffness( _stiffness ),
   damping( _damping ),
-  mmStiffness( _mmStiffness ) {
+  useRelativeValues( _useRelativeValues ) {
   type_name = "SmoothSurface";
   database.initFields( this );
   
-  mmStiffness->setValue( true );
+  useRelativeValues->setValue( true );
   stiffness->setValue( 0.5 );
   damping->setValue( 0 );
 }
@@ -63,9 +63,9 @@ SmoothSurface::SmoothSurface( Inst< UpdateStiffness > _stiffness,
 void SmoothSurface::initialize() {
   H3DSurfaceNode::initialize();
   hapi_surface.reset(
-    new HAPI::FrictionSurface( mmStiffness->getValue() ?
-                                stiffness->getValue() :
-                                stiffness->getValue() * 0.001f,
+    new HAPI::FrictionSurface( useRelativeValues->getValue() ?
+                                 stiffness->getValue() :
+                                 stiffness->getValue() * 0.001f,
                                damping->getValue() * 0.001f ) );
 }
 
@@ -74,7 +74,7 @@ void SmoothSurface::UpdateStiffness::setValue( const H3DFloat &f, int id ){
   SmoothSurface *ss = 
     static_cast< SmoothSurface * >( getOwner() );
   if( ss->hapi_surface.get() ) {
-    if( ss->mmStiffness->getValue() ) {
+    if( ss->useRelativeValues->getValue() ) {
       static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
         ->stiffness = f;
     } else {
@@ -89,7 +89,7 @@ void SmoothSurface::UpdateStiffness::update() {
   SmoothSurface *ss = 
     static_cast< SmoothSurface * >( getOwner() );
   if( ss->hapi_surface.get() ) {
-    if( ss->mmStiffness->getValue() ) {
+    if( ss->useRelativeValues->getValue() ) {
       static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
         ->stiffness = value;
     } else {

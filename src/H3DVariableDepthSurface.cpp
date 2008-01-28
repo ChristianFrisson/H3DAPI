@@ -43,24 +43,24 @@ namespace H3DVariableDepthSurfaceInternals {
   FIELDDB_ELEMENT( H3DVariableDepthSurface, damping,          INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DVariableDepthSurface, staticFriction,   INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DVariableDepthSurface, dynamicFriction,  INPUT_OUTPUT );
-  FIELDDB_ELEMENT( H3DVariableDepthSurface, mmStiffness,  INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( H3DVariableDepthSurface, useRelativeValues,  INITIALIZE_ONLY );
 }
 
 H3DVariableDepthSurface::H3DVariableDepthSurface(
                     Inst< UpdateStiffness       > _stiffness,
                     Inst< UpdateDamping         > _damping,
-									  Inst< UpdateStaticFriction  > _staticFriction,
-									  Inst< UpdateDynamicFriction > _dynamicFriction,
-                    Inst< SFBool                > _mmStiffness ):
+                    Inst< UpdateStaticFriction  > _staticFriction,
+                    Inst< UpdateDynamicFriction > _dynamicFriction,
+                    Inst< SFBool                > _useRelativeValues ):
   stiffness( _stiffness ),
   damping( _damping ),
   staticFriction( _staticFriction ),
   dynamicFriction( _dynamicFriction ),
-  mmStiffness( _mmStiffness ) {
+  useRelativeValues( _useRelativeValues ) {
 
   type_name = "H3DVariableDepthSurface";
   database.initFields( this );
-  mmStiffness->setValue( true );
+  useRelativeValues->setValue( true );
   stiffness->setValue( 0.5f );
   damping->setValue( 0 );
   staticFriction->setValue( 0.1f );
@@ -73,12 +73,12 @@ void H3DVariableDepthSurface::UpdateStiffness::
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
-    if( hvds->mmStiffness->getValue() ) {
+    if( hvds->useRelativeValues->getValue() ) {
       static_cast< HAPI::HAPIVariableDepthSurface * >
         ( hvds->hapi_surface.get() )->stiffness = f;
     } else {
       static_cast< HAPI::HAPIVariableDepthSurface * >
-        ( hvds->hapi_surface.get() )->stiffness = f * 0.001;
+        ( hvds->hapi_surface.get() )->stiffness = f * 0.001f;
     }
   }
 }
@@ -88,7 +88,7 @@ void H3DVariableDepthSurface::UpdateStiffness::update() {
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
-    if( hvds->mmStiffness->getValue() ) {
+    if( hvds->useRelativeValues->getValue() ) {
       static_cast< HAPI::HAPIVariableDepthSurface * >
         ( hvds->hapi_surface.get() )->stiffness = value;
     } else {
