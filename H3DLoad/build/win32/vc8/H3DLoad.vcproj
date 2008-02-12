@@ -52,8 +52,8 @@
 				RuntimeTypeInfo="true"
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
-				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="$(IntDir)\$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CompileAs="0"
@@ -76,7 +76,7 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				GenerateDebugInformation="false"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="1"
 			/>
 			<Tool
@@ -141,8 +141,8 @@
 				RuntimeTypeInfo="true"
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation=""
-				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="$(IntDir)\$(TargetName).pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CompileAs="0"
@@ -166,7 +166,7 @@
 				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="1"
 			/>
 			<Tool

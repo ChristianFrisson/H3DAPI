@@ -1,13 +1,13 @@
 // This is the example from the H3D Manual(Examples section)
 
 // Files included that are needed for setting up the scene graph
-#include <X3D.h>
-#include <Scene.h>
-#include <MouseSensor.h>
-#include <Material.h>
-#include <Shape.h>
-#include <Transform.h>
-#include <GLUTWindow.h>
+#include <H3D/X3D.h>
+#include <H3D/Scene.h>
+#include <H3D/MouseSensor.h>
+#include <H3D/Material.h>
+#include <H3D/Shape.h>
+#include <H3D/Transform.h>
+#include <H3D/GLUTWindow.h>
 
 using namespace H3D;
 

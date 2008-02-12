@@ -45,8 +45,8 @@
 				OutputFile="$(OutDir)/H3DViewer.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(H3D_ROOT)\lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;..\..\..\..\bin;..\..\..\..\lib"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				GenerateDebugInformation="FALSE"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -109,7 +109,7 @@
 				AdditionalLibraryDirectories="..\..\..\..\lib;..\..\..\..\bin;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(H3D_ROOT)\lib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool

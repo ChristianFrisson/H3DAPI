@@ -45,7 +45,7 @@
 				OutputFile="$(OutDir)/H3DLoad.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -105,7 +105,7 @@
 				AdditionalLibraryDirectories="..\..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\zlib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;..\..\..\..\H3DUtil\include;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\Chai3DRenderer\include;..\..\..\..\HAPI\include;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DirectShow\BaseClasses&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\zlib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;..\..\..\..\H3DUtil\include;..\..\..\..\HAPI\Chai3DRenderer\include;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\include;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DirectShow\BaseClasses&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;_DEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -49,6 +49,7 @@
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)\$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
@@ -69,11 +70,11 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
 				IgnoreDefaultLibraryNames=""
-				DelayLoadDLLs="OpenHapticsRenderer10_vc8_d.dll;cg.dll;cgGL.dll;FreeImage.dll;ftgl_dynamic_MTD.dll;OpenAL32.dll;vorbisfile.dll"
+				DelayLoadDLLs="OpenHapticsRenderer10_vc8_d.dll;cg.dll;cgGL.dll;FreeImage.dll;ftgl_dynamic_MTD.dll;OpenAL32.dll;vorbisfile.dll;Chai3DRenderer10_vc8_d.dll"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
-				ImportLibrary="..\..\..\..\lib\H3DApi20_vc8_d.lib"
+				ImportLibrary="..\..\..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -126,12 +127,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\zlib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;..\..\..\..\H3DUtil\include;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\Chai3DRenderer\include;..\..\..\..\HAPI\include;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DirectShow\BaseClasses&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Include&quot;;&quot;$(NOVINT_DEVICE_SUPPORT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\zlib&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\fparser&quot;;..\..\..\..\H3DUtil\include;..\..\..\..\HAPI\Chai3DRenderer\include;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\include;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DHD-API&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\DirectShow\BaseClasses&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\OpenAL&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\libaudiofile&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\vorbis\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\FreeImage\Dist&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(3DTOUCH_BASE)\utilities\include&quot;;..\..\..\include;&quot;$(H3D_EXTERNAL_ROOT)\include\3dconnexion\inc&quot;;&quot;$(H3D_PYTHON_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\freetype\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;WIN32;NDEBUG;_WINDOWS;_USRDLL;H3DAPI_EXPORTS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)\$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
@@ -151,12 +153,13 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
 				IgnoreDefaultLibraryNames=""
-				DelayLoadDLLs="OpenHapticsRenderer10_vc8.dll;cg.dll;cgGL.dll;FreeImage.dll;ftgl_dynamic_MTD.dll;OpenAL32.dll;vorbisfile.dll"
-				GenerateDebugInformation="true"
+				DelayLoadDLLs="OpenHapticsRenderer10_vc8.dll;cg.dll;cgGL.dll;FreeImage.dll;ftgl_dynamic_MTD.dll;OpenAL32.dll;vorbisfile.dll;Chai3DRenderer10_vc8.dll"
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="0"
 				EnableCOMDATFolding="0"
-				ImportLibrary="..\..\..\..\lib\H3DApi20_vc8.lib"
+				ImportLibrary="..\..\..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool

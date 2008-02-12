@@ -27,6 +27,8 @@
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
+				ObjectFile="$(IntDir)/"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"/>
@@ -36,13 +38,13 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="H3DUtil10_vc7_d.lib"
 				OutputFile="$(OutDir)/H3DApi20_vc7_d.dll"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
 				DelayLoadDLLs="Chai3DRenderer10_vc7_d.dll;OpenHapticsRenderer10_vc7_d.dll;audiofile.dll;cg.dll;cgGL.dll;FreeImage.dll;ftgl_dynamic_MTD.dll;OpenAL32.dll;vorbisfile.dll"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/H3DApi20_vc7_d.pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
-				ImportLibrary="..\..\..\..\lib\H3DApi20_vc7_d.lib"
+				ImportLibrary="..\..\..\..\lib\$(TargetName).lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -80,6 +82,8 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
+				ObjectFile="$(IntDir)/"
+				ProgramDataBaseFileName="$(IntDir)/$(TargetName).pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"/>
@@ -92,12 +96,12 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Siena Robotics and Systems Lab\Haptik Library\RSLib\Lib&quot;;..\..\..\..\lib;&quot;$(H3D_EXTERNAL_ROOT)\lib&quot;;&quot;$(3DTOUCH_BASE)\lib&quot;;&quot;$(3DTOUCH_BASE)\utilities\lib&quot;;&quot;$(H3D_PYTHON_ROOT)\libs&quot;"
 				DelayLoadDLLs="Chai3DRenderer10_vc7.dll;OpenHapticsRenderer10_vc7.dll;cg.dll;cgGL.dll;FreeImage.dll;ftgl_dynamic_MTD.dll;OpenAL32.dll;vorbisfile.dll"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/H3DApi20_vc7.pdb"
+				GenerateDebugInformation="FALSE"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="..\..\..\..\lib\H3DApi20_vc7.lib"
+				ImportLibrary="..\..\..\..\lib\$(TargetName).lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
