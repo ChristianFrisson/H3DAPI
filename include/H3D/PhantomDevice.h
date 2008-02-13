@@ -213,11 +213,9 @@ namespace H3D {
     static H3DNodeDatabase database;
 
     protected:
-#ifdef HAVE_OPENHAPTICS
       static unsigned int nr_initialized_devices;
       static bool started_scheduler;
       static unsigned int render_shapes_called;
-#endif
   };
 }
 

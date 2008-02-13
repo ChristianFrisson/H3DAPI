@@ -140,8 +140,10 @@ Sound::Sound(
 }
 
 Sound::~Sound() {
+#ifdef HAVE_OPENAL
   if( al_source )
     alDeleteSources(1, &al_source );
+#endif
 }
 
 void Sound::traverseSG( TraverseInfo &ti ) {

@@ -109,14 +109,9 @@ PhantomDevice::PhantomDevice(
 
   type_name = "PhantomDevice";  
   database.initFields( this );
-#ifdef HAVE_OPENHAPTICS
+
   hapi_device.reset(0);
-#else
-  Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
-	     << " OpenHaptics support. Recompile HAPI with "
-	     << "HAVE_OPENHAPTICS defined"
-	     << " in order to use it." << endl;
-#endif
+
   maxForce->setValue( 0, id );
   maxContinuousForce->setValue( 0, id );
   tabletopOffset->setValue( 0, id );
