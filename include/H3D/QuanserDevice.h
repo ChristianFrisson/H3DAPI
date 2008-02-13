@@ -67,8 +67,7 @@ namespace H3D {
             Inst< SFNode             > _stylus                 = 0,
             Inst< SFFloat            > _proxyRadius            = 0 );
     
-    /// Creates a PhantomHapticsDevice in the hapi_device
-    /// with name deviceName
+    /// Creates a QuanserHapticsDevice in the hapi_device
     virtual void initialize();
 
     /// Node database entry

@@ -303,9 +303,9 @@ void X3DGeometryNode::SFBoundTree::update() {
   vector< HAPI::Collision::LineSegment > lines;
   vector< HAPI::Collision::Point > points;
   HAPI::FeedbackBufferCollector::collectPrimitives( geometry, 
-                                                    Matrix4f( 1e3f, 0, 0, 0,
-                                                              0, 1e3f, 0, 0,
-                                                              0, 0, 1e3f, 0,
+                                                    Matrix4d( 1e3, 0, 0, 0,
+                                                              0, 1e3, 0, 0,
+                                                              0, 0, 1e3, 0,
                                                               0, 0, 0, 1 ),
                                                     triangles, 
                                                     lines, 
@@ -455,9 +455,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
   Vec3f scale = ti.getAccInverseMatrix().getScalePart();
   Matrix4f to_local = ti.getAccInverseMatrix();
   if( use_bound_tree )
-    to_local = Matrix4f( 1e3, 0, 0, 0,
-                         0, 1e3, 0, 0,
-                         0, 0, 1e3, 0,
+    to_local = Matrix4f( 1e3f, 0, 0, 0,
+                         0, 1e3f, 0, 0,
+                         0, 0, 1e3f, 0,
                          0, 0, 0, 1 ) * to_local;
   Vec3f local_proxy =  to_local * hd->proxyPosition->getValue();
   Vec3f local_last_proxy = to_local * hd->getPreviousProxyPosition();
@@ -479,9 +479,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
     if( radius < 0 ) {
       HAPI::FeedbackBufferCollector::collectPrimitives( 
                                   this, 
-                                  Matrix4f( 1e3f, 0, 0, 0,
-                                            0, 1e3f, 0, 0,
-                                            0, 0, 1e3f, 0,
+                                  Matrix4d( 1e3, 0, 0, 0,
+                                            0, 1e3, 0, 0,
+                                            0, 0, 1e3, 0,
                                             0, 0, 0, 1 ),
                                   tris, 
                                   lines, 
@@ -528,9 +528,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticTriangleSet is destructed.
     ref();
     HAPI::HapticTriangleSet * tri_set = 
-      new HAPI::HapticTriangleSet(  Matrix4f( 1e3, 0, 0, 0,
-                                              0, 1e3, 0, 0,
-                                              0, 0, 1e3, 0,
+      new HAPI::HapticTriangleSet(  Matrix4f( 1e3f, 0, 0, 0,
+                                              0, 1e3f, 0, 0,
+                                              0, 0, 1e3f, 0,
                                               0, 0, 0, 1 ) *
                                     (ti.getAccForwardMatrix() *
                                      Matrix4f( 1e-3f, 0, 0, 0,
@@ -586,9 +586,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticLineSet is destructed.
     ref();
     HAPI::HapticLineSet * lin_set = 
-      new HAPI::HapticLineSet( Matrix4f( 1e3, 0, 0, 0,
-                                         0, 1e3, 0, 0,
-                                         0, 0, 1e3, 0,
+      new HAPI::HapticLineSet( Matrix4f( 1e3f, 0, 0, 0,
+                                         0, 1e3f, 0, 0,
+                                         0, 0, 1e3f, 0,
                                          0, 0, 0, 1 ) *
                                (ti.getAccForwardMatrix() *
                                 Matrix4f( 1e-3f, 0, 0, 0,
@@ -643,9 +643,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticPointSet is destructed.
     ref();
     HAPI::HapticPointSet * pt_set = 
-      new HAPI::HapticPointSet(  Matrix4f( 1e3, 0, 0, 0,
-                                           0, 1e3, 0, 0,
-                                           0, 0, 1e3, 0,
+      new HAPI::HapticPointSet(  Matrix4f( 1e3f, 0, 0, 0,
+                                           0, 1e3f, 0, 0,
+                                           0, 0, 1e3f, 0,
                                            0, 0, 0, 1 ) *
                                  (ti.getAccForwardMatrix() *
                                   Matrix4f( 1e-3f, 0, 0, 0,

@@ -72,7 +72,7 @@ namespace H3D {
             Inst< SFFloat            > _proxyRadius            = 0,
             Inst< SFString           > _deviceName             = 0 );
     
-    /// Creates a PhantomHapticsDevice in the hapi_device
+    /// Creates a HAPI::HapticMasterDevice in the hapi_device
     /// with name deviceName
     virtual void initialize();
 
