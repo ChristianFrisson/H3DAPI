@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386&#x0D;&#x0A;/FORCE:MULTIPLE"
+				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="wxmsw28_gl_vc8.lib wxmsw28_core_vc8.lib wxbase28_vc8.lib wxmsw28_adv_vc8.lib rpcrt4.lib comctl32.lib"
 				OutputFile="$(OutDir)/H3DViewer.exe"
 				LinkIncremental="1"
@@ -137,7 +137,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\src;..\..\..\..\HAPI\Chai3DRenderer\include;..\..\..\..\HAPI\OpenHapticsRenderer\include;..\..\..\..\HAPI\include;..\..\..\..\H3DUtil\include;&quot;$(H3D_EXTERNAL_ROOT)\include&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\pthread&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\Xerces-C-src_2_7_0\src&quot;;&quot;$(H3D_EXTERNAL_ROOT)\include\chai3d\include&quot;;&quot;$(3DTOUCH_BASE)\include&quot;;&quot;$(H3D_ROOT)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_WINDOWS;PLATFORM_WIN32;__WXMSW__;NOPCH"
-				BasicRuntimeChecks="0"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
 				TreatWChar_tAsBuiltInType="false"
