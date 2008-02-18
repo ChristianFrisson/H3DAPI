@@ -240,7 +240,7 @@ namespace H3D {
         if( renderer && device->hapi_device.get() ) {
           for( unsigned int i = 0; i < device->hapi_device->nrLayers(); i++ )
             device->hapi_device->setHapticsRenderer( 
-                                     renderer->getHapticsRenderer( i ) );
+                                     renderer->getHapticsRenderer( i ), i );
         }
       }
       virtual void onRemove( Node *n ) {
