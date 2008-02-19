@@ -1,3 +1,9 @@
+<!-- This demo only works with OpenHapticsRenderer.
+     The maxDistance of hapticsOptions is used so that
+     the correct haptics shapes are added to the haptics
+     loop even when the magnetic surface pulls the device
+     and the speed gets to great. Otherwise haptic rendering
+     artifacts could be noticed. -->
 <Group>
   <Shape>
     <Appearance>
@@ -5,7 +11,8 @@
       <MagneticSurface />
     </Appearance>
     <LineSet vertexCount="4">
-      <Coordinate point="0.1 0.1 0, 0.1 -0.1 0, -0.1 -0.1 0, -0.1 0.1 0"/> 
+      <Coordinate point="0.1 0.1 0, 0.1 -0.1 0, -0.1 -0.1 0, -0.1 0.1 0"/>
+      <HapticsOptions maxDistance="0.15" />
     </LineSet>
   </Shape>
 </Group>

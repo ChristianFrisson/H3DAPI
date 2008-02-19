@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This shows an example of how DepthMapSurface can feel.
+     The example only works for GodObjectRenderer and RuspiniRenderer
+     user implemented renderers that use the functions getProxyMovement
+     and getForces of the HAPISurfaceObjects. -->
+<Group>
+  <Shape>
+    <Appearance>
+      <Material />
+
+      <ImageTexture url="depthmapSG.png" DEF="IMT" repeatS="false" repeatT="false"/>
+
+      <DepthMapSurface stiffness="0.3"
+                      maxDepth="0.003"
+                      staticFriction="0.4"
+                      dynamicFriction="0.2"
+                      whiteIsOut="true" >
+        
+        <ImageTexture containerField="depthMap" url="depthmapSG_gray.png" repeatS="false" repeatT="false"/>
+      </DepthMapSurface>
+    </Appearance>
+
+    <IndexedTriangleSet index="2 1 3 1 0 3" solid="false">
+      <Coordinate DEF="COORD" point="0.15 0.15 0, 0.15 -0.15 0, -0.15 -0.15 0, -0.15 0.15 0" />
+      <TextureCoordinate3D  point="1.0 1.0 0.0, 1.0 0 0.0, 0 0 1.0, 0 1.0 1.0 "/>
+    </IndexedTriangleSet>
+
+  </Shape>
+</Group>

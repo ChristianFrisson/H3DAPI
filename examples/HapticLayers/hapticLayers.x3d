@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This example shows how to use different layers for the haptic rendering.
+     In the edges of the box only the box should be felt. If however the user
+     press the haptics device inside the box closer to the middle of one of
+     the boxes sides an additional shape (sphere) should be felt. -->
+<Group>
+  <GlobalSettings>
+    <HapticsOptions maxDistance="1" />
+  </GlobalSettings>
+  <HapticLayeredGroup>
+    <Shape>
+      <Appearance>
+        <Material/>
+        <ImageTexture url="box_texture.png"/>
+        <SmoothSurface stiffness="0.08" />
+      </Appearance>
+      <Box size="0.1 0.1 0.1"/>
+    </Shape>
+    <Shape>
+      <Appearance>
+        <Material/>
+        <FrictionalSurface stiffness="0.3" />
+      </Appearance>
+      <Sphere radius="0.03"/>
+    </Shape>
+  </HapticLayeredGroup>
+</Group>

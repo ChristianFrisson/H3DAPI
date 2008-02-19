@@ -46,4 +46,7 @@
 
    <ROUTE fromNode="PS" fromField="sumTorques"
       toNode="DYN" toField="torque" />
+
+  <ROUTE fromNode="DYN" fromField="matrix"
+      toNode="PS" toField="invertForce" />
 </Group>

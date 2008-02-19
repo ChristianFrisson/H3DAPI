@@ -29,20 +29,34 @@ class LinDamper( SFVec3f ):
 linDamper = LinDamper( 10 )
 
 # The SumForces class just sums all SFVec3f fields that are routed to it.
-class SumForces( SFVec3f ):
+class SumForces( TypedField( SFVec3f, (SFVec3f, SFVec3f, MFVec3f) ) ):
   def update( self, event ):
     f = Vec3f( 0, 0, 0 );
     routes = getRoutesIn( self )
     for r in routes:
-      f = f + r.getValue();
+      if isinstance( r, SFVec3f ):
+        f = f + r.getValue();
+      elif isinstance( r, MFVec3f ):
+        forces = r.getValue()
+        for force in forces:
+          f = f + force
     return f
 
-class InvertForce( TypedField( SFVec3f, MFVec3f ) ):
+class InvertForce( TypedField( MFVec3f, (MFVec3f, SFMatrix4f ) ) ):
   def update( self, event ):
     try:
-      return event.getValue()[0] * -1;
+      forces, matrix = self.getRoutesIn()
+      if( forces == event ):
+        forces = event.getValue()
+        forces_to_return = []
+        to_global = matrix.getValue().getRotationPart()
+        for force in forces:
+          forces_to_return.append( ( to_global * force ) * -1 )
+        return forces_to_return
+      else:
+        return [Vec3f( 0, 0, 0 ) ]
     except:
-      return Vec3f(0,0,0)
+      return [Vec3f(0,0,0)]
 
 sumForces = SumForces()
 invertForce = InvertForce()
@@ -92,11 +106,13 @@ class ApplyTorque( TypedField( SFVec3f, ( SFMatrix4f, MFVec3f, MFVec3f ) ) ):
       matrix, force, points = self.getRoutesIn()
       mypoints = points.getValue()
       to_global = matrix.getValue()
-
-      fulcrum = to_global * Vec3f( 0, 0, 0 )
-      touch_point = to_global * mypoints[0]
-      torque = (fulcrum - touch_point) % ( to_global.getRotationPart() *
-                                           force.getValue()[0] )
+      temp_force = force.getValue()
+      
+      torque = Vec3f( 0, 0, 0 )
+      fulcrum = to_global * torque
+      for i in range( len(mypoints) ):
+        touch_point = to_global * mypoints[i]
+        torque = torque + (fulcrum - touch_point) % ( to_global.getRotationPart() * temp_force[i] )
       return torque
     except:
       return Vec3f( 0, 0, 0 )
