@@ -80,47 +80,51 @@ public:
   wxPanel* CreateOpenHapticsSettingsPage(wxWindow* parent, GlobalSettings *gs);
   wxPanel* CreateRuspiniSettingsPage(wxWindow* parent, GlobalSettings *gs);
   wxPanel* CreateDebugSettingsPage(wxWindow* parent, GlobalSettings *gs);
-  
+
+  inline float getProxyRadius() {
+    return std::strtod( proxy_radius_text->GetValue().c_str(), NULL );
+  }
   
 protected:
 
-    enum {
-        ID_SHOW_TOOLTIPS = 100,
+  enum {
+    ID_SHOW_TOOLTIPS = 100,
 
-        ID_AUTO_SAVE,
-        ID_AUTO_SAVE_MINS,
-        ID_LOAD_LAST_PROJECT,
+    ID_AUTO_SAVE,
+    ID_AUTO_SAVE_MINS,
+    ID_LOAD_LAST_PROJECT,
 
-        ID_APPLY_SETTINGS_TO,
-        ID_BACKGROUND_STYLE,
-        ID_FONT_SIZE,
+    ID_APPLY_SETTINGS_TO,
+    ID_BACKGROUND_STYLE,
+    ID_FONT_SIZE,
 
-        ID_MAX_TRIANGLES,
-        ID_USE_DISPLAY_LISTS,
-        ID_CACHE_ONLY_GEOMS,
-        ID_CACHING_DELAY,
-        ID_PROXY_RADIUS,
-        ID_BOUND_TYPE,
-        ID_MAX_DISTANCE,
-        ID_TOUCHABLE_FACE,
-        ID_LOOK_AHEAD_FACTOR,
-        ID_USE_BOUND_TREE,
-        ID_OH_SHAPE_TYPE,
-        ID_ADAPTIVE_VIEWPORT,
-        ID_HAPTIC_CAMERA,
-        ID_FULL_GEOMETRY_RENDER,
-        ID_DRAW_BOUNDS,
-        ID_DRAW_TRIANGLES,
-        ID_DRAW_BOUND_TREE,
-        ID_DRAW_TREE_DEPTH,
-        ID_USE_COLLISION_DETECTION
-        
-    };
+    ID_MAX_TRIANGLES,
+    ID_USE_DISPLAY_LISTS,
+    ID_CACHE_ONLY_GEOMS,
+    ID_CACHING_DELAY,
+    ID_PROXY_RADIUS,
+    ID_BOUND_TYPE,
+    ID_MAX_DISTANCE,
+    ID_TOUCHABLE_FACE,
+    ID_LOOK_AHEAD_FACTOR,
+    ID_USE_BOUND_TREE,
+    ID_OH_SHAPE_TYPE,
+    ID_ADAPTIVE_VIEWPORT,
+    ID_HAPTIC_CAMERA,
+    ID_FULL_GEOMETRY_RENDER,
+    ID_DRAW_BOUNDS,
+    ID_DRAW_TRIANGLES,
+    ID_DRAW_BOUND_TREE,
+    ID_DRAW_TREE_DEPTH,
+    ID_USE_COLLISION_DETECTION
 
-    wxImageList*    m_imageList;
+  };
+
+  wxImageList*    m_imageList;
   WxFrame *wx_frame;
-    bool boundTree;
-    int treeDepth;
+  bool boundTree;
+  int treeDepth;
+  wxTextCtrl* proxy_radius_text;
 
 DECLARE_EVENT_TABLE()
 };

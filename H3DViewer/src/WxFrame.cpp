@@ -589,6 +589,8 @@ bool WxFrame::loadFile( const string &filename) {
           if( radius ) 
             original_proxy_radius = radius->getValue();
           setProxyRadius( original_proxy_radius );
+        } else {
+          original_proxy_radius = 0.0f;
         }
       } catch( const Exception::H3DException &e ) {
         Console( 4 ) << "Warning: Could not create default stylus "
@@ -989,7 +991,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
             nv != allDevices.end(); nv++) {
         static_cast < H3DHapticsDevice *> 
             (*nv)->hapticsRenderer->setValue(new OpenHapticsRenderer);
-       }
+      }
       setProxyRadius( original_proxy_radius );
       break;
     case FRAME_CHAI3D:
@@ -1007,7 +1009,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
              nv != allDevices.end(); nv++) {
           static_cast < H3DHapticsDevice *> (*nv)->
               hapticsRenderer->setValue(new GodObjectRenderer);
-        }
+      }
       setProxyRadius( original_proxy_radius );
 	    break;
     case FRAME_RUSPINI:
@@ -1016,7 +1018,11 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
             static_cast < H3DHapticsDevice *> (*nv)->
               hapticsRenderer->setValue(new RuspiniRenderer);
         }
-        setProxyRadius( current_proxy_radius );
+        if( current_proxy_radius != 0 )
+          setProxyRadius( current_proxy_radius );
+        else {
+          setProxyRadius( settings->getProxyRadius() );
+        }
 		  break;
   }
 }
@@ -1854,16 +1860,15 @@ wxPanel* SettingsDialog::CreateRuspiniSettingsPage( wxWindow* parent,
                    0,
                    wxALL, 5);
 
-    wxTextCtrl* proxy_radius_text = new wxTextCtrl(panel, 
-                                                   ID_PROXY_RADIUS,
-                                                   wxEmptyString,
-                                                   wxDefaultPosition,
-                                                   wxSize(40, wxDefaultCoord));
+    proxy_radius_text = new wxTextCtrl( panel, 
+                                        ID_PROXY_RADIUS,
+                                        wxEmptyString,
+                                        wxDefaultPosition,
+                                        wxSize(40, wxDefaultCoord));
     //    stringstream ss;
     //    ss << wx_frame->current_proxy_radius;
     proxy_radius_text->SetValue( wxT("0.0025") ); //ss.str().c_str() );
-    topSizer->Add(proxy_radius_text, 0,
-                            wxALL, 5);
+    topSizer->Add(proxy_radius_text, 0, wxALL, 5);
 
     panel->SetSizer(topSizer);
     topSizer->Fit(panel);
