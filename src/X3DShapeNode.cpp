@@ -194,8 +194,8 @@ bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,
                                           NodeIntersectResult &result ) {
   X3DGeometryNode *tmp_geom = geometry->getValue();
   if( tmp_geom )
-    return geometry->getValue()->movingSphereIntersect( radius, from, to,
-                                                        result );
+    return tmp_geom->movingSphereIntersect( radius, from, to,
+                                            result );
   else
     return false;
 }
