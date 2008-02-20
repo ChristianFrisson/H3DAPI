@@ -30,6 +30,11 @@
 
 #include <H3D/HapticsRenderers.h>
 
+#include <HAPI/OpenHapticsRenderer.h>
+#ifdef HAVE_CHAI3D
+#include <HAPI/Chai3DRenderer.h>
+#endif
+
 using namespace H3D;
 
 H3DNodeDatabase OpenHapticsRenderer::database( 
@@ -56,6 +61,12 @@ H3DNodeDatabase Chai3DRenderer::database(
                            &(newInstance<Chai3DRenderer>), 
                            typeid( Chai3DRenderer ),
                            &H3DHapticsRendererNode::database );
+
+/// Returns a new instancs of HAPI::Chai3DRenderer
+HAPI::HAPIHapticsRenderer *Chai3DRenderer::getNewHapticsRenderer() {
+  return new HAPI::Chai3DRenderer;
+}
+
 #endif
 
 namespace HapticsRendererInternals {
@@ -131,5 +142,13 @@ void OpenHapticsRenderer::CameraView::onValueChange( const bool &v ) {
       static_cast< HAPI::OpenHapticsRenderer * >(oh_node->getHapticsRenderer( i ) );
     r->setDefaultHapticCameraView( v );
   }
+#endif
+}
+
+HAPI::HAPIHapticsRenderer *OpenHapticsRenderer::getNewHapticsRenderer() {
+#ifdef HAVE_OPENHAPTICS
+  return new HAPI::OpenHapticsRenderer;
+#else
+  return NULL;
 #endif
 }

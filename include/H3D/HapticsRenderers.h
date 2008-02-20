@@ -37,12 +37,8 @@
 #include <H3D/FieldTemplates.h>
 
 // HAPI includes
-#include <HAPI/OpenHapticsRenderer.h>
 #include <HAPI/RuspiniRenderer.h>
 #include <HAPI/GodObjectRenderer.h>
-#ifdef HAVE_CHAI3D
-#include <HAPI/Chai3DRenderer.h>
-#endif
 
 namespace H3D {
 
@@ -95,13 +91,7 @@ namespace H3D {
     }
 
     /// Returns a new instancs of HAPI::OpenHapticsRenderer
-    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
-#ifdef HAVE_OPENHAPTICS
-      return new HAPI::OpenHapticsRenderer;
-#else
-      return NULL;
-#endif
-    }
+    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
 
     /// The default shape type to use if it has not been specified with
     /// the OpenHapticsOptions node. 
@@ -196,9 +186,7 @@ namespace H3D {
     }
 
     /// Returns a new instancs of HAPI::Chai3DRenderer
-    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
-      return new HAPI::Chai3DRenderer;
-    }
+    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
