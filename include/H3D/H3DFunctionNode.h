@@ -33,6 +33,8 @@
 #include <H3D/MFDouble.h>
 #include <H3D/SFDouble.h>
 
+#include <HAPI/HAPIFunctionObject.h>
+
 namespace H3D {
 
   /// \ingroup H3DNodes 
@@ -70,6 +72,13 @@ namespace H3D {
 
     /// Returns the number of input values the function takes.
     virtual unsigned int nrInputValues() = 0;
+
+    /// Returns the function as a HAPIFunctionObject. Should return a new copy
+    /// if the H3DFunctionNode stores a copy of HAPIFunctionObject since owner
+    /// ship of the returned HAPIFunctionObject should be considered to belong
+    /// to the caller of the function. Returns 0 if the H3DFunctionNode can not
+    /// be represented as a HAPIFunctionObject.
+    virtual HAPI::HAPIFunctionObject *getAsHAPIFunctionObject() { return 0; }
 
     virtual string defaultXMLContainerField() {
       return "function";

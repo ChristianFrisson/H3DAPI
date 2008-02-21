@@ -92,9 +92,6 @@ inline string toStr( const wxString &s ) {
 #endif
 }
 
-
-AutoRef< GlobalSettings > global_settings;
-
 /*******************Required Class***********************/
 
 H3D_API_EXCEPTION( QuitAPIException );
@@ -194,6 +191,8 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
   global_settings->options->push_back( new OpenHapticsOptions );
   global_settings->options->push_back( new HapticsOptions );
   global_settings->options->push_back( new CollisionOptions );
+
+  stereo_info.reset( new StereoInfo );
 
   //File History
   recentFiles = (wxFileHistory *) NULL;
@@ -358,8 +357,9 @@ END_EVENT_TABLE()
 /*******************Event Table*********************/
 
 void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
+  /// TODO: Why is this not a switch case? Or at least a big if else case.
   DebugOptions *dgo = NULL;
-  global_settings->getOptionNode( dgo );
+  wx_frame->global_settings->getOptionNode( dgo );
   int id = event.GetId(); 
   if( dgo ) {
     if( id == ID_DRAW_BOUNDS ) 
@@ -383,7 +383,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   GraphicsCachingOptions *gco = NULL;
-  global_settings->getOptionNode( gco );
+  wx_frame->global_settings->getOptionNode( gco );
 
   if( gco ) {
     if( id == ID_USE_DISPLAY_LISTS ) 
@@ -394,7 +394,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   HapticsOptions *ho = NULL;
-  global_settings->getOptionNode( ho );
+  wx_frame->global_settings->getOptionNode( ho );
 
   if( ho ) {
     if( id == ID_TOUCHABLE_FACE ) {
@@ -413,16 +413,28 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   CollisionOptions *col_opt = 0;
-  global_settings->getOptionNode( col_opt );
+  wx_frame->global_settings->getOptionNode( col_opt );
 
   if( col_opt ) {
     if( id == ID_USE_COLLISION_DETECTION ) 
       col_opt->avatarCollision->setValue( event.IsChecked() );
   }
 
+  if( id == ID_FOCAL_DISTANCE ) {
+    StereoInfo * stereo_info = StereoInfo::getActive();
+    if( stereo_info )
+      stereo_info->focalDistance->setValue(
+        atof( event.GetString().mb_str() ) );
+  } else if( id == ID_INTEROCULAR_DISTANCE ) {
+    StereoInfo * stereo_info = StereoInfo::getActive();
+    if( stereo_info )
+      stereo_info->interocularDistance->setValue(
+        atof( event.GetString().mb_str() ) );
+  }
+
   OpenHapticsOptions *oho = NULL;
 
-  global_settings->getOptionNode( oho );
+  wx_frame->global_settings->getOptionNode( oho );
 
   if( oho ) {
     if( id == ID_OH_SHAPE_TYPE ) {
@@ -440,7 +452,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   GeometryBoundTreeOptions *gbto = NULL;
-  global_settings->getOptionNode( gbto );
+  wx_frame->global_settings->getOptionNode( gbto );
 
   if( gbto ) {
     if( id == ID_BOUND_TYPE ) {
@@ -458,7 +470,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
 
 void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
   DebugOptions *dgo = NULL;
-  global_settings->getOptionNode( dgo );
+  wx_frame->global_settings->getOptionNode( dgo );
   int id = event.GetId(); 
   if( dgo ) {
     if( (id == ID_DRAW_TREE_DEPTH) && (boundTree) ) {
@@ -469,7 +481,7 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
   }
 
   GraphicsCachingOptions *gco = NULL;
-  global_settings->getOptionNode( gco );
+  wx_frame->global_settings->getOptionNode( gco );
 
   if( gco ) {
     if( id == ID_CACHING_DELAY ) 
@@ -477,7 +489,7 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
   }
 
   GeometryBoundTreeOptions *gbto = NULL;
-  global_settings->getOptionNode( gbto );
+  wx_frame->global_settings->getOptionNode( gbto );
 
   if( gbto ) {
     if( id == ID_MAX_TRIANGLES ) 
@@ -727,6 +739,7 @@ bool WxFrame::loadFile( const string &filename) {
     wxMessageBox(wxString(s.str().c_str(),wxConvUTF8), wxT("Error"), wxOK | wxICON_EXCLAMATION);
     return false;
   }
+
   return true;
 }
 
@@ -1616,6 +1629,9 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
 
   EVT_CHECKBOX( ID_USE_COLLISION_DETECTION,
                 SettingsDialog::handleSettingsChange)
+  
+  EVT_TEXT( ID_FOCAL_DISTANCE, SettingsDialog::handleSettingsChange )
+  EVT_TEXT( ID_INTEROCULAR_DISTANCE, SettingsDialog::handleSettingsChange )
 
   EVT_CHOICE( ID_OH_SHAPE_TYPE, SettingsDialog::handleSettingsChange)
   EVT_CHECKBOX( ID_ADAPTIVE_VIEWPORT, SettingsDialog::handleSettingsChange)
@@ -2103,7 +2119,7 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent,
                                           wxT("&Collision detection"),
                                           wxDefaultPosition, wxDefaultSize);
     CollisionOptions *col_opt = 0;
-    global_settings->getOptionNode( col_opt );
+    wx_frame->global_settings->getOptionNode( col_opt );
     bool use_collision = false;
     if( col_opt ) {
       use_collision = col_opt->avatarCollision->getValue();
@@ -2117,6 +2133,57 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent,
 
     // End Collision Options
 
+    // StereoInfo Options
+    item0->Add(5, 5, 1, wxALL, 0);
+    wxStaticBox* stereo_info_box = new wxStaticBox(panel, wxID_ANY,
+                                               wxT("StereoInfo options:"));
+    wxBoxSizer* stereo_info_box_sizer = new wxStaticBoxSizer( stereo_info_box, 
+                                                            wxVERTICAL );
+    
+    wxBoxSizer* focal_distance_sizer = new wxBoxSizer( wxHORIZONTAL );
+    focal_distance_sizer->Add(new wxStaticText(panel, wxID_ANY,
+                                             wxT("&Focal Distance:")), 0,
+                                             wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    wxTextCtrl* focal_distance_text = new wxTextCtrl(panel, ID_FOCAL_DISTANCE,
+                                                   wxEmptyString,
+                                                   wxDefaultPosition,
+                                                   wxSize(40, wxDefaultCoord));
+    StereoInfo *stereo_info = StereoInfo::getActive();
+    if( stereo_info )
+      focal_distance_text->SetValue( wxString(
+        stereo_info->focalDistance->getValueAsString().c_str(),
+        wxConvUTF8) );
+    else
+      focal_distance_text->SetValue( wxString("0.6",wxConvUTF8) );
+    focal_distance_sizer->Add(focal_distance_text, 0,
+                            wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    
+    stereo_info_box_sizer->Add(focal_distance_sizer, 0, wxGROW|wxALL, 0);
+
+    wxBoxSizer* interocular_distance_sizer = new wxBoxSizer( wxHORIZONTAL );
+    interocular_distance_sizer->Add(new wxStaticText(panel, wxID_ANY,
+                                             wxT("&Interocular Distance:")), 0,
+                                             wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    wxTextCtrl* interocular_distance_text = new wxTextCtrl( panel,
+                                              ID_INTEROCULAR_DISTANCE,
+                                              wxEmptyString,
+                                              wxDefaultPosition,
+                                              wxSize(40, wxDefaultCoord) );
+
+    if( stereo_info )
+      interocular_distance_text->SetValue(
+        wxString( stereo_info->interocularDistance->getValueAsString().c_str(),
+        wxConvUTF8) );
+    else
+      interocular_distance_text->SetValue( wxString("0.06", wxConvUTF8) );
+    interocular_distance_sizer->Add(interocular_distance_text, 0,
+                            wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    
+    stereo_info_box_sizer->Add(interocular_distance_sizer, 0, wxGROW|wxALL, 0);
+
+    item0->Add(stereo_info_box_sizer, 0, wxGROW|wxLEFT|wxRIGHT, 5);
+    // End StereoInfo options.
+
     topSizer->Add( item0, 1, wxGROW|wxALIGN_CENTRE|wxALL, 5 );
     topSizer->AddSpacer(5);
 
@@ -2128,7 +2195,7 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent,
 
 
 
-void WxFrame::readSettingsFromINIFile( const string &filename, 
+/*void WxFrame::readSettingsFromINIFile( const string &filename, 
                                           GlobalSettings *gs ) {
   gs->options->clear();
 
@@ -2256,7 +2323,7 @@ void WxFrame::readSettingsFromINIFile( const string &filename,
                                               "force_full_geometry_render" ) );
 
   global_settings->options->push_back( oho );
-}
+}*/
 
 void SettingsDialog::OnOk (wxCommandEvent & event) {
   static_cast< WxFrame* >(this->GetParent())->SaveSettings();

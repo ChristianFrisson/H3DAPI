@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/GaussianFunction.h>
+#include <HAPI/ParsedFunction.h>
 
 using namespace H3D;
 
@@ -66,4 +67,11 @@ H3DDouble GaussianFunction::evaluate( H3DDouble *x ) {
   H3DDouble diff = x[0] - center->getValue();
   H3DDouble w = width->getValue();
   return amplitude->getValue() * H3DExp( -(diff*diff )/( w * w ) );
+}
+
+HAPI::HAPIFunctionObject *GaussianFunction::getAsHAPIFunctionObject() {
+  string function_string = amplitude->getValueAsString() + " * exp(" + "(x-" + center->getValueAsString() + ")^2/(" + width->getValueAsString() + ")^2)";
+  HAPI::ParsedFunction *return_function = new HAPI::ParsedFunction();
+  return_function->setFunctionString( function_string );
+  return return_function;
 }

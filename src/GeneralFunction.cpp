@@ -105,4 +105,18 @@ unsigned int GeneralFunction::nrInputValues() {
   else return 0;
 }
 
+HAPI::HAPIFunctionObject *GeneralFunction::getAsHAPIFunctionObject() {
+  HAPI::ParsedFunction * return_function = new HAPI::ParsedFunction;
+  if( !return_function->setFunctionString( function->getValue(),
+                                           params->getValue() ) ) {
+    H3DUtil::Console(3) << "Could not parse function expression: \"" 
+                        << function->getValue() << "\" in ParsedFunction node("
+                        << getName() << "). " << endl;
+    delete return_function;
+    return 0;
+  }
+
+  return return_function;
+}
+
 #endif

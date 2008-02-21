@@ -38,6 +38,7 @@
 
 #include "WxWidgetsWindow.h"
 #include <H3D/GlobalSettings.h>
+#include <H3D/StereoInfo.h>
 
 #include <H3D/Group.h>
 #include <H3D/Transform.h>
@@ -116,7 +117,9 @@ protected:
     ID_DRAW_TRIANGLES,
     ID_DRAW_BOUND_TREE,
     ID_DRAW_TREE_DEPTH,
-    ID_USE_COLLISION_DETECTION
+    ID_USE_COLLISION_DETECTION,
+    ID_FOCAL_DISTANCE,
+    ID_INTEROCULAR_DISTANCE
 
   };
 
@@ -216,7 +219,7 @@ public:
   void LoadMRU();
   void LoadSettings ();
   void buildNavMenu();
-  void readSettingsFromINIFile( const string &filename,GlobalSettings *gs );
+  //void readSettingsFromINIFile( const string &filename,GlobalSettings *gs );
   void setProxyRadius( float r );
 
   void updateFrameRates() {
@@ -267,6 +270,10 @@ private:
 	consoleDialog *  theConsole;
 	FrameRateDialog *  frameRates;
 	SettingsDialog * settings;
+
+  AutoRef< GlobalSettings > global_settings;
+
+  AutoRef< StereoInfo > stereo_info;
 
   friend class SettingsDialog;
 

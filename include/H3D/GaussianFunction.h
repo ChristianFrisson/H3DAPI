@@ -49,6 +49,13 @@ namespace H3D {
     /// Returns the number of input values the function takes.
     virtual unsigned int nrInputValues() { return 1; };
 
+    /// Returns the function as a HAPIFunctionObject. Should return a new copy
+    /// if the H3DFunctionNode stores a copy of HAPIFunctionObject since owner
+    /// ship of the returned HAPIFunctionObject should be considered to belong
+    /// to the caller of the function. Returns 0 if the H3DFunctionNode can not
+    /// be represented as a HAPIFunctionObject.
+    virtual HAPI::HAPIFunctionObject *getAsHAPIFunctionObject();
+
     /// The amplitude of the gaussian.
     /// 
     /// <b>Access type:</b> inputOutput \n
