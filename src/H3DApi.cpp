@@ -123,10 +123,10 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #ifdef __cplusplus
 extern "C" {
 #endif
-  void __attribute__((constructor)) initAPI( void ) {
+  void __attribute__((constructor)) initH3DAPI( void ) {
     initializeH3D();
   }
-  void __attribute__((destructor)) finiAPI( void ) {
+  void __attribute__((destructor)) finiH3DAPI( void ) {
     deinitializeH3D();
   }
 #ifdef __cplusplus
