@@ -83,7 +83,7 @@ public:
   wxPanel* CreateDebugSettingsPage(wxWindow* parent, GlobalSettings *gs);
 
   inline float getProxyRadius() {
-    return std::strtod( proxy_radius_text->GetValue().c_str(), NULL );
+    return std::strtod( proxy_radius_text->GetValue().mb_str(), NULL );
   }
   
 protected:
