@@ -32,6 +32,16 @@
 
 #ifdef HAVE_FREEIMAGE
 #include <H3DUtil/FreeImageImage.h>
+#include <FreeImage.h>
+
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#ifdef H3DUTIL_LINK_STATIC_EXTERNALS
+#pragma comment( lib, "FreeImage_static.lib" )
+#else
+#pragma comment( lib, "FreeImage.lib" )
+#endif
+#endif
+
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
