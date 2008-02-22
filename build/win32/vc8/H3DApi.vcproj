@@ -861,6 +861,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\PositionFunctionEffect.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\PositionInterpolator.cpp"
 				>
 			</File>
@@ -1074,6 +1078,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\TextureTransform3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\TimeFunctionEffect.cpp"
 				>
 			</File>
 			<File
@@ -2195,6 +2203,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\include\H3D\PositionFunctionEffect.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\include\H3D\PositionInterpolator.h"
 				>
 			</File>
@@ -2512,6 +2524,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3D\ThreadSafeFields.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\H3D\TimeFunctionEffect.h"
 				>
 			</File>
 			<File

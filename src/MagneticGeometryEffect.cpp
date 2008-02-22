@@ -128,10 +128,6 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
               tris.reserve( 200 );
               Matrix4f to_local = ti.getAccInverseMatrix();
               Vec3f scale = to_local.getScalePart();
-              to_local = Matrix4f( 1e3f, 0, 0, 0,
-                                   0, 1e3f, 0, 0,
-                                   0, 0, 1e3f, 0,
-                                   0, 0, 0, 1 ) * to_local;
               Vec3f local_proxy =  to_local * hd->proxyPosition->getValue();
               Vec3f local_last_proxy =
                 to_local * hd->getPreviousProxyPosition();
@@ -142,25 +138,17 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                 addDistance = move_length;
               the_geometry->boundTree->getValue()
                 ->getTrianglesIntersectedByMovingSphere( 
-                  ( distance + addDistance ) * 1e3 *
+                  ( distance + addDistance ) *
                   H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
                   local_proxy,
                   local_proxy + movement * lookahead_factor,
                   tris );
               HapticTriangleSet *haptic_triangle_set =
-                new HapticTriangleSet( Matrix4f( 1e3f, 0, 0, 0,
-                                                 0, 1e3f, 0, 0,
-                                                 0, 0, 1e3f, 0,
-                                                 0, 0, 0, 1 ) *
-                                       (ti.getAccForwardMatrix() *
-                                       Matrix4f( 1e-3f, 0, 0, 0,
-                                                  0, 1e-3f, 0, 0,
-                                                  0, 0, 1e-3f, 0,
-                                                  0, 0, 0, 1 )),
+                new HapticTriangleSet( ti.getAccForwardMatrix(),
                                        tris, NULL );
               ti.addForceEffect( i,
                 new HapticShapeConstraint( haptic_triangle_set,
-                                           springConstant->getValue() / 1000 ) );
+                                           springConstant->getValue() ) );
             }
           }
         }

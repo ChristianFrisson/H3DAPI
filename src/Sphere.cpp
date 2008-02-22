@@ -210,17 +210,9 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
       
       HAPI::HapticPrimitive * haptic_sphere = 
         new HAPI::HapticPrimitive(
-                Matrix4f( 1e3, 0, 0, 0,
-                         0, 1e3, 0, 0,
-                         0, 0, 1e3, 0,
-                         0, 0, 0, 1 ) *
-               (ti.getAccForwardMatrix() *
-                Matrix4f( 1e-3f, 0, 0, 0,
-                          0, 1e-3f, 0, 0,
-                          0, 0, 1e-3f, 0,
-                          0, 0, 0, 1 ) ),
+                ti.getAccForwardMatrix(),
                 new HAPI::Collision::Sphere( Vec3f( 0, 0, 0 ),
-                                             radius->getValue() * 1000 ),
+                                             radius->getValue() ),
                 ti.getCurrentSurface()->getSurface(),
                 touchable_face,
                 this,
@@ -263,12 +255,10 @@ bool Sphere::lineIntersect(
 
   IntersectionInfo tempresult;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
-                                       radius->getValue() * 1000.0f );
+                                       radius->getValue() );
   bool returnValue =
-    temp_sphere.lineIntersect( 1000*from, 1000*to, tempresult );
+    temp_sphere.lineIntersect( from, to, tempresult );
   if( returnValue ) {
-    tempresult.point = tempresult.point / 1000;
-    tempresult.normal = tempresult.normal / 1000;
     result.result.push_back( tempresult );
     result.theNodes.push_back( this );
     result.addTransform();
@@ -284,11 +274,11 @@ void Sphere::closestPoint(
                   vector< Vec3f > &tex_coord ) {
   Vec3d temp_closest_point, temp_normal, temp_tex_coord;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
-                                    radius->getValue() * 1000.0f );
-  temp_sphere.closestPoint( p * 1000, temp_closest_point, 
+                                    radius->getValue() );
+  temp_sphere.closestPoint( p, temp_closest_point, 
                             temp_normal, temp_tex_coord );
-  closest_point.push_back( (Vec3f)temp_closest_point / 1000 );
-  normal.push_back( (Vec3f)temp_normal / 1000 );
+  closest_point.push_back( Vec3f( temp_closest_point ) );
+  normal.push_back( Vec3f( temp_normal ) );
   tex_coord.push_back( (Vec3f)temp_tex_coord );
 }
 

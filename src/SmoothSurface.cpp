@@ -63,10 +63,8 @@ SmoothSurface::SmoothSurface( Inst< UpdateStiffness > _stiffness,
 void SmoothSurface::initialize() {
   H3DSurfaceNode::initialize();
   hapi_surface.reset(
-    new HAPI::FrictionSurface( useRelativeValues->getValue() ?
-                                 stiffness->getValue() :
-                                 stiffness->getValue() * 0.001f,
-                               damping->getValue() * 0.001f ) );
+    new HAPI::FrictionSurface( stiffness->getValue(),
+                               damping->getValue() ) );
 }
 
 void SmoothSurface::UpdateStiffness::setValue( const H3DFloat &f, int id ){
@@ -74,13 +72,8 @@ void SmoothSurface::UpdateStiffness::setValue( const H3DFloat &f, int id ){
   SmoothSurface *ss = 
     static_cast< SmoothSurface * >( getOwner() );
   if( ss->hapi_surface.get() ) {
-    if( ss->useRelativeValues->getValue() ) {
-      static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-        ->stiffness = f;
-    } else {
-      static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-        ->stiffness = f * 0.001f;
-    }
+    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
+      ->stiffness = f;
   }
 }
 
@@ -89,13 +82,8 @@ void SmoothSurface::UpdateStiffness::update() {
   SmoothSurface *ss = 
     static_cast< SmoothSurface * >( getOwner() );
   if( ss->hapi_surface.get() ) {
-    if( ss->useRelativeValues->getValue() ) {
-      static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-        ->stiffness = value;
-    } else {
-      static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-        ->stiffness = value * 0.001f;
-    }
+    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
+      ->stiffness = value;
   }
 }
 
@@ -105,7 +93,7 @@ void SmoothSurface::UpdateDamping::setValue( const H3DFloat &f, int id ){
     static_cast< SmoothSurface * >( getOwner() );
   if( ss->hapi_surface.get() ) {
     static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-      ->damping = f / 1000; 
+      ->damping = f; 
   }
 }
 
@@ -115,6 +103,6 @@ void SmoothSurface::UpdateDamping::update() {
     static_cast< SmoothSurface * >( getOwner() );
   if( ss->hapi_surface.get() ) {
     static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-      ->damping = value / 1000; 
+      ->damping = value; 
   }
 }

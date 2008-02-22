@@ -76,15 +76,14 @@ DepthMapSurface::DepthMapSurface(
      temp_image = height_map->image->getValue();
 
    hapi_surface.reset( new HAPI::DepthMapSurface( 
-                          useRelativeValues->getValue() ?
-                            stiffness->getValue():
-                            stiffness->getValue() * 0.001f ,
-                          damping->getValue()* 0.001,
+                          stiffness->getValue(),
+                          damping->getValue(),
                           staticFriction->getValue(),
                           dynamicFriction->getValue(),
                           temp_image,
-                          maxDepth->getValue() * 1000,
-                          whiteIsOut->getValue() ) );
+                          maxDepth->getValue(),
+                          whiteIsOut->getValue(),
+                          useRelativeValues->getValue() ) );
 
 }
 

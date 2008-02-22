@@ -277,7 +277,6 @@ void renderHapticTriangles() {
         if( render_triangles ) {
           glMatrixMode( GL_MODELVIEW );
           glPushMatrix();
-          glScalef( 1e-3f, 1e-3f, 1e-3f );   
           glPushAttrib( GL_CURRENT_BIT | GL_ENABLE_BIT | GL_POLYGON_BIT );
           glDisable( GL_LIGHTING );
           glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );

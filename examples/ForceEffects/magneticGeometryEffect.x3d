@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Transform translation="0 -0.05 0">
-  <GlobalSettings>
-    <HapticOptions maxDistance="0.05"/>
-  </GlobalSettings>
   <Transform translation="-0.23 0.2 0">
     <Shape>
       <Appearance>

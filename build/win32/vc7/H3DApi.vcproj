@@ -619,6 +619,9 @@
 				RelativePath="..\..\..\src\Polypoint2D.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\PositionFunctionEffect.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\PositionInterpolator.cpp">
 			</File>
 			<File
@@ -779,6 +782,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\TextureTransform3D.cpp">
+			</File>
+			<File
+				RelativePath="..\..\..\src\TimeFunctionEffect.cpp">
 			</File>
 			<File
 				RelativePath="..\..\..\src\TimeSensor.cpp">
@@ -1608,6 +1614,9 @@
 				RelativePath="..\..\..\include\H3d\Polypoint2D.h">
 			</File>
 			<File
+				RelativePath="..\..\..\include\H3d\PositionFunctionEffect.h">
+			</File>
+			<File
 				RelativePath="..\..\..\include\H3d\PositionInterpolator.h">
 			</File>
 			<File
@@ -1846,6 +1855,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3d\ThreadSafeFields.h">
+			</File>
+			<File
+				RelativePath="..\..\..\include\H3d\TimeFunctionEffect.h">
 			</File>
 			<File
 				RelativePath="..\..\..\include\H3d\TimeSensor.h">

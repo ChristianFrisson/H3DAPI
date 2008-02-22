@@ -67,8 +67,8 @@ void BoundedPhysicsModel::updateParticleValues(
   if( !tree ) return;
   
   HAPI::Collision::IntersectionInfo intersection;
-  if( tree->lineIntersect( last_particle.position * 1000,
-                           particle.position * 1000,
+  if( tree->lineIntersect( last_particle.position,
+                           particle.position,
                            intersection ) ) {
     Vec3f neg_v = -particle.velocity;
     Vec3f v_par = (Vec3f) ((neg_v * intersection.normal) * intersection.normal); 
@@ -79,7 +79,7 @@ void BoundedPhysicsModel::updateParticleValues(
       intersection.face == HAPI::Collision::FRONT ? 
       intersection.normal : -intersection.normal );
     particle.position = 
-      (Vec3f) intersection.point/1000 + 
+      (Vec3f) intersection.point + 
       1e-7 * n;
     
   }

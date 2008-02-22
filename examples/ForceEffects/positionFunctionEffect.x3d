@@ -2,7 +2,7 @@
 <Group>
   <ToggleGroup DEF="TG" hapticsOn="false">
     <PositionFunctionEffect>
-      <GeneralFunction containerField="xFunction" function="y" params="x,y,z"/>
+      <GeneralFunction containerField="xFunction" function="10*y" params="x,y,z"/>
       <GeneralFunction containerField="yFunction" function="0" params="x,y,z"/>
       <GeneralFunction containerField="zFunction" function="0" params="x,y,z"/>
     </PositionFunctionEffect>

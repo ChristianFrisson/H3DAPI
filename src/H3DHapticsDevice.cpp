@@ -263,8 +263,8 @@ void H3DHapticsDevice::updateDeviceValues() {
     HAPI::HAPIHapticsDevice::DeviceValues dv = 
       hapi_device->getRawDeviceValues();
     // convert to metres
-    devicePosition->setValue( (Vec3f)dv.position * 1e-3, id);
-    deviceVelocity->setValue( (Vec3f)dv.velocity * 1e-3, id);
+    devicePosition->setValue( Vec3f( dv.position ), id);
+    deviceVelocity->setValue( Vec3f( dv.velocity ), id);
     deviceOrientation->setValue( dv.orientation, id);
     force->setValue( (Vec3f)dv.force, id);
     torque->setValue( (Vec3f)dv.torque, id);
@@ -305,15 +305,8 @@ void H3DHapticsDevice::updateDeviceValues() {
       adjustedPositionCalibration->
         setValue( adjust_matrix * positionCalibration->getValue() );
 
-      hapi_device->setPositionCalibration( Matrix4f( 1e3, 0, 0, 0,
-                                                     0, 1e3, 0, 0,
-                                                     0, 0, 1e3, 0,
-                                                     0, 0, 0, 1 ) *
-                            adjustedPositionCalibration->rt_pos_calibration *
-                                           Matrix4f( 1e-3f, 0, 0, 0,
-                                                     0, 1e-3f, 0, 0,
-                                                     0, 0, 1e-3f, 0,
-                                                     0, 0, 0, 1 ) );
+      hapi_device->setPositionCalibration( 
+        adjustedPositionCalibration->rt_pos_calibration );
       
       // Create adjusted OrnCalibration and send to HAPI
       adjustedOrnCalibration->setValue(
@@ -324,15 +317,7 @@ void H3DHapticsDevice::updateDeviceValues() {
     }
     else {
       hapi_device->
-        setPositionCalibration( Matrix4f( 1e3, 0, 0, 0,
-                                          0, 1e3, 0, 0,
-                                          0, 0, 1e3, 0,
-                                          0, 0, 0, 1 ) *
-                                positionCalibration->rt_pos_calibration *
-                                Matrix4f( 1e-3f, 0, 0, 0,
-                                          0, 1e-3f, 0, 0,
-                                          0, 0, 1e-3f, 0,
-                                          0, 0, 0, 1 ) );
+        setPositionCalibration( positionCalibration->rt_pos_calibration );
       hapi_device->setOrientationCalibration(
         orientationCalibration->rt_orn_calibration );
     }
@@ -348,7 +333,7 @@ void H3DHapticsDevice::updateDeviceValues() {
       HAPI::HAPIProxyBasedRenderer *proxy_renderer = 
         dynamic_cast< HAPI::HAPIProxyBasedRenderer * >( renderer );
       if( proxy_renderer ) {
-        Vec3f proxy_pos = (Vec3f)(proxy_renderer->getProxyPosition() * 1e-3);
+        Vec3f proxy_pos = Vec3f( proxy_renderer->getProxyPosition() );
         proxies.push_back( proxy_pos );
         if( layer == 0 ) {
           //cerr << proxy_pos << endl;
@@ -415,7 +400,7 @@ void H3DHapticsDevice::updateDeviceValues() {
         Matrix4d global_to_local = (*i).first->getInverse();
         Matrix3d global_vec_to_local = global_to_local.getRotationPart();
 
-        Vec3f cp( ( global_to_local * ci.globalSurfaceContactPoint() )* 1e-3 );
+        Vec3f cp( global_to_local * ci.globalSurfaceContactPoint() );
 
         if( geom->contactPoint->getValueByIndex( device_index ) != cp )
           geom->contactPoint->setValue( device_index, cp, geom->id );
@@ -465,10 +450,10 @@ void H3DHapticsDevice::updateDeviceValues() {
     last_contacts.swap( all_contacts );
 
     /*
-    cerr << "F: " << devicePosition->getValue() * 1e3<< endl;
-    cerr << "F: " << trackerPosition->getValue() * 1e3<< endl;
-    cerr << "T: " << proxyPosition->getValue() * 1e3 << endl;
-    cerr << "W: " << weightedProxyPosition->getValue()* 1e3<< endl;
+    cerr << "F: " << devicePosition->getValue() << endl;
+    cerr << "F: " << trackerPosition->getValue() << endl;
+    cerr << "T: " << proxyPosition->getValue() << endl;
+    cerr << "W: " << weightedProxyPosition->getValue() << endl;
     */
   }
 

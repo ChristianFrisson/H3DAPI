@@ -273,7 +273,6 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
       if( tree ) {
         glMatrixMode( GL_MODELVIEW );
         glPushMatrix();
-        glScalef( 1e-3f, 1e-3f, 1e-3f ); 
         tree->renderBounds( render_depth );
         glPopMatrix();
       }
@@ -303,9 +302,9 @@ void X3DGeometryNode::SFBoundTree::update() {
   vector< HAPI::Collision::LineSegment > lines;
   vector< HAPI::Collision::Point > points;
   HAPI::FeedbackBufferCollector::collectPrimitives( geometry, 
-                                                    Matrix4d( 1e3, 0, 0, 0,
-                                                              0, 1e3, 0, 0,
-                                                              0, 0, 1e3, 0,
+                                                    Matrix4d( 1, 0, 0, 0,
+                                                              0, 1, 0, 0,
+                                                              0, 0, 1, 0,
                                                               0, 0, 0, 1 ),
                                                     triangles, 
                                                     lines, 
@@ -454,11 +453,6 @@ void X3DGeometryNode::createAndAddHapticShapes(
 
   Vec3f scale = ti.getAccInverseMatrix().getScalePart();
   Matrix4f to_local = ti.getAccInverseMatrix();
-  if( use_bound_tree )
-    to_local = Matrix4f( 1e3f, 0, 0, 0,
-                         0, 1e3f, 0, 0,
-                         0, 0, 1e3f, 0,
-                         0, 0, 0, 1 ) * to_local;
   Vec3f local_proxy =  to_local * hd->proxyPosition->getValue();
   Vec3f local_last_proxy = to_local * hd->getPreviousProxyPosition();
   Vec3f movement = local_proxy - local_last_proxy;
@@ -468,7 +462,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
       boundTree->getValue()->getAllPrimitives( tris, lines, points );
     } else {
       boundTree->getValue()->getPrimitivesIntersectedByMovingSphere(
-        radius * 1e3 * H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
+        radius * H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
         local_proxy,
         local_proxy + movement * lookahead_factor,
         tris,
@@ -479,9 +473,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
     if( radius < 0 ) {
       HAPI::FeedbackBufferCollector::collectPrimitives( 
                                   this, 
-                                  Matrix4d( 1e3, 0, 0, 0,
-                                            0, 1e3, 0, 0,
-                                            0, 0, 1e3, 0,
+                                  Matrix4d( 1, 0, 0, 0,
+                                            0, 1, 0, 0,
+                                            0, 0, 1, 0,
                                             0, 0, 0, 1 ),
                                   tris, 
                                   lines, 
@@ -496,15 +490,14 @@ void X3DGeometryNode::createAndAddHapticShapes(
       glMatrixMode( GL_MODELVIEW );
       glPushMatrix();
       glLoadIdentity();
-      glScalef( 1e3f, 1e3f, 1e3f );
+      ///glScalef( 1e3f, 1e3f, 1e3f );
       while( !done ) {
         HAPI::FeedbackBufferCollector::startCollecting( nr_values, 
-                                center * 1e3f, 
-                                (full_movement + 
+                                center, 
+                                full_movement + 
                                 Vec3f( d, d, d ) *  H3DMax( scale.x,
                                 H3DMax( scale.y, 
-                                scale.z ) ) 
-                                * 1e3f  ) );
+                                scale.z ) ) );
         glRender();
         HAPI::FeedbackBufferCollector::ErrorType e = 
           HAPI::FeedbackBufferCollector::endCollecting( tris,
@@ -528,15 +521,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticTriangleSet is destructed.
     ref();
     HAPI::HapticTriangleSet * tri_set = 
-      new HAPI::HapticTriangleSet(  Matrix4f( 1e3f, 0, 0, 0,
-                                              0, 1e3f, 0, 0,
-                                              0, 0, 1e3f, 0,
-                                              0, 0, 0, 1 ) *
-                                    (ti.getAccForwardMatrix() *
-                                     Matrix4f( 1e-3f, 0, 0, 0,
-                                               0, 1e-3f, 0, 0,
-                                               0, 0, 1e-3f, 0,
-                                               0, 0, 0, 1 )),
+      new HAPI::HapticTriangleSet(  ti.getAccForwardMatrix(),
                                     tris ,
                                     ti.getCurrentSurface()->getSurface(),
 									HAPI::HapticTriangleSet::NOT_CONVEX,
@@ -586,15 +571,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticLineSet is destructed.
     ref();
     HAPI::HapticLineSet * lin_set = 
-      new HAPI::HapticLineSet( Matrix4f( 1e3f, 0, 0, 0,
-                                         0, 1e3f, 0, 0,
-                                         0, 0, 1e3f, 0,
-                                         0, 0, 0, 1 ) *
-                               (ti.getAccForwardMatrix() *
-                                Matrix4f( 1e-3f, 0, 0, 0,
-                                          0, 1e-3f, 0, 0,
-                                          0, 0, 1e-3f, 0,
-                                          0, 0, 0, 1 )),
+      new HAPI::HapticLineSet( ti.getAccForwardMatrix(),
                                lines,
                                ti.getCurrentSurface()->getSurface(),
                                touchable_face,
@@ -643,15 +620,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     // it when the HapticPointSet is destructed.
     ref();
     HAPI::HapticPointSet * pt_set = 
-      new HAPI::HapticPointSet(  Matrix4f( 1e3f, 0, 0, 0,
-                                           0, 1e3f, 0, 0,
-                                           0, 0, 1e3f, 0,
-                                           0, 0, 0, 1 ) *
-                                 (ti.getAccForwardMatrix() *
-                                  Matrix4f( 1e-3f, 0, 0, 0,
-                                            0, 1e-3f, 0, 0,
-                                            0, 0, 1e-3f, 0,
-                                            0, 0, 0, 1 )),
+      new HAPI::HapticPointSet(  ti.getAccForwardMatrix(),
                                  points ,
                                  ti.getCurrentSurface()->getSurface(),
                                  touchable_face,
@@ -705,10 +674,8 @@ bool X3DGeometryNode::lineIntersect(
 
   IntersectionInfo tempresult;
   bool returnValue =
-    boundTree->getValue()->lineIntersect( 1000*from, 1000*to, tempresult );
+    boundTree->getValue()->lineIntersect( from, to, tempresult );
   if( returnValue ) {
-    tempresult.point = tempresult.point / 1000;
-    tempresult.normal = tempresult.normal / 1000;
     result.result.push_back( tempresult );
     result.theNodes.push_back( this );
     result.addTransform();
@@ -723,11 +690,11 @@ void X3DGeometryNode::closestPoint(
                   vector< Vec3f > &normal,
                   vector< Vec3f > &tex_coord ) {
   Vec3d temp_closest_point, temp_normal, temp_tex_coord;
-  boundTree->getValue()->closestPoint( p * 1000, temp_closest_point, 
+  boundTree->getValue()->closestPoint( p, temp_closest_point, 
                                        temp_normal, temp_tex_coord );
-  closest_point.push_back( (Vec3f)temp_closest_point / 1000 );
-  normal.push_back( (Vec3f)temp_normal / 1000 );
-  tex_coord.push_back( (Vec3f)temp_tex_coord );
+  closest_point.push_back( Vec3f( temp_closest_point ) );
+  normal.push_back( Vec3f( temp_normal ) );
+  tex_coord.push_back( Vec3f( temp_tex_coord ) );
 }
 
 bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
@@ -736,13 +703,12 @@ bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
                                              NodeIntersectResult &result ) {
   HAPI::Collision::IntersectionInfo temp_result;
   bool return_value = boundTree->getValue()->movingSphereIntersect(
-                                               radius * 1000.0f,
-                                               from * 1000.0f,
-                                               to * 1000.0f,
+                                               radius,
+                                               from,
+                                               to,
                                                temp_result );
   if( return_value ) {
     result.theNodes.push_back( this );
-    temp_result.point = temp_result.point / 1000.0;
     result.result.push_back( temp_result );
     result.addTransform();
   }

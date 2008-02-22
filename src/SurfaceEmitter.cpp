@@ -121,6 +121,7 @@ void SurfaceEmitter::generateParticles( ParticleSystem *ps,
       (Vec3f)(triangle.a * u + triangle.b * v + triangle.c * (1-u-v ));
     
     // create new particle
+    //TODO divided by 1000, why?
     Particle p = newParticle( ps, pos / 1000, dir );
     particles.push_back( p );
     particles_to_emit--;

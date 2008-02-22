@@ -104,8 +104,8 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
           active->setValue( false, id );
           force->setValue( Vec3f( 0, 0, 0 ) );
         } else {
-          haptic_spring->setPosition( (ti.getAccForwardMatrix() * spring_pos )* 1000 );
-          haptic_spring->setSpringConstant( springConstant->getValue() / 1000 );
+          haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
+          haptic_spring->setSpringConstant( springConstant->getValue() );
           ti.addForceEffect( device_index, haptic_spring.get() );
           Vec3f f = (Vec3f) haptic_spring->getLatestForce();
           force->setValue( f );
@@ -113,8 +113,8 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
       } else {
         if( distance <= startDistance->getValue() ) {
           active->setValue( true, id );
-          haptic_spring->setPosition( (ti.getAccForwardMatrix() * spring_pos ) * 1000 );
-          haptic_spring->setSpringConstant( springConstant->getValue() / 1000 );
+          haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
+          haptic_spring->setSpringConstant( springConstant->getValue() );
           ti.addForceEffect( device_index, haptic_spring.get() );
         }
       }

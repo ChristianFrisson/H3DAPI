@@ -73,13 +73,8 @@ void H3DVariableDepthSurface::UpdateStiffness::
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
-    if( hvds->useRelativeValues->getValue() ) {
-      static_cast< HAPI::HAPIVariableDepthSurface * >
-        ( hvds->hapi_surface.get() )->stiffness = f;
-    } else {
-      static_cast< HAPI::HAPIVariableDepthSurface * >
-        ( hvds->hapi_surface.get() )->stiffness = f * 0.001f;
-    }
+    static_cast< HAPI::HAPIVariableDepthSurface * >
+      ( hvds->hapi_surface.get() )->stiffness = f;
   }
 }
 
@@ -88,13 +83,8 @@ void H3DVariableDepthSurface::UpdateStiffness::update() {
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
-    if( hvds->useRelativeValues->getValue() ) {
-      static_cast< HAPI::HAPIVariableDepthSurface * >
-        ( hvds->hapi_surface.get() )->stiffness = value;
-    } else {
-      static_cast< HAPI::HAPIVariableDepthSurface * >
-        ( hvds->hapi_surface.get() )->stiffness = value * 0.001f;
-    }
+    static_cast< HAPI::HAPIVariableDepthSurface * >
+      ( hvds->hapi_surface.get() )->stiffness = value;
   }
 }
 
@@ -105,7 +95,7 @@ void H3DVariableDepthSurface::
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
     static_cast< HAPI::HAPIVariableDepthSurface * >
-      ( hvds->hapi_surface.get() )->damping = f * 0.001f;
+      ( hvds->hapi_surface.get() )->damping = f;
   }
 }
 
@@ -115,7 +105,7 @@ void H3DVariableDepthSurface::UpdateDamping::update() {
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
     static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
-      ->damping = value * 0.001f;
+      ->damping = value;
   }
 }
 

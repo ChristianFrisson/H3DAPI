@@ -46,6 +46,9 @@ namespace H3D {
   /// within which forces are generated to pull the proxy towards the
   /// surface. If the device is pulled outside this distance from the
   /// surface it will be freed from the magnetic attraction.
+  ///
+  /// TODO: This node only works for OpenHapticsRenderer. All values has
+  /// to be given relative to maximum.
   class H3DAPI_API MagneticSurface:  public H3DSurfaceNode {
   public:
 
@@ -119,8 +122,7 @@ namespace H3D {
                      Inst< UpdateDamping         > _damping           = 0,
                      Inst< UpdateStaticFriction  > _staticFriction    = 0,
                      Inst< UpdateDynamicFriction > _dynamicFriction   = 0,
-                     Inst< UpdateSnapDistance    > _snapDistance      = 0,
-                     Inst< SFBool                > _useRelativeValues = 0 );
+                     Inst< UpdateSnapDistance    > _snapDistance      = 0 );
 
     void initialize();
 
@@ -164,15 +166,6 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> 0.01 \n
     auto_ptr< UpdateSnapDistance > snapDistance;
-
-    /// If false then values (such as stiffness) is in absolute values with
-    /// SI units or equivalent. If true the units are relative to the maximum
-    /// values that the haptics device, on which the surface is rendered on,
-    /// can handle.
-    ///
-    /// <b>Access type: </b> initializeOnly \n
-    /// <b>Default value: </b> true \n
-    auto_ptr< SFBool > useRelativeValues;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
