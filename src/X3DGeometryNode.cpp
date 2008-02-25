@@ -490,7 +490,6 @@ void X3DGeometryNode::createAndAddHapticShapes(
       glMatrixMode( GL_MODELVIEW );
       glPushMatrix();
       glLoadIdentity();
-      ///glScalef( 1e3f, 1e3f, 1e3f );
       while( !done ) {
         HAPI::FeedbackBufferCollector::startCollecting( nr_values, 
                                 center, 
