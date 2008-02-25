@@ -1,0 +1,255 @@
+////////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004-2007, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file H3DInterface.py.cpp
+/// \brief cpp file for H3DInterface.py.cpp
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+
+namespace H3D {
+
+  namespace H3DInterface {
+    // const string H3DInterface_string = "print \"TEST\" \n";
+
+    const string H3DInterface_string = "\
+print \"TEST\" \n\
+from H3D import * \n\
+\n\
+import sys\n\
+\n\
+print \"TEST\" \n\
+Console = H3DConsole()\n\
+\n\
+sys.stdout = Console\n\
+sys.stderr = Console\n\
+\n\
+print \"TEST\" \n\
+###################################################################\n\
+#\n\
+# Base types; Vec2f, Vec3f, Vec2d, Vec2d, etc, etc, etc\n\
+#\n\
+###################################################################\n\
+\n\
+###################################################################\n\
+#\n\
+# Field base class and SF* MF* class definitions\n\
+#\n\
+###################################################################\n\
+class Field:\n\
+  type = UNKNOWN_X3D_TYPE\n\
+  def __init__( self, auto_update = 0 ):\n\
+    module = self.__class__.__dict__[\"__module__\"]\n\
+    createField( self, auto_update, module + \".\" + self.__class__.__name__ )\n\
+\n\
+  def route( self, dest ):\n\
+    return routeField( self, dest )\n\
+\n\
+  def routeNoEvent( self, dest ):\n\
+    return routeFieldNoEvent( self, dest )\n\
+\n\
+  def unroute( self, dest ):\n\
+    return unrouteField( self, dest )\n\
+\n\
+#  def replaceRoute( self, dest, i ):\n\
+#    return unrouteField( self, dest )\n\
+\n\
+#  def replaceRouteNoEvent( self, dest, i ):\n\
+#    return unrouteField( self, dest, i )\n\
+\n\
+  def touch( self ):\n\
+    return touchField( self )\n\
+\n\
+  def getRoutesIn( self ):\n\
+    return getRoutesIn( self )\n\
+\n\
+  def getRoutesOut( self ):\n\
+    return getRoutesOut( self )\n\
+\n\
+  def __cmp__( self, o ):\n\
+    return getCPtr(self) - getCPtr(o)\n\
+\n\
+class SField( Field ):\n\
+  type = UNKNOWN_X3D_TYPE\n\
+  def setValue( self, value ):\n\
+    setFieldValue( self, value )\n\
+\n\
+  def getValue( self ):\n\
+    return getFieldValue( self )\n\
+\n\
+class MField( Field ):\n\
+  type = UNKNOWN_X3D_TYPE\n\
+  def setValue( self, value ):\n\
+    setFieldValue( self, value )\n\
+\n\
+  def getValue( self ):\n\
+    return getFieldValue( self )\n\
+\n\
+  def push_back( self, v ):\n\
+    pushBackElementInMField( self, v ) \n\
+\n\
+  def pop_back( self ):\n\
+    MFieldPopBack( self )\n\
+\n\
+  def empty( self ):\n\
+    return MFieldEmpty( self )\n\
+\n\
+  def front( self ):\n\
+    return MFieldFront( self )\n\
+\n\
+  def back( self ):\n\
+    return MFieldBack( self )\n\
+\n"
+"  def clear( self ):\n\
+    MFieldClear( self )\n\
+\n\
+  def erase( self, v ):\n\
+    eraseElementFromMField( self, v ) \n\
+\n\
+\n\
+# Install all built-in Field types:\n\
+sfield_types = [ \n\
+  ( SFFLOAT,    \"SFFloat\" ),\n\
+  ( SFDOUBLE,   \"SFDouble\" ),\n\
+  ( SFTIME,     \"SFTime\" ),\n\
+  ( SFINT32,    \"SFInt32\" ),\n\
+  ( SFVEC2F,    \"SFVec2f\" ),\n\
+  ( SFVEC2D,    \"SFVec2d\" ),\n\
+  ( SFVEC3F,    \"SFVec3f\" ),\n\
+  ( SFVEC3D,    \"SFVec3d\" ),\n\
+  ( SFVEC4F,    \"SFVec4f\" ),\n\
+  ( SFVEC4D,    \"SFVec4d\" ),\n\
+  ( SFBOOL,     \"SFBool\"  ),\n\
+  ( SFSTRING,   \"SFString\" ),\n\
+  ( SFCOLOR,    \"SFColor\" ),\n\
+  ( SFCOLORRGBA,\"SFColorRGBA\" ),\n\
+  ( SFROTATION, \"SFRotation\" ),\n\
+  ( SFQUATERNION, \"SFQuaternion\" ),\n\
+  ( SFMATRIX3F, \"SFMatrix3f\" ),\n\
+  ( SFMATRIX4F, \"SFMatrix4f\" ),\n\
+  ( SFMATRIX3D, \"SFMatrix3d\" ),\n\
+  ( SFMATRIX4D, \"SFMatrix4d\" ),\n\
+  ( SFNODE    , \"SFNode\"     ) ]\n\
+\n\
+mfield_types = [\n\
+  ( MFFLOAT,    \"MFFloat\" ),\n\
+  ( MFDOUBLE,   \"MFDouble\" ),\n\
+  ( MFTIME,     \"MFTime\" ),\n\
+  ( MFINT32,    \"MFInt32\" ),\n\
+  ( MFVEC2F,    \"MFVec2f\" ),\n\
+  ( MFVEC2D,    \"MFVec2d\" ),\n\
+  ( MFVEC3F,    \"MFVec3f\" ),\n\
+  ( MFVEC3D,    \"MFVec3d\" ),\n\
+  ( MFVEC4F,    \"MFVec4f\" ),\n\
+  ( MFVEC4D,    \"MFVec4d\" ),\n\
+  ( MFBOOL,     \"MFBool\"  ),\n\
+  ( MFSTRING,   \"MFString\" ),\n\
+  ( MFCOLOR,    \"MFColor\" ),\n\
+  ( MFCOLORRGBA,\"MFColorRGBA\" ),\n\
+  ( MFROTATION, \"MFRotation\" ),\n\
+  ( MFQUATERNION, \"MFQuaternion\" ),\n\
+  ( MFMATRIX3F, \"MFMatrix3f\" ),\n\
+  ( MFMATRIX4F, \"MFMatrix4f\" ),\n\
+  ( MFMATRIX3D, \"MFMatrix3d\" ),\n\
+  ( MFMATRIX4D, \"MFMatrix4d\" ),\n\
+  ( MFNODE    , \"MFNode\"     )\n\
+]\n\
+\n\
+for t in sfield_types:\n\
+  exec \"\"\"\n\
+class %s( SField ):\n\
+  type = %s\n\
+\"\"\" % (t[1], t[0] )\n\
+\n\
+for t in mfield_types:\n\
+  exec \"\"\"\n\
+class %s( MField ):\n\
+  type = %s\n\
+\"\"\" % (t[1], t[0] )\n\
+\n\
+\n\
+typed_field_classes = {}\n\
+\n\
+def TypedField( base_class, type_info = None, opt_type_info = None ):\n\
+  class TypedBase( base_class ):\n\
+    pass\n\
+  global typed_field_classes\n\
+  if( typed_field_classes.has_key( (base_class, type_info, opt_type_info) ) ):\n\
+    return typed_field_classes[(base_class, type_info, opt_type_info)]\n"
+"\n\
+  if type_info == None:\n\
+    TypedBase.__type_info__ = ()\n\
+  elif type( type_info ) != type(()):\n\
+    TypedBase.__type_info__ = ( type_info, )\n\
+  else:\n\
+    TypedBase.__type_info__ = type_info\n\
+\n\
+  if opt_type_info == None:\n\
+    TypedBase.__opt_type_info__ = ()\n\
+  elif type( opt_type_info ) != type(()):\n\
+    TypedBase.__opt_type_info__ = ( opt_type_info, )\n\
+  else:\n\
+    TypedBase.__opt_type_info__ = opt_type_info\n\
+\n\
+  typed_field_classes[(base_class, type_info, opt_type_info)] = TypedBase\n\
+  return TypedBase\n\
+\n\
+\n\
+auto_update_classes = {}\n\
+\n\
+\n\
+# AutoUpdate \"template\" as in C++\n\
+def AutoUpdate( base_class ):\n\
+  class AutoUpdateBase( base_class ):\n\
+    def __init__( self ):\n\
+      base_class.__init__( self, 1 )\n\
+\n\
+  global auto_update_classes\n\
+  if( auto_update_classes.has_key( base_class ) ):\n\
+    return auto_update_classes[base_class]\n\
+  else:\n\
+    auto_update_classes[base_class] = AutoUpdateBase\n\
+    return AutoUpdateBase\n\
+\n\
+periodic_update_classes = {}\n\
+\n\
+def PeriodicUpdate( base_class ):\n\
+  class PeriodicUpdateBase( base_class ):\n\
+    def __init__( self ):\n\
+      print \"calling init\"\n\
+      base_class.__init__( self, 0 )\n\
+      print \"set up route\"\n\
+      self.route( eventSink )\n\
+  \n\
+  global periodic_update_classes\n\
+  if( periodic_update_classes.has_key( base_class ) ):\n\
+    print \"class found, use old\"\n\
+    return periodic_update_classes[base_class]\n\
+  else:\n\
+    periodic_update_classes[base_class] = PeriodicUpdateBase\n\
+    print \"class not found, create new\"\n\
+    return PeriodicUpdateBase\n\
+\n";
+
+  }
+}
