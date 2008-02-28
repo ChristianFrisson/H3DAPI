@@ -200,6 +200,40 @@ namespace H3D {
     /// Traverse the inline scenegraph, if loaded.
     virtual void traverseSG( TraverseInfo &ti );
 
+    /// Detect intersection between a line segment and the Node.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect( const Vec3f &from, 
+                                const Vec3f &to,    
+                                LineIntersectResult &result );
+
+    /// Find closest point on Node to p.
+    /// \param p The point to find the closest point to.
+    /// \param closest_point Return parameter for each closest point
+    /// \param normal Return parameter for normal at each closest point.
+    /// \param tex_coord Return paramater for each texture coordinate at
+    /// closest point.
+    virtual void closestPoint( const Vec3f &p,
+                               vector< Vec3f > &closest_point,
+                               vector< Vec3f > &normal,
+                               vector< Vec3f > &tex_coord );
+
+    /// Detect collision between a moving sphere and the Node.
+    /// Only nodes to which collision is possible will return true
+    /// \param radius The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \param result A struct containing various results of intersections
+    /// such as which geometries intersected the moving sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersect( H3DFloat radius,
+                                        const Vec3f &from, 
+                                        const Vec3f &to,
+                                        NodeIntersectResult &result );
+
     /// If the load field is set to TRUE (the default field value), 
     /// the X3D file specified by the url field is loaded immediately. 
     /// If the load field is set to FALSE, no action is taken.

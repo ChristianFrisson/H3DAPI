@@ -148,6 +148,9 @@
 #define HAVE_SYS_TIME_H
 #endif
 
+#define H3DAPI_MAJOR_VERSION 2
+#define H3DAPI_MINOR_VERSION 0
+
 namespace H3D {
   /// Initialize H3D API(only needed if using H3D API as a static library). 
   void initializeH3D();
@@ -168,6 +171,10 @@ namespace H3D {
     bool little_endian = (p.bytes[0] == 1U); 
     return little_endian;
   }
+
+  /// Will return the version of H3DAPI as a double on the form
+  /// H3DAPI_MAJOR_VERSION.H3DAPI_MINOR_VERSION
+  double H3DAPI_API getH3DApiVersion();
 }
 
 #endif

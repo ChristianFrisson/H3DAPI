@@ -178,4 +178,47 @@ void Inline::LoadedScene::onRemove( Node *n ) {
   LoadedSceneBase::onRemove( n );
 }
 
+bool Inline::lineIntersect( const Vec3f &from, 
+                            const Vec3f &to,    
+                            LineIntersectResult &result ) {
+  bool intersection = false;
+  if( load->getValue() ) {
+    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+      Group *g = loadedScene->getValueByIndex( i );
+      if( g ) intersection = intersection || g->lineIntersect( from,
+                                                               to,
+                                                               result );
+    }
+  }
+  return intersection;
+}
 
+void Inline::closestPoint( const Vec3f &p,
+                           vector< Vec3f > &closest_point,
+                           vector< Vec3f > &normal,
+                           vector< Vec3f > &tex_coord ) {
+  if( load->getValue() ) {
+    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+      Group *g = loadedScene->getValueByIndex( i );
+      if( g ) g->closestPoint( p, closest_point, normal, tex_coord );
+    }
+  }
+}
+
+bool Inline::movingSphereIntersect( H3DFloat radius,
+                                    const Vec3f &from, 
+                                    const Vec3f &to,
+                                    NodeIntersectResult &result ) {
+  bool intersection = false;
+  if( load->getValue() ) {
+    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+      Group *g = loadedScene->getValueByIndex( i );
+      if( g ) intersection = intersection ||
+                             g->movingSphereIntersect( radius,
+                                                       from,
+                                                       to,
+                                                       result );
+    }
+  }
+  return intersection;
+}

@@ -25,6 +25,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/H3DApi.h>
+#include <sstream>
 #ifdef HAVE_XERCES
 #include <xercesc/util/PlatformUtils.hpp>
 #endif
@@ -98,6 +99,13 @@ void H3D::deinitializeH3D() {
 #endif
 }
 
+double H3D::getH3DApiVersion() {
+  std::stringstream stm;
+  stm << H3DAPI_MAJOR_VERSION;
+  stm << ".";
+  stm << H3DAPI_MINOR_VERSION;
+  return atof( stm.str().c_str() );
+}
 
 #ifdef WIN32
 BOOL APIENTRY DllMain( HANDLE hModule, 
