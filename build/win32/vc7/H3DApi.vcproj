@@ -172,6 +172,9 @@
 				RelativePath="..\..\..\src\BooleanTrigger.cpp">
 			</File>
 			<File
+				RelativePath="..\..\..\src\Bound.cpp">
+			</File>
+			<File
 				RelativePath="..\..\..\src\BoundedPhysicsModel.cpp">
 			</File>
 			<File

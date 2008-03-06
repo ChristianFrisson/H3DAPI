@@ -30,6 +30,14 @@
 
 #include <H3D/VisibilitySensor.h>
 
+#include <GL/glew.h>
+
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
 using namespace H3D;
 
 H3DNodeDatabase VisibilitySensor::database( 
