@@ -284,7 +284,7 @@ namespace H3D {
       virtual void update() {
         H3DInt32 buttons   = 
           static_cast< SFInt32 * >( routes_in[0] )->getValue();
-        value = (buttons & 0x10) != 0;
+        value = (buttons & 0x02) != 0;
       }
     }; 
 

@@ -267,11 +267,15 @@ bool X3DGroupingNode::movingSphereIntersect( H3DFloat radius,
                                              const Vec3f &from, 
                                              const Vec3f &to,
                                              NodeIntersectResult &result ) {
-  const NodeVector &children_nodes = children->getValue();
-  bool hit = false;
-  for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-    if( children_nodes[i]->movingSphereIntersect( radius, from, to, result ) )
-      hit = true;
+  Bound * the_bound = bound->getValue();
+  if( !the_bound || the_bound->movingSphereIntersect( from, to, radius ) ) {
+    const NodeVector &children_nodes = children->getValue();
+    bool hit = false;
+    for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
+      if( children_nodes[i]->movingSphereIntersect( radius, from, to, result ))
+        hit = true;
+    }
+    return hit;
   }
-  return hit;
+  return false;
 }

@@ -48,8 +48,14 @@ namespace H3D {
 
     /// Checks a line segment for intersection with the bound. If line
     /// intersects, true is returned.
-    virtual bool lineSegmentIntersect( const Vec3f& from,
+    virtual bool lineSegmentIntersect( const Vec3f &from,
                                        const Vec3f &to ) = 0;
+
+    /// Checks a moving sphere for intersection with the bound. If the sphere
+    /// intersects, true is returned.
+    virtual bool movingSphereIntersect( const Vec3f &from,
+                                        const Vec3f &to,
+                                        H3DFloat radius ) = 0;
 
     /// Returns a Bound that is the union between all the bounds specified
     /// by the iterators. Iterator is a iterator to a Bound.
@@ -85,6 +91,14 @@ namespace H3D {
                                        const Vec3f &to ) {
       return true;
     }
+
+    /// Checks a moving sphere for intersection with the bound.
+    /// return true always.
+    virtual bool movingSphereIntersect( const Vec3f &from,
+                                        const Vec3f &to,
+                                        H3DFloat radius ) {
+      return true;
+    }
     
     virtual Vec3f closestPoint( const Vec3f &p ) {
       return p;
@@ -104,6 +118,14 @@ namespace H3D {
     /// Returns false always. 
     virtual bool lineSegmentIntersect( const Vec3f& from,
                                        const Vec3f &to ) {
+      return false;
+    }
+
+    /// Checks a moving sphere for intersection with the bound. 
+    /// return false always.
+    virtual bool movingSphereIntersect( const Vec3f &from,
+                                        const Vec3f &to,
+                                        H3DFloat radius ) {
       return false;
     }
 
@@ -230,6 +252,12 @@ namespace H3D {
 
       return true;
     }
+
+    /// Checks a moving sphere for intersection with the bound. If the sphere
+    /// intersects, true is returned.
+    virtual bool movingSphereIntersect( const Vec3f &from,
+                                        const Vec3f &to,
+                                        H3DFloat radius );
 
     virtual Vec3f closestPoint( const Vec3f &p ) {
       const Vec3f &c = center->getValue();

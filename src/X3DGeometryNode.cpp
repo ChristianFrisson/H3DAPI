@@ -670,17 +670,20 @@ bool X3DGeometryNode::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
-
-  IntersectionInfo tempresult;
-  bool returnValue =
-    boundTree->getValue()->lineIntersect( from, to, tempresult );
-  if( returnValue ) {
-    result.result.push_back( tempresult );
-    result.theNodes.push_back( this );
-    result.addTransform();
-    result.addPtDevMap();
+  Bound * the_bound = bound->getValue();
+  if( !the_bound || the_bound->lineSegmentIntersect( from, to ) ) {
+    IntersectionInfo tempresult;
+    bool returnValue =
+      boundTree->getValue()->lineIntersect( from, to, tempresult );
+    if( returnValue ) {
+      result.result.push_back( tempresult );
+      result.theNodes.push_back( this );
+      result.addTransform();
+      result.addPtDevMap();
+    }
+    return returnValue;
   }
-  return returnValue;
+  return false;
 }
 
 void X3DGeometryNode::closestPoint(
@@ -700,16 +703,20 @@ bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
                                              const Vec3f &from, 
                                              const Vec3f &to,
                                              NodeIntersectResult &result ) {
-  HAPI::Collision::IntersectionInfo temp_result;
-  bool return_value = boundTree->getValue()->movingSphereIntersect(
-                                               radius,
-                                               from,
-                                               to,
-                                               temp_result );
-  if( return_value ) {
-    result.theNodes.push_back( this );
-    result.result.push_back( temp_result );
-    result.addTransform();
+  Bound * the_bound = bound->getValue();
+  if( !the_bound || the_bound->movingSphereIntersect( from, to, radius ) ) {
+    HAPI::Collision::IntersectionInfo temp_result;
+    bool return_value =
+      boundTree->getValue()->movingSphereIntersect( radius,
+                                                    from,
+                                                    to,
+                                                    temp_result );
+    if( return_value ) {
+      result.theNodes.push_back( this );
+      result.result.push_back( temp_result );
+      result.addTransform();
+    }
+    return return_value;
   }
-  return return_value;
+  return false;  
 }

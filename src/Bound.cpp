@@ -73,3 +73,39 @@ void BoxBound::render() {
   glEnd();
   glEnable( GL_LIGHTING );
 }
+
+bool BoxBound::movingSphereIntersect( const Vec3f &from,
+                                      const Vec3f &to,
+                                      H3DFloat radius ) {
+  // duplicate code (see linesegmentIntersect) because we can not set the
+  // size otherwise.
+   // algorithm from "Realtime Collision Detection" book
+  Vec3f e = ( size->getValue() + 2 * Vec3f( radius, radius, radius ) ) / 2.0;
+  const Vec3f c = center->getValue();
+  // line center
+  Vec3f m = (from + to ) * 0.5f;
+  // halflength vector
+  Vec3f d = to - m;
+  // translate to origin
+  m = m -c; 
+
+  H3DFloat adx = H3DAbs( d.x );
+  if( H3DAbs( m.x ) > e.x + adx ) return false;
+  H3DFloat ady = H3DAbs( d.y );
+  if( H3DAbs( m.y ) > e.y + ady ) return false;
+  H3DFloat adz = H3DAbs( d.z );
+  if( H3DAbs( m.z ) > e.z + adz ) return false;
+
+  adx += Constants::f_epsilon;
+  ady += Constants::f_epsilon;
+  adz += Constants::f_epsilon;
+
+  if( H3DAbs( m.y * d.z - m.z * d.y ) > e.y * adz + e.z * ady ) 
+    return false;
+  if( H3DAbs( m.z * d.x - m.x * d.z ) > e.x * adz + e.z * adx ) 
+    return false;
+  if( H3DAbs( m.x * d.y - m.y * d.x ) > e.x * ady + e.y * adx ) 
+    return false;
+
+  return true;
+}
