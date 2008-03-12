@@ -7,11 +7,21 @@
 
 
 # Look for the header file.
-FIND_PATH(FREEIMAGE_INCLUDE_DIR NAMES FreeImage.h)
+FIND_PATH(FREEIMAGE_INCLUDE_DIR NAMES FreeImage.h
+                                PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                      $ENV{H3D_EXTERNAL_ROOT}/include/FreeImage/Dist
+                                      ../../External/include
+                                      ../../External/include/FreeImage/Dist
+)
+
 MARK_AS_ADVANCED(FREEIMAGE_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES freeimage)
+FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES freeimage
+                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                     ../../External/lib           
+)
+
 MARK_AS_ADVANCED(FREEIMAGE_LIBRARY)
 
 # Copy the results to the output variables.
@@ -28,7 +38,7 @@ ENDIF(FREEIMAGE_INCLUDE_DIR AND FREEIMAGE_LIBRARY)
 # Report the results.
 IF(NOT FREEIMAGE_FOUND)
   SET(FREEIMAGE_DIR_MESSAGE
-    "FREEIMAGE was not found. Make sure FREEIMAGE_LIBRARY and FREEIMAGE_INCLUDE_DIR are set.")
+    "FREEIMAGE was not found. Make sure FREEIMAGE_LIBRARY and FREEIMAGE_INCLUDE_DIR are set to the directory of your FreeImage installation. If you do not have it many image formats will not be available to use as textures")
   IF(NOT FREEIMAGE_FIND_QUIETLY)
     MESSAGE(STATUS "${FREEIMAGE_DIR_MESSAGE}")
   ELSE(NOT FREEIMAGE_FIND_QUIETLY)

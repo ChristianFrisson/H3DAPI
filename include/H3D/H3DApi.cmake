@@ -69,7 +69,7 @@
 /// Undef if you do not have 3dxware(www.3dconnexion.com) installed.
 /// SpaceWareSensor node will then not be supported.
 #ifdef WIN32
-#define HAVE_3DXWARE
+#cmakedefine HAVE_3DXWARE
 #endif
 
 /// Undef if you do not have Python(www.python.org) installed.
@@ -88,7 +88,7 @@
 /// Undef if you do not have DirectShow available. Needed for the 
 /// DirectShowDecoder node.
 #ifdef WIN32
-#define HAVE_DSHOW
+#cmakedefine HAVE_DSHOW
 #endif
 
 #define XML_USE_WIN32_TRANSCODER
@@ -157,6 +157,10 @@
 #define HAVE_SYS_TIME_H
 #endif
 
+#cmakedefine H3DAPI_MAJOR_VERSION 
+#cmakedefine H3DAPI_MINOR_VERSION
+#cmakedefine H3DAPI_BUILD_VERSION
+
 namespace H3D {
   /// Initialize H3D API(only needed if using H3D API as a static library). 
   void initializeH3D();
@@ -177,6 +181,12 @@ namespace H3D {
     bool little_endian = (p.bytes[0] == 1U); 
     return little_endian;
   }
+
+
+  /// Will return the version of H3DAPI as a double on the form
+  /// H3DAPI_MAJOR_VERSION.H3DAPI_MINOR_VERSION
+  double H3DAPI_API getH3DApiVersion();
+
 }
 
 #endif

@@ -7,17 +7,29 @@
 
 
 # Look for the header file.
-FIND_PATH(VORBIS_INCLUDE_DIR NAMES vorbis/vorbisfile.h)
+FIND_PATH(VORBIS_INCLUDE_DIR NAMES vorbis/vorbisfile.h
+                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
+                                   $ENV{H3D_EXTERNAL_ROOT}/include/vorbis/include
+                                   ../../External/include    
+                                   ../../External/include/vorbis/include)
 MARK_AS_ADVANCED(VORBIS_INCLUDE_DIR)
 
-FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h)
+FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h
+                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
+                                $ENV{H3D_EXTERNAL_ROOT}/include/vorbis/include
+                                ../../External/include    
+                                ../../External/include/vorbis/include)
 MARK_AS_ADVANCED(OGG_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(VORBIS_LIBRARY NAMES vorbisfile)
+FIND_LIBRARY(VORBIS_LIBRARY NAMES vorbisfile 
+                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                  ../../External/lib)
 MARK_AS_ADVANCED(VORBIS_LIBRARY)
 
-FIND_LIBRARY(OGG_LIBRARY NAMES ogg)
+FIND_LIBRARY(OGG_LIBRARY NAMES ogg 
+                         PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                               ../../External/lib)
 MARK_AS_ADVANCED(OGG_LIBRARY)
 
 # Copy the results to the output variables.
@@ -34,7 +46,8 @@ ENDIF(VORBIS_INCLUDE_DIR AND VORBIS_LIBRARY)
 # Report the results.
 IF(NOT VORBIS_FOUND)
   SET(VORBIS_DIR_MESSAGE
-    "VORBIS was not found. Make sure VORBIS_LIBRARY and VORBIS_INCLUDE_DIR are set.")
+    "VORBIS was not found. Make sure VORBIS_LIBRARY and
+    VORBIS_INCLUDE_DIR are set to the directories containing the include and lib files for ogg/vorbis. If you do not have the library you will not be able to use ogg files as sound.")
   IF(NOT VORBIS_FIND_QUIETLY)
     MESSAGE(STATUS "${VORBIS_DIR_MESSAGE}")
   ELSE(NOT VORBIS_FIND_QUIETLY)

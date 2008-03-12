@@ -147,8 +147,25 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
 	int width, height;
 	GetClientSize(&width, &height);
 	glwindow->width->setValue(width);
-  glwindow->height->setValue(height);
-
+    glwindow->height->setValue(height);
+    
+    #if 0
+glwindow->colorTransform->setValue( Matrix4f( 0, 0, 0, 0,
+                                                  0, 0, 0, 0,
+                                                  0, 0, 0, 0,
+                                                  0, 0, 0, 1 ) );
+    glwindow->leftEyeColorTransform->setValue( Matrix4f( 1, 0.15, 0.00, 0, 
+                                                         0.00, 0.0, 0.10, 0,
+                                                         0.00, 0.00, 0.0, 0,
+                                                         0, 0, 0, 1 ) /*Matrix4f( 0.40, 0.15, 0.00, 0, 
+                                                         0.00, 0.40, 0.10, 0,
+                                                         0.00, 0.00, 0.90, 0,
+                                                         0, 0, 0, 1 )*/ );
+    glwindow->rightEyeColorTransform->setValue( Matrix4f( 0.85, 0.00, 0.05, 0, 
+                                                          0.05, 0.95, 0.00, 0,
+                                                          0.00, 0.00, 1.00, 0,
+                                                          0, 0, 0, 1 ) );
+#endif
 	t->children->clear();
 	g->children->push_back( t.get() );
 	scene->window->push_back( glwindow );
@@ -417,7 +434,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
 
   if( col_opt ) {
     if( id == ID_USE_COLLISION_DETECTION ) 
-      col_opt->avatarCollision->setValue( event.IsChecked() );
+      col_opt->avatarCollision->setValue( false /*event.IsChecked() */ );
   }
 
   if( id == ID_FOCAL_DISTANCE ) {

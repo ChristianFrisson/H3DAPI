@@ -7,11 +7,15 @@
 
 
 # Look for the header file.
-FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
+FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
+                                 ../../External/include)
 MARK_AS_ADVANCED(GLEW_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW)
+FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW glew32  
+                                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                      ../../External/lib   )
 MARK_AS_ADVANCED(GLEW_LIBRARY)
 
 # Copy the results to the output variables.
@@ -28,7 +32,7 @@ ENDIF(GLEW_INCLUDE_DIR AND GLEW_LIBRARY)
 # Report the results.
 IF(NOT GLEW_FOUND)
   SET(GLEW_DIR_MESSAGE
-    "GLEW was not found. Make sure GLEW_LIBRARY and GLEW_INCLUDE_DIR are set.")
+    "GLEW was not found. Make sure GLEW_LIBRARY and GLEW_INCLUDE_DIR are set to where you have your glew header and lib files.")
   IF(NOT GLEW_FIND_QUIETLY)
     MESSAGE(STATUS "${GLEW_DIR_MESSAGE}")
   ELSE(NOT GLEW_FIND_QUIETLY)

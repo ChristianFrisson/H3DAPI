@@ -1,81 +1,91 @@
-# The name of our project is "HELLO".  CMakeLists files in this project can
-# refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
-# to the root binary directory of the project as ${HELLO_BINARY_DIR}.
-project (H3DAPI)
+PROJECT (H3DAPI)
 
-# Create a library called "Hello" which includes the source file "hello.cxx".
-# The extension is already found.  Any number of sources could be listed here.
+SET( H3DAPI_MAJOR_VERSION 1 )
+SET( H3DAPI_MINOR_VERSION 0 )
+SET( H3DAPI_BUILD_VERSION 0 )
 
+SET( H3DAPI_FULL_VERSION
+${H3DAPI_MAJOR_VERSION}.${H3DAPI_MINOR_VERSION}.${H3DAPI_BUILD_VERSION} ) 
+
+#add all sources
 AUX_SOURCE_DIRECTORY(../src H3DAPI_SRCS)
 
+# add the H3DAPI.rc resource file if Visual Studio
+IF(MSVC)
+  SET( H3DAPI_SRCS ${H3DAPI_SRCS} H3DAPI.rc )
+ENDIF(MSVC)
+
+# H3DAPI shared library definition
+ADD_LIBRARY(H3DAPI SHARED ${H3DAPI_SRCS})
+
+# make sure that the H3DAPI.rc contains the correct svn-version
+IF( MSVC )
+  EXECUTE_PROCESS( COMMAND FindSVNVersion ${H3DAPI_SOURCE_DIR}/../src/.svn/entries 
+                   OUTPUT_VARIABLE H3DAPI_SVN_VERSION )
+  # autogenerate H3DAPI.rc depending on the version
+  CONFIGURE_FILE( H3DAPI.rc.cmake H3DAPI.rc )
+  
+  ADD_CUSTOM_COMMAND( TARGET H3DAPI 
+                      PRE_BUILD 
+                      COMMAND UpdateResourceFile 
+                      ARGS H3DAPI H3DAPI.rc H3DAPI.rc.cmake
+                      ${H3DAPI_MAJOR_VERSION} ${H3DAPI_MINOR_VERSION}
+                      ${H3DAPI_BUILD_VERSION}
+                      ${H3DAPI_SOURCE_DIR}/../src/.svn/entries )
+ENDIF(MSVC)
+
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${H3DAPI_SOURCE_DIR}/../..)
+ENDIF(WIN32)
+
+# add all optional libraries to this variable
 SET(optionalLibs)
 
-INCLUDE_DIRECTORIES( ../include )
-
-SET(CMAKE_SYSTEM_INCLUDE_PATH ${CMAKE_SYSTEM_INCLUDE_PATH}
-"$ENV{H3D_EXTERNAL_ROOT}\\include" 
-"$ENV{H3D_EXTERNAL_ROOT}\\include\\pthread" 
-../../External/include 
-../../External/include/pthread 
-)
-
-SET(CMAKE_SYSTEM_LIBRARY_PATH ${CMAKE_SYSTEM_LIBRARY_PATH}
-"$ENV{H3D_EXTERNAL_ROOT}\\lib" ../../External/lib )
-
+# add all required libraries to this variable
 SET(requiredLibs)
+
+IF(!WIN32)
+SET(requiredLibs ${requiredLibs} H3DUtil HAPI)
+ENDIF(!WIN32)
+
+INCLUDE_DIRECTORIES( ../include
+${H3DAPI_SOURCE_DIR}/../../H3DUtil/include
+${H3DAPI_SOURCE_DIR}/../../HAPI/include 
+${H3DAPI_SOURCE_DIR}/../../HAPI/OpenHapticsRenderer/include
+${H3DAPI_SOURCE_DIR}/../../HAPI/Chai3DRenderer/include)
 
 IF(WIN32)
   SET(requiredLibs ${requiredLibs} winmm.lib )
 ENDIF(WIN32)
 
-SET(CMAKE_MODULE_PATH "modules/")
+SET(CMAKE_MODULE_PATH ${H3DAPI_SOURCE_DIR}/modules )
 
 FIND_PACKAGE(PTHREAD REQUIRED)
-
 IF(PTHREAD_FOUND)
   INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
 ENDIF(PTHREAD_FOUND)
 
-#H3DUtil
-FIND_PACKAGE(H3DUtil REQUIRED)
-
-IF(H3DUTIL_FOUND)
-  INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
-ENDIF(H3DUTIL_FOUND)
-
-#HAPI
-FIND_PACKAGE(HAPI REQUIRED)
-
-IF(HAPI_FOUND)
-  INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
-ENDIF(HAPI_FOUND)
-
 FIND_PACKAGE(OpenGL REQUIRED)
-
 IF(OPENGL_FOUND)
   INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
 ENDIF(OPENGL_FOUND)
 
 FIND_PACKAGE(GLUT)
-
 IF(GLUT_FOUND)
   INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${GLUT_LIBRARIES} )
 ENDIF(GLUT_FOUND)
 
 FIND_PACKAGE(GLEW REQUIRED)
-
 IF(GLEW_FOUND)
   INCLUDE_DIRECTORIES( ${GLEW_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${GLEW_LIBRARIES} )
 ENDIF(GLEW_FOUND)
 
 FIND_PACKAGE(Xerces)
-
 IF(XERCES_FOUND)
   SET(HAVE_XERCES 1)
   INCLUDE_DIRECTORIES( ${XERCES_INCLUDE_DIR} ) 
@@ -97,8 +107,6 @@ IF(ZLIB_FOUND)
 ENDIF(ZLIB_FOUND)
 
 FIND_PACKAGE(PythonLibs)
-
-
 IF( PYTHON_INCLUDE_PATH AND PYTHON_LIBRARIES)
   SET(PYTHON_FOUND 1)
 ELSE(PYTHON_INCLUDE_PATH AND PYTHON_LIBRARIES)
@@ -167,28 +175,63 @@ IF(FREEIMAGE_FOUND)
   SET(optionalLibs ${optionalLibs} ${FREEIMAGE_LIBRARIES} )
 ENDIF(FREEIMAGE_FOUND)
 
-FIND_PACKAGE(FontConfig)
-IF(FONTCONFIG_FOUND)
-  SET(HAVE_FONTCONFIG 1)
-  INCLUDE_DIRECTORIES( ${FONTCONFIG_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${FONTCONFIG_LIBRARIES} )
-ENDIF(FONTCONFIG_FOUND)
+IF(NOT WIN32)
+  FIND_PACKAGE(FontConfig)
+  IF(FONTCONFIG_FOUND)
+    SET(HAVE_FONTCONFIG 1)
+    INCLUDE_DIRECTORIES( ${FONTCONFIG_INCLUDE_DIR} ) 
+    SET(optionalLibs ${optionalLibs} ${FONTCONFIG_LIBRARIES} )
+  ENDIF(FONTCONFIG_FOUND)
+ENDIF(NOT WIN32)
 
-ADD_LIBRARY(H3DAPI SHARED ${H3DAPI_SRCS})
+# make sure symbols are exported.
 SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-DH3DAPI_EXPORTS" )
+
+# add the libraries needed for linking
 TARGET_LINK_LIBRARIES( H3DAPI ${requiredLibs} ${optionalLibs} )
 
+# make the name of debug libraries end in _d.
+SET_TARGET_PROPERTIES( H3DAPI PROPERTIES DEBUG_POSTFIX "_d" )
+
+# set the version of the library
+SET_TARGET_PROPERTIES( H3DAPI PROPERTIES VERSION ${H3DAPI_FULL_VERSION} )
+
+# change the name depending on compiler to be able to tell them apart
+# since they are not compatible with each other. 
+IF(MSVC70 OR MSVC71)
+  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc7 )
+ELSEIF(MSVC80)
+  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc8 )
+ELSEIF(MSCV90)
+  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc9 )
+ENDIF(MSVC70 OR MSVC71)
+
+# autogenerate H3DAPI.h depending on the libraries available.
 CONFIGURE_FILE( ../include/H3D/H3DApi.cmake ../include/H3D/H3DApi.h )
 
 INSTALL( TARGETS H3DAPI
-	 LIBRARY DESTINATION lib
-	 RUNTIME DESTINATION bin )
+         LIBRARY DESTINATION lib
+         RUNTIME DESTINATION bin
+         ARCHIVE DESTINATION lib )
 
-INSTALL( DIRECTORY ../include/H3D 
-	 DESTINATION /usr/local/include 
-	 PATTERN .svn EXCLUDE )
+IF( NOT WIN32 )
+  INSTALL( DIRECTORY ../include/H3D 
+           DESTINATION /usr/local/include 
+           PATTERN .svn EXCLUDE )
+ENDIF( NOT WIN32 )
 
+# include HAPI in the build
+ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../../HAPI/build
+                  ${H3DAPI_SOURCE_DIR}/../../HAPI/build )
 
-#MESSAGE(FATAL_ERROR,  ${GLUT_Xi_LIBRARY} )    
-#MESSAGE(FATAL_ERROR,  ${GLUT_Xmu_LIBRARY} )    
+# H3DAPI is dependent on H3DUtil and HAPI
+ADD_DEPENDENCIES( H3DAPI H3DUtil )
+ADD_DEPENDENCIES( H3DAPI HAPI )
 
+IF( WIN32 )
+  ADD_DEPENDENCIES( H3DAPI OpenHapticsRenderer )
+  ADD_DEPENDENCIES( H3DAPI Chai3DRenderer )
+ENDIF( WIN32 )
+
+GET_DIRECTORY_PROPERTY( HAPI_INCLUDES DIRECTORY ${H3DAPI_SOURCE_DIR}/../../HAPI/build INCLUDE_DIRECTORIES )
+INCLUDE_DIRECTORIES( ${HAPI_INCLUDES} )
