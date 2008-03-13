@@ -157,9 +157,9 @@
 #define HAVE_SYS_TIME_H
 #endif
 
-#cmakedefine H3DAPI_MAJOR_VERSION 
-#cmakedefine H3DAPI_MINOR_VERSION
-#cmakedefine H3DAPI_BUILD_VERSION
+#define H3DAPI_MAJOR_VERSION ${H3DAPI_MAJOR_VERSION}
+#define H3DAPI_MINOR_VERSION ${H3DAPI_MINOR_VERSION}
+#define H3DAPI_BUILD_VERSION ${H3DAPI_BUILD_VERSION}
 
 namespace H3D {
   /// Initialize H3D API(only needed if using H3D API as a static library). 

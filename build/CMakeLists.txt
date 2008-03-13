@@ -1,6 +1,6 @@
 PROJECT (H3DAPI)
 
-SET( H3DAPI_MAJOR_VERSION 1 )
+SET( H3DAPI_MAJOR_VERSION 2 )
 SET( H3DAPI_MINOR_VERSION 0 )
 SET( H3DAPI_BUILD_VERSION 0 )
 
@@ -45,9 +45,9 @@ SET(optionalLibs)
 # add all required libraries to this variable
 SET(requiredLibs)
 
-IF(!WIN32)
+IF(NOT WIN32)
 SET(requiredLibs ${requiredLibs} H3DUtil HAPI)
-ENDIF(!WIN32)
+ENDIF(NOT WIN32)
 
 INCLUDE_DIRECTORIES( ../include
 ${H3DAPI_SOURCE_DIR}/../../H3DUtil/include
