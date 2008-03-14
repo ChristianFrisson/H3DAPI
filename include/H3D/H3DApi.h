@@ -27,7 +27,7 @@
 ///
 //////////////////////////////////////////////////////////////////////////////
 
-/// \mainpage
+/// \mainpage H3D API Documentation
 /// Copyright 2004, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
 
 #ifndef __H3DApi_H__

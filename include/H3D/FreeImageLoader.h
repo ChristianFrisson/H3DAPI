@@ -53,7 +53,7 @@ namespace H3D {
     /// Load the image using the FreeImage library. A new FreeImageImage
     /// is returned. NULL if not successfully loaded.
     virtual Image *loadImage( const string &url ) {
-      return H3DUtil::LoadImageFunctions::loadFreeImage( url );
+      return H3DUtil::loadFreeImage( url );
     }
     
     /// TODO: Implement 

@@ -78,14 +78,13 @@ RawImageLoader::RawImageLoader( Inst< SFInt32  > _width,
 }
 
 Image *RawImageLoader::loadImage( const string &url ) {
-  LoadImageFunctions::RawImageInfo raw_image_info(
-                               width->getValue(),
+  RawImageInfo raw_image_info( width->getValue(),
                                height->getValue(),
                                depth->getValue(),
                                pixelType->getValue(),
                                pixelComponentType->getValue(),
                                bitsPerPixel->getValue(),
                                pixelSize->getValue() );
-  return LoadImageFunctions::loadRawImage( url, raw_image_info );
+  return loadRawImage( url, raw_image_info );
 }
 
