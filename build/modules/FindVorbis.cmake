@@ -22,7 +22,7 @@ FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h
 MARK_AS_ADVANCED(OGG_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(VORBIS_LIBRARY NAMES vorbisfile 
+FIND_LIBRARY(VORBIS_LIBRARY NAMES vorbisfile vorbis
                             PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                   ../../External/lib)
 MARK_AS_ADVANCED(VORBIS_LIBRARY)
