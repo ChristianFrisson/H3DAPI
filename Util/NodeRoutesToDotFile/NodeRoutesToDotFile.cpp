@@ -1,8 +1,8 @@
 
-#include "H3DNodeDatabase.h"
-#include "Scene.h"
-#include "Exception.h"
-#include "Node.h"
+#include <H3D/H3DNodeDatabase.h>
+#include <H3D/Scene.h>
+#include <H3DUtil/Exception.h>
+#include <H3D/Node.h>
 #include <set>
 #include <queue>
 #include <fstream>
@@ -54,7 +54,7 @@ void writeNode( string out_dir, Node *n ) {
   while( !to_visit.empty() ) {
     Field *f = *(to_visit.begin());
     visited.insert( f );
-	if( f == Scene::eventSink ) {
+	if( f == Scene::eventSink.get() ) {
 	  writeFieldDef( os, f );
 	  to_visit.erase( f );
 	  continue;
@@ -106,13 +106,13 @@ void writeNode( string out_dir, Node *n ) {
   os.close();
 }
 
-#include "X3DComposedGeometryNode.h"
-#include "X3DTexture2DNode.h"
-#include "X3DTextureTransform2DNode.h"
-#include "X3DShapeNode.h"
-#include "X3DBackgroundNode.h"
-#include "H3DHapticsDevice.h"
-#include "X3DTexture3DNode.h"
+#include <H3D/X3DComposedGeometryNode.h>
+#include <H3D/X3DTexture2DNode.h>
+#include <H3D/X3DTextureTransform2DNode.h>
+#include <H3D/X3DShapeNode.h>
+#include <H3D/X3DBackgroundNode.h>
+#include <H3D/H3DHapticsDevice.h>
+#include <H3D/X3DTexture3DNode.h>
 
 
 int main(int argc, char* argv[]) {

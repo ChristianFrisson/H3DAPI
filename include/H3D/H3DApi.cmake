@@ -27,7 +27,7 @@
 ///
 //////////////////////////////////////////////////////////////////////////////
 
-/// \mainpage
+/// \mainpage H3D API Documentation
 /// Copyright 2004, <a href="http://www.sensegraphics.com">SenseGraphics AB</a>
 
 #ifndef __H3DApi_H__
@@ -95,9 +95,9 @@
 #define XML_USE_INMEM_MESSAGELOADER
 #define XML_USE_NETACCESSOR_WINSOCK
 
-//#define LINK_STATIC_EXTERNALS
+//#define H3D_LINK_STATIC_EXTERNALS
 
-#ifdef LINK_STATIC_EXTERNALS
+#ifdef H3D_LINK_STATIC_EXTERNALS
 // define this if you are linking Xerces as a static library
 #define XML_LIBRARY
 // Define this if you are linking Freeimage as a static library
