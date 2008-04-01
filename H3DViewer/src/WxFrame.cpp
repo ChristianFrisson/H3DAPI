@@ -426,6 +426,8 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       ho->lookAheadFactor->setValue( atof( event.GetString().mb_str() ) );
     } else if( id == ID_USE_BOUND_TREE ) {
       ho->useBoundTree->setValue( event.IsChecked() );
+    } else if( id == ID_INTERPOLATE_FORCE_EFFECTS ) {
+      ho->interpolateForceEffects->setValue( event.IsChecked() );
     }
   }
 
@@ -1643,6 +1645,8 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
   EVT_TEXT(ID_MAX_DISTANCE, SettingsDialog::handleSettingsChange )
   EVT_TEXT(ID_LOOK_AHEAD_FACTOR, SettingsDialog::handleSettingsChange )
   EVT_CHECKBOX( ID_USE_BOUND_TREE, SettingsDialog::handleSettingsChange)
+  EVT_CHECKBOX( ID_INTERPOLATE_FORCE_EFFECTS,
+                SettingsDialog::handleSettingsChange)
 
   EVT_CHECKBOX( ID_USE_COLLISION_DETECTION,
                 SettingsDialog::handleSettingsChange)
@@ -2043,12 +2047,14 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent,
     string max_distance = "0.015";
     string look_ahead_factor = "3";
     bool use_bound_tree = true;
+    bool interpolate_force_effects = true;
       
 
   if( gs ) {
     gs->getOptionNode( ho );
     if( ho ) {
       use_bound_tree = ho->useBoundTree->getValue();
+      interpolate_force_effects = ho->interpolateForceEffects->getValue();
 
       const string &face = ho->touchableFace->getValue();
       if( face == "AS_GRAPHICS" ) touchable_face = 0;
@@ -2119,6 +2125,20 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent,
                               wxALL|wxALIGN_CENTER_VERTICAL, 5);
     //haptics_box_sizer->Add(use_bound_tree_checkbox, 0, wxGROW|wxALL, 0);
     haptics_box_sizer->Add(use_bound_tree_sizer, 0, wxGROW|wxALL, 0);
+
+    wxBoxSizer* interpolate_force_effects_sizer =
+      new wxBoxSizer( wxHORIZONTAL );
+    wxCheckBox* interpolate_force_effects_checkbox =
+      new wxCheckBox( panel,
+                      ID_INTERPOLATE_FORCE_EFFECTS, 
+                      wxT("&Interpolate force effects"),
+                      wxDefaultPosition,
+                      wxDefaultSize );
+    interpolate_force_effects_checkbox->SetValue( interpolate_force_effects );
+    interpolate_force_effects_sizer->Add(interpolate_force_effects_checkbox, 0,
+                              wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    haptics_box_sizer->
+      Add(interpolate_force_effects_sizer, 0, wxGROW|wxALL, 0);
 
     item0->Add(haptics_box_sizer, 0, wxGROW|wxLEFT|wxRIGHT, 5);
 

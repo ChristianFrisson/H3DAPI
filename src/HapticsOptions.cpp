@@ -43,6 +43,7 @@ namespace HapticsOptionsInternals {
   FIELDDB_ELEMENT( HapticsOptions, maxDistance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( HapticsOptions, lookAheadFactor, INPUT_OUTPUT );
   FIELDDB_ELEMENT( HapticsOptions, useBoundTree, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( HapticsOptions, interpolateForceEffects, INPUT_OUTPUT );
 }
 
 HapticsOptions::HapticsOptions( 
@@ -50,12 +51,14 @@ HapticsOptions::HapticsOptions(
                            Inst< SFString >  _touchableFace,
                            Inst< SFFloat  > _maxDistance,
                            Inst< SFFloat  > _lookAheadFactor,
-                           Inst< SFBool   > _useBoundTree ) :
+                           Inst< SFBool   > _useBoundTree,
+                           Inst< SFBool   > _interpolateForceEffects ) :
   H3DOptionNode( _metadata ),
   touchableFace( _touchableFace ),
   maxDistance( _maxDistance ),
   lookAheadFactor( _lookAheadFactor ),
-  useBoundTree ( _useBoundTree ) {
+  useBoundTree ( _useBoundTree ),
+  interpolateForceEffects( _interpolateForceEffects ){
   type_name = "HapticsOptions";
 
   database.initFields( this );
@@ -64,6 +67,7 @@ HapticsOptions::HapticsOptions(
   maxDistance->setValue( 0.015f );
   lookAheadFactor->setValue( 3 );
   useBoundTree->setValue( true );
+  interpolateForceEffects->setValue( true );
 }
 
 

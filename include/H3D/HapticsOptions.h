@@ -48,7 +48,8 @@ namespace H3D {
                     Inst< SFString  >  _touchableFace  = 0,
                     Inst< SFFloat   >  _maxDistance  = 0,
                     Inst< SFFloat   > _lookAheadFactor = 0,
-                    Inst< SFBool    > _useBoundTree = 0 );
+                    Inst< SFBool    > _useBoundTree = 0,
+                    Inst< SFBool    > _interpolateForceEffects = 0 );
     
     /// Specifies which sides of the shapes to render haptically. If "BACK"
     /// only the back side of can be felt, "FRONT" only front side and 
@@ -80,7 +81,7 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n    
     auto_ptr< SFFloat > lookAheadFactor;
 
-    /// IF true the boundTree field is used in the X3DGeometryNodes in order
+    /// If true the boundTree field is used in the X3DGeometryNodes in order
     /// to extract which triangles are close enough to the proxy. However if
     /// it is unwanted that the boundTree is used(e.g. because the geometry
     /// changes all the time and the overhead for rebuilding the boundTree
@@ -90,6 +91,20 @@ namespace H3D {
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n    
     auto_ptr< SFBool > useBoundTree;
+
+    /// If true force effects will be smoothed between graphical frames. The
+    /// force effects from the previous and current frame will contribute to
+    /// the total force output. Early in the graphics frame the old force
+    /// effects will be dominating and late in the graphics frame the new force
+    /// effects will be dominating. This means that if a H3DForceEffect node
+    /// use the same instance of a HAPIForceEffect when force effects are
+    /// collected this HAPIForceEffect will be called twice each haptics loop
+    /// when this variable it true. The HapticsOptionsNode should be put in a
+    /// GlobalSettings node for this option to take effect.
+    ///
+    /// <b>Default value: </b> true \n
+    /// <b>Access type: </b> inputOutput \n    
+    auto_ptr< SFBool > interpolateForceEffects;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -31,6 +31,8 @@
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/DeviceInfo.h>
 #include <H3D/X3DViewpointNode.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/HapticsOptions.h>
 
 #include <HAPI/HAPIHapticsRenderer.h>
 #include <HAPI/HAPIProxyBasedRenderer.h>
@@ -225,6 +227,14 @@ void H3DHapticsDevice::renderEffects(
   TimeStamp now_time;
   H3DTime dt = now_time - last_effect_change;
   last_effect_change = now_time;
+  GlobalSettings *gs = GlobalSettings::getActive();
+  if( gs ) {
+    HapticsOptions *ho = 0;
+    gs->getOptionNode( ho );
+    if( ho && !( ho->interpolateForceEffects->getValue() ) )
+      dt = 0;
+  }
+
   if( hapi_device.get() )
     hapi_device->setEffects( effects, dt );
 }
