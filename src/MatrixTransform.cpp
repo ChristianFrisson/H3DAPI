@@ -145,10 +145,10 @@ bool MatrixTransform::lineIntersect(
                              LineIntersectResult &result ) {
   const Matrix4f &the_matrix = matrix->getValue();
   result.pushTransform( the_matrix );
-  Matrix4f theMatrixInverse = the_matrix.inverse();
+  Matrix4f the_matrix_inverse = the_matrix.inverse();
 
-  Vec3f local_from = theMatrixInverse * from;
-  Vec3f local_to = theMatrixInverse * to;
+  Vec3f local_from = the_matrix_inverse * from;
+  Vec3f local_to = the_matrix_inverse * to;
   bool intersection = X3DGroupingNode::lineIntersect( local_from,
                                                       local_to,
                                                       result );
@@ -156,20 +156,14 @@ bool MatrixTransform::lineIntersect(
   return intersection;
 }
 
-void MatrixTransform::closestPoint(
-                  const Vec3f &p,
-                  vector< Vec3f > &closest_point,
-                  vector< Vec3f > &normal,
-                  vector< Vec3f > &tex_coord ) {
-  Matrix4f theMatrix = matrix->getValue();
-  Matrix4f theMatrixInverse = theMatrix.inverse();
-  Vec3f local_p = theMatrixInverse * p;
-  H3DInt32 sizeBefore = closest_point.size();
-  X3DGroupingNode::closestPoint( local_p, closest_point, normal, tex_coord );
-  for( unsigned int i = sizeBefore; i < closest_point.size(); i++ ) {
-    closest_point[i] = theMatrix * closest_point[i];
-    normal[i] = theMatrix.getRotationPart() * normal[i];
-  }
+void MatrixTransform::closestPoint( const Vec3f &p,
+                                    NodeIntersectResult &result ) {
+  const Matrix4f &the_matrix = matrix->getValue();
+  result.pushTransform( the_matrix );
+  Matrix4f the_matrix_inverse = the_matrix.inverse();
+  Vec3f local_p = the_matrix_inverse * p;
+  X3DGroupingNode::closestPoint( local_p, result );
+  result.popTransform();
 }
 
 

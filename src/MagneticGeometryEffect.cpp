@@ -94,14 +94,15 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
         const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
         for( unsigned int i = 0; i < devices.size(); i++ ) {
           H3DHapticsDevice *hd = devices[i];
-          vector< Vec3f > closest_point, temp;
           const Vec3f &pos = ti.getAccInverseMatrix() *
             hd->trackerPosition->getValue();
           X3DGeometryNode * the_geometry = geometry->getValue();
 
           if( the_geometry ) {
-            the_geometry->closestPoint( pos, closest_point, temp, temp );
-            H3DFloat distance = (closest_point.front() - pos).length();
+            NodeIntersectResult result;
+            the_geometry->closestPoint( pos, result );
+            result.transformResult();
+            H3DFloat distance = (result.result.front().point - pos).length();
             bool addForceEffect = false;
             if( active->getValue() ) {
               if( distance >= escapeDistance->getValue() ) {

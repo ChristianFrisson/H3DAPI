@@ -88,18 +88,14 @@ bool Collision::lineIntersect(
   return false;
 }
 
-void Collision::closestPoint(
-                  const Vec3f &p,
-                  vector< Vec3f > &closest_point,
-                  vector< Vec3f > &normal,
-                  vector< Vec3f > &tex_coord ) {
+void Collision::closestPoint( const Vec3f &p,
+                              NodeIntersectResult &result ) {
   if( enabled->getValue() ) {
     X3DChildNode * temp_proxy = proxy->getValue();
     if( temp_proxy )
-      return temp_proxy->closestPoint( p, closest_point, normal, tex_coord );
+      return temp_proxy->closestPoint( p, result );
     else
-      return X3DGroupingNode::closestPoint( p, closest_point, normal,
-             tex_coord);
+      return X3DGroupingNode::closestPoint( p, result );
   }
 }
 

@@ -178,14 +178,11 @@ bool X3DShapeNode::lineIntersect(
     return false;
 }
 
-void X3DShapeNode::closestPoint(
-                  const Vec3f &p,
-                  vector< Vec3f > &closest_point,
-                  vector< Vec3f > &normal,
-                  vector< Vec3f > &tex_coord ) {
+void X3DShapeNode::closestPoint( const Vec3f &p,
+                                 NodeIntersectResult &result ) {
   X3DGeometryNode *tmp_geom = geometry->getValue();
   if( tmp_geom )
-    geometry->getValue()->closestPoint( p, closest_point, normal, tex_coord );
+    geometry->getValue()->closestPoint( p, result );
 }
 
 bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,

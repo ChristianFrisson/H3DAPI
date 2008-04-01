@@ -672,13 +672,11 @@ bool X3DGeometryNode::lineIntersect(
                   LineIntersectResult &result ) {
   Bound * the_bound = bound->getValue();
   if( !the_bound || the_bound->lineSegmentIntersect( from, to ) ) {
-    IntersectionInfo tempresult;
+    IntersectionInfo temp_result;
     bool returnValue =
-      boundTree->getValue()->lineIntersect( from, to, tempresult );
+      boundTree->getValue()->lineIntersect( from, to, temp_result );
     if( returnValue ) {
-      result.result.push_back( tempresult );
-      result.theNodes.push_back( this );
-      result.addTransform();
+      result.addResults( temp_result, this );
       result.addPtDevMap();
     }
     return returnValue;
@@ -686,17 +684,16 @@ bool X3DGeometryNode::lineIntersect(
   return false;
 }
 
-void X3DGeometryNode::closestPoint(
-                  const Vec3f &p,
-                  vector< Vec3f > &closest_point,
-                  vector< Vec3f > &normal,
-                  vector< Vec3f > &tex_coord ) {
+void X3DGeometryNode::closestPoint( const Vec3f &p,
+                                    NodeIntersectResult &result ) {
   Vec3d temp_closest_point, temp_normal, temp_tex_coord;
   boundTree->getValue()->closestPoint( p, temp_closest_point, 
                                        temp_normal, temp_tex_coord );
-  closest_point.push_back( Vec3f( temp_closest_point ) );
-  normal.push_back( Vec3f( temp_normal ) );
-  tex_coord.push_back( Vec3f( temp_tex_coord ) );
+  IntersectionInfo temp_result;
+  temp_result.point = temp_closest_point;
+  temp_result.normal = temp_normal;
+  temp_result.tex_coord = temp_tex_coord;
+  result.addResults( temp_result, this );
 }
 
 bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
@@ -705,16 +702,14 @@ bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
                                              NodeIntersectResult &result ) {
   Bound * the_bound = bound->getValue();
   if( !the_bound || the_bound->movingSphereIntersect( from, to, radius ) ) {
-    HAPI::Collision::IntersectionInfo temp_result;
+    IntersectionInfo temp_result;
     bool return_value =
       boundTree->getValue()->movingSphereIntersect( radius,
                                                     from,
                                                     to,
                                                     temp_result );
     if( return_value ) {
-      result.theNodes.push_back( this );
-      result.result.push_back( temp_result );
-      result.addTransform();
+      result.addResults( temp_result, this );
     }
     return return_value;
   }

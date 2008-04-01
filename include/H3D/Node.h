@@ -128,6 +128,16 @@ namespace H3D {
         }
       }
 
+      /// Convenience function to add results to the struct.
+      inline void addResults( IntersectionInfo &temp_result,
+                              Node * the_node,
+                              bool add_transform = true ) {
+        result.push_back( temp_result );
+        theNodes.push_back( the_node );
+        if( add_transform )
+          addTransform();
+      }
+
     protected:
       /// A vector of matrices from the local
       /// coordinate space to global space for each node that the
@@ -225,14 +235,11 @@ namespace H3D {
 
     /// Find closest point on Node to p.
     /// \param p The point to find the closest point to.
-    /// \param closest_point Return parameter for each closest point
-    /// \param normal Return parameter for normal at each closest point.
-    /// \param tex_coord Return paramater for each texture coordinate at
-    /// closest point.
+    /// \param result A struct containing various results of closest
+    /// points such as which geometries the closest points where
+    /// detected on.
     virtual void closestPoint( const Vec3f &p,
-                               vector< Vec3f > &closest_point,
-                               vector< Vec3f > &normal,
-                               vector< Vec3f > &tex_coord ){}
+                               NodeIntersectResult &result ){}
 
     /// Detect collision between a moving sphere and the Node.
     /// Only nodes to which collision is possible will return true

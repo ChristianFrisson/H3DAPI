@@ -253,33 +253,30 @@ bool Sphere::lineIntersect(
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
 
-  IntersectionInfo tempresult;
+  IntersectionInfo temp_result;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
                                        radius->getValue() );
   bool returnValue =
-    temp_sphere.lineIntersect( from, to, tempresult );
+    temp_sphere.lineIntersect( from, to, temp_result );
   if( returnValue ) {
-    result.result.push_back( tempresult );
-    result.theNodes.push_back( this );
-    result.addTransform();
+    result.addResults( temp_result, this );
     result.addPtDevMap();
   }
   return returnValue;
 }
 
-void Sphere::closestPoint(
-                  const Vec3f &p,
-                  vector< Vec3f > &closest_point,
-                  vector< Vec3f > &normal,
-                  vector< Vec3f > &tex_coord ) {
+void Sphere::closestPoint( const Vec3f &p,
+                           NodeIntersectResult &result ) {
   Vec3d temp_closest_point, temp_normal, temp_tex_coord;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
                                     radius->getValue() );
   temp_sphere.closestPoint( p, temp_closest_point, 
                             temp_normal, temp_tex_coord );
-  closest_point.push_back( Vec3f( temp_closest_point ) );
-  normal.push_back( Vec3f( temp_normal ) );
-  tex_coord.push_back( (Vec3f)temp_tex_coord );
+  IntersectionInfo temp_result;
+  temp_result.point = temp_closest_point;
+  temp_result.normal = temp_normal;
+  temp_result.tex_coord = temp_tex_coord;
+  result.addResults( temp_result, this );
 }
 
 bool Sphere::movingSphereIntersect( H3DFloat _radius,
@@ -288,16 +285,14 @@ bool Sphere::movingSphereIntersect( H3DFloat _radius,
                                     NodeIntersectResult &result ) {
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),
                                     radius->getValue() );
-  HAPI::Collision::IntersectionInfo temp_result;
+  IntersectionInfo temp_result;
   bool return_value = temp_sphere.movingSphereIntersect( _radius,
                                                          from,
                                                          to,
                                                          temp_result );
   if( return_value ) {
-    result.theNodes.push_back( this );
     temp_result.primitive = 0;
-    result.result.push_back( temp_result );
-    result.addTransform();
+    result.addResults( temp_result, this );
   }
   return return_value;
 }

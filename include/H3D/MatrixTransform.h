@@ -146,14 +146,11 @@ namespace H3D {
     /// Find closest point on Node to p. Transforms point
     /// p and calls closestPoint for all children.
     /// \param p The point to find the closest point to.
-    /// \param closest_point Return parameter for each closest point
-    /// \param normal Return parameter for normal at each closest point.
-    /// \param tex_coord Return paramater for each texture coordinate at
-    /// closest point
+    /// \param result A struct containing various results of closest
+    /// points such as which geometries the closest points where
+    /// detected on.
     virtual void closestPoint( const Vec3f &p,
-                               vector< Vec3f > &closest_point,
-                               vector< Vec3f > &normal,
-                               vector< Vec3f > &tex_coord );
+                               NodeIntersectResult &result );
 
     /// Detect collision between a moving sphere and the Node.
     /// Transforms points and radius (if non-uniform scaling the biggest

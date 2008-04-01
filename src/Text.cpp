@@ -478,12 +478,10 @@ bool Text::lineIntersect(
   if( the_bound ) {
       returnValue = the_bound->lineSegmentIntersect( from, to );
       if( returnValue ) {
-        IntersectionInfo tempresult;
-        tempresult.point = Vec3f( 0, 0, 0 );
-        tempresult.normal = Vec3f( 0, 0, 1 );
-        result.result.push_back( tempresult );
-        result.theNodes.push_back( this );
-        result.addTransform();
+        IntersectionInfo temp_result;
+        temp_result.point = Vec3f( 0, 0, 0 );
+        temp_result.normal = Vec3f( 0, 0, 1 );
+        result.addResults( temp_result, this );
         result.addPtDevMap();
       }
   }

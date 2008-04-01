@@ -172,15 +172,12 @@ bool X3DGroupingNode::lineIntersect(
   return intersect;
 }
 
-void X3DGroupingNode::closestPoint(
-                  const Vec3f &p,
-                  vector< Vec3f > &closest_point,
-                  vector< Vec3f > &normal,
-                  vector< Vec3f > &tex_coord ) {
-                    Bound *the_bound = bound->getValue();
+void X3DGroupingNode::closestPoint( const Vec3f &p,
+                                    NodeIntersectResult &result ) {
+  Bound *the_bound = bound->getValue();
   const NodeVector &children_nodes = children->getValue();
   for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-    children_nodes[i]->closestPoint( p, closest_point, normal, tex_coord);
+    children_nodes[i]->closestPoint( p, result );
   }
 }
 

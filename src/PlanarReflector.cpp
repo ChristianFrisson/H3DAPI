@@ -285,13 +285,10 @@ bool PlanarReflector::lineIntersect(
   else return false; 
 }
 
-void PlanarReflector::closestPoint(
-                  const Vec3f &p,
-                  vector< Vec3f > &closest_point,
-                  vector< Vec3f > &normal,
-                  vector< Vec3f > &tex_coord ) {
+void PlanarReflector::closestPoint( const Vec3f &p,
+                                    NodeIntersectResult &result ) {
   X3DGeometryNode *g = geometry->getValue();
-  if( g ) g->closestPoint( p, closest_point, normal, tex_coord );
+  if( g ) g->closestPoint( p, result );
 }
 
 bool PlanarReflector::movingSphereIntersect( H3DFloat radius,

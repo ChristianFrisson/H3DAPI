@@ -194,13 +194,11 @@ bool Inline::lineIntersect( const Vec3f &from,
 }
 
 void Inline::closestPoint( const Vec3f &p,
-                           vector< Vec3f > &closest_point,
-                           vector< Vec3f > &normal,
-                           vector< Vec3f > &tex_coord ) {
+                           NodeIntersectResult &result ) {
   if( load->getValue() ) {
     for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
       Group *g = loadedScene->getValueByIndex( i );
-      if( g ) g->closestPoint( p, closest_point, normal, tex_coord );
+      if( g ) g->closestPoint( p, result );
     }
   }
 }
