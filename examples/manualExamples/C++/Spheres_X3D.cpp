@@ -13,14 +13,16 @@ using namespace H3D;
 
 // Global variables.
 // The geometry to add at each click.
-AutoRef< Node > sphere( X3D::createX3DNodeFromString( "<Sphere radius=\"0.02\" /> ") );
+AutoRef< Node > sphere(
+  X3D::createX3DNodeFromString( "<Sphere radius=\"0.02\" /> ") );
 
 X3D::DEFNodes myDefNodes;
-AutoRef< Node > group( X3D::createX3DNodeFromString( "<Group>\n"
-                                                     "  <Group DEF=\"GROUP\" />\n"
-                                                     "  <MouseSensor DEF=\"MS\" />\n"
-                                                     "</Group>", 
-                                                     &myDefNodes ) );
+AutoRef< Node > group(
+  X3D::createX3DNodeFromString( "<Group>\n"
+                                "  <Group DEF=\"GROUP\" />\n"
+                                "  <MouseSensor DEF=\"MS\" />\n"
+                                "</Group>", 
+                                &myDefNodes ) );
 
 // The AddSphere class adds a new sphere to the group nodes children
 // field each time a field routed to it generates an event.

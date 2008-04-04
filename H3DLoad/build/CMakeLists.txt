@@ -1,10 +1,7 @@
-# The name of our project is "HELLO".  CMakeLists files in this project can
-# refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
-# to the root binary directory of the project as ${HELLO_BINARY_DIR}.
+# The name of our project is "H3DLoad".  CMakeLists files in this project can
+# refer to the root source directory of the project as ${H3DLoad_SOURCE_DIR} and
+# to the root binary directory of the project as ${H3DLoad_BINARY_DIR}.
 project (H3DLoad)
-
-# Create a library called "Hello" which includes the source file "hello.cxx".
-# The extension is already found.  Any number of sources could be listed here.
 
 AUX_SOURCE_DIRECTORY(../src H3DLoad_SRCS)
 
@@ -14,7 +11,7 @@ INCLUDE_DIRECTORIES( ../src )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH "../../build/modules/")
+SET(CMAKE_MODULE_PATH "${H3DLoad_SOURCE_DIR}/../../build/modules/")
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)
@@ -32,7 +29,7 @@ IF(HAPI_FOUND)
   SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
 ENDIF(HAPI_FOUND)
 
-#H#DAPI
+#H3DAPI
 FIND_PACKAGE(H3DAPI REQUIRED)
 
 IF(H3DAPI_FOUND)
@@ -65,6 +62,10 @@ ENDIF(XERCES_FOUND)
 ADD_EXECUTABLE(H3DLoad  ${H3DLoad_SRCS})
 TARGET_LINK_LIBRARIES( H3DLoad ${requiredLibs} ${optionalLibs} )
 
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${H3DLoad_SOURCE_DIR}/../../..)
+ENDIF(WIN32)
 
 INSTALL( TARGETS H3DLoad
 	 LIBRARY DESTINATION lib

@@ -1,15 +1,15 @@
-# The name of our project is "H3DViewer".  CMakeLists files in this project can
-# refer to the root source directory of the project as ${H3DViewer_SOURCE_DIR} and
-# to the root binary directory of the project as ${H3DViewer_BINARY_DIR}.
-project (H3DViewer)
+# The name of our project is "ParticleDemo".  CMakeLists files in this project can
+# refer to the root source directory of the project as ${ParticleDemo_SOURCE_DIR} and
+# to the root binary directory of the project as ${ParticleDemo_BINARY_DIR}.
+project (ParticleDemo)
 
-AUX_SOURCE_DIRECTORY(../src H3DViewer_SRCS)
+AUX_SOURCE_DIRECTORY(../src ParticleDemo_SRCS)
 
 INCLUDE_DIRECTORIES( ../src )
 
 SET(requiredLibs)
 
-SET(CMAKE_MODULE_PATH "${H3DViewer_SOURCE_DIR}/../../build/modules/")
+SET(CMAKE_MODULE_PATH "${ParticleDemo_SOURCE_DIR}/../../../build/modules/")
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)
@@ -55,7 +55,7 @@ IF(XERCES_FOUND)
   SET(optionalLibs ${optionalLibs} ${XERCES_LIBRARIES} )
 ENDIF(XERCES_FOUND)
 
-ADD_EXECUTABLE(H3DViewer WIN32 MACOSX_BUNDLE ${H3DViewer_SRCS})
+ADD_EXECUTABLE(ParticleDemo WIN32 MACOSX_BUNDLE ${ParticleDemo_SRCS})
 
-TARGET_LINK_LIBRARIES( H3DViewer ${requiredLibs} ${optionalLibs} )
+TARGET_LINK_LIBRARIES( ParticleDemo ${requiredLibs} ${optionalLibs} )
 
