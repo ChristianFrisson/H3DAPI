@@ -92,7 +92,6 @@ void RuspiniRenderer::ProxyRadius::onValueChange( const H3DFloat &v ) {
   for( unsigned int i = 0; i < ruspini_node->renderers.size(); i++ ) {
     HAPI::RuspiniRenderer *r = 
       static_cast< HAPI::RuspiniRenderer * >(ruspini_node->getHapticsRenderer( i ) );
-    // convert to millimeters
     r->setProxyRadius( v );
   }
 }

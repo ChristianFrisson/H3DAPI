@@ -1,50 +1,127 @@
 PROJECT (H3DAPI)
 
+# Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
+# for packaging H3DAPI. Default is NO since most people will not use this.
+IF( NOT DEFINED GENERATE_CPACK_PROJECT )
+  SET( GENERATE_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
+  MARK_AS_ADVANCED(GENERATE_CPACK_PROJECT)
+  MESSAGE( "generate cpack project" )
+ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
+
 # include HAPI in the build
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../../HAPI/build BINARY_DIR_FOR_HAPI ${CMAKE_CURRENT_BINARY_DIR} )
 ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../../HAPI/build
                   ${BINARY_DIR_FOR_HAPI} )
 
-
 SET( H3DAPI_MAJOR_VERSION 2 )
 SET( H3DAPI_MINOR_VERSION 0 )
 SET( H3DAPI_BUILD_VERSION 0 )
 
-#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "H3DAPI. A cross platform, device independent, graphics and haptics scenegraph.")
-#SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
-#SET(CPACK_PACKAGE_DESCRIPTION_FILE "${H3DAPI_SOURCE_DIR}/../ReadMe.txt")
-#SET(CPACK_RESOURCE_FILE_LICENSE "${H3DAPI_SOURCE_DIR}/../LICENSE")
+# Set here already in case a special NSIS template needs to be used by cpack.
+SET(CMAKE_MODULE_PATH ${H3DAPI_SOURCE_DIR}/modules )
 
-#SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DAPI_MAJOR_VERSION})
-#SET(CPACK_PACKAGE_VERSION_MINOR ${H3DAPI_MINOR_VERSION})
-#SET(CPACK_PACKAGE_VERSION_PATCH ${H3DAPI_BUILD_VERSION})
-# TODO: fix different for windows and unix if needed.
-#IF(WIN32 AND NOT UNIX)
-#  SET(CPACK_IGNORE_FILES /\\\\.svn/
-#                         \\\\.obj$
-#                         \\\\.vcproj$
-#                         \\\\.ncb$
-#                         \\\\.log$
-#                         \\\\.suo$
-#                         \\\\.sln$
-#                         \\\\.zip$
-#                         \\\\.dir/
-#                         \\\\.user$
-#                         \\\\.cv$
-#                         /Debug
-#                         /debug
-#                         /Release
-#                         /release
-#                         /linux
-#                         /win32
-#                         /osx )
-#  SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
-#                                  "${H3DAPI_SOURCE_DIR}/../../HAPI;HAPI"
-#                                  "${H3DAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil" )
-#  MESSAGE( STATUS ${CPACK_INSTALL_COMMANDS})
-#ENDIF(WIN32 AND NOT UNIX)
-#INCLUDE(CPack)
+# If cpack should be configured.
+IF( GENERATE_CPACK_PROJECT )
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "H3DAPI. A cross platform, device independent, graphics and haptics scenegraph.")
+  SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${H3DAPI_SOURCE_DIR}/../ReadMe.txt")
+  SET(CPACK_RESOURCE_FILE_LICENSE "${H3DAPI_SOURCE_DIR}/../LICENSE")
+  SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};H3DAPI;ALL;/"
+                                   "${BINARY_DIR_FOR_HAPI};HAPI;ALL;/" )
+
+  # If H3DLoad should be added to the package.
+  SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
+  MARK_AS_ADVANCED(H3DLoad_cmake_install)
+  IF( H3DLoad_cmake_install )
+    SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
+                                     "${H3DLoad_cmake_install};H3DLoad;ALL;/" )
+    IF( WIN32 )
+      SET( CPACK_ADD_H3DLOAD_DEMOS_LINKS "ON" )
+    ENDIF( WIN32 )
+  ENDIF( H3DLoad_cmake_install )
+  
+  # If H3DViewer should be added to package.
+  SET( H3DViewer_cmake_install "" CACHE PATH "Needs to be set if H3DViewer is desired to be packed in the install.  Set to location of cmake_install.cmake for H3DViewer." )
+  MARK_AS_ADVANCED(H3DViewer_cmake_install)
+  IF( H3DViewer_cmake_install )
+    SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
+                                      "${H3DViewer_cmake_install};H3DViewer;ALL;/" )
+    IF( WIN32 )
+      SET( CPACK_PACKAGE_EXECUTABLES ${CPACK_PACKAGE_EXECUTABLES}
+                                     "H3DViewer;H3DViewer" )
+    ENDIF( WIN32 )
+  ENDIF( H3DViewer_cmake_install )
+  
+  #If particleDemo should be added to package.
+  SET( ParticleDemo_cmake_install "" CACHE PATH "Needs to be set if ParticleDemo is desired to be packed in the install.  Set to location of cmake_install.cmake for ParticleDemo." )
+  MARK_AS_ADVANCED(ParticleDemo_cmake_install)
+  IF( ParticleDemo_cmake_install )
+    SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
+                                      "${ParticleDemo_cmake_install};ParticleDemo;ALL;/" )
+  ENDIF( ParticleDemo_cmake_install )
+
+  SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DAPI_MAJOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_MINOR ${H3DAPI_MINOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_PATCH ${H3DAPI_BUILD_VERSION})
+  # TODO: fix different for windows and unix if needed.
+  IF(WIN32 AND NOT UNIX)
+    SET(CPACK_IGNORE_FILES /\\\\.svn/
+                           \\\\.obj$
+                           \\\\.ncb$
+                           \\\\.log$
+                          \\\\.suo$
+                          \\\\.zip$
+                          \\\\.dir/
+                          \\\\.user$
+                          \\\\.cv$
+                          "/Debug(.)*/"
+                          "/debug(.)*/"
+                          /Release
+                          /release
+                          /linux
+                          /build/win32/
+                          /build/vc8
+                          /build/vc7
+                          /osx
+                          /H3DAPI/Util/ )
+    SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
+                                    "${H3DAPI_SOURCE_DIR}/../../HAPI;HAPI"
+                                    "${H3DAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
+                                    "${H3DAPI_SOURCE_DIR}/../../doc;doc" )
+
+    #Extra links to start menu if values are "ON"
+    SET( CPACK_ADD_H3DDOC_LINKS "ON" )
+    SET( CPACK_ADD_H3DSETTINGS_LINKS "ON" )
+    
+    # Extra install commands will be set to install python and OpenAL
+    SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
+    SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "\\n" )
+    
+    # Install python if not already installed
+    SET( PythonInstallMSI "" CACHE FILEPATH "Needs to be set to add python installation to the package." )
+    MARK_AS_ADVANCED(PythonInstallMSI)
+    IF( PythonInstallMSI )
+      STRING( REPLACE "/" "\\\\" TEMP_PythonInstallMSI ${PythonInstallMSI} )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             "   Code to install Python\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n   StrCmp $0 \\\"\\\" 0 +5\\n  file ${TEMP_PythonInstallMSI}\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\python-2.4.4.msi\\\"'\\n  delete $INSTDIR\\\\python-2.4.4.msi\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n   Push H3D_PYTHON_ROOT\\n  Push $0\\n   Call WriteEnvStr\\n" )
+      SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+                                               "   Remove H3D_PYTHON_ROOT\\n   Push H3D_PYTHON_ROOT\\n  Call un.DeleteEnvStr\\n")
+    ENDIF( PythonInstallMSI )
+    
+    # Install OpenAL
+    SET( OpenAlInstallExe "" CACHE FILEPATH "Needs to be set to add openal installation to the package." )
+    MARK_AS_ADVANCED(OpenAlInstallExe)
+    IF( OpenAlInstallExe )
+      STRING( REPLACE "/" "\\\\" TEMP_OpenAlInstallExe ${OpenAlInstallExe} )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             "   Code to install OPENAL\\n   file ${TEMP_OpenAlInstallExe}\\n  ExecWait \\\"$INSTDIR\\\\OpenALwEAX.exe\\\"\\n  delete $INSTDIR\\\\OpenALwEAX.exe\\n" )
+    ENDIF( OpenAlInstallExe )
+
+    # Do not modify path since this is done by the NSIS template.
+    SET( CPACK_NSIS_MODIFY_PATH "OFF" )
+  ENDIF(WIN32 AND NOT UNIX)
+ENDIF( GENERATE_CPACK_PROJECT )
 
 SET( H3DAPI_FULL_VERSION
 ${H3DAPI_MAJOR_VERSION}.${H3DAPI_MINOR_VERSION}.${H3DAPI_BUILD_VERSION} ) 
@@ -76,8 +153,6 @@ ${H3DAPI_SOURCE_DIR}/../../HAPI/Chai3DRenderer/include)
 IF(WIN32)
   SET(requiredLibs ${requiredLibs} winmm.lib )
 ENDIF(WIN32)
-
-SET(CMAKE_MODULE_PATH ${H3DAPI_SOURCE_DIR}/modules )
 
 FIND_PACKAGE(PTHREAD REQUIRED)
 IF(PTHREAD_FOUND)
@@ -279,6 +354,111 @@ IF(WIN32)
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${DIRECTSHOW_LIBRARIES})
   ENDIF(DIRECTSHOW_FOUND)
 ENDIF(WIN32)
+
+# If cpack project should be generated and windows is the system on which to generate
+# a number of extra directories needs to be added.
+IF( WIN32 AND GENERATE_CPACK_PROJECT )
+  IF( PTHREAD_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${PTHREAD_INCLUDE_DIR};External/include/pthread" )
+  ENDIF( PTHREAD_FOUND )
+  
+  IF( OPENGL_FOUND AND OPENGL_INCLUDE_DIR )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${OPENGL_INCLUDE_DIR}/GL;External/include/GL" )
+  ENDIF( OPENGL_FOUND AND OPENGL_INCLUDE_DIR )
+  
+  IF( GLUT_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${GLUT_INCLUDE_DIR}/GL;External/include/GL" )
+  ENDIF( GLUT_FOUND )
+  
+  IF( GLEW_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${GLEW_INCLUDE_DIR}/GL;External/include/GL" )
+  ENDIF( GLEW_FOUND )
+  
+  IF( XERCES_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${XERCES_INCLUDE_DIR}/..;External/include/xerces-c-src_2_7_0" )
+  ENDIF( XERCES_FOUND )
+  
+  IF( CURL_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${CURL_INCLUDE_DIR}/curl;External/include/curl" )
+  ENDIF( CURL_FOUND )
+  
+  IF( NVIDIACG_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${NVIDIACG_INCLUDE_DIR};External/include/Cg" )
+  ENDIF( NVIDIACG_FOUND )
+  
+  IF( ZLIB_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${ZLIB_INCLUDE_DIR};External/include/zlib" )
+  ENDIF( ZLIB_FOUND )
+  
+  IF( OPENAL_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${OPENAL_INCLUDE_DIR};External/include/OpenAL" )
+  ENDIF( OPENAL_FOUND )
+  
+  IF( VORBIS_FOUND )
+    FOREACH(TEMP_LIST_ITEM ${VORBIS_INCLUDE_DIR})
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${TEMP_LIST_ITEM}/..;External/include/vorbis" )
+    ENDFOREACH(TEMP_LIST_ITEM ${ARGV})
+  ENDIF( VORBIS_FOUND )
+  
+  IF( AUDIOFILE_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${AUDIOFILE_INCLUDE_DIR};External/include/libaudiofile" )
+  ENDIF( AUDIOFILE_FOUND )
+  
+  IF( FREETYPE_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${FREETYPE_INCLUDE_DIR}/..;External/include/freetype" )
+  ENDIF( FREETYPE_FOUND )
+  
+  IF( 3DXWARE_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${3DXWARE_INCLUDE_DIR}/..;External/include/3dconnexion" )
+  ENDIF( 3DXWARE_FOUND )
+  
+  IF( FTGL_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${FTGL_INCLUDE_DIR}/FTGL;External/include/FTGL" )
+  ENDIF( FTGL_FOUND )
+  
+  IF( FREEIMAGE_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${FREEIMAGE_INCLUDE_DIR}/..;External/include/FreeImage" )
+  ENDIF( FREEIMAGE_FOUND )
+  
+  IF( DIRECTSHOW_FOUND )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${DIRECTSHOW_INCLUDE_DIR_STREAMS_H}/..;External/include/DirectShow" )
+  ENDIF( DIRECTSHOW_FOUND )
+  
+  SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                  ${HAPI_CPACK_INSTALLED_DIRECTORIES} )
+
+  IF( H3DViewer_cmake_install )
+    #TODO: use h3dviewer to find this
+    STRING(REPLACE  "\\" "/" WX_INCLUDE_DIRECTORIES "$ENV{H3D_EXTERNAL_ROOT}/include/wx" )
+    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${WX_INCLUDE_DIRECTORIES};External/include/wx" )
+  ENDIF( H3DViewer_cmake_install )
+  
+  SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${H3DAPI_SOURCE_DIR}/../../External/bin;External/bin" )  
+  SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                    "${H3DAPI_SOURCE_DIR}/../../External/lib;External/lib" )
+  
+  INCLUDE(CPack)
+ELSE( WIN32 AND GENERATE_CPACK_PROJECT )
+  INCLUDE(CPack)
+ENDIF( WIN32 AND GENERATE_CPACK_PROJECT )
 
 # H3DAPI shared library definition
 ADD_LIBRARY(H3DAPI SHARED ${H3DAPI_SRCS})
