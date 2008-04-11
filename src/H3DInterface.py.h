@@ -33,18 +33,15 @@ namespace H3D {
     // const string H3DInterface_string = "print \"TEST\" \n";
 
     const string H3DInterface_string = "\
-print \"TEST\" \n\
 from H3D import * \n\
 \n\
 import sys\n\
 \n\
-print \"TEST\" \n\
 Console = H3DConsole()\n\
 \n\
 sys.stdout = Console\n\
 sys.stderr = Console\n\
 \n\
-print \"TEST\" \n\
 ###################################################################\n\
 #\n\
 # Base types; Vec2f, Vec3f, Vec2d, Vec2d, etc, etc, etc\n\

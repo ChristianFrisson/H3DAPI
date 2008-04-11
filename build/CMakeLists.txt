@@ -28,6 +28,7 @@ IF( GENERATE_CPACK_PROJECT )
   SET(CPACK_RESOURCE_FILE_LICENSE "${H3DAPI_SOURCE_DIR}/../LICENSE")
   SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};H3DAPI;ALL;/"
                                    "${BINARY_DIR_FOR_HAPI};HAPI;ALL;/" )
+  SET(CPACK_PACKAGE_INSTALL_DIRECTORY "H3D" )
 
   # If H3DLoad should be added to the package.
   SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
@@ -83,7 +84,31 @@ IF( GENERATE_CPACK_PROJECT )
                           /build/vc8
                           /build/vc7
                           /osx
-                          /H3DAPI/Util/ )
+                          /H3DAPI/Util/
+                          /fparser.lib$
+                          /teem.lib$
+                          /wxbase28_net.lib$
+                          /wxbase28_odbc.lib$
+                          /wxbase28_xml.lib$
+                          /wxbase28_net.lib$
+                          /wxbase28_odbc.lib$
+                          /wxbase28_xml.lib$
+                          /wxexpat.lib$
+                          /wxjpeg.lib$
+                          /wxmsw28_aui.lib$
+                          /wxmsw28_dbgrid.lib$
+                          /wxmsw28_html.lib$
+                          /wxmsw28_media.lib$
+                          /wxmsw28_qa.lib$
+                          /wxmsw28_richtext.lib$
+                          /wxmsw28_xrc.lib$
+                          /wxpng.lib$
+                          /wxregex.lib$
+                          /wxtiff.lib$
+                          /wxzlib.lib$
+                          /pthreadGC2.dll$
+                          /pthreadGCE2.dll$
+                          /pthreadVSE2.dll$ )
     SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
@@ -512,7 +537,7 @@ ELSEIF(MSVC80)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc8 )
   # remove some warnings about deprecated functions.
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-")
-  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES LINK_FLAGS "/NODEFAULTLIB:msvcrt")
+  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt")
 ELSEIF(MSCV90)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc9 )
   # remove some warnings about deprecated functions.

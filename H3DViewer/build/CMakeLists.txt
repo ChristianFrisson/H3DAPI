@@ -59,3 +59,11 @@ ADD_EXECUTABLE(H3DViewer WIN32 MACOSX_BUNDLE ${H3DViewer_SRCS})
 
 TARGET_LINK_LIBRARIES( H3DViewer ${requiredLibs} ${optionalLibs} )
 
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${H3DViewer_SOURCE_DIR}/../../..)
+ENDIF(WIN32)
+
+INSTALL( TARGETS H3DViewer
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )

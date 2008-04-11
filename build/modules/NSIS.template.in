@@ -24,7 +24,7 @@
   !include "MUI.nsh"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\@CPACK_PACKAGE_INSTALL_DIRECTORY@"  
+  InstallDir "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"  
 
 ;--------------------------------
 ;General
@@ -79,7 +79,7 @@ Function .onInit
 
   done:
   StrCmp $SV_ALLUSERS "AllUsers" 0 +2
-    StrCpy $INSTDIR "$PROGRAMFILES\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+    StrCpy $INSTDIR "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
   StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 noOptionsPage
     !insertmacro MUI_INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
@@ -616,22 +616,22 @@ Section "Installer Section" InstSection
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Demos"
 
     ;Add Example shortcuts.
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Earth Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_earthshader.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Glass Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_glass.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cubemap.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\CubeMap\CubeMap.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Deformable Shape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DeformableShape\deform.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Depth map surface.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DepthMapSurface\depthMappedITS.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Dynamic.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DynamicTransform\dynamic.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Fish.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\fish\Kumanomi.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Flight.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\flight\flight.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Polka Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_polkadot.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Magnetic lines.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\magneticlines\magneticlines.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Plane.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\plane\bobcat.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"'
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SuperShape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SuperShape\SuperShape.x3d"'
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Earth Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Glass Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_glass.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cubemap.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\CubeMap\CubeMap.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Deformable Shape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DeformableShape\deform.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Depth map surface.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DepthMapSurface\depthMappedITS.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Dynamic.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DynamicTransform\dynamic.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Fish.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\fish\Kumanomi.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Flight.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\flight\flight.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Polka Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_polkadot.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Magnetic lines.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\magneticlines\magneticlines.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Plane.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\plane\bobcat.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SuperShape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SuperShape\SuperShape.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
   
   StrCmp "@CPACK_ADD_H3DDOC_LINKS@" "ON" 0 +5
     ;Create Docs folder.
@@ -641,9 +641,11 @@ Section "Installer Section" InstSection
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\H3D API Manual.lnk" "$INSTDIR\doc\H3D API Manual.pdf"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\HAPI Manual.lnk" "$INSTDIR\doc\HAPI Manual.pdf"
   
-  StrCmp "@CPACK_ADD_H3DSETTINGS_LINKS@" "ON" 0 +2
+  StrCmp "@CPACK_ADD_H3DSETTINGS_LINKS@" "ON" 0 +4
     ; Add link to settingsGUI.exe
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DLoad settings.lnk" "$INSTDIR\H3DAPI\settings\SettingsGUI.exe"
+    SetOutPath $INSTDIR\H3DAPI\settings
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DLoad settings.lnk" "$INSTDIR\H3DAPI\settings\SettingsGUI.exe" "" "$INSTDIR\H3DAPI\settings\icons\settings.ico"
+    SetOutPath $INSTDIR
 
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
