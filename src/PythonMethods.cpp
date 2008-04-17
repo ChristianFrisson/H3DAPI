@@ -596,28 +596,31 @@ if( check_func( value ) ) {                                         \
       PythonInternals::H3DInterface_dict = 
         PyModule_GetDict( PythonInternals::H3DInterface_module.get() );
 #else
-      H3DInterface_module.reset( PyImport_AddModule( "H3DInterface" ) ); 
-      PythonInternals::H3DInterface_dict = 
-        PyModule_GetDict( PythonInternals::H3DInterface_module.get() );
-      // install the buildins in the module
-      if( PythonInternals::H3DInterface_dict != NULL ) {
-        if (PyDict_GetItemString(  PythonInternals::H3DInterface_dict, 
-                                   "__builtins__") == NULL) {
-          if (PyDict_SetItemString(  PythonInternals::H3DInterface_dict, 
-                                     "__builtins__",
-                                     PyEval_GetBuiltins()) != 0)
-            Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
+      if ( !PythonInternals::H3DInterface_module.get() ) {
+        PythonInternals::H3DInterface_module.reset( 
+          PyImport_AddModule( "H3DInterface" ) ); 
+        PythonInternals::H3DInterface_dict = 
+          PyModule_GetDict( PythonInternals::H3DInterface_module.get() );
+        // install the buildins in the module
+        if( PythonInternals::H3DInterface_dict != NULL ) {
+          if (PyDict_GetItemString(  PythonInternals::H3DInterface_dict, 
+            "__builtins__") == NULL) {
+              if (PyDict_SetItemString(  PythonInternals::H3DInterface_dict, 
+                "__builtins__",
+                PyEval_GetBuiltins()) != 0)
+                Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
+          }
         }
-      }
 
-      string a = H3DInterface::H3DInterface_string;
-      PyObject *r = PyRun_String( H3DInterface::H3DInterface_string.c_str(), 
-                                  Py_file_input,
-                                  PythonInternals::H3DInterface_dict,
-                                  PythonInternals::H3DInterface_dict );
-      if ( r == NULL ) {
-        Console( 3 ) << "Python error in file H3DInterface.py.h:" << endl;
-        PyErr_Print();
+        string a = H3DInterface::H3DInterface_string;
+        PyObject *r = PyRun_String( H3DInterface::H3DInterface_string.c_str(), 
+          Py_file_input,
+          PythonInternals::H3DInterface_dict,
+          PythonInternals::H3DInterface_dict );
+        if ( r == NULL ) {
+          Console( 3 ) << "Python error in file H3DInterface.py.h:" << endl;
+          PyErr_Print();
+        }
       }
 
 #endif

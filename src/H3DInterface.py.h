@@ -233,18 +233,14 @@ periodic_update_classes = {}\n\
 def PeriodicUpdate( base_class ):\n\
   class PeriodicUpdateBase( base_class ):\n\
     def __init__( self ):\n\
-      print \"calling init\"\n\
       base_class.__init__( self, 0 )\n\
-      print \"set up route\"\n\
       self.route( eventSink )\n\
   \n\
   global periodic_update_classes\n\
   if( periodic_update_classes.has_key( base_class ) ):\n\
-    print \"class found, use old\"\n\
     return periodic_update_classes[base_class]\n\
   else:\n\
     periodic_update_classes[base_class] = PeriodicUpdateBase\n\
-    print \"class not found, create new\"\n\
     return PeriodicUpdateBase\n\
 \n";
 

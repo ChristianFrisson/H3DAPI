@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<DeviceInfo>
+  <SimballDevice positionCalibration="2 0 0 0
+                                      0 2 0 0
+                                      0 0 2 0.3
+                                      0 0 0 1"  proxyWeighting="1" >
+	<GodObjectRenderer/>
+  </SimballDevice>
+</DeviceInfo>

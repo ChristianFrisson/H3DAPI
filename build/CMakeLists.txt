@@ -531,18 +531,44 @@ SET_TARGET_PROPERTIES( H3DAPI PROPERTIES VERSION ${H3DAPI_FULL_VERSION} )
 
 # change the name depending on compiler to be able to tell them apart
 # since they are not compatible with each other. 
+SET( TEMP_OUTPUT_POSTFIX "" )
 IF(MSVC70 OR MSVC71)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc7 )
+  SET( TEMP_OUTPUT_POSTFIX _vc7 )
 ELSEIF(MSVC80)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc8 )
+  SET( TEMP_OUTPUT_POSTFIX _vc8 )
   # remove some warnings about deprecated functions.
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-")
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt")
-ELSEIF(MSCV90)
+ELSEIF(MSVC90)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc9 )
+  SET( TEMP_OUTPUT_POSTFIX _vc9 )
   # remove some warnings about deprecated functions.
-  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE" )
+  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /MP" )
 ENDIF(MSVC70 OR MSVC71)
+
+IF( WIN32 )
+  # delay load information, not working for some reason when the / is there. For version 2.4.8 of cmake
+  # According to some information it should work with latest trunk of cmake.
+  # It is also not really correct in the fact that it does not add the choice in the properties
+  # of the microsoft visual studio target but rather put it on the command prompt.
+  # Only tested with microsoft visual studio c++ 2003 and 2005 express.
+  SET_TARGET_PROPERTIES( H3DAPI
+                         PROPERTIES
+                         LINK_FLAGS "/DELAYLOAD:\"cg.dll\""
+                         LINK_FLAGS "/DELAYLOAD:\"dgGL.dll\""
+                         LINK_FLAGS "/DELAYLOAD:\"FreeImage.dll\""
+                         LINK_FLAGS "/DELAYLOAD:\"ftgl_dynamic_MTD.dll\""
+                         LINK_FLAGS "/DELAYLOAD:\"OpenAL32.dll\""
+                         LINK_FLAGS "/DELAYLOAD:\"vorbisfile.dll\"" )
+  SET_TARGET_PROPERTIES( H3DAPI
+                         PROPERTIES  
+                         LINK_FLAGS_DEBUG "/DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\""
+                         LINK_FLAGS_DEBUG "/DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\""
+                         LINK_FLAGS_RELEASE "/DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\""
+                         LINK_FLAGS_RELEASE "/DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
+ENDIF( WIN32 )
 
 # autogenerate H3DAPI.h depending on the libraries available.
 CONFIGURE_FILE( ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.cmake ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.h )
