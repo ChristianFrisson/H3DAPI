@@ -518,7 +518,7 @@ IF(NOT WIN32 AND NOT APPLE)
 ENDIF(NOT WIN32 AND NOT APPLE) 
 
 # make sure symbols are exported.
-SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-DH3DAPI_EXPORTS" )
+SET( H3DAPI_COMPILE_FLAGS "-DH3DAPI_EXPORTS" )
 
 # add the libraries needed for linking
 TARGET_LINK_LIBRARIES( H3DAPI ${requiredLibs} ${optionalLibs} )
@@ -532,6 +532,7 @@ SET_TARGET_PROPERTIES( H3DAPI PROPERTIES VERSION ${H3DAPI_FULL_VERSION} )
 # change the name depending on compiler to be able to tell them apart
 # since they are not compatible with each other. 
 SET( TEMP_OUTPUT_POSTFIX "" )
+SET( H3DAPI_LINK_FLAGS_DEBUG "" )
 IF(MSVC70 OR MSVC71)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc7 )
   SET( TEMP_OUTPUT_POSTFIX _vc7 )
@@ -539,14 +540,16 @@ ELSEIF(MSVC80)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc8 )
   SET( TEMP_OUTPUT_POSTFIX _vc8 )
   # remove some warnings about deprecated functions.
-  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-")
-  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt")
+  SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+  SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
 ELSEIF(MSVC90)
   SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc9 )
   SET( TEMP_OUTPUT_POSTFIX _vc9 )
   # remove some warnings about deprecated functions.
-  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /MP" )
+  SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
 ENDIF(MSVC70 OR MSVC71)
+
+SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS}" )
 
 IF( WIN32 )
   # delay load information, not working for some reason when the / is there. For version 2.4.8 of cmake
@@ -556,18 +559,12 @@ IF( WIN32 )
   # Only tested with microsoft visual studio c++ 2003 and 2005 express.
   SET_TARGET_PROPERTIES( H3DAPI
                          PROPERTIES
-                         LINK_FLAGS "/DELAYLOAD:\"cg.dll\""
-                         LINK_FLAGS "/DELAYLOAD:\"dgGL.dll\""
-                         LINK_FLAGS "/DELAYLOAD:\"FreeImage.dll\""
-                         LINK_FLAGS "/DELAYLOAD:\"ftgl_dynamic_MTD.dll\""
-                         LINK_FLAGS "/DELAYLOAD:\"OpenAL32.dll\""
-                         LINK_FLAGS "/DELAYLOAD:\"vorbisfile.dll\"" )
+                         LINK_FLAGS "/DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"dgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"ftgl_dynamic_MTD.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\"" )
+
   SET_TARGET_PROPERTIES( H3DAPI
                          PROPERTIES  
-                         LINK_FLAGS_DEBUG "/DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\""
-                         LINK_FLAGS_DEBUG "/DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\""
-                         LINK_FLAGS_RELEASE "/DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\""
-                         LINK_FLAGS_RELEASE "/DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
+                         LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\" /DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\""
+                         LINK_FLAGS_RELEASE "/DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\" /DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
 ENDIF( WIN32 )
 
 # autogenerate H3DAPI.h depending on the libraries available.

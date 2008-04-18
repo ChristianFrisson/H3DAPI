@@ -327,7 +327,7 @@ void DirectShowDecoder::pausePlaying() {
     HRESULT hr = S_OK;
     // Stop the graph running;
     if (FAILED(hr = g_pMC->Pause()) ){
-      Console( 4 ) << "Pause failed (" << (DirectShowDecoder::pausePlaying)
+      Console( 4 ) << "Pause failed (" << (&DirectShowDecoder::pausePlaying)
                    << ")" << endl;
     } else {
       status = PAUSED;

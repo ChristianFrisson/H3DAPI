@@ -36,7 +36,10 @@ namespace H3D {
   class RefCountMField;
   
   namespace FieldInternals {
-   
+
+#if _MSC_VER >= 1500
+#pragma warning( disable : 4275 )
+#endif
     /// \internal
     /// The MFNodeAutoRefVector is a class used in MFNode in order to 
     /// call the onAdd and onRemove functions when
@@ -45,6 +48,9 @@ namespace H3D {
     template< class RefClass >
     class H3DAPI_API MFNodeAutoRefVector: public AutoRefVector< RefClass > {
     public :
+#if _MSC_VER >= 1500
+#pragma warning( default : 4275 )
+#endif
 
       /// Creates an empty vector.
       inline MFNodeAutoRefVector() {}
@@ -109,7 +115,6 @@ namespace H3D {
       /// The field the vector resides in.
       RefCountMField< RefClass > *owner;
     };
-
   }
 }
 

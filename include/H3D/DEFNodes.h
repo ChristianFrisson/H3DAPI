@@ -28,11 +28,17 @@ namespace H3D {
     /// 
     H3D_VALUE_EXCEPTION( const string, NoSuchDEFName );
 
+#if _MSC_VER >= 1500
+#pragma warning( disable : 4275 )
+#endif
     /// Provides a mapping between defined DEF names in X3D and 
     /// the nodes they refer to.
     /// 
     class H3DAPI_API DEFNodes : 
       private map< const string, Node * > { //, Util::LtStr > {
+#if _MSC_VER >= 1500
+#pragma warning( default : 4275 )
+#endif
     public: 
       
       /// Destructor. unrefs all the nodes in the map.
