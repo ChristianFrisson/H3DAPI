@@ -135,13 +135,14 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   URNResolver *urn_resolver = ResourceResolver::getURNResolver();
   string urn = url;
   if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
-  string::size_type pos = urn.find_last_of( "/\\" );
-  string path = urn.substr( 0, pos + 1 );
-  string old_base = ResourceResolver::getBaseURL();
 
   bool is_tmp_file;
   string resolved_url = ResourceResolver::resolveURLAsFile( url, 
                                                             &is_tmp_file );
+  
+  string::size_type pos = resolved_url.find_last_of( "/\\" );
+  string path = resolved_url.substr( 0, pos + 1 );
+  string old_base = ResourceResolver::getBaseURL();
 
 #ifdef WIN32
   // needed when running H3DAPI as a plugin to a web-browser
