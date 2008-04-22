@@ -61,18 +61,27 @@ void ImportLibrary::initialize() {
        i++ ) {
     DynamicLibrary::LIBHANDLE handle;
 #ifdef WIN32
-
-#ifdef _DEBUG
     bool ends_in_dll = (*i).find( ".dll" ) != string::npos;
 
+#ifdef _DEBUG
+
     if( !ends_in_dll ) {
-      // test the given name directly.
-      string filename = resolveURLAsFile( (*i) + "_d" );
-      if( filename == "" ) filename = (*i) + "_d";
-      handle = DynamicLibrary::load( filename );
+      // try relative path first
+      handle = DynamicLibrary::load( url_base + (*i) + "_d" );
       if( handle ) return;
     }
+
+    // try absolute path.
+    handle = DynamicLibrary::load( (*i) + "_d" );
+    if( handle ) return;
+    
 #endif // _DEBUG
+
+    if( !ends_in_dll ) {
+      // try as relative path first
+      handle = DynamicLibrary::load( url_base + (*i) );
+      if( handle ) return;
+    }
 
 #endif // WIN32
 
