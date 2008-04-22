@@ -145,17 +145,19 @@ PythonScript::PythonScript( Inst< MFString > _url,
 }
 
 PythonScript::~PythonScript() {
-  // Clearing the dictionary
-  PyDict_Clear( static_cast< PyObject * >(module_dict) );
-
-  // Removing the PythonScript module module_name from database.
-  // If it is already removed then there are two PythonScripts in the
-  // scene using the same module_name ( or DEF ).
-  PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
-  if( PyDict_DelItemString( temp_sys_module_dict,
-                            (char*)module_name.c_str() ) == -1 ) {
-    Console(4) << "Could not remove the python module " << module_name
-               << " from the sys.modules database. " << endl;
+  if( module_dict ) {
+    // Clearing the dictionary
+    PyDict_Clear( static_cast< PyObject * >(module_dict) );
+    
+    // Removing the PythonScript module module_name from database.
+    // If it is already removed then there are two PythonScripts in the
+    // scene using the same module_name ( or DEF ).
+    PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
+    if( PyDict_DelItemString( temp_sys_module_dict,
+                              (char*)module_name.c_str() ) == -1 ) {
+      Console(4) << "Could not remove the python module " << module_name
+                 << " from the sys.modules database. " << endl;
+    }
   }
 }
 
