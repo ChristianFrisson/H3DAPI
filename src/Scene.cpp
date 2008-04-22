@@ -44,6 +44,7 @@
 #include <H3D/X3DGroupingNode.h>
 #include <H3D/ProfilesAndComponents.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/H3DMultiPassRenderObject.h>
 
 using namespace H3D;
 
@@ -94,6 +95,8 @@ void Scene::idle() {
   frameRate->setValue( 1.0f / (H3DFloat)( t - last_time ), id );
   last_time = t;
   time->setValue( t, id );
+
+  H3DMultiPassRenderObject::resetCounters();
 
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {

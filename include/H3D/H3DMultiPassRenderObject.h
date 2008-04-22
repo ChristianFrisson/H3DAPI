@@ -42,7 +42,8 @@ namespace H3D {
   public:
 
     /// Constructor.
-    inline H3DMultiPassRenderObject() {
+    inline H3DMultiPassRenderObject():
+      nr_times_in_scene( 0 ) {
       instances.push_back( this );
     }
     
@@ -70,12 +71,24 @@ namespace H3D {
     virtual void renderPostScene( X3DChildNode *scene_root,
                                   X3DViewpointNode *vp) {}
 
+    /// Traverse the scenegraph. 
+    virtual void traverseSG( TraverseInfo &ti ) {
+      nr_times_in_scene++;
+    }
+
+    /// Reset the counter.
+    inline void resetCounter() {
+      nr_times_in_scene = 0;
+    }
+
+
     /// Run renderPreViewpoint on all instances of H3DMultiPassRenderObject.
     static void renderPreViewpointAll( X3DChildNode *n,
                                        X3DViewpointNode *vp ) { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
            i != instances.end(); i++ ) {
-        (*i)->renderPreViewpoint( n, vp );
+        if( (*i)->nr_times_in_scene > 0 )
+          (*i)->renderPreViewpoint( n, vp );
       }
     }
 
@@ -84,7 +97,8 @@ namespace H3D {
                                         X3DViewpointNode *vp ) { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
            i != instances.end(); i++ ) {
-        (*i)->renderPostViewpoint( n, vp );
+        if( (*i)->nr_times_in_scene > 0 )
+          (*i)->renderPostViewpoint( n, vp );
       }
     }
 
@@ -93,13 +107,25 @@ namespace H3D {
                                     X3DViewpointNode *vp ) { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
            i != instances.end(); i++ ) {
-        (*i)->renderPostScene( n, vp );
+        if( (*i)->nr_times_in_scene > 0 )
+          (*i)->renderPostScene( n, vp );
+      }
+    }
+
+    /// Run renderPostScene on all instances of H3DMultiPassRenderObject.
+    static void resetCounters() { 
+      for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
+           i != instances.end(); i++ ) {
+        (*i)->resetCounter();
       }
     }
 
   protected:
     // All instances of H3DMultiPassRenderObject that has been created.
     static std::list< H3DMultiPassRenderObject * > instances;
+
+    // The number of times the node appears in the current rendered scene-graph.
+    unsigned int nr_times_in_scene;
   };
 }
 

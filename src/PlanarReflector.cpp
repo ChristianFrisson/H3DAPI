@@ -272,6 +272,7 @@ void PlanarReflector::traverseSG( TraverseInfo &ti ) {
   Node *g = geometry->getValue();
   if ( g ) g->traverseSG( ti );
   X3DChildNode::traverseSG( ti );
+  H3DMultiPassRenderObject::traverseSG( ti );
 }
 
 bool PlanarReflector::lineIntersect(
