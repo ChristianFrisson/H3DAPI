@@ -676,7 +676,7 @@ Section "Installer Section" InstSection
   Call WriteEnvStr
   
   Push PYTHONPATH
-  Push $INSTDIR\H3DAPI\lib;$%PYTHONPATH%
+  Push $INSTDIR\H3DAPI\lib
   Call WriteEnvStr
   
   Push $INSTDIR\bin

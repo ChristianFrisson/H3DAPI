@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.4.8)
 PROJECT (H3DAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
@@ -176,6 +177,9 @@ ${H3DAPI_SOURCE_DIR}/../../HAPI/Chai3DRenderer/include)
 
 IF(WIN32)
   SET(requiredLibs ${requiredLibs} winmm.lib )
+  IF( MSVC90 )
+    SET(requiredLibs ${requiredLibs} DelayImp.lib )
+  ENDIF( MSVC90 )
 ENDIF(WIN32)
 
 FIND_PACKAGE(PTHREAD REQUIRED)
@@ -547,6 +551,7 @@ ELSEIF(MSVC90)
   SET( TEMP_OUTPUT_POSTFIX _vc9 )
   # remove some warnings about deprecated functions.
   SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+  SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
 ENDIF(MSVC70 OR MSVC71)
 
 SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS}" )
@@ -559,7 +564,7 @@ IF( WIN32 )
   # Only tested with microsoft visual studio c++ 2003 and 2005 express.
   SET_TARGET_PROPERTIES( H3DAPI
                          PROPERTIES
-                         LINK_FLAGS "/DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"dgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"ftgl_dynamic_MTD.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\"" )
+                         LINK_FLAGS "/DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"cgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"ftgl_dynamic_MTD.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\"" )
 
   SET_TARGET_PROPERTIES( H3DAPI
                          PROPERTIES  

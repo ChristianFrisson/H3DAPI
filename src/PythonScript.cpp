@@ -36,7 +36,7 @@
 #include <H3D/X3DSAX2Handlers.h>
 #include <H3D/MFNode.h>
 #include <H3D/PythonMethods.h>
-#include "H3D/ResourceResolver.h"
+#include <H3D/ResourceResolver.h>
 
 #ifdef HAVE_PYTHON
 

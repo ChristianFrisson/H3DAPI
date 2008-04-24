@@ -244,5 +244,70 @@ def PeriodicUpdate( base_class ):\n\
     return PeriodicUpdateBase\n\
 \n";
 
+    const string H3DUtils_string ="from H3DInterface import *\n\
+\n\
+def PrintFieldValue( base_class ):\n\
+  class PrintValueClass( AutoUpdate( base_class ) ):\n\
+    def update( self, event ):\n\
+      v = event.getValue()\n\
+      print v\n\
+      return v\n\
+  return PrintValueClass()\n\
+\n\
+def FieldValue2String( base_class ):\n\
+  class Value2StringClass( TypedField( SFString, base_class ) ):\n\
+    def update( self, event ):\n\
+      v = event.getValue()\n\
+      return str( v )\n\
+  return Value2StringClass()\n\
+\n\
+def FieldValue2StringList( base_class ):\n\
+  class Value2StringListClass( TypedField( MFString, base_class ) ):\n\
+    def update( self, event ):\n\
+      v = event.getValue()\n\
+      return [str( v )]\n\
+  return Value2StringListClass()\n\
+\n\
+def FieldValue2Int( base_class ):\n\
+  class Value2IntClass( TypedField( SFInt32, base_class ) ):\n\
+    def update( self, event ):\n\
+      v = event.getValue()\n\
+      return int( v )\n\
+  return Value2IntClass()\n\
+\n\
+def SField2MField( sfield, mfield ):\n\
+  class SField2MFieldClass( TypedField( mfield, sfield ) ):\n\
+    def update( self, event ):\n\
+      v = event.getValue()\n\
+      print v\n\
+      return [v]\n\
+  return SField2MFieldClass()\n\
+\n\
+# The TimerCallback field is a field in which you can set callback functions\n\
+# to be called at a later time that you specify.\n\
+class TimerCallback( AutoUpdate( SFTime ) ):\n\
+  def __init__( self ):\n\
+    AutoUpdate( SFTime ).__init__( self )\n\
+    self.callbacks = []\n\
+    time.route( self )\n\
+\n\
+  def update( self, event ):\n\
+    t = event.getValue()\n\
+    cbs_to_remove = []\n\
+    for cb in self.callbacks:\n\
+      if t > cb[0]:\n\
+        apply( cb[1], cb[2] )\n\
+        cbs_to_remove.append( cb )\n\
+    for cb in cbs_to_remove:\n\
+      self.callbacks.remove( cb )\n\
+\n\
+    return event.getValue()\n\
+\n\
+  # add a callback function. The function will be called at the specified\n\
+  # time with the given arguments.\n\
+  def addCallback( self, time, func, args ):\n\
+    self.callbacks.append( (time, func, args ) )\n\
+\n";
+
   }
 }

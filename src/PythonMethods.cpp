@@ -104,6 +104,13 @@ namespace H3D {
     PyObject * H3DInterface_dict = NULL;
     PyObject * H3D_dict = NULL;
 
+#ifndef H3DINTERFACE_AS_FILE
+    // H3DUtils when not loading the module as a file.
+    PythonAutoRef H3DUtils_module( NULL );
+    // borrowed references so do not need autoref
+    PyObject * H3DUtils_dict = NULL;
+#endif
+
     // Macro used by pythonCreateField to create a new PythonField depending
     // on the field type.
 #define CREATE_FIELD( check_func, value_func, from_func, \
@@ -582,7 +589,7 @@ if( check_func( value ) ) {                                         \
       PyConsole::installType( H3D_module.get() );
 
 
-       PythonInternals::insertFieldTypes( H3D_dict );
+      PythonInternals::insertFieldTypes( H3D_dict );
 
 #ifdef H3DINTERFACE_AS_FILE
       PythonInternals::H3DInterface_module.reset( 
@@ -639,6 +646,35 @@ if( check_func( value ) ) {                                         \
                       PyString_FromString( "eventSink" ), 
                       event_sink );
       Py_DECREF( event_sink );
+
+#ifndef H3DINTERFACE_AS_FILE
+      if( !PythonInternals::H3DUtils_module.get() ) {
+        PythonInternals::H3DUtils_module.reset( 
+          PyImport_AddModule( "H3DUtils" ) ); 
+        PythonInternals::H3DUtils_dict = 
+          PyModule_GetDict( PythonInternals::H3DUtils_module.get() );
+        // install the buildins in the module
+        if( PythonInternals::H3DUtils_dict != NULL ) {
+          if (PyDict_GetItemString(  PythonInternals::H3DUtils_dict, 
+            "__builtins__") == NULL) {
+              if (PyDict_SetItemString(  PythonInternals::H3DUtils_dict, 
+                "__builtins__",
+                PyEval_GetBuiltins()) != 0)
+                Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
+          }
+        }
+
+        string a = H3DInterface::H3DUtils_string;
+        PyObject *r = PyRun_String( H3DInterface::H3DUtils_string.c_str(), 
+          Py_file_input,
+          PythonInternals::H3DUtils_dict,
+          PythonInternals::H3DUtils_dict );
+        if ( r == NULL ) {
+          Console( 3 ) << "Python error in file H3DInterface.py.h:" << endl;
+          PyErr_Print();
+        }
+      }
+#endif
     };
   
     void fieldDestructor( void *f ) {
