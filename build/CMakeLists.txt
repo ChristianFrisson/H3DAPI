@@ -51,6 +51,12 @@ IF( GENERATE_CPACK_PROJECT )
     IF( WIN32 )
       SET( CPACK_PACKAGE_EXECUTABLES ${CPACK_PACKAGE_EXECUTABLES}
                                      "H3DViewer;H3DViewer" )
+      SET(WXWINDOWS_USE_GL 1)
+      FIND_PACKAGE(wxWidgetsWin)
+      IF(wxWidgets_FOUND)
+        SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                         "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
+      ENDIF(wxWidgets_FOUND)
     ENDIF( WIN32 )
   ENDIF( H3DViewer_cmake_install )
   
@@ -60,6 +66,15 @@ IF( GENERATE_CPACK_PROJECT )
   IF( ParticleDemo_cmake_install )
     SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
                                       "${ParticleDemo_cmake_install};ParticleDemo;ALL;/" )
+    IF( WIN32 AND NOT H3DViewer_cmake_install )
+      FIND_PACKAGE(wxWidgetsWin)
+      IF(wxWidgets_FOUND)
+        SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                         "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
+      ENDIF(wxWidgets_FOUND)
+    ENDIF( WIN32 AND NOT H3DViewer_cmake_install )
+  ELSE( ParticleDemo_cmake_install )
+    SET(CPACK_IGNORE_FILES /examples/Particledemo/ )
   ENDIF( ParticleDemo_cmake_install )
 
   SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DAPI_MAJOR_VERSION})
@@ -67,7 +82,8 @@ IF( GENERATE_CPACK_PROJECT )
   SET(CPACK_PACKAGE_VERSION_PATCH ${H3DAPI_BUILD_VERSION})
   # TODO: fix different for windows and unix if needed.
   IF(WIN32 AND NOT UNIX)
-    SET(CPACK_IGNORE_FILES /\\\\.svn/
+    SET(CPACK_IGNORE_FILES ${CPACK_IGNORE_FILES}
+                           /\\\\.svn/
                            \\\\.obj$
                            \\\\.ncb$
                            \\\\.log$
