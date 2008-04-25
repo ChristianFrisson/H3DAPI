@@ -598,7 +598,7 @@ INSTALL( TARGETS H3DAPI
 
 IF( NOT WIN32 )
   INSTALL( DIRECTORY ../include/H3D 
-           DESTINATION /usr/local/include 
+           DESTINATION include 
            PATTERN .svn EXCLUDE )
 ENDIF( NOT WIN32 )
 
