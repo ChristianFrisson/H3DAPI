@@ -10,9 +10,13 @@ ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 
 # include HAPI in the build
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../../HAPI/build BINARY_DIR_FOR_HAPI ${CMAKE_CURRENT_BINARY_DIR} )
-ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../../HAPI/build
+IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
+  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../../HAPI/build BINARY_DIR_FOR_HAPI ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../../HAPI/build
                   ${BINARY_DIR_FOR_HAPI} )
+  GET_DIRECTORY_PROPERTY( HAPI_INCLUDES DIRECTORY ${H3DAPI_SOURCE_DIR}/../../HAPI/build INCLUDE_DIRECTORIES )
+  INCLUDE_DIRECTORIES( ${HAPI_INCLUDES} )
+ENDIF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
 
 SET( H3DAPI_MAJOR_VERSION 2 )
 SET( H3DAPI_MINOR_VERSION 0 )
@@ -23,13 +27,18 @@ SET(CMAKE_MODULE_PATH ${H3DAPI_SOURCE_DIR}/modules )
 
 # If cpack should be configured.
 IF( GENERATE_CPACK_PROJECT )
-  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "H3DAPI. A cross platform, device independent, graphics and haptics scenegraph.")
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "H3DAPI. A cross platform, haptics device independent, X3D based API for 3D graphics and haptics.")
   SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+  SET(CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
   SET(CPACK_PACKAGE_DESCRIPTION_FILE "${H3DAPI_SOURCE_DIR}/../ReadMe.txt")
   SET(CPACK_RESOURCE_FILE_LICENSE "${H3DAPI_SOURCE_DIR}/../LICENSE")
-  SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};H3DAPI;ALL;/"
-                                   "${BINARY_DIR_FOR_HAPI};HAPI;ALL;/" )
+  SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};H3DAPI;ALL;/")
+                                   
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "H3D" )
+
+  
+  SET(DEBIAN_PACKAGE_DEPENDS "libcurl3, libfreetype6-dev, ftgl-dev, python2.4-dev, libaudiofile0, libvorbis-dev, libopenal-dev, zlib1g-dev, libxerces27-dev, libfreeimage-dev, libhapi(>= 1.0.0), libh3dutil(>=1.0.0)" )	      
+
 
   # If H3DLoad should be added to the package.
   SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
@@ -502,6 +511,10 @@ IF( GENERATE_CPACK_PROJECT )
   ENDIF(WIN32)
   
   INCLUDE(CPack)
+  INCLUDE(UseDebian)
+  IF(DEBIAN_FOUND)
+    ADD_DEBIAN_TARGETS(H3DAPI)
+  ENDIF(DEBIAN_FOUND)
 ENDIF( GENERATE_CPACK_PROJECT )
 
 # H3DAPI shared library definition
@@ -611,5 +624,4 @@ IF( WIN32 )
   ADD_DEPENDENCIES( H3DAPI Chai3DRenderer )
 ENDIF( WIN32 )
 
-GET_DIRECTORY_PROPERTY( HAPI_INCLUDES DIRECTORY ${H3DAPI_SOURCE_DIR}/../../HAPI/build INCLUDE_DIRECTORIES )
-INCLUDE_DIRECTORIES( ${HAPI_INCLUDES} )
+
