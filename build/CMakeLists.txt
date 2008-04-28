@@ -37,7 +37,7 @@ IF( GENERATE_CPACK_PROJECT )
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "H3D" )
 
   
-  SET(DEBIAN_PACKAGE_DEPENDS "libcurl3, libfreetype6-dev, ftgl-dev, python2.4-dev, libaudiofile0, libvorbis-dev, libopenal-dev, zlib1g-dev, libxerces27-dev, libfreeimage-dev, libhapi(>= 1.0.0), libh3dutil(>=1.0.0)" )	      
+  SET(DEBIAN_PACKAGE_DEPENDS "libcurl3, libfreetype6-dev, ftgl-dev, python2.4-dev, libaudiofile0, libvorbis-dev, libopenal-dev, zlib1g-dev, libxerces27-dev, libfreeimage-dev, hapi(>= 1.0.0), h3dutil(>=1.0.0)" )	      
 
 
   # If H3DLoad should be added to the package.
