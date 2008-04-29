@@ -132,6 +132,9 @@ IF( GENERATE_CPACK_PROJECT )
                           /wxregex\\\\.lib$
                           /wxtiff\\\\.lib$
                           /wxzlib\\\\.lib$
+                          /bz2\\\\.lib$
+                          /z\\\\.lib$
+                          /png\\\\.lib$
                           /pthreadGC2\\\\.dll$
                           /pthreadGCE2\\\\.dll$
                           /pthreadVSE2\\\\.dll$ )
@@ -201,10 +204,7 @@ ${H3DAPI_SOURCE_DIR}/../../HAPI/OpenHapticsRenderer/include
 ${H3DAPI_SOURCE_DIR}/../../HAPI/Chai3DRenderer/include)
 
 IF(WIN32)
-  SET(requiredLibs ${requiredLibs} winmm.lib )
-  IF( MSVC90 )
-    SET(requiredLibs ${requiredLibs} DelayImp.lib )
-  ENDIF( MSVC90 )
+  SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
 ENDIF(WIN32)
 
 FIND_PACKAGE(PTHREAD REQUIRED)

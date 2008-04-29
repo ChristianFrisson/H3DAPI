@@ -12,13 +12,25 @@ varying float Diffuse;
 varying vec3  Specular;
 varying vec2  TexCoord;
 
-uniform vec3 LightPosition;
+uniform vec3 lightPosition;
+uniform vec3 viewpointPosition;
+uniform mat4 viewpointOrn;
 
 void main(void)
 {
-    vec3 ecPosition = vec3 (gl_ModelViewMatrix * gl_Vertex);
-    vec3 light_pos = vec3( vec4( LightPosition - vec3( 0, 0, 0.6 ), 1) );
-    vec3 tnorm      = normalize( gl_NormalMatrix * gl_Normal);
+    vec3 ecPosition = vec3 ((viewpointOrn * gl_ModelViewMatrix) * gl_Vertex);
+    vec3 light_pos = vec3( vec4( lightPosition - viewpointPosition, 1) );
+    mat3 viewpointOrn3x3;
+    viewpointOrn3x3[0][0] = viewpointOrn[0][0];
+    viewpointOrn3x3[0][1] = viewpointOrn[0][1];
+    viewpointOrn3x3[0][2] = viewpointOrn[0][2];
+    viewpointOrn3x3[1][0] = viewpointOrn[1][0];
+    viewpointOrn3x3[1][1] = viewpointOrn[1][1];
+    viewpointOrn3x3[1][2] = viewpointOrn[1][2];
+    viewpointOrn3x3[2][0] = viewpointOrn[2][0];
+    viewpointOrn3x3[2][1] = viewpointOrn[2][1];
+    viewpointOrn3x3[2][2] = viewpointOrn[2][2];
+    vec3 tnorm      = normalize( (viewpointOrn3x3 * gl_NormalMatrix ) * gl_Normal);
     vec3 lightVec   = normalize(light_pos - ecPosition);
     vec3 reflectVec = reflect(-light_pos, tnorm);
     vec3 viewVec    = normalize(-ecPosition);

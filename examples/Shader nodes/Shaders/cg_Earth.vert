@@ -7,12 +7,15 @@ void main( in float4 pos: POSITION,
              out float4 pos_out: POSITION,
              out float3 color: COLOR,
              out float3 tex_coord_out: TEXCOORD0,
-             uniform float3 LightPosition  )
+             uniform float3 lightPosition,
+             uniform float3 viewpointPosition,
+             uniform float4x4 viewpointOrn,
+             uniform float4x4 viewpointOrnInv  )
 {
-    float3 ecPosition = float3 ( mul( glstate.matrix.modelview[0], pos
+    float3 ecPosition = float3 ( mul( mul( viewpointOrn, glstate.matrix.modelview[0] ), pos
              ) );
-    float3 light_pos = LightPosition - float3( 0, 0, 0.6 );
-    float4x4 normal_matrix =  transpose( glstate.matrix.inverse.modelview[0] );
+    float3 light_pos = lightPosition - viewpointPosition;
+    float4x4 normal_matrix = transpose( mul( viewpointOrnInv, glstate.matrix.inverse.modelview[0]) );
     float3 tnorm = float3( normalize( mul( normal_matrix, float4(
              normal, 0 ) ) ) );
     float3 lightVec   = normalize(light_pos - ecPosition);

@@ -83,7 +83,7 @@ ViewpointGroup::ViewpointGroup(
 
   X3DViewpointNode * vp = getActive();
   if( vp ) {
-    last_position = vp->position->getValue() + vp->rel_pos;
+    last_position = vp->totalPosition->getValue();
   }
 }
 
@@ -96,7 +96,7 @@ void ViewpointGroup::traverseSG( TraverseInfo &ti ) {
     else {
       X3DViewpointNode * vp = getActive();
       if( vp ) {
-        Vec3f vp_full_position = vp->getFullPos();
+        Vec3f vp_full_position = vp->totalPosition->getValue();
         Vec3f box_size_half = size->getValue() / 2;
         Vec3f box_min = the_center - box_size_half;
         Vec3f box_max = the_center + box_size_half;

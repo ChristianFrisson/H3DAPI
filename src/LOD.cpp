@@ -82,7 +82,7 @@ void LOD::traverseSG( TraverseInfo &ti ){
 
   //gets the position of the vp in LOD local coordinates.
   Vec3f vp_pos_LOD = vp_to_LOD *
-    vp->getFullPos();
+    vp->totalPosition->getValue();
 
   //calculates the distance (d) from the vp position to centre
   H3DFloat d = (vp_pos_LOD - center->getValue()).length();

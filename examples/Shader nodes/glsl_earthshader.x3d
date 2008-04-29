@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="Windows-1252"?>
 <!-- This example requires a haptics device -->
 <Group>
   <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
@@ -14,14 +15,26 @@
         <field name="EarthCloudGloss" type="SFNode" accessType="inputOutput">
           <ImageTexture DEF="EARTH_CLOUDS" url="../textures/Clouds.jpg" />
         </field>
-        <field name="LightPosition" type="SFVec3f" value="0.45 0 -0.45" accessType="inputOutput" />
+        <field name="lightPosition" type="SFVec3f" value="0.45 0 -0.45" accessType="inputOutput" />
+        <field name="viewpointPosition" type="SFVec3f" value="0 0 0.6"
+                 accessType="inputOutput" />
+        <field name="viewpointOrn" type="SFMatrix4f" value="1 0 0 0
+                                                            0 1 0 0
+                                                            0 0 1 0
+                                                            0 0 0 1"
+               accessType="inputOutput" />
         <ShaderPart type="FRAGMENT" url="Shaders/glsl_Earth.frag" />
         <ShaderPart type="VERTEX" url="Shaders/glsl_Earth.vert" />
       </ComposedShader>
     </Appearance>
     <Sphere radius="0.1" />
   </Shape>
-  <ROUTE fromNode="HDEV" fromField="trackerPosition" toNode="SHADER"
-         toField="LightPosition" />
+
+  <PythonScript DEF="PS" url="viewpointMatrices.py" >
+    <ShaderProgram USE="SHADER" containerField="references"/>
+  </PythonScript>
+  
+  <ROUTE fromNode="HDEV" fromField="trackerPosition"
+         toNode="SHADER" toField="lightPosition" />
 </Group>
 

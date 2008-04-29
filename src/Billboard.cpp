@@ -141,10 +141,10 @@ void Billboard::traverseSG( TraverseInfo &ti ) {
     ti.getAccInverseMatrix() *
     vp->accForwardMatrix->getValue();
   
-    vp_pos = vp_to_local * vp->getFullPos();
+    vp_pos = vp_to_local * vp->totalPosition->getValue();
     vp_y_axis = 
     vp_to_local.getScaleRotationPart() * 
-    (vp->getFullOrn() *  Vec3f( 0, 1, 0 ) );
+    (vp->totalOrientation->getValue() *  Vec3f( 0, 1, 0 ) );
   }
   else {
     vp_to_local = 

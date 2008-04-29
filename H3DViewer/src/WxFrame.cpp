@@ -1121,8 +1121,8 @@ void WxFrame::ChangeViewpoint (wxCommandEvent & event)
 void WxFrame::ResetViewpoint(wxCommandEvent & event)
 {
   if (defaultvp) {
-      defaultvp->rel_orn = Rotation();
-      defaultvp->rel_pos = Vec3f();
+      defaultvp->relOrn->setValue( Rotation() );
+      defaultvp->relPos->setValue( Vec3f() );
   }
 }
 

@@ -52,6 +52,8 @@ namespace X3DViewpointNodeInternals {
   FIELDDB_ELEMENT( X3DViewpointNode, retainUserOffsets, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DViewpointNode, accForwardMatrix, OUTPUT_ONLY );
   FIELDDB_ELEMENT( X3DViewpointNode, accInverseMatrix, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( X3DViewpointNode, totalPosition, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( X3DViewpointNode, totalOrientation, OUTPUT_ONLY );
 
   inline bool intersectLinePlane( const Vec3f &from,
                                   const Vec3f &to,
@@ -73,29 +75,34 @@ namespace X3DViewpointNodeInternals {
 
 
 
-X3DViewpointNode::X3DViewpointNode( 
-                     Inst< SFSetBind  > _set_bind,
-                     Inst< SFVec3f    > _centerOfRotation,
-                     Inst< SFString   > _description,
-                     Inst< SFBool    >  _jump,
-                     Inst< SFNode     > _metadata,
-                     Inst< SFOrientation > _orientation,
-                     Inst< SFPosition > _position,
-                     Inst< SFBool     > _retainUserOffsets,
-                     Inst< SFTime     > _bindTime,
-                     Inst< SFBool     > _isBound,
-                     Inst< SFMatrix4f > _accForwardMatrix,
-                     Inst< SFMatrix4f > _accInverseMatrix ) :
+X3DViewpointNode::X3DViewpointNode( Inst< SFSetBind     > _set_bind,
+                                    Inst< SFVec3f       > _centerOfRotation,
+                                    Inst< SFString      > _description,
+                                    Inst< SFBool        > _jump,
+                                    Inst< SFNode        > _metadata,
+                                    Inst< SFOrientation > _orientation,
+                                    Inst< SFPosition    > _position,
+                                    Inst< SFBool        > _retainUserOffsets,
+                                    Inst< SFTime        > _bindTime,
+                                    Inst< SFBool        > _isBound,
+                                    Inst< SFMatrix4f    > _accForwardMatrix,
+                                    Inst< SFMatrix4f    > _accInverseMatrix,
+                                    Inst< SFSumVec3f    > _totalPosition,
+                                    Inst< SFSumRotation > _totalOrientation ) :
   X3DBindableNode( "X3DViewpointNode", _set_bind, _metadata, 
                    _bindTime, _isBound ),
-  centerOfRotation( _centerOfRotation ),
-  description     ( _description      ),
-  jump            ( _jump             ),
-  orientation     ( _orientation      ),
-  position        ( _position         ),
+  centerOfRotation ( _centerOfRotation ),
+  description      ( _description      ),
+  jump             ( _jump             ),
+  orientation      ( _orientation      ),
+  position         ( _position         ),
   retainUserOffsets( _retainUserOffsets ),
-  accForwardMatrix( _accForwardMatrix ),
-  accInverseMatrix( _accInverseMatrix ) {
+  accForwardMatrix ( _accForwardMatrix ),
+  accInverseMatrix ( _accInverseMatrix ),
+  totalPosition    ( _totalPosition ),
+  totalOrientation ( _totalOrientation ),
+  relPos( new SFVec3f() ),
+  relOrn( new SFRotation() ) {
   
   type_name = "X3DViewpointNode";
   database.initFields( this );
@@ -108,6 +115,12 @@ X3DViewpointNode::X3DViewpointNode(
   // need to give the id since the fields are output only.
   accForwardMatrix->setValue( Matrix4f(), id );
   accInverseMatrix->setValue( Matrix4f(), id );
+
+  position->routeNoEvent( totalPosition, id );
+  relPos->route( totalPosition, id );
+
+  orientation->routeNoEvent( totalOrientation, id );
+  relOrn->route( totalOrientation, id );
 
   viewpoints.push_back( this );
 }
@@ -129,15 +142,15 @@ void X3DViewpointNode::removeFromStack() {
             new_vp->accInverseMatrix->getValue();
           const Matrix4f &old_vp_acc_frw_mtx = accForwardMatrix->getValue();
 
-          new_vp->rel_pos = vp_acc_inv_mtx *
-                            ( old_vp_acc_frw_mtx *
-                              getFullPos() )
-                            - new_vp->position->getValue();
+          new_vp->relPos->setValue( vp_acc_inv_mtx *
+                                    ( old_vp_acc_frw_mtx *
+                                      totalPosition->getValue() )
+                                    - new_vp->position->getValue() );
 
-          new_vp->rel_orn = -new_vp->orientation->getValue() * 
+          new_vp->relOrn->setValue( -new_vp->orientation->getValue() * 
             ( Rotation( vp_acc_inv_mtx.getScaleRotationPart() ) *
               ( Rotation( old_vp_acc_frw_mtx.getScaleRotationPart() ) *
-                getFullOrn() ) );
+                totalOrientation->getValue() ) ) );
         }
       }
     }
@@ -152,8 +165,8 @@ void X3DViewpointNode::toStackTop() {
     bool local_jump = NavigationInfo::force_jump ? true : jump->getValue();
     if( local_jump ) {
       if( !retainUserOffsets->getValue() ) {
-        rel_pos = Vec3f( 0, 0, 0 );
-        rel_orn = Rotation( 0, 0, 0, 0 );
+        relPos->setValue( Vec3f( 0, 0, 0 ) );
+        relOrn->setValue( Rotation( 0, 0, 0, 0 ) );
       }
     }
     else {
@@ -163,15 +176,15 @@ void X3DViewpointNode::toStackTop() {
         const Matrix4f &old_vp_acc_frw_mtx =
           old_vp->accForwardMatrix->getValue();
 
-        rel_pos = vp_acc_inv_mtx *
+        relPos->setValue( vp_acc_inv_mtx *
                   ( old_vp_acc_frw_mtx *
-                    old_vp->getFullPos() )
-                    - position->getValue();
+                    old_vp->totalPosition->getValue() )
+                    - position->getValue() );
 
-        rel_orn = -orientation->getValue() * 
+        relOrn->setValue( -orientation->getValue() * 
         ( Rotation( vp_acc_inv_mtx.getScaleRotationPart() ) *
           ( Rotation(old_vp_acc_frw_mtx.getScaleRotationPart() ) *
-          old_vp->getFullOrn() ) );
+          old_vp->totalOrientation->getValue() ) ) );
       }
     }
     X3DBindableNode::toStackTop();
@@ -213,34 +226,34 @@ X3DViewpointNode::ViewpointList X3DViewpointNode::getViewpointHierarchy() {
 void X3DViewpointNode::rotateAround( Rotation rotation, bool collision,
                                      Vec3f center_of_rot ) {
   Vec3f vp_pos = position->getValue();
-  Vec3f vp_full_pos = vp_pos + rel_pos;
+  Vec3f vp_full_pos = vp_pos + relPos->getValue();
   Rotation vp_orientation = orientation->getValue();
-  Rotation vp_full_orientation = vp_orientation * rel_orn;
+  Rotation vp_full_orientation = vp_orientation * relOrn->getValue();
 
   rotation = Rotation( vp_full_orientation * rotation.axis, rotation.angle );
   Vec3f new_pos = Matrix3f( rotation ) *
     ( vp_full_pos - center_of_rot ) +
     center_of_rot;
 
-  rel_pos = new_pos - vp_pos;
+  relPos->setValue( new_pos - vp_pos );
   Rotation new_rotation = rotation * vp_full_orientation;
-  rel_orn = -vp_orientation * new_rotation;
+  relOrn->setValue( -vp_orientation * new_rotation );
 }
 
 void X3DViewpointNode::rotateAroundSelf( Rotation rotation ) {
   Rotation vp_orientation = orientation->getValue();
-  Rotation vp_full_orientation = vp_orientation * rel_orn;
+  Rotation vp_full_orientation = vp_orientation * relOrn->getValue();
   rotation = Rotation( vp_full_orientation * rotation.axis, rotation.angle );
   Rotation new_rotation = rotation * vp_full_orientation;
-  rel_orn = -vp_orientation * new_rotation;
+  relOrn->setValue( -vp_orientation * new_rotation );
 }
 
 void X3DViewpointNode::translate( Vec3f direction, bool collision,
                                   const vector< H3DFloat > &avatar_size,
                                   X3DChildNode * topNode ) {
   Vec3f vp_pos = position->getValue();
-  Vec3f vp_full_pos = vp_pos + rel_pos;
-  Rotation vp_full_orientation = orientation->getValue() * rel_orn;
+  Vec3f vp_full_pos = vp_pos + relPos->getValue();
+  Rotation vp_full_orientation = orientation->getValue() * relOrn->getValue();
   const Matrix4f &acc_fr_mt = accForwardMatrix->getValue();
   Vec3f scaling = acc_fr_mt.getScalePart();
   direction = vp_full_orientation * direction;
@@ -319,19 +332,19 @@ void X3DViewpointNode::translate( Vec3f direction, bool collision,
       }
       counter++;
     }
-    rel_pos = acc_fr_mt.inverse() * global_from - vp_pos;
+    relPos->setValue( acc_fr_mt.inverse() * global_from - vp_pos );
   } else
-    rel_pos = new_pos - vp_pos;
+    relPos->setValue( new_pos - vp_pos );
 }
 
 // used when moving without collision of any kind.
 void X3DViewpointNode::moveTo( Vec3f new_pos ) {
-  rel_pos = new_pos - position->getValue();
+  relPos->setValue( new_pos - position->getValue() );
 }
 bool X3DViewpointNode::detectCollision( const vector< H3DFloat > &avatar_size,
                                         X3DChildNode * topNode ) {
   Vec3f vp_full_pos =
-    accForwardMatrix->getValue() *  (position->getValue() + rel_pos );
+    accForwardMatrix->getValue() * ( totalPosition->getValue() );
   NodeIntersectResult result;
   return topNode->movingSphereIntersect( avatar_size[0],
                                          vp_full_pos,

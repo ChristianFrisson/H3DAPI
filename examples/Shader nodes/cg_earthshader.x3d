@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="Windows-1252"?>
 <!-- This example requires a haptics device -->
 <Group>
   <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
@@ -18,14 +19,31 @@
           </field>
         </ShaderProgram>
         <ShaderProgram DEF="VERTEX_SHADER" type="VERTEX" url="Shaders/cg_Earth.vert" >
-          <field name="LightPosition" type="SFVec3f" value="0.45 0 -0.45"
+          <field name="lightPosition" type="SFVec3f" value="0.45 0 -0.45"
+                 accessType="inputOutput" />
+          <field name="viewpointPosition" type="SFVec3f" value="0 0 0.6"
+                 accessType="inputOutput" />
+          <field name="viewpointOrn" type="SFMatrix4f" value="1 0 0 0
+                                                              0 1 0 0
+                                                              0 0 1 0
+                                                              0 0 0 1"
+                 accessType="inputOutput" />
+          <field name="viewpointOrnInv" type="SFMatrix4f" value="1 0 0 0
+                                                                 0 1 0 0
+                                                                 0 0 1 0
+                                                                 0 0 0 1"
                  accessType="inputOutput" />
         </ShaderProgram>
       </ProgramShader>
     </Appearance>
     <Sphere radius="0.1" />
   </Shape>
-  <ROUTE fromNode="HDEV" fromField="trackerPosition" toNode="VERTEX_SHADER"
-         toField="LightPosition" />
+
+  <PythonScript DEF="PS" url="viewpointMatrices.py" >
+    <ShaderProgram USE="VERTEX_SHADER" containerField="references"/>
+  </PythonScript>
+
+  <ROUTE fromNode="HDEV"        fromField="trackerPosition"
+         toNode="VERTEX_SHADER" toField="lightPosition" />
 </Group>
 

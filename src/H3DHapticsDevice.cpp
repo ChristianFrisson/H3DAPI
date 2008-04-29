@@ -288,7 +288,7 @@ void H3DHapticsDevice::updateDeviceValues() {
 
       if( !vp_initialized ) {
         // Store default matrices for viewpoint following.
-        Vec3f default_vp_pos = vp_accFrw * vp->getFullPos();
+        Vec3f default_vp_pos = vp_accFrw * vp->totalPosition->getValue();
         default_vp_pos_mtx[0][3] = default_vp_pos.x;
         default_vp_pos_mtx[1][3] = default_vp_pos.y;
         default_vp_pos_mtx[2][3] = default_vp_pos.z;
@@ -298,14 +298,15 @@ void H3DHapticsDevice::updateDeviceValues() {
       }
 
       // create matrix for new point
-      Vec3f vp_full_pos = vp_accFrw * vp->getFullPos();
+      Vec3f vp_full_pos = vp_accFrw * vp->totalPosition->getValue();
       Matrix4f translation_matrix_new;
       translation_matrix_new[0][3] = vp_full_pos.x;
       translation_matrix_new[1][3] = vp_full_pos.y;
       translation_matrix_new[2][3] = vp_full_pos.z;
 
       // create rotation matrix.
-      Matrix4f vp_full_orn_mtx = vp_accFrw * Matrix4f( vp->getFullOrn() );
+      Matrix4f vp_full_orn_mtx =
+        vp_accFrw * Matrix4f( vp->totalOrientation->getValue() );
       Matrix4f rotation_matrix = vp_full_orn_mtx * default_vp_orn_mtx;
 
       // create the matrix used to adjust the positionCalibration

@@ -126,8 +126,8 @@ class ChangeViewport : public AutoUpdate< SFInt32> {
       case KeySensor::F5: {
         X3DViewpointNode * vp = X3DViewpointNode::getActive();
         if ( vp ) {
-          vp->rel_orn = Rotation();
-          vp->rel_pos = Vec3f();
+          vp->relOrn->setValue( Rotation() );
+          vp->relPos->setValue( Vec3f() );
         }
         break;
       }

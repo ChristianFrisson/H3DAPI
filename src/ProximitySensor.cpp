@@ -88,7 +88,7 @@ void ProximitySensor::traverseSG( TraverseInfo &ti ) {
     X3DViewpointNode *vp = X3DViewpointNode::getActive();
     
     // Local position of viewpoint
-    Vec3f loc_vp_pos = vp->getFullPos();
+    Vec3f loc_vp_pos = vp->totalPosition->getValue();
     
     const Matrix4f &accFM_vp = vp->accForwardMatrix->getValue();
     
@@ -103,7 +103,7 @@ void ProximitySensor::traverseSG( TraverseInfo &ti ) {
     Vec3f prev_vp_pos_wrt_pr = accInvMatrix * prev_vp_pos;
 
     // Local orientation of viewpoint
-    Rotation loc_vp_orn = vp->getFullOrn();
+    Rotation loc_vp_orn = vp->totalOrientation->getValue();
     Rotation vp_rot = 
     (Rotation)vp->accForwardMatrix->getValue().getRotationPart();
 

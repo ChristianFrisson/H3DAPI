@@ -111,9 +111,9 @@ NavigationInfo::NavigationInfo( Inst< SFSetBind > _set_bind,
 void NavigationInfo::doNavigation( X3DViewpointNode * vp,
                                       X3DChildNode *topNode ) {
   Vec3f vp_pos = vp->position->getValue();
-  Vec3f vp_full_pos = vp_pos + vp->rel_pos;
+  Vec3f vp_full_pos = vp_pos + vp->relPos->getValue();
   Rotation vp_orientation = vp->orientation->getValue();
-  Rotation vp_full_orientation = vp_orientation * vp->rel_orn;
+  Rotation vp_full_orientation = vp_orientation * vp->relOrn->getValue();
   H3DTime current_time = Scene::time->getValue();
   last_time = current_time;
   string navigation_type = getUsedNavType();
@@ -123,8 +123,8 @@ void NavigationInfo::doNavigation( X3DViewpointNode * vp,
     // current position and viewpoint.
     if( linear_interpolate ) {
       if( !old_vp->retainUserOffsets->getValue() ) {
-        old_vp->rel_pos = goal_position;
-        old_vp->rel_orn = goal_orientation;
+        old_vp->relPos->setValue( goal_position );
+        old_vp->relOrn->setValue( goal_orientation );
       }
       linear_interpolate = false;
     }
@@ -156,11 +156,11 @@ void NavigationInfo::doNavigation( X3DViewpointNode * vp,
           ( (Rotation)old_vp_acc_frw_mtx.getScaleRotationPart()
           * old_vp_orientation ) );
 
-        goal_orientation = vp->rel_orn;
+        goal_orientation = vp->relOrn->getValue();
 
         start_position = vp_acc_inv_mtx * 
           (old_vp_acc_frw_mtx * old_vp_pos) - vp_pos;
-        goal_position = vp->rel_pos;
+        goal_position = vp->relPos->getValue();
         move_direction = goal_position - start_position;
         start_time = current_time;
       }
@@ -169,8 +169,8 @@ void NavigationInfo::doNavigation( X3DViewpointNode * vp,
   }
   else if( !old_vp.get() ) {
     old_vp.reset( vp );
-    old_vp_pos = old_vp->getFullPos();
-    old_vp_orientation = old_vp->getFullOrn();
+    old_vp_pos = old_vp->totalPosition->getValue();
+    old_vp_orientation = old_vp->totalOrientation->getValue();
   }
 
   // When a transition takes place navigationinfo negates external
@@ -180,17 +180,17 @@ void NavigationInfo::doNavigation( X3DViewpointNode * vp,
     H3DTime total_time = transitionTime->getValue();
     if( elapsed_time < total_time ) {
       H3DDouble interpolation = elapsed_time / total_time;
-      vp->rel_pos =  start_position +
-        move_direction * interpolation;
-      vp->rel_orn = start_orientation.slerp( goal_orientation,
-        (H3DFloat)interpolation );
+      vp->relPos->setValue( start_position +
+        move_direction * interpolation );
+      vp->relOrn->setValue( start_orientation.slerp( goal_orientation,
+        (H3DFloat)interpolation ) );
     }
     else {
       linear_interpolate = false;
       transitionComplete->setValue( true, id );
-      vp->rel_pos = goal_position;
+      vp->relPos->setValue( goal_position );
       vp_full_pos = vp_pos + goal_position;
-      vp->rel_orn = goal_orientation;
+      vp->relOrn->setValue( goal_orientation );
       vp_full_orientation = vp_orientation * goal_orientation;
     }
   }

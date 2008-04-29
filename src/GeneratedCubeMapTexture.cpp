@@ -175,7 +175,7 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
 
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-  Rotation vp_orientation = vp->getFullOrn();
+  Rotation vp_orientation = vp->totalOrientation->getValue();
   Rotation vp_rot = 
     (Rotation)vp->accForwardMatrix->getValue().getRotationPart();
 

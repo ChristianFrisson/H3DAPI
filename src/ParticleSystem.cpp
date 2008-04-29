@@ -240,8 +240,8 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   
   Matrix3f vp_to_local_rot = vp_to_local.getRotationPart();
     
-  Vec3f vp_position =  vp_to_local * vp->getFullPos();
-  Rotation vp_orn = vp->getFullOrn();
+  Vec3f vp_position =  vp_to_local * vp->totalPosition->getValue();
+  Rotation vp_orn = vp->totalOrientation->getValue();
   Vec3f vp_up = vp_to_local_rot * ( vp_orn *  Vec3f( 0, 1, 0 ) );
   Vec3f vp_lookat = vp_to_local_rot * ( vp_orn *  Vec3f( 0, 0, -1 ) );
 

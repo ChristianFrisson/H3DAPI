@@ -242,15 +242,19 @@ namespace H3D {
     public:
       virtual void setValue( const Vec3f &v, int id = 0 ) {
         SFVec3f::setValue( v, id );
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+        X3DViewpointNode * temp_owner =
+          static_cast< X3DViewpointNode * >( getOwner() );
+        temp_owner->relPos->setValue( Vec3f() );
+        temp_owner->relOrn->setValue( Rotation() );
       }
 
     protected:
       virtual void update() {
         SFVec3f::update();
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+        X3DViewpointNode * temp_owner =
+          static_cast< X3DViewpointNode * >( getOwner() );
+        temp_owner->relPos->setValue( Vec3f() );
+        temp_owner->relOrn->setValue( Rotation() );
       }
     };
 #ifdef __BORLANDC__
@@ -264,42 +268,78 @@ namespace H3D {
     public:
       virtual void setValue( const Rotation &v, int id = 0 ) {
         SFRotation::setValue( v, id );
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+        X3DViewpointNode * temp_owner =
+          static_cast< X3DViewpointNode * >( getOwner() );
+        temp_owner->relPos->setValue( Vec3f() );
+        temp_owner->relOrn->setValue( Rotation() );
       }
 
     protected:
       virtual void update() {
         SFRotation::update();
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_pos = Vec3f();
-        static_cast< X3DViewpointNode * >( getOwner() )->rel_orn = Rotation();
+        X3DViewpointNode * temp_owner =
+          static_cast< X3DViewpointNode * >( getOwner() );
+        temp_owner->relPos->setValue( Vec3f() );
+        temp_owner->relOrn->setValue( Rotation() );
       }
     };
 #ifdef __BORLANDC__
-    friend class SFPosition;
+    friend class SFOrientation;
+#endif
+
+    /// This field sums the value of the two SFVec3f routed to it.
+    class H3DAPI_API SFSumVec3f: 
+      public TypedField< SFVec3f, Types< SFPosition, SFVec3f > > {
+    protected:
+      virtual void update() {
+        SFVec3f::update();
+        value = static_cast< SFPosition * >( routes_in[0] )->getValue() +
+                static_cast< SFVec3f * >( routes_in[1] )->getValue();
+      }
+    };
+#ifdef __BORLANDC__
+    friend class SFSumVec3f;
+#endif
+
+    /// This field sums the value of the two SFRotation routed to it.
+    class H3DAPI_API SFSumRotation: public TypedField< SFRotation,
+      Types< SFOrientation, SFRotation > > {
+    protected:
+      virtual void update() {
+        SFRotation::update();
+        Rotation temp_rot =
+          static_cast< SFOrientation * >( routes_in[0] )->getValue();
+        temp_rot.axis.normalizeSafe();
+        value = temp_rot *
+                static_cast< SFRotation * >( routes_in[1] )->getValue();
+      }
+    };
+#ifdef __BORLANDC__
+    friend class SFSumRotation;
 #endif
 
     /// Constructor.
-    X3DViewpointNode( 
-              Inst< SFSetBind >  _set_bind         = 0,
-              Inst< SFVec3f   >  _centerOfRotation = 0,
-              Inst< SFString  >  _description      = 0,
-              Inst< SFBool    >  _jump             = 0,
-              Inst< SFNode    >  _metadata         = 0,
-              Inst< SFOrientation >  _orientation      = 0,
-              Inst< SFPosition >  _position         = 0,
-              Inst< SFBool    >  _retainUserOffsets = 0,
-              Inst< SFTime    >  _bindTime         = 0,
-              Inst< SFBool    >  _isBound          = 0,
-              Inst< SFMatrix4f > _accForwardMatrix = 0,
-              Inst< SFMatrix4f > _accInverseMatrix = 0 );
+    X3DViewpointNode( Inst< SFSetBind     > _set_bind          = 0,
+                      Inst< SFVec3f       > _centerOfRotation  = 0,
+                      Inst< SFString      > _description       = 0,
+                      Inst< SFBool        > _jump              = 0,
+                      Inst< SFNode        > _metadata          = 0,
+                      Inst< SFOrientation > _orientation       = 0,
+                      Inst< SFPosition    > _position          = 0,
+                      Inst< SFBool        > _retainUserOffsets = 0,
+                      Inst< SFTime        > _bindTime          = 0,
+                      Inst< SFBool        > _isBound           = 0,
+                      Inst< SFMatrix4f    > _accForwardMatrix  = 0,
+                      Inst< SFMatrix4f    > _accInverseMatrix  = 0,
+                      Inst< SFSumVec3f    > _totalPosition     = 0,
+                      Inst< SFSumRotation > _totalOrientation  = 0 );
 
     /// Destructor
     virtual ~X3DViewpointNode() {
       viewpoints.remove( this );
     }
 
-		/// Traverse the scenegraph. Saves the accumulated inverse
+    /// Traverse the scenegraph. Saves the accumulated inverse
     /// matrix for later use when transforming the X3DViewpointNode in
     /// GLWindow.
     virtual void traverseSG( TraverseInfo &ti ) {
@@ -352,16 +392,6 @@ namespace H3D {
     /// Returns a list of all current X3DViewpointNode instances.
     static const ViewpointList &getAllViewpoints() {
       return viewpoints;
-    }
-
-    inline Vec3f getFullPos() {
-      return position->getValue() + rel_pos;
-    }
-
-    inline Rotation getFullOrn() {
-      Rotation temp_rot = orientation->getValue();
-      temp_rot.axis.normalizeSafe();
-      return temp_rot * rel_orn;
     }
 
     /// Get the all X3DViewpointNode instances with the X3DViewpointNode
@@ -435,11 +465,30 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFMatrix4f > accInverseMatrix;
+
+    /// Returns the sum of the field position and the internal field
+    /// relPos used for navigation.
+    /// 
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFSumVec3f > totalPosition;
+
+    /// Returns the sum of the field orientation and the internal field
+    /// relOrn used for navigation.
+    /// 
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFSumRotation > totalOrientation;
     
     static H3DNodeDatabase database;
 
-    Vec3f rel_pos;
-    Rotation rel_orn;
+    /// Internal field that stores the relative offset from the position
+    /// set by the user. Set while navigating. The actual position of the
+    /// viewpoint can be obtained through the totalPosition field.
+    auto_ptr< SFVec3f > relPos;
+
+    /// Internal field that stores the relative offset from the orientation
+    /// set by the user. Set while navigating. The actual orientation of the
+    /// viewpoint can be obtained through the totalOrientation field.
+    auto_ptr< SFRotation > relOrn;
 
   protected:
     static ViewpointList viewpoints;

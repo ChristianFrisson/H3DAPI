@@ -129,6 +129,7 @@ FunctionEnd
 !define NT_current_env 'HKCU "Environment"'
 !define NT_all_env     'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
+!define ALL_USERS 1
 !ifndef WriteEnvStr_RegKey
   !ifdef ALL_USERS
     !define WriteEnvStr_RegKey \
@@ -675,10 +676,6 @@ Section "Installer Section" InstSection
   Push $INSTDIR\External
   Call WriteEnvStr
   
-  Push PYTHONPATH
-  Push $INSTDIR\H3DAPI\lib
-  Call WriteEnvStr
-  
   Push $INSTDIR\bin
   Call AddToPath
   
@@ -868,9 +865,6 @@ Section "Uninstall"
   Call un.DeleteEnvStr
   
   Push H3D_EXTERNAL_ROOT
-  Call un.DeleteEnvStr
-  
-  Push PYTHONPATH
   Call un.DeleteEnvStr
   
   Push $INSTDIR\bin

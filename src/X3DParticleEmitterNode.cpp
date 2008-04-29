@@ -256,10 +256,10 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       global_to_local *
       vp->accForwardMatrix->getValue();
     
-    Vec3f vp_position =  vp_to_local * vp->getFullPos();
+    Vec3f vp_position =  vp_to_local * vp->totalPosition->getValue();
     Vec3f vp_y_axis = 
       vp_to_local.getScaleRotationPart() * 
-      (vp->getFullOrn() *  Vec3f( 0, 1, 0 ) );
+      (vp->totalOrientation->getValue() *  Vec3f( 0, 1, 0 ) );
     vp_y_axis.normalizeSafe();
     Vec3f particle_to_viewer = vp_to_local.getRotationPart() * Vec3f( 0, 0, 1); //vp_position;// - position;
     Vec3f X = vp_y_axis % particle_to_viewer;

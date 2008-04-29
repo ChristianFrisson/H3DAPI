@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="Windows-1252"?>
 <Group>
   <Background     
      backUrl  ="../textures/b_arch_00000.png"
@@ -8,6 +9,7 @@
      topUrl   ="../textures/t_arch_00000.png"  />
   
   <Viewpoint position="0 0 0.6" />
+  <NavigationInfo type="NONE"/>
     <DynamicTransform angularMomentum="-0.40 0.22 0.5">
     <FitToBoxTransform boxCenter="0 0 0" boxSize="0.25 0.25 0.25"
                        uniformScalingOnly="true" active="true">
