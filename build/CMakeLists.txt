@@ -12,6 +12,10 @@ ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
 IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
   STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../../HAPI/build BINARY_DIR_FOR_HAPI ${CMAKE_CURRENT_BINARY_DIR} )
+  STRING( COMPARE EQUAL ${BINARY_DIR_FOR_HAPI} ${CMAKE_CURRENT_BINARY_DIR} SPECIAL_BINARY_DIR )
+  IF( SPECIAL_BINARY_DIR )
+    SET( BINARY_DIR_FOR_HAPI ${H3DAPI_SOURCE_DIR}/../../HAPI/build )
+  ENDIF( SPECIAL_BINARY_DIR )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../../HAPI/build
                   ${BINARY_DIR_FOR_HAPI} )
   GET_DIRECTORY_PROPERTY( HAPI_INCLUDES DIRECTORY ${H3DAPI_SOURCE_DIR}/../../HAPI/build INCLUDE_DIRECTORIES )
@@ -157,9 +161,7 @@ IF( GENERATE_CPACK_PROJECT )
     IF( PythonInstallMSI )
       STRING( REPLACE "/" "\\\\" TEMP_PythonInstallMSI ${PythonInstallMSI} )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             "   Code to install Python\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n   StrCmp $0 \\\"\\\" 0 +5\\n  file ${TEMP_PythonInstallMSI}\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\python-2.4.4.msi\\\"'\\n  delete $INSTDIR\\\\python-2.4.4.msi\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n   Push H3D_PYTHON_ROOT\\n  Push $0\\n   Call WriteEnvStr\\n" )
-      SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                               "   Remove H3D_PYTHON_ROOT\\n   Push H3D_PYTHON_ROOT\\n  Call un.DeleteEnvStr\\n")
+                                             "   Code to install Python\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n   StrCmp $0 \\\"\\\" 0 +5\\n  file ${TEMP_PythonInstallMSI}\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\python-2.4.4.msi\\\"'\\n  delete $INSTDIR\\\\python-2.4.4.msi\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n" )
     ENDIF( PythonInstallMSI )
     
     # Install OpenAL
@@ -172,7 +174,7 @@ IF( GENERATE_CPACK_PROJECT )
     ENDIF( OpenAlInstallExe )
 
     # Do not modify path since this is done by the NSIS template.
-    SET( CPACK_NSIS_MODIFY_PATH "OFF" )
+    SET( CPACK_NSIS_MODIFY_PATH "ON" )
   ENDIF(WIN32 AND NOT UNIX)
 ENDIF( GENERATE_CPACK_PROJECT )
 
@@ -499,9 +501,11 @@ IF( GENERATE_CPACK_PROJECT )
 
     IF( H3DViewer_cmake_install )
       #TODO: use h3dviewer to find this
-      STRING(REPLACE  "\\" "/" WX_INCLUDE_DIRECTORIES "$ENV{H3D_EXTERNAL_ROOT}/include/wx" )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${WX_INCLUDE_DIRECTORIES};External/include/wx" )
+      FIND_PACKAGE(wxWidgetsWin)
+      IF(wxWidgets_FOUND)
+        SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                        "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
+      ENDIF(wxWidgets_FOUND)
     ENDIF( H3DViewer_cmake_install )
   
     SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
