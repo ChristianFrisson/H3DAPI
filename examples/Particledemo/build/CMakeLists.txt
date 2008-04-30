@@ -58,7 +58,6 @@ ENDIF(wxWidgets_FOUND)
 FIND_PACKAGE(Xerces)
 
 IF(XERCES_FOUND)
-  SET(HAVE_XERCES 1)
   INCLUDE_DIRECTORIES( ${XERCES_INCLUDE_DIR} ) 
   SET(optionalLibs ${optionalLibs} ${XERCES_LIBRARIES} )
 ENDIF(XERCES_FOUND)
@@ -66,4 +65,23 @@ ENDIF(XERCES_FOUND)
 ADD_EXECUTABLE(ParticleDemo WIN32 MACOSX_BUNDLE ${ParticleDemo_SRCS})
 
 TARGET_LINK_LIBRARIES( ParticleDemo ${requiredLibs} ${optionalLibs} )
+
+SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES DEBUG_POSTFIX "_d" )
+
+IF(MSVC80)
+  # remove some warnings about deprecated functions.
+  SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+ELSEIF(MSVC90)
+  # remove some warnings about deprecated functions.
+  SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+ENDIF(MSVC80)
+
+# set the install directory to the H3D directory on Windows
+IF(WIN32) 
+ SET( CMAKE_INSTALL_PREFIX ${ParticleDemo_SOURCE_DIR}/../../../..)
+ENDIF(WIN32)
+
+INSTALL( TARGETS ParticleDemo
+	 LIBRARY DESTINATION lib
+	 RUNTIME DESTINATION bin )
 

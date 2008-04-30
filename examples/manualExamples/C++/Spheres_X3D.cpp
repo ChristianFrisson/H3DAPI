@@ -19,6 +19,7 @@ AutoRef< Node > sphere(
 X3D::DEFNodes myDefNodes;
 AutoRef< Node > group(
   X3D::createX3DNodeFromString( "<Group>\n"
+                                "<Viewpoint position=\"0 0 1\" />\n"
                                 "  <Group DEF=\"GROUP\" />\n"
                                 "  <MouseSensor DEF=\"MS\" />\n"
                                 "</Group>", 

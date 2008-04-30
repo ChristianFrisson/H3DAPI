@@ -1,13 +1,17 @@
 <Group>
+  <Viewpoint position="0 0 1" />
   <Shape>
     <Appearance>
-      <Material DEF="MATERIAL"/>
+      <Material DEF="MATERIAL" />
     </Appearance>
-    <Sphere radius="0.1"/>
+    <Sphere radius="0.1" />
   </Shape>
-  <PythonScript DEF="PS" url="sphere.py"/>
-  <MouseSensor DEF="MS"/>
-  <ROUTE fromNode="MS" fromField="leftButton" toNode="PS" toField="color"/>
-  <ROUTE fromNode="PS" fromField="color"
-         toNode="MATERIAL" toField="diffuseColor"/>
+  <PythonScript DEF="PS" url="sphere.py" />
+  <MouseSensor DEF="MS" />
+
+  <ROUTE fromNode="MS" fromField="leftButton" 
+         toNode="PS" toField="color" />
+  <ROUTE fromNode="PS" fromField="color" 
+         toNode="MATERIAL" toField="diffuseColor" />
 </Group>
+

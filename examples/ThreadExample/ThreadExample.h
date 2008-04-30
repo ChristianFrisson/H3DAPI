@@ -29,8 +29,8 @@
 #ifndef __THREADEXAMPLE_H__
 #define __THREADEXAMPLE_H__
 
-#include "X3DGeometryNode.h"
-#include "Threads.h"
+#include "H3D/X3DGeometryNode.h"
+#include "H3DUtil/Threads.h"
 
 namespace H3D {
 
@@ -49,10 +49,6 @@ namespace H3D {
 
     /// Renders the ThreadExample using OpenGL.
     virtual void render();
-
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
-    virtual void traverseSG( TraverseInfo &ti );
 
     virtual void initialize();
 

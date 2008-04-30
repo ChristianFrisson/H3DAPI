@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "ThreadExample.h"
-#include "Scene.h"
+#include "H3D/Scene.h"
 
 using namespace H3D;
 
@@ -111,15 +111,6 @@ void ThreadExample::render() {
     }
     glEnd();
     glEnable( GL_LIGHTING );
-  }
-}
-
-void ThreadExample::traverseSG( TraverseInfo &ti ) {
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
-    ti.addHapticShapeToAll( getOpenGLHapticShape( 
-                                                 ti.getCurrentSurface(),
-                                                 ti.getAccForwardMatrix(),
-                                                 points->size() ) );
   }
 }
 

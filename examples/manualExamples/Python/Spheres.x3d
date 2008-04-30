@@ -1,9 +1,10 @@
 <Group>
-  <Group DEF="GROUP"/>
+  <Viewpoint position="0 0 1" />
+  <Group DEF="GROUP" />
   <PythonScript DEF="PS" url="spheres.py">
     <Group USE="GROUP" containerField="references"/>
   </PythonScript>
-  <MouseSensor DEF="MS"/>
-  <ROUTE fromNode="MS" fromField="leftButton"
-         toNode="PS" toField="add_sphere"/>
+  <MouseSensor DEF="MS" />
+  <ROUTE fromNode="MS" fromField="leftButton" 
+         toNode="PS" toField="add_sphere" />
 </Group>

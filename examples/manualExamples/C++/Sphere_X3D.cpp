@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
   // Set up the scene graph by specifying a string 
   // and using createX3DNodeFromString
   string theSceneGraphString = "<Group>"
+                             "<Viewpoint position=\"0 0 1\" />"
                              "  <Shape>"
                              "    <Appearance>"
                              "      <Material DEF=\"MATERIAL\" />"
