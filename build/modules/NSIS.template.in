@@ -625,7 +625,7 @@ Section "Installer Section" InstSection
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 @CPACK_NSIS_CREATE_ICONS@
-  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +18
+  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +20
     ;Create Demos folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Demos"
 
@@ -641,9 +641,11 @@ Section "Installer Section" InstSection
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Polka Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_polkadot.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Magnetic lines.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\magneticlines\magneticlines.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Plane.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\plane\bobcat.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SuperShape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SuperShape\SuperShape.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
   
@@ -770,7 +772,7 @@ Section "Uninstall"
     
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS@
-  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +18
+  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +20
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
@@ -783,9 +785,11 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Force Field.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Polka Shader.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Haptic Layers.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Magnetic lines.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Plane.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Sound.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SpaceTennis.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Spring.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SuperShape.lnk"
     
@@ -823,7 +827,7 @@ Section "Uninstall"
   StrCpy $MUI_TEMP "$START_MENU"
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS@
-  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +18
+  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +20
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
@@ -836,9 +840,11 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Force Field.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Polka Shader.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Haptic Layers.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Magnetic lines.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Plane.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Sound.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SpaceTennis.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Spring.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SuperShape.lnk"
     

@@ -141,7 +141,21 @@ IF( GENERATE_CPACK_PROJECT )
                           /png\\\\.lib$
                           /pthreadGC2\\\\.dll$
                           /pthreadGCE2\\\\.dll$
-                          /pthreadVSE2\\\\.dll$ )
+                          /pthreadVSE2\\\\.dll$
+                          /berk/berk\\\\.wrl$
+                          /berk/berk_orig\\\\.x3d$
+                          /fish/Kumanomi\\\\.wrl$
+                          /fish/Kumanomi_orig\\\\.x3d$
+                          /humvee/humvee\\\\.WRL$
+                          /humvee/humvee_orig\\\\.x3d$
+                          /manikin/manikin\\\\.wrl$
+                          /manikin/manikin_orig\\\\.x3d$
+                          /moondial/moondial_orig\\\\.x3d$
+                          /moondial/themoondial\\\\.wrl$
+                          /plane/bobcat2\\\\.x3d$
+                          /plane/bobcat_nh\\\\.wrl$
+                          /plane/bobcat_orig\\\\.x3d$
+                          /HAPI/doc/ )
     SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
