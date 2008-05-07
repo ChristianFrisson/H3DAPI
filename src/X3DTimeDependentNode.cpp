@@ -86,7 +86,7 @@ X3DTimeDependentNode::X3DTimeDependentNode(
   startTime->setValue( 0 );
   stopTime->setValue( 0 );
   elapsedTime->setValue( 0, id );
-  timeHandler->setValue( TimeStamp() );
+  timeHandler->setValue( Scene::time->getValue() );
 
   Scene::time->routeNoEvent( timeHandler );
 }

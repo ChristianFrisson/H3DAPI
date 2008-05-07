@@ -82,8 +82,11 @@ X3DSoundSourceNode::X3DSoundSourceNode( Inst< SFNode  >  _metadata,
 }
 
 
-void X3DSoundSourceNode::initALBuffers( bool stream ) {
+bool X3DSoundSourceNode::initALBuffers( bool stream ) {
 #ifdef HAVE_OPENAL
+  if( reader.get() ) reader->reset();
+  else return false;
+
   if( !stream ) {
     sound_as_stream = false;
     char *buffer = new char[ reader->totalDataSize() ];
@@ -120,6 +123,10 @@ void X3DSoundSourceNode::initALBuffers( bool stream ) {
                             al_buffers );  
     }
   }
+  
+  return true;
+#else
+  return false;
 #endif
 }
 
@@ -127,10 +134,8 @@ void X3DSoundSourceNode::onStart() {
   X3DTimeDependentNode::onStart();
 #ifdef HAVE_OPENAL
   sound_buffer->upToDate();
-  if( reader.get() ) {
-    reader->reset();
-    initALBuffers( sound_as_stream );
 
+  if( initALBuffers( sound_as_stream ) ) {
     for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
          i != parent_sound_nodes.end(); i++ ) {
       alSourcei( (*i)->getALSourceId(), AL_BUFFER, 0 );

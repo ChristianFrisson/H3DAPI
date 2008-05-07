@@ -136,7 +136,7 @@ namespace H3D {
     /// Reads new data into the OpenAL from the reader and attaches them
     /// to the sound sources that use this sound source. The stream param 
     /// indicates if it should init a stream source or a static source.
-    virtual void initALBuffers( bool stream );
+    virtual bool initALBuffers( bool stream );
 
     /// Perform the OpenAL calls to render the sound.
     virtual void ALrender();
