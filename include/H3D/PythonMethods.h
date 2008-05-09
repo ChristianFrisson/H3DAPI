@@ -241,8 +241,15 @@ namespace H3D {
       PyObject *type_id = PyObject_GetAttrString( type_info, "type" );
       int type_int = PyInt_AsLong( type_id );
       //if( ! t || ! PyInt_Check( t ) )
+
+      // check that field type is of correct type. The comparison
+      // with UNKNOWN_X3D_TYPE is to allow Python fields to accept
+      // Field as input, thus allowing any field type to be routed
+      // to it.
       if ( f->getTypeName().compare( 
-           X3DTypes::typeToString( (X3DTypes::X3DType)type_int ) ) != 0 ) {
+           X3DTypes::typeToString( (X3DTypes::X3DType)type_int ) ) != 0 &&
+           strcmp( X3DTypes::typeToString( (X3DTypes::X3DType)type_int ),
+                   "UNKNOWN_X3D_TYPE" ) != 0 ) {
         ostringstream err;
         err << "Bad input, expected " 
             << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
