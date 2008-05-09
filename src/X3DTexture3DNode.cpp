@@ -478,8 +478,8 @@ void X3DTexture3DNode::renderSubImage( Image *image,
 
   unsigned char *modified_data = 
     new unsigned char[ width * height * depth * bytes_per_pixel ]; 
-  for( unsigned int z = 0; z < depth; z++ ) {
-    for( unsigned int y = 0; y < height; y++ ) {
+  for( unsigned int z = 0; z < (unsigned int)depth; z++ ) {
+    for( unsigned int y = 0; y < (unsigned int)height; y++ ) {
       memcpy( modified_data + (z * height + y ) * width * bytes_per_pixel, 
               image_data + 
               ( ((z + z_offset) * image->height() + (y + y_offset ) ) * 

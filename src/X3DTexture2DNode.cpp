@@ -474,7 +474,7 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
 
   unsigned char *modified_data = 
     new unsigned char[ width * height * bytes_per_pixel ]; 
-  for( unsigned int i = 0; i < height; i++ ) {
+  for( unsigned int i = 0; i < (unsigned int)height; i++ ) {
     memcpy( modified_data + i * width * bytes_per_pixel, 
             image_data + ( (i + y_offset )* image->width() + x_offset) * bytes_per_pixel,
             width * bytes_per_pixel );

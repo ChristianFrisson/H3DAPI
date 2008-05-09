@@ -40,7 +40,7 @@ using namespace std;
     unsigned int str_len = XMLString::stringLen( xmls );
     string s( str_len, 'a' );
     for( unsigned int i = 0; i < str_len; i++)
-      s[i] = xmls[i];
+      s[i] = (char)xmls[i];
     return s;
   }
 

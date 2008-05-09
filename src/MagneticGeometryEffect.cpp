@@ -102,7 +102,8 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
             NodeIntersectResult result;
             the_geometry->closestPoint( pos, result );
             result.transformResult();
-            H3DFloat distance = (result.result.front().point - pos).length();
+            H3DFloat distance = (H3DFloat)( 
+              (result.result.front().point - pos).length() );
             bool addForceEffect = false;
             if( active->getValue() ) {
               if( distance >= escapeDistance->getValue() ) {

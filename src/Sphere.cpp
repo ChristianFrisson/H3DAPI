@@ -222,10 +222,11 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
 
 #ifdef HAVE_OPENHAPTICS
       if( dynamic_cast< OpenHapticsRenderer * >( hd_renderer ) ) {
-      // Even for openhaptics we want to use the HAPI::HapticSphere for haptic
+      // Even for openhaptics we want to use the HAPI::HapticPrimitive
+      // class with a HAPI::Collision::Sphere in it for haptic
       // rendering. In this case without calling some glRender function of
-      // HAPI::HapticSphere. Cleaning up of the options node is taken care of
-      // by an AutoPtrVector.
+      // HAPI::HapticPrimitive. Cleaning up of the options node is taken care
+      // of by an AutoPtrVector.
       // forcing full geometry rendering for openhaptics will not be used
       // for Sphere.
       haptic_sphere->addRenderOption(
