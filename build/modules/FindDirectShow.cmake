@@ -4,45 +4,8 @@
 #  DIRECTSHOW_LIBRARIES    - List of libraries when using DirectShow.
 #  DIRECTSHOW_FOUND        - True if DirectShow is found.
 
-# Macro to check if MFC exists. Would like to check if ATL exists but this will have to do for now.
-# Can be seen as a way of detecting whether an express version of visual studio is used or not.
-MACRO(TEST_FOR_EXPRESS)
-  SET(CMAKE_BUILD_ON_VISUAL_STUDIO 0)
-  IF(WIN32 AND NOT UNIX AND NOT BORLAND AND NOT MINGW )
-    SET(CMAKE_BUILD_ON_VISUAL_STUDIO 1)
-  ENDIF(WIN32 AND NOT UNIX AND NOT BORLAND AND NOT MINGW )
-  
-  IF(CMAKE_BUILD_ON_VISUAL_STUDIO)
-    IF("CMake_HAVE_MFC" MATCHES "^CMake_HAVE_MFC$")
-      SET(CHECK_INCLUDE_FILE_VAR "afxwin.h")
-      CONFIGURE_FILE(${CMAKE_ROOT}/Modules/CheckIncludeFile.cxx.in
-        ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CheckIncludeFile.cxx)
-      MESSAGE(STATUS "Looking for MFC")
-      TRY_COMPILE(CMake_HAVE_MFC
-        ${CMAKE_BINARY_DIR}
-        ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CheckIncludeFile.cxx
-        CMAKE_FLAGS
-        -DCMAKE_MFC_FLAG:STRING=2
-        -DCOMPILE_DEFINITIONS:STRING=-D_AFXDLL
-        OUTPUT_VARIABLE OUTPUT)
-      IF(CMake_HAVE_MFC)
-        MESSAGE(STATUS "Looking for MFC - found")
-        SET(CMake_HAVE_MFC 1 CACHE INTERNAL "Have MFC?")
-        FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeOutput.log
-          "Determining if MFC exists passed with the following output:\n"
-          "${OUTPUT}\n\n")
-      ELSE(CMake_HAVE_MFC)
-        MESSAGE(STATUS "Looking for MFC - not found")
-        SET(CMake_HAVE_MFC 0 CACHE INTERNAL "Have MFC?")
-        FILE(APPEND ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeError.log
-          "Determining if MFC exists failed with the following output:\n"
-          "${OUTPUT}\n\n")
-      ENDIF(CMake_HAVE_MFC)
-    ENDIF("CMake_HAVE_MFC" MATCHES "^CMake_HAVE_MFC$")
-  ENDIF(CMAKE_BUILD_ON_VISUAL_STUDIO)
-ENDMACRO(TEST_FOR_EXPRESS)
-
-TEST_FOR_EXPRESS()
+INCLUDE( TestIfVCExpress )
+TestIfVCExpress()
 
 IF(CMake_HAVE_MFC)
 # Look for the header file.

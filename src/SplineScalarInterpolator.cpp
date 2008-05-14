@@ -137,7 +137,7 @@ void SplineScalarInterpolator::SFValue::update() {
           T.push_back(key_velocity[i]*(D/H3DAbs(key_velocity[i])));
         }
       }
-      specified = "true";
+      specified = true;
     }
 
 

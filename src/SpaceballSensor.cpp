@@ -88,7 +88,7 @@ void SpaceballSensor::addGLUTRotateAction( int x, int y, int z ) {
 
 void SpaceballSensor::addGLUTButtonAction( int button, int state ) { 
   if ( button > (int)buttons->size() ) {
-    buttons->resize( button, id );
+    buttons->resize( button, false, id );
   }
   buttons->setValue( button-1, state, id );
 }
