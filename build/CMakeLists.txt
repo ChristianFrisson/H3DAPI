@@ -223,7 +223,7 @@ AUX_SOURCE_DIRECTORY(${H3DAPI_SOURCE_DIR}/../src H3DAPI_SRCS)
 
 # Add the H3DAPI.rc resource file if Visual Studio
 IF(MSVC)
-  SET( H3DAPI_SRCS ${H3DAPI_SRCS} ${H3DAPI_SOURCE_DIR}/H3DAPI.rc )
+  SET( H3DAPI_SRCS ${H3DAPI_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
 ENDIF(MSVC)
 
 # Add all optional libraries to this variable
@@ -613,12 +613,12 @@ IF( MSVC )
   EXECUTE_PROCESS( COMMAND ${H3DAPI_SOURCE_DIR}/FindSVNVersion ${H3DAPI_SOURCE_DIR}/../src/.svn/entries 
                    OUTPUT_VARIABLE H3DAPI_SVN_VERSION )
   # autogenerate H3DAPI.rc depending on the version
-  CONFIGURE_FILE( H3DAPI.rc.cmake ${H3DAPI_SOURCE_DIR}/H3DAPI.rc )
+  CONFIGURE_FILE( H3DAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
 
   ADD_CUSTOM_COMMAND( TARGET H3DAPI 
                       PRE_BUILD 
                       COMMAND ${H3DAPI_SOURCE_DIR}/UpdateResourceFile 
-                      ARGS H3DAPI ${H3DAPI_SOURCE_DIR}/H3DAPI.rc H3DAPI.rc.cmake
+                      ARGS H3DAPI ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc H3DAPI.rc.cmake
                       ${H3DAPI_MAJOR_VERSION} ${H3DAPI_MINOR_VERSION}
                       ${H3DAPI_BUILD_VERSION}
                       ${H3DAPI_SOURCE_DIR}/../src/.svn/entries )
