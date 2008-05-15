@@ -207,9 +207,13 @@ glwindow->colorTransform->setValue( Matrix4f( 0, 0, 0, 0,
   global_settings->options->push_back( new GraphicsCachingOptions );
   global_settings->options->push_back( new GeometryBoundTreeOptions );
 
-  if( DynamicLibrary::load( "hd.dll" ) ) {
+#ifdef WIN32
+  if( DynamicLibrary::load( "hd.dll" ) && DynamicLibrary::load( "hl.dll" ) ) {
     global_settings->options->push_back( new OpenHapticsOptions );
   }
+#else
+  global_settings->options->push_back( new OpenHapticsOptions );
+#endif
   global_settings->options->push_back( new HapticsOptions );
   global_settings->options->push_back( new CollisionOptions );
 
@@ -1023,12 +1027,19 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
 {
   switch ( event.GetId() ) {
     case FRAME_OPENHAPTICS:
-      for (NodeVector::const_iterator nv = allDevices.begin(); 
-            nv != allDevices.end(); nv++) {
-        static_cast < H3DHapticsDevice *> 
-            (*nv)->hapticsRenderer->setValue(new OpenHapticsRenderer);
+#ifdef WIN32
+      if( DynamicLibrary::load( "hd.dll" ) &&
+          DynamicLibrary::load( "hl.dll" ) ) {
+#endif
+        for (NodeVector::const_iterator nv = allDevices.begin(); 
+          nv != allDevices.end(); nv++) {
+            static_cast < H3DHapticsDevice *> 
+              (*nv)->hapticsRenderer->setValue(new OpenHapticsRenderer);
+        }
+        setProxyRadius( original_proxy_radius );
+#ifdef WIN32
       }
-      setProxyRadius( original_proxy_radius );
+#endif
       break;
     case FRAME_CHAI3D:
 #ifdef HAVE_CHAI3D
