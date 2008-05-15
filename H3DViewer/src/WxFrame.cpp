@@ -71,6 +71,7 @@
 
 #include <HAPI/HAPIHapticsRenderer.h>
 #include <H3DUtil/Console.h>
+#include <H3DUtil/DynamicLibrary.h>
 
 using namespace std;
 using namespace H3D;
@@ -205,7 +206,10 @@ glwindow->colorTransform->setValue( Matrix4f( 0, 0, 0, 0,
   global_settings->options->push_back( new DebugOptions );
   global_settings->options->push_back( new GraphicsCachingOptions );
   global_settings->options->push_back( new GeometryBoundTreeOptions );
-  global_settings->options->push_back( new OpenHapticsOptions );
+
+  if( DynamicLibrary::load( "hd.dll" ) ) {
+    global_settings->options->push_back( new OpenHapticsOptions );
+  }
   global_settings->options->push_back( new HapticsOptions );
   global_settings->options->push_back( new CollisionOptions );
 

@@ -269,7 +269,8 @@ namespace H3D {
     /// on the geometry.
     /// The field contains a contact point for each HapticsDevice with the index
     /// as specified in the DeviceInfo node. The value will be an empty vector
-    /// before the first contact.
+    /// before the first contact. NOTE: Will not return correct texture coordinate
+    /// when using OpenHapticsRenderer.
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactTexCoord;
