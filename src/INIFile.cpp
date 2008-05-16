@@ -46,11 +46,11 @@ namespace {
 
   void cleanup( std::string& line ) {
     std::string copy = line;
-    unsigned begin = 0;
+    string::size_type begin = 0;
     while ( begin != line.size() && isspace( line[ begin ] ) ) ++begin;
     
     bool inQuote = false;
-    unsigned end;
+    string::size_type end;
     for ( end = begin; end != line.size(); ++end ) {
       if ( line[ end ] == '\"' ) {
         inQuote = !inQuote;
@@ -80,7 +80,7 @@ namespace {
 }
 
 void INIFile::parseLine( string line, string group, unsigned count ) {
-  unsigned equals = line.find( '=' );
+  string::size_type equals = line.find( '=' );
   if ( equals == string::npos ) {
     std::cerr << "Could not parse line " << count << ", ignoring.\n";
     return;
