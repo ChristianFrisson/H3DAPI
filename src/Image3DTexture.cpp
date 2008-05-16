@@ -85,12 +85,14 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
            il++ ) {
         bool is_tmp_file;
         string url = texture->resolveURLAsFile( *i, &is_tmp_file );
-        Image *image = 
-          static_cast< H3DImageLoaderNode * >(*il)->loadImage( url );
-        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
-        if( image ) {
-          texture->setURLUsed( *i );
-          return image;
+        if( !url.empty() ) {
+          Image *image = 
+            static_cast< H3DImageLoaderNode * >(*il)->loadImage( url );
+          if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+          if( image ) {
+            texture->setURLUsed( *i );
+            return image;
+          }
         }
       }
     }
@@ -100,15 +102,17 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
        i != urls.end(); ++i ) {
     bool is_tmp_file;
     string url = texture->resolveURLAsFile( *i, &is_tmp_file );
-	  auto_ptr< H3DImageLoaderNode > 
-      il( H3DImageLoaderNode::getSupportedFileReader( url ) );
-    if( il.get() ) {
-      texture->setURLUsed( *i );
-      Image *image = il->loadImage( url );
+    if( !url.empty() ) {
+      auto_ptr< H3DImageLoaderNode > 
+        il( H3DImageLoaderNode::getSupportedFileReader( url ) );
+      if( il.get() ) {
+        texture->setURLUsed( *i );
+        Image *image = il->loadImage( url );
+        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+        return image;
+      }
       if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
-      return image;
     }
-    if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
   }
 
   Console(4) << "Warning: None of the urls in Image3DTexture with url [";
