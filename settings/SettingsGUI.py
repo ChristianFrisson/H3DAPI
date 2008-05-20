@@ -326,9 +326,11 @@ class TestDialog(wx.Dialog):
     label = wx.StaticText(self, -1, "Display type: ")
     label.SetHelpText("The type of immersive display you are using")
     box.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
-    self.display_choice = wx.ComboBox(self, -1, self.getDefaultDisplay(), (90, 50), (180,-1),
+    temp_selection_string = self.getDefaultDisplay()
+    self.display_choice = wx.ComboBox(self, -1, temp_selection_string, (90, 50), (180,-1),
                                       self.getAvailableDisplays(), wx.CB_READONLY )
     self.display_choice.SetHelpText("Here's some help text for field #1")
+    self.display_choice.SetStringSelection( temp_selection_string )
     box.Add(self.display_choice, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
     
     self.Bind(wx.EVT_COMBOBOX, self.onDisplayChoice, self.display_choice )
@@ -343,7 +345,9 @@ class TestDialog(wx.Dialog):
     label.SetHelpText("The haptics devices used in the display")
     box.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
     
-    self.device_choice = wx.ComboBox(self, -1, self.getDefaultDevice(), (90, 50), (180,-1), self.getDevicesForDisplay( self.display_choice.GetValue() ) , wx.CB_READONLY )
+    temp_selection_string = self.getDefaultDevice()
+    self.device_choice = wx.ComboBox(self, -1, temp_selection_string, (90, 50), (180,-1), self.getDevicesForDisplay( self.display_choice.GetValue() ) , wx.CB_READONLY )
+    self.device_choice.SetStringSelection( temp_selection_string )
     
     self.device_choice.SetHelpText("Here's some help text for field #1")
     box.Add(self.device_choice, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
@@ -352,12 +356,12 @@ class TestDialog(wx.Dialog):
     label = wx.StaticText(self, -1, "Default stylus: ")
     label.SetHelpText("blah")
     stylus_box.Add( label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
-    self.stylus_choice = wx.ComboBox(self, -1, self.getDefaultStylus(), 
+    temp_selection_string = self.getDefaultStylus()
+    self.stylus_choice = wx.ComboBox(self, -1, temp_selection_string, 
                                      (90, 50), (180,-1), 
                                      self.getCommonStylus(), 
                                      wx.CB_READONLY )
-    if( self.stylus_choice.GetSelection() == wx.NOT_FOUND ):
-      self.stylus_choice.SetSelection( 0 )
+    self.stylus_choice.SetStringSelection( temp_selection_string )
     self.Bind(wx.EVT_COMBOBOX, self.onStylusChoice, self.stylus_choice )
     self.stylus_choice.SetHelpText("Here's some help text for field #1")
     
@@ -375,11 +379,13 @@ class TestDialog(wx.Dialog):
     label.SetHelpText("The mode in which to render the scene graphically")
     box.Add(label, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
     
-    self.stereo_choice = wx.ComboBox(self, -1, self.getDefaultStereoMode(),
+    temp_selection_string = self.getDefaultStereoMode()
+    self.stereo_choice = wx.ComboBox(self, -1, temp_selection_string,
                                      (90, 50), (130,-1), 
                                      stereo_mode_box_options, wx.CB_READONLY )
     self.stereo_choice.SetHelpText("Here's some help text for field #1")
     box.Add(self.stereo_choice, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
+    self.stereo_choice.SetStringSelection(temp_selection_string)
     
     check_boxes = wx.BoxSizer(wx.VERTICAL)
     self.mirrored_cb = wx.CheckBox( self, -1, "Mirrored in Y" )
@@ -403,12 +409,12 @@ class TestDialog(wx.Dialog):
       if( not( self.isCommonViewpoint( vp ) ) and 
           not( self.isDisplayViewpoint( self.display_choice.GetValue(), vp ) ) ):
         self.browse_viewpoints.append( vp )
-    self.viewpoint_choice = wx.ComboBox(self, -1, self.getDefaultViewpoint(),
+    temp_selection_string = self.getDefaultViewpoint()
+    self.viewpoint_choice = wx.ComboBox(self, -1, temp_selection_string,
                                         (90, 50), (120,-1), 
                                         self.getViewpointForDisplay( self.display_choice.GetValue() ), 
                                         wx.CB_READONLY )
-    if( self.viewpoint_choice.GetSelection() == wx.NOT_FOUND ):
-      self.viewpoint_choice.SetSelection( 0 )
+    self.viewpoint_choice.SetStringSelection(temp_selection_string)
     self.Bind(wx.EVT_COMBOBOX, self.onViewpointChoice, self.viewpoint_choice )
     self.viewpoint_choice.SetHelpText("Here's some help text for field #1")
     

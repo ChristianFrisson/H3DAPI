@@ -59,27 +59,64 @@ IF( GENERATE_CPACK_PROJECT )
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "H3D" )
 
   # Our project depends on these debian packages for Linux.
-  SET(DEBIAN_PACKAGE_DEPENDS "libcurl3, libfreetype6-dev, ftgl-dev, python2.4-dev, libaudiofile0, libvorbis-dev, libopenal-dev, zlib1g-dev, libxerces27-dev, libfreeimage-dev, hapi(>= 1.0.0), h3dutil(>=1.0.0)" )	      
+  SET(DEBIAN_PACKAGE_DEPENDS "libcurl3, libfreetype6-dev, ftgl-dev, python2.4-dev, libaudiofile0, libvorbis-dev, libopenal-dev, zlib1g-dev, libxerces27-dev, libfreeimage-dev, hapi(>= 1.0.0), h3dutil(>=1.0.0)" )
+  
+  # File patterns to ignore, common for all operating systems.
+  SET( H3DAPI_CPACK_IGNORE_PATTERNS /\\\\.svn/
+                                    \\\\.obj$
+                                    \\\\.ncb$
+                                    \\\\.log$
+                                    \\\\.suo$
+                                    \\\\.zip$
+                                    \\\\.dir/
+                                    \\\\.user$
+                                    \\\\.cv$
+                                    "/Debug(.)*/"
+                                    "/debug(.)*/"
+                                    /Release
+                              	    /release
+                                    /linux
+                                    /build/win32/
+                                    /build/vc8
+                                    /build/vc7
+                                    /osx
+                                    /H3DAPI/Util/
+                                    /berk/berk\\\\.wrl$
+                                    /berk/berk_orig\\\\.x3d$
+                                    /fish/Kumanomi\\\\.wrl$
+                                    /fish/Kumanomi_orig\\\\.x3d$
+                                    /humvee/humvee\\\\.WRL$
+                                    /humvee/humvee_orig\\\\.x3d$
+                                    /manikin/manikin\\\\.wrl$
+                                    /manikin/manikin_orig\\\\.x3d$
+                                    /moondial/moondial_orig\\\\.x3d$
+                                    /moondial/themoondial\\\\.wrl$
+                                    /plane/bobcat2\\\\.x3d$
+                                    /plane/bobcat_nh\\\\.wrl$
+                                    /plane/bobcat_orig\\\\.x3d$ )
 
-
-  # If H3DLoad should be added to the package. TODO: Only for Windows?
-  SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
-  MARK_AS_ADVANCED(H3DLoad_cmake_install)
-  IF( H3DLoad_cmake_install )
-    SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
-                                     "${H3DLoad_cmake_install};H3DLoad;ALL;/" )
-    IF( WIN32 )
+  SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DAPI_MAJOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_MINOR ${H3DAPI_MINOR_VERSION})
+  SET(CPACK_PACKAGE_VERSION_PATCH ${H3DAPI_BUILD_VERSION})
+  
+  # TODO: fix different for windows and unix if needed.
+  IF(WIN32 AND NOT UNIX)
+    # If H3DLoad should be added to the package.
+    SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
+    MARK_AS_ADVANCED(H3DLoad_cmake_install)
+    IF( H3DLoad_cmake_install )
+      SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
+                                       "${H3DLoad_cmake_install};H3DLoad;ALL;/" )
       SET( CPACK_ADD_H3DLOAD_DEMOS_LINKS "ON" )
-    ENDIF( WIN32 )
-  ENDIF( H3DLoad_cmake_install )
+    ENDIF( H3DLoad_cmake_install )
 
-  # If H3DViewer should be added to package. TODO: Only for Windows?
-  SET( H3DViewer_cmake_install "" CACHE PATH "Needs to be set if H3DViewer is desired to be packed in the install.  Set to location of cmake_install.cmake for H3DViewer." )
-  MARK_AS_ADVANCED(H3DViewer_cmake_install)
-  IF( H3DViewer_cmake_install )
-    SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
-                                      "${H3DViewer_cmake_install};H3DViewer;ALL;/" )
-    IF( WIN32 )
+    # If H3DViewer should be added to package.
+    SET( H3DViewer_cmake_install "" CACHE PATH "Needs to be set if H3DViewer is desired to be packed in the install.  Set to location of cmake_install.cmake for H3DViewer." )
+    MARK_AS_ADVANCED(H3DViewer_cmake_install)
+    IF( H3DViewer_cmake_install )
+      SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
+                                        "${H3DViewer_cmake_install};H3DViewer;ALL;/" )
+
       SET( CPACK_PACKAGE_EXECUTABLES ${CPACK_PACKAGE_EXECUTABLES}
                                      "H3DViewer;H3DViewer" )
       SET(WXWINDOWS_USE_GL 1)
@@ -88,94 +125,55 @@ IF( GENERATE_CPACK_PROJECT )
         SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
                                          "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
       ENDIF(wxWidgets_FOUND)
-    ENDIF( WIN32 )
-  ENDIF( H3DViewer_cmake_install )
+    ENDIF( H3DViewer_cmake_install )
 
-  #If particleDemo should be added to package. TODO: Only for Windows?
-  SET( ParticleDemo_cmake_install "" CACHE PATH "Needs to be set if ParticleDemo is desired to be packed in the install.  Set to location of cmake_install.cmake for ParticleDemo." )
-  MARK_AS_ADVANCED(ParticleDemo_cmake_install)
-  IF( ParticleDemo_cmake_install )
-    SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
-                                      "${ParticleDemo_cmake_install};ParticleDemo;ALL;/" )
-    IF( WIN32 AND NOT H3DViewer_cmake_install )
-      FIND_PACKAGE(wxWidgetsWin)
-      IF(wxWidgets_FOUND)
-        SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                         "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
-      ENDIF(wxWidgets_FOUND)
-    ENDIF( WIN32 AND NOT H3DViewer_cmake_install )
-  ELSE( ParticleDemo_cmake_install )
-    SET(CPACK_IGNORE_FILES /examples/Particledemo/ )
-  ENDIF( ParticleDemo_cmake_install )
+    #If particleDemo should be added to package.
+    SET( ParticleDemo_cmake_install "" CACHE PATH "Needs to be set if ParticleDemo is desired to be packed in the install.  Set to location of cmake_install.cmake for ParticleDemo." )
+    MARK_AS_ADVANCED(ParticleDemo_cmake_install)
+    IF( ParticleDemo_cmake_install )
+      SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
+                                        "${ParticleDemo_cmake_install};ParticleDemo;ALL;/" )
+      IF( NOT H3DViewer_cmake_install )
+        FIND_PACKAGE(wxWidgetsWin)
+        IF(wxWidgets_FOUND)
+          SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+                                           "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
+        ENDIF(wxWidgets_FOUND)
+      ENDIF( NOT H3DViewer_cmake_install )
+    ELSE( ParticleDemo_cmake_install )
+      SET(H3DAPI_CPACK_IGNORE_PATTERNS ${H3DAPI_CPACK_IGNORE_PATTERNS} /examples/Particledemo/ )
+    ENDIF( ParticleDemo_cmake_install )
 
-  SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DAPI_MAJOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_MINOR ${H3DAPI_MINOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_PATCH ${H3DAPI_BUILD_VERSION})
-  
-  # TODO: fix different for windows and unix if needed.
-  IF(WIN32 AND NOT UNIX)
     # Pattern in folders and files to ignore when adding files to installation package.
-    SET(CPACK_IGNORE_FILES ${CPACK_IGNORE_FILES}
-                           /\\\\.svn/
-                           \\\\.obj$
-                           \\\\.ncb$
-                           \\\\.log$
-                          \\\\.suo$
-                          \\\\.zip$
-                          \\\\.dir/
-                          \\\\.user$
-                          \\\\.cv$
-                          "/Debug(.)*/"
-                          "/debug(.)*/"
-                          /Release
-                          /release
-                          /linux
-                          /build/win32/
-                          /build/vc8
-                          /build/vc7
-                          /osx
-                          /H3DAPI/Util/
-                          /fparser\\\\.lib$
-                          /teem\\\\.lib$
-                          /wxbase28_net\\\\.lib$
-                          /wxbase28_odbc\\\\.lib$
-                          /wxbase28_xml\\\\.lib$
-                          /wxbase28_net\\\\.lib$
-                          /wxbase28_odbc\\\\.lib$
-                          /wxbase28_xml\\\\.lib$
-                          /wxexpat\\\\.lib$
-                          /wxjpeg\\\\.lib$
-                          /wxmsw28_aui\\\\.lib$
-                          /wxmsw28_dbgrid\\\\.lib$
-                          /wxmsw28_html\\\\.lib$
-                          /wxmsw28_media\\\\.lib$
-                          /wxmsw28_qa\\\\.lib$
-                          /wxmsw28_richtext\\\\.lib$
-                          /wxmsw28_xrc\\\\.lib$
-                          /wxpng\\\\.lib$
-                          /wxregex\\\\.lib$
-                          /wxtiff\\\\.lib$
-                          /wxzlib\\\\.lib$
-                          /bz2\\\\.lib$
-                          /z\\\\.lib$
-                          /png\\\\.lib$
-                          /pthreadGC2\\\\.dll$
-                          /pthreadGCE2\\\\.dll$
-                          /pthreadVSE2\\\\.dll$
-                          /berk/berk\\\\.wrl$
-                          /berk/berk_orig\\\\.x3d$
-                          /fish/Kumanomi\\\\.wrl$
-                          /fish/Kumanomi_orig\\\\.x3d$
-                          /humvee/humvee\\\\.WRL$
-                          /humvee/humvee_orig\\\\.x3d$
-                          /manikin/manikin\\\\.wrl$
-                          /manikin/manikin_orig\\\\.x3d$
-                          /moondial/moondial_orig\\\\.x3d$
-                          /moondial/themoondial\\\\.wrl$
-                          /plane/bobcat2\\\\.x3d$
-                          /plane/bobcat_nh\\\\.wrl$
-                          /plane/bobcat_orig\\\\.x3d$
-                          /HAPI/doc/ )
+    SET(CPACK_IGNORE_FILES ${H3DAPI_CPACK_IGNORE_PATTERNS}
+                           /fparser\\\\.lib$
+                           /teem\\\\.lib$
+                           /wxbase28_net\\\\.lib$
+                           /wxbase28_odbc\\\\.lib$
+                           /wxbase28_xml\\\\.lib$
+                           /wxbase28_net\\\\.lib$
+                           /wxbase28_odbc\\\\.lib$
+                           /wxbase28_xml\\\\.lib$
+                           /wxexpat\\\\.lib$
+                           /wxjpeg\\\\.lib$
+                           /wxmsw28_aui\\\\.lib$
+                           /wxmsw28_dbgrid\\\\.lib$
+                           /wxmsw28_html\\\\.lib$
+                           /wxmsw28_media\\\\.lib$
+                           /wxmsw28_qa\\\\.lib$
+                           /wxmsw28_richtext\\\\.lib$
+                           /wxmsw28_xrc\\\\.lib$
+                           /wxpng\\\\.lib$
+                           /wxregex\\\\.lib$
+                           /wxtiff\\\\.lib$
+                           /wxzlib\\\\.lib$
+                           /bz2\\\\.lib$
+                           /z\\\\.lib$
+                           /png\\\\.lib$
+                           /pthreadGC2\\\\.dll$
+                           /pthreadGCE2\\\\.dll$
+                           /pthreadVSE2\\\\.dll$
+                           /HAPI/doc/ )
     
     # Directories to install, and how they should be named. Non-existing folders will be ignored when packing.
     SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
@@ -211,6 +209,10 @@ IF( GENERATE_CPACK_PROJECT )
 
     # Do not modify path since this is done by the NSIS template.
     SET( CPACK_NSIS_MODIFY_PATH "ON" )
+  ELSE(WIN32 AND NOT UNIX)
+    SET(H3DAPI_CPACK_IGNORE_PATTERNS ${H3DAPI_CPACK_IGNORE_PATTERNS} /examples/Particledemo/ )
+    SET(CPACK_SOURCE_IGNORE_FILES ${H3DAPI_CPACK_IGNORE_PATTERNS} )
+    SET(CPACK_SOURCE_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI" )
   ENDIF(WIN32 AND NOT UNIX)
 ENDIF( GENERATE_CPACK_PROJECT )
 
