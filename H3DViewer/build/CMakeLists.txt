@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 # The name of our project is "H3DViewer".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${H3DViewer_SOURCE_DIR} and
 # to the root binary directory of the project as ${H3DViewer_BINARY_DIR}.
@@ -17,6 +19,19 @@ SET(requiredLibs)
 SET(CMAKE_MODULE_PATH "${H3DViewer_SOURCE_DIR}/../../build/modules/")
 INCLUDE( StripAndAddLibraryDirectories )
 
+#H3DAPI
+FIND_PACKAGE(H3DAPI REQUIRED)
+
+IF(H3DAPI_FOUND)
+  INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
+  IF( WIN32 )
+    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${H3DAPI_LIBRARIES} )
+    SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
+  ELSE( WIN32 )
+    SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
+  ENDIF( WIN32 )
+ENDIF(H3DAPI_FOUND)
+
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)
 
@@ -32,19 +47,6 @@ IF(HAPI_FOUND)
   INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
 ENDIF(HAPI_FOUND)
-
-#H3DAPI
-FIND_PACKAGE(H3DAPI REQUIRED)
-
-IF(H3DAPI_FOUND)
-  INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
-  IF( WIN32 )
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${H3DAPI_LIBRARIES} )
-    SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
-  ELSE( WIN32 )
-    SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
-  ENDIF( WIN32 )
-ENDIF(H3DAPI_FOUND)
 
 # WxWidgets.
 SET(WXWINDOWS_USE_GL 1)

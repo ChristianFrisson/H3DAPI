@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 PROJECT (H3DAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
@@ -221,7 +223,7 @@ SET( H3DAPI_FULL_VERSION
 ${H3DAPI_MAJOR_VERSION}.${H3DAPI_MINOR_VERSION}.${H3DAPI_BUILD_VERSION} ) 
 
 # Add all sources
-AUX_SOURCE_DIRECTORY(${H3DAPI_SOURCE_DIR}/../src H3DAPI_SRCS)
+AUX_SOURCE_DIRECTORY(../src H3DAPI_SRCS)
 
 # Add the H3DAPI.rc resource file if Visual Studio
 IF(MSVC)

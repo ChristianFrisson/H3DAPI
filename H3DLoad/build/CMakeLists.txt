@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.6.0)
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.6.0)
+ENDIF(WIN32)
 
 # The name of our project is "H3DLoad".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${H3DLoad_SOURCE_DIR} and
@@ -21,6 +23,14 @@ SET(requiredLibs)
 SET(CMAKE_MODULE_PATH "${H3DLoad_SOURCE_DIR}/../../build/modules/")
 INCLUDE( StripAndAddLibraryDirectories )
 
+#H3DAPI
+FIND_PACKAGE(H3DAPI REQUIRED)
+
+IF(H3DAPI_FOUND)
+  INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
+  SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
+ENDIF(H3DAPI_FOUND)
+
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)
 
@@ -36,14 +46,6 @@ IF(HAPI_FOUND)
   INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
 ENDIF(HAPI_FOUND)
-
-#H3DAPI
-FIND_PACKAGE(H3DAPI REQUIRED)
-
-IF(H3DAPI_FOUND)
-  INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
-ENDIF(H3DAPI_FOUND)
 
 # OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
