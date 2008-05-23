@@ -29,10 +29,10 @@
 #ifndef __H3DDISPLAYLISTOBJECT_H__
 #define __H3DDISPLAYLISTOBJECT_H__
 
+#include <GL/glew.h>
 #include <H3D/H3DApi.h>
 #include <H3D/Field.h>
 #include <H3D/Instantiate.h>
-#include "GL/glew.h"
 #include <H3D/FieldTemplates.h>
 #include <H3D/SFBool.h>
 #include <H3D/SFTime.h>
