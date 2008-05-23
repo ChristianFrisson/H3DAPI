@@ -51,7 +51,7 @@ IF( GENERATE_CPACK_PROJECT )
   SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "H3DAPI. A cross platform, haptics device independent, X3D based API for 3D graphics and haptics.")
   SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
   SET(CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
-  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${H3DAPI_SOURCE_DIR}/../ReadMe.txt")
+  SET(CPACK_PACKAGE_DESCRIPTION_FILE "${H3DAPI_SOURCE_DIR}/../ReadMe")
   SET(CPACK_RESOURCE_FILE_LICENSE "${H3DAPI_SOURCE_DIR}/../LICENSE")
 
   # Project to install.

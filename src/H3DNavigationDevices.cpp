@@ -98,7 +98,7 @@ void MouseNavigation::CalculateMouseMoveInfo::update( ) {
   else if( button_pressed ) {
     Vec2f perp = Vec2f( -motion.y, -motion.x );
     perp.normalize();
-    if( nav_type == "EXAMINE" ) {
+    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
       the_owner->rel_rot *=
         Rotation( perp.x, perp.y, 0, motion.length() * 0.01f );
       the_owner->move_dir = Vec3f();
@@ -223,7 +223,7 @@ void KeyboardNavigation::CalculateKeyboardMoveInfo::update( ) {
       temp_value = true;
     }
   }
-  else if( nav_type == "EXAMINE" ) {
+  else if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
     if( upPressed ) {
       temp_move_dir = Vec3f( 0, 0, 0 );
       temp_rel_rot *= Rotation( 1, 0, 0, 0.01f );
@@ -288,7 +288,7 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
   
   if( button_pressed ) {
     string nav_type = the_owner->getNavType();
-    if( nav_type == "EXAMINE" ) {
+    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
       Rotation this_orn = hd->deviceOrientation->getValue();
       the_owner->rel_rot = -(this_orn * -last_orn);
       last_orn = this_orn;
@@ -408,7 +408,7 @@ void SWSNavigation::CalculateSWSMoveInfo::update( ) {
     }
   }
   else if( event.ptr == routes_in[1] ) {
-    if( nav_type == "EXAMINE" || nav_type == "FLY" ) {
+    if( nav_type == "EXAMINE" || nav_type == "FLY" || nav_type == "ANY" ) {
       the_owner->rel_rot =
         static_cast< SFRotation * >( routes_in[1] )->getValue();
       value = true;
