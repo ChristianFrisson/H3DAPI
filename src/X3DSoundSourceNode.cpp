@@ -331,6 +331,7 @@ void X3DSoundSourceNode::registerSoundNode( X3DSoundNode *n ) {
 /// Unregister this sound node with the X3DSoundSourceNode.   
 void X3DSoundSourceNode::unregisterSoundNode( X3DSoundNode *n ) {
 #ifdef HAVE_OPENAL
+  alSourceStop( n->getALSourceId() );  
   alSourcei( n->getALSourceId(), AL_BUFFER, 0 );
 #endif
   parent_sound_nodes.remove( n );
