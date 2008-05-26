@@ -368,7 +368,11 @@ string FC_GetFontByName( const char *font_name ) {
 
 #endif
 
+#ifndef LINUX
 #define DEFAULT_SERIF_FONT "Times New Roman"
+#else
+#define DEFAULT_SERIF_FONT "FreeSerif"
+#endif
 #define DEFAULT_SANS_FONT "Helvetica"
 #define DEFAULT_TYPEWRITER_FONT "Courier New"
 
