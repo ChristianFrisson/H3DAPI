@@ -30,32 +30,9 @@
 #include <H3DUtil/LinAlgTypes.h>
 
 namespace H3D {
-  /*
-  /// The floating point type.
-  typedef float H3DFloat;
-  /// Used for floating point values when specified as high-precision
-  /// in the X3D specification.
-  typedef double H3DDouble;
-  /// The 32 bit integer type.
-  typedef int H3DInt32;
-  /// The type for time values.
-  typedef double H3DTime;
-  
-  typedef LinAlg::Rotation Rotation;
-  typedef LinAlg::Quaternion Quaternion;
 
-  typedef LinAlg::Vec2d Vec2d;
-  typedef LinAlg::Vec3d Vec3d;
-  typedef LinAlg::Vec4d Vec4d;
-  typedef LinAlg::Matrix3d Matrix3d;
-  typedef LinAlg::Matrix4d Matrix4d;
-
-  typedef LinAlg::Vec2f Vec2f;
-  typedef LinAlg::Vec3f Vec3f;
-  typedef LinAlg::Vec4f Vec4f;
-  typedef LinAlg::Matrix3f Matrix3f;
-  typedef LinAlg::Matrix4f Matrix4f;*/
-
+  // In H3D namespace all H3DUtil functions/types/classes can be used
+  // without writing H3DUtil:: first.
   using namespace H3DUtil;
 }
 

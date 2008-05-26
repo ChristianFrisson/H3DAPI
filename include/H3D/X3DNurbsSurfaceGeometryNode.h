@@ -123,7 +123,7 @@ namespace H3D {
     public X3DParametricGeometryNode {
   public:
     
-		/// The SFCoordinateNode is dependent on the propertyChanged field of the 
+    /// The SFCoordinateNode is dependent on the propertyChanged field of the 
     /// contained X3DCoordinateNode.
     typedef DependentSFNode< X3DCoordinateNode,
                              FieldRef< X3DGeometricPropertyNode,
@@ -131,10 +131,10 @@ namespace H3D {
                                        &X3DCoordinateNode::propertyChanged > > 
     SFCoordinateNode;
 
-		/// The SFTextureCoordinteNode is dependent on the propertyChanged 
+    /// The SFTextureCoordinteNode is dependent on the propertyChanged 
     /// field of the contained X3DTextureCoordinateNode or 
-		/// NurbsTextureCoordinate which both inherits from 
-		/// X3DGeometricPropertyNode.
+    /// NurbsTextureCoordinate which both inherits from 
+    /// X3DGeometricPropertyNode.
     typedef DependentSFNode< 
                 X3DGeometricPropertyNode,
                 FieldRef< X3DGeometricPropertyNode,
@@ -145,44 +145,44 @@ namespace H3D {
     /// The bound field for X3DNurbsSurfaceGeometryNode is a CoordBoundField.
     typedef CoordBoundField SFBound;
 
-		/// This field class takes as input SFNode field and checks whether
-		/// this is one of the allowed textureNodes or not.
-		class H3DAPI_API TexCoordOrNurbsTex: public TexCoordOrNurbsTexDependent {
-		public:
+    /// This field class takes as input SFNode field and checks whether
+    /// this is one of the allowed textureNodes or not.
+    class H3DAPI_API TexCoordOrNurbsTex: public TexCoordOrNurbsTexDependent {
+    public:
 
-			/// Destructor. Sets the value to NULL in order to get the correct
-			/// onAdd and onRemove functions to be called and initialize the 
-			/// different texture coord fields in the X3DNurbsSurfaceGeometryNode
-			/// node when changing the textureNode.
-			~TexCoordOrNurbsTex() {
-				value = NULL;
-			}
+      /// Destructor. Sets the value to NULL in order to get the correct
+      /// onAdd and onRemove functions to be called and initialize the 
+      /// different texture coord fields in the X3DNurbsSurfaceGeometryNode
+      /// node when changing the textureNode.
+      ~TexCoordOrNurbsTex() {
+        value = NULL;
+      }
 
-			virtual void onAdd( Node *n ) {
-				SFNode::onAdd( n );
-				X3DTextureCoordinateNode *tex_coord_node = 
-					dynamic_cast< X3DTextureCoordinateNode * >( n );
+      virtual void onAdd( Node *n ) {
+        SFNode::onAdd( n );
+        X3DTextureCoordinateNode *tex_coord_node = 
+          dynamic_cast< X3DTextureCoordinateNode * >( n );
 
-				NurbsTextureCoordinate *nurbs_tex_coord = 
-					dynamic_cast< NurbsTextureCoordinate * >( n );
+        NurbsTextureCoordinate *nurbs_tex_coord = 
+          dynamic_cast< NurbsTextureCoordinate * >( n );
 
-				if( !tex_coord_node && !nurbs_tex_coord ) {
-					stringstream s;
-					s << "Expecting X3DTextureCoordinateNode or NurbsTextureCoordinate";
-					throw InvalidNodeType( n->getTypeName(),
-						s.str(),
-						H3D_FULL_LOCATION );
-				}
-			}
-		};
+        if( !tex_coord_node && !nurbs_tex_coord ) {
+          stringstream s;
+          s << "Expecting X3DTextureCoordinateNode or NurbsTextureCoordinate";
+          throw InvalidNodeType( n->getTypeName(),
+            s.str(),
+            H3D_FULL_LOCATION );
+        }
+      }
+    };
 #ifdef __BORLANDC__
     friend class TexCoordOrNurbsTex;
 #endif
 
-		/// Destructor
-		~X3DNurbsSurfaceGeometryNode() { 
-			if( nurbs_object ) gluDeleteNurbsRenderer( nurbs_object );
-		}
+    /// Destructor
+    ~X3DNurbsSurfaceGeometryNode() { 
+      if( nurbs_object ) gluDeleteNurbsRenderer( nurbs_object );
+    }
 
     /// Constructor.
     X3DNurbsSurfaceGeometryNode( Inst< SFNode      >  _metadata = 0,
@@ -207,8 +207,8 @@ namespace H3D {
                                  Inst< SFInt32     > _uOrder = 0,
                                  Inst< SFInt32     > _vOrder = 0 );
 
-		/// Render the X3DNurbsSurfaceGeometryNode with OpenGL.
-		virtual void render();
+    /// Render the X3DNurbsSurfaceGeometryNode with OpenGL.
+    virtual void render();
 
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti );  
@@ -219,23 +219,23 @@ namespace H3D {
       return -1;
     }
 
-		/// Function called by render to specify what differs between 
-		/// NurbsPatchSurface and NurbsTrimmedSurface,
-		virtual void renderBetweenBeginEnd(
-																GLUnurbsObj *nurbs_object,
-																X3DTextureCoordinateNode *tex_coord_node,
-																TextureCoordinateGenerator *tex_coord_gen,
-																NurbsTextureCoordinate *nurbs_tex_coord, 
-																GLfloat *texKnotU,
-																GLfloat *texKnotV,
-																GLfloat *texCoordinates, 
-																GLfloat *u_knots, 
-																GLfloat *v_knots, 
-																H3DInt32 &sizeOfVertex,
-																GLfloat *withWeights, 
-																H3DInt32 &uSizeToUse, 
-																H3DInt32 &vSizeToUse, 
-																H3DInt32 &map2Vertex3Or4 ) {};
+    /// Function called by render to specify what differs between 
+    /// NurbsPatchSurface and NurbsTrimmedSurface,
+    virtual void renderBetweenBeginEnd(
+                                GLUnurbsObj *nurbs_object,
+                                X3DTextureCoordinateNode *tex_coord_node,
+                                TextureCoordinateGenerator *tex_coord_gen,
+                                NurbsTextureCoordinate *nurbs_tex_coord, 
+                                GLfloat *texKnotU,
+                                GLfloat *texKnotV,
+                                GLfloat *texCoordinates, 
+                                GLfloat *u_knots, 
+                                GLfloat *v_knots, 
+                                H3DInt32 &sizeOfVertex,
+                                GLfloat *withWeights, 
+                                H3DInt32 &uSizeToUse, 
+                                H3DInt32 &vSizeToUse, 
+                                H3DInt32 &map2Vertex3Or4 ) {};
     
     /// controlPoint defines a set of control points of dimension 
     /// uDimension × vDimension. This set of points defines a mesh where the
@@ -368,9 +368,9 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-		
-	protected:
-		GLUnurbsObj *nurbs_object;
+    
+  protected:
+    GLUnurbsObj *nurbs_object;
 
   };
 }

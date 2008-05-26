@@ -48,20 +48,20 @@ H3DNodeDatabase VisibilitySensor::database(
         );
 
 VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
-								Inst< SFVec3f > _center ,
-								Inst< SFVec3f > _size ,
-								Inst< SFTime > _enterTime ,
-								Inst< SFTime > _exitTime ,
-								Inst< SFBool > _enabled ,
-								Inst< SFBool > _isActive ) :
-								X3DEnvironmentalSensorNode( _metadata, 
-                                            _center, 
-                                            _enabled, 
-                                            _size,
-                                            _enterTime,
-                                            _exitTime,
-                                            _isActive ),
-								set_time( new SetTime ){
+                                    Inst< SFVec3f > _center ,
+                                    Inst< SFVec3f > _size ,
+                                    Inst< SFTime > _enterTime ,
+                                    Inst< SFTime > _exitTime ,
+                                    Inst< SFBool > _enabled ,
+                                    Inst< SFBool > _isActive ) :
+                                    X3DEnvironmentalSensorNode( _metadata, 
+                                                                _center, 
+                                                                _enabled, 
+                                                                _size,
+                                                                _enterTime,
+                                                                _exitTime,
+                                                                _isActive ),
+                                    set_time( new SetTime ) {
 
   type_name = "VisibilitySensor";
   database.initFields( this );
@@ -69,171 +69,172 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
   set_time->setOwner( this );
   isActive->route( set_time );
   visib_pix_no_threshold = 10;
+  prev_travinfoadr = 0;
   
 }
 void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
  
-	if( enabled->getValue() &&
-	  ( size->getValue().x >= 0.0 &&
-	    size->getValue().y >= 0.0 &&
-	    size->getValue().z >= 0.0 ))
-	{
-		
-		if( prev_travinfoadr != (int)&ti)
-		{
-			// First Instance DEF/USE of traveseSG
-			prev_maxnoinstances = no_instance;
-			vector<int>::iterator p;
-			for( p = list.begin(); p != list.end(); p++ ) {
-				if( *p > no_instance)
-					p=list.erase( p );
-			}
-			no_instance = 0;
-		}
-		no_instance++;
-			
-		const Matrix4f &vs_frw_m = ti.getAccForwardMatrix();
+  if( enabled->getValue() &&
+    ( size->getValue().x >= 0.0 &&
+      size->getValue().y >= 0.0 &&
+      size->getValue().z >= 0.0 ))
+  {
+    
+    if( prev_travinfoadr != &ti)
+    {
+      // First Instance DEF/USE of traveseSG
+      prev_maxnoinstances = no_instance;
+      vector<int>::iterator p;
+      for( p = list.begin(); p != list.end(); p++ ) {
+        if( *p > no_instance)
+          p=list.erase( p );
+      }
+      no_instance = 0;
+    }
+    no_instance++;
+      
+    const Matrix4f &vs_frw_m = ti.getAccForwardMatrix();
 
-		H3DFloat xmin = center->getValue().x - size->getValue().x / 2.0f;
-		H3DFloat xmax = center->getValue().x + size->getValue().x / 2.0f;
-		H3DFloat ymin = center->getValue().y - size->getValue().y / 2.0f;
-		H3DFloat ymax = center->getValue().y + size->getValue().y / 2.0f;
-		H3DFloat zmin = center->getValue().z - size->getValue().z / 2.0f;
-		H3DFloat zmax = center->getValue().z + size->getValue().z / 2.0f;
-		
-		Vec3f loc0(xmin, ymin, zmax);
-		Vec3f loc1(xmax, ymin, zmax);
-		Vec3f loc2(xmax, ymax, zmax);
-		Vec3f loc3(xmin, ymax, zmax);
-		Vec3f loc4(xmin, ymin, zmin);
-		Vec3f loc5(xmax, ymin, zmin);
-		Vec3f loc6(xmax, ymax, zmin);
-		Vec3f loc7(xmin, ymax, zmin);
+    H3DFloat xmin = center->getValue().x - size->getValue().x / 2.0f;
+    H3DFloat xmax = center->getValue().x + size->getValue().x / 2.0f;
+    H3DFloat ymin = center->getValue().y - size->getValue().y / 2.0f;
+    H3DFloat ymax = center->getValue().y + size->getValue().y / 2.0f;
+    H3DFloat zmin = center->getValue().z - size->getValue().z / 2.0f;
+    H3DFloat zmax = center->getValue().z + size->getValue().z / 2.0f;
+    
+    Vec3f loc0(xmin, ymin, zmax);
+    Vec3f loc1(xmax, ymin, zmax);
+    Vec3f loc2(xmax, ymax, zmax);
+    Vec3f loc3(xmin, ymax, zmax);
+    Vec3f loc4(xmin, ymin, zmin);
+    Vec3f loc5(xmax, ymin, zmin);
+    Vec3f loc6(xmax, ymax, zmin);
+    Vec3f loc7(xmin, ymax, zmin);
 
-		// Global coordinates of the corners of visibilitySensor
+    // Global coordinates of the corners of visibilitySensor
 
-		Vec3f g0 = vs_frw_m * loc0;
-		Vec3f g1 = vs_frw_m * loc1;
-		Vec3f g2 = vs_frw_m * loc2;
-		Vec3f g3 = vs_frw_m * loc3;
-		Vec3f g4 = vs_frw_m * loc4;
-		Vec3f g5 = vs_frw_m * loc5;
-		Vec3f g6 = vs_frw_m * loc6;
-		Vec3f g7 = vs_frw_m * loc7;
-		
-		GLuint queries[1];
-		GLuint sampleCount;
-		GLint available;
-		GLint bitsSupported;
+    Vec3f g0 = vs_frw_m * loc0;
+    Vec3f g1 = vs_frw_m * loc1;
+    Vec3f g2 = vs_frw_m * loc2;
+    Vec3f g3 = vs_frw_m * loc3;
+    Vec3f g4 = vs_frw_m * loc4;
+    Vec3f g5 = vs_frw_m * loc5;
+    Vec3f g6 = vs_frw_m * loc6;
+    Vec3f g7 = vs_frw_m * loc7;
+    
+    GLuint queries[1];
+    GLuint sampleCount;
+    GLint available;
+    GLint bitsSupported;
 
-		// check to make sure functionality is supported
-		glGetQueryiv(GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS_ARB, 
-			&bitsSupported);
-		if (bitsSupported == 0) {
-		     cout<<"query check is not supported"<<endl;
-			
-		}
+    // check to make sure functionality is supported
+    glGetQueryiv(GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS_ARB, 
+      &bitsSupported);
+    if (bitsSupported == 0) {
+         cout<<"query check is not supported"<<endl;
+      
+    }
 
-		glGenQueriesARB(1, queries);
-	    
-		// before this point, render major occluders
-		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		glDepthMask(GL_FALSE);
-	    
-		// also disable texturing and any fancy shaders
-		glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queries[0]);
-		// render bounding box for object i
-		glBegin( GL_QUADS );
-	
-			// +z
-			//glNormal3f  ( 0, 0, 1 );
+    glGenQueriesARB(1, queries);
+      
+    // before this point, render major occluders
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glDepthMask(GL_FALSE);
+      
+    // also disable texturing and any fancy shaders
+    glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queries[0]);
+    // render bounding box for object i
+    glBegin( GL_QUADS );
+  
+    // +z
+    //glNormal3f  ( 0, 0, 1 );
 
-			glVertex3f  (g2.x, g2.y,g2.z);
-			glVertex3f  (g3.x, g3.y,g3.z);
-			glVertex3f  (g0.x, g0.y,g0.z);
-			glVertex3f  (g1.x, g1.y,g1.z);
+    glVertex3f  (g2.x, g2.y,g2.z);
+    glVertex3f  (g3.x, g3.y,g3.z);
+    glVertex3f  (g0.x, g0.y,g0.z);
+    glVertex3f  (g1.x, g1.y,g1.z);
 
-				
-			// -z
-			//glNormal3f  ( 0, 0, -1 );
 
-			glVertex3f  (g5.x, g5.y,g5.z);
-			glVertex3f  (g4.x, g4.y,g4.z);
-			glVertex3f  (g7.x, g7.y,g7.z);
-			glVertex3f  (g6.x, g6.y,g6.z);
-			
-			// +y
-			//glNormal3f  ( 0, 1, 0 );
+    // -z
+    //glNormal3f  ( 0, 0, -1 );
 
-			glVertex3f  (g2.x, g2.y,g2.z);
-			glVertex3f  (g6.x, g6.y,g6.z);
-			glVertex3f  (g7.x, g7.y,g7.z);
-			glVertex3f  (g3.x, g3.y,g3.z);
+    glVertex3f  (g5.x, g5.y,g5.z);
+    glVertex3f  (g4.x, g4.y,g4.z);
+    glVertex3f  (g7.x, g7.y,g7.z);
+    glVertex3f  (g6.x, g6.y,g6.z);
 
-			// -y
-			//glNormal3f  ( 0, -1, 0 );
+    // +y
+    //glNormal3f  ( 0, 1, 0 );
 
-			glVertex3f  (g0.x, g0.y,g0.z);
-			glVertex3f  (g4.x, g4.y,g4.z);
-			glVertex3f  (g5.x, g5.y,g5.z);
-			glVertex3f  (g1.x, g1.y,g1.z);
+    glVertex3f  (g2.x, g2.y,g2.z);
+    glVertex3f  (g6.x, g6.y,g6.z);
+    glVertex3f  (g7.x, g7.y,g7.z);
+    glVertex3f  (g3.x, g3.y,g3.z);
 
-			// +x
-			//glNormal3f  ( 1, 0, 0 );
+    // -y
+    //glNormal3f  ( 0, -1, 0 );
 
-			glVertex3f  (g2.x, g2.y,g2.z);
-			glVertex3f  (g1.x, g1.y,g1.z);
-			glVertex3f  (g5.x, g5.y,g5.z);
-			glVertex3f  (g6.x, g6.y,g6.z);
+    glVertex3f  (g0.x, g0.y,g0.z);
+    glVertex3f  (g4.x, g4.y,g4.z);
+    glVertex3f  (g5.x, g5.y,g5.z);
+    glVertex3f  (g1.x, g1.y,g1.z);
 
-			// -x
-			//glNormal3f  ( -1, 0, 0 );
+    // +x
+    //glNormal3f  ( 1, 0, 0 );
 
-			glVertex3f  (g7.x, g7.y,g7.z);
-			glVertex3f  (g4.x, g4.y,g4.z);
-			glVertex3f  (g0.x, g0.y,g0.z);
-			glVertex3f  (g3.x, g3.y,g4.z);
-			
-				
-		glEnd();
-		
-		glEndQueryARB(GL_SAMPLES_PASSED_ARB);
-	    
-		glFlush();
+    glVertex3f  (g2.x, g2.y,g2.z);
+    glVertex3f  (g1.x, g1.y,g1.z);
+    glVertex3f  (g5.x, g5.y,g5.z);
+    glVertex3f  (g6.x, g6.y,g6.z);
 
-		do {
-			glGetQueryObjectivARB(queries[0],
-								GL_QUERY_RESULT_AVAILABLE_ARB,
-								&available);
-		} while (!available);
+    // -x
+    //glNormal3f  ( -1, 0, 0 );
 
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		glDepthMask(GL_TRUE);
-	    
-		glGetQueryObjectuivARB(queries[0], GL_QUERY_RESULT_ARB,
-								&sampleCount);
+    glVertex3f  (g7.x, g7.y,g7.z);
+    glVertex3f  (g4.x, g4.y,g4.z);
+    glVertex3f  (g0.x, g0.y,g0.z);
+    glVertex3f  (g3.x, g3.y,g4.z);
 
-	
-		if( (int)sampleCount > visib_pix_no_threshold )
-		{
-			vector<int>::iterator p = find(list.begin(), list.end(), 
-				no_instance );
-			if ( p == list.end() ) {
-				if( list.size() == 0 ) isActive->setValue( true, id );
-	        	list.push_back( no_instance );
-			}
-		}
-		else
-		{
-			vector<int>::iterator p = find(list.begin(), list.end(), 
-				no_instance );
-			if ( p != list.end() ) {
-	    			list.erase( p );
-					if( list.size() == 0 ) isActive->setValue( false, id );
-			}
-		}
 
-		prev_travinfoadr = (int)&ti;
-	
-	}
+    glEnd();
+    
+    glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+      
+    glFlush();
+
+    do {
+      glGetQueryObjectivARB(queries[0],
+                GL_QUERY_RESULT_AVAILABLE_ARB,
+                &available);
+    } while (!available);
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glDepthMask(GL_TRUE);
+      
+    glGetQueryObjectuivARB(queries[0], GL_QUERY_RESULT_ARB,
+                &sampleCount);
+
+  
+    if( (int)sampleCount > visib_pix_no_threshold )
+    {
+      vector<int>::iterator p = find(list.begin(), list.end(), 
+        no_instance );
+      if ( p == list.end() ) {
+        if( list.size() == 0 ) isActive->setValue( true, id );
+            list.push_back( no_instance );
+      }
+    }
+    else
+    {
+      vector<int>::iterator p = find(list.begin(), list.end(), 
+        no_instance );
+      if ( p != list.end() ) {
+            list.erase( p );
+          if( list.size() == 0 ) isActive->setValue( false, id );
+      }
+    }
+
+    prev_travinfoadr = &ti;
+  
+  }
 }

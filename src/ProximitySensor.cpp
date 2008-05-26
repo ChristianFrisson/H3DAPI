@@ -70,6 +70,7 @@ ProximitySensor::ProximitySensor( Inst< SFNode > _metadata ,
 
   set_time->setOwner( this );
   isActive->route( set_time );
+  prev_travinfoadr = 0;
   
 }
 void ProximitySensor::traverseSG( TraverseInfo &ti ) {
@@ -81,7 +82,7 @@ void ProximitySensor::traverseSG( TraverseInfo &ti ) {
   {
 
     // First instance of the DEF/USE ProximitySensors in the scene
-    if( prev_travinfoadr != (int)&ti)
+    if( prev_travinfoadr != &ti)
       prev_vp_pos = can_prev_vp_pos;
 
     // Active viewpoint
@@ -181,7 +182,7 @@ void ProximitySensor::traverseSG( TraverseInfo &ti ) {
     }
   
     can_prev_vp_pos = glob_vp_pos;
-    prev_travinfoadr = (int)&ti;
+    prev_travinfoadr = &ti;
   }
 }
 

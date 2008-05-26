@@ -76,7 +76,7 @@ IF( GENERATE_CPACK_PROJECT )
                                     "/Debug(.)*/"
                                     "/debug(.)*/"
                                     /Release
-                              	    /release
+                                    /release
                                     /linux
                                     /build/win32/
                                     /build/vc8
@@ -355,7 +355,6 @@ ENDIF(NVIDIACG_FOUND)
 # Optional extra library. Used to read compressed files.
 FIND_PACKAGE(H3DZLIB)
 IF(ZLIB_FOUND)
-  SET(HAVE_ZLIB 1)
   INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} )
   IF(WIN32)
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${ZLIB_LIBRARIES})
@@ -470,7 +469,6 @@ ENDIF(FTGL_FOUND)
 # Optional extra library. Used to read images.
 FIND_PACKAGE(FreeImage)
 IF(FREEIMAGE_FOUND)
-  SET(HAVE_FREEIMAGE 1)
   INCLUDE_DIRECTORIES( ${FREEIMAGE_INCLUDE_DIR} ) 
   IF(WIN32)
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${FREEIMAGE_LIBRARIES})
@@ -665,9 +663,9 @@ IF( WIN32 )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
     IF(OPENHAPTICS_FOUND)
-      SET_SOURCE_FILES_PROPERTIES( ${H3DAPI_SOURCE_DIR}/../src/MagneticSurface.cpp
-                                   ${H3DAPI_SOURCE_DIR}/../src/OpenHapticsSurface.cpp
-                                   ${H3DAPI_SOURCE_DIR}/../src/X3DGeometryNode.cpp
+      SET_SOURCE_FILES_PROPERTIES( ../src/MagneticSurface.cpp
+                                   ../src/OpenHapticsSurface.cpp
+                                   ../src/X3DGeometryNode.cpp
                                    PROPERTIES COMPILE_FLAGS "/Od" )
     ENDIF(OPENHAPTICS_FOUND)
   ELSEIF(MSVC90)
@@ -679,9 +677,9 @@ IF( WIN32 )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt /INCREMENTAL:NO" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
     IF(OPENHAPTICS_FOUND)
-      SET_SOURCE_FILES_PROPERTIES( ${H3DAPI_SOURCE_DIR}/../src/MagneticSurface.cpp
-                                   ${H3DAPI_SOURCE_DIR}/../src/OpenHapticsSurface.cpp
-                                   ${H3DAPI_SOURCE_DIR}/../src/X3DGeometryNode.cpp
+      SET_SOURCE_FILES_PROPERTIES( ../src/MagneticSurface.cpp
+                                   ../src/OpenHapticsSurface.cpp
+                                   ../src/X3DGeometryNode.cpp
                                    PROPERTIES COMPILE_FLAGS "/Od" )
     ENDIF(OPENHAPTICS_FOUND)
   ENDIF(MSVC70 OR MSVC71)

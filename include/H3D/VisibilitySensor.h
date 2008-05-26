@@ -114,7 +114,7 @@ namespace H3D {
           vs->enterTime->setValue( TimeStamp() , vs->id ); 
         else 
           vs->exitTime->setValue( TimeStamp() , vs->id ); 
-	  }
+      }
     protected:
       /// Sets either the inputTrue or inputFalse field depending
       /// on the new value.
@@ -124,44 +124,45 @@ namespace H3D {
           static_cast< VisibilitySensor * >( getOwner() );
         if( value )
           vs->enterTime->setValue( TimeStamp() , vs->id );
-		else 
+        else 
           vs->exitTime->setValue( TimeStamp(), vs->id ); 
-		}
-	};
- 
+      }
+    };
+
 
     // travese func.
     virtual void traverseSG( TraverseInfo &ti ); 
 
-	// Fields
+    // Fields
 
-	/// Sets enterTime if the set_boolean value is set to
+    /// Sets enterTime if the set_boolean value is set to
     /// TRUE. Else sets exitTime
     /// 
     /// <b>Access type:</b> inputOnly \n
     /// 
     /// \dotfile ProximitySensor_setTime.dot
-	auto_ptr< SetTime > set_time;
+    auto_ptr< SetTime > set_time;
 
-   	// Adress of traverseInfo 
-	int prev_travinfoadr;
+    /// Adress of traverseInfo 
+    /// only interested in adress, what it points to will be invalid
+    TraverseInfo *prev_travinfoadr;
 
-	//  Number of Instances(DEF/USE) cases in the previous traverseSG
-	int prev_maxnoinstances;
-	//  The variable keeping the instance no in a traverseSG
-	int no_instance;
+    //  Number of Instances(DEF/USE) cases in the previous traverseSG
+    int prev_maxnoinstances;
+    //  The variable keeping the instance no in a traverseSG
+    int no_instance;
 
-	//  List of NoInstances of visible instances
-	vector < int > list;
-	//  The threshold : an object is considered as visible if the no of
-	//  visible pixels exceeds the threshold value
-	int visib_pix_no_threshold;
+    //  List of NoInstances of visible instances
+    vector < int > list;
+    //  The threshold : an object is considered as visible if the no of
+    //  visible pixels exceeds the threshold value
+    int visib_pix_no_threshold;
 
-	// Internal Vectors for previous position, orientation and
-	// center of rotation of viewpoint
-	Vec3f prev_vp_pos;
-	Vec3f can_prev_vp_pos;
-    
+    // Internal Vectors for previous position, orientation and
+    // center of rotation of viewpoint
+    Vec3f prev_vp_pos;
+    Vec3f can_prev_vp_pos;
+
    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };

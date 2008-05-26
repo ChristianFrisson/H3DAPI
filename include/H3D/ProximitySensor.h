@@ -126,11 +126,11 @@ namespace H3D {
       // Sets either the exitTime or enterTime field depending
       // on the new value.
       virtual void setValue( const bool &b, int id = 0 ) {
-      	SFBool::setValue( b , id );
+        SFBool::setValue( b , id );
         ProximitySensor *ps = 
           static_cast< ProximitySensor * >( getOwner() );
-	    if( value )
-			ps->enterTime->setValue( TimeStamp() , ps->id ); 
+      if( value )
+      ps->enterTime->setValue( TimeStamp() , ps->id ); 
         else 
             ps->exitTime->setValue( TimeStamp() , ps->id ); 
       }
@@ -139,74 +139,76 @@ namespace H3D {
       // on the new value.
       virtual void update() {
         SFBool::update();
-    	ProximitySensor *ps = 
+        ProximitySensor *ps = 
           static_cast< ProximitySensor * >( getOwner() );
-		if( value )
-			ps->enterTime->setValue( TimeStamp() , ps->id );
-	    else 
-			ps->exitTime->setValue( TimeStamp(), ps->id ); 
-	  }
-	};
+        if( value )
+          ps->enterTime->setValue( TimeStamp() , ps->id );
+        else 
+          ps->exitTime->setValue( TimeStamp(), ps->id ); 
+      }
+    };
 
     /// Constructor.
     ProximitySensor( Inst< SFNode > _metadata = 0,
-								Inst< SFVec3f > _center = 0,
-								Inst< SFBool > _enabled = 0,
-								Inst< SFVec3f > _size = 0,
-								Inst< SFTime > _enterTime = 0,
-								Inst< SFTime > _exitTime = 0,
-								Inst< SFBool > _isActive = 0,
-								Inst< SFVec3f > _centerOfRotation_changed = 0,
-								Inst< SFRotation > _orientation_changed = 0,
-								Inst< SFVec3f > _position_changed = 0);
+                     Inst< SFVec3f > _center = 0,
+                     Inst< SFBool > _enabled = 0,
+                     Inst< SFVec3f > _size = 0,
+                     Inst< SFTime > _enterTime = 0,
+                     Inst< SFTime > _exitTime = 0,
+                     Inst< SFBool > _isActive = 0,
+                     Inst< SFVec3f > _centerOfRotation_changed = 0,
+                     Inst< SFRotation > _orientation_changed = 0,
+                     Inst< SFVec3f > _position_changed = 0);
 
 
-	/// Traverse function
-	virtual void traverseSG( TraverseInfo &ti ); 
-	
-
-  // Fields
-
-  /// centerOfRotation_changed gives the location of the center
-	/// of rotation of the active viewpoint with respect to 
-	/// center of proximitySensor.
-  ///
-  /// <b>Access type:</b> =OutputOnly \n
-  /// <b>Default value:</b> SFVec3f = 0,0,0 \n
-  /// 
-  /// \dotfile ProximitySensor_centerOfRotation_changed.dot
-  auto_ptr< SFVec3f >  centerOfRotation_changed;
-
-	
-	auto_ptr< SFRotation >  orientation_changed;
-	
-	/// position_changed gives the position
-	/// of the active viewpoint with respect to 
-	/// center of proximitySensor.
-  ///
-  /// <b>Access type:</b> =OutputOnly \n
-  /// <b>Default value:</b> SFVec3f = 0,0,0 \n
-  /// 
-  /// \dotfile ProximitySensor_position_changed.dot
-  auto_ptr< SFVec3f >  position_changed;
+    /// Traverse function
+    virtual void traverseSG( TraverseInfo &ti ); 
 
 
-	/// Sets enterTime if the set_boolean value is set 
-  /// to TRUE else sets exitTime.
-  /// 
-  /// <b>Access type:</b> inputOnly \n
-  /// 
-  /// \dotfile ProximitySensor_setTime.dot
-	auto_ptr< SetTime > set_time;
+    // Fields
 
-	int prev_travinfoadr;
-	
-	
-	// Internal Vectors for previous position of viewpoint
-	Vec3f prev_vp_pos;
-	Vec3f can_prev_vp_pos;
+    /// centerOfRotation_changed gives the location of the center
+    /// of rotation of the active viewpoint with respect to 
+    /// center of proximitySensor.
+    ///
+    /// <b>Access type:</b> =OutputOnly \n
+    /// <b>Default value:</b> SFVec3f = 0,0,0 \n
+    /// 
+    /// \dotfile ProximitySensor_centerOfRotation_changed.dot
+    auto_ptr< SFVec3f >  centerOfRotation_changed;
 
-	
+  
+    auto_ptr< SFRotation >  orientation_changed;
+
+    /// position_changed gives the position
+    /// of the active viewpoint with respect to 
+    /// center of proximitySensor.
+    ///
+    /// <b>Access type:</b> =OutputOnly \n
+    /// <b>Default value:</b> SFVec3f = 0,0,0 \n
+    /// 
+    /// \dotfile ProximitySensor_position_changed.dot
+    auto_ptr< SFVec3f >  position_changed;
+
+
+    /// Sets enterTime if the set_boolean value is set 
+    /// to TRUE else sets exitTime.
+    /// 
+    /// <b>Access type:</b> inputOnly \n
+    /// 
+    /// \dotfile ProximitySensor_setTime.dot
+    auto_ptr< SetTime > set_time;
+
+    /// Adress of traverseInfo 
+    /// only interested in adress, what it points to will be invalid
+    TraverseInfo *prev_travinfoadr;
+
+
+    // Internal Vectors for previous position of viewpoint
+    Vec3f prev_vp_pos;
+    Vec3f can_prev_vp_pos;
+
+  
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };

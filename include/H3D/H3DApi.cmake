@@ -37,10 +37,6 @@
 /// installed. Required for parsing xml based x3d files.
 #cmakedefine HAVE_XERCES
 
-/// Undef if you do not have zlib(http://www.zlib.net/) installed. 
-/// Required for support for parsing zipped x3d files.
-#cmakedefine HAVE_ZLIB
-
 /// Undef if you do not have OpenAL(www.openal.org) installed. Sounds will
 /// then be disabled.
 #cmakedefine HAVE_OPENAL
@@ -76,10 +72,6 @@
 /// PythonScript node will then not be supported.
 #cmakedefine HAVE_PYTHON
 
-/// Undef if you do not have FreeImage(freeimage.sourceforge.net) installed.
-/// ImageTexture nodes will not be able to read image files.
-#cmakedefine HAVE_FREEIMAGE
-
 /// Undef if you do not have libcurl(http://sourceforge.net/projects/curl/)
 /// installed. URLs using protocols like http and ftp will then not be 
 /// supported. Only local filenames can be used. 
@@ -100,8 +92,6 @@
 #ifdef H3D_LINK_STATIC_EXTERNALS
 // define this if you are linking Xerces as a static library
 #define XML_LIBRARY
-// Define this if you are linking Freeimage as a static library
-#define FREEIMAGE_LIB
 #define FTGL_LIBRARY_STATIC
 #define GLEW_STATIC
 #define CURL_STATICLIB
