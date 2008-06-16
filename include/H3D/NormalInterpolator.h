@@ -53,6 +53,9 @@ namespace H3D {
   /// and Q. Also, equally spaced input fractions shall result in arcs of
   /// equal length. The results are undefined if P and Q are diagonally
   /// opposite. 
+  ///
+  /// \par Internal routes:
+  /// \dotfile NormalInterpolator.dot
   class H3DAPI_API NormalInterpolator : public X3DInterpolatorNode {
   public:
     /// The SFValue field updates the interpolated value from the fields

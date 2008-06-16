@@ -57,11 +57,11 @@ NurbsCurve::NurbsCurve(  Inst< SFNode >  _metadata,
                        Inst< MFVec3f           > _contactPoint,
                        Inst< MFVec3f           > _contactNormal,
                        Inst< SFCoordinateNode  > _controlPoint,
-                       Inst< SFInt32	         > _tessellation,
+                       Inst< SFInt32           > _tessellation,
                        Inst< MFDouble          > _weight,
                        Inst< MFDouble          > _knot,
-                       Inst< SFInt32	         > _order,
-                       Inst< SFBool	           > _closed):
+                       Inst< SFInt32           > _order,
+                       Inst< SFBool             > _closed):
 X3DParametricGeometryNode( _metadata, _bound, _displayList,
                           _isTouched,_force, _contactPoint, _contactNormal),
                           tessellation( _tessellation ),
@@ -72,14 +72,14 @@ X3DParametricGeometryNode( _metadata, _bound, _displayList,
                           controlPoint (_controlPoint ),
                           theNurb( NULL ){
 
-                            type_name = "NurbsCurve";
-                            database.initFields( this );
-                            displayList->setOwner( this );
+  type_name = "NurbsCurve";
+  database.initFields( this );
+  displayList->setOwner( this );
 
-                            tessellation->setValue( 0 );
-                            order->setValue( 3 );
-                            closed->setValue( false );
-                            controlPoint->route(bound); 
+  tessellation->setValue( 0 );
+  order->setValue( 3 );
+  closed->setValue( false );
+  controlPoint->route(bound); 
 }
 
 
@@ -179,7 +179,7 @@ void NurbsCurve::render( ) {
   // Order has to be 2 or greater to define the nurbsCurve
   if( local_order < 2 ) {
     Console(3) << "Warning: order is less than 2 in " << getTypeName()
-      << " node( "	<< getName() 
+      << " node( "  << getName() 
       << "). Node will not be rendered. " << endl;
     if (valid_order) valid_order=false;
     return;

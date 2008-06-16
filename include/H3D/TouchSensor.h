@@ -50,9 +50,6 @@ namespace H3D {
   /// texture coordinates of that surface at the hitPoint. The values of
   /// hitTexCoord_changed and hitNormal_changed events are computed as
   /// appropriate for the associated shape.
-  ///
-  /// \par Internal routes:
-  /// \dotfile Extrusion.dot 
   class H3DAPI_API TouchSensor : 
     public X3DTouchSensorNode {
   public:
@@ -73,8 +70,6 @@ namespace H3D {
     /// at the hitPoint. ( Given in TouchSensors local coordinates )
     /// 
     /// <b>Access type:</b> outputOnly \n
-    /// 
-    /// \dotfile TouchSensor_hitNormal_changed.dot 
     auto_ptr< SFVec3f > hitNormal_changed;
 
     /// hitPoint_changed events contain the 3D point on the surface
@@ -82,16 +77,12 @@ namespace H3D {
     /// coordinate system.
     /// 
     /// <b>Access type:</b> outputOnly \n
-    /// 
-    /// \dotfile TouchSensor_hitPoint_changed.dot 
     auto_ptr< SFVec3f > hitPoint_changed;
 
     /// hitTexCoord_changed events contain the texture coordinates of
     /// that surface at the hitPoint.
     /// 
     /// <b>Access type:</b> outputOnly \n
-    /// 
-    /// \dotfile TouchSensor_hitTexCoord_changed.dot 
     auto_ptr< SFVec2f > hitTexCoord_changed;
 
     /// The H3DNodeDatabase for this node.

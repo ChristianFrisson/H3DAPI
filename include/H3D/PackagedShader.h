@@ -43,7 +43,7 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class PackagedShader
-  /// \briefA PackagedShader node describes a single file that may contain a 
+  /// \brief A PackagedShader node describes a single file that may contain a 
   /// number of shaders and combined effects.
   ///
   /// The shader source is read from the URL specified by the url field. 

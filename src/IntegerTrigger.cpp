@@ -41,22 +41,22 @@ H3DNodeDatabase IntegerTrigger::database(
 
 namespace IntegerTriggerInternals {
   FIELDDB_ELEMENT( IntegerTrigger, set_boolean, INPUT_ONLY );
-	FIELDDB_ELEMENT( IntegerTrigger, integerKey, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( IntegerTrigger, triggerValue, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( IntegerTrigger, integerKey, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( IntegerTrigger, triggerValue, OUTPUT_ONLY );
 }
 
-IntegerTrigger::IntegerTrigger( Inst< SFNode					> _metadata,
-																Inst< SFBool				  > _set_boolean,
-																Inst< SFInt32					> _integerKey,
-																Inst< SetTriggerValue > _triggerValue ):
+IntegerTrigger::IntegerTrigger( Inst< SFNode          > _metadata,
+                                Inst< SFBool          > _set_boolean,
+                                Inst< SFInt32          > _integerKey,
+                                Inst< SetTriggerValue > _triggerValue ):
   X3DTriggerNode( _metadata     ),
   set_boolean   ( _set_boolean  ),
   integerKey    ( _integerKey   ),
-	triggerValue  ( _triggerValue ){
+  triggerValue  ( _triggerValue ){
 
   type_name = "IntegerTrigger";
   database.initFields( this );
 
-	set_boolean->route( triggerValue, id );
+  set_boolean->route( triggerValue, id );
 
 }

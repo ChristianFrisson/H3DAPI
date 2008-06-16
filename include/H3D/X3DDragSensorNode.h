@@ -60,16 +60,12 @@ namespace H3D {
     /// deactivation (or any other time).
     ///
     /// <b>Access type:</b> inputOutput \n
-    /// 
-    /// \dotfile X3DDragSensorNode_autoOffset.dot 
     auto_ptr< SFBool > autoOffset;
 
     /// The trackPoint_changed outputOnly field sends the intersection point of
     /// the bearing with the drag sensor's virtual geometry.
     /// 
     /// <b>Access type:</b> outputOnly \n
-    /// 
-    /// \dotfile X3DDragSensorNode_trackPoint_changed.dot 
     auto_ptr< SFVec3f >  trackPoint_changed;
 
     /// The H3DNodeDatabase for this node.

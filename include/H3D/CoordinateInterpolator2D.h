@@ -74,9 +74,13 @@ namespace H3D {
 
 
     /// The values to interpolate between.
+    ///
+    /// \dotfile CoordinateInterpolator2D_keyValue.dot
     auto_ptr< MFVec2f >  keyValue;
 
     /// The linearly interpolated result value.
+    ///
+    /// \dotfile CoordinateInterpolator2D_value_changed.dot
     auto_ptr<  MFVec2f >  value_changed;
 
     /// The H3DNodeDatabase for the node.

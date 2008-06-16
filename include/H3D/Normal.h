@@ -45,6 +45,9 @@ namespace H3D {
   /// vector field of some geometry nodes (EXAMPLE  IndexedFaceSet and
   /// ElevationGrid). This node contains one multiple-valued field that
   /// contains the normal vectors. Normals shall be of unit length. 
+  ///
+  /// \par Internal routes:
+  /// \dotfile Normal.dot
   class H3DAPI_API Normal : public X3DNormalNode {
   public:
     
@@ -78,6 +81,8 @@ namespace H3D {
     /// A vector of 3D normal vectors.
     ///
     /// <b>Access type: </b> inputOutput
+    ///
+    /// \dotfile Normal_vector.dot
     auto_ptr< MFVec3f >  vector;
 
     /// The H3DNodeDatabase for this node.

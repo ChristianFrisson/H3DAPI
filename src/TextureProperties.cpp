@@ -96,6 +96,7 @@ TextureProperties::TextureProperties(
   texturePriority->setValue( 1.0f );
   generateMipMaps->setValue( false );
 
+  propertyChanged->setName( "propertyChanged" );
   anisotropicDegree->route( propertyChanged );
   borderColor->route( propertyChanged );
   borderWidth->route( propertyChanged );

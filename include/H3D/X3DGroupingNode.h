@@ -44,6 +44,9 @@ namespace H3D {
   /// This abstract node type indicates that concrete node types derived
   /// from it contain children nodes and is the basis for all
   /// aggregation. 
+  ///
+  /// \par Internal routes:
+  /// \dotfile X3DGroupingNode.dot
   class H3DAPI_API X3DGroupingNode : 
     public X3DChildNode,
     public X3DBoundedObject,
@@ -190,6 +193,8 @@ namespace H3D {
     /// are already in the children list of the grouping node are ignored.
     ///
     /// <b>Access type: </b> inputOnly
+    /// 
+    /// \dotfile X3DGroupingNode_addChildren.dot
     auto_ptr< MFChild  >  addChildren;
 
     /// The removeChildren event removes nodes from the children field of
@@ -197,11 +202,15 @@ namespace H3D {
     /// not in the children list of the grouping node are ignored.
     ///
     /// <b>Access type: </b> inputOnly
+    /// 
+    /// \dotfile X3DGroupingNode_removeChildren.dot
     auto_ptr< MFChild  >  removeChildren;
 
     /// The nodes that are grouped together by this node.
     ///
     /// <b>Access type: </b> inputOutput
+    /// 
+    /// \dotfile X3DGroupingNode_children.dot
     auto_ptr< MFChild >  children;
     
     /// The H3DNodeDatabase for this node.

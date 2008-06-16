@@ -395,14 +395,14 @@ namespace H3D {
     ///
     /// <b>Access type: </b> inputOutput \n
     /// 
-    /// \dotfile SpaceWareSensor_latestButtonRelease.dot
+    /// \dotfile SpaceWareSensor_accumulateTimeDependent.dot
     auto_ptr< SFBool > accumulateTimeDependent;
 
     /// Resets the value of accumulatedTranslation to its own value
     ///
     /// <b>Access type: </b> inputOnly \n
     /// 
-    /// \dotfile SpaceWareSensor_latestButtonRelease.dot
+    /// \dotfile SpaceWareSensor_resetAccumulatedTranslation.dot
     auto_ptr< ResetAccumulatedTranslation > resetAccumulatedTranslation;
 
     /// Resets the value of accumulatedRotation to its own value.
@@ -410,7 +410,7 @@ namespace H3D {
     ///
     /// <b>Access type: </b> inputOnly \n
     /// 
-    /// \dotfile SpaceWareSensor_latestButtonRelease.dot
+    /// \dotfile SpaceWareSensor_resetAccumulatedRotation.dot
     auto_ptr< ResetAccumulatedRotation > resetAccumulatedRotation;
 
     /// Transfers the values from the device communication thread to

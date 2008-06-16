@@ -232,6 +232,9 @@ namespace H3D {
   /// defined viewpoint position, orientation. When an node of type
   /// X3DViewpointNode is bound, user navigation offsets are reinitialized if
   /// the associated retainUserOffsets is TRUE.
+  ///
+  /// \par Internal routes:
+  /// \dotfile X3DViewpointNode.dot
   class H3DAPI_API X3DViewpointNode : public X3DBindableNode {
   public:
 
@@ -356,7 +359,12 @@ namespace H3D {
     virtual bool windowFromfieldOfView( H3DFloat width, H3DFloat height,
                                         H3DFloat clip_near,
                                         H3DFloat &top, H3DFloat &bottom,
-                                        H3DFloat &right, H3DFloat &left ) = 0;
+                                        H3DFloat &right, H3DFloat &left )
+#ifndef H3D_GENERATE_DOTROUTE_FILES
+                                        = 0;
+#else
+    { return false; }
+#endif
 
     /// Move this instance to the stack top. 
     virtual void toStackTop();
@@ -404,6 +412,8 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    /// 
+    /// \dotfile X3DViewpointNode_centerOfRotation.dot
     auto_ptr< SFVec3f    > centerOfRotation;
 
     /// The description field specifies a textual description of the
@@ -411,17 +421,9 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> "" \n
+    /// 
+    /// \dotfile X3DViewpointNode_description.dot
     auto_ptr< SFString   > description;
-
-    /// The fieldOfView field specifies a preferred minimum viewing angle
-    /// from this X3DViewpointNode in radians. 
-    /// See /ref X3DViewpointNode_fieldOfView "Detailed description" for more
-    /// info.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> pi/4 \n
-    /// <b>Value range:</b> (0,pi) \n
-    auto_ptr< SFFloat    > fieldOfView;
 
     /// The jump field specifies whether the user's view "jumps" to the 
     /// position and orientation of a bound X3DViewpointNode node or remains 
@@ -429,6 +431,8 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
+    /// 
+    /// \dotfile X3DViewpointNode_jump.dot
     auto_ptr< SFBool     > jump;
 
     /// Specifies the orientation of the X3DViewpointNode relative to the
@@ -438,6 +442,8 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Rotation( 0, 0, 1, 0 ) \n
+    /// 
+    /// \dotfile X3DViewpointNode_orientation.dot
     auto_ptr< SFOrientation > orientation;
     
     /// Specifies the position of the X3DViewpointNode the local coordinate
@@ -445,6 +451,8 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 10 ) \n
+    /// 
+    /// \dotfile X3DViewpointNode_position.dot
     auto_ptr< SFPosition > position;
 
     /// The retainUserOffsets field indicates whether a viewpoint needs to
@@ -453,29 +461,39 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> false \n
+    /// 
+    /// \dotfile X3DViewpointNode_retainUserOffsets.dot
     auto_ptr< SFBool    > retainUserOffsets;
 
     /// The matrix from local space to global space.
     ///
     /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile X3DViewpointNode_accForwardMatrix.dot
     auto_ptr< SFMatrix4f > accForwardMatrix;
 
     /// The matrix from global space to the local space the X3DViewpointNode
     /// resides in.
     /// 
     /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile X3DViewpointNode_accInverseMatrix.dot
     auto_ptr< SFMatrix4f > accInverseMatrix;
 
     /// Returns the sum of the field position and the internal field
     /// relPos used for navigation.
     /// 
     /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile X3DViewpointNode_totalPosition.dot
     auto_ptr< SFSumVec3f > totalPosition;
 
     /// Returns the sum of the field orientation and the internal field
     /// relOrn used for navigation.
     /// 
     /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile X3DViewpointNode_totalOrientation.dot
     auto_ptr< SFSumRotation > totalOrientation;
     
     static H3DNodeDatabase database;

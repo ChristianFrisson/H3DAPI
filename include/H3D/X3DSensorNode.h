@@ -37,8 +37,6 @@ namespace H3D {
   /// \ingroup AbstractNodes
   /// \class X3DSensorNode
   /// \brief This abstract node type is the base type for all sensors. 
-  ///
-  /// 
   class H3DAPI_API X3DSensorNode : public X3DChildNode {
   public:
     
@@ -48,8 +46,16 @@ namespace H3D {
                    Inst< SFBool >  _isActive = 0 );
 
 
-    // Fields
+    /// If enabled is true the sensor node is enabled otherwise it is
+    /// disabled and will not generate any output.
+    ///
+    /// <b>Access type:</b> inputOutput
     auto_ptr< SFBool >  enabled;
+
+    /// A sensor is active when some special conditions are fulfilled and
+    /// it will then generate extra output.
+    ///
+    /// <b>Access type:</b> outputOnly
     auto_ptr<  SFBool >  isActive;
 
     /// The H3DNodeDatabase for this node.

@@ -65,7 +65,7 @@ X3DDragSensorNode::X3DDragSensorNode(
 
 H3DFloat X3DDragSensorNode::Clamp(
   H3DFloat n, H3DFloat min, H3DFloat max ) {
-	if( n < min ) return min;
-	if( n > max ) return max;
-	return n;
+  if( n < min ) return min;
+  if( n > max ) return max;
+  return n;
 }

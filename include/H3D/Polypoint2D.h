@@ -87,7 +87,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
-    /// \dotfile Polypoint2D_size.dot
+    /// \dotfile Polypoint2D_point.dot
     auto_ptr< MFVec2f > point;
 
     /// The H3DNodeDatabase for this node.

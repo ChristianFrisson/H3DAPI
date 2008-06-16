@@ -37,7 +37,8 @@
 
 using namespace H3D;
 
-auto_ptr< Field > H3DDisplayListObject::DisplayList::break_list_field( new Field );
+auto_ptr< Field >
+  H3DDisplayListObject::DisplayList::break_list_field( new Field );
 
 void H3DDisplayListObject::DisplayList::rebuildAllDisplayLists() {
   break_list_field->touch();
@@ -52,9 +53,12 @@ H3DDisplayListObject::DisplayList::DisplayList():
 
   delay_cache_counter = cachingDelay();
   isActive->setValue( true );
+  isActive->setName( "H3DDisplayListObject::isActive" );
   Scene::time->routeNoEvent( isActive );
 
+#ifndef H3D_GENERATE_DOTROUTE_FILES
   break_list_field->route( this );
+#endif
 }
 
 H3DDisplayListObject::H3DDisplayListObject( 
@@ -155,7 +159,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
                  << "\" when rendering " << getFullName() << endl;
     } else {
       if( delay_cache_counter > 0 ) 
-     	  delay_cache_counter--;
+         delay_cache_counter--;
     }
   }  
 }

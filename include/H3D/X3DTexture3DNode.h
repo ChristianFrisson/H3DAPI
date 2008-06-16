@@ -187,7 +187,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> FALSE \n
     ///
-    /// \dotfile X3DTexture3DNode_image.dot 
+    /// \dotfile X3DTexture3DNode_scaleToPowerOfTwo.dot 
     auto_ptr< SFBool > scaleToPowerOfTwo;
     
     /// The textureProperties field contains a TextureProperties node
@@ -195,7 +195,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     ///
-    /// \dotfile X3DTexture2DNode_textureProperties.dot 
+    /// \dotfile X3DTexture3DNode_textureProperties.dot 
     auto_ptr< SFTextureProperties >  textureProperties;
 
     /// The H3DNodeDatabase for this node.

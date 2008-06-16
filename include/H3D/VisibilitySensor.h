@@ -84,7 +84,8 @@ namespace H3D {
   ///  instances. An instanced VisibilitySensor node shall detect visibility
   ///  changes for all instances of the box and send events appropriately.
   ///
-  ///
+  /// \par Internal routes:
+  /// \dotfile VisibilitySensor.dot
 
   class H3DAPI_API VisibilitySensor : public X3DEnvironmentalSensorNode {
   public:
@@ -139,8 +140,6 @@ namespace H3D {
     /// TRUE. Else sets exitTime
     /// 
     /// <b>Access type:</b> inputOnly \n
-    /// 
-    /// \dotfile ProximitySensor_setTime.dot
     auto_ptr< SetTime > set_time;
 
     /// Adress of traverseInfo 

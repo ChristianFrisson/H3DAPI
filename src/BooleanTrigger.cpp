@@ -41,18 +41,18 @@ H3DNodeDatabase BooleanTrigger::database(
 
 namespace BooleanTriggerInternals {
   FIELDDB_ELEMENT( BooleanTrigger, set_triggerTime, INPUT_ONLY );
-	FIELDDB_ELEMENT( BooleanTrigger, triggerTrue, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( BooleanTrigger, triggerTrue, OUTPUT_ONLY );
 }
 
-BooleanTrigger::BooleanTrigger( Inst< SFNode		 > _metadata,
-																Inst< SFTime		 > _set_triggerTime,
-																Inst< SetBoolean > _triggerTrue ):
+BooleanTrigger::BooleanTrigger( Inst< SFNode     > _metadata,
+                                Inst< SFTime     > _set_triggerTime,
+                                Inst< SetBoolean > _triggerTrue ):
   X3DTriggerNode ( _metadata        ),
   set_triggerTime( _set_triggerTime ),
   triggerTrue    ( _triggerTrue     ) {
 
   type_name = "BooleanTrigger";
   database.initFields( this );
-	
-	set_triggerTime->route( triggerTrue, id);
+  
+  set_triggerTime->route( triggerTrue, id);
 }

@@ -78,6 +78,7 @@ CylinderSensor::CylinderSensor(
   offset->setValue( 0 );
 
   set_CylinderEvents->setOwner( this );
+  set_CylinderEvents->setName( "set_CylinderEvents" );
   mouse_sensor->position->routeNoEvent( set_CylinderEvents );
   isActive->routeNoEvent( set_CylinderEvents );
 }
@@ -268,7 +269,7 @@ void CylinderSensor::Set_CylinderEvents::update() {
           // H3DAPI resends last event.
           Console(3) << "Warning: No intersection with invisible cylinder"
                      << " in CylinderSensor node( "
-				             << cs->getName() 
+                     << cs->getName() 
                      << " ). Last event resent." << endl;
           cs->trackPoint_changed->touch();
           cs->rotation_changed->touch();

@@ -40,20 +40,18 @@ namespace H3D {
   /// \ingroup AbstractNodes
   /// \class X3DEnvironmentalSensorNode
   /// \brief This abstract node type is the base type for all sensors. 
-  ///
-  /// 
   class H3DAPI_API X3DEnvironmentalSensorNode : public X3DSensorNode {
   public:
 
     /// Constructor.
     X3DEnvironmentalSensorNode( 
                 Inst< SFNode >  _metadata   = 0,
-								Inst< SFVec3f > _center     = 0,
-								Inst< SFBool >  _enabled    = 0,
-								Inst< SFVec3f > _size       = 0,
-								Inst< SFTime >  _enterTime  = 0,
-								Inst< SFTime >  _exitTime   = 0,
-								Inst< SFBool >  _isActive   = 0 );
+                Inst< SFVec3f > _center     = 0,
+                Inst< SFBool >  _enabled    = 0,
+                Inst< SFVec3f > _size       = 0,
+                Inst< SFTime >  _enterTime  = 0,
+                Inst< SFTime >  _exitTime   = 0,
+                Inst< SFBool >  _isActive   = 0 );
 
 
     // Fields
@@ -61,35 +59,27 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> SFVec3f = 0,0,0 \n
-    /// 
-    /// \dotfile X3DEnvironmentalSensorNode_center.dot
-    auto_ptr< SFVec3f >  center;
+    auto_ptr< SFVec3f > center;
 
     /// Size gives the size of the box (width=x, height=y, depth=z) 
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> SFVec3f = 0,0,0 \n
-    /// 
-    /// \dotfile X3DEnvironmentalSensorNode_size.dot
-    auto_ptr< SFVec3f >  size;
+    auto_ptr< SFVec3f > size;
 
     /// enterTime
     ///
     /// <b>Access type:</b> OutputOnly \n
     /// <b>Default value:</b> SFTime \n
-    /// 
-    /// \dotfile X3DEnvironmentalSensorNode_enterTime.dot
-	  auto_ptr< SFTime >  enterTime;
+    auto_ptr< SFTime > enterTime;
     
     /// exitTime
     ///
     /// <b>Access type:</b> OutputOnly \n
     /// <b>Default value:</b> SFTime \n
-    /// 
-    /// \dotfile X3DEnvironmentalSensorNode_exitTime.dot
-	  auto_ptr< SFTime >  exitTime;
+    auto_ptr< SFTime > exitTime;
 
-	/// The H3DNodeDatabase for this node.
+  /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };
 }

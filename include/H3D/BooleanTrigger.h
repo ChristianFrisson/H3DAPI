@@ -38,16 +38,16 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class BooleanTrigger
   /// \brief BooleanTrigger is a trigger node that generates boolean events 
-	/// upon receiving time events.
+  /// upon receiving time events.
   ///
   /// \par Internal routes:
   /// \dotfile BooleanTrigger.dot
-  
-	class H3DAPI_API BooleanTrigger : public X3DTriggerNode {
+
+  class H3DAPI_API BooleanTrigger : public X3DTriggerNode {
   public:
 
     /// If a time event is given, generate a true event.
-		class H3DAPI_API SetBoolean: public TypedField < SFBool, SFTime > {
+    class H3DAPI_API SetBoolean: public TypedField < SFBool, SFTime > {
     protected:
       // always returns true
       virtual void update() {
@@ -59,21 +59,21 @@ namespace H3D {
 #endif
 
     /// Constructor.
-    BooleanTrigger( Inst< SFNode > _metadata				= 0,
-										Inst< SFTime > _set_triggerTime = 0,
-										Inst< SetBoolean > _triggerTrue	= 0);
+    BooleanTrigger( Inst< SFNode > _metadata        = 0,
+                    Inst< SFTime > _set_triggerTime = 0,
+                    Inst< SetBoolean > _triggerTrue  = 0);
 
-		/// The triggerTrue event is generated when the 
-		/// BooleanTrigger receives a set_triggerTime event.
+    /// The triggerTrue event is generated when the 
+    /// BooleanTrigger receives a set_triggerTime event.
     /// 
     /// <b>Access type:</b> inputOnly \n
     /// 
     /// \dotfile BooleanTrigger_set_triggerTime.dot
     auto_ptr< SFTime > set_triggerTime;
 
-		/// Gives the boolean event.
-		/// The value of triggerTrue shall always be TRUE.
-		///
+    /// Gives the boolean event.
+    /// The value of triggerTrue shall always be TRUE.
+    ///
     /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile BooleanTrigger_set_triggerTime.dot

@@ -39,10 +39,13 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class SplineScalarInterpolator
   /// \brief The SplineScalarInterpolator node non-linearly interpolates 
-  ///  among a list of floats to produce an SFFloat value_changed event. 
-  ///  
-  ///The keyValue, keyVelocity, and key fields shall each have the same number of values.
-  /// 
+  ///  among a list of floats to produce an SFFloat value_changed event.
+  ///
+  /// The keyValue, keyVelocity, and key fields shall each have the same
+  /// number of values.
+  ///
+  /// \par Internal routes:
+  /// \dotfile SplineScalarInterpolator.dot
 
   class H3DAPI_API SplineScalarInterpolator : public X3DInterpolatorNode {
   public:
@@ -70,10 +73,10 @@ namespace H3D {
                         Inst< SFFloat >  _set_fraction  = 0,
                         Inst< MFFloat >  _key           = 0,
                         Inst< MFFloat >  _keyValue      = 0,
-						            Inst< MFFloat >  _keyVelocity   = 0,
+                        Inst< MFFloat >  _keyVelocity   = 0,
                         Inst< SFValue >  _value_changed = 0,
-						            Inst< SFBool  >  _closed		= 0,
-						            Inst< SFBool  >  _normalizeVelocity = 0);
+                        Inst< SFBool  >  _closed    = 0,
+                        Inst< SFBool  >  _normalizeVelocity = 0);
 
     /// keyValues are the values to interpolate between
     /// 
@@ -104,7 +107,7 @@ namespace H3D {
     /// <b>Default value:</b> SFBool = FALSE \n
     /// <b>Access type:</b> inputOutput
     /// 
-    /// \dotfile SplineScalarInterpolator_closed.dot
+    /// \dotfile SplineScalarInterpolator_normalizeVelocity.dot
     auto_ptr< SFBool > normalizeVelocity;
 
     /// The interpolated result value.

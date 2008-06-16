@@ -66,6 +66,7 @@ SphereSensor::SphereSensor(
   offset->setValue( Rotation( 0, 1, 0, 0 ) );
 
   set_SphereEvents->setOwner( this );
+  set_SphereEvents->setName( "set_SphereEvents" );
   mouse_sensor->position->routeNoEvent( set_SphereEvents );
   isActive->routeNoEvent( set_SphereEvents );
 }
@@ -145,7 +146,7 @@ void SphereSensor::Set_SphereEvents::update() {
           // H3DAPI resends last event.
           Console(3) << "Warning: No intersection with invisible sphere"
                      << " in SphereSensor node( "
-				             << ss->getName() 
+                     << ss->getName() 
                      << " ). Last event resent." << endl;
           ss->trackPoint_changed->touch();
           ss->rotation_changed->touch();

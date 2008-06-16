@@ -90,6 +90,7 @@ SuperShape::SuperShape(
 
   coord->setValue( new Coordinate );
   coord->setOwner( this );
+  coord->setName( "coord" );
   normal->setValue( new Normal );
 
   ss1_m->setValue ( 4 );

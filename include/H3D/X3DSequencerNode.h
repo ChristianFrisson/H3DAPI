@@ -39,82 +39,79 @@ namespace H3D {
   /// \ingroup AbstractNodes
   /// \class X3DSequencerNode
   /// \brief This abstract node type is the base node type from which all 
-	/// Sequencers are derived.
-	///
-	/// The specified X3D sequencer nodes are designed for discrete events 
-	/// along a timeline. Each of these nodes defines a piecewise-linear 
-	/// function, f(t), on the interval (-infinity, +infinity).
-	/// The piecewise-linear function is defined by n values of t, called key,
-	/// and the n corresponding values of f(t), called keyValue. The keys shall
-	/// be monotonically non-decreasing, otherwise the results are undefined.
-	/// The keys are not restricted to any interval.
-	///
-	/// Each of these nodes evaluates f(t) given any value of t 
-	/// (via the fraction field) as follows:
-	/// Let the n keys t0, t1, t2, ..., tn-1 partition the domain 
-	/// (-infinity, +infinity) into the n+1 subintervals given by 
-	/// (-infinity, t0), [t0, t1), [t1, t2), ... , [tn-1, +infinity).
-	/// Also, let the n values v0, v1, v2, ..., vn-1 be the values of f(t) at
-	/// the associated key values. The discrete value sequencing 
-	/// function, f(t), is defined to be: 
-	///
-	/// f(t) = vn, if tn <= t < tn-1
-	///      = v0, if t <= t0,
-	///      = vn-1, if t >= tn-1
-	/// 
-  /// \par Internal routes:
-  /// \dotfile X3DSequencerNode.dot 
+  /// Sequencers are derived.
+  ///
+  /// The specified X3D sequencer nodes are designed for discrete events 
+  /// along a timeline. Each of these nodes defines a piecewise-linear 
+  /// function, f(t), on the interval (-infinity, +infinity).
+  /// The piecewise-linear function is defined by n values of t, called key,
+  /// and the n corresponding values of f(t), called keyValue. The keys shall
+  /// be monotonically non-decreasing, otherwise the results are undefined.
+  /// The keys are not restricted to any interval.
+  ///
+  /// Each of these nodes evaluates f(t) given any value of t 
+  /// (via the fraction field) as follows:
+  /// Let the n keys t0, t1, t2, ..., tn-1 partition the domain 
+  /// (-infinity, +infinity) into the n+1 subintervals given by 
+  /// (-infinity, t0), [t0, t1), [t1, t2), ... , [tn-1, +infinity).
+  /// Also, let the n values v0, v1, v2, ..., vn-1 be the values of f(t) at
+  /// the associated key values. The discrete value sequencing 
+  /// function, f(t), is defined to be: 
+  ///
+  /// f(t) = vn, if tn <= t < tn-1
+  ///      = v0, if t <= t0,
+  ///      = vn-1, if t >= tn-1
 
-	class H3DAPI_API X3DSequencerNode : public X3DChildNode {
+  class H3DAPI_API X3DSequencerNode : public X3DChildNode {
   public:
-		
-		/// Each value in the keyValue field corresponds in order to the parameter
-		/// value in the key field.
-		template< class MType > class H3DAPI_API KeyValues : public MType {};
+    
+    /// Each value in the keyValue field corresponds in order to the parameter
+    /// value in the key field.
+    template< class MType > class H3DAPI_API KeyValues : public MType {};
 
-		/// ValueChanged is a specialized class used to evaluate and set the 
-		/// value_changed field depending on the input to the class.
-		///
+    /// ValueChanged is a specialized class used to evaluate and set the 
+    /// value_changed field depending on the input to the class.
+    ///
     /// routes_in[0] is the next field.
     /// routes_in[1] is the previous field.
-		/// routes_in[2] is the set_fraction field.
+    /// routes_in[2] is the set_fraction field.
     /// routes_in[3] is the key field.
     /// routes_in[4] is the keyValue field.
-		template< class TheType, class KeyValuesIn > class H3DAPI_API ValueChanged
-			: public AutoUpdate< TypedField< TheType, 
-																			 Types< SFBool, 
-																			 			  SFBool, 
-															 								SFFloat, 
-															 							 	MFFloat, 
-																							KeyValuesIn > > >{
-		public:
-			ValueChanged() { currentPosition = 0; fractionInitialized = false; }
-			bool fractionInitialized;
-			// The X3D specification never tells from where the next and previous
-			// should start. Therefore I choose to start at the beginning
-			// by default.
-			H3DInt32 currentPosition;
-		protected:
-			// evaluate the value using set_fraction
-			inline  typename TheType::value_type evaluateValueChanged(
-				const typename KeyValuesIn::vector_type &key_value, 
-				const vector< H3DFloat > &keys, 
-				const H3DFloat &setFraction) {
-				
-				if( setFraction <= keys.front() )
-					return key_value.front();
-				else if( setFraction >= keys.back() )
-					return key_value.back();
-				else {
-					int i;
-					for( i = 0; 
-						i < ( H3DInt32 )key_value.size() - 1 &&
-						!( setFraction >= keys[i] && setFraction < keys[ i + 1 ] );
-					i++ );
-					return key_value[i];
-				}
-			}
-			virtual void update() {
+    template< class TheType, class KeyValuesIn > class H3DAPI_API ValueChanged
+      : public AutoUpdate< TypedField< TheType, 
+                                       Types< SFBool, 
+                                               SFBool, 
+                                               SFFloat, 
+                                                MFFloat, 
+                                              KeyValuesIn > > >{
+    public:
+      ValueChanged() { currentPosition = 0; fractionInitialized = false; }
+      bool fractionInitialized;
+      // The X3D specification never tells from where the next and previous
+      // should start. Therefore I choose to start at the beginning
+      // by default.
+      H3DInt32 currentPosition;
+    protected:
+      // evaluate the value using set_fraction
+      inline  typename TheType::value_type evaluateValueChanged(
+        const typename KeyValuesIn::vector_type &key_value, 
+        const vector< H3DFloat > &keys, 
+        const H3DFloat &setFraction) {
+        
+        if( setFraction <= keys.front() )
+          return key_value.front();
+        else if( setFraction >= keys.back() )
+          return key_value.back();
+        else {
+          int i;
+          for( i = 0; 
+            i < ( H3DInt32 )key_value.size() - 1 &&
+            !( setFraction >= keys[i] && setFraction < keys[ i + 1 ] );
+          i++ );
+          return key_value[i];
+        }
+      }
+      virtual void update() {
         if( TheType::routes_in[0] == TheType::event.ptr ||
             TheType::routes_in[1] == TheType::event.ptr ||
             TheType::routes_in[2] == TheType::event.ptr ) {
@@ -208,62 +205,54 @@ namespace H3D {
             }
           }
         }
-			}
-		};
+      }
+    };
 #ifdef __BORLANDC__
     template< class TheType, class KeyValuesIn > friend class ValueChanged;
 #endif
 
     /// Constructor.
-    X3DSequencerNode(	Inst< SFNode           > _metadata			= 0,
-											Inst< SFBool	         > _next    			= 0,
-											Inst< SFBool           > _previous 			= 0,
-											Inst< SFFloat          > _set_fraction	= 0,
-											Inst< MFFloat          > _key     			= 0 );
-							 
+    X3DSequencerNode(  Inst< SFNode           > _metadata      = 0,
+                      Inst< SFBool           > _next          = 0,
+                      Inst< SFBool           > _previous       = 0,
+                      Inst< SFFloat          > _set_fraction  = 0,
+                      Inst< MFFloat          > _key           = 0 );
+               
 
-		/// Receipt of next event triggers next output value in keyValue array,
-		/// next goes to initial element after last.
-		/// 
+    /// Receipt of next event triggers next output value in keyValue array,
+    /// next goes to initial element after last.
+    /// 
     /// <b>Access type:</b> inputOnly \n
     /// <b>Default value:</b> - \n
-    /// 
-    /// \dotfile X3DSequencerNode_next.dot 
     auto_ptr< SFBool >  next;
 
-		/// Receipt of previous event triggers previous output value in keyValue
-		/// array, previous goes to last element after first.
-		///
+    /// Receipt of previous event triggers previous output value in keyValue
+    /// array, previous goes to last element after first.
+    ///
     /// <b>Access type:</b> inputOnly \n
     /// <b>Default value:</b> - \n
-    /// 
-    /// \dotfile X3DSequencerNode_previous.dot 
     auto_ptr< SFBool >  previous;
 
-		/// The set_fraction inputOnly field receives an SFFloat event and causes 
-		/// the sequencing function to evaluate, resulting in a value_changed 
-		/// output event with the same timestamp as the set_fraction event.
-		/// 
+    /// The set_fraction inputOnly field receives an SFFloat event and causes 
+    /// the sequencing function to evaluate, resulting in a value_changed 
+    /// output event with the same timestamp as the set_fraction event.
+    /// 
     /// <b>Access type:</b> inputOnly \n
     /// <b>Default value:</b> - \n
-    /// 
-    /// \dotfile X3DSequencerNode_set_fraction.dot 
     auto_ptr< SFFloat >  set_fraction;
 
-		/// Each value in the keyValue field corresponds in order to the parameter
-		/// value in the key field. The keys shall be monotonically non-decreasing,
-		/// otherwise the results are undefined. The keys are not restricted to 
-		/// any interval. 
-		/// 
+    /// Each value in the keyValue field corresponds in order to the parameter
+    /// value in the key field. The keys shall be monotonically non-decreasing,
+    /// otherwise the results are undefined. The keys are not restricted to 
+    /// any interval. 
+    /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> - \n
-    /// 
-    /// \dotfile X3DSequencerNode_key.dot 
     auto_ptr< MFFloat >  key;
 
-		/// The H3DNodeDatabase for this node.
+    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-	};
+  };
 }
 
 #endif

@@ -103,10 +103,10 @@ namespace H3D {
   /// geometry when that geometry is intersected by the bearing. If the bearing
   /// intersects multiple sensors' geometries, only the sensor nearest to the
   /// pointer will be eligible for activation.
-  ///
+  /// \par Internal routes:
+  /// \dotfile X3DPointingDeviceSensorNode.dot
   // TODO: Allowing for 3D pointing device. 
   // (which could be a haptics device perhaps)
-
   class H3DAPI_API X3DPointingDeviceSensorNode : 
     public X3DSensorNode {
   public:
@@ -215,7 +215,7 @@ namespace H3D {
     /// and moving underneath the pointing device.
     ///
     /// <b>Access type:</b> outputOnly
-    ///
+    /// 
     /// \dotfile X3DPointingDeviceSensorNode_isOver.dot
     auto_ptr< SFBool > isOver;
 

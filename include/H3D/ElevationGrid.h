@@ -270,7 +270,7 @@ namespace H3D {
       else return (x_dim - 1) * (z_dim - 1 ) * 2;
     }
 
-		/// Traverse the scenegraph. A HLFeedbackShape is added for haptic
+    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
 
@@ -445,8 +445,6 @@ namespace H3D {
 
     /// Auto-generated normals that are used if the normal field is NULL.
     /// Only accessable in C++.
-    ///
-    /// \dotfile ElevationGrid_autoNormal.dot 
     auto_ptr< AutoNormal  >  autoNormal;
 
     /// If the fogCoord field is not empty, it shall contain a list 
@@ -454,7 +452,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     ///
-    /// \dotfile FogCoordinate_fogCoord.dot 
+    /// \dotfile ElevationGrid_fogCoord.dot 
     auto_ptr< SFFogCoordinate > fogCoord;
 
 

@@ -37,25 +37,22 @@ namespace H3D {
   /// \ingroup X3DNode
   /// \class ContourPolyline2D
   /// \brief The ContourPolyline2D node defines a piecewise linear curve 
-	/// segment as a part of a trimming contour in the u,v domain of a surface.
-	///
-	/// The controlPoint field specifies the end points of each segment of 
-	/// the piecewise linear curve.
-	///
-	/// ContourPolyline2D nodes are used as children of the Contour2D group.
-	/// 
-  /// \par Internal routes:
-  /// \dotfile ContourPolyline2D.dot
+  /// segment as a part of a trimming contour in the u,v domain of a surface.
+  ///
+  /// The controlPoint field specifies the end points of each segment of 
+  /// the piecewise linear curve.
+  ///
+  /// ContourPolyline2D nodes are used as children of the Contour2D group.
 
   class H3DAPI_API ContourPolyline2D : 
     public X3DNurbsControlCurveNode {
   public:
 
     /// Constructor.
-    ContourPolyline2D( Inst< SFNode	 > _metadata = 0,
-											Inst< MFVec2d  > _controlPoint = 0 );
+    ContourPolyline2D( Inst< SFNode   > _metadata = 0,
+                      Inst< MFVec2d  > _controlPoint = 0 );
 
-		/// The H3DNodeDatabase for this node.
+    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };
 }

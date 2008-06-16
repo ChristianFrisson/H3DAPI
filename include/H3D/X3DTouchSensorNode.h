@@ -38,6 +38,9 @@ namespace H3D {
   /// \class X3DTouchSensorNode
   /// \brief This abstract node type is the base type for all 
   /// touch-style pointing device sensors.
+  ///
+  /// \par Internal routes:
+  /// \dotfile X3DTouchSensorNode.dot
   
   class H3DAPI_API X3DTouchSensorNode : 
     public X3DPointingDeviceSensorNode {

@@ -61,6 +61,9 @@ namespace H3D {
   /// - The texture field contains a list of X3DTextureNode instances 
   ///   (e.g., ImageTexture, PixelTexture and MultiTexture). 
   ///   The texture field may not contain another MultiTexture node.
+  ///
+  /// \par Internal routes:
+  /// \dotfile MultiTexture.dot
   class H3DAPI_API MultiTexture : public X3DTextureNode {
   public:
     
@@ -98,6 +101,8 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
     /// <b>Valid range:</b> [0-1]
+    ///
+    /// \dotfile MultiTexture_alpha.dot
     auto_ptr< SFFloat >  alpha;
     
     /// Base alpha value for SELECT mode operations.
@@ -105,6 +110,8 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> RGB( 1, 1, 1 ) \n
     /// <b>Valid range:</b> [0-1]
+    ///
+    /// \dotfile MultiTexture_color.dot
     auto_ptr< SFColor >  color;
 
     /// The function field defines an optional function to be applied to
@@ -112,18 +119,24 @@ namespace H3D {
     /// This is not supported at this time.
     /// 
     /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile MultiTexture_function.dot
     auto_ptr< MFString >  function;
 
     /// The mode field controls the type of blending operation. The only
     /// available mode at this time is "MODULATE".
     /// 
     /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile MultiTexture_mode.dot
     auto_ptr< MFString >  mode;
 
     /// The source field determines the colour source for the second argument.
     /// This is not supported at this time.
     ///
     /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile MultiTexture_source.dot
     auto_ptr< MFString >  source;
 
     /// The texture field contains a list of X3DTextureNode instances 
@@ -131,6 +144,8 @@ namespace H3D {
     /// The texture field may not contain another MultiTexture node.
     ///
     /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile MultiTexture_texture.dot
     auto_ptr< MFTexture >  texture;
 
     /// The H3DNodeDatabase for this node.

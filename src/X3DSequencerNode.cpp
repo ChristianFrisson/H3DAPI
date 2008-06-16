@@ -41,21 +41,21 @@ H3DNodeDatabase X3DSequencerNode::database(
 
 namespace X3DSequencerNodeInternals {
   FIELDDB_ELEMENT( X3DSequencerNode, next, INPUT_ONLY );
-	FIELDDB_ELEMENT( X3DSequencerNode, previous, INPUT_ONLY );
-	FIELDDB_ELEMENT( X3DSequencerNode, set_fraction, INPUT_ONLY );
-	FIELDDB_ELEMENT( X3DSequencerNode, key, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DSequencerNode, previous, INPUT_ONLY );
+  FIELDDB_ELEMENT( X3DSequencerNode, set_fraction, INPUT_ONLY );
+  FIELDDB_ELEMENT( X3DSequencerNode, key, INPUT_OUTPUT );
 }
 
-X3DSequencerNode::X3DSequencerNode( Inst< SFNode	> _metadata,
-																		Inst< SFBool	> _next,
-																		Inst< SFBool	> _previous,
-																		Inst< SFFloat	> _set_fraction,
-																		Inst< MFFloat > _key ):
+X3DSequencerNode::X3DSequencerNode( Inst< SFNode  > _metadata,
+                                    Inst< SFBool  > _next,
+                                    Inst< SFBool  > _previous,
+                                    Inst< SFFloat  > _set_fraction,
+                                    Inst< MFFloat > _key ):
   X3DChildNode( _metadata     ),
-  next					( _next  ),
-  previous			( _previous  ),
-	set_fraction  ( _set_fraction  ),
-	key						( _key ) {
+  next          ( _next  ),
+  previous      ( _previous  ),
+  set_fraction  ( _set_fraction  ),
+  key            ( _key ) {
 
   type_name = "X3DSequencerNode";
   database.initFields( this );

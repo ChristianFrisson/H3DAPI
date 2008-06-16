@@ -186,8 +186,6 @@ namespace H3D {
       image( _image ) {}
 
     /// Field containing the Image to use as a texture. 
-    ///
-    /// \dotfile H3DImageObject_image.dot 
     auto_ptr< SFImage > image;
         
   };

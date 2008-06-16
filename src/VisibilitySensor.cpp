@@ -67,6 +67,7 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
   database.initFields( this );
 
   set_time->setOwner( this );
+  set_time->setName( "set_time" );
   isActive->route( set_time );
   visib_pix_no_threshold = 10;
   prev_travinfoadr = 0;

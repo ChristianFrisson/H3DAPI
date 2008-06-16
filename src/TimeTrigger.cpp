@@ -41,12 +41,12 @@ H3DNodeDatabase TimeTrigger::database(
 
 namespace TimeTriggerInternals {
   FIELDDB_ELEMENT( TimeTrigger, set_boolean, INPUT_ONLY );
-	FIELDDB_ELEMENT( TimeTrigger, triggerTime, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( TimeTrigger, triggerTime, OUTPUT_ONLY );
 }
 
-TimeTrigger::TimeTrigger( Inst< SFNode				 > _metadata,
-													Inst< SFBool				 > _set_boolean,
-													Inst< SetTriggerTime > _triggerTime ):
+TimeTrigger::TimeTrigger( Inst< SFNode         > _metadata,
+                          Inst< SFBool         > _set_boolean,
+                          Inst< SetTriggerTime > _triggerTime ):
   X3DTriggerNode( _metadata     ),
   set_boolean   ( _set_boolean  ),
   triggerTime   ( _triggerTime  ){
@@ -54,5 +54,5 @@ TimeTrigger::TimeTrigger( Inst< SFNode				 > _metadata,
   type_name = "TimeTrigger";
   database.initFields( this );
 
-	set_boolean->route( triggerTime, id );
+  set_boolean->route( triggerTime, id );
 }

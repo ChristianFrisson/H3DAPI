@@ -43,8 +43,11 @@ namespace H3D {
   /// \brief The SplinePositionInterpolator node non-linearly interpolates 
   ///  among a list of 3D vectors to produce an SFVec3f value_changed event. 
   ///
-  ///  The keyValue, keyVelocity, and key fields shall each have the same number of values.
+  ///  The keyValue, keyVelocity, and key fields shall each have the same
+  ///  number of values.
   ///
+  /// \par Internal routes:
+  /// \dotfile SplinePositionInterpolator.dot
 
   class H3DAPI_API SplinePositionInterpolator : public X3DInterpolatorNode {
   public:
@@ -75,7 +78,7 @@ namespace H3D {
       Inst< MFVec3f >  _keyValue      = 0,
       Inst< MFVec3f >  _keyVelocity   = 0,
       Inst< SFValue >  _value_changed = 0,
-      Inst< SFBool  >  _closed		= 0,
+      Inst< SFBool  >  _closed    = 0,
       Inst< SFBool  >  _normalizeVelocity = 0 );
 
     /// The values to interpolate between.

@@ -72,8 +72,9 @@ struct __declspec(uuid("{71771540-2017-11cf-ae26-0020afd79767}")) CLSID_TextureR
 
   /// \ingroup H3DNodes
   /// \class DirectShowDecoder
-  /// This node uses DirectShow to decode video clips. All video types
+  /// \brief This node uses DirectShow to decode video clips. All video types
   /// that are supported by an installed DirectShow filter can be decoded.
+  ///
   class H3DAPI_API DirectShowDecoder : public H3DVideoClipDecoderNode {
 
     /// The class checks for DirectShow events and handles them.

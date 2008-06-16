@@ -195,7 +195,7 @@ namespace H3D {
                              Inst< SFBool           > _colorPerVertex  = 0,
                              Inst< SFBool           > _normalPerVertex = 0,
                              Inst< SFBool           > _solid           = 0,
-			                       Inst< MFVertexAttributeNode > _attrib     = 0,
+                             Inst< MFVertexAttributeNode > _attrib     = 0,
                              Inst< SFFogCoordinate     > _fogCoord     =0 );
 
     /// Contains an X3DColorNode whose colors are applied to the
@@ -299,7 +299,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     ///
-    /// \dotfile FogCoordinate_fogCoord.dot 
+    /// \dotfile X3DComposedGeometryNode_fogCoord.dot 
     auto_ptr< SFFogCoordinate > fogCoord;
 
     /// The H3DNodeDatabase for this node.

@@ -92,13 +92,16 @@ namespace H3D {
   ///
   // NOTE: If the scenegraph is changed while isActive is true for a 
   // planeSensor the planeSensor might not be working correctly anymore.
+  ///
+  /// \par Internal routes:
+  /// \dotfile PlaneSensor.dot
   
   class H3DAPI_API PlaneSensor : 
     public X3DDragSensorNode {
   public:
 
 
-    /// The Set_Events field takes care of sending trackPoint_changed,
+    /// The Set_PlaneEvents field takes care of sending trackPoint_changed,
     /// translation_changed, and offset events when they should be sent.
     ///
     /// - routes_in[0] is the position field of a MouseSensor

@@ -1,4 +1,3 @@
-
 #include <H3D/H3DNodeDatabase.h>
 #include <H3D/Scene.h>
 #include <H3DUtil/Exception.h>
@@ -104,6 +103,7 @@ void writeNode( string out_dir, Node *n ) {
   }
   os << "}" << endl;
   os.close();
+  delete n;
 }
 
 #include <H3D/X3DComposedGeometryNode.h>
@@ -113,6 +113,20 @@ void writeNode( string out_dir, Node *n ) {
 #include <H3D/X3DBackgroundNode.h>
 #include <H3D/H3DHapticsDevice.h>
 #include <H3D/X3DTexture3DNode.h>
+#include <H3D/X3DSoundSourceNode.h>
+#include <H3D/X3DViewpointNode.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/X3DTouchSensorNode.h>
+#include <H3D/X3DNurbsSurfaceGeometryNode.h>
+#include <H3D/X3DLightNode.h>
+#include <H3D/X3DGroupingNode.h>
+#include <H3D/X3DGeometryNode.h>
+#include <H3D/Scene.h>
+
+inline void resetSceneTimeField() {
+  Scene::time.reset( new SFTime( TimeStamp() ) );
+  Scene::time->setName( "Scene::time" );
+}
 
 
 int main(int argc, char* argv[]) {
@@ -124,14 +138,36 @@ int main(int argc, char* argv[]) {
 
   string out_dir = argv[1];
 
+  writeNode( out_dir, new Scene );
+  resetSceneTimeField();
   writeNode( out_dir, new X3DComposedGeometryNode );
+  resetSceneTimeField();
   writeNode( out_dir, new H3DHapticsDevice );
-
+  resetSceneTimeField();
   writeNode( out_dir, new X3DTexture2DNode );
+  resetSceneTimeField();
   writeNode( out_dir, new X3DTexture3DNode );
+  resetSceneTimeField();
   writeNode( out_dir, new X3DTextureTransform2DNode );
+  resetSceneTimeField();
   writeNode( out_dir, new X3DShapeNode );
+  resetSceneTimeField();
   writeNode( out_dir, new X3DBackgroundNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DSoundSourceNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DViewpointNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DPointingDeviceSensorNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DTouchSensorNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DNurbsSurfaceGeometryNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DLightNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DGroupingNode );
+  resetSceneTimeField();
 
   try {
     for( H3DNodeDatabase::NodeDatabaseConstIterator i = 
@@ -140,13 +176,17 @@ int main(int argc, char* argv[]) {
          i++ ) {
       string node_name = (*i).first;
       Node *n = H3DNodeDatabase::createNode( node_name.c_str()  );
-	  if( !n ) {
-		  cerr << node_name << ": No such node exists in the node database" << endl;
-	  } else {
-      writeNode( out_dir, n );
-	  }
+      // The dot hierarchy gets completely screwed up without this since
+      // routes and fields are left over from previous instance of Scene::time.
+      if( !n ) {
+        cerr << node_name << ": No such node exists in the node database" <<
+          endl;
+      } else {
+        writeNode( out_dir, n );
+        resetSceneTimeField();
+      }
     }
-  cerr << "DONE!" << endl;
+    cerr << "DONE!" << endl;
   }
   catch (const Exception::H3DException &e) {
       cerr << e << endl;

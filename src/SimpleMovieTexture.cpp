@@ -88,6 +88,7 @@ SimpleMovieTexture::SimpleMovieTexture(
   database.initFields( this );
   
   decoderManager->setOwner( this );
+  decoderManager->setName( "decoderManager" );
   
   rate->setValue( 1, id );
   playAudio->setValue( true, id );

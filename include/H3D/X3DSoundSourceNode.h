@@ -37,18 +37,15 @@
 #include <fstream>
 
 #ifdef HAVE_OPENAL
-#ifdef WIN32
-#include <al.h>
-#include <alc.h>
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "OpenAL32.lib" )
-#endif
-#elif defined( MACOSX )
+#if defined( MACOSX )
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #else
 #include <AL/al.h>
 #include <AL/alc.h>
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment( lib, "OpenAL32.lib" )
+#endif
 #endif
 #endif 
 

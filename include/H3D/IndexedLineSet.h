@@ -240,7 +240,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     ///
-    /// \dotfile FogCoordinate_fogCoord.dot 
+    /// \dotfile IndexedLineSet_fogCoord.dot 
     auto_ptr< SFFogCoordinate > fogCoord;
 
     /// The H3DNodeDatabase instance for this node.

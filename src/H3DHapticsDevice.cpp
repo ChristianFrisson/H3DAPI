@@ -71,6 +71,7 @@ namespace H3DHapticsDeviceInternals {
   FIELDDB_ELEMENT( H3DHapticsDevice, followViewpoint, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, deviceVelocity, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, trackerVelocity, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DHapticsDevice, hapticsLoopTime, OUTPUT_ONLY );
 }
 
 

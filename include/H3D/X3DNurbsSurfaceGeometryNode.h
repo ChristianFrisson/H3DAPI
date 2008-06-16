@@ -119,6 +119,9 @@ namespace H3D {
   /// closed defines whether the curve should be rendered as a closed object
   /// in the given parametric direction allowing the object to be closed in
   /// one direction, but not the other (EXAMPLE  cylinder).
+  ///
+  /// \par Internal routes:
+  /// \dotfile X3DNurbsSurfaceGeometryNode.dot
   class H3DAPI_API X3DNurbsSurfaceGeometryNode : 
     public X3DParametricGeometryNode {
   public:

@@ -56,7 +56,7 @@ CoordinateInterpolator2D::CoordinateInterpolator2D(
   keyValue     ( _keyValue      ),
   value_changed( _value_changed ) {
 
-  type_name = "CoordinateInterpolator";
+  type_name = "CoordinateInterpolator2D";
   database.initFields( this );
   
   set_fraction->route( value_changed, id );
@@ -84,15 +84,15 @@ void CoordinateInterpolator2D::MFValue::update() {
        (key_index + 2)* value_size - 1 < (int)key_values.size() ) {
     if (weight<=0) 
       for (int x = 0; x < value_size; x++ )
-	value[x] = key_values[ key_index*value_size + x ];
+  value[x] = key_values[ key_index*value_size + x ];
     else if (weight>=1)
       for (int x = 0; x < value_size; x++ )
-	value[x] = key_values[ (key_index+1)*value_size + x];
+  value[x] = key_values[ (key_index+1)*value_size + x];
     else { // else, interpolate linearly
       for (int x = 0; x < value_size; x++ ) {
-	Vec2f a = key_values[ key_index*value_size + x ];
-	Vec2f b = key_values[ (key_index+1)*value_size + x  ];
-	value[ x ] = (1-weight)*a + (weight)*b;
+  Vec2f a = key_values[ key_index*value_size + x ];
+  Vec2f b = key_values[ (key_index+1)*value_size + x  ];
+  value[ x ] = (1-weight)*a + (weight)*b;
       }
     }
   }

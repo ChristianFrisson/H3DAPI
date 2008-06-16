@@ -133,14 +133,14 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
-    /// \dotfile GeneratedCubeMapTexture_back.dot
+    /// \dotfile GeneratedCubeMapTexture_update.dot
     auto_ptr< SFString > update;
 
     /// The texture to use on the front face of the cube.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
-    /// \dotfile GeneratedCubeMapTexture_front.dot
+    /// \dotfile GeneratedCubeMapTexture_size.dot
     auto_ptr< SFInt32 > size;
 
     /// The H3DNodeDatabase for this node.

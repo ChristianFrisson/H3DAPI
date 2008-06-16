@@ -432,8 +432,6 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Unit matrix \n
-    /// 
-    /// \dotfile H3DHapticsDevice_adjustedPositionCalibration.dot
     auto_ptr< PosCalibration > adjustedPositionCalibration;
 
     /// The calibration rotation between deviceOrientation and 
@@ -504,7 +502,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly \n
     /// 
-    /// \dotfile H3DHapticsDevice_buttons
+    /// \dotfile H3DHapticsDevice_buttons.dot
     auto_ptr< SFInt32 > buttons;
 
     /// The approximation of the force that has been rendered during the last 

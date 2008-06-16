@@ -109,7 +109,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> FALSE
     /// 
-    /// \dotfile Disc2D_solid.dot
+    /// \dotfile TriangleSet2D_solid.dot
     auto_ptr< SFBool > solid;
 
     /// The H3DNodeDatabase for this node.

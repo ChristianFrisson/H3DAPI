@@ -117,9 +117,11 @@ X3DViewpointNode::X3DViewpointNode( Inst< SFSetBind     > _set_bind,
   accInverseMatrix->setValue( Matrix4f(), id );
 
   position->routeNoEvent( totalPosition, id );
+  relPos->setName( "relPos" );
   relPos->route( totalPosition, id );
 
   orientation->routeNoEvent( totalOrientation, id );
+  relOrn->setName( "relOrn" );
   relOrn->route( totalOrientation, id );
 
   viewpoints.push_back( this );

@@ -1,3 +1,83 @@
+Changes for version 2.0 beta 1:
+
+New H3D nodes:
+CollisionOptions
+DepthMapSurface
+HapticMasterDevice
+PlanarReflector
+PositionFunctionEffect
+SimballDevice
+TimeFunctionEffect
+
+Fields added to existing nodes:
+X3DLightNode - global. Lightsources can be used as global.
+H3DHapticsDevice - hapticsLoopTime. Get the time of the last haptics loop.
+                 - deviceVelocity. Get the velocity of the device.
+                 - trackerVelocity. Get the velocity of the tracker.
+                 - desiredHapticRate. Set the desired haptics rate of the
+                   device.
+H3DVariableDepthSurface - damping. A damping can be set.
+Various surface nodes - useRelativeValues. Choose if the properties of a surface
+                        (currently only stiffness) should be relative to the
+                        maximum stiffness the device can handle or not
+HapticsOptions - interpolateForceEffects. Let the user choose if force effects
+                 should be interpolated between haptics frames or not. Now set
+                 globally instead of locally as before.
+X3DViewpointNode - totalPosition. The position after navigating.
+                   totalOrientation. The orientation after navigating.
+
+- Build files for different systems are no longer provided. They should be
+generated through CMake. www.cmake.org. The CMakeLists.txt used for this
+can be found in the build folder.
+- The PYTHONPATH and H3D_PYTHON_ROOT environment variables no longer needs
+to be set.
+- Added some examples and improved existing ones.
+- Redone how X3DPointingDeviceSensors are handled. Works better than before.
+- Added new stereo mode. Horizontal split keep aspect ratio.
+- Textures now have an editing function that uses glTexSubImage. Used to change
+texture data.
+- H3DViewer now supports unicode version of wxWidgets and also have more
+options and settings in the menus.
+- Moved H3DLoad to separate directory.
+- Zipped raw files can be read by RawImageLoader.
+- Additional changes in order to reflect changes in HAPI.
+- Fixed thread safe issues and other major issues with the haptics causing
+crashes.
+- The Rotation in the rotation field of Transform is now normalized before
+calculating the matrix. This makes it easier to specify rotation around
+arbitrary vector.
+- Added HDEV0, HDEV1, HDEV2 exports.
+- Fixed the H3D/Python connection in a number of ways. Now the user can use
+moduleName to separate PythonScripts with the same DEF-name in different files.
+Python can now access Console to print warnings.
+- Added keyboard interface in H3DLoad to enable/disable which devices should be
+used for navigation. Run H3DLoad without file as input to see the commands.
+- H3D API can now handle more than the openGL limit to the number of
+lightsources in a scene, provided that they are not all active at the same
+time when following the tree hierarchy added together with the number of global
+lightsources in the scene.
+- Prepared for chosing to link libraries statically. User need to compile the
+libraries themselves to use this feature.
+- Fixed problem with diffuseColor when loading images for textures in threads.
+- Fixed a lot of minor bugs. See svn changelog at www.h3d.org:8080 for details.
+
+
+Compatability issues:
+- Moved Image, PixelImage and FreeImageImage to H3DUtil.
+- HAPI::Bounds namespace renamed to HAPI::Collision.
+- Moved header files of H3DUtil, HAPI and H3D so that:
+   HAPI includes requires HAPI/ prefix.
+   H3DUtil includes requires H3DUtil/ prefix.
+   Header files of H3D API requires H3D/ prefix.
+- Now use functions when getting information from the ContactInfo struct.
+- lineIntersect, movingSphereIntersect and closestPoint functions of Node
+are now using a struct as argument.
+- Can no longer set interpolate property for each force effect. It has to
+be set globally through the HapticsOptions node.
+- SensAbleDevice -> PhantomDevice
+- HaptikHapticsDevice -> HaptikDevice.
+
+
 Changes for version 2.0 alpha:
 
 New X3D nodes:

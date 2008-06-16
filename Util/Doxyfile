@@ -200,7 +200,7 @@ INCLUDE_PATH           = ../include \
                          ../../HAPI/OpenHapticRenderer/include \
                          ../../HAPI/Chai3DRenderer/include
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = 
+PREDEFINED             = HAVE_DSHOW
 EXPAND_AS_DEFINED      = H3D_VALUE_EXCEPTION \
                          H3D_API_EXCEPTION
 SKIP_FUNCTION_MACROS   = YES

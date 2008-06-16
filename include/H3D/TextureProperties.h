@@ -58,66 +58,66 @@ namespace H3D {
   /// The boundaryModeS, boundaryModeT nad boundaryModeR fields describe the
   /// way texture coordinate boundaries are handled. Valid values are:
   ///
-  /// - "CLAMP"	Clamp texture coordinates to the range [0,1]	
-  /// - "CLAMP_TO_EDGE"	Clamp texture coordinates such that a border
+  /// - "CLAMP"  Clamp texture coordinates to the range [0,1]  
+  /// - "CLAMP_TO_EDGE"  Clamp texture coordinates such that a border
   ///    texel is never sampled. Coordinates are clamped to the range 
   ///    [1/(2N), 1 - 1/(2N)], where N is the size of the texture in the
-  ///    direction of clamping.	
-  /// - "CLAMP_TO_BOUNDARY"	Clamp texture coordinates such that texture
+  ///    direction of clamping.  
+  /// - "CLAMP_TO_BOUNDARY"  Clamp texture coordinates such that texture
   ///   samples are border texels for fragments whose corresponding texture
   ///   coordinate is sufficiently outside the range [0,1]. Texture 
-  ///  coordinates are clamped to the range [-1/(2N), 1 + 1/(2N)].	
-  /// - "MIRRORED_REPEAT"	Texture coordinates are mirrored and then clamped
-  ///   as in CLAMP_TO_EDGE	
-  /// - "REPEAT"	Repeat a texture across the fragment. Ignore the integer 
-  ///   part of the texture coordinates, using only the fractional part.	
+  ///  coordinates are clamped to the range [-1/(2N), 1 + 1/(2N)].  
+  /// - "MIRRORED_REPEAT"  Texture coordinates are mirrored and then clamped
+  ///   as in CLAMP_TO_EDGE  
+  /// - "REPEAT"  Repeat a texture across the fragment. Ignore the integer 
+  ///   part of the texture coordinates, using only the fractional part.  
   ///
   ///
   /// The magnificationFilter field describes the way textures are filtered
   /// when the image is smaller then the screen space representation. 
   /// Valid values are:
   ///
-  /// - "AVG_PIXEL"	Select the weighted average of the four texture elements
-  ///   that are closest to the center of the pixel being textured.	
-  /// - "DEFAULT"	Select the browser-specified default magnification mode. In 
+  /// - "AVG_PIXEL"  Select the weighted average of the four texture elements
+  ///   that are closest to the center of the pixel being textured.  
+  /// - "DEFAULT"  Select the browser-specified default magnification mode. In 
   ///   H3D API the same as AVG_PIXEL.
-  /// - "FASTEST"	Select the fastest method available.	
-  /// - "NEAREST_PIXEL"	Select the pixel that is nearest to the center
-  ///   of the pixel being textured.	
-  /// - "NICEST"	Select the highest quality method available.	
+  /// - "FASTEST"  Select the fastest method available.  
+  /// - "NEAREST_PIXEL"  Select the pixel that is nearest to the center
+  ///   of the pixel being textured.  
+  /// - "NICEST"  Select the highest quality method available.  
   ///
   /// The minificationFilter field describes the way textures are filtered
   /// when the image is larger then the screen space representation. Valid
   /// values are: 
   ///
-  /// -"AVG_PIXEL"	Select the weighted average of the four texture elements
-  ///  that are closest to the center of the pixel being textured.	
-  /// -"AVG_PIXEL_AVG_MIPMAP"	Performs tri-linear filtering. Choose the two
+  /// -"AVG_PIXEL"  Select the weighted average of the four texture elements
+  ///  that are closest to the center of the pixel being textured.  
+  /// -"AVG_PIXEL_AVG_MIPMAP"  Performs tri-linear filtering. Choose the two
   ///   mipmaps that most closely match the size of the pixel being textured
   ///   and use the weighted average of the four texture elements that are
   ///   closest to the center of the pixel to produce a texture value from
   ///   each mipmap. The final texture value is a weighted average of those
-  ///   two values. 	
-  /// -"AVG_PIXEL_NEAREST_MIPMAP"	Choose the mipmap that most closely matches
+  ///   two values.   
+  /// -"AVG_PIXEL_NEAREST_MIPMAP"  Choose the mipmap that most closely matches
   ///   the size of the pixel being textured and use the weighted average of
   ///   the four texture elements that are closest to the center of the pixel
-  ///   to produce a texture value.	
-  /// -"DEFAULT"	Select the browser-specified default minification mode.	
-  /// -"FASTEST"	Select the fastest method available. Mipmaps shall be used, 
-  ///   if available.	
-  /// -"NEAREST_PIXEL"	Select the pixel that is nearest to the center of 
-  ///   the pixel being textured.	
-  /// -"NEAREST_PIXEL_AVG_MIPMAP"	Choose the two mipmaps that most closely 
+  ///   to produce a texture value.  
+  /// -"DEFAULT"  Select the browser-specified default minification mode.  
+  /// -"FASTEST"  Select the fastest method available. Mipmaps shall be used, 
+  ///   if available.  
+  /// -"NEAREST_PIXEL"  Select the pixel that is nearest to the center of 
+  ///   the pixel being textured.  
+  /// -"NEAREST_PIXEL_AVG_MIPMAP"  Choose the two mipmaps that most closely 
   ///   match the size of the pixel being textured and use the texture element
   /// nearest to the center of the pixel to produce a texture value from
   /// each mipmap. The final texture value is a weighted average of those
-  /// two values.	
-  /// -"NEAREST_PIXEL_NEAREST_MIPMAP"	Choose the mipmap that most closely 
+  /// two values.  
+  /// -"NEAREST_PIXEL_NEAREST_MIPMAP"  Choose the mipmap that most closely 
   ///  matches the size of the pixel being textured and use the texture
   ///  element nearest to the center of the pixel) to produce a texture value.
   /// 
-  /// -"NICEST"	Select the highest quality method available. Mipmaps shall be 
-  ///  used, if available.	
+  /// -"NICEST"  Select the highest quality method available. Mipmaps shall be 
+  ///  used, if available.  
   ///
   /// Modes with MIPMAP in the name require mipmaps. If mipmaps are not 
   /// provided, the mode shall pick the corresponding non-mipmapped mode
@@ -134,15 +134,15 @@ namespace H3D {
   /// The textureCompression fields describes if/how a texture should be 
   /// compressed. Valid values are:
   ///
-  /// - "DEFAULT"	No compression
-  /// - "FASTEST" Select the fastest compression mode available.	
-  /// - "HIGH"	Select the compression mode with the greatest amount of 
-  ///   compression.	
-  /// - "LOW"	Select the compression mode with the least amount of
-  ///   compression.	
-  /// - "MEDIUM"	Select a compression mode with a moderate amount of 
-  ///   compression.	
-  /// - "NICEST"	Select the compression mode that produces the nicest effect.
+  /// - "DEFAULT"  No compression
+  /// - "FASTEST" Select the fastest compression mode available.  
+  /// - "HIGH"  Select the compression mode with the greatest amount of 
+  ///   compression.  
+  /// - "LOW"  Select the compression mode with the least amount of
+  ///   compression.  
+  /// - "MEDIUM"  Select a compression mode with a moderate amount of 
+  ///   compression.  
+  /// - "NICEST"  Select the compression mode that produces the nicest effect.
   ///
   /// \par Internal routes:
   /// \dotfile TextureProperties.dot  
@@ -178,7 +178,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1.0 \n
     ///
-    /// \dotfile TextureProperties_repeatS.dot 
+    /// \dotfile TextureProperties_anisotropicDegree.dot 
     auto_ptr< SFFloat >  anisotropicDegree;
 
     /// The borderColor field describes the color to use for border pixels.

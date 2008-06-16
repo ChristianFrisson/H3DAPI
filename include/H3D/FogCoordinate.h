@@ -42,9 +42,11 @@ namespace H3D {
   /// implicitly generated depths; specifying fog coordinates will result
   /// in the implicit depth (specified by the visibilityRange field of a
   /// node derived from X3DFogObject) being ignored. 
-  /// 
+  ///
+  /// \par Internal routes:
+  /// \dotfile FogCoordinate.dot
   //  
-  // To Do: One depth value per vertex shall be supplied. If the user does not
+  // TODO: One depth value per vertex shall be supplied. If the user does not
   // provide a  sufficient number of depth values, the last value defined
   // shall be replicated for any further vertices. If too many depth values
   // are supplied, the excess depth values shall be ignored.
@@ -74,6 +76,8 @@ namespace H3D {
     }
 
     /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile FogCoordinate_depth.dot
     auto_ptr< MFFloat >  depth;
 
     /// The H3DNodeDatabase for this node.

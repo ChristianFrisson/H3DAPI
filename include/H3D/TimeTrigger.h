@@ -54,8 +54,8 @@ namespace H3D {
     class SetTriggerTime: public AutoUpdate< TypedField < SFTime, SFBool > > {
     protected:
       virtual void update() {
-	TimeStamp theTime;
-	value = theTime;
+  TimeStamp theTime;
+  value = theTime;
       }
     };
 #ifdef __BORLANDC__
@@ -64,15 +64,15 @@ namespace H3D {
 
     /// Constructor.
     TimeTrigger( Inst< SFNode > _metadata            = 0,
-		 Inst< SFBool > _set_boolean         = 0,
-		 Inst< SetTriggerTime > _triggerTime = 0 );
+     Inst< SFBool > _set_boolean         = 0,
+     Inst< SetTriggerTime > _triggerTime = 0 );
 
     /// When an event is received store the current 
     /// time in triggerTime.
     /// 
     /// <b>Access type:</b> inputOnly \n
     /// 
-    /// \dotfile TimeTrigger__set_boolean.dot
+    /// \dotfile TimeTrigger_set_boolean.dot
     auto_ptr< SFBool > set_boolean;
 
     /// Contains the current time when an event has been generated

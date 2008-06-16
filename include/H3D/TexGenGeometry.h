@@ -40,7 +40,9 @@ namespace H3D {
   /// \brief The TexGenGeometry node is a wrapper node that lets you specify
   /// a TextureCoordinateGenerator node to generate the texture coordinates
   /// of a geometry instead of using the default ones.
-  /// 
+  ///
+  /// \par Internal routes:
+  /// \dotfile TexGenGeometry.dot
   class H3DAPI_API TexGenGeometry : 
     public X3DGeometryNode {
   public:
@@ -119,10 +121,14 @@ namespace H3D {
     /// generate texture coordinates for.
     ///
     /// <b>Access type: </b> inputOutput
+    /// 
+    /// \dotfile TexGenGeometry_geometry.dot
     auto_ptr< SFGeometryNode > geometry;
 
     /// The texCoord field contains the TextureCoordinateGenerator node
     /// to use to generate texture coordinates.
+    /// 
+    /// \dotfile TexGenGeometry_texCoord.dot
     auto_ptr< SFTexCoordGenNode > texCoord;
 
     /// The H3DNodeDatabase for this node.

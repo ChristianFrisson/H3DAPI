@@ -132,7 +132,9 @@ namespace H3D {
   /// f(x) = 2*x         "2*x"         "x"
   /// f(s,t) = s + t     "s+t"         "s,t"
   /// f(a) = cos(a)      "cos(a)"      "a"
-  /// 
+  ///
+  /// \par Internal routes:
+  /// \dotfile GeneralFunction.dot
   class H3DAPI_API GeneralFunction : public H3DFunctionNode {
   public:
     /// Class for updating an HAPI::ParsedFunction depending
@@ -179,6 +181,8 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> "x" \n
+    ///
+    /// \dotfile GeneralFunction_function.dot
     auto_ptr< SFString > function;
 
     /// The function parameter string. Decides the
@@ -189,6 +193,8 @@ namespace H3D {
     /// f(s,t) = s + t     "s,t"     
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
+    ///
+    /// \dotfile GeneralFunction_params.dot
     auto_ptr< SFString > params;
 
     /// The H3DNodeDatabase for this object.

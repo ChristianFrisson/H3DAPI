@@ -152,7 +152,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     ///
-    /// \dotfile FogCoordinate_fogCoord.dot 
+    /// \dotfile LineSet_fogCoord.dot 
     auto_ptr< SFFogCoordinate > fogCoord;
 
     /// The H3DNodeDatabase for this node.

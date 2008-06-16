@@ -49,7 +49,10 @@ namespace H3D {
   ///
   /// RGB or RGBA textures take precedence over colours; specifying both an
   /// RGB or RGBA texture and a Color node for geometric shape will result
-  /// in the Color node being ignored. 
+  /// in the Color node being ignored.
+  ///
+  /// \par Internal routes:
+  /// \dotfile Color.dot
   class H3DAPI_API Color : public X3DColorNode {
   public:
     /// Constructor.
@@ -84,6 +87,8 @@ namespace H3D {
     /// A vector of Color values.
     ///
     /// <b>Access type:</b> inputOutput \n
+    /// 
+    /// \dotfile Color_color.dot
     auto_ptr< MFColor >  color;
 
     /// The H3DNodeDatabase for this node.

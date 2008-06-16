@@ -81,7 +81,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     ///
-    /// \dotfile TextureCoordinate4D_point.dot 
+    /// \dotfile TextureCoordinate3D_point.dot 
     auto_ptr< MFVec3f >  point;
 
     /// The H3DNodeDatabase for this node.

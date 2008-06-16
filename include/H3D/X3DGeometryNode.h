@@ -283,6 +283,8 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactNormal;
 
+    /// Contains a tree of the HAPI::GeometryPrimitives that build up
+    /// the X3DGeometryNode. C++-only field.
     auto_ptr< SFBoundTree > boundTree;
 
     /// Contains nodes with options for haptics and graphics rendering.

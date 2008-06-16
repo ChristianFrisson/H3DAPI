@@ -71,8 +71,8 @@ namespace H3D {
           value_size = key_values.size() / key_size;
         value.resize( value_size );
 
-	if ( key_index >= 0 && 
-	     (key_index + 2)* value_size - 1 < (int)key_values.size() ) {
+  if ( key_index >= 0 && 
+       (key_index + 2)* value_size - 1 < (int)key_values.size() ) {
           if (weight<=0) 
             for (int x = 0; x < value_size; x++ )
               value[x] = key_values[ key_index*value_size + x ];
@@ -101,10 +101,14 @@ namespace H3D {
                             Inst< MFValue >  _value_changed = 0 );
 
     /// The values to interpolate between.
-    auto_ptr< MFVec3f >  keyValue;
+    ///
+    /// \dotfile CoordinateInterpolator_keyValue.dot
+    auto_ptr< MFVec3f > keyValue;
 
     /// The linearly interpolated result value.
-    auto_ptr< MFValue >  value_changed;
+    ///
+    /// \dotfile CoordinateInterpolator_value_changed.dot
+    auto_ptr< MFValue > value_changed;
 
     /// The H3DNodeDatabase for the node.
     static H3DNodeDatabase database;

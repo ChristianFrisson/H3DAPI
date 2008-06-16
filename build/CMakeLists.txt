@@ -1,6 +1,9 @@
 IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
+# Make include files in paths like /usr/local/include have preference before
+# files in OSX frameworks. 
+SET(CMAKE_FIND_FRAMEWORK "LAST")
 PROJECT (H3DAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
@@ -11,7 +14,7 @@ IF( NOT DEFINED GENERATE_CPACK_PROJECT )
 ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 
 # Include HAPI in the build.
-IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
+IF( WIN32 )
   # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
   STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../../HAPI/build BINARY_DIR_FOR_HAPI ${CMAKE_CURRENT_BINARY_DIR} )
   STRING( COMPARE EQUAL ${BINARY_DIR_FOR_HAPI} ${CMAKE_CURRENT_BINARY_DIR} SPECIAL_BINARY_DIR )
@@ -34,7 +37,7 @@ IF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
   IF(OPENHAPTICS_INCLUDE_DIR AND HD_LIBRARY AND HL_LIBRARY AND HDU_LIBRARY)
     SET( OPENHAPTICS_FOUND 1 )
   ENDIF(OPENHAPTICS_INCLUDE_DIR AND HD_LIBRARY AND HL_LIBRARY AND HDU_LIBRARY)
-ENDIF( NOT GENERATE_CPACK_PROJECT OR WIN32 )
+ENDIF( WIN32 )
 
 # Version of H3D API.
 SET( H3DAPI_MAJOR_VERSION 2 )
@@ -94,7 +97,7 @@ IF( GENERATE_CPACK_PROJECT )
                                     /moondial/moondial_orig\\\\.x3d$
                                     /moondial/themoondial\\\\.wrl$
                                     /plane/bobcat2\\\\.x3d$
-                                    /plane/bobcat_nh\\\\.wrl$
+                                    /plane/bobcat_nh\\\\.x3d$
                                     /plane/bobcat_orig\\\\.x3d$ )
 
   SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DAPI_MAJOR_VERSION})
@@ -103,6 +106,7 @@ IF( GENERATE_CPACK_PROJECT )
   
   # TODO: fix different for windows and unix if needed.
   IF(WIN32 AND NOT UNIX)
+    SET( CPACK_PACKAGE_START_MENU_NAME "H3DAPI 2.0 Beta" )
     # If H3DLoad should be added to the package.
     SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
     MARK_AS_ADVANCED(H3DLoad_cmake_install)
@@ -123,10 +127,6 @@ IF( GENERATE_CPACK_PROJECT )
                                      "H3DViewer;H3DViewer" )
       SET(WXWINDOWS_USE_GL 1)
       FIND_PACKAGE(wxWidgetsWin)
-      IF(wxWidgets_FOUND)
-        SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                         "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
-      ENDIF(wxWidgets_FOUND)
     ENDIF( H3DViewer_cmake_install )
 
     #If particleDemo should be added to package.
@@ -135,13 +135,6 @@ IF( GENERATE_CPACK_PROJECT )
     IF( ParticleDemo_cmake_install )
       SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
                                         "${ParticleDemo_cmake_install};ParticleDemo;ALL;/" )
-      IF( NOT H3DViewer_cmake_install )
-        FIND_PACKAGE(wxWidgetsWin)
-        IF(wxWidgets_FOUND)
-          SET( CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                           "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
-        ENDIF(wxWidgets_FOUND)
-      ENDIF( NOT H3DViewer_cmake_install )
     ELSE( ParticleDemo_cmake_install )
       SET(H3DAPI_CPACK_IGNORE_PATTERNS ${H3DAPI_CPACK_IGNORE_PATTERNS} /examples/Particledemo/ )
     ENDIF( ParticleDemo_cmake_install )
@@ -175,7 +168,10 @@ IF( GENERATE_CPACK_PROJECT )
                            /pthreadGC2\\\\.dll$
                            /pthreadGCE2\\\\.dll$
                            /pthreadVSE2\\\\.dll$
-                           /HAPI/doc/ )
+                           /HAPI/doc/
+                           /H3DUtil/doc/
+                           /include/fparser
+                           /include/teem )
     
     # Directories to install, and how they should be named. Non-existing folders will be ignored when packing.
     SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
@@ -195,9 +191,13 @@ IF( GENERATE_CPACK_PROJECT )
     SET( PythonInstallMSI "" CACHE FILEPATH "Needs to be set to add python installation to the package." )
     MARK_AS_ADVANCED(PythonInstallMSI)
     IF( PythonInstallMSI )
+      STRING( REGEX MATCH 2\\.[456789] CPACK_PYTHON_VERSION ${PythonInstallMSI} )
+      GET_FILENAME_COMPONENT( PYTHON_FILE_NAME ${PythonInstallMSI} NAME )
       STRING( REPLACE "/" "\\\\" TEMP_PythonInstallMSI ${PythonInstallMSI} )
+      #STRING( REPLACE "." "\\\\\\." TEMP_CPACK_PYTHON_VERSION ${CPACK_PYTHON_VERSION} )
+      #STRING( REPLACE "." "\\\\\\." TEMP_PYTHON_FILE_NAME ${PYTHON_FILE_NAME} )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             "   Code to install Python\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n   StrCmp $0 \\\"\\\" 0 +5\\n  file ${TEMP_PythonInstallMSI}\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\python-2.4.4.msi\\\"'\\n  delete $INSTDIR\\\\python-2.4.4.msi\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\2.4\\\\InstallPath \\\"\\\"\\n" )
+                                             "   Code to install Python\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n   StrCmp $0 \\\"\\\" 0 +5\\n  file ${TEMP_PythonInstallMSI}\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'\\n  delete $INSTDIR\\\\${PYTHON_FILE_NAME}\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n" )
     ENDIF( PythonInstallMSI )
     
     # Install OpenAL.
@@ -256,15 +256,6 @@ ENDIF(NOT WIN32)
 INCLUDE_DIRECTORIES( ../include
 ${H3DAPI_SOURCE_DIR}/../../H3DUtil/include
 ${H3DAPI_SOURCE_DIR}/../../HAPI/include )
-
-# Possible extra include directories.
-IF(CHAI3D_FOUND)
-  INCLUDE_DIRECTORIES( ${H3DAPI_SOURCE_DIR}/../../HAPI/Chai3DRenderer/include )
-ENDIF(CHAI3D_FOUND)
-
-IF(OPENHAPTICS_FOUND)
-  INCLUDE_DIRECTORIES( ${H3DAPI_SOURCE_DIR}/../../HAPI/OpenHapticsRenderer/include )
-ENDIF(OPENHAPTICS_FOUND)
 
 # Extra libs to link against. TODO: Only for MSVC?
 IF(WIN32)
@@ -500,104 +491,9 @@ ENDIF(NOT WIN32 AND NOT APPLE)
 # a number of extra directories needs to be added to be installed.
 IF( GENERATE_CPACK_PROJECT )
   IF( WIN32 )
-    IF( PTHREAD_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${PTHREAD_INCLUDE_DIR};External/include/pthread" )
-    ENDIF( PTHREAD_FOUND )
-
-    IF( OPENGL_FOUND AND OPENGL_INCLUDE_DIR )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${OPENGL_INCLUDE_DIR}/GL;External/include/GL" )
-    ENDIF( OPENGL_FOUND AND OPENGL_INCLUDE_DIR )
-
-    IF( GLUT_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${GLUT_INCLUDE_DIR}/GL;External/include/GL" )
-    ENDIF( GLUT_FOUND )
-
-    IF( GLEW_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${GLEW_INCLUDE_DIR}/GL;External/include/GL" )
-    ENDIF( GLEW_FOUND )
-
-    IF( XERCES_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${XERCES_INCLUDE_DIR}/..;External/include/xerces-c-src_2_7_0" )
-    ENDIF( XERCES_FOUND )
-
-    IF( CURL_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${CURL_INCLUDE_DIR}/curl;External/include/curl" )
-    ENDIF( CURL_FOUND )
-
-    IF( NVIDIACG_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${NVIDIACG_INCLUDE_DIR};External/include/Cg" )
-    ENDIF( NVIDIACG_FOUND )
-
-    IF( ZLIB_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${ZLIB_INCLUDE_DIR};External/include/zlib" )
-    ENDIF( ZLIB_FOUND )
-
-    IF( OPENAL_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${OPENAL_INCLUDE_DIR};External/include/OpenAL" )
-    ENDIF( OPENAL_FOUND )
-
-    IF( VORBIS_FOUND )
-      FOREACH(TEMP_LIST_ITEM ${VORBIS_INCLUDE_DIR})
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${TEMP_LIST_ITEM}/..;External/include/vorbis" )
-      ENDFOREACH(TEMP_LIST_ITEM ${ARGV})
-    ENDIF( VORBIS_FOUND )
-
-    IF( AUDIOFILE_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${AUDIOFILE_INCLUDE_DIR};External/include/libaudiofile" )
-    ENDIF( AUDIOFILE_FOUND )
-
-    IF( FREETYPE_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${FREETYPE_INCLUDE_DIR}/..;External/include/freetype" )
-    ENDIF( FREETYPE_FOUND )
-
-    IF( 3DXWARE_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${3DXWARE_INCLUDE_DIR}/..;External/include/3dconnexion" )
-    ENDIF( 3DXWARE_FOUND )
-
-    IF( FTGL_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${FTGL_INCLUDE_DIR}/FTGL;External/include/FTGL" )
-    ENDIF( FTGL_FOUND )
-
-    IF( FREEIMAGE_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${FREEIMAGE_INCLUDE_DIR}/..;External/include/FreeImage" )
-    ENDIF( FREEIMAGE_FOUND )
-
-    IF( DIRECTSHOW_FOUND )
-      SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                      "${DIRECTSHOW_INCLUDE_DIR_STREAMS_H}/..;External/include/DirectShow" )
-    ENDIF( DIRECTSHOW_FOUND )
-  
     SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
                                     ${HAPI_CPACK_INSTALLED_DIRECTORIES} )
 
-    IF( H3DViewer_cmake_install )
-      FIND_PACKAGE(wxWidgetsWin)
-      IF(wxWidgets_FOUND)
-        SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                        "${wxWidgets_INCLUDE_DIR}/wx;External/include/wx" )
-      ENDIF(wxWidgets_FOUND)
-    ENDIF( H3DViewer_cmake_install )
-
-    # External/bin and External/lib are needed to run program.
-    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                    "${H3DAPI_SOURCE_DIR}/../../External/bin;External/bin" )  
-    SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-                                    "${H3DAPI_SOURCE_DIR}/../../External/lib;External/lib" )
   ENDIF(WIN32)
 
   INCLUDE(CPack)

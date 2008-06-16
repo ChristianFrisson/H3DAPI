@@ -43,6 +43,9 @@ namespace H3D {
   /// single floating point value. Examples include width, radius, and
   /// intensity fields. The keyValue field shall contain exactly as many
   /// numbers as there are key frames in the key field. 
+  ///
+  /// \par Internal routes:
+  /// \dotfile ScalarInterpolator.dot
   class H3DAPI_API ScalarInterpolator : public X3DInterpolatorNode {
   public:
     

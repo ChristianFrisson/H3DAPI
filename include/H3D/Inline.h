@@ -93,6 +93,9 @@ namespace H3D {
   /// The user is able to specify a bounding box for the Inline node using
   /// the bboxCenter and bboxSize fields. This is a hint to the browser and
   /// could be used for optimization purposes such as culling. 
+  ///
+  /// \par Internal routes:
+  /// \dotfile Inline.dot
   class H3DAPI_API Inline : 
     public X3DChildNode,
     public X3DBoundedObject,
@@ -234,9 +237,13 @@ namespace H3D {
     /// If the load field is set to TRUE (the default field value), 
     /// the X3D file specified by the url field is loaded immediately. 
     /// If the load field is set to FALSE, no action is taken.
+    ///
+    /// \dotfile Inline_load.dot
     auto_ptr< SFBool >  load;
     
     /// The scene that is currently loaded by the inline node.
+    ///
+    /// \dotfile Inline_loadedScene.dot
     auto_ptr< LoadedScene > loadedScene;
 
     // if true a route will be set up between the bound field of the

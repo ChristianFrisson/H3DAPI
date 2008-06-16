@@ -123,13 +123,16 @@ namespace H3D {
   /// of values. If minAngle is greater than maxAngle, rotation_changed events
   /// are not clamped. The minAngle and maxAngle fields are restricted to the
   /// range [-2pi, 2pi].
+  ///
+  /// \par Internal routes:
+  /// \dotfile CylinderSensor.dot
  
   class H3DAPI_API CylinderSensor : 
     public X3DDragSensorNode {
   public:
 
 
-    /// The Set_Events field takes care of sending trackPoint_changed,
+    /// The Set_CylinderEvents field takes care of sending trackPoint_changed,
     /// rotation_changed, and offset events when they should be sent.
     ///
     /// routes_in[0] is the position field of a MouseSensor
@@ -186,7 +189,7 @@ namespace H3D {
           SFFloat::setValue( -limit, id );
           Console(3) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
-				             << owner->getName() 
+                     << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."
                      << " Value set to -2pi" << endl;
         }
@@ -194,7 +197,7 @@ namespace H3D {
           SFFloat::setValue( limit, id );
           Console(3) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
-				             << owner->getName() 
+                     << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."
                      << " Value set to 2pi" << endl;
         }
@@ -208,7 +211,7 @@ namespace H3D {
           value = -limit;
           Console(3) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
-				             << owner->getName() 
+                     << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."
                      << " Value set to -2pi" << endl;
         }
@@ -216,7 +219,7 @@ namespace H3D {
           value  = limit;
           Console(3) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
-				             << owner->getName() 
+                     << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."
                      << " Value set to 2pi" << endl;
         }
@@ -304,7 +307,7 @@ namespace H3D {
 
   protected:
     /// Called to generate isOver events and other events (dependent on isOver)
-    // if they should be generated.
+    /// if they should be generated.
     virtual void onIsOver( IntersectionInfo *result = 0,
                            Matrix4f *global_to_local = 0 );
 

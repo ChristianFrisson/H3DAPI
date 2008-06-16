@@ -69,7 +69,7 @@ class SettingsDialog: public wxPropertySheetDialog
 {
 DECLARE_CLASS(SettingsDialog)
 public:
-    SettingsDialog(wxWindow* parent, GlobalSettings *gs, WxFrame *f );
+    SettingsDialog(wxWindow* parent, WxFrame *f );
     ~SettingsDialog();
 
   void handleSettingsChange (wxCommandEvent & event);
@@ -77,14 +77,51 @@ public:
   void OnOk (wxCommandEvent & event);
   void OnCancel (wxCommandEvent & event);
 
-  wxPanel* CreateGeneralSettingsPage(wxWindow* parent, GlobalSettings *gs );
-  wxPanel* CreateOpenHapticsSettingsPage(wxWindow* parent, GlobalSettings *gs);
-  wxPanel* CreateRuspiniSettingsPage(wxWindow* parent, GlobalSettings *gs);
-  wxPanel* CreateDebugSettingsPage(wxWindow* parent, GlobalSettings *gs);
+  wxPanel* CreateGeneralSettingsPage(wxWindow* parent );
+  wxPanel* CreateOpenHapticsSettingsPage(wxWindow* parent);
+  wxPanel* CreateRuspiniSettingsPage(wxWindow* parent);
+  wxPanel* CreateDebugSettingsPage(wxWindow* parent);
 
   inline float getProxyRadius() {
     return std::strtod( proxy_radius_text->GetValue().mb_str(), NULL );
   }
+
+  // DebugOptionsUI
+  wxSpinCtrl *depth_spin;
+  wxCheckBox *draw_bound_box;
+  wxCheckBox *draw_tree_box;
+  wxCheckBox *draw_triangles_box;
+  bool boundTree;
+  int treeDepth;
+
+  // GraphicsCachingOptionsUI
+  wxCheckBox *display_list_checkbox;
+  wxCheckBox *only_geoms_checkbox;
+  wxSpinCtrl *caching_delay_spin;
+
+  // HapticsOptions
+  wxChoice *face_choice;
+  wxTextCtrl *max_distance_text;
+  wxTextCtrl *look_ahead_text;
+  wxCheckBox *use_bound_tree_checkbox;
+  wxCheckBox *interpolate_force_effects_checkbox;
+
+  // GeometryBoundTreeOptionsGUI
+  wxChoice *bound_choice;
+  wxSpinCtrl *max_triangles_spin;
+
+  // CollisionOptionsGUI
+  wxCheckBox *use_collision_checkbox;
+
+  // StereoInfoGUI
+  wxTextCtrl *focal_distance_text;
+  wxTextCtrl* interocular_distance_text;
+
+  // OpenHapticsOptionsGUI
+  wxCheckBox *adaptive_viewport;
+  wxCheckBox *haptic_camera;
+  wxCheckBox *full_geom_render;
+  wxChoice *shape_choice;
   
 protected:
 
@@ -126,8 +163,6 @@ protected:
 
   wxImageList*    m_imageList;
   WxFrame *wx_frame;
-  bool boundTree;
-  int treeDepth;
   wxTextCtrl* proxy_radius_text;
 
 DECLARE_EVENT_TABLE()

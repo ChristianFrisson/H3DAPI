@@ -43,6 +43,8 @@ namespace H3D {
   /// properties for defining rigid body motion. This includes
   /// a position, orientation, mass, etc.
   ///
+  /// \par Internal routes:
+  /// \dotfile DynamicTransform.dot
   class H3DAPI_API DynamicTransform : public MatrixTransform {
   public:
 
@@ -158,66 +160,90 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    ///
+    /// \dotfile DynamicTransform_position.dot
     auto_ptr<    SFVec3f    >  position;
 
     /// Specifies the orientation of the shape
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Rotation( 0, 0, 1, 0 ) \n
+    ///
+    /// \dotfile DynamicTransform_orientation.dot
     auto_ptr<    SFRotation >  orientation;
 
     /// Specifies the velocity in m/s
     ///
     /// <b>Access type:</b> outputOnly \n
+    ///
+    /// \dotfile DynamicTransform_velocity.dot
     auto_ptr<    SFVec3f    >  velocity;
     
     /// Specifies the momentum
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    ///
+    /// \dotfile DynamicTransform_momentum.dot
     auto_ptr<    SFVec3f    >  momentum;
     
     /// Specifies the force currently acting on the dynamic
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    ///
+    /// \dotfile DynamicTransform_force.dot
     auto_ptr<    SFVec3f    >  force;
 
     /// Specifies the angular velocity of the dynamic
     ///
     /// <b>Access type:</b> outputOnly \n
+    ///
+    /// \dotfile DynamicTransform_angularVelocity.dot
     auto_ptr<    SFVec3f    >  angularVelocity;
 
     /// Specifies the angular momentum of the dynamic
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    ///
+    /// \dotfile DynamicTransform_angularMomentum.dot
     auto_ptr<    SFVec3f    >  angularMomentum;
 
     /// Specifies the spin of the dynamic
     ///
     /// <b>Access type:</b> outputOnly \n
+    ///
+    /// \dotfile DynamicTransform_spin.dot
     auto_ptr<    SFSpin    >  spin;
 
     /// Specifies the torque force currently acting on the dynamic
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    ///
+    /// \dotfile DynamicTransform_torque.dot
     auto_ptr<    SFVec3f    >  torque;
 
     /// Specifies the mass, in kg
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    ///
+    /// \dotfile DynamicTransform_mass.dot
     auto_ptr<    SFFloat    >  mass;
 
     /// Specifies the inertia tensor
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Matrix3f( 1, 0, 0, 0, 1, 0, 0, 0, 1 ) \n
+    ///
+    /// \dotfile DynamicTransform_inertiaTensor.dot
     auto_ptr<    SFMatrix3f  >  inertiaTensor;
 
     /// Dynamic update algorithm
+    ///
+    /// \dotfile DynamicTransform_motion.dot
     auto_ptr<    SFMotion    >  motion;
     
     /// The H3DNodeDatabase for this node.

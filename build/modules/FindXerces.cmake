@@ -8,10 +8,8 @@
 
 # Look for the header file.
 FIND_PATH(XERCES_INCLUDE_DIR NAMES xercesc/sax2/Attributes.hpp
-                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                                   $ENV{H3D_EXTERNAL_ROOT}/include/xerces-c-src_2_7_0/src
-                                   ../../External/include    
-                                   ../../External/include/xerces-c-src_2_7_0/src)
+                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                   ../../External/include )
 MARK_AS_ADVANCED(XERCES_INCLUDE_DIR)
 
 # Look for the library.
@@ -37,11 +35,9 @@ IF(NOT XERCES_FOUND)
     "Xerces-c was not found. Make sure XERCES_LIBRARY and
     XERCES_INCLUDE_DIR are set to the directory of your xerces lib and
     include files. If you do not have Xerces x3d/xml files cannot be parsed.")
-  IF(NOT XERCES_FIND_QUIETLY)
+  IF(XERCES_FIND_REQUIRED)
+    MESSAGE(FATAL_ERROR "${XERCES_DIR_MESSAGE}")
+  ELSEIF(NOT XERCES_FIND_QUIETLY)
     MESSAGE(STATUS "${XERCES_DIR_MESSAGE}")
-  ELSE(NOT XERCES_FIND_QUIETLY)
-    IF(XERCES_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "${XERCES_DIR_MESSAGE}")
-    ENDIF(XERCES_FIND_REQUIRED)
-  ENDIF(NOT XERCES_FIND_QUIETLY)
+  ENDIF(XERCES_FIND_REQUIRED)
 ENDIF(NOT XERCES_FOUND)

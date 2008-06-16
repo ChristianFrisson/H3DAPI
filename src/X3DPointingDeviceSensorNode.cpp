@@ -79,11 +79,13 @@ X3DPointingDeviceSensorNode::X3DPointingDeviceSensorNode(
 
   is_enabled = true;
   setIsEnabled->setOwner( this );
+  setIsEnabled->setName( "setIsEnabled" );
   setIsEnabled->setValue( true );
   enabled->routeNoEvent( setIsEnabled );
   mouse_sensor->leftButton->routeNoEvent( setIsEnabled );
 
   setIsActive->setOwner( this );
+  setIsActive->setName( "setIsActive" );
   mouse_sensor->leftButton->routeNoEvent( setIsActive );
   isOver->setValue( false, id );
 

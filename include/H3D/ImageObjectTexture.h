@@ -57,7 +57,7 @@ namespace H3D {
     };
 
     /// Constructor.
-	  ImageObjectTexture( Inst< DisplayList > _displayList = 0,
+    ImageObjectTexture( Inst< DisplayList > _displayList = 0,
                         Inst< SFNode  > _metadata  = 0,
                         Inst< SFBool  > _repeatS   = 0,
                         Inst< SFBool  > _repeatT   = 0,
@@ -71,8 +71,6 @@ namespace H3D {
     /// 
     /// Access type:</b> inputOutput \n
     /// Default value:</b> NULL \n
-    /// 
-    /// \dotfile ImageObjectTexture_imageObject.dot
     auto_ptr< SFImageObject > imageObject;
 
     /// The H3DNodeDatabase for this node.

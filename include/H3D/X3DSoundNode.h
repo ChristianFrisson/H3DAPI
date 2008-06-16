@@ -31,14 +31,13 @@
 
 #include <H3D/X3DChildNode.h>
 #ifdef HAVE_OPENAL
-#ifdef WIN32
-#include <al.h>
-#elif defined( MACOSX )
+#if defined( MACOSX )
 #include <OpenAL/al.h>
 #else
 #include <AL/al.h>
 #endif
 #endif
+
 namespace H3D {
 
   /// \ingroup AbstractNodes

@@ -42,9 +42,6 @@ namespace H3D {
   /// mouse.
   /// The set_devicePosition, set_deviceOrientation and set_mainButton fields
   /// are used to control the values of the haptics device. 
-  ///
-  /// \par Internal routes:
-  /// \dotfile H3DFakeHapticsDevice.dot
   class H3DAPI_API H3DFakeHapticsDevice: public H3DHapticsDevice {
   public:
     class H3DAPI_API FakeHapticsDevice: public HAPI::HAPIHapticsDevice {
@@ -55,7 +52,7 @@ namespace H3D {
 
       /// Output is ignored on a fake haptics device.
       virtual void sendOutput( DeviceOutput &dv,
-			       HAPI::HAPITime dt ) {}
+             HAPI::HAPITime dt ) {}
 
       /// Implementation of initHapticsDevice.
       virtual bool initHapticsDevice( int _thread_frequency = 1000 ) {
@@ -67,35 +64,35 @@ namespace H3D {
     protected:
       H3DFakeHapticsDevice *owner;
     
-	friend class H3DFakeHapticsDevice;
+  friend class H3DFakeHapticsDevice;
     };
 
     /// Constructor.
     H3DFakeHapticsDevice( Inst< SFVec3f         > _devicePosition         = 0,
-			  Inst< SFRotation      > _deviceOrientation      = 0,
-			  Inst< TrackerPosition > _trackerPosition        = 0,
-			  Inst< TrackerOrientation > _trackerOrientation  = 0,
-			  Inst< PosCalibration  > _positionCalibration    = 0,
-			  Inst< OrnCalibration  > _orientationCalibration = 0,
-			  Inst< SFVec3f         > _proxyPosition          = 0,
-			  Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
-			  Inst< SFFloat         > _proxyWeighting         = 0,
-			  Inst< MainButton      > _main_button            = 0,
-			  Inst< SecondaryButton > _secondary_button       = 0,
-			  Inst< SFInt32         > _buttons                = 0,
-			  Inst< SFVec3f         > _force                  = 0,
-			  Inst< SFVec3f         > _torque                 = 0,
-			  Inst< SFInt32         > _inputDOF               = 0,
-			  Inst< SFInt32         > _outputDOF              = 0,
-			  Inst< SFInt32         > _hapticsRate            = 0,
+        Inst< SFRotation      > _deviceOrientation      = 0,
+        Inst< TrackerPosition > _trackerPosition        = 0,
+        Inst< TrackerOrientation > _trackerOrientation  = 0,
+        Inst< PosCalibration  > _positionCalibration    = 0,
+        Inst< OrnCalibration  > _orientationCalibration = 0,
+        Inst< SFVec3f         > _proxyPosition          = 0,
+        Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
+        Inst< SFFloat         > _proxyWeighting         = 0,
+        Inst< MainButton      > _main_button            = 0,
+        Inst< SecondaryButton > _secondary_button       = 0,
+        Inst< SFInt32         > _buttons                = 0,
+        Inst< SFVec3f         > _force                  = 0,
+        Inst< SFVec3f         > _torque                 = 0,
+        Inst< SFInt32         > _inputDOF               = 0,
+        Inst< SFInt32         > _outputDOF              = 0,
+        Inst< SFInt32         > _hapticsRate            = 0,
         Inst< SFInt32         > _desiredHapticsRate     = 0,
-			  Inst< SFNode          > _stylus                 = 0,
-			  Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
-			  Inst< MFVec3f         > _proxyPositions         = 0,
-			  Inst< SFBool          > _followViewpoint        = 0,
-			  Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
-			  Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
-			  Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0 );
+        Inst< SFNode          > _stylus                 = 0,
+        Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
+        Inst< MFVec3f         > _proxyPositions         = 0,
+        Inst< SFBool          > _followViewpoint        = 0,
+        Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
+        Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
+        Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0 );
 
     /// Destructor.
     ~H3DFakeHapticsDevice() {
@@ -110,24 +107,18 @@ namespace H3D {
     /// devicePosition field of the haptics device.
     ///
     /// <b>Access type:</b> inputOnly \n
-    /// 
-    /// \dotfile H3DFakeHapticsDevice_set_devicePosition.dot
     auto_ptr< SFVec3f > set_devicePosition;
 
     /// The set_deviceOrientation field can be used to set the 
     /// deviceOrientation field of the haptics device.
     ///
     /// <b>Access type:</b> inputOnly \n
-    /// 
-    /// \dotfile H3DFakeHapticsDevice_set_deviceOrientation.dot
     auto_ptr< SFRotation > set_deviceOrientation;
 
     /// The set_mainButton field can be used to set the 
     /// mainButton field of the haptics device.
     ///
     /// <b>Access type:</b> inputOnly \n
-    /// 
-    /// \dotfile H3DFakeHapticsDevice_set_mainButton.dot
     auto_ptr< SFBool > set_mainButton;
   };
 }

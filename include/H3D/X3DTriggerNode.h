@@ -36,12 +36,9 @@ namespace H3D {
   /// \ingroup AbstractNodes
   /// \class X3DTriggerNode
   /// \brief This abstract node type is the base node type from which all 
-	/// Triggers are derived.
-  ///
-  /// \par Internal routes:
-  /// \dotfile X3DTriggerNode.dot
+  /// Triggers are derived.
   
-	class H3DAPI_API X3DTriggerNode : public X3DChildNode {
+  class H3DAPI_API X3DTriggerNode : public X3DChildNode {
   public:
 
     /// Constructor.

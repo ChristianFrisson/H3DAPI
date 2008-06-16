@@ -89,6 +89,9 @@ namespace H3D {
   /// children at any time. A default bboxSize value, (-1, -1, -1), implies
   /// that the bounding box is not specified and if needed shall be
   /// calculated by the browser. 
+  ///
+  /// \par Internal routes:
+  /// \dotfile Billboard.dot
   class H3DAPI_API Billboard : public MatrixTransform {
   public:
     

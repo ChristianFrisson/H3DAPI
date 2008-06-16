@@ -81,13 +81,16 @@ namespace H3D {
   /// to the sphere or continue to rotate as the point is dragged away from the
   /// sphere). Each movement of the pointing device while isActive is TRUE
   /// generates trackPoint_changed and rotation_changed events.
+  ///
+  /// \par Internal routes:
+  /// \dotfile SphereSensor.dot
  
   class H3DAPI_API SphereSensor : 
     public X3DDragSensorNode {
   public:
 
 
-    /// The Set_Events field takes care of sending trackPoint_changed,
+    /// The Set_SphereEvents field takes care of sending trackPoint_changed,
     /// rotation_changed, and offset events when they should be sent.
     ///
     /// - routes_in[0] is the position field of a MouseSensor

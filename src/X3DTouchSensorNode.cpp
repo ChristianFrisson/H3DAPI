@@ -60,5 +60,6 @@ X3DTouchSensorNode::X3DTouchSensorNode(
   
   setTouchTime->setValue( true );
   setTouchTime->setOwner( this );
+  setTouchTime->setName( "setTouchTime" );
   isActive->route( setTouchTime );
 }

@@ -41,54 +41,57 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class NurbsTextureCoordinate
   /// \brief The NurbsTextureCoordinate node is a NURBS surface existing in the
-	/// parametric domain of its surface host specifying the mapping of the 
-	/// texture onto the surface.
-	///
-	/// The parameters are as specified in NurbsTextureCoordinate with the
-	/// exception that the control points are specified in (u, v) coordinates.
+  /// parametric domain of its surface host specifying the mapping of the 
+  /// texture onto the surface.
   ///
-	/// The tessellation process generates 2D texture coordinates.
-	/// If a NurbsTextureCoordinate is undefined, texture coordinates are
-	/// computed by the client on the basis of parametric step size.
-	/// Conventional vertex parameters do not apply on NURBS surfaces because 
-	/// triangles are only available after polygonalization. However, the 
-	/// conventional texture transform may be used.
-	///
-	/// NurbsTextureCoordinate nodes are accessed through the texCoord field 
-	/// of a node derived from NurbsTextureCoordinate.
-	/// A NurbsTextureCoordinate node separately encountered is ignored.
+  /// The parameters are as specified in NurbsTextureCoordinate with the
+  /// exception that the control points are specified in (u, v) coordinates.
+  ///
+  /// The tessellation process generates 2D texture coordinates.
+  /// If a NurbsTextureCoordinate is undefined, texture coordinates are
+  /// computed by the client on the basis of parametric step size.
+  /// Conventional vertex parameters do not apply on NURBS surfaces because 
+  /// triangles are only available after polygonalization. However, the 
+  /// conventional texture transform may be used.
+  ///
+  /// NurbsTextureCoordinate nodes are accessed through the texCoord field 
+  /// of a node derived from NurbsTextureCoordinate.
+  /// A NurbsTextureCoordinate node separately encountered is ignored.
 
-	// according to the X3D standard NurbsTextureCoordinate should inherit 
-	// from X3DNode so we cheat here to make it easier in 
-	// NurbsTextureCoordinate.
+  // according to the X3D standard NurbsTextureCoordinate should inherit 
+  // from X3DNode so we cheat here to make it easier in 
+  // NurbsTextureCoordinate.
+  ///
+  /// \par Internal routes:
+  /// \dotfile NurbsTextureCoordinate.dot
   class H3DAPI_API NurbsTextureCoordinate : 
     public X3DGeometricPropertyNode {
   public:
 
-		/// Calls OpenGL routines to render the texture.
-		void renderTexForNurbs( GLUnurbsObj *nurbs_object );
+    /// Calls OpenGL routines to render the texture.
+    void renderTexForNurbs( GLUnurbsObj *nurbs_object );
 
-		/// Destructor.
-		~NurbsTextureCoordinate(){ 
-			if(u_knots != NULL ) 
-				delete [] u_knots;
-			if(v_knots != NULL ) 
-				delete [] v_knots;	
-			if(withWeights != NULL ) 
-				delete [] withWeights;}
+    /// Destructor.
+    ~NurbsTextureCoordinate(){ 
+      if(u_knots != NULL ) 
+        delete [] u_knots;
+      if(v_knots != NULL ) 
+        delete [] v_knots;  
+      if(withWeights != NULL ) 
+        delete [] withWeights;}
 
     /// Constructor.
-    NurbsTextureCoordinate(			 Inst< SFNode   >  _metadata		= 0,
-                                 Inst< MFVec2f	> _controlPoint = 0,
-                                 Inst< MFFloat  > _weight				= 0,
-                                 Inst< SFInt32  > _uDimension		= 0,
-                                 Inst< SFInt32  > _vDimension		= 0,
-                                 Inst< MFDouble > _uKnot				= 0,
-                                 Inst< MFDouble > _vKnot				= 0,
-                                 Inst< SFInt32  > _uOrder				= 0,
-                                 Inst< SFInt32  > _vOrder				= 0 );
+    NurbsTextureCoordinate(       Inst< SFNode   >  _metadata    = 0,
+                                 Inst< MFVec2f  > _controlPoint = 0,
+                                 Inst< MFFloat  > _weight        = 0,
+                                 Inst< SFInt32  > _uDimension    = 0,
+                                 Inst< SFInt32  > _vDimension    = 0,
+                                 Inst< MFDouble > _uKnot        = 0,
+                                 Inst< MFDouble > _vKnot        = 0,
+                                 Inst< SFInt32  > _uOrder        = 0,
+                                 Inst< SFInt32  > _vOrder        = 0 );
 
-		/// Returns the default xml containerField attribute value.
+    /// Returns the default xml containerField attribute value.
     /// For this node it is "texCoord".
     ///
     virtual string defaultXMLContainerField() {
@@ -101,7 +104,7 @@ namespace H3D {
     /// polyline in u-direction followed by further u-polylines with the 
     /// v-parameter in ascending order. The number of control points shall be
     /// equal or greater than the order.
-		/// The control points are specified as (u, v) coordinates in this node.
+    /// The control points are specified as (u, v) coordinates in this node.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
@@ -171,11 +174,11 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
-	protected:
-		// Used for temporary storage.
-		GLfloat * withWeights;
-		GLfloat * u_knots;
-		GLfloat * v_knots;
+  protected:
+    // Used for temporary storage.
+    GLfloat * withWeights;
+    GLfloat * u_knots;
+    GLfloat * v_knots;
   };
 }
 

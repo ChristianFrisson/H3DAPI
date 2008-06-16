@@ -118,6 +118,7 @@ ElevationGrid::ElevationGrid(
   colorPerVertex->route( displayList );
   normalPerVertex->route( displayList );
   solid->route( displayList );
+  attrib->setName( "attrib" );
   attrib->route( displayList );
   xDimension->route( displayList );
   zDimension->route( displayList );
@@ -132,6 +133,7 @@ ElevationGrid::ElevationGrid(
   zSpacing->route( bound );
   height->route( bound );
 
+  autoNormal->setName( "autoNormal" );
   normalPerVertex->route( autoNormal );
   xDimension->route( autoNormal );
   zDimension->route( autoNormal );

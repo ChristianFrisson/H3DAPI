@@ -88,7 +88,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
-    /// \dotfile Polyline2D_size.dot
+    /// \dotfile Polyline2D_lineSegments.dot
     auto_ptr< MFVec2f > lineSegments;
 
     /// The H3DNodeDatabase for this node.

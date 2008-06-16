@@ -95,8 +95,6 @@ namespace H3D {
     /// that this instance is not in use.
     ///
     /// <b>Access type:</b> outputOnly \n
-    /// 
-    /// \dotfile X3DShaderNode_isSelected.dot
     auto_ptr< SFBool > isSelected;
 
     /// The isValid field is used to indicate whether the current shader
@@ -104,14 +102,12 @@ namespace H3D {
     /// syntax errors and the hardware can support all the required features.
     /// 
     /// <b>Access type:</b> outputOnly \n
-    /// \dotfile X3DShaderNode_isValid.dot
     auto_ptr< SFBool > isValid;
 
     /// The activate field forces the shader to activate the contained 
     /// objects.
     /// 
     /// <b>Access type:</b> inputOnly \n
-    /// \dotfile X3DShaderNode_activate.dot
     auto_ptr< SFBool > activate;
 
     /// The language field is used to indicate to the browser which shading 
@@ -119,7 +115,6 @@ namespace H3D {
     /// API since only "GLSL" source is allowed.
     /// 
     /// <b>Access type:</b> outputOnly \n
-    /// \dotfile X3DShaderNode_language.dot
     auto_ptr< SFString > language;
 
     /// The H3DNodeDatabase for this node.

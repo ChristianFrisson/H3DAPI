@@ -37,6 +37,7 @@ H3DFunctionNode::H3DFunctionNode( Inst< SFNode>  _metadata,
   input( _input ),
   output( _output ),
   functionChanged( new Field ) {
+  functionChanged->setName( "functionChanged" );
 
   output->setValue( 0, id );
   

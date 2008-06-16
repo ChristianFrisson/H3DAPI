@@ -52,6 +52,9 @@ namespace H3D {
   /// This geometryNode implements a 3D-version of the SuperFormula by using
   /// two functions. The parameter names for one function is ss1_x and for the
   /// other it is ss2. Experiment with values to see what they do.
+  ///
+  /// \par Internal routes:
+  /// \dotfile SuperShape.dot
   class H3DAPI_API SuperShape : public X3DGeometryNode {
   public:
     
@@ -163,72 +166,96 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 4 \n
+    /// 
+    /// \dotfile SuperShape_ss1_m.dot
     auto_ptr< SFFloat  > ss1_m;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
+    /// 
+    /// \dotfile SuperShape_ss1_a.dot
     auto_ptr< SFFloat  > ss1_a;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
+    /// 
+    /// \dotfile SuperShape_ss1_b.dot
     auto_ptr< SFFloat  > ss1_b;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 100 \n
+    /// 
+    /// \dotfile SuperShape_ss1_n1.dot
     auto_ptr< SFFloat  > ss1_n1;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 100 \n
+    /// 
+    /// \dotfile SuperShape_ss1_n2.dot
     auto_ptr< SFFloat  > ss1_n2;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 100 \n
+    /// 
+    /// \dotfile SuperShape_ss1_n3.dot
     auto_ptr< SFFloat  > ss1_n3;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 4 \n
+    /// 
+    /// \dotfile SuperShape_ss2_m.dot
     auto_ptr< SFFloat  > ss2_m;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
+    /// 
+    /// \dotfile SuperShape_ss2_a.dot
     auto_ptr< SFFloat  > ss2_a;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
+    /// 
+    /// \dotfile SuperShape_ss2_b.dot
     auto_ptr< SFFloat  > ss2_b;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 100 \n
+    /// 
+    /// \dotfile SuperShape_ss2_n1.dot
     auto_ptr< SFFloat  > ss2_n1;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 100 \n
+    /// 
+    /// \dotfile SuperShape_ss2_n2.dot
     auto_ptr< SFFloat  > ss2_n2;
 
     /// Parameter to define supershape.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 100 \n
+    /// 
+    /// \dotfile SuperShape_ss2_n3.dot
     auto_ptr< SFFloat  > ss2_n3;
 
     /// Parameter to define the resolution of the supershape.
@@ -237,6 +264,8 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 128 \n
+    /// 
+    /// \dotfile SuperShape_resolution.dot
     auto_ptr< SFInt32  > resolution;
 
     static H3DNodeDatabase database;

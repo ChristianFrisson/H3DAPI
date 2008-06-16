@@ -112,7 +112,7 @@ namespace H3D {
   /// viewer is inside the proximity region.
   ///
   /// \par Internal routes:
-  /// \dotfile Box.dot
+  /// \dotfile ProximitySensor.dot
 
   class H3DAPI_API ProximitySensor : public X3DEnvironmentalSensorNode {
   public:
@@ -196,7 +196,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOnly \n
     /// 
-    /// \dotfile ProximitySensor_setTime.dot
+    /// \dotfile ProximitySensor_set_time.dot
     auto_ptr< SetTime > set_time;
 
     /// Adress of traverseInfo 

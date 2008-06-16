@@ -196,7 +196,7 @@ namespace H3D {
       return default_using_multi_pass_transparency;
     }
     
-    /// If specified it ontains a FillProperties node that specifies 
+    /// If specified it contains a FillProperties node that specifies
     /// additional properties to be applied to all polygonal areas.
     ///
     /// <b>Access type:</b> inputOutput
@@ -245,7 +245,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput
     /// 
-    /// \dotfile Appearance_shader.dot
+    /// \dotfile Appearance_shaders.dot
     auto_ptr< MFShaderNode >  shaders;
 
     /// The renderProperties field, if specified, shall contain a 

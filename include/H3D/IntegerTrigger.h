@@ -38,20 +38,20 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class IntegerTrigger
   /// \brief IntegerTrigger handles single field Boolean 
-	/// events to set an integer value for the output event. Upon receiving a 
-	/// set_boolean event, the IntegerTrigger node will generate a triggerValue
-	/// event with the current value of integerKey. 
-	/// This is useful for connecting environmental events to 
-	/// the Switch node's whichChoice.
+  /// events to set an integer value for the output event. Upon receiving a 
+  /// set_boolean event, the IntegerTrigger node will generate a triggerValue
+  /// event with the current value of integerKey. 
+  /// This is useful for connecting environmental events to 
+  /// the Switch node's whichChoice.
   ///
   /// \par Internal routes:
   /// \dotfile IntegerTrigger.dot
   
-	class H3DAPI_API IntegerTrigger : public X3DTriggerNode {
+  class H3DAPI_API IntegerTrigger : public X3DTriggerNode {
   public:
 
-		/// The SetTriggerValue class is specialize to set the vaule of
-		/// the triggerValue field to the value of the field integerKey.
+    /// The SetTriggerValue class is specialize to set the vaule of
+    /// the triggerValue field to the value of the field integerKey.
     class H3DAPI_API SetTriggerValue: public AutoUpdate< TypedField < SFInt32, SFBool > > {
     protected:
       virtual void update() {
@@ -61,33 +61,33 @@ namespace H3D {
       }
     };
 #ifdef __BORLANDC__
-		friend class SetTriggerValue;
+    friend class SetTriggerValue;
 #endif
 
     /// Constructor.
-    IntegerTrigger( Inst< SFNode					> _metadata			= 0,
-										Inst< SFBool				  > _set_boolean  = 0,
-										Inst< SFInt32					> _integerKey		= 0,
-										Inst< SetTriggerValue > _triggerValue = 0);
+    IntegerTrigger( Inst< SFNode          > _metadata      = 0,
+                    Inst< SFBool          > _set_boolean  = 0,
+                    Inst< SFInt32          > _integerKey    = 0,
+                    Inst< SetTriggerValue > _triggerValue = 0);
 
-		/// When an event is recieved generate triggerValue event with current 
-		/// value of integerKey 
+    /// When an event is recieved generate triggerValue event with current 
+    /// value of integerKey 
     /// 
     /// <b>Access type:</b> inputOnly \n
     /// 
-    /// \dotfile IntegerTrigger__set_boolean.dot
+    /// \dotfile IntegerTrigger_set_boolean.dot
     auto_ptr< SFBool > set_boolean;
 
     /// Contains the value triggerValue will be set to.
-		///
-		/// <b>Access type:</b> inputOutput \n
+    ///
+    /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile IntegerTrigger_integerKey.dot
     auto_ptr< SFInt32 > integerKey;
 
-		/// TriggerValue will be set if a set_boolean event is recieved.
-		///
-		/// <b>Access type:</b> outputOnly \n
+    /// TriggerValue will be set if a set_boolean event is recieved.
+    ///
+    /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile IntegerTrigger_triggerValue.dot
     auto_ptr< SetTriggerValue > triggerValue;

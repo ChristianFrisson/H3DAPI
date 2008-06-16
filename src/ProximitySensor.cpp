@@ -69,6 +69,7 @@ ProximitySensor::ProximitySensor( Inst< SFNode > _metadata ,
   database.initFields( this );
 
   set_time->setOwner( this );
+  set_time->setName( "set_time" );
   isActive->route( set_time );
   prev_travinfoadr = 0;
   

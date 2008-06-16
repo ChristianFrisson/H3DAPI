@@ -79,6 +79,9 @@ namespace H3D {
   /// shall be displayed. If solid is FALSE, each polygon is visible
   /// regardless of the viewing direction and if it is TRUE back face culling
   /// is performed to only show the front face of the polygons.
+  ///
+  /// \par Internal routes:
+  /// \dotfile Text.dot
   class H3DAPI_API Text : public X3DGeometryNode {
   protected:
     typedef TypedSFNode< X3DFontStyleNode > SFFontStyleNode;
@@ -93,7 +96,7 @@ namespace H3D {
     class H3DAPI_API SFBound: 
       public TypedField< X3DGeometryNode::SFBound,
       Types< SFFontStyleNode, MFFloat, SFFloat, MFString > >{
-	protected:
+  protected:
       /// Updates to a BoxBound containing the text.
       virtual void update();
     }; 
@@ -201,6 +204,8 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> FALSE \n
+    /// 
+    /// \dotfile Text_solid.dot
     auto_ptr< SFBool   >  solid;
 
     /// The H3DNodeDatabase for this node.

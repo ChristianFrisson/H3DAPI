@@ -45,6 +45,8 @@ namespace H3D {
   ///
   ///  The keyValue, keyVelocity, and key fields shall each have the same number of values.
   ///
+  /// \par Internal routes:
+  /// \dotfile SplinePositionInterpolator2D.dot
 
   class H3DAPI_API SplinePositionInterpolator2D : public X3DInterpolatorNode {
   public:
@@ -75,7 +77,7 @@ namespace H3D {
       Inst< MFVec2f >  _keyValue      = 0,
       Inst< MFVec2f >  _keyVelocity   = 0,
       Inst< SFValue >  _value_changed = 0,
-      Inst< SFBool  >  _closed		= 0,
+      Inst< SFBool  >  _closed    = 0,
       Inst< SFBool  >  _normalizeVelocity = 0);
 
     /// The values to interpolate between.

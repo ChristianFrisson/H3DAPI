@@ -154,7 +154,7 @@ namespace H3D {
                         Inst< SFBool           > _colorPerVertex  = 0,
                         Inst< SFBool           > _normalPerVertex = 0,
                         Inst< SFBool           > _solid           = 0,
-			                  Inst< MFVertexAttributeNode > _attrib     = 0,
+                        Inst< MFVertexAttributeNode > _attrib     = 0,
                         Inst< AutoNormal       > _autoNormal      = 0,
                         Inst< MFInt32          > _set_index       = 0,
                         Inst< MFInt32          > _index           = 0,
@@ -181,7 +181,7 @@ namespace H3D {
     /// Field for setting the value of the index field.
     /// <b>Access type:</b> inputOnly 
     ///
-    /// \dotfile IndexedTriangleSet_set_Index.dot 
+    /// \dotfile IndexedTriangleSet_set_index.dot 
     auto_ptr< MFInt32 >  set_index;
 
     /// The index field is used to specify the vertices of each triangle

@@ -75,6 +75,7 @@ PlaneSensor::PlaneSensor(
 
   set_PlaneEvents->setValue( true );
   set_PlaneEvents->setOwner( this );
+  set_PlaneEvents->setName( "set_PlaneEvents" );
   mouse_sensor->position->routeNoEvent( set_PlaneEvents );
   isActive->routeNoEvent( set_PlaneEvents );
 }

@@ -46,6 +46,9 @@ namespace H3D {
   /// 
   /// If a function is not specified for a component the function will be
   /// F(x) = x for that component.
+  ///
+  /// \par Internal routes:
+  /// \dotfile TransferFunctionTexture.dot
   class H3DAPI_API TransferFunctionTexture : public X3DTexture2DNode {
   public:
     
@@ -81,25 +84,33 @@ namespace H3D {
     /// The function for the red component. 
     ///
     /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile TransferFunctionTexture_redFunction.dot
     auto_ptr< SFFunctionNode > redFunction; 
 
     /// The function for the green component. 
     ///
     /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile TransferFunctionTexture_greenFunction.dot
     auto_ptr< SFFunctionNode > greenFunction;
 
     /// The function for the blue component. 
     ///
     /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile TransferFunctionTexture_blueFunction.dot
     auto_ptr< SFFunctionNode > blueFunction; 
 
     /// The function for the alpha component. 
     ///
     /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile TransferFunctionTexture_alphaFunction.dot
     auto_ptr< SFFunctionNode > alphaFunction;
 
     /// The H3DNodeDatabase for this node.
-	static H3DNodeDatabase database;
+  static H3DNodeDatabase database;
 
   };
 }

@@ -47,20 +47,20 @@ namespace X3DSensorEnvironmentalNodeInternals {
 
 }
 
-X3DEnvironmentalSensorNode::X3DEnvironmentalSensorNode(	
-								Inst< SFNode > _metadata,
-								Inst< SFVec3f > _center ,
-								Inst< SFBool > _enabled ,
-								Inst< SFVec3f > _size ,
-								Inst< SFTime > _enterTime ,
-								Inst< SFTime > _exitTime ,
-								Inst< SFBool > _isActive ) :					
+X3DEnvironmentalSensorNode::X3DEnvironmentalSensorNode(  
+                Inst< SFNode > _metadata,
+                Inst< SFVec3f > _center ,
+                Inst< SFBool > _enabled ,
+                Inst< SFVec3f > _size ,
+                Inst< SFTime > _enterTime ,
+                Inst< SFTime > _exitTime ,
+                Inst< SFBool > _isActive ) :          
 
-								X3DSensorNode( _enabled, _metadata, _isActive),
-								center( _center),
-								size( _size ),
-								enterTime( _enterTime ),
-								exitTime( _exitTime ){
+                X3DSensorNode( _enabled, _metadata, _isActive),
+                center( _center),
+                size( _size ),
+                enterTime( _enterTime ),
+                exitTime( _exitTime ){
 
   type_name = "X3DEnvironmentalSensorNode";
   database.initFields( this );

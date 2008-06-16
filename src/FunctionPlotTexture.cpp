@@ -74,7 +74,7 @@ FunctionPlotTexture::FunctionPlotTexture(
   xResolution( _xResolution ),
   yResolution( _yResolution ) {
 
-  type_name = "ImageTexture";
+  type_name = "FunctionPlotTexture";
   database.initFields( this );
 
   backgroundColor->setValue( RGBA( 1, 1, 1, 1 ) );

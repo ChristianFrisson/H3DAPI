@@ -92,9 +92,13 @@ namespace H3D {
                              Inst< SFValue    > _value_changed = 0 );
 
     /// The values to interpolate between.
+    ///
+    /// \dotfile OrientationInterpolator_keyValue.dot
     auto_ptr< MFRotation >  keyValue;
     
     /// The resulting interpolated value.
+    ///
+    /// \dotfile OrientationInterpolator_value_changed.dot
     auto_ptr<  SFValue >  value_changed;
 
     /// The H3DNodeDatabase for this node.

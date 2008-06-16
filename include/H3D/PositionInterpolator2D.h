@@ -44,7 +44,7 @@ namespace H3D {
   /// field. 
   ///
   /// \par Internal routes:
-  /// \dotfile PositionInterpolator.dot
+  /// \dotfile PositionInterpolator2D.dot
   class H3DAPI_API PositionInterpolator2D : public X3DInterpolatorNode {
   public:
     
@@ -72,9 +72,13 @@ namespace H3D {
                             Inst< SFValue > _value_changed = 0 );
 
     /// The values to interpolate between.
+    ///
+    /// \dotfile PositionInterpolator2D_keyValue.dot
     auto_ptr< MFVec2f >  keyValue;
 
     /// The linearly interpolated result value.
+    ///
+    /// \dotfile PositionInterpolator2D_value_changed.dot
     auto_ptr< SFValue >  value_changed;
 
     /// The H3DNodeDatabase for the node.

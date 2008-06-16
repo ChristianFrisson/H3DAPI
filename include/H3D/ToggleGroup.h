@@ -43,6 +43,9 @@ namespace H3D {
   ///
   /// The graphicsOn field specifies if nodes in the children field of 
   /// this group should be rendered graphically or not.
+  ///
+  /// \par Internal routes:
+  /// \dotfile ToggleGroup.dot
   class H3DAPI_API ToggleGroup : public X3DGroupingNode {
   public:
     /// Constructor.
@@ -67,6 +70,8 @@ namespace H3D {
     ///
     /// <b>Default value:</b> TRUE /n
     /// <b>Access type: </b> inputOutput
+    /// 
+    /// \dotfile ToggleGroup_hapticsOn.dot
     auto_ptr< SFBool >  hapticsOn;
 
     /// The graphicsOn field specifies if nodes in the children field of 
@@ -74,6 +79,8 @@ namespace H3D {
     ///
     /// <b>Default value:</b> TRUE /n
     /// <b>Access type: </b> inputOutput
+    /// 
+    /// \dotfile ToggleGroup_graphicsOn.dot
     auto_ptr< SFBool >  graphicsOn;
 
     /// The H3DNodeDatabase for this node.
