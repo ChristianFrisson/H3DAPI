@@ -10,14 +10,20 @@
 FIND_PATH(FREETYPE_INCLUDE_DIR NAMES freetype/freetype.h
                               PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
                                     $ENV{H3D_EXTERNAL_ROOT}/include/freetype/include
-                                    ../../External/include    
-                                    ../../External/include/freetype/include)
+                                    $ENV{H3D_ROOT}/../External/include  
+                                    $ENV{H3D_ROOT}/../External/include/freetype/include
+                                    ../../External/include
+                                    ../../External/include/freetype/include
+                                    ${CMAKE_MODULE_PATH}/../../../External/include
+                                    ${CMAKE_MODULE_PATH}/../../../External/include/freetype/include)
 MARK_AS_ADVANCED(FREETYPE_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype235
                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                    ../../External/lib )
+                                    $ENV{H3D_ROOT}/../External/lib
+                                    ../../External/lib
+                                    ${CMAKE_MODULE_PATH}/../../../External/lib )
 MARK_AS_ADVANCED(FREETYPE_LIBRARY)
 
 # Copy the results to the output variables.

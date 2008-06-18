@@ -28,7 +28,7 @@ desired. The libraries used by H3DAPI are:
   - FTGL, for rendering fonts in OpenGL. http://homepages.paradise.net.nz/henryj/code
   - OpenAL, for sound in H3DAPI. http://www.openal.org/downloads.html
   - libcurl, used for handling urls. http://sourceforge.net/projects/curl/
-  - libaudiofile, for reading sound files. http://68k.org/ michael/audiofile/
+  - libaudiofile, for reading sound files. http://68k.org/~michael/audiofile/
   - libvorbis, to read more sound files. http://xiph.org/downloads/
   - Python, for python scripting support. http://www.python.org
   - wxWidgets. Needed for H3DViewer. http://www.wxwidgets.org/
@@ -60,7 +60,7 @@ on Linux follow these steps.
    required for H3DAPI to compile. See the list of external libraries in the
    beginning of this ReadMe.
    
-   For linux the librarie fontconfig1 is also needed. www.fontconfig.org
+   For linux the library fontconfig1 is also needed. www.fontconfig.org
 
    If using Ubuntu, several of these libraries can be obtained by using the
    apt-get feature. In a terminal write:

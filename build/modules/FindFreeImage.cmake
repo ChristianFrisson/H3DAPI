@@ -10,17 +10,21 @@
 FIND_PATH(FREEIMAGE_INCLUDE_DIR NAMES FreeImage.h
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                       $ENV{H3D_EXTERNAL_ROOT}/include/FreeImage/Dist
+                                      $ENV{H3D_ROOT}/../External/include
+                                      $ENV{H3D_ROOT}/../External/include/FreeImage/Dist
                                       ../../External/include
                                       ../../External/include/FreeImage/Dist
-)
+                                      ${CMAKE_MODULE_PATH}/../../../External/include
+                                      ${CMAKE_MODULE_PATH}/../../../External/include/FreeImage/Dist)
 
 MARK_AS_ADVANCED(FREEIMAGE_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES freeimage
                                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                     ../../External/lib           
-)
+                                     $ENV{H3D_ROOT}/../External/lib
+                                     ../../External/lib
+                                     ${CMAKE_MODULE_PATH}/../../../External/lib )
 
 MARK_AS_ADVANCED(FREEIMAGE_LIBRARY)
 

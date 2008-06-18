@@ -10,22 +10,30 @@ FIND_PATH( NVIDIACG_INCLUDE_DIR NAMES cg.h cgGL.h
            PATHS /usr/local/include
                  $ENV{H3D_EXTERNAL_ROOT}/include  
                  $ENV{H3D_EXTERNAL_ROOT}/include/cg
-                 ../../External/include    
-                 ../../External/include/cg )
+                 $ENV{H3D_ROOT}/../External/include  
+                 $ENV{H3D_ROOT}/../External/include/cg
+                 ../../External/include
+                 ../../External/include/cg
+                 ${CMAKE_MODULE_PATH}/../../../External/include
+                 ${CMAKE_MODULE_PATH}/../../../External/include/cg )
 MARK_AS_ADVANCED(NVIDIACG_INCLUDE_DIR)
 
 # Look for the library cg.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( NVIDIACG_LIBRARY NAMES cg
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib  
-                     ../../External/lib )
+              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${CMAKE_MODULE_PATH}/../../../External/lib )
 MARK_AS_ADVANCED(NVIDIACG_LIBRARY)
 
 # Look for the library cg.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( NVIDIACGGL_LIBRARY NAMES cgGL
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib  
-                     ../../External/lib )
+              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${CMAKE_MODULE_PATH}/../../../External/lib )
 MARK_AS_ADVANCED(NVIDIACGGL_LIBRARY)
 
 # Copy the results to the output variables.

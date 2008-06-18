@@ -8,24 +8,32 @@
 
 # Look for the header file.
 FIND_PATH(VORBIS_INCLUDE_DIR NAMES vorbis/vorbisfile.h
-                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                                   ../../External/include )
+                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                   $ENV{H3D_ROOT}/../External/include
+                                   ../../External/include
+                                   ${CMAKE_MODULE_PATH}/../../../External/include )
 MARK_AS_ADVANCED(VORBIS_INCLUDE_DIR)
 
 FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                                ../../External/include )
+                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                $ENV{H3D_ROOT}/../External/include
+                                ../../External/include
+                                ${CMAKE_MODULE_PATH}/../../../External/include )
 MARK_AS_ADVANCED(OGG_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(VORBIS_LIBRARY NAMES vorbisfile vorbis
                             PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                  ../../External/lib)
+                                  $ENV{H3D_ROOT}/../External/lib
+                                  ../../External/lib
+                                  ${CMAKE_MODULE_PATH}/../../../External/lib)
 MARK_AS_ADVANCED(VORBIS_LIBRARY)
 
 FIND_LIBRARY(OGG_LIBRARY NAMES ogg 
                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                               ../../External/lib)
+                               $ENV{H3D_ROOT}/../External/lib
+                               ../../External/lib
+                               ${CMAKE_MODULE_PATH}/../../../External/lib)
 MARK_AS_ADVANCED(OGG_LIBRARY)
 
 # Copy the results to the output variables.

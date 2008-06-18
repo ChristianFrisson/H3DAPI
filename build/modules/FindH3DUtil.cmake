@@ -9,7 +9,8 @@
 # Look for the header file.
 FIND_PATH(H3DUTIL_INCLUDE_DIR NAMES H3DUtil/H3DUtil.h 
                               PATHS $ENV{H3D_ROOT}/../H3DUtil/include
-                                    ../../H3DUtil/include )
+                                    ../../H3DUtil/include
+                                    ${CMAKE_MODULE_PATH}/../../../H3DUtil/include )
 MARK_AS_ADVANCED(H3DUTIL_INCLUDE_DIR)
 
 # Look for the library.
@@ -25,11 +26,13 @@ ENDIF(MSVC70 OR MSVC71)
 
 FIND_LIBRARY(H3DUTIL_LIBRARY NAMES ${H3DUTIL_NAME}
                              PATHS $ENV{H3D_ROOT}/../lib
-                                   ../../lib)
+                                   ../../lib
+                                   ${CMAKE_MODULE_PATH}/../../../lib )
 
 FIND_LIBRARY(H3DUTIL_DEBUG_LIBRARY NAMES ${H3DUTIL_NAME}_d
                                    PATHS $ENV{H3D_ROOT}/../lib
-                                   ../../lib)
+                                   ../../lib
+                                   ${CMAKE_MODULE_PATH}/../../../lib )
 
 MARK_AS_ADVANCED(H3DUTIL_LIBRARY)
 MARK_AS_ADVANCED(H3DUTIL_DEBUG_LIBRARY)

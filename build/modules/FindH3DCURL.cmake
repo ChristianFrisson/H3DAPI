@@ -11,13 +11,17 @@ FIND_PACKAGE(CURL)
 IF(NOT CURL_FOUND AND WIN32)
   # Look for the header file.
   FIND_PATH( CURL_INCLUDE_DIR NAMES curl/curl.h
-             PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                   ../../External/include )
+             PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                   $ENV{H3D_ROOT}/../External/include
+                   ../../External/include
+                   ${CMAKE_MODULE_PATH}/../../../External/include )
   
   # Look for the library.
   FIND_LIBRARY( CURL_LIBRARY NAMES libcurl 
                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                      ../../External/lib )    
+                      $ENV{H3D_ROOT}/../External/lib
+                      ../../External/lib
+                      ${CMAKE_MODULE_PATH}/../../../External/lib )
   
   IF(CURL_INCLUDE_DIR AND CURL_LIBRARY)
     SET(CURL_FOUND 1)

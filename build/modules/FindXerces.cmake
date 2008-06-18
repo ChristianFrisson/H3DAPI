@@ -9,13 +9,17 @@
 # Look for the header file.
 FIND_PATH(XERCES_INCLUDE_DIR NAMES xercesc/sax2/Attributes.hpp
                              PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                   ../../External/include )
+                                   $ENV{H3D_ROOT}/../External/include
+                                   ../../External/include
+                                   ${CMAKE_MODULE_PATH}/../../../External/include )
 MARK_AS_ADVANCED(XERCES_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(XERCES_LIBRARY NAMES xerces-c xerces-c_2  
                             PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                  ../../External/lib )
+                                  $ENV{H3D_ROOT}/../External/lib
+                                  ../../External/lib
+                                  ${CMAKE_MODULE_PATH}/../../../External/lib )
 MARK_AS_ADVANCED(XERCES_LIBRARY)
 
 # Copy the results to the output variables.

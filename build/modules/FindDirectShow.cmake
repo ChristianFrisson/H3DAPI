@@ -20,8 +20,12 @@ ENDIF(MSVC70 OR MSVC71)
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_STREAMS_H NAMES streams.h
            PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
                  $ENV{H3D_EXTERNAL_ROOT}/include/DirectShow/BaseClasses
-                 ../../External/include    
-                 ../../External/include/DirectShow/BaseClasses )
+                 $ENV{H3D_ROOT}/../External/include  
+                 $ENV{H3D_ROOT}/../External/include/DirectShow/BaseClasses
+                 ../../External/include
+                 ../../External/include/DirectShow/BaseClasses
+                 ${CMAKE_MODULE_PATH}/../../../External/include
+                 ${CMAKE_MODULE_PATH}/../../../External/include/DirectShow/BaseClasses )
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_STREAMS_H)
 
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_DDRAW_H NAMES ddraw.h
@@ -31,7 +35,9 @@ MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_DDRAW_H)
 
 FIND_LIBRARY( DIRECTSHOW_LIBRARY NAMES strmbase
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                    ../../External/lib )
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${CMAKE_MODULE_PATH}/../../../External/lib )
 MARK_AS_ADVANCED(DIRECTSHOW_LIBRARY)
 
 # Copy the results to the output variables.

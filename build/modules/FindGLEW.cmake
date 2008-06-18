@@ -8,14 +8,18 @@
 
 # Look for the header file.
 FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                                 ../../External/include)
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                 $ENV{H3D_ROOT}/../External/include
+                                 ../../External/include
+                                 ${CMAKE_MODULE_PATH}/../../../External/include )
 MARK_AS_ADVANCED(GLEW_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW glew32  
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                      ../../External/lib   )
+                                      $ENV{H3D_ROOT}/../External/lib
+                                      ../../External/lib
+                                      ${CMAKE_MODULE_PATH}/../../../External/lib )
 MARK_AS_ADVANCED(GLEW_LIBRARY)
 
 # Copy the results to the output variables.
