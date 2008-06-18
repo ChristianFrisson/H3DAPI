@@ -122,6 +122,9 @@ public:
   wxCheckBox *haptic_camera;
   wxCheckBox *full_geom_render;
   wxChoice *shape_choice;
+
+  // Proxy radius used by ruspini
+  wxTextCtrl* proxy_radius_text;
   
 protected:
 
@@ -163,7 +166,6 @@ protected:
 
   wxImageList*    m_imageList;
   WxFrame *wx_frame;
-  wxTextCtrl* proxy_radius_text;
 
 DECLARE_EVENT_TABLE()
 };
@@ -251,18 +253,67 @@ public:
   wxString GetCurrentPath();
   bool validateNavType(string);
   void SaveMRU ();
-  void SaveSettings ();
+  void SaveSettings( bool to_config );
+  void SaveCollisionOptions( bool to_config );
+  void SaveDebugOptions( bool to_config );
+  void SaveGeometryBoundTreeOptions( bool to_config );
+  void SaveGraphicsCachingOptions( bool to_config );
+  void SaveHapticsOptions( bool to_config );
+  void SaveOpenHapticsOptions( bool to_config );
+  void SaveStereoInfo( bool to_config );
+  void SaveRuspiniSettings( bool to_config );
   void LoadMRU();
-  void LoadSettings ();
+  void LoadSettings( bool from_config );
   void buildNavMenu();
-  //void readSettingsFromINIFile( const string &filename,GlobalSettings *gs );
+
   void setProxyRadius( float r );
 
   void updateFrameRates() {
     frameRates->updateFrameRates();
   }
 private:
-	wxString currentFilename;
+  struct NonConfigOptions {
+    // CollisionOptions
+    bool avatar_collision;
+    
+    // DebugOptions
+    bool draw_bound;
+    int draw_tree;
+    bool draw_triangles;
+
+    // GeometryBoundTreeOptions
+    string bound_type;
+    int max_triangles_in_leaf;
+
+    // GraphicsCachingOptions
+    bool use_caching;
+    bool cache_only_geometries;
+    int caching_delay;
+
+    // HapticsOptions
+    string touchable_face;
+    float max_distance;
+    float look_ahead_factor;
+    bool use_bound_tree;
+    bool interpolate_force_effects;
+
+    // OpenHapticsOptions
+    bool use_adaptive_viewport;
+    bool use_haptic_camera_view;
+    string gl_shape;
+    bool force_full_geometry_render;
+
+    // StereoInfo
+    float focal_distance;
+    float interocular_distance;
+
+    // Proxy radius used by ruspini
+    float proxy_radius;
+  };
+
+  NonConfigOptions non_conf_opt;
+
+  wxString currentFilename;
 	wxString currentPath;
 	bool lastmirror;
   bool lastDeviceStatus;
@@ -278,7 +329,7 @@ private:
 	NodeVector allDevices;
 	X3DViewpointNode *defaultvp;
 	
-	//One time intialization variables
+	// One time intialization variables
 	string settings_path;
 	string common_path;
 	string deviceinfo_file;
@@ -286,9 +337,7 @@ private:
 	string viewpoint_file;
 	string render_mode;
 
-	//KeyRotation *kr;
-
-	//Autoref Variables
+	// Autoref Variables
 	AutoRef< Scene > scene;
 	AutoRef< KeySensor > ks;
 	AutoRef< MouseSensor > ms;
@@ -296,13 +345,9 @@ private:
 	AutoRef< Transform > t;
 	AutoRef< Node > device_info;
 	AutoRef< Node > viewpoint;
-	AutoRef< Node > default_stylus;
   AutoRef< Group > g;
 
-  float original_proxy_radius;
-  float current_proxy_radius;
   X3D::DEFNodes default_stylus_dn;
-
 	consoleDialog *  theConsole;
 	FrameRateDialog *  frameRates;
 	SettingsDialog * settings;

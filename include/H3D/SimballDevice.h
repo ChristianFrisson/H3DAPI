@@ -66,7 +66,6 @@ namespace H3D {
             Inst< SFHapticsRendererNode > _hapticsRenderer     = 0,
             Inst< MFVec3f            > _proxyPositions         = 0,
             Inst< SFBool             > _followViewpoint        = 0, 
-            Inst< SFFloat            > _proxyRadius            = 0,
             Inst< SFInt32            > _deviceNr               = 0,
             Inst< SFFloat            > _handleAngle            = 0 );
     

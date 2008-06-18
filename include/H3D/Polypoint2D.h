@@ -48,14 +48,14 @@ namespace H3D {
     public X3DGeometryNode {
   public:
 
-    /// SFBound is specialized update itself from the radius field 
-    /// of the Box node.
+    /// SFBound is specialized update itself from the point field 
+    /// of the Polypoint2D node.
     ///
-    /// routes_in[0] is the size field of the Box node.  
+    /// routes_in[0] is the point field of the Polypoint2D node.
     ///
     class SFBound: public TypedField< X3DGeometryNode::SFBound,
     MFVec2f > {
-      /// Update the bound from the radius field. 
+      /// Update the bound from the point field. 
       virtual void update() {
         const vector< Vec2f > &points = 
           static_cast< MFVec2f * >( routes_in[0] )->getValue();

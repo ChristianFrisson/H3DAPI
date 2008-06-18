@@ -69,7 +69,6 @@ SimballDevice::SimballDevice(
                Inst< SFHapticsRendererNode > _hapticsRenderer,
                Inst< MFVec3f         > _proxyPositions,
                Inst< SFBool          > _followViewpoint,
-               Inst< SFFloat         > _proxyRadius,
                Inst< SFInt32         > _deviceNr,
                Inst< SFFloat         > _handleAngle ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,

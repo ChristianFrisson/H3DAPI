@@ -168,7 +168,8 @@ bool MyApp::OnInit()
 
   theWxFrame->Show(true);
 
-  if(cmd_line_filename != wxString()){
+  if( cmd_line_filename != wxString() ) {
+    theWxFrame->clearData();
     theWxFrame->loadFile(toStr(cmd_line_filename));
   }
 

@@ -62,7 +62,6 @@ HapticMasterDevice::HapticMasterDevice(
                Inst< SFInt32         > _hapticsRate,
                Inst< SFInt32         > _desiredHapticsRate,
                Inst< SFNode          > _stylus,
-               Inst< SFFloat         > _proxyRadius,
                Inst< SFString        > _deviceName ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
               _trackerOrientation, _positionCalibration, 

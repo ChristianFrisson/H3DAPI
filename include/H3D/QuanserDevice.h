@@ -64,8 +64,7 @@ namespace H3D {
             Inst< SFInt32            > _outputDOF              = 0,
             Inst< SFInt32            > _hapticsRate            = 0,
             Inst< SFInt32            > _desiredHapticsRate     = 0,
-            Inst< SFNode             > _stylus                 = 0,
-            Inst< SFFloat            > _proxyRadius            = 0 );
+            Inst< SFNode             > _stylus                 = 0 );
     
     /// Creates a QuanserHapticsDevice in the hapi_device
     virtual void initialize();

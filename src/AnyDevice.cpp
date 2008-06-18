@@ -60,8 +60,7 @@ AnyDevice::AnyDevice(
                Inst< SFInt32         > _outputDOF,
                Inst< SFInt32         > _hapticsRate,
                Inst< SFInt32         > _desiredHapticsRate,
-               Inst< SFNode          > _stylus,
-               Inst< SFFloat         > _proxyRadius ) :
+               Inst< SFNode          > _stylus ):
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
               _trackerOrientation, _positionCalibration, 
               _orientationCalibration, _proxyPosition,

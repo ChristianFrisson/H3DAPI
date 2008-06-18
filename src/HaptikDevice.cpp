@@ -68,7 +68,6 @@ HaptikDevice::HaptikDevice(
                Inst< SFInt32         > _hapticsRate,
                Inst< SFInt32         > _desiredHapticsRate,
                Inst< SFNode          > _stylus,
-               Inst< SFFloat         > _proxyRadius,
                Inst< MFString        > _deviceName             ,
                Inst< MFString        > _modelName              ,     
                Inst< MFString        > _manufacturer           ,

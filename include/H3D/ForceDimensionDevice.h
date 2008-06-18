@@ -96,7 +96,6 @@ namespace H3D {
             Inst< SFHapticsRendererNode > _hapticsRenderer     = 0,
             Inst< MFVec3f            > _proxyPositions         = 0,
             Inst< SFBool             > _followViewpoint        = 0, 
-            Inst< SFFloat            > _proxyRadius            = 0,
             Inst< GravityComp        > _useGravityCompensation = 0,
             Inst< Reset              > _reset                  = 0,
             Inst< WaitReset          > _waitForReset           = 0,

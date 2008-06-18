@@ -72,7 +72,6 @@ ForceDimensionDevice::ForceDimensionDevice(
                Inst< SFHapticsRendererNode > _hapticsRenderer,
                Inst< MFVec3f         > _proxyPositions,
                Inst< SFBool          > _followViewpoint,
-               Inst< SFFloat         > _proxyRadius,
                Inst< GravityComp     > _useGravityCompensation,
                Inst< Reset           > _reset,
                Inst< WaitReset       > _waitForReset,

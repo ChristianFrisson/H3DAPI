@@ -48,9 +48,9 @@ namespace H3D {
   public:
 
     /// SFBound is specialized update itself from the radius field 
-    /// of the Box node.
+    /// of the Circle2D node.
     ///
-    /// routes_in[0] is the size field of the Box node.  
+    /// routes_in[0] is the radius field of the Circle2D node.  
     ///
     class H3DAPI_API SFBound: public TypedField< X3DGeometryNode::SFBound,
     SFFloat > {

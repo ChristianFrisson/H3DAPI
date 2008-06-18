@@ -54,8 +54,8 @@ namespace H3D {
     public X3DGeometryNode {
   public:
 
-    /// SFBound is specialized update itself from the radius field 
-    /// of the Box node.
+    /// SFBound is specialized update itself from the vertices field 
+    /// of the TriangleSet2D node.
     ///
     /// routes_in[0] is the vertices field of the TriangleSet2D node.  
     ///

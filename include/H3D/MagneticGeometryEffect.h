@@ -60,7 +60,7 @@ namespace H3D {
                      Inst< SFFloat > _springConstant = 0,
                      Inst< SFGeometry > _geometry = 0);
 
-    /// Adds a forceeffect created from viscosity and radius.
+    /// Adds a forceeffect.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// Enables or disables the force calculations.

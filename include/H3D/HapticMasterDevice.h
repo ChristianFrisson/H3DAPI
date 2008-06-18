@@ -69,7 +69,6 @@ namespace H3D {
             Inst< SFInt32            > _hapticsRate            = 0,
             Inst< SFInt32            > _desiredHapticsRate     = 0,
             Inst< SFNode             > _stylus                 = 0,
-            Inst< SFFloat            > _proxyRadius            = 0,
             Inst< SFString           > _deviceName             = 0 );
     
     /// Creates a HAPI::HapticMasterDevice in the hapi_device
