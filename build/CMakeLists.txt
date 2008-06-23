@@ -1,10 +1,12 @@
 IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
+
+PROJECT (H3DAPI)
+
 # Make include files in paths like /usr/local/include have preference before
 # files in OSX frameworks. 
 SET(CMAKE_FIND_FRAMEWORK "LAST")
-PROJECT (H3DAPI)
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
 # for packaging H3DAPI. Default is NO since most people will not use this.
@@ -12,6 +14,19 @@ IF( NOT DEFINED GENERATE_CPACK_PROJECT )
   SET( GENERATE_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
   MARK_AS_ADVANCED(GENERATE_CPACK_PROJECT)
 ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
+
+# Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
+# for packaging H3DAPI. Default is NO since most people will not use this.
+IF( NOT DEFINED PREFER_STATIC_LIBRARIES )
+  SET( PREFER_STATIC_LIBRARIES "NO" CACHE BOOL "Decides if CMake should prefer static libraries to dynamic libraries when both exist." )
+  MARK_AS_ADVANCED(PREFER_STATIC_LIBRARIES)
+ENDIF( NOT DEFINED PREFER_STATIC_LIBRARIES )
+
+IF( PREFER_STATIC_LIBRARIES )
+  SET( CMAKE_FIND_LIBRARY_SUFFIXES .a${CMAKE_FIND_LIBRARY_SUFFIXES} )	
+  MESSAGE( STATUS, ${CMAKE_FIND_LIBRARY_SUFFIXES} )
+ENDIF( PREFER_STATIC_LIBRARIES )
+
 
 # Include HAPI in the build.
 IF( WIN32 )
@@ -286,7 +301,7 @@ IF(OPENGL_FOUND)
 ENDIF(OPENGL_FOUND)
 
 # Find Glew library. Required to compile.
-FIND_PACKAGE(GLEW REQUIRED)
+FIND_PACKAGE(GLEW)
 IF(GLEW_FOUND)
   INCLUDE_DIRECTORIES( ${GLEW_INCLUDE_DIR} ) 
   IF(WIN32)
@@ -297,7 +312,12 @@ IF(GLEW_FOUND)
 ENDIF(GLEW_FOUND)
 
 # Optional extra library. Makes is possible to used GLUT windows handling with H3D API.
-FIND_PACKAGE(GLUT)
+IF(WIN32)
+  FIND_PACKAGE(GLUTWin)
+ELSE(WIN32)
+  FIND_PACKAGE(GLUT)
+ENDIF(WIN32)
+
 IF(GLUT_FOUND)
   INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} ) 
   IF(WIN32)
