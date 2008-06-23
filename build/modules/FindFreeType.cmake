@@ -1,13 +1,48 @@
 # - Find FREETYPE
 # Find the native FREETYPE headers and libraries.
 #
+#  FREETYPE_FOUND        - True if FREETYPE found.
 #  FREETYPE_INCLUDE_DIR -  where to find FREETYPE.h, etc.
 #  FREETYPE_LIBRARIES    - List of libraries when using FREETYPE.
-#  FREETYPE_FOUND        - True if FREETYPE found.
 
+FIND_PROGRAM(FREETYPE_CONFIG_EXECUTABLE freetype-config
+      ONLY_CMAKE_FIND_ROOT_PATH
+      )
 
-# Look for the header file.
-FIND_PATH(FREETYPE_INCLUDE_DIR NAMES freetype/freetype.h
+IF(FREETYPE_CONFIG_EXECUTABLE)
+
+  # run the freetype-config program to get cflags
+  EXECUTE_PROCESS(
+        COMMAND sh "${FREETYPE_CONFIG_EXECUTABLE}" --cflags
+        OUTPUT_VARIABLE FREETYPE_CFLAGS
+        RESULT_VARIABLE RET
+        ERROR_QUIET
+        )
+
+  IF(RET EQUAL 0)
+    STRING(STRIP "${FREETYPE_CFLAGS}" FREETYPE_CFLAGS)
+    SEPARATE_ARGUMENTS(FREETYPE_CFLAGS)
+
+    # parse definitions from cxxflags; drop -D* from CFLAGS
+    STRING(REGEX REPLACE "-D[^;]+;" ""
+           FREETYPE_CFLAGS "${FREETYPE_CFLAGS}")
+
+    # parse include dirs from cxxflags; drop -I prefix
+    STRING(REGEX MATCHALL "-I[^;]+"
+           FREETYPE_INCLUDE_DIR "${FREETYPE_CFLAGS}")
+    STRING(REGEX REPLACE "-I[^;]+;" ""
+           FREETYPE_CFLAGS "${FREETYPE_CFLAGS}")
+    STRING(REPLACE "-I" ""
+           FREETYPE_INCLUDE_DIR "${FREETYPE_INCLUDE_DIR}")  
+    SET( FREETYPE_INCLUDE_DIR "${FREETYPE_INCLUDE_DIR}" )  
+    MESSAGE( STATUS, ${FREETYPE_INCLUDE_DIR} )      
+  ENDIF(RET EQUAL 0)
+
+ENDIF(FREETYPE_CONFIG_EXECUTABLE)
+
+IF( NOT FREETYPE_INCLUDE_DIR )
+  # Look for the header file.
+  FIND_PATH(FREETYPE_INCLUDE_DIR NAMES freetype/freetype.h
                               PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
                                     $ENV{H3D_EXTERNAL_ROOT}/include/freetype/include
                                     $ENV{H3D_ROOT}/../External/include  
@@ -16,7 +51,8 @@ FIND_PATH(FREETYPE_INCLUDE_DIR NAMES freetype/freetype.h
                                     ../../External/include/freetype/include
                                     ${CMAKE_MODULE_PATH}/../../../External/include
                                     ${CMAKE_MODULE_PATH}/../../../External/include/freetype/include)
-MARK_AS_ADVANCED(FREETYPE_INCLUDE_DIR)
+  MARK_AS_ADVANCED(FREETYPE_INCLUDE_DIR)
+ENDIF( NOT FREETYPE_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype235
