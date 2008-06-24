@@ -151,36 +151,42 @@ bool MyApp::OnExceptionInMainLoop() {
 
 bool MyApp::OnInit()
 {
-  // call default behaviour (mandatory)
-  if (!wxApp::OnInit())
-    return false;
-
-  SetVendorName(_T("SenseGraphics AB"));
-  SetAppName(_T("H3D Viewer"));
-
-  Console.setShowLevel( false );
-
-  //initializeH3D();
-
-  // create a window to display
-  WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
-                                    wxDefaultPosition, wxSize(800, 600));
-
-  theWxFrame->Show(true);
-
-  if( cmd_line_filename != wxString() ) {
-    theWxFrame->clearData();
-    theWxFrame->loadFile(toStr(cmd_line_filename));
-  }
-
-  //This next line is used to set the icon file h3d.ico, when created.
-	//theWxframe->SetIcon(wxIcon(_T("h3d_icn")));
-
+  try {
+    // call default behaviour (mandatory)
+    if (!wxApp::OnInit())
+      return false;
     
-  // Using this line instead of the two previous lines will make
-  // WxWidgetsWindow create an instance of a wxframe with no menus and use
-  // this as parent to the canvas.
-  // WxWidgetsWindow *glwindow = new WxWidgetsWindow();
+    SetVendorName(_T("SenseGraphics AB"));
+    SetAppName(_T("H3D Viewer"));
+    
+    Console.setShowLevel( false );
+    
+    //initializeH3D();
+    
+    // create a window to display
+    WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
+				      wxDefaultPosition, wxSize(800, 600));
+    
+    theWxFrame->Show(true);
+    
+    if( cmd_line_filename != wxString() ) {
+      theWxFrame->clearData();
+      theWxFrame->loadFile(toStr(cmd_line_filename));
+    }
+
+    //This next line is used to set the icon file h3d.ico, when created.
+    //theWxframe->SetIcon(wxIcon(_T("h3d_icn")));
+    
+    
+    // Using this line instead of the two previous lines will make
+    // WxWidgetsWindow create an instance of a wxframe with no menus and use
+    // this as parent to the canvas.
+    // WxWidgetsWindow *glwindow = new WxWidgetsWindow();
+
+  } catch (const Exception::H3DException &e) {
+    cerr << e << endl;
+    return false;
+  }
 
   return true;
 }
