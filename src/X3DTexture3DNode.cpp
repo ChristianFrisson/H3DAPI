@@ -299,11 +299,11 @@ void X3DTexture3DNode::renderTextureProperties() {
 
     // T
     const string &t_mode = texture_properties->boundaryModeT->getValue();
-    if( s_mode == "CLAMP" ) {
+    if( t_mode == "CLAMP" ) {
       glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    } else if( s_mode == "CLAMP_TO_EDGE" ) {
+    } else if( t_mode == "CLAMP_TO_EDGE" ) {
       glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    } else if( s_mode == "CLAMP_TO_BOUNDARY" ) {
+    } else if( t_mode == "CLAMP_TO_BOUNDARY" ) {
       if( GLEW_ARB_texture_border_clamp ) {
         glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, 
                          GL_CLAMP_TO_BORDER );
@@ -312,7 +312,7 @@ void X3DTexture3DNode::renderTextureProperties() {
                    << "supported by your graphics card (in " << getName()
                    << ")" << endl;
       }
-    } else if( s_mode == "MIRRORED_REPEAT" ) {
+    } else if( t_mode == "MIRRORED_REPEAT" ) {
       if( GLEW_ARB_texture_mirrored_repeat ) {
         glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, 
                          GL_MIRRORED_REPEAT_ARB );
@@ -321,10 +321,10 @@ void X3DTexture3DNode::renderTextureProperties() {
                    << "supported by your graphics card (in " << getName()
                    << ")" << endl;
       }
-    } else if( s_mode == "REPEAT" ) {
+    } else if( t_mode == "REPEAT" ) {
       glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     } else {
-      Console(3) << "Warning: Invalid boundary mode \"" << s_mode 
+      Console(3) << "Warning: Invalid boundary mode \"" << t_mode 
                  << "\" in TextureProperties "
                  << " node for texture node(" << getName() << ")." << endl; 
     }
@@ -332,11 +332,11 @@ void X3DTexture3DNode::renderTextureProperties() {
 
     // R
     const string &r_mode = texture_properties->boundaryModeR->getValue();
-    if( s_mode == "CLAMP" ) {
+    if( r_mode == "CLAMP" ) {
       glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP );
-    } else if( s_mode == "CLAMP_TO_EDGE" ) {
+    } else if( r_mode == "CLAMP_TO_EDGE" ) {
       glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
-    } else if( s_mode == "CLAMP_TO_BOUNDARY" ) {
+    } else if( r_mode == "CLAMP_TO_BOUNDARY" ) {
       if( GLEW_ARB_texture_border_clamp ) {
         glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, 
                          GL_CLAMP_TO_BORDER );
@@ -345,7 +345,7 @@ void X3DTexture3DNode::renderTextureProperties() {
                    << "supported by your graphics card (in " << getName()
                    << ")" << endl;
       }
-    } else if( s_mode == "MIRRORED_REPEAT" ) {
+    } else if( r_mode == "MIRRORED_REPEAT" ) {
       if( GLEW_ARB_texture_mirrored_repeat ) {
         glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, 
                          GL_MIRRORED_REPEAT_ARB );
@@ -354,10 +354,10 @@ void X3DTexture3DNode::renderTextureProperties() {
                    << "supported by your graphics card (in " << getName()
                    << ")" << endl;
       }
-    } else if( s_mode == "REPEAT" ) {
+    } else if( r_mode == "REPEAT" ) {
       glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT );
     } else {
-      Console(3) << "Warning: Invalid boundary mode \"" << s_mode 
+      Console(3) << "Warning: Invalid boundary mode \"" << r_mode 
                  << "\" in TextureProperties "
                  << " node for texture node(" << getName() << ")." << endl; 
     }
