@@ -102,7 +102,6 @@ namespace H3D {
     /// Register a file reader that can then be returned by 
     /// getSupportedFileReader().
     static void registerFileReader( const FileReaderRegistration &fr ) {
-      list< FileReaderRegistration > *j = registered_file_readers.get();
       registered_file_readers->push_back( fr );
     }
     
