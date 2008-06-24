@@ -33,6 +33,8 @@
 #ifndef __H3DApi_H__
 #define __H3DApi_H__
 
+#include <HAPI/HAPI.h>
+
 /// Undef if you do not have xerces-c(http://xerces.apache.org/xerces-c/) 
 /// installed. Required for parsing xml based x3d files.
 #cmakedefine HAVE_XERCES
