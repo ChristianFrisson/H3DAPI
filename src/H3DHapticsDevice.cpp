@@ -119,7 +119,6 @@ H3DHapticsDevice::H3DHapticsDevice(
   torque( _torque ),
   inputDOF( _inputDOF ),
   outputDOF( _outputDOF ),
-  trackerVelocity( _trackerVelocity ),
   hapticsRate( _hapticsRate ),
   desiredHapticsRate( _desiredHapticsRate ),
   hapticsLoopTime( new SFTime ),
@@ -131,6 +130,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   enabled( new SFBool ),
   followViewpoint( _followViewpoint ),
   deviceVelocity( _deviceVelocity ),
+  trackerVelocity( _trackerVelocity ),
   error_msg_printed( false ) {
 
   type_name = "H3DHapticsDevice";  

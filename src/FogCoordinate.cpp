@@ -66,7 +66,7 @@ void FogCoordinate::render( int depth_index ) {
 void FogCoordinate::renderArray() {
   if( !depth->empty() ) {
 
-    float test_array [] = {5, 10, 15, 20, 25, 30 },
+  //  float test_array [] = {5, 10, 15, 20, 25, 30 },
     glEnableClientState(GL_FOG_COORD_ARRAY);
     glFogCoordPointerEXT(GL_FLOAT, 0,
                      &(*depth->begin()) );

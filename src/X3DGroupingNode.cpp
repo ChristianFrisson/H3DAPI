@@ -138,7 +138,6 @@ bool X3DGroupingNode::lineIntersect(
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
   bool intersect = false;
-  bool traverse_children = false;
   Bound * the_bound = bound->getValue();
 
   bool add_pt_devices = result.detect_pt_device && !pt_dev_sensors.empty();
@@ -174,7 +173,6 @@ bool X3DGroupingNode::lineIntersect(
 
 void X3DGroupingNode::closestPoint( const Vec3f &p,
                                     NodeIntersectResult &result ) {
-  Bound *the_bound = bound->getValue();
   const NodeVector &children_nodes = children->getValue();
   for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
     children_nodes[i]->closestPoint( p, result );

@@ -37,8 +37,10 @@
 #include <H3D/DeviceInfo.h>
 #include <H3D/DebugOptions.h>
 
+#ifdef HAVE_OPENHAPTICS
 #include <HAPI/HLDepthBufferShape.h>
 #include <HAPI/HLFeedbackShape.h>
+#endif
 
 #include <HAPI/HAPIHapticShape.h>
 #include <HAPI/FeedbackBufferCollector.h>

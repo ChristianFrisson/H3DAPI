@@ -89,7 +89,6 @@ void NurbsCurve::SFBound::update() {
 
   Coordinate *c = 
     dynamic_cast< Coordinate * >(coord_node);
-  H3DInt32 no_of_control_points =coord_node->nrAvailableCoords();
 
   BoxBound *bound = new BoxBound();
   if ( c ){
@@ -123,7 +122,7 @@ void NurbsCurve::render( ) {
   // default uniform knot vectors will be generated.
   bool generate_uniform = true;
   vector< H3DFloat > knots;
-  if(knots_double.size() == no_of_knots){
+  if(knots_double.size() == (unsigned int) no_of_knots){
     for ( int i = 0; i<no_of_knots; i++){
       knots_float[i]= (GLfloat)knots_double[i];
     }
@@ -153,7 +152,7 @@ void NurbsCurve::render( ) {
       }
     }
   }
-  else if(generate_uniform || (knots_double.size() != no_of_knots )){
+  else if(generate_uniform || (knots_double.size() != (unsigned int)no_of_knots )){
     for( int i = 0; i < no_of_knots; i++ ){
       knots_float[i] = (GLfloat)( (H3DDouble)i / ( no_of_knots - 1 ) );
     }

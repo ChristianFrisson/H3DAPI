@@ -87,7 +87,6 @@ void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
     if( ti.hapticsEnabled()  ) {
       if( enabled->getValue() ) {
         int device_index = deviceIndex->getValue();
-        H3DHapticsDevice *hd = ti.getHapticsDevice( device_index );
         ti.addForceEffect( device_index,
                            new HAPI::HapticViscosity(
                              viscosity->getValue(),

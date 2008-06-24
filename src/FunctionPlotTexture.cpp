@@ -103,8 +103,8 @@ void FunctionPlotTexture::SFImage::update() {
   H3DInt32 y_resolution = static_cast< SFInt32 * >( routes_in[6] )->getValue();
 
   if( !value.get() || 
-      x_resolution != value->width() || 
-      y_resolution != value->height() ) {
+      (unsigned int)x_resolution != value->width() || 
+      (unsigned int)y_resolution != value->height() ) {
     unsigned char *data = new unsigned char[ 4 * x_resolution * y_resolution ];
     unsigned int bytes_used = 4 * x_resolution * y_resolution;
     for( unsigned int i = 0; i < bytes_used; i+=4 ) {

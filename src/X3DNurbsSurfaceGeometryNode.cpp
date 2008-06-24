@@ -189,7 +189,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     const vector< Vec3f > &noWeights = coord_node->point->getValue();
 
     // another check to see that the nurbssurfacepatch is correctly defined
-    if( noWeights.size() != u_dimension * v_dimension )  {
+    if( noWeights.size() != (unsigned int)(u_dimension * v_dimension) )  {
       Console(3) << "Warning: The size of controlPoint does not match "
         << "vDimension * uDimension in " << getTypeName() << " node( "
         << getName() << "). Node will not be rendered. " << endl;
@@ -233,7 +233,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     // check the knot-vectors. If they are not according to standard
     // default uniform knot vectors will be generated.
     bool generateUniform = true;
-    if( uk.size() == u_dimension + u_order )  {
+    if( uk.size() == (unsigned int)(u_dimension + u_order) )  {
       generateUniform = false;
       H3DInt32 consecutiveKnots = 0;
       for( unsigned int i = 0; i < uk.size(); i++ ) {
@@ -265,7 +265,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     }
 
     generateUniform = true;
-    if( vk.size() == v_dimension + v_order )  {
+    if( vk.size() == (unsigned int)(v_dimension + v_order) )  {
       generateUniform = false;
       H3DInt32 consecutiveKnots = 0;
       for( unsigned int i = 0; i < vk.size(); i++ ) {

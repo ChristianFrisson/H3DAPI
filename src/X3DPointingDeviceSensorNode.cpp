@@ -62,10 +62,10 @@ X3DPointingDeviceSensorNode::X3DPointingDeviceSensorNode(
   X3DSensorNode( _enabled, _metadata, _isActive ),
   description ( _description  ),
   isOver( _isOver ),
-  setIsEnabled( new SetIsEnabled ),
-  setIsActive( new SetIsActive ),
   new_value( false ),
-  lowest_enabled( false ) {
+  lowest_enabled( false ),
+  setIsEnabled( new SetIsEnabled ),
+  setIsActive( new SetIsActive ) {
 
   type_name = "X3DPointingDeviceSensorNode";
   database.initFields( this );

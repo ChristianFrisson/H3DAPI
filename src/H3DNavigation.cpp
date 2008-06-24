@@ -71,7 +71,6 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
                               X3DChildNode *topNode, bool detect_collision, 
                               const vector< H3DFloat > &avatar_size, 
                               H3DFloat speed ) {
-  const Matrix4f &acc_fr_mt = vp->accForwardMatrix->getValue();
   Vec3f vp_full_pos = vp->totalPosition->getValue();
   Rotation vp_full_orientation = vp->totalOrientation->getValue();
   H3DTime current_time = Scene::time->getValue();

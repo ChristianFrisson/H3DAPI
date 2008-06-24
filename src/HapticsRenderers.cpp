@@ -30,7 +30,10 @@
 
 #include <H3D/HapticsRenderers.h>
 
+#ifdef HAVE_OPENHAPTICS
 #include <HAPI/OpenHapticsRenderer.h>
+#endif
+
 #ifdef HAVE_CHAI3D
 #include <HAPI/Chai3DRenderer.h>
 #endif

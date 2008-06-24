@@ -133,7 +133,7 @@ void SuperShape::render() {
   X3DGeometryNode::render();
   H3DInt32 res = resolution->getValue();
   if( res > 0 ) {
-    X3DTextureCoordinateNode *tex_coord = 0;
+//    X3DTextureCoordinateNode *tex_coord = 0;
     // always generate texture coordinate from bounding box
     //    startTexGen();
     coord->getValue()->renderArray();

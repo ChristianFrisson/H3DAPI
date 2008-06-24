@@ -175,9 +175,7 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
 #endif
 
   } else {
-    // determines if resolved_url file should be deleted or not
-    bool delete_file = false;
-
+ 
 #ifdef HAVE_ZLIB
     // check if zip-file
     ifstream ifs( resolved_url.c_str(), ios::binary );

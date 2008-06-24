@@ -23,8 +23,8 @@ extern Group* getRoot();
   // A simple attempt to automatically determine VRMLedness of a 
   // file/string/url.
 bool X3D::isVRML( const string &str ) {
-  int x3d_pos = str.find( "<" );
-  int vrml_pos = str.find( "{" );
+  size_t x3d_pos = str.find( "<" );
+  size_t vrml_pos = str.find( "{" );
   if ( vrml_pos == string::npos )
     return false;
   else if  ( x3d_pos == string::npos )
