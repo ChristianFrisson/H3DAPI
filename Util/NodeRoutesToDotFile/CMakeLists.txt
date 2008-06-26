@@ -58,6 +58,16 @@ IF(OPENAL_FOUND)
   ENDIF(WIN32)
 ENDIF(OPENAL_FOUND)
 
+#UI
+SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}")
+FIND_PACKAGE(UI)
+
+IF(UI_FOUND)
+  INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} ) 
+  SET(optionalLibs ${optionalLibs} ${UI_LIBRARIES} )
+ENDIF(UI_FOUND)
+SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
+
 # Create build filess.
 ADD_EXECUTABLE(NodeRoutesToDotFile  ${NodeRoutesToDotFile_SRCS})
 TARGET_LINK_LIBRARIES( NodeRoutesToDotFile ${requiredLibs} ${optionalLibs} )
@@ -67,13 +77,22 @@ SET_TARGET_PROPERTIES( NodeRoutesToDotFile PROPERTIES DEBUG_POSTFIX "_d" )
 
 # set the install directory to the H3D directory on Windows
 IF(WIN32) 
+  # Variable used to set compile properties.
+  SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "" )
+
+  IF( UI_FOUND )
+    SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS} -D_HAVE_UI" )
+  ENDIF( UI_FOUND )
+
   # Set compile and link properties for projects.
   IF(MSVC80)
     # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
-    SET_TARGET_PROPERTIES( NodeRoutesToDotFile PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+    SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
   ELSEIF(MSVC90)
     # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
-    SET_TARGET_PROPERTIES( NodeRoutesToDotFile PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+    SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
   ENDIF(MSVC80)
+
+  SET_TARGET_PROPERTIES( NodeRoutesToDotFile PROPERTIES COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS}" )
 
 ENDIF(WIN32)

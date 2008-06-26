@@ -9,17 +9,17 @@
 using namespace std;
 using namespace H3D;
 
-void writeFieldDef( ostream &os, Field *f, bool filled = false ) {
-  os << "\"" << f->getName() << "\" [URL=\"\\ref " 
-     << f->getName() << "\"";
+void writeFieldDef( ostream &os, Field *f, string nodename = "", bool filled = false ) {
+  os << "\"" << nodename << f->getName() << "\" [URL=\"\\ref " 
+     << nodename << f->getName() << "\"";
   if( filled )
     os << ", style=filled, fillcolor=steelblue1";
   os <<"  ]" << endl; 
 }
 
-void writeRoute( ostream &os, Field *src, Field *dest ) {
-   os << "\"" << src->getName() << "\"" << " -> " 
-      << "\"" << dest->getName() << "\"" << endl;
+void writeRoute( ostream &os, Field *src, Field *dest, string srcnodename, string destnodename ) {
+   os << "\"" << srcnodename << src->getName() << "\"" << " -> " 
+      << "\"" << destnodename << dest->getName() << "\"" << endl;
 }
 
 void writeNode( string out_dir, Node *n ) {
@@ -53,53 +53,109 @@ void writeNode( string out_dir, Node *n ) {
   while( !to_visit.empty() ) {
     Field *f = *(to_visit.begin());
     visited.insert( f );
-	if( f == Scene::eventSink.get() ) {
-	  writeFieldDef( os, f );
-	  to_visit.erase( f );
-	  continue;
-	}
+    if( f == Scene::eventSink.get() ) {
+      writeFieldDef( os, f );
+      to_visit.erase( f );
+      continue;
+    }
 
     const Field::FieldSet &routes_out = f->getRoutesOut();
-    
+
     string out_file_field = 
       out_dir + "\\" + node_name +
       "_" + f->getName() + ".dot";
-    
-    ofstream os_field( out_file_field.c_str() );
-    os_field << "digraph g { \n"
-             << "graph [ rankdir = \"LR\" ]; \n"
-             << "node [ fontsize = \"10\" \n"
-             << "       shape = \"ellipse\" \n"
-             << "]; \n";
-    
-    writeFieldDef( os, f );
-    writeFieldDef( os_field, f, true );
-    
+
+    string field_own_name = "";
+
+    Node * temp_owner = f->getOwner();
+    if( temp_owner && temp_owner->getTypeName() != node_name ) {
+      field_own_name = temp_owner->getTypeName() + "_";
+      if( temp_owner->getName().find( "Unnamed " ) == string::npos ) {
+        field_own_name = temp_owner->getName() + "_";
+      }
+      out_file_field = out_dir + "\\" + node_name + "_" + 
+         field_own_name + f->getName() + ".dot";
+    }
+
+    bool set_up_routes = false;
+
     for( Field::FieldSet::const_iterator out = routes_out.begin();
          out != routes_out.end(); out++ ) {
-      
-      writeFieldDef( os_field, *out );
-      writeRoute( os_field, f, *out );
-      writeRoute( os, f, *out );
-      
       if( visited.find( *out ) == visited.end() &&
           to_visit.find( *out ) == to_visit.end() ) {
         to_visit.insert( *out );
       }
     }
+
     const Field::FieldVector &routes_in = f->getRoutesIn();
     for( Field::FieldVector::const_iterator in = routes_in.begin();
          in != routes_in.end(); in++ ) {
-      writeFieldDef( os_field, *in );
-      writeRoute( os_field,*in, f );
       if( visited.find( *in ) == visited.end() &&
           to_visit.find( *in ) == to_visit.end()) {
         to_visit.insert( *in );
       }
+      
     }
-    to_visit.erase( f );
+
+    //if( routes_out.empty() && routes_in.empty() ) {
+      temp_owner = f->getOwner();
+      if( temp_owner && temp_owner == n ) {
+        set_up_routes = true;
+      }
+    //}
+
+    if( set_up_routes ) {
+      ofstream os_field( out_file_field.c_str() );
+      os_field << "digraph g { \n"
+               << "graph [ rankdir = \"LR\" ]; \n"
+               << "node [ fontsize = \"10\" \n"
+               << "       shape = \"ellipse\" \n"
+               << "]; \n";
+
+      writeFieldDef( os, f, field_own_name );
+      writeFieldDef( os_field, f, field_own_name, true );
+
+      for( Field::FieldSet::const_iterator out = routes_out.begin();
+           out != routes_out.end(); out++ ) {
+      
+        string dest_node_name = "";
+        temp_owner = (*out)->getOwner();
+        if( temp_owner && temp_owner->getTypeName() != node_name ) {
+          dest_node_name = temp_owner->getTypeName() + "_";
+          if( temp_owner->getName().find( "Unnamed " ) == string::npos ) {
+            dest_node_name = temp_owner->getName() + "_";
+          }
+        }
+
+        writeFieldDef( os_field, *out, dest_node_name );
+        writeRoute( os_field, f, *out, field_own_name, dest_node_name );
+        if( visited.find( *out ) == visited.end() || (temp_owner && temp_owner != n ) ) {
+          writeRoute( os, f, *out, field_own_name, dest_node_name );
+        }
+      }
+    
+      for( Field::FieldVector::const_iterator in = routes_in.begin();
+           in != routes_in.end(); in++ ) {
+  
+        string src_node_name = "";
+        temp_owner = (*in)->getOwner();
+        if( temp_owner && temp_owner->getTypeName() != node_name ) {
+          src_node_name = temp_owner->getTypeName() + "_";
+          if( temp_owner->getName().find( "Unnamed " ) == string::npos ) {
+            src_node_name = temp_owner->getName() + "_" ;
+          }
+        }
+
+        writeFieldDef( os_field, *in, src_node_name );
+        writeRoute( os_field,*in, f, src_node_name, field_own_name );
+        if( visited.find( *in ) == visited.end() || (temp_owner && temp_owner != n ) ) {
+          writeRoute( os,*in, f, src_node_name, field_own_name );
+        }
+      }
     os_field << "}" << endl;  
     os_field.close();
+    }
+    to_visit.erase( f );
   }
   os << "}" << endl;
   os.close();
@@ -123,6 +179,12 @@ void writeNode( string out_dir, Node *n ) {
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/Scene.h>
 
+#ifdef HAVE_UI
+#include <UI/Frame.h>
+#include <UI/H3DLabeledWidget.h>
+#include <UI/H3DButtonNode.h>
+#endif
+
 inline void resetSceneTimeField() {
   Scene::time.reset( new SFTime( TimeStamp() ) );
   Scene::time->setName( "Scene::time" );
@@ -135,6 +197,12 @@ int main(int argc, char* argv[]) {
     cerr << "Usage: " << argv[0] << " <Output dir>" << endl;
     return 1;
   }
+#ifdef HAVE_UI
+  {
+    // To make sure that UI is linked in if used.
+    auto_ptr<Frame> kurt( new Frame );
+  }
+#endif
 
   string out_dir = argv[1];
 
@@ -168,6 +236,14 @@ int main(int argc, char* argv[]) {
   resetSceneTimeField();
   writeNode( out_dir, new X3DGroupingNode );
   resetSceneTimeField();
+#ifdef HAVE_UI
+  writeNode( out_dir, new H3DWidgetNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DLabeledWidget );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DButtonNode );
+  resetSceneTimeField();
+#endif
 
   try {
     for( H3DNodeDatabase::NodeDatabaseConstIterator i = 

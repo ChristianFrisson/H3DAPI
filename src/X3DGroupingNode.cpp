@@ -225,7 +225,7 @@ void X3DGroupingNode::MFChild::onRemove( Node *n ) {
       if( bo ) {
         MatrixTransform *t = dynamic_cast< MatrixTransform *>( n );
         if( t ) {
-          t->transformedBound->route( o->bound );
+          t->transformedBound->unroute( o->bound );
         } else {
           bo->bound->unroute( o->bound );
         }
