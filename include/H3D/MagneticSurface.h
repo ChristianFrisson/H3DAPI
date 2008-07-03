@@ -55,66 +55,56 @@ namespace H3D {
     /// Specialized field which sets the stiffness variable in
     /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the
     /// stiffness field of SmoothSurface is changed.
-		///
+    ///
     /// routes_in[0] is the stiffness field
-    class H3DAPI_API UpdateStiffness: public AutoUpdate< SFFloat > {
-    public:
-      virtual void setValue( const H3DFloat &f, int id = 0 );
-
+    class H3DAPI_API UpdateStiffness:
+      public AutoUpdate< OnValueChangeSField< SFFloat > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const H3DFloat &v );
     };
 
     /// Specialized field which sets the damping variable in
     /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the damping
     /// field of MagneticSurface is changed.
-		///
+    ///
     /// routes_in[0] is the damping field
-    class H3DAPI_API UpdateDamping: public AutoUpdate< SFFloat > {
-    public:
-      virtual void setValue( const H3DFloat &f, int id = 0 );
-
+    class H3DAPI_API UpdateDamping:
+      public AutoUpdate< OnValueChangeSField< SFFloat > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const H3DFloat &v );
     };
 
     /// Specialized field which sets the static_friction variable in
     /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the staticFriction
     /// field of MagneticSurface is changed.
-		///
+    ///
     /// routes_in[0] is the staticFriction field
-    class H3DAPI_API UpdateStaticFriction: public AutoUpdate< SFFloat > {
-    public:
-      virtual void setValue( const H3DFloat &f, int id = 0 );
-
+    class H3DAPI_API UpdateStaticFriction:
+      public AutoUpdate< OnValueChangeSField< SFFloat > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const H3DFloat &v );
     };
 
     /// Specialized field which sets the dynamic_friction variable in
     /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the dynamicFriction
     /// field of MagneticSurface is changed.
-		///
+    ///
     /// routes_in[0] is the dynamicFriction field
-    class H3DAPI_API UpdateDynamicFriction: public AutoUpdate< SFFloat > {
-    public:
-      virtual void setValue( const H3DFloat &f, int id = 0 );
-
+    class H3DAPI_API UpdateDynamicFriction:
+      public AutoUpdate< OnValueChangeSField< SFFloat > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const H3DFloat &v );
     };
 
     /// Specialized field which sets the snap_distance variable in
     /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the snapDistance
     /// field of MagneticSurface is changed.
-		///
+    ///
     /// routes_in[0] is the snapDistance field
-    class H3DAPI_API UpdateSnapDistance: public AutoUpdate< SFFloat > {
-    public:
-      virtual void setValue( const H3DFloat &f, int id = 0 );
-
+    class H3DAPI_API UpdateSnapDistance:
+      public AutoUpdate< OnValueChangeSField< SFFloat > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const H3DFloat &v );
     };
 
     /// Constructor.

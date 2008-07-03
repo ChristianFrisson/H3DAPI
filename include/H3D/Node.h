@@ -62,7 +62,7 @@ namespace H3D {
     /// of the scene-graph. 
     virtual void render()     { };
 
-		/// traverseSG is called onve per scenegraph loop on the scene in order to
+    /// traverseSG is called once per scenegraph loop on the scene in order to
     /// traverse the scenegraph. During this traversal things can be updated
     /// in the node and HapticObject instances to be rendered should be added 
     /// to the TraverseInfo object.

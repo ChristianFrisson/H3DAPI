@@ -71,23 +71,12 @@ void OpenHapticsSurface::initialize() {
 }
 
 void OpenHapticsSurface::UpdateMagnetic::
-    setValue( const bool &b, int id ) {
-  SFBool::setValue( b, id );
-  OpenHapticsSurface *ohs = 
+    onValueChange( const bool &b ) {
+  OpenHapticsSurface *ohs =
     static_cast< OpenHapticsSurface * >( getOwner() );
   if( ohs->hapi_surface.get() ) {
     static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
       ( ohs->hapi_surface.get() )->snap_distance = b;
-  }
-}
-
-void OpenHapticsSurface::UpdateMagnetic::update() {
-  SFBool::update();
-  OpenHapticsSurface *ohs = 
-    static_cast< OpenHapticsSurface * >( getOwner() );
-  if( ohs->hapi_surface.get() ) {
-    static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
-      ( ohs->hapi_surface.get() )->snap_distance = value;
   }
 }
 

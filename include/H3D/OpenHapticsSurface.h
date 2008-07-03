@@ -46,14 +46,12 @@ namespace H3D {
     /// Specialized field which sets the magnetic variable in
     /// HAPI::OpenHapticsRenderer::OpenHapticsSurface when the magnetic
     /// field of OpenHapticsSurface is changed.
-		///
+    ///
     /// routes_in[0] is the magnetic field
-    class H3DAPI_API UpdateMagnetic: public AutoUpdate< SFBool > {
-    public:
-      virtual void setValue( const bool &b, int id = 0 );
-
+    class H3DAPI_API UpdateMagnetic:
+      public AutoUpdate< OnValueChangeSField< SFBool > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const bool &b );
     };
 
     /// Constructor.

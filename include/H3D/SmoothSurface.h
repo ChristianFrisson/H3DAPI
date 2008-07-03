@@ -48,23 +48,19 @@ namespace H3D {
     /// Specialized field which sets the stiffness variable in
     /// FrictionSurface when the stiffness field of SmoothSurface
     /// is changed.
-    class H3DAPI_API UpdateStiffness: public AutoUpdate< SFFloat > {
-    public:
-      virtual void setValue( const H3DFloat &f, int id = 0 );
-
+    class H3DAPI_API UpdateStiffness:
+      public AutoUpdate< OnValueChangeSField< SFFloat > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const H3DFloat &v );
     };
 
     /// Specialized field which sets the damping variable in
     /// FrictionSurface when the damping field of SmoothSurface
     /// is changed.
-    class H3DAPI_API UpdateDamping: public AutoUpdate< SFFloat > {
-    public:
-      virtual void setValue( const H3DFloat &f, int id = 0 );
-
+    class H3DAPI_API UpdateDamping:
+      public AutoUpdate< OnValueChangeSField< SFFloat > > {
     protected:
-      virtual void update();
+      virtual void onValueChange( const H3DFloat &v );
     };
 
     /// Constructor.

@@ -69,44 +69,22 @@ void FrictionalSurface::initialize() {
   friction_surface->dynamic_friction = dynamicFriction->getValue();
 }
 
-void FrictionalSurface::UpdateStaticFriction::
-      setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+void FrictionalSurface::UpdateStaticFriction::onValueChange( const float &v ) {
   FrictionalSurface *fs = 
     static_cast< FrictionalSurface * >( getOwner() );
   if( fs->hapi_surface.get() ) {
     static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
-      ->static_friction = f;
-  }
-}
-
-void FrictionalSurface::UpdateStaticFriction::update() {
-  SFFloat::update();
-  FrictionalSurface *fs = 
-    static_cast< FrictionalSurface * >( getOwner() );
-  if( fs->hapi_surface.get() ) {
-    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
-      ->static_friction = value;
+      ->static_friction = v;
   }
 }
 
 void FrictionalSurface::UpdateDynamicFriction::
-    setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+  onValueChange( const float &v ) {
   FrictionalSurface *fs = 
     static_cast< FrictionalSurface * >( getOwner() );
   if( fs->hapi_surface.get() ) {
     static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
-      ->dynamic_friction = f;
+      ->dynamic_friction = v;
   }
 }
 
-void FrictionalSurface::UpdateDynamicFriction::update() {
-  SFFloat::update();
-  FrictionalSurface *fs = 
-    static_cast< FrictionalSurface * >( getOwner() );
-  if( fs->hapi_surface.get() ) {
-    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
-      ->dynamic_friction = value;
-  }
-}

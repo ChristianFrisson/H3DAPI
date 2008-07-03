@@ -86,8 +86,7 @@ void MagneticSurface::initialize() {
 #endif
 }
 
-void MagneticSurface::UpdateStiffness::setValue( const H3DFloat &f, int id ){
-  SFFloat::setValue( f, id );
+void MagneticSurface::UpdateStiffness::onValueChange( const H3DFloat &f ) {
 #ifdef HAVE_OPENHAPTICS
   MagneticSurface *ms = 
     static_cast< MagneticSurface * >( getOwner() );
@@ -98,20 +97,7 @@ void MagneticSurface::UpdateStiffness::setValue( const H3DFloat &f, int id ){
 #endif
 }
 
-void MagneticSurface::UpdateStiffness::update() {
-  SFFloat::update();
-#ifdef HAVE_OPENHAPTICS
-  MagneticSurface *ms = 
-    static_cast< MagneticSurface * >( getOwner() );
-  if( ms->hapi_surface.get() ) {
-    static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
-      ( ms->hapi_surface.get() )->stiffness = value;
-  }
-#endif
-}
-
-void MagneticSurface::UpdateDamping::setValue( const H3DFloat &f, int id ){
-  SFFloat::setValue( f, id );
+void MagneticSurface::UpdateDamping::onValueChange( const H3DFloat &f ) {
 #ifdef HAVE_OPENHAPTICS
   MagneticSurface *ms = 
     static_cast< MagneticSurface * >( getOwner() );
@@ -122,21 +108,8 @@ void MagneticSurface::UpdateDamping::setValue( const H3DFloat &f, int id ){
 #endif
 }
 
-void MagneticSurface::UpdateDamping::update() {
-  SFFloat::update();
-#ifdef HAVE_OPENHAPTICS
-  MagneticSurface *ms = 
-    static_cast< MagneticSurface * >( getOwner() );
-  if( ms->hapi_surface.get() ) {
-    static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
-      ( ms->hapi_surface.get() )->damping = value;
-  }
-#endif
-}
-
 void MagneticSurface::UpdateStaticFriction::
-      setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+      onValueChange( const H3DFloat &f ) {
 #ifdef HAVE_OPENHAPTICS
   MagneticSurface *ms = 
     static_cast< MagneticSurface * >( getOwner() );
@@ -147,21 +120,8 @@ void MagneticSurface::UpdateStaticFriction::
 #endif
 }
 
-void MagneticSurface::UpdateStaticFriction::update() {
-  SFFloat::update();
-#ifdef HAVE_OPENHAPTICS
-  MagneticSurface *ms = 
-    static_cast< MagneticSurface * >( getOwner() );
-  if( ms->hapi_surface.get() ) {
-    static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
-      ( ms->hapi_surface.get() )->static_friction = value;
-  }
-#endif
-}
-
 void MagneticSurface::UpdateDynamicFriction::
-    setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+    onValueChange( const H3DFloat &f ) {
 #ifdef HAVE_OPENHAPTICS
   MagneticSurface *ms = 
     static_cast< MagneticSurface * >( getOwner() );
@@ -172,21 +132,8 @@ void MagneticSurface::UpdateDynamicFriction::
 #endif
 }
 
-void MagneticSurface::UpdateDynamicFriction::update() {
-  SFFloat::update();
-#ifdef HAVE_OPENHAPTICS
-  MagneticSurface *ms = 
-    static_cast< MagneticSurface * >( getOwner() );
-  if( ms->hapi_surface.get() ) {
-    static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
-      ( ms->hapi_surface.get() )->dynamic_friction = value;
-  }
-#endif
-}
-
 void MagneticSurface::UpdateSnapDistance::
-    setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+    onValueChange( const H3DFloat &f ) {
 #ifdef HAVE_OPENHAPTICS
   MagneticSurface *ms = 
     static_cast< MagneticSurface * >( getOwner() );
@@ -197,14 +144,3 @@ void MagneticSurface::UpdateSnapDistance::
 #endif
 }
 
-void MagneticSurface::UpdateSnapDistance::update() {
-  SFFloat::update();
-#ifdef HAVE_OPENHAPTICS
-  MagneticSurface *ms = 
-    static_cast< MagneticSurface * >( getOwner() );
-  if( ms->hapi_surface.get() ) {
-    static_cast< HAPI::OpenHapticsRenderer::OpenHapticsSurface * >
-      ( ms->hapi_surface.get() )->snap_distance = value * 1e3;
-  }
-#endif
-}

@@ -90,7 +90,7 @@ namespace H3D {
       defaultHapticCameraView->setValue( true );
     }
 
-    /// Returns a new instancs of HAPI::OpenHapticsRenderer
+    /// Returns a new instance of HAPI::OpenHapticsRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
 
     /// The default shape type to use if it has not been specified with
@@ -133,7 +133,7 @@ namespace H3D {
       database.initFields( this );
     }
     
-    /// Returns a new instancs of HAPI::GodObjectRenderer
+    /// Returns a new instance of HAPI::GodObjectRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
       return new HAPI::GodObjectRenderer;
     }
@@ -157,7 +157,7 @@ namespace H3D {
     /// Constructor.
     RuspiniRenderer( Inst< ProxyRadius > _proxyRadius    = 0);
 
-    /// Returns a new instancs of HAPI::RuspiniRenderer
+    /// Returns a new instance of HAPI::RuspiniRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
       return new HAPI::RuspiniRenderer;
     }
@@ -185,7 +185,7 @@ namespace H3D {
       database.initFields( this );
     }
 
-    /// Returns a new instancs of HAPI::Chai3DRenderer
+    /// Returns a new instance of HAPI::Chai3DRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
 
     /// The H3DNodeDatabase for this node.

@@ -48,17 +48,19 @@ namespace H3D {
   /// to a value that is different than its previous value.
   template < class SF >
   class OnValueChangeSField: public SF {
-    /// This function is called when the value in the field has changed. 
-    virtual void onValueChange( const typename SF::value_type &new_value ) = 0;
-
-    virtual void setValue( const typename SF::value_type &v, int id  ) {
+  public:
+    virtual void setValue( const typename SF::value_type &v, int id = 0  ) {
       typename SF::value_type old_value = this->value;
-      SF::setValue( v );
+      SF::setValue( v, id );
         if( this->value != old_value ) {
           onValueChange( this->value );
         } 
     }
-    
+
+  protected:
+    /// This function is called when the value in the field has changed. 
+    virtual void onValueChange( const typename SF::value_type &new_value ) = 0;
+
     virtual void update() {
       typename SF::value_type old_value = this->value;
       SF::update();
@@ -76,13 +78,16 @@ namespace H3D {
   /// or update function is called, even if the new value is the same as the old.
   template < class SF >
   class OnNewValueSField: public SF {
-    /// This function is called when the field is updated to a value.
-    virtual void onNewValue( const typename SF::value_type &new_value ) = 0;
-    virtual void setValue( const typename SF::value_type &v, int id ) {
-      SF::setValue( v );
+  public:
+    virtual void setValue( const typename SF::value_type &v, int id = 0 ) {
+      SF::setValue( v, id );
       onNewValue( this->value );
     }
-    
+
+  protected:
+    /// This function is called when the field is updated to a value.
+    virtual void onNewValue( const typename SF::value_type &new_value ) = 0;
+
     virtual void update() {
       SF::update();
       onNewValue( this->value );

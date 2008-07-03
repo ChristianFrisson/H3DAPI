@@ -68,85 +68,42 @@ H3DVariableDepthSurface::H3DVariableDepthSurface(
 }
 
 void H3DVariableDepthSurface::UpdateStiffness::
-  setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+  onValueChange( const H3DFloat &v ) {
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
     static_cast< HAPI::HAPIVariableDepthSurface * >
-      ( hvds->hapi_surface.get() )->stiffness = f;
-  }
-}
-
-void H3DVariableDepthSurface::UpdateStiffness::update() {
-  SFFloat::update();
-  H3DVariableDepthSurface *hvds = 
-    static_cast< H3DVariableDepthSurface * >( getOwner() );
-  if( hvds->hapi_surface.get() ) {
-    static_cast< HAPI::HAPIVariableDepthSurface * >
-      ( hvds->hapi_surface.get() )->stiffness = value;
+      ( hvds->hapi_surface.get() )->stiffness = v;
   }
 }
 
 void H3DVariableDepthSurface::
-  UpdateDamping::setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+  UpdateDamping::onValueChange( const H3DFloat &v ) {
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
     static_cast< HAPI::HAPIVariableDepthSurface * >
-      ( hvds->hapi_surface.get() )->damping = f;
-  }
-}
-
-void H3DVariableDepthSurface::UpdateDamping::update() {
-  SFFloat::update();
-  H3DVariableDepthSurface *hvds = 
-    static_cast< H3DVariableDepthSurface * >( getOwner() );
-  if( hvds->hapi_surface.get() ) {
-    static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
-      ->damping = value;
+      ( hvds->hapi_surface.get() )->damping = v;
   }
 }
 
 void H3DVariableDepthSurface::UpdateStaticFriction::
-      setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+  onValueChange( const H3DFloat &v ) {
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
     static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
-      ->static_friction = f;
-  }
-}
-
-void H3DVariableDepthSurface::UpdateStaticFriction::update() {
-  SFFloat::update();
-  H3DVariableDepthSurface *hvds = 
-    static_cast< H3DVariableDepthSurface * >( getOwner() );
-  if( hvds->hapi_surface.get() ) {
-    static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
-      ->static_friction = value;
+      ->static_friction = v;
   }
 }
 
 void H3DVariableDepthSurface::UpdateDynamicFriction::
-    setValue( const H3DFloat &f, int id ) {
-  SFFloat::setValue( f, id );
+  onValueChange( const H3DFloat &v ) {
   H3DVariableDepthSurface *hvds = 
     static_cast< H3DVariableDepthSurface * >( getOwner() );
   if( hvds->hapi_surface.get() ) {
     static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
-      ->dynamic_friction = f;
+      ->dynamic_friction = v;
   }
 }
 
-void H3DVariableDepthSurface::UpdateDynamicFriction::update() {
-  SFFloat::update();
-  H3DVariableDepthSurface *hvds = 
-    static_cast< H3DVariableDepthSurface * >( getOwner() );
-  if( hvds->hapi_surface.get() ) {
-    static_cast< HAPI::HAPIVariableDepthSurface * >( hvds->hapi_surface.get() )
-      ->dynamic_friction = value;
-  }
-}
