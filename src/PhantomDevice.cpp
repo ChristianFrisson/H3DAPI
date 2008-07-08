@@ -166,6 +166,16 @@ H3DHapticsDevice::ErrorCode PhantomDevice::initDevice() {
   return e;
 }
 
+H3DHapticsDevice::ErrorCode PhantomDevice::releaseDevice() {
+  H3DHapticsDevice::ErrorCode e = H3DHapticsDevice::releaseDevice();
+#ifdef HAVE_OPENHAPTICS
+  if( e == HAPI::HAPIHapticsDevice::SUCCESS ) {
+    nr_initialized_devices--;
+  }
+#endif
+  return e;
+}
+
 void PhantomDevice::updateDeviceValues() {
 #ifdef HAVE_OPENHAPTICS
   H3DHapticsDevice::updateDeviceValues();

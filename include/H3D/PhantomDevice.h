@@ -79,6 +79,11 @@ namespace H3D {
     /// use it.
     virtual ErrorCode initDevice();
 
+    /// Perform cleanup and let go of all device resources that are allocated.
+    /// After a call to this function no haptic rendering can be performed on
+    /// the device until the initDevice() function has been called again.
+    virtual ErrorCode releaseDevice();
+
     /// This function is used to transfer device values, such as position, 
     /// button status etc from the realtime loop to the fields of 
     /// H3DHapticsDevice, and possible vice versa.
