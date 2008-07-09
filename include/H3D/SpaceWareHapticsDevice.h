@@ -86,9 +86,6 @@ namespace H3D {
     /// SpaceWareSensor.
     virtual void updateDeviceValues() {
       H3DFakeHapticsDevice::updateDeviceValues();
-      vector< H3DHapticsDevice * > hds;
-      TraverseInfo ti( hds );
-      spaceware_sensor->traverseSG( ti );
     }
     
     /// Node database entry

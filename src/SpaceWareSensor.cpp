@@ -64,6 +64,8 @@ extern "C" {
 #endif // __linux
 #endif // HAVE_3DXWARE
 
+#include <H3D/Scene.h>
+
 using namespace H3D;
 SpaceWareSensor * SpaceWareSensor::sws_instance = 0;
 
@@ -478,12 +480,16 @@ SpaceWareSensor::SpaceWareSensor(
   accumulateTimeDependent( _accumulateTimeDependent ),
   resetAccumulatedTranslation( _resetAccumulatedTranslation ),
   resetAccumulatedRotation(_resetAccumulatedRotation ),
+  update( new Update ),
   thread_motion_event( false ) {
 
   type_name = "SpaceWareSensor";
 
   database.initFields( this );
-
+  
+  update->setOwner(this);
+  Scene::time->routeNoEvent(update);
+  
   rawTranslation->setValue( Vec3f( 0, 0, 0 ), id );
   rawYaw->setValue( Rotation( 1, 0, 0, 0 ), id  );
   rawPitch->setValue( Rotation( 1, 0, 0, 0 ), id  );
@@ -541,7 +547,7 @@ SpaceWareSensor::SpaceWareSensor(
     sws_instance = this;
 }
 
-void SpaceWareSensor::traverseSG( TraverseInfo &ti ) {
+void SpaceWareSensor::updateValues(){
   using namespace SpaceWareSensorInternal;
   // TODO: lock
 
@@ -590,5 +596,6 @@ void SpaceWareSensor::traverseSG( TraverseInfo &ti ) {
     }
   }
 }
+
 
 

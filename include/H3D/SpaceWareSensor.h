@@ -413,10 +413,6 @@ namespace H3D {
     /// \dotfile SpaceWareSensor_resetAccumulatedRotation.dot
     auto_ptr< ResetAccumulatedRotation > resetAccumulatedRotation;
 
-    /// Transfers the values from the device communication thread to
-    /// the scenegraph thread.
-    virtual void traverseSG( TraverseInfo &ti );
-
     // This data structure is used to transfer button data from the 
     // device communication thread to the scene graph thread.
     struct ButtonData {
@@ -449,6 +445,20 @@ namespace H3D {
     // the handle of the communication thread.
     auto_ptr< H3DUtil::SimpleThread > thread_handle;
 #endif
+
+    /// Transfers the values from the device communication thread to
+    /// the scenegraph thread.
+    void updateValues();
+    
+    struct H3DAPI_API Update
+      : AutoUpdate<Field> {
+      void update(){
+        static_cast<SpaceWareSensor*>
+          (owner)->updateValues();
+      }
+    };
+    
+    auto_ptr< Update > update;
   };
 }
 

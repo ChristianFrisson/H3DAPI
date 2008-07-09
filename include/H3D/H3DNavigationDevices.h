@@ -33,6 +33,7 @@
 #include <H3D/KeySensor.h>
 #include <H3D/SFVec3f.h>
 #include <H3D/SFRotation.h>
+#include <H3D/SpaceWareSensor.h>
 
 namespace H3D {
   
@@ -243,6 +244,7 @@ namespace H3D {
 
   protected:
     auto_ptr< CalculateSWSMoveInfo > calculateSWSMoveInfo;
+    auto_ptr< SpaceWareSensor > sws;
   };
 }
 

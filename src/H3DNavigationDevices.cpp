@@ -30,7 +30,6 @@
 
 #include <H3D/H3DNavigationDevices.h>
 #include <H3D/DeviceInfo.h>
-#include <H3D/SpaceWareSensor.h>
 
 using namespace H3D;
 
@@ -369,20 +368,15 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
 }
 
 SWSNavigation::SWSNavigation() :
-  calculateSWSMoveInfo( new CalculateSWSMoveInfo ) {
+  calculateSWSMoveInfo( new CalculateSWSMoveInfo ),
+  sws( new SpaceWareSensor ) {
   calculateSWSMoveInfo->the_owner = this;
   calculateSWSMoveInfo->setValue( false );
 
-  SpaceWareSensor *sws = SpaceWareSensor::sws_instance;
-  if( sws ) {
-    sws->instantTranslation->route( calculateSWSMoveInfo );
-    sws->instantRotation->route( calculateSWSMoveInfo );
-    sws->instantPitch->route( calculateSWSMoveInfo );
-    calculateSWSMoveInfo->route( shouldGetInfo );
-  }
-  else
-    Console(4) << "There is no SpaceWareSensor in the scene. "
-    << "Navigation with SpaceWareSensor will not be used. " << endl;
+  sws->instantTranslation->route( calculateSWSMoveInfo );
+  sws->instantRotation->route( calculateSWSMoveInfo );
+  sws->instantPitch->route( calculateSWSMoveInfo );
+  calculateSWSMoveInfo->route( shouldGetInfo );
 }
 
 void SWSNavigation::resetAll() {
