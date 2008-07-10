@@ -53,8 +53,8 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
           Inst< SFVec3f         > _proxyPosition          ,
           Inst< WeightedProxy   > _weightedProxyPosition  ,     
           Inst< SFFloat         > _proxyWeighting         ,
-          Inst< MainButton      > _main_button            ,
-          Inst< SecondaryButton > _secondary_button       ,
+          Inst< SFBool          > _mainButton            ,
+          Inst< SFBool          > _secondaryButton       ,
           Inst< SFInt32         > _buttons                ,
           Inst< SFVec3f         > _force                  ,
           Inst< SFVec3f         > _torque                 ,
@@ -74,8 +74,8 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
   H3DFakeHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
                         _trackerOrientation, _positionCalibration, 
                         _orientationCalibration, _proxyPosition,
-                        _weightedProxyPosition, _proxyWeighting, _main_button,
-                        _secondary_button, _buttons,
+                        _weightedProxyPosition, _proxyWeighting, _mainButton,
+                        _secondaryButton, _buttons,
                         _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
                         _desiredHapticsRate,
                         _stylus, _hapticsRenderer, _proxyPositions, 
@@ -100,8 +100,11 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
 }
 
 void SpaceWareHapticsDevice::SetMainButton::update() {
+  assert( H3DUtil::ThreadBase::inMainThread() );
   H3DInt32 buttons = static_cast< SFInt32 * >( routes_in[0] )->getValue();
   value = (buttons != 0);
+  void * param[] = { &this->value, &rt_value };
+  H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
 }
 
 

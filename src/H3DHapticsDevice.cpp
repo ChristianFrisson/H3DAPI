@@ -86,8 +86,8 @@ H3DHapticsDevice::H3DHapticsDevice(
                Inst< SFVec3f         > _proxyPosition          ,
                Inst< WeightedProxy   > _weightedProxyPosition  ,     
                Inst< SFFloat         > _proxyWeighting         ,
-               Inst< MainButton      > _mainButton             ,
-               Inst< SecondaryButton > _secondaryButton       ,
+               Inst< SFBool          > _mainButton             ,
+               Inst< SFBool          > _secondaryButton       ,
                Inst< SFInt32         > _buttons                ,
                Inst< SFVec3f         > _force                  ,
                Inst< SFVec3f         > _torque                 ,
@@ -142,6 +142,8 @@ H3DHapticsDevice::H3DHapticsDevice(
   enabled->setValue( false, id );
   proxyWeighting->setValue( 0.95f );
   buttons->setValue( 0, id );
+  mainButton->setValue( false, id );
+  secondaryButton->setValue( false, id );
   hapticsRate->setValue( 0, id );
   desiredHapticsRate->setValue( 1000, id );
 
@@ -157,9 +159,6 @@ H3DHapticsDevice::H3DHapticsDevice(
   proxyPosition->route( weightedProxyPosition, id );
   trackerPosition->route( weightedProxyPosition, id );
   proxyWeighting->route( weightedProxyPosition, id );
-
-  buttons->route( mainButton, id );
-  buttons->route( secondaryButton, id );
 
   vp_initialized = false;
 }
@@ -280,6 +279,13 @@ void H3DHapticsDevice::updateDeviceValues() {
     force->setValue( (Vec3f)dv.force, id);
     torque->setValue( (Vec3f)dv.torque, id);
     buttons->setValue( dv.button_status, id );
+    // set mainButton and secondaryButton
+    bool temp_value = (dv.button_status & 0x01) != 0;
+    if( temp_value != mainButton->getValue() )
+      mainButton->setValue( temp_value, id );
+    temp_value = (dv.button_status & 0x02) != 0;
+    if( temp_value != secondaryButton->getValue() )
+      secondaryButton->setValue( temp_value, id );
 
     X3DViewpointNode *vp = X3DViewpointNode::getActive();
     if( followViewpoint->getValue() && vp ) {

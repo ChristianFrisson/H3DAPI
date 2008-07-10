@@ -65,17 +65,16 @@ parent( _parent ) {
   }
 }
 
-// Ulrika Added after Penny's comments**
 H3DNodeDatabase::~H3DNodeDatabase(void){
+  // Needed to make sure memory is released.
   if(initialized = true){
     delete database;
     database = 0;
   }
   for(FieldDBType::const_iterator i = fields.begin(); i !=fields.end(); i++){
-    delete (*i).second; // MATT added this to fix some memory leaks
+    delete (*i).second;
   }
 }
-//***
 
 
 Node *H3DNodeDatabase::createNode( const string &name ) {
@@ -109,6 +108,13 @@ Field *H3DNodeDatabase::getFieldHelp( Node *n, const string &f ) const {
     const string &name = (*i).first;
     if ( name == f )
       return fdb->getField( n );
+    ostringstream namestr;
+    namestr << fdb << "_" << f; 
+    if( namestr.str() == name ) {
+      Field *the_field = fdb->getField( n );
+      if( the_field )
+        return the_field;
+    }
   }    
   if ( parent )
     return parent->getField( n, f );
@@ -136,7 +142,16 @@ Field *H3DNodeDatabase::getField( Node *n, const string &name ) const {
 }
 
 void H3DNodeDatabase::addField( FieldDBElement *f ) {
-  fields[f->getName()] = f;
+  string tmp_name = f->getName();
+  DynamicFieldDBElement *f_ptr = dynamic_cast< DynamicFieldDBElement *>(f);
+  if( f_ptr && fields.find( tmp_name ) == fields.end() ) {
+    // If the field is added at run-time it should not overwrite an
+    // existing non-runtime-added field.
+    ostringstream namestr;
+    namestr << f << "_" << tmp_name; 
+    tmp_name = namestr.str();
+  }
+  fields[tmp_name] = f;
 }
 
 H3DNodeDatabase *H3DNodeDatabase::lookupTypeId( const type_info &t ) {

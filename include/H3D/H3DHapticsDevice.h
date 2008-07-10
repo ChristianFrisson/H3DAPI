@@ -267,27 +267,6 @@ namespace H3D {
       }
     };
 
-    /// The MainButton class masks out the bit 0 from the incoming integer.
-    ///
-    /// inputs[0] is the buttons field
-    class H3DAPI_API MainButton: public TypedField< SFBool, SFInt32 > {
-      virtual void update() {
-        H3DInt32 buttons   = 
-          static_cast< SFInt32 * >( routes_in[0] )->getValue();
-        value = (buttons & 0x01) != 0;
-      }
-    }; 
-
-    /// The SecondaryButton class masks out bit 1 from the incoming integer.
-    /// inputs[0] is the buttons field
-    class H3DAPI_API SecondaryButton: public TypedField< SFBool, SFInt32 > {
-      virtual void update() {
-        H3DInt32 buttons   = 
-          static_cast< SFInt32 * >( routes_in[0] )->getValue();
-        value = (buttons & 0x02) != 0;
-      }
-    }; 
-
     /// Constructor.
     H3DHapticsDevice( Inst< SFVec3f         > _devicePosition         = 0,
                       Inst< SFRotation      > _deviceOrientation      = 0,
@@ -298,8 +277,8 @@ namespace H3D {
                       Inst< SFVec3f         > _proxyPosition          = 0,
                       Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
                       Inst< SFFloat         > _proxyWeighting         = 0,
-                      Inst< MainButton      > _main_button            = 0,
-                      Inst< SecondaryButton > _secondary_button       = 0,
+                      Inst< SFBool          > _mainButton             = 0,
+                      Inst< SFBool          > _secondaryButton        = 0,
                       Inst< SFInt32         > _buttons                = 0,
                       Inst< SFVec3f         > _force                  = 0,
                       Inst< SFVec3f         > _torque                 = 0,
@@ -485,7 +464,7 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile H3DHapticsDevice_mainButton.dot
-    auto_ptr< MainButton >   mainButton;
+    auto_ptr< SFBool >   mainButton;
 
     /// The state of the secondary button (button 1).
     /// true means that the button is pressed.
@@ -493,7 +472,7 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile H3DHapticsDevice_mainButton.dot
-    auto_ptr< SecondaryButton >   secondaryButton;
+    auto_ptr< SFBool >   secondaryButton;
 
     /// The state of all buttons. Bit 0 is button 0, bit 1 is button 1,..
     /// A 1 in the bit position indicates that the button is pressed.

@@ -49,10 +49,10 @@ AnyDevice::AnyDevice(
                Inst< PosCalibration  > _positionCalibration,
                Inst< OrnCalibration  > _orientationCalibration,
                Inst< SFVec3f         > _proxyPosition,
-               Inst< WeightedProxy   > _weightedProxyPosition,     
+               Inst< WeightedProxy   > _weightedProxyPosition,
                Inst< SFFloat         > _proxyWeighting,
-               Inst< MainButton      > _mainButton,
-               Inst< SecondaryButton > _secondary_button,
+               Inst< SFBool          > _mainButton,
+               Inst< SFBool          > _secondaryButton,
                Inst< SFInt32         > _buttons,
                Inst< SFVec3f         > _force,
                Inst< SFVec3f         > _torque,
@@ -65,7 +65,7 @@ AnyDevice::AnyDevice(
               _trackerOrientation, _positionCalibration, 
               _orientationCalibration, _proxyPosition,
               _weightedProxyPosition, _proxyWeighting, _mainButton,
-                    _secondary_button, _buttons,
+                    _secondaryButton, _buttons,
               _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
               _desiredHapticsRate, _stylus ) {
 
