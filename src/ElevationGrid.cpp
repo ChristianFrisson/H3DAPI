@@ -231,7 +231,7 @@ void ElevationGrid::render() {
     unsigned int vertex_index = 0;
 
     if ( color_node ) {
-      glEnable( GL_COLOR_MATERIAL );
+      color_node->preRender();
     } 
 
     if( tex_coord_gen ) {
@@ -418,7 +418,7 @@ void ElevationGrid::render() {
       stopTexGen( tex_coord_gen );
     }
     if ( color_node ) {
-      glDisable( GL_COLOR_MATERIAL );
+      color_node->postRender();
     }
   } 
 }

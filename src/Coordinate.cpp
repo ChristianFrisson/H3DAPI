@@ -65,7 +65,7 @@ void Coordinate::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderAttay().
+/// Disable the array state enabled in renderArray().
 void Coordinate::disableArray() {
   glDisableClientState(GL_VERTEX_ARRAY);
 }

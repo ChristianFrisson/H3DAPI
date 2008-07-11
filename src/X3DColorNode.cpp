@@ -29,6 +29,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/X3DColorNode.h>
+#ifdef MACOSX
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 
 using namespace H3D;
 
@@ -38,4 +43,11 @@ X3DColorNode::X3DColorNode(
   type_name = "X3DColorNode";
 }
 
+void X3DColorNode::preRender() {
+  glEnable( GL_COLOR_MATERIAL );
+}
+
+void X3DColorNode::postRender() {
+  glDisable( GL_COLOR_MATERIAL );
+}
 

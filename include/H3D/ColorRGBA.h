@@ -78,6 +78,20 @@ namespace H3D {
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
 
+    /// Enable state needed before rendering the color.
+    virtual void preRender() {
+      X3DColorNode::preRender();
+      glEnable( GL_BLEND );
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    /// Disable state set in preRender() function.
+    virtual void postRender() {
+      X3DColorNode::postRender();
+      glDisable( GL_COLOR_MATERIAL );
+      glDisable( GL_BLEND );
+    }
+
     /// Returns the number of color this color node can render.
     virtual unsigned int nrAvailableColors() {
       return color->size();

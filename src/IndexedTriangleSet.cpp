@@ -150,7 +150,7 @@ void IndexedTriangleSet::render() {
           throw NotEnoughColors( color_node->nrAvailableColors(),
             s.str(), H3D_FULL_LOCATION );
       }
-      glEnable( GL_COLOR_MATERIAL );
+      color_node->preRender();
     }
 
     GLhandleARB shader_program = 0;
@@ -257,7 +257,7 @@ void IndexedTriangleSet::render() {
     }
 
     if ( color_node ) {
-      glDisable( GL_COLOR_MATERIAL );
+      color_node->postRender();
     } 
   } 
 }

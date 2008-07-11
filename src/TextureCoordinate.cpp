@@ -74,7 +74,7 @@ void TextureCoordinate::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderAttay().
+/// Disable the array state enabled in renderArray().
 void TextureCoordinate::disableArray() {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }

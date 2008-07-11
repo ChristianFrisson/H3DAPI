@@ -54,8 +54,14 @@ namespace H3D {
     /// array.
     virtual void renderArray() {}
 
-    /// Disable the array state enabled in renderAttay().
+    /// Disable the array state enabled in renderArray().
     virtual void disableArray() {}
+
+    /// Enable state needed before rendering the color.
+    virtual void preRender();
+
+    /// Disable state set in preRender() function.
+    virtual void postRender();
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "color".

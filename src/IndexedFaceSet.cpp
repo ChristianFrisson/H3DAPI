@@ -65,7 +65,7 @@ IndexedFaceSet::IndexedFaceSet(
                     Inst< SFBool       > _colorPerVertex,
                     Inst< SFBool       >  _normalPerVertex,
                     Inst< SFBool       > _solid,
-		                Inst< MFVertexAttributeNode > _attrib,
+                    Inst< MFVertexAttributeNode > _attrib,
                     Inst< AutoNormal   > _autoNormal,
                     Inst< SFBool       > _convex,
                     Inst< SFFloat      > _creaseAngle,
@@ -161,7 +161,7 @@ void IndexedFaceSet::render() {
     // if we have a color node we use the color from that instead
     // of the previously installed Material node.
     if ( colors ) {
-      glEnable( GL_COLOR_MATERIAL );
+      colors->preRender();
     } 
 
     GLhandleARB shader_program = 0;
@@ -324,7 +324,7 @@ void IndexedFaceSet::render() {
     if( tex_coord_gen ) stopTexGen( tex_coords );
 
     if ( colors ) {
-      glDisable( GL_COLOR_MATERIAL );
+      colors->postRender();
     } 
   }
 }
