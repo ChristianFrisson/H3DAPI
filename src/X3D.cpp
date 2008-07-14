@@ -189,17 +189,36 @@ Group* X3D::createX3DFromURL( const string &url,
       ResourceResolver::setBaseURL( old_base );
       return g;
     }
+
+    #ifdef HAVE_XERCES
+    XERCES_CPP_NAMESPACE_USE
+    // else...
+    ifstream is( resolved_url.c_str() );
+    XMLCh *url_ch = new XMLCh[ url.size() + 1 ];
+    for( unsigned int i = 0; i < url.size(); i++ ) {
+      url_ch[i] = url[i];
+    }
+    url_ch[ url.size() ] = '\0'; 
+    parser->parse( IStreamInputSource( is, url_ch ) );
+    delete[] url_ch;
+    is.close();
+#endif   
   }
   if( is_tmp_file ) 
     ResourceResolver::releaseTmpFileName( resolved_url );
   ResourceResolver::setBaseURL( old_base );
 
+#ifdef HAVE_XERCES
   Group *g = new Group;
-  AutoRef< Node > n = createX3DNodeFromURL( url, dn, exported_nodes,
-                                            prototypes );
+  AutoRef< Node > n = handler.getResultingNode();
   if( n.get() )
     g->children->push_back( n.get() );
   return g;
+#else
+  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+       << "are not supported" << endl;
+  return AutoRef< Node >(NULL);
+#endif
 }
 
 Group* X3D::createX3DFromStream( istream &is, 
