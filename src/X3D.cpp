@@ -88,8 +88,10 @@ SAX2XMLReader* X3D::getNewXMLParser() {
 
 Group* X3D::createX3DFromString( const string &str,
                                  DEFNodes *dn,
-				 DEFNodes *exported_nodes,
-				 PrototypeVector *prototypes  ) {
+         DEFNodes *exported_nodes,
+         PrototypeVector *prototypes  ) {
+  if ( isVRML( str ) )
+    return createVRMLFromString( str, dn );
   Group *g = new Group;
   AutoRef< Node > n = createX3DNodeFromString( str, dn,
                                                exported_nodes, 
@@ -101,11 +103,100 @@ Group* X3D::createX3DFromString( const string &str,
 
 Group* X3D::createX3DFromURL( const string &url,
                               DEFNodes *dn,
-			      DEFNodes *exported_nodes,
-			      PrototypeVector *prototypes ) {
+            DEFNodes *exported_nodes,
+            PrototypeVector *prototypes ) {
+  URNResolver *urn_resolver = ResourceResolver::getURNResolver();
+  string urn = url;
+  if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
+
+  bool is_tmp_file;
+  string resolved_url = ResourceResolver::resolveURLAsFile( url, 
+    &is_tmp_file );
+
+  string::size_type pos = resolved_url.find_last_of( "/\\" );
+  string path = resolved_url.substr( 0, pos + 1 );
+  string old_base = ResourceResolver::getBaseURL();
+
+#ifdef WIN32
+  // needed when running H3DAPI as a plugin to a web-browser
+  // and if url points to a local file.
+  // Needed for plugin for IE
+  string remove_string = "file:///";
+  if( path.find( remove_string ) == 0 ) {
+    path = path.substr( remove_string.size(), pos + 1 );
+  }
+
+  // Needed for plugin for Netscape ( tested on Opera )
+  remove_string = "file://localhost/";
+  if( path.find( remove_string ) == 0 ) {
+    path = path.substr( remove_string.size(), pos + 1 );
+  }
+#endif
+
+  ResourceResolver::setBaseURL( path ); 
+
+#ifdef HAVE_XERCES
+  auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
+  X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
+  parser->setContentHandler(&handler);
+  parser->setErrorHandler(&handler); 
+#endif
+
+  if( resolved_url == "" ) {
+#ifdef HAVE_XERCES
+    parser->parse( url.c_str() );
+#endif
+
+  } else {
+
+#ifdef HAVE_ZLIB
+    // check if zip-file
+    ifstream ifs( resolved_url.c_str(), ios::binary );
+    unsigned short magic_nr;
+    ifs.read( (char *)&magic_nr, sizeof( unsigned short ) );
+    bool file_exists = ifs.good();
+    ifs.close();
+
+    // then unpack it
+    if( file_exists && magic_nr == ZIP_MAGIC_NR ) {
+      string tmp_file = ResourceResolver::getTmpFileName();
+      if( tmp_file != "" ) { 
+        gzFile in  = gzopen( resolved_url.c_str(),"rb");
+        ofstream ofs( tmp_file.c_str(), ios::binary );
+        if( in && ofs.good() ) {
+          char buf[ 16384 ];  
+          int len = 0;
+          while( (len = gzread( in, buf, sizeof(buf))) != 0 ) {
+            ofs.write( buf, len );
+          }
+          gzclose(in);
+          ofs.close();
+          if( is_tmp_file ) 
+            ResourceResolver::releaseTmpFileName( resolved_url );
+          resolved_url = tmp_file;
+          is_tmp_file = true;
+        }
+      }
+    }
+#endif
+
+
+    ifstream istest( resolved_url.c_str() );
+    if ( isVRML( istest ) ) {
+      Group *g = createVRMLFromURL( resolved_url, dn );
+      if( is_tmp_file ) 
+        ResourceResolver::releaseTmpFileName( resolved_url );
+      ResourceResolver::setBaseURL( old_base );
+      return g;
+    }
+  }
+  if( is_tmp_file ) 
+    ResourceResolver::releaseTmpFileName( resolved_url );
+  ResourceResolver::setBaseURL( old_base );
+
   Group *g = new Group;
-  AutoRef< Node > n = createX3DNodeFromURL( url, dn, exported_nodes, 
-					    prototypes );
+  AutoRef< Node > n = createX3DNodeFromURL( url, dn, exported_nodes,
+                                            prototypes );
   if( n.get() )
     g->children->push_back( n.get() );
   return g;
@@ -113,12 +204,12 @@ Group* X3D::createX3DFromURL( const string &url,
 
 Group* X3D::createX3DFromStream( istream &is, 
                                  DEFNodes *dn,
-				 DEFNodes *exported_nodes,
-				 PrototypeVector *prototypes,
+         DEFNodes *exported_nodes,
+         PrototypeVector *prototypes,
                                  const XMLCh *const system_id ) {
   Group *g = new Group;
   AutoRef< Node > n = createX3DNodeFromStream( is, dn, exported_nodes, 
-					       prototypes,system_id );
+                 prototypes,system_id );
   if( n.get() )
     g->children->push_back( n.get() );
   return g;
@@ -127,8 +218,8 @@ Group* X3D::createX3DFromStream( istream &is,
 
 AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
                                               DEFNodes *dn,
-					      DEFNodes *exported_nodes,
-					      PrototypeVector *prototypes ) {
+                DEFNodes *exported_nodes,
+                PrototypeVector *prototypes ) {
   if ( isVRML( str ) )
     return createVRMLNodeFromString( str, dn );
   else {
@@ -143,7 +234,7 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
     return handler.getResultingNode();
 #else
   Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
-	     << "are not supported" << endl;
+       << "are not supported" << endl;
   return AutoRef< Node >(NULL);
 #endif
   }
@@ -151,8 +242,8 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
 
 AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
                                            DEFNodes *dn,
-					   DEFNodes *exported_nodes,
-					   PrototypeVector *prototypes ) {
+             DEFNodes *exported_nodes,
+             PrototypeVector *prototypes ) {
 
   URNResolver *urn_resolver = ResourceResolver::getURNResolver();
   string urn = url;
@@ -213,7 +304,7 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
         gzFile in  = gzopen( resolved_url.c_str(),"rb");
         ofstream ofs( tmp_file.c_str(), ios::binary );
         if( in && ofs.good() ) {
-          char buf[ 16384 ];	
+          char buf[ 16384 ];  
           int len = 0;
           while( (len = gzread( in, buf, sizeof(buf))) != 0 ) {
             ofs.write( buf, len );
@@ -261,15 +352,15 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   return handler.getResultingNode();
 #else
   Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
-	     << "are not supported" << endl;
+       << "are not supported" << endl;
   return AutoRef< Node >(NULL);
 #endif
 }
 
 AutoRef< Node > X3D::createX3DNodeFromStream( istream &is, 
                                               DEFNodes *dn,
-					      DEFNodes *exported_nodes,
-					      PrototypeVector *prototypes,
+                DEFNodes *exported_nodes,
+                PrototypeVector *prototypes,
                                               const XMLCh *const system_id ) {
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
@@ -280,7 +371,7 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
   return handler.getResultingNode();
 #else
   Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
-	     << "are not supported" << endl;
+       << "are not supported" << endl;
   return AutoRef< Node >( NULL );
 #endif
 }

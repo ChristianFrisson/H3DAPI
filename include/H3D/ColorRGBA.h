@@ -88,7 +88,6 @@ namespace H3D {
     /// Disable state set in preRender() function.
     virtual void postRender() {
       X3DColorNode::postRender();
-      glDisable( GL_COLOR_MATERIAL );
       glDisable( GL_BLEND );
     }
 
