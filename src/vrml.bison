@@ -418,8 +418,6 @@ inlineNodeNameId:        VRMLID ;
 
 exportedNodeNameId:      VRMLID ;
 
-nodeTypeId:              VRMLID ;
-
 initializeOnlyId:        VRMLID ;
 
 inputOnlyId:             VRMLID ;

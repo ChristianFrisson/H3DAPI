@@ -1,7 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
-/* C++ Skeleton parser for LALR(1) parsing with Bison,
-   Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* Skeleton interface for Bison LALR(1) parsers in C++
+
+   Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,16 +18,28 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.  */
-/* FIXME: This is wrong, we want computed header guards.
-   I don't know why the macros are missing now. :( */
+
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+/* C++ LALR(1) parser skeleton written by Akim Demaille.  */
+
 #ifndef PARSER_HEADER_H
 # define PARSER_HEADER_H
 
 #include <string>
 #include <iostream>
-
-/* Using locations.  */
-#define YYLSP_NEEDED 1
+#include "stack.hh"
 
 namespace yy
 {
@@ -34,35 +47,7 @@ namespace yy
   class location;
 }
 
-/* Tokens.  */
-   enum yytokentype {
-     VRMLID = 258,
-     STRING = 259,
-     AS = 260,
-     VRMLNULL = 261,
-     SCRIPT = 262,
-     VRMLTRUE = 263,
-     VRMLFALSE = 264,
-     PROFILE = 265,
-     COMPONENT = 266,
-     EXPORT = 267,
-     IMPORT = 268,
-     META = 269,
-     DEF = 270,
-     USE = 271,
-     PROTO = 272,
-     inputOnly = 273,
-     outputOnly = 274,
-     initializeOnly = 275,
-     inputOutput = 276,
-     EXTERNPROTO = 277,
-     ROUTE = 278,
-     TO = 279,
-     IS = 280
-   };
-
-
-/* Copy the first part of user declarations.  */
+/* First part of user declarations.  */
 #line 6 "vrml.bison"
 
 //////////////////////////////////////////////////////////////////////////////
@@ -128,10 +113,9 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 
 
 
-/* Line 321 of lalr1.cc.  */
-#line 133 "vrml.hpp"
+/* Line 35 of lalr1.cc.  */
+#line 118 "vrml.hpp"
 
-#include "stack.hh"
 #include "location.hh"
 
 /* Enabling traces.  */
@@ -147,34 +131,11 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 # define YYERROR_VERBOSE 1
 #endif
 
-#if YYERROR_VERBOSE
-# define YYERROR_VERBOSE_IF(x) x
-#else
-# define YYERROR_VERBOSE_IF(x) /* empty */
-#endif
-
 /* Enabling the token table.  */
 #ifndef YYTOKEN_TABLE
 # define YYTOKEN_TABLE 0
 #endif
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 84 "vrml.bison"
-union YYSTYPE {
-  char* val;
-};
-/* Line 321 of lalr1.cc.  */
-#line 168 "vrml.hpp"
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
-#endif
-
-/* Copy the second part of user declarations.  */
-
-
-/* Line 321 of lalr1.cc.  */
-#line 178 "vrml.hpp"
 /* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
    If N is 0, then set CURRENT to the empty location which ends
    the previous symbol: RHS[0] (always defined).  */
@@ -191,51 +152,68 @@ do {							\
     {							\
       (Current).begin = (Current).end = (Rhs)[0].end;	\
     }							\
-} while (0)
+} while (false)
 #endif
 
 namespace yy
 {
-  class VrmlParser;
 
-  template <typename P>
-  struct traits
-  {
-  };
-
-  template <>
-  struct traits<VrmlParser>
-  {
-    typedef unsigned char token_number_type;
-    typedef signed char       rhs_number_type;
-    typedef int state_type;
-    typedef YYSTYPE semantic_type;
-    typedef location location_type;
-  };
-}
-
-namespace yy
-{
   /// A Bison parser.
   class VrmlParser
   {
-    /// Symbol semantic values.
-    typedef traits<VrmlParser>::semantic_type semantic_type;
-    /// Symbol locations.
-    typedef traits<VrmlParser>::location_type location_type;
-
   public:
-    /// Build a parser object.
-    VrmlParser (VrmlDriver& driver_yyarg) :
-      yydebug_ (false),
-      yycdebug_ (&std::cerr),
-      driver (driver_yyarg)
+    /// Symbol semantic values.
+#ifndef YYSTYPE
+    union semantic_type
+#line 84 "vrml.bison"
+{
+  char* val;
+}
+/* Line 35 of lalr1.cc.  */
+#line 174 "vrml.hpp"
+	;
+#else
+    typedef YYSTYPE semantic_type;
+#endif
+    /// Symbol locations.
+    typedef location location_type;
+    /// Tokens.
+    struct token
     {
-    }
+      /* Tokens.  */
+   enum yytokentype {
+     VRMLID = 258,
+     STRING = 259,
+     AS = 260,
+     VRMLNULL = 261,
+     SCRIPT = 262,
+     VRMLTRUE = 263,
+     VRMLFALSE = 264,
+     PROFILE = 265,
+     COMPONENT = 266,
+     EXPORT = 267,
+     IMPORT = 268,
+     META = 269,
+     DEF = 270,
+     USE = 271,
+     PROTO = 272,
+     inputOnly = 273,
+     outputOnly = 274,
+     initializeOnly = 275,
+     inputOutput = 276,
+     EXTERNPROTO = 277,
+     ROUTE = 278,
+     TO = 279,
+     IS = 280
+   };
 
-    virtual ~VrmlParser ()
-    {
-    }
+    };
+    /// Token type.
+    typedef token::yytokentype token_type;
+
+    /// Build a parser object.
+    VrmlParser (VrmlDriver& driver_yyarg);
+    virtual ~VrmlParser ();
 
     /// Parse.
     /// \returns  0 iff parsing succeeded.
@@ -260,22 +238,30 @@ namespace yy
     virtual void error (const location_type& loc, const std::string& msg);
 
     /// Generate an error message.
-    /// \param tok    the look-ahead token.
-    virtual std::string yysyntax_error_ (YYERROR_VERBOSE_IF (int tok));
+    /// \param state   the state where the error occurred.
+    /// \param tok     the look-ahead token.
+    virtual std::string yysyntax_error_ (int yystate, int tok);
 
 #if YYDEBUG
+    /// \brief Report a symbol value on the debug stream.
+    /// \param yytype       The token type.
+    /// \param yyvaluep     Its semantic value.
+    /// \param yylocationp  Its location.
+    virtual void yy_symbol_value_print_ (int yytype,
+					 const semantic_type* yyvaluep,
+					 const location_type* yylocationp);
     /// \brief Report a symbol on the debug stream.
     /// \param yytype       The token type.
     /// \param yyvaluep     Its semantic value.
     /// \param yylocationp  Its location.
-    virtual void yysymprint_ (int yytype,
-			      const semantic_type* yyvaluep,
-			      const location_type* yylocationp);
+    virtual void yy_symbol_print_ (int yytype,
+				   const semantic_type* yyvaluep,
+				   const location_type* yylocationp);
 #endif /* ! YYDEBUG */
 
 
     /// State numbers.
-    typedef traits<VrmlParser>::state_type state_type;
+    typedef int state_type;
     /// State stack type.
     typedef stack<state_type>    state_stack_type;
     /// Semantic value stack type.
@@ -291,7 +277,7 @@ namespace yy
     location_stack_type yylocation_stack_;
 
     /// Internal symbol numbers.
-    typedef traits<VrmlParser>::token_number_type token_number_type;
+    typedef unsigned char token_number_type;
     /* Tables.  */
     /// For a state, the index in \a yytable_ of its portion.
     static const short int yypact_[];
@@ -335,7 +321,7 @@ namespace yy
 
 #if YYDEBUG
     /// A type to store symbol numbers and -1.
-    typedef traits<VrmlParser>::rhs_number_type rhs_number_type;
+    typedef signed char rhs_number_type;
     /// A `-1'-separated list of the rules' RHS.
     static const rhs_number_type yyrhs_[];
     /// For each rule, the index of the first RHS symbol in \a yyrhs_.
@@ -345,13 +331,13 @@ namespace yy
     /// For each scanner token number, its symbol number.
     static const unsigned short int yytoken_number_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
-    virtual void yyreduce_print_ (int r);
+    virtual void yy_reduce_print_ (int r);
     /// Print the state stack on the debug stream.
     virtual void yystack_print_ ();
 #endif
 
-    /// Convert a scanner token number to a symbol number.
-    inline token_number_type yytranslate_ (int token);
+    /// Convert a scanner token number \a t to a symbol number.
+    token_number_type yytranslate_ (int t);
 
     /// \brief Reclaim the memory associated to a symbol.
     /// \param yymsg        Why this token is reclaimed.
@@ -359,9 +345,9 @@ namespace yy
     /// \param yyvaluep     Its semantic value.
     /// \param yylocationp  Its location.
     inline void yydestruct_ (const char* yymsg,
-                             int yytype,
-                             semantic_type* yyvaluep,
-                             location_type* yylocationp);
+			     int yytype,
+			     semantic_type* yyvaluep,
+			     location_type* yylocationp);
 
     /// Pop \a n symbols the three stacks.
     inline void yypop_ (unsigned int n = 1);
@@ -379,15 +365,6 @@ namespace yy
     static const unsigned int yyuser_token_number_max_;
     static const token_number_type yyundef_token_;
 
-    /* State.  */
-    int yyn_;
-    int yylen_;
-    int yystate_;
-
-    /* Error handling. */
-    int yynerrs_;
-    int yyerrstatus_;
-
     /* Debugging.  */
     int yydebug_;
     std::ostream* yycdebug_;
@@ -397,5 +374,6 @@ namespace yy
     VrmlDriver& driver;
   };
 }
+
 
 #endif /* ! defined PARSER_HEADER_H */

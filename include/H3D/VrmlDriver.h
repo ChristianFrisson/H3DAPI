@@ -44,7 +44,9 @@ using namespace H3D;
 using namespace X3D;
 
 // Forward declarations.
-union YYSTYPE;
+union YYSTYPE {
+  char* val;
+};
 
 class VrmlDriver;
 

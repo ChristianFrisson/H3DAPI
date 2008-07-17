@@ -1,7 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
-/* Position class for Bison C++ parsers,
-   Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* Positions for Bison parsers in C++
+
+   Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,9 +19,22 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.  */
 
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
 /**
  ** \file position.hh
- ** Define the position class.
+ ** Define the yy::position class.
  */
 
 #ifndef BISON_POSITION_HH
@@ -35,23 +49,21 @@ namespace yy
   class position
   {
   public:
-    /// Initial column number.
-    static const unsigned int initial_column = 0;
-    /// Initial line number.
-    static const unsigned int initial_line = 1;
 
-    /** \name Ctor & dtor.
-     ** \{ */
-  public:
     /// Construct a position.
-    position () :
-      filename (0),
-      line (initial_line),
-      column (initial_column)
+    position ()
+      : filename (0), line (1), column (0)
     {
     }
-    /** \} */
 
+
+    /// Initialization.
+    inline void initialize (std::string* fn)
+    {
+      filename = fn;
+      line = 1;
+      column = 0;
+    }
 
     /** \name Line and Column related manipulators
      ** \{ */
@@ -59,19 +71,19 @@ namespace yy
     /// (line related) Advance to the COUNT next lines.
     inline void lines (int count = 1)
     {
-      column = initial_column;
+      column = 0;
       line += count;
     }
 
     /// (column related) Advance to the COUNT next columns.
     inline void columns (int count = 1)
     {
-      int leftmost = initial_column;
+      int leftmost = 0;
       int current  = column;
       if (leftmost <= current + count)
 	column += count;
       else
-	column = initial_column;
+	column = 0;
     }
     /** \} */
 

@@ -32,14 +32,14 @@
 //
 
 #include <H3D/VrmlDriver.h>
-#include <H3D/vrml.hpp>
+#include "vrml.hpp"
 #define YYLMAX 65535
 %}
 
 %option noyywrap nounput batch debug
 
 
-ID       [^\-\x30-\x39\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ][^\-\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ]*
+ID       [^\-\x30-\x39\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ][^\x0-\x20\x22\x23\x27\x2c\x2e\x5b\x5c\x5d\x7b\x7f{}\[\] ]*
 
 OLDNUMBER   (([\-\+0-9][0-9\+\-.eE]*)|([\-\+0-9\.][0-9\+\-.eE]+)|(0[xX][0-9a-fA-F]+))
 
@@ -55,38 +55,38 @@ STRING    \"[^\"]*\"
 %%
 
 
-AS             driver.addLine( yytext ); return AS;
-TRUE           driver.addLine( yytext ); return VRMLTRUE;
-FALSE          driver.addLine( yytext ); return VRMLFALSE;
-PROFILE        driver.addLine( yytext ); return PROFILE;
-COMPONENT      driver.addLine( yytext ); return COMPONENT;
-EXPORT         driver.addLine( yytext ); return EXPORT;
-IMPORT         driver.addLine( yytext ); return IMPORT;
-META           driver.addLine( yytext ); return META;
-DEF            driver.addLine( yytext ); return DEF;
-USE            driver.addLine( yytext ); return USE;
-PROTO          driver.addLine( yytext ); return PROTO;
-NULL           driver.addLine( yytext ); return VRMLNULL;
-inputOnly      driver.addLine( yytext ); return inputOnly;
-eventIn        driver.addLine( yytext ); return inputOnly;
-outputOnly     driver.addLine( yytext ); return outputOnly;
-eventOut       driver.addLine( yytext ); return outputOnly;
-initializeOnly driver.addLine( yytext ); return initializeOnly;
-field          driver.addLine( yytext ); return initializeOnly;
-inputOutput    driver.addLine( yytext ); return inputOutput;
-exposedField   driver.addLine( yytext ); return inputOutput;
-EXTERNPROTO    driver.addLine( yytext ); return EXTERNPROTO;
-ROUTE          driver.addLine( yytext ); return ROUTE;
-TO             driver.addLine( yytext ); return TO;
-IS             driver.addLine( yytext ); return IS;
+AS             driver.addLine( yytext ); return yy::VrmlParser::token::AS;
+TRUE           driver.addLine( yytext ); return yy::VrmlParser::token::VRMLTRUE;
+FALSE          driver.addLine( yytext ); return yy::VrmlParser::token::VRMLFALSE;
+PROFILE        driver.addLine( yytext ); return yy::VrmlParser::token::PROFILE;
+COMPONENT      driver.addLine( yytext ); return yy::VrmlParser::token::COMPONENT;
+EXPORT         driver.addLine( yytext ); return yy::VrmlParser::token::EXPORT;
+IMPORT         driver.addLine( yytext ); return yy::VrmlParser::token::IMPORT;
+META           driver.addLine( yytext ); return yy::VrmlParser::token::META;
+DEF            driver.addLine( yytext ); return yy::VrmlParser::token::DEF;
+USE            driver.addLine( yytext ); return yy::VrmlParser::token::USE;
+PROTO          driver.addLine( yytext ); return yy::VrmlParser::token::PROTO;
+NULL           driver.addLine( yytext ); return yy::VrmlParser::token::VRMLNULL;
+inputOnly      driver.addLine( yytext ); return yy::VrmlParser::token::inputOnly;
+eventIn        driver.addLine( yytext ); return yy::VrmlParser::token::inputOnly;
+outputOnly     driver.addLine( yytext ); return yy::VrmlParser::token::outputOnly;
+eventOut       driver.addLine( yytext ); return yy::VrmlParser::token::outputOnly;
+initializeOnly driver.addLine( yytext ); return yy::VrmlParser::token::initializeOnly;
+field          driver.addLine( yytext ); return yy::VrmlParser::token::initializeOnly;
+inputOutput    driver.addLine( yytext ); return yy::VrmlParser::token::inputOutput;
+exposedField   driver.addLine( yytext ); return yy::VrmlParser::token::inputOutput;
+EXTERNPROTO    driver.addLine( yytext ); return yy::VrmlParser::token::EXTERNPROTO;
+ROUTE          driver.addLine( yytext ); return yy::VrmlParser::token::ROUTE;
+TO             driver.addLine( yytext ); return yy::VrmlParser::token::TO;
+IS             driver.addLine( yytext ); return yy::VrmlParser::token::IS;
 
 
-{ID}        yylval->val=strdup(yytext); driver.addLine( yytext );  return VRMLID;
+{ID}        yylval->val=strdup(yytext); driver.addLine( yytext );  return yy::VrmlParser::token::VRMLID;
 
 ({COMMENT}({WHITE})*)+  driver.addLine( yytext );
 
 
-(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+       driver.addLine( yytext ); yylval->val=strdup(yytext); return STRING;
+(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+       driver.addLine( yytext ); yylval->val=strdup(yytext); return yy::VrmlParser::token::STRING;
 
 
 {WHITE}+     driver.addLine( yytext );
