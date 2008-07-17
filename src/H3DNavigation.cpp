@@ -287,6 +287,10 @@ void H3DNavigation::disableDevice( int device ) {
 }
 
 void H3DNavigation::enableDevice( int device ) {
+  if( !instance ) {
+    instance = new H3DNavigation();
+    instance->last_time = Scene::time->getValue();
+  }
   if( instance )
   {
     switch( device ) {

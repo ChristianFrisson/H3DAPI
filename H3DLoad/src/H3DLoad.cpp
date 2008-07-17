@@ -534,10 +534,7 @@ int main(int argc, char* argv[]) {
 
   try {
     AutoRef< KeySensor > ks( new KeySensor );
-#ifndef MACOSX
-    AutoRef< SpaceWareSensor > ss;
-    if( use_space_mouse ) ss.reset( new SpaceWareSensor );
-#endif
+
     X3D::DEFNodes dn;
     auto_ptr< QuitAPIField > quit_api( new QuitAPIField );
     auto_ptr< ChangeViewport > change_viewpoint( new ChangeViewport );
@@ -592,8 +589,10 @@ int main(int argc, char* argv[]) {
     ks->actionKeyPress->route( change_viewpoint );  //###########
 
 #ifndef MACOSX
-    if( use_space_mouse )
-      g->children->push_back(ss.get());
+    if( use_space_mouse ) {
+      if( !H3DNavigation::isEnabled( H3DNavigation::SWS ) )
+          H3DNavigation::enableDevice( H3DNavigation::SWS );
+    }
 #endif    
     // create a Viewpoint if it does not exist.
     if( !X3DViewpointNode::getActive() && viewpoint_file.size() ) {
