@@ -63,7 +63,7 @@ namespace H3D {
           if( (*i)->use_center ) {
             use_center_sum = true;
             centerCounter++;
-            center_of_rot_sum += (*i)->center_of_rot;
+            center_of_rot_sum += (*i)->getCenterOfRot();
           }
           (*i)->resetAll();
           somethingmoved = true;
@@ -106,6 +106,10 @@ namespace H3D {
     Rotation rel_rot;
     Vec3f center_of_rot;
     bool use_center;
+
+    virtual Vec3f getCenterOfRot(){
+      return center_of_rot;
+    }
 
   protected:
     auto_ptr< SFBool > shouldGetInfo;
@@ -187,7 +191,7 @@ namespace H3D {
   public:
 
     class CalculateHapticDeviceMoveInfo :
-      public AutoUpdate< TypedField< SFBool, Types< SFBool > > > {
+      public TypedField< SFBool, Types< SFBool, SFVec3f > > {
 
     public:
       CalculateHapticDeviceMoveInfo() {
@@ -211,6 +215,8 @@ namespace H3D {
     HapticDeviceNavigation();
 
     virtual void resetAll();
+
+    virtual Vec3f getCenterOfRot();
 
   protected:
     auto_ptr< CalculateHapticDeviceMoveInfo > calculateHapticDeviceMoveInfo;

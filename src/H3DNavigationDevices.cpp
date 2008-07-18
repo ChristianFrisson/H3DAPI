@@ -259,7 +259,8 @@ HapticDeviceNavigation::HapticDeviceNavigation() :
   if( di && !di->device->empty() ) {
     H3DHapticsDevice *hd =
       static_cast< H3DHapticsDevice * >(di->device->getValueByIndex( 0 ) );
-    hd->mainButton->route( calculateHapticDeviceMoveInfo );
+    hd->mainButton->routeNoEvent( calculateHapticDeviceMoveInfo );
+    hd->devicePosition->route( calculateHapticDeviceMoveInfo );
     calculateHapticDeviceMoveInfo->route( shouldGetInfo );
   } else {
     Console(4) << "No haptics devices in the scene. "
@@ -276,31 +277,36 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
   H3DHapticsDevice *hd =
     static_cast< H3DHapticsDevice * >(di->device->getValueByIndex( 0 ) );
   bool tmp_button_pressed = static_cast< SFBool * >(routes_in[0])->getValue();
+  Vec3f device_pos = static_cast< SFVec3f * >(routes_in[1])->getValue();
+  Rotation device_orn = hd->deviceOrientation->getValue();
+  Vec3f scaling_stuff = hd->positionCalibration->getValue().getScalePart();
   if( tmp_button_pressed != button_pressed ) {
     button_pressed = tmp_button_pressed;
     if( button_pressed ) {
-      last_orn = hd->deviceOrientation->getValue();
-      last_pos = hd->devicePosition->getValue();
-      last_weight_pos = hd->weightedProxyPosition->getValue();
+      last_orn = device_orn;
+      last_pos = device_pos;
     }
   }
   
   if( button_pressed ) {
     string nav_type = the_owner->getNavType();
     if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
-      Rotation this_orn = hd->deviceOrientation->getValue();
+      Rotation this_orn = device_orn;
       the_owner->rel_rot = -(this_orn * -last_orn);
       last_orn = this_orn;
-      the_owner->move_dir = 2*( last_pos - hd->devicePosition->getValue() );
-      last_pos = hd->devicePosition->getValue();
-      the_owner->center_of_rot = hd->weightedProxyPosition->getValue();
+      Vec3f temp_move_dir = last_pos - device_pos;
+      temp_move_dir.x *= scaling_stuff.x;
+      temp_move_dir.y *= scaling_stuff.y;
+      temp_move_dir.z *= scaling_stuff.z;
+      the_owner->move_dir = temp_move_dir;
+      last_pos = device_pos;
       the_owner->use_center = true;
     }
     else if( nav_type == "WALK" ) {
-      Vec3f dist_change = hd->devicePosition->getValue() - last_pos;
+      Vec3f dist_change = device_pos - last_pos;
       dist_change.y = 0;
       dist_change.normalizeSafe();
-      Rotation this_orn = hd->deviceOrientation->getValue();
+      Rotation this_orn = device_orn;
       last_orn = this_orn;
       Rotation rel_rot = Rotation();
       try {
@@ -317,15 +323,14 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
       }
       the_owner->move_dir = dist_change;
       the_owner->rel_rot = rel_rot;
-      the_owner->center_of_rot = Vec3f();
       the_owner->use_center = false;
     }
     else if( nav_type == "FLY" ) {
       the_owner->rel_rot = Rotation();
-      Vec3f dist_change = hd->devicePosition->getValue() - last_pos;
+      Vec3f dist_change = device_pos - last_pos;
       dist_change.y = 0;
       dist_change.normalizeSafe();
-      Rotation this_orn = hd->deviceOrientation->getValue();
+      Rotation this_orn = device_orn;
       last_orn = this_orn;
       Rotation rel_rot = Rotation();
       try {
@@ -356,7 +361,6 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
       }
       the_owner->move_dir = dist_change;
       the_owner->rel_rot = rel_rot;
-      the_owner->center_of_rot = Vec3f();
       the_owner->use_center = false;
     }
     else if( nav_type == "LOOKAT" ) {
@@ -365,6 +369,14 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
     return;
   }
   value = false;
+}
+
+Vec3f HapticDeviceNavigation::getCenterOfRot() {
+  DeviceInfo *di = DeviceInfo::getActive();
+  if( di && !di->device->empty() ) {
+    return static_cast< H3DHapticsDevice * >(di->device->getValueByIndex( 0 ) )
+      ->weightedProxyPosition->getValue();
+  } else return Vec3f();
 }
 
 SWSNavigation::SWSNavigation() :
