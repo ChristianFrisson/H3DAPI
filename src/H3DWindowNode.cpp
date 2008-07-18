@@ -571,7 +571,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
   }
 
-    AutoRef< Viewpoint > vp_ref;
+  AutoRef< Viewpoint > vp_ref;
   // get the viewpoint. If the H3DWindowNode viewpoint field is set use that
   // otherwise use the stack top of the Viewpoint bindable stack.
   X3DViewpointNode *vp =
@@ -582,6 +582,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     vp = new Viewpoint;
     vp_ref.reset( static_cast<Viewpoint *>(vp) );
   }
+
+  X3DViewpointNode *navigation_vp = vp;
+  if( nav_info )
+    vp = nav_info->viewpointToUse( vp );
 
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
 
@@ -990,7 +994,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // two windows in the same scene will probably
   // give some strange results.
   if( nav_info )
-    nav_info->doNavigation( vp, child_to_render );
+    nav_info->doNavigation( navigation_vp, child_to_render );
   else {
     bool use_collision = default_collision;
     

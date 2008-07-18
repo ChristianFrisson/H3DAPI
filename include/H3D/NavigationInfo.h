@@ -266,6 +266,17 @@ namespace H3D {
 
     void doNavigation( X3DViewpointNode * vp, X3DChildNode *topNode );
 
+    /// Compares the viewpoint provided to the viewpoint in use by
+    /// the NavigationInfo. Used in order to make sure that the same viewpoint
+    /// is used for graphics and haptics when a NavigationInfo is in use.
+    inline X3DViewpointNode *
+      viewpointToUse( X3DViewpointNode *potential_vp ) {
+        if( old_vp.get() && old_vp.get() != potential_vp ) {
+          return old_vp.get();
+        }
+        return potential_vp;
+      }
+
     inline void setNavType( string type ) { nav_type = type; }
 
     string getUsedNavType();

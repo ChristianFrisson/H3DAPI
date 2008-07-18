@@ -33,6 +33,7 @@
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/GlobalSettings.h>
 #include <H3D/HapticsOptions.h>
+#include <H3D/NavigationInfo.h>
 
 #include <HAPI/HAPIHapticsRenderer.h>
 #include <HAPI/HAPIProxyBasedRenderer.h>
@@ -261,33 +262,16 @@ void H3DHapticsDevice::renderShapes(
 }
 
 void H3DHapticsDevice::updateDeviceValues() {
-   previuos_proxy_pos = proxyPosition->getValue();
+  previuos_proxy_pos = proxyPosition->getValue();
   TimeStamp now = TimeStamp();
   TimeStamp dt = now - last_update_values;
   last_update_values = now;
 
   if( hapi_device.get() ) {
-    H3DInt32 hr = hapi_device->getHapticsRate();
-    hapticsRate->setValue( hr, id );
-    hapticsLoopTime->setValue( hapi_device->getTimeSpentInLastLoop() ,id );
-    HAPI::HAPIHapticsDevice::DeviceValues dv = 
-      hapi_device->getRawDeviceValues();
-    // convert to metres
-    devicePosition->setValue( Vec3f( dv.position ), id);
-    deviceVelocity->setValue( Vec3f( dv.velocity ), id);
-    deviceOrientation->setValue( dv.orientation, id);
-    force->setValue( (Vec3f)dv.force, id);
-    torque->setValue( (Vec3f)dv.torque, id);
-    buttons->setValue( dv.button_status, id );
-    // set mainButton and secondaryButton
-    bool temp_value = (dv.button_status & 0x01) != 0;
-    if( temp_value != mainButton->getValue() )
-      mainButton->setValue( temp_value, id );
-    temp_value = (dv.button_status & 0x02) != 0;
-    if( temp_value != secondaryButton->getValue() )
-      secondaryButton->setValue( temp_value, id );
-
     X3DViewpointNode *vp = X3DViewpointNode::getActive();
+    NavigationInfo *nav_info = NavigationInfo::getActive();
+    if( nav_info )
+      vp = nav_info->viewpointToUse( vp );
     if( followViewpoint->getValue() && vp ) {
       // Haptic device should follow the viewpoint.
 
@@ -339,8 +323,26 @@ void H3DHapticsDevice::updateDeviceValues() {
       hapi_device->setOrientationCalibration(
         orientationCalibration->rt_orn_calibration );
     }
-    //cerr << deviceOrientation->getValue() << endl;
-    //cerr << trackerOrientation->getValue() << endl;
+
+    H3DInt32 hr = hapi_device->getHapticsRate();
+    hapticsRate->setValue( hr, id );
+    hapticsLoopTime->setValue( hapi_device->getTimeSpentInLastLoop() ,id );
+    HAPI::HAPIHapticsDevice::DeviceValues dv = 
+      hapi_device->getRawDeviceValues();
+    // convert to metres
+    devicePosition->setValue( Vec3f( dv.position ), id);
+    deviceVelocity->setValue( Vec3f( dv.velocity ), id);
+    deviceOrientation->setValue( dv.orientation, id);
+    force->setValue( (Vec3f)dv.force, id);
+    torque->setValue( (Vec3f)dv.torque, id);
+    buttons->setValue( dv.button_status, id );
+    // set mainButton and secondaryButton
+    bool temp_value = (dv.button_status & 0x01) != 0;
+    if( temp_value != mainButton->getValue() )
+      mainButton->setValue( temp_value, id );
+    temp_value = (dv.button_status & 0x02) != 0;
+    if( temp_value != secondaryButton->getValue() )
+      secondaryButton->setValue( temp_value, id );
 
     vector< Vec3f > proxies;
 
@@ -467,12 +469,6 @@ void H3DHapticsDevice::updateDeviceValues() {
     }
     last_contacts.swap( all_contacts );
 
-    /*
-    cerr << "F: " << devicePosition->getValue() << endl;
-    cerr << "F: " << trackerPosition->getValue() << endl;
-    cerr << "T: " << proxyPosition->getValue() << endl;
-    cerr << "W: " << weightedProxyPosition->getValue() << endl;
-    */
   }
 
   //cerr << hr << endl;
