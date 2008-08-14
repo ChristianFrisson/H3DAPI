@@ -135,6 +135,10 @@ void TimeSensor::TimeHandler::update() {
       }
     }
     X3DTimeDependentNode::TimeHandler::update();
+    if( !time_node->isActive->getValue() &&
+      time_node->stopTime->getValue() <= time_node->startTime->getValue() ) {
+      activate( time );
+    }
   } else {
     if( time_node->isActive->getValue() ) {
       deactivate( time );
