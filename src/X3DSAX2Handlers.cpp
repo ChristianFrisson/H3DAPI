@@ -41,6 +41,7 @@
 #include <H3D/Inline.h>
 #include <H3D/H3DExports.h>
 #include <H3D/ProfilesAndComponents.h>
+#include <H3D/PythonScript.h>
 
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
@@ -95,11 +96,13 @@ using namespace X3DSAX2HandlersInternals;
 
 class FieldValue: public Node {
 public:
-  FieldValue( const string &n, Field *f ): Node(), field(f ) {
+  FieldValue( const string &n, Field *f, Node * _fv_parent = 0 ):
+      Node(), field(f), fv_parent(_fv_parent) {
     type_name = "FieldValue";
     name = n;
   }
   Field *field;
+  Node *fv_parent;
 };
 
 string X3DSAX2Handlers::getLocationString() {
@@ -591,6 +594,16 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
                                 toString( locator->getSystemId() ),
                                 locator->getLineNumber() );
     } else {
+      if( dynamic_cast< PythonScript * >(parent) ) {
+        if( !parent->isInitialized() && parent->getManualInitialize() ) {
+          parent->initialize();
+          Console(3) << "WARNING: When using a PythonScript in a Protobody "
+                     << "all nodes within the PythonScript tags has to be "
+                     << "declared before the connect elements. This warning "
+                     << "is outputed even if this is already the case. "
+                     << getLocationString() << endl;
+        }
+      }
       
       // Lookup the nodes and fields and set up the route.
       Field *node_field = parent->getField( toString( node_field_name ) ); 
@@ -740,7 +753,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
         proto_declaration->setProtoBody( proto_declaration->getProtoBody() + 
                                          s.str() );
       } 
-	
+  
     }
   }
 }
@@ -931,7 +944,10 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
     return;
   }
 
+  bool name_value_missing = true;
+
   if( name && value ) {
+    name_value_missing = false;
     Field *field = pi->database.getField( parent, toString( name ) );
     if( !field ) {
       Console(3) << "Warning: Field named \"" << name 
@@ -974,9 +990,27 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
                                   locator->getLineNumber() ); 
       } 
     }
-  } else {
-    Console(3) << "Warning: Both \"name\" and \"value\" attributes required in fieldValue element" 
-         << getLocationString() << endl;
+  } else if( name && !value ) {
+    Field *field = pi->database.getField( parent, toString( name ) );
+    if( !field ) {
+      Console(3) << "Warning: Field named \"" << name 
+           << "\" does not exist in ProtoInstance node (" 
+           << toString( locator->getSystemId() )
+           << ", line " << locator->getLineNumber() << ")" << endl;
+      return;
+    }
+    if( field->getX3DType() == X3DTypes::MFNODE ||
+        field->getX3DType() == X3DTypes::SFNODE ) {
+      name_value_missing = false;
+      node_stack.pop();
+      node_stack.push( new FieldValue( toString( name ), field,
+                                       node_stack.top().getNode() ) );
+    }
+  }
+
+  if( name_value_missing ) {
+    Console(3) << "Warning: Both \"name\" and \"value\" attributes required "
+               << "in fieldValue element"  << getLocationString() << endl;
     return;
   }
 }
@@ -1098,7 +1132,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         } else {
           defining_proto_connections = true;
         }
-      }	else if( localname_string == "connect"  ) {
+      } else if( localname_string == "connect"  ) {
         handleConnectElement( attrs, parent );
       } else if( localname_string == "ROUTE" ) {
         handleRouteElement( attrs, false );
@@ -1207,7 +1241,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
           int nr_attrs = attrs.getLength();
           for( int i = 0; i < nr_attrs; i++ ) {
             string name = toString( attrs.getQName( i ) );
-	    
+      
             if( name == "USE" ) {
               // this case has already been specially handled above, 
               // so we just ignore it
@@ -1253,7 +1287,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                   // without throwing an error.
                   if( XMLString::equals( attr_value, gEmptyString ) )
                     continue;
-		  
+      
                   try {
                     pfield->setValueFromString( toString( attr_value ) ); 
                   }
@@ -1365,7 +1399,7 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
       new_node->initialize();
     if( parent ) {
       FieldValue *fv = dynamic_cast< FieldValue * >( parent );
-      if( fv ) {
+      if( fv && !(fv->fv_parent) ) {
         Field::AccessType access_type = fv->field->getAccessType();
         if( access_type == Field::INITIALIZE_ONLY ||
             access_type == Field::INPUT_OUTPUT ) {
@@ -1387,6 +1421,9 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
                << getLocationString() << endl;
         }
       } else {
+        if( fv && fv->fv_parent )
+          parent = fv->fv_parent;
+
         Field *cf = 
           parent->getField( new_node_element.getContainerField().c_str() );
         SFNode *sfnode = dynamic_cast< SFNode * >( cf );

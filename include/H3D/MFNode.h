@@ -186,12 +186,12 @@ namespace H3D {
       return value;
     }
 
-    /// Returns a string name for this field type i.e. SFNode
+    /// Returns a string name for this field type i.e. MFNode
     virtual string getTypeName() {
       return classTypeName();
     }
     
-    /// Returns a string name for this field type i.e. SFNode
+    /// Returns a string name for this field type i.e. MFNode
     static string classTypeName() {
       return "MFNode";
     }

@@ -51,6 +51,11 @@ IF( WIN32 )
   IF(OPENHAPTICS_INCLUDE_DIR AND HD_LIBRARY AND HL_LIBRARY AND HDU_LIBRARY)
     SET( OPENHAPTICS_FOUND 1 )
   ENDIF(OPENHAPTICS_INCLUDE_DIR AND HD_LIBRARY AND HL_LIBRARY AND HDU_LIBRARY)
+
+  # Check if HAPTIK was found.
+  IF(HAPTIK_INCLUDE_DIR AND HAPTIK_LIBRARY)
+    SET( HAPTIK_FOUND 1 )
+  ENDIF(HAPTIK_INCLUDE_DIR AND HAPTIK_LIBRARY)
 ENDIF( WIN32 )
 
 # Version of H3D API.
@@ -487,6 +492,14 @@ IF(FREEIMAGE_FOUND)
   ENDIF(WIN32)
 ENDIF(FREEIMAGE_FOUND)
 
+IF(HAPTIK_FOUND)
+  IF(WIN32)
+  STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${HAPTIK_LIBRARY} )
+  ELSE(WIN32)
+    SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARY} )
+  ENDIF(WIN32)
+ENDIF(HAPTIK_FOUND)
+
 IF(WIN32)
   # Optional extra library. Used to render movies as textures.
   FIND_PACKAGE(DirectShow)
@@ -561,6 +574,8 @@ SET_TARGET_PROPERTIES( H3DAPI PROPERTIES VERSION ${H3DAPI_FULL_VERSION} )
 IF( WIN32 )
   # Temporary variables used later to set LINK_FLAGS.
   SET( TEMP_OUTPUT_POSTFIX "" )
+  SET( H3DAPI_LINK_FLAGS "" )
+  SET( H3DAPI_LINK_FLAGS_RELEASE "" )
   SET( H3DAPI_LINK_FLAGS_DEBUG "" )
 
   # change the name depending on compiler to be able to tell them apart
@@ -600,9 +615,15 @@ IF( WIN32 )
   ENDIF(MSVC70 OR MSVC71)
 
   # Set delayload properties of H3D API.
+  SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"cgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"ftgl_dynamic_MTD.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\"")
+
+  IF(HAPTIK_FOUND)
+    SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"Haptik.Library.dll\"" )
+  ENDIF(HAPTIK_FOUND)
+
   SET_TARGET_PROPERTIES( H3DAPI
                          PROPERTIES
-                         LINK_FLAGS "/DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"cgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"ftgl_dynamic_MTD.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\"" )
+                         LINK_FLAGS "${H3DAPI_LINK_FLAGS}" )
   
   IF(CHAI3D_FOUND)
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\"" )
