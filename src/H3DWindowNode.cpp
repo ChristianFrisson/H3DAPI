@@ -725,6 +725,16 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
              stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
              stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
+
+      // Inserted this line to reset the position of the raster
+      // so that the entire stencil_mask will be copied into the stencil
+      // buffer by glDrawPixels.  This ensures that even if user calls such
+      // as glDrawPixels(), glCopyPixels(), or glBindFramebufferEXT()
+      // leave glRasterPos in the middle of the screen, the entire stencil
+      // stencil_mack still gets copied to the stencil buffery by
+      // glDrawPixels()
+      glWindowPos2f(0.000000f, 0.000000f);
+
       // TODO: Currently we redraw the stencil mask each loop, becuase of
       // the stencil mask can be cleared when running on a Sharp laptop
       // from somewhere outside H3D API. When this does not happen anymore
