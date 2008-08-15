@@ -85,15 +85,17 @@ void X3DGroupingNode::render()     {
       l->enableGraphicsState();
     }
   }
-  
-  for( MFNode::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
-    H3DDisplayListObject *c = dynamic_cast< H3DDisplayListObject* >( *i );
-    if ( c ) {
-      c->displayList->callList();
-    } else {
-      //if(*i)
-        (*i)->render();
+
+  // not using iterators since they can become invalid if the 
+  // traversal changes the children field while iterating.
+  const NodeVector &c = children->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    if( c[i] ) {
+      H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
+      if( tmp )
+        tmp->displayList->callList();
+      else
+        c[i]->render();
     }
   }
 
