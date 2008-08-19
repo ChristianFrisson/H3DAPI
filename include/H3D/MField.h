@@ -353,7 +353,7 @@ namespace H3D {
     inline virtual typename vector<Type>::const_reference
     getValueByIndex( typename BaseMField::size_type i, int id = 0 ) {
 #ifdef DEBUG
-      Console(1) << "MField(" << name << ")::getValue()" << endl;
+      Console(1) << "MField(" << this->name << ")::getValue()" << endl;
 #endif
       // check that we have the correct access type
       this->checkAccessTypeGet( id );

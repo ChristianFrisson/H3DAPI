@@ -222,29 +222,29 @@ public:
   void clearData();
 
   /***************Member Functions*****************/
-  void OnOpenFile	(wxCommandEvent & event);
-  void OnMRUFile  (wxCommandEvent & event);
-  void OnOpenFileURL	(wxCommandEvent & event);
-  void OnCloseFile	(wxCommandEvent & event);
-  void OnChooseDir  (wxCommandEvent & event);
-  void OnExit     	(wxCommandEvent & event);
-  void OnWindowExit (wxCloseEvent & event);
-  void OnAbout		(wxCommandEvent & event);
-  void OnHelp		(wxCommandEvent & event);
-  void OnFullscreen	(wxCommandEvent & event);
-  void RestoreWindow(wxCommandEvent & event);
-  void MirrorScene	(wxCommandEvent & event);
-  void RenderMode	(wxCommandEvent & event);
-  void ShowConsole	(wxCommandEvent & event);
-  void ShowFrameRate	(wxCommandEvent & event);
-  void GetSelection (wxMenuEvent & event);
-  void ChangeViewpoint (wxCommandEvent & event);
-  void ResetViewpoint (wxCommandEvent & event);
-  void ChangeNavigation (wxCommandEvent & event);
-  void ChangeNavigationDevice (wxCommandEvent & event);
-  void ChangeRenderer (wxCommandEvent & event);
-  void ToggleHaptics  (wxCommandEvent & event);
-  void OnSettings( wxCommandEvent & event);
+  void OnOpenFile( wxCommandEvent & event );
+  void OnMRUFile( wxCommandEvent & event );
+  void OnOpenFileURL( wxCommandEvent & event );
+  void OnCloseFile( wxCommandEvent & event );
+  void OnChooseDir( wxCommandEvent & event );
+  void OnExit( wxCommandEvent & event );
+  void OnWindowExit( wxCloseEvent & event );
+  void OnAbout( wxCommandEvent & event );
+  void OnHelp( wxCommandEvent & event );
+  void OnFullscreen( wxCommandEvent & event );
+  void RestoreWindow( wxCommandEvent & event );
+  void MirrorScene( wxCommandEvent & event );
+  void RenderMode( wxCommandEvent & event );
+  void ShowConsole( wxCommandEvent & event );
+  void ShowFrameRate( wxCommandEvent & event );
+  void GetSelection( wxMenuEvent & event );
+  void ChangeViewpoint( wxCommandEvent & event );
+  void ResetViewpoint( wxCommandEvent & event );
+  void ChangeNavigation( wxCommandEvent & event );
+  void ChangeNavigationDevice( wxCommandEvent & event );
+  void ChangeRenderer( wxCommandEvent & event );
+  void ToggleHaptics( wxCommandEvent & event );
+  void OnSettings( wxCommandEvent & event );
 
   /***************Standard trivial functions***************/
   wxString GetCurrentFilename();
@@ -314,43 +314,43 @@ private:
   NonConfigOptions non_conf_opt;
 
   wxString currentFilename;
-	wxString currentPath;
-	bool lastmirror;
+  wxString currentPath;
+  bool lastmirror;
   bool lastDeviceStatus;
-	//wxString renderModeSelection;
-	int selection;
-	int viewpointCount;
-	int navTypeCount;
-	int deviceCount;
-	X3DViewpointNode::ViewpointList VPlist;
-	NavigationInfo *mynav;
-	DeviceInfo *mydevice;
-	H3DHapticsDevice *myH3Ddevice;
-	NodeVector allDevices;
-	X3DViewpointNode *defaultvp;
-	
-	// One time intialization variables
-	string settings_path;
-	string common_path;
-	string deviceinfo_file;
-	string stylus_file;
-	string viewpoint_file;
-	string render_mode;
+  //wxString renderModeSelection;
+  int selection;
+  int viewpointCount;
+  int navTypeCount;
+  int deviceCount;
+  X3DViewpointNode::ViewpointList VPlist;
+  NavigationInfo *mynav;
+  DeviceInfo *mydevice;
+  H3DHapticsDevice *myH3Ddevice;
+  NodeVector allDevices;
+  X3DViewpointNode *defaultvp;
+  
+  // One time intialization variables
+  string settings_path;
+  string common_path;
+  string deviceinfo_file;
+  string stylus_file;
+  string viewpoint_file;
+  string render_mode;
 
-	// Autoref Variables
-	AutoRef< Scene > scene;
-	AutoRef< KeySensor > ks;
-	AutoRef< MouseSensor > ms;
-	AutoRef< SpaceWareSensor > ss;
-	AutoRef< Transform > t;
-	AutoRef< Node > device_info;
-	AutoRef< Node > viewpoint;
+  // Autoref Variables
+  AutoRef< Scene > scene;
+  AutoRef< KeySensor > ks;
+  AutoRef< MouseSensor > ms;
+  AutoRef< SpaceWareSensor > ss;
+  AutoRef< Transform > t;
+  AutoRef< Node > device_info;
+  AutoRef< Node > viewpoint;
   AutoRef< Group > g;
 
   X3D::DEFNodes default_stylus_dn;
-	consoleDialog *  theConsole;
-	FrameRateDialog *  frameRates;
-	SettingsDialog * settings;
+  consoleDialog *  theConsole;
+  FrameRateDialog *  frameRates;
+  SettingsDialog * settings;
 
   AutoRef< GlobalSettings > global_settings;
 
@@ -395,6 +395,7 @@ enum
   FRAME_VERTINTERLACED,
   FRAME_SHARPDISPLAY,
   FRAME_REDBLUE,
+  FRAME_REDGREEN,
   FRAME_REDCYAN,
   FRAME_DEVICECONTROL,
   FRAME_HAPTICSCONTROL,
@@ -416,5 +417,6 @@ enum
   FRAME_SWS_NAV,
   FRAME_HAPTICSDEVICE_NAV
 };
+
 
 

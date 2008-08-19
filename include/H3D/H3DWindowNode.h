@@ -84,6 +84,9 @@ namespace H3D {
         /// eye in blue. 
         RED_BLUE_STEREO,
         /// Stereo mode where the left eye is rendered in red and the right 
+        /// eye in green. 
+        RED_GREEN_STEREO,
+        /// Stereo mode where the left eye is rendered in red and the right 
         /// eye in cyan. 
         RED_CYAN_STEREO,
 
@@ -305,7 +308,7 @@ namespace H3D {
   protected:
 #ifdef WIN32
     HGLRC rendering_context;
-    HWND	hWnd;
+    HWND hWnd;
     HINSTANCE windowInstance;
 
     // WindowProc calls the Window Procedure stored in wpOrigProc
@@ -320,7 +323,7 @@ namespace H3D {
     static LRESULT CALLBACK WindowProc(HWND _hWnd, UINT uMsg, 
                                        WPARAM wParam, LPARAM lParam);
     /// Handles messages. Called by WindowProc.
-    LRESULT	Message(HWND _hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    LRESULT Message(HWND _hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
 
     /// If multi pass transparency is set to true the scene will be rendered

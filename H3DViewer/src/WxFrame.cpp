@@ -285,6 +285,8 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
                               wxT("Optimized for Sharp display systems"));
   renderMode->AppendRadioItem(FRAME_REDBLUE, wxT("Red-Blue Stereo"),
                               wxT("Red-Blue Stereo mode"));
+  renderMode->AppendRadioItem(FRAME_REDGREEN, wxT("Red-Green Stereo"),
+                              wxT("Red-Green Stereo mode"));
   renderMode->AppendRadioItem(FRAME_REDCYAN, wxT("Red-Cyan Stereo"),
                               wxT("Red-Cyan Stereo mode"));
 
@@ -1222,6 +1224,9 @@ void WxFrame::RenderMode(wxCommandEvent & event)
       break;
     case FRAME_REDBLUE:
       renderMode = "RED_BLUE_STEREO";
+      break;
+    case FRAME_REDGREEN:
+      renderMode = "RED_GREEN_STEREO";
       break;
     case FRAME_REDCYAN:
       renderMode = "RED_CYAN_STEREO";

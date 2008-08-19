@@ -228,7 +228,7 @@ void H3DWindowNode::initialize() {
 }
 
 void renderStyli() {
-	// Render the stylus of each H3DHapticsDevice.
+  // Render the stylus of each H3DHapticsDevice.
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {
     di->renderStyli();
@@ -719,6 +719,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glDrawBuffer(GL_BACK_LEFT);
     
     if( stereo_mode == RenderMode::RED_BLUE_STEREO ||
+        stereo_mode == RenderMode::RED_GREEN_STEREO ||
         stereo_mode == RenderMode::RED_CYAN_STEREO )
       // render only the red component
       glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
@@ -828,6 +829,12 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_TRUE);
       glEnable(GL_BLEND);
       glBlendFunc(GL_ONE, GL_ONE);
+    } else if( stereo_mode == RenderMode::RED_GREEN_STEREO ) {
+      glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE);
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      glColorMask(GL_FALSE, GL_TRUE, GL_FALSE, GL_TRUE);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_ONE, GL_ONE);
     } else if( stereo_mode == RenderMode::RED_CYAN_STEREO ) {
       glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE);
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -889,6 +896,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                                                   vp );
 
     if( stereo_mode == RenderMode::RED_BLUE_STEREO ||
+        stereo_mode == RenderMode::RED_GREEN_STEREO ||
         stereo_mode == RenderMode::RED_CYAN_STEREO )
       glDisable( GL_BLEND );
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
@@ -896,7 +904,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glDisable( GL_STENCIL_TEST );
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
       glDisable( GL_STENCIL_TEST );
-      	// do green shift
+      // do green shift
       glPushAttrib(GL_CURRENT_BIT | GL_LINE_BIT | GL_POLYGON_BIT | 
                    GL_POLYGON_STIPPLE_BIT | GL_VIEWPORT_BIT | 
                    GL_TRANSFORM_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
@@ -1073,6 +1081,8 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return HORIZONTAL_INTERLACED;
   else if( value == "RED_BLUE_STEREO" )
     return RED_BLUE_STEREO;
+  else if( value == "RED_GREEN_STEREO" )
+    return RED_GREEN_STEREO;
   else if( value == "RED_CYAN_STEREO" )
     return RED_CYAN_STEREO;
   else if( value == "VERTICAL_INTERLACED_GREEN_SHIFT" )
@@ -1082,7 +1092,7 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     s << "Must be one of MONO, QUAD_BUFFERED_STEREO, HORIZONTAL_INTERLACED, "
       << "VERTICAL_INTERLACED, VERTICAL_INTERLACED_GREEN_SHIFT, "
       << "VERTICAL_SPLIT, VERTICAL_SPLIT_KEEP_RATIO, HORIZONTAL_SPLIT, "
-      << "RED_CYAN_STEREO or RED_BLUE_STEREO. ";
+      << "RED_CYAN_STEREO, RED_GREEN_STEREO or RED_BLUE_STEREO. ";
     throw InvalidRenderMode( value, 
                              s.str(),
                              H3D_FULL_LOCATION );
@@ -1152,12 +1162,12 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
                                LPARAM lParam)
 {  
   // Evaluate Window Message
-	switch (uMsg) {    
-    case WM_SYSCOMMAND: {				// Intercept System Commands
+  switch (uMsg) {    
+    case WM_SYSCOMMAND: {        // Intercept System Commands
       // Check System Calls (according to msdn the & with 0xFFF0
       // is needed to obtain the correct result)
-			switch (wParam & 0xFFF0)
-			{
+      switch (wParam & 0xFFF0)
+      {
       case SC_KEYMENU: {
           // If the Window does not have a menu
           // then we do not want the default behaviour for SC_KEYMENU
@@ -1170,8 +1180,8 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
           break;
         }
         default:{}
-			}
-		  break;
+      }
+      break;
     }
 
     case WM_KEYDOWN:  
@@ -1209,7 +1219,7 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
     case WM_KEYUP:
     case WM_SYSKEYUP: {
       switch( wParam ) {
-	      case VK_F1: onKeyUp( X3DKeyDeviceSensorNode::F1, true ); break;
+        case VK_F1: onKeyUp( X3DKeyDeviceSensorNode::F1, true ); break;
         case VK_F2: onKeyUp( X3DKeyDeviceSensorNode::F2, true ); break;
         case VK_F3: onKeyUp( X3DKeyDeviceSensorNode::F3, true ); break;
         case VK_F4: onKeyUp( X3DKeyDeviceSensorNode::F4, true ); break;
@@ -1324,7 +1334,7 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
   }
 
   // Call the original windows Procedure.
-	return CallWindowProc(wpOrigProc, _hWnd, uMsg, 
+  return CallWindowProc(wpOrigProc, _hWnd, uMsg, 
         wParam, lParam); 
 }
 #endif
