@@ -266,6 +266,7 @@ HapticDeviceNavigation::HapticDeviceNavigation() :
     Console(4) << "No haptics devices in the scene. "
                << "Navigation with haptics device will not be used." << endl;
   }
+  calculate_center = false;
 }
 
 void HapticDeviceNavigation::resetAll() {
@@ -285,6 +286,9 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
     if( button_pressed ) {
       last_orn = device_orn;
       last_pos = device_pos;
+      the_owner->calculate_center = true;
+    } else {
+      the_owner->calculate_center = false;
     }
   }
   
@@ -374,8 +378,12 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
 Vec3f HapticDeviceNavigation::getCenterOfRot() {
   DeviceInfo *di = DeviceInfo::getActive();
   if( di && !di->device->empty() ) {
-    return static_cast< H3DHapticsDevice * >(di->device->getValueByIndex( 0 ) )
-      ->weightedProxyPosition->getValue();
+    if( calculate_center ) {
+      center_of_rot = static_cast< H3DHapticsDevice * >
+        (di->device->getValueByIndex( 0 ) )->weightedProxyPosition->getValue();
+      calculate_center = false;
+    }
+    return center_of_rot;
   } else return Vec3f();
 }
 

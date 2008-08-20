@@ -220,6 +220,10 @@ namespace H3D {
 
   protected:
     auto_ptr< CalculateHapticDeviceMoveInfo > calculateHapticDeviceMoveInfo;
+    // Needed because the center of rotation should be calculated as late
+    // as possible and only once. Used in getCenterOfRot();
+    bool calculate_center;
+
   };
 
   /// Takes care of navigation with SpaceWareSensor.
