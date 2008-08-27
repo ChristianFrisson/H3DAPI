@@ -72,6 +72,8 @@ namespace H3D {
 
     typedef HAPI::HAPIHapticsDevice::ErrorCode ErrorCode;
     typedef HAPI::HAPIHapticsDevice::DeviceState DeviceState;
+    typedef SFBool MainButton;
+    typedef SFBool SecondaryButton;
 
     /// Saves the value of the field in a variable that can be accessed
     /// from the realtime loop.
