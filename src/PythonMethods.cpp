@@ -547,6 +547,7 @@ if( check_func( value ) ) {                                         \
       { "getCurrentScenes", pythonGetCurrentScenes, 0 },
       { "getActiveDeviceInfo", pythonGetActiveDeviceInfo, 0 },
       { "getActiveViewpoint", pythonGetActiveViewpoint, 0 },
+      { "getActiveBindableNode", pythonGetActiveBindableNode, 0 },
       { "getActiveNavigationInfo", pythonGetActiveNavigationInfo, 0 },
       { "getActiveFog", pythonGetActiveFog, 0 },
       { "getActiveGlobalSettings", pythonGetActiveGlobalSettings, 0 },
@@ -1401,6 +1402,20 @@ call the base class __init__ function." );
       }
 
       return PyNode_FromNode( X3DViewpointNode::getActive() );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject* pythonGetActiveBindableNode( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyString_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.getActiveBindableNode( bindable )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      char *bindable = PyString_AsString( arg );
+      return PyNode_FromNode( X3DBindableNode::getActive( bindable ) );
     }
 
     /////////////////////////////////////////////////////////////////////////

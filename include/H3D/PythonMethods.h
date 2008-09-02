@@ -106,6 +106,8 @@ namespace H3D {
 
     PyObject* pythonGetActiveDeviceInfo( PyObject *self, PyObject *arg );
 
+    PyObject* pythonGetActiveBindableNode( PyObject *self, PyObject *arg );
+
     PyObject* pythonGetActiveViewpoint( PyObject *self, PyObject *arg );
 
     PyObject* pythonGetActiveNavigationInfo( PyObject *self, PyObject *arg );
