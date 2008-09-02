@@ -232,6 +232,8 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   Scene::time->setName( "Scene::time" );
   time->setAccessType( Field::OUTPUT_ONLY );
   frameRate->setValue( 0, id );
+  ThreadBase::setThreadName( ThreadBase::getMainThreadId(), 
+			     "H3D API Main Thread" );
 }
 
 Scene::~Scene() {
