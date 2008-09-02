@@ -176,10 +176,10 @@ void ComposedShader::render() {
       for( unsigned int i = 0; i < dynamic_fields.size(); i++ ) {
         if( !Shaders::setGLSLUniformVariableValue( program_handle, 
                                                    dynamic_fields[i] ) ) {
-          Console(3) << "Warning: Uniform variable \"" 
+   /*       Console(3) << "Warning: Uniform variable \"" 
                      <<  dynamic_fields[i]->getName() 
                      << "\" not defined in shader source of the ShaderPart nodes "
-                     << "in the node \"" << getName() << "\"" << endl;
+                     << "in the node \"" << getName() << "\"" << endl;*/
         }
       }
     }

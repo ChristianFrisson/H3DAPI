@@ -158,6 +158,7 @@ void ImageTexture::SFImage::update() {
 
     texture->load_thread.reset( new H3DUtil::SimpleThread( &loadImageThreadFunc, 
                                                    (void *)&thread_data ) );
+    texture->load_thread->setThreadName( "ImageTexture load thread" );
   } else {
     value = loadImage( texture, urls->getValue(), image_loaders->getValue() );
   }

@@ -532,6 +532,7 @@ SpaceWareSensor::SpaceWareSensor(
   thread_handle.reset( 
     new H3DUtil::SimpleThread( SpaceWareSensorInternal::spaceWareThread, 
                        this ) );
+  thread_handle->setThreadName( "SpaceWareSensor com thread" );
 #endif 
 
 #ifndef HAVE_3DXWARE
