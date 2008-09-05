@@ -15,15 +15,15 @@ IF( NOT DEFINED GENERATE_CPACK_PROJECT )
   MARK_AS_ADVANCED(GENERATE_CPACK_PROJECT)
 ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 
-# Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
-# for packaging H3DAPI. Default is NO since most people will not use this.
+# Add a cache variable PREFER_STATIC_LIBRARIES to have the choice of generating a project
+# linking against static libraries if they exist. Default is NO since most people will not use this.
 IF( NOT DEFINED PREFER_STATIC_LIBRARIES )
   SET( PREFER_STATIC_LIBRARIES "NO" CACHE BOOL "Decides if CMake should prefer static libraries to dynamic libraries when both exist." )
   MARK_AS_ADVANCED(PREFER_STATIC_LIBRARIES)
 ENDIF( NOT DEFINED PREFER_STATIC_LIBRARIES )
 
 IF( PREFER_STATIC_LIBRARIES )
-  SET( CMAKE_FIND_LIBRARY_SUFFIXES .a;${CMAKE_FIND_LIBRARY_SUFFIXES} )	
+  SET( CMAKE_FIND_LIBRARY_SUFFIXES .a;${CMAKE_FIND_LIBRARY_SUFFIXES} )
 ENDIF( PREFER_STATIC_LIBRARIES )
 
 

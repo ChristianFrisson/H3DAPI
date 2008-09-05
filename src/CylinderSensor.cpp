@@ -132,22 +132,27 @@ int CylinderSensor::Set_CylinderEvents::intersectSegmentCylinder(
   H3DFloat discr = b * b - a * c;
   if( discr < 0.0f ) return 0; // No real roots; no intersection
   t = ( -b - H3DSqrt(discr) ) / a;
-  if( t < 0.0f || t > 1.0f ) return 0; // Intersection lies outside segment
+  // NOTE: This code is corrected using errata on
+  // http://realtimecollisiondetection.net/books/rtcd/errata/
+  // page. Parts of the fix is not completely verified, if the code below
+  // cause trouble investigate this.
+  H3DFloat t0 = t = (-b - H3DUtil::H3DSqrt( discr ) ) / a;
   if( md + t * nd < 0.0f ) {
     // Intersection outside cylinder on 'ca' side
     if( nd <= 0.0f ) return 0; // Segment pointing away from endcap
     t = -md / nd;
     // Keep intersection if Dot(S(t) - ca, S(t) - ca ) <= r^2
-    return k + 2 * t * ( mn + t * nn ) <= 0.0f;
+    return k + t * (2.0f * mn + t * nn ) <= 0.0f;
   } else if( md + t * nd > dd ) {
     // Intersection outside cylinder on 'cb' side
     if( nd >= 0.0f ) return 0; // Segment pointing away from endcap
     t = ( dd - md ) / nd;
     // Keep intersection if Dot(S(t) - cb, S(t) - cb ) < r^2
-    return k + dd - 2 * md + t * (2 * ( mn - nd ) + t * nn ) <= 0.0f;
+    return k + dd - 2.0f * md + t * (2.0f * ( mn - nd ) + t * nn ) <= 0.0f;
   }
-  // Segment intersect cylinder between the endcaps; t is correct
-  return 1;
+  t = t0;
+  // Intersection if segment intersects cylinder between the end-caps.
+  return t >= 0.0f && t <= 1.0f;
 }
 
 int CylinderSensor::Set_CylinderEvents::intersectLinePlane(

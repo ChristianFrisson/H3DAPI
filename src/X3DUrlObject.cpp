@@ -69,3 +69,7 @@ string X3DUrlObject::resolveURLAsFile( const string &url,
 void X3DUrlObject::addInlinePrefix( const string &s ) {
   supported_inline_prefixes.push_back( s + ":" );
 }
+
+bool X3DUrlObject::removeTmpFile( const string &file ) {
+  return ResourceResolver::releaseTmpFileName( file );
+}
