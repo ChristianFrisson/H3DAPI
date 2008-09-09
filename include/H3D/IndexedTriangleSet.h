@@ -189,9 +189,9 @@ namespace H3D {
     /// vertices of the Coordinate node identified by three consecutive 
     /// indices from the index field. If the index field does not contain
     /// a multiple of three coordinate values, the remaining vertices shall
-    ///be ignored.
+    /// be ignored. NOTE: The access type differs from the X3D standard.
     ///
-    /// <b>Access type:</b> inputOnly 
+    /// <b>Access type:</b> inputOutput 
     ///
     /// \dotfile IndexedTriangleSet_index.dot 
     auto_ptr< MFInt32 >  index;

@@ -95,7 +95,7 @@ namespace H3D {
       return 12;
     }
 
-		/// Traverse the scenegraph. A HLFeedbackShape is added for haptic
+    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
     /// rendering if haptics is enabled.
     virtual void traverseSG( TraverseInfo &ti );  
 

@@ -118,31 +118,10 @@ int X3DGeometryNode::getHapticShapeId( unsigned int index ) {
   return haptic_shape_ids[ index ];
 }
 
-#ifdef HAVE_OPENHAPTICS
-X3DGeometryNode::~X3DGeometryNode() {/*
-  for( ShapeIdMap::iterator entry = hl_shape_ids.begin();
-       entry != hl_shape_ids.end();
-       entry++ )
-  for( vector< HLuint>::iterator i = (*entry).second.begin();
-       i != (*entry).second.end();
-       i++ ) {
-    HLuint hl_shape_id = *i; 
-    hlDeleteShapes( hl_shape_id, 1 );
-    hlRemoveEventCallback( HL_EVENT_MOTION, 
-                           hl_shape_id,
-                           HL_CLIENT_THREAD,
-                           &motionCallback );
-    hlRemoveEventCallback( HL_EVENT_TOUCH, 
-                           hl_shape_id,
-                           HL_CLIENT_THREAD,
-                           &touchCallback );
-    hlRemoveEventCallback( HL_EVENT_UNTOUCH, 
-                           hl_shape_id,
-                           HL_CLIENT_THREAD,
-                           &untouchCallback );
-  }*/
+X3DGeometryNode::~X3DGeometryNode() {
 }
 
+#ifdef HAVE_OPENHAPTICS
 HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
                                                     H3DSurfaceNode *_surface,
                                                     const Matrix4f &_transform,
@@ -222,7 +201,7 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
                                       _surface->getSurface(),
                                       touchable_face,
                                       camera_view,
-									  adaptive_viewport,
+                                      adaptive_viewport,
                                       _nr_vertices,
                                       this,
                                       -1,
@@ -525,7 +504,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
       new HAPI::HapticTriangleSet(  ti.getAccForwardMatrix(),
                                     tris ,
                                     ti.getCurrentSurface()->getSurface(),
-									HAPI::HapticTriangleSet::NOT_CONVEX,
+                                    HAPI::HapticTriangleSet::NOT_CONVEX,
                                     touchable_face,
                                     this,
                                     -1,
