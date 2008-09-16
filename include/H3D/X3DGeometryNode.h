@@ -205,10 +205,10 @@ namespace H3D {
     /// get is determined by the index argument.
     int getHapticShapeId( unsigned int index );
 
- #ifdef HAVE_OPENHAPTICS   
-    /// Destructor. Deletes the hl_shape_id.
+    /// Destructor.
     virtual ~X3DGeometryNode();
- 
+
+#ifdef HAVE_OPENHAPTICS    
     /// Returns a either a HLFeedbackShape or a HLDepthBufferShape with
     /// the X3DGeometryNode. Which type depents on possible 
     /// OpenHapticsOptions nodes in the options field and
