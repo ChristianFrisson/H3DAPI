@@ -87,6 +87,50 @@ namespace H3D {
         return X3DNode::defaultXMLContainerField();
     }
 
+    /// Detect intersection between a line segment and the Node.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect( 
+      const Vec3f &from, 
+      const Vec3f &to,    
+      LineIntersectResult &result ) {
+      if( prototyped_node.get() )
+        return prototyped_node->lineIntersect( from, to, result );
+      else return false;
+    }
+
+    /// Find closest point on Node to p.
+    /// \param p The point to find the closest point to.
+    /// \param result A struct containing various results of closest
+    /// points such as which geometries the closest points where
+    /// detected on.
+    virtual void closestPoint( const Vec3f &p,
+                               NodeIntersectResult &result ){
+      if( prototyped_node.get() )
+        return prototyped_node->closestPoint( p, result );
+    }
+
+    /// Detect collision between a moving sphere and the Node.
+    /// Only nodes to which collision is possible will return true
+    /// \param radius The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \param result A struct containing various results of intersections
+    /// such as which geometries intersected the moving sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersect( H3DFloat radius,
+                                        const Vec3f &from, 
+                                        const Vec3f &to,
+                                        NodeIntersectResult &result ) {
+      if( prototyped_node.get() )
+        return prototyped_node->movingSphereIntersect( radius,
+                                                       from, to, result );
+      else return false;
+    }
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
     
