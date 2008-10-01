@@ -43,10 +43,11 @@ namespace H3D {
   /// with a haptics device from SensAble, such as the Phantom Omni and
   /// the Phantom Desktop haptics devices.
   /// Note: The valid values for desiredHapticsRate depends on the type of
-  /// interface and communication protocol used. PCI and EPP support 500,
-  /// 1000, and 2000 Hz. Firewire supports 500, 1000, 1600 Hz, plus some
-  /// increments in between based on the following expression:
-  /// floor(8000/N + 0.5). The first successful initialization of PhantomDevice
+  /// interface and communication protocol used. Frequencies of 500, 1000, and
+  /// 2000 Hz are valid when using a device connecting through PCI and EPP.
+  /// Frequencies of 500, 1000, 1600Hz plus values in between based on the
+  /// formula floor(8000/N + 0.5) are valid for devices connecting through
+  /// Firewire. The first successful initialization of PhantomDevice
   /// will decide the haptics thread rate since only one scheduler is used by
   /// OpenHaptics even for dual device configurations.
   class H3DAPI_API PhantomDevice: public H3DHapticsDevice {

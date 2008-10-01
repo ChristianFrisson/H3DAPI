@@ -555,9 +555,9 @@ IF( MSVC )
 ENDIF(MSVC)
 
 # set the install directory to the H3D directory on Windows
-IF(WIN32) 
- SET( CMAKE_INSTALL_PREFIX ${H3DAPI_SOURCE_DIR}/../..)
-ENDIF(WIN32)
+IF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+  SET( CMAKE_INSTALL_PREFIX ${H3DAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+ENDIF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 
 # make sure symbols are exported.
 SET( H3DAPI_COMPILE_FLAGS "-DH3DAPI_EXPORTS" )
