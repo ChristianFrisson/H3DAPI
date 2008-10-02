@@ -1,10 +1,11 @@
 
 file_template = """
 //////////////////////////////////////////////////////////////////////////////
-//    H3D API.   Copyright 2004, Daniel Evestedt, Mark Dixon
+//    H3D API.   Copyright 2004-2008, SenseGraphics AB
 //    All Rights Reserved
 //
-/// \\file This file has been automatically generated from the 
+/// \\file TypedFieldAnyTmpl.h
+/// \\brief This file has been automatically generated from the 
 /// Util/TypedFieldAnyTmpl.py. It contains the definition of the Any 
 /// template class.
 //

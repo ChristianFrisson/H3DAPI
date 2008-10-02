@@ -221,8 +221,9 @@ namespace H3D {
 
     /// Called to detect and set properties of X3DPointingDeviceSensors.
     /// This is not done in traverseSG since that would give prolems with
-    /// DEF/USE feature and X3DPointinDevice hierarchy. It would also mean
+    /// DEF/USE feature and X3DPointingDevice hierarchy. It would also mean
     /// more calls to lineIntersect.
+    /// \param n The node to do intersection tests with, e.g. the sceneRoot.
     static void updateX3DPointingDeviceSensors( Node * n );
 
     /// The H3DNodeDatabase for this node.

@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file VRML.h
+/// \file VrmlParser.h
 /// \brief This file contains functions for creating H3D nodes from
 /// VRML/WRL input files.
 //
@@ -125,8 +125,8 @@ namespace H3D {
     H3DAPI_API AutoRef<Node> createVRMLNodeFromString( 
                   const string &str,
                   DEFNodes *dn = NULL,
-						      DEFNodes *exported_nodes = NULL,
-						      PrototypeVector *prototypes = NULL 
+                  DEFNodes *exported_nodes = NULL,
+                  PrototypeVector *prototypes = NULL 
                   );
 
 

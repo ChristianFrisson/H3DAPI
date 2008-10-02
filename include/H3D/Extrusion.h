@@ -152,8 +152,8 @@ namespace H3D {
               crossSection->size() * spine->size() * 2 );
     }
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
 
     /// Constructor.

@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file X3DEnvirronmentalSensorNode.cpp
+/// \file X3DEnvironmentalSensorNode.cpp
 /// \brief CPP file for X3DEnvironmentalSensorNode, X3D scene-graph node
 ///
 //

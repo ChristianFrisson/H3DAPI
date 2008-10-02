@@ -67,6 +67,8 @@ namespace H3D {
 
     /// Traverse the scenegraph. Used in PythonScript to call a function
     /// in python once per scene graph loop.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
     
     virtual void initialiseParser();

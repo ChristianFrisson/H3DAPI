@@ -114,6 +114,7 @@ namespace H3D {
   /// object;</a></li>
   /// <li>Sets the center of rotation in the currently bound Viewpoint node to
   /// the approximate "center" of the selected object.</a></li>
+  /// </ul>
   ///
   /// EXAMINE navigation is used for viewing individual objects. EXAMINE shall
   /// provide the ability to orbit or spin the user's eyepoint about the center
@@ -235,7 +236,6 @@ namespace H3D {
   /// for content authors to include geometry intended to remain fixed relative
   /// to the viewer). Such geometry shall not be occluded by geometry outside
   /// of the collision volume.
-
   class H3DAPI_API NavigationInfo : public X3DBindableNode {
   public:
 
@@ -266,7 +266,7 @@ namespace H3D {
 
     void doNavigation( X3DViewpointNode * vp, X3DChildNode *topNode );
 
-    /// Compares the viewpoint provided to the viewpoint in use by
+    /// Compares the given X3DViewpointNode to the X3DViewpointNode used by
     /// the NavigationInfo. Used in order to make sure that the same viewpoint
     /// is used for graphics and haptics when a NavigationInfo is in use.
     inline X3DViewpointNode *

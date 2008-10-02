@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004, SenseGraphics AB
+//    Copyright 2004-2008, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file DepthMapSurface.h
+/// \file H3D/DepthMapSurface.h
 /// \brief Header file for DepthMapSurface
 ///
 //
@@ -113,7 +113,7 @@ namespace H3D {
     /// and black will be in. If the parameter is false the it is the opposite.
     ///
     /// <b>Access type:</b> inputOutput
-
+    ///
     /// \dotfile DepthMapSurface_whiteIsOut.dot
     auto_ptr< SFBool > whiteIsOut;
 

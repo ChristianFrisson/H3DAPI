@@ -83,16 +83,8 @@ FalconDevice::FalconDevice(
 
   type_name = "FalconDevice";  
   database.initFields( this );
-#ifdef HAVE_FALCONAPI
   hapi_device.reset(0);
-#else
-  Console(4) << "Cannot use FalconDevice. HAPI compiled without"
-	     << " OpenHaptics support. Recompile HAPI with "
-	     << "HAVE_FALCONAPI defined"
-	     << " in order to use it." << endl;
-#endif
   maxWorkspaceDimensions->resize( 2, Vec3f(0,0,0), id );
- 
 }
 
 void FalconDevice::initialize() {
@@ -101,9 +93,9 @@ void FalconDevice::initialize() {
   hapi_device.reset( new HAPI::FalconHapticsDevice( deviceName->getValue() ) );
 #else
   Console(4) << "Cannot use FalconDevice. HAPI compiled without"
-	     << " FalconAPI support. Recompile HAPI with "
-	     << "HAVE_FALCONAPI defined"
-	     << " in order to use it." << endl;
+             << " FalconAPI support. Recompile HAPI with "
+             << "HAVE_FALCONAPI defined"
+             << " in order to use it." << endl;
 #endif
 }
 

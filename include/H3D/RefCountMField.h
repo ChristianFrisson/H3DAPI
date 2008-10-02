@@ -98,13 +98,12 @@ namespace H3D {
       }
       return this->value[i];    
     }
-    
-    /// TEMPORARILY REMOVED: causes INTERNAL_COMPILER_ERROR
-    /// Get the value of an element of the MField.
-    /// \param i The index of the element.
-    ///
-    ///inline virtual const Type &getValue( size_type i );
-    
+
+    /// Set the value of an element in the field.
+    /// \param i Index of the element.
+    /// \param v The new value.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline void setValue( typename FieldInternals::MFNodeAutoRefVector< RefClass >::size_type i,
                           const typename FieldInternals::MFNodeAutoRefVector< RefClass >::value_type &v,
                           int id = 0 ) {
@@ -115,7 +114,9 @@ namespace H3D {
     }
     
     /// Set the value of the field.
-    /// \param The new value.
+    /// \param v The new value.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void setValue( const AutoRefVector< RefClass > &v,
                                   int id = 0  ) {
       this->checkAccessTypeSet( id );
@@ -124,15 +125,19 @@ namespace H3D {
     }
     
     /// Set the value of the field.
-    /// \param The new value.
+    /// \param v The new value.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void setValue( const vector< RefClass * > &v, int id = 0 ) {
       this->checkAccessTypeSet( id );
       this->value = v;
       this->startEvent();
     }
 
-
     /// Swaps the contents of two vectors.
+    /// \param v vector to swap with.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void swap( vector< RefClass * > &v, int id = 0 ) {
       this->checkAccessTypeSet( id );
       this->checkAccessTypeGet( id );
@@ -142,6 +147,9 @@ namespace H3D {
     }
 
     /// Erase the first element equal to a.
+    /// \param a Value to erase.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void erase( RefClass *a, int id = 0 ) {
       this->checkAccessTypeSet( id );
       this->upToDate();

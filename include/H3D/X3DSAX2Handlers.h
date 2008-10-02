@@ -79,6 +79,8 @@ namespace H3D {
       ///  Constructor.
       ///  \param dn A structure to store the mapping between DEF names
       ///  and the nodes the reference
+      /// \param _exported_nodes A structure to store the exported nodes.
+      /// \param _proto_declarations Storage of all proto declarations.
       X3DSAX2Handlers( DEFNodes *dn = NULL,
                        DEFNodes *_exported_nodes = NULL,
                        PrototypeVector *_proto_declarations = NULL ): 

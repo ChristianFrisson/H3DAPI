@@ -64,8 +64,8 @@ namespace H3D {
     };
 
     /// Constructor.
-    /// \param The name of the prototype.
-    /// \param String with the internal scenegraph of the prototype.
+    /// \param _name The name of the prototype.
+    /// \param _body String with the internal scenegraph of the prototype.
     ProtoDeclaration( const string &_name,
                       const string &_body = "" ) :
       name( _name ),

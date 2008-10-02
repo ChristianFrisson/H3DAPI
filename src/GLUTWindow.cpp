@@ -168,8 +168,8 @@ void GLUTWindow::initWindow() {
 }
 
 
-/// Given the identifier of a GLUT window the GLWindow instance
-/// that created that window is returned.
+// Given the identifier of a GLUT window the GLWindow instance
+// that created that window is returned.
 GLUTWindow *GLUTWindow::getGLUTWindow( int glut_id ) {
   for( set< H3DWindowNode* >::iterator i = H3DWindowNode::windows.begin(); 
        i != H3DWindowNode::windows.end(); i ++ ) {

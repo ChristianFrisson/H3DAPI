@@ -116,6 +116,7 @@ namespace H3D {
       this->upToDate();
       return value.begin();
     }
+    
     /// Returns a const_iterator pointing to the end of the vector.
     inline const_iterator end( int id = 0 ) { 
       // check that we have the correct access type
@@ -123,16 +124,22 @@ namespace H3D {
       this->upToDate();
       return value.end(); 
     }
+    
     /// Returns a const_reverse_iterator pointing to the beginning of the
     /// reversed vector.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline const_reverse_iterator rbegin( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
       return value.rbegin();
     }
+    
     /// Returns a const_reverse_iterator pointing to the end of the reversed 
     /// vector.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline const_reverse_iterator rend( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
@@ -159,11 +166,11 @@ namespace H3D {
       return value.capacity(); 
     }
         
-    /// A request for allocation of additional memory. If n is less than
+    /// A request for allocation of additional memory. If s is less than
     /// or equal to capacity(), this call has no effect. 
     /// Otherwise, it is a request for allocation of additional memory. 
     /// If the request is successful, then capacity() is greater than or 
-    /// equal to n; otherwise, capacity() is unchanged. In either case, 
+    /// equal to s; otherwise, capacity() is unchanged. In either case, 
     /// size() is unchanged.
     /// 
     inline void reserve( size_t s ) { 
@@ -249,7 +256,9 @@ namespace H3D {
     /// of the field is. 
     /// \param data A pointer to the data.
     /// \param nr_elements The number of values in the mfield.
-    /// \param size The size in bytes of the each value stored in the data.
+    /// \param len The size in bytes of the each value stored in the data.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     /// \returns 0 if successful, -1 otherwise.
     inline virtual int setValueFromVoidPtr( void *data, 
                                             unsigned int nr_elements, 
@@ -272,7 +281,9 @@ namespace H3D {
     /// \param data Buffer to copy the data into.
     /// \param nr_elements This parameter will be set to the nr of values
     /// in the mfield.
-    /// \param size The size of the buffer.
+    /// \param len The size of the buffer.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     /// \returns If successful: The number of bytes that was copied into the 
     /// Otherwise -1.
     inline virtual int getValueAsVoidPtr( void *data, 
@@ -350,6 +361,8 @@ namespace H3D {
 
     /// Get the value of an element of the MField.
     /// \param i The index of the element.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual typename vector<Type>::const_reference
     getValueByIndex( typename BaseMField::size_type i, int id = 0 ) {
 #ifdef DEBUG
@@ -371,12 +384,16 @@ namespace H3D {
     }
 
     /// Set the value of the field.
-    /// \param The new value.
+    /// \param v The new value.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void setValue( const vector< Type > &v, int id = 0  );
 
     /// Change the value of one element in the MField.
     /// \param i The index of the value to set.
-    /// \param t The new value.
+    /// \param v The new value.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void setValue( typename BaseMField::size_type i,
                                   const Type &v, int id = 0  ) {
 #ifdef DEBUG
@@ -492,8 +509,7 @@ namespace H3D {
       return v.size();
     }
 
-    /// Get the value of the field as a string. If the field contains
-    /// multiple values the separator string is used between the values.
+    /// Get the value of an element of the field as a string.
     inline virtual string getElementAsString( size_t element ) {
       stringstream s;
       const vector< Type > &v = getValue();

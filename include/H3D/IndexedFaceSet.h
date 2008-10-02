@@ -1,4 +1,3 @@
-
 //////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
@@ -297,8 +296,8 @@ namespace H3D {
       return coordIndex->size();
     }
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
 
     /// Field for setting the value of the colorIndex field.

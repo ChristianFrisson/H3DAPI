@@ -160,9 +160,9 @@ namespace H3D {
                         Inst< MFInt32          > _index           = 0,
                         Inst< SFFogCoordinate  > _fogCoord        =0 );
  
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
-    virtual void traverseSG( TraverseInfo &ti );  
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
+    virtual void traverseSG( TraverseInfo &ti );
 
     /// Renders the IndexedTriangleSet with OpenGL.
     virtual void render();

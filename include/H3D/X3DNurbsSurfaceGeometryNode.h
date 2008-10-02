@@ -222,8 +222,10 @@ namespace H3D {
       return -1;
     }
 
-    /// Function called by render to specify what differs between 
-    /// NurbsPatchSurface and NurbsTrimmedSurface,
+    /// Function called by render to render the small part that differs
+    /// between NurbsPatchSurface and NurbsTrimmedSurface. The arguments
+    /// are things that are needed to render that difference. TODO:
+    /// make protected instead of public?
     virtual void renderBetweenBeginEnd(
                                 GLUnurbsObj *nurbs_object,
                                 X3DTextureCoordinateNode *tex_coord_node,

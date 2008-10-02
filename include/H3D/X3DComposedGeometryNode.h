@@ -160,9 +160,9 @@ namespace H3D {
 
     /// Start texture coordinate generation. Texture coordinates will be
     /// generated for all texture units used by the currently active texture.
-    /// If tex_coord_gen is NULL then texture coordinates will be generated 
+    /// If tex_coord is NULL then texture coordinates will be generated 
     /// from the bounding box of the geometry as defined in the X3D 
-    /// specification. If tex_coord_gen is not NULL then we use the 
+    /// specification. If tex_coord is not NULL then we use the 
     /// TextureCoordinateGenerator to define the texture coordinate generation.
     virtual void startTexGen( X3DTextureCoordinateNode *tex_coord );
 

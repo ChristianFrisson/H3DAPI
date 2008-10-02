@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file VisabilitySensor.cpp
-/// \brief CPP file for VisabilitySensor, X3D scene-graph node
+/// \file VisibilitySensor.cpp
+/// \brief CPP file for VisibilitySensor, X3D scene-graph node
 ///
 //
 //

@@ -197,7 +197,7 @@ SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = ../include \
                          ../../H3DUtil/include \
                          ../../HAPI/include \
-                         ../../HAPI/OpenHapticRenderer/include \
+                         ../../HAPI/OpenHapticsRenderer/include \
                          ../../HAPI/Chai3DRenderer/include
 INCLUDE_FILE_PATTERNS  = 
 PREDEFINED             = HAVE_DSHOW

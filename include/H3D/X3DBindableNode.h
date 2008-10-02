@@ -67,29 +67,29 @@ namespace H3D {
   /// instanced (DEF/USE) bindable node is bound.
   ///
   /// The following rules describe the behaviour of the binding stack for a
-  /// node of type <bindable node>:
+  /// node of type X3DBindableNode:
   /// <ul>
   /// <li>
-  /// During read, the first encountered <bindable node> is bound by pushing
-  /// it to the top of the <bindable node> stack. The first encountered
-  /// <bindable node> sends an isBound TRUE event.
+  /// During read, the first encountered X3DBindableNode is bound by pushing
+  /// it to the top of the X3DBindableNode stack. The first encountered
+  /// X3DBindableNode sends an isBound TRUE event.
   /// <li>
-  /// When a set_bind TRUE event is received by a <bindable node>,
+  /// When a set_bind TRUE event is received by a X3DBindableNode,
   /// <ol><li>
   /// If it is not on the top of the stack: the current top of stack node 
   /// sends an isBound FALSE event. The new node is moved to the top of the
-  /// stack and becomes the currently bound <bindable node>. The new 
-  /// <bindable node> (top of stack) sends an isBound TRUE event.
+  /// stack and becomes the currently bound X3DBindableNode. The new 
+  /// X3DBindableNode (top of stack) sends an isBound TRUE event.
   /// <li>
   /// If the node is already at the top of the stack, this event has no effect.
   /// </ol>
   /// <li>
-  /// When a set_bind FALSE event is received by a <bindable node> in the 
+  /// When a set_bind FALSE event is received by a X3DBindableNode in the 
   /// stack, it is removed from the stack. If it was on the top of the stack,
   /// <ol><li>
   /// it sends an isBound FALSE event.
   /// <li>
-  /// the next node in the stack becomes the currently bound <bindable node>
+  /// the next node in the stack becomes the currently bound X3DBindableNode
   /// (i.e., pop) and issues an isBound TRUE event. 
   /// </ol>
   /// <li>

@@ -53,15 +53,21 @@ namespace H3D {
 
     /// Called from the (x3d-)parser when a profile name is found.
     /// Create instance of itself if not already created then
-    /// call setProfileInternal. Store error messages in err_msg
-    /// if something goes wrong.
+    /// call setProfileInternal.
+    /// \param profile Name of profile.
+    /// \param err_msg String containing error message if function fails.
+    /// \param _version String with version number.
+    /// \returns True if profile is set, false otherwise.
     static bool setProfile( std::string profile, std::string &err_msg,
                             std::string _version );
 
     /// Called from the (x3d-)parser when a component name is found.
     /// Create instance of itself if not already created then
-    /// call addComponentInternal. Store error messages in err_msg
-    /// if something goes wrong.
+    /// call addComponentInternal.
+    /// \param component Name of component.
+    /// \param level Support level of component.
+    /// \param err_msg String containing error message if function fails.
+    /// \returns True if profile is set, false otherwise.
     static bool addComponent( std::string component,
                               int level, std::string &err_msg );
 
@@ -71,6 +77,7 @@ namespace H3D {
 
     /// Called by (x3d-)parser when the first file with a profile
     /// and component definition is set.
+    /// \param _main_profile_set Value used when setting flag.
     static void setMainProfileDone( bool _main_profile_set );
 
     /// Set to false before starting an application ( or loading a file )

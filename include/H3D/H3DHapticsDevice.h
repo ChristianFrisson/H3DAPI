@@ -358,7 +358,7 @@ namespace H3D {
     /// Perform haptic rendering for the given HapticShape instances. 
     /// HapticShape objects that are to be be rendered haptically must be 
     /// rendered with this function each scenegraph loop. 
-    /// \param objects The haptic shapes to render.
+    /// \param shapes The haptic shapes to render.
     /// \param layer The haptic layer to render them in.
     virtual void renderShapes( const HapticShapeVector &shapes, 
                                unsigned int layer = 0 );
@@ -366,8 +366,7 @@ namespace H3D {
     /// Perform haptic rendering for the given HAPIForceEffect instances. 
     /// HAPIForceEffect objects that are to be be rendered haptically must
     /// be rendered with this function each scenegraph loop.
-    /// \param objects The haptic objects to render.
-    ///
+    /// \param effects The HAPIForceEffects to render.
     virtual void renderEffects( const HapticEffectVector &effects );
     
     /// The position of the device given in the coordinate system of the 

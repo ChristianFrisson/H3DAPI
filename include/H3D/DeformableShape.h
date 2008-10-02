@@ -128,6 +128,8 @@ namespace H3D {
 
     /// Traverse the scenegraph. The deformation parameters are updated
     /// in the CoordinateDeformer in coordinateDeformer field.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// The origCoord field contains the coordinates that the 

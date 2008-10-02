@@ -124,6 +124,8 @@ namespace H3D {
 
     /// Set the matrix field in order to set the matrix field to perform
     /// the rotation required by the Billboard.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// The axisOfRotation field specifies which axis to use to perform

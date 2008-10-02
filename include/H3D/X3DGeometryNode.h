@@ -94,6 +94,10 @@ namespace H3D {
                      Inst< MFVec3f     > _contactTexCoord = 0,
                      Inst< SFBoundTree > _boundTree = 0 );
 
+    /// Traverse the scenegraph. A HAPIHapticShape is added for haptic
+    /// rendering if haptics is enabled.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// Detect intersection between a line segment and this geometry.
@@ -198,8 +202,8 @@ namespace H3D {
       option = NULL;
     }
 
-    /// Get a shape id to be used for rendering of this geometry with HLAPI for
-    /// the given haptics device.
+    /// Get a shape id to be used for rendering of this geometry with HLAPI
+    /// for the given haptics device. In the future it will have more uses.
     /// Since the geometry can appear in several places in the scene graph
     /// it can contain several shape ids (one for each place). Which one to
     /// get is determined by the index argument.
@@ -298,7 +302,7 @@ namespace H3D {
   protected:
     /// Function sent to HAPIHapticsShape created to allow for deletion of
     /// X3DGeometryNode at the correct time. The X3DGeometryNode is not
-    /// automatically refernced counted when sent to HAPIHapticShape.
+    /// automatically reference counted when sent to HAPIHapticShape.
     static void cleanUpFunction( void *userdata) {
       static_cast< X3DGeometryNode * >(userdata)->unref();
     }

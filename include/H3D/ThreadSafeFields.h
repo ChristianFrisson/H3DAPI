@@ -234,7 +234,9 @@ namespace H3D {
     ThreadSafeMField(): rt_value_changed( false ) {}
 
     /// Set the value of the field.
-    /// \param The new value.
+    /// \param v The new value.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void setValue( 
                  const vector< typename BaseField::value_type > &v,
                  int id = 0 ) {
@@ -252,6 +254,8 @@ namespace H3D {
     /// Change the value of one element in the MField.
     /// \param i The index of the value to set.
     /// \param t The new value.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual void setValue( typename BaseField::size_type i,
                                   const typename BaseField::value_type &t,
                                   int id = 0  ) {
@@ -344,6 +348,8 @@ namespace H3D {
     
     /// Returns a const_reverse_iterator pointing to the beginning of the
     /// reversed vector.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual typename BaseField::const_reverse_iterator rbegin( int id = 0 ) { 
       if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.rbegin();
@@ -354,6 +360,8 @@ namespace H3D {
     }
     /// Returns a const_reverse_iterator pointing to the end of the reversed 
     /// vector.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     inline virtual typename BaseField::const_reverse_iterator rend( int id = 0 ) { 
       if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.rend();

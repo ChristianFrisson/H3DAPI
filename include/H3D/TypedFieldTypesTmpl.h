@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2008, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file This file has been automatically generated from the 
+/// \file TypedFieldTypesTmpl.h
+/// \brief This file has been automatically generated from the
 /// Util/TypedFieldTypesTmpl.py. It contains the definition of the Types 
 /// template class.
 //

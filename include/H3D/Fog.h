@@ -75,9 +75,9 @@ namespace H3D {
     /// Render the global fog with OpenGL.
     virtual void renderFog();
 
-		/// Traverse the scenegraph. Saves the accumulated inverse
-    /// matrix for later use when transforming the Viewpoint in
-    /// GLWindow.
+    /// Traverse the scenegraph. Set the scale_local_to_global variable.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti ) {
       Matrix3f m = ti.getAccForwardMatrix().getScaleRotationPart();
       Vec3f scaled_v = m * Vec3f( 0, 0, 1 );

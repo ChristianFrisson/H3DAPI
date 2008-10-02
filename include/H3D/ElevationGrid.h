@@ -270,8 +270,8 @@ namespace H3D {
       else return (x_dim - 1) * (z_dim - 1 ) * 2;
     }
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
 
     /// Constructor.

@@ -112,7 +112,7 @@ namespace H3D {
       }
     }
 
-    /// Run renderPostScene on all instances of H3DMultiPassRenderObject.
+    /// Run resetCounter on all instances of H3DMultiPassRenderObject.
     static void resetCounters() { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
            i != instances.end(); i++ ) {

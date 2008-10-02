@@ -46,18 +46,22 @@ namespace H3D {
     /// of the field is. 
     /// \param data A pointer to the data.
     /// \param size The size in bytes of the value stored in data.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     /// \returns 0 if successful, -1 otherwise.
     virtual int setValueFromVoidPtr( void *data, unsigned int size, 
-				     int id = 0 ) = 0;
+                                     int id = 0 ) = 0;
 
     /// Get the value of the data copied into a memory buffer.
     /// \param data Buffer to copy the data into.
     /// \param size The size of the buffer.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     /// \returns If successful: The number of bytes that was copied into the 
     /// Otherwise -1.
     ///
     virtual int getValueAsVoidPtr( void *data, unsigned int size, 
-				   int id = 0 ) = 0;
+                                   int id = 0 ) = 0;
 
     /// Returns the size in bytes of the value type the sfield encapsulates.
     virtual unsigned int valueTypeSize() = 0;
@@ -89,10 +93,12 @@ namespace H3D {
     /// Set the value of the field given a pointer to where the value
     /// of the field is. 
     /// \param data A pointer to the data.
-    /// \param size The size in bytes of the value stored in data.
+    /// \param len The size in bytes of the value stored in data.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     /// \returns 0 if successful, -1 otherwise.
     inline virtual int setValueFromVoidPtr( void *data, unsigned int len, 
-					    int id = 0 ) {
+                                            int id = 0 ) {
       if( len != sizeof( value_type ) )
         return -1;
       setValue( *( static_cast< Type * >( data ) ), id );
@@ -101,12 +107,14 @@ namespace H3D {
 
     /// Get the value of the data copied into a memory buffer.
     /// \param data Buffer to copy the data into.
-    /// \param size The size of the buffer.
+    /// \param len The size of the buffer.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
     /// \returns If successful: The number of bytes that was copied into the 
     /// Otherwise -1.
     ///
     inline virtual int getValueAsVoidPtr( void *data, unsigned int len, 
-					  int id = 0 ) {
+                                          int id = 0 ) {
       unsigned int size = sizeof( value_type );
       if( len < size ) {
         return -1;
@@ -146,7 +154,7 @@ namespace H3D {
     }
 
     /// Returns a string name for this field type e.g. SFInt32
-	static string classTypeName() { return typeid( SField< Type > ).name(); }
+  static string classTypeName() { return typeid( SField< Type > ).name(); }
 
   protected:
     /// Make the field up to date given that an event has occured.

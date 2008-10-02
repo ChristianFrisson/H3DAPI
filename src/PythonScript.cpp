@@ -232,8 +232,8 @@ void PythonScript::loadScript( const string &script ) {
 }
 
 
-/// Traverse the scenegraph. Used in PythonScript to call a function
-/// in python once per scene graph loop.
+// Traverse the scenegraph. Used in PythonScript to call a function
+// in python once per scene graph loop.
 void PythonScript::traverseSG( TraverseInfo &ti ) {
   PyObject *func = 
     PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 

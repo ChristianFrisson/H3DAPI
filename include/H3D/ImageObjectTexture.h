@@ -69,8 +69,8 @@ namespace H3D {
     
     /// The H3DImageObject which image we want to use as data.
     /// 
-    /// Access type:</b> inputOutput \n
-    /// Default value:</b> NULL \n
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> NULL \n
     auto_ptr< SFImageObject > imageObject;
 
     /// The H3DNodeDatabase for this node.

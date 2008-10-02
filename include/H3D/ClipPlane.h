@@ -77,9 +77,13 @@ namespace H3D {
 
     /// Disable haptics if device position is on the clipped side
     /// of the clip plane.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void enableHapticsState( TraverseInfo &ti );
 
     /// Reenable haptics.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void disableHapticsState( TraverseInfo &ti );
   
     /// Specifies if the clipping plane should be enabled or not.

@@ -85,7 +85,7 @@ namespace H3D {
     /// texture coordinate generation
     virtual bool supportsTexGen();
 
-    /// This function all is not allowed. Use renderForTextureUnit() or 
+    /// This function call is not allowed. Use renderForTextureUnit() or 
     /// renderForTextureUnits() instead. Call will raise an exception.
     virtual void render( int index );
 

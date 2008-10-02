@@ -54,7 +54,7 @@ namespace H3D {
   /// to resolve the urn. Normally the rules resides in a config file that
   /// are given to the URNResolver constructor. The rules are on the form
   ///
-  /// urn:web3d: c:\h3d\h3dapi
+  /// urn:web3d: c:\\h3d\\h3dapi
   /// urn:h3d:textures http://www.h3d.org/textures
   ///
   /// This means that e.g. urn:h3d:textures/concrete.jpg will be resolved

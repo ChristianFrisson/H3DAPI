@@ -330,7 +330,7 @@ namespace H3D {
     /// three times graphically, once for all solid objects, once for the back
     /// side of transparent objects and once for the front face of 
     /// transparent objects. This is in order to avoid artifacts for 
-    /// transparent objects when rendered int the wrong order. 
+    /// transparent objects when rendered in the wrong order. 
     inline void setMultiPassTransparency( bool b ) {
       multi_pass_transparency = b;
     }

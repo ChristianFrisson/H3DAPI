@@ -36,7 +36,7 @@ using namespace H3D;
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase FloatVertexAttribute::database( 
                                    "FloatVertexAttribute", 
-				   &(newInstance<FloatVertexAttribute>), 
+                                   &(newInstance<FloatVertexAttribute>),
                                    typeid( FloatVertexAttribute ),
                                    &X3DVertexAttributeNode::database );
 
@@ -59,8 +59,8 @@ FloatVertexAttribute::FloatVertexAttribute( Inst< SFNode   > _metadata,
   numComponents->setValue( 4 );
 }
 
-/// Perform the OpenGL commands to set the vertex attribute
-/// with the given index.
+// Perform the OpenGL commands to set the vertex attribute
+// with the given index.
 void FloatVertexAttribute::render( int value_index ) {
   if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
     GLfloat v0, v1, v2, v3;

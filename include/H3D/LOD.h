@@ -92,9 +92,10 @@ namespace H3D {
     
     virtual void render();
 
-    /// Traverse the scenegraph. Saves the accumulated inverse
-    /// matrix for later use when transforming the X3DViewpointNode in
-    /// GLWindow.
+    /// Traverse the scenegraph. Calculates distance to viewer and decides
+    /// which level in the LOD should be used for rendering.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
      virtual void traverseSG( TraverseInfo &ti );
 
 

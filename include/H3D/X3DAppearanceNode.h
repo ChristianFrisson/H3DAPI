@@ -82,9 +82,10 @@ namespace H3D {
       return "appearance";
     }
 
-		/// Traversing the scene graph. The current surface will be set to the 
+    /// Traversing the scene graph. The current surface will be set to the 
     /// surface of the X3DAppearanceNode.
-    ///
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// Contains the Surface node that will determine how an object will 

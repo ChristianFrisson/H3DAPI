@@ -119,6 +119,8 @@ namespace H3D {
 
     /// Saves the accumulatedForwardMatrix in the local_to_global
     /// member variable.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// Updates the cube map textures of the GeneratedCubeMapTexture.

@@ -89,6 +89,8 @@ namespace H3D {
 
     /// Traverse the scenegraph. Check changes of viewpoint position
     /// since last scene graph traversal.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
      /// Move this instance to the stack top. 

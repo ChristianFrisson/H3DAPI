@@ -144,8 +144,8 @@ namespace H3D {
 
     /// The ImageLoader nodes to use to read the image files.
     /// 
-    /// Access type:</b> inputOutput \n
-    /// Default value:</b> FreeImageLoader \n
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> FreeImageLoader \n
     /// 
     /// \dotfile Image3DTexture_imageLoader.dot
     auto_ptr< MFImageLoader > imageLoader;

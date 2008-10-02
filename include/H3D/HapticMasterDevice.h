@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2008, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticMasterDevice.h
+/// \file H3D/HapticMasterDevice.h
 /// \brief Header file for HapticMasterDevice.
 ///
 //

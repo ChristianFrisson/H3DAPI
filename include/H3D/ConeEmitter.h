@@ -58,7 +58,7 @@ namespace H3D {
     virtual void generateParticles( ParticleSystem *ps,
                                     H3DTime last_time,
                                     H3DTime now,
-                                    std::list< Particle > &particles );
+                                    list< Particle > &particles );
 
     /// The position from which the particles are emitted. 
     ///

@@ -74,8 +74,8 @@ namespace yy
 //
 //
 //
-/// \file vrml.bison
-/// \brief Bison VRML grammar
+/// \file vrml.hpp
+/// \brief Bison VRML grammar header file.
 //
 //  To generate vrml.cpp and vrml.hpp, simply run:
 //     bison -o vrml.cpp vrml.bison

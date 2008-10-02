@@ -98,7 +98,7 @@ namespace H3D {
 
     /// The function to plot.
     /// 
-    /// Access type:</b> inputOutput \n
+    /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile FunctionPlotTexture_function.dot
     auto_ptr< SFFunctionNode > function;

@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file H3DInterface.py.cpp
-/// \brief cpp file for H3DInterface.py.cpp
+/// \file H3DInterface.py.h
+/// \brief header file containing H3DInterface python module strings.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////

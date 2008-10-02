@@ -91,8 +91,8 @@ namespace H3D {
     /// Renders the Disk2D using OpenGL.
     virtual void render();
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
 
     /// The number of triangles rendered by this geometry.

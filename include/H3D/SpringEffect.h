@@ -65,6 +65,8 @@ namespace H3D {
 
     /// Adds the effect if within startDistance and removes it when 
     /// going outside escapeDistance.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
 

@@ -100,7 +100,7 @@ namespace H3D {
     /// Used in PhantomDevice to determine when to start the scheduler
     /// for OpenHaptics in order to avoid random crashes when creating
     /// hlContext.
-    /// \param objects The haptic shapes to render.
+    /// \param shapes The haptic shapes to render.
     /// \param layer The haptic layer to render them in.
     virtual void renderShapes( const HapticShapeVector &shapes, 
                                unsigned int layer = 0 );

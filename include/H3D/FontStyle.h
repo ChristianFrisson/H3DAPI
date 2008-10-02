@@ -77,7 +77,7 @@ namespace H3D {
   /// a fixed-pitch font such as Courier. An empty family value is identical
   /// to ["SERIF"]. Any font family may be specified as shown in the 
   /// following example of the specification of a font family:
-  /// \begincode
+  /// \code
   /// ["Lucida Sans Typewriter", "Lucida Sans", "Helvetica", "SANS"]
   /// \endcode
   /// In this example, the browser would first look for the font family
@@ -255,7 +255,7 @@ namespace H3D {
     }
 
     /// Get the bounding box dimensions of the 3d-representation of
-    /// the character.
+    /// the given character.
     virtual Vec3f charDimensions( unsigned char c ) {
       
       H3DFloat default_size = font->Ascender() - font->Descender();

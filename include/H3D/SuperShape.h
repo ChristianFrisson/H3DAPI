@@ -157,9 +157,9 @@ namespace H3D {
       else return res * res * 2;
     }
 
-    /// Traverse the scenegraph. A HapticShape is added for haptic
-    /// rendering if haptics is enabled.
-    virtual void traverseSG( TraverseInfo &ti );  
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
+    virtual void traverseSG( TraverseInfo &ti );
     
     // Fields
     /// Parameter to define supershape.

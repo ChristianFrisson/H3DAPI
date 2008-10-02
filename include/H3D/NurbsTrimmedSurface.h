@@ -175,8 +175,9 @@ namespace H3D {
                          Inst< SFInt32     > _uOrder = 0,
                          Inst< SFInt32     > _vOrder = 0 );
 
-    /// Function called to specify what differs between NurbsPatchSurface
-    /// and NurbsTrimmedSurface.
+    /// Function called by render to render the small part that differs
+    /// between NurbsPatchSurface and NurbsTrimmedSurface. The arguments
+    /// are things that are needed to render that difference.
     virtual void renderBetweenBeginEnd(
                                 GLUnurbsObj *nurbs_object,
                                 X3DTextureCoordinateNode *tex_coord_node,

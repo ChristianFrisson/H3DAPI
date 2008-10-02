@@ -54,15 +54,15 @@ FogCoordinate::FogCoordinate(   Inst< MFFloat  > _depth,
   depth->route( propertyChanged );
 }
 
-/// Perform the OpenGL commands to render fog until 
-/// the given index.
+// Perform the OpenGL commands to render fog until 
+// the given index.
 void FogCoordinate::render( int depth_index ) {
   const GLfloat d = depth->getValueByIndex( depth_index );
   glFogCoordfEXT( d);
 }
 
-/// Perform the OpenGL commands to render the fog for
-/// the whole fog array.
+// Perform the OpenGL commands to render the fog for
+// the whole fog array.
 void FogCoordinate::renderArray() {
   if( !depth->empty() ) {
 

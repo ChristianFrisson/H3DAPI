@@ -168,6 +168,8 @@ namespace H3D {
 
     /// Traverse the scenegraph. Saves the accForwardMatrix and calls
     /// traverseSG() for source.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// Perform the OpenAL calls to render the sound node.

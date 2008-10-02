@@ -95,8 +95,8 @@ namespace H3D {
       return 12;
     }
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
 
     ///  The size field specifies the extents of the box along the X-, Y-,

@@ -86,6 +86,8 @@ namespace H3D {
 
     /// Traverse the scenegraph. Stores pointer to X3DLightNode and
     /// transformation matrices for those that are global.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// returns an index that can be used to enable light.

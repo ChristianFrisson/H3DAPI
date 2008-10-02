@@ -64,7 +64,7 @@ namespace H3D {
                              Inst< SFNode>  _metadata = 0 );
 
     /// Render the texture transform for the texture units between and
-    /// inluding start_unit and end_unit.
+    /// including start_unit and end_unit.
     virtual void renderForTextureUnits( unsigned int start_unit,
                                         unsigned int end_unit );
 

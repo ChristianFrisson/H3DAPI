@@ -101,8 +101,8 @@ namespace H3D {
       return 40;
     }
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
 
     /// The end angle for the ArcClose.  The ArcClose extends from the startAngle

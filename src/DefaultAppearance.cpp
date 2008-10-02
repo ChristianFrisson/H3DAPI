@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file GraphicalRenderingOptions.cpp
-/// \brief CPP file for GraphicalRenderingOptions.
+/// \file DefaultAppearance.cpp
+/// \brief CPP file for DefaultAppearance.
 ///
 //
 //

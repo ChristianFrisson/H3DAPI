@@ -54,8 +54,8 @@ Matrix4VertexAttribute::Matrix4VertexAttribute( Inst< SFNode   > _metadata,
   database.initFields( this );
 }
 
-/// Perform the OpenGL commands to set the vertex attribute
-/// with the given index.
+// Perform the OpenGL commands to set the vertex attribute
+// with the given index.
 void Matrix4VertexAttribute::render( int value_index ) {
   if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
     GLfloat v0, v1, v2, v3;

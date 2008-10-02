@@ -143,24 +143,24 @@ namespace H3D {
 
     /// Constructor.
     IndexedTriangleFanSet( Inst< SFNode           > _metadata        = 0,
-			   Inst< SFBound          > _bound           = 0,
-			   Inst< DisplayList      > _displayList     = 0,
-			   Inst< SFColorNode      > _color           = 0,
-			   Inst< SFCoordinateNode > _coord           = 0,
-			   Inst< SFNormalNode     > _normal          = 0,
-			   Inst< SFTextureCoordinateNode > _texCoord = 0,
-			   Inst< SFBool           > _ccw             = 0,
-			   Inst< SFBool           > _colorPerVertex  = 0,
-			   Inst< SFBool           > _normalPerVertex = 0,
-			   Inst< SFBool           > _solid           = 0,
-			   Inst< MFVertexAttributeNode > _attrib     = 0,
-			   Inst< AutoNormal       > _autoNormal      = 0,
-			   Inst< MFInt32          > _set_index       = 0,
-			   Inst< MFInt32          > _index           = 0,
-         Inst< SFFogCoordinate  > _fogCoord        =0 );
+                           Inst< SFBound          > _bound           = 0,
+                           Inst< DisplayList      > _displayList     = 0,
+                           Inst< SFColorNode      > _color           = 0,
+                           Inst< SFCoordinateNode > _coord           = 0,
+                           Inst< SFNormalNode     > _normal          = 0,
+                           Inst< SFTextureCoordinateNode > _texCoord = 0,
+                           Inst< SFBool           > _ccw             = 0,
+                           Inst< SFBool           > _colorPerVertex  = 0,
+                           Inst< SFBool           > _normalPerVertex = 0,
+                           Inst< SFBool           > _solid           = 0,
+                           Inst< MFVertexAttributeNode > _attrib     = 0,
+                           Inst< AutoNormal       > _autoNormal      = 0,
+                           Inst< MFInt32          > _set_index       = 0,
+                           Inst< MFInt32          > _index           = 0,
+                           Inst< SFFogCoordinate  > _fogCoord        = 0 );
 
-    /// Traverse the scenegraph. A HLFeedbackShape is added for haptic
-    /// rendering if haptics is enabled.
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
 
     /// Renders the IndexedTriangleFanSet with OpenGL.

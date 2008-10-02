@@ -95,12 +95,14 @@ namespace H3D {
       };
       
     public:
+      /// \brief The entries in CacheMode enumerator is used for checking if
+      /// caching should be done or not.
       typedef enum {
         /// Caching is on.
         ON, 
         /// Caching is off.
         OFF,
-        /// Caching is depending in the GraphicalRenderingOptions in use
+        /// Caching is depending on the GraphicalRenderingOptions in use.
         OPTIONS
       } CacheMode;
         

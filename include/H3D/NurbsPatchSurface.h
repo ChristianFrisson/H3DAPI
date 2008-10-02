@@ -110,14 +110,14 @@ namespace H3D {
   /// closed defines whether the curve should be rendered as a closed object
   /// in the given parametric direction allowing the object to be closed in
   /// one direction, but not the other (EXAMPLE  cylinder).
-	/// 
-	/// \par Internal routes:
+  /// 
+  /// \par Internal routes:
   /// \dotfile NurbsPatchSurface.dot
   class NurbsPatchSurface : 
     public X3DNurbsSurfaceGeometryNode {
   public:
     
-		/// Constructor.
+    /// Constructor.
     NurbsPatchSurface( Inst< SFNode      >  _metadata = 0,
                        Inst< SFBound     > _bound = 0,
                        Inst< DisplayList > _displayList = 0,
@@ -126,7 +126,7 @@ namespace H3D {
                        Inst< MFVec3f     > _contactPoint = 0,
                        Inst< MFVec3f     > _contactNormal = 0,
                        Inst< SFCoordinateNode > _controlPoint = 0,
-                       Inst< TexCoordOrNurbsTex >	_texCoord = 0,
+                       Inst< TexCoordOrNurbsTex >  _texCoord = 0,
                        Inst< SFInt32     > _uTessellation = 0,
                        Inst< SFInt32     > _vTessellation = 0,
                        Inst< MFDouble    > _weight = 0,
@@ -140,23 +140,24 @@ namespace H3D {
                        Inst< SFInt32     > _uOrder = 0,
                        Inst< SFInt32     > _vOrder = 0 );
 
-		/// Function called to specify what differs between NurbsPatchSurface
-		/// and NurbsTrimmedSurface.
-		virtual void renderBetweenBeginEnd(
-																GLUnurbsObj *nurbs_object,
-																X3DTextureCoordinateNode *tex_coord_node,
-																TextureCoordinateGenerator *tex_coord_gen,
-																NurbsTextureCoordinate *nurbs_tex_coord, 
-																GLfloat *texKnotU,
-																GLfloat *texKnotV,
-																GLfloat *texCoordinates, 
-																GLfloat *u_knots, 
-																GLfloat *v_knots, 
-																H3DInt32 &sizeOfVertex,
-																GLfloat *withWeights, 
-																H3DInt32 &uSizeToUse, 
-																H3DInt32 &vSizeToUse, 
-																H3DInt32 &map2Vertex3Or4 );
+    // Function called by render to render the small part that differs
+    // between NurbsPatchSurface and NurbsTrimmedSurface. The arguments
+    // are things that are needed to render that difference.
+    virtual void renderBetweenBeginEnd(
+                                GLUnurbsObj *nurbs_object,
+                                X3DTextureCoordinateNode *tex_coord_node,
+                                TextureCoordinateGenerator *tex_coord_gen,
+                                NurbsTextureCoordinate *nurbs_tex_coord, 
+                                GLfloat *texKnotU,
+                                GLfloat *texKnotV,
+                                GLfloat *texCoordinates, 
+                                GLfloat *u_knots, 
+                                GLfloat *v_knots, 
+                                H3DInt32 &sizeOfVertex,
+                                GLfloat *withWeights, 
+                                H3DInt32 &uSizeToUse, 
+                                H3DInt32 &vSizeToUse, 
+                                H3DInt32 &map2Vertex3Or4 );
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

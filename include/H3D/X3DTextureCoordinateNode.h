@@ -81,7 +81,7 @@ namespace H3D {
                                        unsigned int texture_unit ) {}
     
     /// Render the texture coordinate for the texture units between and
-    /// inluding start_unit and end_unit.
+    /// including start_unit and end_unit.
     void renderForTextureUnits( int index,
                                 unsigned int start_unit,
                                 unsigned int end_unit );
@@ -117,7 +117,7 @@ namespace H3D {
     
     /// Perform the OpenGL commands to render all texture coordinates as 
     /// an array for the texture units between and
-    /// inluding start_unit and end_unit.
+    /// including start_unit and end_unit.
     void renderArrayForTextureUnits( unsigned int start_unit,
                                      unsigned int end_unit );
     
@@ -170,7 +170,7 @@ namespace H3D {
     void stopTexGenForActiveTexture();
 
     /// Start hardware texture coordinate generation for the texture units 
-    /// between and inluding start_unit and end_unit. Algorithm depends
+    /// between and including start_unit and end_unit. Algorithm depends
     /// on the texture coordinate node
     void startTexGenForTextureUnits( unsigned int start_unit,
                                      unsigned int end_unit );

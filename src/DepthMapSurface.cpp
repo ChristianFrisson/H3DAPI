@@ -48,10 +48,10 @@ namespace DepthMapSurfaceInternals {
 DepthMapSurface::DepthMapSurface(
                     Inst< UpdateStiffness       > _stiffness,
                     Inst< UpdateDamping         > _damping,
-									  Inst< UpdateStaticFriction  > _staticFriction,
-									  Inst< UpdateDynamicFriction > _dynamicFriction,
-									  Inst< SFTexture2DNode       > _depthMap,
-									  Inst< SFFloat               > _maxDepth,
+                    Inst< UpdateStaticFriction  > _staticFriction,
+                    Inst< UpdateDynamicFriction > _dynamicFriction,
+                    Inst< SFTexture2DNode       > _depthMap,
+                    Inst< SFFloat               > _maxDepth,
                     Inst< SFBool                > _whiteIsOut ):
   H3DVariableDepthSurface( _stiffness, _damping,
                            _staticFriction, _dynamicFriction ),

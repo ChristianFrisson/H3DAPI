@@ -57,12 +57,12 @@ namespace H3D {
     FogCoordinate(  Inst< MFFloat  > _depth         = 0,
                     Inst< SFNode   > _metadata      = 0);
 
-    /// Perform the OpenGL commands to set the depth
+    /// Perform the OpenGL commands to render fog until 
+    /// the given index.
     virtual void render( int depth_index );
 
-    /// Perform the OpenGL commands to set the vertex attributes
-    /// as a an vertex attribute array on the attribute with the 
-    /// currently set attribute index.
+    /// Perform the OpenGL commands to render the fog for
+    /// the whole fog array.
     virtual void renderArray();
 
     /// Disable the array state enabled in renderArray().

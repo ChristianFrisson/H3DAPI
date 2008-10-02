@@ -1,6 +1,5 @@
-
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2008, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -22,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file This file has been automatically generated from the 
+/// \file TypedFieldAnyTmpl.h
+/// \brief This file has been automatically generated from the
 /// Util/TypedFieldAnyTmpl.py. It contains the definition of the Any 
 /// template class.
 //
@@ -111,8 +111,6 @@ namespace H3D {
 
       /// Check that a field is of the correct type. 
       /// \param f The field to check the type of
-      /// \param index The index of the field in the template
-      /// types specified in Type.
       /// \throws InvalidType
       ///
       static void checkType( Field *f ) { 

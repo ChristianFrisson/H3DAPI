@@ -345,6 +345,8 @@ namespace H3D {
     /// Traverse the scenegraph. Saves the accumulated inverse
     /// matrix for later use when transforming the X3DViewpointNode in
     /// GLWindow.
+    /// \param ti The TraverseInfo object containing information about the
+    /// traversal.
     virtual void traverseSG( TraverseInfo &ti ) {
       accInverseMatrix->setValue( ti.getAccInverseMatrix(), id );
       accForwardMatrix->setValue( ti.getAccForwardMatrix(), id );
@@ -374,6 +376,10 @@ namespace H3D {
 
     /// Function for rotating the viewpoint around rotation_center
     /// without changing the position or orientation fields.
+    /// \param rotation The rotation to be applied.
+    /// \param collision If true then collision between avatar and 
+    /// nodes will be considered. NOTE: Not used in current implementation.
+    /// \param rotation_center The center of rotation.
     virtual void rotateAround( Rotation rotation, bool collision,
                                Vec3f rotation_center );
 
@@ -383,6 +389,12 @@ namespace H3D {
 
     /// Function for translating the viewpoint with direction
     /// without changing the position or orientation fields.
+    /// \param direction The translation vector.
+    /// \param collision If true then collision between avatar and 
+    /// nodes will be considered.
+    /// \param avatar_size Information about how the avatar is specified.
+    /// \param topNode needed for collision detection.
+    // TODO: remove the collision parameter? topNode can be used.
     virtual void translate( Vec3f direction, bool collision,
                             const vector< H3DFloat > &avatar_size,
                             X3DChildNode * topNode );
