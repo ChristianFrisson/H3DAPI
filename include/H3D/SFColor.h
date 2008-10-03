@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFColor.h
+/// \brief Contains the SFColor field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFCOLOR_H__

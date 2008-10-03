@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFBool.h
+/// \brief Contains the MFBool field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFBOOL_H__

@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFColor.h
+/// \brief Contains the MFColor field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFCOLOR_H__

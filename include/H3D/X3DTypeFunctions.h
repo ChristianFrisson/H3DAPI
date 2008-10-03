@@ -21,6 +21,9 @@
 //    www.sensegraphics.com for more information.
 //
 //
+/// \file X3DTypeFunctions.h
+/// \brief Header file containing useful functions for conversions of different
+/// representations of X3D types.
 //
 //////////////////////////////////////////////////////////////////////////////
 

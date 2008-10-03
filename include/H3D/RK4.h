@@ -22,8 +22,8 @@
 //
 //
 //
-/// \file Node.h
-/// \brief Node base class
+/// \file RK4.h
+/// \brief Contains fourth-order Runge Kutta integration functions.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __RK4_H__

@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file Instantiate.h
+/// \brief Contains the Inst struct.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __INSTANTIATE_H__

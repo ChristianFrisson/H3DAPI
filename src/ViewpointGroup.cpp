@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file Viewpoint.cpp
-/// \brief CPP file for Viewpoint, X3D scene-graph node
+/// \file ViewpointGroup.cpp
+/// \brief CPP file for ViewpointGroup, X3D scene-graph node
 ///
 //
 //

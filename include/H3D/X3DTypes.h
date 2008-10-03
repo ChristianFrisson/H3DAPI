@@ -21,6 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
+/// \file X3DTypes.h
+/// \brief Header file containing all X3D types enumerated.
 //
 //////////////////////////////////////////////////////////////////////////////
 

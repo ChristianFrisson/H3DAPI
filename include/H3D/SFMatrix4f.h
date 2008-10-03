@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFMatrix4f.h
+/// \brief Contains the SFMatrix4f field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFMATRIX4F_H__

@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFColorRGBA.h
+/// \brief Contains the MFColorRGBA field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFCOLORRGBA_H__

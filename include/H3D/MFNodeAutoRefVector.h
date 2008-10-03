@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFNodeAutoRefVector.h
+/// \brief Contains the MFNodeAutoRefVector class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFNODEAUTOREFVECTOR_H__

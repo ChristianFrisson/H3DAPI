@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFTime.h
+/// \brief Contains the SFTime field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFTIME_H__

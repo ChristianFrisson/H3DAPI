@@ -22,7 +22,7 @@
 //
 //
 /// \file RefCountSField.h
-/// \brief Contains the MFNode class.
+/// \brief Contains the RefCountSField class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __REFCOUNTSFIELD_H__

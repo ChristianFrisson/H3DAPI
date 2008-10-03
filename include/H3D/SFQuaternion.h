@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFQuaternion.h
+/// \brief Contains the SFQuaternion field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFQUATERNION_H__

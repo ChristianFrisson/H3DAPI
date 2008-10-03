@@ -23,7 +23,7 @@
 //
 //
 /// \file CoordBoundField.h
-/// \brief Header file for CoordBoundField, X3D scene-graph node
+/// \brief Header file for CoordBoundField, specialiced field class.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////

@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file RK4.cpp
+/// \brief CPP file for fourth-order Runge Kutta integration functions.
 //
 //////////////////////////////////////////////////////////////////////////////
 

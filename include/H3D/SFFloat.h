@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFFloat.h
+/// \brief Contains the SFFloat field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFFLOAT_H__

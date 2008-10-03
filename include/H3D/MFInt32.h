@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFInt32.h
+/// \brief Contains the MFInt32 field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFINT32_H__

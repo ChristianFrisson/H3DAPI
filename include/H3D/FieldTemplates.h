@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file FieldTemplates.h
+/// \brief Contains different templates to modify field behaviour.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __FIELDTEMPLATES_H__

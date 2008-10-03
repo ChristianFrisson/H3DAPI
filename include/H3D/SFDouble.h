@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFDouble.h
+/// \brief Contains the SFDouble field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFDOUBLE_H__

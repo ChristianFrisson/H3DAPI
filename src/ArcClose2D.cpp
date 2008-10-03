@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file Arc2D.cpp
+/// \file ArcClose2D.cpp
 /// \brief CPP file for ArcClose2D, X3D scene-graph node
 ///
 //

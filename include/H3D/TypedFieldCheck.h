@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file TypedFieldCheck.h contains a lot of help template classes for
+/// \file TypedFieldCheck.h 
+/// \brief Contains a lot of help template classes for
 /// checking the types of a field given a TypedField template argument
 /// specification.
 //

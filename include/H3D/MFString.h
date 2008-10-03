@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFString.h
+/// \brief Contains the MFString field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFSTRING_H__

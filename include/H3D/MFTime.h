@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFTime.h
+/// \brief Contains the MFTime field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFTIME_H__

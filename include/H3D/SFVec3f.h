@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFVec3f.h
+/// \brief Contains the SFVec3f field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFVEC3F_H__

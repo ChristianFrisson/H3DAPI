@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFMatrix3f.h
+/// \brief Contains the SFMatrix3f field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFMATRIX3F_H__

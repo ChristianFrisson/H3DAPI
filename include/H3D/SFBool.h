@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFBool.h
+/// \brief Contains the SFBool field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFBOOL_H__

@@ -22,8 +22,8 @@
 //
 //
 //
-/// \file Node.h
-/// \brief Node base class
+/// \file DeviceLog.h
+/// \brief Header file for DeviceLog, scene-graph node.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __DEVICE_LOG_H__

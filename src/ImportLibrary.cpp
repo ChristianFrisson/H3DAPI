@@ -23,7 +23,7 @@
 //
 //
 /// \file ImportLibrary.cpp
-/// \brief Header file for ImportLibrary, H3D scene-graph node.
+/// \brief CPP file for ImportLibrary, H3D scene-graph node.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////

@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-// \file DependentNodeFields.h Contains the DependentSFNode and 
+/// \file DependentNodeFields.h Contains the DependentSFNode and 
 /// DependentMFNode template classes.
 //
 //////////////////////////////////////////////////////////////////////////////

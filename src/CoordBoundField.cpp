@@ -21,8 +21,8 @@
 //    A commercial license is also available. Please contact us at 
 //    www.sensegraphics.com for more information.
 //
-/// \file IndexedFaceSet.cpp
-/// \brief CPP file for IndexedFaceSet, X3D scene-graph node
+/// \file CoordBoundField.cpp
+/// \brief CPP file for CoordBoundField, specialiced field class.
 ///
 //
 //

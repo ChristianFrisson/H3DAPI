@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFRotation.h
+/// \brief Contains the MFRotation field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFROTATION_H__

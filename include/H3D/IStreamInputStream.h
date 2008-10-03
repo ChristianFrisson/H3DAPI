@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file IStreamInputStream.h
+/// \brief Header file for the IStreamInputStream class.
 //
 //////////////////////////////////////////////////////////////////////////////
 

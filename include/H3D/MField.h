@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MField.h
+/// \brief Contains base classes used to create multivalued fields.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFIELD_H__

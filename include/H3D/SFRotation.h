@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFRotation.h
+/// \brief Contains the SFRotation field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFROTATION_H__

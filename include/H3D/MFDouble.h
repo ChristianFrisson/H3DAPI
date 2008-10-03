@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFDouble.h
+/// \brief Contains the MFDouble field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFDOUBLE_H__

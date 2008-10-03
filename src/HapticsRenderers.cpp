@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file Material.cpp
-/// \brief CPP file for Material, X3D scene-graph node
+/// \file HapticsRenderers.cpp
+/// \brief CPP file for several subclasses of H3DHapticsRendererNode
 ///
 //
 //

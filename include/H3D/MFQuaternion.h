@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFQuaternion.h
+/// \brief Contains the MFQuaternion field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFQUATERNION_H__

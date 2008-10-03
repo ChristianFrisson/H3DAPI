@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file Field.h
+/// \brief Contains the Field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __FIELD_H__

@@ -22,7 +22,7 @@
 //
 //
 /// \file SFNode.h
-/// \brief Contains the MFNode class.
+/// \brief Contains the SFNode class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFNODE_H__

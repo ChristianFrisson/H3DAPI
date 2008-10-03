@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file ImageObjectTexture.cpp
+/// \file ImageObjectTexture.h
 /// \brief Header file for ImageObjectTexture.
 ///
 //

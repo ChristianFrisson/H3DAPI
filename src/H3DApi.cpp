@@ -21,6 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
+/// \file H3DApi.cpp
+/// \brief Cpp file containing dll initialization functions.
 //
 //////////////////////////////////////////////////////////////////////////////
 

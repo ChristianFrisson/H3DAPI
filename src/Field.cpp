@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file Field.cpp
+/// \brief CPP file for the Field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 

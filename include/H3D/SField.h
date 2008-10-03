@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-// \file SField.h Contains the SField template class.
+/// \file SField.h
+/// \brief Contains the SField template class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFIELD_H__

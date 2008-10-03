@@ -22,7 +22,7 @@
 //
 //
 /// \file SpotLight.h
-/// \brief UNIMPLEMENTED: Header file for SpotLight, X3D scene-graph node
+/// \brief Header file for SpotLight, X3D scene-graph node
 ///
 //
 //////////////////////////////////////////////////////////////////////////////

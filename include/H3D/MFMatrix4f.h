@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFMatrix4f.h
+/// \brief Contains the MFMatrix4f field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFMATRIX4F_H__

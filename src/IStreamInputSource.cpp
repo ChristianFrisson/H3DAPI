@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file IStreamInputSource.cpp
+/// \brief CPP file for the IStreamInputSource class.
 //
 //////////////////////////////////////////////////////////////////////////////
 

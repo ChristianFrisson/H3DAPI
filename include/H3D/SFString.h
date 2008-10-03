@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFString.h
+/// \brief Contains the SFString field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFSTRING_H__

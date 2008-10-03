@@ -21,6 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 /// \file H3DExports.h
+/// \brief header file for getH3DExportNode function. Used to be able to access
+/// HDEV, HDEV0, HDEV1 and HDEV2 from X3D.
 //
 //////////////////////////////////////////////////////////////////////////////
 

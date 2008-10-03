@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFMatrix3d.h
+/// \brief Contains the MFMatrix3d field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFMATRIX3D_H__

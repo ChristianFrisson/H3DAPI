@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file SFColorRGBA.h
+/// \brief Contains the SFColorRGBA field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __SFCOLORRGBA_H__

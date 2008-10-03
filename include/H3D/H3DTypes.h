@@ -21,6 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
+/// \file H3DTypes.h
+/// \brief Include this file to include the H3D specific types.
 //
 //////////////////////////////////////////////////////////////////////////////
 

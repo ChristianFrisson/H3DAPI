@@ -21,7 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-//
+/// \file MFFloat.h
+/// \brief Contains the MFFloat field class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __MFFLOAT_H__

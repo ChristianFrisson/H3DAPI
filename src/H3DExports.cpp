@@ -21,6 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 /// \file H3DExports.cpp
+/// \brief cpp file for getH3DExportNode function.
 //
 //////////////////////////////////////////////////////////////////////////////
 
