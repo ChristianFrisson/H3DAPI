@@ -72,7 +72,7 @@ namespace H3D {
   /// that can have any number of SFFloat fields routed to it.
   /// 
   /// \par
-  /// TypedField< SFInt32, Types< SFFloat, SFFloat >, Any< SFInt32, MFInt32 >>
+  /// TypedField< SFInt32, Types< SFFloat, SFFloat >, Types< Any< SFInt32, MFInt32 > > >
   /// defines a SFInt32 field that requires two SFFloat routes and can
   /// optionally have an extra SFInt32 or MFInt32 route.
   ///
