@@ -90,6 +90,7 @@ namespace H3D {
       /// LUMINANCE_ALPHA: color.r, color.a 
       /// RGB, BGR, VEC3:  color.rgb
       /// RGBA, BGRA       color.rgba
+      /// Texture coordinates will be clamped to the range [0,1]
       virtual void setPixel( const Vec2f &tex_coord, 
                              const RGBA &color );
 
@@ -109,6 +110,7 @@ namespace H3D {
       /// LUMINANCE_ALPHA: color.r, color.a 
       /// RGB, BGR, VEC3:  color.rgb
       /// RGBA, BGRA       color.rgba
+      /// Texture coordinates will be clamped to the range [0,1]
       virtual void setPixel( const Vec3f &tex_coord, 
                              const RGBA &color );
 
