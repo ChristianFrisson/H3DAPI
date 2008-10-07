@@ -149,7 +149,27 @@ void OpenHapticsRenderer::CameraView::onValueChange( const bool &v ) {
 
 HAPI::HAPIHapticsRenderer *OpenHapticsRenderer::getNewHapticsRenderer() {
 #ifdef HAVE_OPENHAPTICS
-  return new HAPI::OpenHapticsRenderer;
+  const string &default_shape_type = defaultShapeType->getValue();
+  if( default_shape_type == "FEEDBACK_BUFFER" ) {
+      return new HAPI::OpenHapticsRenderer(
+        HAPI::OpenHapticsRenderer::OpenHapticsOptions::FEEDBACK_BUFFER,
+        defaultAdaptiveViewport->getValue(),
+        defaultHapticCameraView->getValue() );
+    } else if( default_shape_type == "DEPTH_BUFFER" ) {
+      return new HAPI::OpenHapticsRenderer(
+        HAPI::OpenHapticsRenderer::OpenHapticsOptions::DEPTH_BUFFER,
+        defaultAdaptiveViewport->getValue(),
+        defaultHapticCameraView->getValue() );
+    } else {
+      Console(4) << "Warning: Invalid OpenHaptics shape type: "
+                 << default_shape_type
+                 << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
+                 << "(in \"" << getName() << "\")" << endl;
+      return new HAPI::OpenHapticsRenderer(
+        HAPI::OpenHapticsRenderer::OpenHapticsOptions::FEEDBACK_BUFFER,
+        defaultAdaptiveViewport->getValue(),
+        defaultHapticCameraView->getValue() );
+    }
 #else
   return NULL;
 #endif

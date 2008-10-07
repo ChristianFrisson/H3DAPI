@@ -159,7 +159,7 @@ namespace H3D {
 
     /// Returns a new instance of HAPI::RuspiniRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
-      return new HAPI::RuspiniRenderer;
+      return new HAPI::RuspiniRenderer( proxyRadius->getValue() );
     }
 
     /// The radius of the proxy in metres.
