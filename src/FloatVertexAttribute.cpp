@@ -62,7 +62,7 @@ FloatVertexAttribute::FloatVertexAttribute( Inst< SFNode   > _metadata,
 // Perform the OpenGL commands to set the vertex attribute
 // with the given index.
 void FloatVertexAttribute::render( int value_index ) {
-  if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
+  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     GLfloat v0, v1, v2, v3;
     H3DInt32 nr_components = numComponents->getValue();
     int index = value_index * nr_components;
@@ -81,7 +81,7 @@ void FloatVertexAttribute::render( int value_index ) {
 /// as a an vertex attribute array.
 void FloatVertexAttribute::renderArray() {
   if( !value->empty() ) {
-    if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
+    if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
       glEnableVertexAttribArrayARB( attrib_index );
       glVertexAttribPointerARB( attrib_index,
         numComponents->getValue(),
@@ -95,7 +95,7 @@ void FloatVertexAttribute::renderArray() {
 
 /// Disable the array state enabled in renderArray().
 void FloatVertexAttribute::disableArray() {
-  if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
+  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     glDisableVertexAttribArrayARB( attrib_index );
   }
 }

@@ -57,7 +57,7 @@ Matrix4VertexAttribute::Matrix4VertexAttribute( Inst< SFNode   > _metadata,
 // Perform the OpenGL commands to set the vertex attribute
 // with the given index.
 void Matrix4VertexAttribute::render( int value_index ) {
-  if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
+  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     GLfloat v0, v1, v2, v3;
     const Matrix4f &m = value->getValueByIndex( value_index );
     v0 = m[0][0]; v1 = m[1][0]; v2 = m[2][0]; v3 = m[3][0];
@@ -76,7 +76,7 @@ void Matrix4VertexAttribute::render( int value_index ) {
 /// Perform the OpenGL commands to set the vertex attributes
 /// as a an vertex attribute array.
 void Matrix4VertexAttribute::renderArray() {
-  if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
+  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     glEnableVertexAttribArrayARB( attrib_index );
     GLfloat *data = new GLfloat[ 16 * value->size() ];
     for( unsigned int i = 0; i < value->size(); i++ ) {
@@ -111,7 +111,7 @@ void Matrix4VertexAttribute::renderArray() {
 
 /// Disable the array state enabled in renderArray().
 void Matrix4VertexAttribute::disableArray() {
-  if( GLEW_ARB_vertex_program && attrib_index > 0 ) {
+  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     glDisableVertexAttribArrayARB( attrib_index );
   }
 }

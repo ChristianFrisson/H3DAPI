@@ -48,7 +48,7 @@ X3DVertexAttributeNode::X3DVertexAttributeNode( Inst< SFNode   > _metadata,
                                                 Inst< SFString > _name ):
   X3DGeometricPropertyNode( _metadata ),
   name( _name ),
-  attrib_index( 0 ) {
+  attrib_index( -1 ) {
 
   type_name = "X3DVertexAttributeNode";
   database.initFields( this );
