@@ -54,9 +54,8 @@ void H3DImageObject::SFImage::setPixel( unsigned int x, unsigned int y,
 void H3DImageObject::SFImage::setPixel( const Vec2f &tc,
                                           const RGBA &color ) {
   if( value.get() ) {
-    setPixel( (unsigned int)( (value->width() - 1) * tc.x ),
-              (unsigned int)( (value->height() - 1) * tc.y ),
-               color );
+    setPixel( Vec3f( tc.x, tc.y, 0 ),
+              color );
   }
 }
 
@@ -87,9 +86,24 @@ void H3DImageObject::SFImage::setPixel( unsigned int x,
 void H3DImageObject::SFImage::setPixel( const Vec3f &tc,
                                         const RGBA &color ) {
   if( value.get() ) {
-    setPixel( (unsigned int)( (value->width() - 1) * tc.x ),
-              (unsigned int)( (value->height() - 1) * tc.y ),
-              (unsigned int)( (value->depth() - 1) * tc.z ),
-               color );
+    unsigned int width = value->width();
+    unsigned int height = value->height();
+    unsigned int depth = value->depth();
+
+    // find the pixel corresponding to the texture coordinate.
+    unsigned int x = (unsigned int)(tc.x * width );
+    unsigned int y = (unsigned int)(tc.y * height);
+    unsigned int z = (unsigned int)(tc.z * depth );
+    
+    // clamp to pixel values
+    if( x < 0 ) x = 0;
+    if( y < 0 ) y = 0;
+    if( z < 0 ) z = 0;
+    if( x >= width ) x = width - 1;
+    if( y >= height ) x = height - 1;
+    if( z >= depth ) x = depth - 1;
+  
+    // set the pixel to new value
+    setPixel( x, y, z, color );
   }
 }
