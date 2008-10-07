@@ -178,7 +178,7 @@ void ComposedShader::render() {
                                                    dynamic_fields[i] ) ) {
           Console(3) << "Warning: Uniform variable \"" 
                      <<  dynamic_fields[i]->getName() 
-                     << "\" not defined in shader source of the ShaderPart nodes "
+                     << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
                      << "in the node \"" << getName() << "\"" << endl;
         }
       }
