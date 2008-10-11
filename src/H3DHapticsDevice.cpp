@@ -256,6 +256,7 @@ void H3DHapticsDevice::renderShapes(
                                   layer );
       }
     }
+
     hapi_device->setShapes( shapes, layer );
     hapi_device->transferObjects();
   }
@@ -332,7 +333,7 @@ void H3DHapticsDevice::updateDeviceValues() {
     // convert to metres
     devicePosition->setValue( Vec3f( dv.position ), id);
     deviceVelocity->setValue( Vec3f( dv.velocity ), id);
-    deviceOrientation->setValue( dv.orientation, id);
+    deviceOrientation->setValue( Rotation(dv.orientation), id);
     force->setValue( (Vec3f)dv.force, id);
     torque->setValue( (Vec3f)dv.torque, id);
     buttons->setValue( dv.button_status, id );
