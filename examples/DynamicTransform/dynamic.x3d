@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Group>
+  <GlobalSettings>
+    <HapticsOptions maxDistance="-1" />
+  </GlobalSettings>
+
   <DynamicTransform  DEF="DYN"
                      mass="20" 
                      inertiaTensor="0.1 0 0 0 0.1 0 0 0 0.1">
