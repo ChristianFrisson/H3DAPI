@@ -314,6 +314,12 @@ namespace H3D {
       return transform_stack.top().acc_inv;
     }
     
+    /// Returns the number of times the given geometry has been added
+    /// as the source of a haptic shape so far in the traversal.
+    inline getGeometryCount( X3DGeometryNode *geom ) {
+      return geometry_count[geom];
+    }
+
     /// Used to get all the X3DLightNodes that are global.
     typedef AutoRefVector< RefCountedClass > RefCountedVector;
     RefCountedVector x3dlightnode_vector;

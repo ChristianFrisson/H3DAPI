@@ -49,7 +49,8 @@ namespace H3D {
                     Inst< SFFloat   >  _maxDistance  = 0,
                     Inst< SFFloat   > _lookAheadFactor = 0,
                     Inst< SFBool    > _useBoundTree = 0,
-                    Inst< SFBool    > _interpolateForceEffects = 0 );
+                    Inst< SFBool    > _interpolateForceEffects = 0,
+                    Inst< SFString  > _dynamicMode = 0 );
     
     /// Specifies which sides of the shapes to render haptically. If "BACK"
     /// only the back side of can be felt, "FRONT" only front side and 
@@ -105,6 +106,23 @@ namespace H3D {
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n    
     auto_ptr< SFBool > interpolateForceEffects;
+
+    /// Determines when geometries should be considered dynamic, i.e. have
+    /// movement in the global coordinate space. When a geometry is dynamic
+    /// the haptics rendering will be a bit slower, but if a geometry is 
+    /// moving and the dynamic flag is not set there is a big possibility
+    /// of fallthrough.
+    /// Values:
+    /// - "ALWAYS" Geometry is always considered dynamic
+    /// - "NEVER"  Geometry is never considered dynamic
+    /// - "TRANSFORM_CHANGED" Geometry is considered dynamic if it has moved
+    /// between two scenegraph loops.
+    ///
+    /// <b>Valid values: </b> "ALWAYS", "NEVER" or "TRANSFORM_CHANGED"
+    /// <b>Default value: </b> "TRANSFORM_CHANGED" \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFString > dynamicMode;
+
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

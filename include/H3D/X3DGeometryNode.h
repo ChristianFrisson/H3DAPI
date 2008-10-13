@@ -317,7 +317,7 @@ namespace H3D {
                                    OpenHapticsOptions *openhaptics_options );
 
     /// identifiers for the shapes geometry.
-    vector< int > haptic_shape_ids;
+    vector< pair< int, pair< Matrix4f, H3DTime > > > haptic_shape_ids;
 
     bool use_culling, allow_culling;
     bool draw_debug_options;
