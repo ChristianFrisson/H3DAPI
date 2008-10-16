@@ -34,6 +34,9 @@
 using namespace H3D;
 
 string LibCurlResolver::resolveURLAsTmpFile( const string &url ) {
+  // only process files that have a protocol defined to avoid long timeouts
+  // on files that will not succeed to load anyway
+  if( url.find( "://" ) == string::npos ) return "";
   CURL *handle = curl_easy_init();
   
   string tmp_file = ResourceResolver::getTmpFileName();
