@@ -316,7 +316,7 @@ namespace H3D {
     
     /// Returns the number of times the given geometry has been added
     /// as the source of a haptic shape so far in the traversal.
-    inline getGeometryCount( X3DGeometryNode *geom ) {
+    inline void getGeometryCount( X3DGeometryNode *geom ) {
       return geometry_count[geom];
     }
 
