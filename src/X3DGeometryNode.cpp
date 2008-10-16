@@ -560,6 +560,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
         Vec3f velocity = (acc_frw.getTranslationPart() - last_xf.getTranslationPart() ) / dt;
         Vec3f scale_velocity = (acc_frw.getScalePart() - last_xf.getScalePart() ) / dt;
         HAPI::Rotation angular_velocity( last_xf.inverse().getRotationPart() * acc_frw.getRotationPart() );
+        angular_velocity.angle = angular_velocity.angle / dt;
         
         // set velocities on shape.
         tri_set->setVelocity( velocity );
@@ -732,6 +733,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
         pt_set->setVelocity( velocity );
         pt_set->setAngularVelocity( angular_velocity );
         pt_set->setGrowthRate( scale_velocity );
+        
         
         // force the shape to be dynamic if specified in the HapticsOptions
         if( dynamic_mode == "ALWAYS" )
