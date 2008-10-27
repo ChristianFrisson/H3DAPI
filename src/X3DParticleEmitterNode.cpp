@@ -261,8 +261,10 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       vp_to_local.getScaleRotationPart() * 
       (vp->totalOrientation->getValue() *  Vec3f( 0, 1, 0 ) );
     vp_y_axis.normalizeSafe();
-    Vec3f particle_to_viewer = vp_to_local.getRotationPart() * Vec3f( 0, 0, 1); //vp_position;// - position;
+    Vec3f particle_to_viewer = vp_position;// - position
     Vec3f X = vp_y_axis % particle_to_viewer;
+    particle_to_viewer.normalizeSafe();
+    X.normalizeSafe();
     
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
