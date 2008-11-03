@@ -138,6 +138,47 @@ namespace H3D {
       this->upToDate();
     }
   };
+
+  /// The EventCollection field collects all fields routed to it that
+  /// generates event between calls to the update function of the field.
+  /// Good to use if you have several fields and want to know which ones
+  /// of them that has generated an event since last update.
+  template< class FieldType >
+  class EventCollectingField : public FieldType {
+  protected:
+    
+    virtual void update() {
+      FieldType::update();
+      event_fields.clear();
+    }
+    
+    /// When the event is propagated the field that created the event is
+    /// saved
+    virtual void propagateEvent( Field::Event e ) {
+      FieldType::propagateEvent( e );
+      event_fields.insert( e.ptr );
+    }
+    
+  public:
+    /// Returns true if the Field given has generated an event to this
+    /// field since the last call to the update() function.
+    inline bool hasCausedEvent( Field *f ) {
+      return event_fields.find( f ) != event_fields.end();
+    }
+    
+    /// Returns true if the Field given has generated an event to this
+    /// field since the last call to the update() function.
+    template< class FieldType >
+    inline bool hasCausedEvent( auto_ptr< FieldType > &f ) {
+      return hasCausedEvent( f.get() );
+    }
+    
+  private:
+    /// The fields that has generated an event since the last call to
+    /// update()
+    set< Field * > event_fields;
+  };
+
 }
 
 #endif
