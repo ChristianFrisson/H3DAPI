@@ -168,8 +168,8 @@ namespace H3D {
     
     /// Returns true if the Field given has generated an event to this
     /// field since the last call to the update() function.
-    template< class FieldType >
-    inline bool hasCausedEvent( auto_ptr< FieldType > &f ) {
+    template< class FieldType2 >
+    inline bool hasCausedEvent( auto_ptr< FieldType2 > &f ) {
       return hasCausedEvent( f.get() );
     }
     
