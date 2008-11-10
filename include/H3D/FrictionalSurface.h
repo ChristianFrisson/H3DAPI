@@ -30,63 +30,27 @@
 #ifndef __FRICTIONALSURFACE_H__
 #define __FRICTIONALSURFACE_H__
 
-#include <H3D/SmoothSurface.h>
+#include <H3D/H3DFrictionalSurfaceNode.h>
 
 namespace H3D {
 
   /// \ingroup H3DNodes
   /// \class FrictionalSurface
   /// Surface with friction.
-  class H3DAPI_API FrictionalSurface: public SmoothSurface {
+  class H3DAPI_API FrictionalSurface: public H3DFrictionalSurfaceNode {
   public:
-
-    /// Specialized field which sets the static_friction variable in
-    /// FrictionSurface when the staticFriction field of FrictionalSurface
-    /// is changed.
-    class H3DAPI_API UpdateStaticFriction:
-      public AutoUpdate< OnValueChangeSField< SFFloat > > {
-    protected:
-      virtual void onValueChange( const H3DFloat &v );
-    };
-
-    /// Specialized field which sets the dynamic_friction variable in
-    /// FrictionSurface when the dynamicFriction field of FrictionalSurface
-    /// is changed.
-    class H3DAPI_API UpdateDynamicFriction:
-      public AutoUpdate< OnValueChangeSField< SFFloat > > {
-    protected:
-      virtual void onValueChange( const H3DFloat &v );
-    };
 
     /// Constructor.
     FrictionalSurface( Inst< UpdateStiffness >  _stiffness = 0,
                        Inst< UpdateDamping >  _damping   = 0,
                        Inst< UpdateStaticFriction >  _staticFriction = 0,
-                       Inst< UpdateDynamicFriction >  _dynamicFriction = 0 );
+                       Inst< UpdateDynamicFriction >  _dynamicFriction = 0,
+                       Inst< SFBool          > _useRelativeValues = 0 );
 
     void initialize();
 
-    /// The friction that is experienced upon initial movement when resting on 
-    /// the surface.
-    ///
-    /// <b>Access type: </b> inputOutput \n
-    /// <b>Default value: </b> 0.1 \n
-    /// <b>Value range: </b> [0-1]
-    auto_ptr< UpdateStaticFriction > staticFriction;
-
-    /// The friction that is experienced when moving along the surface 
-    /// the surface.
-    ///
-    /// <b>Access type: </b> inputOutput \n
-    /// <b>Default value: </b> 0.4 \n
-    /// <b>Value range: </b> [0-1]
-    auto_ptr< UpdateDynamicFriction > dynamicFriction;
-
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-    
-  protected:
-    bool in_static_contact;
   };
 }
 

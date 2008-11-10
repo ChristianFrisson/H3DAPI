@@ -5,12 +5,13 @@
 #  H3DAPI_LIBRARIES    - List of libraries when using H3DAPI.
 #  H3DAPI_FOUND        - True if H3DAPI found.
 
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
 FIND_PATH( H3DAPI_INCLUDE_DIR NAMES H3D/H3DApi.h
            PATHS $ENV{H3D_ROOT}/include
                  ../include
-                 ${CMAKE_MODULE_PATH}/../../include )
+                 ${module_file_path}/../../include )
 MARK_AS_ADVANCED(H3DAPI_INCLUDE_DIR)
 
 # Look for the library.
@@ -27,12 +28,12 @@ ENDIF(MSVC70 OR MSVC71)
 FIND_LIBRARY( H3DAPI_LIBRARY NAMES ${H3DAPI_NAME}
               PATHS $ENV{H3D_ROOT}/../lib
                     ../../lib
-                    ${CMAKE_MODULE_PATH}/../../../lib )
+                    ${module_file_path}/../../../lib )
 
 FIND_LIBRARY( H3DAPI_DEBUG_LIBRARY NAMES ${H3DAPI_NAME}_d
               PATHS $ENV{H3D_ROOT}/../lib
                     ../../lib
-                    ${CMAKE_MODULE_PATH}/../../../lib )
+                    ${module_file_path}/../../../lib )
 MARK_AS_ADVANCED(H3DAPI_LIBRARY)
 MARK_AS_ADVANCED(H3DAPI_DEBUG_LIBRARY)
 

@@ -36,7 +36,7 @@ H3DNodeDatabase DepthMapSurface::database(
                                             "DepthMapSurface", 
                                             &(newInstance<DepthMapSurface>),
                                             typeid( DepthMapSurface ),
-                                            &H3DVariableDepthSurface::database
+                                            &H3DFrictionalSurfaceNode::database
                                             );
 
 namespace DepthMapSurfaceInternals {
@@ -50,11 +50,13 @@ DepthMapSurface::DepthMapSurface(
                     Inst< UpdateDamping         > _damping,
                     Inst< UpdateStaticFriction  > _staticFriction,
                     Inst< UpdateDynamicFriction > _dynamicFriction,
+                    Inst< SFBool                > _useRelativeValues,
                     Inst< SFTexture2DNode       > _depthMap,
                     Inst< SFFloat               > _maxDepth,
                     Inst< SFBool                > _whiteIsOut ):
-  H3DVariableDepthSurface( _stiffness, _damping,
-                           _staticFriction, _dynamicFriction ),
+  H3DFrictionalSurfaceNode( _stiffness, _damping,
+                           _staticFriction, _dynamicFriction,
+                           _useRelativeValues ),
   depthMap( _depthMap ),
   maxDepth( _maxDepth ),
   whiteIsOut( _whiteIsOut ),
@@ -68,7 +70,7 @@ DepthMapSurface::DepthMapSurface(
   setImagePtr->setOwner( this );
 }
  void DepthMapSurface::initialize() {
-   H3DVariableDepthSurface::initialize();
+   H3DFrictionalSurfaceNode::initialize();
    X3DTexture2DNode * height_map = 
      static_cast< X3DTexture2DNode * >( depthMap->getValue() );
    Image * temp_image = 0;

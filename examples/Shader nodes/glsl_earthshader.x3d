@@ -1,40 +1,46 @@
-<?xml version="1.0" encoding="Windows-1252"?>
-<!-- This example requires a haptics device -->
-<Group>
-  <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
-  <Shape>
-    <Appearance>
-      <Material />
-      <ComposedShader DEF="SHADER" language="GLSL" >
-        <field name="EarthDay" type="SFNode" accessType="inputOutput">
-          <ImageTexture DEF="EARTH_DAY" url="../textures/Day.jpg" />
-        </field>
-        <field name="EarthNight" type="SFNode" accessType="inputOutput">
-          <ImageTexture DEF="EARTH_NIGHT" url="../textures/Night.jpg" />
-        </field>
-        <field name="EarthCloudGloss" type="SFNode" accessType="inputOutput">
-          <ImageTexture DEF="EARTH_CLOUDS" url="../textures/Clouds.jpg" />
-        </field>
-        <field name="lightPosition" type="SFVec3f" value="0.45 0 -0.45" accessType="inputOutput" />
-        <field name="viewpointPosition" type="SFVec3f" value="0 0 0.6"
-                 accessType="inputOutput" />
-        <field name="viewpointOrn" type="SFMatrix4f" value="1 0 0 0
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.0'>
+  <head>
+    <meta name='title' content='glsl_earthshader.x3d'/>
+    <meta name='description' content='Demonstrates how to use shaders with H3DAPI. The shader language is GLSL. This example requires a haptics device.'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  <Scene>
+    <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
+    <Shape>
+      <Appearance>
+        <Material />
+        <ComposedShader DEF="SHADER" language="GLSL" >
+          <field name="EarthDay" type="SFNode" accessType="inputOutput">
+            <ImageTexture DEF="EARTH_DAY" url="../textures/Day.jpg" />
+          </field>
+          <field name="EarthNight" type="SFNode" accessType="inputOutput">
+            <ImageTexture DEF="EARTH_NIGHT" url="../textures/Night.jpg" />
+          </field>
+          <field name="EarthCloudGloss" type="SFNode" accessType="inputOutput">
+            <ImageTexture DEF="EARTH_CLOUDS" url="../textures/Clouds.jpg" />
+          </field>
+          <field name="lightPosition" type="SFVec3f" value="0.45 0 -0.45" accessType="inputOutput" />
+          <field name="viewpointPosition" type="SFVec3f" value="0 0 0.6"
+                   accessType="inputOutput" />
+          <field name="viewpointOrn" type="SFMatrix4f" value="1 0 0 0
                                                             0 1 0 0
                                                             0 0 1 0
                                                             0 0 0 1"
-               accessType="inputOutput" />
-        <ShaderPart type="FRAGMENT" url="Shaders/glsl_Earth.frag" />
-        <ShaderPart type="VERTEX" url="Shaders/glsl_Earth.vert" />
-      </ComposedShader>
-    </Appearance>
-    <Sphere radius="0.1" />
-  </Shape>
+                 accessType="inputOutput" />
+          <ShaderPart type="FRAGMENT" url="Shaders/glsl_Earth.frag" />
+          <ShaderPart type="VERTEX" url="Shaders/glsl_Earth.vert" />
+        </ComposedShader>
+      </Appearance>
+      <Sphere radius="0.1" />
+    </Shape>
 
-  <PythonScript DEF="PS" url="viewpointMatrices.py" >
-    <ShaderProgram USE="SHADER" containerField="references"/>
-  </PythonScript>
-  
-  <ROUTE fromNode="HDEV" fromField="trackerPosition"
-         toNode="SHADER" toField="lightPosition" />
-</Group>
+    <PythonScript DEF="PS" url="viewpointMatrices.py" >
+      <ShaderProgram USE="SHADER" containerField="references"/>
+    </PythonScript>
+
+    <ROUTE fromNode="HDEV" fromField="trackerPosition"
+           toNode="SHADER" toField="lightPosition" />
+  </Scene>
+</X3D>
 

@@ -210,9 +210,9 @@ void writeNode( string out_dir, Node *n ) {
 #include <H3D/Scene.h>
 
 #ifdef HAVE_UI
-#include <UI/Frame.h>
-#include <UI/H3DLabeledWidget.h>
-#include <UI/H3DButtonNode.h>
+#include <H3D/UI/Frame.h>
+#include <H3D/UI/H3DLabeledWidget.h>
+#include <H3D/UI/H3DButtonNode.h>
 #endif
 
 inline void resetSceneTimeField() {

@@ -9,8 +9,8 @@ if( di ):
 
 # This python file creates an rectangular IndexedTriangleSet with
 # columns X rows coordinates.
-columns = 30
-rows = 30
+columns = 31
+rows = 31
 size = Vec2f( 0.4, 0.4 )
 
 coords = []
@@ -18,15 +18,15 @@ tex_coords = []
 index = []
 
 
-step_c = size.x / columns
-step_r = size.y / rows
+step_c = size.x / (columns-1)
+step_r = size.y / (rows-1)
 
-tc_step_c = 1.0/ columns
-tc_step_r = 1.0/ rows
+tc_step_c = 1.0/ (columns-1)
+tc_step_r = 1.0/ (rows-1)
 
 for c in range( columns ):
   for r in range( rows ):
-    coords.append( Vec3f( step_c * c - size.x / 2, step_r * r - size.x/2, 0 ) )
+    coords.append( Vec3f( step_c * c - size.x / 2, step_r * r - size.y/2, 0 ) )
     tex_coords.append( Vec2f( tc_step_c * c, tc_step_r * r ) )
 
 for c in range( columns - 1 ):

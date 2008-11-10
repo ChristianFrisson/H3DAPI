@@ -130,6 +130,7 @@ Group* X3D::createVRMLFromURL( const string &url,
     if ( c )
       g->children->push_back( c );
   } 
+  inp.close();
   ResourceResolver::setBaseURL( old_base );
   if( is_tmp_file ) ResourceResolver::releaseTmpFileName( resolved_url );
   return g;
@@ -203,6 +204,7 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
     if ( c && !c->children->empty() )
       g.reset( c->children->front() );
   } 
+  inp.close();
   ResourceResolver::setBaseURL( old_base );
   if( is_tmp_file ) ResourceResolver::releaseTmpFileName( resolved_url );
   return g;

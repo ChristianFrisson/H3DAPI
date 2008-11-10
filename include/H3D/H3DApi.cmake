@@ -89,15 +89,17 @@
 #define XML_USE_INMEM_MESSAGELOADER
 #define XML_USE_NETACCESSOR_WINSOCK
 
-//#define H3D_LINK_STATIC_EXTERNALS
-
-#ifdef H3D_LINK_STATIC_EXTERNALS
+#ifdef WIN32
 // define this if you are linking Xerces as a static library
-#define XML_LIBRARY
-#define FTGL_LIBRARY_STATIC
-#define GLEW_STATIC
-#define CURL_STATICLIB
-#define FREEGLUT_STATIC
+#cmakedefine XML_LIBRARY
+// define this if you are linking ftgl as a static library
+#cmakedefine FTGL_LIBRARY_STATIC
+// define this if you are linking GLEW as a static library
+#cmakedefine GLEW_STATIC
+// define this if you are linking curl as a static library
+#cmakedefine CURL_STATICLIB
+// define this if you are linking FreeGlut as a static library
+#cmakedefine FREEGLUT_STATIC
 #endif
 
 // The following ifdef block is the standard way of creating macros

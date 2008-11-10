@@ -1,56 +1,63 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Group>
-  <GlobalSettings>
-    <HapticsOptions maxDistance="-1" />
-  </GlobalSettings>
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.0'>
+  <head>
+    <meta name='title' content='dynamic.x3d'/>
+    <meta name='description' content='An example of dynamic interaction between the haptics device and an object. The dynamic part of the scene is modeled through python and the DynamicTransform node.'/>
+    <meta name='editors' content='SenseGraphics AB'/>
+  </head>
+  <Scene>
+    <GlobalSettings>
+      <HapticsOptions maxDistance="-1" />
+    </GlobalSettings>
 
-  <DynamicTransform  DEF="DYN"
-                     mass="20" 
-                     inertiaTensor="0.1 0 0 0 0.1 0 0 0 0.1">
-    <Shape>
-      <Appearance>
-        <Material diffuseColor="1 0 0"/>
-        <FrictionalSurface dynamicFriction="0.6" staticFriction="0.2"/>
-      </Appearance>
-      <Box DEF="BOX" size="0.2 0.2 0.2" />
-    </Shape>
-  </DynamicTransform>
- 
-
-   <PythonScript DEF="PS" url="dynamic.py">
-   </PythonScript>
-
-   <ROUTE fromNode="DYN" fromField="position"
-      toNode="PS" toField="linSpring" />
-
-   <ROUTE fromNode="DYN" fromField="velocity"
-      toNode="PS" toField="linDamper" />
-
-   <ROUTE fromNode="PS" fromField="sumForces"
-      toNode="DYN" toField="force" />
+    <DynamicTransform  DEF="DYN"
+                       mass="20"
+                       inertiaTensor="0.1 0 0 0 0.1 0 0 0 0.1">
+      <Shape>
+        <Appearance>
+          <Material diffuseColor="1 0 0"/>
+          <FrictionalSurface dynamicFriction="0.6" staticFriction="0.2"/>
+        </Appearance>
+        <Box DEF="BOX" size="0.2 0.2 0.2" />
+      </Shape>
+    </DynamicTransform>
 
 
-   <ROUTE fromNode="BOX" fromField="force"
-      toNode="PS" toField="invertForce" />
+    <PythonScript DEF="PS" url="dynamic.py">
+    </PythonScript>
 
-   <ROUTE fromNode="DYN" fromField="matrix"
-      toNode="PS" toField="applyTorque" />
+    <ROUTE fromNode="DYN" fromField="position"
+       toNode="PS" toField="linSpring" />
 
-   <ROUTE fromNode="BOX" fromField="force"
-      toNode="PS" toField="applyTorque" />
+    <ROUTE fromNode="DYN" fromField="velocity"
+       toNode="PS" toField="linDamper" />
 
-   <ROUTE fromNode="BOX" fromField="contactPoint"
-      toNode="PS" toField="applyTorque" />
+    <ROUTE fromNode="PS" fromField="sumForces"
+       toNode="DYN" toField="force" />
 
-   <ROUTE fromNode="DYN" fromField="orientation"
-      toNode="PS" toField="angSpring" />
 
-   <ROUTE fromNode="DYN" fromField="angularVelocity"
-      toNode="PS" toField="angDamper" />
+    <ROUTE fromNode="BOX" fromField="force"
+       toNode="PS" toField="invertForce" />
 
-   <ROUTE fromNode="PS" fromField="sumTorques"
-      toNode="DYN" toField="torque" />
+    <ROUTE fromNode="DYN" fromField="matrix"
+       toNode="PS" toField="applyTorque" />
 
-  <ROUTE fromNode="DYN" fromField="matrix"
-      toNode="PS" toField="invertForce" />
-</Group>
+    <ROUTE fromNode="BOX" fromField="force"
+       toNode="PS" toField="applyTorque" />
+
+    <ROUTE fromNode="BOX" fromField="contactPoint"
+       toNode="PS" toField="applyTorque" />
+
+    <ROUTE fromNode="DYN" fromField="orientation"
+       toNode="PS" toField="angSpring" />
+
+    <ROUTE fromNode="DYN" fromField="angularVelocity"
+       toNode="PS" toField="angDamper" />
+
+    <ROUTE fromNode="PS" fromField="sumTorques"
+       toNode="DYN" toField="torque" />
+
+    <ROUTE fromNode="DYN" fromField="matrix"
+        toNode="PS" toField="invertForce" />
+  </Scene>
+</X3D>

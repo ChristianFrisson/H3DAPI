@@ -165,7 +165,7 @@ namespace H3D {
   /// FALSE is sent, the X3DViewpointNode node does not un-jump during unbind.
   /// If jump was FALSE when the X3DViewpointNode node is bound, but changed to
   /// TRUE before the set_bind FALSE is sent, the X3DViewpointNode node does
-  //// perform the un-jump during unbind.
+  /// perform the un-jump during unbind.
   ///
   /// Note that there are two other mechanisms that result in the binding of
   /// a new X3DViewpointNode:

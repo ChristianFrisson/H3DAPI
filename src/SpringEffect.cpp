@@ -90,7 +90,7 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
   if( counter < 5 ) {
     counter++;
   } else {
-    if( ti.hapticsEnabled()  ) {
+    if( ti.hapticsEnabled() && !ti.getHapticsDevices().empty()) {
       int device_index = deviceIndex->getValue();
       H3DHapticsDevice *hd = ti.getHapticsDevice( device_index );
       // the tracker position in local coordinates.

@@ -571,7 +571,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
   }
 
-  AutoRef< Viewpoint > vp_ref;
   // get the viewpoint. If the H3DWindowNode viewpoint field is set use that
   // otherwise use the stack top of the Viewpoint bindable stack.
   X3DViewpointNode *vp =

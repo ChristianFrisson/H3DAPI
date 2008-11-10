@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This shows an example of how DepthMapSurface can feel.
-     The example only works for GodObjectRenderer and RuspiniRenderer
-     user implemented renderers that use the functions getProxyMovement
-     and getForces of the HAPISurfaceObjects. -->
-<Group>
-  <Shape>
-    <Appearance>
-      <Material />
+<X3D profile='H3DAPI' version='2.0'>
+  <head>
+    <meta name='title' content='depthMappedSphere.x3d'/>
+    <meta name='description' content='An example of how a surface specified through the DepthMapSurface node can feel. The example only works for GodObjectRenderer and RuspiniRenderer.'/>
+    <meta name='editors' content='SenseGraphics AB'/>
+  </head>
+  <Scene>
+    <Shape>
+      <Appearance>
+        <Material />
 
-      <ImageTexture url="depthmap.png" DEF="IMT" repeatS="false" repeatT="false"/>
+        <ImageTexture url="depthmap.png" DEF="IMT" repeatS="false" repeatT="false"/>
 
-      <DepthMapSurface stiffness="0.3"
-                      maxDepth="0.007"
-                      staticFriction="0.4"
-                      dynamicFriction="0.2"
-                      whiteIsOut="true" >
-        
-        <ImageTexture containerField="depthMap" url="depthmap_gray.png" repeatS="false" repeatT="false"/>
-      </DepthMapSurface>
-    </Appearance>
+        <DepthMapSurface stiffness="0.3"
+                        maxDepth="0.007"
+                        staticFriction="0.4"
+                        dynamicFriction="0.2"
+                        whiteIsOut="true" >
 
-    <Sphere radius="0.1" />
+          <ImageTexture containerField="depthMap" url="depthmap_gray.png" repeatS="false" repeatT="false"/>
+        </DepthMapSurface>
+      </Appearance>
 
-  </Shape>
-</Group>
+      <Sphere radius="0.1" />
+
+    </Shape>
+  </Scene>
+</X3D>

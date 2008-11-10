@@ -6,7 +6,7 @@
     </Appearance>
     <Sphere radius="0.1" />
   </Shape>
-  <PythonScript DEF="PS" url="sphere.py" />
+  <PythonScript DEF="PS" url="Sphere.py" />
   <MouseSensor DEF="MS" />
 
   <ROUTE fromNode="MS" fromField="leftButton" 

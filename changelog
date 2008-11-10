@@ -1,3 +1,27 @@
+Changes for version 2.0:
+
+- Inheritance order for surface nodes changed. Added two base classes and
+ removed one to manage this.
+- Fixed incorrect storage of settings in H3DViewer.
+- Corrections to CMake build system and additions for compiling against static
+ libraries.
+- Doxygen updates.
+- SpaceWareSensor no longer has to be part of the scene in order to start and
+ update correctly. Useful when creating an instance of the SpaceWareSensor node
+ in python.
+- Corrections to mainButton and secondaryButton field of H3DHapticsDevice.
+ These fields now only send events on state change, as in H3DAPI 1.5.
+- Fixed a number of bugs reported on www.h3d.org.
+- Added getActiveBindableNode python method.
+- Threads in H3DAPI now have names to differ them when debugging in Windows.
+- Corrections to initialization sequence of PhantomHapticsDevice.
+
+Compatability issues:
+- Upgrading from H3DAPI 1.5 to 2.0 will require changing the calibration
+ matrices for the device if any other than the provided device settings files
+ are used. This is due to the fact that H3DAPI now works correctly in meters.
+
+
 Changes for version 2.0 beta 1:
 
 New H3D nodes:

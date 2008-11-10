@@ -1,20 +1,30 @@
-<Transform DEF="TRANS" translation="0.1 0.1 0">
-  <TimeSensor DEF='TIME' cycleInterval='1' loop='false'/> 
-  <PositionInterpolator DEF="POS_INTERP" key='0 1' keyValue='0 0 0 0 0.03 0' />
-  <ScalarInterpolator DEF="SCALAR_INTERP" key='0 3' keyValue='0 3' />
-  <Transform DEF='SHAPE_TRANS' > 
-    <Shape> 
-      <Appearance> 
-        <Material DEF="MAT" transparency="1" diffuseColor="1 1 1" /> 
-      </Appearance> 
-      <Text DEF="TEXT" string="GOAL!!"  >
-        <FontStyle size="0.05" justify="MIDDLE"  />
-      </Text>
-    </Shape> 
-  </Transform> 
-  <ROUTE fromNode='TIME' fromField='fraction_changed' toNode='POS_INTERP' toField='set_fraction'/> 
-  <ROUTE fromNode='POS_INTERP' fromField='value_changed' toNode='SHAPE_TRANS' toField='translation'/>
-  <ROUTE fromNode='TIME' fromField='fraction_changed' toNode='SCALAR_INTERP' toField='set_fraction'/> 
-  <ROUTE_NO_EVENT fromNode='SCALAR_INTERP' fromField='value_changed' toNode='MAT' toField='transparency'/>
-  
-</Transform>
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.5'>
+  <head>
+    <meta name='title' content='score.x3d'/>
+    <meta name='description' content='Help file to the simple tennis game. Do not start game with this file.'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  <Scene>
+    <Transform DEF="TRANS" translation="0.1 0.1 0">
+      <TimeSensor DEF='TIME' cycleInterval='1' loop='false'/>
+      <PositionInterpolator DEF="POS_INTERP" key='0 1' keyValue='0 0 0 0 0.03 0' />
+      <ScalarInterpolator DEF="SCALAR_INTERP" key='0 3' keyValue='0 3' />
+      <Transform DEF='SHAPE_TRANS' >
+        <Shape>
+          <Appearance>
+            <Material DEF="MAT" transparency="1" diffuseColor="1 1 1" />
+          </Appearance>
+          <Text DEF="TEXT" string="GOAL!!"  >
+            <FontStyle size="0.05" justify="MIDDLE"  />
+          </Text>
+        </Shape>
+      </Transform>
+      <ROUTE fromNode='TIME' fromField='fraction_changed' toNode='POS_INTERP' toField='set_fraction'/>
+      <ROUTE fromNode='POS_INTERP' fromField='value_changed' toNode='SHAPE_TRANS' toField='translation'/>
+      <ROUTE fromNode='TIME' fromField='fraction_changed' toNode='SCALAR_INTERP' toField='set_fraction'/>
+      <ROUTE_NO_EVENT fromNode='SCALAR_INTERP' fromField='value_changed' toNode='MAT' toField='transparency'/>
+
+    </Transform>
+  </Scene>
+</X3D>

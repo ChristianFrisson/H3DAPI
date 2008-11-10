@@ -29,7 +29,7 @@
 #ifndef __DEPTHMAPSURFACE_H__
 #define __DEPTHMAPSURFACE_H__
 
-#include <H3D/H3DVariableDepthSurface.h>
+#include <H3D/H3DFrictionalSurfaceNode.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/SFVec2d.h>
 
@@ -43,7 +43,7 @@ namespace H3D {
   /// the haptics device and each gray-scale value will correspond to a depth
   /// that the user will feel. Non-gray-scale images will use the red channel
   /// to modify depth.
-  class H3DAPI_API DepthMapSurface: public H3DVariableDepthSurface {
+  class H3DAPI_API DepthMapSurface: public H3DFrictionalSurfaceNode {
   public:
 
     /// Field that contains an X3DTexture2DNode. Need to override onAdd
@@ -86,6 +86,7 @@ namespace H3D {
                      Inst< UpdateDamping         > _damping         = 0,
                      Inst< UpdateStaticFriction  > _staticFriction  = 0,
                      Inst< UpdateDynamicFriction > _dynamicFriction = 0,
+                     Inst< SFBool                > _useRelativeValues = 0,
                      Inst< SFTexture2DNode       > _depthMap        = 0,
                      Inst< SFFloat               > _maxDepth        = 0,
                      Inst< SFBool                > _whiteIsOut      = 0 );

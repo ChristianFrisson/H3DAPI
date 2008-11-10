@@ -34,57 +34,33 @@ using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase FrictionalSurface::database( 
-                                            "FrictionalSurface", 
-                                            &(newInstance<FrictionalSurface>),
-                                            typeid( FrictionalSurface ),
-                                            &SmoothSurface::database
-                                            );
-
-namespace FritionalSurfaceInternals {
-  FIELDDB_ELEMENT( FrictionalSurface, staticFriction, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( FrictionalSurface, dynamicFriction, INPUT_OUTPUT );
-}
+                                         "FrictionalSurface",
+                                         &(newInstance<FrictionalSurface>),
+                                         typeid( FrictionalSurface ),
+                                         &H3DFrictionalSurfaceNode::database );
 
 FrictionalSurface::FrictionalSurface( 
         Inst< UpdateStiffness > _stiffness,
         Inst< UpdateDamping > _damping,
         Inst< UpdateStaticFriction > _staticFriction,
-        Inst< UpdateDynamicFriction > _dynamicFriction ):
-  SmoothSurface( _stiffness, _damping ),
-  staticFriction( _staticFriction ),
-  dynamicFriction( _dynamicFriction ),
-  in_static_contact( true ) {
+        Inst< UpdateDynamicFriction > _dynamicFriction,
+        Inst< SFBool          > _useRelativeValues ):
+  H3DFrictionalSurfaceNode( _stiffness,
+                        _damping,
+                        _staticFriction,
+                        _dynamicFriction,
+                        _useRelativeValues ) {
   type_name = "FrictionalSurface";
   database.initFields( this );
-  
-  staticFriction->setValue( 0.1f );
-  dynamicFriction->setValue( 0.4f );
 }
 
 void FrictionalSurface::initialize() {
-  SmoothSurface::initialize();
-  HAPI::FrictionSurface *friction_surface =
-    static_cast< HAPI::FrictionSurface * >( hapi_surface.get() );
-  friction_surface->static_friction = staticFriction->getValue();
-  friction_surface->dynamic_friction = dynamicFriction->getValue();
-}
-
-void FrictionalSurface::UpdateStaticFriction::onValueChange( const float &v ) {
-  FrictionalSurface *fs = 
-    static_cast< FrictionalSurface * >( getOwner() );
-  if( fs->hapi_surface.get() ) {
-    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
-      ->static_friction = v;
-  }
-}
-
-void FrictionalSurface::UpdateDynamicFriction::
-  onValueChange( const float &v ) {
-  FrictionalSurface *fs = 
-    static_cast< FrictionalSurface * >( getOwner() );
-  if( fs->hapi_surface.get() ) {
-    static_cast< HAPI::FrictionSurface * >( fs->hapi_surface.get() )
-      ->dynamic_friction = v;
-  }
+  H3DFrictionalSurfaceNode::initialize();
+  hapi_surface.reset(
+    new HAPI::FrictionSurface( stiffness->getValue(),
+                               damping->getValue(),
+                               staticFriction->getValue(),
+                               dynamicFriction->getValue(),
+                               useRelativeValues->getValue() ) );
 }
 

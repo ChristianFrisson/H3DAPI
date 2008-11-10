@@ -1,165 +1,172 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- H3D Terrain demo
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.0'>
+  <head>
+    <meta name='title' content='flight.x3d'/>
+    <meta name='description' content='Simple example on how to create a pod that can be controlled with the haptics device or keyboard. Terrain generation is done through python.'/>
+    <meta name='editors' content='SenseGraphics AB, 2005-2008'/>
+  </head>
+  <!-- H3D Terrain demo
      Copyright 2005 SenseGraphics AB -->
-<Group>
-  <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
+  <Scene>
+    <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
 
-  <Viewpoint DEF="VP" position="0 0.05 0.0" />
+    <Viewpoint DEF="VP" position="0 0.05 0.0" />
 
-  <!-- a somewhat unrealistic background sky -->
-  <Background DEF='grays' groundColor='0.5 0.5 0.8'
-              skyAngle='1.35 1.45 1.52 1.57' 
-            skyColor='0.141176 0.141176 0.41176 0.274509 0.274509 0.74509
-                      0.38 0.38 0.8 0.482745 0.482745 0.82745 0.5 0.5 0.8'/> 
+    <!-- a somewhat unrealistic background sky -->
+    <Background DEF='grays' groundColor='0.5 0.5 0.8'
+                skyAngle='1.35 1.45 1.52 1.57'
+              skyColor='0.141176 0.141176 0.41176 0.274509 0.274509 0.74509
+                      0.38 0.38 0.8 0.482745 0.482745 0.82745 0.5 0.5 0.8'/>
 
-  <!-- Disable the headlight since we want an overhead light -->
-  <NavigationInfo headlight="FALSE" type="NONE" />
-  
-  <!-- Position a light overhead, slightly off-centered -->
-  <DirectionalLight direction="0.1 -1 0.1" />
-  <!--DirectionalLight direction="0.1 1 0.1" /-->
+    <!-- Disable the headlight since we want an overhead light -->
+    <NavigationInfo headlight="FALSE" type="NONE" />
 
-  <Shape DEF="MYSHAPE">
-    <Appearance>
-      <Material diffuseColor="0.2 1 0.7"/>
-      <!--ImageTexture url="palesand2.jpg" />
+    <!-- Position a light overhead, slightly off-centered -->
+    <DirectionalLight direction="0.1 -1 0.1" />
+    <!--DirectionalLight direction="0.1 1 0.1" /-->
+
+    <Shape DEF="MYSHAPE">
+      <Appearance>
+        <Material diffuseColor="0.2 1 0.7"/>
+        <!--ImageTexture url="palesand2.jpg" />
       <TextureTransform scale="2 2" /-->
-    </Appearance>
-    <IndexedTriangleSet DEF="IFS" normalPerVertex="TRUE" solid="FALSE"  >
-      <Coordinate />
-      <Color />
-    </IndexedTriangleSet>
-  </Shape>
-
-
-
-<!-- -Z wall -->
-<Transform translation="0 0 -25" >
-  <Transform translation="0 2 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.85 0.85 0.85" />
-        <ImageTexture url="warning.jpg" />
-        <TextureTransform scale="50 1" />
       </Appearance>
-      <Box size="50 0.5 0.01" />
+      <IndexedTriangleSet DEF="IFS" normalPerVertex="TRUE" solid="FALSE"  >
+        <Coordinate />
+        <Color />
+      </IndexedTriangleSet>
     </Shape>
-  </Transform>
-  <Transform translation="0 1.5 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.25 0.25 0.25" />
-      </Appearance>
-      <Box size="50 3 0.001" />
-    </Shape>
-  </Transform>
-</Transform>
-
-<!-- +Z wall -->
-<Transform translation="0 0 25" >
-  <Transform translation="0 2 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.85 0.85 0.85" />
-        <ImageTexture url="warning.jpg" />
-        <TextureTransform scale="50 1" />
-      </Appearance>
-      <Box size="50 0.5 0.01" />
-    </Shape>
-  </Transform>
-  <Transform translation="0 1.5 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.25 0.25 0.25" />
-      </Appearance>
-      <Box size="50 3 0.001" />
-    </Shape>
-  </Transform>
-</Transform>
-
-
-<!-- -X wall -->
-<Transform translation="-25 0 0" >
-  <Transform translation="0 2 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.85 0.85 0.85" />
-        <ImageTexture url="warning.jpg" />
-        <TextureTransform scale="50 1" />
-      </Appearance>
-      <Box size="0.01 0.5 50" />
-    </Shape>
-  </Transform>
-  <Transform translation="0 1.5 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.25 0.25 0.25" />
-      </Appearance>
-      <Box size="0.001 3 50" />
-    </Shape>
-  </Transform>
-</Transform>
-
-<!-- +Z wall -->
-<Transform translation="25 0 0" >
-  <Transform translation="0 2 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.85 0.85 0.85" />
-        <ImageTexture url="warning.jpg" />
-        <TextureTransform scale="50 1" />
-      </Appearance>
-      <Box size="0.01 0.5 50" />
-    </Shape>
-  </Transform>
-  <Transform translation="0 1.5 0" >
-    <Shape>
-      <Appearance>
-        <Material emissiveColor="0.25 0.25 0.25" />
-      </Appearance>
-      <Box size="0.001 3 50" />
-    </Shape>
-  </Transform>
-</Transform>
-
-<!-- 'POD' Spaceship -->
-<Transform DEF="POD" translation="0 0.25 0">
-<Transform scale="0.01 0.01 0.01" >
-<Shape>
-   <Appearance>
-     <Material emissiveColor="0.5 0.5 0.5" diffuseColor="0.81 0.81 0.81" />
-   </Appearance>
-     <SuperShape DEF="SS" resolution="64" 
-                 ss1_m="2" 
-                 ss1_n1="0.7" ss1_n2="0.3" ss1_n3="0.2"
-                 ss2_m="3" 
-                 ss2_n1="100" ss2_n2="100" ss2_n3="100"  /> 
- </Shape>
-</Transform>
-</Transform>
 
 
 
-  <!-- KeySensor node for handling user keyboard input -->
-  <KeySensor DEF="KS" />
+    <!-- -Z wall -->
+    <Transform translation="0 0 -25" >
+      <Transform translation="0 2 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.85 0.85 0.85" />
+            <ImageTexture url="warning.jpg" />
+            <TextureTransform scale="50 1" />
+          </Appearance>
+          <Box size="50 0.5 0.01" />
+        </Shape>
+      </Transform>
+      <Transform translation="0 1.5 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.25 0.25 0.25" />
+          </Appearance>
+          <Box size="50 3 0.001" />
+        </Shape>
+      </Transform>
+    </Transform>
 
-  <PythonScript DEF="PS" url="flight.py" >
-    <Shape USE="MYSHAPE" containerField="references" />
-    <Transform USE="POD" containerField="references" />
-  </PythonScript>
-  
-  <!-- Routes to/from PythonScript -->
-  <ROUTE fromNode="HDEV" fromField="trackerPosition" 
-         toNode="PS" toField="proxyNavigator" />
-  <ROUTE fromNode="KS" fromField="actionKeyPress" 
-         toNode="PS" toField="keyManager" />
-  <ROUTE fromNode="PS" fromField="vpPosition" 
-         toNode="VP" toField="position" />
-  <ROUTE fromNode="PS" fromField="vpOrientation" 
-         toNode="VP" toField="orientation" />
-  <ROUTE fromNode="PS" fromField="podPos" 
-         toNode="POD" toField="translation" />
-  <ROUTE fromNode="PS" fromField="podOrientation" 
-         toNode="POD" toField="rotation" />
+    <!-- +Z wall -->
+    <Transform translation="0 0 25" >
+      <Transform translation="0 2 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.85 0.85 0.85" />
+            <ImageTexture url="warning.jpg" />
+            <TextureTransform scale="50 1" />
+          </Appearance>
+          <Box size="50 0.5 0.01" />
+        </Shape>
+      </Transform>
+      <Transform translation="0 1.5 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.25 0.25 0.25" />
+          </Appearance>
+          <Box size="50 3 0.001" />
+        </Shape>
+      </Transform>
+    </Transform>
 
-</Group>
+
+    <!-- -X wall -->
+    <Transform translation="-25 0 0" >
+      <Transform translation="0 2 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.85 0.85 0.85" />
+            <ImageTexture url="warning.jpg" />
+            <TextureTransform scale="50 1" />
+          </Appearance>
+          <Box size="0.01 0.5 50" />
+        </Shape>
+      </Transform>
+      <Transform translation="0 1.5 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.25 0.25 0.25" />
+          </Appearance>
+          <Box size="0.001 3 50" />
+        </Shape>
+      </Transform>
+    </Transform>
+
+    <!-- +Z wall -->
+    <Transform translation="25 0 0" >
+      <Transform translation="0 2 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.85 0.85 0.85" />
+            <ImageTexture url="warning.jpg" />
+            <TextureTransform scale="50 1" />
+          </Appearance>
+          <Box size="0.01 0.5 50" />
+        </Shape>
+      </Transform>
+      <Transform translation="0 1.5 0" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.25 0.25 0.25" />
+          </Appearance>
+          <Box size="0.001 3 50" />
+        </Shape>
+      </Transform>
+    </Transform>
+
+    <!-- 'POD' Spaceship -->
+    <Transform DEF="POD" translation="0 0.25 0">
+      <Transform scale="0.01 0.01 0.01" >
+        <Shape>
+          <Appearance>
+            <Material emissiveColor="0.5 0.5 0.5" diffuseColor="0.81 0.81 0.81" />
+          </Appearance>
+          <SuperShape DEF="SS" resolution="64"
+                      ss1_m="2"
+                      ss1_n1="0.7" ss1_n2="0.3" ss1_n3="0.2"
+                      ss2_m="3"
+                      ss2_n1="100" ss2_n2="100" ss2_n3="100"  />
+        </Shape>
+      </Transform>
+    </Transform>
+
+
+
+    <!-- KeySensor node for handling user keyboard input -->
+    <KeySensor DEF="KS" />
+
+    <PythonScript DEF="PS" url="flight.py" >
+      <Shape USE="MYSHAPE" containerField="references" />
+      <Transform USE="POD" containerField="references" />
+    </PythonScript>
+
+    <!-- Routes to/from PythonScript -->
+    <ROUTE fromNode="HDEV" fromField="trackerPosition"
+           toNode="PS" toField="proxyNavigator" />
+    <ROUTE fromNode="KS" fromField="actionKeyPress"
+           toNode="PS" toField="keyManager" />
+    <ROUTE fromNode="PS" fromField="vpPosition"
+           toNode="VP" toField="position" />
+    <ROUTE fromNode="PS" fromField="vpOrientation"
+           toNode="VP" toField="orientation" />
+    <ROUTE fromNode="PS" fromField="podPos"
+           toNode="POD" toField="translation" />
+    <ROUTE fromNode="PS" fromField="podOrientation"
+           toNode="POD" toField="rotation" />
+
+  </Scene>
+</X3D>

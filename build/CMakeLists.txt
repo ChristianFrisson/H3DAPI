@@ -91,7 +91,6 @@ IF( GENERATE_CPACK_PROJECT )
                                     \\\\.ncb$
                                     \\\\.log$
                                     \\\\.suo$
-                                    \\\\.zip$
                                     \\\\.dir/
                                     \\\\.user$
                                     \\\\.cv$
@@ -103,6 +102,7 @@ IF( GENERATE_CPACK_PROJECT )
                                     /build/win32/
                                     /build/vc8
                                     /build/vc7
+                                    /build/vc9
                                     /osx
                                     /H3DAPI/Util/
                                     /berk/berk\\\\.wrl$
@@ -125,7 +125,7 @@ IF( GENERATE_CPACK_PROJECT )
   
   # TODO: fix different for windows and unix if needed.
   IF(WIN32 AND NOT UNIX)
-    SET( CPACK_PACKAGE_START_MENU_NAME "H3DAPI 2.0 Beta" )
+    SET( CPACK_PACKAGE_START_MENU_NAME "H3DAPI 2.0" )
     # If H3DLoad should be added to the package.
     SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
     MARK_AS_ADVANCED(H3DLoad_cmake_install)
@@ -190,13 +190,26 @@ IF( GENERATE_CPACK_PROJECT )
                            /HAPI/doc/
                            /H3DUtil/doc/
                            /include/fparser
-                           /include/teem )
+                           /include/teem
+                           /HapticAPI2
+                           /xerces-c_2_7\\\\.dll$
+                           /xerces-c_2_7D\\\\.dll$
+                           /dcmdata\\\\.lib$
+                           /dcmimage\\\\.lib$
+                           /dcmimgle\\\\.lib$
+                           /z\\\\.lib$
+                           /png\\\\.lib$
+                           /bz2\\\\.lib$
+                           /ofstd\\\\.lib$
+                           /Definitions.h$ )
     
     # Directories to install, and how they should be named. Non-existing folders will be ignored when packing.
     SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
-                                    "${H3DAPI_SOURCE_DIR}/../../doc;doc" )
+                                    "${H3DAPI_SOURCE_DIR}/../../doc;doc"
+                                    "${H3DAPI_SOURCE_DIR}/../../bin;bin"
+                                    "${H3DAPI_SOURCE_DIR}/../../lib;lib" )
 
     #Extra links to start menu if values are "ON"
     SET( CPACK_ADD_H3DDOC_LINKS "ON" )
@@ -257,7 +270,21 @@ SET(requiredLibs)
 
 # Add projects to link against. The projects where created when adding subdirectory in the beginning of this file.
 IF(NOT WIN32)
-  SET(requiredLibs ${requiredLibs} H3DUtil HAPI)
+  #H3DUtil
+  FIND_PACKAGE(H3DUtil REQUIRED)
+
+  IF(H3DUTIL_FOUND)
+    INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+  ENDIF(H3DUTIL_FOUND)
+
+  #HAPI
+  FIND_PACKAGE(HAPI REQUIRED)
+
+  IF(HAPI_FOUND)
+    INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
+  ENDIF(HAPI_FOUND)
 ELSEIF( MSVC70 OR MSVC71 )
   # On other versions of visual studio dependency setting is enough to link correctly.
   SET(requiredLibs ${requiredLibs} H3DUtil HAPI)
@@ -269,15 +296,20 @@ ELSEIF( MSVC70 OR MSVC71 )
   IF(OPENHAPTICS_FOUND)
     SET(requiredLibs ${requiredLibs} OpenHapticsRenderer)
   ENDIF(OPENHAPTICS_FOUND)
+ELSEIF( MSVC80 )
+  IF(CHAI3D_FOUND)
+    SET(requiredLibs ${requiredLibs} atls.lib)
+  ENDIF(CHAI3D_FOUND)
 ENDIF(NOT WIN32)
 
 # Include directories needed.
-INCLUDE_DIRECTORIES( ../include
-${H3DAPI_SOURCE_DIR}/../../H3DUtil/include
-${H3DAPI_SOURCE_DIR}/../../HAPI/include )
+INCLUDE_DIRECTORIES( ../include )
 
-# Extra libs to link against. TODO: Only for MSVC?
+# Extra libs to link against.
 IF(WIN32)
+  INCLUDE_DIRECTORIES( ${H3DAPI_SOURCE_DIR}/../../H3DUtil/include
+                       ${H3DAPI_SOURCE_DIR}/../../HAPI/include )
+  # TODO: Only for MSVC?
   SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
 ENDIF(WIN32)
 
@@ -285,11 +317,7 @@ ENDIF(WIN32)
 FIND_PACKAGE(PTHREAD REQUIRED)
 IF(PTHREAD_FOUND)
   INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${PTHREAD_LIBRARIES})
-  ELSE(WIN32)
-    SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
 ENDIF(PTHREAD_FOUND)
 
 # Find OpenGL library. Required to compile.
@@ -297,22 +325,14 @@ FIND_PACKAGE(OpenGL REQUIRED)
 IF(OPENGL_FOUND)
   SET(HAVE_OPENGL 1)
   INCLUDE_DIRECTORIES( ${OPENGL_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${OPENGL_LIBRARIES} )
-  ELSE(WIN32)
-    SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(requiredLibs ${requiredLibs} ${OPENGL_LIBRARIES} )
 ENDIF(OPENGL_FOUND)
 
 # Find Glew library. Required to compile.
 FIND_PACKAGE(GLEW)
 IF(GLEW_FOUND)
   INCLUDE_DIRECTORIES( ${GLEW_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLEW_LIBRARIES} )
-  ELSE(WIN32)
-    SET(requiredLibs ${requiredLibs} ${GLEW_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(requiredLibs ${requiredLibs} ${GLEW_LIBRARIES} )
 ENDIF(GLEW_FOUND)
 
 # Optional extra library. Makes is possible to used GLUT windows handling with H3D API.
@@ -323,8 +343,12 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 IF(GLUT_FOUND)
-  INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} ) 
+  INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
   IF(WIN32)
+    # This is used in order for the compiler to find freeglut.lib.
+    # If freeglut.lib is in any other place than glut32 on your system
+    # either this CMakeLists.txt or FindGLUTWin needs to be changed
+    # to allow for choice of extra library directory.
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
   ELSE(WIN32)
     SET(requiredLibs ${requiredLibs} ${GLUT_LIBRARIES} )
@@ -336,11 +360,7 @@ FIND_PACKAGE(Xerces)
 IF(XERCES_FOUND)
   SET(HAVE_XERCES 1)
   INCLUDE_DIRECTORIES( ${XERCES_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${XERCES_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${XERCES_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${XERCES_LIBRARIES} )
 ENDIF(XERCES_FOUND)
 
 # Optional extra library. Used in H3D API to resolved urls.
@@ -348,11 +368,7 @@ FIND_PACKAGE(H3DCURL)
 IF(CURL_FOUND)
   SET(HAVE_LIBCURL 1)
   INCLUDE_DIRECTORIES( ${CURL_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${CURL_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${CURL_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${CURL_LIBRARIES} )
 ENDIF(CURL_FOUND)
 
 # Optional extra library. Needed to support shading using the CG shader language from NVidia.
@@ -360,22 +376,14 @@ FIND_PACKAGE(NvidiaCG)
 IF(NVIDIACG_FOUND)
   SET(HAVE_CG 1)
   INCLUDE_DIRECTORIES( ${NVIDIACG_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${NVIDIACG_LIBRARIES} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${NVIDIACG_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${NVIDIACG_LIBRARIES} )
 ENDIF(NVIDIACG_FOUND)
 
 # Optional extra library. Used to read compressed files.
 FIND_PACKAGE(H3DZLIB)
 IF(ZLIB_FOUND)
   INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${ZLIB_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${ZLIB_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${ZLIB_LIBRARIES} )
 ENDIF(ZLIB_FOUND)
 
 # Optional extra library. Add python bindings to H3D API, allow for extended prototyping without using C++.
@@ -402,11 +410,7 @@ ENDIF(NOT PYTHON_FOUND)
 IF(PYTHON_FOUND)
   SET(HAVE_PYTHON 1)
   INCLUDE_DIRECTORIES( ${PYTHON_INCLUDE_PATH} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${PYTHON_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${PYTHON_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${PYTHON_LIBRARIES} )
 ENDIF(PYTHON_FOUND)
 
 # Optional extra library. Used for sound in H3D API.
@@ -414,11 +418,7 @@ FIND_PACKAGE(H3DOpenAL)
 IF(OPENAL_FOUND)
   SET(HAVE_OPENAL 1)
   INCLUDE_DIRECTORIES( ${OPENAL_INCLUDE_DIR} )
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${OPENAL_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${OPENAL_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${OPENAL_LIBRARIES} )
 ENDIF(OPENAL_FOUND)
 
 # Optional extra library. Used to read sound files.
@@ -426,11 +426,7 @@ FIND_PACKAGE(Vorbis)
 IF(VORBIS_FOUND)
   SET(HAVE_LIBVORBIS 1)
   INCLUDE_DIRECTORIES( ${VORBIS_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${VORBIS_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${VORBIS_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${VORBIS_LIBRARIES} )
 ENDIF(VORBIS_FOUND)
 
 # Optional extra library. Used to read sound files.
@@ -438,11 +434,7 @@ FIND_PACKAGE(Audiofile)
 IF(AUDIOFILE_FOUND)
   SET(HAVE_LIBAUDIOFILE 1)
   INCLUDE_DIRECTORIES( ${AUDIOFILE_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${AUDIOFILE_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${AUDIOFILE_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${AUDIOFILE_LIBRARIES} )
 ENDIF(AUDIOFILE_FOUND)
 
 # Optional extra library. Used to handle fonts in H3D API.
@@ -450,11 +442,7 @@ FIND_PACKAGE(FreeType)
 IF(FREETYPE_FOUND)
   SET(HAVE_FREETYPE 1)
   INCLUDE_DIRECTORIES( ${FREETYPE_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${FREETYPE_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${FREETYPE_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${FREETYPE_LIBRARIES} )
 ENDIF(FREETYPE_FOUND)
 
 # Optional extra library. Adds support to use devices by 3dxware. See www.3dconnexion.com.
@@ -462,11 +450,7 @@ FIND_PACKAGE(3DXWARE)
 IF(3DXWARE_FOUND)
   SET(HAVE_3DXWARE 1)
   INCLUDE_DIRECTORIES( ${3DXWARE_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${3DXWARE_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${3DXWARE_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${3DXWARE_LIBRARIES} )
 ENDIF(3DXWARE_FOUND)
 
 # Optional extra library. Used to render fonts in OpenGL.
@@ -474,30 +458,18 @@ FIND_PACKAGE(FTGL)
 IF(FTGL_FOUND)
   SET(HAVE_FTGL 1)
   INCLUDE_DIRECTORIES( ${FTGL_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${FTGL_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${FTGL_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${FTGL_LIBRARIES} )
 ENDIF(FTGL_FOUND)
 
 # Optional extra library. Used to read images.
 FIND_PACKAGE(FreeImage)
 IF(FREEIMAGE_FOUND)
   INCLUDE_DIRECTORIES( ${FREEIMAGE_INCLUDE_DIR} ) 
-  IF(WIN32)
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${FREEIMAGE_LIBRARIES})
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${FREEIMAGE_LIBRARIES} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${FREEIMAGE_LIBRARIES} )
 ENDIF(FREEIMAGE_FOUND)
 
 IF(HAPTIK_FOUND)
-  IF(WIN32)
-  STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${HAPTIK_LIBRARY} )
-  ELSE(WIN32)
-    SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARY} )
-  ENDIF(WIN32)
+  SET(optionalLibs ${optionalLibs} ${HAPTIK_LIBRARY} )
 ENDIF(HAPTIK_FOUND)
 
 IF(WIN32)
@@ -506,7 +478,7 @@ IF(WIN32)
   IF(DIRECTSHOW_FOUND)
     SET(HAVE_DSHOW 1)
     INCLUDE_DIRECTORIES( ${DIRECTSHOW_INCLUDE_DIR} ) 
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${DIRECTSHOW_LIBRARIES})
+    SET(optionalLibs ${optionalLibs} ${DIRECTSHOW_LIBRARIES} )
   ENDIF(DIRECTSHOW_FOUND)
 ENDIF(WIN32)
 
@@ -591,6 +563,9 @@ IF( WIN32 )
     # remove some warnings about deprecated functions.
     SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
+    IF( PREFER_STATIC_LIBRARIES )
+      SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /INCREMENTAL:NO" )
+    ENDIF( PREFER_STATIC_LIBRARIES )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
     IF(OPENHAPTICS_FOUND)
       SET_SOURCE_FILES_PROPERTIES( ../src/MagneticSurface.cpp
@@ -660,11 +635,11 @@ IF( NOT WIN32 )
            PATTERN .svn EXCLUDE )
 ENDIF( NOT WIN32 )
 
-# H3DAPI is dependent on H3DUtil and HAPI
-ADD_DEPENDENCIES( H3DAPI H3DUtil )
-ADD_DEPENDENCIES( H3DAPI HAPI )
-
 IF( WIN32 )
+  # H3DAPI is dependent on H3DUtil and HAPI
+  ADD_DEPENDENCIES( H3DAPI H3DUtil )
+  ADD_DEPENDENCIES( H3DAPI HAPI )
+
   #Only add dependencies if OpenHaptics exists.
   IF(OPENHAPTICS_FOUND)
     ADD_DEPENDENCIES( H3DAPI OpenHapticsRenderer )

@@ -1,17 +1,37 @@
-<Group>
-  <Shape>
-    <Appearance>
-      <Material diffuseColor="1 0 0" transparency="0.5"/>
-    </Appearance>
-    <Sphere DEF="SPHERE" radius = "0.01" />
-  </Shape>
-  <SpringEffect DEF="SPRING" escapeDistance="0.03"/>
-  <PythonScript DEF="PS" url="springs.py" />
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='springs.x3d'/>
+    <meta name='description' content='Demos the SpringEffect node. Move the haptics device stylus inside the red sphere.'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  <Scene>
+    <Transform translation="-0.15 0.10 0">
+      <Shape>
+        <Appearance>
+          <Material diffuseColor="1 1 1"/>
+        </Appearance>
+        <Text string='"This example requires a haptics device."
+                    "To activate the force from the SpringEffect"
+                    "move the haptics device inside the red sphere below."'>
+          <FontStyle size='0.02'/>
+        </Text>
+      </Shape>
+    </Transform>
 
-  <ROUTE fromNode="SPRING" fromField="active" toNode="PS" toField="sphereRadius"/>
-  <ROUTE fromNode="SPRING" fromField="startDistance" toNode="PS" toField="sphereRadius"/>
-  <ROUTE fromNode="SPRING" fromField="escapeDistance" toNode="PS" toField="sphereRadius"/>
-  <ROUTE fromNode="PS" fromField="sphereRadius" toNode="SPHERE" toField="radius"/>
+    <Shape>
+      <Appearance>
+        <Material diffuseColor="1 0 0" transparency="0.5"/>
+      </Appearance>
+      <Sphere DEF="SPHERE" radius = "0.01" />
+    </Shape>
+    <SpringEffect DEF="SPRING" escapeDistance="0.03"/>
+    <PythonScript DEF="PS" url="springs.py" />
 
+    <ROUTE fromNode="SPRING" fromField="active" toNode="PS" toField="sphereRadius"/>
+    <ROUTE fromNode="SPRING" fromField="startDistance" toNode="PS" toField="sphereRadius"/>
+    <ROUTE fromNode="SPRING" fromField="escapeDistance" toNode="PS" toField="sphereRadius"/>
+    <ROUTE fromNode="PS" fromField="sphereRadius" toNode="SPHERE" toField="radius"/>
 
-</Group>
+  </Scene>
+</X3D>

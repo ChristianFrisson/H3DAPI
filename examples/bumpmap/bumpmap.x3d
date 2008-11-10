@@ -1,26 +1,33 @@
-<!-- This example requires a haptics device -->
-<Group>
-  <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />  
-  <TransformInfo DEF="TRANS" />
-  <Shape>
-    <Appearance>
-      <Material />
-      <MultiTexture DEF="MT" color="0 0.2 0.45" source="DIFFUSE" mode='"DOTPRODUCT3" "MODULATE"' >
-        <ImageTexture url="stone_wall_normal_map.bmp" />
-        <ImageTexture url="stone_wall.bmp" />
-      </MultiTexture>
-    </Appearance>
-    <IndexedFaceSet coordIndex="0 1 2 3" solid="false">
-      <Coordinate DEF="COORD" point="0.15 0.15 0, 0.15 -0.15 0, -0.15 -0.15 0, -0.15 0.15 0" />
-      <Color DEF="COLOR" />
-    </IndexedFaceSet>
-  </Shape>
-  <PythonScript DEF="PS" url="bumpmap.py" />
-  <ROUTE fromNode="HDEV" fromField="trackerPosition" toNode="PS" toField="toColor" />
-  <ROUTE fromNode="TRANS" fromField="accInverseMatrix" toNode="PS" toField="toColor" />
-  <ROUTE fromNode="COORD" fromField="point" toNode="PS" toField="toColor" />
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='bumpmap.x3d'/>
+    <meta name='description' content='Shows how to create a bump mapped texture using X3D and Python. Requires a haptics device to move the light source around.'/>
+    <meta name='editors' content='SenseGraphics AB'/>
+  </head>
+  <Scene>
+    <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />
+    <TransformInfo DEF="TRANS" />
+    <Shape>
+      <Appearance>
+        <Material />
+        <MultiTexture DEF="MT" color="0 0.2 0.45" source="DIFFUSE" mode='"DOTPRODUCT3" "MODULATE"' >
+          <ImageTexture url="stone_wall_normal_map.bmp" />
+          <ImageTexture url="stone_wall.bmp" />
+        </MultiTexture>
+      </Appearance>
+      <IndexedFaceSet coordIndex="0 1 2 3" solid="false">
+        <Coordinate DEF="COORD" point="0.15 0.15 0, 0.15 -0.15 0, -0.15 -0.15 0, -0.15 0.15 0" />
+        <Color DEF="COLOR" />
+      </IndexedFaceSet>
+    </Shape>
+    <PythonScript DEF="PS" url="bumpmap.py" />
+    <ROUTE fromNode="HDEV" fromField="trackerPosition" toNode="PS" toField="toColor" />
+    <ROUTE fromNode="TRANS" fromField="accInverseMatrix" toNode="PS" toField="toColor" />
+    <ROUTE fromNode="COORD" fromField="point" toNode="PS" toField="toColor" />
 
-  <ROUTE fromNode="PS" fromField="toColor" toNode="COLOR" toField="color" />
-  <NavigationInfo headlight="true" />
+    <ROUTE fromNode="PS" fromField="toColor" toNode="COLOR" toField="color" />
+    <NavigationInfo headlight="true" />
 
-</Group>
+  </Scene>
+</X3D>

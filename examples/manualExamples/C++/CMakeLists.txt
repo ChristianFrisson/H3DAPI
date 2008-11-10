@@ -56,14 +56,6 @@ IF(GLUT_FOUND)
   ENDIF( WIN32 )
 ENDIF(GLUT_FOUND)
 
-#Xerces
-FIND_PACKAGE(Xerces REQUIRED)
-
-IF(XERCES_FOUND)
-  INCLUDE_DIRECTORIES( ${XERCES_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${XERCES_LIBRARIES} )
-ENDIF(XERCES_FOUND)
-
 # Build files created. Two executables. Sphere_X3D and Spheres_X3D.
 ADD_EXECUTABLE(Sphere_X3D ${ManualExamples_SOURCE_DIR}/Sphere_X3D.cpp )
 ADD_EXECUTABLE(Spheres_X3D ${ManualExamples_SOURCE_DIR}/Spheres_X3D.cpp )
@@ -88,7 +80,9 @@ IF(WIN32)
     SET_TARGET_PROPERTIES( Spheres_X3D PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
   ENDIF(MSVC80)
 
-  SET( CMAKE_INSTALL_PREFIX ${ManualExamples_SOURCE_DIR}/../../../..)
+  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+    SET( CMAKE_INSTALL_PREFIX ${ManualExamples_SOURCE_DIR}/../../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 ENDIF(WIN32)
 
 # Install to these directories.

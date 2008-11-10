@@ -1,9 +1,17 @@
-<Group>
-  <NavigationInfo type = "NONE" />
-  <Viewpoint position="0 0 0.6" />
-  <Group DEF="G" />
-  <PythonScript DEF="SpaceTennis" url="SpaceTennis.py" />
-  <PythonScript url="SpaceTennisStart.py" >
-    <Group USE="G" containerField="references" />
-  </PythonScript>
-</Group>
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.5'>
+  <head>
+    <meta name='title' content='SpaceTennis.x3d'/>
+    <meta name='description' content='Use this file to start a simple tennis game. Requires a haptics device.'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  <Scene>
+    <NavigationInfo type = "NONE" />
+    <Viewpoint position="0 0 0.6" />
+    <Group DEF="G" />
+    <PythonScript DEF="SpaceTennis" url="SpaceTennis.py" />
+    <PythonScript url="SpaceTennisStart.py" >
+      <Group USE="G" containerField="references" />
+    </PythonScript>
+  </Scene>
+</X3D>

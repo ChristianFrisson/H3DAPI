@@ -1,7 +1,7 @@
 <Group>
   <Viewpoint position="0 0 1" />
   <Group DEF="GROUP" />
-  <PythonScript DEF="PS" url="spheres.py">
+  <PythonScript DEF="PS" url="Spheres.py">
     <Group USE="GROUP" containerField="references"/>
   </PythonScript>
   <MouseSensor DEF="MS" />

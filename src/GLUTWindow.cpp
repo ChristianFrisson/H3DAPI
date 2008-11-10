@@ -38,13 +38,6 @@
 #endif
 #ifdef FREEGLUT
 #include <GL/freeglut.h>
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#ifdef H3D_LINK_STATIC_EXTERNALS
-#pragma comment( lib, "freeglut_static.lib" )
-#else
-#pragma comment( lib, "freeglut.lib" )
-#endif
-#endif
 #endif
 
 #if !( defined(FREEGLUT) && defined(WIN32) )

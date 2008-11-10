@@ -151,7 +151,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   navTypeCount(0),
   deviceCount(0),
   navigationDevices(0),
-wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
+  wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
+  avatar_collision( true )
 {
   wxAcceleratorEntry entries[1];
   entries[0].Set(wxACCEL_NORMAL, (int) WXK_F11, FRAME_RESTORE);
@@ -165,7 +166,7 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
   ss.reset (0);
 #endif
   t.reset ( new Transform );
-  viewpoint.reset (NULL);
+  viewpoint.reset( new Viewpoint );
   device_info.reset (NULL);
   g.reset ( new Group );
 
@@ -374,6 +375,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
   EVT_MENU_RANGE (FRAME_MOUSE_NAV, FRAME_HAPTICSDEVICE_NAV,
                   WxFrame::ChangeNavigationDevice)
+  EVT_MENU (BASIC_COLLISION , WxFrame::ChangeCollision )
   EVT_MENU_RANGE (FRAME_OPENHAPTICS, FRAME_RUSPINI, WxFrame::ChangeRenderer)
   EVT_MENU (FRAME_DEVICECONTROL, WxFrame::ToggleHaptics)
   EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
@@ -447,12 +449,6 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
     } else if( id == ID_INTERPOLATE_FORCE_EFFECTS ) {
       ho->interpolateForceEffects->setValue( event.IsChecked() );
     }
-  } else if( id == ID_USE_COLLISION_DETECTION ) {
-
-    CollisionOptions *col_opt = 0;
-    wx_frame->global_settings->getOptionNode( col_opt );
-    col_opt->avatarCollision->setValue( event.IsChecked() );
-
   } else if( id == ID_FOCAL_DISTANCE ||
              id == ID_INTEROCULAR_DISTANCE ) {
     StereoInfo * stereo_info = StereoInfo::getActive();
@@ -547,7 +543,7 @@ bool WxFrame::loadFile( const string &filename) {
   
   //Clear existing data
   t->children->clear();
-  viewpoint.reset (NULL);
+  viewpoint.reset( NULL );
 
   settings_path = 
     GET_ENV_INI_DEFAULT( "H3D_DISPLAY",
@@ -708,6 +704,7 @@ bool WxFrame::loadFile( const string &filename) {
       try {
         viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
       } catch( const Exception::H3DException &e ) {
+        viewpoint.reset( new Viewpoint );
         Console(3) << "Warning: Could not create default Viewpoint node "
                    << "from file \"" << viewpoint_file << "\": "
                    << e << endl;
@@ -774,6 +771,7 @@ bool WxFrame::loadFile( const string &filename) {
   scene->sceneRoot->setValue( g.get() );
   }
   catch (const Exception::H3DException &e) {
+    viewpoint.reset( new Viewpoint );
     stringstream s;
   s << e;
     wxMessageBox(wxString(s.str().c_str(),wxConvUTF8), wxT("Error"), wxOK | wxICON_EXCLAMATION);
@@ -788,15 +786,16 @@ bool WxFrame::loadFile( const string &filename) {
   // Set CollisionOptions or update page.
   CollisionOptions * co = 0;
   global_settings->getOptionNode( co );
+  wxMenuItem * col_item = navigationMenu->
+    FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 );
 
   if( co ) {
-    settings->use_collision_checkbox->
-      SetValue( co->avatarCollision->getValue() );
-    SaveCollisionOptions( false );
+    avatar_collision = co->avatarCollision->getValue();
+    col_item->Check( avatar_collision );
   } else {
     co = new CollisionOptions;
     co->avatarCollision->
-      setValue( settings->use_collision_checkbox->GetValue() );
+      setValue( avatar_collision );
     global_settings->options->push_back( co );
   }
 
@@ -1012,7 +1011,7 @@ bool WxFrame::loadFile( const string &filename) {
 //Clear data when closing file
 void WxFrame::clearData () {
   t->children->clear();
-  viewpoint.reset (NULL);
+  viewpoint.reset( new Viewpoint );
 
   //Delete items from viewpoint menu & disconnect events
   for (int i = 0; i <= viewpointCount; i++) {
@@ -1118,6 +1117,8 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
 void WxFrame::OnCloseFile(wxCommandEvent & event) {
   //clearData();
   t->children->clear();
+  if( !Viewpoint::getActive() )
+    viewpoint.reset( new Viewpoint );
   SetStatusText(wxT("Open a file..."), 0);
   SetStatusText(wxT(""),1);
 
@@ -1378,6 +1379,17 @@ void WxFrame::ResetViewpoint(wxCommandEvent & event)
   }
 }
 
+void WxFrame::ChangeCollision (wxCommandEvent & event) {
+  if( global_settings.get() ) {
+    CollisionOptions * col_opt = 0;
+    global_settings->getOptionNode( col_opt );
+    if( col_opt ) {
+      avatar_collision = event.IsChecked();
+      col_opt->avatarCollision->setValue( avatar_collision );
+    }
+  }
+}
+
 //Change Navigation
 void WxFrame::ChangeNavigation (wxCommandEvent & event)
 {
@@ -1398,12 +1410,14 @@ void WxFrame::GetSelection (wxMenuEvent & event)
 //Exit via menu
 void WxFrame::OnExit (wxCommandEvent & event)
 {
+  SaveCollisionOptions();
   Close(true);
 }
 
 //Exit via window manager
 void WxFrame::OnWindowExit (wxCloseEvent & event) 
 {
+  SaveCollisionOptions();
   Destroy();
   SaveMRU();
   delete wxConfigBase::Set((wxConfigBase *) NULL);
@@ -1453,7 +1467,6 @@ void WxFrame::SaveMRU () {
 // Save settings for next initialization
 void WxFrame::SaveSettings( bool to_config ) {
 
-  SaveCollisionOptions( to_config );
   SaveDebugOptions( to_config );
   SaveGeometryBoundTreeOptions( to_config );
   SaveGraphicsCachingOptions( to_config );
@@ -1464,18 +1477,15 @@ void WxFrame::SaveSettings( bool to_config ) {
 
 }
 
-void WxFrame::SaveCollisionOptions( bool to_config ) {
+void WxFrame::SaveCollisionOptions() {
   // Save collision options
-  CollisionOptions *co = 0;
-  global_settings->getOptionNode( co );
-  if( co ) {
-    bool avatar_collision = co->avatarCollision->getValue();
-    if( to_config ) {
+  if( global_settings.get() ) {
+    CollisionOptions *co = 0;
+    global_settings->getOptionNode( co );
+    if( co ) {
       h3dConfig = wxConfigBase::Get();
       h3dConfig->SetPath( wxT("/Settings/Collision") );
       h3dConfig->Write( wxT("avatar_collision"), avatar_collision );
-    } else {
-      non_conf_opt.avatar_collision = avatar_collision;
     }
   }
 }
@@ -1653,25 +1663,17 @@ void WxFrame::LoadSettings( bool from_config ) {
 
   // Load settings from previous sessions
   // Load CollisionOptions settings
-  CollisionOptions *co = 0;
-  global_settings->getOptionNode( co );
-  if( co ) {  
-    bool avatar_collision;
-
-    if( from_config ) {
-      if( h3dConfig->Exists( wxT("/Settings/Collision") ) ) {
-        h3dConfig->SetPath( wxT("/Settings/Collision") );
-        h3dConfig->Read( wxT("avatar_collision"), &avatar_collision );
-      } else {
-        // on clean system
-        avatar_collision = co->avatarCollision->getValue();
-      }
+  if( from_config ) {
+    if( h3dConfig->Exists( wxT("/Settings/Collision") ) ) {
+      h3dConfig->SetPath( wxT("/Settings/Collision") );
+      h3dConfig->Read( wxT("avatar_collision"), &avatar_collision );
     } else {
-      avatar_collision = non_conf_opt.avatar_collision;
+      CollisionOptions *co = 0;
+        global_settings->getOptionNode( co );
+      // on clean system
+      if( co )
+        avatar_collision = co->avatarCollision->getValue();
     }
-
-    co->avatarCollision->setValue( avatar_collision );
-    settings->use_collision_checkbox->SetValue( avatar_collision );
   }
 
   // Load Debug options
@@ -2097,6 +2099,12 @@ void WxFrame::buildNavMenu () {
   }
   navigationMenu->AppendSubMenu( navigationDevices, wxT("Navigation Devices"),
                   wxT("Toggle on an off which devices to use for navigation") );
+
+  navigationMenu->AppendSeparator();
+  navigationMenu->AppendCheckItem( BASIC_COLLISION, wxT( "Avatar collision" ),
+    wxT("Turn on and off collision between avatar and objects in scene"));
+  navigationMenu->
+    FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 )->Check( avatar_collision );
 }
 
 
@@ -2221,9 +2229,6 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
   EVT_TEXT(ID_LOOK_AHEAD_FACTOR, SettingsDialog::handleSettingsChange )
   EVT_CHECKBOX( ID_USE_BOUND_TREE, SettingsDialog::handleSettingsChange)
   EVT_CHECKBOX( ID_INTERPOLATE_FORCE_EFFECTS,
-                SettingsDialog::handleSettingsChange)
-
-  EVT_CHECKBOX( ID_USE_COLLISION_DETECTION,
                 SettingsDialog::handleSettingsChange)
   
   EVT_TEXT( ID_FOCAL_DISTANCE, SettingsDialog::handleSettingsChange )
@@ -2592,28 +2597,6 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent ) {
     Add(interpolate_force_effects_sizer, 0, wxGROW|wxALL, 0);
 
   item0->Add(haptics_box_sizer, 0, wxGROW|wxLEFT|wxRIGHT, 5);
-
-
-  // Collision Options
-  item0->Add(5, 5, 1, wxALL, 0);
-  wxStaticBox* collision_box = new wxStaticBox(panel, wxID_ANY,
-                                               wxT("Collision options:"));
-  wxBoxSizer* collision_box_sizer = new wxStaticBoxSizer( collision_box, 
-                                                          wxVERTICAL );
-
-  wxBoxSizer* collision_options_sizer = new wxBoxSizer( wxVERTICAL );
-  use_collision_checkbox = new wxCheckBox( panel,
-                                           ID_USE_COLLISION_DETECTION,
-                                           wxT("&Collision detection"),
-                                           wxDefaultPosition, wxDefaultSize);
-
-  collision_options_sizer->Add( use_collision_checkbox, 0,
-                                wxALL|wxALIGN_CENTER_VERTICAL, 5 );
-  collision_box_sizer->Add(collision_options_sizer, 0, wxGROW|wxALL, 0);
-
-  item0->Add(collision_box_sizer, 0, wxGROW|wxLEFT|wxRIGHT, 5);
-
-  // End Collision Options
 
   // StereoInfo Options
   item0->Add(5, 5, 1, wxALL, 0);

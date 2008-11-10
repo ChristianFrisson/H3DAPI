@@ -17,7 +17,6 @@ SET(requiredLibs)
 
 # Where to find cmake modules used to find packages.
 SET(CMAKE_MODULE_PATH "${ParticleDemo_SOURCE_DIR}/../../../build/modules/")
-INCLUDE( StripAndAddLibraryDirectories )
 
 #H3DUtil
 FIND_PACKAGE(H3DUtil REQUIRED)
@@ -40,12 +39,7 @@ FIND_PACKAGE(H3DAPI REQUIRED)
 
 IF(H3DAPI_FOUND)
   INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
-  IF( WIN32 )
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${H3DAPI_LIBRARIES} )
-    SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
-  ELSE( WIN32 )
-    SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
-  ENDIF( WIN32 )
+  SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
 ENDIF(H3DAPI_FOUND)
 
 # WxWidgets.
@@ -67,14 +61,6 @@ ELSE(wxWidgets_FOUND)
     SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
   ENDIF(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
-
-# Xerces.
-FIND_PACKAGE(Xerces)
-
-IF(XERCES_FOUND)
-  INCLUDE_DIRECTORIES( ${XERCES_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${XERCES_LIBRARIES} )
-ENDIF(XERCES_FOUND)
 
 # Create build files.
 ADD_EXECUTABLE(ParticleDemo WIN32 MACOSX_BUNDLE ${ParticleDemo_SRCS})
@@ -103,7 +89,9 @@ IF(WIN32)
   ENDIF(MSVC70 OR MSVC71)
 
   # set the install directory to the H3D directory on Windows
-  SET( CMAKE_INSTALL_PREFIX ${ParticleDemo_SOURCE_DIR}/../../../..)
+  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+    SET( CMAKE_INSTALL_PREFIX ${ParticleDemo_SOURCE_DIR}/../../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 ENDIF(WIN32)
 
 INSTALL( TARGETS ParticleDemo

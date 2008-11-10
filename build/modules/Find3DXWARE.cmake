@@ -4,6 +4,7 @@
 #  3DXWARE_LIBRARIES    - List of libraries when using 3dxware.
 #  3DXWARE_FOUND        - True if 3dxware is found.
 
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
 FIND_PATH( 3DXWARE_INCLUDE_DIR NAMES si.h siapp.h H3D/xdrvlib.h X11/Xlib.h X11/Xutil.h X11/Xos.h X11/Xatom.h X11/keysym.h
@@ -14,8 +15,8 @@ FIND_PATH( 3DXWARE_INCLUDE_DIR NAMES si.h siapp.h H3D/xdrvlib.h X11/Xlib.h X11/X
                  $ENV{H3D_ROOT}/../External/include/3dconnexion/inc
                  ../../External/include
                  ../../External/include/3dconnexion/inc
-                 ${CMAKE_MODULE_PATH}/../../../External/include
-                 ${CMAKE_MODULE_PATH}/../../../External/include/3dconnexion/inc )
+                 ${module_file_path}/../../../External/include
+                 ${module_file_path}/../../../External/include/3dconnexion/inc )
 MARK_AS_ADVANCED(3DXWARE_INCLUDE_DIR)
 
 # Look for the library siapp.
@@ -24,7 +25,7 @@ FIND_LIBRARY( 3DXWARESIAPP_LIBRARY NAMES siapp
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${CMAKE_MODULE_PATH}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib )
 MARK_AS_ADVANCED(3DXWARESIAPP_LIBRARY)
 
 # Look for the library spwmath.
@@ -33,7 +34,7 @@ FIND_LIBRARY( 3DXWARESPWMATH_LIBRARY NAMES spwmath
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${CMAKE_MODULE_PATH}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib )
 MARK_AS_ADVANCED(3DXWARESPWMATH_LIBRARY)
 
 # Copy the results to the output variables.

@@ -46,13 +46,6 @@
 
 #ifdef HAVE_FREEIMAGE
 #include <FreeImage.h>
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#ifdef H3DUTIL_LINK_STATIC_EXTERNALS
-#pragma comment( lib, "FreeImage_static.lib" )
-#else
-#pragma comment( lib, "FreeImage.lib" )
-#endif
-#endif
 #endif
 
 using namespace H3D;

@@ -1,34 +1,42 @@
-<Group>
-  <DynamicTransform angularMomentum="-0.40 0.22 0.5"> 
-    <FitToBoxTransform boxCenter="0 0 0" boxSize="0.4 0.4 0.4"
-                       uniformScalingOnly="true" active="true">
-      <Shape>
-        <Appearance>
-          <Material />
-          
-          <ComposedShader DEF="SHADER" language="GLSL" >
-            <field name="LightPosition" type="SFVec3f" value="0 0 0.45"
-                   accessType="inputOutput" /> 
-            <field name="Spacing" type="SFVec3f" value="0.2 0.2 0.2"
-                   accessType="inputOutput" /> 
-            <field name="DotSize" type="SFFloat" value="0.1"
-                   accessType="inputOutput" /> 
-            <field name="ModelColor" type="SFColor" value="1 0 0"
-                   accessType="inputOutput" /> 
-            <field name="PolkaDotColor" type="SFColor" value="1 1 1"
-                   accessType="inputOutput" /> 
-            <ShaderPart type="FRAGMENT" url="Shaders/glsl_Polkadot3D.frag" />
-            <ShaderPart type="VERTEX" url="Shaders/glsl_Polkadot3D.vert" />
-          </ComposedShader>
-          
-        </Appearance>
-        <SuperShape DEF="SS" resolution="128" 
-                    ss1_m="6" ss1_a="1" ss1_b="1"
-                    ss1_n1="1" ss1_n2="1" ss1_n3="1"
-                    ss2_m="3" ss2_a="1" ss2_b="1"
-                    ss2_n1="1" ss2_n2="1" ss2_n3="1"  /> 
-      </Shape>
-    </FitToBoxTransform>
-    
-  </DynamicTransform>
-</Group>
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='glsl_polkadot.x3d'/>
+    <meta name='description' content='Demonstrates how to use shaders with H3DAPI. The shader language is GLSL.'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  <Scene>
+    <DynamicTransform angularMomentum="-0.40 0.22 0.5">
+      <FitToBoxTransform boxCenter="0 0 0" boxSize="0.4 0.4 0.4"
+                         uniformScalingOnly="true" active="true">
+        <Shape>
+          <Appearance>
+            <Material />
+
+            <ComposedShader DEF="SHADER" language="GLSL" >
+              <field name="LightPosition" type="SFVec3f" value="0 0 0.45"
+                     accessType="inputOutput" />
+              <field name="Spacing" type="SFVec3f" value="0.2 0.2 0.2"
+                     accessType="inputOutput" />
+              <field name="DotSize" type="SFFloat" value="0.1"
+                     accessType="inputOutput" />
+              <field name="ModelColor" type="SFColor" value="1 0 0"
+                     accessType="inputOutput" />
+              <field name="PolkaDotColor" type="SFColor" value="1 1 1"
+                     accessType="inputOutput" />
+              <ShaderPart type="FRAGMENT" url="Shaders/glsl_Polkadot3D.frag" />
+              <ShaderPart type="VERTEX" url="Shaders/glsl_Polkadot3D.vert" />
+            </ComposedShader>
+
+          </Appearance>
+          <SuperShape DEF="SS" resolution="128"
+                      ss1_m="6" ss1_a="1" ss1_b="1"
+                      ss1_n1="1" ss1_n2="1" ss1_n3="1"
+                      ss2_m="3" ss2_a="1" ss2_b="1"
+                      ss2_n1="1" ss2_n2="1" ss2_n3="1"  />
+        </Shape>
+      </FitToBoxTransform>
+
+    </DynamicTransform>
+  </Scene>
+</X3D>

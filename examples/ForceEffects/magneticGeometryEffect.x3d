@@ -1,51 +1,60 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Transform translation="0 -0.05 0">
-  <Transform translation="-0.23 0.2 0">
-    <Shape>
-      <Appearance>
-        <Material diffuseColor="1 1 1"/>
-      </Appearance>
-      <Text string='"This scene demonstrates the MagneticGeometryEffect."
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.0'>
+  <head>
+    <meta name='title' content='magneticGeometryEffect.x3d'/>
+    <meta name='description' content='Demos the MagneticGeometryEffect node. Requires a haptics device.'/>
+    <meta name='editors' content='SenseGraphics AB, 2007-2008'/>
+  </head>
+  <Scene>
+    <Transform translation="0 -0.05 0">
+      <Transform translation="-0.23 0.2 0">
+        <Shape>
+          <Appearance>
+            <Material diffuseColor="1 1 1"/>
+          </Appearance>
+          <Text string='"This scene demonstrates the MagneticGeometryEffect."
                     "The shapes are not rendered by the MagneticGeometryEffect"
                     "node. They are rendered with a normal shape node There"
                     "are two geometries that have the MagneticGeometryEffect in"
                     "the scene. The one that is not visible can be made visible"
                     "by pressing the right mouse button."'>
-        <FontStyle size="0.02"/>
-      </Text>
-    </Shape>
-  </Transform>
-  <Transform translation="0.1 0 0">
-    <Shape>
-      <Appearance>
-        <Material diffuseColor="1 0 0" transparency="0.5"/>
-      </Appearance>
-      <Box size="0.1 0.1 0.1" DEF="BOX"/>
-    </Shape>
-    <MagneticGeometryEffect DEF="MGE" startDistance="0.03" escapeDistance="0.03">
-      <Box USE="BOX"/>
-    </MagneticGeometryEffect>
-  </Transform>
+            <FontStyle size="0.02"/>
+          </Text>
+        </Shape>
+      </Transform>
+      <Transform translation="0.1 0 0">
+        <Shape>
+          <Appearance>
+            <Material diffuseColor="1 0 0" transparency="0.5"/>
+          </Appearance>
+          <Box size="0.1 0.1 0.1" DEF="BOX"/>
+        </Shape>
+        <MagneticGeometryEffect DEF="MGE" startDistance="0.03" escapeDistance="0.03">
+          <Box USE="BOX"/>
+        </MagneticGeometryEffect>
+      </Transform>
 
-  <Transform translation="-0.1 0 0">
-    <MagneticGeometryEffect DEF="MGE" startDistance="0.01" escapeDistance="0.01" springConstant="400">
-      <Extrusion spine="-0.05 -0.05 -0.05, 0 -0.05 0, 0 0.05 0, 0.05 0.05 0"
-                 crossSection="0.01 0.01, 0.01 -0.01, -0.01 -0.01, -0.01 0.01, 0.01 0.01" 
-                 DEF="EXT"/>
-    </MagneticGeometryEffect>
-    <ToggleGroup DEF="TG" graphicsOn="false" hapticsOn="false">
-      <Shape>
-        <Appearance>
-          <Material/>
-        </Appearance>
-        <Extrusion USE="EXT"/>
-      </Shape>
-    </ToggleGroup>
-  </Transform>
+      <Transform translation="-0.1 0 0">
+        <MagneticGeometryEffect DEF="MGE" startDistance="0.01" escapeDistance="0.01" springConstant="400">
+          <Extrusion spine="-0.05 -0.05 -0.05, 0 -0.05 0, 0 0.05 0, 0.05 0.05 0"
+                     crossSection="0.01 0.01, 0.01 -0.01, -0.01 -0.01, -0.01 0.01, 0.01 0.01"
+                     DEF="EXT"/>
+        </MagneticGeometryEffect>
+        <ToggleGroup DEF="TG" graphicsOn="false" hapticsOn="false">
+          <Shape>
+            <Appearance>
+              <Material/>
+            </Appearance>
+            <Extrusion USE="EXT"/>
+          </Shape>
+        </ToggleGroup>
+      </Transform>
 
-  <MouseSensor DEF="MS"/>
+      <MouseSensor DEF="MS"/>
 
-  <ROUTE fromNode='MS' fromField='rightButton'
-         toNode='TG' toField='graphicsOn'/>
+      <ROUTE fromNode='MS' fromField='rightButton'
+             toNode='TG' toField='graphicsOn'/>
 
-</Transform>
+    </Transform>
+  </Scene>
+</X3D>

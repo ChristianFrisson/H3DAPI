@@ -5,12 +5,13 @@
 #  UI_LIBRARIES    - List of libraries when using UI.
 #  UI_FOUND        - True if UI found.
 
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
-FIND_PATH( UI_INCLUDE_DIR NAMES UI/UI.h
+FIND_PATH( UI_INCLUDE_DIR NAMES H3D/UI/UI.h
            PATHS $ENV{H3D_ROOT}/../UI/include
                  ../../../UI/include
-                 ${CMAKE_MODULE_PATH}/../../../UI/include )
+                 ${module_file_path}/../../../UI/include )
 MARK_AS_ADVANCED(UI_INCLUDE_DIR)
 
 # Look for the library.
@@ -20,19 +21,19 @@ ELSEIF(MSVC80)
   SET( UI_NAME UI_vc8 )
 ELSEIF(MSVC90)
   SET( UI_NAME UI_vc9 )
-ELSE(MSVC90)
+ELSE(MSVC70 OR MSVC71)
   SET( UI_NAME UI )
 ENDIF(MSVC70 OR MSVC71)
 
 FIND_LIBRARY( UI_LIBRARY NAMES ${UI_NAME}
               PATHS $ENV{H3D_ROOT}/../UI/lib
                     ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../lib )
+                    ${CMAKE_MODULE_PATH}/../../../UI/lib )
 
 FIND_LIBRARY( UI_DEBUG_LIBRARY NAMES ${UI_NAME}_d
               PATHS $ENV{H3D_ROOT}/../UI/lib
                     ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../lib )
+                    ${CMAKE_MODULE_PATH}/../../../UI/lib )
 MARK_AS_ADVANCED(UI_LIBRARY)
 MARK_AS_ADVANCED(UI_DEBUG_LIBRARY)
 

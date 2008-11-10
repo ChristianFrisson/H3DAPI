@@ -38,7 +38,6 @@
 #include <iostream>
 
 #include <H3D/VrmlParser.h>
-#include <H3D/X3DSAX2Handlers.h>
 #include <H3D/GLUTWindow.h>
 #include <H3D/Group.h>
 #include <H3D/Transform.h>

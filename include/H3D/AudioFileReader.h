@@ -32,9 +32,6 @@
 #include <H3D/H3DSoundFileNode.h>
 
 #ifdef HAVE_LIBAUDIOFILE
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "libaudiofile.lib" )
-#endif
 #include <audiofile.h>
 
 namespace H3D {

@@ -45,16 +45,6 @@
 #include <xercesc/sax/Locator.hpp>
 
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#ifdef H3D_LINK_STATIC_EXTERNALS
-#pragma comment( lib, "xerces-c_static_2.lib" )
-#pragma comment( lib, "ws2_32.lib" )
-#pragma comment( lib, "advapi32.lib" )
-#else
-#pragma comment( lib, "xerces-c_2.lib" )
-#endif
-#endif
-
 XERCES_CPP_NAMESPACE_USE
 using namespace std;
 

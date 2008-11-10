@@ -60,10 +60,6 @@
 #undef RESTORE_DEBUG
 #endif
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "strmbase.lib" )
-#endif
-
 #include <H3D/H3DVideoClipDecoderNode.h>
 
 namespace H3D {

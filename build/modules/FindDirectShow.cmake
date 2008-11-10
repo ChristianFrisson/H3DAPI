@@ -17,6 +17,9 @@ ELSEIF(MSVC80)
 ELSEIF(MSVC90)
   SET( DIRECTSHOW_EXTRA_DIR $ENV{VS90COMNTOOLS}../../VC/PlatformSDK/Include )
 ENDIF(MSVC70 OR MSVC71)
+
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_STREAMS_H NAMES streams.h
            PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
                  $ENV{H3D_EXTERNAL_ROOT}/include/DirectShow/BaseClasses
@@ -24,8 +27,8 @@ FIND_PATH( DIRECTSHOW_INCLUDE_DIR_STREAMS_H NAMES streams.h
                  $ENV{H3D_ROOT}/../External/include/DirectShow/BaseClasses
                  ../../External/include
                  ../../External/include/DirectShow/BaseClasses
-                 ${CMAKE_MODULE_PATH}/../../../External/include
-                 ${CMAKE_MODULE_PATH}/../../../External/include/DirectShow/BaseClasses )
+                 ${module_file_path}/../../../External/include
+                 ${module_file_path}/../../../External/include/DirectShow/BaseClasses )
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_STREAMS_H)
 
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_DDRAW_H NAMES ddraw.h
@@ -37,7 +40,7 @@ FIND_LIBRARY( DIRECTSHOW_LIBRARY NAMES strmbase
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${CMAKE_MODULE_PATH}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib )
 MARK_AS_ADVANCED(DIRECTSHOW_LIBRARY)
 
 # Copy the results to the output variables.
@@ -57,9 +60,9 @@ ENDIF(CMake_HAVE_MFC)
 IF(NOT DIRECTSHOW_FOUND)
   SET(DIRECTSHOW_DIR_MESSAGE
     "Directshow was not found. It only works for Visual Studio 7 at the moment.")
-  IF(DIRECTSHOW_FIND_REQUIRED)
+  IF(DirectShow_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${DIRECTSHOW_DIR_MESSAGE}")
-  ELSEIF(NOT DIRECTSHOW_FIND_QUIETLY)
+  ELSEIF(NOT DirectShow_FIND_QUIETLY)
     MESSAGE(STATUS "${DIRECTSHOW_DIR_MESSAGE}")
-  ENDIF(DIRECTSHOW_FIND_REQUIRED)
+  ENDIF(DirectShow_FIND_REQUIRED)
 ENDIF(NOT DIRECTSHOW_FOUND)

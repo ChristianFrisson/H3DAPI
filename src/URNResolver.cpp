@@ -113,6 +113,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     
     
   }
+  is.close();
 }
 
 string URNResolver::resolveURN( const string &urn ) {

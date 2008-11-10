@@ -33,55 +33,26 @@
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-H3DNodeDatabase SmoothSurface::database( 
-                                        "SmoothSurface", 
-                                        &(newInstance<SmoothSurface>), 
-                                        typeid( SmoothSurface ),
-                                        &H3DSurfaceNode::database );
-
-namespace SmoothSurfaceInternals {
-  FIELDDB_ELEMENT( SmoothSurface, stiffness, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( SmoothSurface, damping, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( SmoothSurface, useRelativeValues, INITIALIZE_ONLY );
-}
+H3DNodeDatabase SmoothSurface::database( "SmoothSurface", 
+                                         &(newInstance<SmoothSurface>), 
+                                         typeid( SmoothSurface ),
+                                         &H3DStiffnessSurfaceNode::database );
 
 /// Constructor.
 SmoothSurface::SmoothSurface( Inst< UpdateStiffness > _stiffness,
                               Inst< UpdateDamping   > _damping,
                               Inst< SFBool          > _useRelativeValues ):
-  stiffness( _stiffness ),
-  damping( _damping ),
-  useRelativeValues( _useRelativeValues ) {
+  H3DStiffnessSurfaceNode( _stiffness, _damping, _useRelativeValues ) {
   type_name = "SmoothSurface";
   database.initFields( this );
-  
-  useRelativeValues->setValue( true );
-  stiffness->setValue( 0.5 );
-  damping->setValue( 0 );
 }
 
 void SmoothSurface::initialize() {
-  H3DSurfaceNode::initialize();
+  H3DStiffnessSurfaceNode::initialize();
   hapi_surface.reset(
     new HAPI::FrictionSurface( stiffness->getValue(),
-                               damping->getValue() ) );
-}
-
-void SmoothSurface::UpdateStiffness::onValueChange( const H3DFloat &v ) {
-  SmoothSurface *ss = 
-    static_cast< SmoothSurface * >( getOwner() );
-  if( ss->hapi_surface.get() ) {
-    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-      ->stiffness = v;
-  }
-}
-
-void SmoothSurface::UpdateDamping::onValueChange( const H3DFloat &v ) {
-  SmoothSurface *ss = 
-    static_cast< SmoothSurface * >( getOwner() );
-  if( ss->hapi_surface.get() ) {
-    static_cast< HAPI::FrictionSurface * >( ss->hapi_surface.get() )
-      ->damping = v;
-  }
+                               damping->getValue(),
+                               0, 0,
+                               useRelativeValues->getValue() ) );
 }
 

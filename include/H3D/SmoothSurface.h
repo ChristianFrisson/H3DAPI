@@ -29,7 +29,7 @@
 #ifndef __SMOOTHSURFACE_H__
 #define __SMOOTHSURFACE_H__
 
-#include <H3D/H3DSurfaceNode.h>
+#include <H3D/H3DStiffnessSurfaceNode.h>
 #include <H3D/SFFloat.h>
 #include <H3D/FieldTemplates.h>
 #include <H3D/SFBool.h>
@@ -38,30 +38,14 @@ namespace H3D {
 
   /// \ingroup H3DNodes
   /// \class SmoothSurface
-  /// A SmoothSurface has no friction at all. Only the stiffness of the surface
-  /// can be specified. The stiffness is specified as a value between 0 and 1
-  /// where 1 is the maximum stiffness the device can handle.
+  /// A SmoothSurface has no friction at all. Only the stiffness and damping
+  /// can be set. If the field useRelativeValues is true then
+  /// stiffness is specified as a value between 0 and 1 where 1 is the
+  /// maximum stiffness the device can handle. Otherwise the stiffness is
+  /// in N/m.
   ///
-  class H3DAPI_API SmoothSurface: public H3DSurfaceNode {
+  class H3DAPI_API SmoothSurface: public H3DStiffnessSurfaceNode {
   public:
-
-    /// Specialized field which sets the stiffness variable in
-    /// FrictionSurface when the stiffness field of SmoothSurface
-    /// is changed.
-    class H3DAPI_API UpdateStiffness:
-      public AutoUpdate< OnValueChangeSField< SFFloat > > {
-    protected:
-      virtual void onValueChange( const H3DFloat &v );
-    };
-
-    /// Specialized field which sets the damping variable in
-    /// FrictionSurface when the damping field of SmoothSurface
-    /// is changed.
-    class H3DAPI_API UpdateDamping:
-      public AutoUpdate< OnValueChangeSField< SFFloat > > {
-    protected:
-      virtual void onValueChange( const H3DFloat &v );
-    };
 
     /// Constructor.
     SmoothSurface( Inst< UpdateStiffness > _stiffness   = 0,
@@ -69,31 +53,6 @@ namespace H3D {
                    Inst< SFBool          > _useRelativeValues = 0 );
 
     void initialize();
-
-    /// The stiffness of the surface. Should be a value between 0 and 1
-    /// where 1 is the maximum stiffness the haptics device can handle.
-    ///
-    /// <b>Access type: </b> inputOutput \n
-    /// <b>Default value: </b> 0.5 \n
-    /// <b>Value range: </b> [0-1]
-    auto_ptr< UpdateStiffness > stiffness;
-
-    /// The velocity based damping of the surface. Should be a value between
-    /// 0 and 1 where 1 is the maximum damping the haptics device can handle.
-    ///
-    /// <b>Access type: </b> inputOutput \n
-    /// <b>Default value: </b> 0 \n
-    /// <b>Value range: </b> [0-1]
-    auto_ptr< UpdateDamping > damping;
-
-    /// If false then values (such as stiffness) is in absolute values with
-    /// SI units or equivalent. If true the units are relative to the maximum
-    /// values that the haptics device, on which the surface is rendered on,
-    /// can handle.
-    ///
-    /// <b>Access type: </b> initializeOnly \n
-    /// <b>Default value: </b> true \n
-    auto_ptr< SFBool > useRelativeValues;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

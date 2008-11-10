@@ -352,6 +352,8 @@ namespace H3D {
     unsigned int stencil_mask_width;
     bool last_loop_mirrored;
 
+    AutoRef< X3DViewpointNode > vp_ref;
+
   };
 }
 

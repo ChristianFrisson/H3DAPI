@@ -110,9 +110,6 @@ public:
   wxChoice *bound_choice;
   wxSpinCtrl *max_triangles_spin;
 
-  // CollisionOptionsGUI
-  wxCheckBox *use_collision_checkbox;
-
   // StereoInfoGUI
   wxTextCtrl *focal_distance_text;
   wxTextCtrl* interocular_distance_text;
@@ -158,7 +155,6 @@ protected:
     ID_DRAW_TRIANGLES,
     ID_DRAW_BOUND_TREE,
     ID_DRAW_TREE_DEPTH,
-    ID_USE_COLLISION_DETECTION,
     ID_FOCAL_DISTANCE,
     ID_INTEROCULAR_DISTANCE
 
@@ -242,6 +238,7 @@ public:
   void ResetViewpoint( wxCommandEvent & event );
   void ChangeNavigation( wxCommandEvent & event );
   void ChangeNavigationDevice( wxCommandEvent & event );
+  void ChangeCollision( wxCommandEvent & event );
   void ChangeRenderer( wxCommandEvent & event );
   void ToggleHaptics( wxCommandEvent & event );
   void OnSettings( wxCommandEvent & event );
@@ -254,7 +251,7 @@ public:
   bool validateNavType(string);
   void SaveMRU ();
   void SaveSettings( bool to_config );
-  void SaveCollisionOptions( bool to_config );
+  void SaveCollisionOptions();
   void SaveDebugOptions( bool to_config );
   void SaveGeometryBoundTreeOptions( bool to_config );
   void SaveGraphicsCachingOptions( bool to_config );
@@ -273,9 +270,6 @@ public:
   }
 private:
   struct NonConfigOptions {
-    // CollisionOptions
-    bool avatar_collision;
-    
     // DebugOptions
     bool draw_bound;
     int draw_tree;
@@ -313,11 +307,13 @@ private:
 
   NonConfigOptions non_conf_opt;
 
+  // CollisionOptions
+  bool avatar_collision;
+
   wxString currentFilename;
   wxString currentPath;
   bool lastmirror;
   bool lastDeviceStatus;
-  //wxString renderModeSelection;
   int selection;
   int viewpointCount;
   int navTypeCount;
@@ -408,6 +404,7 @@ enum
   BASIC_NAVEXAMINE,
   BASIC_NAVFLY,
   BASIC_DIR,
+  BASIC_COLLISION,
   FRAME_ABOUT,
   FRAME_HELP,
   FRAME_SETTINGS,

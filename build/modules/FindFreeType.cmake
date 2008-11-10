@@ -8,6 +8,7 @@
 FIND_PROGRAM(FREETYPE_CONFIG_EXECUTABLE freetype-config
       ONLY_CMAKE_FIND_ROOT_PATH
       )
+MARK_AS_ADVANCED( FREETYPE_CONFIG_EXECUTABLE )
 
 IF(FREETYPE_CONFIG_EXECUTABLE)
 
@@ -42,6 +43,8 @@ IF(FREETYPE_CONFIG_EXECUTABLE)
 
 ENDIF(FREETYPE_CONFIG_EXECUTABLE)
 
+GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+
 IF( NOT FREETYPE_INCLUDE_DIR )
   # Look for the header file.
   FIND_PATH(FREETYPE_INCLUDE_DIR NAMES freetype/freetype.h
@@ -51,8 +54,8 @@ IF( NOT FREETYPE_INCLUDE_DIR )
                                     $ENV{H3D_ROOT}/../External/include/freetype/include
                                     ../../External/include
                                     ../../External/include/freetype/include
-                                    ${CMAKE_MODULE_PATH}/../../../External/include
-                                    ${CMAKE_MODULE_PATH}/../../../External/include/freetype/include)
+                                    ${module_file_path}/../../../External/include
+                                    ${module_file_path}/../../../External/include/freetype/include)
   MARK_AS_ADVANCED(FREETYPE_INCLUDE_DIR)
 ENDIF( NOT FREETYPE_INCLUDE_DIR)
 
@@ -61,7 +64,7 @@ FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype235
                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                     $ENV{H3D_ROOT}/../External/lib
                                     ../../External/lib
-                                    ${CMAKE_MODULE_PATH}/../../../External/lib )
+                                    ${module_file_path}/../../../External/lib )
 MARK_AS_ADVANCED(FREETYPE_LIBRARY)
 
 # Copy the results to the output variables.
@@ -79,9 +82,9 @@ ENDIF(FREETYPE_INCLUDE_DIR AND FREETYPE_LIBRARY)
 IF(NOT FREETYPE_FOUND)
   SET(FREETYPE_DIR_MESSAGE
     "FREETYPE was not found. Make sure FREETYPE_LIBRARY and FREETYPE_INCLUDE_DIR are set to the directories containing the include and lib files for freetype. If you do not have it you will not be able to use the Text node.")
-  IF(FREETYPE_FIND_REQUIRED)
+  IF(FreeType_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${FREETYPE_DIR_MESSAGE}")
-  ELSEIF(NOT FREETYPE_FIND_QUIETLY)
+  ELSEIF(NOT FreeType_FIND_QUIETLY)
     MESSAGE(STATUS "${FREETYPE_DIR_MESSAGE}")
-  ENDIF(FREETYPE_FIND_REQUIRED)
+  ENDIF(FreeType_FIND_REQUIRED)
 ENDIF(NOT FREETYPE_FOUND)

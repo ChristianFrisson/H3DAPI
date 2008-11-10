@@ -37,17 +37,6 @@
 #include <H3D/SFBool.h>
 #include <H3D/SFTime.h>
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#pragma comment( lib, "OpenGL32.lib" )
-#pragma comment( lib, "glu32.lib" )
-
-#ifdef H3D_LINK_STATIC_EXTERNALS
-#pragma comment( lib, "glew32_static.lib" )
-#else
-#pragma comment( lib, "glew32.lib" )
-#endif
-#endif
-
 namespace H3D {
   /// \ingroup AbstractInterface
   /// \brief This abstract interface class is the base class for all node

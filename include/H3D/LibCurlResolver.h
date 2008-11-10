@@ -41,15 +41,6 @@
 
 using namespace std;
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-#ifdef H3D_LINK_STATIC_EXTERNALS
-#pragma comment( lib, "libcurl_static.lib" )
-#else
-#pragma comment( lib, "libcurl.lib" )
-#endif
-
-#endif
-
 namespace H3D {
 
   /// The LibCurlResolver uses libcurl to resolve URLs using e.g. the

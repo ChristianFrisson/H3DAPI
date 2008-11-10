@@ -1,1 +1,23 @@
-<ForceField force = "0.5 0 0"/>
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='forcefield.x3d'/>
+    <meta name='description' content='Demos the ForceField node. Requires a haptics device.'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  <Scene>
+    <Transform translation="-0.23 0.10 0">
+      <Shape>
+        <Appearance>
+          <Material diffuseColor="1 1 1"/>
+        </Appearance>
+        <Text string='"A small force is now trying to push the haptics device to the right."'>
+          <FontStyle size='0.02'/>
+        </Text>
+      </Shape>
+    </Transform>
+
+    <ForceField force = "0.5 0 0"/>
+
+  </Scene>
+</X3D>

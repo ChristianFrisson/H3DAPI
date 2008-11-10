@@ -68,14 +68,6 @@ ELSE(wxWidgets_FOUND)
   ENDIF(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
 
-# Xerces.
-FIND_PACKAGE(Xerces)
-
-IF(XERCES_FOUND)
-  INCLUDE_DIRECTORIES( ${XERCES_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${XERCES_LIBRARIES} )
-ENDIF(XERCES_FOUND)
-
 # Create build files.
 ADD_EXECUTABLE(H3DViewer WIN32 MACOSX_BUNDLE ${H3DViewer_SRCS})
 
@@ -103,7 +95,9 @@ IF(WIN32)
   ENDIF(MSVC70 OR MSVC71)
 
   # set the install directory to the H3D directory on Windows
-  SET( CMAKE_INSTALL_PREFIX ${H3DViewer_SOURCE_DIR}/../../..)
+  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
+    SET( CMAKE_INSTALL_PREFIX ${H3DViewer_SOURCE_DIR}/../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 ENDIF(WIN32)
 
 # Install in these folders.

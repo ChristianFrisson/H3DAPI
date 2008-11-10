@@ -1,30 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Group>
-  <ToggleGroup DEF="TG" hapticsOn="false">
-    <PositionFunctionEffect>
-      <GeneralFunction containerField="xFunction" function="10*y" params="x,y,z"/>
-      <GeneralFunction containerField="yFunction" function="0" params="x,y,z"/>
-      <GeneralFunction containerField="zFunction" function="0" params="x,y,z"/>
-    </PositionFunctionEffect>
-  </ToggleGroup>
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.0'>
+  <head>
+    <meta name='title' content='positionFunctionEffect.x3d'/>
+    <meta name='description' content='Demos the PositionFunctionEffect node. Requires a haptics device.'/>
+    <meta name='editors' content='SenseGraphics AB, 2007-2008'/>
+  </head>
+  <Scene>
+    <ToggleGroup DEF="TG" hapticsOn="false">
+      <PositionFunctionEffect>
+        <GeneralFunction containerField="xFunction" function="10*y" params="x,y,z"/>
+        <GeneralFunction containerField="yFunction" function="0" params="x,y,z"/>
+        <GeneralFunction containerField="zFunction" function="0" params="x,y,z"/>
+      </PositionFunctionEffect>
+    </ToggleGroup>
 
-  <Transform translation="-0.15 0.05 0">
-    <Shape>
-      <Appearance>
-        <Material diffuseColor="1 1 1"/>
-      </Appearance>
-      <Text string='"This is an example of the PositionFunctionEffect."
+    <Transform translation="-0.15 0.05 0">
+      <Shape>
+        <Appearance>
+          <Material diffuseColor="1 1 1"/>
+        </Appearance>
+        <Text string='"This is an example of the PositionFunctionEffect."
                     "Grab your haptics device and hold it firmly."
                     "Toggle haptics on by holding down the right"
                     "mouse button. If you have more than one device"
                     "in the scene you need to hold them all."'>
-        <FontStyle size='0.02'/>
-      </Text>
-    </Shape>
-  </Transform>
+          <FontStyle size='0.02'/>
+        </Text>
+      </Shape>
+    </Transform>
 
-  <MouseSensor DEF='MS'/>
+    <MouseSensor DEF='MS'/>
 
-  <ROUTE fromNode='MS' fromField='rightButton'
-         toNode='TG' toField='hapticsOn'/>
-</Group>
+    <ROUTE fromNode='MS' fromField='rightButton'
+           toNode='TG' toField='hapticsOn'/>
+  </Scene>
+</X3D>

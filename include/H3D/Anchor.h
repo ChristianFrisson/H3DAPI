@@ -106,7 +106,7 @@ namespace H3D {
   /// binds the viewer to the viewpoint defined by the "Doorway" viewpoint in
   /// the current world when the sphere is activated. In this case, if the
   /// Viewpoint is not found, no action occurs on activation.
-
+  /// NOTE: This node is not fully tested and may crash now and then when used.
   class H3DAPI_API Anchor : public X3DGroupingNode {
   public:
 
