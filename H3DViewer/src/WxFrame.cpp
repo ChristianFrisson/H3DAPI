@@ -2666,15 +2666,13 @@ void WxFrame::setProxyRadius( float r ) {
 
     if( renderer ) {
       renderer->proxyRadius->setValue( r );
+      Node *proxy = default_stylus_dn.getNode("PROXY");
+      if( proxy ) {
+        SFFloat *radius = 
+          dynamic_cast< SFFloat * >( proxy->getField("radius") );
+        if( radius ) 
+          radius->setValue( r );
+      }
     }
   }
-
-  Node *proxy = default_stylus_dn.getNode("PROXY");
-  if( proxy ) {
-    SFFloat *radius = 
-      dynamic_cast< SFFloat * >( proxy->getField("radius") );
-    if( radius ) 
-      radius->setValue( r );
-  }
-
 }

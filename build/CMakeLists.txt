@@ -563,9 +563,8 @@ IF( WIN32 )
     # remove some warnings about deprecated functions.
     SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
-    IF( PREFER_STATIC_LIBRARIES )
-      SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /INCREMENTAL:NO" )
-    ENDIF( PREFER_STATIC_LIBRARIES )
+    # H3D API is now to big to link incrementally with vc8.
+    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /INCREMENTAL:NO" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
     IF(OPENHAPTICS_FOUND)
       SET_SOURCE_FILES_PROPERTIES( ../src/MagneticSurface.cpp
@@ -650,3 +649,40 @@ IF( WIN32 )
     ADD_DEPENDENCIES( H3DAPI Chai3DRenderer )
   ENDIF(CHAI3D_FOUND)
 ENDIF( WIN32 )
+
+IF( NOT DEFINED H3DAPI_LOADER_PROJECTS )
+  SET( H3DAPI_LOADER_PROJECTS "NO" CACHE BOOL "If set to YES H3DLoad and H3DViewer will be included in the build." )
+ENDIF( NOT DEFINED H3DAPI_LOADER_PROJECTS )
+
+IF( H3DAPI_LOADER_PROJECTS )
+  # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
+  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../H3DLoad/build H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DLoad/build
+                    ${H3DAPI_LOADER_BINARY_DIR} )
+  ADD_DEPENDENCIES( H3DLoad H3DAPI )
+  
+  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../H3DViewer/build H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
+                    ${H3DAPI_LOADER_BINARY_DIR} )
+  ADD_DEPENDENCIES( H3DViewer H3DAPI )
+ENDIF( H3DAPI_LOADER_PROJECTS )
+
+IF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
+  SET( H3DAPI_EXAMPLE_PROJECTS "NO" CACHE BOOL "If set to YES various example projects build on H3DAPI will be included in the build." )
+ENDIF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
+
+IF( H3DAPI_EXAMPLE_PROJECTS )
+  # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
+  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++ H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++
+                    ${H3DAPI_LOADER_BINARY_DIR} )
+  ADD_DEPENDENCIES( Sphere_X3D H3DAPI )
+  ADD_DEPENDENCIES( Spheres_X3D H3DAPI )
+  
+  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
+                    ${H3DAPI_LOADER_BINARY_DIR} )
+  IF( DEFINED ParticleDemo_SOURCE_DIR )
+    ADD_DEPENDENCIES( ParticleDemo H3DAPI )
+  ENDIF( DEFINED ParticleDemo_SOURCE_DIR )
+ENDIF( H3DAPI_EXAMPLE_PROJECTS )

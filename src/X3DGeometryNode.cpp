@@ -37,6 +37,7 @@
 #include <H3D/DeviceInfo.h>
 #include <H3D/DebugOptions.h>
 #include <H3D/Scene.h>
+#include <H3D/HapticsRenderers.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HAPI/HLDepthBufferShape.h>
@@ -360,21 +361,25 @@ void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
       force_full_oh = 
         openhaptics_options->forceFullGeometryRender->getValue();
     }
-    
-    if( force_full_oh ) {
+
+    const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
+    for( unsigned int i = 0; i < devices.size(); i++ ) {
+      bool tmp_force_full_oh = force_full_oh;
 #ifdef HAVE_OPENHAPTICS
-      ti.addHapticShapeToAll( getOpenGLHapticShape( ti.getCurrentSurface(),
+      if( tmp_force_full_oh && 
+          !dynamic_cast< OpenHapticsRenderer * >
+            ( devices[i]->hapticsRenderer->getValue() ) )
+        tmp_force_full_oh = false;
+#endif
+
+      if( tmp_force_full_oh ) {
+#ifdef HAVE_OPENHAPTICS
+        ti.addHapticShape( i, getOpenGLHapticShape( ti.getCurrentSurface(),
                                                     ti.getAccForwardMatrix(),
                                                     nrVertices() ) );
 #endif
-    } else {
-      const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
-    
-      for( unsigned int i = 0; i < devices.size(); i++ ) {
-
+      } else {
         createAndAddHapticShapes( ti, devices[i], i, openhaptics_options );
-        
-        //displayList->breakCache();        
       }
     }
   }
