@@ -81,6 +81,11 @@ X3DSoundSourceNode::X3DSoundSourceNode( Inst< SFNode  >  _metadata,
   loop->route( sound_buffer );
 }
 
+X3DSoundSourceNode::~X3DSoundSourceNode() {
+  if( al_buffers ) {
+    alDeleteBuffers( NR_STREAM_BUFFERS, al_buffers );
+  }
+}
 
 bool X3DSoundSourceNode::initALBuffers( bool stream ) {
 #ifdef HAVE_OPENAL
