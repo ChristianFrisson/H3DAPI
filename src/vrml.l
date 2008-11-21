@@ -81,12 +81,12 @@ TO             driver.addLine( yytext ); return yy::VrmlParser::token::TO;
 IS             driver.addLine( yytext ); return yy::VrmlParser::token::IS;
 
 
-{ID}        yylval->val=strdup(yytext); driver.addLine( yytext );  return yy::VrmlParser::token::VRMLID;
+{ID}        *yylval=std::string(yytext); driver.addLine( yytext );  return yy::VrmlParser::token::VRMLID;
 
 ({COMMENT}({WHITE})*)+  driver.addLine( yytext );
 
 
-(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+       driver.addLine( yytext ); yylval->val=strdup(yytext); return yy::VrmlParser::token::STRING;
+(({NUMBER}|{STRING}|{COMMENT})({WHITE})*)+       driver.addLine( yytext ); *yylval=std::string(yytext); return yy::VrmlParser::token::STRING;
 
 
 {WHITE}+     driver.addLine( yytext );

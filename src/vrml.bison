@@ -60,7 +60,7 @@ using namespace X3D;
 #include <sstream>
 using namespace std;
 
-
+#define YYSTYPE std::string
 #define YYERROR_VERBOSE  1
 
 int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
@@ -108,7 +108,7 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 
 
 
-x3dScene : { driver.root = new Group(); }
+x3dScene : { driver.root.reset( new Group() ); }
        profileStatement 
        componentStatements
        metaStatements
@@ -146,7 +146,7 @@ exportStatement:         EXPORT nodeNameId AS exportedNodeNameId {
 importStatement:         IMPORT inlineNodeNameId '.' exportedNodeNameId 
                          AS nodeNameId {
 if( driver.proto_declarations.size()==0 ) {
-  if( strcmp( $2, "H3D_EXPORTS" ) == 0 ) {
+  if(  $2 == "H3D_EXPORTS" ) {
     Node *import_node = 
       H3DExports::getH3DExportNode( $4 );
     if( import_node ) {
@@ -344,16 +344,16 @@ if ( driver.proto_declarations.size()==0 ) {
   Node *new_node = NULL;     
   if ( driver.node_stack.size() == 0 || 
        driver.node_stack.back() != NULL ) {
-    new_node =  H3DNodeDatabase::createNode( yylval.val );
+    new_node =  H3DNodeDatabase::createNode( yylval );
     if ( !new_node ) {
       // try as a proto:
       ProtoDeclaration *proto = driver.proto_vector->getProtoDeclaration(
-      yylval.val );
+      yylval );
       if ( proto ) {
          new_node = proto->newProtoInstance();
       }
       if ( !new_node )
-        Console(3) << "WARNING: Could not create node \"" << yylval.val << 
+        Console(3) << "WARNING: Could not create node \"" << yylval << 
           "\" - name not found in the node database ( " <<
           driver.getLocationString() << " )." << endl;
     }

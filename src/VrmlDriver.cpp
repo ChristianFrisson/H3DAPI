@@ -45,8 +45,8 @@ VrmlDriver::~VrmlDriver () {
 
 int VrmlDriver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
                         *exported_nodes, PrototypeVector *prototypes ) {
-  lexer = NULL;
-  root = NULL;
+  lexer.reset( NULL );
+  root.reset( NULL );
   DEF_map = dn;
   DEF_export = exported_nodes;
   proto_vector = prototypes;
@@ -59,19 +59,25 @@ int VrmlDriver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
   if (!proto_vector) {
     if (global_proto_vector)
       proto_vector = global_proto_vector;
-    else
-      proto_vector = new PrototypeVector;
+    else {
+      local_proto_vector.reset( new PrototypeVector );
+      proto_vector = local_proto_vector.get();
+    }
   }
 
-  if (!dn) DEF_map = new DEFNodes();
+  if (!dn) {
+    DEF_map = new DEFNodes();
+    local_DEF_map.reset( DEF_map );
+  }
 
   if (!inp->fail()) {
-    lexer = new VRMLFlexLexer( inp, &Console );
+    lexer.reset( new VRMLFlexLexer( inp, &Console ) );
     yy::VrmlParser parser (*this);
     if ( !global_proto_vector ) {
       global_proto_vector=proto_vector;
       parser.parse ();
       global_proto_vector=NULL;
+
     } else
       parser.parse ();
   }
@@ -87,7 +93,7 @@ void VrmlDriver::error (const std::string& m) {
 }
 
 
-void VrmlDriver::setFieldValue( const char* v ) {
+void VrmlDriver::setFieldValue( const char *v ) {
   Node *node = node_stack.back();
   if ( !node ) return;
   Field *field = node->getField( field_stack.back() );
@@ -187,24 +193,20 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
 
 
 
-void VrmlDriver::setProtoField( const char* name, const char* type, const
-                                 Field::AccessType &access_type, 
-                                 const char* value ) {
+void VrmlDriver::setProtoField( const string& name, 
+                                const string& type, 
+                                const Field::AccessType &access_type, 
+                                const string & value ) {
   if ( proto_declarations.size()==1 ) {
     X3DTypes::X3DType x3d_type = 
-      X3DTypes::stringToType(  type );
+      X3DTypes::stringToType(  type.c_str() );
     if( x3d_type == X3DTypes::UNKNOWN_X3D_TYPE ) {
       Console(3) << "WARNING: Invalid type value field \"" 
                  << name << "\", " << type << " " 
                  << getLocationString() << endl;
     } else {
-      if ( value ) 
         proto_declarations.back()->addFieldDeclaration( name, x3d_type,
-                                                        access_type, value );
-      else
-        proto_declarations.back()->addFieldDeclaration( name, x3d_type,
-                                                        access_type );
-      
+                                                        access_type, value );    
     }
   }
 }

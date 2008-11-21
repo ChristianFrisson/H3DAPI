@@ -44,9 +44,11 @@ using namespace H3D;
 using namespace X3D;
 
 // Forward declarations.
-union YYSTYPE {
-  char* val;
-};
+//union YYSTYPE {
+//  char* val;
+//};
+
+#define YYSTYPE std::string
 
 class VrmlDriver;
 
@@ -87,27 +89,31 @@ public:
   void setProtoInstance ( X3DPrototypeInstance *p ) {
     proto_instance = p;
   }
-  void setProtoField( const char* name, const char* type, const
-                      Field::AccessType &access_type, 
-                      const char* value = 0 );
+  void setProtoField( const string &name, 
+                      const string& type, 
+                      const Field::AccessType &access_type, 
+                      const string & value = 0 );
 
   // VRML specific functions:
 
-  Group *getRoot() { return root; }
-  void setFieldValue( const char*);
+  Group *getRoot() { return root.get(); }
+  void setFieldValue( const char *);
   void setNodeStatement( int );
   string getLocationString();
   string getOldLocationString();
 
   void addLine( const char* );
 
-  VRMLFlexLexer* lexer;
-  Group *root;
+  auto_ptr< VRMLFlexLexer > lexer;
+  AutoRef< Group > root;
+
   DEFNodes *DEF_map;
   DEFNodes *DEF_export;
+
+  auto_ptr< DEFNodes > local_DEF_map;
   
   vector< Node* > node_stack;
-  vector< const char* > field_stack;
+  vector< string > field_stack;
   
   int vrml_line_no;
   int old_line_no;
@@ -116,7 +122,9 @@ public:
   const char *file_name;
   
   vector< ProtoDeclaration *> proto_declarations;
+  
   PrototypeVector *proto_vector;
+  auto_ptr< PrototypeVector > local_proto_vector;
   static PrototypeVector *global_proto_vector;
   string proto_body;
   

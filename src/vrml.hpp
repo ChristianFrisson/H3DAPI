@@ -106,7 +106,7 @@ using namespace X3D;
 #include <sstream>
 using namespace std;
 
-
+#define YYSTYPE std::string
 #define YYERROR_VERBOSE  1
 
 int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);

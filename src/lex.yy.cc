@@ -4393,7 +4393,7 @@ driver.addLine( yytext ); return yy::VrmlParser::token::IS;
 case 25:
 YY_RULE_SETUP
 #line 84 "vrml.l"
-yylval->val=strdup(yytext); driver.addLine( yytext );  return yy::VrmlParser::token::VRMLID;
+  *yylval=std::string(yytext); driver.addLine( yytext );  return yy::VrmlParser::token::VRMLID;
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
@@ -4405,7 +4405,7 @@ case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
 #line 89 "vrml.l"
-driver.addLine( yytext ); yylval->val=strdup(yytext); return yy::VrmlParser::token::STRING;
+  driver.addLine( yytext ); *yylval =std::string(yytext); return yy::VrmlParser::token::STRING;
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */

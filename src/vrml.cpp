@@ -393,22 +393,22 @@ namespace yy
       {
 	  case 2:
 #line 111 "vrml.bison"
-    { driver.root = new Group(); }
+      { driver.root.reset( new Group() ); }
     break;
 
   case 13:
 #line 131 "vrml.bison"
     {
-  Node *node= driver.DEF_map->getNode( (yysemantic_stack_[(4) - (2)].val) );
+  Node *node= driver.DEF_map->getNode( (yysemantic_stack_[(4) - (2)]) );
   if ( node ) {
     if ( driver.DEF_export )
-      driver.DEF_export->addNode( (yysemantic_stack_[(4) - (4)].val), node );
+      driver.DEF_export->addNode( (yysemantic_stack_[(4) - (4)]), node );
     else
       Console(3) << "WARNING: EXPORT error. No export DEF map provided!"
                  << driver.getLocationString() << endl;
   } else {
     Console(3) << "WARNING: EXPORT error. Node named \"" 
-               << (yysemantic_stack_[(4) - (2)].val) << "\" does not exist."
+               << (yysemantic_stack_[(4) - (2)]) << "\" does not exist."
                << driver.getLocationString() << endl;
   }
 }
@@ -418,40 +418,40 @@ namespace yy
 #line 147 "vrml.bison"
     {
 if( driver.proto_declarations.size()==0 ) {
-  if( strcmp( (yysemantic_stack_[(6) - (2)].val), "H3D_EXPORTS" ) == 0 ) {
+  if( yysemantic_stack_[(6) - (2)] == "H3D_EXPORTS" ) {
     Node *import_node = 
-      H3DExports::getH3DExportNode( (yysemantic_stack_[(6) - (4)].val) );
+      H3DExports::getH3DExportNode( (yysemantic_stack_[(6) - (4)]) );
     if( import_node ) {
-      driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)].val), import_node ); 
+      driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)]), import_node ); 
     } else {
       Console(3) << "WARNING: IMPORT error. H3D_EXPORTS " 
                  << "does not include \""
-                 << (yysemantic_stack_[(6) - (4)].val) << "\"" 
+                 << (yysemantic_stack_[(6) - (4)]) << "\"" 
                  << driver.getLocationString() << endl;
     }
   } else {
-    Node *n = driver.DEF_map->getNode( (yysemantic_stack_[(6) - (2)].val) );
+    Node *n = driver.DEF_map->getNode( (yysemantic_stack_[(6) - (2)]) );
     Inline *inline_node = dynamic_cast< Inline * >( n );
     if( inline_node ) {
       Node *import_node = 
-        inline_node->exported_nodes.getNode( (yysemantic_stack_[(6) - (4)].val) );
+        inline_node->exported_nodes.getNode( (yysemantic_stack_[(6) - (4)]) );
       if( import_node ) {
-        driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)].val), 
+        driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)]), 
                           import_node ); 
       } else {
         Console(3) << "WARNING: IMPORT error. Inline node \"" 
-                   << (yysemantic_stack_[(6) - (2)].val) << "\" does not EXPORT \""
-                   << (yysemantic_stack_[(6) - (4)].val) << "\"" 
+                   << (yysemantic_stack_[(6) - (2)]) << "\" does not EXPORT \""
+                   << (yysemantic_stack_[(6) - (4)]) << "\"" 
                    << driver.getLocationString() << endl;
       }
     } else {
       if( n ) {
         Console(3) << "WARNING: IMPORT error. Node \"" 
-                   << (yysemantic_stack_[(6) - (2)].val) << "\" is not an Inline node "
+                   << (yysemantic_stack_[(6) - (2)]) << "\" is not an Inline node "
                    << driver.getLocationString() << endl;
       } else {
         Console(3) << "WARNING: IMPORT error. Node named \"" 
-                   << (yysemantic_stack_[(6) - (2)].val) << "\" does not exist."
+                   << (yysemantic_stack_[(6) - (2)]) << "\" does not exist."
                    << driver.getLocationString() << endl;
       }
     }
@@ -477,8 +477,8 @@ if( driver.proto_declarations.size()==0 ) {
     {
   if ( driver.proto_declarations.size()==0 &&
        driver.node_stack.back() ) {
-    driver.DEF_map->addNode( (yysemantic_stack_[(3) - (2)].val), driver.node_stack.back() );
-    driver.node_stack.back()->setName( (yysemantic_stack_[(3) - (2)].val) );
+    driver.DEF_map->addNode( (yysemantic_stack_[(3) - (2)]), driver.node_stack.back() );
+    driver.node_stack.back()->setName( (yysemantic_stack_[(3) - (2)]) );
   } 
 }
     break;
@@ -487,7 +487,7 @@ if( driver.proto_declarations.size()==0 ) {
 #line 225 "vrml.bison"
     {
   if ( driver.proto_declarations.size()==0 )
-    driver.node_stack.push_back( driver.DEF_map->getNode( (yysemantic_stack_[(2) - (2)].val) ) );
+    driver.node_stack.push_back( driver.DEF_map->getNode( (yysemantic_stack_[(2) - (2)]) ) );
   }
     break;
 
@@ -495,7 +495,7 @@ if( driver.proto_declarations.size()==0 ) {
 #line 240 "vrml.bison"
     {
    if ( driver.proto_vector ) {
-     driver.proto_declarations.push_back( new ProtoDeclaration( (yysemantic_stack_[(2) - (2)].val) ) );
+     driver.proto_declarations.push_back( new ProtoDeclaration( (yysemantic_stack_[(2) - (2)]) ) );
      if ( driver.proto_declarations.size()==1 ) {
        driver.proto_body = "";
        driver.proto_vector->push_back( driver.proto_declarations.back() );
@@ -525,28 +525,28 @@ if( driver.proto_declarations.size()==0 ) {
   case 47:
 #line 268 "vrml.bison"
     {
-  driver.setProtoField( (yysemantic_stack_[(3) - (3)].val), (yysemantic_stack_[(3) - (2)].val), Field::INPUT_ONLY, NULL );
+  driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_ONLY, NULL );
 }
     break;
 
   case 48:
 #line 271 "vrml.bison"
     {
-  driver.setProtoField( (yysemantic_stack_[(3) - (3)].val), (yysemantic_stack_[(3) - (2)].val), Field::OUTPUT_ONLY, NULL );
+  driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::OUTPUT_ONLY, NULL );
 }
     break;
 
   case 49:
 #line 274 "vrml.bison"
     {
-  driver.setProtoField( (yysemantic_stack_[(4) - (3)].val), (yysemantic_stack_[(4) - (2)].val), Field::INITIALIZE_ONLY, (yysemantic_stack_[(4) - (4)].val) );
+  driver.setProtoField( (yysemantic_stack_[(4) - (3)]), (yysemantic_stack_[(4) - (2)]), Field::INITIALIZE_ONLY, (yysemantic_stack_[(4) - (4)]) );
 }
     break;
 
   case 51:
 #line 279 "vrml.bison"
     {
-  driver.setProtoField( (yysemantic_stack_[(4) - (3)].val), (yysemantic_stack_[(4) - (2)].val), Field::INPUT_OUTPUT, (yysemantic_stack_[(4) - (4)].val) );
+  driver.setProtoField( (yysemantic_stack_[(4) - (3)]), (yysemantic_stack_[(4) - (2)]), Field::INPUT_OUTPUT, (yysemantic_stack_[(4) - (4)]) );
 }
     break;
 
@@ -554,36 +554,36 @@ if( driver.proto_declarations.size()==0 ) {
 #line 299 "vrml.bison"
     {
 if ( driver.proto_declarations.size()==0 ) {
-  Node *fr = driver.DEF_map->getNode( (yysemantic_stack_[(8) - (2)].val) );
+  Node *fr = driver.DEF_map->getNode( (yysemantic_stack_[(8) - (2)]) );
   if ( fr ) {
-    Field *frf = fr->getField( (yysemantic_stack_[(8) - (4)].val) );
+    Field *frf = fr->getField( (yysemantic_stack_[(8) - (4)]) );
     if ( frf ) {
-      Node *to = driver.DEF_map->getNode( (yysemantic_stack_[(8) - (6)].val) );
+      Node *to = driver.DEF_map->getNode( (yysemantic_stack_[(8) - (6)]) );
       if ( to ) {
-        Field *tof = to->getField( (yysemantic_stack_[(8) - (8)].val) );
+        Field *tof = to->getField( (yysemantic_stack_[(8) - (8)]) );
         if ( tof )
           frf->route( tof );
         else {
           Console(3) << "WARNING: Route error. Could not find field named \"" 
-                     <<  (yysemantic_stack_[(8) - (8)].val)
-                     << "\" in \"" << (yysemantic_stack_[(8) - (6)].val) << "\" Node " 
+                     <<  (yysemantic_stack_[(8) - (8)])
+                     << "\" in \"" << (yysemantic_stack_[(8) - (6)]) << "\" Node " 
                      << driver.getLocationString() << endl;
         }
       } else {
         Console(3) << "WARNING: Route error. Could not find destination Node named \"" 
-                   << (yysemantic_stack_[(8) - (6)].val)
+                   << (yysemantic_stack_[(8) - (6)])
                    << "\" " 
                    << driver.getLocationString() << endl;
       }
     } else {
       Console(3) << "WARNING: Route error. Could not find field named \"" 
-                 << (yysemantic_stack_[(8) - (4)].val)
-                 << "\" in \"" << (yysemantic_stack_[(8) - (2)].val) << "\" Node " 
+                 << (yysemantic_stack_[(8) - (4)])
+                 << "\" in \"" << (yysemantic_stack_[(8) - (2)]) << "\" Node " 
                  << driver.getLocationString() << endl;
     }  
   } else {
     Console(3) << "WARNING: Route error. Could not find source Node named \"" 
-               << (yysemantic_stack_[(8) - (2)].val)
+               << (yysemantic_stack_[(8) - (2)])
                << "\" " 
                << driver.getLocationString() << endl;
   }
@@ -598,16 +598,16 @@ if ( driver.proto_declarations.size()==0 ) {
   Node *new_node = NULL;     
   if ( driver.node_stack.size() == 0 || 
        driver.node_stack.back() != NULL ) {
-    new_node =  H3DNodeDatabase::createNode( yylval.val );
+    new_node =  H3DNodeDatabase::createNode( yylval );
     if ( !new_node ) {
       // try as a proto:
       ProtoDeclaration *proto = driver.proto_vector->getProtoDeclaration(
-      yylval.val );
+      yylval );
       if ( proto ) {
          new_node = proto->newProtoInstance();
       }
       if ( !new_node )
-        Console(3) << "WARNING: Could not create node \"" << yylval.val << 
+        Console(3) << "WARNING: Could not create node \"" << yylval << 
           "\" - name not found in the node database ( " <<
           driver.getLocationString() << " )." << endl;
     }
@@ -620,7 +620,7 @@ if ( driver.proto_declarations.size()==0 ) {
   case 78:
 #line 383 "vrml.bison"
     { 
-                            driver.field_stack.push_back( (yysemantic_stack_[(1) - (1)].val) ); }
+                            driver.field_stack.push_back( (yysemantic_stack_[(1) - (1)]) ); }
     break;
 
   case 79:
@@ -636,9 +636,9 @@ if ( driver.proto_declarations.size()==0 ) {
     {
   if ( driver.proto_instance != NULL ) {
     Node *node = driver.node_stack.back();
-    Field *node_field = node->getField( (yysemantic_stack_[(3) - (1)].val) );
+    Field *node_field = node->getField( (yysemantic_stack_[(3) - (1)]) );
     Field *proto_field =  
-        driver.proto_instance->getField( (yysemantic_stack_[(3) - (3)].val) );
+        driver.proto_instance->getField( (yysemantic_stack_[(3) - (3)]) );
     if ( node && node_field && proto_field ) {
       Field::AccessType access_type = node_field->getAccessType();
         
@@ -660,7 +660,7 @@ if ( driver.proto_declarations.size()==0 ) {
 #line 431 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
-  driver.setFieldValue( (yysemantic_stack_[(1) - (1)].val) );
+  driver.setFieldValue( (yysemantic_stack_[(1) - (1)]).c_str() );
 }
     break;
 
@@ -668,7 +668,7 @@ if ( driver.proto_declarations.size()==0 )
 #line 435 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
-  driver.setFieldValue( (yysemantic_stack_[(1) - (1)].val) );
+  driver.setFieldValue( (yysemantic_stack_[(1) - (1)]).c_str() );
                         }
     break;
 
@@ -684,22 +684,22 @@ if ( driver.proto_declarations.size()==0 )
 
   case 97:
 #line 443 "vrml.bison"
-    { (yyval.val) = "TRUE"; }
+    { (yyval) = "TRUE"; }
     break;
 
   case 98:
 #line 444 "vrml.bison"
-    { (yyval.val) = "FALSE";}
+    { (yyval) = "FALSE";}
     break;
 
   case 100:
 #line 447 "vrml.bison"
-    { (yyval.val) = ""; }
+    { (yyval) = ""; }
     break;
 
   case 101:
 #line 448 "vrml.bison"
-    { (yyval.val) = (yysemantic_stack_[(3) - (2)].val); }
+    { (yyval) = (yysemantic_stack_[(3) - (2)]); }
     break;
 
   case 102:
