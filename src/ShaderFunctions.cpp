@@ -592,6 +592,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     delete[] v;
   } else if( SFNode *f = dynamic_cast< SFNode * >( field ) ) {
     Node *n = f->getValue(); 
+    if( n == NULL ) return true;
     if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
       glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
     } else if( X3DTexture3DNode *t = 
@@ -609,7 +610,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     GLint *v = new GLint[ size ];
     for( unsigned int i = 0; i < size; i++ ) {
       Node *n = f->getValueByIndex( i ); 
-      if( n == NULL ) return true;
+      if( n == NULL ) continue;
       if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
         v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
       } else if( X3DTexture3DNode *t = 
