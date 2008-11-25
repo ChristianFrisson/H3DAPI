@@ -33,6 +33,7 @@
 #include <H3D/SFString.h>
 
 namespace H3D {
+  /// \ingroup AbstractNodes
   /// \class X3DVertexAttributeNode
   /// This abstract node type is the base type for all node types that specify
   /// per-vertex attribute information to the shader. 

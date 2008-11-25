@@ -127,6 +127,8 @@ namespace H3D {
                         Inst< SFBool   > _isPaused         = 0,
                         Inst< TimeHandler > _timeHandler   = 0 );
 
+    virtual ~X3DSoundSourceNode();
+
     /// Reads new data into the OpenAL from the reader and attaches them
     /// to the sound sources that use this sound source. The stream param 
     /// indicates if it should init a stream source or a static source.

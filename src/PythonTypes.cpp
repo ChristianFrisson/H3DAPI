@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
@@ -2924,23 +2924,23 @@ self, name, field_type, access_type )" );
   PyObject* PyRotation::slerp( PyObject *myself, PyObject *args ) {
     if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
       PyErr_SetString(PyExc_TypeError, 
-                      "invalid number of arguments given Rotation::slerp( Quat, t )." );
+                      "invalid number of arguments given Rotation::slerp( Rot, t )." );
       return 0;
     }
 
     PyObject *q = PyTuple_GetItem( args, 0 );
     PyObject *t = PyTuple_GetItem( args, 1 );
 
-    if( !PyRotation_Check( q ) || !PyFloat_Check( q ) ) {
+    if( !PyRotation_Check( q ) || !PyFloat_Check( t ) ) {
       PyErr_SetString(PyExc_TypeError, 
-           "invalid type given as arguments to Rotation::slerp( Quat, t )." );
+           "invalid type given as arguments to Rotation::slerp( Rot, t )." );
       return 0;
     }
 
-    Rotation quat1 = PyRotation_AsRotation( myself );
-    Rotation quat2 = PyRotation_AsRotation( q );
+    Rotation rot1 = PyRotation_AsRotation( myself );
+    Rotation rot2 = PyRotation_AsRotation( q );
     H3DFloat arg = (H3DFloat) PyFloat_AsDouble( t );
-    return PyQuaternion_FromQuaternion( quat1.slerp( quat2, arg ) );
+    return PyRotation_FromRotation( rot1.slerp( rot2, arg ) );
   }
 
   int PyRotation::init(PyRotation *self, PyObject *args, PyObject *kwds)  {
@@ -3269,7 +3269,7 @@ self, name, field_type, access_type )" );
     PyObject *q = PyTuple_GetItem( args, 0 );
     PyObject *t = PyTuple_GetItem( args, 1 );
 
-    if( !PyQuaternion_Check( q ) || !PyFloat_Check( q ) ) {
+    if( !PyQuaternion_Check( q ) || !PyFloat_Check( t ) ) {
       PyErr_SetString(PyExc_TypeError, 
            "invalid type given as arguments to Quaternion::slerp( Quat, t )." );
       return 0;
