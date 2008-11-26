@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
@@ -63,6 +63,7 @@ namespace H3D {
       if( n && !database->getField( n, name.c_str() ) ) {
         field->setOwner( n );
         field->setName( name );
+        field->setAccessType( access );
         database->addField( new DynamicFieldDBElement( database,
                                                        name.c_str(),
                                                        access,

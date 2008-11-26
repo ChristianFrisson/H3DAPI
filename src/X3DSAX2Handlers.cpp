@@ -623,7 +623,8 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
         return;
       }
       
-      if( node_field->getAccessType() != proto_field->getAccessType() ) {
+      if( node_field->getAccessType() != Field::INPUT_OUTPUT &&
+          node_field->getAccessType() != proto_field->getAccessType() ) {
         Console(3) << "WARNING: accessType of \"nodeField\" and \"protoField\" does not match"
              << getLocationString() << endl;
         return;
@@ -1333,6 +1334,24 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                 s << "Invalid containerField attribute \"" 
                   <<  container_field
                   << "\". Field is not of type SFNode or MFNode.";
+                throw X3D::XMLParseError( s.str(), "", 
+                                          toString( locator->getSystemId() ),
+                                          locator->getLineNumber() ); 
+              }
+            }
+          } else if( parent ) {
+            FieldValue *fv = static_cast< FieldValue * >(parent);
+            if( fv && fv->fv_parent && 
+                fv->fv_parent->getTypeName() == "PrototypeInstance" ) {
+              if( fv->field &&  
+                  ( fv->field->getX3DType() == X3DTypes::MFNODE ||
+                    fv->field->getX3DType() == X3DTypes::SFNODE ) &&
+                  fv->field->getName() != container_field ) {
+                stringstream s;
+                s << "Invalid containerField attribute \"" 
+                  <<  container_field 
+                  << "\". The field does not exist in parent fieldValue "
+                  << "with name (" << parent->getName() << ")";
                 throw X3D::XMLParseError( s.str(), "", 
                                           toString( locator->getSystemId() ),
                                           locator->getLineNumber() ); 
