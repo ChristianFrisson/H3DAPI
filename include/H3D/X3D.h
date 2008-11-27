@@ -52,6 +52,7 @@ using namespace std;
 
 
 namespace H3D {
+  /// X3D namespace
   namespace X3D {
 
     /// Create H3D nodes given X3D data as a istream

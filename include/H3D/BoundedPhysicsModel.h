@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
@@ -36,6 +36,22 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class BoundedPhysicsModel
+  /// \brief The BoundedPhysicsModel node specifies a physics model that
+  /// applies a user-defined set of geometrical bounds to the particles.
+  ///
+  /// The geometry field specifies a piece of geometry that models the bounds
+  /// that constrain the location of the particles. When a particle touches the
+  /// surface of the bounds, it is reflected. The particles may be restricted
+  /// to an inside location or an outside location. All geometry defined by the
+  /// bounds are considered to be non-solid, regardless of the setting of the
+  /// solid field. It does not matter whether the particle impacts the front or
+  /// back side of the geometry. Particles are reflected at the same angle to
+  /// the normal of the surface to which they impact, continuing in the same
+  /// direction. The calculation of the correct normal is determined by the
+  /// rules of the geometry that forms the bounds.
+  ///
+  /// EXAMPLE  A particle can be made to bounce off an elevation grid
+  /// representing terrain.
   class H3DAPI_API BoundedPhysicsModel : public X3DParticlePhysicsModelNode {
   public:
     typedef TypedSFNode< X3DGeometryNode > SFGeometryNode;
