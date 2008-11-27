@@ -675,14 +675,15 @@ IF( H3DAPI_EXAMPLE_PROJECTS )
   # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
   STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++ H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++
-                    ${H3DAPI_LOADER_BINARY_DIR} )
+                    ${H3DAPI_EXAMPLES_BINARY_DIR} )
   ADD_DEPENDENCIES( Sphere_X3D H3DAPI )
   ADD_DEPENDENCIES( Spheres_X3D H3DAPI )
   
   STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
-                    ${H3DAPI_LOADER_BINARY_DIR} )
+                    ${H3DAPI_EXAMPLES_BINARY_DIR} )
   IF( DEFINED ParticleDemo_SOURCE_DIR )
     ADD_DEPENDENCIES( ParticleDemo H3DAPI )
   ENDIF( DEFINED ParticleDemo_SOURCE_DIR )
 ENDIF( H3DAPI_EXAMPLE_PROJECTS )
+

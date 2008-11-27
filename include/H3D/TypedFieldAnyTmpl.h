@@ -30,6 +30,8 @@
 #ifndef __TYPESFIELDANYTEMPL_H__
 #define __TYPESFIELDANYTEMPL_H__
 
+#include <typeinfo>
+
 #define H3D_ANY_TEMPLATE_LIST class Type0, class Type1, class Type2, class Type3, class Type4, class Type5, class Type6, class Type7, class Type8, class Type9, class Type10, class Type11, class Type12, class Type13, class Type14, class Type15, class Type16, class Type17, class Type18, class Type19, class Type20, class Type21, class Type22, class Type23, class Type24, class Type25, class Type26, class Type27, class Type28, class Type29, class Type30, class Type31, class Type32, class Type33, class Type34, class Type35, class Type36, class Type37, class Type38, class Type39
 
 #define H3D_ANY_CLASS Any< Type0, Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9, Type10, Type11, Type12, Type13, Type14, Type15, Type16, Type17, Type18, Type19, Type20, Type21, Type22, Type23, Type24, Type25, Type26, Type27, Type28, Type29, Type30, Type31, Type32, Type33, Type34, Type35, Type36, Type37, Type38, Type39 >

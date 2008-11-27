@@ -56,6 +56,24 @@
 using namespace std;
 using namespace H3D;
 
+inline string toStr( const wxString &s ) {
+# if(wxUSE_UNICODE)
+  char *b = new char[s.size()+1];
+  const wchar_t *wb = s.c_str();
+  for( unsigned int i = 0; i < s.size(); i++ ) {
+    b[i] = (char)(wb[i]);
+  }
+  
+  b[s.size()] = '\0';
+  string sb(b);
+  delete[] b;
+  return sb;
+#else
+  return string( s.c_str() );
+#endif
+}  
+
+
 
 H3D_API_EXCEPTION( QuitAPIException );
 
@@ -70,7 +88,8 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 const wxCmdLineEntryDesc gCmdLineDesc[] = 
   {
-    { wxCMD_LINE_PARAM, NULL, NULL, wxT("File to load"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL}, 
+    { wxCMD_LINE_PARAM, NULL, NULL, wxT("File to load"),
+      wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL}, 
     { wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, 0} };
 
 // Define a new application type
@@ -122,7 +141,8 @@ bool MyApp::OnExceptionInMainLoop() {
     return false;
   }
   catch (const Exception::H3DException &e) {
-     wxMessageBox(e.message.c_str(), "Error", wxOK | wxICON_EXCLAMATION);
+     wxMessageBox( wxString( e.message.c_str(), wxConvLibc ),
+		   wxT("Error"), wxOK | wxICON_EXCLAMATION);
     return false;
   }
   wxApp::OnExceptionInMainLoop();  
@@ -140,12 +160,15 @@ bool MyApp::OnInit()
   //initializeH3D();
 
   // create a window to display
-  WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, "Particle Systems - Demo", wxDefaultPosition, wxSize(800, 600));
+  WxFrame *theWxFrame = new WxFrame( NULL, wxID_ANY,
+                                     wxT("Particle Systems - Demo"),
+                                     wxDefaultPosition, wxSize(800, 600) );
 	//glwindow constructed in the frame constructor.  Next line redundant.
 	//theWxFrame->glwindow = new H3DWxWidgetsWindow(theWxFrame);
 	theWxFrame->Show(true);
 
-  if( cmd_line_filename != "" ) theWxFrame->loadFile( string(cmd_line_filename) );
+  if( cmd_line_filename != wxString() )
+    theWxFrame->loadFile( toStr(cmd_line_filename) );
   //This next line is used to set the icon file h3d.ico, when created.
 	//theWxframe->SetIcon(wxIcon(_T("h3d_icn")));
 

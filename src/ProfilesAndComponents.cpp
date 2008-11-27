@@ -36,6 +36,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <memory>
 
 using namespace H3D;
 using namespace std;

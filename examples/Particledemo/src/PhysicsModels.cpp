@@ -456,11 +456,11 @@ void WindPhysicsModelDialog::handleSettingsChange (wxCommandEvent & event) {
   if ( id == ID_ENABLED )
     windPhysicsModel->enabled->setValue( event.IsChecked() );
   else if ( id == ID_SPEED )
-    windPhysicsModel->speed->setValue( atof( event.GetString() ) );
+    windPhysicsModel->speed->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_GUSTINESS)
-    windPhysicsModel->gustiness->setValue ( atof( event.GetString() ) );
+    windPhysicsModel->gustiness->setValue ( atof( event.GetString().mb_str()));
   else if (id == ID_TURBULENCE )
-    windPhysicsModel->turbulence->setValue( atof( event.GetString() ) );
+    windPhysicsModel->turbulence->setValue( atof( event.GetString().mb_str()));
   else if (id == ID_DIRECTION) {
     wxString temp_string = event.GetString();
     wxStringTokenizer vec3_tkz( temp_string, wxT(" "), wxTOKEN_DEFAULT );

@@ -230,13 +230,13 @@ void PointEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   if ( id == ID_SPEED )
-    pointEmitter->speed->setValue( atof( event.GetString() ) );
+    pointEmitter->speed->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_VARIATION)
-    pointEmitter->variation->setValue ( atof( event.GetString() ) );
+    pointEmitter->variation->setValue ( atof( event.GetString().mb_str() ) );
   else if (id == ID_MASS )
-    pointEmitter->mass->setValue( atof( event.GetString() ) );
+    pointEmitter->mass->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_SURFACE_AREA )
-    pointEmitter->surfaceArea->setValue( atof( event.GetString() ) );
+    pointEmitter->surfaceArea->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_DIRECTION) {
     wxString temp_string = event.GetString();
     wxStringTokenizer vec3_tkz( temp_string, wxT(" "), wxTOKEN_DEFAULT );
@@ -731,13 +731,13 @@ void ConeEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
     ehdev->trackerPosition->route(coneEmitter->position);
   }
   if ( id == ID_SPEED )
-    coneEmitter->speed->setValue( atof( event.GetString() ) );
+    coneEmitter->speed->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_VARIATION)
-    coneEmitter->variation->setValue ( atof( event.GetString() ) );
+    coneEmitter->variation->setValue ( atof( event.GetString().mb_str() ) );
   else if (id == ID_MASS )
-    coneEmitter->mass->setValue( atof( event.GetString() ) );
+    coneEmitter->mass->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_SURFACE_AREA )
-    coneEmitter->surfaceArea->setValue( atof( event.GetString() ) );
+    coneEmitter->surfaceArea->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_DIRECTION) {
     wxString temp_string = event.GetString();
     wxStringTokenizer vec3_tkz( temp_string, wxT(" "), wxTOKEN_DEFAULT );
@@ -973,13 +973,14 @@ void ExplosionEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   if ( id == ID_SPEED )
-    explosionEmitter->speed->setValue( atof( event.GetString() ) );
+    explosionEmitter->speed->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_VARIATION)
-    explosionEmitter->variation->setValue ( atof( event.GetString() ) );
+    explosionEmitter->variation->setValue ( atof( event.GetString().mb_str()));
   else if (id == ID_MASS )
-    explosionEmitter->mass->setValue( atof( event.GetString() ) );
+    explosionEmitter->mass->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_SURFACE_AREA )
-    explosionEmitter->surfaceArea->setValue( atof( event.GetString() ) );
+    explosionEmitter->surfaceArea->setValue(
+      atof( event.GetString().mb_str() ) );
   else if (id == ID_POSITION) {
     wxString temp_string = event.GetString();
     wxStringTokenizer vec3_tkz( temp_string, wxT(" "), wxTOKEN_DEFAULT );
@@ -1177,13 +1178,13 @@ void SurfaceEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   if ( id == ID_SPEED )
-    surfaceEmitter->speed->setValue( atof( event.GetString() ) );
+    surfaceEmitter->speed->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_VARIATION)
-    surfaceEmitter->variation->setValue ( atof( event.GetString() ) );
+    surfaceEmitter->variation->setValue ( atof( event.GetString().mb_str() ) );
   else if (id == ID_MASS )
-    surfaceEmitter->mass->setValue( atof( event.GetString() ) );
+    surfaceEmitter->mass->setValue( atof( event.GetString().mb_str() ) );
   else if (id == ID_SURFACE_AREA )
-    surfaceEmitter->surfaceArea->setValue( atof( event.GetString() ) );
+    surfaceEmitter->surfaceArea->setValue( atof( event.GetString().mb_str() ));
   //else if (id == ID_COORD_INDEX )
   //else if (id == ID_SURFACE)
 }

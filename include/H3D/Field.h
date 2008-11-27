@@ -36,6 +36,7 @@
 #include <H3D/H3DTypes.h>
 #include <H3DUtil/TimeStamp.h>
 #include <H3D/X3DTypes.h>
+#include <memory>
 
 using namespace std;
 

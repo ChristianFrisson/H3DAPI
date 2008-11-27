@@ -31,7 +31,7 @@
 //  Includes
 // ---------------------------------------------------------------------------
 
-#include <consoleDialog.h>
+#include "ConsoleDialog.h"
 
 // H3DUtil includes
 #include <H3DUtil/Console.h>
@@ -58,7 +58,8 @@ wxDialog (parent, id, title, pos, size, style)
 
 	// create text ctrl with minimal size 400x200
 	logText = (wxTextCtrl *) NULL;
-	logText = new wxTextCtrl ( this, -1, "", wxDefaultPosition, wxSize(400, 200),
+	logText = new wxTextCtrl ( this, -1, wxT(""), wxDefaultPosition,
+                             wxSize(400, 200),
                              wxTE_MULTILINE | wxTE_READONLY );
 
 	topsizer->Add(logText, 
@@ -67,7 +68,7 @@ wxDialog (parent, id, title, pos, size, style)
 				  wxALL,        //   and make border all around
 				  10 );         // set border width to 10 */
 
-    wxButton *closeButton = new wxButton( this, wxID_CLOSE, "Close" );
+    wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("Close") );
 
     wxBoxSizer *button_sizer = new wxBoxSizer( wxHORIZONTAL );
     button_sizer->Add(closeButton, 

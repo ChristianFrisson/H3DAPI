@@ -80,7 +80,7 @@ public:
   WxFrame( wxWindow *_parent, wxWindowID _id, const wxString& _title,
               const wxPoint& _pos, const wxSize& _size,
               long _style = wxDEFAULT_FRAME_STYLE,
-              const wxString& name = "MedX3D Demo" );
+              const wxString& name = wxT("Particle Demo") );
 
   //Pointer to H3DWxWidgetsWindow
   WxWidgetsWindow *glwindow;

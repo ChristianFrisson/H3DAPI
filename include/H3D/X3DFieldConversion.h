@@ -35,6 +35,8 @@
 #include <H3D/H3DTypes.h>
 #include <H3DUtil/PixelImage.h>
 
+#include <typeinfo>
+
 using namespace std;
 
 namespace H3D {

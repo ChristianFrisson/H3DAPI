@@ -41,7 +41,6 @@ using namespace std;
 
 namespace H3D {
   // forward declarations
-  class HAPI::HAPIHapticShape;
   class H3DSurfaceNode;
   class H3DHapticsDevice;
   class X3DGeometryNode;

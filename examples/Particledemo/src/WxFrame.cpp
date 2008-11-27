@@ -74,6 +74,23 @@
 
 using namespace std;
 using namespace H3D;
+inline string toStr( const wxString &s ) {
+# if(wxUSE_UNICODE)
+  char *b = new char[s.size()+1];
+  const wchar_t *wb = s.c_str();
+  for( unsigned int i = 0; i < s.size(); i++ ) {
+    b[i] = (char)(wb[i]);
+  }
+  
+  b[s.size()] = '\0';
+  string sb(b);
+  delete[] b;
+  return sb;
+#else
+  return string( s.c_str() );
+#endif
+}  
+
 
 
 //AutoRef< GlobalSettings > global_settings;
@@ -135,7 +152,7 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
 
 	//scene->window->push_back( glwindow );
 
-  wxString console_string = "Console";
+  wxString console_string = wxT("Console");
   theConsole = new consoleDialog(this, wxID_ANY, console_string, wxDefaultPosition, 
                                      wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
 
@@ -160,56 +177,83 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
   /******************Menu Bar Items*****************/
   //File menu
   fileMenu = new wxMenu;
-  fileMenu->Append(FRAME_OPEN,"&Open file...\tCtrl+O","Open a file");
-  fileMenu->Append(FRAME_OPEN_URL, "&Open file from URL...", "Open a file from URL" );
-  fileMenu->Append(FRAME_CLOSE, "&Close file","Close file");
+  fileMenu->Append( FRAME_OPEN, wxT("&Open file...\tCtrl+O"),
+                    wxT("Open a file") );
+  fileMenu->Append( FRAME_OPEN_URL,
+                    wxT("&Open file from URL..."),
+                    wxT("Open a file from URL") );
+  fileMenu->Append( FRAME_CLOSE, wxT("&Close file"),
+                    wxT("Close file") );
   fileMenu->AppendSeparator();
-  fileMenu->Append(FRAME_EXIT,"E&xit\tCtrl+X", "Exit");
+  fileMenu->Append(FRAME_EXIT, wxT("E&xit\tCtrl+X"), wxT("Exit") );
 
   //Particle Geometry sub menu
   geometryMenu = new wxMenu;
-  geometryMenu->AppendRadioItem(FRAME_QUAD,"Quad","Quad Geometry");
-  geometryMenu->AppendRadioItem(FRAME_TRIANGLE,"Triangle","Triangle Geometry");
-  geometryMenu->AppendRadioItem(FRAME_POINT,"Point","Point Geometry");
-  geometryMenu->AppendRadioItem(FRAME_SPRITE,"Sprite","Sprite Geometry");
-  geometryMenu->AppendRadioItem(FRAME_LINE,"Line","Line Geometry");
+  geometryMenu->AppendRadioItem( FRAME_QUAD, wxT("Quad"),
+                                 wxT("Quad Geometry") );
+  geometryMenu->AppendRadioItem( FRAME_TRIANGLE,
+                                 wxT("Triangle"),
+                                 wxT("Triangle Geometry") );
+  geometryMenu->AppendRadioItem( FRAME_POINT,
+                                 wxT("Point"),
+                                 wxT("Point Geometry") );
+  geometryMenu->AppendRadioItem( FRAME_SPRITE,
+                                 wxT("Sprite"),
+                                 wxT("Sprite Geometry") );
+  geometryMenu->AppendRadioItem( FRAME_LINE,
+                                 wxT("Line"),
+                                 wxT("Line Geometry") );
 
   //Particle menu
   particleMenu = new wxMenu;
-  particleMenu->Append(FRAME_GEOMETRY,"Geometry", geometryMenu, "Select Particle Geometry");
+  particleMenu->Append( FRAME_GEOMETRY, wxT("Geometry"),
+                        geometryMenu, wxT("Select Particle Geometry") );
 
   //Physics menu
   physicsMenu = new wxMenu;
-  physicsMenu->Append(FRAME_BOUNDEDPHYSICSMODEL,"Bounded Physics Model", "Bounded Physics Model");
-  physicsMenu->Append(FRAME_GRAVITYPHYSICSMODEL,"Gravity Physics Model", "Gravity Physics Model");
-  physicsMenu->Append(FRAME_WINDPHYSICSMODEL,"Wind Physics Model", "Wind Physics Model");
+  physicsMenu->Append( FRAME_BOUNDEDPHYSICSMODEL,
+                       wxT("Bounded Physics Model"),
+                       wxT("Bounded Physics Model") );
+  physicsMenu->Append( FRAME_GRAVITYPHYSICSMODEL,
+                       wxT("Gravity Physics Model"),
+                       wxT("Gravity Physics Model") );
+  physicsMenu->Append( FRAME_WINDPHYSICSMODEL,
+                       wxT("Wind Physics Model"),
+                       wxT("Wind Physics Model") );
 
   //Emitter Menu
   emitterMenu = new wxMenu;
-  emitterMenu->Append(FRAME_CONEEMITTER,"Cone","Select Cone Emitter");
-  emitterMenu->Append(FRAME_EXPLOSIONEMITTER,"Explosion","Select Explosion Emitter");
-  emitterMenu->Append(FRAME_POINTEMITTER,"Point","Select Point Emitter");
-  emitterMenu->Append(FRAME_POLYLINEEMITTER, "Polyline", "Select Polyline Emitter");
-  emitterMenu->Append(FRAME_VOLUMEEMITTER, "Volume", "Select Volume Emitter");
-  emitterMenu->Append(FRAME_SURFACEEMITTER, "Surface", "Select Surface Emitter");
+  emitterMenu->Append( FRAME_CONEEMITTER,
+                       wxT("Cone"), wxT("Select Cone Emitter") );
+  emitterMenu->Append( FRAME_EXPLOSIONEMITTER,
+                       wxT("Explosion"), wxT("Select Explosion Emitter") );
+  emitterMenu->Append( FRAME_POINTEMITTER,
+                       wxT("Point"), wxT("Select Point Emitter") );
+  emitterMenu->Append( FRAME_POLYLINEEMITTER,
+                       wxT("Polyline"), wxT("Select Polyline Emitter") );
+  emitterMenu->Append( FRAME_VOLUMEEMITTER,
+                       wxT("Volume"), wxT("Select Volume Emitter") );
+  emitterMenu->Append( FRAME_SURFACEEMITTER,
+                       wxT("Surface"), wxT("Select Surface Emitter") );
 
   //Advanced Menu
   advancedMenu = new wxMenu;
-  advancedMenu->Append(FRAME_CONSOLE, "Show Console", "Show the message console");
+  advancedMenu->Append( FRAME_CONSOLE,
+                        wxT("Show Console"), wxT("Show the message console") );
   
   //Help Menu
   helpMenu = new wxMenu;
-  helpMenu->Append(FRAME_HELP, "Help");
-  helpMenu->Append(FRAME_ABOUT, "About");
+  helpMenu->Append( FRAME_HELP, wxT("Help") );
+  helpMenu->Append( FRAME_ABOUT, wxT("About") );
 
   //Install Menu Bar
   menuBar = new wxMenuBar;
-  menuBar->Append(fileMenu, "&File");
-  menuBar->Append(particleMenu, "&Particle System");
-  menuBar->Append(physicsMenu, "Phy&sics");
-  menuBar->Append(emitterMenu, "&Emitter");
-  menuBar->Append(advancedMenu, "&Advanced");
-  menuBar->Append(helpMenu, "&Help");
+  menuBar->Append( fileMenu, wxT("&File") );
+  menuBar->Append( particleMenu, wxT("&Particle System") );
+  menuBar->Append( physicsMenu, wxT("&Physics") );
+  menuBar->Append( emitterMenu, wxT("&Emitter") );
+  menuBar->Append( advancedMenu, wxT("&Advanced") );
+  menuBar->Append( helpMenu, wxT("&Help") );
   SetMenuBar(menuBar);
 
 }
@@ -380,19 +424,29 @@ bool WxFrame::loadFile( const string &filename) {
       PS = PSList.front();
       if (PS->enabled->getValue()) {
         ParticleStatus = true;
-        particleMenu->Insert(0, FRAME_PARTICLECONTROL, "Remove particles", "Stop and remove all particles on screen");
-        particleMenu->Insert(1, FRAME_PARTICLECREATION, "Stop particle creation", "Do not generate new particles");
+        particleMenu->Insert( 0, FRAME_PARTICLECONTROL, 
+                              wxT("Remove particles"),
+                              wxT("Stop and remove all particles on screen") );
+        particleMenu->Insert( 1, FRAME_PARTICLECREATION, 
+                              wxT("Stop particle creation"),
+                              wxT("Do not generate new particles") );
         particleMenu->InsertSeparator(2);
       }
       else {
         ParticleStatus = false;
-        particleMenu->Insert(0, FRAME_PARTICLECONTROL, "Display particles", "Start and display all particles on screen");
-        particleMenu->Insert(1, FRAME_PARTICLECREATION, "Start particle creation", "Resume generation of new particles");
+        particleMenu->Insert( 0, FRAME_PARTICLECONTROL,
+                              wxT("Display particles"),
+                              wxT("Start and display all particles on screen") );
+        particleMenu->Insert( 1, FRAME_PARTICLECREATION,
+                              wxT("Start particle creation"),
+                              wxT("Resume generation of new particles") );
         particleMenu->InsertSeparator(2);
       }
     }
     else {
-      wxMessageDialog PSnotfound ( this, "Particle System node not found.\nCertain menus will be disabled.", "Particle System", wxOK);
+      wxMessageDialog PSnotfound ( this, 
+       wxT("Particle System node not found.\nCertain menus will be disabled."),
+       wxT("Particle System"), wxOK);
       PSnotfound.ShowModal();
       menuBar->EnableTop(1, false);
     }
@@ -436,7 +490,8 @@ bool WxFrame::loadFile( const string &filename) {
     scene->sceneRoot->setValue( g.get() );
   }
   catch (const Exception::H3DException &e) {
-    wxMessageBox(e.message.c_str(), "Error", wxOK | wxICON_EXCLAMATION);
+    wxMessageBox( wxString( e.message.c_str(), wxConvLibc ),
+                  wxT("Error"), wxOK | wxICON_EXCLAMATION );
     return false;
   }
   return true;
@@ -452,11 +507,11 @@ void WxFrame::clearData () {
 //Open a file
 void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
    auto_ptr< wxTextEntryDialog > text_dialog( new wxTextEntryDialog ( this,
-													   "Enter the location of the file here",
-													   "Open file from URL",
-													   "") );
+													   wxT("Enter the location of the file here"),
+													   wxT("Open file from URL"),
+													   wxT("") ) );
    if( text_dialog->ShowModal() == wxID_OK ) {
-     string s(text_dialog->GetValue());
+     string s( toStr( text_dialog->GetValue() ) );
      clearData();
      loadFile( s );
    }
@@ -465,9 +520,9 @@ void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
 void WxFrame::OnOpenFile(wxCommandEvent & event)
 {
 	auto_ptr< wxFileDialog > openFileDialog( new wxFileDialog ( this,
-													   "Open file",
+													   wxT("Open file"),
 													   GetCurrentPath(),
-													   "",
+													   wxT(""),
 													   FILETYPES,
 													   wxOPEN,
 													   wxDefaultPosition) );
@@ -479,11 +534,11 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
     SetStatusText(GetCurrentFilename(), 0);
     SetStatusText(openFileDialog->GetDirectory(),1);
 #ifdef WIN32
-    wxString wx_filename = currentPath + "\\" + currentFilename;
+    wxString wx_filename = currentPath + wxT("\\") + currentFilename;
 #else
-    wxString wx_filename = currentPath + "/" + currentFilename;
+    wxString wx_filename = currentPath + wxT("/") + currentFilename;
 #endif
-    string filename(wx_filename);
+    string filename( toStr(wx_filename) );
     clearData();
     loadFile( filename );
   }
@@ -493,8 +548,8 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
 void WxFrame::OnCloseFile(wxCommandEvent & event) {
   //clearData();
   t->children->clear();
-	SetStatusText("Open a file...", 0);
-  SetStatusText("",1);
+	SetStatusText(wxT("Open a file..."), 0);
+  SetStatusText(wxT(""),1);
 }
 
 
@@ -511,7 +566,7 @@ void WxFrame::OnAbout(wxCommandEvent & event)
 //Particle Geometry event
 void WxFrame::OnParticleGeometry(wxCommandEvent & event)
 {
-  wxString geometry;
+  string geometry;
   switch ( event.GetId() ) {
     case FRAME_QUAD:
       geometry = "QUAD";
@@ -529,7 +584,7 @@ void WxFrame::OnParticleGeometry(wxCommandEvent & event)
       geometry = "LINE";
       break;
 	}
-  PS->geometryType->setValue(geometry.c_str());
+  PS->geometryType->setValue( geometry.c_str() );
 }
 
 //Toggle Particles
@@ -539,13 +594,15 @@ void WxFrame::ToggleParticles(wxCommandEvent & event)
     PS->enabled->setValue(false);
     ParticleStatus = false;
     particleMenu->Destroy(FRAME_PARTICLECONTROL);
-    particleMenu->Insert(0, FRAME_PARTICLECONTROL, "Display Particles", "Start and display all particles on screen");
+    particleMenu->Insert( 0, FRAME_PARTICLECONTROL, wxT("Display Particles"),
+                          wxT("Start and display all particles on screen") );
   }
   else {
     PS->enabled->setValue(true);
     ParticleStatus = true;
     particleMenu->Destroy(FRAME_PARTICLECONTROL);
-    particleMenu->Insert(0, FRAME_PARTICLECONTROL, "Remove Particles", "Stop and remove all particles on screen");
+    particleMenu->Insert( 0, FRAME_PARTICLECONTROL, wxT("Remove Particles"),
+                          wxT("Stop and remove all particles on screen") );
   }
 }
 

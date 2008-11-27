@@ -36,6 +36,7 @@
 using namespace std;
 #include <H3D/URNResolver.h>
 #include <H3DUtil/AutoPtrVector.h>
+#include <memory>
 
 
 
