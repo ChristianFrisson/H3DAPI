@@ -65,6 +65,16 @@ using namespace H3D;
 
 class WxFrame;
 
+class SpeedDialog: public wxDialog {
+  DECLARE_CLASS( SpeedDialog )
+public:
+  SpeedDialog( wxWindow* parent, WxFrame *f );
+  void handleSliderEvent( wxScrollEvent &event );
+protected:
+  WxFrame *wx_frame;
+  DECLARE_EVENT_TABLE()
+};
+
 class SettingsDialog: public wxPropertySheetDialog
 {
 DECLARE_CLASS(SettingsDialog)
@@ -101,6 +111,7 @@ public:
 
   // HapticsOptions
   wxChoice *face_choice;
+  wxChoice *dynamic_mode_choice;
   wxTextCtrl *max_distance_text;
   wxTextCtrl *look_ahead_text;
   wxCheckBox *use_bound_tree_checkbox;
@@ -144,6 +155,7 @@ protected:
     ID_BOUND_TYPE,
     ID_MAX_DISTANCE,
     ID_TOUCHABLE_FACE,
+    ID_DYNAMIC_MODE,
     ID_LOOK_AHEAD_FACTOR,
     ID_USE_BOUND_TREE,
     ID_INTERPOLATE_FORCE_EFFECTS,
@@ -239,6 +251,7 @@ public:
   void ChangeNavigation( wxCommandEvent & event );
   void ChangeNavigationDevice( wxCommandEvent & event );
   void ChangeCollision( wxCommandEvent & event );
+  void OnSpeed( wxCommandEvent & event );
   void ChangeRenderer( wxCommandEvent & event );
   void ToggleHaptics( wxCommandEvent & event );
   void OnSettings( wxCommandEvent & event );
@@ -286,6 +299,7 @@ private:
 
     // HapticsOptions
     string touchable_face;
+    string dynamic_mode;
     float max_distance;
     float look_ahead_factor;
     bool use_bound_tree;
@@ -347,6 +361,7 @@ private:
   consoleDialog *  theConsole;
   FrameRateDialog *  frameRates;
   SettingsDialog * settings;
+  SpeedDialog *speed_slider;
 
   AutoRef< GlobalSettings > global_settings;
 
@@ -405,6 +420,8 @@ enum
   BASIC_NAVFLY,
   BASIC_DIR,
   BASIC_COLLISION,
+  FRAME_SPEED,
+  FRAME_SPEED_SLIDER,
   FRAME_ABOUT,
   FRAME_HELP,
   FRAME_SETTINGS,

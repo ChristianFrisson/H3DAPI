@@ -123,7 +123,8 @@ namespace H3D {
   public:
 
     class CalculateMouseMoveInfo :
-      public AutoUpdate< TypedField< SFBool, Types< SFBool, SFVec2f > > > {
+      public AutoUpdate< TypedField< SFBool, Types< SFBool, SFVec2f,
+                                                    SFBool, SFBool > > > {
     public:
       virtual void update();
       MouseNavigation *the_owner;

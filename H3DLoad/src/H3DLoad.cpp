@@ -167,7 +167,7 @@ class ChangeViewport : public AutoUpdate< SFInt32> {
     
 class ChangeNavType : public AutoUpdate< SFString > { 
 public:
-  ChangeNavType() : glwindow( 0 ) {}
+  ChangeNavType() : glwindow( 0 ), speed_increment( 0.1f ) {}
 
   inline void setOwnerWindow( H3DWindowNode * owner_window ) {
     glwindow = owner_window;
@@ -188,8 +188,7 @@ protected:
       else{
         glwindow->default_nav = "WALK"; 
       }
-    }
-    if( s[0] == 102 ) {
+    } else if( s[0] == 102 ) {
       // Set navigation type to FLY
       if(mynav){
         mynav->setNavType("FLY");
@@ -197,8 +196,7 @@ protected:
       else{
         glwindow->default_nav = "FLY"; 
       }
-    }
-    if( s[0] == 101 ) {
+    } else if( s[0] == 101 ) {
       // Set navigation type to EXAMINE
       if(mynav){
         mynav->setNavType("EXAMINE");
@@ -206,8 +204,7 @@ protected:
       else{
         glwindow->default_nav = "EXAMINE"; 
       }
-    }
-    if( s[0] == 108 ) {
+    } else if( s[0] == 108 ) {
       // Set navigation type to LOOKAT
       if(mynav){
         mynav->setNavType("LOOKAT");
@@ -215,8 +212,7 @@ protected:
       else{
         glwindow->default_nav = "LOOKAT"; 
       }
-    }
-    if( s[0] == 110 ) {
+    } else if( s[0] == 110 ) {
       // Set navigation type to NONE
       if(mynav){
         mynav->setNavType("NONE");
@@ -224,10 +220,29 @@ protected:
       else{
         glwindow->default_nav = "NONE"; 
       }
+    } else if( s == "+" ) {
+      if( mynav ) {
+        mynav->speed->setValue( mynav->speed->getValue() + speed_increment );
+      } else {
+        glwindow->default_speed += speed_increment;
+      }
+    } else if( s == "-" ) {
+      if( mynav ) {
+        H3DFloat tmp_speed = mynav->speed->getValue() - speed_increment;
+        if( tmp_speed < 0 )
+          tmp_speed = 0;
+        mynav->speed->setValue( tmp_speed );
+      } else {
+        H3DFloat tmp_speed = glwindow->default_speed - speed_increment;
+        if( tmp_speed  < 0 )
+          tmp_speed = 0;
+        glwindow->default_speed = tmp_speed;
+      }
     }
   }
 
   H3DWindowNode *glwindow;
+  H3DFloat speed_increment;
 };
 
 #define GET4(ENV,GROUP,VAR,DEFAULT) \
@@ -325,6 +340,9 @@ int main(int argc, char* argv[]) {
   help_message += " l                      Set navigationType to LOOKAT\n";
   help_message += " e                      Set navigationType to EXAMINE\n";
   help_message += " n                      Set navigationType to NONE\n";
+  help_message += "Other navigation options:\n";
+  help_message += "+                       Increase navigation speed.\n";
+  help_message += "-                       Decrease navigation speed.\n";
   help_message += "To set devices used for navigation: \n";
   help_message += " F1                     Enable/Disable mouse.";
   help_message += " Default is enabled.\n";

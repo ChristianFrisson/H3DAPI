@@ -127,6 +127,13 @@ namespace WxFrameInternals {
   string front = "FRONT";
   string back = "BACK";
 
+  wxString wx_always = wxT("Always");
+  wxString wx_never = wxT("Never");
+  wxString wx_transform_changed = wxT("Transform changed");
+  string always = "ALWAYS";
+  string never = "NEVER";
+  string transform_changed = "TRANSFORM_CHANGED";
+
   wxString wx_OBB = wxT("Oriented bounding box");
   wxString wx_AABB = wxT("Axis-aligned bounding box");
   wxString wx_SPHERE = wxT("Sphere");
@@ -338,6 +345,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   menuBar->Append(deviceMenu, wxT("&Device Control"));
   menuBar->Append(viewpointMenu, wxT("&Viewpoints"));
   menuBar->Append(navigationMenu, wxT("&Navigation"));
+  speed_slider = new SpeedDialog( this, this );
+  speed_slider->Show( false );
   menuBar->Append(advancedMenu, wxT("&Advanced"));
   menuBar->Append(helpMenu, wxT("&Help"));
   SetMenuBar(menuBar);
@@ -375,7 +384,8 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
   EVT_MENU_RANGE (FRAME_MOUSE_NAV, FRAME_HAPTICSDEVICE_NAV,
                   WxFrame::ChangeNavigationDevice)
-  EVT_MENU (BASIC_COLLISION , WxFrame::ChangeCollision )
+  EVT_MENU (BASIC_COLLISION, WxFrame::ChangeCollision )
+  EVT_MENU (FRAME_SPEED, WxFrame::OnSpeed )
   EVT_MENU_RANGE (FRAME_OPENHAPTICS, FRAME_RUSPINI, WxFrame::ChangeRenderer)
   EVT_MENU (FRAME_DEVICECONTROL, WxFrame::ToggleHaptics)
   EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
@@ -427,6 +437,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       gco->cacheOnlyGeometries->setValue( event.IsChecked() );
     }
   } else if( id == ID_TOUCHABLE_FACE ||
+             id == ID_DYNAMIC_MODE ||
              id == ID_MAX_DISTANCE ||
              id == ID_LOOK_AHEAD_FACTOR ||
              id == ID_USE_BOUND_TREE ||
@@ -440,6 +451,12 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       else if( i == 1 ) ho->touchableFace->setValue( WxFrameInternals::front_and_back );
       else if( i == 2 ) ho->touchableFace->setValue( WxFrameInternals::front );
       else if( i == 3 ) ho->touchableFace->setValue( WxFrameInternals::back );
+    } else if( id == ID_DYNAMIC_MODE ) {
+      int i = event.GetSelection();
+      if( i == 0 ) ho->dynamicMode->setValue(
+        WxFrameInternals::transform_changed );
+      else if( i == 1 ) ho->dynamicMode->setValue( WxFrameInternals::never );
+      else if( i == 2 ) ho->dynamicMode->setValue( WxFrameInternals::always );
     } else if( id == ID_MAX_DISTANCE ) {
       ho->maxDistance->setValue( atof( event.GetString().mb_str() ) );
     } else if( id == ID_LOOK_AHEAD_FACTOR ) {
@@ -787,7 +804,7 @@ bool WxFrame::loadFile( const string &filename) {
   CollisionOptions * co = 0;
   global_settings->getOptionNode( co );
   wxMenuItem * col_item = navigationMenu->
-    FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 );
+    FindItemByPosition( navigationMenu->GetMenuItemCount() - 3 );
 
   if( co ) {
     avatar_collision = co->avatarCollision->getValue();
@@ -868,6 +885,18 @@ bool WxFrame::loadFile( const string &filename) {
       settings->face_choice->SetStringSelection( WxFrameInternals::wx_front );
     else if( touchable_face == WxFrameInternals::back )
       settings->face_choice->SetStringSelection( WxFrameInternals::wx_back );
+
+    string dynamic_mode = ho->dynamicMode->getValue();
+    if( dynamic_mode == WxFrameInternals::transform_changed )
+      settings->dynamic_mode_choice->
+        SetStringSelection( WxFrameInternals::wx_transform_changed );
+    else if( dynamic_mode == WxFrameInternals::never )
+      settings->dynamic_mode_choice->
+        SetStringSelection( WxFrameInternals::wx_never );
+    else if( dynamic_mode == WxFrameInternals::always )
+      settings->dynamic_mode_choice->
+        SetStringSelection( WxFrameInternals::wx_always );
+
     stringstream max_dist;
     max_dist  <<  ho->maxDistance->getValue();
     settings->max_distance_text->
@@ -889,6 +918,13 @@ bool WxFrame::loadFile( const string &filename) {
                         WxFrameInternals::front_and_back );
     else if( i == 2 ) ho->touchableFace->setValue( WxFrameInternals::front );
     else if( i == 3 ) ho->touchableFace->setValue( WxFrameInternals::back );
+
+    i = settings->dynamic_mode_choice->GetSelection();
+    if( i == 0 ) ho->dynamicMode->setValue( 
+      WxFrameInternals::transform_changed );
+    else if( i == 1 ) ho->dynamicMode->setValue( WxFrameInternals::never );
+    else if( i == 2 ) ho->dynamicMode->setValue( WxFrameInternals::always );
+
     ho->maxDistance->setValueFromString(
                     toStr( settings->max_distance_text->GetValue() ) );
     ho->lookAheadFactor->setValueFromString(
@@ -1390,6 +1426,10 @@ void WxFrame::ChangeCollision (wxCommandEvent & event) {
   }
 }
 
+void WxFrame::OnSpeed( wxCommandEvent & event ) {
+  speed_slider->Show();
+}
+
 //Change Navigation
 void WxFrame::ChangeNavigation (wxCommandEvent & event)
 {
@@ -1560,6 +1600,7 @@ void WxFrame::SaveHapticsOptions( bool to_config ) {
   global_settings->getOptionNode (ho);
   if(ho) {
     string touchable_face = ho->touchableFace->getValue();
+    string dynamic_mode = ho->dynamicMode->getValue();
     float max_distance = ho->maxDistance->getValue();
     float look_ahead_factor = ho->lookAheadFactor->getValue();
     bool use_bound_tree = ho->useBoundTree->getValue();
@@ -1569,6 +1610,8 @@ void WxFrame::SaveHapticsOptions( bool to_config ) {
       h3dConfig->SetPath(wxT("/Settings/Haptics"));
       h3dConfig->Write( wxT("touchableFace"), 
                         wxString( touchable_face.c_str(), wxConvUTF8 ) );
+      h3dConfig->Write( wxT("dynamicMode"), 
+                        wxString( dynamic_mode.c_str(), wxConvUTF8 ) );
       h3dConfig->Write( wxT("maxDistance"), max_distance );
       h3dConfig->Write( wxT("lookAheadFactor"), look_ahead_factor );
       h3dConfig->Write( wxT("useBoundTree"), use_bound_tree );
@@ -1576,6 +1619,7 @@ void WxFrame::SaveHapticsOptions( bool to_config ) {
                         interpolate_force_effects );
     } else {
       non_conf_opt.touchable_face = touchable_face;
+      non_conf_opt.dynamic_mode = dynamic_mode;
       non_conf_opt.max_distance = max_distance;
       non_conf_opt.look_ahead_factor = look_ahead_factor;
       non_conf_opt.use_bound_tree = use_bound_tree;
@@ -1794,6 +1838,7 @@ void WxFrame::LoadSettings( bool from_config ) {
   if(ho) {
     bool use_bound_tree;
     string touchable_face;
+    string dynamic_mode;
     double max_distance;
     double look_ahead_factor;
     bool interpolate_force_effects;
@@ -1805,6 +1850,9 @@ void WxFrame::LoadSettings( bool from_config ) {
         wxString touchable_face_wx;
         h3dConfig->Read( wxT("touchableFace"), &touchable_face_wx );
         touchable_face = toStr( touchable_face_wx );
+        wxString dynamic_mode_wx;
+        h3dConfig->Read( wxT("dynamicMode"), &dynamic_mode_wx );
+        dynamic_mode = toStr( dynamic_mode_wx );
         h3dConfig->Read( wxT("maxDistance"), &max_distance );
         h3dConfig->Read( wxT("lookAheadFactor"), &look_ahead_factor );
         h3dConfig->Read( wxT("interpolateForceEffects"),
@@ -1813,6 +1861,7 @@ void WxFrame::LoadSettings( bool from_config ) {
         // on clean system
         use_bound_tree = ho->useBoundTree->getValue();
         touchable_face = ho->touchableFace->getValue();
+        dynamic_mode = ho->dynamicMode->getValue();
         max_distance = ho->maxDistance->getValue();
         look_ahead_factor = ho->lookAheadFactor->getValue();
         interpolate_force_effects = ho->interpolateForceEffects->getValue();
@@ -1820,6 +1869,7 @@ void WxFrame::LoadSettings( bool from_config ) {
     } else {
       use_bound_tree = non_conf_opt.use_bound_tree;
       touchable_face = non_conf_opt.touchable_face;
+      dynamic_mode = non_conf_opt.dynamic_mode;
       max_distance = non_conf_opt.max_distance;
       look_ahead_factor = non_conf_opt.look_ahead_factor;
       interpolate_force_effects = non_conf_opt.interpolate_force_effects;
@@ -1836,6 +1886,17 @@ void WxFrame::LoadSettings( bool from_config ) {
       settings->face_choice->SetStringSelection( WxFrameInternals::wx_front );
     else if( touchable_face == WxFrameInternals::back )
       settings->face_choice->SetStringSelection( WxFrameInternals::wx_back );
+
+    ho->dynamicMode->setValue( dynamic_mode );
+    if( dynamic_mode == WxFrameInternals::transform_changed )
+      settings->dynamic_mode_choice->
+        SetStringSelection( WxFrameInternals::wx_transform_changed );
+    else if( dynamic_mode == WxFrameInternals::never )
+      settings->dynamic_mode_choice->
+        SetStringSelection( WxFrameInternals::wx_never );
+    else if( dynamic_mode == WxFrameInternals::always )
+      settings->dynamic_mode_choice->
+        SetStringSelection( WxFrameInternals::wx_never );
 
     ho->maxDistance->setValue( max_distance );
     stringstream max_dist;
@@ -2083,6 +2144,14 @@ void WxFrame::buildNavMenu () {
   }
 
   navigationMenu->AppendSeparator();
+  navigationMenu->AppendCheckItem( BASIC_COLLISION, wxT( "Avatar collision" ),
+    wxT("Turn on and off collision between avatar and objects in scene"));
+  navigationMenu->
+    FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 )->Check( avatar_collision );
+  navigationMenu->Append( FRAME_SPEED, wxT("Speed"),
+                 wxT("Opens a slider bar used to adjust navigation speed" ));
+
+  navigationMenu->AppendSeparator();
   if( !navigationDevices ) {
     navigationDevices = new wxMenu;
     navigationDevices->AppendCheckItem(FRAME_MOUSE_NAV, wxT("Mouse"), 
@@ -2099,12 +2168,6 @@ void WxFrame::buildNavMenu () {
   }
   navigationMenu->AppendSubMenu( navigationDevices, wxT("Navigation Devices"),
                   wxT("Toggle on an off which devices to use for navigation") );
-
-  navigationMenu->AppendSeparator();
-  navigationMenu->AppendCheckItem( BASIC_COLLISION, wxT( "Avatar collision" ),
-    wxT("Turn on and off collision between avatar and objects in scene"));
-  navigationMenu->
-    FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 )->Check( avatar_collision );
 }
 
 
@@ -2225,6 +2288,7 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
   EVT_SPINCTRL (ID_CACHING_DELAY, SettingsDialog::handleSpinEvent )
 
   EVT_CHOICE(ID_TOUCHABLE_FACE, SettingsDialog::handleSettingsChange)
+  EVT_CHOICE(ID_DYNAMIC_MODE, SettingsDialog::handleSettingsChange)
   EVT_TEXT(ID_MAX_DISTANCE, SettingsDialog::handleSettingsChange )
   EVT_TEXT(ID_LOOK_AHEAD_FACTOR, SettingsDialog::handleSettingsChange )
   EVT_CHECKBOX( ID_USE_BOUND_TREE, SettingsDialog::handleSettingsChange)
@@ -2550,6 +2614,22 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent ) {
   face_choice_sizer->Add(face_choice, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
   haptics_box_sizer->Add(face_choice_sizer, 0, wxGROW|wxALL, 5);
 
+  wxArrayString dynamic_mode_choices;
+  dynamic_mode_choices.Add(WxFrameInternals::wx_transform_changed);
+  dynamic_mode_choices.Add(WxFrameInternals::wx_never);
+  dynamic_mode_choices.Add(WxFrameInternals::wx_always);
+
+  wxBoxSizer* dynamic_mode_sizer = new wxBoxSizer( wxHORIZONTAL );
+  dynamic_mode_sizer->Add( new wxStaticText( panel, wxID_ANY,
+                                             wxT( "&Dynamic mode:" )), 0,
+                                             wxALL|wxALIGN_CENTER_VERTICAL, 5);
+  dynamic_mode_choice = new wxChoice( panel, ID_DYNAMIC_MODE,
+                                      wxDefaultPosition, wxDefaultSize,
+                                      dynamic_mode_choices );
+  dynamic_mode_sizer->Add( dynamic_mode_choice, 0,
+                           wxALL|wxALIGN_CENTER_VERTICAL, 5);
+  haptics_box_sizer->Add( dynamic_mode_sizer, 0, wxGROW|wxALL, 5);
+
   wxBoxSizer* max_distance_sizer = new wxBoxSizer( wxHORIZONTAL );
   max_distance_sizer->Add(new wxStaticText(panel, wxID_ANY,
                                            wxT("&Max distance:")), 0,
@@ -2676,3 +2756,52 @@ void WxFrame::setProxyRadius( float r ) {
     }
   }
 }
+
+SpeedDialog::SpeedDialog( wxWindow* parent, WxFrame *f ):
+  wxDialog( parent, wxID_ANY, wxString( _T("Navigation Speed") ) ),
+    wx_frame( f ) {
+  wxBoxSizer *top_sizer = new wxBoxSizer(wxVERTICAL);
+
+  /*wxBoxSizer *title_sizer = new wxBoxSizer( wxHORIZONTAL );
+  title_sizer->Add(new wxStaticText(this, wxID_ANY,
+                  _("Use the slider to change navigation speed")),
+                   0, wxALL|wxALIGN_CENTER_VERTICAL, 5);*/
+
+  wxSize slider_size( wxDefaultSize );
+  //slider_size.SetDefaults( wxDefaultSize );
+  slider_size.SetWidth( 200 );
+
+  wxSlider* speed_value_slider = 
+    new wxSlider( this, FRAME_SPEED_SLIDER,
+                  1, 0, 500, wxDefaultPosition,
+                  slider_size,
+                  wxSL_HORIZONTAL | wxSL_LABELS);  
+
+  //top_sizer->Add(title_sizer, 0, wxALL, 5);
+  top_sizer->Add( speed_value_slider, 0, wxALL, 5);
+
+  SetSizer(top_sizer);
+
+  top_sizer->SetSizeHints(this);
+  top_sizer->Fit(this);
+}
+
+void SpeedDialog::handleSliderEvent( wxScrollEvent &event ) {
+  int id = event.GetId();
+
+  if( id == FRAME_SPEED_SLIDER ) {
+    NavigationInfo *mynav = NavigationInfo::getActive();
+    if( mynav ) {
+      mynav->speed->setValue( event.GetPosition() );
+    } else {
+      wx_frame->glwindow->default_speed = event.GetPosition();
+    }
+  }
+}
+
+
+IMPLEMENT_CLASS(SpeedDialog, wxDialog)
+BEGIN_EVENT_TABLE(SpeedDialog, wxDialog)
+  EVT_COMMAND_SCROLL( FRAME_SPEED_SLIDER, 
+                      SpeedDialog::handleSliderEvent)
+END_EVENT_TABLE()

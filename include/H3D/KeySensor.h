@@ -69,8 +69,10 @@ namespace H3D {
   /// <tr><td>RIGHT<td>20</tr>
   /// </table>
   ///
-  /// The following is unimplemented in H3DAPI since it is not supported
-  /// by glut to get an event when a shift, control or alt key is pressed.
+  /// The following is unimplemented in H3DAPI for applications using
+  /// GLUT with H3DAPI on non Windows systems (for example H3DLoad)
+  /// since it is not supported by glut to get an event when a shift,
+  /// control or alt key is pressed.
   /// shiftKey, controlKey, and altKey events are generated as the shift,
   /// alt and control keys on the keyboard are pressed and released. 
   /// Their value is TRUE when the key is pressed and FALSE when the key

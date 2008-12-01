@@ -29,11 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/DynamicTransform.h>
-#ifdef MACOSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
 #include <H3D/RK4.h>
 #include <H3D/Scene.h>
 
