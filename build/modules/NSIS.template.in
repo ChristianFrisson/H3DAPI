@@ -879,7 +879,9 @@ Section "Uninstall"
 
   DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
-  
+  DeleteRegKey HKCU "Software\SenseGraphics AB\H3D Viewer"
+
+
   Push H3D_ROOT
   Call un.DeleteEnvStr
   

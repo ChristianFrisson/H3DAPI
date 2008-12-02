@@ -186,17 +186,20 @@ void GLUTWindow::makeWindowActive() {
   glutSetWindow( window_id );
 }
 
-#if !( defined(FREEGLUT) && defined(WIN32) )
+
 void GLUTWindow::glutKeyboardDownCallback( unsigned char key, 
                                      int x, int y ) {
+#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     window->onKeyDown( key, false );
   }
+#endif
 }
 
 void GLUTWindow::glutSpecialDownCallback( int key, 
                                     int x, int y ) {
+#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     switch( key ) {
@@ -253,18 +256,22 @@ void GLUTWindow::glutSpecialDownCallback( int key,
       default: {}
     }
   }
+#endif
 }
 
 void GLUTWindow::glutKeyboardUpCallback( unsigned char key, 
                                    int x, int y ) {
+#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     window->onKeyUp( key, false );
   }
+#endif
 }
 
 void GLUTWindow::glutSpecialUpCallback( int key, 
                                   int x, int y ) {
+#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     switch( key ) {
@@ -318,8 +325,8 @@ void GLUTWindow::glutSpecialUpCallback( int key,
       default: {}
     }
   }
-}
 #endif
+}
 
 #ifndef WIN32
 void GLUTWindow::glutMouseCallback( int button, int state, 
@@ -355,9 +362,9 @@ void GLUTWindow::glutMotionCallback( int x, int y ) {
 }
 #endif
 
-#if defined(FREEGLUT) && !defined(WIN32)
 void GLUTWindow::glutMouseWheelCallback( int wheel, 
                                         int direction, int x, int y ) {
+#if defined(FREEGLUT) && !defined(WIN32)
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     if( direction == 1 )
@@ -365,5 +372,6 @@ void GLUTWindow::glutMouseWheelCallback( int wheel,
     else
       window->onMouseWheelAction( MouseSensor::TOWARDS );
   }
-}
 #endif
+}
+

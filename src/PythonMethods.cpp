@@ -766,6 +766,8 @@ if( check_func( value ) ) {                                         \
         Py_DECREF( pfield );
         PyObject *update = PyObject_GetAttrString( field, "update" );
         if( update ) {
+          // field is reference counted one extra if update is found.
+          Py_DECREF( field );
           if( PyMethod_Check( update ) ) {
             dynamic_cast< PythonFieldBase* >(f)->python_update = update;
           } else {

@@ -31,16 +31,6 @@
 
 #include <H3D/H3DWindowNode.h>
 
-#include <GL/glew.h>
-#ifdef MACOSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
-#ifdef FREEGLUT
-#include <GL/freeglut.h>
-#endif
-
 namespace H3D {
 
   /// \ingroup Nodes
@@ -86,7 +76,6 @@ namespace H3D {
       return window_id;
     }
 
-#if !( defined(FREEGLUT) && defined(WIN32) )
     /// GLUT callback function for glutKeyboardFunc.
     static void glutKeyboardDownCallback( unsigned char key, 
                                           int x, int y );
@@ -102,7 +91,6 @@ namespace H3D {
     /// GLUT callback function for glutSpecialUpFunc.
     static void glutSpecialUpCallback( int key, 
                                        int x, int y );
-#endif
 
 #ifndef WIN32
     /// glut callback function. Calls onMouseButtonAction with the
@@ -114,13 +102,11 @@ namespace H3D {
     static void glutMotionCallback( int x, int y );
 #endif
 
-#if defined(FREEGLUT) && !defined(WIN32)
     /// glut callback function for mouse scroll wheel.
     /// Calls onMouseWheelAction with direction translated to the
     /// values in KeySensor.h
     static void glutMouseWheelCallback( int wheel, 
                                         int direction, int x, int y );
-#endif
 
 
     /// Initialize GLUT. 
