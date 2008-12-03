@@ -29,6 +29,176 @@
 #ifndef __PYTHONTYPES_H__
 #define __PYTHONTYPES_H__
 
+// The following is doxygen comment in order to generate a page explaining the
+// connection between python and H3DAPI.
+/// \page PythonSyntax How to use H3DAPI from python.
+/// \section TheBasics The Basics
+/// The PythonScript node is a binding to the Python scripting language, which
+/// can be used to e.g. modify scenes and handle events. In order to use Python
+/// a PythonScript node have to be added to the scenegraph. The PythonScript
+/// node specifies an url to where the actual Python code is located. So if
+/// there is a simle Python file named Hello.py which contains:
+/// <pre>print "Hello"</pre>
+/// You can get this code to execute by adding a PythonScript node to your
+/// scenegraph. This can be done by specifying it directly in an x3d file, e.g.
+/// <pre><Scene><br><PythonScript url="Hello.py" /><br></Scene></pre>
+/// If you use H3DLoad on the x3d file the Python code should execute and 
+/// "Hello" should be printed to the command prompt.
+///
+/// H3D API also adds its own types and field types and classes to be used from
+/// python. All these are defined in the H3DInterface module. In order to get
+/// access to these types and classes you have to import the Python module
+/// named H3DInterface. This contains all H3D specific Python bindings. It can
+/// be imported by writing 
+/// <pre>from H3DInterface import *</pre>
+/// in your Python file.
+///
+/// \section H3DInterfaceModule Content of H3DInterface module
+/// The things included in the H3DInterface Python module are:
+///
+/// Global fields 
+/// - time - Python access to Scene::time, which is the current time updated
+///   each scene-graph loop. 
+/// - eventSink - Python access to Scene::eventSink, which makes all fields
+///   up-to-date what are routed to it once per scene-graph loop 
+///
+/// Functions 
+/// - X3D creation functions - each of the functions below returns a tuple
+///   where the first element is the node that has been created and the second
+///   argument is a dictionary with all the DEFed nodes in the string/url
+///   provided.
+///   - createX3DFromURL( url ) 
+///   - createX3DFromString( string ) 
+///   - createX3DNodeFromURL( url ) 
+///   - createX3DNodeFromString( string ) 
+/// - Bindable nodes access - the following functions return the currently
+///   bound node for different bindable node stacks 
+///   - getActiveDeviceInfo() 
+///   - getActiveViewpoint() 
+///   - getActiveNavigationInfo() 
+///   - getActiveStereoInfo() 
+///   - getActiveBackground() 
+/// - Scene instance access 
+///   - getCurrentScenes() - returns a list of all currently instantiated
+///     Scene instances.
+///
+/// Types 
+/// - X3D field types - The field types included are: 
+///   - SFields - SFFloat, SFDouble, SFTime, SFInt32,  SFVec2f, SFVec2d,
+///     SFVec3f, SFVec3d, SFVec4f, SFVec4d, SFBool, SFString, SFColor,
+///     SFColorRGBA, SFRotation, SFMatrix3f, SFMatrix4f, SFNode 
+///   - MFields - MFFloat, MFDouble, MFTime, MFInt32, MFVec2f, MFVec2d,
+///     MFVec3f, MFVec3d, MFVec4f, MFVec4d, MFBool, MFString, MFColor,
+///     MFColorRGBA, MFRotation, MFMatrix3f, MFMatrix4f, MFNode 
+/// - Field functions - the member functions available in all fields
+///   - route(field) - set up a new route 
+///   - routeNoEvent(field) - set up a new route without generating an event 
+///   - unroute(field) - remove a route 
+///   - touch() - generate an event from the field 
+///   - getRoutesIn() - returns a list of all fields routed to the field
+///   - getRoutesOut() - returns a list of all fields the field is routed to
+/// - SField specific functions - the member functions for all SFields(i.e.
+///   SFFloat, SFDouble, etc) are 
+///   - setValue(value) - set the field to the new value 
+///   - getValue() - returns the current value of the field
+/// - MField specific functions - the member functions for all MFields
+///   (i.e. MFFloat, MFDouble, etc) are 
+///   - setValue(list) - set the field to the new value 
+///   - getValue() - get the value of the field as a list 
+///   - push_back( element ) - add a new element to the end of the list of
+///     values
+///   - pop_back() - removes the last element 
+///   - empty() - returns 1 if MField is empty, 0 otherwise 
+///   - front() - returns the first element 
+///   - back() - returns the last element 
+///   - clear() - removes all elements 
+///   - erase(element) - removes the first occurence of element 
+/// - TypedField - used for fields where you define the type of all the routes
+///   to it 
+/// - AutoUpdate - used if you want to add AutoUpdate capabilities to a field,
+///   i.e. make it update its value as soon as it receives an event
+///
+/// - X3D Types - The types included are:
+///   - Matrix3d, Matrix3f, Matrix4d, Matrix4f, Node, Quaternion,
+///     RGB, RGBA, Rotation, Vec2d, Vec2f, Vec3d, Vec3f, Vec4d, Vec4f
+/// - Matrix methods, common for all matrices.
+///   - setToIdentity()
+///   - inverse()
+///   - getRow( row_number )
+///   - getColumn( column_number )
+///   - getElement( row, column )
+///   - setElement( row, column, value )
+///   - getScalePart() - returns the matrix scale part as a Vec3f/d.
+///     With scaling in x,y,z-dimensions.
+///   - transpose()
+/// - Matrix3f/d methods.
+///   - toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
+///     a Vec3f/d.
+/// - Matrix4f/d methods.
+///   - transformInverse() - returns the inverse of the matrix assuming that
+///     the fourth row is 0 0 0 1.
+///   - getScaleRotationPart() - returns a Matrix3f/d containing the scale
+///     and rotation of the Matrix4f/d
+///   - getRotationPart() - returns a Matrix3f/d containing the rotation
+///     of the Matrix4f/d
+/// - Node methods.
+///   - getFieldList()
+///   - addField( name, field_type, access_type ) - can only be used with nodes
+///     that inherit from H3DDynamicFieldsObject.
+///   - getField( name )
+///   - getName()
+///   - getTypeName()
+/// - Quaternion methods.
+///   - toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
+///     a Vec3f/d.
+///   - norm() - returns the quaternion norm.
+///   - normalize()
+///   - conjugate()
+///   - inverse()
+///   - slerp( quat, t ) - spherical linear interpolation between two
+///     quaternions. t is a value between 0 and 1
+///   - dotProduct( q )
+/// - Quaternion members.
+///   - x
+///   - y
+///   - z
+///   - w
+/// - RGB members.
+///   - r
+///   - g
+///   - b
+/// - RGBA members.
+///   - r
+///   - g
+///   - b
+///   - a
+/// - Rotation methods.
+///   - toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
+///     a Vec3f/d.
+///   - slerp( rot, t ) - spherical linear interpolation between two
+///     rotations. t is a value between 0 and 1
+/// - Rotation members.
+///   - x
+///   - y
+///   - z
+///   - angle
+///   - a - another way of getting the angle.
+/// - Vector methods, common for all vectors.
+///   - length()
+///   - lengthSqr()
+///   - normalize()
+///   - normalizeSafe()
+///   - dotProduct( v )
+/// - Vec3f/d and Vec4f/d methods.
+///   - crossProduct( v )
+/// - Vector members, common for all vectors.
+///   - x
+///   - y
+/// - Vec3f/d and Vec4f/d members.
+///   - z
+/// - Vec4f/d members.
+///   - w
+
 
 #include <H3DUtil/Exception.h>
 #include <H3D/X3DTypes.h>

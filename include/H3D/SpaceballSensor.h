@@ -32,12 +32,6 @@
 
 #include <H3D/X3DSensorNode.h>
 #include <list>
-#include <GL/glew.h>
-#ifdef MACOSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
 
 #include <H3D/SFVec3f.h>
 #include <H3D/MFBool.h>

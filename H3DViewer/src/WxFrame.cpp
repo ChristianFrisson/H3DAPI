@@ -425,6 +425,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
     }
 
     H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+    on_cancel_rebuild_displaylist = true;
   } else if( id == ID_USE_DISPLAY_LISTS ||
              id == ID_CACHE_ONLY_GEOMS ) {
 
@@ -527,7 +528,8 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
       dgo->drawBoundTree->setValue( event.GetInt() );
     } 
     treeDepth = event.GetInt();
-    H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();    
+    H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+    on_cancel_rebuild_displaylist = true;
   }
 
   GraphicsCachingOptions *gco = NULL;
@@ -1040,6 +1042,7 @@ bool WxFrame::loadFile( const string &filename) {
   }
 
   H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+  settings->on_cancel_rebuild_displaylist = false;
 
   return true;
 }
@@ -2314,7 +2317,7 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
 END_EVENT_TABLE()
 
   SettingsDialog::SettingsDialog(wxWindow* win, WxFrame *w ):
-    wx_frame( w )
+    wx_frame( w ), on_cancel_rebuild_displaylist( false )
 {
 
 
@@ -2727,12 +2730,15 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent ) {
 
 void SettingsDialog::OnOk (wxCommandEvent & event) {
   static_cast< WxFrame* >(this->GetParent())->SaveSettings( true );
+  on_cancel_rebuild_displaylist = false;
   this->Show(false);
 }
 
 void SettingsDialog::OnCancel (wxCommandEvent & event) {
   static_cast< WxFrame* >(this->GetParent())->LoadSettings( false );
-  H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+  if( on_cancel_rebuild_displaylist )
+    H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+  on_cancel_rebuild_displaylist = false;
   this->Show(false);
 }
 

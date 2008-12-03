@@ -105,7 +105,7 @@ namespace H3D {
       } if( PyVec4f_Check( o ) ) {
         return PyVec4f_AsVec4f( o );
       } else {
-        throw Exception::H3DAPIException( "PyObject * is not a PyVec3d *", 
+        throw Exception::H3DAPIException( "PyObject * is not a PyVec4d *", 
                                           H3D_FULL_LOCATION );
       }
     }  
@@ -252,13 +252,15 @@ self, name, field_type, access_type )" );
       return NULL;
     }
 
-    H3DDynamicFieldsObject *dfo = dynamic_cast< H3DDynamicFieldsObject * >( n );
+    H3DDynamicFieldsObject *dfo =
+      dynamic_cast< H3DDynamicFieldsObject * >( n );
     if( !dfo ) {
       PyErr_SetString( PyExc_ValueError, 
-               "Trying to add field to Node that is not a H3DDynamicFieldsObject." );
+        "Trying to add field to Node that is not a H3DDynamicFieldsObject." );
       return NULL;
     }
-    Field *f = X3DTypes::newFieldInstance( (X3DTypes::X3DType)PyInt_AsLong( field_type ) );
+    Field *f = X3DTypes::newFieldInstance(
+      (X3DTypes::X3DType)PyInt_AsLong( field_type ) );
 
     string access_type_string = PyString_AsString( py_access_type );
     Field::AccessType access_type;
@@ -355,7 +357,7 @@ self, name, field_type, access_type )" );
   PyObject* PyNode::setName( PyObject *self, PyObject *args ) {
     if(!args || ! PyString_Check( args ) ) {
       PyErr_SetString( PyExc_ValueError, 
-                       "Invalid argument(s) to function H3D.Node.setName( self, name )" );
+           "Invalid argument(s) to function H3D.Node.setName( self, name )" );
       return 0;
     }
     PyNode *n = (PyNode*)self;
@@ -381,7 +383,7 @@ self, name, field_type, access_type )" );
   PyObject* PyNode::getSingleField( PyObject *self, PyObject *args ) {
     if(!args || ! PyString_Check( args ) ) {
       PyErr_SetString( PyExc_ValueError, 
-                       "Invalid argument(s) to function H3D.Node.getField( self, f )" );
+            "Invalid argument(s) to function H3D.Node.getField( self, f )" );
         return 0;
     }
     char *field_name = PyString_AsString( args );
@@ -1636,7 +1638,7 @@ self, name, field_type, access_type )" );
 
     if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
       PyErr_SetString(PyExc_TypeError, 
-          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+          "invalid type given as argument to PyMatrix::getElement( i, j )." );
       return 0;
     }
 
@@ -1659,7 +1661,7 @@ self, name, field_type, access_type )" );
     if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
         !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
       PyErr_SetString(PyExc_TypeError, 
-           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+        "invalid type given as argument to PyMatrix::setElement( i, j, v )." );
       return 0;
     }
 
@@ -1820,7 +1822,8 @@ self, name, field_type, access_type )" );
     { "transpose", (PyCFunction)PyMatrix4f::transpose, 0 },
     { "getRow", (PyCFunction)PyMatrix4f::getRow, 0 },
     { "getColumn", (PyCFunction)PyMatrix4f::getColumn, 0 },
-    { "getScaleRotationPart", (PyCFunction)PyMatrix4f::getScaleRotationPart, 0 },
+    { "getScaleRotationPart", 
+     (PyCFunction)PyMatrix4f::getScaleRotationPart, 0 },
     { "getRotationPart", (PyCFunction)PyMatrix4f::getRotationPart, 0 },
     { "getScalePart", (PyCFunction)PyMatrix4f::getScalePart, 0 },
     { "getElement", (PyCFunction)PyMatrix4f::getElement, 0 },    
@@ -2040,7 +2043,7 @@ self, name, field_type, access_type )" );
 
     if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
       PyErr_SetString(PyExc_TypeError, 
-          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+          "invalid type given as argument to PyMatrix::getElement( i, j )." );
       return 0;
     }
 
@@ -2063,7 +2066,7 @@ self, name, field_type, access_type )" );
     if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
         !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
       PyErr_SetString(PyExc_TypeError, 
-           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+           "invalid type given as argument to PyMatrix::getElement( i, j )." );
       return 0;
     }
 
@@ -2362,7 +2365,7 @@ self, name, field_type, access_type )" );
 
     if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
       PyErr_SetString(PyExc_TypeError, 
-          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+          "invalid type given as argument to PyMatrix::getElement( i, j )." );
       return 0;
     }
 
@@ -2385,7 +2388,7 @@ self, name, field_type, access_type )" );
     if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
         !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
       PyErr_SetString(PyExc_TypeError, 
-           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+           "invalid type given as argument to PyMatrix::getElement( i, j )." );
       return 0;
     }
 
@@ -2467,7 +2470,8 @@ self, name, field_type, access_type )" );
     { "transpose", (PyCFunction)PyMatrix4d::transpose, 0 },
     { "getRow", (PyCFunction)PyMatrix4d::getRow, 0 },
     { "getColumn", (PyCFunction)PyMatrix4d::getColumn, 0 },
-    { "getScaleRotationPart", (PyCFunction)PyMatrix4d::getScaleRotationPart, 0 },
+    { "getScaleRotationPart",
+      (PyCFunction)PyMatrix4d::getScaleRotationPart, 0 },
     { "getRotationPart", (PyCFunction)PyMatrix4d::getRotationPart, 0 },
     { "getScalePart", (PyCFunction)PyMatrix4d::getScalePart, 0 },
     { "getElement", (PyCFunction)PyMatrix4d::getElement, 0 },    
@@ -2686,7 +2690,7 @@ self, name, field_type, access_type )" );
 
     if( !PyInt_Check( i ) || !PyInt_Check( j ) ) {
       PyErr_SetString(PyExc_TypeError, 
-          "invalid type given as argument to PyVec2f::getElement( i, j )." );
+          "invalid type given as argument to PyMatrix::getElement( i, j )." );
       return 0;
     }
 
@@ -2709,7 +2713,7 @@ self, name, field_type, access_type )" );
     if( !PyInt_Check( i ) || !PyInt_Check( j ) || 
         !(PyFloat_Check( v ) || PyInt_Check( v ) || PyLong_Check( v ) ) ) {
       PyErr_SetString(PyExc_TypeError, 
-           "invalid type given as argument to PyVec2f::getElement( i, j )." );
+           "invalid type given as argument to PyMatrix::getElement( i, j )." );
       return 0;
     }
 
@@ -2924,7 +2928,7 @@ self, name, field_type, access_type )" );
   PyObject* PyRotation::slerp( PyObject *myself, PyObject *args ) {
     if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
       PyErr_SetString(PyExc_TypeError, 
-                      "invalid number of arguments given Rotation::slerp( Rot, t )." );
+             "invalid number of arguments given Rotation::slerp( Rot, t )." );
       return 0;
     }
 
@@ -3251,7 +3255,7 @@ self, name, field_type, access_type )" );
   PyObject* PyQuaternion::dotProduct( PyObject *myself, PyObject *args ) {
     if( !args || !PyQuaternion_Check( args ) ) {
       PyErr_SetString(PyExc_TypeError, 
-                      "invalid type given as argument to Quaternion::dotProduct." );
+                "invalid type given as argument to Quaternion::dotProduct." );
       return 0;
     }
     Quaternion quat = PyQuaternion_AsQuaternion( myself );
@@ -3262,7 +3266,7 @@ self, name, field_type, access_type )" );
   PyObject* PyQuaternion::slerp( PyObject *myself, PyObject *args ) {
     if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
       PyErr_SetString(PyExc_TypeError, 
-                      "invalid number of arguments given Quaternion::slerp( Quat, t )." );
+          "invalid number of arguments given Quaternion::slerp( Quat, t )." );
       return 0;
     }
 
@@ -3271,7 +3275,7 @@ self, name, field_type, access_type )" );
 
     if( !PyQuaternion_Check( q ) || !PyFloat_Check( t ) ) {
       PyErr_SetString(PyExc_TypeError, 
-           "invalid type given as arguments to Quaternion::slerp( Quat, t )." );
+         "invalid type given as arguments to Quaternion::slerp( Quat, t )." );
       return 0;
     }
 

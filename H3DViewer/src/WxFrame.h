@@ -133,7 +133,9 @@ public:
 
   // Proxy radius used by ruspini
   wxTextCtrl* proxy_radius_text;
-  
+
+  bool on_cancel_rebuild_displaylist;
+
 protected:
 
   enum {
