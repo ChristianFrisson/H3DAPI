@@ -114,10 +114,11 @@ void PlaneSensor::Set_PlaneEvents::update() {
   if( ps->enabled->getValue() ) {
     bool isActive = static_cast< SFBool * >(routes_in[1])->getValue();
     if( isActive ) {
-      if( newPlane ) {
+      if( new_plane ) {
+        ps->send_warning_message = true;
         originalIntersection = ps->intersection_point;
         active_matrix = ps->intersection_matrix;
-        newPlane = false;
+        new_plane = false;
         planeD = planeNormal * originalIntersection;
         ps->trackPoint_changed->setValue( originalIntersection, ps->id );
         ps->translation_changed->setValue( Vec3f( 0, 0, 0 ) + 
@@ -129,6 +130,7 @@ void PlaneSensor::Set_PlaneEvents::update() {
         if( intersectLinePlane( active_matrix * near_plane_pos,
                                    active_matrix * far_plane_pos, t,
                                    intersectionPoint ) ) {
+          ps->send_warning_message = true;
           Vec3f translation_changed = intersectionPoint - originalIntersection
                                       + ps->offset->getValue();
           Vec2f minPosition = ps->minPosition->getValue();
@@ -147,20 +149,23 @@ void PlaneSensor::Set_PlaneEvents::update() {
           ps->translation_changed->setValue( translation_changed , ps->id );
         }
         else {
-          // X3D specification states that in the case of no plane intersection
-          // "browsers may interpret this in a variety of ways"
-          // which means doing whatever feels natural.
-          // H3DAPI resends last event.
-          cerr << "Outside the plane due to near- and farplane" <<
-                  " clipping or other reason, last event resent." << endl;
+          if( ps->send_warning_message ) {
+            // X3D specification states that in the case of no plane
+            // intersection "browsers may interpret this in a variety of ways"
+            // which means doing whatever feels natural.
+            // H3DAPI resends last event.
+            cerr << "Outside the plane due to near- and farplane" <<
+                    " clipping or other reason, last event resent." << endl;
+            ps->send_warning_message = false;
+          }
           ps->trackPoint_changed->touch();
           ps->translation_changed->touch();
         }
       }
     }
     else {
-      if( !newPlane ) {
-        newPlane = true;
+      if( !new_plane ) {
+        new_plane = true;
         if( ps->autoOffset->getValue() )
           ps->offset->setValue( ps->translation_changed->getValue(), ps->id );
       }

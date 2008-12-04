@@ -74,6 +74,9 @@ namespace H3D {
   protected:
     // Clamp n in the range [min, max]
     H3DFloat Clamp( H3DFloat n, H3DFloat min, H3DFloat max );
+    // Check to send error message only once each time the user drags
+    // the mouse pointer outside cylinder.
+    bool send_warning_message;
   };
 }
 

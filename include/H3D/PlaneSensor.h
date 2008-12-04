@@ -113,7 +113,7 @@ namespace H3D {
       // Constructor
       Set_PlaneEvents() { 
         originalGeometry = -1;
-        newPlane = true;
+        new_plane = true;
         planeNormal = Vec3f( 0, 0, 1);
       }
 
@@ -134,7 +134,7 @@ namespace H3D {
       H3DFloat planeD;
       Matrix4f active_matrix;
       // If true a new plane will be defined.
-      bool newPlane;
+      bool new_plane;
     };
 #ifdef __BORLANDC__
     friend class Set_PlaneEvents;

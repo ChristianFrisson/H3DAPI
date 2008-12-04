@@ -117,6 +117,7 @@ void SphereSensor::Set_SphereEvents::update() {
     bool isActive = static_cast< SFBool * >(routes_in[1])->getValue();
     if( isActive ) {
       if( new_radius ) {
+        ss->send_warning_message = true;
         original_intersection = ss->original_intersection;
         original_transform_matrix = ss->intersection_matrix;
         new_radius = false;
@@ -133,6 +134,7 @@ void SphereSensor::Set_SphereEvents::update() {
                                  original_transform_matrix * near_plane_pos,
                                  original_transform_matrix * far_plane_pos,
                                  t, intersectionPoint ) ) {
+          ss->send_warning_message = true;
           ss->trackPoint_changed->setValue( intersectionPoint, ss->id );
           intersectionPoint.normalize();
           ss->rotation_changed->setValue( Rotation( original_intersection,
@@ -140,14 +142,17 @@ void SphereSensor::Set_SphereEvents::update() {
                                           ss->offset->getValue(), ss->id );
         }
         else {
-          // X3D specification states that in the case of no sphere
-          // intersection "browsers may interpret this in a variety of ways"
-          // which means doing whatever feels natural.
-          // H3DAPI resends last event.
-          Console(3) << "Warning: No intersection with invisible sphere"
-                     << " in SphereSensor node( "
-                     << ss->getName() 
-                     << " ). Last event resent." << endl;
+          if( ss->send_warning_message ) {
+            // X3D specification states that in the case of no sphere
+            // intersection "browsers may interpret this in a variety of ways"
+            // which means doing whatever feels natural.
+            // H3DAPI resends last event.
+            Console(3) << "Warning: No intersection with invisible sphere"
+                       << " in SphereSensor node( "
+                       << ss->getName() 
+                       << " ). Last event resent." << endl;
+            ss->send_warning_message = false;
+          }
           ss->trackPoint_changed->touch();
           ss->rotation_changed->touch();
         }

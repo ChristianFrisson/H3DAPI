@@ -173,6 +173,7 @@ void CylinderSensor::Set_CylinderEvents::update() {
     bool isActive = static_cast< SFBool * >(routes_in[1])->getValue();
     if( isActive ) {
       if( new_cylinder ) {
+        cs->send_warning_message = true;
         original_transform_matrix = cs->intersection_matrix;
         Vec3f bearing = original_transform_matrix * far_plane_pos -
                         original_transform_matrix * near_plane_pos;
@@ -239,6 +240,7 @@ void CylinderSensor::Set_CylinderEvents::update() {
 
         // if intersection send events.
         if( intersected ) {
+          cs->send_warning_message = true;
           cs->trackPoint_changed->setValue( intersectionPoint, cs->id );
           intersectionPoint.y = 0.0f;
           intersectionPoint.normalizeSafe();
@@ -268,14 +270,17 @@ void CylinderSensor::Set_CylinderEvents::update() {
           cs->rotation_changed->setValue( Rotation( y_axis, angle ),
                                           cs->id );
         } else {
-          // X3D specification states that in the case of no Cylinder(or plane)
-          // intersection "browsers may interpret this in a variety of ways"
-          // which means doing whatever feels natural.
-          // H3DAPI resends last event.
-          Console(3) << "Warning: No intersection with invisible cylinder"
-                     << " in CylinderSensor node( "
-                     << cs->getName() 
-                     << " ). Last event resent." << endl;
+          if( cs->send_warning_message ) {
+            // X3D specification states that in the case of no Cylinder
+            // (or plane) intersection "browsers may interpret this in a
+            // variety of ways" which means doing whatever feels natural.
+            // H3DAPI resends last event.
+            Console(3) << "Warning: No intersection with invisible cylinder"
+                       << " in CylinderSensor node( "
+                       << cs->getName() 
+                       << " ). Last event resent." << endl;
+            cs->send_warning_message = false;
+          }
           cs->trackPoint_changed->touch();
           cs->rotation_changed->touch();
         }

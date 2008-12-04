@@ -55,7 +55,8 @@ X3DDragSensorNode::X3DDragSensorNode(
   X3DPointingDeviceSensorNode( _description, _enabled,
                                _metadata, _isActive, _isOver ),
   autoOffset ( _autoOffset  ),
-  trackPoint_changed( _trackPoint_changed ) {
+  trackPoint_changed( _trackPoint_changed ),
+  send_warning_message( true ) {
 
   type_name = "X3DDragSensorNode";
   database.initFields( this );
