@@ -121,16 +121,16 @@ namespace H3D {
 #endif
 
     /// Constructor.
-    Anchor( Inst< MFChild  > _addChildren    = 0,
-            Inst< MFChild  > _removeChildren = 0,
-            Inst< MFChild > _children        = 0,
-            Inst< SFString > _description    = 0,
-            Inst< SFNode  > _metadata        = 0,
-            Inst< SFBound > _bound           = 0,
-            Inst< MFString > _parameter      = 0,
-            Inst< MFString > _url            = 0,
-            Inst< SFVec3f > _bboxCenter      = 0,
-            Inst< SFVec3f > _bboxSize        = 0 );
+    Anchor( Inst< AddChildren    > _addChildren    = 0,
+            Inst< RemoveChildren > _removeChildren = 0,
+            Inst< MFChild        > _children       = 0,
+            Inst< SFString       > _description    = 0,
+            Inst< SFNode         > _metadata       = 0,
+            Inst< SFBound        > _bound          = 0,
+            Inst< MFString       > _parameter      = 0,
+            Inst< MFString       > _url            = 0,
+            Inst< SFVec3f        > _bboxCenter     = 0,
+            Inst< SFVec3f        > _bboxSize       = 0 );
 
     ~Anchor();
 

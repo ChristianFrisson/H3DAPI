@@ -41,7 +41,6 @@ H3DNodeDatabase DynamicTransform::database(
                                        typeid( DynamicTransform ) );
 
 namespace DynamicTransformInternals {
-  FIELDDB_ELEMENT( DynamicTransform, children,        INPUT_OUTPUT );
   FIELDDB_ELEMENT( DynamicTransform, metadata,        INPUT_OUTPUT );
   FIELDDB_ELEMENT( DynamicTransform, bboxCenter,      INPUT_OUTPUT );
   FIELDDB_ELEMENT( DynamicTransform, bboxSize,        INPUT_OUTPUT );
@@ -59,13 +58,12 @@ namespace DynamicTransformInternals {
   FIELDDB_ELEMENT( DynamicTransform, motion,          INPUT_OUTPUT );
   FIELDDB_ELEMENT( DynamicTransform, accumulatedInverse, INPUT_OUTPUT );
   FIELDDB_ELEMENT( DynamicTransform, accumulatedForward, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( DynamicTransform, matrix,          INPUT_OUTPUT );
 }
 
 
 DynamicTransform::DynamicTransform(
-                           Inst< MFChild            > _addChildren,
-                           Inst< MFChild            > _removeChildren,
+                           Inst< AddChildren        > _addChildren,
+                           Inst< RemoveChildren     > _removeChildren,
                            Inst< MFChild            > _children,
                            Inst< SFNode             > _metadata,
                            Inst< SFBound            > _bound,  

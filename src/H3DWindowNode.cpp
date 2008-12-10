@@ -1009,13 +1009,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if ( !norm ) 
       glEnable( GL_NORMALIZE );
 
-    /*Vec3f forward_scale_part = vp->accForwardMatrix->getValue().getScalePart();
-    glTranslatef( -vp_position.x * forward_scale_part.x,
-                  -vp_position.y * forward_scale_part.y,
-                  -vp_position.z * forward_scale_part.z );
-    glScalef( forward_scale_part.x, forward_scale_part.y, forward_scale_part.z );
-    glMultMatrixf( vp_inv_transform );*/
-
     glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
     glMultMatrixf( vp_inv_transform );
 

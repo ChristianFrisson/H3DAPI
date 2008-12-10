@@ -49,13 +49,13 @@ namespace H3D {
   class H3DAPI_API Group : public X3DGroupingNode {
   public:
     /// Constructor.
-    Group( Inst< MFChild  > _addChildren    = 0,
-           Inst< MFChild  > _removeChildren = 0,
-           Inst< MFChild > _children       = 0,
-           Inst< SFNode  > _metadata       = 0,
-           Inst< SFBound > _bound          = 0,
-           Inst< SFVec3f > _bboxCenter     = 0,
-           Inst< SFVec3f > _bboxSize       = 0 );
+    Group( Inst< AddChildren    > _addChildren    = 0,
+           Inst< RemoveChildren > _removeChildren = 0,
+           Inst< MFChild        > _children       = 0,
+           Inst< SFNode         > _metadata       = 0,
+           Inst< SFBound        > _bound          = 0,
+           Inst< SFVec3f        > _bboxCenter     = 0,
+           Inst< SFVec3f        > _bboxSize       = 0 );
 
 
     virtual H3DNodeDatabase *getDatabase() { return &database; }

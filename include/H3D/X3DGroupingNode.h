@@ -92,6 +92,28 @@ namespace H3D {
 #ifdef __BORLANDC__
     friend class MFChild;
 #endif
+
+    /// AddChildren is a class that adds any node added to it to the
+    /// children field of its owner (X3DGroupingNode) if the node is
+    /// not already in the children field.
+    class H3DAPI_API AddChildren: public TypedMFNode< X3DChildNode > {
+    public:
+      virtual void onAdd( Node *n );
+    };
+#ifdef __BORLANDC__
+    friend class AddChildren;
+#endif
+
+    /// RemoveChildren is a class that removes any node added to it from the
+    /// children field of its owner (X3DGroupingNode). If the node is not
+    /// found in the children field then nothing is done.
+    class H3DAPI_API RemoveChildren: public TypedMFNode< X3DChildNode > {
+    public:
+      virtual void onAdd( Node *n );
+    };
+#ifdef __BORLANDC__
+    friend class RemoveChildren;
+#endif
     
     /// SFBound is specialized to update from the SFBound fields 
     /// routed to it. The resulting Bound object is the union of 
@@ -112,14 +134,13 @@ namespace H3D {
     };
 
     /// Constructor.
-    X3DGroupingNode( 
-                    Inst< MFChild  > _addChildren    = 0,
-                    Inst< MFChild  > _removeChildren = 0,
-                    Inst< MFChild > _children       = 0,
-                    Inst< SFNode  > _metadata       = 0,
-                    Inst< SFBound > _bound          = 0,
-                    Inst< SFVec3f > _bboxCenter     = 0,
-                    Inst< SFVec3f > _bboxSize       = 0 );
+    X3DGroupingNode( Inst< AddChildren    > _addChildren    = 0,
+                     Inst< RemoveChildren > _removeChildren = 0,
+                     Inst< MFChild        > _children       = 0,
+                     Inst< SFNode         > _metadata       = 0,
+                     Inst< SFBound        > _bound          = 0,
+                     Inst< SFVec3f        > _bboxCenter     = 0,
+                     Inst< SFVec3f        > _bboxSize       = 0 );
 
     /// Sets up the bound field using the bboxCenter and bboxSize fields.
     /// If bboxSize is (-1, -1, -1) the bound will be the union of all the
@@ -195,7 +216,7 @@ namespace H3D {
     /// <b>Access type: </b> inputOnly
     /// 
     /// \dotfile X3DGroupingNode_addChildren.dot
-    auto_ptr< MFChild  >  addChildren;
+    auto_ptr< AddChildren > addChildren;
 
     /// The removeChildren event removes nodes from the children field of
     /// the grouping node . Any nodes in the removeChildren event that are
@@ -204,14 +225,14 @@ namespace H3D {
     /// <b>Access type: </b> inputOnly
     /// 
     /// \dotfile X3DGroupingNode_removeChildren.dot
-    auto_ptr< MFChild  >  removeChildren;
+    auto_ptr< RemoveChildren > removeChildren;
 
     /// The nodes that are grouped together by this node.
     ///
     /// <b>Access type: </b> inputOutput
     /// 
     /// \dotfile X3DGroupingNode_children.dot
-    auto_ptr< MFChild >  children;
+    auto_ptr< MFChild > children;
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -37,7 +37,6 @@
 #include <H3D/CoordBoundField.h>
 #include <H3D/X3DNormalNode.h>
 
-/// H3D API namespace
 namespace H3D {
 
   /// \ingroup H3DNodes

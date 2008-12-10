@@ -117,17 +117,17 @@ namespace H3D {
     typedef TypedSFNode< X3DChildNode > SFChild;
 
     /// Constructor.
-    Collision( Inst< MFChild > _addChildren    = 0,
-               Inst< MFChild > _removeChildren = 0,
-               Inst< SFBool  > _enabled        = 0,
-               Inst< MFChild > _children       = 0,
-               Inst< SFNode  > _metadata       = 0,
-               Inst< SFTime  > _collideTime    = 0,
-               Inst< SFBool  > _isActive       = 0,
-               Inst< SFBound > _bound          = 0,
-               Inst< SFVec3f > _bboxCenter     = 0,
-               Inst< SFVec3f > _bboxSize       = 0,
-               Inst< SFChild > _proxy          = 0 );
+    Collision( Inst< AddChildren    > _addChildren    = 0,
+               Inst< RemoveChildren > _removeChildren = 0,
+               Inst< SFBool         > _enabled        = 0,
+               Inst< MFChild        > _children       = 0,
+               Inst< SFNode         > _metadata       = 0,
+               Inst< SFTime         > _collideTime    = 0,
+               Inst< SFBool         > _isActive       = 0,
+               Inst< SFBound        > _bound          = 0,
+               Inst< SFVec3f        > _bboxCenter     = 0,
+               Inst< SFVec3f        > _bboxSize       = 0,
+               Inst< SFChild        > _proxy          = 0 );
 
     /// Detect intersection between a line segment and a Node.
     /// Calls lineIntersect for all children if the Node is enabled.

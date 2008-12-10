@@ -51,13 +51,13 @@ namespace X3DGroupingNodeInternals {
   FIELDDB_ELEMENT( X3DGroupingNode, bboxSize, INITIALIZE_ONLY );
 }
 
-X3DGroupingNode::X3DGroupingNode( Inst< MFChild >  _addChildren,
-                                  Inst< MFChild >  _removeChildren,
-                                  Inst< MFChild >  _children,
-                                  Inst< SFNode  >  _metadata,
-                                  Inst< SFBound >  _bound,
-                                  Inst< SFVec3f >  _bboxCenter,
-                                  Inst< SFVec3f >  _bboxSize ) :
+X3DGroupingNode::X3DGroupingNode( Inst< AddChildren    > _addChildren,
+                                  Inst< RemoveChildren > _removeChildren,
+                                  Inst< MFChild        > _children,
+                                  Inst< SFNode         > _metadata,
+                                  Inst< SFBound        > _bound,
+                                  Inst< SFVec3f        > _bboxCenter,
+                                  Inst< SFVec3f        > _bboxSize ) :
   X3DChildNode( _metadata ),
   X3DBoundedObject( _bound, _bboxCenter, _bboxSize ),
   use_union_bound( false ),
@@ -276,3 +276,23 @@ bool X3DGroupingNode::movingSphereIntersect( H3DFloat radius,
   }
   return false;
 }
+
+void X3DGroupingNode::AddChildren::onAdd( Node *n ) {
+  TypedMFNode< X3DChildNode >::onAdd( n );
+
+  X3DGroupingNode *group_node = static_cast< X3DGroupingNode * >(getOwner());
+  const NodeVector &c = group_node->children->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    if( n == c[i] )
+      return;
+  }
+
+  group_node->children->push_back( n, group_node->id );
+}
+
+void X3DGroupingNode::RemoveChildren::onAdd( Node *n ) {
+  TypedMFNode< X3DChildNode >::onAdd( n );
+  X3DGroupingNode *group_node = static_cast< X3DGroupingNode * >(getOwner());
+  group_node->children->erase( n, group_node->id );
+}
+

@@ -78,8 +78,8 @@ namespace H3D {
 
     /// Constructor.
     FitToBoxTransform( 
-                      Inst< MFChild            > _addChildren        = 0,
-                      Inst< MFChild            > _removeChildren     = 0,
+                      Inst< AddChildren        > _addChildren        = 0,
+                      Inst< RemoveChildren     > _removeChildren     = 0,
                       Inst< MFChild            > _children           = 0,
                       Inst< SFNode             > _metadata           = 0,
                       Inst< SFBound            > _bound              = 0,

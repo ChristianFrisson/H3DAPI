@@ -43,16 +43,15 @@ namespace SwitchInternals {
   FIELDDB_ELEMENT( Switch, whichChoice, INPUT_OUTPUT );
 }
 
-Switch::Switch( 
-               Inst< MFChild  > _addChildren,
-               Inst< MFChild  > _removeChildren,
-               Inst< MFChild  > _children,
-               Inst< SFNode   > _metadata,
-               Inst< SFBound  > _bound,
-               Inst< SFVec3f  > _bboxCenter,
-               Inst< SFVec3f  > _bboxSize,
-               Inst< SFInt32  > _whichChoice ) :
-  X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, 
+Switch::Switch( Inst< AddChildren    > _addChildren,
+                Inst< RemoveChildren > _removeChildren,
+                Inst< MFChild        > _children,
+                Inst< SFNode         > _metadata,
+                Inst< SFBound        > _bound,
+                Inst< SFVec3f        > _bboxCenter,
+                Inst< SFVec3f        > _bboxSize,
+                Inst< SFInt32        > _whichChoice ) :
+  X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata,
                    _bound,_bboxCenter, _bboxSize ),
   whichChoice   ( _whichChoice  ) {
 

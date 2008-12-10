@@ -155,6 +155,7 @@
 #define H3DAPI_MINOR_VERSION ${H3DAPI_MINOR_VERSION}
 #define H3DAPI_BUILD_VERSION ${H3DAPI_BUILD_VERSION}
 
+/// H3D API namespace
 namespace H3D {
   /// Initialize H3D API(only needed if using H3D API as a static library). 
   void initializeH3D();

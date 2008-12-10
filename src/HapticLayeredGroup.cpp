@@ -40,14 +40,13 @@ H3DNodeDatabase HapticLayeredGroup::database( "HapticLayeredGroup",
                                  &X3DGroupingNode::database );
 
 
-HapticLayeredGroup::HapticLayeredGroup( 
-             Inst< MFChild  >  _addChildren,
-             Inst< MFChild  >  _removeChildren,
-             Inst< MFChild >  _children,
-             Inst< SFNode  >  _metadata,
-             Inst< SFBound > _bound,
-             Inst< SFVec3f >  _bboxCenter,
-             Inst< SFVec3f >  _bboxSize ) :
+HapticLayeredGroup::HapticLayeredGroup( Inst< AddChildren    > _addChildren,
+                                        Inst< RemoveChildren > _removeChildren,
+                                        Inst< MFChild        > _children,
+                                        Inst< SFNode         > _metadata,
+                                        Inst< SFBound        > _bound,
+                                        Inst< SFVec3f        > _bboxCenter,
+                                        Inst< SFVec3f        > _bboxSize ) :
   X3DGroupingNode( _addChildren, _removeChildren, _children, 
                    _metadata, _bound, _bboxCenter, _bboxSize ) {
   type_name = "HapticLayeredGroup";

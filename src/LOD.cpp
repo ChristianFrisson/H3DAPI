@@ -47,17 +47,17 @@ namespace LODInternals {
 }
 
 LOD::LOD( 
-         Inst< MFChild  > _addChildren,
-         Inst< MFChild  > _removeChildren,
-         Inst< MFChild  > _children,
-         Inst< SFNode   > _metadata,
-         Inst< SFBound  > _bound,
-         Inst< SFInt32  > _level_changed,
-         Inst< SFVec3f  > _bboxCenter,
-         Inst< SFVec3f  > _bboxSize,
-         Inst< SFVec3f  > _center,    
-         Inst< SFBool   > _forceTransitions, 
-         Inst< MFFloat  > _range  ) :
+         Inst< AddChildren > _addChildren,
+         Inst< RemoveChildren > _removeChildren,
+         Inst< MFChild > _children,
+         Inst< SFNode  > _metadata,
+         Inst< SFBound > _bound,
+         Inst< SFInt32 > _level_changed,
+         Inst< SFVec3f > _bboxCenter,
+         Inst< SFVec3f > _bboxSize,
+         Inst< SFVec3f > _center,
+         Inst< SFBool  > _forceTransitions,
+         Inst< MFFloat > _range ) :
 MatrixTransform( _addChildren, _removeChildren, _children, 
                 _metadata, _bound, _bboxCenter, _bboxSize),
                 level_changed( _level_changed ),

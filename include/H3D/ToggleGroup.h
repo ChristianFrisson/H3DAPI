@@ -49,15 +49,15 @@ namespace H3D {
   class H3DAPI_API ToggleGroup : public X3DGroupingNode {
   public:
     /// Constructor.
-    ToggleGroup( Inst< MFChild  > _addChildren    = 0,
-                 Inst< MFChild  > _removeChildren = 0,
-                 Inst< MFChild > _children       = 0,
-                 Inst< SFNode  > _metadata       = 0,
-                 Inst< SFBound > _bound          = 0,
-                 Inst< SFVec3f > _bboxCenter     = 0,
-                 Inst< SFVec3f > _bboxSize       = 0,
-                 Inst< SFBool  > _hapticsOn      = 0,
-                 Inst< SFBool  > _graphicsOn     = 0 );
+    ToggleGroup( Inst< AddChildren    > _addChildren    = 0,
+                 Inst< RemoveChildren > _removeChildren = 0,
+                 Inst< MFChild        > _children       = 0,
+                 Inst< SFNode         > _metadata       = 0,
+                 Inst< SFBound        > _bound          = 0,
+                 Inst< SFVec3f        > _bboxCenter     = 0,
+                 Inst< SFVec3f        > _bboxSize       = 0,
+                 Inst< SFBool         > _hapticsOn      = 0,
+                 Inst< SFBool         > _graphicsOn     = 0 );
 
     /// Haptics is disabled if hapticsOn is false.
     virtual void traverseSG( TraverseInfo &ti );

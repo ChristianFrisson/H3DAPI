@@ -31,7 +31,6 @@
 #include <H3D/Anchor.h>
 #include <H3D/TouchSensor.h>
 #include <H3D/X3D.h>
-//#include "X3DViewpointNode.h"
 #include <H3D/NavigationInfo.h>
 #include <H3D/Scene.h>
 
@@ -51,17 +50,17 @@ namespace AnchorInternals {
 
 static int temp_internname = 0;
 Anchor::Anchor( 
-             Inst< MFChild  >  _addChildren,
-             Inst< MFChild  >  _removeChildren,
-             Inst< MFChild >  _children,
-             Inst< SFString > _description,
-             Inst< SFNode  >  _metadata,
-             Inst< SFBound > _bound,
-             Inst< MFString > _parameter,
-             Inst< MFString > _url,
-             Inst< SFVec3f >  _bboxCenter,
-             Inst< SFVec3f >  _bboxSize ) :
-  X3DGroupingNode( _addChildren, _removeChildren, _children, 
+             Inst< AddChildren    > _addChildren,
+             Inst< RemoveChildren > _removeChildren,
+             Inst< MFChild        > _children,
+             Inst< SFString       > _description,
+             Inst< SFNode         > _metadata,
+             Inst< SFBound        > _bound,
+             Inst< MFString       > _parameter,
+             Inst< MFString       > _url,
+             Inst< SFVec3f        > _bboxCenter,
+             Inst< SFVec3f        > _bboxSize ) :
+  X3DGroupingNode( _addChildren, _removeChildren, _children,
                    _metadata, _bound, _bboxCenter, _bboxSize ),
   description( _description ),
   parameter( _parameter ),
@@ -83,7 +82,6 @@ Anchor::Anchor(
 }
 
 Anchor::~Anchor() {
-  Console(3) << "anchor deleted" << endl;
 }
 
 
@@ -155,7 +153,9 @@ void Anchor::GeometrySelected::update() {
         }
       }
       if( no_valid_things )
-        Console(3) << "url is faulty" << endl;
+        Console(3) << "Warning: The url field in Anchor node "
+                   << anchor->getName() << " is incorrect. "
+                   << "The anchor will not be activated." << endl;
     }
   }
 }

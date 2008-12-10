@@ -49,17 +49,17 @@ namespace CollisionInternals {
 
 
 
-Collision::Collision( Inst< MFChild > _addChildren,
-                      Inst< MFChild > _removeChildren,
-                      Inst< SFBool  > _enabled,
-                      Inst< MFChild > _children,
-                      Inst< SFNode  > _metadata,
-                      Inst< SFTime  > _collideTime,
-                      Inst< SFBool  > _isActive,
-                      Inst< SFBound > _bound,
-                      Inst< SFVec3f > _bboxCenter,
-                      Inst< SFVec3f > _bboxSize,
-                      Inst< SFChild > _proxy) :
+Collision::Collision( Inst< AddChildren    > _addChildren,
+                      Inst< RemoveChildren > _removeChildren,
+                      Inst< SFBool         > _enabled,
+                      Inst< MFChild        > _children,
+                      Inst< SFNode         > _metadata,
+                      Inst< SFTime         > _collideTime,
+                      Inst< SFBool         > _isActive,
+                      Inst< SFBound        > _bound,
+                      Inst< SFVec3f        > _bboxCenter,
+                      Inst< SFVec3f        > _bboxSize,
+                      Inst< SFChild        > _proxy) :
   X3DGroupingNode( _addChildren, _removeChildren, _children,
                    _metadata, _bound, _bboxCenter, _bboxSize ),
   collideTime    ( _collideTime ),

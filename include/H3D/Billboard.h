@@ -111,16 +111,16 @@ namespace H3D {
 
 
     /// Constructor.
-    Billboard( Inst< MFChild             > _addChildren      = 0,
-               Inst< MFChild             > _removeChildren   = 0,
-               Inst< MFChild             > _children         = 0,
-               Inst< SFNode              > _metadata         = 0,
-               Inst< SFBound             > _bound            = 0,
-               Inst< SFVec3f             > _bboxCenter       = 0,
-               Inst< SFVec3f             > _bboxSize         = 0,
-               Inst< SFTransformedBound  > _transformedBound = 0,    
-               Inst< SFMatrix4f          > _matrix           = 0, 
-               Inst< SFVec3f             > _axisOfRotation   = 0 );
+    Billboard( Inst< AddChildren        > _addChildren      = 0,
+               Inst< RemoveChildren     > _removeChildren   = 0,
+               Inst< MFChild            > _children         = 0,
+               Inst< SFNode             > _metadata         = 0,
+               Inst< SFBound            > _bound            = 0,
+               Inst< SFVec3f            > _bboxCenter       = 0,
+               Inst< SFVec3f            > _bboxSize         = 0,
+               Inst< SFTransformedBound > _transformedBound = 0,
+               Inst< SFMatrix4f         > _matrix           = 0,
+               Inst< SFVec3f            > _axisOfRotation   = 0 );
 
     /// Set the matrix field in order to set the matrix field to perform
     /// the rotation required by the Billboard.

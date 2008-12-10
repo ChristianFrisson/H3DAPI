@@ -47,19 +47,19 @@ namespace FitToBoxTransformInternals {
 
 
 FitToBoxTransform::FitToBoxTransform( 
-                              Inst< MFChild            >  _addChildren,
-                              Inst< MFChild            >  _removeChildren,
-                              Inst< MFChild            >  _children,
-                              Inst< SFNode             >  _metadata,
+                              Inst< AddChildren        > _addChildren,
+                              Inst< RemoveChildren     > _removeChildren,
+                              Inst< MFChild            > _children,
+                              Inst< SFNode             > _metadata,
                               Inst< SFBound            > _bound,
-                              Inst< SFVec3f            >  _bboxCenter,
-                              Inst< SFVec3f            >  _bboxSize,
+                              Inst< SFVec3f            > _bboxCenter,
+                              Inst< SFVec3f            > _bboxSize,
                               Inst< SFTransformedBound > _transformedBound,
                               Inst< SFMatrix4f         > _matrix,
-                              Inst< SFVec3f            >  _boxSize,
-                              Inst< SFVec3f            >  _boxCenter,
-                              Inst< SFBool             >  _uniformScalingOnly,
-                              Inst< SFBool             >  _active 
+                              Inst< SFVec3f            > _boxSize,
+                              Inst< SFVec3f            > _boxCenter,
+                              Inst< SFBool             > _uniformScalingOnly,
+                              Inst< SFBool             > _active 
                               ) :
   MatrixTransform( _addChildren, _removeChildren, 
                    _children, _metadata, 

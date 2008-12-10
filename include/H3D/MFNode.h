@@ -245,7 +245,7 @@ namespace H3D {
     }
   };
 
-  /// Template to make sure that the Nodes that is set in a SFNode is
+  /// Template to make sure that the Nodes that are set in a MFNode are
   /// of a specified type. This is the same as TypedMFNode but with 
   /// the difference that the type does not have to be a node type
   /// but can be an abstract base class such as X3DMetadataObject.
@@ -254,7 +254,7 @@ namespace H3D {
   /// function must be used. You only have to use this template if
   /// you want to use one of the interface base classes such as 
   /// X3DMetadataObject and H3DDisplayListObject as the Type parameter.
-  /// In all other cases the TypedSFNode template is recommended.
+  /// In all other cases the TypedMFNode template is recommended.
   /// \param Type The expected type. 
   /// \ingroup FieldTemplateModifiers
   template< class Type >

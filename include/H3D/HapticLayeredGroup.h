@@ -46,13 +46,13 @@ namespace H3D {
   class H3DAPI_API HapticLayeredGroup : public X3DGroupingNode {
   public:
     /// Constructor.
-    HapticLayeredGroup( Inst< MFChild  > _addChildren    = 0,
-                        Inst< MFChild  > _removeChildren = 0,
-                        Inst< MFChild > _children        = 0,
-                        Inst< SFNode  > _metadata        = 0,
-                        Inst< SFBound > _bound           = 0,
-                        Inst< SFVec3f > _bboxCenter      = 0,
-                        Inst< SFVec3f > _bboxSize        = 0 );
+    HapticLayeredGroup( Inst< AddChildren    > _addChildren     = 0,
+                        Inst< RemoveChildren > _removeChildren  = 0,
+                        Inst< MFChild        > _children        = 0,
+                        Inst< SFNode         > _metadata        = 0,
+                        Inst< SFBound        > _bound           = 0,
+                        Inst< SFVec3f        > _bboxCenter      = 0,
+                        Inst< SFVec3f        > _bboxSize        = 0 );
 
     /// Handles the layering.
     virtual void traverseSG( TraverseInfo &ti );

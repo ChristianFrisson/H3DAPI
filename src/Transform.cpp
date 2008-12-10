@@ -273,8 +273,8 @@ namespace TransformInternals {
 
 
 Transform::Transform( 
-                     Inst< MFChild    > _addChildren,
-                     Inst< MFChild    > _removeChildren,
+                     Inst< AddChildren > _addChildren,
+                     Inst< RemoveChildren > _removeChildren,
                      Inst< SFVec3f    > _center,
                      Inst< MFChild    > _children,
                      Inst< SFNode     > _metadata,
@@ -285,7 +285,7 @@ Transform::Transform(
                      Inst< SFBound    > _bound,
                      Inst< SFVec3f    > _bboxCenter,
                      Inst< SFVec3f    > _bboxSize,
-                     Inst< SFTransformedBound > _transformedBound,  
+                     Inst< SFTransformedBound > _transformedBound,
                      Inst< Matrix > _matrix,
                      Inst< SFMatrix4f > _accumulatedForward,
                      Inst< SFMatrix4f > _accumulatedInverse ) :

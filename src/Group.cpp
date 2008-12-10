@@ -40,13 +40,13 @@ H3DNodeDatabase Group::database( "Group",
 
 
 Group::Group( 
-             Inst< MFChild  >  _addChildren,
-             Inst< MFChild  >  _removeChildren,
-             Inst< MFChild >  _children,
-             Inst< SFNode  >  _metadata,
-             Inst< SFBound > _bound,
-             Inst< SFVec3f >  _bboxCenter,
-             Inst< SFVec3f >  _bboxSize ) :
+             Inst< AddChildren    > _addChildren,
+             Inst< RemoveChildren > _removeChildren,
+             Inst< MFChild        > _children,
+             Inst< SFNode         > _metadata,
+             Inst< SFBound        > _bound,
+             Inst< SFVec3f        > _bboxCenter,
+             Inst< SFVec3f        > _bboxSize ) :
   X3DGroupingNode( _addChildren, _removeChildren, _children, 
                    _metadata, _bound, _bboxCenter, _bboxSize ) {
   type_name = "Group";

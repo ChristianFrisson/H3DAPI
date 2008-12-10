@@ -47,19 +47,19 @@ namespace MatrixTransformInternals {
 
 
 MatrixTransform::MatrixTransform( 
-                                 Inst< MFChild >  _addChildren,
-                                 Inst< MFChild >  _removeChildren,
-                                 Inst< MFChild >  _children,
-                                 Inst< SFNode  >  _metadata,
-                                 Inst< SFBound > _bound,
-                                 Inst< SFVec3f >  _bboxCenter,
-                                 Inst< SFVec3f >  _bboxSize,
+                                 Inst< AddChildren        > _addChildren,
+                                 Inst< RemoveChildren     > _removeChildren,
+                                 Inst< MFChild            > _children,
+                                 Inst< SFNode             > _metadata,
+                                 Inst< SFBound            > _bound,
+                                 Inst< SFVec3f            > _bboxCenter,
+                                 Inst< SFVec3f            > _bboxSize,
                                  Inst< SFTransformedBound > _transformedBound,
-                                 Inst< SFMatrix4f > _matrix,
+                                 Inst< SFMatrix4f         > _matrix,
                                  Inst< SFMatrix4f > _accumulatedForward,
                                  Inst< SFMatrix4f > _accumulatedInverse
                                  ) :
-  X3DGroupingNode( _addChildren, _removeChildren, 
+  X3DGroupingNode( _addChildren, _removeChildren,
                    _children, _metadata, 
                    _bound, _bboxCenter, _bboxSize ),
   matrix( _matrix ),

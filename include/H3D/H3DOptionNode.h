@@ -36,8 +36,7 @@ namespace H3D {
   /// \ingroup AbstractNodes
   /// \class H3DOptionNode
   /// \brief This abstract node type indicates that the concrete nodes which 
-  /// are instantiated based on it may be used in children, addChildren, and
-  /// removeChildren fields. 
+  /// are instantiated based on it may be used in options fields.
   ///
   class H3DAPI_API H3DOptionNode : public X3DNode {
   public:
