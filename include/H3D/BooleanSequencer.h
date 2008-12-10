@@ -75,7 +75,8 @@ namespace H3D {
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile BooleanSequencer_value_changed.dot 
-    auto_ptr< ValueChanged < SFBool, MFBool, BooleanSequencer >> value_changed;
+    auto_ptr< ValueChanged < SFBool, MFBool,
+                             BooleanSequencer > > value_changed;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
