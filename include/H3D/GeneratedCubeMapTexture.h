@@ -42,7 +42,7 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class GeneratedCubeMapTexture
-  /// The ComposedCubeMapTexture node defines a cubic environment map 
+  /// The GeneratedCubeMapTexture node defines a cubic environment map 
   /// that sources its data from internally generated images. 
   ///
   /// The viewpoint location of a texture is the location of the geometry

@@ -31,7 +31,6 @@
 
 #include <H3D/X3DEnvironmentalSensorNode.h>
 #include <H3D/SFVec3f.h>
-#include <H3D/X3DViewpointNode.h>
 
 
 namespace H3D {

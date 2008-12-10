@@ -39,8 +39,6 @@ namespace H3D {
   /// \brief The NavigationInfo node contains information describing 
   /// the physical characteristics of the viewer's avatar and viewing model.
   /// 
-  /// Only the visibilityLimit and headlight are used in H3D API.
-  /// 
   /// NavigationInfo node is a bindable node. The range field specifies the
   /// ideal distances (termed level distances) at which to switch between the
   /// levels. If forceTransitions is TRUE, browsers shall switch levels at the
@@ -200,6 +198,8 @@ namespace H3D {
   /// bound Viewpoint node scales the avatarSize. Translations and rotations
   /// have no effect on avatarSize.
   ///
+  /// In H3DAPI only the first entry of avatarSize is considered.
+  ///
   /// For purposes of terrain following, the browser maintains a notion of the
   /// down direction (down vector), since gravity is applied in the direction
   /// of the down vector. This down vector shall be along the negative Y-axis
@@ -294,7 +294,7 @@ namespace H3D {
 
     /// The avatarSize field specifies the user's physical dimensions 
     /// in the world for the purpose of collision detection and terrain
-    /// following.
+    /// following. Only the first number in avatarSize is supported by H3DAPI.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> [0.25 1.6 0.75] \n

@@ -51,7 +51,8 @@ BooleanSequencer::BooleanSequencer(
                     Inst< SFFloat               > _set_fraction,
                     Inst< MFFloat               > _key,
                     Inst< KeyValues < MFBool > > _keyValue,
-                    Inst< ValueChanged < SFBool, MFBool > > _value_changed ) :
+                    Inst< ValueChanged < SFBool, MFBool,
+                          BooleanSequencer > > _value_changed ) :
   X3DSequencerNode( _metadata, _next, _previous, _set_fraction, _key ),
   keyValue        ( _keyValue      ),
   value_changed    ( _value_changed ) {
@@ -61,8 +62,6 @@ BooleanSequencer::BooleanSequencer(
   next->routeNoEvent( value_changed, id );
   previous->routeNoEvent( value_changed, id );
   set_fraction->routeNoEvent( value_changed, id );
-  key->routeNoEvent( value_changed, id );
-  keyValue->routeNoEvent( value_changed, id );
 
   database.initFields( this );
 }

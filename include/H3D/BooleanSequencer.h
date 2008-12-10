@@ -48,14 +48,14 @@ namespace H3D {
   public:
 
     /// Constructor.
-    BooleanSequencer( Inst< SFNode                >  _metadata      = 0,
-                      Inst< SFBool                > _next          = 0,
-                      Inst< SFBool                > _previous     = 0,
-                      Inst< SFFloat                > _set_fraction  = 0,
-                      Inst< MFFloat                > _key           = 0,
-                      Inst< KeyValues < MFBool >  > _keyValue      = 0,
-                      Inst< ValueChanged < SFBool, MFBool > >
-                        _value_changed  = 0 );
+    BooleanSequencer( Inst< SFNode               >  _metadata      = 0,
+                      Inst< SFBool               > _next          = 0,
+                      Inst< SFBool               > _previous     = 0,
+                      Inst< SFFloat              > _set_fraction  = 0,
+                      Inst< MFFloat              > _key           = 0,
+                      Inst< KeyValues < MFBool > > _keyValue      = 0,
+                      Inst< ValueChanged < SFBool, MFBool, BooleanSequencer > >
+                        _value_changed = 0 );
                
 
     /// The keyValue field is made up of a list of FALSE and TRUE values
@@ -65,7 +65,7 @@ namespace H3D {
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile BooleanSequencer_keyValue.dot 
-    auto_ptr< KeyValues < MFBool > >  keyValue;
+    auto_ptr< KeyValues < MFBool > > keyValue;
 
     /// Each value in the keyValue field corresponds in order to the parameter
     /// value in the key field. The keys shall be monotonically non-decreasing,
@@ -75,7 +75,7 @@ namespace H3D {
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile BooleanSequencer_value_changed.dot 
-    auto_ptr< ValueChanged < SFBool, MFBool > >  value_changed;
+    auto_ptr< ValueChanged < SFBool, MFBool, BooleanSequencer >> value_changed;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

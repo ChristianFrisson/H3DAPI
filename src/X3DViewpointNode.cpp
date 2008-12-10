@@ -257,7 +257,6 @@ void X3DViewpointNode::translate( Vec3f direction, bool collision,
   Vec3f vp_full_pos = vp_pos + relPos->getValue();
   Rotation vp_full_orientation = orientation->getValue() * relOrn->getValue();
   const Matrix4f &acc_fr_mt = accForwardMatrix->getValue();
-  Vec3f scaling = acc_fr_mt.getScalePart();
   direction = vp_full_orientation * direction;
   Vec3f new_pos = vp_full_pos + direction;
   H3DFloat min_dist_from_plane = 1e-5f;

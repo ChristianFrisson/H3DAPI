@@ -47,7 +47,6 @@
 #include <H3D/MouseSensor.h>
 #include <H3D/SpaceWareSensor.h>
 #include <H3D/DeviceInfo.h>
-#include <H3D/INIFile.h>
 #include <H3D/ResourceResolver.h>
 #include <H3D/NavigationInfo.h>
 #include <H3D/X3D.h>
@@ -340,7 +339,10 @@ private:
   H3DHapticsDevice *myH3Ddevice;
   NodeVector allDevices;
   X3DViewpointNode *defaultvp;
-  
+
+  // Check if the first file is loaded.
+  bool loaded_first_file;
+
   // One time intialization variables
   string settings_path;
   string common_path;

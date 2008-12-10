@@ -161,7 +161,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   trackerPosition->route( weightedProxyPosition, id );
   proxyWeighting->route( weightedProxyPosition, id );
 
-  vp_initialized = false;
+  vp_initialized = 0;
 }
 
 H3DHapticsDevice::ErrorCode H3DHapticsDevice::enableDevice() {
@@ -278,15 +278,20 @@ void H3DHapticsDevice::updateDeviceValues() {
 
       const Matrix4f vp_accFrw = vp->accForwardMatrix->getValue();
 
-      if( !vp_initialized ) {
+      if( vp_initialized < 2 ) {
         // Store default matrices for viewpoint following.
         Vec3f default_vp_pos = vp_accFrw * vp->totalPosition->getValue();
         default_vp_pos_mtx[0][3] = default_vp_pos.x;
         default_vp_pos_mtx[1][3] = default_vp_pos.y;
         default_vp_pos_mtx[2][3] = default_vp_pos.z;
+        default_vp_scaling = vp_accFrw.getScalePart();
+        default_vp_pos_mtx[0][0] = default_vp_scaling.x;
+        default_vp_pos_mtx[1][1] = default_vp_scaling.y;
+        default_vp_pos_mtx[2][2] = default_vp_scaling.z;
+        default_vp_pos_mtx = default_vp_pos_mtx.inverse();
 
-        default_vp_orn_mtx = vp_accFrw.inverse();
-        vp_initialized = true;
+        default_vp_orn_mtx = vp_accFrw.inverse().getRotationPart();
+        vp_initialized++;
       }
 
       // create matrix for new point
@@ -295,15 +300,20 @@ void H3DHapticsDevice::updateDeviceValues() {
       translation_matrix_new[0][3] = vp_full_pos.x;
       translation_matrix_new[1][3] = vp_full_pos.y;
       translation_matrix_new[2][3] = vp_full_pos.z;
+      translation_matrix_new[0][0] = default_vp_scaling.x;
+      translation_matrix_new[1][1] = default_vp_scaling.y;
+      translation_matrix_new[2][2] = default_vp_scaling.z;
 
       // create rotation matrix.
-      Matrix4f vp_full_orn_mtx =
-        vp_accFrw * Matrix4f( vp->totalOrientation->getValue() );
-      Matrix4f rotation_matrix = vp_full_orn_mtx * default_vp_orn_mtx;
+      Matrix3f vp_full_orn_mtx =
+        vp_accFrw.getRotationPart() *
+        Matrix3f( vp->totalOrientation->getValue() );
+      Matrix4f rotation_matrix( (vp_accFrw.getRotationPart() *
+        Matrix3f( vp->totalOrientation->getValue() ) ) * default_vp_orn_mtx );
 
       // create the matrix used to adjust the positionCalibration
       Matrix4f adjust_matrix = translation_matrix_new *
-        ( rotation_matrix * default_vp_pos_mtx.inverse() );
+        ( rotation_matrix * default_vp_pos_mtx );
 
       adjustedPositionCalibration->
         setValue( adjust_matrix * positionCalibration->getValue() );
@@ -313,7 +323,7 @@ void H3DHapticsDevice::updateDeviceValues() {
       
       // Create adjusted OrnCalibration and send to HAPI
       adjustedOrnCalibration->setValue(
-        Rotation( vp_full_orn_mtx.getScaleRotationPart() ) *
+        Rotation( vp_full_orn_mtx ) *
         orientationCalibration->getValue() );
       hapi_device->
         setOrientationCalibration(adjustedOrnCalibration->rt_orn_calibration );

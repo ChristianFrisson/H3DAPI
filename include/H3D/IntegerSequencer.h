@@ -38,40 +38,42 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class IntegerSequencer
   /// \brief The IntegerSequencer node generates sequential discrete SFInt32 
-	/// events in response to each set_fraction, next, or previous event.
-	///
+  /// events in response to each set_fraction, next, or previous event.
+  ///
   /// \par Internal routes:
   /// \dotfile IntegerSequencer.dot 
   class H3DAPI_API IntegerSequencer : public X3DSequencerNode {
   public:
 
     /// Constructor.
-    IntegerSequencer( Inst< SFNode								> _metadata			= 0,
-											Inst< SFBool								> _next    			= 0,
-											Inst< SFBool								> _previous 		= 0,
-											Inst< SFFloat								> _set_fraction	= 0,
-											Inst< MFFloat								> _key     			= 0,
-											Inst< KeyValues < MFInt32 > > _keyValue			= 0,
-											Inst< ValueChanged < SFInt32, MFInt32 > >
-												_value_changed	= 0 );
+    IntegerSequencer( Inst< SFNode                 > _metadata      = 0,
+                      Inst< SFBool                 > _next          = 0,
+                      Inst< SFBool                 > _previous     = 0,
+                      Inst< SFFloat                > _set_fraction  = 0,
+                      Inst< MFFloat                > _key           = 0,
+                      Inst< KeyValues < MFInt32 >  > _keyValue      = 0,
+                      Inst< ValueChanged < SFInt32, MFInt32,
+                                           IntegerSequencer > >
+                        _value_changed  = 0 );
 
-		/// The keyValue field is made up of a list of integer values.
+    /// The keyValue field is made up of a list of integer values.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile IntegerSequencer_keyValue.dot 
-    auto_ptr< KeyValues < MFInt32 > >  keyValue;
+    auto_ptr< KeyValues < MFInt32 > > keyValue;
 
-		/// Each value in the keyValue field corresponds in order to the parameter
-		/// value in the key field. The keys shall be monotonically non-decreasing,
-		/// otherwise the results are undefined.
-		/// 
+    /// Each value in the keyValue field corresponds in order to the parameter
+    /// value in the key field. The keys shall be monotonically non-decreasing,
+    /// otherwise the results are undefined.
+    /// 
     /// <b>Access type:</b> outputOnly \n
     /// <b>Default value:</b> - \n
     /// 
     /// \dotfile IntegerSequencer_value_changed.dot 
-    auto_ptr< ValueChanged < SFInt32, MFInt32 > >  value_changed;
+    auto_ptr< ValueChanged < SFInt32, MFInt32, IntegerSequencer > >
+      value_changed;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

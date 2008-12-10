@@ -159,7 +159,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   deviceCount(0),
   navigationDevices(0),
   wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
-  avatar_collision( true )
+  avatar_collision( true ),
+  loaded_first_file( false )
 {
   wxAcceleratorEntry entries[1];
   entries[0].Set(wxACCEL_NORMAL, (int) WXK_F11, FRAME_RESTORE);
@@ -407,8 +408,11 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
 
     wx_frame->global_settings->getOptionNode( dgo );
 
-    if( id == ID_DRAW_BOUNDS ) 
+    if( id == ID_DRAW_BOUNDS ) {
       dgo->drawBound->setValue( event.IsChecked() );
+      H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+      on_cancel_rebuild_displaylist = true;
+    }
     else if( id == ID_DRAW_TRIANGLES ) 
       dgo->drawHapticTriangles->setValue( event.IsChecked() );
     else if( id == ID_DRAW_BOUND_TREE ) {
@@ -420,12 +424,14 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
         dgo->drawBoundTree->setValue( -1 );
         boundTree = false;
       }
+      H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+      on_cancel_rebuild_displaylist = true;
     } else if( id == ID_DRAW_TREE_DEPTH ) {
       dgo->drawBoundTree->setValue( event.GetInt() );
+      H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+      on_cancel_rebuild_displaylist = true;
     }
 
-    H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
-    on_cancel_rebuild_displaylist = true;
   } else if( id == ID_USE_DISPLAY_LISTS ||
              id == ID_CACHE_ONLY_GEOMS ) {
 
@@ -512,11 +518,14 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
     else if( i == 1 ) gbto->boundType->setValue( WxFrameInternals::str_AABB );
     else if( i == 2 ) gbto->boundType->setValue(
       WxFrameInternals::str_SPHERE );
+    H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+    on_cancel_rebuild_displaylist = true;
   }
 
   if( id == ID_PROXY_RADIUS ) {
     wx_frame->setProxyRadius( atof( event.GetString().mb_str() ) );
   }
+
 }
 
 void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
@@ -544,8 +553,11 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
   wx_frame->global_settings->getOptionNode( gbto );
 
   if( gbto ) {
-    if( id == ID_MAX_TRIANGLES ) 
+    if( id == ID_MAX_TRIANGLES )  {
       gbto->maxTrianglesInLeaf->setValue( event.GetInt() );
+      H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+      on_cancel_rebuild_displaylist = true;
+    }
   }
 }
 
@@ -672,13 +684,16 @@ bool WxFrame::loadFile( const string &filename) {
          filename.find( ".wrl", filename.size()-5 ) != string::npos )
       t->children->push_back( X3D::createVRMLFromURL( filename.c_str(), 
                                                       &dn ) );
-      else
+    else
         t->children->push_back( X3D::createX3DFromURL( filename.c_str(), 
                                                        &dn ) );
 
     /**********************Reset mirrored and fullscreen********************/
-  rendererMenu->Check(FRAME_FULLSCREEN, false);
-  rendererMenu->Check(FRAME_MIRROR, false);
+    if( !loaded_first_file ) {
+      rendererMenu->Check(FRAME_FULLSCREEN, fullscreen);
+      rendererMenu->Check(FRAME_MIRROR, mirrored);
+      lastmirror = mirrored;
+    }
 
   /****************************Navigation Info****************************/
   //Enable Navigation Menu
@@ -698,19 +713,39 @@ bool WxFrame::loadFile( const string &filename) {
 
     for( NodeVector::const_iterator nv = allDevices.begin();
          nv != allDevices.end(); nv++ ) {
-      RuspiniRenderer *renderer = 
-        dynamic_cast< RuspiniRenderer * >( 
-        static_cast < H3DHapticsDevice *> (*nv)->
-        hapticsRenderer->getValue() );
+      H3DHapticsRendererNode *renderer =
+        static_cast < H3DHapticsDevice *> (*nv)->hapticsRenderer->getValue();
+      RuspiniRenderer *ruspini_renderer = 
+        dynamic_cast< RuspiniRenderer * >( renderer );
 
-      if( renderer ) {
+      if( ruspini_renderer ) {
         stringstream proxy_text;
-        proxy_text << renderer->proxyRadius->getValue();
+        proxy_text << ruspini_renderer->proxyRadius->getValue();
         settings->proxy_radius_text->
           SetValue( wxString(proxy_text.str().c_str(),wxConvUTF8) );
         SaveRuspiniSettings(false);
-        break;
+        hapticsRenderer->Check( FRAME_RUSPINI, true );
+        //break;
+      } else if( dynamic_cast< GodObjectRenderer * >(renderer) ) {
+        hapticsRenderer->Check( FRAME_GODOBJECT, true );
       }
+#ifdef HAVE_CHAI3D
+      else if( dynamic_cast< Chai3DRenderer * >(renderer) ) {
+        hapticsRenderer->Check( FRAME_CHAI3D, true );
+      }
+#endif
+#ifdef WIN32
+      else if( DynamicLibrary::load( "hd.dll" ) &&
+          DynamicLibrary::load( "hl.dll" ) ) {
+#else
+      else
+#endif
+      if( dynamic_cast< OpenHapticsRenderer * >(renderer) ) {
+        hapticsRenderer->Check( FRAME_OPENHAPTICS, true );
+      }
+#ifdef WIN32
+      }
+#endif
     }
   }
 
@@ -782,9 +817,12 @@ bool WxFrame::loadFile( const string &filename) {
   // this as parent to the canvas.
   // WxWidgetsWindow *glwindow = new WxWidgetsWindow();
 
-  this->glwindow->fullscreen->setValue( fullscreen );
-  this->glwindow->mirrored->setValue( mirrored );
-  this->glwindow->renderMode->setValue( render_mode );
+    if( !loaded_first_file ) {
+      loaded_first_file = true;
+      this->glwindow->fullscreen->setValue( fullscreen );
+      this->glwindow->mirrored->setValue( mirrored );
+      this->glwindow->renderMode->setValue( render_mode );
+    }
 
   
   scene->sceneRoot->setValue( g.get() );
@@ -792,8 +830,9 @@ bool WxFrame::loadFile( const string &filename) {
   catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
     stringstream s;
-  s << e;
-    wxMessageBox(wxString(s.str().c_str(),wxConvUTF8), wxT("Error"), wxOK | wxICON_EXCLAMATION);
+    s << e;
+    wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
     return false;
   }
 

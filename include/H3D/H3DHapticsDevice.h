@@ -622,19 +622,22 @@ namespace H3D {
   protected:
     Vec3f previuos_proxy_pos;
 
-    // true if we have a default_vp_pos
-    bool vp_initialized;
+    // int because traverseSG is not run for the viewpoint
+    // before the first call to updateDeviceValues
+    // Over 1 when a default_vp_pos is found.
+    int vp_initialized;
 
     // the position in global coordinates of the viewpoint which should
     // be used as default reference if the haptic device should follow
     // viewpoint movement.
     Matrix4f default_vp_pos_mtx;
     Vec3f default_vp_pos;
+    Vec3f default_vp_scaling;
 
     // the orientation in global coordinates of the viewpoint which should
     // be used as default reference if the haptic device should follow
     // viewpoint movement.
-    Matrix4f default_vp_orn_mtx;
+    Matrix3f default_vp_orn_mtx;
 
     // The time of the last call to updateDeviceValues.
     TimeStamp last_update_values;

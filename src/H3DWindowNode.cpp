@@ -481,6 +481,18 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
     clip_near = min_d - 1e-4f;
     clip_far = max_d + 1e-4f;
 
+    // Needed in order to get the correct clip factors when scaling the scene.
+    Vec3f scale_factors = vp->accInverseMatrix->getValue().getScalePart();
+    if( scale_factors.z > 1 ) {
+      H3DFloat clip_center = clip_far + clip_near / 2;
+      H3DFloat clip_edge_mov = (clip_center - clip_near) * scale_factors.z;
+      clip_near = clip_center - clip_edge_mov;
+      clip_far =  clip_center + clip_edge_mov;
+    } else {
+      clip_near = clip_near * scale_factors.z;
+      clip_far = clip_far * scale_factors.z;
+    }
+
     // make sure the clip planes are in front of the camera. Depth
     // buffer precision is affected by the values of clip_far and clip_near.
     // The greater the radion clip_far/clip_near the less the precision will
@@ -759,19 +771,20 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glPushMatrix();
-    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
-               vp_orientation.axis.x, 
-               vp_orientation.axis.y,
-               vp_orientation.axis.z );
-    glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
-               vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
     if( background ) {
+      glPushMatrix();
+      glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
+                 vp_orientation.axis.x, 
+                 vp_orientation.axis.y,
+                 vp_orientation.axis.z );
+      glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
+                 vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
       glDepthMask( GL_FALSE );
       background->renderBackground();
       glDepthMask( GL_TRUE );
+      glPopMatrix();
     }
-    glPopMatrix();
+
     glTranslatef( half_interocular_distance, 0, 0 );
     glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
                vp_orientation.axis.x, 
@@ -856,19 +869,20 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glPushMatrix();
-    glRotatef( (H3DFloat)-(180/Constants::pi)*vp_orientation.angle, 
-               vp_orientation.axis.x, 
-               vp_orientation.axis.y,
-               vp_orientation.axis.z );
-    glRotatef( (H3DFloat)(180/Constants::pi)*vp_inv_rot.angle, 
-               vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
+    
     if( background ) {
+      glPushMatrix();
+      glRotatef( (H3DFloat)-(180/Constants::pi)*vp_orientation.angle, 
+                 vp_orientation.axis.x, 
+                 vp_orientation.axis.y,
+                 vp_orientation.axis.z );
+      glRotatef( (H3DFloat)(180/Constants::pi)*vp_inv_rot.angle, 
+                 vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
       glDepthMask( GL_FALSE );
       background->renderBackground();
       glDepthMask( GL_TRUE );
+      glPopMatrix();
     }
-    glPopMatrix();
 
 
     glTranslatef( -half_interocular_distance, 0, 0 );
@@ -981,20 +995,30 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     // clear the buffers before rendering
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    glPushMatrix();
-    glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
-               vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
-
     if( background ) {
+      glPushMatrix();
+      glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
+                 vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
       glDepthMask( GL_FALSE );
       background->renderBackground();
       glDepthMask( GL_TRUE );
-    } 
-    glPopMatrix();
+      glPopMatrix();
+    }
+
+    GLboolean norm= glIsEnabled( GL_NORMALIZE );
+    if ( !norm ) 
+      glEnable( GL_NORMALIZE );
+
+    /*Vec3f forward_scale_part = vp->accForwardMatrix->getValue().getScalePart();
+    glTranslatef( -vp_position.x * forward_scale_part.x,
+                  -vp_position.y * forward_scale_part.y,
+                  -vp_position.z * forward_scale_part.z );
+    glScalef( forward_scale_part.x, forward_scale_part.y, forward_scale_part.z );
+    glMultMatrixf( vp_inv_transform );*/
 
     glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
     glMultMatrixf( vp_inv_transform );
-    
+
     X3DPointingDeviceSensorNode::
       updateX3DPointingDeviceSensors( child_to_render );
 
@@ -1003,6 +1027,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     renderChild( child_to_render );
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp );
+    if ( !norm ) 
+      glDisable( GL_NORMALIZE );
     swapBuffers();
   }
   glPopAttrib();

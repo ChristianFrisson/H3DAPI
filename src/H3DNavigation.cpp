@@ -71,7 +71,6 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
                               X3DChildNode *topNode, bool detect_collision, 
                               const vector< H3DFloat > &avatar_size, 
                               H3DFloat speed ) {
-  Vec3f vp_full_pos = vp->totalPosition->getValue();
   Rotation vp_full_orientation = vp->totalOrientation->getValue();
   H3DTime current_time = Scene::time->getValue();
   H3DTime delta_time = current_time - last_time;
@@ -96,59 +95,34 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
     }
     else if( detect_collision )
       vp->detectCollision( avatar_size, topNode );
-  }
-  else if( navigation_type == "WALK" ) {
+  } else if( navigation_type == "WALK" || navigation_type == "FLY" ) {
     Vec3f translation_delta;
     Rotation rotation_value;
     Vec3f center_of_rot;
     bool use_center;
-    if( H3DNavigationDevices::getMoveInfo(
-          translation_delta, rotation_value, center_of_rot, use_center ) ) {
-      vp->rotateAroundSelf( rotation_value );
-
-      Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
-      if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
+    Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
+    if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
         && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
-        vp->translate( translation_delta * speed * delta_time * scaling.x,
-          detect_collision, avatar_size, topNode );
+      vector< H3DFloat > temp_avatar_size( avatar_size );
+      for( unsigned int i = 0; i < temp_avatar_size.size(); i++ ) {
+        temp_avatar_size[i] *= scaling.x;
       }
-      else {
+      if( H3DNavigationDevices::getMoveInfo(
+          translation_delta, rotation_value, center_of_rot, use_center ) ) {
+        vp->rotateAroundSelf( rotation_value );
+        vp->translate( translation_delta * speed * delta_time * scaling.x,
+                       detect_collision, temp_avatar_size, topNode );
+      }
+      else if( detect_collision )
+        vp->detectCollision( temp_avatar_size, topNode );
+    } else {
         Console(3) << "Warning: Non-uniform scaling in the"
           << " active X3DViewpointNode ( "
           << vp->getName()
-          << " ) nodes local coordinate system. Speed of "
+          << " ) nodes local coordinate system. Speed and avatar size of "
           << "Avatar is undefined ";
-      }
     }
-    else if( detect_collision )
-      vp->detectCollision( avatar_size, topNode );
-  }
-  else if( navigation_type == "FLY" ) {
-    Vec3f translation_delta;
-    Rotation rotation_value;
-    Vec3f center_of_rot;
-    bool use_center;
-    if( H3DNavigationDevices::getMoveInfo(
-          translation_delta, rotation_value, center_of_rot, use_center ) ) {
-      vp->rotateAroundSelf( rotation_value );
-      Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
-      if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
-        && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
-        vp->translate( translation_delta * speed * delta_time * scaling.x,
-          detect_collision, avatar_size, topNode );
-      }
-      else {
-        Console(3) << "Warning: Non-uniform scaling in the"
-          << " active X3DViewpointNode ( "
-          << vp->getName()
-          << " ) nodes local coordinate system. Speed of "
-          << "Avatar is undefined ";
-      }
-    }
-    else if( detect_collision )
-      vp->detectCollision( avatar_size, topNode );
-  }
-  else if( navigation_type == "LOOKAT" ) {
+  } else if( navigation_type == "LOOKAT" ) {
     Vec3f translation_delta;
     Rotation rotation_value;
     Vec3f center_of_rot;

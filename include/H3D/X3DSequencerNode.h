@@ -75,15 +75,12 @@ namespace H3D {
     /// routes_in[0] is the next field.
     /// routes_in[1] is the previous field.
     /// routes_in[2] is the set_fraction field.
-    /// routes_in[3] is the key field.
-    /// routes_in[4] is the keyValue field.
-    template< class TheType, class KeyValuesIn > class H3DAPI_API ValueChanged
+    template< class TheType, class KeyValuesIn, class SequencerClass >
+      class H3DAPI_API ValueChanged
       : public AutoUpdate< TypedField< TheType, 
                                        Types< SFBool, 
-                                               SFBool, 
-                                               SFFloat, 
-                                                MFFloat, 
-                                              KeyValuesIn > > >{
+                                              SFBool, 
+                                              SFFloat > > > {
     public:
       ValueChanged() { currentPosition = 0; fractionInitialized = false; }
       bool fractionInitialized;
@@ -116,35 +113,34 @@ namespace H3D {
             TheType::routes_in[1] == TheType::event.ptr ||
             TheType::routes_in[2] == TheType::event.ptr ) {
         
-          X3DSequencerNode * sN = 
-            static_cast< X3DSequencerNode * >( TheType::getOwner() );
+          SequencerClass * sn = 
+            static_cast< SequencerClass * >( TheType::getOwner() );
 
           bool notMonotonically = false;
 
           const typename KeyValuesIn::vector_type &key_value = 
-            static_cast<  KeyValuesIn * >( TheType::routes_in[4] )->getValue();
+            sn->keyValue->getValue();
 
-          const vector< H3DFloat > &keys = 
-            static_cast< MFFloat * >( TheType::routes_in[3] )->getValue();
+          const vector< H3DFloat > &keys = sn->key->getValue();
 
           if( keys.empty() ) {
             Console(3) << "Warning: The key array is empty in " <<
-              "X3DSequencerNode ( " << TheType::getName() << 
-              "). Node will not be used. " << endl;
+              "X3DSequencerNode ( " << sn->getName() << 
+              " ). Node will not be used. " << endl;
             return;
           }
 
           if( key_value.empty() ) {
             Console(3) << "Warning: The keyValue array is empty in " <<
-              "X3DSequencerNode ( " << TheType::getName() << 
-              "). Node will not be used. " << endl;
+              "X3DSequencerNode ( " << sn->getName() << 
+              " ). Node will not be used. " << endl;
             return;
           }
 
           if( keys.size() != key_value.size() ) {
             Console(3) << "Warning: The key and keyValue arrays mismatch in " <<
-              "X3DSequencerNode ( " << TheType::getName() << 
-              "). Node will not be used. " << endl;
+              "X3DSequencerNode ( " << sn->getName() << 
+              " ). Node will not be used. " << endl;
             return;
           }
 
@@ -157,8 +153,8 @@ namespace H3D {
 
           if( notMonotonically ) {
             Console(3) << "Warning: The key array is not monotonically " <<
-              "non-decreasing in X3DSequencerNode ( " << TheType::getName() << 
-              "). Node will not be used. " << endl;
+              "non-decreasing in X3DSequencerNode ( " << sn->getName() << 
+              " ). Node will not be used. " << endl;
             return;
           }
 
@@ -182,27 +178,8 @@ namespace H3D {
           else if( TheType::routes_in[2] == TheType::event.ptr ) {
             fractionInitialized = true;
             const H3DFloat &setFraction = 
-              static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
+              static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sn -> id );
             TheType::value = evaluateValueChanged(key_value, keys, setFraction);
-          }
-          else if( TheType::routes_in[3] == TheType::event.ptr ) {
-            if( fractionInitialized ) {
-              const H3DFloat &setFraction = 
-                static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
-              TheType::value = evaluateValueChanged(key_value, keys, setFraction);
-            }
-          }
-          else if ( TheType::routes_in[4] == TheType::event.ptr ) {
-            if( fractionInitialized ) {
-              const H3DFloat &setFraction = 
-                static_cast< SFFloat * >( TheType::routes_in[2] )->getValue( sN -> id );
-              TheType::value = evaluateValueChanged(key_value, keys, setFraction);
-            }
-
-            if( currentPosition > ( H3DInt32 )key_value.size() - 1 ) {
-              currentPosition = key_value.size() - 1;
-              TheType::value = key_value[ currentPosition ];
-            }
           }
         }
       }
@@ -213,11 +190,10 @@ namespace H3D {
 
     /// Constructor.
     X3DSequencerNode(  Inst< SFNode           > _metadata      = 0,
-                      Inst< SFBool           > _next          = 0,
-                      Inst< SFBool           > _previous       = 0,
-                      Inst< SFFloat          > _set_fraction  = 0,
-                      Inst< MFFloat          > _key           = 0 );
-               
+                       Inst< SFBool           > _next          = 0,
+                       Inst< SFBool           > _previous       = 0,
+                       Inst< SFFloat          > _set_fraction  = 0,
+                       Inst< MFFloat          > _key           = 0 );
 
     /// Receipt of next event triggers next output value in keyValue array,
     /// next goes to initial element after last.
