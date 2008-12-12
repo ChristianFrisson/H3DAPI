@@ -252,40 +252,6 @@ void Scene::mainLoop() {
   glutMainLoop();
 }
 
-void Scene::replaceWorld( AutoRef< Node > new_world,
-                          X3DViewpointNode * new_vp ) {
-  for( set< Scene * >::iterator i = Scene::scenes.begin();
-       i != Scene::scenes.end();
-       i++ ) {
-    if( (*i)->isActive() ) {
-      //TODO: traverse scene to see if the Anchor belongs in it.
-      // right now it assumes just one scene.
-      X3DGroupingNode * scene_root = dynamic_cast< X3DGroupingNode * >
-        ( (*i)->sceneRoot->getValue() );
-      if( scene_root ) {
-        /*for(unsigned int j = 0; j < scene_root->children->size(); j++ ) {
-          X3DGroupingNode * temp_gr = dynamic_cast< X3DGroupingNode * >
-            ( scene_root->children->getValueByIndex( j ) );
-        }*/
-        scene_root->children->clear();
-      }
-      (*i)->sceneRoot->setValue( new_world.get() );
-      if( new_vp ) {
-        new_vp->set_bind->setValue( true );
-      }
-      else {
-        const X3DViewpointNode::ViewpointList vp_list
-          = X3DViewpointNode::getAllViewpoints();
-        if( !vp_list.empty() ) {
-          vp_list.front()->set_bind->setValue( true );
-        }
-      }
-      H3DNavigation::enableDevice( H3DNavigation::MOUSE );
-      break;
-    }
-  }
-}
-
 void Scene::EventSink::update() {
   for( unsigned int i = 0; i < routes_in.size(); i++ ) {
     if( PeriodicUpdateField *pf = 

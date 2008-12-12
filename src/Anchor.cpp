@@ -33,6 +33,7 @@
 #include <H3D/X3D.h>
 #include <H3D/NavigationInfo.h>
 #include <H3D/Scene.h>
+#include <H3D/H3DNavigation.h>
 
 using namespace H3D;
 
@@ -129,7 +130,7 @@ void Anchor::GeometrySelected::update() {
             }
           }
           
-          Scene::replaceWorld( new_world, temp_vp );
+          Anchor::replaceScene( new_world, temp_vp, anchor );
           
           no_valid_things = false;
           break;
@@ -159,3 +160,50 @@ void Anchor::GeometrySelected::update() {
     }
   }
 }
+
+void Anchor::replaceScene( AutoRef< Node > new_world,
+                           const X3DViewpointNode *new_vp,
+                           const Anchor *the_anchor) {
+  for( set< Scene * >::iterator i = Scene::scenes.begin();
+       i != Scene::scenes.end();
+       i++ ) {
+    if( (*i)->isActive() ) {
+      X3DGroupingNode * scene_root = dynamic_cast< X3DGroupingNode * >
+        ( (*i)->sceneRoot->getValue() );
+      if( scene_root && isAnchorInScene( scene_root, the_anchor ) ) {
+        scene_root->children->clear();
+        (*i)->sceneRoot->setValue( new_world.get() );
+        if( new_vp ) {
+          new_vp->set_bind->setValue( true );
+        }
+        else {
+          const X3DViewpointNode::ViewpointList vp_list
+            = X3DViewpointNode::getAllViewpoints();
+          if( !vp_list.empty() ) {
+            vp_list.front()->set_bind->setValue( true );
+          }
+        }
+        H3DNavigation::enableDevice( H3DNavigation::MOUSE );
+        break;
+      }
+    }
+  }
+}
+
+bool Anchor::isAnchorInScene( const X3DGroupingNode *group_node,
+                              const Anchor *anchor_to_find ) {
+  NodeVector c = group_node->children->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    if( c[i] == anchor_to_find )
+      return true;
+  }
+
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    X3DGroupingNode *temp_group = dynamic_cast< X3DGroupingNode * >( c[i] );
+    if( temp_group )
+      if( isAnchorInScene( temp_group, anchor_to_find ) )
+        return true;
+  }
+  return false;
+}
+

@@ -30,7 +30,7 @@
 #define __ANCHOR_H__
 
 #include <H3D/X3DGroupingNode.h>
-#include <H3D/SFString.h>
+#include <H3D/X3DViewpointNode.h>
 #include <H3D/MFString.h>
 
 namespace H3D {
@@ -133,6 +133,13 @@ namespace H3D {
             Inst< SFVec3f        > _bboxSize       = 0 );
 
     ~Anchor();
+
+    static void Anchor::replaceScene( AutoRef< Node > new_world,
+                                      const X3DViewpointNode *new_vp,
+                                      const Anchor *the_anchor);
+
+    static bool isAnchorInScene( const X3DGroupingNode *group_node,
+                                 const Anchor *anchor_to_find );
 
     /// The description field in the Anchor node specifies a textual
     /// description of the Anchor node.
