@@ -43,6 +43,9 @@ namespace H3D {
   /// the haptics device and each gray-scale value will correspond to a depth
   /// that the user will feel. Non-gray-scale images will use the red channel
   /// to modify depth.
+  ///
+  /// \par Internal routes:
+  /// \dotfile DepthMapSurface.dot
   class H3DAPI_API DepthMapSurface: public H3DFrictionalSurfaceNode {
   public:
 
@@ -72,9 +75,6 @@ namespace H3D {
     ///
     /// routes_in[0] is the image field in the X3DTexture2DNode in
     /// the depthMap field.
-    ///
-    /// \par Internal routes:
-    /// \dotfile DepthMapSurface.dot
     class SetImagePtr : public AutoUpdate< 
       TypedField< SFBool, Types< X3DTexture2DNode::SFImage > > > {
     protected:
@@ -106,6 +106,7 @@ namespace H3D {
     /// the image.
     ///
     /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> 0.001 \n
     /// 
     /// \dotfile DepthMapSurface_maxDepth.dot
     auto_ptr< SFFloat > maxDepth;
@@ -114,6 +115,7 @@ namespace H3D {
     /// and black will be in. If the parameter is false the it is the opposite.
     ///
     /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> true \n
     ///
     /// \dotfile DepthMapSurface_whiteIsOut.dot
     auto_ptr< SFBool > whiteIsOut;

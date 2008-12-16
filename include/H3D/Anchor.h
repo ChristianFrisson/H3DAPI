@@ -110,10 +110,11 @@ namespace H3D {
   class H3DAPI_API Anchor : public X3DGroupingNode {
   public:
 
-    /// 
+    /// Takes care of changing the scene when an object in the Anchor is
+    /// selected (by clicking on it with the mouse).
     class H3DAPI_API GeometrySelected: public AutoUpdate < SFBool > {
     protected:
-      // 
+      // Check the url and call replaceScene if the url is correct.
       virtual void update();
     };
 #ifdef __BORLANDC__
@@ -134,10 +135,21 @@ namespace H3D {
 
     ~Anchor();
 
+    /// Replaces the world in the scene with a new one.
+    /// \param new_world The top node of the new world.
+    /// \param new_vp The viewpoint to use after changing the world.
+    /// \param the_anchor The Anchor node causing the call to this function.
     static void Anchor::replaceScene( AutoRef< Node > new_world,
                                       const X3DViewpointNode *new_vp,
                                       const Anchor *the_anchor);
 
+    /// Checks which Scenes the given anchor is part of.
+    /// \param group_node The X3DGroupingNode to traverse in order to find
+    /// the anchor.
+    /// \param anchor_to_find The anchor that is tested for inclusion in the
+    /// scene defined by the group_node.
+    /// \returns true if the anchor is found in the group_node, false
+    /// otherwise.
     static bool isAnchorInScene( const X3DGroupingNode *group_node,
                                  const Anchor *anchor_to_find );
 
@@ -169,6 +181,8 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+    // Internal variables used to control when to replace the world
+    // ( or change viewpoint ).
     auto_ptr< GeometrySelected > on_click;
     auto_ptr< X3DPointingDeviceSensorNode > intern_pdsn;
   };
