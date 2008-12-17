@@ -145,6 +145,7 @@ void ShaderPart::SFShaderString::update() {
         is.read (buffer,length);
         length = is.gcount();
         is.close();
+        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
         buffer[length] = '\0';
         shader_part->setURLUsed( *i );
         value = string( buffer );
