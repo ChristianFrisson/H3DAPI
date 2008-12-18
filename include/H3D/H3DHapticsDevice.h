@@ -544,7 +544,7 @@ namespace H3D {
         
     /// The Node used as the visual representation of the stylus.
     ///
-    /// <b>Access type:</b> outputOnly \n
+    /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile H3DHapticsDevice_stylus.dot
     auto_ptr< SFNode > stylus;
