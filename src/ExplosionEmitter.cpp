@@ -72,8 +72,8 @@ void ExplosionEmitter::generateParticles( ParticleSystem *ps,
 
     while( particles_to_emit >= 1 ) {
       Vec3f dir = ParticleSystem::getRandomPointOnUnitSphere();      
-      Particle p = newParticle( ps, Vec3f( 0, 0, 0 ),
-                                dir );
+      Particle p = newParticle( ps, position->getValue(),
+                                dir);
       particles.push_back( p );
       particles_to_emit--;
     }

@@ -33,6 +33,9 @@
 #include <H3D/X3DTextureNode.h>
 #include <H3D/ParticleSystem.h>
 #include <H3D/MultiTexture.h>
+#include <H3D/X3DAppearanceNode.h>
+#include <H3D/X3DMaterialNode.h>
+#include <H3D/Appearance.h>
 
 using namespace H3D;
 
@@ -72,12 +75,18 @@ X3DParticleEmitterNode::X3DParticleEmitterNode(
 }
 
 void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
- 
+  X3DAppearanceNode *appearance = ps->appearance->getValue();
+  X3DMaterialNode *material = NULL;
+  if( appearance )
+    material = dynamic_cast<Appearance *>(appearance)->material->getValue();
   X3DColorNode *color_ramp = ps->colorRamp->getValue();
   const vector< H3DFloat > color_key = ps->colorKey->getValue(); 
   TextureCoordinate *tex_coord_ramp = ps->texCoordRamp->getValue();
   const vector< H3DFloat > tex_coord_key = ps->texCoordKey->getValue();
   if( isDead() ) return;
+  
+  glPushAttrib( GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
+
   glEnable( GL_BLEND ); 
   glEnable( GL_ALPHA_TEST );
   glAlphaFunc( GL_NOTEQUAL, 0 );
@@ -142,7 +151,12 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
     X3DTextureNode *texture = X3DTextureNode::getActiveTexture();
     if( texture ) texture->disableTexturing();
 
-    if( have_color_value ) {
+    // if material node is specified, use properties from there
+    // otherwise, use colorRamp if specified
+    if( material ) {  
+      material->render(); 
+    } else if( have_color_value ) {
+      glEnable( GL_COLOR_MATERIAL );
       glColor4f( color.r, color.g, color.b, color.a ); 
     }
     
@@ -153,7 +167,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
     if( lighting_enabled ) glEnable( GL_LIGHTING );
     if( texture ) texture->enableTexturing();
   } else if( type == LINE ) {
-    glEnable( GL_COLOR_MATERIAL );
+    
     // Save the old state of GL_LIGHTING 
     GLboolean lighting_enabled;
     glGetBooleanv( GL_LIGHTING, &lighting_enabled );
@@ -161,7 +175,12 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
 
     glEnable( GL_BLEND );
 
-    if( have_color_value ) {
+    // if material node is specified, use properties from there
+    // otherwise, use colorRamp if specified
+    if( material ) {  
+      material->render(); 
+    } else if( have_color_value ) {
+      glEnable( GL_COLOR_MATERIAL );
       glColor4f( color.r, color.g, color.b, color.a ); 
     }
     
@@ -219,14 +238,18 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
         // TODO: warning
       }
     }
-    
-    // TODO: fix color material
-    glEnable( GL_COLOR_MATERIAL );
+  
     Vec3f t = Vec3f( size.x / 2, size.y/2, 0 );
     Vec3f max_corner = position + t; 
     Vec3f min_corner = position - t;
     glNormal3f( 0, 0, 1 );
-    if( have_color_value ) {
+    
+    // if material node is specified, use properties from there
+    // otherwise, use colorRamp if specified
+    if( material ) {  
+      material->render(); 
+    } else if( have_color_value ) {
+      glEnable( GL_COLOR_MATERIAL );
       glColor4f( color.r, color.g, color.b, color.a ); 
     }
     glBegin( GL_QUADS );
@@ -281,13 +304,18 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
     glTranslatef( position.x, position.y, position.z );
     glMultMatrixf( m );
 
-    // TODO: fix color material
-    glEnable( GL_COLOR_MATERIAL );
+
     Vec3f t = Vec3f( size.x / 2, size.y/2, 0 );
     Vec3f max_corner = t; 
     Vec3f min_corner = - t;
     glNormal3f( 0, 0, 1 );
-    if( have_color_value ) {
+    
+    // if material node is specified, use properties from there
+    // otherwise, use colorRamp if specified
+    if( material ) {  
+      material->render(); 
+    } else if( have_color_value ) {
+      glEnable( GL_COLOR_MATERIAL );
       glColor4f( color.r, color.g, color.b, color.a ); 
     }
     glBegin( GL_QUADS );
@@ -310,7 +338,8 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       glPopMatrix();
     }
   }
-  //glEnable( GL_DEPTH_TEST );
+  glEnable( GL_DEPTH_TEST );
+  glPopAttrib();
 }
 
 

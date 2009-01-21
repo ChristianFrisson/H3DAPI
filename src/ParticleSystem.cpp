@@ -138,13 +138,8 @@ void ParticleSystem::render() {
     } else if( geometry_render_mode == SOLID ) {
       // only render non-transparent objects
       if( !a || !a->isTransparent() ) {
-        H3DFloat a = 2000;
         for( Particles::iterator p = particles.begin(); 
            p != particles.end(); p++ ) {
-             if( (*p).distance_from_viewer > a ) {
-                cerr << "f";
-             }
-             a = (*p).distance_from_viewer;
           (*p).render( this );
         }
       }
@@ -156,31 +151,57 @@ void ParticleSystem::render() {
           (*p).render( this );
         }
       } else if( geometry_render_mode == TRANSPARENT_FRONT ) {
-        GLenum previous_cull_face = g->getCullFace();
-        bool previous_culling = g->usingCulling();
-        if( !previous_culling || previous_cull_face != GL_FRONT ) { 
-          //g->setCullFace( GL_BACK );
-          //g->useCulling( true );
-          for( Particles::iterator p = particles.begin(); 
-             p != particles.end(); p++ ) {
-             (*p).render( this );
-           }
-          //g->setCullFace( previous_cull_face );
-          //g->useCulling( previous_culling );
-        }
-      } else if( geometry_render_mode == TRANSPARENT_BACK ) {
-        GLenum previous_cull_face = g->getCullFace();
-        bool previous_culling = g->usingCulling();
-        if( !previous_culling || previous_cull_face != GL_BACK ) { 
-          //g->setCullFace( GL_FRONT );
-          //g->useCulling( true );
-          for( Particles::iterator p = particles.begin(); 
-             p != particles.end(); p++ ) {
-             (*p).render( this );
+        glPushAttrib( GL_POLYGON_BIT );
+        if( geometryType->getValue() == "GEOMETRY" && g ) {
+          // we have a geometry so we use the geometry functions for culling
+          GLenum previous_cull_face = g->getCullFace();
+          bool previous_culling = g->usingCulling();
+          if( !previous_culling || previous_cull_face != GL_FRONT ) { 
+            g->setCullFace( GL_BACK );
+            g->useCulling( true );
+            for( Particles::iterator p = particles.begin(); 
+              p != particles.end(); p++ ) {
+                (*p).render( this );
+            }
+            g->setCullFace( previous_cull_face );
+            g->useCulling( previous_culling );
           }
-          //g->setCullFace( previous_cull_face );
-          //g->useCulling( previous_culling );
+        } else {
+          // not geometry so use OpenGL directly to do face culling
+          glCullFace( GL_BACK );
+          glEnable( GL_CULL_FACE );
+          for( Particles::iterator p = particles.begin(); 
+            p != particles.end(); p++ ) {
+              (*p).render( this );
+          }
         }
+        glPopAttrib();
+      } else if( geometry_render_mode == TRANSPARENT_BACK ) {
+        glPushAttrib( GL_POLYGON_BIT );
+        if( geometryType->getValue() == "GEOMETRY" && g ) {
+          // we have a geometry so we use the geometry functions for culling
+          GLenum previous_cull_face = g->getCullFace();
+          bool previous_culling = g->usingCulling();
+          if( !previous_culling || previous_cull_face != GL_BACK ) { 
+            g->setCullFace( GL_FRONT );
+            g->useCulling( true );
+            for( Particles::iterator p = particles.begin(); 
+              p != particles.end(); p++ ) {
+                (*p).render( this );
+              }
+              g->setCullFace( previous_cull_face );
+              g->useCulling( previous_culling );
+          }
+        } else {
+          // not geometry so use OpenGL directly to do face culling
+          glCullFace( GL_FRONT );
+          glEnable( GL_CULL_FACE );
+          for( Particles::iterator p = particles.begin(); 
+            p != particles.end(); p++ ) {
+              (*p).render( this );
+          }
+        }
+        glPopAttrib();
       } 
     }
   }
@@ -215,6 +236,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   if( !enabled->getValue() ) {
     particle_system_time = 0;
     particles.clear();
+		last_time = TimeStamp();
     return;
   }
   
@@ -291,7 +313,9 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
     Vec3f min, max;
     min = max = (*p).position;
     p++;
-    for( ; p != particles.end(); ++p ) {
+
+		// find the min and max center values for each particle
+		for( ; p != particles.end(); ++p ) {
       if( (*p).position.x < min.x ) min.x = (*p).position.x;
       if( (*p).position.y < min.y ) min.y = (*p).position.y;
       if( (*p).position.z < min.z ) min.z = (*p).position.z;
@@ -299,8 +323,12 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
       if( (*p).position.y > max.y ) max.y = (*p).position.y;
       if( (*p).position.z > max.z ) max.z = (*p).position.z;
     }
-    H3DFloat ps = 0;
+    
 
+		// calculate the size of each particle by looking at the first
+		// particle.
+		H3DFloat ps = 0;
+    p = particles.begin(); 
     if( geometryType->getValue() == "GEOMETRY" ) {
       if( (*p).geometry.get() ) {
         X3DGeometryNode *g = (*p).geometry.get();
@@ -322,6 +350,8 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
       ps= H3DMax( particle_size.x, particle_size.y );
     }
 
+		// the final bounding box is the bounding box of point particles 
+		// extended by the size of the particle.
     Vec3f s = max - min;
     bb->center->setValue( min + s / 2.0 );
     bb->size->setValue( s  + Vec3f( ps, ps, ps ) );
@@ -352,7 +382,9 @@ Vec3f ParticleSystem::getRandomPointOnUnitSphere() {
 
   H3DFloat x1_sqr = x1 * x1;
   H3DFloat x2_sqr = x2 * x2;
-  while( x1*x1 + x2*x2 >= 1 ) {
+  while( x1_sqr + x2_sqr >= 1 ) {
+		x1 = getRandomValue( -1, 1 );
+		x1_sqr = x1 * x1;
     x2 = getRandomValue( -1, 1 );
     x2_sqr = x2 * x2;
   }
