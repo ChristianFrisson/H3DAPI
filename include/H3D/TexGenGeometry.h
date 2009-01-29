@@ -120,7 +120,7 @@ namespace H3D {
     /// The geometry field contains the X3DGeometryNode that we want to 
     /// generate texture coordinates for.
     ///
-    /// <b>Access type: </b> inputOutput
+    /// <b>Access type: </b> inputOutput \n
     /// 
     /// \dotfile TexGenGeometry_geometry.dot
     auto_ptr< SFGeometryNode > geometry;
@@ -128,6 +128,8 @@ namespace H3D {
     /// The texCoord field contains the TextureCoordinateGenerator node
     /// to use to generate texture coordinates.
     /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
     /// \dotfile TexGenGeometry_texCoord.dot
     auto_ptr< SFTexCoordGenNode > texCoord;
 

@@ -238,11 +238,13 @@ namespace H3D {
     /// the X3D file specified by the url field is loaded immediately. 
     /// If the load field is set to FALSE, no action is taken.
     ///
+    /// <b>Access type:</b> inputOutput \n
     /// \dotfile Inline_load.dot
     auto_ptr< SFBool >  load;
     
     /// The scene that is currently loaded by the inline node.
     ///
+    /// <b>Access type:</b> outputOnly \n
     /// \dotfile Inline_loadedScene.dot
     auto_ptr< LoadedScene > loadedScene;
 

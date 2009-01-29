@@ -68,6 +68,8 @@ namespace H3D {
     X3DNode( Inst< SFNode>  _metadata = 0 );
 
     /// Meta data about the node.
+    ///
+    /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFNode >  metadata;
 
     /// The H3DNodeDatabase for this node.

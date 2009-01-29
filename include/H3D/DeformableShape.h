@@ -157,6 +157,8 @@ namespace H3D {
     /// The deformer field specifies an H3DCoordinateDeformerNode that 
     /// determines how the coordinates should be deformed on contact.
     /// If NULL, no deformation will be done.
+    ///
+    /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFCoordinateDeformer > deformer;   
 
     /// The H3DNodeDatabase for this node.

@@ -75,11 +75,13 @@ namespace H3D {
 
     /// The values to interpolate between.
     ///
+    /// <b>Access type:</b> inputOutput \n
     /// \dotfile CoordinateInterpolator2D_keyValue.dot
     auto_ptr< MFVec2f >  keyValue;
 
     /// The linearly interpolated result value.
     ///
+    /// <b>Access type:</b> outputOnly \n
     /// \dotfile CoordinateInterpolator2D_value_changed.dot
     auto_ptr<  MFVec2f >  value_changed;
 

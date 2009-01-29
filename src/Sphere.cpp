@@ -33,9 +33,7 @@
 
 #include <H3D/HapticsOptions.h>
 #include <H3D/GlobalSettings.h>
-#include <H3D/OpenHapticsOptions.h>
 
-#include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/HapticsRenderers.h>
 #include <H3D/H3DHapticsDevice.h>
 
@@ -191,6 +189,8 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
           default_settings->getOptionNode( haptics_options );
         }
       }
+      
+      string dynamic_mode = "TRANSFORM_CHANGED";
 
       if( haptics_options ) {
         const string &face = haptics_options->touchableFace->getValue();
@@ -206,6 +206,8 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
             << ". Must be \"FRONT\", \"BACK\" or \"FRONT_AND_BACK\" "
             << "(in active HapticsOptions node\" )" << endl;
         }
+
+        dynamic_mode = haptics_options->dynamicMode->getValue();
       }
       
       HAPI::HapticPrimitive * haptic_sphere = 
@@ -236,6 +238,8 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
           false ) );
       }
 #endif
+
+      addDynamicInfoToShape( ti, dynamic_mode, haptic_sphere );
       ti.addHapticShape( i, haptic_sphere );
 
 #ifdef HAVE_CHAI3D
@@ -260,6 +264,7 @@ bool Sphere::lineIntersect(
   bool returnValue =
     temp_sphere.lineIntersect( from, to, temp_result );
   if( returnValue ) {
+    temp_result.primitive = 0;
     result.addResults( temp_result, this );
     result.addPtDevMap();
   }

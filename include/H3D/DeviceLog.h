@@ -72,6 +72,10 @@ namespace H3D {
       return "deviceLog";
     }
     
+    /// The name of the log file.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "log.dat" \n
     auto_ptr< SFString > filename;
     
     /// The H3DNodeDatabase for this node.

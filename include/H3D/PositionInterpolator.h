@@ -73,10 +73,14 @@ namespace H3D {
 
     /// The values to interpolate between.
     ///
+    /// <b>Access type:</b> inputOutput \n
+    ///
     /// \dotfile PositionInterpolator_keyValue.dot
     auto_ptr< MFVec3f >  keyValue;
 
     /// The linearly interpolated result value.
+    ///
+    /// <b>Access type:</b> outputOnly \n
     ///
     /// \dotfile PositionInterpolator_value_changed.dot
     auto_ptr< SFValue >  value_changed;

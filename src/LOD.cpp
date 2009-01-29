@@ -69,6 +69,7 @@ MatrixTransform( _addChildren, _removeChildren, _children,
                   type_name = "LOD";
                   database.initFields( this );
                   display_index->route( displayList );
+                  forceTransitions->setValue( false );
 }
 
 

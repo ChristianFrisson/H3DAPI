@@ -40,7 +40,6 @@ H3DNodeDatabase CoordinateInterpolator2D::database(
                                       &X3DInterpolatorNode::database );
 
 namespace CoordinateInterpolator2DInternals {
-  FIELDDB_ELEMENT( CoordinateInterpolator2D, metadata, INPUT_OUTPUT );
   FIELDDB_ELEMENT( CoordinateInterpolator2D, value_changed, OUTPUT_ONLY );
   FIELDDB_ELEMENT( CoordinateInterpolator2D, keyValue, INPUT_OUTPUT );
 }

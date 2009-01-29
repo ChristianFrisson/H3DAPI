@@ -69,6 +69,10 @@ namespace H3D {
                 H3DTime last_time,
                 H3DTime current_time );
 
+    /// The geometry field specifies a piece of geometry that models the bounds
+    /// that constrain the location of the particles
+    ///
+    /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFGeometryNode > geometry;
 
     /// The H3DNodeDatabase for this node.

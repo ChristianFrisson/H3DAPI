@@ -94,7 +94,32 @@ namespace H3D {
   ///    Shape 
   ///       IndexedFaceSet { coordIndex='... 1 ... >
   ///           Coordinate DEF='Moved' point [ x y z, ... ] # t0Geometry
-  ///       
+  ///       }                  
+  ///    }
+  ///  } 
+  ///
+  /// CoordinateInterpolator DEF='Mover'
+  ///    key [t0 t1 t2 ]            #   list of key times, 0 to 1
+  ///    keyValue ' x y z, ... '    #   one geometry per key time
+  ///
+  /// TimeSensor DEF='Timer' cycleInterval 5 loop TRUE 
+  ///
+  /// ROUTE Timer.fraction_changed TO Mover.set_value  
+  /// ROUTE Mover.value_changed TO Moved.point 
+  ///
+  /// In typical operation, the key frame set_fraction event arrives from a
+  /// TimeSensor to signal that the time value has advanced. This value varies
+  /// from 0 to 1 depending upon where the TimeSensor is in its cycle time.
+  /// For example, if the TimeSensor has a cycleTime of 10 seconds, and 5
+  /// seconds has elapsed in its cycle, the set_fraction value will be 0.5.
+  ///
+  /// In this sample structure, the IndexedFaceSet contains a Coordinate field
+  /// named Moved. This defines the time equals zero geometry for the node.
+  /// The CoordinateInterpolator node named Mover contains the list of key
+  /// frame times and the corresponding sets of coordinates in the keyValue
+  /// field. When the set_fraction event arrives for key, the corresponding 
+  /// interpolated keyValue is sent to the target Coordinate node for
+  /// rendering.
   class H3DAPI_API X3DInterpolatorNode : public X3DChildNode {
   public:
     
@@ -127,10 +152,22 @@ namespace H3D {
         }
       }
       return -1;  // something must have gone wrong to get here
-    }    
-    
-    auto_ptr<   SFFloat >  set_fraction;
-    auto_ptr< MFFloat >  key;
+    }
+
+    /// The set_fraction inputOnly field receives an SFFloat event and causes
+    /// the interpolator node function to evaluate, resulting in a
+    /// value_changed output event of the specified type with the same
+    /// timestamp as the set_fraction event.
+    ///
+    /// <b>Access type:</b> inputOnly \n
+    auto_ptr< SFFloat > set_fraction;
+
+    /// The key field contains the list of key times, which could appear as:
+    /// key [0 0.25 0.65 0.75 1]
+    /// to indicate there are five key frames in this node.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    auto_ptr< MFFloat > key;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

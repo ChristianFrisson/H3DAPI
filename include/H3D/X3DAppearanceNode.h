@@ -90,6 +90,8 @@ namespace H3D {
 
     /// Contains the Surface node that will determine how an object will 
     /// feel haptically.
+    ///
+    /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFSurface >  surface;
 
     /// The H3DNodeDatabase for this node.

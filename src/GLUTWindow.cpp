@@ -154,8 +154,8 @@ void GLUTWindow::initWindow() {
   // It seems to work even if two GLUTWindow instances
   // are created but this may be system dependent.
   hWnd = FindWindow( "FREEGLUT", "H3D" );
-  wpOrigProc = (WNDPROC) SetWindowLong(hWnd, 
-                GWL_WNDPROC, (LONG) WindowProc);
+  wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                GWL_WNDPROC, (LONG_PTR) WindowProc);
 #endif
 #endif
 }

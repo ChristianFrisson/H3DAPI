@@ -122,13 +122,28 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly
     auto_ptr< SFInt32>    actionKeyRelease;
 
-    /// The altKey field is not supported at this time by H3DAPI.
+    /// Generates events when alt key is used.
+    /// True if the alt key is pressed, false when released.
+    /// The altKey field is not supported at this time by H3DAPI when
+    /// using GLUT on non-Windows systems.
+    ///
+    /// <b>Access type:</b> outputOnly \n
     auto_ptr<  SFBool>    altKey;
 
-    /// The controlKey field is not supported at this time by H3DAPI.
+    /// Generates events when control key is used. True if the control key
+    /// is pressed, false when released.
+    /// The controlKey field is not supported at this time by H3DAPI when
+    /// using GLUT on non-Windows systems.
+    ///
+    /// <b>Access type:</b> outputOnly \n
     auto_ptr<  SFBool>    controlKey;
 
-    /// The shiftKey field is not supported at this time by H3DAPI.
+    /// Generates events when shift key is used. True if the shift key
+    /// is pressed, false when released.
+    /// The shiftKey field is not supported at this time by H3DAPI when
+    /// using GLUT on non-Windows systems.
+    ///
+    /// <b>Access type:</b> outputOnly \n
     auto_ptr<  SFBool>    shiftKey;
 
     /// The keyPress field events are generated as keys which produce

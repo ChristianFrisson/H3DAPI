@@ -110,6 +110,7 @@ namespace H3D {
     /// \dotfile LOD_level_changed.dot
     auto_ptr< SFInt32 > level_changed;
 
+    /// This field is only accessible in C++
     auto_ptr <SFInt32> display_index; 
 
     ///  The center field is a translation
@@ -117,7 +118,8 @@ namespace H3D {
     ///  that specifies the centre of the LOD
     ///  node for distance calculations.
     ///
-    /// <b>Default value:</b> SFVec3f = 0 0 0 \n
+    /// <b>Default value:</b> 0 0 0 \n
+    /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile LOD_center.dot
     auto_ptr< SFVec3f > center;
@@ -127,7 +129,8 @@ namespace H3D {
     /// level distances in order to provide better 
     /// performance.
     ///
-    /// <b>Default value:</b> SFBool = FALSE \n
+    /// <b>Default value:</b> false \n
+    /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile LOD_forceTransitions.dot
     auto_ptr< SFBool > forceTransitions;
@@ -138,6 +141,8 @@ namespace H3D {
     ///
     /// Each value in the range field shall 
     /// be greater than the previous value.
+    ///
+    /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile LOD_range.dot
     auto_ptr< MFFloat > range;

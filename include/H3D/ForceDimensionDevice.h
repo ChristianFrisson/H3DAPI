@@ -166,6 +166,8 @@ namespace H3D {
     /// simulator
     /// - DHD_DEVICE_CUSTOM - Unknown devices.
     /// - -1, device not initialized
+    ///
+    /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFInt32 > deviceType;
 
     /// Node database entry

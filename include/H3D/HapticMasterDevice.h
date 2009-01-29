@@ -79,6 +79,8 @@ namespace H3D {
     static H3DNodeDatabase database;
 
     /// The name of the device as specified in the servers.db file.
+    ///
+    /// <b>Access type:</b> initializeOnly \n
     auto_ptr< SFString > deviceName;
   };
 }

@@ -75,6 +75,7 @@ namespace H3D {
       return "fogCoord";
     }
 
+    /// Depth used to replace the automatic depth.
     /// <b>Access type:</b> inputOutput \n
     ///
     /// \dotfile FogCoordinate_depth.dot

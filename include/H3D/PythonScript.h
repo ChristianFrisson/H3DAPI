@@ -89,7 +89,9 @@ namespace H3D {
 
     /// Through this field one can pass references to Nodes in the scene
     /// graph that can then be access through the 'references' variable
-    /// in the Python script.    
+    /// in the Python script.
+    ///
+    /// <b>Access type:</b> initializeOnly \n
     auto_ptr< MFNode > references;
 
     /// Specify a specific moduleName for the pythonscript. This name should
@@ -98,6 +100,8 @@ namespace H3D {
     /// the DEF-name of the PythonScript will be used. An automatically
     /// generated name will be used if moduleName is empty and the node does
     /// not have a DEF name.
+    ///
+    /// <b>Access type:</b> initializeOnly \n
     auto_ptr< SFString > moduleName;
     
     /// The H3DNodeDatabase for this node.

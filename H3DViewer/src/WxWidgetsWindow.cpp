@@ -86,8 +86,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 #ifdef WIN32
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
   if( hWnd )
-    wpOrigProc = (WNDPROC) SetWindowLong(hWnd, 
-                          GWL_WNDPROC, (LONG) WindowProc);
+    wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                          GWL_WNDPROC, (LONG_PTR) WindowProc);
 #endif
 }
 

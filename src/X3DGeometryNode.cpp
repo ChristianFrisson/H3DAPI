@@ -553,40 +553,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     }
 #endif
  
-    unsigned int geom_count = ti.getGeometryCount( this );      
-    if( geom_count < haptic_shape_ids.size() ) {
-      const Matrix4f &acc_frw = ti.getAccForwardMatrix();
-      if( dynamic_mode != "NEVER" ) {
-        
-        const Matrix4f &last_xf = haptic_shape_ids[ geom_count ].second.first;
-        // calculate the time between this scenegraph loop and last
-        H3DTime dt = (Scene::time->getValue() - haptic_shape_ids[ geom_count ].second.second );
-        // calculate velocities
-        Vec3f velocity = (acc_frw.getTranslationPart() - last_xf.getTranslationPart() ) / dt;
-        Vec3f scale_velocity = (acc_frw.getScalePart() - last_xf.getScalePart() ) / dt;
-        HAPI::Rotation angular_velocity( last_xf.inverse().getRotationPart() * acc_frw.getRotationPart() );
-        angular_velocity.angle = angular_velocity.angle / dt;
-        
-        // set velocities on shape.
-        tri_set->setVelocity( velocity );
-        tri_set->setAngularVelocity( angular_velocity );
-        tri_set->setGrowthRate( scale_velocity );
-        
-        // force the shape to be dynamic if specified in the HapticsOptions
-        if( dynamic_mode == "ALWAYS" )
-          tri_set->setForceDynamic( true );
-        else  if( !(dynamic_mode == "TRANSFORM_CHANGED" || 
-                    dynamic_mode == "ALWAYS" ) ) {
-          Console(4) << "Warning: Invalid dynamic mode: "
-                     << dynamic_mode 
-                     << ". Must be \"ALWAYS\", \"NEVER\" or \"TRANSFORM_CHANGED\" "
-                     << "(in active HapticsOptions node\" )" << endl;
-        } 
-      }
-      
-      haptic_shape_ids[ geom_count ].second = make_pair( acc_frw, 
-                                                         Scene::time->getValue() );
-    }
+    addDynamicInfoToShape( ti, dynamic_mode, tri_set );
   
     ti.addHapticShape( hd_index, tri_set );
   }
@@ -637,39 +604,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     }
 #endif
 
-    unsigned int geom_count = ti.getGeometryCount( this );      
-    if( geom_count < haptic_shape_ids.size() ) {
-      const Matrix4f &acc_frw = ti.getAccForwardMatrix();
-      if( dynamic_mode != "NEVER" ) {
-        
-        const Matrix4f &last_xf = haptic_shape_ids[ geom_count ].second.first;
-        // calculate the time between this scenegraph loop and last
-        H3DTime dt = (Scene::time->getValue() - haptic_shape_ids[ geom_count ].second.second );
-        // calculate velocities
-        Vec3f velocity = (acc_frw.getTranslationPart() - last_xf.getTranslationPart() ) / dt;
-        Vec3f scale_velocity = (acc_frw.getScalePart() - last_xf.getScalePart() ) / dt;
-        HAPI::Rotation angular_velocity( last_xf.inverse().getRotationPart() * acc_frw.getRotationPart() );
-        
-        // set velocities on shape.
-        lin_set->setVelocity( velocity );
-        lin_set->setAngularVelocity( angular_velocity );
-        lin_set->setGrowthRate( scale_velocity );
-        
-        // force the shape to be dynamic if specified in the HapticsOptions
-        if( dynamic_mode == "ALWAYS" )
-          lin_set->setForceDynamic( true );
-        else  if( !(dynamic_mode == "TRANSFORM_CHANGED" || 
-                    dynamic_mode == "ALWAYS" ) ) {
-          Console(4) << "Warning: Invalid dynamic mode: "
-                     << dynamic_mode 
-                     << ". Must be \"ALWAYS\", \"NEVER\" or \"TRANSFORM_CHANGED\" "
-                     << "(in active HapticsOptions node\" )" << endl;
-        } 
-      }
-      
-      haptic_shape_ids[ geom_count ].second = make_pair( acc_frw, 
-                                                         Scene::time->getValue() );
-    }
+    addDynamicInfoToShape( ti, dynamic_mode, lin_set );
 
     ti.addHapticShape( hd_index, lin_set );
   }
@@ -721,40 +656,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     }
 #endif
 
-    unsigned int geom_count = ti.getGeometryCount( this );      
-    if( geom_count < haptic_shape_ids.size() ) {
-      const Matrix4f &acc_frw = ti.getAccForwardMatrix();
-      if( dynamic_mode != "NEVER" ) {
-        
-        const Matrix4f &last_xf = haptic_shape_ids[ geom_count ].second.first;
-        // calculate the time between this scenegraph loop and last
-        H3DTime dt = (Scene::time->getValue() - haptic_shape_ids[ geom_count ].second.second );
-        // calculate velocities
-        Vec3f velocity = (acc_frw.getTranslationPart() - last_xf.getTranslationPart() ) / dt;
-        Vec3f scale_velocity = (acc_frw.getScalePart() - last_xf.getScalePart() ) / dt;
-        HAPI::Rotation angular_velocity( last_xf.inverse().getRotationPart() * acc_frw.getRotationPart() );
-        
-        // set velocities on shape.
-        pt_set->setVelocity( velocity );
-        pt_set->setAngularVelocity( angular_velocity );
-        pt_set->setGrowthRate( scale_velocity );
-        
-        
-        // force the shape to be dynamic if specified in the HapticsOptions
-        if( dynamic_mode == "ALWAYS" )
-          pt_set->setForceDynamic( true );
-        else  if( !(dynamic_mode == "TRANSFORM_CHANGED" || 
-                    dynamic_mode == "ALWAYS" ) ) {
-          Console(4) << "Warning: Invalid dynamic mode: "
-                     << dynamic_mode 
-                     << ". Must be \"ALWAYS\", \"NEVER\" or \"TRANSFORM_CHANGED\" "
-                     << "(in active HapticsOptions node\" )" << endl;
-        } 
-      }
-      
-      haptic_shape_ids[ geom_count ].second = make_pair( acc_frw, 
-                                                         Scene::time->getValue() );
-    }
+    addDynamicInfoToShape( ti, dynamic_mode, pt_set );
 
     ti.addHapticShape( hd_index, pt_set );
   }
@@ -810,3 +712,43 @@ bool X3DGeometryNode::movingSphereIntersect( H3DFloat radius,
   }
   return false;  
 }
+
+void X3DGeometryNode::addDynamicInfoToShape( TraverseInfo &ti,
+                                             const string &dynamic_mode,
+                                             HAPI::HAPIHapticShape *shape ) {
+  unsigned int geom_count = ti.getGeometryCount( this );
+  if( geom_count < haptic_shape_ids.size() ) {
+    const Matrix4f &acc_frw = ti.getAccForwardMatrix();
+    if( dynamic_mode != "NEVER" ) {
+
+      const Matrix4f &last_xf = haptic_shape_ids[ geom_count ].second.first;
+      // calculate the time between this scenegraph loop and last
+      H3DTime dt = (Scene::time->getValue() - haptic_shape_ids[ geom_count ].second.second );
+      // calculate velocities
+      Vec3f velocity = (acc_frw.getTranslationPart() - last_xf.getTranslationPart() ) / dt;
+      Vec3f scale_velocity = (acc_frw.getScalePart() - last_xf.getScalePart() ) / dt;
+      HAPI::Rotation angular_velocity( last_xf.inverse().getRotationPart() * acc_frw.getRotationPart() );
+      angular_velocity.angle = angular_velocity.angle / dt;
+
+      // set velocities on shape.
+      shape->setVelocity( velocity );
+      shape->setAngularVelocity( angular_velocity );
+      shape->setGrowthRate( scale_velocity );
+      
+      // force the shape to be dynamic if specified in the HapticsOptions
+      if( dynamic_mode == "ALWAYS" )
+        shape->setForceDynamic( true );
+      else  if( !(dynamic_mode == "TRANSFORM_CHANGED" ||
+                  dynamic_mode == "ALWAYS" ) ) {
+        Console(4) << "Warning: Invalid dynamic mode: "
+                   << dynamic_mode 
+                   << ". Must be \"ALWAYS\", \"NEVER\" or \"TRANSFORM_CHANGED\" "
+                   << "(in active HapticsOptions node\" )" << endl;
+      }
+    }
+
+    haptic_shape_ids[ geom_count ].second = make_pair( acc_frw, 
+                                                       Scene::time->getValue() );
+  }
+}
+

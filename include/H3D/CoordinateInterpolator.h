@@ -102,11 +102,13 @@ namespace H3D {
 
     /// The values to interpolate between.
     ///
+    /// <b>Access type:</b> inputOutput \n
     /// \dotfile CoordinateInterpolator_keyValue.dot
     auto_ptr< MFVec3f > keyValue;
 
     /// The linearly interpolated result value.
     ///
+    /// <b>Access type:</b> outputOnly \n
     /// \dotfile CoordinateInterpolator_value_changed.dot
     auto_ptr< MFValue > value_changed;
 

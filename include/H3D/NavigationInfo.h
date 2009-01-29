@@ -354,8 +354,6 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFBool > transitionComplete;
 
-    //auto_ptr< MoveAvatar > moveAvatar;
-
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 

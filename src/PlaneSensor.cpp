@@ -154,7 +154,7 @@ void PlaneSensor::Set_PlaneEvents::update() {
             // intersection "browsers may interpret this in a variety of ways"
             // which means doing whatever feels natural.
             // H3DAPI resends last event.
-            cerr << "Outside the plane due to near- and farplane" <<
+            Console(3) << "Outside the plane due to near- and farplane" <<
                     " clipping or other reason, last event resent." << endl;
             ps->send_warning_message = false;
           }

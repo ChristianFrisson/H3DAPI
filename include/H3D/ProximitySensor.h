@@ -167,25 +167,32 @@ namespace H3D {
 
     // Fields
 
-    /// centerOfRotation_changed gives the location of the center
-    /// of rotation of the active viewpoint with respect to 
-    /// center of proximitySensor.
+    /// The centerOfRotation_changed field sends events whenever the user is
+    /// contained within the proximity region and the center of rotation of the
+    /// viewer for EXAMINE mode changes with respect to the ProximitySensor 
+    /// node's coordinate system.
     ///
-    /// <b>Access type:</b> =OutputOnly \n
-    /// <b>Default value:</b> SFVec3f = 0,0,0 \n
+    /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile ProximitySensor_centerOfRotation_changed.dot
     auto_ptr< SFVec3f >  centerOfRotation_changed;
 
-  
+    /// The orientation_changed fields send events whenever the user is
+    /// contained within the proximity region and the orientation of the viewer
+    /// changes with respect to the ProximitySensor
+    /// node's coordinate system including enter and exit times.
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile ProximitySensor_orientation_changed.dot
     auto_ptr< SFRotation >  orientation_changed;
 
-    /// position_changed gives the position
-    /// of the active viewpoint with respect to 
-    /// center of proximitySensor.
+    /// The position_changed fields send events whenever the user is
+    /// contained within the proximity region and the position of the viewer
+    /// changes with respect to the ProximitySensor
+    /// node's coordinate system including enter and exit times.
     ///
-    /// <b>Access type:</b> =OutputOnly \n
-    /// <b>Default value:</b> SFVec3f = 0,0,0 \n
+    /// <b>Access type:</b> outputOnly \n
     /// 
     /// \dotfile ProximitySensor_position_changed.dot
     auto_ptr< SFVec3f >  position_changed;
@@ -193,8 +200,7 @@ namespace H3D {
 
     /// Sets enterTime if the set_boolean value is set 
     /// to TRUE else sets exitTime.
-    /// 
-    /// <b>Access type:</b> inputOnly \n
+    /// Only accessible in C++.
     /// 
     /// \dotfile ProximitySensor_set_time.dot
     auto_ptr< SetTime > set_time;

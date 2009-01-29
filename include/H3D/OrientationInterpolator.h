@@ -93,10 +93,14 @@ namespace H3D {
 
     /// The values to interpolate between.
     ///
+    /// <b>Access type:</b> inputOutput \n
+    ///
     /// \dotfile OrientationInterpolator_keyValue.dot
     auto_ptr< MFRotation >  keyValue;
     
     /// The resulting interpolated value.
+    ///
+    /// <b>Access type:</b> outputOnly \n
     ///
     /// \dotfile OrientationInterpolator_value_changed.dot
     auto_ptr<  SFValue >  value_changed;

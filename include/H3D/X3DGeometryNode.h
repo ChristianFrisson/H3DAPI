@@ -316,6 +316,10 @@ namespace H3D {
                                    H3DInt32 hd_index,
                                    OpenHapticsOptions *openhaptics_options );
 
+    void addDynamicInfoToShape( TraverseInfo &ti,
+                                const string &dynamic_mode,
+                                HAPI::HAPIHapticShape *shape );
+
     /// identifiers for the shapes geometry.
     vector< pair< int, pair< Matrix4f, H3DTime > > > haptic_shape_ids;
 
