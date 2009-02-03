@@ -84,8 +84,7 @@ namespace H3D {
                 Inst< SFBool      > _fullscreen = 0,
                 Inst< SFBool      > _mirrored   = 0,
                 Inst< RenderMode  > _renderMode = 0, 
-                Inst< SFViewpoint > _viewpoint  = 0,
-                Inst< SFTime      > _time       = 0 );
+                Inst< SFViewpoint > _viewpoint  = 0 );
 
     ///// Destructor.
     //~WxWidgetsWindow();

@@ -8,9 +8,9 @@ import string
 cp = ConfigParser.ConfigParser()
 cp.read("h3dload.ini")
 
-stereo_mode_box_options = ["No stereo", "Quad buffered", "Horizontal split", "Vertical split", "Vertical split keep ratio", "Horizontal interlaced", "Vertical interlaced", "Sharp display", "Red-Blue stereo", "Red-Green stereo", "Red-Cyan stereo" ]
+stereo_mode_box_options = ["No stereo", "Quad buffered", "Horizontal split", "Vertical split", "Vertical split keep ratio", "Horizontal interlaced", "Vertical interlaced", "Checker Interlaced", "Sharp display", "Red-Blue stereo", "Red-Green stereo", "Red-Cyan stereo" ]
 
-stereo_mode_strings = [ "MONO", "QUAD_BUFFERED_STEREO", "HORIZONTAL_SPLIT", "VERTICAL_SPLIT", "VERTICAL_SPLIT_KEEP_RATIO", "HORIZONTAL_INTERLACED", "VERTICAL_INTERLACED", "VERTICAL_INTERLACED_GREEN_SHIFT", "RED_BLUE_STEREO", "RED_GREEN_STEREO", "RED_CYAN_STEREO" ]
+stereo_mode_strings = [ "MONO", "QUAD_BUFFERED_STEREO", "HORIZONTAL_SPLIT", "VERTICAL_SPLIT", "VERTICAL_SPLIT_KEEP_RATIO", "HORIZONTAL_INTERLACED", "VERTICAL_INTERLACED", "CHECKER_INTERLACED", "VERTICAL_INTERLACED_GREEN_SHIFT", "RED_BLUE_STEREO", "RED_GREEN_STEREO", "RED_CYAN_STEREO" ]
 
 #----------------------------------------------------------------------
 class MainFrame(wx.Frame):

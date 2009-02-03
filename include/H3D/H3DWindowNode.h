@@ -75,6 +75,9 @@ namespace H3D {
         /// Stereo mode where every second vertical line is rendered for the 
         /// left eye and every other line for the right eye.
         VERTICAL_INTERLACED,  
+        /// Stereo mode where "white" and "black" in a checker pattern
+        /// are rendered for the left and right eye, respectively.
+        CHECKER_INTERLACED,
         /// Stereo mode where every second vertical line is rendered for the 
         /// left eye and every other line for the right eye, but with the green 
         /// pixel shifted one pixel to the right. Used with for example the 
@@ -140,8 +143,7 @@ namespace H3D {
                    Inst< SFBool      > _fullscreen = 0,
                    Inst< SFBool      > _mirrored   = 0,
                    Inst< RenderMode  > _renderMode = 0, 
-                   Inst< SFViewpoint > _viewpoint  = 0,
-                   Inst< SFTime      > _time       = 0 );
+                   Inst< SFViewpoint > _viewpoint  = 0 );
 
     /// Destructor.
     ~H3DWindowNode();
@@ -274,8 +276,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> NULL \n
     auto_ptr< SFViewpoint > viewpoint;
-    
-    auto_ptr< SFTime > time;
+
     static set< H3DWindowNode* > windows;
     
     /// This function shares the rendering context between this H3DWindowNode

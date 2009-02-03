@@ -49,10 +49,9 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
                         Inst< SFBool      > _fullscreen,
                         Inst< SFBool      > _mirrored,
                         Inst< RenderMode  > _renderMode, 
-                        Inst< SFViewpoint > _viewpoint,
-                        Inst< SFTime      > _time     ) :
+                        Inst< SFViewpoint > _viewpoint ) :
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
-                 _viewpoint, _time ),
+                 _viewpoint ),
   theWindow( _theParent ){
   type_name = "WxWidgetsWindow";
   database.initFields( this );

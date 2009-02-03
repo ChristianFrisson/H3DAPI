@@ -82,7 +82,6 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, mirrored, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, renderMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, viewpoint, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( H3DWindowNode, time, INPUT_OUTPUT );
 }
 
 
@@ -95,8 +94,7 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFBool      > _fullscreen,
                    Inst< SFBool      > _mirrored,
                    Inst< RenderMode  > _renderMode, 
-                   Inst< SFViewpoint > _viewpoint,
-                   Inst< SFTime      > _time     ) :
+                   Inst< SFViewpoint > _viewpoint ) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -106,7 +104,6 @@ H3DWindowNode::H3DWindowNode(
   mirrored  ( _mirrored   ),
   renderMode( _renderMode ),
   viewpoint( _viewpoint ),
-  time    ( _time ),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -127,7 +124,6 @@ H3DWindowNode::H3DWindowNode(
   fullscreen->setValue( false );
   mirrored->setValue( false );
   renderMode->setValue( "MONO" );
-  time->setValue( TimeStamp::now() );
 
 #ifdef WIN32
   wpOrigProc = (WNDPROC)DefWindowProc;
@@ -628,14 +624,19 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     stencil_mask_width = w;
     stencil_mask_height = h;
 
-    if( stereo_mode == RenderMode::HORIZONTAL_INTERLACED ) {
+    switch(stereo_mode){
+    case RenderMode::HORIZONTAL_INTERLACED:
       for( int i = 0; i < h; i++ )
         for( int j = 0; j < w; j++ )
           stencil_mask[i*w+j]=(i+1)%2;
-    } else {
+    case RenderMode::VERTICAL_INTERLACED:
       for( int i = 0; i < h; i++ )
         for( int j = 0; j < w; j++ )
           stencil_mask[i*w+j]=(j+1)%2;
+    case RenderMode::CHECKER_INTERLACED:
+      for( int i = 0; i < h; i++ )
+        for( int j = 0; j < w; j++ )
+          stencil_mask[i*w+j]=(i+j+1)%2;
     }
     rebuild_stencil_mask = false;
   }
@@ -736,6 +737,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
              stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
+             stereo_mode == RenderMode::CHECKER_INTERLACED ||
              stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
 
       // Inserted this line to reset the position of the raster
@@ -854,6 +856,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glBlendFunc(GL_ONE, GL_ONE);
     } else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
                stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
+               stereo_mode == RenderMode::CHECKER_INTERLACED ||
                stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_NOTEQUAL,1,1);
@@ -913,7 +916,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
         stereo_mode == RenderMode::RED_CYAN_STEREO )
       glDisable( GL_BLEND );
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
-             stereo_mode == RenderMode::HORIZONTAL_INTERLACED ) 
+             stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
+             stereo_mode == RenderMode::CHECKER_INTERLACED ) 
       glDisable( GL_STENCIL_TEST );
     else if( stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
       glDisable( GL_STENCIL_TEST );
@@ -1070,6 +1074,7 @@ void H3DWindowNode::reshape( int w, int h ) {
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
   if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
       stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
+      stereo_mode == RenderMode::CHECKER_INTERLACED ||
       stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
     rebuild_stencil_mask = true;
   }
@@ -1097,6 +1102,8 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return VERTICAL_INTERLACED;
   else if( value == "HORIZONTAL_INTERLACED" )
     return HORIZONTAL_INTERLACED;
+  else if( value == "CHECKER_INTERLACED" )
+    return CHECKER_INTERLACED;
   else if( value == "RED_BLUE_STEREO" )
     return RED_BLUE_STEREO;
   else if( value == "RED_GREEN_STEREO" )
@@ -1107,9 +1114,16 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return VERTICAL_INTERLACED_GREEN_SHIFT;  
   else {
     stringstream s;
-    s << "Must be one of MONO, QUAD_BUFFERED_STEREO, HORIZONTAL_INTERLACED, "
-      << "VERTICAL_INTERLACED, VERTICAL_INTERLACED_GREEN_SHIFT, "
-      << "VERTICAL_SPLIT, VERTICAL_SPLIT_KEEP_RATIO, HORIZONTAL_SPLIT, "
+    s << "Must be one of "
+      << "MONO, "
+      << "QUAD_BUFFERED_STEREO, "
+      << "HORIZONTAL_INTERLACED, "
+      << "VERTICAL_INTERLACED, "
+      << "CHECKER_INTERLACED, "
+      << "VERTICAL_INTERLACED_GREEN_SHIFT, "
+      << "VERTICAL_SPLIT, "
+      << "VERTICAL_SPLIT_KEEP_RATIO, "
+      << "HORIZONTAL_SPLIT, "
       << "RED_CYAN_STEREO, RED_GREEN_STEREO or RED_BLUE_STEREO. ";
     throw InvalidRenderMode( value, 
                              s.str(),
