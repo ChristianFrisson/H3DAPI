@@ -41,7 +41,9 @@
 #include <H3D/Inline.h>
 #include <H3D/H3DExports.h>
 #include <H3D/ProfilesAndComponents.h>
+#ifdef HAVE_PYTHON
 #include <H3D/PythonScript.h>
+#endif
 
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
@@ -594,6 +596,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
                                 toString( locator->getSystemId() ),
                                 locator->getLineNumber() );
     } else {
+#ifdef HAVE_PYTHON
       if( dynamic_cast< PythonScript * >(parent) ) {
         if( !parent->isInitialized() && parent->getManualInitialize() ) {
           parent->initialize();
@@ -604,6 +607,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
                      << getLocationString() << endl;
         }
       }
+#endif
       
       // Lookup the nodes and fields and set up the route.
       Field *node_field = parent->getField( toString( node_field_name ) ); 
