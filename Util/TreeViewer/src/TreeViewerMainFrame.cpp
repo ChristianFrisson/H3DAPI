@@ -22,7 +22,7 @@ void TreeViewerMainFrame::OnOpenFile( wxCommandEvent& event )
 {
   wxFileDialog *openFileDialog = new wxFileDialog ( this,
                              wxT("Open file"),
-                             "",
+			     wxT(""),
                              wxT(""),
                              wxT("*.*"),
                              wxOPEN,

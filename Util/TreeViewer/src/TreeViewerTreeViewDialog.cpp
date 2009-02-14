@@ -5,12 +5,13 @@ TreeViewerTreeViewDialog::TreeViewerTreeViewDialog( wxWindow* parent )
 :
 TreeViewDialog( parent )
 {
-  TreeViewTree->AddRoot( "World" );
+  TreeViewTree->AddRoot( wxT("World") );
 }
 
 
 void TreeViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
-   TreeViewerFieldValuesDialog *field_values = 
+
+  TreeViewerFieldValuesDialog *field_values = 
     static_cast< TreeViewerApp * >(wxTheApp )->field_values_dialog;
    field_values->displayFieldsFromNode( node_map[ event.GetItem().m_pItem ] );
 }
@@ -20,7 +21,7 @@ void TreeViewerTreeViewDialog::showNodeAsTree( Node *n ) {
   //addSceneToTree( TreeViewTree->GetRootItem(), n );
   addSceneToTree( TreeViewTree->GetRootItem(), *Scene::scenes.begin() );
   
-  wxTreeItemId new_id = TreeViewTree->AppendItem( TreeViewTree->GetRootItem(), "Active bindable nodes" );
+  wxTreeItemId new_id = TreeViewTree->AppendItem( TreeViewTree->GetRootItem(), wxT("Active bindable nodes") );
   const X3DBindableNode::StackMapType &stacks = X3DBindableNode::getStackMap();
   for( X3DBindableNode::StackMapType::const_iterator i = stacks.begin(); i != stacks.end();i++ ) {
     addSceneToTree( new_id, X3DBindableNode::getActive( (*i).first ) );
@@ -34,7 +35,7 @@ void TreeViewerTreeViewDialog::addSceneToTree( wxTreeItemId tree_id, H3D::Node *
   if( n->hasName() ) {
     tree_string = tree_string + " (" + n->getName() + ")";
   }
-  wxTreeItemId new_id = TreeViewTree->AppendItem( tree_id, tree_string );
+  wxTreeItemId new_id = TreeViewTree->AppendItem( tree_id, wxString( tree_string.c_str(), wxConvUTF8 ) );
   unsigned int s1 = node_map.size();
   node_map[ new_id.m_pItem ] = n;
 

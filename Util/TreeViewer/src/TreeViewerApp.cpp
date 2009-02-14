@@ -35,10 +35,10 @@ bool TreeViewerApp::OnInit()
 
   field_values_dialog = new TreeViewerFieldValuesDialog( frame );
   field_values_dialog->Show();
-
+  
   tree_dialog = new TreeViewerTreeViewDialog( frame );
   tree_dialog->Show();
-
+  
 
 
   SetTopWindow( frame );
