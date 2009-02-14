@@ -40,6 +40,7 @@ ResourceResolver::TmpFileNameList ResourceResolver::tmp_files;
 
 string ResourceResolver::resolveURLAsFile( const string &urn,
                                            bool *is_tmp_file ) {
+  if( urn == "" ) return "";
   string filename = urn;
   if( urn_resolver.get() ) {
     filename = urn_resolver->resolveURN( urn );
