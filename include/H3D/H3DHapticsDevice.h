@@ -524,15 +524,23 @@ namespace H3D {
 
     /// The desired update rate of the servoloop of the H3DHapticsDevice.
     /// This only give a hint to the system of what update rate of the haptics
-    /// loop is desired. For most devices the only valid values are 1-1000.
-    /// A value of -1 indicates that the loop should be run as fast as possible
-    /// Those device nodes that does not use these default values there is a
-    /// comment in the description of the node.
-    ///
+    /// loop is desired. A value of -1 indicates that the loop should be run as
+    /// fast as possible.
+    /// The system will try to match the frequency as close as possible but
+    /// the actual frequency is dependent on the frequency of the timer on the 
+    /// system. E.g on a Windows system the multimedia timers are used for
+    /// synchronization. When run at its highest frequence this will have a clock
+    /// cycle of 0.976 ms. This means that the highest frequency we can get is
+    /// 1024. Since we only can get an event from the timer once for each ms, the
+    /// possible frequences are 1024/x, where x is the number of milliseconds to run
+    /// each loop in the thread, i.e. 1024, 512, 342, 256, 205 and so on.
+    /// Some haptics devices uses other synchronization means than the RTC timer
+    /// though and in those cases they might have different possible frequencies.
+    /// The acual haptics rate can be found in the hapticsRate field.
     /// <b>Access type:</b> initializeOnly \n
-    /// <b>Default value:</b> 1000 \n
+    /// <b>Default value:</b> 1024 \n
     /// 
-    /// \dotfile H3DHapticsDevice_hapticsRate.dot
+    /// \dotfile H3DHapticsDevice_desiredHapticsRate.dot
     auto_ptr< SFInt32 >   desiredHapticsRate;
 
     /// The time spent in the last haptics loop(in seconds)

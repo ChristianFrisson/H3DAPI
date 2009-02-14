@@ -146,7 +146,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   mainButton->setValue( false, id );
   secondaryButton->setValue( false, id );
   hapticsRate->setValue( 0, id );
-  desiredHapticsRate->setValue( 1000, id );
+  desiredHapticsRate->setValue( 1024, id );
 
   positionCalibration->route( trackerPosition, id );
   devicePosition->route( trackerPosition, id );
