@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2007, SenseGraphics AB
 //
@@ -115,4 +116,15 @@ void X3DBindableNode::toStackTop() {
     if( active )
       active->isBound->setValue( false, active->id );
   }
+}
+
+
+ /// Return the map of all bindable nodes available.
+const X3DBindableNode::StackMapType &X3DBindableNode::getStackMap() {
+  return stack;
+}
+
+const X3DBindableNode::StackType &X3DBindableNode::getStack
+( const string &bindable_stack_name ) {
+  return stack[ bindable_stack_name ];
 }

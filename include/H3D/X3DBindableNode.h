@@ -154,10 +154,10 @@ namespace H3D {
     }
 
     /// Get the stack for a given name
-    static inline const StackType &getStack
-    ( const string &bindable_stack_name ) {
-      return stack[ bindable_stack_name ];
-    }
+    static const StackType &getStack( const string &bindable_stack_name );
+
+    /// Return the map of all bindable nodes available.
+    static const StackMapType &getStackMap();
 
     /// Move this instance to the stack top. 
     virtual void toStackTop();
