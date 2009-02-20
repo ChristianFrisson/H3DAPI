@@ -42,6 +42,8 @@ namespace H3D {
   /// 
   class H3DAPI_API X3DCoordinateNode : public X3DGeometricPropertyNode {
   public:
+    // Iterator for X3DCoordinateNode, iterates through point field
+    // value of X3DCoordinateNode
     /// Constructor.
     X3DCoordinateNode( Inst< SFNode>  _metadata = 0 );
 
@@ -68,6 +70,53 @@ namespace H3D {
 
     /// Returns the number of coordinates this coordinate node can render.
     virtual unsigned int nrAvailableCoords() = 0; 
+
+    class Iterator {
+    private:
+      X3DCoordinateNode *coord;
+      int index;
+
+    public:
+      Iterator( X3DCoordinateNode* c ) : coord( c ) {
+        index = 0;
+      }
+
+      Iterator() {
+        index = -1;
+      }
+      
+      inline Vec3f operator*() {
+        return coord->getCoord( index );
+      }
+
+      inline Iterator& operator++() {
+        if ( ++index == coord->nrAvailableCoords() )
+          index = -1;
+        return *this;
+      }
+
+      inline Iterator operator++( int ) {
+        Iterator temp = *this;
+        ++(*this);
+        return temp;
+      }
+
+      inline bool operator==( const Iterator &i ) {
+       return this->index == i.index;
+      }
+
+      inline bool operator!=( const Iterator &i ) {
+        return this->index != i.index;
+      }
+    };
+
+    Iterator pointBegin() {
+      return Iterator( this );
+    }
+
+    Iterator pointEnd() {
+      return Iterator();
+    }
   };
 }
 
