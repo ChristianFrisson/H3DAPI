@@ -30,16 +30,25 @@
 
 #include <H3D/CoordBoundField.h>
 #include <H3D/Coordinate.h>
+#include <H3D/CoordinateDouble.h>
 using namespace H3D;
 
 //TODO: Fix so that it works for all X3DCoordinateNode
 void CoordBoundField::update() {
-  Coordinate *c = 
-    dynamic_cast< Coordinate * >( static_cast< TypedSFNode< X3DCoordinateNode> * >
-                                  ( routes_in[0] )->getValue() );
+  X3DCoordinateNode *coord = static_cast< TypedSFNode< X3DCoordinateNode> * >
+                                  ( routes_in[0] )->getValue();
  
   BoxBound *bound = new BoxBound();
-  if ( c )
+
+  if( Coordinate *c = 
+    dynamic_cast< Coordinate * >( coord ) ) {
     bound->fitAroundPoints( c->point->begin(), c->point->end() );
+  } else if ( CoordinateDouble *c = 
+    dynamic_cast< CoordinateDouble * >( coord ) ) {
+    bound->fitAroundPoints( c->point->begin(), c->point->end() );
+  } else if ( c == NULL ) {
+  } else {
+    bound->fitAroundPoints( c->pointBegin(), c->pointEnd() );
+  }
   value = bound;
 }
