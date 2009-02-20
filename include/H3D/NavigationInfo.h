@@ -269,13 +269,7 @@ namespace H3D {
     /// Compares the given X3DViewpointNode to the X3DViewpointNode used by
     /// the NavigationInfo. Used in order to make sure that the same viewpoint
     /// is used for graphics and haptics when a NavigationInfo is in use.
-    inline X3DViewpointNode *
-      viewpointToUse( X3DViewpointNode *potential_vp ) {
-        if( old_vp.get() && old_vp.get() != potential_vp ) {
-          return old_vp.get();
-        }
-        return potential_vp;
-      }
+    X3DViewpointNode * viewpointToUse( X3DViewpointNode *potential_vp );
 
     inline void setNavType( string type ) { nav_type = type; }
 
@@ -361,7 +355,6 @@ namespace H3D {
     static bool linear_interpolate;
     static Vec3f goal_position;
     static Rotation goal_orientation;
-    static AutoRef< X3DViewpointNode > old_vp;
     static Vec3f old_vp_pos;
     static Rotation old_vp_orientation;
     H3DTime start_time;
@@ -372,6 +365,8 @@ namespace H3D {
 
     H3DTime last_time;
     static NavigationInfoList navigationInfos;
+    static AutoRef< X3DViewpointNode > old_vp;
+    friend void H3D::deinitializeH3D();
   };
 }
 

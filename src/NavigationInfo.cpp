@@ -108,6 +108,14 @@ NavigationInfo::NavigationInfo( Inst< SFSetBind > _set_bind,
   navigationInfos.push_back( this );
 }
 
+X3DViewpointNode *
+NavigationInfo::viewpointToUse( X3DViewpointNode *potential_vp ) {
+  if( old_vp.get() && old_vp.get() != potential_vp ) {
+     return old_vp.get();
+  }
+  return potential_vp;
+}
+
 void NavigationInfo::doNavigation( X3DViewpointNode * vp,
                                       X3DChildNode *topNode ) {
   Vec3f vp_pos = vp->position->getValue();

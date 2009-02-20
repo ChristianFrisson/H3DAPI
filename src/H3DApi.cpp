@@ -43,6 +43,7 @@
 #endif
 
 #include <H3D/ResourceResolver.h>
+#include <H3D/NavigationInfo.h>
 
 #ifdef HAVE_FREEIMAGE
 #include <FreeImage.h>
@@ -92,6 +93,10 @@ void H3D::deinitializeH3D() {
   XERCES_CPP_NAMESPACE_USE
   XMLPlatformUtils::Terminate();
 #endif
+
+  // this is needed because of static variable destruction order
+  // cause crashes otherwise.
+  NavigationInfo::old_vp.reset( NULL );
 }
 
 double H3D::getH3DApiVersion() {
