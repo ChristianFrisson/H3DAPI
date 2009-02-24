@@ -166,19 +166,19 @@ namespace H3D {
         return;
       }
       InputIterator i = begin;
-      Vec3f min = *i;
-      Vec3f max = *i;
+      Vec3f min_p( *i );
+      Vec3f max_p( *i );
       i++;
       for( ; i != end; ++i ) {
-        if( (*i).x < min.x ) min.x = (*i).x;
-        if( (*i).y < min.y ) min.y = (*i).y;
-        if( (*i).z < min.z ) min.z = (*i).z;
-        if( (*i).x > max.x ) max.x = (*i).x;
-        if( (*i).y > max.y ) max.y = (*i).y;
-        if( (*i).z > max.z ) max.z = (*i).z;
+        if( (*i).x < min_p.x ) min_p.x = (*i).x;
+        if( (*i).y < min_p.y ) min_p.y = (*i).y;
+        if( (*i).z < min_p.z ) min_p.z = (*i).z;
+        if( (*i).x > max_p.x ) max_p.x = (*i).x;
+        if( (*i).y > max_p.y ) max_p.y = (*i).y;
+        if( (*i).z > max_p.z ) max_p.z = (*i).z;
       }
-      Vec3f s = max - min;
-      center->setValue( min + s / 2.0 );
+      Vec3f s = max_p - min_p;
+      center->setValue( min_p + s / 2.0 );
       size->setValue( s );
     }
 
@@ -191,17 +191,17 @@ namespace H3D {
         return;
       }
       InputIterator i = begin;
-      Vec2f min = *i;
-      Vec2f max = *i;
+      Vec2f min_p(*i);
+      Vec2f max_p(*i);
       i++;
       for( ; i != end; ++i ) {
-        if( (*i).x < min.x ) min.x = (*i).x;
-        if( (*i).y < min.y ) min.y = (*i).y;
-        if( (*i).x > max.x ) max.x = (*i).x;
-        if( (*i).y > max.y ) max.y = (*i).y;
+        if( (*i).x < min_p.x ) min_p.x = (*i).x;
+        if( (*i).y < min_p.y ) min_p.y = (*i).y;
+        if( (*i).x > max_p.x ) max_p.x = (*i).x;
+        if( (*i).y > max_p.y ) max_p.y = (*i).y;
       }
-      Vec2f s = max - min;
-      Vec2f c = min + s / 2.0;
+      Vec2f s = max_p - min_p;
+      Vec2f c = min_p + s / 2.0;
       center->setValue( Vec3f( c.x, c.y, 0.f ) );
       size->setValue( Vec3f( s.x, s.y, 0.f ) );
     }
