@@ -34,9 +34,6 @@
 #include <H3D/MouseSensor.h>
 #endif
 
-#include "WxFrame.h"
-
-
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
@@ -76,12 +73,19 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 #endif
  
   if( !theWindow ) {
-     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"), wxDefaultPosition,
+     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"),
+                              wxDefaultPosition,
                               wxSize( width->getValue(), height->getValue() ));
   }
 
   theWxGLCanvas = new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
               wxSize( width->getValue(), height->getValue() ), attribList );
+  theWxGLContext = new wxGLContext( theWxGLCanvas );
+  wxSizer *tmp_sizer = theWindow->GetSizer();
+  if( tmp_sizer ) {
+    tmp_sizer->Add( theWxGLCanvas, 1, wxEXPAND );
+    theWindow->Layout();
+  }
 #ifdef WIN32
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
   if( hWnd )
@@ -94,7 +98,7 @@ void WxWidgetsWindow::initWindow() {
   last_fullscreen = !fullscreen->getValue();
   theWindow->Show();
   theWxGLCanvas->Show();
-  theWxGLCanvas->SetCurrent();
+  theWxGLCanvas->SetCurrent( *theWxGLContext );
   glClearColor( 0, 0, 0, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClear( GL_COLOR_BUFFER_BIT );
@@ -117,7 +121,7 @@ void WxWidgetsWindow::swapBuffers() {
 }
 
 void WxWidgetsWindow::makeWindowActive() {
-  theWxGLCanvas->SetCurrent();
+  theWxGLCanvas->SetCurrent( *theWxGLContext );
 }
 
 BEGIN_EVENT_TABLE(WxWidgetsWindow::MyWxGLCanvas, wxGLCanvas)
@@ -152,14 +156,16 @@ WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
                                                   long _style, 
                                                   const wxString& _name,
                                                   const wxPalette& _palette ):
-wxGLCanvas(_parent, _id, _pos, _size, _style | wxFULL_REPAINT_ON_RESIZE, _name,
-           _attribList, _palette),
+wxGLCanvas( _parent, _id, _attribList, _pos, _size,
+            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
+            _palette ),
 myOwner( _myOwner )
 {
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
-  static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
+  //TODO:
+  //  static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
   event.RequestMore();
 }
 
@@ -168,8 +174,8 @@ void WxWidgetsWindow::MyWxGLCanvas::OnSize( wxSizeEvent& event ) {
   // set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
   int w, h;
   GetClientSize(&w, &h);
-  if ( GetContext() )
-    myOwner->reshape( w, h );
+  //if ( GetContext() )
+  myOwner->reshape( w, h );
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnPaint( wxPaintEvent& WXUNUSED(event))

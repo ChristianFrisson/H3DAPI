@@ -339,6 +339,7 @@ namespace H3D {
 
     /// Destructor
     virtual ~X3DViewpointNode() {
+      removeFromStack();
       viewpoints.remove( this );
     }
 

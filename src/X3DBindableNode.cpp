@@ -77,11 +77,13 @@ void X3DBindableNode::removeFromStack() {
     bool is_active = (s.front() == this);
     
     if ( is_active ) {
-      X3DBindableNode *new_top = s.front();
       s.pop_front();
       isBound->setValue( false, id );
-      new_top->isBound->setValue( true, new_top->id );
-      new_top->bindTime->setValue( TimeStamp(), new_top->id );
+      if( !s.empty() ) {
+        X3DBindableNode *new_top = s.front();
+        new_top->isBound->setValue( true, new_top->id );
+        new_top->bindTime->setValue( TimeStamp(), new_top->id );
+      }
     } else {
       for( StackType::iterator i = s.begin();
            i != s.end(); i++ ) {

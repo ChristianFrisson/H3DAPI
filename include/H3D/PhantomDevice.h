@@ -49,7 +49,9 @@ namespace H3D {
   /// formula floor(8000/N + 0.5) are valid for devices connecting through
   /// Firewire. The first successful initialization of PhantomDevice
   /// will decide the haptics thread rate since only one scheduler is used by
-  /// OpenHaptics even for dual device configurations.
+  /// OpenHaptics even for dual device configurations. The default value for
+  /// the field desiredHapticsRate is different from the default value of
+  /// H3DHapticsDevice since the allowed values of this field differs.
   class H3DAPI_API PhantomDevice: public H3DHapticsDevice {
   public:
 

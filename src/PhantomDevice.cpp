@@ -118,6 +118,8 @@ PhantomDevice::PhantomDevice(
   maxWorkspaceDimensions->resize( 2, Vec3f(0,0,0), id );
   usableWorkspaceDimensions->resize( 2, Vec3f(0,0,0), id );
   needsCalibration->setValue( false, id );
+
+  desiredHapticsRate->setValue( 1000, id );
 }
 
 void PhantomDevice::initialize() {

@@ -96,14 +96,16 @@ void DeviceInfo::removeFromStack() {
       hd->releaseDevice();
     }
   }
-  DeviceInfo *new_top = 
-    static_cast< DeviceInfo * >( stack[bindable_stack_name].front() );
-  if( new_top ) {
-    for( MFDevice::const_iterator i = new_top->device->begin();
-         i != new_top->device->end(); i++ ) {
-      H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
-      if( hd ) {
-        hd->initDevice();
+  if( !stack[bindable_stack_name].empty() ) {
+    DeviceInfo *new_top = 
+      static_cast< DeviceInfo * >( stack[bindable_stack_name].front() );
+    if( new_top ) {
+      for( MFDevice::const_iterator i = new_top->device->begin();
+        i != new_top->device->end(); i++ ) {
+          H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
+          if( hd ) {
+            hd->initDevice();
+          }
       }
     }
   }

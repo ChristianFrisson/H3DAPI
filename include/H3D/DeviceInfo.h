@@ -51,6 +51,10 @@ namespace H3D {
                 Inst< SFBool    >  _isBound         = 0,
                 Inst< MFDevice  >  _device          = 0 );
 
+    virtual ~DeviceInfo() {
+      removeFromStack();
+    }
+
     /// Convenience function to get the top of the DeviceInfo stack.
     static inline DeviceInfo *getActive() {
       return static_cast< DeviceInfo * >( X3DBindableNode::getActive( "DeviceInfo" ) );

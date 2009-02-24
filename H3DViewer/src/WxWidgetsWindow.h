@@ -111,6 +111,7 @@ namespace H3D {
   protected:
     wxWindow * theWindow;
     MyWxGLCanvas * theWxGLCanvas;
+    wxGLContext * theWxGLContext;
 	bool last_fullscreen;
   };
 }
