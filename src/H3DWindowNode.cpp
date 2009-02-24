@@ -52,6 +52,7 @@
 #include <H3D/X3DLightNode.h>
 #include <H3D/CollisionOptions.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/OrthoViewpoint.h>
 
 #include <H3DUtil/TimeStamp.h>
 #include <H3DUtil/Exception.h>
@@ -583,8 +584,16 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // otherwise use the stack top of the Viewpoint bindable stack.
   X3DViewpointNode *vp =
     static_cast< X3DViewpointNode * >( viewpoint->getValue() );
-  if( !vp ) 
+  if( !vp ) {
+    // we have at least 2 Viewpoints and are using a default local viewpoint
+    // this means that we should not have a default local viewpoint any more
+    // so remove it and activate the first in the list of new viewpoints
+    if( X3DViewpointNode::getAllViewpoints().size() > 1 && vp_ref.get() ) {
+      vp_ref.reset( NULL );
+      X3DViewpointNode::getAllViewpoints().front()->set_bind->setValue( true );
+    }
     vp = static_cast< X3DViewpointNode * >(X3DViewpointNode::getActive());
+  }
   if ( ! vp ) {
     vp = new Viewpoint;
     vp_ref.reset( static_cast<Viewpoint *>(vp) );
@@ -716,7 +725,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
     
     //TODO: correct the stereo for ORTHO (if possible)
-    if( dynamic_cast< Viewpoint * >(vp) ) {
+    // also make more general. Maybe let each viewpoint set
+    // up its own projection matrix.
+    if( !dynamic_cast< OrthoViewpoint * >(vp) ) {
       glFrustum( left + frustum_shift,
                  right + frustum_shift,
                  bottom, top, 
@@ -821,7 +832,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glFrontFace( GL_CCW );
     }
     //TODO: correct the stereo for ORTHO (if possible)
-    if( dynamic_cast< Viewpoint * >(vp) ) {
+    // also make more general. Maybe let each viewpoint set
+    // up its own projection matrix.
+    if( !dynamic_cast< OrthoViewpoint * >(vp) ) {
       glFrustum( left - frustum_shift,
                  right - frustum_shift,
                  bottom, top, 
@@ -980,7 +993,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else {
       glFrontFace( GL_CCW );
     }
-    if( dynamic_cast< Viewpoint * >(vp) ) {
+
+    // TODO: Make more general. Maybe let each viewpoint set
+    // up its own projection matrix.
+    if( !dynamic_cast< OrthoViewpoint * >(vp) ) {
       glFrustum(left,right,bottom,top,clip_near,clip_far);
     }
     else {
