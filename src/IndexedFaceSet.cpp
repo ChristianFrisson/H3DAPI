@@ -508,8 +508,8 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
           }
           // we did not find any edges that could be used for 
           // generate a normal so just add a dummy normal.
-          if( coord_index[j] == -1 ||
-              j >= coord_index.size()) {
+          if( j >= coord_index.size() ||
+              coord_index[j] == -1 ) {
             norm = Vec3f( 1, 0, 0 );
           }
         }
