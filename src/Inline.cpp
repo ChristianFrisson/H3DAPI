@@ -121,7 +121,8 @@ void Inline::LoadedScene::update() {
 #endif
 	  {
           Group *g = X3D::createX3DFromURL( url, NULL, 
-                                            &inline_node->exported_nodes );
+                                            &inline_node->exported_nodes,
+                                            NULL, !is_tmp_file );
           if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
           value.push_back( g );
           inline_node->setURLUsed( *i );

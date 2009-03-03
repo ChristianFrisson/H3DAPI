@@ -89,11 +89,17 @@ namespace H3D {
     /// that are exported with the EXPORT statement.
     /// \param prototypes A map from the PROTO declaration nodes specified
     /// in the URL.
+    /// \param change_base_path_during_parsing If true, the base path of the 
+    /// ResourceResolver will be set to the part of urn that is before
+    /// the file name during parsing of this file. 
+    /// E.g. if urn is /test/test.x3d, the base path will be set to /test/. 
+    /// If false, it will remain what it was before calling this function.
     /// \return A Group containing the nodes created.
     H3DAPI_API Group* createVRMLFromURL( const string &urn,
                                          DEFNodes *dn = NULL,
                                          DEFNodes *exported_nodes = NULL,
-                                         PrototypeVector *prototypes = NULL  );
+                                         PrototypeVector *prototypes = NULL,
+                                         bool change_base_path_during_parsing = true  );
 
 
     /// Create a H3D Node given VRML data as a istream
@@ -138,12 +144,18 @@ namespace H3D {
     /// that are exported with the EXPORT statement.
     /// \param prototypes A map from the PROTO declaration nodes specified
     /// in the URL.
+    /// \param change_base_path_during_parsing If true, the base path of the 
+    /// ResourceResolver will be set to the part of urn that is before
+    /// the file name during parsing of this file. 
+    /// E.g. if urn is /test/test.x3d, the base path will be set to /test/. 
+    /// If false, it will remain what it was before calling this function.
     /// \return The created Node.
     H3DAPI_API AutoRef<Node> createVRMLNodeFromURL( 
                  const string &urn,
                  DEFNodes *dn = NULL,
                  DEFNodes *exported_nodes = NULL,
-                 PrototypeVector *prototypes = NULL 
+                 PrototypeVector *prototypes = NULL,
+                 bool change_base_path_during_parsing = true 
                  );
 
 

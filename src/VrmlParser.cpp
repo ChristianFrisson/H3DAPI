@@ -100,7 +100,8 @@ Group* X3D::createVRMLFromString( const string &str,
 Group* X3D::createVRMLFromURL( const string &url,
                                DEFNodes *dn,
                                DEFNodes *exported_nodes,
-                               PrototypeVector *prototypes ) {
+                               PrototypeVector *prototypes,
+                               bool change_base_path_during_parsing ) {
   Group *g = new Group;
 
   URNResolver *urn_resolver = ResourceResolver::getURNResolver();
@@ -113,7 +114,8 @@ Group* X3D::createVRMLFromURL( const string &url,
   bool is_tmp_file;
   string resolved_url = ResourceResolver::resolveURLAsFile( url, 
                                                             &is_tmp_file );
-  ResourceResolver::setBaseURL( path ); 
+  if( change_base_path_during_parsing )
+    ResourceResolver::setBaseURL( path ); 
 
   if( resolved_url == "" ) {
     Console(3) << "WARNING: Could not open file " 
@@ -173,9 +175,10 @@ AutoRef< Node > X3D::createVRMLNodeFromString( const string &str,
 }
 
 AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
-                                             DEFNodes *dn,
-                                             DEFNodes *exported_nodes,
-                                             PrototypeVector *prototypes ) {
+                                            DEFNodes *dn,
+                                            DEFNodes *exported_nodes,
+                                            PrototypeVector *prototypes,
+                                            bool change_base_path_during_parsing ) {
   AutoRef< Node > g;
   VrmlDriver driver;
   
@@ -189,7 +192,9 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
   bool is_tmp_file;
   string resolved_url = ResourceResolver::resolveURLAsFile( url, 
                                                             &is_tmp_file );
-  ResourceResolver::setBaseURL( path ); 
+
+  if( change_base_path_during_parsing )
+    ResourceResolver::setBaseURL( path ); 
 
   if( resolved_url == "" ) {
     Console(3) << "WARNING: Could not open file " 

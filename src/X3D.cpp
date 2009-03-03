@@ -101,7 +101,8 @@ Group* X3D::createX3DFromString( const string &str,
 Group* X3D::createX3DFromURL( const string &url,
                               DEFNodes *dn,
                               DEFNodes *exported_nodes,
-                              PrototypeVector *prototypes ) {
+                              PrototypeVector *prototypes,
+                              bool change_base_path_during_parsing ) {
   URNResolver *urn_resolver = ResourceResolver::getURNResolver();
   string urn = url;
   if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
@@ -134,7 +135,8 @@ Group* X3D::createX3DFromURL( const string &url,
   }
 #endif
 
-  ResourceResolver::setBaseURL( path ); 
+  if( change_base_path_during_parsing )
+    ResourceResolver::setBaseURL( path ); 
 
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
@@ -186,7 +188,8 @@ Group* X3D::createX3DFromURL( const string &url,
     if ( isVRML( istest ) ) {
       istest.close();
       Group *g = createVRMLFromURL( resolved_url, dn,
-                                    exported_nodes, prototypes );
+                                    exported_nodes, prototypes,
+                                    change_base_path_during_parsing );
       if( is_tmp_file ) 
         ResourceResolver::releaseTmpFileName( resolved_url );
       ResourceResolver::setBaseURL( old_base );
@@ -265,8 +268,9 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
 
 AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
                                            DEFNodes *dn,
-             DEFNodes *exported_nodes,
-             PrototypeVector *prototypes ) {
+                                           DEFNodes *exported_nodes,
+                                           PrototypeVector *prototypes,
+                                           bool change_base_path_during_parsing ) {
 
   URNResolver *urn_resolver = ResourceResolver::getURNResolver();
   string urn = url;
@@ -300,7 +304,8 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   }
 #endif
 
-  ResourceResolver::setBaseURL( path ); 
+  if( change_base_path_during_parsing )
+    ResourceResolver::setBaseURL( path ); 
 
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
@@ -355,7 +360,8 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
       // will to its own resolving.
       ResourceResolver::setBaseURL( old_base );
       AutoRef< Node > n = createVRMLNodeFromURL( resolved_url, dn,
-                                                 exported_nodes, prototypes );
+                                                 exported_nodes, prototypes,
+                                                 change_base_path_during_parsing );
       if( is_tmp_file ) 
         ResourceResolver::releaseTmpFileName( resolved_url );
       ResourceResolver::setBaseURL( old_base );
