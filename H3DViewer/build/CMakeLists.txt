@@ -7,7 +7,14 @@ ENDIF(WIN32)
 project (H3DViewer)
 
 # Source files.
-AUX_SOURCE_DIRECTORY(../src H3DViewer_SRCS)
+SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/ConsoleDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/ConsoleDialog.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxFrame.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxFrame.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.h" )
 
 # Include directories.
 INCLUDE_DIRECTORIES( ../src )

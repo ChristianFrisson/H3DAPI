@@ -8,7 +8,7 @@ ENDIF(WIN32)
 project (NodeRoutesToDotFile)
 
 # Where to find Source files.
-AUX_SOURCE_DIRECTORY(. NodeRoutesToDotFile_SRCS)
+SET( NodeRoutesToDotFile_SRCS "${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cpp" )
 
 # Add optional libs to this variable.
 SET(optionalLibs)

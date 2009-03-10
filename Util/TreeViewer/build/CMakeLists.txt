@@ -7,7 +7,18 @@ ENDIF(WIN32)
 project (TreeViewer)
 
 # Source files.
-AUX_SOURCE_DIRECTORY(../src TreeViewer_SRCS)
+SET( TreeViewer_SRCS "${TreeViewer_SOURCE_DIR}/../src/TreeViewer.cpp"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewer.h"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerApp.cpp"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerApp.h"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerFieldValuesDialog.cpp"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerFieldValuesDialog.h"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerMainFrame.cpp"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerMainFrame.h"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerTreeViewDialog.cpp"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewerTreeViewDialog.h"
+                     "${TreeViewer_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"
+                     "${TreeViewer_SOURCE_DIR}/../src/WxWidgetsWindow.h" )
 
 # Include directories.
 INCLUDE_DIRECTORIES( ../src )

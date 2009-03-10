@@ -7,7 +7,19 @@ ENDIF(WIN32)
 project (ParticleDemo)
 
 # Source files.
-AUX_SOURCE_DIRECTORY(../src ParticleDemo_SRCS)
+SET( ParticleDemo_SRCS
+       "${ParticleDemo_SOURCE_DIR}/../src/ConsoleDialog.cpp"
+       "${ParticleDemo_SOURCE_DIR}/../src/ConsoleDialog.h"
+       "${ParticleDemo_SOURCE_DIR}/../src/EmitterSettings.cpp"
+       "${ParticleDemo_SOURCE_DIR}/../src/EmitterSettings.h"
+       "${ParticleDemo_SOURCE_DIR}/../src/Envini.h"
+       "${ParticleDemo_SOURCE_DIR}/../src/ParticleDemo.cpp"
+       "${ParticleDemo_SOURCE_DIR}/../src/PhysicsModels.cpp"
+       "${ParticleDemo_SOURCE_DIR}/../src/PhysicsModels.h"
+       "${ParticleDemo_SOURCE_DIR}/../src/WxFrame.cpp"
+       "${ParticleDemo_SOURCE_DIR}/../src/WxFrame.h"
+       "${ParticleDemo_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"
+       "${ParticleDemo_SOURCE_DIR}/../src/WxWidgetsWindow.h" )
 
 # Include directories.
 INCLUDE_DIRECTORIES( ../src )

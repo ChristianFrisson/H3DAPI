@@ -8,7 +8,7 @@ ENDIF(WIN32)
 project (H3DLoad)
 
 # Where to find Source files.
-AUX_SOURCE_DIRECTORY(../src H3DLoad_SRCS)
+SET( H3DLoad_SRCS "${H3DLoad_SOURCE_DIR}/../src/H3DLoad.cpp" )
 
 # Add optional libs to this variable.
 SET(optionalLibs)
