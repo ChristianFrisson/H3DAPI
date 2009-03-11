@@ -879,6 +879,9 @@ namespace H3D {
 
     /// Returns the scaling part of the Matrix4f.
     static PyObject* getScalePart( PyObject *self, PyObject *args );
+    
+    /// Returns the translation part of the Matrix4f.
+    static PyObject* getTranslationPart( PyObject *self, PyObject *args );
 
     /// Get an element in the matrix.
     static PyObject* getElement( PyObject *self, PyObject *args );
@@ -1047,6 +1050,9 @@ namespace H3D {
 
     /// Returns the scaling part of the Matrix4d.
     static PyObject* getScalePart( PyObject *self, PyObject *args );
+
+    /// Returns the translation part of the Matrix4d.
+    static PyObject* getTranslationPart( PyObject *self, PyObject *args );
 
     /// Get an element in the matrix.
     static PyObject* getElement( PyObject *self, PyObject *args );

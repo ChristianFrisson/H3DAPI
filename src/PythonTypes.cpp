@@ -1826,6 +1826,7 @@ self, name, field_type, access_type )" );
      (PyCFunction)PyMatrix4f::getScaleRotationPart, 0 },
     { "getRotationPart", (PyCFunction)PyMatrix4f::getRotationPart, 0 },
     { "getScalePart", (PyCFunction)PyMatrix4f::getScalePart, 0 },
+    { "getTranslationPart", (PyCFunction)PyMatrix4f::getTranslationPart, 0 },
     { "getElement", (PyCFunction)PyMatrix4f::getElement, 0 },    
     { "setElement", (PyCFunction)PyMatrix4f::setElement, 0 },
     {NULL, NULL}
@@ -2112,6 +2113,11 @@ self, name, field_type, access_type )" );
   PyObject* PyMatrix4f::getScalePart( PyObject *myself, PyObject *args ) {
     Matrix4f m = PyMatrix4f_AsMatrix4f( myself );
     return PyVec3f_FromVec3f( m.getScalePart() );
+  }
+
+  PyObject* PyMatrix4f::getTranslationPart( PyObject *myself, PyObject *args ) {
+    Matrix4f m = PyMatrix4f_AsMatrix4f( myself );
+    return PyVec3f_FromVec3f( m.getTranslationPart() );
   }
 
   PyObject* PyMatrix4f::getRow( PyObject *myself, PyObject *args ) {
@@ -2474,6 +2480,7 @@ self, name, field_type, access_type )" );
       (PyCFunction)PyMatrix4d::getScaleRotationPart, 0 },
     { "getRotationPart", (PyCFunction)PyMatrix4d::getRotationPart, 0 },
     { "getScalePart", (PyCFunction)PyMatrix4d::getScalePart, 0 },
+    { "getTranslationPart", (PyCFunction)PyMatrix4d::getTranslationPart, 0 },
     { "getElement", (PyCFunction)PyMatrix4d::getElement, 0 },    
     { "setElement", (PyCFunction)PyMatrix4d::setElement, 0 },
     {NULL, NULL}
@@ -2759,6 +2766,11 @@ self, name, field_type, access_type )" );
   PyObject* PyMatrix4d::getScalePart( PyObject *myself, PyObject *args ) {
     Matrix4d m = PyMatrix4d_AsMatrix4d( myself );
     return PyVec3d_FromVec3d( m.getScalePart() );
+  }
+
+  PyObject* PyMatrix4d::getTranslationPart( PyObject *myself, PyObject *args ) {
+    Matrix4d m = PyMatrix4d_AsMatrix4d( myself );
+    return PyVec3d_FromVec3d( m.getTranslationPart() );
   }
 
   PyObject* PyMatrix4d::getRow( PyObject *myself, PyObject *args ) {
