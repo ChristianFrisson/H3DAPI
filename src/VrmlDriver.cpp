@@ -103,7 +103,9 @@ void VrmlDriver::setFieldValue( const char *v ) {
   const char *p=v;
   const char *l=0;
   const char *r=0;
+  bool sf_or_mf_string = false;
   if ( dynamic_cast<SFString*>(field) ) {
+    sf_or_mf_string = true;
     while ( *p=='\n' || *p==' ' || *p=='\t' ) p++;
     if ( *p=='"' ) {
       l=p+1;
@@ -121,12 +123,19 @@ void VrmlDriver::setFieldValue( const char *v ) {
   if ( pfield ) {
     string s;
     s.reserve( strlen(v) );
+    if( !sf_or_mf_string && dynamic_cast< MFString *>(field) ) {
+      sf_or_mf_string = true;
+    }
+
     // first remove all VRML comments from the string:
     const char *p;
     if ( l != NULL ) p=l; else p=v;
     while( p && *p!='\0' && p!=r ) {
       if ( *p != '#' ) {
-        s += *p;
+        if( !sf_or_mf_string && (*p) == ',' )
+          s += ' ';
+        else
+          s += *p;
         p++;
       } else {
         while( p && *p != '\0' && *p != '\n' ) p++;
