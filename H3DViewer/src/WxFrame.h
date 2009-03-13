@@ -44,7 +44,6 @@
 #include <H3D/Transform.h>
 #include <H3D/Scene.h>
 #include <H3D/KeySensor.h>
-#include <H3D/MouseSensor.h>
 #include <H3D/SpaceWareSensor.h>
 #include <H3D/DeviceInfo.h>
 #include <H3D/ResourceResolver.h>
@@ -354,7 +353,6 @@ private:
   // Autoref Variables
   AutoRef< Scene > scene;
   AutoRef< KeySensor > ks;
-  AutoRef< MouseSensor > ms;
   AutoRef< SpaceWareSensor > ss;
   AutoRef< Transform > t;
   AutoRef< Node > device_info;
@@ -372,6 +370,23 @@ private:
   AutoRef< StereoInfo > stereo_info;
 
   friend class SettingsDialog;
+
+  class ChangeNavType : public AutoUpdate< SFString > { 
+  public:
+    ChangeNavType() : glwindow( 0 ), speed_increment( 0.1f ) {}
+
+    inline void setOwnerWindow( H3DWindowNode * owner_window ) {
+      glwindow = owner_window;
+    }
+
+  protected:
+    virtual void update();
+
+    H3DWindowNode *glwindow;
+    H3DFloat speed_increment;
+  };
+
+  auto_ptr< ChangeNavType > change_nav_type;
 
 protected:
   DECLARE_EVENT_TABLE()
