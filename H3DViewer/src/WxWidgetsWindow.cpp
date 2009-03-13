@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "WxWidgetsWindow.h"
+#include "WxFrame.h"
 #ifndef WIN32
 #include <H3D/X3DKeyDeviceSensorNode.h>
 #include <H3D/MouseSensor.h>
@@ -164,8 +165,7 @@ myOwner( _myOwner )
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
-  //TODO:
-  //  static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
+  static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
   event.RequestMore();
 }
 
