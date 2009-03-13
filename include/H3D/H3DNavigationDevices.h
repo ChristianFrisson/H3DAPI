@@ -40,6 +40,19 @@ namespace H3D {
   class H3DAPI_API H3DNavigationDevices {
   public:
 
+    struct MoveInfo{
+    public:
+      MoveInfo() {
+        zoom = false;
+        use_center_sum = false;
+      }
+      Vec3f translation_sum;
+      Rotation rotation_sum;
+      Vec3f center_of_rot_sum;
+      bool use_center_sum;
+      bool zoom;
+    };
+
     /// Constructor.
     H3DNavigationDevices();
 
@@ -50,27 +63,26 @@ namespace H3D {
 
     /// Call this function to sum up movement changes from all devices
     /// returns true if there are changes.
-    static bool getMoveInfo( Vec3f &translationSum, Rotation &rotationSum,
-                             Vec3f &center_of_rot_sum, bool &use_center_sum ) {
+    static bool getMoveInfo( MoveInfo &move_info ) {
       bool somethingmoved = false;
       int centerCounter = 0;
-      use_center_sum = false;
       for( list< H3DNavigationDevices * >::iterator i = h3dnavigations.begin();
            i != h3dnavigations.end(); i++ ) {
         if( (*i)->shouldGetInfo->getValue() ) {
-          translationSum += (*i)->move_dir;
-          rotationSum = rotationSum * (*i)->rel_rot;
+          move_info.translation_sum += (*i)->move_dir;
+          move_info.rotation_sum = move_info.rotation_sum * (*i)->rel_rot;
+          move_info.zoom = (*i)->zoom;
           if( (*i)->use_center ) {
-            use_center_sum = true;
+            move_info.use_center_sum = true;
             centerCounter++;
-            center_of_rot_sum += (*i)->getCenterOfRot();
+            move_info.center_of_rot_sum += (*i)->getCenterOfRot();
           }
           (*i)->resetAll();
           somethingmoved = true;
         }
       }
-      if( use_center_sum )
-        center_of_rot_sum /= centerCounter;
+      if( move_info.use_center_sum )
+        move_info.center_of_rot_sum /= centerCounter;
       return somethingmoved;
     }
 
@@ -106,6 +118,7 @@ namespace H3D {
     Rotation rel_rot;
     Vec3f center_of_rot;
     bool use_center;
+    bool zoom;
 
     virtual Vec3f getCenterOfRot(){
       return center_of_rot;
