@@ -198,8 +198,6 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-
-     auto_ptr< SFInt32 > depth;
   };
 }
 

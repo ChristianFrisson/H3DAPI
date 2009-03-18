@@ -634,7 +634,10 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
 /*******************Member Functions*********************/
 
 bool WxFrame::loadFile( const string &filename) {
-  
+#ifdef WIN32
+  UINT old_error_mode;
+  old_error_mode = SetErrorMode( 0 );
+#endif
   char *r = getenv( "H3D_ROOT" );
 
   string h3d_root = r ? r : ""; 
@@ -902,6 +905,9 @@ bool WxFrame::loadFile( const string &filename) {
     s << e;
     wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
+#ifdef WIN32
+    SetErrorMode( old_error_mode );
+#endif
     return false;
   }
 
@@ -1151,7 +1157,9 @@ bool WxFrame::loadFile( const string &filename) {
 
   H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
   settings->on_cancel_rebuild_displaylist = false;
-
+#ifdef WIN32
+  SetErrorMode( old_error_mode );
+#endif
   return true;
 }
 

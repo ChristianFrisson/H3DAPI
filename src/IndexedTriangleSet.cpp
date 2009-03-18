@@ -50,7 +50,6 @@ H3DNodeDatabase IndexedTriangleSet::database(
 namespace IndexedTriangleSetInternals {
   FIELDDB_ELEMENT( IndexedTriangleSet, set_index, INPUT_ONLY );
   FIELDDB_ELEMENT( IndexedTriangleSet, index, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( IndexedTriangleSet, depth, INPUT_OUTPUT );
 }
 
 
@@ -77,8 +76,7 @@ X3DComposedGeometryNode( _metadata, _bound, _displayList,
                         _solid, _attrib, _fogCoord ),
                         autoNormal( _autoNormal ),   
                         set_index( _set_index ),
-                        index( _index ),
-                        depth( new SFInt32 ) {
+                        index( _index ) {
 
                           type_name = "IndexedTriangleSet";
                           database.initFields( this );
@@ -95,9 +93,6 @@ X3DComposedGeometryNode( _metadata, _bound, _displayList,
                           ccw->route( autoNormal );
 
                           coord->route( bound );
-
-                          depth->setValue( 0 );
-                          depth->route( displayList );
 }
 
 void IndexedTriangleSet::render() {
