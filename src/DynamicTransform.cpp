@@ -129,6 +129,7 @@ DynamicTransform::DynamicTransform(
   inertiaTensor->route( angularVelocity, id );
   angularMomentum->route( angularVelocity, id );
 
+  motion->setOwner( this );
   Scene::time->route( motion );
   motion->route( Scene::eventSink );
 }
