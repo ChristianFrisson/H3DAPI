@@ -19,7 +19,8 @@ protected:
 	void OnOpenFile( wxCommandEvent& event );
 	void OnClose( wxCommandEvent& event );
 	void OnQuit( wxCommandEvent& event );
-	
+
+  TimeStamp last_tree_update;
 public:
 	/** Constructor */
 	TreeViewerMainFrame( wxWindow* parent );

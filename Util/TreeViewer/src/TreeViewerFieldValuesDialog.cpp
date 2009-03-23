@@ -30,8 +30,18 @@ void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
         
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
-       
-    } else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
+
+    } /*else if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
+      if( rows >= FieldValuesGrid->GetNumberRows() ) {
+         FieldValuesGrid->AppendRows(1);
+         FieldValuesGrid->SetCellRenderer( rows, 1, new wxGridCellBoolRenderer );
+         FieldValuesGrid->SetCellEditor( rows, 1, new wxGridCellBoolEditor );
+      }
+
+      if( string( FieldValuesGrid->GetCellValue( rows, 0 ).mb_str() ) != *i )
+        FieldValuesGrid->SetCellValue( rows, 0, wxString( (*i).c_str() , wxConvUTF8) );
+      rows++;
+      } */ else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
       if( pfield->getAccessType() != Field::INPUT_ONLY ) {
         if( rows >= FieldValuesGrid->GetNumberRows() )
           FieldValuesGrid->AppendRows(1);

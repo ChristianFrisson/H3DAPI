@@ -1,6 +1,7 @@
 #include "TreeViewerApp.h"
 #include "TreeViewerMainFrame.h"
 #include "WxWidgetsWindow.h"
+#include "ConsoleDialog.h"
 #include <H3D/Group.h>
 
 H3D::AutoRef< H3D::Scene > TreeViewerApp::h3d_scene;
@@ -39,7 +40,9 @@ bool TreeViewerApp::OnInit()
   tree_dialog = new TreeViewerTreeViewDialog( frame );
   tree_dialog->Show();
   
-
+  console_dialog = new consoleDialog(frame, wxID_ANY, wxT("Console"), 
+                                     wxDefaultPosition, wxDefaultSize,
+                                     wxDEFAULT_DIALOG_STYLE);  console_dialog->Show();
 
   SetTopWindow( frame );
   return true;

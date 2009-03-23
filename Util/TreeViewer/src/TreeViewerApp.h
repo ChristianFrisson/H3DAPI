@@ -4,6 +4,7 @@
 #include <wx/wx.h>
 #include <H3D/Scene.h>
 #include "WxWidgetsWindow.h"
+#include "ConsoleDialog.h"
 #include "TreeViewerTreeViewDialog.h"
 #include "TreeViewerFieldValuesDialog.h"
 
@@ -17,6 +18,7 @@ public:
   static H3D::AutoRef< H3D::Scene > h3d_scene;
   static H3D::AutoRef< H3D::WxWidgetsWindow > h3d_window;
 
+  consoleDialog *console_dialog;
   TreeViewerTreeViewDialog *tree_dialog;
   TreeViewerFieldValuesDialog *field_values_dialog;
 };

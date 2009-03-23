@@ -48,7 +48,7 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
                         Inst< SFBool      > _fullscreen,
                         Inst< SFBool      > _mirrored,
                         Inst< RenderMode  > _renderMode, 
-                        Inst< SFViewpoint > _viewpoint ) :
+                        Inst< SFViewpoint > _viewpoint     ) :
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
                  _viewpoint ),
   theWindow( _theParent ){
