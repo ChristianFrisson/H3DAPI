@@ -398,8 +398,8 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
 
 AutoRef< Node > X3D::createX3DNodeFromStream( istream &is, 
                                               DEFNodes *dn,
-                DEFNodes *exported_nodes,
-                PrototypeVector *prototypes,
+                                              DEFNodes *exported_nodes,
+                                              PrototypeVector *prototypes,
                                               const XMLCh *const system_id ) {
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
@@ -416,53 +416,101 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
 }
 
 void X3D::writeNodeAsX3D( ostream& os, 
-                          Node *node, 
-                          const string& container_field ) {
+			  Node *node, 
+			  const string &container_field ) {
+  std::set< Node *> visited_nodes;
+  writeNodeAsX3DHelp( os, node, container_field, "", 
+		      visited_nodes );
+}
+
+void X3D::writeNodeAsX3DHelp( ostream& os, 
+			      Node *node, 
+			      const string& container_field,
+			      const string & prefix,
+			      std::set< Node * > &visited_nodes ) {
   if( !node ) {
     return;
   }
+
+  
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *node ) );
   string node_name = node->getTypeName();    
 
-  os << "<" << node_name << " containerField=\"" 
-     << container_field << "\" ";
-    
-  if( node->hasName() ) {
-    os << "DEF=\"" << node->getName() << "\" ";
+  os << prefix << "<" << node_name << " ";
+  string new_prefix = prefix + "  "; 
+
+  // only use container field if it is needed.
+  if( node->defaultXMLContainerField() != container_field && 
+      container_field != "" ) {
+    os << "containerField=\"" << container_field << "\" ";
+  }
+
+  set< Node * >::iterator i = visited_nodes.find( node );    
+
+  bool use_node = i != visited_nodes.end();
+
+  stringstream s;
+  s << "NODE_" << (unsigned int) node;
+  string name = node->hasName() ? node->getName() : s.str();
+
+  // handle DEF/USE cases
+  if( !use_node ) {
+    os << "DEF=\"" << name << "\" ";
+    visited_nodes.insert( node );
+  } else {
+    os << "USE=\"" << name << "\" ";
   }
 
   vector< pair< string, SFNode * > > sf_nodes;
   vector< pair< string, MFNode * > > mf_nodes;
 
-  for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       i != db->fieldDBEnd(); i++ ) {
-    Field *f = node->getField( *i );
-    Field::AccessType access_type = f->getAccessType();
-    if( access_type != Field::INPUT_ONLY &&
-        access_type != Field::OUTPUT_ONLY ) {
-      if( MFNode *mf_node = dynamic_cast< MFNode * >( f ) ) {
-        mf_nodes.push_back( make_pair( f->getName(), mf_node ) );
-      } else if( SFNode *sf_node = dynamic_cast< SFNode * >( f ) ) {
-        sf_nodes.push_back( make_pair( f->getName(), sf_node ) );
-      } else if( ParsableField *p_field = 
-                 dynamic_cast< ParsableField * >( f ) ){
-        os << f->getName() << "=\'" << p_field->getValueAsString() << "\' ";
+  //only set fields if it is not a node that is USEd
+  if( !use_node ) {   
+    for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
+         i != db->fieldDBEnd(); i++ ) {
+      Field *f = node->getField( *i );
+      Field::AccessType access_type = f->getAccessType();
+      if( access_type != Field::INPUT_ONLY &&
+          access_type != Field::OUTPUT_ONLY ) {
+        if( MFNode *mf_node = dynamic_cast< MFNode * >( f ) ) {
+          if( mf_node->size() > 0 ) mf_nodes.push_back( make_pair( *i, mf_node ) );
+        } else if( SFNode *sf_node = dynamic_cast< SFNode * >( f ) ) {
+          if( sf_node->getValue() ) sf_nodes.push_back( make_pair( *i, sf_node ) );
+        } else if( ParsableField *p_field = 
+                   dynamic_cast< ParsableField * >( f ) ){
+          os << *i << "=\'" << p_field->getValueAsString() << "\' ";
+        }
       }
     }
   }
 
-  os << ">" << endl;
-
-  for( unsigned int i = 0; i < sf_nodes.size(); i++ ) {
-    X3D::writeNodeAsX3D( os, sf_nodes[i].second->getValue(), sf_nodes[i].first );
-  }
-
-  for( unsigned int i = 0; i < mf_nodes.size(); i++ ) {
-    for( MFNode::const_iterator n = mf_nodes[i].second->begin();
-         n != mf_nodes[i].second->end(); n++ ) {
-      X3D::writeNodeAsX3D( os, *n, mf_nodes[i].first );
-    }
-  }
   
-  os << "</" << node_name << ">" << endl;
+  if( sf_nodes.empty() && mf_nodes.empty() ) {
+    // if no nodes as children, end tag on same line
+    os << " />" << endl;
+  } else {
+    os << ">" << endl;
+
+    // process child nodes
+    for( unsigned int i = 0; i < sf_nodes.size(); i++ ) {
+      X3D::writeNodeAsX3DHelp( os, 
+			       sf_nodes[i].second->getValue(), 
+			       sf_nodes[i].first,
+			       new_prefix,
+			       visited_nodes );
+    }
+
+    for( unsigned int i = 0; i < mf_nodes.size(); i++ ) {
+      for( MFNode::const_iterator n = mf_nodes[i].second->begin();
+           n != mf_nodes[i].second->end(); n++ ) {
+        X3D::writeNodeAsX3DHelp( os, 
+				 *n, 
+				 mf_nodes[i].first, 
+				 new_prefix, 
+				 visited_nodes );
+      }
+    }
+    // end tag
+    os << prefix << "</" << node_name << ">" << endl;
+  }
 }

@@ -171,8 +171,14 @@ namespace H3D {
     /// to the given ostream.
     H3DAPI_API void writeNodeAsX3D( ostream& os, 
                                     Node *node,
-                                    const string& container_field = 
-                                    "children" );
+				    const string &container_field = "" );
+
+    /// Help function for writeNodeAsX3D.
+    H3DAPI_API void writeNodeAsX3DHelp( ostream& os, 
+					Node *node,
+					const string& container_field,
+					const string & prefix,
+					std::set< Node * > &visited_nodes );
 
   }
 };
