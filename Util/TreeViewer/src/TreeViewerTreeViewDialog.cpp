@@ -9,6 +9,7 @@ TreeViewDialog( parent )
   // add the bindable nodes in the tree view
   bindable_tree_id = TreeViewTree->AppendItem( TreeViewTree->GetRootItem(), 
                                                wxT("Active bindable nodes") );
+  TreeViewTree->Expand( TreeViewTree->GetRootItem() ); 
 }
 
 
@@ -20,11 +21,12 @@ void TreeViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
   if( ni == node_map.end() ) {
     field_values->displayFieldsFromNode( NULL );
   } else {
-    field_values->displayFieldsFromNode( (*ni).second );
+    field_values->displayFieldsFromNode( (*ni).second.get() );
   }
 }
 
-void TreeViewerTreeViewDialog::showEntireSceneAsTree( wxTreeItemId tree_id ) {
+void TreeViewerTreeViewDialog::showEntireSceneAsTree( wxTreeItemId tree_id,
+                                                      bool expand_new ) {
   //node_map.clear();
 
   // show the scene in the tree view.
@@ -32,7 +34,7 @@ void TreeViewerTreeViewDialog::showEntireSceneAsTree( wxTreeItemId tree_id ) {
   list< H3D::Node * > l;
   l.push_back( *Scene::scenes.begin() );
 
-  updateNodeTree( tree_id, l );
+  updateNodeTree( tree_id, l, expand_new );
 
 
   l.clear();  
@@ -41,7 +43,7 @@ void TreeViewerTreeViewDialog::showEntireSceneAsTree( wxTreeItemId tree_id ) {
        i != stacks.end();i++ ) {
     l.push_back( X3DBindableNode::getActive( (*i).first ) );
   }
-  updateNodeTree( bindable_tree_id, l );
+  updateNodeTree( bindable_tree_id, l, false );
 }
 
 void TreeViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id, 
@@ -60,14 +62,14 @@ void TreeViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
   unsigned int s1 = node_map.size();
 
   // add an entry for the tree_id-node pair 
-  node_map[ new_id.m_pItem ] = n;
+  node_map[ new_id.m_pItem ].reset( n );
 
 
   // recursively add all the child nodes of the node to the tree
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; i++ ) {
-    Field *f = n->getField( *i );
+    Field *f = i.getField( n ); //n->getField( *i );
     
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
       if( sfnode->getAccessType() != Field::INPUT_ONLY ) {
@@ -89,7 +91,8 @@ void TreeViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
 
 
 void TreeViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id, 
-                                               list< H3D::Node *> nodes ) {
+                                               list< H3D::Node *> nodes,
+                                               bool expand_new ) {
 
   // find all children of tree_id
   list< wxTreeItemId > children_ids;
@@ -109,7 +112,7 @@ void TreeViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
 
     if( node_map.find( (*i).m_pItem ) == node_map.end() ) continue;
 
-    Node *id_node = node_map[ (*i).m_pItem ]; 
+    Node *id_node = node_map[ (*i).m_pItem ].get(); 
 
     // check if this node still exists in the new node structure
     list< H3D::Node * >::iterator ni = std::find( nodes.begin(), nodes.end(), id_node );
@@ -122,7 +125,7 @@ void TreeViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
       H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *id_node ) );
       for( H3DNodeDatabase::FieldDBConstIterator j = db->fieldDBBegin();
            db->fieldDBEnd() != j; j++ ) {
-        Field *f = id_node->getField( *j );
+         Field *f = j.getField( id_node ); //Field *f = id_node->getField( *j );
 
         if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
           if( sfnode->getAccessType() != Field::INPUT_ONLY ) {
@@ -139,7 +142,7 @@ void TreeViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
         }        
       }
       // update
-      updateNodeTree( *i, child_nodes );
+      updateNodeTree( *i, child_nodes, expand_new );
       nodes.erase( ni );
     } else {
       // the node does not exist, so remove the tree id.
@@ -151,7 +154,7 @@ void TreeViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
   // add all new nodes to the tree. 
   for( list< H3D::Node *>::iterator i = nodes.begin();
        i != nodes.end(); i++ ) {
-    addNodeToTree( tree_id, *i, false );
+    addNodeToTree( tree_id, *i, expand_new );
   }
 
   // make the tree be open down to leaves by default.

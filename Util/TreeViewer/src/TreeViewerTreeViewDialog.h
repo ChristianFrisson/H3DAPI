@@ -19,11 +19,12 @@ public:
 	TreeViewerTreeViewDialog( wxWindow* parent );
   virtual void OnNodeSelected( wxTreeEvent& event );
 
-  void showEntireSceneAsTree( wxTreeItemId tree_id );
+  void showEntireSceneAsTree( wxTreeItemId tree_id,
+                              bool expand_new = true );
 protected:
   void addNodeToTree( wxTreeItemId tree_id, H3D::Node *n, bool expand = true );
-  void updateNodeTree( wxTreeItemId tree_id, std::list< H3D::Node *> );
-  typedef  std::map< wxTreeItemIdValue, H3D::Node * > TreeIdMap;
+  void updateNodeTree( wxTreeItemId tree_id, std::list< H3D::Node *>, bool expand_new = true );
+  typedef  std::map< wxTreeItemIdValue, H3D::AutoRef< H3D::Node > > TreeIdMap;
   TreeIdMap node_map;
   wxTreeItemId bindable_tree_id;
 };

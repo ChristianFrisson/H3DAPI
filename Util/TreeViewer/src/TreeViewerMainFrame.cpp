@@ -56,10 +56,10 @@ void TreeViewerMainFrame::OnQuit( wxCommandEvent& event )
 
 void TreeViewerMainFrame::OnIdle( wxIdleEvent& event ) {
   TimeStamp now;
-  if( now - last_tree_update > 1 ) {
+  if( now - last_tree_update > 10 ) {
     TreeViewerTreeViewDialog *tree = 
       static_cast< TreeViewerApp * >(wxTheApp )->tree_dialog;
-    tree->showEntireSceneAsTree( tree->TreeViewTree->GetRootItem() );
+    tree->showEntireSceneAsTree( tree->TreeViewTree->GetRootItem(), false );
     last_tree_update = now;
   }
 

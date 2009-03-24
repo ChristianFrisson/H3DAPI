@@ -12,8 +12,12 @@ TreeViewerFieldValuesDialog::TreeViewerFieldValuesDialog( wxWindow* parent )
 
 
 void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
-  displayed_node = n;
+  bool new_node = n != displayed_node.get();
+  displayed_node.reset( n );
   if( !n ) {
+#ifdef DEFAULT_VALUES
+    default_values_node.reset( NULL );
+#endif
     SetTitle(wxT(""));
     if( FieldValuesGrid->GetNumberRows() > 0 )
       FieldValuesGrid->DeleteRows( 0, FieldValuesGrid->GetNumberRows() );
@@ -22,10 +26,15 @@ void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
 
   SetTitle( wxString(n->getTypeName().c_str(),wxConvUTF8) );
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+#ifdef DEFAULT_VALUES
+  if( new_node ) {
+    default_values_node.reset( db->createNode() );
+  }
+#endif
   unsigned int rows = 0;
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; i++ ) {
-    Field *f = n->getField( *i );
+    Field *f = i.getField( n ); //n->getField( *i );
       
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
         
@@ -51,7 +60,22 @@ void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
         string value = pfield->getValueAsString();
         if( string( FieldValuesGrid->GetCellValue( rows, 1 ).mb_str() ) != value )
           FieldValuesGrid->SetCellValue( rows, 1, wxString( value.c_str(), wxConvUTF8) );
+
+#ifdef DEFAULT_VALUES
+         ParsableField *df = 
+           static_cast< ParsableField * >( i.getField( default_values_node.get() ) );
+         if( df->getValueAsString() == pfield->getValueAsString() ) {
+           FieldValuesGrid->SetCellTextColour( rows, 0, *wxBLACK );
+           FieldValuesGrid->SetCellTextColour( rows, 1, *wxBLACK );
+         } else {
+           FieldValuesGrid->SetCellTextColour( rows, 0, *wxRED );
+           FieldValuesGrid->SetCellTextColour( rows, 1, *wxRED );
+         }
+#endif
+
         rows++;
+
+
       }
     }
   
@@ -65,11 +89,15 @@ void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
 
 
 void TreeViewerFieldValuesDialog::OnIdle( wxIdleEvent& event ) {
-  displayFieldsFromNode( displayed_node );
+  TimeStamp now;
+  if( now - last_fields_update > 0.1 ) {
+    displayFieldsFromNode( displayed_node.get() );
+    last_fields_update = now;
+  }
 }
 
 void TreeViewerFieldValuesDialog::OnCellEdit( wxGridEvent& event ) {
-  if( displayed_node ) {
+  if( displayed_node.get() ) {
     int col = event.GetCol();
     int row = event.GetRow();
     string s( FieldValuesGrid->GetCellValue( row, col ).mb_str() );
