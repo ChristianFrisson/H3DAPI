@@ -50,7 +50,7 @@ parent( _parent ) {
     database = new H3DNodeDatabaseType;
     initialized = true;
   }
-  (*database)[ name ] = this;
+  (*database)[ ti ] = this;
 }
 
 H3DNodeDatabase::H3DNodeDatabase( const type_info &_ti,
@@ -78,11 +78,11 @@ H3DNodeDatabase::~H3DNodeDatabase(void){
 
 
 Node *H3DNodeDatabase::createNode( const string &name ) {
-  H3DNodeDatabaseType::iterator pos = database->find( name );
-  if( pos == database->end() || (*pos).second->createf == NULL )
+  H3DNodeDatabase *db = lookupName( name );
+  if( !db || db->createf == NULL )
     return NULL;
   else
-    return (*(*pos).second->createf)();
+    return db->createf();
 }
 
 void H3DNodeDatabase::initFields( Node *n ) const {
@@ -157,21 +157,21 @@ void H3DNodeDatabase::addField( FieldDBElement *f ) {
 }
 
 H3DNodeDatabase *H3DNodeDatabase::lookupTypeId( const type_info &t ) {
-  for( H3DNodeDatabaseType::iterator i = database->begin(); 
-       i != database->end(); i++ ) {
-    H3DNodeDatabase *n = (*i).second;
-    if ( n->ti == t )
-      return n;
-  }
-  return NULL;
-}
-
-H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &name ) {
-  H3DNodeDatabaseType::iterator pos = database->find( name );
+  H3DNodeDatabaseType::iterator pos = database->find( t );
   if( pos == database->end() )
     return NULL;
   else
     return (*pos).second;
+}
+
+H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &name ) {
+   for( H3DNodeDatabaseType::iterator i = database->begin(); 
+       i != database->end(); i++ ) {
+    H3DNodeDatabase *n = (*i).second;
+    if ( n->name == name )
+      return n;
+  }
+  return NULL; 
 }
 
 FieldDBElement::FieldDBElement( H3DNodeDatabase *_container,

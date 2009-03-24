@@ -194,8 +194,23 @@ namespace H3D {
   /// H3DNodeDatabase member variable must be defined in the node class
   /// with the (nodename, constructor) pair that is wanted.
 	struct H3DAPI_API H3DNodeDatabase {
+
+    /// Wrapper class to be able to put type_info as a key in a map.
+    struct TypeInfoWrapper {
+      const std::type_info& t; 
+
+      /// Constructor.
+      TypeInfoWrapper (const std::type_info& t_) 
+        : t (t_) {} 
+
+      /// Less than operator
+      bool operator< (const TypeInfoWrapper & o) const { 
+        return t.before (o.t) != 0; 
+      } 
+    };
+
     typedef map< string, FieldDBElement* > FieldDBType;
-    typedef map< string, H3DNodeDatabase*> H3DNodeDatabaseType;
+    typedef map< TypeInfoWrapper, H3DNodeDatabase* > H3DNodeDatabaseType;
     typedef H3DNodeDatabaseType::const_iterator NodeDatabaseConstIterator;
 
     /// The FieldDBConstIterator is an iterator class used for iterating
@@ -310,6 +325,23 @@ namespace H3D {
     /// \returns A new instance of the node if it exists in the database,
     /// otherwise NULL is returned.
 	  static Node *createNode( const string &name );
+
+    /// Get the name of the node in the database object.
+    inline const string &getName() {
+      return name;
+    }
+
+    /// Get the type_info of the node in the database object.
+    inline const type_info &getTypeInfo() {
+      return ti;
+    }
+
+    /// Create a new instance of the node type the database object
+    /// refers to.
+    inline Node * createNode() {
+      if( createf ) return createf();
+      else return NULL;
+    }
 
     /// add a field to the node database entry
     void addField( FieldDBElement *f );
