@@ -7,7 +7,9 @@ ENDIF(WIN32)
 project (TreeViewer)
 
 # Source files.
-SET( TreeViewer_SRCS "${TreeViewer_SOURCE_DIR}/../src/TreeViewer.cpp"
+SET( TreeViewer_SRCS "${TreeViewer_SOURCE_DIR}/../src/ConsoleDialog.cpp"
+                     "${TreeViewer_SOURCE_DIR}/../src/ConsoleDialog.h"
+                     "${TreeViewer_SOURCE_DIR}/../src/TreeViewer.cpp"
                      "${TreeViewer_SOURCE_DIR}/../src/TreeViewer.h"
                      "${TreeViewer_SOURCE_DIR}/../src/TreeViewerApp.cpp"
                      "${TreeViewer_SOURCE_DIR}/../src/TreeViewerApp.h"
