@@ -14,7 +14,13 @@ SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/ConsoleDialog.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/WxFrame.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/WxFrame.h"
                     "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.h" )
+                    "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerFieldValuesDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerFieldValuesDialog.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerTreeViewDialog.cpp"        
+                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerTreeViewDialog.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewer.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewer.h" )
 
 # Include directories.
 INCLUDE_DIRECTORIES( ../src )

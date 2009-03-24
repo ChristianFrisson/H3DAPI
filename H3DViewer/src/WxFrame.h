@@ -53,6 +53,7 @@
 #include <H3DUtil/Console.h>
 
 #include "ConsoleDialog.h"
+#include "TreeViewerTreeViewDialog.h"
 
 using namespace std;
 using namespace H3D;
@@ -244,6 +245,7 @@ public:
   void MirrorScene( wxCommandEvent & event );
   void RenderMode( wxCommandEvent & event );
   void ShowConsole( wxCommandEvent & event );
+  void ShowTreeView( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
   void GetSelection( wxMenuEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
@@ -361,6 +363,7 @@ private:
 
   X3D::DEFNodes default_stylus_dn;
   consoleDialog *  theConsole;
+  TreeViewerTreeViewDialog * tree_view_dialog;
   FrameRateDialog *  frameRates;
   SettingsDialog * settings;
   SpeedDialog *speed_slider;
@@ -405,6 +408,7 @@ enum
   FRAME_RESTORE,
   FRAME_MIRROR,
   FRAME_CONSOLE,
+  FRAME_TREEVIEW,
   FRAME_FRAMERATE,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,

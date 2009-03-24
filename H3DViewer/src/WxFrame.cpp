@@ -193,6 +193,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   theConsole = new consoleDialog(this, wxID_ANY, console_string, 
                                  wxDefaultPosition, wxDefaultSize,
                                  wxDEFAULT_DIALOG_STYLE);
+  tree_view_dialog = new TreeViewerTreeViewDialog( this ); 
   frameRates = new FrameRateDialog( this );
 
   defaultvp = (X3DViewpointNode *) NULL;
@@ -333,6 +334,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                        wxT("Show the message console"));
   advancedMenu->Append(FRAME_FRAMERATE, wxT("Show frame rates"),
                        wxT("Show the frame rates of graphics and haptics loop"));
+  advancedMenu->Append(FRAME_TREEVIEW, wxT("Show tree view"),
+                       wxT("Show the scene as a tree, making it possible to inspect and change values at runtime."));
   
   //Help Menu
   helpMenu = new wxMenu;
@@ -447,6 +450,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_MIRROR, WxFrame::MirrorScene)
   EVT_MENU_RANGE (FRAME_MONO, FRAME_REDCYAN, WxFrame::RenderMode)
   EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
+  EVT_MENU (FRAME_TREEVIEW, WxFrame::ShowTreeView)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
   EVT_MENU_HIGHLIGHT (FRAME_SELECTION, WxFrame::GetSelection)
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
@@ -647,6 +651,7 @@ bool WxFrame::loadFile( const string &filename) {
   //Clear existing data
   t->children->clear();
   viewpoint.reset( NULL );
+  tree_view_dialog->clearTreeView();
 
   settings_path = 
     GET_ENV_INI_DEFAULT( "H3D_DISPLAY",
@@ -898,6 +903,7 @@ bool WxFrame::loadFile( const string &filename) {
 
   
   scene->sceneRoot->setValue( g.get() );
+  tree_view_dialog->showEntireSceneAsTree( true );
   }
   catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
@@ -1486,6 +1492,12 @@ void WxFrame::ToggleHaptics (wxCommandEvent & event) {
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
   theConsole->Show();
+}
+
+//Show console event
+void WxFrame::ShowTreeView(wxCommandEvent & event)
+{
+  tree_view_dialog->Show();
 }
 
 void WxFrame::ShowFrameRate(wxCommandEvent & event)
