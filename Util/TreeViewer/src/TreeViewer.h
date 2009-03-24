@@ -20,8 +20,10 @@
 #include <wx/frame.h>
 #include <wx/treectrl.h>
 #include <wx/sizer.h>
-#include <wx/dialog.h>
+#include <wx/panel.h>
 #include <wx/grid.h>
+#include <wx/splitter.h>
+#include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -58,15 +60,27 @@ class TreeViewDialog : public wxDialog
 	private:
 	
 	protected:
+		wxSplitterWindow* m_splitter1;
+		wxPanel* m_panel1;
+		wxPanel* m_panel2;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnIdle( wxIdleEvent& event ){ event.Skip(); }
 		virtual void OnNodeSelected( wxTreeEvent& event ){ event.Skip(); }
+		virtual void OnCellEdit( wxGridEvent& event ){ event.Skip(); }
 		
 	
 	public:
 		wxTreeCtrl* TreeViewTree;
-		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 356,426 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+		wxGrid* FieldValuesGrid;
+		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 588,474 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
 		~TreeViewDialog();
+		void m_splitter1OnIdle( wxIdleEvent& )
+		{
+		m_splitter1->SetSashPosition( 346 );
+		m_splitter1->Disconnect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::m_splitter1OnIdle ), NULL, this );
+		}
+		
 	
 };
 

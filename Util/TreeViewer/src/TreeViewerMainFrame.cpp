@@ -42,6 +42,8 @@ void TreeViewerMainFrame::OnOpenFile( wxCommandEvent& event )
   //addSceneToTree( tree->TreeViewTree, root, TreeViewerApp::h3d_scene->sceneRoot->getValue() );
   tree->showEntireSceneAsTree( tree->TreeViewTree->GetRootItem() );
   field_values->displayFieldsFromNode( TreeViewerApp::h3d_scene->sceneRoot->getValue() );
+  tree->displayFieldsFromNode( TreeViewerApp::h3d_scene->sceneRoot->getValue() );
+
 }
 
 void TreeViewerMainFrame::OnClose( wxCommandEvent& event )
@@ -56,7 +58,7 @@ void TreeViewerMainFrame::OnQuit( wxCommandEvent& event )
 
 void TreeViewerMainFrame::OnIdle( wxIdleEvent& event ) {
   TimeStamp now;
-  if( now - last_tree_update > 10 ) {
+  if( now - last_tree_update > 1 ) {
     TreeViewerTreeViewDialog *tree = 
       static_cast< TreeViewerApp * >(wxTheApp )->tree_dialog;
     tree->showEntireSceneAsTree( tree->TreeViewTree->GetRootItem(), false );
