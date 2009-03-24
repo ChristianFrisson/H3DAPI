@@ -94,6 +94,8 @@ namespace H3D {
 
     PyObject* pythonCreateVRMLFromString( PyObject *self, PyObject *arg );
 
+    PyObject* pythonWriteNodeAsX3D( PyObject *self, PyObject *arg );
+
     PyObject* pythonCreateVRMLNodeFromURL( PyObject *self, PyObject *arg );
 
     PyObject* pythonCreateVRMLNodeFromString( PyObject *self, PyObject *arg );

@@ -534,6 +534,7 @@ if( check_func( value ) ) {                                         \
       { "routeFieldNoEvent", pythonRouteFieldNoEvent, 0 },
       { "unrouteField", pythonUnrouteField, 0 },
       { "getCPtr", pythonGetCPtr, 0 },
+      { "writeNodeAsX3D", pythonWriteNodeAsX3D, 0 },
       { "createX3DFromURL", pythonCreateX3DFromURL, 0 },
       { "createX3DFromString", pythonCreateX3DFromString, 0 },
       { "createX3DNodeFromURL", pythonCreateX3DNodeFromURL, 0 },
@@ -1147,6 +1148,26 @@ call the base class __init__ function." );
 
     /////////////////////////////////////////////////////////////////////////
 
+    PyObject* pythonWriteNodeAsX3D( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyNode_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.writeNodeAsX3D( node )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      Node *n = PyNode_AsNode( arg );
+      stringstream s;
+      X3D::writeNodeAsX3D( s, n );
+
+      PyObject *pstring = PyString_FromString( s.str().c_str() );
+      return pstring;
+      
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////
+
     PyObject* pythonCreateX3DNodeFromURL( PyObject *self, PyObject *arg ) {
       if( !arg || !PyString_Check( arg ) ) {
         ostringstream err;
@@ -1171,7 +1192,7 @@ call the base class __init__ function." );
     PyObject* pythonCreateX3DNodeFromString( PyObject *self, PyObject *arg ) {
       if( !arg || !PyString_Check( arg ) ) {
         ostringstream err;
-        err << "Invalid argument(s) to function H3D.createX3DFromString( s )";
+        err << "Invalid argument(s) to function H3D.createX3DNodeFromString( s )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
         return 0;
       }
