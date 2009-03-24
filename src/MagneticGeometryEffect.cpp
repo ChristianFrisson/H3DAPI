@@ -29,8 +29,9 @@
 #include <H3D/MagneticGeometryEffect.h> 
 #include <H3D/H3DHapticsDevice.h>
 #include <H3D/HapticsOptions.h>
+#include <H3D/Sphere.h>
 #include <HAPI/HapticShapeConstraint.h>
-#include <HAPI/HapticTriangleSet.h>
+#include <HAPI/HapticPrimitiveSet.h>
 
 using namespace H3D;
 using namespace HAPI;
@@ -104,55 +105,91 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
             result.transformResult();
             H3DFloat distance = (H3DFloat)( 
               (result.result.front().point - pos).length() );
-            bool addForceEffect = false;
+            bool add_force_effect = false;
             if( active->getValue() ) {
               if( distance >= escapeDistance->getValue() ) {
                 active->setValue( false, id );
               } else {
-                addForceEffect = true;
+                add_force_effect = true;
               }
             }
             else {
               if( distance <= startDistance->getValue() )
-                addForceEffect = true;
+                add_force_effect = true;
             }
 
-            if( addForceEffect ) {
-              H3DFloat lookahead_factor = 3;
-              HapticsOptions *haptics_options = NULL;
-              the_geometry->getOptionNode( haptics_options );
+            if( add_force_effect ) {
+              if( dynamic_cast< Sphere * >(the_geometry) ) {
+                Vec3f scale = ti.getAccForwardMatrix().getScalePart();
+                ti.addForceEffect( i,
+                  new HapticShapeConstraint(
+                    new HAPI::Collision::Sphere(
+                      ti.getAccForwardMatrix() * Vec3f(),
+                      dynamic_cast< Sphere * >(the_geometry)
+                        ->radius->getValue() * max( H3DAbs( scale.x ),
+                          max( H3DAbs( scale.y ), H3DAbs( scale.z ) ) ) ),
+                      springConstant->getValue() ) );
+              } else {
+                H3DFloat lookahead_factor = 3;
+                HapticsOptions *haptics_options = NULL;
+                the_geometry->getOptionNode( haptics_options );
 
-              if( haptics_options )
-                lookahead_factor =
-                haptics_options->lookAheadFactor->getValue();
+                if( haptics_options )
+                  lookahead_factor =
+                  haptics_options->lookAheadFactor->getValue();
 
-              vector< HAPI::Collision::Triangle > tris;
-              tris.reserve( 200 );
-              Matrix4f to_local = ti.getAccInverseMatrix();
-              Vec3f scale = to_local.getScalePart();
-              Vec3f local_proxy =  to_local * hd->proxyPosition->getValue();
-              Vec3f local_last_proxy =
-                to_local * hd->getPreviousProxyPosition();
-              Vec3f movement = local_proxy - local_last_proxy;
-              H3DFloat addDistance = 0.01f;
-              H3DFloat move_length = movement.length();
-              if( move_length > addDistance )
-                addDistance = move_length;
-              the_geometry->boundTree->getValue()
-                ->getTrianglesIntersectedByMovingSphere( 
-                  ( distance + addDistance ) *
-                  H3DMax( H3DUtil::H3DAbs( scale.x ),
-                          H3DMax( H3DUtil::H3DAbs( scale.y ),
-                                  H3DUtil::H3DAbs( scale.z ) ) ),
-                  local_proxy,
-                  local_proxy + movement * lookahead_factor,
-                  tris );
-              HapticTriangleSet *haptic_triangle_set =
-                new HapticTriangleSet( ti.getAccForwardMatrix(),
-                                       tris, NULL );
-              ti.addForceEffect( i,
-                new HapticShapeConstraint( haptic_triangle_set,
-                                           springConstant->getValue() ) );
+                Matrix4f to_local = ti.getAccInverseMatrix();
+                Vec3f scale = to_local.getScalePart();
+                Vec3f local_proxy =  to_local * hd->proxyPosition->getValue();
+                Vec3f local_last_proxy =
+                  to_local * hd->getPreviousProxyPosition();
+                Vec3f movement = local_proxy - local_last_proxy;
+                H3DFloat addDistance = 0.01f;
+                H3DFloat move_length = movement.length();
+                if( move_length > addDistance )
+                  addDistance = move_length;
+                vector< HAPI::Collision::Triangle > tris;
+                tris.reserve( 200 );
+                vector< HAPI::Collision::LineSegment > lines;
+                lines.reserve( 200 );
+                vector< HAPI::Collision::Point > points;
+                points.reserve( 200 );
+                the_geometry->boundTree->getValue()
+                  ->getPrimitivesIntersectedByMovingSphere(
+                    ( distance + addDistance ) *
+                    H3DMax( H3DUtil::H3DAbs( scale.x ),
+                            H3DMax( H3DUtil::H3DAbs( scale.y ),
+                                    H3DUtil::H3DAbs( scale.z ) ) ),
+                    local_proxy,
+                    local_proxy + movement * lookahead_factor,
+                    tris,
+                    lines,
+                    points );
+                vector< HAPI::Collision::GeometryPrimitive * > primitives;
+                primitives.reserve( 200 );
+                for( unsigned int j = 0; j < tris.size(); j++ ) {
+                  primitives.push_back(
+                    new HAPI::Collision::Triangle(
+                      tris[j].a, tris[j].b, tris[j].c,
+                      tris[j].ta, tris[j].tb, tris[j].tc ) );
+                }
+                for( unsigned int j = 0; j < lines.size(); j++ ) {
+                  primitives.push_back(
+                    new HAPI::Collision::LineSegment( lines[j].start,
+                                                      lines[j].end ) );
+                }
+                for( unsigned int j = 0; j < points.size(); j++ ) {
+                  primitives.push_back(
+                    new HAPI::Collision::Point( points[j].position ) );
+                }
+                /// The HapticPrimitiveSet hold a reference to all primitives.
+                HapticPrimitiveSet *haptic_primitive_set =
+                  new HapticPrimitiveSet( ti.getAccForwardMatrix(),
+                                          primitives, NULL );
+                ti.addForceEffect( i,
+                  new HapticShapeConstraint( haptic_primitive_set,
+                                             springConstant->getValue() ) );
+              }
             }
           }
         }

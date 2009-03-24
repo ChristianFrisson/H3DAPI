@@ -141,6 +141,8 @@
 ///     and rotation of the Matrix4f/d
 ///   - getRotationPart() - returns a Matrix3f/d containing the rotation
 ///     of the Matrix4f/d
+///   - getTranslationPart() - returns a Vec3f/d containing the translation
+///     part of the Matrix4f/d
 /// - Node methods.
 ///   - getFieldList()
 ///   - addField( name, field_type, access_type ) - can only be used with nodes
