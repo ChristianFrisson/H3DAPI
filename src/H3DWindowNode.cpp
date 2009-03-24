@@ -588,9 +588,16 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     // we have at least 2 Viewpoints and are using a default local viewpoint
     // this means that we should not have a default local viewpoint any more
     // so remove it and activate the first in the list of new viewpoints
-    if( X3DViewpointNode::getAllViewpoints().size() > 1 && vp_ref.get() ) {
+    X3DViewpointNode::ViewpointList vps = X3DViewpointNode::getAllViewpoints();
+    if( vps.size() > 1 && vp_ref.get() ) {
+      // find a viewpoint that is not the default local viewpoint and bind it.
+      for( X3DViewpointNode::ViewpointList::iterator i = vps.begin();
+           i != vps.end(); i++ ) {
+        if( (*i) != vp_ref.get() ) {
+          (*i)->set_bind->setValue( true );
+        }
+      }
       vp_ref.reset( NULL );
-      X3DViewpointNode::getAllViewpoints().front()->set_bind->setValue( true );
     }
     vp = static_cast< X3DViewpointNode * >(X3DViewpointNode::getActive());
   }
