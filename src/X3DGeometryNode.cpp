@@ -453,7 +453,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
       boundTree->getValue()->getAllPrimitives( tris, lines, points );
     } else {
       boundTree->getValue()->getPrimitivesIntersectedByMovingSphere(
-        radius * H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
+        radius * H3DMax( H3DUtil::H3DAbs( scale.x ),
+                         H3DMax( H3DUtil::H3DAbs( scale.y ),
+                                 H3DUtil::H3DAbs( scale.z ) ) ),
         local_proxy,
         local_proxy + movement * lookahead_factor,
         tris,
@@ -485,9 +487,11 @@ void X3DGeometryNode::createAndAddHapticShapes(
         HAPI::FeedbackBufferCollector::startCollecting( nr_values, 
                                 center, 
                                 full_movement + 
-                                Vec3f( d, d, d ) *  H3DMax( scale.x,
-                                H3DMax( scale.y, 
-                                scale.z ) ) );
+                                Vec3f( d, d, d ) *
+                                H3DMax( H3DUtil::H3DAbs( scale.x ),
+                                        H3DMax( H3DUtil::H3DAbs( scale.y ),
+                                                H3DUtil::H3DAbs( scale.z )
+                                ) ) );
         glRender();
         HAPI::FeedbackBufferCollector::ErrorType e = 
           HAPI::FeedbackBufferCollector::endCollecting( tris,

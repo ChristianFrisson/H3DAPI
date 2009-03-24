@@ -206,10 +206,12 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
               ( transform_matrices[closest ] * box_bound->center->getValue() );
             Vec3f acc_inv_scale = vp_acc_inv_mtx.getScalePart();
             Vec3f geom_scale = transform_matrices[closest].getScalePart();
-            Vec3f size = H3DMax( H3DMax( acc_inv_scale.x, acc_inv_scale.y ),
-              acc_inv_scale.z ) *
-              ( H3DMax( H3DMax( geom_scale.x, geom_scale.y ),
-              geom_scale.z ) *
+            Vec3f size = H3DMax( H3DMax( H3DUtil::H3DAbs( acc_inv_scale.x ),
+                                         H3DUtil::H3DAbs( acc_inv_scale.y ) ),
+                                  H3DUtil::H3DAbs( acc_inv_scale.z ) ) *
+              ( H3DMax( H3DMax( H3DUtil::H3DAbs( geom_scale.x ),
+                                H3DUtil::H3DAbs( geom_scale.y ) ),
+                        H3DUtil::H3DAbs( geom_scale.z ) ) *
               box_bound->size->getValue() );
 
             viewing_distance = 2 * size.length();

@@ -141,7 +141,9 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
               the_geometry->boundTree->getValue()
                 ->getTrianglesIntersectedByMovingSphere( 
                   ( distance + addDistance ) *
-                  H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
+                  H3DMax( H3DUtil::H3DAbs( scale.x ),
+                          H3DMax( H3DUtil::H3DAbs( scale.y ),
+                                  H3DUtil::H3DAbs( scale.z ) ) ),
                   local_proxy,
                   local_proxy + movement * lookahead_factor,
                   tris );
