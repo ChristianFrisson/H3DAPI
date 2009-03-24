@@ -108,6 +108,8 @@ Field *H3DNodeDatabase::getFieldHelp( Node *n, const string &f ) const {
     const string &name = (*i).first;
     if ( name == f )
       return fdb->getField( n );
+
+    // check for dynamic field.
     ostringstream namestr;
     namestr << fdb << "_" << f; 
     if( namestr.str() == name ) {
@@ -246,4 +248,26 @@ void H3DNodeDatabase::clearDynamicFields() {
       fields.erase( to_erase );
     } 
   }
+}
+
+H3DNodeDatabase::FieldDBConstIterator::FieldDBConstIterator( const FieldDBConstIterator &f ):
+  status( f.status ),
+  local_iterator( f.local_iterator ),
+  inherited_iterator( new FieldDBConstIterator ),
+  ndb( f.ndb ) {
+  *inherited_iterator = *f.inherited_iterator;
+}
+
+H3DNodeDatabase::FieldDBConstIterator & H3DNodeDatabase::FieldDBConstIterator::operator=(const FieldDBConstIterator &f) {
+  status = f.status;
+  local_iterator = f.local_iterator;
+  ndb = f.ndb;
+  if( f.inherited_iterator.get() ) {
+    if( inherited_iterator.get() == NULL ) 
+      inherited_iterator.reset( new FieldDBConstIterator );
+    *inherited_iterator = *f.inherited_iterator;
+  } else {
+    inherited_iterator.reset( NULL );
+  }
+  return *this;
 }

@@ -207,13 +207,10 @@ namespace H3D {
       FieldDBConstIterator( H3DNodeDatabase * _ndb , bool is_end );
 
       /// Copy constructor.
-      FieldDBConstIterator( const FieldDBConstIterator &f ):
-        status( f.status ),
-        local_iterator( f.local_iterator ),
-        inherited_iterator( new FieldDBConstIterator ),
-        ndb( f.ndb ) {
-        *inherited_iterator = *f.inherited_iterator;
-      }
+      FieldDBConstIterator( const FieldDBConstIterator &f );
+
+      /// Assignment operator.
+      FieldDBConstIterator & operator=(const FieldDBConstIterator &rhs);
 
       /// Pre-increment operator.
       inline FieldDBConstIterator &operator++(int) {
@@ -239,9 +236,28 @@ namespace H3D {
           /// status == LOCAL )
           return (*local_iterator).first;
       }
+
+      /// Get the FieldDBElement associated with the iterator.
+      inline FieldDBElement *getFieldDBElement() {
+        if( status == INHERITED )
+          return (*inherited_iterator).getFieldDBElement();
+        else 
+          /// status == LOCAL )
+          return (*local_iterator).second;
+      }
+
+      /// Get the Field * associated with the iterator.
+      inline Field * getField( Node *n ) {
+        if( status == INHERITED )
+          return (*inherited_iterator).getField( n );
+        else 
+          /// status == LOCAL )
+          return (*local_iterator).second->getField( n ) ;
+      }
       
     protected:
-      FieldDBConstIterator(){}
+      FieldDBConstIterator():
+        inherited_iterator( NULL ) {}
 
       typedef enum {
         /// The iterator is currently iterating through the local field 
@@ -262,7 +278,7 @@ namespace H3D {
       FieldDBType::const_iterator local_iterator;
       /// Iterator used for iterating through the fields inherited from
       /// the parent database if it exists. Only valid if status == INHERITED.
-      FieldDBConstIterator* inherited_iterator;
+      auto_ptr< FieldDBConstIterator > inherited_iterator;
       /// The database which fields this iterator iterates through.
       H3DNodeDatabase * ndb;
     };
