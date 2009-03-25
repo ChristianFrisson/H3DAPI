@@ -53,6 +53,25 @@ parent( _parent ) {
   (*database)[ ti ] = this;
 }
 
+H3DNodeDatabase::H3DNodeDatabase( const string &_name, 
+                                  const string &_alias,
+                                  H3DCreateNodeFunc _createf,
+                                  const type_info &_ti,
+                                  H3DNodeDatabase *_parent ) :
+name( _name ), 
+createf( _createf ),
+ti( _ti ),
+parent( _parent ) {
+  if (!initialized) {
+    database = new H3DNodeDatabaseType;
+    initialized = true;
+  }
+  (*database)[ ti ] = this;
+  addAlias( _alias );
+}
+
+
+
 H3DNodeDatabase::H3DNodeDatabase( const type_info &_ti,
                                   H3DNodeDatabase *_parent ) :
 name( "" ),
@@ -168,8 +187,17 @@ H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &name ) {
    for( H3DNodeDatabaseType::iterator i = database->begin(); 
        i != database->end(); i++ ) {
     H3DNodeDatabase *n = (*i).second;
+    // name is a match
     if ( n->name == name )
-      return n;
+      return n;  
+
+    // an alias is a match
+    for( list< string >::iterator a = n->aliases.begin();
+         a != n->aliases.end(); a++ ) {
+      if( name == *a ) {
+        return n;
+      }
+    }
   }
   return NULL; 
 }

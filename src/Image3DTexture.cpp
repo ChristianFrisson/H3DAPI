@@ -35,14 +35,10 @@ using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase Image3DTexture::database( "Image3DTexture", 
-                                        &(newInstance<Image3DTexture>), 
-                                        typeid( Image3DTexture ),
-                                        &X3DTexture3DNode::database );
-
-H3DNodeDatabase Image3DTexture::database2( "ImageTexture3D", 
-                                        &(newInstance<Image3DTexture>), 
-                                        typeid( Image3DTexture ),
-                                        &X3DTexture3DNode::database );
+                                          "ImageTexture3D",
+                                          &(newInstance<Image3DTexture>), 
+                                          typeid( Image3DTexture ), 
+                                          &X3DTexture3DNode::database );
 
 namespace Image3DTextureInternals {
   FIELDDB_ELEMENT( Image3DTexture, url, INPUT_OUTPUT );

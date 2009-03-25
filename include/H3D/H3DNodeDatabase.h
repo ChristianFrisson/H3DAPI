@@ -36,6 +36,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <list>
 #include <typeinfo>
 
 using namespace std;
@@ -308,6 +309,15 @@ namespace H3D {
                      const type_info &_ti,
                      H3DNodeDatabase *_parent = 0 );
 
+    /// Constructor. Allows the adding of one alias name as well
+    /// as the ordinary name. Any extra alias names must be added
+    /// with the addAlias method.
+	  H3DNodeDatabase( const string&_name, 
+                     const string &_alias,
+                     H3DCreateNodeFunc _createf,
+                     const type_info &_ti,
+                     H3DNodeDatabase *_parent = 0 );
+
     /// Unnamed constructor, for nodes that cannot be instantiated but
     /// instead act as base classes for other nodes.
 	  H3DNodeDatabase( const type_info &_ti,
@@ -320,6 +330,11 @@ namespace H3D {
     /// Search the node database for an entry with a matching name.
     static H3DNodeDatabase *lookupName( const string &name );
     
+    /// Add an alias for the node in the database.
+    inline void addAlias( const string &alias ) {
+      aliases.push_back( alias );
+    }
+
     /// Create a new instance of a Node type.
     /// \param name The name of the node in the database.
     /// \returns A new instance of the node if it exists in the database,
@@ -378,6 +393,10 @@ namespace H3D {
     
     /// Static map of nodes that have initialised themselves into the database
 		static bool initialized;
+
+    /// A list of aliases for this node, i.e. other names this node is known
+    /// as.
+    list< string > aliases;
     
   public:
     /// The database with all H3DNodeDatabase instances.
