@@ -79,7 +79,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
   if( navigation_type == "EXAMINE" || navigation_type == "ANY" ) {
     H3DNavigationDevices::MoveInfo move_info;
     if( H3DNavigationDevices::getMoveInfo( move_info ) ) {
-      if( move_info.zoom == true ) {
+      if( move_info.zoom ) {
         Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
         if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
           && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
@@ -89,14 +89,37 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
             }
             Vec3f direction = vp->centerOfRotation->getValue() - 
                               vp->totalPosition->getValue();
-            direction.normalize();
-            if( move_info.translation_sum * Vec3f( 0, 0, -1 ) < 0 )
+            H3DFloat max_movement = direction.length();
+            if( max_movement < Constants::f_epsilon ) {
+              // Should never come here unless user manually aligns the
+              // position of the viewpoint with the center of rotation.
+              // Just choose a direction to zoom out from.
+              direction = Vec3f( 1, 0, 0 );
+              max_movement = 1;
+            }
+            direction = direction / max_movement;
+            bool move_towards = true;
+            if( move_info.translation_sum * Vec3f( 0, 0, -1 ) < 0 ) {
               direction = -direction;
+              move_towards = false;
+            }
             direction = -vp_full_orientation * direction;
-            vp->translate( move_info.translation_sum.length() * direction *
-                           speed *
-                           delta_time * scaling.x,
-              false, temp_avatar_size, topNode );
+            direction = move_info.translation_sum.length() * direction *
+                        speed *
+                        delta_time * scaling.x;
+            if( move_towards ) {
+              H3DFloat dist_from_center = 1e-5f;
+              max_movement = max_movement > dist_from_center ?
+                             max_movement - dist_from_center : 0;
+              if( direction.length() < max_movement )
+                vp->translate( direction, false, temp_avatar_size, topNode );
+              else {
+                direction.normalize();
+                vp->translate( direction * max_movement,
+                               false, temp_avatar_size, topNode );
+              }
+            } else
+              vp->translate( direction, false, temp_avatar_size, topNode );
         } else {
           Console(3) << "Warning: Non-uniform scaling in the"
             << " active X3DViewpointNode ( "
@@ -206,12 +229,10 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
               ( transform_matrices[closest ] * box_bound->center->getValue() );
             Vec3f acc_inv_scale = vp_acc_inv_mtx.getScalePart();
             Vec3f geom_scale = transform_matrices[closest].getScalePart();
-            Vec3f size = H3DMax( H3DMax( H3DUtil::H3DAbs( acc_inv_scale.x ),
-                                         H3DUtil::H3DAbs( acc_inv_scale.y ) ),
-                                  H3DUtil::H3DAbs( acc_inv_scale.z ) ) *
-              ( H3DMax( H3DMax( H3DUtil::H3DAbs( geom_scale.x ),
-                                H3DUtil::H3DAbs( geom_scale.y ) ),
-                        H3DUtil::H3DAbs( geom_scale.z ) ) *
+            Vec3f size = H3DMax( H3DMax( acc_inv_scale.x, acc_inv_scale.y ),
+              acc_inv_scale.z ) *
+              ( H3DMax( H3DMax( geom_scale.x, geom_scale.y ),
+              geom_scale.z ) *
               box_bound->size->getValue() );
 
             viewing_distance = 2 * size.length();
