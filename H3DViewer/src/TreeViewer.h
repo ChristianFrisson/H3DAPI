@@ -8,17 +8,21 @@
 #ifndef __TreeViewer__
 #define __TreeViewer__
 
-#include <wx/treectrl.h>
+#include <wx/string.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
+#include <wx/menu.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
-#include <wx/string.h>
+#include <wx/treectrl.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
 #include <wx/grid.h>
 #include <wx/splitter.h>
-#include <wx/dialog.h>
+#include <wx/frame.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -26,17 +30,25 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Class TreeViewDialog
 ///////////////////////////////////////////////////////////////////////////////
-class TreeViewDialog : public wxDialog 
+class TreeViewDialog : public wxFrame 
 {
 	private:
 	
 	protected:
+		wxMenuBar* m_menubar1;
+		wxMenu* RightClickMenu;
 		wxSplitterWindow* m_splitter1;
 		wxPanel* m_panel1;
 		wxPanel* m_panel2;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnIdle( wxIdleEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewCollapseAll( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewExpandAll( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewCollapseChildren( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewNodeWatch( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewSaveX3D( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeRightClick( wxTreeEvent& event ){ event.Skip(); }
 		virtual void OnNodeSelected( wxTreeEvent& event ){ event.Skip(); }
 		virtual void OnCellEdit( wxGridEvent& event ){ event.Skip(); }
 		
@@ -44,7 +56,7 @@ class TreeViewDialog : public wxDialog
 	public:
 		wxTreeCtrl* TreeViewTree;
 		wxGrid* FieldValuesGrid;
-		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 588,474 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Scene tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 600,464 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		~TreeViewDialog();
 		void m_splitter1OnIdle( wxIdleEvent& )
 		{
@@ -58,7 +70,7 @@ class TreeViewDialog : public wxDialog
 ///////////////////////////////////////////////////////////////////////////////
 /// Class FieldValuesDialog
 ///////////////////////////////////////////////////////////////////////////////
-class FieldValuesDialog : public wxDialog 
+class FieldValuesDialog : public wxFrame 
 {
 	private:
 	
@@ -71,7 +83,7 @@ class FieldValuesDialog : public wxDialog
 	
 	public:
 		wxGrid* FieldValuesGrid;
-		FieldValuesDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 197,265 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+		FieldValuesDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 236,335 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		~FieldValuesDialog();
 	
 };

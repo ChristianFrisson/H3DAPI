@@ -31,7 +31,7 @@ void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
     default_values_node.reset( db->createNode() );
   }
 #endif
-  unsigned int rows = 0;
+  int rows = 0;
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; i++ ) {
     Field *f = i.getField( n ); //n->getField( *i );

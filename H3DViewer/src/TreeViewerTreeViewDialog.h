@@ -27,6 +27,24 @@ public:
   // Callback for when a cell in the node field view is changed.
   virtual void OnCellEdit( wxGridEvent& event );
 
+  /// Callback for when user right clicked on a tree node.
+	virtual void OnTreeRightClick( wxTreeEvent& event );
+
+  /// Callback for collapse all menu choice.
+	virtual void OnTreeViewCollapseAll( wxCommandEvent& event );
+
+  /// Callback for expand all menu choice.
+  virtual void OnTreeViewExpandAll( wxCommandEvent& event );
+
+  /// Callback for collapse children menu choice.
+  virtual void OnTreeViewCollapseChildren( wxCommandEvent& event );
+
+  /// Callback for node watch menu choice.
+  virtual void OnTreeViewNodeWatch( wxCommandEvent& event );
+
+  /// Callback for node save x3d menu choice.
+  virtual void OnTreeViewSaveX3D( wxCommandEvent& event );
+
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );
 
@@ -43,6 +61,12 @@ public:
   void clearTreeView();
 
 protected:
+  // Expand the item and all children below it.
+  void expandTree( const wxTreeItemId &id ); 
+
+  // Collapse the item and all children below it.
+  void collapseTree( const wxTreeItemId &id ); 
+
   // Delete a part of a wx tree, both from the wx widget and from
   // the map of nodes.
   void deleteTree( const wxTreeItemId &id );

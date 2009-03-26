@@ -1,6 +1,10 @@
 #include "TreeViewerTreeViewDialog.h"
+#include "TreeViewerFieldValuesDialog.h"
+#include <fstream>
+#include <wx/wx.h>
 #include <H3D/Scene.h>
 #include <H3D/Viewpoint.h>
+#include <H3D/X3D.h>
 
 TreeViewerTreeViewDialog::TreeViewerTreeViewDialog( wxWindow* parent )
 :
@@ -13,6 +17,7 @@ TreeViewerTreeViewDialog::TreeViewerTreeViewDialog( wxWindow* parent )
   bindable_tree_id = TreeViewTree->AppendItem( TreeViewTree->GetRootItem(), 
                                                wxT("Active bindable nodes") );
   TreeViewTree->Expand( TreeViewTree->GetRootItem() ); 
+  SetMenuBar( NULL );
 }
 
 
@@ -184,13 +189,13 @@ void TreeViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
 #ifdef DEFAULT_VALUES
     default_values_node.reset( NULL );
 #endif
-    SetTitle(wxT(""));
+    //SetTitle(wxT(""));
     if( FieldValuesGrid->GetNumberRows() > 0 )
       FieldValuesGrid->DeleteRows( 0, FieldValuesGrid->GetNumberRows() );
     return;
   }
 
-  SetTitle( wxString(n->getTypeName().c_str(),wxConvUTF8) );
+  //SetTitle( wxString(n->getTypeName().c_str(),wxConvUTF8) );
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
 #ifdef DEFAULT_VALUES
   if( new_node ) {
@@ -298,3 +303,115 @@ void TreeViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
   }
 }
 
+void TreeViewerTreeViewDialog::expandTree( const wxTreeItemId &id ) {
+  if( id.IsOk() ) {
+    wxTreeItemIdValue cookie;
+    wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
+    while( child_id.IsOk() ) {
+      expandTree( child_id );
+      child_id = TreeViewTree->GetNextSibling( child_id );
+    }
+    TreeViewTree->Expand( id );
+  }
+}
+
+void TreeViewerTreeViewDialog::collapseTree( const wxTreeItemId &id ) {
+  if( id.IsOk() ) {
+    wxTreeItemIdValue cookie;
+    wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
+    while( child_id.IsOk() ) {
+      collapseTree( child_id );
+      child_id = TreeViewTree->GetNextSibling( child_id );
+    }
+    TreeViewTree->Collapse( id );
+  }
+}
+
+void TreeViewerTreeViewDialog::OnTreeRightClick( wxTreeEvent& event ) {
+  TreeViewTree->SelectItem( event.GetItem() );
+  PopupMenu( RightClickMenu );
+}
+
+/// Callback for collapse all menu choice.
+void TreeViewerTreeViewDialog::OnTreeViewCollapseAll( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  if( id.IsOk() ) {
+    collapseTree( id );
+  }
+}
+
+/// Callback for expand all menu choice.
+void TreeViewerTreeViewDialog::OnTreeViewExpandAll( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  if( id.IsOk() ) {
+    expandTree( id );
+  }
+}
+
+/// Callback for collapse children menu choice.
+void TreeViewerTreeViewDialog::OnTreeViewCollapseChildren( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  wxTreeItemIdValue cookie;
+  wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
+  while( child_id.IsOk() ) {
+    collapseTree( child_id );
+    child_id = TreeViewTree->GetNextSibling( child_id );
+  }
+}
+
+/// Callback for node watch menu choice.
+void TreeViewerTreeViewDialog::OnTreeViewNodeWatch( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  
+  TreeIdMap::iterator ni = node_map.find( id.m_pItem );
+  if( ni == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } else {
+    TreeViewerFieldValuesDialog *fv = new TreeViewerFieldValuesDialog( 0 );
+    fv->displayFieldsFromNode( (*ni).second.get() );
+    fv->Show();
+  }
+}
+
+/// Callback for node save x3d menu choice.
+void TreeViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  
+  TreeIdMap::iterator ni = node_map.find( id.m_pItem );
+  if( ni == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } else {
+    wxFileDialog *file_dialog = new wxFileDialog ( this,
+                                                   wxT("File to save as.."),
+                                                   wxT(""),
+                                                   wxT(""),
+                                                   wxT("*.*"),
+                                                   wxSAVE,
+                                                   wxDefaultPosition) ;
+
+    if (file_dialog->ShowModal() == wxID_OK) {
+      std::string filename(file_dialog->GetPath().mb_str());
+      std::ofstream os( filename.c_str() );
+      if( os.fail() ) {
+        wxMessageBox( wxT("Unable to open selected file"), 
+                      wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      
+      try {
+        X3D::writeNodeAsX3D( os,
+                             (*ni).second.get() );
+      } catch (const Exception::H3DException &e) {
+        stringstream s;
+        s << e;
+        wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      os.close();
+    }
+  }
+}
