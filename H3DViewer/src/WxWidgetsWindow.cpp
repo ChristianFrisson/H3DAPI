@@ -187,6 +187,18 @@ myOwner( _myOwner )
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
   if( myOwner->is_initialized ) {
     static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
+   
+    // resize the window if the size is different from the current size.
+    int w = myOwner->width->getValue();
+    int h = myOwner->height->getValue();
+    int current_w, current_h;
+    GetSize( &current_w, &current_h );
+    if( w != current_w || h != current_h ) {
+      SetSize( w, h );
+    }
+
+    myOwner->theWindow->Fit();
+                                                           
   }
   event.RequestMore();
 }
