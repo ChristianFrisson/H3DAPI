@@ -42,6 +42,7 @@ class TreeViewDialog : public wxFrame
 		wxPanel* m_panel2;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnClose( wxCloseEvent& event ){ event.Skip(); }
 		virtual void OnIdle( wxIdleEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewCollapseAll( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewExpandAll( wxCommandEvent& event ){ event.Skip(); }

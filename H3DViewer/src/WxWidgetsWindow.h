@@ -93,7 +93,11 @@ namespace H3D {
                 Inst< SFViewpoint > _viewpoint  = 0 );
 
     ///// Destructor.
-    //~WxWidgetsWindow();
+    ~WxWidgetsWindow() {
+      if( !have_parent ) {
+        theWindow->Destroy();
+      }
+    }
 
     /// Calls wxGLCanvas::SwapBuffers
     virtual void swapBuffers(); 
@@ -114,6 +118,8 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+    bool is_initialized;
+    bool have_parent;
     wxWindow * theWindow;
     MyWxGLCanvas * theWxGLCanvas;
 #ifdef USE_EXPLICIT_GLCONTEXT

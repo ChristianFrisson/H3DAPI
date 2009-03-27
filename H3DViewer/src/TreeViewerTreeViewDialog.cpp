@@ -369,7 +369,7 @@ void TreeViewerTreeViewDialog::OnTreeViewNodeWatch( wxCommandEvent& event ) {
                   wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
   } else {
-    TreeViewerFieldValuesDialog *fv = new TreeViewerFieldValuesDialog( 0 );
+    TreeViewerFieldValuesDialog *fv = new TreeViewerFieldValuesDialog( this );
     fv->displayFieldsFromNode( (*ni).second.get() );
     fv->Show();
   }
@@ -414,4 +414,8 @@ void TreeViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
       os.close();
     }
   }
+}
+
+void TreeViewerTreeViewDialog::OnClose( wxCloseEvent& event ) {
+  Hide();
 }

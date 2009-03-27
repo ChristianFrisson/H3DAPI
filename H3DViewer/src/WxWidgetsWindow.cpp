@@ -52,10 +52,21 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
                         Inst< SFViewpoint > _viewpoint ) :
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
                  _viewpoint ),
-  theWindow( _theParent ){
+  theWindow( _theParent ),
+  is_initialized( false ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
   
+  have_parent = theWindow != NULL;
+ 
+  if( !theWindow ) {
+     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"),
+                              wxDefaultPosition,
+                              wxSize( width->getValue(), height->getValue() ));
+  }
+}
+
+void WxWidgetsWindow::initWindow() {
   int attribList[8];
   attribList[0] = WX_GL_RGBA;
   attribList[1] = WX_GL_DOUBLEBUFFER;
@@ -72,13 +83,6 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   //  attribList[6] = WX_GL_STEREO;
   attribList[7] = 0;
 #endif
- 
-  if( !theWindow ) {
-     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"),
-                              wxDefaultPosition,
-                              wxSize( width->getValue(), height->getValue() ));
-  }
-
   theWxGLCanvas = new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
               wxSize( width->getValue(), height->getValue() ), attribList );
 #ifdef USE_EXPLICIT_GLCONTEXT
@@ -96,9 +100,7 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
     wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
                           GWL_WNDPROC, (LONG_PTR) WindowProc);
 #endif
-}
 
-void WxWidgetsWindow::initWindow() {
   last_fullscreen = !fullscreen->getValue();
   theWindow->Show();
   theWxGLCanvas->Show();
@@ -110,6 +112,7 @@ void WxWidgetsWindow::initWindow() {
   glClearColor( 0, 0, 0, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClear( GL_COLOR_BUFFER_BIT );
+  is_initialized = true;
 }
 
 void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
@@ -182,7 +185,9 @@ myOwner( _myOwner )
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
-  static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
+  if( myOwner->is_initialized ) {
+    static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
+  }
   event.RequestMore();
 }
 

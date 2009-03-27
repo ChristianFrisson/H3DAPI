@@ -104,6 +104,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	this->Layout();
 	
 	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( TreeViewDialog::OnClose ) );
 	this->Connect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::OnIdle ) );
 	this->Connect( TreeViewCollapseAll->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseAll ) );
 	this->Connect( TreeViewExpandAll->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewExpandAll ) );
@@ -118,6 +119,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 TreeViewDialog::~TreeViewDialog()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( TreeViewDialog::OnClose ) );
 	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::OnIdle ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewExpandAll ) );
