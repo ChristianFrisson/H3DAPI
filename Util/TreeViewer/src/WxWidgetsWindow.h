@@ -31,12 +31,16 @@
 
 #include "wx/wx.h"
 #include <H3D/H3DWindowNode.h>
-//#include "Scene.h"
 #include "wx/glcanvas.h"
 
 #if !wxUSE_GLCANVAS
     #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
 #endif
+
+// Define this if you want the gl context be created explicitly. This does
+// not work under OSX v2.8 wxWidgets and does not really add anything unless
+// you want to share rendering contexts. So by default we do not use it.
+//#define USE_EXPLICIT_GLCONTEXT
 
 namespace H3D {
 
@@ -111,7 +115,9 @@ namespace H3D {
   protected:
     wxWindow * theWindow;
     MyWxGLCanvas * theWxGLCanvas;
+#ifdef USE_EXPLICIT_GLCONTEXT
     wxGLContext * theWxGLContext;
+#endif
 	bool last_fullscreen;
   };
 }

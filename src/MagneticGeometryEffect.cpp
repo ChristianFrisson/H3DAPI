@@ -126,8 +126,8 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                     new HAPI::Collision::Sphere(
                       ti.getAccForwardMatrix() * Vec3f(),
                       dynamic_cast< Sphere * >(the_geometry)
-                        ->radius->getValue() * max( H3DAbs( scale.x ),
-                          max( H3DAbs( scale.y ), H3DAbs( scale.z ) ) ) ),
+                        ->radius->getValue() * max( scale.x,
+                          max( scale.y, scale.z ) ) ),
                       springConstant->getValue() ) );
               } else {
                 H3DFloat lookahead_factor = 3;
@@ -157,9 +157,7 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                 the_geometry->boundTree->getValue()
                   ->getPrimitivesIntersectedByMovingSphere(
                     ( distance + addDistance ) *
-                    H3DMax( H3DUtil::H3DAbs( scale.x ),
-                            H3DMax( H3DUtil::H3DAbs( scale.y ),
-                                    H3DUtil::H3DAbs( scale.z ) ) ),
+                    H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
                     local_proxy,
                     local_proxy + movement * lookahead_factor,
                     tris,

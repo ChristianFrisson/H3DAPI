@@ -28,12 +28,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <WxWidgetsWindow.h>
+#include "WxWidgetsWindow.h"
 #ifndef WIN32
 #include <H3D/X3DKeyDeviceSensorNode.h>
 #include <H3D/MouseSensor.h>
 #endif
-
 
 using namespace H3D;
 
@@ -63,26 +62,38 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   attribList[3] = 24;
   attribList[4] = WX_GL_STENCIL_SIZE;
   attribList[5] = 8;
+
+  // TODO: FIX stereo mode
 #ifdef MACOSX
   // TODO: stereo mode does not work with mac
   attribList[6] = 0;
 #else
-  attribList[6] = WX_GL_STEREO;
+  //  attribList[6] = WX_GL_STEREO;
   attribList[7] = 0;
 #endif
  
   if( !theWindow ) {
-     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"), wxDefaultPosition,
+     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"),
+                              wxDefaultPosition,
                               wxSize( width->getValue(), height->getValue() ));
   }
 
   theWxGLCanvas = new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
               wxSize( width->getValue(), height->getValue() ), attribList );
+#ifdef USE_EXPLICIT_GLCONTEXT
+  theWxGLContext = new wxGLContext( theWxGLCanvas );
+#endif
+
+  wxSizer *tmp_sizer = theWindow->GetSizer();
+  if( tmp_sizer ) {
+    tmp_sizer->Add( theWxGLCanvas, 1, wxEXPAND );
+    theWindow->Layout();
+  }
 #ifdef WIN32
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
   if( hWnd )
-    wpOrigProc = (WNDPROC) SetWindowLong(hWnd, 
-                          GWL_WNDPROC, (LONG) WindowProc);
+    wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                          GWL_WNDPROC, (LONG_PTR) WindowProc);
 #endif
 }
 
@@ -90,7 +101,11 @@ void WxWidgetsWindow::initWindow() {
   last_fullscreen = !fullscreen->getValue();
   theWindow->Show();
   theWxGLCanvas->Show();
+#ifdef USE_EXPLICIT_GLCONTEXT
+  theWxGLCanvas->SetCurrent( *theWxGLContext );
+#else
   theWxGLCanvas->SetCurrent();
+#endif
   glClearColor( 0, 0, 0, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClear( GL_COLOR_BUFFER_BIT );
@@ -113,7 +128,11 @@ void WxWidgetsWindow::swapBuffers() {
 }
 
 void WxWidgetsWindow::makeWindowActive() {
+#ifdef USE_EXPLICIT_GLCONTEXT
+  theWxGLCanvas->SetCurrent( *theWxGLContext );
+#else
   theWxGLCanvas->SetCurrent();
+#endif
 }
 
 BEGIN_EVENT_TABLE(WxWidgetsWindow::MyWxGLCanvas, wxGLCanvas)
@@ -148,8 +167,15 @@ WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
                                                   long _style, 
                                                   const wxString& _name,
                                                   const wxPalette& _palette ):
-wxGLCanvas(_parent, _id, _pos, _size, _style | wxFULL_REPAINT_ON_RESIZE, _name,
-           _attribList, _palette),
+#ifdef USE_EXPLICIT_GLCONTEXT
+wxGLCanvas( _parent, _id, _attribList, _pos, _size,
+            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
+            _palette ),
+#else
+wxGLCanvas( _parent, _id, _pos, _size,
+            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
+	    _attribList,  _palette ),
+#endif
 myOwner( _myOwner )
 {
 }
@@ -163,8 +189,12 @@ void WxWidgetsWindow::MyWxGLCanvas::OnSize( wxSizeEvent& event ) {
   // set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
   int w, h;
   GetClientSize(&w, &h);
+#ifdef USE_EXPLICIT_GLCONTEXT
+  myOwner->reshape( w, h );
+#else
   if ( GetContext() )
     myOwner->reshape( w, h );
+#endif
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnPaint( wxPaintEvent& WXUNUSED(event))

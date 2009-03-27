@@ -453,9 +453,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
       boundTree->getValue()->getAllPrimitives( tris, lines, points );
     } else {
       boundTree->getValue()->getPrimitivesIntersectedByMovingSphere(
-        radius * H3DMax( H3DUtil::H3DAbs( scale.x ),
-                         H3DMax( H3DUtil::H3DAbs( scale.y ),
-                                 H3DUtil::H3DAbs( scale.z ) ) ),
+        radius * H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
         local_proxy,
         local_proxy + movement * lookahead_factor,
         tris,
@@ -487,11 +485,9 @@ void X3DGeometryNode::createAndAddHapticShapes(
         HAPI::FeedbackBufferCollector::startCollecting( nr_values, 
                                 center, 
                                 full_movement + 
-                                Vec3f( d, d, d ) *
-                                H3DMax( H3DUtil::H3DAbs( scale.x ),
-                                        H3DMax( H3DUtil::H3DAbs( scale.y ),
-                                                H3DUtil::H3DAbs( scale.z )
-                                ) ) );
+                                Vec3f( d, d, d ) *  H3DMax( scale.x,
+                                H3DMax( scale.y, 
+                                scale.z ) ) );
         glRender();
         HAPI::FeedbackBufferCollector::ErrorType e = 
           HAPI::FeedbackBufferCollector::endCollecting( tris,
@@ -510,6 +506,13 @@ void X3DGeometryNode::createAndAddHapticShapes(
     }
   }
 
+  Matrix3f m3 = ti.getAccForwardMatrix().getScaleRotationPart();
+  if( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) < 0 ) {
+    Console(3) << "Warning: A parent transform node to the X3DGeometryNode "
+               << getName() << " contains a negative scaling coefficient. "
+               << " Haptics will most likely not be rendered correctly."
+               << endl;
+  }
   if( tris.size() > 0 )  {
     // Increase ref-count to have cleanupfunction decrease
     // it when the HapticTriangleSet is destructed.

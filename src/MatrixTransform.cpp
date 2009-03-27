@@ -194,9 +194,7 @@ bool MatrixTransform::movingSphereIntersect( H3DFloat radius,
   Vec3f local_to = matrix_inverse * to;
   Vec3f scaling_values = matrix_inverse.getScalePart();
   H3DFloat local_radius = radius *
-    max( H3DUtil::H3DAbs( scaling_values.x ),
-         max( H3DUtil::H3DAbs( scaling_values.y ),
-              H3DUtil::H3DAbs( scaling_values.z ) ) );
+    max( scaling_values.x, max( scaling_values.y, scaling_values.z ) );
   bool intersection = X3DGroupingNode::movingSphereIntersect(
                         local_radius, local_from, local_to, result );
   result.popTransform();
