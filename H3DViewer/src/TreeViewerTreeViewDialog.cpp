@@ -27,7 +27,7 @@ void TreeViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
   if( ni == node_map.end() ) {
     displayFieldsFromNode( NULL );
   } else {
-    displayFieldsFromNode( (*ni).second.get() );
+    selected_node.reset( (*ni).second.get() );
   }
 }
 
@@ -196,6 +196,10 @@ void TreeViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
     return;
   }
 
+  if( new_node ) {
+    FieldValuesGrid->SaveEditControlValue();
+  }
+
   //SetTitle( wxString(n->getTypeName().c_str(),wxConvUTF8) );
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
 #ifdef DEFAULT_VALUES
@@ -222,7 +226,36 @@ void TreeViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
       Field *default_field = i.getField( default_values_node.get() );
       bool allow_cell_update = true;
 
-      if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
+      if( SFString *sfstring = dynamic_cast< SFString * >( f ) ) {
+         // set renderer to string renderer
+         renderer = FieldValuesGrid->GetDefaultRenderer();
+        // use a choice editor if a set of valid values have been
+        // specified for the field.
+        if( sfstring->hasValidValues() ) {    
+          // set editor
+          if( !dynamic_cast< wxGridCellChoiceEditor * >( current_editor ) ||
+              new_node ) {
+            const set<string > &valid_values = sfstring->getValidValues();
+            wxArrayString choices;
+            choices.Alloc( valid_values.size() );
+            for( set<string>::const_iterator i = valid_values.begin();
+                 i != valid_values.end(); i++ ) {
+              choices.Add( wxString( (*i).c_str() ));
+            }
+            editor = new wxGridCellChoiceEditor( choices, false );
+          }
+        } else {
+          // no valid values specified, use string editor.
+          editor = FieldValuesGrid->GetDefaultEditor();
+        }
+
+        // set value
+        value = "";
+        if( sfstring->getAccessType() != Field::INPUT_ONLY ) {
+          value = sfstring->getValue();
+          default_value = static_cast< SFString * >( default_field )->getValue();
+        }
+      } else if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
         // set renderer
         if( !dynamic_cast< wxGridCellBoolRenderer * >( current_renderer ) ) {
           renderer = new wxGridCellBoolRenderer;
@@ -327,7 +360,7 @@ void TreeViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
   if( IsShown() ) {
     TimeStamp now;
     if( now - last_fields_update > 0.1 ) {
-      displayFieldsFromNode( displayed_node.get() );
+      displayFieldsFromNode( selected_node.get() );
       last_fields_update = now;
     }
 
@@ -357,7 +390,6 @@ void TreeViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
       Field *f = displayed_node->getField( field_name );
       if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
          sfbool->setValue( s == "1" );
-         Console(4) << (s == "1") << endl;
       } else if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
         try {
           pf->setValueFromString( s );

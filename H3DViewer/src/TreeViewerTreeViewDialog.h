@@ -109,6 +109,12 @@ protected:
 #endif
   // The node which values are currently being displayed.
   AutoRef< Node > displayed_node;
+
+  // The node that was last selected. This will be used to
+  // set the displayed node in isIdle. Cannot use only displayed_node
+  // since we have to divide it into two parts, selecting and displaying
+  // in order to work around a crash that happens in a choice editor.
+  AutoRef< Node > selected_node;
 };
 
 #endif // __TreeViewerTreeViewDialog__
