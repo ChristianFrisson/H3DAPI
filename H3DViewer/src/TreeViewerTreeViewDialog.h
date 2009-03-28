@@ -66,6 +66,13 @@ public:
   void clearTreeView();
 
 protected:
+  // Update the specified row in the field values grid with
+  // values from the node and filed into given.
+  void updateRowFromFieldDB( int row, 
+                             Node *n,
+                             FieldDBElement *db,
+                             bool new_node );
+
   // Expand the item and all children below it.
   void expandTree( const wxTreeItemId &id ); 
 
