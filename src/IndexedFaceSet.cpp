@@ -490,10 +490,11 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
         }
 
         norm = AB % BC;
+        H3DFloat l = norm.length();
         // check if zero vector
-        if( norm*norm > Constants::f_epsilon ) {
+        if( l > Constants::f_epsilon ) {
           // if not normalize and add to vector.
-          norm.normalize();
+          norm = norm / l;
         } else {
           // try to find an edge that together with AB can generate
           // a normal
@@ -501,8 +502,9 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
             C = coord->getCoord( coord_index[ j++ ] );
             BC = B - C;
             norm = AB % BC;
-            if( norm*norm > Constants::f_epsilon ) {
-              norm.normalize();
+            l = norm.length();
+            if( l > Constants::f_epsilon ) {
+              norm = norm / l;
               break;
             }
           }
