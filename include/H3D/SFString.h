@@ -43,6 +43,43 @@ namespace H3D {
     SFString() {}
     SFString( const string &_value ): SField< string >( _value ){}
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFSTRING; }
+
+    /// Add a valid value for the string. valid values is a set of values
+    /// that the field can be set to to make sense. It is not forced to
+    /// be any of these values but they provide an indication of what 
+    /// values to use.
+    inline void addValidValue( const string &s ) {
+      valid_values.insert( s );
+    }
+
+    /// Add valid values for the string. valid values is a set of values
+    /// that the field can be set to to make sense. It is not forced to
+    /// be any of these values but they provide an indication of what 
+    /// values to use.
+    template< class InputIterator >
+    inline void addValidValues( InputIterator begin, InputIterator end ) {
+      valid_values.insert( begin, end );
+    }
+
+    /// Returns true if the given string is one of the specified valid
+    /// values for the field.
+    inline bool isValidValue( const string &s ) {
+      return valid_values.find( s ) != valid_values.end();
+    }
+
+    /// Returns true if any valid values have been specified for the 
+    /// field.
+    inline bool hasValidValues() {
+      return valid_values.size() > 0;
+    }
+
+    /// Returns the valid values for the field.
+    const set< string > &getValidValues() {
+      return valid_values;
+    }
+    
+  protected:
+    set< string > valid_values;
   };
 }
 
