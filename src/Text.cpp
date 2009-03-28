@@ -40,6 +40,8 @@ H3DNodeDatabase Text::database(
                                typeid( Text ),
                                &X3DGeometryNode::database );
 
+AutoRef<FontStyle > Text::default_font_style( NULL );
+
 namespace TextInternals {
   FIELDDB_ELEMENT( Text, fontStyle, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Text, length, INPUT_OUTPUT );
@@ -80,6 +82,11 @@ Text::Text( Inst< SFNode          > _metadata,
   length->route( bound );
   maxExtent->route( bound );
   stringF->route( bound );
+
+  // initialize static default font.
+  if( !default_font_style.get() ) {
+    default_font_style.reset( new FontStyle );
+  }
 
 }
 
@@ -312,74 +319,76 @@ void Text::render() {
   X3DFontStyleNode *font = 
     static_cast< X3DFontStyleNode * >( fontStyle->getValue() );
  
-  if( font ) {
-    // we will make changes to the transformation matrices so we save
-    // the current matrices.
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
+  if( !font ) {
+    font = default_font_style.get();
+  }
 
-    font->buildFonts();
+  // we will make changes to the transformation matrices so we save
+  // the current matrices.
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
 
-    // get the field values
-    X3DFontStyleNode::Alignment alignment = font->getAlignment();
-    //X3DFontStyleNode::Justification major = font->getMajorJustification();
-    const vector< string >& text = stringF->getValue(); 
-    //bool top_to_bottom = font->isTopToBottom();
-    //bool left_to_right = font->isLeftToRight();
-    //H3DFloat max_extent = maxExtent->getValue();
-    const vector< H3DFloat > &line_length = length->getValue();
+  font->buildFonts();
 
-    // scale to make the text fit within max extent value.
-    scaleToMaxExtent( text, font );
+  // get the field values
+  X3DFontStyleNode::Alignment alignment = font->getAlignment();
+  //X3DFontStyleNode::Justification major = font->getMajorJustification();
+  const vector< string >& text = stringF->getValue(); 
+  //bool top_to_bottom = font->isTopToBottom();
+  //bool left_to_right = font->isLeftToRight();
+  //H3DFloat max_extent = maxExtent->getValue();
+  const vector< H3DFloat > &line_length = length->getValue();
 
-    // justify the text in the minor alignment.
-    justifyMinor( text, font );
+  // scale to make the text fit within max extent value.
+  scaleToMaxExtent( text, font );
 
-    vector< H3DFloat >::const_iterator l = line_length.begin();
-    for( vector< string >::const_iterator line = text.begin();
-         line != text.end();
-         line++ ) {
+  // justify the text in the minor alignment.
+  justifyMinor( text, font );
+
+  vector< H3DFloat >::const_iterator l = line_length.begin();
+  for( vector< string >::const_iterator line = text.begin();
+       line != text.end();
+       line++ ) {
       
-      // translate to the next line. What the next line is depends on the 
-      // values in the font node.
-      if ( !( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) )
-        if( line != text.begin() )
-          moveToNewLine( *line, font );
-      
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();   
-      
-      // if we have values in the length field we scale in order to have
-      // the text line be the same size as the length.
-      if( l != line_length.end() ) {
-        if( alignment == X3DFontStyleNode::HORIZONTAL ) 
-          glScalef( (*l)/ font->stringDimensions( *line, alignment ).x, 
-                    1, 1 );
-        else 
-          glScalef( 1,
-                    (*l)/ font->stringDimensions( *line, alignment ).y, 
-                    1 );
-        l++;
-      }
-
-      // justify the line in the major alignment depending on the justify
-      // values in font.
-      justifyLine( *line, font ); 
-      // render the line of text in the style of the font.
-      renderTextLine( *line, font );
-
-      glMatrixMode(GL_MODELVIEW);
-      glPopMatrix();
-
-      // translate to the next line. What the next line is depends on the 
-      // values in the font node.
-      if( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) 
+    // translate to the next line. What the next line is depends on the 
+    // values in the font node.
+    if ( !( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) )
+      if( line != text.begin() )
         moveToNewLine( *line, font );
       
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();   
+      
+    // if we have values in the length field we scale in order to have
+    // the text line be the same size as the length.
+    if( l != line_length.end() ) {
+      if( alignment == X3DFontStyleNode::HORIZONTAL ) 
+        glScalef( (*l)/ font->stringDimensions( *line, alignment ).x, 
+                  1, 1 );
+      else 
+        glScalef( 1,
+                  (*l)/ font->stringDimensions( *line, alignment ).y, 
+                  1 );
+      l++;
     }
+
+    // justify the line in the major alignment depending on the justify
+    // values in font.
+    justifyLine( *line, font ); 
+    // render the line of text in the style of the font.
+    renderTextLine( *line, font );
+
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
+
+    // translate to the next line. What the next line is depends on the 
+    // values in the font node.
+    if( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) 
+      moveToNewLine( *line, font );
+      
   }
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
 }
   
 void Text::DisplayList::callList( bool build_list ) {

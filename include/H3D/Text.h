@@ -34,6 +34,7 @@
 #include <H3D/MFFloat.h>
 #include <H3D/SFFloat.h>
 #include <H3D/MFString.h>
+#include <H3D/FontStyle.h>
 
 namespace H3D {
 
@@ -211,6 +212,10 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+
+    /// The font style to use when no style is specified.
+    static AutoRef< FontStyle > default_font_style;
+
     /// Scales the scene so that the text given would be contained within
     /// the value of the maxExtent field. The length field is inspected as
     /// well as the dimensions of the text to determine what the scale should
