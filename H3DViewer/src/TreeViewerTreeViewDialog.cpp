@@ -42,7 +42,8 @@ void TreeViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
   const X3DBindableNode::StackMapType &stacks = X3DBindableNode::getStackMap();
   for( X3DBindableNode::StackMapType::const_iterator i = stacks.begin(); 
        i != stacks.end();i++ ) {
-    l.push_back( X3DBindableNode::getActive( (*i).first ) );
+    X3DBindableNode *b = X3DBindableNode::getActive( (*i).first );
+    if( b ) l.push_back( b );
   }
   updateNodeTree( bindable_tree_id, l, false );
 }
@@ -211,44 +212,102 @@ void TreeViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
         
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
 
-    } /*else if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
-      if( rows >= FieldValuesGrid->GetNumberRows() ) {
-         FieldValuesGrid->AppendRows(1);
-         FieldValuesGrid->SetCellRenderer( rows, 1, new wxGridCellBoolRenderer );
-         FieldValuesGrid->SetCellEditor( rows, 1, new wxGridCellBoolEditor );
+    } else {
+      wxGridCellEditor *current_editor = FieldValuesGrid->GetCellEditor( rows, 1 );
+      wxGridCellRenderer *current_renderer = FieldValuesGrid->GetCellRenderer( rows, 1 );
+      wxGridCellEditor *editor = current_editor;
+      wxGridCellRenderer *renderer = current_renderer;
+      string value;
+      string default_value;
+      Field *default_field = i.getField( default_values_node.get() );
+      bool allow_cell_update = true;
+
+      if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
+        // set renderer
+        if( !dynamic_cast< wxGridCellBoolRenderer * >( current_renderer ) ) {
+          renderer = new wxGridCellBoolRenderer;
+        }
+        
+        // set editor
+        if( !dynamic_cast< wxGridCellBoolEditor * >( current_editor ) ) {
+          editor = new wxGridCellBoolEditor;
+        }
+
+        if( FieldValuesGrid->GetGridCursorRow() ==  rows ) {
+          FieldValuesGrid->SaveEditControlValue();
+          allow_cell_update = FieldValuesGrid->GetGridCursorCol() !=  1;
+        }
+
+        // set value
+        value = "0";
+        if( sfbool->getAccessType() != Field::INPUT_ONLY ) {
+          bool checked = sfbool->getValue();
+          value = checked ? "1" : "0";
+        }
+
+        // set default value
+        default_value = "0";
+        if( sfbool->getAccessType() != Field::INPUT_ONLY  ) {
+          SFBool *sf = static_cast< SFBool *>( default_field );
+          bool checked = sf->getValue();
+          default_value = checked ? "1" : "0";
+        }
+      }  else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
+        // set renderer and editor
+        editor = FieldValuesGrid->GetDefaultEditor();
+        renderer = FieldValuesGrid->GetDefaultRenderer();
+
+        // set value
+        if( pfield->getAccessType() != Field::INPUT_ONLY ) {
+          value = pfield->getValueAsString();
+        }
+
+        // set default value
+        default_value = "0";
+        if( pfield->getAccessType() != Field::INPUT_ONLY  ) {
+          ParsableField *df = static_cast< ParsableField * >( default_field );
+          default_value = df->getValueAsString();
+        }
       }
 
-      if( string( FieldValuesGrid->GetCellValue( rows, 0 ).mb_str() ) != *i )
-        FieldValuesGrid->SetCellValue( rows, 0, wxString( (*i).c_str() , wxConvUTF8) );
-      rows++;
-      } */ else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
-      if( pfield->getAccessType() != Field::INPUT_ONLY ) {
-        if( rows >= FieldValuesGrid->GetNumberRows() )
-          FieldValuesGrid->AppendRows(1);
-        if( string( FieldValuesGrid->GetCellValue( rows, 0 ).mb_str() ) != *i )
-          FieldValuesGrid->SetCellValue( rows, 0, wxString( (*i).c_str() , wxConvUTF8) );
-
-        string value = pfield->getValueAsString();
-        if( string( FieldValuesGrid->GetCellValue( rows, 1 ).mb_str() ) != value )
-          FieldValuesGrid->SetCellValue( rows, 1, wxString( value.c_str(), wxConvUTF8) );
-
+      // if not enough rows, append a new one
+      if( rows >= FieldValuesGrid->GetNumberRows() )
+        FieldValuesGrid->AppendRows(1);
+        
+      // set the editor and renderer of the cell
+      FieldValuesGrid->SetCellRenderer( rows, 1, renderer );
+      FieldValuesGrid->SetCellEditor( rows, 1, editor );
+      
+      bool changed_color = false;
 #ifdef DEFAULT_VALUES
-         ParsableField *df = 
-           static_cast< ParsableField * >( i.getField( default_values_node.get() ) );
-         if( df->getValueAsString() == pfield->getValueAsString() ) {
-           FieldValuesGrid->SetCellTextColour( rows, 0, *wxBLACK );
-           FieldValuesGrid->SetCellTextColour( rows, 1, *wxBLACK );
-         } else {
-           FieldValuesGrid->SetCellTextColour( rows, 0, *wxRED );
-           FieldValuesGrid->SetCellTextColour( rows, 1, *wxRED );
-         }
-#endif
-        rows++;
+      wxColour current_color = FieldValuesGrid->GetCellTextColour( rows, 0 );
+      // set the color of the text.
+      if( value == default_value ) {
+        FieldValuesGrid->SetCellTextColour( rows, 0, *wxBLACK );
+        FieldValuesGrid->SetCellTextColour( rows, 1, *wxBLACK );
+      } else {
+        FieldValuesGrid->SetCellTextColour( rows, 0, *wxRED );
+        FieldValuesGrid->SetCellTextColour( rows, 1, *wxRED );
       }
-    }
-  
-  }
+      changed_color = FieldValuesGrid->GetCellTextColour( rows, 0 ) != current_color;
+#endif
 
+      //  set the field name value if it has changed.
+      if( string( FieldValuesGrid->GetCellValue( rows, 0 ).mb_str() ) != *i ||
+          changed_color )
+        FieldValuesGrid->SetCellValue( rows, 0, wxString( (*i).c_str() , wxConvUTF8) );
+        
+      // set field value if changed and not currently being edited.
+      if( allow_cell_update &&
+          string( FieldValuesGrid->GetCellValue( rows, 1 ).mb_str() ) != value &&
+          !FieldValuesGrid->IsCellEditControlEnabled() ){
+         FieldValuesGrid->SetCellValue( rows, 1, wxString( value.c_str(), wxConvUTF8) );
+      }
+        
+      rows++;
+    }
+  }
+  
   if( rows < FieldValuesGrid->GetNumberRows() ) {
     FieldValuesGrid->DeleteRows( rows, FieldValuesGrid->GetNumberRows() - rows );
   }
@@ -264,6 +323,7 @@ void TreeViewerTreeViewDialog::clearTreeView() {
 }
 
 void TreeViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
+  try {
   if( IsShown() ) {
     TimeStamp now;
     if( now - last_fields_update > 0.1 ) {
@@ -282,6 +342,9 @@ void TreeViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
   }
 
   shown_last_loop = IsShown();
+  } catch( ... ) {
+    // ignore any errors
+  }
 }
 
 void TreeViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
@@ -292,7 +355,10 @@ void TreeViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
     if( col == 1 ) {
       string field_name( FieldValuesGrid->GetCellValue( row, 0 ).mb_str());
       Field *f = displayed_node->getField( field_name );
-      if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
+      if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
+         sfbool->setValue( s == "1" );
+         Console(4) << (s == "1") << endl;
+      } else if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
         try {
           pf->setValueFromString( s );
         } catch(...) {
