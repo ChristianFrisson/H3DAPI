@@ -67,11 +67,18 @@ HapticsOptions::HapticsOptions(
 
   database.initFields( this );
 
+  touchableFace->addValidValue( "AS_GRAPHICS" );
+  touchableFace->addValidValue( "FRONT" );
+  touchableFace->addValidValue( "BACK" );
+  touchableFace->addValidValue( "FRONT_AND_BACK" );
   touchableFace->setValue( "AS_GRAPHICS" );
   maxDistance->setValue( 0.015f );
   lookAheadFactor->setValue( 3 );
   useBoundTree->setValue( true );
   interpolateForceEffects->setValue( true );
+  dynamicMode->addValidValue( "TRANSFORM_CHANGED" );
+  dynamicMode->addValidValue( "ALWAYS" );
+  dynamicMode->addValidValue( "NEVER" );
   dynamicMode->setValue( "TRANSFORM_CHANGED" );
 }
 

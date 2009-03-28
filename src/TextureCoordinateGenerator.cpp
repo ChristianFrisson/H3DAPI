@@ -58,7 +58,15 @@ TextureCoordinateGenerator::TextureCoordinateGenerator(
   database.initFields( this );
   mode->route( propertyChanged );
   parameter->route( propertyChanged );
-  
+
+  mode->addValidValue( "GL_SPHERE" );
+  mode->addValidValue( "SPHERE" );
+  mode->addValidValue( "MATRIX" );
+  mode->addValidValue( "CAMERASPACEPOSITION" );
+  mode->addValidValue( "COORD-EYE" );
+  mode->addValidValue( "COORD" );
+  mode->addValidValue( "CAMERASPACEREFLECTIONVECTOR" );
+  mode->addValidValue( "CAMERASPACENORMAL" );
   mode->setValue( "GL_SPHERE" );
 }
 

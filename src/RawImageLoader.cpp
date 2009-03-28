@@ -71,7 +71,17 @@ RawImageLoader::RawImageLoader( Inst< SFInt32  > _width,
   width->setValue( 1 );
   height->setValue( 1 );
   depth->setValue( 1 );
+  pixelType->addValidValue( "LUMINANCE" );
+  pixelType->addValidValue( "LUMINANCE_ALPHA" );
+  pixelType->addValidValue( "RGB" );
+  pixelType->addValidValue( "RGBA" );
+  pixelType->addValidValue( "BGR" );
+  pixelType->addValidValue( "BGRA" );
+  pixelType->addValidValue( "VEC3" );
   pixelType->setValue( "RGB" );
+  pixelComponentType->addValidValue( "UNSIGNED" );
+  pixelComponentType->addValidValue( "SIGNED" );
+  pixelComponentType->addValidValue( "RATIONAL" );
   pixelComponentType->setValue( "UNSIGNED" );
   bitsPerPixel->setValue( 24 );
   pixelSize->setValue( Vec3f( 0, 0, 0 ) );

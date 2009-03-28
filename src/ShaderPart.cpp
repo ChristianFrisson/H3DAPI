@@ -62,7 +62,9 @@ ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
   shaderString->setName( "shaderString" );
 
   addInlinePrefix( "glsl" );
-  
+
+  type->addValidValue( "VERTEX" );
+  type->addValidValue( "FRAGMENT" );
   type->setValue( "VERTEX", id );
   url->route( shaderString );
 }

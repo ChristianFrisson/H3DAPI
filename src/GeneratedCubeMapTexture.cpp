@@ -61,6 +61,9 @@ GeneratedCubeMapTexture::GeneratedCubeMapTexture(
   database.initFields( this );
 
   size->setValue( 128 );
+  update->addValidValue( "NONE" );
+  update->addValidValue( "NEXT_FRAME_ONLY" );
+  update->addValidValue( "ALWAYS" );
   update->setValue( "NONE" );
 }
 

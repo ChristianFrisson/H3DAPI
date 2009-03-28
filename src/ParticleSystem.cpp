@@ -112,6 +112,13 @@ ParticleSystem::ParticleSystem(
   maxParticles->setValue( 200 );
   particleLifetime->setValue( 5 );
   particleSize->setValue( Vec2f( (H3DFloat) 0.02, (H3DFloat)0.02 ) );
+
+  geometryType->addValidValue( "QUAD" );
+  geometryType->addValidValue( "TRIANGLE" );
+  geometryType->addValidValue( "LINE" );
+  geometryType->addValidValue( "POINT" );
+  geometryType->addValidValue( "SPRITE" );
+  geometryType->addValidValue( "GEOMETRY" );
   geometryType->setValue( "QUAD" );
 
   last_time = TimeStamp();

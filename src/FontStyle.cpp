@@ -345,16 +345,16 @@ string FC_GetFontByName( const char *font_name ) {
 	map<string,FTFont*>::iterator f = font_db.find( font_to_search );
 	if ( f != font_db.end() )
 	  return (*f).second;
-    if( render_type == "POLYGON" ) {
-      font = new FTGLPolygonFont( full_font_path.c_str() ); 
-    } else if( render_type == "TEXTURE" ) {
-      font = new FTGLTextureFont( full_font_path.c_str() ); 
-    } else if( render_type == "OUTLINE" ) {
-      font = new FTGLOutlineFont( full_font_path.c_str() ); 
-    } else if( render_type == "EXTRUDED" ) {
-      font = new FTGLExtrdFont( full_font_path.c_str() ); 
-    }
-    if( !font || font->Error() ) return NULL;
+  if( render_type == "POLYGON" ) {
+    font = new FTGLPolygonFont( full_font_path.c_str() ); 
+  } else if( render_type == "TEXTURE" ) {
+    font = new FTGLTextureFont( full_font_path.c_str() ); 
+  } else if( render_type == "OUTLINE" ) {
+    font = new FTGLOutlineFont( full_font_path.c_str() ); 
+  } else if( render_type == "EXTRUDED" ) {
+    font = new FTGLExtrdFont( full_font_path.c_str() ); 
+  }
+  if( !font || font->Error() ) return NULL;
 	else {
 	  font->FaceSize( 72 );
 	  font->CharMap(ft_encoding_unicode);
@@ -434,8 +434,18 @@ FontStyle::FontStyle(
   leftToRight->setValue( true );
   size->setValue( 1.0 );
   spacing->setValue( 1.0 );
+
+  style->addValidValue("PLAIN");
+  style->addValidValue( "BOLD" );
+  style->addValidValue("ITALIC");
+  style->addValidValue( "BOLDITALIC" );
+  style->addValidValue("");
   style->setValue( "PLAIN" );
   topToBottom->setValue( true );
+  renderType->addValidValue( "POLYGON" );
+  renderType->addValidValue( "TEXTURE" );
+  renderType->addValidValue( "OUTLINE" );
+  renderType->addValidValue( "EXTRUDED" );
   renderType->setValue( "TEXTURE" );
 
 #if !( defined( HAVE_FREETYPE ) && defined( HAVE_FTGL ) )
@@ -452,10 +462,10 @@ void FontStyle::buildFonts() {
   
   const string &render_type = renderType->getValue();
   if( render_type != "POLYGON" && render_type != "TEXTURE" &&
-      render_type != "OUTLINE" ) {
+      render_type != "OUTLINE" && render_type != "EXTRUDED" ) {
     stringstream s;
     s << " in " << renderType->getFullName() 
-      << ". Valid values are \"POLYGON\", \"TEXTURE\" and \"OUTLINE\"";
+      << ". Valid values are \"POLYGON\", \"TEXTURE\", \"EXTRUDED\" and \"OUTLINE\"";
     throw InvalidFontStyleRenderType( render_type, 
                                       s.str(), 
                                       H3D_FULL_LOCATION ); 

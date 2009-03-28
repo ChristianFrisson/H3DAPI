@@ -42,6 +42,8 @@ X3DFogObject::X3DFogObject( Inst< SFColor  > _color,
   visibilityRange( _visibilityRange ) {
   
   color->setValue( RGB( 1, 1, 1 ) );
+  fogType->addValidValue( "LINEAR" );
+  fogType->addValidValue( "EXPONENTIAL" );
   fogType->setValue( "LINEAR" );
 }
 

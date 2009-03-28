@@ -124,14 +124,25 @@ H3DWindowNode::H3DWindowNode(
   height->setValue( 600 );
   fullscreen->setValue( false );
   mirrored->setValue( false );
-  renderMode->setValue( "MONO" );
+  renderMode->addValidValue( "MONO" );
+  renderMode->addValidValue( "QUAD_BUFFERED_STEREO" );
+  renderMode->addValidValue( "VERTICAL_SPLIT" );
+  renderMode->addValidValue("VERTICAL_SPLIT_KEEP_RATIO" );
+  renderMode->addValidValue("HORIZONTAL_SPLIT" );
+  renderMode->addValidValue( "VERTICAL_INTERLACED" );
+  renderMode->addValidValue("HORIZONTAL_INTERLACED" );
+  renderMode->addValidValue( "CHECKER_INTERLACED" );
+  renderMode->addValidValue( "RED_BLUE_STEREO" );
+  renderMode->addValidValue("RED_GREEN_STEREO" );
+  renderMode->addValidValue( "RED_CYAN_STEREO" );
+  renderMode->addValidValue( "VERTICAL_INTERLACED_GREEN_SHIFT" );
+  renderMode->setValue( "MONO" );  
 
 #ifdef WIN32
   wpOrigProc = (WNDPROC)DefWindowProc;
 #endif
 
   windows.insert( this );
-
 
   default_nav = "EXAMINE";
   default_avatar.push_back( 0.25f );

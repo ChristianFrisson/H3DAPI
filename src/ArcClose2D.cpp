@@ -73,6 +73,8 @@ ArcClose2D::ArcClose2D( Inst< SFNode      > _metadata,
   endAngle->setValue( (H3DFloat) Constants::pi/2 );
   startAngle->setValue( 0.f );
   radius->setValue( 1.f );
+  closureType->addValidValue( "PIE" );
+  closureType->addValidValue( "CHORD" );
   closureType->setValue( "PIE" );
   solid->setValue( false );
 

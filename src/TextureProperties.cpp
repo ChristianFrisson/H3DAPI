@@ -51,6 +51,8 @@ namespace TexturePropertiesInternals {
   FIELDDB_ELEMENT( TextureProperties, textureCompression, INPUT_OUTPUT );
   FIELDDB_ELEMENT( TextureProperties, texturePriority, INPUT_OUTPUT );
   FIELDDB_ELEMENT( TextureProperties, generateMipMaps, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( TextureProperties, textureTransferScale, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( TextureProperties, textureTransferBias, INPUT_OUTPUT );
 }
 
 TextureProperties::TextureProperties( 
@@ -65,7 +67,9 @@ TextureProperties::TextureProperties(
                        Inst< SFString  > _minificationFilter ,
                        Inst< SFString > _textureCompression  ,
                        Inst< SFFloat > _texturePriority       ,
-                       Inst< SFBool  > _generateMipMaps      ):
+                       Inst< SFBool  > _generateMipMaps,
+                       Inst< SFVec4f > _textureTransferScale,
+                       Inst< SFVec4f > _textureTransferBias ):
   X3DNode( _metadata ),
   anisotropicDegree ( _anisotropicDegree  ),
   borderColor ( _borderColor  ),
@@ -78,6 +82,8 @@ TextureProperties::TextureProperties(
   textureCompression( _textureCompression ),
   texturePriority( _texturePriority ),
   generateMipMaps( _generateMipMaps ),
+  textureTransferScale( _textureTransferScale ),
+  textureTransferBias( _textureTransferBias ),
   propertyChanged( new Field ) {
 
   type_name = "TextureProperties";
@@ -87,14 +93,47 @@ TextureProperties::TextureProperties(
   anisotropicDegree->setValue( 1.0f );
   borderColor->setValue( RGBA( 0, 0, 0, 0 ) );
   borderWidth->setValue( 0 );
+  boundaryModeS->addValidValue( "REPEAT" );
+  boundaryModeS->addValidValue( "CLAMP" );
+  boundaryModeS->addValidValue( "CLAMP_TO_EDGE" );
+  boundaryModeS->addValidValue( "CLAMP_TO_BOUNDARY" );
+  boundaryModeS->addValidValue( "MIRRORED_REPEAT" );
   boundaryModeS->setValue( "REPEAT" );
+  boundaryModeT->addValidValue( "REPEAT" );
+  boundaryModeT->addValidValue( "CLAMP" );
+  boundaryModeT->addValidValue( "CLAMP_TO_EDGE" );
+  boundaryModeT->addValidValue( "CLAMP_TO_BOUNDARY" );
+  boundaryModeT->addValidValue( "MIRRORED_REPEAT" );
   boundaryModeT->setValue( "REPEAT" );
+  boundaryModeR->addValidValue( "REPEAT" );
+  boundaryModeR->addValidValue( "CLAMP" );
+  boundaryModeR->addValidValue( "CLAMP_TO_EDGE" );
+  boundaryModeR->addValidValue( "CLAMP_TO_BOUNDARY" );
+  boundaryModeR->addValidValue( "MIRRORED_REPEAT" );
   boundaryModeR->setValue( "REPEAT" );
+  magnificationFilter->addValidValue( "FASTEST" );
+  magnificationFilter->addValidValue( "NEAREST_PIXEL" );
+  magnificationFilter->addValidValue( "AVG_PIXEL" );
+  magnificationFilter->addValidValue( "DEFAULT" );
+  magnificationFilter->addValidValue( "NICEST" );
   magnificationFilter->setValue( "FASTEST" );
+  minificationFilter->addValidValue( "FASTEST" );
+  minificationFilter->addValidValue( "NEAREST_PIXEL" );
+  minificationFilter->addValidValue( "AVG_PIXEL" );
+  minificationFilter->addValidValue( "DEFAULT" );
+  minificationFilter->addValidValue( "NICEST" );
   minificationFilter->setValue( "FASTEST" );
+  textureCompression->addValidValue( "DEFAULT" );
+  textureCompression->addValidValue( "FASTEST" );
+  textureCompression->addValidValue( "HIGH" );
+  textureCompression->addValidValue( "MEDIUM" );
+  textureCompression->addValidValue( "NICEST" );
+  textureCompression->addValidValue( "LOW" );
   textureCompression->setValue( "FASTEST" );
   texturePriority->setValue( 1.0f );
   generateMipMaps->setValue( false );
+  textureTransferScale->setValue( Vec4f( 1, 1, 1, 1 ) );
+  textureTransferBias->setValue( Vec4f( 0, 0, 0, 0 ) );
 
   propertyChanged->setName( "propertyChanged" );
   anisotropicDegree->route( propertyChanged );
@@ -108,4 +147,6 @@ TextureProperties::TextureProperties(
   textureCompression->route( propertyChanged );
   texturePriority->route( propertyChanged );
   generateMipMaps->route( propertyChanged );
+  textureTransferScale->route( propertyChanged );
+  textureTransferBias->route( propertyChanged );
 }
