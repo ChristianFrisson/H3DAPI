@@ -26,6 +26,13 @@ public:
   void displayFieldsFromNode( Node * );
 protected:
   
+  // Update the specified row in the field values grid with
+  // values from the node and filed into given.
+  void updateRowFromFieldDB( int row, 
+                             Node *n,
+                             FieldDBElement *db,
+                             bool new_node );
+
   TimeStamp last_fields_update;
 #ifdef DEFAULT_VALUES
   auto_ptr< Node > default_values_node;
