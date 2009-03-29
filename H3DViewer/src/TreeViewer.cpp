@@ -74,7 +74,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	FieldValuesGrid->SetMargins( 0, 0 );
 	
 	// Columns
-	FieldValuesGrid->SetColSize( 0, 95 );
+	FieldValuesGrid->SetColSize( 0, 114 );
 	FieldValuesGrid->SetColSize( 1, 102 );
 	FieldValuesGrid->EnableDragColMove( false );
 	FieldValuesGrid->EnableDragColSize( true );

@@ -57,7 +57,7 @@ class TreeViewDialog : public wxFrame
 	public:
 		wxTreeCtrl* TreeViewTree;
 		wxGrid* FieldValuesGrid;
-		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Scene tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 600,464 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Scene tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 594,453 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		~TreeViewDialog();
 		void m_splitter1OnIdle( wxIdleEvent& )
 		{

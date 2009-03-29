@@ -32,7 +32,7 @@
             <property name="minimum_size"></property>
             <property name="name">TreeViewDialog</property>
             <property name="pos"></property>
-            <property name="size">600,464</property>
+            <property name="size">594,453</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass"></property>
             <property name="title">Scene tree view</property>
@@ -446,7 +446,7 @@
                                             <property name="col_label_values">&quot;Field&quot; &quot;Value&quot;</property>
                                             <property name="col_label_vert_alignment">wxALIGN_CENTRE</property>
                                             <property name="cols">2</property>
-                                            <property name="column_sizes">95,102</property>
+                                            <property name="column_sizes">114,102</property>
                                             <property name="context_help"></property>
                                             <property name="drag_col_move">0</property>
                                             <property name="drag_col_size">1</property>
