@@ -36,6 +36,7 @@
 #include <H3D/SFString.h>
 #include <H3D/SFFloat.h>
 #include <H3D/SFColorRGBA.h>
+#include <H3D/SFVec4f.h>
 
 namespace H3D {
   /// \ingroup X3DNodes
@@ -162,7 +163,9 @@ namespace H3D {
                        Inst< SFString  > _minificationFilter  = 0,
                        Inst< SFString > _textureCompression   = 0,
                        Inst< SFFloat > _texturePriority        = 0,
-                       Inst< SFBool  > _generateMipMaps      = 0 );
+                       Inst< SFBool  > _generateMipMaps      = 0,
+                       Inst< SFVec4f > _textureTransferScale = 0,
+                       Inst< SFVec4f > _textureTransferBias  = 0 );
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "textureProperties".
@@ -271,9 +274,47 @@ namespace H3D {
     /// \dotfile TextureProperties_generateMipMaps.dot 
     auto_ptr< SFBool >  generateMipMaps;
 
+
+    /// The textureTransferScale field defines the scale component of the 
+    /// transfer function from image value to texture memory value.
+    ///
+    /// When the image data is transferred to texture memory a scaling factor
+    /// and bias value can be added to each pixel value before putting it into 
+    /// texture space. The four values are mapped to r, g, b and alpha 
+    /// components respectively. This does not affect the values in the 
+    /// image field of the texture, but only the values in texture memory.
+    /// E.g.
+    /// texture_memory_value.r = 
+    ///       (image_value.r * textureTransferScale.x) + textureTransferBias.x 
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 1 1 1 1 \n
+    ///
+    /// \dotfile TextureProperties_textureTransferScale.dot  
+    auto_ptr< SFVec4f > textureTransferScale;
+
+    /// The textureTransferBias field defines the bias component of the 
+    /// transfer function from image value to texture memory value.
+    ///
+    /// When the image data is transferred to texture memory a scaling factor
+    /// and bias value can be added to each pixel value before putting it into 
+    /// texture space. The four values are mapped to r, g, b and alpha 
+    /// components respectively. This does not affect the values in the 
+    /// image field of the texture, but only the values in texture memory.
+    /// E.g.
+    /// texture_memory_value.r = 
+    ///       (image_value.r * textureTransferScale.x) + textureTransferBias.x 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 0 0 0 \n
+    ///
+    /// \dotfile TextureProperties_textureTransferBias.dot  
+    auto_ptr< SFVec4f > textureTransferBias;
+
+
     /// Field that gets an event when any of the X3D fields in the
     /// TextureProperties generates an event
     auto_ptr< Field > propertyChanged;
+
 
 
     /// The H3DNodeDatabase for this node.
