@@ -229,7 +229,7 @@ void TreeViewerFieldValuesDialog::updateRowFromFieldDB( int row,
           choices.Alloc( valid_values.size() );
           for( set<string>::const_iterator i = valid_values.begin();
                i != valid_values.end(); i++ ) {
-            choices.Add( wxString( (*i).c_str() ));
+            choices.Add( wxString( (*i).c_str(), wxConvUTF8 ));
           }
           editor = new wxGridCellChoiceEditor( choices, false );
         }
