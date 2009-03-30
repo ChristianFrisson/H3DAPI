@@ -571,6 +571,7 @@ int main(int argc, char* argv[]) {
     }
 
     DeviceInfo *di = DeviceInfo::getActive();
+    unsigned int device_info_size = DeviceInfo::getAllDeviceInfos().size();
     if( di && stylus_file.size() ) {
       AutoRef< Node > default_stylus;
       try {
@@ -600,6 +601,21 @@ int main(int argc, char* argv[]) {
         else
           g->children->push_back( X3D::createX3DFromURL( *file, 
           &dn ) );
+    }
+
+    DeviceInfo::DeviceInfoList device_infos = DeviceInfo::getAllDeviceInfos();
+    if( di && device_infos.size() > device_info_size ) {
+      unsigned int j = 0;
+      for( DeviceInfo::DeviceInfoList::iterator i = device_infos.begin();
+           i != device_infos.end(); i++ ) {
+        if( j < device_info_size )
+          di->set_bind->setValue( false );
+        else {
+          (*i)->set_bind->setValue( true );
+          break;
+        }
+        j++;
+      }
     }
 
     ks->keyPress->route( quit_api );

@@ -37,10 +37,10 @@ X3DBindableNode::StackMapType X3DBindableNode::stack;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase X3DBindableNode::database( 
-					  "X3DBindableNode", 
-					  NULL, 
-					  typeid( X3DBindableNode ),
-					  &X3DChildNode::database );
+            "X3DBindableNode", 
+            NULL, 
+            typeid( X3DBindableNode ),
+            &X3DChildNode::database );
 
 namespace X3DBindableNodeInternals {
   FIELDDB_ELEMENT( X3DBindableNode, set_bind, INPUT_ONLY );
@@ -51,10 +51,10 @@ namespace X3DBindableNodeInternals {
 
 /// Constructor.
 X3DBindableNode::X3DBindableNode( const string &_bindable_stack_name,
-				  Inst< SFSetBind > _set_bind,
-				  Inst< SFNode    > _metadata,
-				  Inst< SFTime    > _bindTime,
-				  Inst< SFBool    > _isBound ) :
+                                  Inst< SFSetBind > _set_bind,
+                                  Inst< SFNode    > _metadata,
+                                  Inst< SFTime    > _bindTime,
+                                  Inst< SFBool    > _isBound ) :
   X3DChildNode( _metadata ),
   set_bind( _set_bind ),
   bindTime( _bindTime ),
@@ -63,12 +63,14 @@ X3DBindableNode::X3DBindableNode( const string &_bindable_stack_name,
   
   type_name = "X3DBindableNode";
   database.initFields( this );
-  
+}
+
+void X3DBindableNode::initialize() {
+  X3DChildNode::initialize();
   StackType &s = stack[bindable_stack_name];
-  
   if ( s.size() == 0 ) {
     toStackTop();
-  } 
+  }
 }
 
 void X3DBindableNode::removeFromStack() {

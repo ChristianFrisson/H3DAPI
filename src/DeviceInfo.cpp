@@ -64,7 +64,6 @@ DeviceInfo::DeviceInfo(
   type_name = "DeviceInfo";
   database.initFields( this );
 
-  toStackTop();
   deviceinfos.push_back( this );
 }
 
@@ -87,6 +86,11 @@ void DeviceInfo::renderStyli() {
 }
 
 void DeviceInfo::removeFromStack() {
+  StackType &s =  stack[bindable_stack_name];
+  bool is_active = false;
+  if( s.size() > 0 ) {
+    bool is_active = (s.front() == this);
+  }
   X3DBindableNode::removeFromStack();
 
   for( MFDevice::const_iterator i = device->begin();
@@ -96,7 +100,7 @@ void DeviceInfo::removeFromStack() {
       hd->releaseDevice();
     }
   }
-  if( !stack[bindable_stack_name].empty() ) {
+  if( is_active && !stack[bindable_stack_name].empty() ) {
     DeviceInfo *new_top = 
       static_cast< DeviceInfo * >( stack[bindable_stack_name].front() );
     if( new_top ) {
@@ -147,6 +151,7 @@ void DeviceInfo::toStackTop() {
 }
 
 void DeviceInfo::initialize() {
+  X3DBindableNode::initialize();
   if( isStackTop() ) {
     for( MFDevice::const_iterator i = device->begin();
          i != device->end(); i++ ) {

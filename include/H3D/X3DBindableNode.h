@@ -134,10 +134,10 @@ namespace H3D {
     
     /// Constructor.
     X3DBindableNode( const string &_bindable_stack_name,
-		     Inst< SFSetBind > _set_bind = 0,
-		     Inst< SFNode    > _metadata = 0,
-		     Inst< SFTime    > _bindTime = 0,
-		     Inst< SFBool    > _isBound  = 0 );
+                     Inst< SFSetBind > _set_bind = 0,
+                     Inst< SFNode    > _metadata = 0,
+                     Inst< SFTime    > _bindTime = 0,
+                     Inst< SFBool    > _isBound  = 0 );
 
     /// Destructor.
     virtual inline ~X3DBindableNode() {
@@ -158,6 +158,9 @@ namespace H3D {
 
     /// Return the map of all bindable nodes available.
     static const StackMapType &getStackMap();
+
+    /// Initialize this bindable stack, toStackTop is done.
+    virtual void initialize();
 
     /// Move this instance to the stack top. 
     virtual void toStackTop();

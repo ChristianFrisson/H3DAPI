@@ -719,7 +719,8 @@ bool WxFrame::loadFile( const string &filename) {
     X3D::DEFNodes dn;
     QuitAPIField *quit_api = new QuitAPIField;
 
-    if (!DeviceInfo::getActive()) {    
+    DeviceInfo *di = DeviceInfo::getActive();
+    if( !di ) {
       if( deviceinfo_file.size() ) {
         try {
           device_info = X3D::createX3DNodeFromURL( deviceinfo_file );
@@ -733,7 +734,7 @@ bool WxFrame::loadFile( const string &filename) {
 
 
       AutoRef< Node > default_stylus( 0 );
-      DeviceInfo *di = DeviceInfo::getActive();
+      di = DeviceInfo::getActive();
       if( di && stylus_file.size() ) {
         try {
           default_stylus = X3D::createX3DNodeFromURL( stylus_file,
@@ -752,9 +753,7 @@ bool WxFrame::loadFile( const string &filename) {
         }
       }
     }
-
-    DeviceInfo::DeviceInfoList DEVlist = DeviceInfo::getAllDeviceInfos();
-    int devcount = DEVlist.size();
+    unsigned int device_info_size = DeviceInfo::getAllDeviceInfos().size();
 
     Console(3) << "Loading " << filename << endl;
     if ( filename.size() > 4 && 
@@ -764,6 +763,21 @@ bool WxFrame::loadFile( const string &filename) {
     else
         t->children->push_back( X3D::createX3DFromURL( filename.c_str(), 
                                                        &dn ) );
+
+    DeviceInfo::DeviceInfoList device_infos = DeviceInfo::getAllDeviceInfos();
+    if( di && device_infos.size() > device_info_size ) {
+      unsigned int j = 0;
+      for( DeviceInfo::DeviceInfoList::iterator i = device_infos.begin();
+           i != device_infos.end(); i++ ) {
+        if( j < device_info_size )
+          di->set_bind->setValue( false );
+        else {
+          (*i)->set_bind->setValue( true );
+          break;
+        }
+        j++;
+      }
+    }
 
     /**********************Reset mirrored and fullscreen********************/
     if( !loaded_first_file ) {
