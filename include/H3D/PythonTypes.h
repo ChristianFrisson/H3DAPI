@@ -71,6 +71,13 @@
 ///   - createX3DFromString( string ) 
 ///   - createX3DNodeFromURL( url ) 
 ///   - createX3DNodeFromString( string ) 
+///   - createVRMLFromURL( url ) 
+///   - createVRMLFromString( string ) 
+///   - createVRMLNodeFromURL( url ) 
+///   - createVRMLNodeFromString( string ) 
+/// - X3D write functions. Each of these functions returns a string which
+///   contains the X3D syntax of the argument.
+///   - writeNodeAsX3D( node )
 /// - Bindable nodes access - the following functions return the currently
 ///   bound node for different bindable node stacks 
 ///   - getActiveDeviceInfo() 
