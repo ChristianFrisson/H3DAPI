@@ -173,6 +173,13 @@ namespace H3D {
                                     Node *node,
 				    const string &container_field = "" );
 
+    /// Write the triangles rendered by the geometry node as STL to
+    /// the given ostream. The name parameter specifies the name to
+    /// use in the stl file for the solid. 
+    H3DAPI_API void writeGeometryAsSTL( ostream &os,
+                                        X3DGeometryNode *geom,
+                                        const string &name = "" );
+
     /// Help function for writeNodeAsX3D.
     H3DAPI_API void writeNodeAsX3DHelp( ostream& os, 
 					Node *node,

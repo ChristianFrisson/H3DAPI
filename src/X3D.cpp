@@ -36,6 +36,7 @@
 
 #include <H3D/ResourceResolver.h>
 #include <H3D/VrmlParser.h>
+#include <H3D/X3DGeometryNode.h>
 #include <sstream>
 
 #ifdef HAVE_ZLIB
@@ -513,4 +514,30 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
     // end tag
     os << prefix << "</" << node_name << ">" << endl;
   }
+}
+
+
+/// Write the triangles rendered by the geometry node as STL to
+/// the given ostream.
+H3DAPI_API void X3D::writeGeometryAsSTL( ostream &os,
+                                    X3DGeometryNode *geom,
+                                    const string &name ) {
+  vector< HAPI::Collision::Triangle > tris;
+  tris.reserve( geom->nrTriangles() );
+  geom->boundTree->getValue()->getAllTriangles( tris );
+
+  os << "solid " << name << endl;
+
+  for( vector< HAPI::Collision::Triangle >::iterator i = tris.begin();
+       i != tris.end(); i++ ) {
+    os << "  facet normal " << (*i).normal << endl;
+    os << "    outer loop" << endl;
+    os << "      vertex " << (*i).a << endl;
+    os << "      vertex " << (*i).b << endl;
+    os << "      vertex " << (*i).c << endl;
+    os << "    endloop" << endl;
+    os << "  endfacet" << endl;
+  }
+  
+  os << "endsolid " << name << endl;
 }
