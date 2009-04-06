@@ -85,6 +85,8 @@ namespace H3D {
 		 << " in order to use it." << endl;
 #endif
 
+      defaultShapeType->addValidValue( "FEEDBACK_BUFFER" );
+      defaultShapeType->addValidValue( "DEPTH_BUFFER" );
       defaultShapeType->setValue( "FEEDBACK_BUFFER" );
       defaultAdaptiveViewport->setValue( true );
       defaultHapticCameraView->setValue( true );
