@@ -490,7 +490,19 @@ IF(NOT WIN32 AND NOT APPLE)
     INCLUDE_DIRECTORIES( ${FONTCONFIG_INCLUDE_DIR} ) 
     SET(optionalLibs ${optionalLibs} ${FONTCONFIG_LIBRARIES} )
   ENDIF(FONTCONFIG_FOUND)
-ENDIF(NOT WIN32 AND NOT APPLE) 
+ENDIF(NOT WIN32 AND NOT APPLE)
+
+FIND_PACKAGE(DCMTK)
+IF(DCMTK_FOUND)
+  INCLUDE_DIRECTORIES( ${DCMTK_INCLUDE_DIR} ) 
+  SET(requiredLibs ${requiredLibs} ${DCMTK_LIBRARIES} )
+ENDIF(DCMTK_FOUND)
+
+FIND_PACKAGE(TEEM)
+IF(TEEM_FOUND)
+  INCLUDE_DIRECTORIES( ${TEEM_INCLUDE_DIR} ) 
+  SET(requiredLibs ${requiredLibs} ${TEEM_LIBRARIES} )
+ENDIF(TEEM_FOUND)
 
 # If cpack project should be generated and windows is the system on which to generate
 # a number of extra directories needs to be added to be installed.
