@@ -348,7 +348,7 @@ bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
   Matrix4f pm_mv_matrix = pm_matrix * mv_matrix;
 
   // find the view frustum planes.
-  Plane planes[6];
+  H3DDisplayListObjectInternal::Plane planes[6];
   // Left clipping plane
   planes[0].a = pm_mv_matrix[3][0] + pm_mv_matrix[0][0];
   planes[0].b = pm_mv_matrix[3][1] + pm_mv_matrix[0][1];
