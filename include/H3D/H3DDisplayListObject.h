@@ -94,6 +94,10 @@ namespace H3D {
         /// Caching is depending on the GraphicalRenderingOptions in use.
         OPTIONS
       } CacheMode;
+
+      /// \brief The entries in FrustumCullingMode enumerator is used for
+      /// checking if view frustum culling should be done.
+      typedef CacheMode FrustumCullingMode;
         
       /// Constructor
       DisplayList();
@@ -113,8 +117,25 @@ namespace H3D {
         return cache_mode;
       }
 
+      /// Set the frustum culling mode.
+      void setFrustumCullingMode( FrustumCullingMode m  ) {
+        frustum_culling_mode = m;
+      }
+
+      /// Get the frustum culling mode.
+      FrustumCullingMode getFrustumCullingMode( ) {
+        return frustum_culling_mode;
+      }
+
       /// Returns true if caching is in use and false otherwise.
       bool usingCaching();
+
+      /// Returns true if view frustum culling is on.
+      bool usingFrustumCulling();
+
+      /// Returns true if the bounding box of the owner of this field
+      /// lies outside the view frustum. 
+      bool isOutsideViewFrustum();
 
       /// Force a rebuild of all display lists created.
       static void rebuildAllDisplayLists();
@@ -185,6 +206,9 @@ namespace H3D {
 
       /// The mode for caching. 
       CacheMode cache_mode;
+
+      /// The mode for view frustum culling. 
+      FrustumCullingMode frustum_culling_mode;
       
       /// True if the display list has been built successfully.
       bool have_valid_display_list;
