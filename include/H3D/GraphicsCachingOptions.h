@@ -46,7 +46,8 @@ namespace H3D {
     GraphicsCachingOptions( Inst< SFNode  > _metadata = 0,
                             Inst< SFBool  > _useCaching = 0,
                             Inst< SFInt32 > _cachingDelay  = 0,
-                            Inst< SFBool  > _cacheOnlyGeometryNodes = 0 );
+                            Inst< SFBool  > _cacheOnlyGeometryNodes = 0,
+                            Inst< SFString > _frustumCulingMode = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -81,6 +82,23 @@ namespace H3D {
     /// <b>Default value: </b> false \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFBool > cacheOnlyGeometries;
+
+    /// Determines if view frustum culling should be made and if so at what
+    /// level. View frustum culling will use the bounding box of a node
+    /// and check it against the 6 planes of the view frustum to determine
+    /// if it should be rendered or not. Everything that is outside the view
+    /// frustum can be skipped.
+    ///
+    /// Valid values are:
+    /// - "NO_CULLING" - no view frustum culling is done.
+    /// - "GEOMETRY" - culling is done at the geometry level, i.e. only
+    /// X3DGeometryNodes will perform culling
+    /// - "ALL" - culling will be done on all nodes with a bounding box
+    /// in the scene graph.
+    ///
+    /// <b>Default value: </b> "NO_CULLING" \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFString > frustumCullingMode;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

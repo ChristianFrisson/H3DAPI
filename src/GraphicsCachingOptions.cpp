@@ -42,17 +42,20 @@ namespace GraphicsCachingOptionsInternals {
   FIELDDB_ELEMENT( GraphicsCachingOptions, useCaching, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsCachingOptions, cachingDelay, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsCachingOptions, cacheOnlyGeometries, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsCachingOptions, frustumCullingMode, INPUT_OUTPUT );
 }
 
 GraphicsCachingOptions::GraphicsCachingOptions( 
                            Inst< SFNode>  _metadata,
                            Inst< SFBool  > _useCaching,
                            Inst< SFInt32 > _cachingDelay,
-                           Inst< SFBool  > _cacheOnlyGeometryNodes ) :
+                           Inst< SFBool  > _cacheOnlyGeometryNodes,
+                           Inst< SFString > _frustumCullingMode ) :
   H3DOptionNode( _metadata ),
   useCaching( _useCaching ),
   cachingDelay( _cachingDelay ),
-  cacheOnlyGeometries( _cacheOnlyGeometryNodes ) {
+  cacheOnlyGeometries( _cacheOnlyGeometryNodes ),
+  frustumCullingMode( _frustumCullingMode ) {
   
   type_name = "GraphicsCachingOptions";
   database.initFields( this );
@@ -60,6 +63,10 @@ GraphicsCachingOptions::GraphicsCachingOptions(
   useCaching->setValue( true );
   cachingDelay->setValue( 5 );
   cacheOnlyGeometries->setValue( false );
+  frustumCullingMode->addValidValue( "NO_CULLING" );
+  frustumCullingMode->addValidValue( "GEOMETRY" );
+  frustumCullingMode->addValidValue( "ALL" );
+  frustumCullingMode->setValue( "NO_CULLING" );
 }
 
 

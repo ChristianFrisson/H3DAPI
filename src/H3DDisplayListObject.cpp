@@ -48,6 +48,7 @@ void H3DDisplayListObject::DisplayList::rebuildAllDisplayLists() {
 H3DDisplayListObject::DisplayList::DisplayList():
   display_list( 0 ),
   cache_mode( OPTIONS ),
+  frustum_culling_mode( OPTIONS ),
   have_valid_display_list( false ),
   isActive( new IsActive ){
 
@@ -84,7 +85,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
       glNewList( display_list, GL_COMPILE_AND_EXECUTE );
       GLuint err = glGetError();
       if( err != GL_NO_ERROR ) {
-        Console(4) << "QpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
+        Console(4) << "OpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
                    << "\" when rendering " << getFullName() << endl;
         return false;
       }
@@ -92,7 +93,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
       glEndList();
       err = glGetError();
       if( err != GL_NO_ERROR ) {
-        Console(4) << "QpenGL error in glEndList() Error: \"" << gluErrorString( err ) 
+        Console(4) << "OpenGL error in glEndList() Error: \"" << gluErrorString( err ) 
                    << "\" when rendering " << getFullName() << endl;
         return false;
       }
@@ -120,6 +121,11 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     Console(4) << "OpenGL error before H3DDisplayListObject::DisplayList::callList() Error: \"" << gluErrorString( err ) 
                << "\" when rendering parent of " << getFullName() << endl;
   }
+
+  // if we are using frustum culling and bounding box is outside frustum
+  // return.
+  if( usingFrustumCulling() && isOutsideViewFrustum() ) 
+    return;
 
   bool using_caching = usingCaching(); 
 
@@ -166,7 +172,6 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
 
 bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_active_field ) {
   bool have_all_needed_display_lists = true;
-  
   // Check all the fields routed to us. If field contains a 
   // H3DDisplayListObject then we check if it is possible to build
   // a display list for this field based on the status of the 
@@ -195,13 +200,15 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
           // any longer since a DisplayList can be activated when 
           // rebuilding cache.
           if( !consider_active_field ) {
-            if( !dl->haveValidDisplayList() ) {
+            if( !dl->haveValidDisplayList() ||
+                 dl->usingFrustumCulling()) {
               have_all_needed_display_lists = false;
               break;
             }
           } else {
             if( dl->isActive->getValue() && 
-                !dl->haveValidDisplayList() ) {
+                ( !dl->haveValidDisplayList() ||
+                   dl->usingFrustumCulling() ) ) {
               have_all_needed_display_lists = false;
               break;
             }
@@ -227,13 +234,15 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
               // any longer since a DisplayList can be activated when 
               // rebuilding cache.
               if( consider_active_field ) {
-                if( !dlo->displayList->haveValidDisplayList() ) {
+                if( !dlo->displayList->haveValidDisplayList() || 
+                    dlo->displayList->usingFrustumCulling() ) {
                   have_all_needed_display_lists = false;
                   break;
                 }
               } else {
                 if( dlo->displayList->isActive->getValue() && 
-                    !dlo->displayList->haveValidDisplayList() ) {
+                    (!dlo->displayList->haveValidDisplayList() ||
+                      dlo->displayList->usingFrustumCulling() ) ) {
                   have_all_needed_display_lists = false;
                   break;
                 }
@@ -247,6 +256,146 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
   return have_all_needed_display_lists;
 }
 
+namespace H3DDisplayListObjectInternal {
+  struct Plane {
+    /// Returns true if the point is behind the plane.
+    bool isBehind( const Vec3f &p ) {
+      return a*p.x + b*p.y + c*p.z + d < 0;
+    }
+    
+    H3DFloat a,b,c,d;
+  };
+}
+
+bool H3DDisplayListObject::DisplayList::usingFrustumCulling() {
+  
+  if( frustum_culling_mode == ON ) return true;
+  if( frustum_culling_mode == OFF ) return false;
+
+  GraphicsCachingOptions *options = NULL;
+  H3DBoundedObject *bound_object = 
+    dynamic_cast< H3DBoundedObject * >( getOwner() );
+
+  // if not a bounded object, frustum culling cannot be used.
+  if( !bound_object ) return false;
+
+  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
+  if( geom ) {
+    geom->getOptionNode( options );
+  }
+  if( !options ) {
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings ) {
+      default_settings->getOptionNode( options );
+    }
+  }
+
+  if( options ) {
+    const string &mode = options->frustumCullingMode->getValue();
+    
+    if( mode == "NO_CULLING" ) {
+      return false;
+    } else if( mode == "GEOMETRY" ) {
+      return geom != NULL;
+    } else if( mode == "ALL" ) {
+      return true;
+    } 
+  } 
+  
+  return geom != NULL;
+}
+
+bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
+  H3DBoundedObject *bound_object = 
+    dynamic_cast< H3DBoundedObject * >( getOwner() );
+  if( !bound_object ) return false;
+
+  BoxBound *box_bound = 
+    dynamic_cast< BoxBound * >( bound_object->bound->getValue() );
+  if( !box_bound ) return false;
+
+  const Vec3f &half_size = box_bound->size->getValue()/2;
+  const Vec3f &center = box_bound->center->getValue();
+
+  // the eight corner points of the bounding box.
+  Vec3f box_points[8];
+  
+  box_points[0] = center + half_size; 
+  box_points[1] = center + Vec3f( -half_size.x, half_size.y, half_size.z );
+  box_points[2] = center + Vec3f( half_size.x, -half_size.y, half_size.z );
+  box_points[3] = center + Vec3f( -half_size.x, -half_size.y, half_size.z );
+  box_points[4] = center + Vec3f( half_size.x, half_size.y, -half_size.z );
+  box_points[5] = center + Vec3f( -half_size.x, half_size.y, -half_size.z );
+  box_points[6] = center + Vec3f( half_size.x, -half_size.y, -half_size.z );
+  box_points[7] = center - half_size;
+  
+
+  // get the current matrices
+  GLfloat pm[16], mv[16];
+  glGetFloatv( GL_PROJECTION_MATRIX, pm );
+  glGetFloatv( GL_MODELVIEW_MATRIX, mv );
+ 
+  // find the position of the near plane.
+  Matrix4f pm_matrix( pm[0], pm[4], pm[8],  pm[12],
+                      pm[1], pm[5], pm[9],  pm[13],
+                      pm[2], pm[6], pm[10], pm[14],
+                      pm[3], pm[7], pm[11], pm[15] );
+  
+  Matrix4f mv_matrix( mv[0], mv[4], mv[8],  mv[12],
+                      mv[1], mv[5], mv[9],  mv[13],
+                      mv[2], mv[6], mv[10], mv[14],
+                      mv[3], mv[7], mv[11], mv[15] );
+  Matrix4f pm_mv_matrix = pm_matrix * mv_matrix;
+
+  // find the view frustum planes.
+  Plane planes[6];
+  // Left clipping plane
+  planes[0].a = pm_mv_matrix[3][0] + pm_mv_matrix[0][0];
+  planes[0].b = pm_mv_matrix[3][1] + pm_mv_matrix[0][1];
+  planes[0].c = pm_mv_matrix[3][2] + pm_mv_matrix[0][2];
+  planes[0].d = pm_mv_matrix[3][3] + pm_mv_matrix[0][3];
+  // Right clipping plane
+  planes[1].a = pm_mv_matrix[3][0] - pm_mv_matrix[0][0];
+  planes[1].b = pm_mv_matrix[3][1] - pm_mv_matrix[0][1];
+  planes[1].c = pm_mv_matrix[3][2] - pm_mv_matrix[0][2];
+  planes[1].d = pm_mv_matrix[3][3] - pm_mv_matrix[0][3];
+  // Top clipping plane
+  planes[2].a = pm_mv_matrix[3][0] - pm_mv_matrix[1][0];
+  planes[2].b = pm_mv_matrix[3][1] - pm_mv_matrix[1][1];
+  planes[2].c = pm_mv_matrix[3][2] - pm_mv_matrix[1][2];
+  planes[2].d = pm_mv_matrix[3][3] - pm_mv_matrix[1][3];
+  // Bottom clipping plane
+  planes[3].a = pm_mv_matrix[3][0] + pm_mv_matrix[1][0];
+  planes[3].b = pm_mv_matrix[3][1] + pm_mv_matrix[1][1];
+  planes[3].c = pm_mv_matrix[3][2] + pm_mv_matrix[1][2];
+  planes[3].d = pm_mv_matrix[3][3] + pm_mv_matrix[1][3];
+  // Near clipping plane
+  planes[4].a = pm_mv_matrix[3][0] + pm_mv_matrix[2][0];
+  planes[4].b = pm_mv_matrix[3][1] + pm_mv_matrix[2][1];
+  planes[4].c = pm_mv_matrix[3][2] + pm_mv_matrix[2][2];
+  planes[4].d = pm_mv_matrix[3][3] + pm_mv_matrix[2][3];
+  // Far clipping plane
+  planes[5].a = pm_mv_matrix[3][0] - pm_mv_matrix[2][0];
+  planes[5].b = pm_mv_matrix[3][1] - pm_mv_matrix[2][1];
+  planes[5].c = pm_mv_matrix[3][2] - pm_mv_matrix[2][2];
+  planes[5].d = pm_mv_matrix[3][3] - pm_mv_matrix[2][3];
+
+  // for each plane check if all bounding box points are behind it.
+  // if so, we can cull it.
+  for( int plane = 0; plane < 6; plane++ ) {
+    bool all_behind = true;
+    for( int i = 0; i < 8; ++i ) {
+      if( !planes[plane].isBehind( box_points[i] ) ) {
+        all_behind = false;
+      }
+    }
+    if( all_behind ) {
+      //Console(4) << "Culled " << plane << endl;
+      return true;
+    }
+  }
+  return false;
+}
 
 bool H3DDisplayListObject::DisplayList::usingCaching() {
   if( cache_mode == ON ) return true;
