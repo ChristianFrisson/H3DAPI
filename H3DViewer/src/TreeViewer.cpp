@@ -42,6 +42,35 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	
 	m_menubar1->Append( RightClickMenu, wxT("Action") );
 	
+	RightClickMenuGeometry = new wxMenu();
+	wxMenuItem* TreeViewCollapseAll1;
+	TreeViewCollapseAll1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Collapse all") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuGeometry->Append( TreeViewCollapseAll1 );
+	
+	wxMenuItem* TreeViewExpandAll1;
+	TreeViewExpandAll1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Expand all") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuGeometry->Append( TreeViewExpandAll1 );
+	
+	wxMenuItem* TreeViewCollapseChildren1;
+	TreeViewCollapseChildren1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Collapse children") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuGeometry->Append( TreeViewCollapseChildren1 );
+	
+	RightClickMenuGeometry->AppendSeparator();
+	
+	wxMenuItem* TreeViewNodeWatch1;
+	TreeViewNodeWatch1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Add node field watch") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuGeometry->Append( TreeViewNodeWatch1 );
+	
+	wxMenuItem* TreeViewSaveX3D1;
+	TreeViewSaveX3D1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Save node snapshot as X3D..") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuGeometry->Append( TreeViewSaveX3D1 );
+	
+	wxMenuItem* TreeViewSaveSTL;
+	TreeViewSaveSTL = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Save geometry triangles as STL..") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuGeometry->Append( TreeViewSaveSTL );
+	
+	m_menubar1->Append( RightClickMenuGeometry, wxT("Action") );
+	
 	this->SetMenuBar( m_menubar1 );
 	
 	wxBoxSizer* bSizer1;
@@ -111,6 +140,12 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	this->Connect( TreeViewCollapseChildren->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseChildren ) );
 	this->Connect( TreeViewNodeWatch->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewNodeWatch ) );
 	this->Connect( TreeViewSaveX3D->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveX3D ) );
+	this->Connect( TreeViewCollapseAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseAll ) );
+	this->Connect( TreeViewExpandAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewExpandAll ) );
+	this->Connect( TreeViewCollapseChildren1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseChildren ) );
+	this->Connect( TreeViewNodeWatch1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewNodeWatch ) );
+	this->Connect( TreeViewSaveX3D1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveX3D ) );
+	this->Connect( TreeViewSaveSTL->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveSTL ) );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
 	FieldValuesGrid->Connect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( TreeViewDialog::OnCellEdit ), NULL, this );
@@ -126,6 +161,12 @@ TreeViewDialog::~TreeViewDialog()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseChildren ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewNodeWatch ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveX3D ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseAll ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewExpandAll ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewCollapseChildren ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewNodeWatch ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveX3D ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveSTL ) );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
 	FieldValuesGrid->Disconnect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( TreeViewDialog::OnCellEdit ), NULL, this );

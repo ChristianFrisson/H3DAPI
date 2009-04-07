@@ -4,6 +4,7 @@
 #include <wx/wx.h>
 #include <H3D/Scene.h>
 #include <H3D/Viewpoint.h>
+#include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
 
 TreeViewerTreeViewDialog::TreeViewerTreeViewDialog( wxWindow* parent )
@@ -400,7 +401,15 @@ void TreeViewerTreeViewDialog::collapseTree( const wxTreeItemId &id ) {
 
 void TreeViewerTreeViewDialog::OnTreeRightClick( wxTreeEvent& event ) {
   TreeViewTree->SelectItem( event.GetItem() );
-  PopupMenu( RightClickMenu );
+  TreeIdMap::iterator ni = node_map.find( event.GetItem().m_pItem );
+  X3DGeometryNode *geom = NULL;
+  
+  if( ni != node_map.end() ) {
+   geom = dynamic_cast< X3DGeometryNode * >( (*ni).second.get() );
+  }
+
+  if(geom) PopupMenu( RightClickMenuGeometry );
+  else PopupMenu( RightClickMenu );
 }
 
 /// Callback for collapse all menu choice.
@@ -486,6 +495,58 @@ void TreeViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
     }
   }
 }
+
+/// Callback for node save x3d menu choice.
+void TreeViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  
+  TreeIdMap::iterator ni = node_map.find( id.m_pItem );
+  if( ni == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+    return;
+  } else {
+    X3DGeometryNode *geom = 
+      dynamic_cast< X3DGeometryNode * >( (*ni).second.get() );
+
+    if( !geom ) {
+      wxMessageBox( wxT("Selected tree item is not a geometry node"),
+                    wxT("Error"),
+                    wxOK | wxICON_EXCLAMATION);
+      return;
+    }
+
+    wxFileDialog *file_dialog = new wxFileDialog ( this,
+                                                   wxT("File to save as.."),
+                                                   wxT(""),
+                                                   wxT(""),
+                                                   wxT("*.*"),
+                                                   wxSAVE,
+                                                   wxDefaultPosition) ;
+
+    if (file_dialog->ShowModal() == wxID_OK) {
+      std::string filename(file_dialog->GetPath().mb_str());
+      std::ofstream os( filename.c_str() );
+      if( os.fail() ) {
+        wxMessageBox( wxT("Unable to open selected file"), 
+                      wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      
+      try {
+        X3D::writeGeometryAsSTL( os, geom );
+      } catch (const Exception::H3DException &e) {
+        stringstream s;
+        s << e;
+        wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      os.close();
+    }
+  }
+}
+
 
 void TreeViewerTreeViewDialog::OnClose( wxCloseEvent& event ) {
   Hide();

@@ -37,6 +37,7 @@ class TreeViewDialog : public wxFrame
 	protected:
 		wxMenuBar* m_menubar1;
 		wxMenu* RightClickMenu;
+		wxMenu* RightClickMenuGeometry;
 		wxSplitterWindow* m_splitter1;
 		wxPanel* m_panel1;
 		wxPanel* m_panel2;
@@ -49,6 +50,7 @@ class TreeViewDialog : public wxFrame
 		virtual void OnTreeViewCollapseChildren( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewNodeWatch( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewSaveX3D( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeRightClick( wxTreeEvent& event ){ event.Skip(); }
 		virtual void OnNodeSelected( wxTreeEvent& event ){ event.Skip(); }
 		virtual void OnCellEdit( wxGridEvent& event ){ event.Skip(); }

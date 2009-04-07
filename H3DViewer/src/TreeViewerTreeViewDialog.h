@@ -50,6 +50,9 @@ public:
   /// Callback for node save x3d menu choice.
   virtual void OnTreeViewSaveX3D( wxCommandEvent& event );
 
+  /// Callback for node save stl menu choice.
+	virtual void OnTreeViewSaveSTL( wxCommandEvent& event );
+
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );
 
