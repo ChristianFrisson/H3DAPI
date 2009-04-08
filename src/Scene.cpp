@@ -37,6 +37,9 @@
 #else
 #include <GL/glut.h>
 #endif
+#ifdef FREEGLUT
+#include <GL/freeglut.h>
+#endif
 #include <H3D/PeriodicUpdate.h>
 #include <H3D/GLUTWindow.h>
 #include <H3D/X3DShapeNode.h>
@@ -78,12 +81,35 @@ auto_ptr< Scene::EventSink > Scene::eventSink(new EventSink);
 //Scene::EventSink *Scene::eventSink = new EventSink;
 
 namespace SceneInternal {
+
   void idle() {
-    for( set< Scene * >::iterator i = Scene::scenes.begin();
-         i != Scene::scenes.end();
-         i++ ) {
-      if( (*i)->isActive() )
-        (*i)->idle();
+    try {
+      for( set< Scene * >::iterator i = Scene::scenes.begin();
+	   i != Scene::scenes.end();
+	   i++ ) {
+	if( (*i)->isActive() )
+	  (*i)->idle();
+      }
+    }
+    catch (const Exception::QuitAPI &) {
+#ifdef FREEGLUT
+      glutLeaveMainLoop();
+#else
+      // normal glut does not support exiting main loop. Have to quit 
+      // using exit. This will not call any destructors.
+      exit(1);
+#endif 
+    }
+    
+    catch (const Exception::H3DException &e) {
+      Console(4) << e << endl;
+#ifdef FREEGLUT
+      glutLeaveMainLoop();
+#else
+      // normal glut does not support exiting main loop. Have to quit 
+      // using exit. This will not call any destructors.
+      exit(1);
+#endif 
     }
   }
 }
