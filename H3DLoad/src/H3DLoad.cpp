@@ -55,17 +55,17 @@
 #include <H3D/PythonScript.h>
 #include <H3D/NavigationInfo.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/PeriodicUpdate.h>
 
 using namespace std;
 using namespace H3D;
 
-H3D_API_EXCEPTION( QuitAPIException );
 
-class QuitAPIField: public AutoUpdate< SFString > {
+class QuitAPIField: public PeriodicUpdate< SFString > {
   virtual void update() {
     string s = static_cast< SFString * >(routes_in[0])->getValue();
     if( s[0] == 27 ) {
-      throw QuitAPIException();
+      throw Exception::QuitAPI();
     }
   }
 };
@@ -657,7 +657,7 @@ int main(int argc, char* argv[]) {
     scene->sceneRoot->setValue( g.get() );
     Scene::mainLoop();
   }
-  catch (const QuitAPIException &) {
+  catch (const Exception::QuitAPI &) {
   }
 
   catch (const Exception::H3DException &e) {
