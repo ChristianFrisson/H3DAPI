@@ -160,8 +160,20 @@ bool MyApp::OnInit()
     SetAppName(_T("H3D Viewer"));
     
     Console.setShowLevel( false );
+
+#ifdef H3DAPI_LIB
+    initializeH3D();
+#endif
     
-    //initializeH3D();
+#ifdef HAVE_PYTHON
+    char argvd[32][256] = { '\0' };
+    char *(argv[32]);
+    for( int idx = 0 ; idx < wxApp::argc ; idx++ ){
+      strncpy(argvd[idx],wxString(wxApp::argv[idx]).mb_str(wxConvUTF8),255);
+      argv[idx] = argvd[idx];
+    }
+    PythonScript::setargv( wxApp::argc, argv );
+#endif
     
     // create a window to display
     WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
