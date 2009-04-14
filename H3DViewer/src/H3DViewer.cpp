@@ -167,7 +167,7 @@ bool MyApp::OnInit()
     
 #ifdef HAVE_PYTHON
     char argvd[32][256] = { '\0' };
-    char *(argv[32]);
+    static char *(argv[32]);
     for( int idx = 0 ; idx < wxApp::argc ; idx++ ){
       strncpy(argvd[idx],wxString(wxApp::argv[idx]).mb_str(wxConvUTF8),255);
       argv[idx] = argvd[idx];
