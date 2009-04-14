@@ -113,6 +113,16 @@ GLUTWindow::~GLUTWindow() {
 }
 
 void GLUTWindow::initWindow() {
+  if( isInitialized() ) {
+    Console(4) << "GLUTWindow does not support changing pixel format from/to "
+               << "quad buffered stereo support after initialization." << endl;
+    if( last_render_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+      renderMode->setValue( "QUAD_BUFFERED_STEREO" );
+    } else {
+      renderMode->setValue( "MONO" );
+    }
+    return;
+  }
   unsigned int mode = GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL;
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
     

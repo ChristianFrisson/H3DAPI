@@ -53,7 +53,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
                  _viewpoint ),
   theWindow( _theParent ),
-  is_initialized( false ) {
+  is_initialized( false ),
+  theWxGLCanvas( NULL ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
   
@@ -67,6 +68,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 }
 
 void WxWidgetsWindow::initWindow() {
+  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
+
   int attribList[8];
   attribList[0] = WX_GL_RGBA;
   attribList[1] = WX_GL_DOUBLEBUFFER;
@@ -80,14 +83,31 @@ void WxWidgetsWindow::initWindow() {
   // TODO: stereo mode does not work with mac
   attribList[6] = 0;
 #else
-  //  attribList[6] = WX_GL_STEREO;
+  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
+    attribList[6] = WX_GL_STEREO;
   attribList[7] = 0;
 #endif
-  theWxGLCanvas = new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
-              wxSize( width->getValue(), height->getValue() ), attribList );
+  // if we have a previous window, use same rendering context and destroy it.
+  MyWxGLCanvas *old_canvas = theWxGLCanvas;
+
+  if( old_canvas ) {
+    theWxGLCanvas = 
+      new MyWxGLCanvas( this,  theWindow, 
+                        old_canvas->GetContext(), -1, wxDefaultPosition,
+                        wxSize( width->getValue(), height->getValue() ), 
+                        attribList );
+    old_canvas->Destroy();
+  } else {
+    theWxGLCanvas = 
+      new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
+                        wxSize( width->getValue(), height->getValue() ), 
+                        attribList );
+  }
 #ifdef USE_EXPLICIT_GLCONTEXT
   theWxGLContext = new wxGLContext( theWxGLCanvas );
 #endif
+
+
 
   wxSizer *tmp_sizer = theWindow->GetSizer();
   if( tmp_sizer ) {
@@ -177,6 +197,29 @@ wxGLCanvas( _parent, _id, _attribList, _pos, _size,
             _palette ),
 #else
 wxGLCanvas( _parent, _id, _pos, _size,
+            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
+	    _attribList,  _palette ),
+#endif
+myOwner( _myOwner )
+{
+}
+
+WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
+                                             wxWindow* _parent,
+                                             wxGLContext *context,
+                                             wxWindowID _id,
+                                             const wxPoint& _pos,
+                                             const wxSize& _size,
+                                             int* _attribList,
+                                             long _style, 
+                                             const wxString& _name,
+                                             const wxPalette& _palette ):
+#ifdef USE_EXPLICIT_GLCONTEXT
+  wxGLCanvas( _parent, context,_id, _attribList, _pos, _size,
+            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
+            _palette ),
+#else
+  wxGLCanvas( _parent, context, _id, _pos, _size,
             _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
 	    _attribList,  _palette ),
 #endif

@@ -55,6 +55,14 @@ namespace H3D {
     class MyWxGLCanvas: public wxGLCanvas
     {
     public:
+      MyWxGLCanvas(WxWidgetsWindow *_myOwner, 
+                   wxWindow* _parent,
+                   wxGLContext *shared_context,
+                   wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
+                   int* _attribList = 0, long _style=0, 
+                   const wxString& _name = wxT("MyWxGLCanvas"),
+                   const wxPalette& _palette = wxNullPalette );
+
       MyWxGLCanvas(WxWidgetsWindow *_myOwner, wxWindow* _parent,
                    wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
                    int* _attribList = 0, long _style=0, 

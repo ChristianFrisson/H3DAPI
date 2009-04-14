@@ -52,7 +52,7 @@ namespace H3D {
     typedef TypedSFNode< X3DViewpointNode > SFViewpoint;
 
     /// The mode for rendering specified as a string.
-    class RenderMode: public SFString {
+    class H3DAPI_API RenderMode: public SFString {
     public:
       /// Thrown when the value of RenderMode is an invalid mode.
       H3D_VALUE_EXCEPTION( string, InvalidRenderMode );
@@ -307,6 +307,10 @@ namespace H3D {
     bool default_collision;
 
   protected:
+    /// internal help function to initialise the window and
+    /// check if success. it will call the initWindow function
+    /// to initialize the window.
+    void initWindowWithContext();
 #ifdef WIN32
     HGLRC rendering_context;
     HWND hWnd;
@@ -355,6 +359,8 @@ namespace H3D {
 
     AutoRef< X3DViewpointNode > vp_ref;
 
+    /// The render mode used in the last render loop.
+    RenderMode::Mode last_render_mode;
   };
 }
 

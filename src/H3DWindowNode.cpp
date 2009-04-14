@@ -85,7 +85,6 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, viewpoint, INPUT_OUTPUT );
 }
 
-
 bool H3DWindowNode::GLEW_init = false;
 set< H3DWindowNode* > H3DWindowNode::windows;
 
@@ -111,7 +110,8 @@ H3DWindowNode::H3DWindowNode(
   stencil_mask( NULL ),
   stencil_mask_height( 0 ),
   stencil_mask_width( 0 ),
-  last_loop_mirrored( false ) {
+  last_loop_mirrored( false ),
+  last_render_mode( RenderMode::MONO ) {
   
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -184,7 +184,7 @@ void H3DWindowNode::shareRenderingContext( H3DWindowNode *w ) {
 
 void H3DWindowNode::initialize() {
   initWindowHandler();
-  initWindow();
+  initWindowWithContext();
 
   if( !GLEW_init ) {
     GLenum err = glewInit();
@@ -198,20 +198,7 @@ void H3DWindowNode::initialize() {
     
 #ifdef WIN32
   rendering_context = wglGetCurrentContext();
-  if( renderMode->getRenderMode() == RenderMode::QUAD_BUFFERED_STEREO ) {
-    // make sure that we got the required pixel format for stereo.
-    HDC hdc = wglGetCurrentDC();
-    int pixel_format = GetPixelFormat( hdc );
-    PIXELFORMATDESCRIPTOR  pfd; 
-    DescribePixelFormat(hdc, pixel_format,  
-                        sizeof(PIXELFORMATDESCRIPTOR), &pfd); 
-    if( !(pfd.dwFlags & PFD_STEREO) ) {
-      Console(4) << "Warning: Stereo pixel format not supported by your "
-                 << "graphics card. Quad buffered stereo cannot be used. "
-                 << "Using \"MONO\" instead. " <<endl;
-      renderMode->setValue( "MONO", id );
-    }
-  }
+  
 #endif    
 
   for( set< H3DWindowNode * >::iterator i = windows.begin();
@@ -233,6 +220,7 @@ void H3DWindowNode::initialize() {
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
   glPixelStorei( GL_PACK_ALIGNMENT, 1 );
   Node::initialize();
+  last_render_mode = renderMode->getRenderMode();
 }
 
 void renderStyli() {
@@ -514,12 +502,48 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
   return false;
 }
 
+
+void H3DWindowNode::initWindowWithContext() {
+  initWindow();
+
+  if( renderMode->getRenderMode() == RenderMode::QUAD_BUFFERED_STEREO ) {
+    /*// make sure that we got the required pixel format for stereo.
+    HDC hdc = wglGetCurrentDC();
+    int pixel_format = GetPixelFormat( hdc );
+    PIXELFORMATDESCRIPTOR  pfd; 
+    DescribePixelFormat(hdc, pixel_format,  
+                        sizeof(PIXELFORMATDESCRIPTOR), &pfd); 
+                        GLboolean quad_stereo_supported; 
+                        if( !(pfd.dwFlags & PFD_STEREO) || !quad_stereo_supported ) { */
+    GLboolean quad_stereo_supported;
+    glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+    if( !quad_stereo_supported ) {
+      Console(4) << "Warning: Stereo pixel format not supported by your "
+                 << "graphics card(or it is not enabled). Quad buffered "
+                 << "stereo cannot be used. "
+                 << "Using \"MONO\" instead. " <<endl;
+      renderMode->setValue( "MONO", id );
+    } 
+  }
+}
+
 void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   if( !child_to_render ) return;
   
   if ( !isInitialized() )
     initialize();
+  
+  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
 
+  if( stereo_mode != last_render_mode ) {
+    if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ||
+        last_render_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+      // reinitialize the window to support/remove quad buffered stereo
+      initWindowWithContext();
+    }
+    last_render_mode = renderMode->getRenderMode();
+  }
+  
   // make this the active window
   makeWindowActive();
 
@@ -621,8 +645,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   X3DViewpointNode *navigation_vp = vp;
   if( nav_info )
     vp = nav_info->viewpointToUse( vp );
-
-  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
 
   Vec3f vp_position = vp->totalPosition->getValue();
   Rotation vp_orientation = vp->totalOrientation->getValue();
