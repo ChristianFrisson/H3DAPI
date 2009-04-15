@@ -37,6 +37,7 @@
 #include <H3D/SFFloat.h>
 #include <H3D/SFRotation.h>
 #include <H3D/SFMatrix4f.h>
+#include <H3D/StereoInfo.h>
 
 namespace H3D {
   /// \ingroup X3DNodes
@@ -238,6 +239,17 @@ namespace H3D {
   class H3DAPI_API X3DViewpointNode : public X3DBindableNode {
   public:
 
+    /// Used with setupProjection function to indicate for which eye the
+    /// frustum should be calculated.
+    enum EyeMode {
+      /// Not a stereo mode, only one frustum is needed.
+      MONO = 0,
+      /// For the left eye.
+      LEFT_EYE = 1,
+      /// For the right eye.
+      RIGHT_EYE = 2
+    };
+
     /// This field is used for the position field in order to reset the
     /// internal variables rel_pos and rel_orn used for H3DAPIs internal
     /// navigation.
@@ -415,11 +427,19 @@ namespace H3D {
       return viewpoints;
     }
 
-    /// Get the all X3DViewpointNode instances with the X3DViewpointNode
+    /// Get all the X3DViewpointNode instances with the X3DViewpointNode
     /// that are in ViewpointGroup only present in the group and not 
     /// by them self in the list.
     static ViewpointList getViewpointHierarchy();
-    
+
+    /// The X3DViewpointNode needs to setup a projection matrix, typically done
+    /// by calling glFrustum but this might not look the same for all types of
+    /// X3DViewpointNodes.
+    virtual void setupProjection( EyeMode eye_mode,
+                                  H3DFloat width, H3DFloat height,
+                                  H3DFloat clip_near, H3DFloat clip_far,
+                                  StereoInfo * stereo_info = 0 ) = 0;
+
     /// The centerOfRotation field specifies a center about which to
     /// rotate the user's eyepoint when in EXAMINE mode.
     ///
@@ -523,6 +543,37 @@ namespace H3D {
 
   protected:
     static ViewpointList viewpoints;
+    // Internal function for easier calculations of parameters sent to
+    // glFrustum or glOrtho. For usage see function setupProjection in
+    // Viewpoint or OrthoViewpoint.
+    inline void getProjectionDimensions( EyeMode eye_mode,
+                                         H3DFloat width,
+                                         H3DFloat height,
+                                         H3DFloat clip_near,
+                                         H3DFloat &top,
+                                         H3DFloat &bottom,
+                                         H3DFloat &right,
+                                         H3DFloat &left,
+                                         StereoInfo * stereo_info = 0 ) {
+      windowFromfieldOfView( width,
+                             height,
+                             clip_near,
+                             top, bottom, right, left );
+      H3DFloat frustum_shift = 0;
+      if( eye_mode == LEFT_EYE || eye_mode == RIGHT_EYE ) {
+        if( !stereo_info )
+          stereo_info = StereoInfo::getActive();
+        if( stereo_info ) {
+          frustum_shift = ( stereo_info->interocularDistance->getValue() / 2 )
+                          * clip_near / stereo_info->focalDistance->getValue();
+          if( eye_mode == RIGHT_EYE )
+            frustum_shift = -frustum_shift;
+        }
+      }
+      left += frustum_shift;
+      right += frustum_shift;
+    }
+
   };
 }
 

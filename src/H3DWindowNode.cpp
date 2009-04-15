@@ -736,25 +736,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       clip_far = focal_distance + 0.01f;
     }
 
-    // The stereo rendering is made using the parallel axis asymmetric frustum 
-    // perspective projection method, which means that the viewpoint for each 
-    // eye remain parallell and an the asymmetric view frustum is set up using 
-    // glFrustum.
-
-    // LEFT EYE
-    H3DFloat frustum_shift = 
-      half_interocular_distance * clip_near / focal_distance; 
-
-    H3DFloat top, bottom, right, left;
-
-    vp->windowFromfieldOfView( 
-              stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ? 
-              (H3DFloat) width->getValue()/2.0f :
-              (H3DFloat) width->getValue(),
-              (H3DFloat) height->getValue(),
-              clip_near,
-              top, bottom, right, left );
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -764,21 +745,24 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else {
       glFrontFace( GL_CCW );
     }
-    
-    //TODO: correct the stereo for ORTHO (if possible)
-    // also make more general. Maybe let each viewpoint set
-    // up its own projection matrix.
-    if( !dynamic_cast< OrthoViewpoint * >(vp) ) {
-      glFrustum( left + frustum_shift,
-                 right + frustum_shift,
-                 bottom, top, 
-                 clip_near, clip_far );
-    } else {
-      glOrtho( left + frustum_shift,
-               right + frustum_shift,
-               bottom, top,
-               clip_near, clip_far );
-    }
+
+    H3DFloat projection_width =
+      stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ? 
+      (H3DFloat) width->getValue()/2.0f :
+      (H3DFloat) width->getValue();
+    H3DFloat projection_height = (H3DFloat) height->getValue();
+
+    // LEFT EYE
+    // The stereo rendering is made using the parallel axis asymmetric frustum 
+    // perspective projection method, which means that the viewpoint for each 
+    // eye remain parallell and an the asymmetric view frustum is set up using 
+    // glFrustum. This is done by calling the setupProjection function of
+    // X3DViewpointNode.
+    vp->setupProjection( X3DViewpointNode::LEFT_EYE,
+                         projection_width,
+                         projection_height,
+                         clip_near, clip_far,
+                         stereo_info );
     
     glDrawBuffer(GL_BACK_LEFT);
     
@@ -872,21 +856,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else {
       glFrontFace( GL_CCW );
     }
-    //TODO: correct the stereo for ORTHO (if possible)
-    // also make more general. Maybe let each viewpoint set
-    // up its own projection matrix.
-    if( !dynamic_cast< OrthoViewpoint * >(vp) ) {
-      glFrustum( left - frustum_shift,
-                 right - frustum_shift,
-                 bottom, top, 
-                 clip_near, clip_far );
-    } else {
-      glOrtho( left - frustum_shift,
-               right - frustum_shift,
-               bottom, top,
-               clip_near, clip_far );
-    }
-    
+
+    vp->setupProjection( X3DViewpointNode::RIGHT_EYE,
+                         projection_width,
+                         projection_height,
+                         clip_near, clip_far,
+                         stereo_info );
+
     if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
       glDrawBuffer(GL_BACK_RIGHT);
       // clear the buffers before rendering
@@ -1018,13 +994,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     swapBuffers();
   } else {
     // MONO
-    H3DFloat top, bottom, right, left;
 
-    vp->windowFromfieldOfView( (H3DFloat) width->getValue(),
-                               (H3DFloat) height->getValue(),
-                               clip_near,
-                               top, bottom, right, left );
-    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -1035,15 +1005,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glFrontFace( GL_CCW );
     }
 
-    // TODO: Make more general. Maybe let each viewpoint set
-    // up its own projection matrix.
-    if( !dynamic_cast< OrthoViewpoint * >(vp) ) {
-      glFrustum(left,right,bottom,top,clip_near,clip_far);
-    }
-    else {
-      glOrtho( left, right, bottom, top, clip_near, clip_far );
-    }
-    
+    vp->setupProjection( X3DViewpointNode::MONO,
+                         (H3DFloat)width->getValue(),
+                         (H3DFloat)height->getValue(),
+                         clip_near, clip_far );
+
     glMatrixMode(GL_MODELVIEW);
     glDrawBuffer(GL_BACK);
     glLoadIdentity();

@@ -81,6 +81,14 @@ namespace H3D {
                                         H3DFloat &top, H3DFloat &bottom,
                                         H3DFloat &right, H3DFloat &left );
 
+    /// The viewpoint needs to setup a projection mode, typically done by
+    /// calling glFrustum but different viewpoints might want different
+    /// behaviours.
+    virtual void setupProjection( EyeMode eye_mode,
+                                  H3DFloat width, H3DFloat height,
+                                  H3DFloat clip_near, H3DFloat clip_far,
+                                  StereoInfo * stereo_info = 0 );
+
     /// The fieldOfView field specifies minimum and maximum extents of the view
     /// in units of the local coordinate system. The minimum an maximum values
     /// in each direction of the field of view shall have the relationship

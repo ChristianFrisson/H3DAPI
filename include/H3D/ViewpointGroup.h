@@ -103,6 +103,12 @@ namespace H3D {
     /// any ViewpointGroups in the the children field.
     bool containsViewpoint( X3DViewpointNode *vp ) const;
 
+    /// Overridden to do nothing.
+    virtual void setupProjection( EyeMode eye_mode,
+                                  H3DFloat width, H3DFloat height,
+                                  H3DFloat clip_near, H3DFloat clip_far,
+                                  StereoInfo * stereo_info = 0 ) {}
+
     /// The center field provides a position offset from origin of local
     /// coordinate system.
     ///

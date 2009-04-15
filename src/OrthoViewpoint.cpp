@@ -30,6 +30,14 @@
 
 #include <H3D/OrthoViewpoint.h>
 
+#ifdef HAVE_OPENGL
+#ifdef MACOSX
+#include <OpenGL/glu.h>
+#else
+#include <GL/glu.h>
+#endif
+#endif
+
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
@@ -123,4 +131,15 @@ bool OrthoViewpoint::windowFromfieldOfView( H3DFloat width, H3DFloat height,
     }
   }
   return true;
+}
+
+void OrthoViewpoint::setupProjection( EyeMode eye_mode,
+                                      H3DFloat width, H3DFloat height,
+                                      H3DFloat clip_near, H3DFloat clip_far,
+                                      StereoInfo * stereo_info ) {
+  H3DFloat top, bottom, right, left;
+  getProjectionDimensions( eye_mode, width, height, clip_near, top,
+                           bottom, right, left, stereo_info );
+
+  glOrtho( left, right, bottom, top, clip_near, clip_far );
 }

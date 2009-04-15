@@ -30,6 +30,14 @@
 
 #include <H3D/Viewpoint.h>
 
+#ifdef HAVE_OPENGL
+#ifdef MACOSX
+#include <OpenGL/glu.h>
+#else
+#include <GL/glu.h>
+#endif
+#endif
+
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
@@ -107,3 +115,15 @@ bool Viewpoint::windowFromfieldOfView( H3DFloat width, H3DFloat height,
   left   = -right;
   return true;
 }
+
+void Viewpoint::setupProjection( EyeMode eye_mode,
+                                 H3DFloat width, H3DFloat height,
+                                 H3DFloat clip_near, H3DFloat clip_far,
+                                 StereoInfo * stereo_info ) {
+  H3DFloat top, bottom, right, left;
+  getProjectionDimensions( eye_mode, width, height, clip_near, top,
+                           bottom, right, left, stereo_info );
+
+  glFrustum( left, right, bottom, top, clip_near, clip_far );
+}
+
