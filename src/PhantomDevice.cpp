@@ -160,6 +160,8 @@ H3DHapticsDevice::ErrorCode PhantomDevice::initDevice() {
     maxForce->setValue( (H3DFloat)pd->getMaxForce(), id );
     maxContinuousForce->setValue( (H3DFloat)pd->getMaxContinuousForce(), id );
     needsCalibration->setValue( pd->needsCalibration(), id );
+    inputDOF->setValue( pd->getInputDOF(), id );
+    outputDOF->setValue( pd->getOutputDOF(), id );
     nr_initialized_devices++;
     render_shapes_called = 0;
     started_scheduler = false;
