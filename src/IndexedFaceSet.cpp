@@ -492,7 +492,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
         norm = AB % BC;
         H3DFloat l = norm.length();
         // check if zero vector
-        if( l > Constants::f_epsilon ) {
+        if( l > 0 ) {
           // if not normalize and add to vector.
           norm = norm / l;
         } else {
@@ -503,7 +503,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
             BC = B - C;
             norm = AB % BC;
             l = norm.length();
-            if( l > Constants::f_epsilon ) {
+            if( l > 0 ) {
               norm = norm / l;
               break;
             }
