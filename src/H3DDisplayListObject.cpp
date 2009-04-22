@@ -34,6 +34,7 @@
 #include <H3D/GlobalSettings.h>
 #include <H3D/GraphicsCachingOptions.h>
 #include <H3D/X3DGeometryNode.h>
+#include <H3D/MatrixTransform.h>
 
 using namespace H3D;
 
@@ -310,8 +311,17 @@ bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
     dynamic_cast< H3DBoundedObject * >( getOwner() );
   if( !bound_object ) return false;
 
-  BoxBound *box_bound = 
-    dynamic_cast< BoxBound * >( bound_object->bound->getValue() );
+  BoxBound *box_bound = NULL;
+
+  MatrixTransform *t = dynamic_cast< MatrixTransform *>( getOwner() );
+  if( t ) {
+    box_bound = 
+      dynamic_cast< BoxBound * >( t->transformedBound->getValue() ); 
+  } else {
+    box_bound = 
+      dynamic_cast< BoxBound * >( bound_object->bound->getValue() );
+  }
+
   if( !box_bound ) return false;
 
   const Vec3f &half_size = box_bound->size->getValue()/2;
