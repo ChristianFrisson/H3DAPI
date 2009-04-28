@@ -260,6 +260,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   frameRate->setValue( 0, id );
   ThreadBase::setThreadName( ThreadBase::getMainThreadId(), 
 			     "H3D API Main Thread" );
+  Scene::time->route( eventSink );
 }
 
 Scene::~Scene() {
