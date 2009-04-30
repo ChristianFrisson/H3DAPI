@@ -35,7 +35,8 @@
 //  Console Dialog Class
 // ---------------------------------------------------------------------------
 #include <wx/wx.h>
-
+#include <sstream>
+#include <memory>
 class consoleDialog: public wxDialog
 {
 public:
@@ -49,9 +50,16 @@ public:
 	wxTextCtrl *logText;
 	wxString GetText();
 
-private:
+  friend void wxLockGUI( void * );
+  friend void wxUnlockGUI( void * );
+
+protected:
+  std::stringstream other_thread_output;
+  std::auto_ptr< std::ostream >console_stream;
 	void OnConsoleClose (wxCommandEvent & event);
+  void OnIdle( wxIdleEvent &event );
 	DECLARE_EVENT_TABLE();
+ 
 };
 
 #endif
