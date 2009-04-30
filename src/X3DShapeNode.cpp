@@ -141,14 +141,16 @@ void X3DShapeNode::render() {
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   X3DAppearanceNode *a = appearance->getValue();
   Node *g = geometry->getValue();
-  Node *hg = hapticGeometry->getValue();
+  Node *hg = 0;
+  if( ti.hapticsEnabled() )
+    hg = hapticGeometry->getValue();
   if ( a ) {
     a->traverseSG( ti );
     if( a->isTransparent() && a->usingMultiPassTransparency() ) {
       ti.setMultiPassTransparency( true );
       displayList->breakCache();
     }
-  } 
+  }
   if( hg ) ti.disableHaptics();
   if ( g ) g->traverseSG( ti );
   if( hg ) {

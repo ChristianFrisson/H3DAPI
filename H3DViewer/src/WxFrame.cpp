@@ -285,12 +285,18 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                               wxT("Horizontal Split"));
   renderMode->AppendRadioItem(FRAME_VERTSPLIT, wxT("Vertical Split"),
                               wxT("Vertical Split"));
-  renderMode->AppendRadioItem(FRAME_VERTSPLITKEEPASPECT, wxT("Vertical Split Keep Aspect"),
-                              wxT("Vertical Split with aspect ratio kept the same."));
-  renderMode->AppendRadioItem(FRAME_HORZINTERLACED, wxT("Horizontal Interlaced"),
+  renderMode->AppendRadioItem(FRAME_VERTSPLITKEEPASPECT,
+                              wxT("Vertical Split Keep Aspect"),
+                       wxT("Vertical Split with aspect ratio kept the same."));
+  renderMode->AppendRadioItem(FRAME_HORZINTERLACED,
+                              wxT("Horizontal Interlaced"),
                               wxT("Horizontal Interlaced"));
-  renderMode->AppendRadioItem(FRAME_VERTINTERLACED, wxT("Vertical Interlaced"),
+  renderMode->AppendRadioItem(FRAME_VERTINTERLACED,
+                              wxT("Vertical Interlaced"),
                               wxT("Vertical Interlaced"));
+  renderMode->AppendRadioItem(FRAME_CHECKERINTERLACED,
+                              wxT("Checker Interlaced"),
+                              wxT("Checker Interlaced"));
   renderMode->AppendRadioItem(FRAME_SHARPDISPLAY, wxT("Sharp Display"),
                               wxT("Optimized for Sharp display systems"));
   renderMode->AppendRadioItem(FRAME_REDBLUE, wxT("Red-Blue Stereo"),
@@ -873,11 +879,22 @@ bool WxFrame::loadFile( const string &filename) {
   }
   else {
     int i = 0;
+    int unnamed = 1;
     for (X3DViewpointNode::ViewpointList::iterator vp = VPlist.begin(); 
            vp != VPlist.end(); vp++) {
-      string vpDescription = (*vp)->description->getValue();
+      string vp_description = (*vp)->description->getValue();
+      if( vp_description == "" ) {
+        if( i == 0 )
+          vp_description = "Unnamed Default Viewpoint";
+        else {
+          stringstream vp_dscr;
+          vp_dscr << "Unnamed Viewpoint " << unnamed;
+          vp_description = vp_dscr.str();
+        }
+        unnamed++;
+      }
       viewpointMenu->AppendRadioItem(FRAME_VIEWPOINT + i, 
-                                     wxString(vpDescription.c_str(),wxConvUTF8),
+                                     wxString(vp_description.c_str(),wxConvUTF8),
                                      wxT("Select a viewpoint"));
       if ((*vp) == Viewpoint::getActive()) {
         viewpointMenu->Check(FRAME_VIEWPOINT+i, true);
@@ -913,6 +930,30 @@ bool WxFrame::loadFile( const string &filename) {
       this->glwindow->fullscreen->setValue( fullscreen );
       this->glwindow->mirrored->setValue( mirrored );
       this->glwindow->renderMode->setValue( render_mode );
+      if( render_mode == "MONO" )
+        renderMode->Check( FRAME_MONO, true );
+      else if( render_mode == "QUAD_BUFFERED_STEREO" )
+        renderMode->Check( FRAME_QUADBUFFERED, true );
+      else if( render_mode == "HORIZONTAL_SPLIT" )
+        renderMode->Check( FRAME_HORZSPLIT, true );
+      else if( render_mode == "VERTICAL_SPLIT" )
+        renderMode->Check( FRAME_VERTSPLIT, true );
+      else if( render_mode == "VERTICAL_SPLIT_KEEP_RATIO" )
+        renderMode->Check( FRAME_VERTSPLITKEEPASPECT, true );
+      else if( render_mode == "HORIZONTAL_INTERLACED" )
+        renderMode->Check( FRAME_HORZINTERLACED, true );
+      else if( render_mode == "VERTICAL_INTERLACED" )
+        renderMode->Check( FRAME_VERTINTERLACED, true );
+      else if( render_mode == "CHECKER_INTERLACED" )
+        renderMode->Check( FRAME_CHECKERINTERLACED, true );
+      else if( render_mode == "VERTICAL_INTERLACED_GREEN_SHIFT" )
+        renderMode->Check( FRAME_SHARPDISPLAY, true );
+      else if( render_mode == "RED_BLUE_STEREO" )
+        renderMode->Check( FRAME_REDBLUE, true );
+      else if( render_mode == "RED_GREEN_STEREO" )
+        renderMode->Check( FRAME_REDGREEN, true );
+      else if( render_mode == "RED_CYAN_STEREO" )
+        renderMode->Check( FRAME_REDCYAN, true );
     }
 
   
@@ -1395,6 +1436,9 @@ void WxFrame::RenderMode(wxCommandEvent & event)
     case FRAME_VERTINTERLACED:
       renderMode = "VERTICAL_INTERLACED";
       break;
+    case FRAME_CHECKERINTERLACED:
+      renderMode = "CHECKER_INTERLACED";
+      break;
     case FRAME_SHARPDISPLAY:
       renderMode = "VERTICAL_INTERLACED_GREEN_SHIFT";
       break;
@@ -1546,7 +1590,6 @@ void WxFrame::ChangeViewpoint (wxCommandEvent & event)
     //Enable that viewpoint
     (*vp)->set_bind->setValue(true);
     defaultvp = *vp;
-    Console (3) << "Viewpoint Set" << endl;
     viewpointMenu->Check(selection, true);
   }
 }
