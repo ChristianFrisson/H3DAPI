@@ -68,7 +68,7 @@ void StringSensor::keyboardDown( int key, bool special_key) {
     string enteredKey;
     if(key == 8 && deletionAllowed->getValue()){/* backspace for Windows & Unix */
       string enteredString = enteredText->getValue();
-      int strSize = enteredString.size();
+      int strSize = (int)enteredString.size();
       if(strSize>0){
         enteredString.resize(strSize-1);
         enteredText->setValue(enteredString, id);

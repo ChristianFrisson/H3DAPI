@@ -158,13 +158,18 @@ void GLUTWindow::initWindow() {
 #endif
   glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, 
                  GLUT_ACTION_GLUTMAINLOOP_RETURNS );
-#ifdef WIN32
+#ifdef H3D_WINDOWS
   // Subclassing this window. Seems to work as it should.
   // It seems to work even if two GLUTWindow instances
   // are created but this may be system dependent.
   hWnd = FindWindow( "FREEGLUT", "H3D" );
+#ifdef H3D_WIN64
   wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                GWLP_WNDPROC, (LONG_PTR) WindowProc);
+#else
+ wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
                 GWL_WNDPROC, (LONG_PTR) WindowProc);
+#endif
 #endif
 #endif
 }

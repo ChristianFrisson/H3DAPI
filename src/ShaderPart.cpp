@@ -133,7 +133,7 @@ void ShaderPart::SFShaderString::update() {
     if( url != "" ) {
       ifstream is( url.c_str() );
       if( is.good() ) {
-        int length;
+        std::streamsize length;
         char * buffer;
         
         // get length of file:

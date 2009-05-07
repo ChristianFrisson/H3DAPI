@@ -202,7 +202,7 @@ namespace H3D {
       /// Add current pointing device struct to geom_ptd_map.
       inline void addPtDevMap() {
         if( detect_pt_device && !current_pt_device.empty() ) {
-          geom_ptd_map[ result.size() - 1 ] = current_pt_device.top();
+          geom_ptd_map[ (unsigned int) result.size() - 1 ] = current_pt_device.top();
         }
       }
 

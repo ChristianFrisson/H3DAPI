@@ -211,12 +211,12 @@ namespace H3D {
       }
       int arg_size = -1;      
       if( python_typeinfo )
-        arg_size = PyTuple_Size( static_cast< PyObject * >(python_typeinfo) );
+        arg_size = (int)PyTuple_Size( static_cast< PyObject * >(python_typeinfo) );
 
       if ( index >= arg_size ) {
         int opt_arg_size = -1;
         if( python_opttypeinfo )
-          opt_arg_size = PyTuple_Size( static_cast< PyObject * >(python_opttypeinfo) );
+          opt_arg_size = (int) PyTuple_Size( static_cast< PyObject * >(python_opttypeinfo) );
         if( opt_arg_size > 0 ) {
           PyObject *type_info = 
             PyTuple_GetItem( static_cast< PyObject * >(python_opttypeinfo),

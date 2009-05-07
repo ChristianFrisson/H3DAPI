@@ -79,7 +79,7 @@ void Switch::render() {
 
 void Switch::SFBound::update() {
   int choice = static_cast< SFInt32 * >(routes_in[0])->getValue();
-  unsigned int nr_bounds = routes_in.size() - 1;
+  unsigned int nr_bounds = (unsigned int) routes_in.size() - 1;
   if( choice >= 0 && (unsigned int)choice < nr_bounds  )
     value = static_cast< SFBound * >( routes_in[choice+1] )->getValue();
 }

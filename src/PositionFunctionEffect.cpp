@@ -73,7 +73,7 @@ void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
     if( x_function && x_function->nrInputValues() == 3 &&
         y_function && y_function->nrInputValues() == 3 &&
         z_function && z_function->nrInputValues() == 3 ) {
-      H3DInt32 nr_of_devices = ti.getHapticsDevices().size();
+      H3DInt32 nr_of_devices = (H3DInt32)ti.getHapticsDevices().size();
       if( deviceIndices->empty() ) {
         // Render the force on all devices.
         for( int i = 0; i < nr_of_devices; i++ ) {

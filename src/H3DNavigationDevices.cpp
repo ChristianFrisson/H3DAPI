@@ -337,7 +337,7 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
         else
           rel_rot.angle = 0.01f * rel_rot.angle;
       }
-      catch( const Exception::H3DException &e ) {
+      catch( const Exception::H3DException & ) {
       }
       the_owner->move_dir = dist_change;
       the_owner->rel_rot = rel_rot;
@@ -372,10 +372,10 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
             rel_rot2.angle = 0.01f * rel_rot2.angle;
           rel_rot = rel_rot * rel_rot2;
         }
-        catch( const Exception::H3DException &e ) {
+        catch( const Exception::H3DException & ) {
         }
       }
-      catch( const Exception::H3DException &e ) {
+      catch( const Exception::H3DException & ) {
       }
       the_owner->move_dir = dist_change;
       the_owner->rel_rot = rel_rot;

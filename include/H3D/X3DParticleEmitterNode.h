@@ -131,14 +131,14 @@ namespace H3D {
         }
         if ( f >= keys[keys.size()-1] ) {
           w = 1;
-          return keys.size() - 1;
+          return (int)keys.size() - 1;
         }
-        for( int i = keys.size()-1; i >= 0; i--) {
+        for( size_t i = keys.size()-1; i >= 0; i--) {
           if ( f > keys[i] ) {
             w = (f-keys[i])/(keys[i+1]-keys[i]);
             if( w < 0 ) w = 0;
             if( w > 1 ) w = 1;
-            return i;
+            return (int) i;
           }
         }
         return -1;  // something must have gone wrong to get here

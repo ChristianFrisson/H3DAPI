@@ -72,7 +72,7 @@ void CoordinateDeformer::deformPoints( const vector< bool  > &is_touched,
   if( !touched && touched_last_time ) {
     new_deformed_points = resting_points;
   } else if( f && touched ) {
-    unsigned int nr_devices = penetration_points.size();
+    unsigned int nr_devices = (unsigned int) penetration_points.size();
     if( nr_devices > 0 ) {
       for( unsigned int i = 0; i < resting_points.size(); i++ ) {
         Vec3f offset = Vec3f( 0, 0, 0 );

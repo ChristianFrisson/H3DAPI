@@ -252,7 +252,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
       }
     }
 
-    H3DInt32 uSizeToUse = uk.size() ;
+    H3DInt32 uSizeToUse = (H3DInt32) uk.size() ;
     if( generateUniform ) {
       uSizeToUse = u_dimension + u_order;
       Console(3) << "Warning: The uKnot array is not according to standard in "
@@ -284,7 +284,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
       }
     }
 
-    H3DInt32 vSizeToUse = vk.size() ;
+    H3DInt32 vSizeToUse = (H3DInt32)vk.size() ;
     if( generateUniform ) {
       vSizeToUse = v_dimension + v_order ;
       Console(3) << "Warning: The vKnot array is not according to standard in "

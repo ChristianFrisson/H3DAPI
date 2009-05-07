@@ -170,7 +170,7 @@ namespace H3D {
           else if( TheType::routes_in[1] == TheType::event.ptr ) {
             currentPosition--;
             if( currentPosition < 0 )
-              currentPosition = key_value.size() - 1;
+              currentPosition = (H3DInt32) key_value.size() - 1;
 
             TheType::value = key_value[ currentPosition ];
           }

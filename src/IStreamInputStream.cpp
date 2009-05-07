@@ -40,7 +40,7 @@ unsigned int X3D::IStreamInputStream::readBytes(
                                           XMLByte* const to_fill,
                                           const unsigned int max_to_read ) {
   is.read( (char *) to_fill, max_to_read );
-  return is.gcount();
+  return (unsigned int) is.gcount();
 }
 
 #endif

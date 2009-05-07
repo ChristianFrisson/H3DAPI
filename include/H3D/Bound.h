@@ -170,12 +170,12 @@ namespace H3D {
       Vec3f max_p( *i );
       i++;
       for( ; i != end; ++i ) {
-        if( (*i).x < min_p.x ) min_p.x = (*i).x;
-        if( (*i).y < min_p.y ) min_p.y = (*i).y;
-        if( (*i).z < min_p.z ) min_p.z = (*i).z;
-        if( (*i).x > max_p.x ) max_p.x = (*i).x;
-        if( (*i).y > max_p.y ) max_p.y = (*i).y;
-        if( (*i).z > max_p.z ) max_p.z = (*i).z;
+        if( (*i).x < min_p.x ) min_p.x = (H3DFloat) (*i).x;
+        if( (*i).y < min_p.y ) min_p.y = (H3DFloat) (*i).y;
+        if( (*i).z < min_p.z ) min_p.z = (H3DFloat) (*i).z;
+        if( (*i).x > max_p.x ) max_p.x = (H3DFloat) (*i).x;
+        if( (*i).y > max_p.y ) max_p.y = (H3DFloat) (*i).y;
+        if( (*i).z > max_p.z ) max_p.z = (H3DFloat) (*i).z;
       }
       Vec3f s = max_p - min_p;
       center->setValue( min_p + s / 2.0 );

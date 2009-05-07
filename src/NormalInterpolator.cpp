@@ -71,7 +71,7 @@ void NormalInterpolator::MFValue::update() {
   vector< Vec3f > key_values = static_cast<MFVec3f*>(routes_in[2])->getValue();
   int value_size = 0;
   if( key_size != 0 )
-    value_size = key_values.size() / key_size;
+    value_size = (int)key_values.size() / key_size;
   value.resize( value_size );
   
   if ( key_index >= 0 && 

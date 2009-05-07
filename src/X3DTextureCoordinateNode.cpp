@@ -174,7 +174,7 @@ void X3DTextureCoordinateNode::startTexGenForTexture( X3DTextureNode *t ) {
     dynamic_cast< MultiTexture * >( t );
   if( mt && mt->texture->size() > 0 ) {
     size_t texture_units = mt->texture->size();
-    startTexGenForTextureUnits( 0, texture_units - 1 );
+    startTexGenForTextureUnits( 0, (unsigned int) texture_units - 1 );
   } else {
     startTexGenForTextureUnit( 0 );
   }
@@ -185,7 +185,7 @@ void X3DTextureCoordinateNode::stopTexGenForTexture( X3DTextureNode *t ) {
     dynamic_cast< MultiTexture * >( t );
   if( mt && mt->texture->size() > 0 ) {
     size_t texture_units = mt->texture->size();
-    stopTexGenForTextureUnits( 0, texture_units - 1 );
+    stopTexGenForTextureUnits( 0, (unsigned int) texture_units - 1 );
   } else {
     stopTexGenForTextureUnit( 0 );
   }
@@ -198,7 +198,7 @@ void X3DTextureCoordinateNode::renderArrayForTexture( X3DTextureNode *t ) {
 
   if( mt && mt->texture->size() > 0 ) {
     size_t texture_units = mt->texture->size();
-    renderArrayForTextureUnits( 0, texture_units -1 );
+    renderArrayForTextureUnits( 0, (unsigned int) texture_units -1 );
   } else {
     renderArrayForTextureUnit( 0 );
   }
@@ -215,7 +215,7 @@ void X3DTextureCoordinateNode::disableArrayForTexture( X3DTextureNode *t ) {
 
   if( mt && mt->texture->size() > 0 ) {
     size_t texture_units = mt->texture->size();
-    disableArrayForTextureUnits( 0, texture_units -1 );
+    disableArrayForTextureUnits( 0, (unsigned int) texture_units -1 );
   } else {
     disableArrayForTextureUnit( 0 );
   }

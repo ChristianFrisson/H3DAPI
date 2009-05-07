@@ -151,6 +151,19 @@
 #define HAVE_SYS_TIME_H
 #endif
 
+#if( defined( _WIN64 ) || defined(WIN64) )
+// set when on 64 bit Windows
+#define H3D_WIN64
+#elif( defined( _WIN32 ) || defined(WIN32) )
+// set when on 32 bit Windows
+#define H3D_WIN32
+#endif
+
+#if( defined( H3D_WIN32 ) || defined( H3D_WIN64 ) )
+// set when on 32 or 64 bit Windows
+#define H3D_WINDOWS
+#endif
+
 #define H3DAPI_MAJOR_VERSION ${H3DAPI_MAJOR_VERSION}
 #define H3DAPI_MINOR_VERSION ${H3DAPI_MINOR_VERSION}
 #define H3DAPI_BUILD_VERSION ${H3DAPI_BUILD_VERSION}

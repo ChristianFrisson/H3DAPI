@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/X3DVertexAttributeNode.h>
-#include "GL/glew.h"
+#include <GL/glew.h>
 
 using namespace H3D;
 

@@ -132,10 +132,10 @@ void Extrusion::VertexVectors::update() {
 
   Extrusion *theExtrusion = static_cast< Extrusion * >( getOwner() );
 
-  H3DInt32 nrOfSpinePoints = spineVectors.size();
-  H3DInt32 nrOfCrossSectionPoints = cross_section.size();
-  H3DInt32 nrOfScaleValues = scaleVectors.size();
-  H3DInt32 nrOfOrientationValues = orientationVectors.size();
+  H3DInt32 nrOfSpinePoints = (H3DInt32)spineVectors.size();
+  H3DInt32 nrOfCrossSectionPoints = (H3DInt32)cross_section.size();
+  H3DInt32 nrOfScaleValues = (H3DInt32)scaleVectors.size();
+  H3DInt32 nrOfOrientationValues = (H3DInt32)orientationVectors.size();
 
   if( nrOfSpinePoints > 1 ) {
     vector< Vec3f > xAxis;
@@ -1200,7 +1200,7 @@ void Extrusion::generateNormalsPerVertex(
     // normals calculated for the endCap if needed.
     if( endCap->getValue() ) {
 
-      H3DInt32 theLastVertexNormal = normalsPerFace.size() - 1;
+      H3DInt32 theLastVertexNormal = (H3DInt32)normalsPerFace.size() - 1;
       Vec3f theFaceNormal = normalsPerFace.back();
       normalVector.push_back( theFaceNormal );
       Vec3f quad_normal = 

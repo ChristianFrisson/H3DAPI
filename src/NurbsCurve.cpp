@@ -108,7 +108,7 @@ void NurbsCurve::render( ) {
   H3DInt32 no_of_control_points =coord_node->nrAvailableCoords();
   H3DInt32 no_of_knots = (no_of_control_points + local_order-1);
 
-  H3DInt32 no_of_weights = weight->getValue().size();
+  H3DInt32 no_of_weights = (H3DInt32)weight->getValue().size();
   GLfloat *weight_float = new GLfloat [no_of_control_points];
 
   // the knots values are doubles from the X3D-specification, but the

@@ -77,7 +77,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     name_space = line.substr( characters_processed, 
                               pos - characters_processed );
     
-    characters_processed += pos - (characters_processed - 1);
+    characters_processed += (unsigned int) pos - (characters_processed - 1);
     
     pos = line.find( ' ', characters_processed );
     string::size_type tab_pos = line.find( '\t', characters_processed );
@@ -89,7 +89,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     
     string prefix = line.substr( characters_processed, 
                                  pos - characters_processed );
-    characters_processed += prefix.size();
+    characters_processed += (unsigned int) prefix.size();
     
     // skip all whitespaces
     while( (line[pos] == ' ' || line[ pos ] == '\t') &&

@@ -238,7 +238,7 @@ if( check_func( value ) ) {                                         \
   "Argument type must be a list of values in MField.setValue()" );      \
     return 0;                                                  \
   }                                                            \
-  int n = PyList_GET_SIZE( value );                            \
+  Py_ssize_t n = PyList_GET_SIZE( value );                     \
   vector< value_type > fv;                                     \
   fv.resize( n );                                              \
   for ( int i=0; i < n; i++ ) {                                \

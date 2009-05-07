@@ -81,7 +81,7 @@ namespace H3D {
   namespace Shaders {
     template< class Type >
     GLint *toIntArray( const vector< Type > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       GLint *v = new GLint[ size ];
       for( unsigned int i = 0; i < size; i++ ) 
         v[i] = (GLint) values[i];
@@ -90,7 +90,7 @@ namespace H3D {
 
     template< class Type >
     float *toFloatArray( const vector< Type > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size ];
       for( unsigned int i = 0; i < size; i++ ) 
         v[i] = (float) values[i];
@@ -98,7 +98,7 @@ namespace H3D {
     }
 
     float *toFloatArray( const vector< Vec2f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 2 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec2f &a = values[i];
@@ -110,7 +110,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Vec3f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 3 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec3f &a = values[i];
@@ -123,7 +123,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Vec4f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec4f &a = values[i];
@@ -137,7 +137,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Vec2d > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 2 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec2d &a = values[i];
@@ -149,7 +149,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Vec3d > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 3 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec3d &a = values[i];
@@ -162,7 +162,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Vec4d > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec4d &a = values[i];
@@ -176,7 +176,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Rotation > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Rotation &r = values[i];
@@ -190,7 +190,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< RGB > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 3 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const RGB &r = values[i];
@@ -203,7 +203,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< RGBA > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const RGBA &r = values[i];
@@ -217,7 +217,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Matrix3f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 9 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Matrix3f &m = values[i];
@@ -236,7 +236,7 @@ namespace H3D {
 
     
     float *toFloatArray( const vector< Matrix4f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 9 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Matrix4f &m = values[i];
@@ -264,7 +264,7 @@ namespace H3D {
 
     template< class Type >
     double *toDoubleArray( const vector< Type > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int)values.size();
       double *v = new double[ size ];
       for( unsigned int i = 0; i < size; i++ ) 
         v[i] = (double) values[i];
@@ -272,7 +272,7 @@ namespace H3D {
     }
 
     double *toDoubleArray( const vector< Vec2f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 2 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec2f &a = values[i];
@@ -284,7 +284,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Vec3f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 3 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec3f &a = values[i];
@@ -297,7 +297,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Vec4f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec4f &a = values[i];
@@ -311,7 +311,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Vec2d > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 2 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec2d &a = values[i];
@@ -323,7 +323,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Vec3d > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 3 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec3d &a = values[i];
@@ -336,7 +336,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Vec4d > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Vec4d &a = values[i];
@@ -350,7 +350,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Rotation > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Rotation &r = values[i];
@@ -364,7 +364,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< RGB > &values ) {
-      unsigned int size = values.size();
+      unsigned int size =(unsigned int)  values.size();
       double *v = new double[ size * 3 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const RGB &r = values[i];
@@ -377,7 +377,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< RGBA > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const RGBA &r = values[i];
@@ -391,7 +391,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Matrix3f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 9 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Matrix3f &m = values[i];
@@ -410,7 +410,7 @@ namespace H3D {
 
     
     double *toDoubleArray( const vector< Matrix4f > &values ) {
-      unsigned int size = values.size();
+      unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 9 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Matrix4f &m = values[i];

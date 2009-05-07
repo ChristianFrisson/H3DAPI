@@ -576,6 +576,11 @@ IF( WIN32 )
     # remove some warnings about deprecated functions.
     SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
+    # if we are using 64 bit compiler some object files get too big so we need
+    # to add the /bigobj flag
+    IF( CMAKE_CL_64 )
+      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
+    ENDIF( CMAKE_CL_64 )
     # H3D API is now to big to link incrementally with vc8.
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /INCREMENTAL:NO" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
@@ -590,6 +595,11 @@ IF( WIN32 )
     SET( TEMP_OUTPUT_POSTFIX _vc9 )
     # remove some warnings about deprecated functions.
     SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+    # if we are using 64 bit compiler some object files get too big so we need
+    # to add the /bigobj flag
+    IF( CMAKE_CL_64 )
+      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
+    ENDIF( CMAKE_CL_64 )
     # H3D API is now to big to link incrementally with vc9.
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt /INCREMENTAL:NO" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.

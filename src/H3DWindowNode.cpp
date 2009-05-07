@@ -1299,7 +1299,7 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
           break;
         case VK_SHIFT: onKeyUp( X3DKeyDeviceSensorNode::SHIFT, true ); break;
         default: {
-          int key = wParam;
+          WPARAM key = wParam;
           BYTE state[ 256 ];
           WORD code[ 2 ];
 

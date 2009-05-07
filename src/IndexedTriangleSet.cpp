@@ -165,7 +165,7 @@ void IndexedTriangleSet::render() {
       }
     }
 
-    unsigned int nr_triangles = indices.size() / 3;
+    unsigned int nr_triangles = (unsigned int) indices.size() / 3;
 
     if( normalPerVertex->getValue() ) {
       // if normal per vertex we can use arrays to render the geometry

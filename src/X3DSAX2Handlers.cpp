@@ -144,19 +144,19 @@ void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs 
         "Invalid 'field' specification. Missing \"name\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber()  );
+                                (int ) locator->getLineNumber()  );
     } else if ( !field_type ) {
       string message = 
         "Invalid 'field' specification. Missing \"type\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int )locator->getLineNumber() );
     } else if ( !field_access_type ) {
       string message = 
         "Invalid 'field' specification. Missing \"accessType\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int )locator->getLineNumber() );
     } 
 
     string access_type_string = toString( field_access_type );
@@ -174,7 +174,7 @@ void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs 
         "Invalid value for 'accessType' attribute of 'field' element.";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int)locator->getLineNumber() );
     }
 
     X3DTypes::X3DType x3d_type = 
@@ -233,19 +233,19 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
         "Invalid 'field' specification. Missing \"name\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber()  );
+                                (int)locator->getLineNumber()  );
     } else if ( !field_type ) {
       string message = 
         "Invalid 'field' specification. Missing \"type\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int)locator->getLineNumber() );
     } else if ( !field_access_type ) {
       string message = 
         "Invalid 'field' specification. Missing \"accessType\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int)locator->getLineNumber() );
     } 
     Field *f = X3DTypes::newFieldInstance( toString( field_type ).c_str() );
     
@@ -254,7 +254,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
         "Invalid value for 'type' attribute of 'field' specification.";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int)locator->getLineNumber() );
     }
     
     f->setOwner( parent );
@@ -275,7 +275,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
         "Invalid value for 'accessType' attribute of 'field' specification.";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int)locator->getLineNumber() );
     }
     
     if( field_value ) {
@@ -288,7 +288,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
           << "in order to be parsable. ";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
-                                  locator->getLineNumber() );
+                                  (int)locator->getLineNumber() );
       }
       if( access_type == Field::INITIALIZE_ONLY ||
           access_type == Field::INPUT_OUTPUT ) {
@@ -304,7 +304,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
             << f->getFullName() << "\".";
           throw X3D::XMLParseError( s.str(), "", 
                                     toString( locator->getSystemId() ),
-                                    locator->getLineNumber() );
+                                    (int)locator->getLineNumber() );
         }
         catch( const Convert::UnimplementedConversionType &e ) {
           stringstream s;
@@ -313,7 +313,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
             << " not implemented";
           throw X3D::XMLParseError( s.str(), "", 
                                     toString( locator->getSystemId() ),
-                                    locator->getLineNumber() ); 
+                                    (int)locator->getLineNumber() ); 
         }
       } else {
         Console(3) << "Warning: 'value' attribute ignored. Only used if "
@@ -366,23 +366,23 @@ void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs,
     string message = "Invalid ROUTE specification. Missing \"fromNode\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber()  );
+                              (int)locator->getLineNumber()  );
   } else if ( !from_field_name ) {
     string message = "Invalid ROUTE specification. Missing \"fromField\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber() );
+                              (int)locator->getLineNumber() );
   } else if ( !to_node_name ) {
     string message = "Invalid ROUTE specification. Missing \"toNode\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber() );
+                              (int)locator->getLineNumber() );
   }
   else if ( !to_field_name ) {
     string message = "Invalid ROUTE specification. Missing \"toField\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber() );
+                              (int)locator->getLineNumber() );
   } else {
     // Lookup the nodes and fields and set up the route.
     Node *from_node = DEF_map->getNode( toString( from_node_name ) );
@@ -455,17 +455,17 @@ void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
     string message = "Invalid IMPORT specification. Missing \"inlineDEF\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber()  );
+                              (int)locator->getLineNumber()  );
   } else if ( !exported_def_name ) {
     string message = "Invalid IMPORT specification. Missing \"exportedDEF\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber() );
+                              (int)locator->getLineNumber() );
   } else if ( !as_name ) {
     string message = "Invalid IMPORT specification. Missing \"AS\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber() );
+                              (int)locator->getLineNumber() );
   } else {
     // Lookup the nodes and fields and set up the route.
     const string &inline_def_string = toString( inline_def_name );
@@ -536,12 +536,12 @@ void X3DSAX2Handlers::handleExportElement( const Attributes &attrs  ) {
     string message = "Invalid EXPORT specification. Missing \"localDEF\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber()  );
+                              (int)locator->getLineNumber()  );
   } else if ( !as_name ) {
     string message = "Invalid IMPORT specification. Missing \"AS\" attribute";
     throw X3D::XMLParseError( message, "", 
                               toString( locator->getSystemId() ),
-                              locator->getLineNumber() );
+                              (int)locator->getLineNumber() );
   } else {
     // Lookup the nodes and fields and set up the route.
     Node *n = DEF_map->getNode( toString( local_def_name ) );
@@ -589,12 +589,12 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
       string message = "Invalid \"connect\" specification. Missing \"nodeField\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber()  );
+                                (int)locator->getLineNumber()  );
     } else if ( !proto_field_name ) {
       string message = "Invalid \"connect\" specification. Missing \"protoField\" attribute";
       throw X3D::XMLParseError( message, "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber() );
+                                (int)locator->getLineNumber() );
     } else {
 #ifdef HAVE_PYTHON
       if( dynamic_cast< PythonScript * >(parent) ) {
@@ -871,7 +871,7 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
           << url << "\".";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
-                                  locator->getLineNumber() );
+                                  (int)locator->getLineNumber() );
       }
       PrototypeVector proto_vector;
       string url_used = "";
@@ -983,7 +983,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
           << name << "\".";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
-                                  locator->getLineNumber() );
+                                  (int)locator->getLineNumber() );
       }
       catch( const Convert::UnimplementedConversionType &e ) {
         stringstream s;
@@ -992,7 +992,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
           << " not implemented";
         throw X3D::XMLParseError( s.str(), "", 
                                   toString( locator->getSystemId() ),
-                                  locator->getLineNumber() ); 
+                                  (int)locator->getLineNumber() ); 
       } 
     }
   } else if( name && !value ) {
@@ -1042,7 +1042,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
     if( node_stack.size() > 0 ) 
       throw X3D::XMLParseError( "X3D element only allowed at toplevel.", "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber()  );
+                                (int)locator->getLineNumber()  );
     else {
       //cerr << "localname " << localname << endl;
       int nr_attrs = attrs.getLength();
@@ -1070,7 +1070,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         else {
           throw X3D::XMLParseError( tmp_err_msg, "", 
             toString( locator->getSystemId() ),
-            locator->getLineNumber()  );
+            (int)locator->getLineNumber()  );
         }
       }
       return;
@@ -1082,7 +1082,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
     if( node_stack.size() > 0 ) 
       throw X3D::XMLParseError( "Scene element only allowed at toplevel or in X3D element.", "", 
                                 toString( locator->getSystemId() ),
-                                locator->getLineNumber()  );
+                                (int)locator->getLineNumber()  );
     else {
       if( profile_set ) {
         ProfilesAndComponents::setMainProfileDone( profile_set );
@@ -1159,7 +1159,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               string( " before any meta element." ) ).c_str(),
             "",
             toString( locator->getSystemId() ),
-            locator->getLineNumber()  );
+            (int)locator->getLineNumber()  );
         }
         else {
           int nr_attrs = attrs.getLength();
@@ -1181,7 +1181,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             tmp_err_msg ) ) {
               throw X3D::XMLParseError( tmp_err_msg, "", 
                 toString( locator->getSystemId() ),
-                locator->getLineNumber()  );
+                (int)locator->getLineNumber()  );
           }
         }
       } else if( localname_string == "meta" ) {
@@ -1192,7 +1192,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               ).c_str(),
             "",
             toString( locator->getSystemId() ),
-            locator->getLineNumber()  );
+            (int)locator->getLineNumber()  );
         }
         else {
           meta_set = true;
@@ -1216,7 +1216,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               << "\" defined.";
             throw X3D::XMLParseError( s.str(), "", 
                                       toString( locator->getSystemId() ),
-                                      locator->getLineNumber() );
+                                      (int)locator->getLineNumber() );
           }
         } else {
           // the element is a node declaration so create a new Node.
@@ -1282,7 +1282,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                     << "in order to be parsable. ";
                   throw X3D::XMLParseError( s.str(), "", 
                                             toString( locator->getSystemId() ),
-                                            locator->getLineNumber() );
+                                            (int)locator->getLineNumber() );
                 } else {
                   const XMLCh *attr_value = attrs.getValue( i );
                   // the standard DTD spec for X3D uses "" as default fixed
@@ -1305,7 +1305,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                       << name << "\".";
                     throw X3D::XMLParseError( s.str(), "", 
                                               toString( locator->getSystemId() ),
-                                              locator->getLineNumber() );
+                                              (int)locator->getLineNumber() );
                   }
                   catch( const Convert::UnimplementedConversionType &e ) {
                     stringstream s;
@@ -1314,7 +1314,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                       << " not implemented";
                     throw X3D::XMLParseError( s.str(), "", 
                                               toString( locator->getSystemId() ),
-                                              locator->getLineNumber() ); 
+                                              (int)locator->getLineNumber() ); 
                   } 
                 }
               }
@@ -1330,7 +1330,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                 << parent->getName() << ")";
               throw X3D::XMLParseError( s.str(), "", 
                                         toString( locator->getSystemId() ),
-                                        locator->getLineNumber() ); 
+                                        (int)locator->getLineNumber() ); 
             } else {
               if( !dynamic_cast< SFNode *>( f ) && 
                   !dynamic_cast< MFNode *>( f ) ) {
@@ -1340,7 +1340,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                   << "\". Field is not of type SFNode or MFNode.";
                 throw X3D::XMLParseError( s.str(), "", 
                                           toString( locator->getSystemId() ),
-                                          locator->getLineNumber() ); 
+                                          (int)locator->getLineNumber() ); 
               }
             }
           } else if( parent ) {
@@ -1358,7 +1358,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                   << "with name (" << parent->getName() << ")";
                 throw X3D::XMLParseError( s.str(), "", 
                                           toString( locator->getSystemId() ),
-                                          locator->getLineNumber() ); 
+                                          (int)locator->getLineNumber() ); 
               }
             }
           }

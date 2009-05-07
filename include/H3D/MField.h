@@ -151,7 +151,7 @@ namespace H3D {
     /// Returns the size of the vector.
     inline unsigned int size() { 
       this->upToDate();
-      return value.size(); 
+      return (unsigned int)value.size(); 
     }
 
     /// Returns the largest possible size of the vector.
@@ -292,7 +292,7 @@ namespace H3D {
                                           unsigned int len, 
                                           int id = 0 ) {
       unsigned int sz = sizeof( value_type );
-      nr_elements = this->value.size();
+      nr_elements = (unsigned int) this->value.size();
       if( len < sz * nr_elements ) {
         return -1;
       }

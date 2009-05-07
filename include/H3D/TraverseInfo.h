@@ -85,7 +85,7 @@ namespace H3D {
     /// If you need more you will have to use the initializeLayers() function
     inline unsigned int nrLayers() {
       if( haptic_shapes.size() > 0 ) {
-        return haptic_shapes[0].size();
+        return (unsigned int) haptic_shapes[0].size();
       } else {
         return 0;
       }

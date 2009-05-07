@@ -195,9 +195,9 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 				}
 			}
 
-			H3DInt32 theSizeToUse = theKnot.size();
+			H3DInt32 theSizeToUse = (H3DInt32) theKnot.size();
 			if( generateUniform ) {
-				theSizeToUse = theCurve.size() + order;
+				theSizeToUse = (H3DInt32) theCurve.size() + order;
 				Console(3) << "Warning: The Knot array is not according to standard in"
 					<< " NurbsCurve2D node( "
 					<< nurbs_curve_2D->getName() 
@@ -238,7 +238,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 			}
 
 			gluPwlCurve( nurbs_object, 
-									 theCurve.size(), curve,
+									 (GLint) theCurve.size(), curve,
 									 2, GLU_MAP1_TRIM_2 );
 		}
 	}
