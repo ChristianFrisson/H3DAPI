@@ -129,6 +129,7 @@ H3DWindowNode::H3DWindowNode(
   renderMode->addValidValue( "VERTICAL_SPLIT" );
   renderMode->addValidValue("VERTICAL_SPLIT_KEEP_RATIO" );
   renderMode->addValidValue("HORIZONTAL_SPLIT" );
+  renderMode->addValidValue("HORIZONTAL_SPLIT_KEEP_RATIO" );
   renderMode->addValidValue( "VERTICAL_INTERLACED" );
   renderMode->addValidValue("HORIZONTAL_INTERLACED" );
   renderMode->addValidValue( "CHECKER_INTERLACED" );
@@ -750,7 +751,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ? 
       (H3DFloat) width->getValue()/2.0f :
       (H3DFloat) width->getValue();
-    H3DFloat projection_height = (H3DFloat) height->getValue();
+    H3DFloat projection_height =  
+      stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ?
+      (H3DFloat) height->getValue()/2.0f :
+      (H3DFloat) height->getValue();
 
     // LEFT EYE
     // The stereo rendering is made using the parallel axis asymmetric frustum 
@@ -796,7 +800,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_EQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
-    } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ) {
+    } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
+			   stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, height->getValue() / 2, 
                   width->getValue(), height->getValue() / 2 );
     } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
@@ -891,7 +896,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_NOTEQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
-    } if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ) {
+    } if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
+		  stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, 0, 
                   width->getValue(), height->getValue() / 2 );
     } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
@@ -1121,6 +1127,8 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return VERTICAL_SPLIT_KEEP_RATIO;
   else if( value == "HORIZONTAL_SPLIT" )
     return HORIZONTAL_SPLIT;
+  else if( value == "HORIZONTAL_SPLIT_KEEP_RATIO" )
+    return HORIZONTAL_SPLIT_KEEP_RATIO;
   else if( value == "VERTICAL_INTERLACED" )
     return VERTICAL_INTERLACED;
   else if( value == "HORIZONTAL_INTERLACED" )
@@ -1147,6 +1155,7 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
       << "VERTICAL_SPLIT, "
       << "VERTICAL_SPLIT_KEEP_RATIO, "
       << "HORIZONTAL_SPLIT, "
+      << "HORIZONTAL_SPLIT_KEEP_RATIO, "
       << "RED_CYAN_STEREO, RED_GREEN_STEREO or RED_BLUE_STEREO. ";
     throw InvalidRenderMode( value, 
                              s.str(),

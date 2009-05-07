@@ -98,7 +98,14 @@ namespace H3D {
         /// The aspect ratio is preserved in this mode, so that it can be used
         /// when e.g. extending the desktop in order for rendering each
         /// the left eye for one projector and the right for another.
-        VERTICAL_SPLIT_KEEP_RATIO
+        VERTICAL_SPLIT_KEEP_RATIO,
+		
+        /// Stereo mode where the left eye is rendered as the top half 
+        /// of the screen and the right eye as the bottom half of the screen.
+        /// The aspect ratio is preserved in this mode, so that it can be used
+        /// when e.g. extending the desktop in order for rendering each
+        /// the left eye for one projector and the right for another.	
+		    HORIZONTAL_SPLIT_KEEP_RATIO 
 
       } Mode;
 
