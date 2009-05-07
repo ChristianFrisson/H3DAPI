@@ -571,7 +571,7 @@ int main(int argc, char* argv[]) {
     }
 
     DeviceInfo *di = DeviceInfo::getActive();
-    unsigned int device_info_size = DeviceInfo::getAllDeviceInfos().size();
+    unsigned int device_info_size = (unsigned int) DeviceInfo::getAllDeviceInfos().size();
     if( di && stylus_file.size() ) {
       AutoRef< Node > default_stylus;
       try {
@@ -589,6 +589,17 @@ int main(int argc, char* argv[]) {
             d->stylus->setValue( default_stylus );
       }
     }
+
+    // create a window to display
+    GLUTWindow *glwindow = new GLUTWindow;
+    change_nav_type->setOwnerWindow( glwindow );
+    ks->keyPress->route( change_nav_type );  //###########
+    glwindow->fullscreen->setValue( fullscreen );
+    glwindow->mirrored->setValue( mirrored );
+    glwindow->renderMode->setValue( render_mode );
+    glwindow->width->setValue(width);
+    glwindow->height->setValue(height);
+    scene->window->push_back( glwindow );
 
     AutoRef< Group > g( new Group );
     for( vector<string>::iterator file = xml_files.begin() ;
@@ -644,16 +655,7 @@ int main(int argc, char* argv[]) {
 
     dn.clear();
 
-    // create a window to display
-    GLUTWindow *glwindow = new GLUTWindow;
-    change_nav_type->setOwnerWindow( glwindow );
-    ks->keyPress->route( change_nav_type );  //###########
-    glwindow->fullscreen->setValue( fullscreen );
-    glwindow->mirrored->setValue( mirrored );
-    glwindow->renderMode->setValue( render_mode );
-    glwindow->width->setValue(width);
-    glwindow->height->setValue(height);
-    scene->window->push_back( glwindow );
+
     scene->sceneRoot->setValue( g.get() );
     Scene::mainLoop();
   }
