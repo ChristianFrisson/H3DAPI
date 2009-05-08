@@ -48,6 +48,7 @@
 #include <H3D/ProfilesAndComponents.h>
 #include <H3D/H3DNavigation.h>
 #include <H3D/H3DMultiPassRenderObject.h>
+#include <H3D/Anchor.h>
 
 using namespace H3D;
 
@@ -232,6 +233,8 @@ void Scene::idle() {
     }
   }
   callback_lock.unlock();
+
+  Anchor::replaceSceneRoot( this );
 }
 
 

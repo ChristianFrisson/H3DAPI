@@ -32,7 +32,6 @@
 #include <H3D/TouchSensor.h>
 #include <H3D/X3D.h>
 #include <H3D/NavigationInfo.h>
-#include <H3D/Scene.h>
 #include <H3D/H3DNavigation.h>
 
 using namespace H3D;
@@ -50,6 +49,9 @@ namespace AnchorInternals {
 }
 
 static int temp_internname = 0;
+AutoRef< Anchor > Anchor::old_anchor(0);
+string Anchor::new_world_url = "";
+string Anchor::new_world_vp = "";
 Anchor::Anchor( 
              Inst< AddChildren    > _addChildren,
              Inst< RemoveChildren > _removeChildren,
@@ -87,7 +89,7 @@ Anchor::~Anchor() {
 
 
 void Anchor::GeometrySelected::update() {
-  AutoUpdate< SFBool >::update();
+  PeriodicUpdate< SFBool >::update();
   bool isActive = static_cast< SFBool * >( event.ptr )->getValue();
   if( isActive ) {
     Anchor * anchor = static_cast< Anchor * >( getOwner() );
@@ -110,12 +112,17 @@ void Anchor::GeometrySelected::update() {
 
         bool file_exist = true;
         AutoRef< Node > new_world;
+        unsigned int vp_list_size =
+          X3DViewpointNode::getAllViewpoints().size();
+        int prev_outputlevel = Console.getOutputLevel();
+        Console.setOutputLevel( 100 );
         try {
           new_world.reset(
             X3D::createX3DFromURL( base_url, &node_names, NULL, NULL ) );
         } catch( const Exception::H3DException & ) {
           file_exist = false;
         }
+        Console.setOutputLevel( prev_outputlevel );
         if( pos != string::npos )
           vp_name = (*i).substr( pos + 1, (*i).size() - pos );
 
@@ -129,13 +136,14 @@ void Anchor::GeometrySelected::update() {
               temp_vp = static_cast< X3DViewpointNode * >(vp_node);
             }
           }
-          
-          Anchor::replaceScene( new_world, temp_vp, anchor );
-          
+
+          old_anchor.reset( anchor );
+          new_world_url = base_url;
+          new_world_vp = vp_name;
+
           no_valid_things = false;
           break;
-        }
-        else if( vp_name != "" ) {
+        } else if( vp_name != "" ) {
           const X3DViewpointNode::ViewpointList &vp_list =
             X3DViewpointNode::getAllViewpoints();
           bool found = false;
@@ -163,7 +171,7 @@ void Anchor::GeometrySelected::update() {
 
 void Anchor::replaceScene( AutoRef< Node > new_world,
                            const X3DViewpointNode *new_vp,
-                           const Anchor *the_anchor) {
+                           const Anchor *the_anchor ) {
   for( set< Scene * >::iterator i = Scene::scenes.begin();
        i != Scene::scenes.end();
        i++ ) {
@@ -186,6 +194,33 @@ void Anchor::replaceScene( AutoRef< Node > new_world,
         H3DNavigation::enableDevice( H3DNavigation::MOUSE );
         break;
       }
+    }
+  }
+}
+
+void Anchor::replaceSceneRoot( Scene * the_scene ) {
+  if( new_world_url != "" ) {
+    X3DGroupingNode * scene_root = static_cast< X3DGroupingNode * > 
+      ( the_scene->sceneRoot->getValue() );
+    if( scene_root &&
+        isAnchorInScene( scene_root,
+                         old_anchor.get() ) ) {
+      scene_root->children->clear();
+      X3D::DEFNodes node_names;
+      the_scene->sceneRoot->setValue(
+        X3D::createX3DFromURL( new_world_url, &node_names, NULL, NULL ) );
+      if( new_world_vp != "" ) {
+        // if there are more than one viewpoint with vp_name results are
+        // undefined.
+        Node * vp_node = node_names.getNode( new_world_vp );
+        if( vp_node ) {
+          static_cast< X3DViewpointNode * >(vp_node)->set_bind->setValue( true );
+        }
+      }
+      H3DNavigation::enableDevice( H3DNavigation::MOUSE );
+      old_anchor.reset( 0 );
+      new_world_url = "";
+      new_world_vp = "";
     }
   }
 }

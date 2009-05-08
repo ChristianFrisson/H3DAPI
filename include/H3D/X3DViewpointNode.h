@@ -406,7 +406,9 @@ namespace H3D {
     /// \param collision If true then collision between avatar and 
     /// nodes will be considered.
     /// \param avatar_size Information about how the avatar is specified.
-    /// \param topNode needed for collision detection.
+    /// \param topNode The topmost node in the scenegraph containing objects
+    /// with which collision should be detected. Only used if the collision
+    /// argument is true.
     // TODO: remove the collision parameter? topNode can be used.
     virtual void translate( Vec3f direction, bool collision,
                             const vector< H3DFloat > &avatar_size,

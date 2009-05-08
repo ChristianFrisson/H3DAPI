@@ -33,11 +33,9 @@
 #include <H3D/X3DBoundedObject.h>
 #include <H3D/DependentNodeFields.h>
 #include <H3D/H3DDisplayListObject.h>
+#include <H3D/X3DPointingDeviceSensorNode.h>
 
 namespace H3D {
-
-  // Forward declaration.
-  class X3DPointingDeviceSensorNode;
 
   /// \ingroup AbstractNodes
   /// \class X3DGroupingNode

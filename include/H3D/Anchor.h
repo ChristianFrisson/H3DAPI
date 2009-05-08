@@ -32,6 +32,8 @@
 #include <H3D/X3DGroupingNode.h>
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/MFString.h>
+#include <H3D/PeriodicUpdate.h>
+#include <H3D/Scene.h>
 
 namespace H3D {
 
@@ -112,10 +114,11 @@ namespace H3D {
 
     /// Takes care of changing the scene when an object in the Anchor is
     /// selected (by clicking on it with the mouse).
-    class H3DAPI_API GeometrySelected: public AutoUpdate < SFBool > {
+    class H3DAPI_API GeometrySelected: public PeriodicUpdate < SFBool > {
     protected:
       // Check the url and call replaceScene if the url is correct.
       virtual void update();
+
     };
 #ifdef __BORLANDC__
     friend class GeometrySelected;
@@ -142,6 +145,13 @@ namespace H3D {
     static void replaceScene( AutoRef< Node > new_world,
                               const X3DViewpointNode *new_vp,
                               const Anchor *the_anchor );
+
+    /// Replaces the world in the scene with a new one. Uses the static
+    /// protected parameters new_scene_root, old_anchor, new_world_vp set
+    /// internally by the Anchor. Used in order to replace the sceneRoot
+    /// from Scene::idle instead of the routing network since calling it
+    /// from the routing network might cause corruption in heap.
+    static void replaceSceneRoot( Scene * the_scene );
 
     /// Checks which Scenes the given anchor is part of.
     /// \param group_node The X3DGroupingNode to traverse in order to find
@@ -185,6 +195,9 @@ namespace H3D {
     // ( or change viewpoint ).
     auto_ptr< GeometrySelected > on_click;
     auto_ptr< X3DPointingDeviceSensorNode > intern_pdsn;
+    static AutoRef< Anchor > old_anchor;
+    static string new_world_url;
+    static string new_world_vp;
   };
 }
 
