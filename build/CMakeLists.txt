@@ -255,7 +255,8 @@ SET( H3DAPI_FULL_VERSION
 ${H3DAPI_MAJOR_VERSION}.${H3DAPI_MINOR_VERSION}.${H3DAPI_BUILD_VERSION} ) 
 
 # Add all sources, they are added to a variable called H3DAPI_SRCS
-# defined in the included file
+# defined in the included file. All header files are added to a variable called
+# H3DAPI_HEADERS.
 INCLUDE( ${H3DAPI_SOURCE_DIR}/H3DAPISourceFiles.txt )
 
 # Add the H3DAPI.rc resource file if Visual Studio
@@ -521,7 +522,7 @@ IF( GENERATE_CPACK_PROJECT )
 ENDIF( GENERATE_CPACK_PROJECT )
 
 # H3DAPI shared library definition
-ADD_LIBRARY(H3DAPI SHARED ${H3DAPI_SRCS})
+ADD_LIBRARY(H3DAPI SHARED ${H3DAPI_SRCS} ${H3DAPI_HEADERS})
 
 # make sure that the H3DAPI.rc contains the correct svn-version
 IF( MSVC )
@@ -653,9 +654,8 @@ INSTALL( TARGETS H3DAPI
 
 IF( NOT WIN32 )
   # Install include files.
-  INSTALL( DIRECTORY ../include/H3D 
-           DESTINATION include 
-           PATTERN .svn EXCLUDE )
+  INSTALL( FILES ${H3DAPI_HEADERS}
+           DESTINATION include/H3D )
 ENDIF( NOT WIN32 )
 
 IF( WIN32 )

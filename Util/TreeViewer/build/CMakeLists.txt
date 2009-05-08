@@ -29,7 +29,7 @@ INCLUDE_DIRECTORIES( ../src )
 SET(requiredLibs)
 
 # Where to find cmake modules used to find packages.
-SET(CMAKE_MODULE_PATH $ENV{H3D_ROOT}/build/modules )
+SET(CMAKE_MODULE_PATH $ENV{H3D_ROOT}/build/modules ${TreeViewer_SOURCE_DIR}/../../../build/modules )
 INCLUDE( StripAndAddLibraryDirectories )
 
 #H3DAPI

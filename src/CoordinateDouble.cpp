@@ -69,3 +69,4 @@ void CoordinateDouble::renderArray() {
 void CoordinateDouble::disableArray() {
   glDisableClientState(GL_VERTEX_ARRAY);
 }
+
