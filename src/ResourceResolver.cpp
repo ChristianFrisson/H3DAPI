@@ -93,13 +93,13 @@ string ResourceResolver::resolveURLAsFile( const string &urn,
 }
 
 string ResourceResolver::getTmpFileName() {
-  char tmp_file[ L_tmpnam ];
-  if( tmpnam( tmp_file ) ) {
-    tmp_files.push_back( tmp_file );
-    return tmp_file;
+  string tmp_file = _tempnam( "", "" );
+  if ( tmp_file.length() > 0 ) {
+      tmp_files.push_back( tmp_file );
+      return tmp_file;
   } else {
-    return "";
-  } 
+      return "";
+  }
 }
 
 bool ResourceResolver::releaseTmpFileName( const string &file ) {
