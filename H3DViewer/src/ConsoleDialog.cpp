@@ -43,6 +43,22 @@ using namespace std;
 
 /*******************Constructor*********************/
 
+class ConsoleStreamBuf: public streambuf {
+public:
+  ConsoleStreamBuf( wxTextCtrl *text ):
+    text_ctrl( text ) {}
+
+  int overflow( int c ) {
+    text_ctrl->AppendText((wxChar)c);
+
+    // return something different from EOF
+    return 0;
+  }
+
+  wxTextCtrl *text_ctrl;
+};
+
+
 void wxLockGUI( void *data ) {
   if( !wxIsMainThread() ) {
     // using the wxMutexGuiEnter function "works", but output is incredibly
@@ -105,17 +121,11 @@ wxDialog (parent, id, title, pos, size, style)
   
 	topsizer->SetSizeHints( this );   // set size hints to honour minimum size
   
-#ifndef MACOSX
-  //TODO: console does not work on Mac
-  std::streambuf *sbOld = std::cerr.rdbuf();
-	std::cerr.rdbuf(logText);
-  console_stream.reset( new ostream(logText) );
-  H3DUtil::Console.setOutputStream( *console_stream );
+  // redirect the console to logText wxTextCtrl.
+  ostream *t = new ostream(new ConsoleStreamBuf( logText) );
+  H3DUtil::Console.setOutputStream( *t );
   H3DUtil::Console.setLockMutexFunction( wxLockGUI, this );
   H3DUtil::Console.setUnlockMutexFunction( wxUnlockGUI, this );
-  std::cerr.rdbuf(sbOld); 
-  
-#endif
 }
 
 /*******************Event Table*********************/
