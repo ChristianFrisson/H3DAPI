@@ -93,6 +93,10 @@ string ResourceResolver::resolveURLAsFile( const string &urn,
 }
 
 string ResourceResolver::getTmpFileName() {
+#ifdef H3D_WINDOWS
+  // special version on Windows that supports Windows Vista.
+  // using tmpnam gives filenames in the root directory which
+  // only administrators have write access to.
   string tmp_file = _tempnam( "", "" );
   if ( tmp_file.length() > 0 ) {
       tmp_files.push_back( tmp_file );
@@ -100,6 +104,15 @@ string ResourceResolver::getTmpFileName() {
   } else {
       return "";
   }
+#else
+  char tmp_file[ L_tmpnam ];
+  if( tmpnam( tmp_file ) ) {
+    tmp_files.push_back( tmp_file );
+    return tmp_file;
+  } else {
+    return "";
+  } 
+#endif
 }
 
 bool ResourceResolver::releaseTmpFileName( const string &file ) {
