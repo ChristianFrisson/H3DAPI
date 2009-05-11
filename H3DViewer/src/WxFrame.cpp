@@ -343,7 +343,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
    
   //Help Menu
   helpMenu = new wxMenu;
-  helpMenu->Append(FRAME_HELP, wxT("Help"));
+  //helpMenu->Append(FRAME_HELP, wxT("Help"));
   helpMenu->Append(FRAME_ABOUT, wxT("About"));
 
   //Install Menu Bar
