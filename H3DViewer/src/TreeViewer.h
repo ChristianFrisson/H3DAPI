@@ -23,6 +23,12 @@
 #include <wx/grid.h>
 #include <wx/splitter.h>
 #include <wx/frame.h>
+#include <wx/stattext.h>
+#include <wx/listbox.h>
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/richtext/richtextctrl.h>
+#include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -88,6 +94,36 @@ class FieldValuesDialog : public wxFrame
 		wxGrid* FieldValuesGrid;
 		FieldValuesDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 236,335 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		~FieldValuesDialog();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class PluginsDialog
+///////////////////////////////////////////////////////////////////////////////
+class PluginsDialog : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxStaticText* m_staticText1;
+		wxListBox* InstalledPluginsList;
+		wxButton* m_button2;
+		wxButton* m_button1;
+		
+		wxRichTextCtrl* PluginInfoText;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnInstalledPluginSelected( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnAddPluginButton( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnRemovePluginButton( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnDisablePluginCheckbox( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnURLEvent( wxTextUrlEvent& event ){ event.Skip(); }
+		
+	
+	public:
+		wxCheckBox* DisablePluginsCheckBox;
+		PluginsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Plugins"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,326 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+		~PluginsDialog();
 	
 };
 

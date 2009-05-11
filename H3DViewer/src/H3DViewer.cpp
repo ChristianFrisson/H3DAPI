@@ -157,7 +157,7 @@ bool MyApp::OnInit()
       return false;
     
     SetVendorName(_T("SenseGraphics AB"));
-    SetAppName(_T("H3D Viewer"));
+    SetAppName(_T("H3DViewer 2.1"));
     
     Console.setShowLevel( false );
 

@@ -54,6 +54,7 @@
 
 #include "ConsoleDialog.h"
 #include "TreeViewerTreeViewDialog.h"
+#include "TreeViewerPluginsDialog.h"
 
 using namespace std;
 using namespace H3D;
@@ -217,7 +218,7 @@ public:
   //Main Menu Bar
   wxMenuBar  *menuBar;
   //Menu Bar Items
-  wxMenu     *fileMenu, *rendererMenu, *deviceMenu, *viewpointMenu,
+  wxMenu     *fileMenu, *rendererMenu, *viewpointMenu,
              *navigationMenu, *advancedMenu, *helpMenu, *navigationDevices;
   //Submenu items
   wxMenu     *hapticsRenderer, *renderMode;
@@ -246,6 +247,7 @@ public:
   void RenderMode( wxCommandEvent & event );
   void ShowConsole( wxCommandEvent & event );
   void ShowTreeView( wxCommandEvent & event );
+  void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
   void GetSelection( wxMenuEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
@@ -276,6 +278,7 @@ public:
   void SaveRuspiniSettings( bool to_config );
   void LoadMRU();
   void LoadSettings( bool from_config );
+  void LoadPlugins();
   void buildNavMenu();
 
   void setProxyRadius( float r );
@@ -362,8 +365,10 @@ private:
   AutoRef< Group > g;
 
   X3D::DEFNodes default_stylus_dn;
+public:
   consoleDialog *  theConsole;
   TreeViewerTreeViewDialog * tree_view_dialog;
+  TreeViewerPluginsDialog * plugins_dialog;
   FrameRateDialog *  frameRates;
   SettingsDialog * settings;
   SpeedDialog *speed_slider;
@@ -409,6 +414,7 @@ enum
   FRAME_MIRROR,
   FRAME_CONSOLE,
   FRAME_TREEVIEW,
+  FRAME_PLUGINS,
   FRAME_FRAMERATE,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,

@@ -107,8 +107,8 @@ class QuitAPIField: public AutoUpdate< SFString > {
 };
 
 /*******************Global Constants*********************/
-static const wxChar *TITLE     = wxT("H3D Viewer ");
-static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2007.\n"
+static const wxChar *TITLE     = wxT("H3DViewer ");
+static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2009.\n"
                                     "All Rights Reserved.");
 static const wxChar *ABOUT     = wxT("About");
 static const wxChar *FILETYPES = wxT( "x3d files|*.x3d|"
@@ -194,6 +194,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                                  wxDefaultPosition, wxDefaultSize,
                                  wxDEFAULT_DIALOG_STYLE);
   tree_view_dialog = new TreeViewerTreeViewDialog( this ); 
+  plugins_dialog = new TreeViewerPluginsDialog( this ); 
   frameRates = new FrameRateDialog( this );
 
   defaultvp = (X3DViewpointNode *) NULL;
@@ -210,7 +211,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   //Top level menus
   fileMenu = (wxMenu *)  NULL;
   rendererMenu = (wxMenu *) NULL;
-  deviceMenu = (wxMenu *) NULL;
   viewpointMenu = (wxMenu *) NULL;
   navigationMenu = (wxMenu *) NULL;
   advancedMenu = (wxMenu *) NULL;
@@ -247,6 +247,9 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   fileMenu->Append(FRAME_CHOOSEDIR, wxT("Change Working Directory"), wxT("Change ")
                    wxT("working directory..."));
   fileMenu->AppendSeparator();
+  fileMenu->Append(FRAME_PLUGINS, wxT("Plugins"),
+                   wxT("Show/change installed plugins")); 
+  fileMenu->AppendSeparator();
   fileMenu->Append(FRAME_EXIT,wxT("E&xit\tCtrl+X"), wxT("Exit"));
 
   //File History
@@ -263,6 +266,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   settings = new SettingsDialog(this, this );
   // Load settings for dialog
   LoadSettings( true );
+
+  LoadPlugins();
 
   //Submenus for Renderer Menu
   //hapticsRenderer
@@ -321,13 +326,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   rendererMenu->Append(FRAME_SETTINGS, wxT("Settings..."),
                        wxT("Scenegraph rendering options"));
 
-  //Device Control Menu
-  deviceMenu = new wxMenu;
-  deviceMenu->Append(FRAME_DEVICECONTROL, wxT("Start Device(s)"), 
-                      wxT("Start haptic devices"));
-  deviceMenu->Append(FRAME_DEVICECONTROL, wxT("Stop Device(s)"),
-                      wxT("Stop haptic devices"));
-
   //Viewpoint Menu
   viewpointMenu = new wxMenu;
 
@@ -342,7 +340,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                        wxT("Show the frame rates of graphics and haptics loop"));
   advancedMenu->Append(FRAME_TREEVIEW, wxT("Show tree view"),
                        wxT("Show the scene as a tree, making it possible to inspect and change values at runtime."));
-  
+   
   //Help Menu
   helpMenu = new wxMenu;
   helpMenu->Append(FRAME_HELP, wxT("Help"));
@@ -352,7 +350,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   menuBar = new wxMenuBar;
   menuBar->Append(fileMenu, wxT("&File"));
   menuBar->Append(rendererMenu, wxT("&Rendering"));
-  menuBar->Append(deviceMenu, wxT("&Device Control"));
   menuBar->Append(viewpointMenu, wxT("&Viewpoints"));
   menuBar->Append(navigationMenu, wxT("&Navigation"));
   speed_slider = new SpeedDialog( this, this );
@@ -365,7 +362,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   //Top menu items
   menuBar->EnableTop(2, false);
   menuBar->EnableTop(3, false);
-  menuBar->EnableTop(4, false);
 
   //Certain options in rendererMenu
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
@@ -457,6 +453,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU_RANGE (FRAME_MONO, FRAME_REDCYAN, WxFrame::RenderMode)
   EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
   EVT_MENU (FRAME_TREEVIEW, WxFrame::ShowTreeView)
+  EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
   EVT_MENU_HIGHLIGHT (FRAME_SELECTION, WxFrame::GetSelection)
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
@@ -794,7 +791,7 @@ bool WxFrame::loadFile( const string &filename) {
 
   /****************************Navigation Info****************************/
   //Enable Navigation Menu
-  menuBar->EnableTop(4, true);
+  menuBar->EnableTop(3, true);
   buildNavMenu();
 
   //Enable graphical rendering options in rendererMenu
@@ -805,7 +802,6 @@ bool WxFrame::loadFile( const string &filename) {
   //Enable Device Menu
   mydevice = DeviceInfo::getActive();
   if (mydevice && (mydevice->device->size() > 0) ) {
-    menuBar->EnableTop(2, true);
     allDevices = mydevice->device->getValue();
 
     for( NodeVector::const_iterator nv = allDevices.begin();
@@ -864,7 +860,7 @@ bool WxFrame::loadFile( const string &filename) {
 
 /****************************Intialize Viewpoints***************************/
   //Enable Viewpoints Menu
-  menuBar->EnableTop(3, true);
+  menuBar->EnableTop(2, true);
   VPlist = X3DViewpointNode::getViewpointHierarchy();
   defaultvp = Viewpoint::getActive();
   
@@ -1271,7 +1267,6 @@ void WxFrame::clearData () {
     }
   }
 
-  deviceMenu->Destroy(FRAME_DEVICECONTROL);
   global_settings.reset( 0 );
   stereo_info.reset( 0 );
 
@@ -1341,7 +1336,6 @@ void WxFrame::OnCloseFile(wxCommandEvent & event) {
   //Disable menus again
   menuBar->EnableTop(2, false);
   menuBar->EnableTop(3, false);
-  menuBar->EnableTop(4, false);
 
   //Disable items in rendererMenu again
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
@@ -1556,6 +1550,11 @@ void WxFrame::ShowConsole(wxCommandEvent & event)
 void WxFrame::ShowTreeView(wxCommandEvent & event)
 {
   tree_view_dialog->Show();
+}
+
+void WxFrame::ShowPluginsDialog(wxCommandEvent & event)
+{
+  plugins_dialog->Show();
 }
 
 void WxFrame::ShowFrameRate(wxCommandEvent & event)
@@ -1888,6 +1887,40 @@ void WxFrame::LoadMRU () {
       }
     }
   }
+}
+
+void WxFrame::LoadPlugins() {
+  if( plugins_dialog->DisablePluginsCheckBox->IsChecked() ) return;
+
+  h3dConfig = wxConfigBase::Get();
+
+ // enumeration variables
+  wxString str;
+  long dummy;
+
+  h3dConfig->SetPath( wxT("/Plugins") );
+
+
+
+  // iterate through all plugins
+  bool  bCont = h3dConfig->GetFirstGroup(str, dummy);
+  while ( bCont ) {
+    // TODO: add handles somewhere so we can unload libraries if we want to.
+    wxString library;
+    bool res = h3dConfig->Read( str + wxT("/Library"), &library );    
+    if( res && !library.IsEmpty() ) {
+     H3DUtil::DynamicLibrary::LIBHANDLE lib = 
+       H3DUtil::DynamicLibrary::load( library.mb_str() );
+     res = lib != NULL;
+    }  
+    if( !res ) {
+      wxMessageBox( wxT("There was an error when trying to load plugin library \"") + str + wxT("\"" ), 
+                    wxT("Error"),
+                    wxOK | wxICON_EXCLAMATION);
+    }
+    bCont = h3dConfig->GetNextGroup(str, dummy);
+  }
+
 }
 
 void WxFrame::LoadSettings( bool from_config ) {
