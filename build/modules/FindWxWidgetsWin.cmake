@@ -21,6 +21,20 @@ IF( MSVC70 OR MSVC71 )
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                             $ENV{H3D_ROOT}/../External/lib
                                             ../../External/lib
+                                            ${module_file_path}/../../../External/lib
+                                            )
+
+  FIND_LIBRARY(wxWidgets_richtext_LIBRARY NAMES wxmsw28_richtext   
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib
+                                            ${module_file_path}/../../../External/lib
+                                      )
+
+  FIND_LIBRARY(wxWidgets_html_LIBRARY NAMES wxmsw28_html   
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib
                                             ${module_file_path}/../../../External/lib )
 
   FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase28   
@@ -43,6 +57,20 @@ IF( MSVC70 OR MSVC71 )
   ENDIF(WXWINDOWS_USE_GL)
 ELSE( MSVC70 OR MSVC71 )
   FIND_LIBRARY(wxWidgets_core_LIBRARY NAMES wxmsw28_core_vc8   
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib 
+                                            ${module_file_path}/../../../External/lib
+                                       )
+
+ FIND_LIBRARY(wxWidgets_richtext_LIBRARY NAMES wxmsw28_richtext_vc8   
+                                      PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
+                                            $ENV{H3D_ROOT}/../External/lib
+                                            ../../External/lib 
+                                            ${module_file_path}/../../../External/lib
+                                      )
+
+ FIND_LIBRARY(wxWidgets_html_LIBRARY NAMES wxmsw28_html_vc8   
                                       PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                             $ENV{H3D_ROOT}/../External/lib
                                             ../../External/lib 
@@ -75,11 +103,12 @@ IF(WXWINDOWS_USE_GL)
 ENDIF(WXWINDOWS_USE_GL)
 
 # Copy the results to the output variables.
-IF(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
+IF(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY AND wxWidgets_html_LIBRARY AND wxWidgets_richtext_LIBRARY )
   IF( WXWINDOWS_USE_GL )
     IF( wxWidgets_gl_LIBRARY AND wxWidgets_adv_LIBRARY )
       SET(wxWidgets_FOUND 1)
       SET( wxWidgets_LIBRARIES ${wxWidgets_core_LIBRARY}
+           ${wxWidgets_richtext_LIBRARY} ${wxWidgets_html_LIBRARY} 
            ${wxWidgets_base_LIBRARY} ${wxWidgets_gl_LIBRARY} ${wxWidgets_adv_LIBRARY} comctl32 Rpcrt4)
       SET(wxWidgets_INCLUDE_DIR ${wxWidgets_INCLUDE_DIR})
     ELSE( wxWidgets_gl_LIBRARY AND wxWidgets_adv_LIBRARY )
@@ -90,14 +119,15 @@ IF(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
   ELSE( WXWINDOWS_USE_GL )
     SET(wxWidgets_FOUND 1)
     SET( wxWidgets_LIBRARIES ${wxWidgets_core_LIBRARY}
+         ${wxWidgets_richtext_LIBRARY} ${wxWidgets_html_LIBRARY} 
          ${wxWidgets_base_LIBRARY} comctl32 Rpcrt4)
     SET(wxWidgets_INCLUDE_DIR ${wxWidgets_INCLUDE_DIR})
   ENDIF( WXWINDOWS_USE_GL )
-ELSE(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
+ELSE(wxWidgets_INCLUDE_DIR AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY AND wxWidgets_html_LIBRARY AND wxWidgets_richtext_LIBRARY)
   SET(wxWidgets_FOUND 0)
   SET(wxWidgets_LIBRARIES)
   SET(wxWidgets_INCLUDE_DIR)
-ENDIF(wxWidgets_INCLUDE_DIR  AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY)
+ENDIF(wxWidgets_INCLUDE_DIR  AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRARY AND wxWidgets_html_LIBRARY AND wxWidgets_richtext_LIBRARY )
 
 # Report the results.
 IF(NOT wxWidgets_FOUND)

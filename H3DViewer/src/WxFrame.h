@@ -53,8 +53,8 @@
 #include <H3DUtil/Console.h>
 
 #include "ConsoleDialog.h"
-#include "TreeViewerTreeViewDialog.h"
-#include "TreeViewerPluginsDialog.h"
+#include "H3DViewerTreeViewDialog.h"
+#include "H3DViewerPluginsDialog.h"
 
 using namespace std;
 using namespace H3D;
@@ -367,8 +367,8 @@ private:
   X3D::DEFNodes default_stylus_dn;
 public:
   consoleDialog *  theConsole;
-  TreeViewerTreeViewDialog * tree_view_dialog;
-  TreeViewerPluginsDialog * plugins_dialog;
+  H3DViewerTreeViewDialog * tree_view_dialog;
+  H3DViewerPluginsDialog * plugins_dialog;
   FrameRateDialog *  frameRates;
   SettingsDialog * settings;
   SpeedDialog *speed_slider;

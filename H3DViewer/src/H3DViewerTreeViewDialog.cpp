@@ -1,5 +1,5 @@
-#include "TreeViewerTreeViewDialog.h"
-#include "TreeViewerFieldValuesDialog.h"
+#include "H3DViewerTreeViewDialog.h"
+#include "H3DViewerFieldValuesDialog.h"
 #include <fstream>
 #include <wx/wx.h>
 #include <H3D/Scene.h>
@@ -7,7 +7,7 @@
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
 
-TreeViewerTreeViewDialog::TreeViewerTreeViewDialog( wxWindow* parent )
+H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
 :
   TreeViewDialog( parent ),
   shown_last_loop( false ),
@@ -22,7 +22,7 @@ TreeViewerTreeViewDialog::TreeViewerTreeViewDialog( wxWindow* parent )
 }
 
 
-void TreeViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
+void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
 
  TreeIdMap::iterator ni = node_map.find( event.GetItem().m_pItem );
   if( ni == node_map.end() ) {
@@ -32,7 +32,7 @@ void TreeViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
   }
 }
 
-void TreeViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
+void H3DViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
   // show the scene in the tree view.
   list< H3D::Node * > l;
   l.push_back( *Scene::scenes.begin() );
@@ -49,7 +49,7 @@ void TreeViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
   updateNodeTree( bindable_tree_id, l, false );
 }
 
-void TreeViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id, 
+void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id, 
                                               H3D::Node *n,
                                               bool expand ) {
   if( !n ) return;
@@ -93,7 +93,7 @@ void TreeViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
 }
 
 
-void TreeViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id, 
+void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id, 
                                                list< H3D::Node *> nodes,
                                                bool expand_new ) {
 
@@ -166,7 +166,7 @@ void TreeViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
 }
 
 
-void TreeViewerTreeViewDialog::deleteTree( const wxTreeItemId &id ) { 
+void H3DViewerTreeViewDialog::deleteTree( const wxTreeItemId &id ) { 
   list< wxTreeItemId > children_ids;
   wxTreeItemIdValue cookie;
   wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
@@ -184,7 +184,7 @@ void TreeViewerTreeViewDialog::deleteTree( const wxTreeItemId &id ) {
   TreeViewTree->Delete( id );
 }
 
-void TreeViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
+void H3DViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
   bool new_node = n != displayed_node.get();
   displayed_node.reset( n );
   if( !n ) {
@@ -321,7 +321,7 @@ void TreeViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
 
 }
 
-void TreeViewerTreeViewDialog::clearTreeView() {
+void H3DViewerTreeViewDialog::clearTreeView() {
   list< Node * > l;
   updateNodeTree( TreeViewTree->GetRootItem(), l );
   updateNodeTree( bindable_tree_id, l, false );
@@ -329,7 +329,7 @@ void TreeViewerTreeViewDialog::clearTreeView() {
 
 }
 
-void TreeViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
+void H3DViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
   try {
   if( IsShown() ) {
     TimeStamp now;
@@ -354,7 +354,7 @@ void TreeViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
   }
 }
 
-void TreeViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
+void H3DViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
   if( displayed_node.get() ) {
     int col = event.GetCol();
     int row = event.GetRow();
@@ -375,7 +375,7 @@ void TreeViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
   }
 }
 
-void TreeViewerTreeViewDialog::expandTree( const wxTreeItemId &id ) {
+void H3DViewerTreeViewDialog::expandTree( const wxTreeItemId &id ) {
   if( id.IsOk() ) {
     wxTreeItemIdValue cookie;
     wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
@@ -387,7 +387,7 @@ void TreeViewerTreeViewDialog::expandTree( const wxTreeItemId &id ) {
   }
 }
 
-void TreeViewerTreeViewDialog::collapseTree( const wxTreeItemId &id ) {
+void H3DViewerTreeViewDialog::collapseTree( const wxTreeItemId &id ) {
   if( id.IsOk() ) {
     wxTreeItemIdValue cookie;
     wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
@@ -399,7 +399,7 @@ void TreeViewerTreeViewDialog::collapseTree( const wxTreeItemId &id ) {
   }
 }
 
-void TreeViewerTreeViewDialog::OnTreeRightClick( wxTreeEvent& event ) {
+void H3DViewerTreeViewDialog::OnTreeRightClick( wxTreeEvent& event ) {
   TreeViewTree->SelectItem( event.GetItem() );
   TreeIdMap::iterator ni = node_map.find( event.GetItem().m_pItem );
   X3DGeometryNode *geom = NULL;
@@ -413,7 +413,7 @@ void TreeViewerTreeViewDialog::OnTreeRightClick( wxTreeEvent& event ) {
 }
 
 /// Callback for collapse all menu choice.
-void TreeViewerTreeViewDialog::OnTreeViewCollapseAll( wxCommandEvent& event ) {
+void H3DViewerTreeViewDialog::OnTreeViewCollapseAll( wxCommandEvent& event ) {
   wxTreeItemId id = TreeViewTree->GetSelection();
   if( id.IsOk() ) {
     collapseTree( id );
@@ -421,7 +421,7 @@ void TreeViewerTreeViewDialog::OnTreeViewCollapseAll( wxCommandEvent& event ) {
 }
 
 /// Callback for expand all menu choice.
-void TreeViewerTreeViewDialog::OnTreeViewExpandAll( wxCommandEvent& event ) {
+void H3DViewerTreeViewDialog::OnTreeViewExpandAll( wxCommandEvent& event ) {
   wxTreeItemId id = TreeViewTree->GetSelection();
   if( id.IsOk() ) {
     expandTree( id );
@@ -429,7 +429,7 @@ void TreeViewerTreeViewDialog::OnTreeViewExpandAll( wxCommandEvent& event ) {
 }
 
 /// Callback for collapse children menu choice.
-void TreeViewerTreeViewDialog::OnTreeViewCollapseChildren( wxCommandEvent& event ) {
+void H3DViewerTreeViewDialog::OnTreeViewCollapseChildren( wxCommandEvent& event ) {
   wxTreeItemId id = TreeViewTree->GetSelection();
   wxTreeItemIdValue cookie;
   wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
@@ -440,7 +440,7 @@ void TreeViewerTreeViewDialog::OnTreeViewCollapseChildren( wxCommandEvent& event
 }
 
 /// Callback for node watch menu choice.
-void TreeViewerTreeViewDialog::OnTreeViewNodeWatch( wxCommandEvent& event ) {
+void H3DViewerTreeViewDialog::OnTreeViewNodeWatch( wxCommandEvent& event ) {
   wxTreeItemId id = TreeViewTree->GetSelection();
   
   TreeIdMap::iterator ni = node_map.find( id.m_pItem );
@@ -449,14 +449,14 @@ void TreeViewerTreeViewDialog::OnTreeViewNodeWatch( wxCommandEvent& event ) {
                   wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
   } else {
-    TreeViewerFieldValuesDialog *fv = new TreeViewerFieldValuesDialog( this );
+    H3DViewerFieldValuesDialog *fv = new H3DViewerFieldValuesDialog( this );
     fv->displayFieldsFromNode( (*ni).second.get() );
     fv->Show();
   }
 }
 
 /// Callback for node save x3d menu choice.
-void TreeViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
+void H3DViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
   wxTreeItemId id = TreeViewTree->GetSelection();
   
   TreeIdMap::iterator ni = node_map.find( id.m_pItem );
@@ -497,7 +497,7 @@ void TreeViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
 }
 
 /// Callback for node save x3d menu choice.
-void TreeViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
+void H3DViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
   wxTreeItemId id = TreeViewTree->GetSelection();
   
   TreeIdMap::iterator ni = node_map.find( id.m_pItem );
@@ -548,11 +548,11 @@ void TreeViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
 }
 
 
-void TreeViewerTreeViewDialog::OnClose( wxCloseEvent& event ) {
+void H3DViewerTreeViewDialog::OnClose( wxCloseEvent& event ) {
   Hide();
 }
 
-void TreeViewerTreeViewDialog::updateRowFromFieldDB( int row, 
+void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row, 
                                                      Node *n,
                                                      FieldDBElement *db,
                                                      bool new_node ) {

@@ -1,9 +1,9 @@
-#include "TreeViewerFieldValuesDialog.h"
+#include "H3DViewerFieldValuesDialog.h"
 
 #include <H3D/Group.h>
 #include <H3D/SFString.h>
 
-TreeViewerFieldValuesDialog::TreeViewerFieldValuesDialog( wxWindow* parent )
+H3DViewerFieldValuesDialog::H3DViewerFieldValuesDialog( wxWindow* parent )
 :
   FieldValuesDialog( parent ),
   displayed_node( NULL )
@@ -12,7 +12,7 @@ TreeViewerFieldValuesDialog::TreeViewerFieldValuesDialog( wxWindow* parent )
 }
 
 
-void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
+void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
     bool new_node = n != displayed_node.get();
   displayed_node.reset( n );
   if( !n ) {
@@ -149,7 +149,7 @@ void TreeViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
 
 }
 
-void TreeViewerFieldValuesDialog::OnIdle( wxIdleEvent& event ) {
+void H3DViewerFieldValuesDialog::OnIdle( wxIdleEvent& event ) {
   TimeStamp now;
   if( now - last_fields_update > 0.1 ) {
     displayFieldsFromNode( displayed_node.get() );
@@ -157,7 +157,7 @@ void TreeViewerFieldValuesDialog::OnIdle( wxIdleEvent& event ) {
   }
 }
 
-void TreeViewerFieldValuesDialog::OnCellEdit( wxGridEvent& event ) {
+void H3DViewerFieldValuesDialog::OnCellEdit( wxGridEvent& event ) {
   if( displayed_node.get() ) {
     int col = event.GetCol();
     int row = event.GetRow();
@@ -178,7 +178,7 @@ void TreeViewerFieldValuesDialog::OnCellEdit( wxGridEvent& event ) {
   }
 }
 
-void TreeViewerFieldValuesDialog::updateRowFromFieldDB( int row, 
+void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row, 
                                                         Node *n,
                                                         FieldDBElement *db,
                                                         bool new_node ) {

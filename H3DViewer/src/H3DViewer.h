@@ -5,8 +5,8 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __TreeViewer__
-#define __TreeViewer__
+#ifndef __H3DViewer__
+#define __H3DViewer__
 
 #include <wx/string.h>
 #include <wx/bitmap.h>
@@ -127,4 +127,4 @@ class PluginsDialog : public wxDialog
 	
 };
 
-#endif //__TreeViewer__
+#endif //__H3DViewer__

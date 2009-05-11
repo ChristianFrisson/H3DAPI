@@ -10,17 +10,19 @@ project (H3DViewer)
 SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/ConsoleDialog.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/ConsoleDialog.h"
                     "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerApp.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/WxFrame.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/WxFrame.h"
                     "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerFieldValuesDialog.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerFieldValuesDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerTreeViewDialog.cpp"        
-                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewerTreeViewDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewer.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/TreeViewer.h" )
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.cpp"        
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.h"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPluginsDialog.cpp"        
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPluginsDialog.h"        
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.h" )
 
 # Include directories.
 INCLUDE_DIRECTORIES( ../src )

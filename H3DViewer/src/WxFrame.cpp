@@ -193,8 +193,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   theConsole = new consoleDialog(this, wxID_ANY, console_string, 
                                  wxDefaultPosition, wxDefaultSize,
                                  wxDEFAULT_DIALOG_STYLE);
-  tree_view_dialog = new TreeViewerTreeViewDialog( this ); 
-  plugins_dialog = new TreeViewerPluginsDialog( this ); 
+  tree_view_dialog = new H3DViewerTreeViewDialog( this ); 
+  plugins_dialog = new H3DViewerPluginsDialog( this ); 
   frameRates = new FrameRateDialog( this );
 
   defaultvp = (X3DViewpointNode *) NULL;
