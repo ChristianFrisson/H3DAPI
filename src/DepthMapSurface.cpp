@@ -74,8 +74,21 @@ DepthMapSurface::DepthMapSurface(
    X3DTexture2DNode * height_map = 
      static_cast< X3DTexture2DNode * >( depthMap->getValue() );
    Image * temp_image = 0;
-   if( height_map )
+   bool wrap_s = true, wrap_t = true, wrap_r = true;
+   if( height_map ) {
      temp_image = height_map->image->getValue();
+     TextureProperties * tex_prop =
+       static_cast< TextureProperties * >
+       ( height_map->textureProperties->getValue() );
+     if( tex_prop ) {
+       wrap_s = tex_prop->boundaryModeS->getValue() == "REPEAT";
+       wrap_t = tex_prop->boundaryModeT->getValue() == "REPEAT";
+       wrap_r = tex_prop->boundaryModeR->getValue() == "REPEAT";
+     } else {
+       wrap_s = height_map->repeatS->getValue();
+       wrap_t = height_map->repeatT->getValue();
+     }
+   }
 
    hapi_surface.reset( new HAPI::DepthMapSurface( 
                           stiffness->getValue(),
@@ -85,7 +98,9 @@ DepthMapSurface::DepthMapSurface(
                           temp_image,
                           maxDepth->getValue(),
                           whiteIsOut->getValue(),
-                          useRelativeValues->getValue() ) );
+                          useRelativeValues->getValue(),
+                          35, 0.0001, true,
+                          wrap_s, wrap_t, wrap_r ) );
 
 }
 
