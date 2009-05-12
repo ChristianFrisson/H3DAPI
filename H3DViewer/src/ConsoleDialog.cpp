@@ -122,8 +122,8 @@ wxDialog (parent, id, title, pos, size, style)
 	topsizer->SetSizeHints( this );   // set size hints to honour minimum size
   
   // redirect the console to logText wxTextCtrl.
-  ostream *t = new ostream(new ConsoleStreamBuf( logText) );
-  H3DUtil::Console.setOutputStream( *t );
+  console_stream.reset( new ostream(new ConsoleStreamBuf( logText) ) );
+  H3DUtil::Console.setOutputStream( *console_stream );
   H3DUtil::Console.setLockMutexFunction( wxLockGUI, this );
   H3DUtil::Console.setUnlockMutexFunction( wxUnlockGUI, this );
 }
