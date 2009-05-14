@@ -64,16 +64,23 @@ void H3D::initializeH3D() {
   XERCES_CPP_NAMESPACE_USE
   XMLPlatformUtils::Initialize();
 #endif
-  /*
-    string urn_config_file = "index.urn";
-    char *buffer = getenv( "H3D_URN_CONFIG_FILE" );
-    if( buffer ) urn_config_file = buffer;
-    else if( buffer = getenv( "H3D_ROOT" ) ) {
+  
+  string urn_config_file = "index.urn";
+  char *buffer = getenv( "H3D_URN_CONFIG_FILE" );
+  if( buffer ) {
+    urn_config_file = buffer;
+    ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );
+  } else if( buffer = getenv( "H3D_ROOT" ) ) {
     urn_config_file = buffer;
     urn_config_file += "/index.urn";
+    ifstream os( urn_config_file.c_str() );
+    if( os.good() ) {
+      ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );      
     }
-    ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );
-  */
+    os.close();
+  }
+ 
+  
 #ifdef HAVE_LIBCURL
   curl_global_init( CURL_GLOBAL_ALL );
   ResourceResolver::addResolver( new LibCurlResolver );
