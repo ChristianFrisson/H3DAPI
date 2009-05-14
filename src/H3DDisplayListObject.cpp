@@ -200,7 +200,7 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
           // if the cache was just broken we cannot use the isActive field 
           // any longer since a DisplayList can be activated when 
           // rebuilding cache.
-          if( !consider_active_field ) {
+          if( consider_active_field ) {
             if( !dl->haveValidDisplayList() ||
                  dl->usingFrustumCulling()) {
               have_all_needed_display_lists = false;

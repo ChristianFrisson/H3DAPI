@@ -1447,6 +1447,9 @@ void WxFrame::RenderMode(wxCommandEvent & event)
       break;
   }
   glwindow->renderMode->setValue( renderMode.c_str() );
+  // This is neeeded to avoid color changes when switching to stereo render
+  // modes if the file was loaded with mono render mode.
+  H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
 }
 
 void WxFrame::ChangeNavigationDevice( wxCommandEvent & event ) {
