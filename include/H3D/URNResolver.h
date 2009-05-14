@@ -122,8 +122,10 @@ namespace H3D {
 
     struct lessthan_string {
       bool operator()(const string & s1, const string & s2) const {
-        if( s1.size() < s2.size() ) return true;
-        return s1 < s2;
+        if( s1.size() == s2.size() )
+          return s1 < s2;
+        else
+          return s1.size() < s2.size();
       }
     };
 
