@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/ImportLibrary.h>
+#include <H3D/ResourceResolver.h>
 #include <H3DUtil/DynamicLibrary.h>
 
 using namespace H3D;
@@ -59,35 +60,40 @@ void ImportLibrary::initialize() {
   for( MFString::const_iterator i = url->begin();
        i != url->end();
        i++ ) {
+    string urn_name = *i;
+    URNResolver *urn_resolver = ResourceResolver::getURNResolver();
+    if( urn_resolver ) {
+      urn_name = urn_resolver->resolveURN( *i );
+    }
     DynamicLibrary::LIBHANDLE handle;
 #ifdef WIN32
-    bool ends_in_dll = (*i).find( ".dll" ) != string::npos;
+    bool ends_in_dll = urn_name.find( ".dll" ) != string::npos;
 
 #ifdef _DEBUG
 
     if( !ends_in_dll ) {
       // try relative path first
-      handle = DynamicLibrary::load( url_base + (*i) + "_d" );
+      handle = DynamicLibrary::load( url_base + urn_name + "_d" );
       if( handle ) return;
     }
 
     // try absolute path.
-    handle = DynamicLibrary::load( (*i) + "_d" );
+    handle = DynamicLibrary::load( urn_name + "_d" );
     if( handle ) return;
     
 #endif // _DEBUG
 
     if( !ends_in_dll ) {
       // try as relative path first
-      handle = DynamicLibrary::load( url_base + (*i) );
+      handle = DynamicLibrary::load( url_base + urn_name );
       if( handle ) return;
     }
 
 #endif // WIN32
 
     // test the given name directly.
-    string filename = resolveURLAsFile( *i);
-    if( filename == "" ) filename = (*i);
+    string filename = resolveURLAsFile( urn_name );
+    if( filename == "" ) filename = urn_name;
     handle =  DynamicLibrary::load( filename );
 
     if( !handle )
