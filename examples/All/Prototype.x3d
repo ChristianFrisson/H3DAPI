@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Prototype.x3d'/>
+    <meta name='description' content='X3D PROTO statement example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <ProtoDeclare name='Text'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='offset' type='SFVec3f' value='0 0 0'/>
+        <field accessType='inputOutput' name='string' type='MFString' value='"Hello"'/>
+      </ProtoInterface>
+      <ProtoBody>
+      <Transform>
+        <IS>
+          <connect nodeField='translation' protoField='offset' />
+        </IS>
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='1 1 1' />
+          </Appearance>
+          <Text>
+            <IS>
+              <connect nodeField='string' protoField='string' />
+            </IS>
+            <FontStyle justify='MIDDLE' size='0.02' />
+          </Text>
+        </Shape>
+      </Transform>
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <ProtoInstance name='Text' containerField='children' >
+      <fieldValue name='offset' value='0 0.08 0' />
+      <fieldValue name='string' value='"Hejsan!"' />
+    </ProtoInstance>
+  </Scene>
+</X3D>

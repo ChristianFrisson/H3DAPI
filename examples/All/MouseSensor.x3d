@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='MouseSensor.x3d'/>
+    <meta name='description' content='X3D MouseSensor example.
+      Left click and scroll up/down to see effects. Refer to 
+      H3DAPI MouseSensor class reference online to see complete
+      list of fields.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information 
+      and to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type='NONE' />
+    
+    <MouseSensor DEF='S' />
+    
+    <Shape>
+      <Sphere radius='0.1' />
+      <Appearance>
+        <Material DEF='M' />
+      </Appearance>
+    </Shape>
+    
+    <PythonScript DEF='P' url='script.py' />
+    
+    <!-- change color on left button pressed -->
+    <ROUTE
+      fromNode='S' fromField='leftButton'
+      toNode='P' toField='colorToRed' />
+    <ROUTE
+      fromNode='P' fromField='colorToRed'
+      toNode='M' toField='diffuseColor' />
+    
+    <!-- increase transparency on scroll-up -->
+    <ROUTE
+      fromNode='S' fromField='scrollUp'
+      toNode='P' toField='increment' />
+    <ROUTE
+      fromNode='M' fromField='transparency'
+      toNode='P' toField='increment' />
+    <ROUTE
+      fromNode='P' fromField='increment'
+      toNode='M' toField='transparency' />
+    
+    <!-- decrease transparency on scroll-down -->  
+    <ROUTE
+      fromNode='S' fromField='scrollDown'
+      toNode='P' toField='decrement' />
+    <ROUTE
+      fromNode='M' fromField='transparency'
+      toNode='P' toField='decrement' />
+    <ROUTE
+      fromNode='P' fromField='decrement'
+      toNode='M' toField='transparency' />
+    
+  </Scene>
+</X3D>

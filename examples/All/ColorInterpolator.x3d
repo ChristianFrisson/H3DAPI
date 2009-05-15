@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='ColorInterpolator.x3d'/>
+    <meta name='description' content='X3D ColorInterpolator example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Shape>
+      <Appearance>
+        <Material DEF='M' />
+      </Appearance>
+      <Sphere radius='0.06' />
+    </Shape>    
+   
+    <TimeSensor DEF='T' 
+      cycleInterval='10' loop='true' enabled='true' />
+    
+    <ColorInterpolator DEF='C'
+      key='0 0.33 0.66 1'
+      keyValue='1 0 0 0 1 0 0 0 1 1 0 0' />
+
+    <ROUTE
+      fromNode='T' fromField='fraction_changed'
+      toNode='C' toField='set_fraction' />
+    <ROUTE
+      fromNode='C' fromField='value_changed'
+      toNode='M' toField='diffuseColor' />    
+  </Scene>
+</X3D>

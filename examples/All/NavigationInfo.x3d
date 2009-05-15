@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='NavigationInfo.x3d'/>
+    <meta name='description' content='X3D NavigationInfo example.
+      Experiement with the field values to observe their effects.
+      Switch viewpoints on the browser to see transition effects.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <NavigationInfo 
+        avatarSize='0.25 1.6 0.75'
+        headlight='true'
+        speed='1.0' 
+        transitionTime='1.0' 
+        transitionType='"LINEAR"'
+        type='"ANY"'
+        visibilityLimit='0.0' />
+    
+    <Viewpoint
+        description='Original view'
+        position='0 0.2 0.6'
+        orientation='1 0 0 -0.2' />
+    <Viewpoint 
+        description='Front view' 
+        position='0 0 0.6' />
+    <Viewpoint
+        description='Side view' 
+        position='1 0 -0.4'
+        orientation='0 1 0 1.57' />
+    <Viewpoint 
+        description='Top view' 
+        position='0 1.6 -0.4' 
+        orientation='1 0 0 -1.57' />
+
+    <Transform translation='0 0 0'>
+      <Inline DEF='C' url='Cylinder.x3d' />
+    </Transform>
+    <Transform translation='0 0 -0.4'>
+      <Inline USE='C' />
+    </Transform>
+    <Transform translation='0 0 -0.8'>
+      <Inline USE='C' />
+    </Transform>      
+  </Scene>
+</X3D>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Sound.x3d'/>
+    <meta name='description' content='X3D Sound node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Sound direction='0 0 1' location='0 0 0' maxFront='0.9' maxBack='0.9'  
+           minFront='0.5' minBack='0.5' intensity='1' priority='0' spatialize='true'>
+      <AudioClip url='ding.wav' loop='true' pitch='1' />
+    </Sound>
+  </Scene>
+</X3D>

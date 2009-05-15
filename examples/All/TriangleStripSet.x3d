@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='TriangleStripSet.x3d'/>
+    <meta name='description' content='X3D TriangleStripSet example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.1 0 0.6' orientation='0 1 0 0.2' />
+    <Shape>
+      <TriangleStripSet
+          ccw='true' normalPerVertex='false'
+          solid='false' stripCount='12'>
+        <Coordinate 
+            point='
+            -0.25 -0.1 0.04           
+            -0.25  0.1 0
+            -0.15 -0.1 -0.05
+            -0.15  0.1 0.02
+            -0.05 -0.1 0.02
+            -0.05  0.1 -0.04
+            0.05 -0.1 0
+            0.05  0.1 0
+            0.15 -0.1 0.05
+            0.15  0.1 0.02
+            0.25 -0.1 -0.02
+            0.25  0.1 0.02'/>
+      </TriangleStripSet>
+      <Appearance>
+        <Material diffuseColor='0.3 0.7 0.7' />
+      </Appearance>
+    </Shape>
+  </Scene>
+</X3D>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='ArcClose2D.x3d'/>
+    <meta name='description' content='X3D ArcClose2D node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Appearance>
+        <Material diffuseColor='1 1 0' />
+      </Appearance>      
+      <ArcClose2D endAngle='2' startAngle='0' 
+                  radius='0.1' closureType='PIE' solid='true' />
+    </Shape>
+  </Scene>
+</X3D>

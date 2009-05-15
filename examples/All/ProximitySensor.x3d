@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='ProximitySensor.x3d'/>
+    <meta name='description' content='X3D ProximitySensor example.
+      Navigate into the box (representing the ProximitySensor) to
+      activate sound. Moving out of it disables sound.
+      Use the keyboard or mouse to navigate (browser dependent).
+      If using H3DViewer or H3DLoad, use the UP and DOWN keys to
+      move forward and backward.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type='"FLY"' />
+    
+    <ProximitySensor DEF='P'
+        center='0 0 0'
+        enabled='true'
+        size='0.3 0.3 0.3' />
+    
+    <Transform DEF='T'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='1 0 0' transparency='0.5' />
+        </Appearance>
+        <Box DEF='B' solid='false' />
+      </Shape>
+    </Transform>
+    
+    <Sound DEF='S'>
+      <AudioClip DEF='A' url='ding.wav' />
+    </Sound>
+    
+    <ROUTE
+        fromNode='P' fromField='enterTime'
+        toNode='A' toField='startTime' />
+    <ROUTE
+        fromNode='P' fromField='exitTime'
+        toNode='A' toField='stopTime' />
+    <ROUTE
+        fromNode='P' fromField='isActive'
+        toNode='A' toField='loop' />
+        
+    <!-- Set box position/size and origin of sound
+         to origin of sensor -->
+    <ROUTE
+        fromNode='P' fromField='center'
+        toNode='T' toField='translation' />
+    <ROUTE
+        fromNode='P' fromField='size'
+        toNode='B' toField='size' />
+    <ROUTE
+        fromNode='P' fromField='center'
+        toNode='S' toField='location' />
+  </Scene>
+</X3D>

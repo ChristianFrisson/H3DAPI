@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Billboard.x3d'/>
+    <meta name='description' content='X3D Billboard node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+    
+    <Billboard axisOfRotation='0 0 0'> 
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.12 0' />
+        <fieldValue name='string' value='"Try changing the view with the mouse (or menu),""This billboard always faces the user..."' />
+      </ProtoInstance>
+    </Billboard>
+    
+    <Shape>
+      <Appearance>
+        <Material diffuseColor='1 0 0' />
+      </Appearance>
+      <Box size='0.1 0.1 0.1' />
+    </Shape>
+    
+    <Billboard axisOfRotation='0 1 0'> 
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 -0.11 0' />
+        <fieldValue name='string' value='"...while this billboard rotates on the y-axis."' />
+      </ProtoInstance>
+    </Billboard>
+  </Scene>
+</X3D>

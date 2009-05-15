@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='BoundedPhysicsModel.x3d'/>
+    <meta name='description' content='X3D BoundedPhysicsModel example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0.1 0.6' orientation='1 0 0 -0.05'/>
+
+    <Transform rotation='1 0 0 -1.4708'>
+      <!-- Graphics -->
+      <Shape>        
+        <Rectangle2D DEF='R' size='0.2 0.2' solid='true' />
+        <Appearance>
+          <Material diffuseColor="1 0 0" />
+        </Appearance>
+      </Shape>
+      
+      <!-- Particle system with bounded physics model -->
+      <ParticleSystem 
+          maxParticles='200' particleLifetime='12' 
+          particleSize='0.01 0.01' geometryType='SPRITE'>
+        <Color containerField='colorRamp' color='1 1 1' />
+        <SurfaceEmitter speed='0.04' mass='0.00005' surfaceArea='0.1'>
+          <Rectangle2D USE='R' containerField='surface' />
+        </SurfaceEmitter>
+        
+        <WindPhysicsModel 
+            enabled='true' direction='1 0 0'
+            gustiness='0.1' speed='0.1'
+            turbulence='0.5'/>
+      </ParticleSystem>
+    </Transform>
+  </Scene>
+</X3D>

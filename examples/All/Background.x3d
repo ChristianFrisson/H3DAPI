@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Background.x3d'/>
+    <meta name='description' content='X3D Background node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  <Scene>
+  <Viewpoint position='0 0 0.6' />
+  <Background 
+       backUrl  ="images/b_arch_00000.png"
+       frontUrl ="images/f_arch_00000.png"
+       leftUrl  ="images/l_arch_00000.png"
+       rightUrl ="images/r_arch_00000.png"
+       bottomUrl="images/d_arch_00000.png"
+       topUrl   ="images/t_arch_00000.png"  />
+  </Scene>
+</X3D>

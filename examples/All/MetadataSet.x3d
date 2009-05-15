@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='MetadataSet.x3d'/>
+    <meta name='description' content='X3D MetadataSet example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <MetadataSet>
+        <MetadataString name='Description' value='"Simple red sphere.""The perfect form."' />
+        <MetadataFloat name='Radius' value='0.1' />
+        <MetadataSet name='History'>
+          <MetadataString name='Date created' value='"14 May 2009"' />
+          <MetadataString name='Author' value='"The creator of all virtual beings"' />
+        </MetadataSet>
+      </MetadataSet>
+      
+      <Appearance DEF='A'>
+        <Material diffuseColor='1 0 0' />
+      </Appearance>      
+      <Sphere radius='0.1' />
+    </Shape>
+  </Scene>
+</X3D>

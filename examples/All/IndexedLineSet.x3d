@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='IndexedLineSet.x3d'/>
+    <meta name='description' content='X3D IndexedLineSet example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Transform translation='-0.15 0.1 0' >
+      <Shape>
+        <IndexedLineSet
+            colorIndex=''
+            colorPerVertex='true'
+            coordIndex='0 1 2 3 4 5 6 7 0'>
+          <Coordinate DEF='C'
+              point='0.0707 0 0
+                     0.05 -0.05 0
+                     0 -0.0707 0
+                     -0.05 -0.05 0
+                     -0.0707 0 0
+                     -0.05 0.05 0
+                     0 0.0707 0
+                     0.05 0.05 0
+                     0.0707 0 0' />
+        </IndexedLineSet>
+        <Appearance DEF='A'>
+          <Material emissiveColor='0.6 1 1' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <!-- Same coordindates with different coordIndex -->
+    <Transform translation='0.15 0.1 0' >
+      <Shape>
+        <IndexedLineSet
+            colorIndex=''
+            colorPerVertex='true'
+            coordIndex='0 1 2 3 0 -1 4 5 6 7 4'>
+          <Coordinate USE='C' />
+        </IndexedLineSet>
+        <Appearance USE='A' />
+      </Shape>
+    </Transform>
+    
+    <!-- Using color with colorPerVertex set to true -->
+    <Transform translation='0.15 -0.1 0' >
+      <Shape>
+        <IndexedLineSet
+            colorIndex='0 1 0 1 0 -1 0 1 0 1 0'
+            colorPerVertex='true'
+            coordIndex='0 1 2 3 0 -1 4 5 6 7 4'>
+          <Coordinate USE='C' />
+          <Color color='1 1 0 1 0 1' />
+        </IndexedLineSet>
+      </Shape>
+    </Transform>
+    
+    <!-- Using color colorPerVertex set to false -->
+    <Transform translation='-0.15 -0.1 0' >
+      <Shape>
+        <IndexedLineSet
+            colorIndex='0 1'
+            colorPerVertex='false'
+            coordIndex='0 1 2 3 0 -1 4 5 6 7 4'>
+          <Coordinate USE='C' />
+          <Color color='1 1 0 1 0 1' />
+        </IndexedLineSet>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

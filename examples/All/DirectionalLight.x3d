@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='DirectionalLight.x3d'/>
+    <meta name='description' content='X3D DirectionalLight example.
+        Note that the light affects nodes that share its parent.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />    
+    <Group>
+      <DirectionalLight 
+        ambientIntensity='0' color='1 0 0' direction='1 0 0' 
+        global='false' intensity='1' on='true' />
+      <Shape DEF='S'>
+        <Sphere radius='0.04' />
+        <Appearance>
+          <Material />
+        </Appearance>          
+      </Shape>
+      
+      <Transform translation='0.1 0 0'>
+        <Sphere USE='S' />
+      </Transform>
+      
+      <Transform translation='-0.1 0 0'>
+        <DirectionalLight 
+        ambientIntensity='0' color='0 1 0' direction='0 1 0' 
+        global='false' intensity='1' on='true' />
+        <Sphere USE='S' />
+      </Transform>
+    </Group>
+  </Scene>
+</X3D>

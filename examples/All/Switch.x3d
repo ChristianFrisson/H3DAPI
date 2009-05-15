@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Switch.x3d'/>
+    <meta name='description' content='X3D Switch, TimeSensor and
+        IntergarSequencer example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Switch DEF='S' whichChoice='0'>
+      <Inline url='Box.x3d' />
+      <Inline url='Cone.x3d' />
+      <Inline url='Cylinder.x3d' />
+    </Switch>
+
+    <TimeSensor DEF='T' enabled='true' loop='true' cycleInterval='3' />
+    <IntegerSequencer DEF='I' keyValue='0 1 2' key='0 0.33 0.66' />
+    <ROUTE
+        fromNode='T' fromField='fraction_changed'
+        toNode='I' toField='set_fraction' />
+    <ROUTE
+        fromNode='I' fromField='value_changed'
+        toNode='S' toField='whichChoice' />
+  </Scene>
+</X3D>

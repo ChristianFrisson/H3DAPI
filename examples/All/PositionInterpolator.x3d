@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='PositionInterpolator.x3d'/>
+    <meta name='description' content='X3D PositionInterpolator example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Transform DEF='T'>
+      <Shape>
+        <Appearance>
+          <Material />
+        </Appearance>
+        <Sphere radius='0.03' />
+      </Shape>
+    </Transform>
+   
+    <TimeSensor DEF='S' 
+      cycleInterval='10' loop='true' enabled='true' />
+    
+    <PositionInterpolator DEF='P'
+      key='0 0.33 0.66 1'
+      keyValue='-0.1 0.1 0 0.2 0.1 -0.2 0 -0.1 0.2 -0.1 0.1 0' />
+
+    <ROUTE
+      fromNode='S' fromField='fraction_changed'
+      toNode='P' toField='set_fraction' />
+    <ROUTE
+      fromNode='P' fromField='value_changed'
+      toNode='T' toField='translation' />    
+  </Scene>
+</X3D>

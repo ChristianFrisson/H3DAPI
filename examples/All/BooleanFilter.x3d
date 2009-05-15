@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='BooleanFilter.x3d'/>
+    <meta name='description' content='X3D BooleanFilter example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <ParticleSystem DEF='S'
+      enabled='false' particleLifetime='1' maxParticles='400' 
+      particleSize='0.002 0.002' colorKey='0'>
+      <Color 
+        containerField='colorRamp' color='0 1 1' />
+      <ExplosionEmitter
+        speed='0.05' mass='0.0002' position='0 0.1 0' />
+    </ParticleSystem>
+
+    <BooleanFilter DEF='B' />
+    
+    <Transform translation='0 -0.1 0'>
+      <Group>
+        <TouchSensor DEF='T' />
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='1 0 0' />
+          </Appearance>
+          <Disk2D outerRadius='0.01' />
+        </Shape>
+      </Group>
+    </Transform>
+
+    <ROUTE
+      fromNode='T' fromField='isOver'
+      toNode='B' toField='set_boolean' />
+    <ROUTE
+      fromNode='B' fromField='inputNegate'
+      toNode='S' toField='enabled' />
+    
+    <!-- Instructions -->
+    <Transform translation='0 -0.2 0'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='1 1 1' />
+        </Appearance>
+        <Text string='"Mouse over and out the red dot to see effects of inputNegate."'>
+          <FontStyle justify='MIDDLE' size='0.02' />
+        </Text>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

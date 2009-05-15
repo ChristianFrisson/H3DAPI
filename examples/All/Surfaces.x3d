@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='Surfaces.x3d'/>
+    <meta name='description' content='H3DAPI surface examples. This example 
+          uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit
+          http://www.h3d.org for more information and to download an H3DAPI-
+          compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />   
+    <!-- ExternProto for Text -->
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+    
+    
+    <!-- SmoothSurface -->
+    <Transform translation='-0.18 0.08 0'>
+      <!-- Shape and surface definitions -->
+      <Shape>
+        <Appearance>
+          <Material DEF='M' />
+          <SmoothSurface stiffness='0.6' damping='0.5' 
+                         useRelativeValues='true'/>
+        </Appearance>      
+        <Sphere radius='0.06' />
+      </Shape>      
+      <!-- Text label -->
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.09 0' />
+        <fieldValue name='string' value='"SmoothSurface"' />
+      </ProtoInstance>
+    </Transform>
+    
+    
+    <!-- FrictionalSurface -->
+    <Transform translation='0 0.08 0'>
+      <Shape>
+        <Appearance>
+          <Material USE='M' />
+          <FrictionalSurface staticFriction='0.8' dynamicFriction='0.4' 
+                             stiffness='0.6' damping='0.5' 
+                             useRelativeValues='true' />
+        </Appearance>      
+        <Sphere radius='0.06' />
+      </Shape>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.09 0' />
+        <fieldValue name='string' value='"FrictionalSurface"' />
+      </ProtoInstance>     
+    </Transform>
+    
+    
+    <!-- MagneticSurface -->
+    <Transform translation='0.18 0.08 0'>
+      <Shape>
+        <Appearance>
+          <Material USE='M' />
+          <MagneticSurface  staticFriction='0.0' dynamicFriction='0' 
+                            stiffness='0.6' damping='0.5' 
+                            snapDistance='0.01' />
+        </Appearance>      
+        <Sphere radius='0.06' />
+      </Shape>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.11 0' />
+        <fieldValue name='string' value='"MagneticSurface""(works only on""OpenHaptics renderer)"' />
+      </ProtoInstance>
+    </Transform>
+    
+    
+    <!-- DepthMapSurface -->
+    <Transform translation='-0.09 -0.08 0'>
+      <Shape>
+        <Appearance>
+          <Material USE='M' />
+          <ImageTexture DEF='I' url='images/grayscale.jpg' />
+          <DepthMapSurface maxDepth='0.01' whiteIsOut='true'>
+            <ImageTexture USE='I' containerField='depthMap' />
+          </DepthMapSurface>
+        </Appearance>      
+        <Sphere radius='0.06' />
+      </Shape>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 -0.09 0' />
+        <fieldValue name='string' value='"DepthMapSurface""(works on Ruspini or""God Object renderer)"' />
+      </ProtoInstance>
+    </Transform>
+    
+    
+    <!-- HapticTexturesSurface -->
+    <Transform translation='0.09 -0.08 0'>
+      <Shape>
+        <Appearance>
+          <Material USE='M' />
+          <ImageTexture USE='I' />
+          <HapticTexturesSurface useRelativeValues='' 
+            stiffness='0.5' maxStiffness='0.9' minStiffness='0.1'
+            damping='0.5' maxDamping='0.9' minDamping='0.1'
+            staticFriction='0' maxStaticFriction='0.7' minStaticFriction='0'
+            dynamicFriction='0' maxDynamicFriction='0.7' minDynamicFriction='0'>
+            <ImageTexture USE='I' containerField='stiffnessMap' />
+            <ImageTexture USE='I' containerField='dampingMap' />
+            <ImageTexture USE='I' containerField='staticFrictionMap' />
+            <ImageTexture USE='I' containerField='dynamicFrictionMap' />
+          </HapticTexturesSurface>
+        </Appearance>      
+        <Sphere radius='0.06' />
+      </Shape>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 -0.09 0' />
+        <fieldValue name='string' value='"HapticTexturesSurface""(works on Ruspini or""God Object renderer)"' />
+      </ProtoInstance>
+    </Transform>
+  </Scene>
+</X3D>

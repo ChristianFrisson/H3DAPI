@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='RenderProperties.x3d'/>
+    <meta name='description' content='H3DAPI RenderProperties
+      depthTestEnabled example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <!-- EXTERNPROTO for labels -->
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+    
+    <!-- PROTO for spheres -->
+    <ProtoDeclare name='Spheres'>
+      <ProtoInterface>
+        <field 
+          accessType='inputOutput' name='offset' 
+          type='SFVec3f' value='-0.1 0 0'/>
+        <field 
+          accessType='inputOutput' name='depthTest' 
+          type='SFBool' value='true'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Transform>
+          <IS>
+            <connect nodeField='translation' protoField='offset' />
+          </IS>
+          <Transform translation='0.02 0 0.05'>
+            <Shape DEF='S'>
+              <Sphere radius='0.04' />
+                <Appearance>
+                  <RenderProperties 
+                    depthTestEnabled='true'
+                    multiPassTransparency='false'
+                    smoothShading='true'>
+                    <IS>
+                    <connect 
+                      nodeField='depthTestEnabled' 
+                      protoField='depthTest' />
+                  </IS>
+                </RenderProperties>
+                <Material diffuseColor='1 0 0' />
+              </Appearance>
+            </Shape>   
+          </Transform>
+          <Transform translation='0 -0.02 -0.1'>
+            <Shape USE='S' />
+          </Transform>
+          <Transform translation='0 0 0.3'>
+            <Shape USE='S' />
+          </Transform>
+          <Transform translation='0.03 0 0.07'>
+            <Shape USE='S' />
+          </Transform>
+        </Transform>   
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <!-- Spheres -->
+    <ProtoInstance name='Spheres'>
+      <fieldValue name='offset' value='-0.1 0 0' />
+      <fieldValue name='depthTest' value='true' />
+    </ProtoInstance>
+    <ProtoInstance name='Spheres'>
+      <fieldValue name='offset' value='0.1 0 0' />
+      <fieldValue name='depthTest' value='false' />
+    </ProtoInstance>
+    
+    <!-- Labels -->
+    <ProtoInstance name='Text'>
+      <fieldValue name='offset' value='-0.1 0.11 0' />
+      <fieldValue name='string' value='"depthTest on"' />
+    </ProtoInstance>
+    <ProtoInstance name='Text'>
+      <fieldValue name='offset' value='0.1 0.11 0' />
+      <fieldValue name='string' value='"depthTest off"' />
+    </ProtoInstance>    
+  </Scene>
+</X3D>

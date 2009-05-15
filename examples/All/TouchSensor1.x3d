@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='TouchSensor1.x3d'/>
+    <meta name='description' content='X3D TouchSensor example.
+      Sphere turns red when device hovers over it.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Group>
+      <TouchSensor DEF='S'
+      description='My touch sensor'
+      enabled='true' />
+      <Shape>
+        <Appearance>
+          <Material DEF='M' />
+        </Appearance>
+        <Sphere radius='0.1' />
+      </Shape>
+    </Group>
+
+    <PythonScript DEF='P' url='script.py' />
+    <ROUTE
+      fromNode='S' fromField='isOver'
+      toNode='P' toField='colorToRed' />
+    <ROUTE
+      fromNode='P' fromField='colorToRed'
+      toNode='M' toField='diffuseColor' /> 
+  </Scene>
+</X3D>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='LineSet.x3d'/>
+    <meta name='description' content='X3D LineSet example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Transform translation='-0.15 0.1 0' >
+      <Shape>
+        <LineSet vertexCount='2'>
+          <Coordinate DEF='C'
+              point='
+              0.0707 0 0
+              0.05 -0.05 0
+              0 -0.0707 0
+              -0.05 -0.05 0
+              -0.0707 0 0
+              -0.05 0.05 0
+              0 0.0707 0
+              0.05 0.05 0
+              0.0707 0 0' />
+        </LineSet>
+        <Appearance DEF='A'>
+          <Material emissiveColor='0 1 1' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <!-- Same coordindates with different vertexCount -->
+    <Transform translation='0.15 0.1 0' >
+      <Shape>
+        <LineSet vertexCount='5'>
+          <Coordinate USE='C' />
+        </LineSet>
+        <Appearance USE='A' />
+      </Shape>
+    </Transform>
+    
+    <!-- Using color and LineProperties -->
+    <Transform translation='0 -0.1 0' >
+      <Shape>
+        <LineSet vertexCount='9'>
+          <Coordinate point='0.0707 0 0
+                     0.05 -0.05 0
+                     0 -0.0707 0
+                     -0.05 -0.05 0
+                     -0.0707 0 0
+                     -0.05 0.05 0
+                     0 0.0707 0
+                     0.05 0.05 0
+                     0.0707 0 0' />
+          <Color 
+              color='1 1 0 
+                     1 1 0
+                     1 0 0
+                     1 0 0 
+                     0 0 1
+                     0 0 1
+                     0 1 0
+                     0 1 0                     
+                     1 1 0' />
+        </LineSet>
+        <Appearance>
+          <LineProperties
+              applied='true' linetype='2'
+              linewidthScaleFactor='6' />
+        </Appearance>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

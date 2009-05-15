@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Collision.x3d'/>
+    <meta name='description' content='X3D Collision example.
+      Try navigating though the box. Change the value of
+      enabled field to see the difference.
+      Use the keyboard or mouse to navigate (browser dependent).
+      If using H3DViewer or H3DLoad, use the UP and DOWN keys 
+      to move forward and backward. If using H3DViewer, change
+      settings on browser first: go to Navigation > 
+      Avatar collision.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type='"FLY"' />
+    
+    <Collision enabled='true'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='1 0 0' transparency='0.5' />
+        </Appearance>
+        <Box size='0.1 0.1 0.1' />
+      </Shape>
+    </Collision>
+  </Scene>
+</X3D>

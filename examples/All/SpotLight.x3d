@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='SpotLight.x3d'/>
+    <meta name='description' content='X3D SpotLight example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0.3 0.5' orientation='1 0 0 -0.5' />
+
+    <SpotLight DEF='L'
+      ambientIntensity='0' attenuation='1 0 0' beamWidth='0.78'
+      color='1 0 0' cutOffAngle='0.78' direction='0 -1 0' 
+      intensity='1' on='true' location='0 0.1 0' />
+
+    <Transform translation='0 -0.5 0'>
+      <Shape>
+        <Sphere radius='0.5' />
+        <Appearance>
+          <Material shininess='0.8'/>
+        </Appearance>
+      </Shape>
+    </Transform>
+
+    <Transform DEF='T' translation='-0.04 0.1 0'>
+      <Shape>
+        <Sphere radius='0.01' />
+        <Appearance>
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <ROUTE
+        fromNode='L' fromField='location'
+        toNode='T' toField='translation' />
+  </Scene>
+</X3D>

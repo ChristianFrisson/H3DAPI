@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='KeySensor.x3d'/>
+    <meta name='description' content='X3D KeySensor example.
+      Displays presed keys.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type='NONE' />
+    
+    <KeySensor DEF='K' />
+    <PythonScript DEF='P' url='script.py' />
+    
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>    
+
+    <!-- key display -->
+    <Transform translation='-0.15 0 0'>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.1 0' />
+        <fieldValue name='string' value='"Key pressed:"' />
+      </ProtoInstance>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.02 0' />
+        <fieldValue name='string' value='"Last key released:"' />
+      </ProtoInstance>
+        <ProtoInstance DEF='T0' name='Text'>
+        <fieldValue name='offset' value='0 0.08 0' />
+      </ProtoInstance>
+      <ProtoInstance DEF='T1' name='Text' />
+    </Transform>
+    
+    <!-- action key display -->
+    <Transform translation='0.15 0 0'>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.1 0' />
+        <fieldValue name='string' value='"Action key pressed:"' />
+      </ProtoInstance>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.02 0' />
+        <fieldValue name='string' value='"Last action key released:"' />
+      </ProtoInstance>
+        <ProtoInstance DEF='T2' name='Text'>
+        <fieldValue name='offset' value='0 0.08 0' />
+      </ProtoInstance>
+      <ProtoInstance DEF='T3' name='Text' />
+    </Transform>
+    
+    <ROUTE
+      fromNode='K' fromField='keyPress'
+      toNode='P' toField='stringSFtoMF0' />
+    <ROUTE
+      fromNode='K' fromField='keyRelease'
+      toNode='P' toField='stringSFtoMF1' />
+    
+    <ROUTE
+      fromNode='P' fromField='stringSFtoMF0'
+      toNode='T0' toField='string' />
+    <ROUTE
+      fromNode='P' fromField='stringSFtoMF1'
+      toNode='T1' toField='string' />
+      
+    <ROUTE
+      fromNode='K' fromField='actionKeyPress'
+      toNode='P' toField='intToMFString0' />
+    <ROUTE
+      fromNode='K' fromField='actionKeyRelease'
+      toNode='P' toField='intToMFString1' />
+    
+    <ROUTE
+      fromNode='P' fromField='intToMFString0'
+      toNode='T2' toField='string' />
+    <ROUTE
+      fromNode='P' fromField='intToMFString1'
+      toNode='T3' toField='string' />
+
+  </Scene>
+</X3D>

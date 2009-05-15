@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='BooleanToggle.x3d'/>
+    <meta name='description' content='X3D BooleanToggle example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+
+    <ParticleSystem DEF='S'
+      enabled='false' particleLifetime='3' maxParticles='800' 
+      particleSize='0.003 0.003' colorKey='0 1'>
+      <Color 
+        containerField='colorRamp' color='0 1 0 1 1 0' />
+      <PointEmitter 
+        speed='0.2' mass='0.0002' direction="0 0 0" />
+    </ParticleSystem>
+    
+    <KeySensor DEF='K' />
+    <BooleanToggle DEF='T' />
+    <PythonScript DEF='P' url='script.py' />
+    
+    <ROUTE
+      fromNode='K' fromField='keyPress'
+      toNode='P' toField='spacePressed' />
+    <ROUTE
+      fromNode='P' fromField='spacePressed'
+      toNode='T' toField='set_boolean' />
+    <ROUTE
+      fromNode='T' fromField='toggle'
+      toNode='S' toField='enabled' />
+    
+    <!-- Instructions -->
+    <Transform translation='0 -0.2 0'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='1 1 1' />
+        </Appearance>
+        <Text string='"Press spacebar to turn particle systen on/off."'>
+          <FontStyle justify='MIDDLE' size='0.02' />
+        </Text>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='FillProperties.x3d'/>
+    <meta name='description' content='X3D FillProperties example.
+        Experiment with the field values to see their differences.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Sphere radius='0.04' />
+      <Appearance>
+        <FillProperties
+            filled='true' hatched='true'
+            hatchColor='1 1 1' hatchStyle='6' />
+      </Appearance>
+    </Shape>
+  </Scene>
+</X3D>

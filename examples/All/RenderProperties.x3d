@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='RenderProperties.x3d'/>
+    <meta name='description' content='H3DAPI RenderProperties
+      smoothShading example. The smoothShading property is applied
+      to shared edge of composed geometries.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+    
+    <Transform translation='-0.14 0 0'>
+      <Shape>
+        <Sphere radius='0.1' />
+        <Appearance>
+          <RenderProperties
+              depthTestEnabled='true'
+              multiPassTransparency='false'
+              smoothShading='true' />
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
+      </Shape>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.11 0' />
+        <fieldValue name='string' value='"smoothSurface on"' />
+      </ProtoInstance>
+    </Transform>
+    
+    <Transform translation='0.14 0 0'>
+      <Shape>
+        <Sphere radius='0.1' />
+        <Appearance>
+          <RenderProperties
+              depthTestEnabled='true'
+              multiPassTransparency='false'
+              smoothShading='false' />
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
+      </Shape>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.11 0' />
+        <fieldValue name='string' value='"smoothSurface off"' />
+      </ProtoInstance>
+    </Transform>
+  </Scene>
+</X3D>

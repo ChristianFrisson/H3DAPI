@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='LineProperties.x3d'/>
+    <meta name='description' content='X3D LineProperties example.
+        Experiment with the field values to see their differences.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <LineSet vertexCount='2'>
+        <Coordinate point='-0.1 0 0, 0.1 0 0'/>
+      </LineSet>
+      <Appearance>
+        <LineProperties
+            applied='true' linetype='5'
+            linewidthScaleFactor='3' />
+        <Material emissiveColor='0 1 0' />
+      </Appearance>
+    </Shape>
+  </Scene>
+</X3D>

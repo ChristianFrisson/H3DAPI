@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='PositionInterpolator.x3d'/>
+    <meta name='description' content='X3D PositionInterpolator example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.3 0 0.6' orientation='0 1 0 0.5'/>
+    
+    <Transform DEF='T'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0 1 1' />
+        </Appearance>
+        <IndexedTriangleSet 
+          index='0 2 3
+                 0 3 4
+                 0 4 5
+                 0 5 2
+                 1 4 3
+                 1 5 4
+                 1 2 5
+                 1 3 2'>
+          <Coordinate DEF='C' />
+        </IndexedTriangleSet>
+      </Shape>
+    </Transform>
+   
+    <TimeSensor DEF='T' 
+      cycleInterval='4' loop='true' enabled='true' />
+    
+    <CoordinateInterpolator DEF='I'
+      key='0 0.5 1'
+      keyValue=' 0.0  0.1  0.0
+                 0.0 -0.1  0.0
+                -0.2  0.0  0.1
+                 0.2  0.0  0.1
+                 0.2  0.0 -0.1
+                -0.2  0.0 -0.1
+                 0.0  0.2  0.0
+                 0.0 -0.2  0.0
+                -0.1  0.0  0.2
+                 0.1  0.0  0.2
+                 0.1  0.0 -0.2
+                -0.1  0.0 -0.2
+                 0.0  0.1  0.0
+                 0.0 -0.1  0.0
+                -0.2  0.0  0.1
+                 0.2  0.0  0.1
+                 0.2  0.0 -0.1
+                -0.2  0.0 -0.1' />
+    <ROUTE
+      fromNode='T' fromField='fraction_changed'
+      toNode='I' toField='set_fraction' />
+    <ROUTE
+      fromNode='I' fromField='value_changed'
+      toNode='C' toField='point' />    
+  </Scene>
+</X3D>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Text.x3d'/>
+    <meta name='description' content='X3D Text and FontStyle node examples.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Appearance>
+        <Material diffuseColor='0 1 1' />
+      </Appearance>      
+      <Text string='"H3DAPI rocks!"":)"' length='' maxExtent='' solid='true'>
+        <FontStyle family='SERIF' horizontal='true' 
+                   justify='MIDDLE' language='en' 
+                   leftToRight='true' size='0.1' spacing='1.0' 
+                   style='ITALIC' topToBottom='true' renderType='TEXTURE' />
+      </Text>
+    </Shape>
+  </Scene>
+</X3D>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Material.x3d'/>
+    <meta name='description' content='X3D Material example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Transform translation='-0.06 0 0'>
+      <Shape>
+        <Sphere radius='0.04' />
+        <Appearance>
+          <Material 
+              ambientIntensity='0.2' diffuseColor='1 0 0'
+              emissiveColor='0 1 1' shininess='0.5'
+              specularColor='1 1 1' transparency='0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <Transform translation='0.06 0 0'>
+      <Shape>
+        <Sphere radius='0.04' />
+        <Appearance>
+          <Material 
+              ambientIntensity='0.2' diffuseColor='0.9 0.9 0.5'
+              emissiveColor='0 0 0' shininess='0.6'
+              specularColor='1 0 0' transparency='0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

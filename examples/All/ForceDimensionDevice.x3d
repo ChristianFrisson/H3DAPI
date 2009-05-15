@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='ForceDimensionDevice.x3d'/>
+    <meta name='description' content='H3DAPI ForceDimensionDevice example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.
+      For this example to work properly, an installed and active 
+      ForceDimension OMEGA haptics device is needed.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />    
+    <DeviceInfo>
+      <ForceDimensionDevice 
+          useGravityCompensation='true'
+          reset='true'
+          waitForReset='true' 
+          endEffectorMass='0.1'
+          useBrakes='true'
+          deviceType='DHD_DEVICE_OMEGA'>
+        <RuspiniRenderer/>
+      </ForceDimensionDevice>
+    </DeviceInfo>    
+  </Scene>
+</X3D>

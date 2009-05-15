@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Background1.x3d'/>
+    <meta name='description' content='X3D Background node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  <Scene>
+  <Viewpoint position='0 0 0.6' />
+  <Background 
+      groundAngle=''
+      groundColor='0.4 0.2 0.2'
+      skyAngle='1.1, 1.78, 1.8'
+      skyColor='0.4 0.6 1, 0.4 0.6 1, 1 0.8 0.1' />
+  </Scene>
+</X3D>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Rectangle2D.x3d'/>
+    <meta name='description' content='X3D Rectangle2D example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Rectangle2D size='0.2 0.1'/>
+      <Appearance>
+        <TwoSidedMaterial 
+            diffuseColor='0 1 0'
+            backDiffuseColor='1 0 0'
+            separateBackColor='true'/>
+      </Appearance>
+    </Shape>
+  </Scene>
+</X3D>

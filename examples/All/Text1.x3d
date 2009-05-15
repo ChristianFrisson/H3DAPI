@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Text1.x3d'/>
+    <meta name='description' content='X3D Text and FontStyle node examples.
+        Demonstrates the differences in Text field values.' />
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Transform translation='0 0.15 0'>
+      <Shape>
+        <Appearance DEF='A'>
+          <Material diffuseColor='0 1 1' />
+        </Appearance>      
+        <Text 
+            string='"H3DAPI rocks!""H3DAPI stones!""H3DAPI pebbles!"' 
+            length='' maxExtent='0' solid='true'>
+          <FontStyle DEF='F' size='0.03' spacing='1.0' justify='MIDDLE'/>
+        </Text>
+      </Shape>
+    </Transform>
+    
+    <Transform translation='0 0 0'>
+      <Shape>
+        <Appearance USE='A' />
+        <Text 
+            string='"H3DAPI rocks!""H3DAPI stones!""H3DAPI pebbles!"'
+            length='' maxExtent='0.1' solid='true'>
+          <FontStyle USE='F' />
+        </Text>
+      </Shape>
+    </Transform>
+    
+    <Transform translation='0 -0.15 0'>
+      <Shape>
+        <Appearance USE='A' />
+        <Text 
+            string='"H3DAPI rocks!""H3DAPI stones!""H3DAPI pebbles!"'
+            length='0.4 0.15 0.6' maxExtent='' solid='true'>
+          <FontStyle USE='F' />
+        </Text>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

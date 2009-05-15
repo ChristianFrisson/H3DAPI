@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='LOD.x3d'/>
+    <meta name='description' content='X3D LOD example.
+      Move closer to/further from the object to see
+      the difference.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type='"FLY"' />
+    
+    <LOD center='0 0 0' forceTransitions='false' range='1 1.5'>
+      <Shape>
+        <Appearance DEF='A'>
+          <Material />
+        </Appearance>
+        <Box size='0.08 0.08 0.08' />
+      </Shape>
+      <Shape>
+        <Appearance USE='A' />
+        <Cone height='0.08' bottomRadius='0.04' />
+      </Shape>
+      <Shape>
+        <Appearance USE='A' />
+        <Sphere radius='0.04' />
+      </Shape>
+    </LOD>
+  </Scene>
+</X3D>

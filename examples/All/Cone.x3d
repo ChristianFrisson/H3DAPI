@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Cone.x3d'/>
+    <meta name='description' content='X3D Cone node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Appearance>
+        <Material diffuseColor='1 1 0' />
+      </Appearance>
+      <Cone bottom='true' bottomRadius='0.08' 
+            height='0.2' side='true' solid='true' />
+    </Shape>
+  </Scene>
+</X3D>

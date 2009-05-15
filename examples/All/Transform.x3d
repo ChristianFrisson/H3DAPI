@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Transform.x3d'/>
+    <meta name='description' content='X3D Transform node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Transform 
+        translation='0 0 0' rotation='1 1 0 1.3'
+        scale='1 2 0.5' center='0.1 0.1 0'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0.5 0.9 0.9' />
+        </Appearance>      
+        <Box size='0.2 0.1 0.05' solid='true' />
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

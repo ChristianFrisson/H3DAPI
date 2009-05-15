@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='StringSensor.x3d'/>
+    <meta name='description' content='X3D StringSensor example.
+      When running the example, type to see effects.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <StringSensor DEF='S'
+      deletionAllowed='true'
+      enabled='true' />
+
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+
+    <ProtoInstance name='Text'>
+      <fieldValue name='offset' value='0 0.12 0' />
+      <fieldValue name='string' value='"Final text:"' />
+    </ProtoInstance>    
+    <ProtoInstance name='Text'>
+      <fieldValue name='offset' value='0 0.02 0' />
+      <fieldValue name='string' value='"Entered text:"' />
+    </ProtoInstance>    
+    <ProtoInstance DEF='T1' name='Text'>
+      <fieldValue name='offset' value='0 0.10 0' />
+    </ProtoInstance>
+    <ProtoInstance DEF='T2' name='Text'>
+      <fieldValue name='offset' value='0 0 0' />
+    </ProtoInstance>
+    
+    <PythonScript DEF='P' url='script.py' />
+    
+    <ROUTE
+      fromNode='S' fromField='finalText'
+      toNode='P' toField='stringSFtoMF0' />
+    <ROUTE
+      fromNode='S' fromField='enteredText'
+      toNode='P' toField='stringSFtoMF1' />
+    
+    <ROUTE
+      fromNode='P' fromField='stringSFtoMF0'
+      toNode='T1' toField='string' />
+    <ROUTE
+      fromNode='P' fromField='stringSFtoMF1'
+      toNode='T2' toField='string' />
+  </Scene>
+</X3D>

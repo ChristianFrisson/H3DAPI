@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='TwoSidedMaterial.x3d'/>
+    <meta name='description' content='X3D TwoSidedMaterial example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Cone height='0.1' bottomRadius='0.04' bottom='false' solid='false'/>
+      <Appearance>
+        <TwoSidedMaterial 
+            ambientIntensity='0.2' diffuseColor='0.8 0.8 0.8'
+            emissiveColor='0 1 0' shininess='0.2'
+            specularColor='0 0 0' transparency='0'
+            backAmbientIntensity='0.2' backDiffuseColor='0.3 0.3 0.3'
+            backEmissiveColor='0 0 0' backShininess='0.2'
+            backSpecularColor='1 0 1' backTransparency='0' 
+            separateBackColor='true' />
+      </Appearance>
+    </Shape>
+  </Scene>
+</X3D>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='BooleanSequencer.x3d'/>
+    <meta name='description' content='X3D BooleanSequencer example.
+      Using BooleanSequencer to toggle graphics on and off.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <ToggleGroup DEF='G'>
+      <Shape>
+        <Appearance>
+          <Material DEF='M' />
+        </Appearance>
+        <Sphere radius='0.1' />
+      </Shape>
+    </ToggleGroup>
+    
+    <TimeSensor DEF='T'
+      loop='true'
+      enabled='true' />
+      
+    <BooleanSequencer DEF='B'
+      key='0 0.5'
+      keyValue='true false' />
+    
+    <ROUTE
+      fromNode='T' fromField='fraction_changed'
+      toNode='B' toField='set_fraction' />
+    <ROUTE
+      fromNode='B' fromField='value_changed'
+      toNode='G' toField='graphicsOn' />
+
+  </Scene>
+</X3D>
