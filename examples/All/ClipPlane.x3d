@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='ClipPlane.x3d'/>
+    <meta name='description' content='H3DAPI ClipPlane example. This example 
+      uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit
+      http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser.
+      To feel the haptics in this example, an installed and active haptics
+      device is needed.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />  
+    
+    <!-- Global clip plane -->
+    <ClipPlane 
+        enabled='true'
+        plane='0 1 0 -0.025'
+        clipHaptics='true'
+        clipGraphics='true'/>
+        
+    <Transform translation='-0.15 0 0'>
+      <Shape>
+        <Sphere radius='0.1' solid='false' />
+        <Appearance>
+          <Material />
+          <FrictionalSurface />
+        </Appearance>
+      </Shape>
+    </Transform>
+
+    <Transform translation='0.15 0 0'>
+      <!-- Local clip planes -->
+      <ClipPlane 
+          enabled='true'
+          plane='1 0 0 0'
+          clipHaptics='true'
+          clipGraphics='true'/>
+      <ClipPlane 
+          enabled='true'
+          plane='0 -1 0 0'
+          clipHaptics='true'
+          clipGraphics='true'/>
+      <Shape>
+        <Sphere radius='0.1' solid='false' />
+        <Appearance>
+          <Material />
+          <FrictionalSurface />
+        </Appearance>
+      </Shape>
+    </Transform>
+
+  </Scene>
+</X3D>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='CylinderSensor.x3d'/>
+    <meta name='description' content='X3D CylinderSensor example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6'/>
+    <Viewpoint position='0 0.6 0' orientation='1 0 0 -1.57' />
+    <NavigationInfo type='NONE' />
+
+    <!-- ExternProto for Boxes -->
+    <ExternProtoDeclare name='ColorBox' url='"./Prototype1.x3d#ColorBox"'>
+      <field accessType='inputOutput' name='size' type='SFVec3f'/>
+      <field accessType='inputOutput' name='color' type='SFColor'/>
+    </ExternProtoDeclare>
+    
+    <Group DEF='G'>
+      <CylinderSensor DEF='S'
+          enabled='true'
+          autoOffset='true'
+          axisRotation='1 0 1 0'
+          diskAngle='0'
+          maxAngle='-1'
+          minAngle='0' />
+      <Transform DEF='T' 
+          translation='0 0 0'>      
+        <ProtoInstance name='ColorBox'>
+          <fieldValue name='size' value='0.1 0.1 0.1' />
+          <fieldValue name='color' value='0.7 0.7 0.7' />
+        </ProtoInstance>
+        <ProtoInstance name='ColorBox'>
+          <fieldValue name='size' value='0.02 0.02 0.3' />
+          <fieldValue name='color' value='1 0 0' />
+        </ProtoInstance>
+      </Transform>
+    </Group>
+    
+    <ROUTE
+        fromNode='S' fromField='rotation_changed'
+        toNode='T' toField='rotation' />
+  </Scene>
+</X3D>

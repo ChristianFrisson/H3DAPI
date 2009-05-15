@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='GravityPhysicsModel.x3d'/>
+    <meta name='description' content='H3DAPI GravityPhysicsModel example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0.1 0.6' orientation='1 0 0 -0.05'/>
+
+      <!-- Graphics -->
+      <Shape>        
+        <Cylinder DEF='C' 
+            radius='0.1' height='0.001' 
+            bottom='false' solid='true' />
+        <Appearance>
+          <Material diffuseColor="1 0 0" />
+        </Appearance>
+      </Shape>
+      
+      <!-- Particle system with gravity physics model -->
+      <ParticleSystem 
+          maxParticles='200' particleLifetime='12' 
+          particleSize='0.01 0.01' geometryType='SPRITE'>
+        <Color containerField='colorRamp' color='1 1 1' />
+        <SurfaceEmitter speed='0.4' mass='0.000005' surfaceArea='0.1'>
+          <Cylinder USE='C' containerField='surface' />
+        </SurfaceEmitter>
+        
+        <GravityPhysicsModel 
+            enabled='true'
+            gravity='0 -0.8 0'/>
+      </ParticleSystem>
+  </Scene>
+</X3D>

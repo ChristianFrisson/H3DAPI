@@ -18,7 +18,7 @@
         </Appearance>
       </Shape>
       
-      <!-- Particle system with bounded physics model -->
+      <!-- Particle system with wind physics model -->
       <ParticleSystem 
           maxParticles='200' particleLifetime='12' 
           particleSize='0.01 0.01' geometryType='SPRITE'>

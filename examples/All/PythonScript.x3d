@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='PythonScript.x3d'/>
+    <meta name='description' content='H3DAPI PythonScript example.
+      Click left mouse button to change color of sphere.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Shape>
+      <Sphere radius='0.1' />
+      <Appearance>
+        <Material DEF='M' />
+      </Appearance>
+    </Shape>
+    
+    <MouseSensor DEF='S' />
+    <PythonScript DEF='P' url='script.py' />
+    
+    <ROUTE
+      fromNode='S' fromField='leftButton'
+      toNode='P' toField='colorToRed' />
+    <ROUTE
+      fromNode='P' fromField='colorToRed'
+      toNode='M' toField='diffuseColor' />
+  </Scene>
+</X3D>

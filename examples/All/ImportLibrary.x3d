@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='ImportLibrary.x3d'/>
+    <meta name='description' content='H3DAPI ImportLibrary example.
+      The RigidBodyPhysics library is needed for this example to work.
+      Insert the path to the library into the library field of the
+      ImportLibrary node.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.
+      To feel the haptics in this example, an installed and active 
+      haptics device is needed.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <ImportLibrary library='RigidBodyPhysics.dll' />
+    <ImportLibrary library='RigidBodyPhysics.so' />
+    
+    <Transform DEF='BOX-T'>
+      <Shape DEF='BOX-S'>
+        <Appearance DEF='A'>
+          <Material diffuseColor='0.7 0.2 0.4' />
+          <FrictionalSurface />
+        </Appearance>
+        <Box DEF='BOX-G' size='0.2 0.01 0.2' />
+      </Shape>
+    </Transform>
+    
+    <Transform DEF='BOX2-T'>
+      <Shape DEF='BOX2-S'>
+        <Appearance USE='A' />
+        <Box DEF='BOX2-G' size='0.4 0.01 0.4' />
+      </Shape>
+    </Transform>
+    
+    <RigidBodyCollection physicsEngine='ODE' gravity='0 -10 0'>
+      <CollisionCollection 
+          containerField='collider' frictionCoefficients='0.2 0.5'>
+        <CollidableShape DEF='BOX-C' containerField='collidables'>
+          <Shape USE='BOX-S' containerField='shape' />
+        </CollidableShape>
+        <CollidableShape DEF='BOX2-C' containerField='collidables'>
+          <Shape USE='BOX2-S' containerField='shape' />
+        </CollidableShape>
+      </CollisionCollection>
+      
+      <RigidBody  DEF='BOX-R'
+          mass='0.4' orientation='0 1 0 0.5' position='0 0.2 0'>
+        <Geometry USE='BOX-C' containerField='geometry' />
+        <Box USE='BOX-G' containerField='massDensityModel' />
+      </RigidBody>
+      <RigidBody  DEF='BOX2-R'
+          mass='0.6' orientation='0 1 0 0.5' position='0 -0.1 0'
+          fixed='true' >
+        <Geometry USE='BOX2-C' containerField='geometry' />
+        <Box USE='BOX2-G' containerField='massDensityModel' />
+      </RigidBody>
+    </RigidBodyCollection>
+
+    <ROUTE 
+        fromNode='BOX-R' fromField='position' 
+        toNode='BOX-T' toField='translation' />
+    <ROUTE 
+        fromNode='BOX-R' fromField='orientation' 
+        toNode='BOX-T' toField='rotation' />
+    <ROUTE 
+        fromNode='BOX2-R' fromField='position' 
+        toNode='BOX2-T' toField='translation' />
+    <ROUTE 
+        fromNode='BOX2-R' fromField='orientation' 
+        toNode='BOX2-T' toField='rotation' />
+
+  </Scene>
+</X3D>

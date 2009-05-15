@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Prototype.x3d'/>
+    <meta name='description' content='X3D PROTO statement example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <ProtoDeclare name='ColorBox' >
+      <ProtoInterface>
+        <field 
+            accessType='inputOutput' name='size' 
+            type='SFVec3f' value='0.1 0.1 0.1'/>
+        <field 
+            accessType='inputOutput' name='color' 
+            type='SFColor' value='0.7 0.7 0.7'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Shape>
+          <Box>
+            <IS>
+              <connect nodeField='size' protoField='size' />
+            </IS>
+          </Box>
+          <Appearance>
+            <Material>
+              <IS>
+                <connect nodeField='diffuseColor' protoField='color' />
+              </IS>
+            </Material>
+          </Appearance>
+        </Shape>
+      </ProtoBody>
+    </ProtoDeclare>>
+    
+    <ProtoInstance name='ColorBox' containerField='children' >
+      <fieldValue name='size' value='0.04 0.08 0.1' />
+      <fieldValue name='color' value='1 0 1' />
+    </ProtoInstance>
+  </Scene>
+</X3D>
