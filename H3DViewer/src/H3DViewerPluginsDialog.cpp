@@ -51,7 +51,7 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   PluginInfoText->WriteText( wxT( "Plugin: " ) );
 	PluginInfoText->EndBold();
   wxString web;
-  bool s = h3dConfig->Read( wxString( "Web" ), &web );
+  bool s = h3dConfig->Read( wxT( "Web" ), &web );
   if( s && !web.IsEmpty() ) {
     PluginInfoText->BeginStyle( urlStyle );
     PluginInfoText->BeginURL( web );
@@ -64,7 +64,7 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   PluginInfoText->Newline();
 
   // version
-  success = h3dConfig->Read( wxString( "Version" ), &str );
+  success = h3dConfig->Read( wxT( "Version" ), &str );
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Version: " ) );
@@ -74,13 +74,13 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   }
 
   // developer
-  success = h3dConfig->Read( wxString( "Developer" ), &str );
+  success = h3dConfig->Read( wxT( "Developer" ), &str );
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Developer: " ) );
 	  PluginInfoText->EndBold();
     wxString web;
-    bool s = h3dConfig->Read( wxString( "DeveloperWeb" ), &web );
+    bool s = h3dConfig->Read( wxT( "DeveloperWeb" ), &web );
     if( s && !web.IsEmpty() ) {
       PluginInfoText->BeginStyle( urlStyle );
       PluginInfoText->BeginURL( web );
@@ -94,18 +94,17 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   }
     
   // info 
-  success = h3dConfig->Read( wxString( "Info" ), &str );
+  success = h3dConfig->Read( wxT( "Info" ), &str );
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Info: " ) );
   	PluginInfoText->EndBold();
     PluginInfoText->WriteText( str );
-    //PluginInfoText->WriteText( wxT( "Adds the nodes from the RigidBodyPhysics component of X3D allowing rigid body physics simulation. Physics properties like mass, friction and gravity can be specified and object behaviour and interaction will be simulated based in this. Objects can also be manipulated with haptics devices."  ) );
     PluginInfoText->Newline();
   }
 
   // library 
-  success = h3dConfig->Read( wxString( "Library" ), &str );
+  success = h3dConfig->Read( wxT( "Library" ), &str );
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Library: " ) );
@@ -123,20 +122,29 @@ void H3DViewerPluginsDialog::OnAddPluginButton( wxCommandEvent& event ) {
                                                               wxT("Open file"),
                                                               wxT(""),
                                                               wxT(""),
+#ifdef H3D_WINDOWS
                                                               wxT("*.dll"),
+#else
+#ifdef H3D_OSX
+                                                              wxT("*.dylib"),
+#else
+                                                              wxT("*.so"),
+#endif 
+#endif
                                                               wxOPEN,
                                                               wxDefaultPosition) );
   if (openFileDialog->ShowModal() == wxID_OK) {
     wxString file = openFileDialog->GetPath();
 
     wxString name = openFileDialog->GetFilename();
-    wxString version("");
-    wxString developer("");
-    wxString developer_web("");
-    wxString web("");
-    wxString info("");
+    wxString version(wxT(""));
+    wxString developer(wxT(""));
+    wxString developer_web(wxT(""));
+    wxString web(wxT(""));
+    wxString info(wxT(""));
 
-    H3DUtil::DynamicLibrary::LIBHANDLE lib = H3DUtil::DynamicLibrary::load( file.mb_str() );
+    H3DUtil::DynamicLibrary::LIBHANDLE lib = 
+      H3DUtil::DynamicLibrary::load( string( file.mb_str() ) );
 
     if( lib == NULL  ) {
       wxMessageBox( wxT("Invalid library file"), wxT("Error"),

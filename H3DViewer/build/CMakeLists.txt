@@ -75,7 +75,7 @@ ENDIF(WIN32)
 
 IF(wxWidgets_FOUND)
 ELSE(wxWidgets_FOUND)
-  SET(wxWidgets_USE_LIBS base core gl adv)
+  SET(wxWidgets_USE_LIBS base core gl adv richtext html)
   FIND_PACKAGE(wxWidgets REQUIRED)
   IF(wxWidgets_FOUND)
     INCLUDE(${wxWidgets_USE_FILE})

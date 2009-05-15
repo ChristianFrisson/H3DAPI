@@ -141,12 +141,14 @@
 
 #if defined(__APPLE__) && defined(__MACH__)
 #define MACOSX
+#define H3D_OSX
 #define H3DAPI_API
 #define HAVE_SYS_TIME_H
 #endif
 
 #if defined(__linux)
 #define LINUX
+#define H3D_LINUX
 #define H3DAPI_API 
 #define HAVE_SYS_TIME_H
 #endif

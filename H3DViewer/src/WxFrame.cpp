@@ -1913,7 +1913,7 @@ void WxFrame::LoadPlugins() {
     bool res = h3dConfig->Read( str + wxT("/Library"), &library );    
     if( res && !library.IsEmpty() ) {
      H3DUtil::DynamicLibrary::LIBHANDLE lib = 
-       H3DUtil::DynamicLibrary::load( library.mb_str() );
+       H3DUtil::DynamicLibrary::load( string(library.mb_str()) );
      res = lib != NULL;
     }  
     if( !res ) {
