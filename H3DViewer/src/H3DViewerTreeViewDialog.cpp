@@ -172,7 +172,7 @@ void H3DViewerTreeViewDialog::deleteTree( const wxTreeItemId &id ) {
   wxTreeItemId child_id = TreeViewTree->GetFirstChild( id, cookie );
   while( child_id.IsOk() ) {
     children_ids.push_back( child_id );
-    child_id = TreeViewTree->GetNextChild( child_id, cookie );
+    child_id = TreeViewTree->GetNextSibling( child_id );
   }
 
   for( list< wxTreeItemId >::iterator i = children_ids.begin();

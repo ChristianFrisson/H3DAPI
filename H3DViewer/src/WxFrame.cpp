@@ -1226,14 +1226,26 @@ void WxFrame::clearData () {
   viewpoint.reset( new Viewpoint );
 
   //Delete items from viewpoint menu & disconnect events
-  for (int i = 0; i <= viewpointCount; i++) {
-    viewpointMenu->Destroy(FRAME_VIEWPOINT + i);
-    Disconnect(FRAME_VIEWPOINT + i,wxEVT_MENU_HIGHLIGHT,
-               wxMenuEventHandler(WxFrame::GetSelection));
-    Disconnect(FRAME_VIEWPOINT + i,wxEVT_COMMAND_MENU_SELECTED,
-               wxCommandEventHandler(WxFrame::ChangeViewpoint));
+  if( viewpointMenu->GetMenuItemCount() != 0 ) {
+    if( viewpointCount <= 1 ) {
+      viewpointMenu->Destroy(FRAME_VIEWPOINT );
+      Disconnect(FRAME_VIEWPOINT ,wxEVT_MENU_HIGHLIGHT,
+		 wxMenuEventHandler(WxFrame::GetSelection));
+      Disconnect(FRAME_VIEWPOINT,wxEVT_COMMAND_MENU_SELECTED,
+		 wxCommandEventHandler(WxFrame::ChangeViewpoint));
+    } else {
+      for (int i = 0; i < viewpointCount; i++) {
+        viewpointMenu->Destroy(FRAME_VIEWPOINT + i);
+        Disconnect(FRAME_VIEWPOINT + i,wxEVT_MENU_HIGHLIGHT,
+                   wxMenuEventHandler(WxFrame::GetSelection));
+        Disconnect(FRAME_VIEWPOINT + i,wxEVT_COMMAND_MENU_SELECTED,
+                   wxCommandEventHandler(WxFrame::ChangeViewpoint));
+      } 
+    }
+    viewpointMenu->Destroy( FRAME_RESET_VIEWPOINT ); 
   }
-  viewpointMenu->Destroy( FRAME_RESET_VIEWPOINT ); 
+
+  
   
   // Find all separators and destroy them, if the item is not a separator
   // something is wrong but not enough to quit.
@@ -1248,7 +1260,7 @@ void WxFrame::clearData () {
   }
 
   //Delete items from navigation menu & disconnect events
-  for (int j = 0; j <= navTypeCount; j++) {
+  for (int j = 0; j < navTypeCount; j++) {
     navigationMenu->Destroy(FRAME_NAVIGATION + j);
     Disconnect(FRAME_NAVIGATION + j,wxEVT_MENU_HIGHLIGHT,
                wxMenuEventHandler(WxFrame::GetSelection));
