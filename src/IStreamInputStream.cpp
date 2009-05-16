@@ -32,6 +32,20 @@
 
 using namespace H3D;
 
+  
+#if(XERCES_VERSION_MAJOR > 2 )  
+
+XMLFilePos X3D::IStreamInputStream::curPos() const {
+  return total_count;
+}
+      
+XMLSize_t X3D::IStreamInputStream::readBytes( 
+                                          XMLByte* const to_fill,
+                                          const XMLSize_t max_to_read ) {
+  is.read( (char *) to_fill, max_to_read );
+  return (unsigned int) is.gcount();
+}
+#else
 unsigned int X3D::IStreamInputStream::curPos() const {
   return total_count;
 }
@@ -42,5 +56,6 @@ unsigned int X3D::IStreamInputStream::readBytes(
   is.read( (char *) to_fill, max_to_read );
   return (unsigned int) is.gcount();
 }
-
 #endif
+
+#endif //HAVE_XERCES
