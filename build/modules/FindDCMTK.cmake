@@ -41,7 +41,8 @@ FIND_PATH( DCMTK_config_INCLUDE_DIR NAMES dcmtk/config/osconfig.h
                  $ENV{H3D_ROOT}/../External/include
                  ../../External/include
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../dcmtk/include )
+                 ${module_file_path}/../../dcmtk/include
+		 /usr/local/dicom/include )
 MARK_AS_ADVANCED(DCMTK_config_INCLUDE_DIR)
 
 FIND_PATH( DCMTK_ofstd_INCLUDE_DIR NAMES dcmtk/ofstd/ofstdinc.h
@@ -52,7 +53,8 @@ FIND_PATH( DCMTK_ofstd_INCLUDE_DIR NAMES dcmtk/ofstd/ofstdinc.h
                  $ENV{H3D_ROOT}/../External/include
                  ../../External/include
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../dcmtk/include )
+                 ${module_file_path}/../../dcmtk/include
+                 /usr/local/dicom/include )
 MARK_AS_ADVANCED(DCMTK_ofstd_INCLUDE_DIR)
 
 FIND_LIBRARY( DCMTK_ofstd_LIBRARY "ofstd${DCMTK_LIBRARY_POSTFIX}"
@@ -66,7 +68,8 @@ FIND_LIBRARY( DCMTK_ofstd_LIBRARY "ofstd${DCMTK_LIBRARY_POSTFIX}"
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib
+                    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_ofstd_LIBRARY)
 
 FIND_PATH( DCMTK_dcmjpeg_INCLUDE_DIR NAMES dcmtk/dcmjpeg/djdecode.h
@@ -77,7 +80,8 @@ FIND_PATH( DCMTK_dcmjpeg_INCLUDE_DIR NAMES dcmtk/dcmjpeg/djdecode.h
                  $ENV{H3D_ROOT}/../External/include
                  ../../External/include
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../dcmtk/include )
+                 ${module_file_path}/../../dcmtk/include
+		 /usr/local/dicom/include )
 MARK_AS_ADVANCED(DCMTK_dcmjpeg_INCLUDE_DIR)
 
 FIND_LIBRARY( DCMTK_dcmjpeg_LIBRARY dcmjpeg${DCMTK_LIBRARY_POSTFIX}
@@ -91,7 +95,8 @@ FIND_LIBRARY( DCMTK_dcmjpeg_LIBRARY dcmjpeg${DCMTK_LIBRARY_POSTFIX}
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib
+		    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_dcmjpeg_LIBRARY)
 
 
@@ -106,7 +111,8 @@ FIND_LIBRARY( DCMTK_ijg8_LIBRARY ijg8${DCMTK_LIBRARY_POSTFIX}
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib
+		    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_ijg8_LIBRARY)
 
 FIND_LIBRARY( DCMTK_ijg12_LIBRARY ijg12${DCMTK_LIBRARY_POSTFIX}
@@ -120,7 +126,8 @@ FIND_LIBRARY( DCMTK_ijg12_LIBRARY ijg12${DCMTK_LIBRARY_POSTFIX}
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib 
+		    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_ijg12_LIBRARY)
 
 FIND_LIBRARY( DCMTK_ijg16_LIBRARY ijg16${DCMTK_LIBRARY_POSTFIX}
@@ -134,7 +141,8 @@ FIND_LIBRARY( DCMTK_ijg16_LIBRARY ijg16${DCMTK_LIBRARY_POSTFIX}
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib 
+		    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_ijg16_LIBRARY)
 
 FIND_PATH( DCMTK_dcmdata_INCLUDE_DIR dcmtk/dcmdata/dctypes.h
@@ -145,7 +153,8 @@ FIND_PATH( DCMTK_dcmdata_INCLUDE_DIR dcmtk/dcmdata/dctypes.h
                  $ENV{H3D_ROOT}/../External/include
                  ../../External/include
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../dcmtk/include )
+                 ${module_file_path}/../../dcmtk/include
+		 /usr/local/dicom/include )
 MARK_AS_ADVANCED(DCMTK_dcmdata_INCLUDE_DIR)
 
 FIND_LIBRARY( DCMTK_dcmdata_LIBRARY dcmdata${DCMTK_LIBRARY_POSTFIX}
@@ -159,7 +168,8 @@ FIND_LIBRARY( DCMTK_dcmdata_LIBRARY dcmdata${DCMTK_LIBRARY_POSTFIX}
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib 
+		    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_dcmdata_LIBRARY)
 
 
@@ -171,7 +181,8 @@ FIND_PATH( DCMTK_dcmimgle_INCLUDE_DIR dcmtk/dcmimgle/dcmimage.h
                  $ENV{H3D_ROOT}/../External/include
                  ../../External/include
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../dcmtk/include )
+                 ${module_file_path}/../../dcmtk/include 
+		  /usr/local/dicom/include )
 MARK_AS_ADVANCED(DCMTK_dcmimgle_INCLUDE_DIR)
 
 FIND_LIBRARY( DCMTK_dcmimgle_LIBRARY dcmimgle${DCMTK_LIBRARY_POSTFIX}
@@ -185,7 +196,8 @@ FIND_LIBRARY( DCMTK_dcmimgle_LIBRARY dcmimgle${DCMTK_LIBRARY_POSTFIX}
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib
+		     /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_dcmimgle_LIBRARY)
 
 FIND_LIBRARY( DCMTK_dcmimage_LIBRARY dcmimage${DCMTK_LIBRARY_POSTFIX}
@@ -199,7 +211,8 @@ FIND_LIBRARY( DCMTK_dcmimage_LIBRARY dcmimage${DCMTK_LIBRARY_POSTFIX}
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
                     ${module_file_path}/../../../External/lib
-                    ${module_file_path}/../../dcmtk/lib )
+                    ${module_file_path}/../../dcmtk/lib
+ 		    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_dcmimage_LIBRARY)
 
 #FIND_LIBRARY(DCMTK_dcmnet_LIBRARY dcmnet${DCMTK_LIBRARY_POSTFIX}
