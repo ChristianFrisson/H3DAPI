@@ -344,7 +344,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   //Help Menu
   helpMenu = new wxMenu;
   //helpMenu->Append(FRAME_HELP, wxT("Help"));
-  helpMenu->Append(FRAME_ABOUT, wxT("About"));
+  helpMenu->Append(wxID_ABOUT, wxT("About"));
 
   //Install Menu Bar
   menuBar = new wxMenuBar;
@@ -466,6 +466,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU_RANGE (FRAME_OPENHAPTICS, FRAME_RUSPINI, WxFrame::ChangeRenderer)
   EVT_MENU (FRAME_DEVICECONTROL, WxFrame::ToggleHaptics)
   EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
+  EVT_MENU (wxID_ABOUT, WxFrame::OnAbout)
   EVT_MENU (FRAME_HELP, WxFrame::OnHelp)
   EVT_CLOSE(WxFrame::OnWindowExit)
 END_EVENT_TABLE()
