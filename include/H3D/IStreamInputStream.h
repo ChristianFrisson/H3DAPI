@@ -47,10 +47,22 @@ namespace H3D {
       /// Constructor.
       IStreamInputStream ( istream &_is ) : is( _is ), total_count( 0 ) {}
       
+#if(XERCES_VERSION_MAJOR > 2 )  
+      virtual XMLFilePos curPos() const;
+      
+      virtual XMLSize_t readBytes( XMLByte* const toFill,
+                                   const XMLSize_t maxToRead );
+
+      virtual const XMLCh* getContentType() const {
+        return 0;
+      }
+#else
       virtual unsigned int curPos() const;
       
       virtual unsigned int readBytes( XMLByte* const toFill,
-                                      const unsigned int maxToRead );
+                                   const unsigned int maxToRead );
+
+#endif
       
     protected :
       //BinFileInputStream(const BinFileInputStream&);
