@@ -95,8 +95,19 @@ const wxCmdLineEntryDesc gCmdLineDesc[] =
 class MyApp: public wxApp
 {
 public:
-  virtual bool OnInit();
+  MyApp():
+    theWxFrame( NULL ) {
 
+  }
+  virtual bool OnInit();
+  virtual void MacOpenFile(const wxString &fileName) {
+    if( theWxFrame ) {
+      theWxFrame->clearData();
+      theWxFrame->loadFile(toStr(fileName)); 
+    } else {
+      cmd_line_filename = fileName; 
+    }
+  }
   virtual void OnIdle(wxIdleEvent& event);
   virtual bool OnExceptionInMainLoop();
   virtual void OnInitCmdLine(wxCmdLineParser& parser) {
@@ -112,7 +123,7 @@ public:
   }
 protected:
   wxString cmd_line_filename;
-
+  WxFrame *theWxFrame;
   DECLARE_EVENT_TABLE()
 };
 
@@ -176,8 +187,8 @@ bool MyApp::OnInit()
 #endif
     
     // create a window to display
-    WxFrame *theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
-				      wxDefaultPosition, wxSize(800, 600));
+    theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
+			     wxDefaultPosition, wxSize(800, 600));
     
     theWxFrame->Show(true);
     
