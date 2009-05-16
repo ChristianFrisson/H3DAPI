@@ -1,3 +1,4 @@
+cmake_policy(SET CMP0003 OLD) 
 IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
@@ -84,13 +85,25 @@ ELSE(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
 
 # Create build files.
-ADD_EXECUTABLE(H3DViewer WIN32 MACOSX_BUNDLE ${H3DViewer_SRCS})
+IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
+  # if generating CPACK project using BUNDLE we should not create the bundle here instead
+  # it is built with CPack 
+  ADD_EXECUTABLE(H3DViewer WIN32 ${H3DViewer_SRCS})
+ELSE( GENERATE_H3DVIEWER_CPACK_PROJECT )
+ ADD_EXECUTABLE(H3DViewer WIN32 MACOSX_BUNDLE ${H3DViewer_SRCS})
+ENDIF ( GENERATE_H3DVIEWER_CPACK_PROJECT )
 
 # Link against requiredLibs and optionalLibs.
 TARGET_LINK_LIBRARIES( H3DViewer ${requiredLibs} ${optionalLibs} )
 
 # Set postfix for debug version of H3DViewer.
 SET_TARGET_PROPERTIES( H3DViewer PROPERTIES DEBUG_POSTFIX "_d" )
+
+SET_TARGET_PROPERTIES( H3DViewer
+    PROPERTIES
+    MACOSX_BUNDLE_BUNDLE_NAME H3DViewer
+    MACOSX_BUNDLE_INFO_STRING ${H3DViewer_SOURCE_DIR}/Info.plist
+)
 
 IF(WIN32)
 
@@ -118,4 +131,51 @@ ENDIF(WIN32)
 # Install in these folders.
 INSTALL( TARGETS H3DViewer
          LIBRARY DESTINATION lib
-         RUNTIME DESTINATION bin )
+         RUNTIME DESTINATION bin
+	 BUNDLE DESTINATION "/Applications" )
+
+
+# Add a cache variable GENERATE_H3DVIEWER_CPACK_PROJECT to have the choice of generating a project
+# for packaging H3DAPI. Default is NO since most people will not use this.
+IF( NOT DEFINED GENERATE_H3DVIEWER_CPACK_PROJECT )
+  SET( GENERATE_H3DVIEWER_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
+  MARK_AS_ADVANCED(GENERATE_H3DVIEWER_CPACK_PROJECT)
+ENDIF( NOT DEFINED GENERATE_H3DVIEWER_CPACK_PROJECT )
+
+IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
+
+  # Set information properties about the project to install.
+  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "H3DViewer. An X3D viewer with extensions for haptics." )
+  SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
+  SET(CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
+  SET(CPACK_RESOURCE_FILE_LICENSE "${H3DViewer_SOURCE_DIR}/../../LICENSE")
+  SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};H3DViewer;ALL;/")
+  SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+  SET(CPACK_PACKAGE_VERSION_MINOR "1")
+  SET(CPACK_PACKAGE_VERSION_PATCH "0")
+
+
+  IF( APPLE )
+    IF( NOT DEFINED H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
+      SET( H3DVIEWER_CPACK_INCLUDE_LIBRARIES "NO" CACHE BOOL "Decides if all dependent shared libraries should be included in the bundle or not." )
+      MARK_AS_ADVANCED(H3DVIEWER_CPACK_INCLUDE_LIBRARIES)
+    ENDIF( NOT DEFINED H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
+
+    SET( CPACK_BUNDLE_NAME "H3DViewer" ) #- provides the bundle name (displayed in the finder underneath the bundle icon). 
+    SET( CPACK_BUNDLE_ICON "${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.icns" ) # - provides the bundle icon (displayed in the /Applications folder, on the dock, etc). 
+    SET( CPACK_BUNDLE_PLIST "${H3DViewer_SOURCE_DIR}/info.plist" ) # - path to a file that will become the bundle plist. 
+    SET( CPACK_BUNDLE_STARTUP_COMMAND "${H3DViewer_SOURCE_DIR}/start.sh" ) #- path to a file that will be executed when the user opens the bundle. Could be a shell-script or a binary.
+
+    IF( H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
+      #Include all shared libraries in bundle
+      INCLUDE("${H3DViewer_SOURCE_DIR}/OSXCPackLibraries.txt" )
+
+      INSTALL( FILES ${OSX_DEPENDENT_LIBRARIES}
+               DESTINATION lib )
+    ENDIF( H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
+
+  ENDIF( APPLE )
+
+  INCLUDE(CPack)
+
+ENDIF( GENERATE_H3DVIEWER_CPACK_PROJECT )
