@@ -38,7 +38,6 @@
 #include "WxWidgetsWindow.h"
 
 #include <wx/wx.h>
-#include <wx/dnd.h>
 #include "Envini.h"
 
 // ---------------------------------------------------------------------------
@@ -109,25 +108,17 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 
 #if wxUSE_DRAG_AND_DROP
-class DragAndDropFile : public wxFileDropTarget
-{
-public:
-    DragAndDropFile(WxFrame *_owner) { owner = _owner; }
 
-    virtual bool OnDropFiles(wxCoord x, wxCoord y,
-                             const wxArrayString& filenames) {
-      size_t n_files = filenames.GetCount();
-      // load the first file, ignore the rest
-      if( n_files > 0 ) {
-        owner->clearData();
-        owner->loadFile( string(filenames[0].mb_str()) );
-      }
-
-      return true;
-    }
-
-private:
-    WxFrame *owner;
+void onDropFiles(wxCoord x, wxCoord y,
+		 const wxArrayString& filenames,
+		 void *arg ) {
+  WxFrame *f = static_cast< WxFrame * >( arg );
+  size_t n_files = filenames.GetCount();
+  // load the first file, ignore the rest
+  if( n_files > 0 ) {
+    f->clearData();
+    f->loadFile( string(filenames[0].mb_str()) );
+  }
 };
 
 #endif
@@ -205,6 +196,9 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   g.reset ( new Group );
 
   glwindow = new WxWidgetsWindow(this);
+#if wxUSE_DRAG_AND_DROP
+  glwindow->onFileDraggedAndDroppedFunction( &onDropFiles, this );
+#endif
   int width, height;
   GetClientSize(&width, &height);
   glwindow->width->setValue(width);
@@ -214,10 +208,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   g->children->push_back( t.get() );
   scene->window->push_back( glwindow );
   scene->sceneRoot->setValue( g.get() );
-
-#if wxUSE_DRAG_AND_DROP
-  SetDropTarget( new DragAndDropFile( this ) );
-#endif
 
   wxString console_string = wxT("Console");
   theConsole = new consoleDialog(this, wxID_ANY, console_string, 

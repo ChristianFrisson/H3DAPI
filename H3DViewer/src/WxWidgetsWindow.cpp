@@ -43,6 +43,7 @@ H3DNodeDatabase WxWidgetsWindow::database( "WxWidgetsWindow",
                                       typeid( WxWidgetsWindow ),
                                       &(H3DWindowNode::database) );
 
+
 WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
                                        Inst< SFInt32     > _width,
                         Inst< SFInt32     > _height,
@@ -53,6 +54,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
                  _viewpoint ),
   theWindow( _theParent ),
+  drag_file_func( NULL ),
+  drag_file_func_arg( NULL ),
   is_initialized( false ),
   theWxGLCanvas( NULL ) {
   type_name = "WxWidgetsWindow";
@@ -103,11 +106,14 @@ void WxWidgetsWindow::initWindow() {
                         wxSize( width->getValue(), height->getValue() ), 
                         attribList );
   }
+  
+#if wxUSE_DRAG_AND_DROP
+  theWxGLCanvas->SetDropTarget( new DragAndDropFile( this ) );
+#endif
+
 #ifdef USE_EXPLICIT_GLCONTEXT
   theWxGLContext = new wxGLContext( theWxGLCanvas );
 #endif
-
-
 
   wxSizer *tmp_sizer = theWindow->GetSizer();
   if( tmp_sizer ) {

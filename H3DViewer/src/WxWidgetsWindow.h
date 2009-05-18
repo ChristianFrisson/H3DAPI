@@ -29,11 +29,10 @@
 #ifndef __WXWIDGETSWINDOW_H__
 #define __WXWIDGETSWINDOW_H__
 
-#include "wx/wx.h"
+#include <wx/wx.h>
 #include <H3D/H3DWindowNode.h>
-//#include "Scene.h"
-#include "wx/glcanvas.h"
-
+#include <wx/glcanvas.h>
+#include <wx/dnd.h>
 #if !wxUSE_GLCANVAS
     #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
 #endif
@@ -125,7 +124,40 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    typedef void (*OnDropFileFunc)( wxCoord x, wxCoord y,
+		      const wxArrayString&,
+		      void * );
+
+    /// Set a callback function that will be called when a file is
+    /// dragged and dropped over the window.
+    void onFileDraggedAndDroppedFunction( OnDropFileFunc func, 
+					  void * arg = NULL ) {
+      drag_file_func = func;
+      drag_file_func_arg = arg;
+    }
+
   protected:
+#if wxUSE_DRAG_AND_DROP
+    
+    class DragAndDropFile : public wxFileDropTarget {
+    public:
+      DragAndDropFile(WxWidgetsWindow *_owner) { owner = _owner; }
+      
+      virtual bool OnDropFiles(wxCoord x, wxCoord y,
+			       const wxArrayString& filenames) {
+	if( owner->drag_file_func ) {
+	  owner->drag_file_func( x, y, filenames, owner->drag_file_func_arg );
+	}
+	return true;
+      }
+    protected:
+      WxWidgetsWindow *owner;
+    };
+#endif
+
+    friend class DragAndDropFile;
+    OnDropFileFunc drag_file_func;
+    void *drag_file_func_arg;
     bool is_initialized;
     bool have_parent;
     wxWindow * theWindow;
