@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='PlaneSensor.x3d'/>
+    <meta name='description' content='X3D PlaneSensor example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6'/>
+    <NavigationInfo type='NONE' />
+
+    <Group>
+      <PlaneSensor DEF='S'
+          enabled='true'
+          autoOffset='true'
+          axisRotation='0 1 0 0'
+          maxPosition='0.1 0.1'
+          minPosition='0 0'/>
+      <Transform translation='-0.15 0 0'>
+        <Transform DEF='T'>
+          <Shape DEF='B'>
+            <Appearance>
+              <Material />
+            </Appearance>
+            <Box size='0.05 0.05 0.05' />
+          </Shape>
+        </Transform>
+      </Transform>
+    </Group>
+    
+    <Group>
+      <PlaneSensor DEF='S1'
+          enabled='true'
+          autoOffset='true'
+          axisRotation='0 1 0 0'
+          maxPosition='0 0.1'
+          minPosition='0 -0.1'/>
+      <Transform translation='0.15 0 0'>
+        <Transform DEF='T1'>
+          <Shape USE='B' />
+        </Transform>
+      </Transform>
+    </Group>
+ 
+    <ROUTE
+        fromNode='S' fromField='translation_changed'
+        toNode='T' toField='translation' />
+    <ROUTE
+        fromNode='S1' fromField='translation_changed'
+        toNode='T1' toField='translation' />
+  </Scene>
+</X3D>

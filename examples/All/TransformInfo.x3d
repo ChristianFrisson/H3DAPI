@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='H3DAPI' version='1.4'>
   <head>
-    <meta name='title' content='TimeTrigger.x3d'/>
-    <meta name='description' content='H3DAPI TimeTrigger example. Prints the
-      value of accForwardMatrix.
+    <meta name='title' content='TransformInfo.x3d'/>
+    <meta name='description' content='H3DAPI TransformInfo example. Prints the
+      value of triggerTime on leftButton events.
       This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers 
       only. Visit http://www.h3d.org for more information and to download an
       H3DAPI-compatible browser.'/>
@@ -12,9 +12,16 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type='NONE' />
     
-    <MouseSensor DEF='S' />
-    <TimeTrigger DEF='T' />
+    <Transform translation='0.1 0.2 0.03'>
+      <Transform translation='12.3 -9.3 5.61' rotation='1 3.4 -7 0.77'>
+        <Transform scale='0.2 3 1.5'>
+          <TransformInfo DEF='T' />
+        </Transform>
+      </Transform>
+    </Transform>
+    
     <PythonScript DEF='P' url='script.py' />
 
     <!-- ExternProto for Text -->
@@ -22,18 +29,13 @@
       <field accessType='inputOutput' name='offset' type='SFVec3f'/>
       <field accessType='inputOutput' name='string' type='MFString'/>
     </ExternProtoDeclare>
-    <ProtoInstance name='Text' DEF='D'>
-      <fieldValue name='offset' value='0 0.1 0' />
-    </ProtoInstance>
+    <ProtoInstance name='Text' DEF='D' />
 
     <ROUTE
-      fromNode='S' fromField='leftButton'
-      toNode='T' toField='set_boolean' />
+      fromNode='T' fromField='accForwardMatrix'
+      toNode='P' toField='matrixToMFString' />
     <ROUTE
-      fromNode='T' fromField='triggerTime'
-      toNode='P' toField='timeToMFString' />
-    <ROUTE
-      fromNode='P' fromField='timeToMFString'
+      fromNode='P' fromField='matrixToMFString'
       toNode='D' toField='string' />
 
   </Scene>

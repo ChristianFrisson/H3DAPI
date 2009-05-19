@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Group.x3d'/>
+    <meta name='description' content='X3D Group example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6'/>
+    
+    <Transform translation='-0.1 -0.1 0'>
+      <Group DEF='G'>
+        <Transform translation='0 0.12 0'>
+          <Shape>
+            <Appearance DEF='A'>
+              <Material diffuseColor='1 0 0'/>
+            </Appearance>
+            <Cone bottomRadius='0.05' height='0.2' />
+          </Shape>
+        </Transform>
+        <Shape>
+          <Appearance USE='A' />
+          <Sphere radius='0.04' />
+        </Shape>
+      </Group>
+    </Transform>
+    
+    <Transform translation='0.1 -0.1 0'>
+      <Group USE='G' />
+    </Transform>
+  </Scene>
+</X3D>

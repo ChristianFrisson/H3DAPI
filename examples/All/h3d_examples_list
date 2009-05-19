@@ -1,0 +1,222 @@
+H3DAPI examples map
+-------------------
+
+NODE                              EXAMPLE FILE (.x3d)
+------------------------------------------------------
+Anchor                            Anchor
+AnyDevice                         AnyDevice
+Appearance                        FillProperties, LineProperties, Material, 
+                                  TwoSidedMaterial, RenderProperties, 
+                                  (Texture, Shaders)
+Arc2D                             Arc2D
+ArcClose2D                        ArcClose2D
+AudioClip                         Sound
+AudioFileReader
+Background                        Background, Background1
+Billboard                         Billboard
+BooleanFilter                     BooleanFilter
+BooleanSequencer                  BooleanSequencer
+BooleanToggle                     BooleanToggle
+BooleanTrigger                    BooleanTrigger
+Bound
+BoundedPhysicsModel               BoundedPhysicsModel
+Box                               Box
+Circle2D                          Circle2D
+ClipPlane                         ClipPlane
+Collision                         Collision
+CollisionOptions
+Color                             IndexedFaceSet, 
+ColorInterpolator                 ColorInterpolator
+ColorRGBA                         ColorRGBA
+Composed3DTexture
+ComposedCubeMapTexture
+ComposedShader
+Cone                              Cone
+ConeEmitter                       ParticleSystem
+Contour2D
+ContourPolyline2D
+CoordBoundField
+Coordinate                        IndexedFaceSet, IndexedTriangleSet, TriangeSet
+CoordinateDeformer
+CoordinateDouble
+CoordinateInterpolator            CoordinateInterpolator
+CoordinateInterpolator2D
+Cylinder                          Cylinder
+CylinderSensor                    CylinderSensor
+DebugOptions
+DefaultAppearance
+DeformableShape
+DepthMapSurface                   Surfaces
+DeviceInfo                        PhantomDevice,
+DeviceLog
+DicomImageLoader
+DirectionalLight                  DirectionalLight
+DirectShowDecoder
+Disk2D                            Disk2D
+DynamicTransform
+ElevationGrid                     ElevationGrid, ElevationGrid1
+ExplosionEmitter                  ParticleSystem
+Extrusion                         Extrusion
+FakeHapticsDevice
+FalconDevice                      FalconDevice
+FillProperties                    FillProperties
+FitToBoxTransform                 FitToBoxTransform
+FloatVertexAttribute
+Fog                               Fog
+FogCoordinate                     FogCoordinate
+FontStyle                         FontStyle
+ForceDimensionDevice              ForceDimensionDevice
+ForceField                        ForceField
+FreeImageLoader
+FrictionalSurface                 Sphere, Surfaces
+FunctionPlotTexture
+GaussianFunction
+GeneralFunction
+GeneratedCubeMapTexture
+GeometryBoundTreeOptions
+GlobalSettings
+GraphicsCachingOptions
+GravityPhysicsModel               GravityPhysicsModel
+Group                             Group
+H3DFunctionNode
+H3DImageObject
+H3DMultiPassRenderObject
+H3DNavigationDevices
+H3DWindowNode
+HapticLayeredGroup
+HapticMasterDevice                HapticMasterDevice
+HapticsOptions
+HapticTexturesSurface             Surfaces
+HaptikDevice                      HaptikDevice
+Image3DTexture
+ImageObjectInfo
+ImageObjectTexture
+ImageTexture
+ImportLibrary                     ImportLibrary
+IndexedFaceSet                    IndexedFaceSet
+IndexedLineSet                    IndexedLineSet
+IndexedTriangleFanSet             IndexedTriangleFanSet
+IndexedTriangleSet                IndexedTriangleSet
+IndexedTriangleStripSet           IndexedTriangleStripSet
+Inline                            Switch
+IntegerSequencer                  Switch
+IntegerTrigger                    IntegerTrigger
+IStreamInputSource
+IStreamInputStream
+KeySensor                         KeySensor
+LineProperties                    LineProperties
+LineSet                           LineSet
+LoadSensor
+LocalFog                          LocalFog
+LOD                               LOD
+MagneticGeometryEffect            MagneticGeometryEffect
+MagneticSurface                   Surfaces
+Material                          Material
+Matrix3VertexAttribute
+Matrix4VertexAttribute
+MatrixTransform
+MetadataDouble                    Metadata
+MetadataFloat                     Metadata
+MetadataInteger                   Metadata
+MetadataSet                       MetadataSet
+MetadataString                    Metadata
+MouseSensor                       MouseSensor
+MovieTexture
+MultiTexture
+MultiTextureCoordinate
+MultiTextureTransform
+NavigationInfo                    NavigationInfo
+Normal
+NormalInterpolator
+NrrdImageLoader
+NurbsCurve
+NurbsCurve2D
+NurbsPatchSurface
+NurbsTextureCoordinate
+NurbsTrimmedSurface
+OggFileReader
+OpenHapticsOptions
+OpenHapticsSurface
+OrientationInterpolator           OrientationInterpolator
+OrthoViewpoint                    OrthoViewpoint
+PackagedShader
+ParticleSystem                    ParticleSystem
+PhantomDevice                     PhantomDevice
+Pixel3DTexture
+PixelTexture
+PlanarReflector
+PlaneSensor                       PlaneSensor
+PointEmitter                      ParticleSystem
+PointLight                        PointLight, PointLight1
+PointNormalClipPlane
+PointSet                          PointSet
+Polyline2D                        Polyline2D
+Polypoint2D                       Polypoint2D
+PositionFunctionEffect            PositionFunctionEffect
+PositionInterpolator              PositionInterpolator
+PositionInterpolator2D            PositionInterpolator2D
+ProgramShader
+ProtoDeclaration                  Prototype, Surfaces
+PrototypeInstance                 Prototype
+ProximitySensor                   ProximitySensor
+PythonScript                      PythonScript
+QuanserDevice                     QuanserDevice
+RawImageLoader
+Rectangle2D                       Rectangle2D
+RenderProperties                  RenderProperties, RenderProperties1, RenderProperties2
+ScalarInterpolator                ScalarInterpolator
+Scene
+Script
+ShaderFunctions
+ShaderPart
+ShaderProgram
+Shape                             Box, Cone, Sphere
+SimballDevice                     SimballDevice
+SimpleMovieTexture
+SmoothSurface                     Surfaces
+Sound                             Sound
+SpaceballSensor
+SpaceWareHapticsDevice            SpaceWareHapticsDevice
+SpaceWareSensor
+Sphere                            Sphere
+SphereSensor                      SphereSensor
+SplinePositionInterpolator
+SplinePositionInterpolator2D
+SplineScalarInterpolator
+SpotLight                         SpotLight
+SpringEffect                      SpringEffect
+StereoInfo
+StringSensor                      StringSensor
+SuperShape                        SuperShape
+SurfaceEmitter                    ParticleSystem
+Switch                            Switch
+TexGenGeometry
+Text                              Text, Text1
+TextureBackground                 
+TextureCoordinate                  
+TextureCoordinate3D               
+TextureCoordinate4D               
+TextureCoordinateGenerator        
+TextureMatrixTransform            
+TextureProperties                 
+TextureTransform                  
+TextureTransform3D                
+TimeFunctionEffect                
+TimeSensor                        Switch
+TimeTrigger                       TimeTrigger
+ToggleGroup                       ToggleGroup
+TouchSensor                       TouchSensor, TouchSensor1, TouchSensor2
+TransferFunctionTexture
+Transform                         Transform
+TransformInfo                     TransformInfo
+TriangleFanSet                    TriangleFanSet
+TriangleSet                       TriangleSet
+TriangleSet2D                     TriangleSet2D
+TriangleStripSet                  TriangleStripSet
+TwoSidedMaterial                  TwoSidedMaterial
+Viewpoint                         Viewpoint
+ViewpointGroup                    ViewpointGroup
+ViscosityEffect                   ViscosityEffect
+VisibilitySensor                  VisibilitySensor
+WindPhysicsModel                  WindPhysicsModel
+WorldInfo                         WorldInfo

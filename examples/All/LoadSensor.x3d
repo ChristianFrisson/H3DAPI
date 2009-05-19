@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='LoadSensor.x3d'/>
+    <meta name='description' content='X3D LoadSensor example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6'/>
+    <NavigationInfo type='NONE' />
+
+    <Shape>
+      <Appearance>
+        <ImageTexture DEF='I' url='http://upload.wikimedia.org/wikipedia/commons/f/f9/Formica_high_res.jpg' />
+      </Appearance>
+      <Sphere radius='0.1' />
+    </Shape>
+
+    <LoadSensor DEF='S'>
+      <ImageTexture USE='I' containerField='watchList' />
+    </LoadSensor>
+  
+    <!--ROUTE
+        fromNode='S' fromField=''
+        toNode='' toField='' />
+    <ROUTE
+        fromNode='' fromField=''
+        toNode='' toField='' /-->
+  </Scene>
+</X3D>

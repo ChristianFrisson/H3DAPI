@@ -1,5 +1,6 @@
 from H3DInterface import *
 from H3DUtils import *
+import math
 
 # returns true on " " string event value
 class SpacePressed( AutoUpdate(TypedField(SFBool, SFString)) ):
@@ -33,6 +34,31 @@ class BoolToFloatChange( TypedField(SFFloat, (SFBool, SFFloat)) ):
       return r[1].getValue() + self.offset
     return r[1].getValue()
 
+class MatrixToMFString( AutoUpdate(TypedField(MFString, SFMatrix4f)) ):
+  def update( self, event ):
+    m = event.getValue()
+    l = []
+    for i in range(4):
+      s = ''
+      for j in range(4):
+        s += "%0.2f" % (m.getElement(i, j)) + "   "
+      l.append(s)
+    return l
+    
+rotation_angle = 0
+class Rotate( TypedField(SFRotation, SFBool) ):    
+  def update( self, event ):
+    global rotation_angle
+    rotation_angle += math.pi/30
+    if rotation_angle > 2*math.pi:
+      rotation_angle -= 2*math.pi
+    return Rotation( 0, 0, -1, rotation_angle )
+    
+rotate = Rotate()
+
+# used in TransformInfo.x3d
+matrixToMFString = MatrixToMFString()
+
 # used in MouseSensor.x3d
 increment = BoolToFloatChange( 0.02 )
 decrement = BoolToFloatChange( -0.02 )
@@ -45,9 +71,11 @@ stringSFtoMF1 = FieldValue2StringList( SFString )
 intToMFString0 = FieldValue2StringList( SFInt32 )
 intToMFString1 = FieldValue2StringList( SFInt32 )
 
+# used in TimeTrigger.x3d
+timeToMFString = FieldValue2StringList( SFTime )
+
 # used in BooleanToggle.x3d
 spacePressed = SpacePressed()
 
 # used in TouchSensor.x3d
 colorToRed = BoolToColor( RGB(0.7,0.7,0.7), RGB(1,0,0) )
-

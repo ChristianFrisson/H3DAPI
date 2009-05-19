@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='FogCoordinate.x3d'/>
+    <meta name='description' content='X3D FogCoordinate example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0.1 0.6' orientation='0 1 0 0'/>
+    <Fog visibilityRange='1' />
+    
+    <!-- Without FogCoordinate (left) -->
+    <Transform rotation='0 1 0 -1' translation='-0.1 0 0'>
+      <Shape>
+        <ElevationGrid 
+            ccw='true' colorPerVertex='true' creaseAngle='0'
+            normalPerVertex='true' solid='true' 
+            xDimension='5' xSpacing='0.04' 
+            zDimension='5' zSpacing='0.04'          
+            height='0 0    0    0    0
+                    0 0.16 0.12 0.20 0
+                    0 0.08 0.10 0.10 0
+                    0 0.12 0.10 0.05 0
+                    0 0    0    0    0' />
+        <Appearance>
+          <Material diffuseColor='0 1 0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <!-- With FogCoordinate -->
+    <Transform rotation='0 1 0 -1' translation='0.1 0 0'>
+      <Shape>
+        <ElevationGrid 
+            ccw='true' colorPerVertex='true' creaseAngle='0'
+            normalPerVertex='true' solid='true' 
+            xDimension='5' xSpacing='0.04' 
+            zDimension='5' zSpacing='0.04'          
+            height='0 0    0    0    0
+                    0 0.16 0.12 0.20 0
+                    0 0.08 0.10 0.10 0
+                    0 0.12 0.10 0.05 0
+                    0 0    0    0    0'>
+            <FogCoordinate 
+                depth='0.01 0.01 0.01 0.01 0.01
+                       0.01 0.9  0.8  1    0.01 
+                       0.01 0.01 0.5  0.5  0.01
+                       0.01 0.8  0.5  0.01 0.01
+                       0.01 0.01 0.01 0.01 0.01' />
+          </ElevationGrid>
+        <Appearance>
+          <Material diffuseColor='0 1 0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+  </Scene>
+</X3D>

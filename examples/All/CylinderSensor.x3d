@@ -7,39 +7,48 @@
   </head>
   
   <Scene>
-    <Viewpoint position='0 0 0.6'/>
-    <Viewpoint position='0 0.6 0' orientation='1 0 0 -1.57' />
+    <Viewpoint description='Front view' position='0 0 0.6'/>
+    <Viewpoint description='Top view' position='0 0.6 0' orientation='1 0 0 -1.57' />
     <NavigationInfo type='NONE' />
-
-    <!-- ExternProto for Boxes -->
-    <ExternProtoDeclare name='ColorBox' url='"./Prototype1.x3d#ColorBox"'>
-      <field accessType='inputOutput' name='size' type='SFVec3f'/>
-      <field accessType='inputOutput' name='color' type='SFColor'/>
-    </ExternProtoDeclare>
     
-    <Group DEF='G'>
+    <Group>
       <CylinderSensor DEF='S'
           enabled='true'
           autoOffset='true'
-          axisRotation='1 0 1 0'
+          axisRotation='1 0 0 0'
           diskAngle='0'
           maxAngle='-1'
           minAngle='0' />
       <Transform DEF='T' 
-          translation='0 0 0'>      
-        <ProtoInstance name='ColorBox'>
-          <fieldValue name='size' value='0.1 0.1 0.1' />
-          <fieldValue name='color' value='0.7 0.7 0.7' />
-        </ProtoInstance>
-        <ProtoInstance name='ColorBox'>
-          <fieldValue name='size' value='0.02 0.02 0.3' />
-          <fieldValue name='color' value='1 0 0' />
-        </ProtoInstance>
+          translation='-0.15 0 0'>
+        <Shape DEF='B'>
+          <Appearance>
+            <Material />
+          </Appearance>
+          <Box size='0.1 0.1 0.1' />
+        </Shape>
+      </Transform>
+    </Group>
+    
+    <Group>
+      <CylinderSensor DEF='S1'
+          enabled='true'
+          autoOffset='true'
+          axisRotation='1 0 0 1.57'
+          diskAngle='0'
+          maxAngle='1.57'
+          minAngle='0' />
+      <Transform DEF='T1' 
+          translation='0.15 0 0'>
+        <Shape USE='B' />
       </Transform>
     </Group>
     
     <ROUTE
         fromNode='S' fromField='rotation_changed'
         toNode='T' toField='rotation' />
+    <ROUTE
+        fromNode='S1' fromField='rotation_changed'
+        toNode='T1' toField='rotation' />
   </Scene>
 </X3D>
