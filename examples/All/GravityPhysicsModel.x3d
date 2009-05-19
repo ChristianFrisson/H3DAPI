@@ -12,28 +12,28 @@
   <Scene>
     <Viewpoint position='0 0.1 0.6' orientation='1 0 0 -0.05'/>
 
-      <!-- Graphics -->
-      <Shape>        
-        <Cylinder DEF='C' 
-            radius='0.1' height='0.001' 
-            bottom='false' solid='true' />
-        <Appearance>
-          <Material diffuseColor="1 0 0" />
-        </Appearance>
-      </Shape>
+    <!-- Graphics -->
+    <Shape>        
+      <Cylinder DEF='C' 
+          radius='0.1' height='0.001' 
+          bottom='false' solid='true' />
+      <Appearance>
+        <Material diffuseColor="1 0 0" />
+      </Appearance>
+    </Shape>
+    
+    <!-- Particle system with gravity physics model -->
+    <ParticleSystem 
+        maxParticles='200' particleLifetime='12' 
+        particleSize='0.01 0.01' geometryType='SPRITE'>
+      <Color containerField='colorRamp' color='1 1 1' />
+      <SurfaceEmitter speed='0.4' mass='0.000005' surfaceArea='0.1'>
+        <Cylinder USE='C' containerField='surface' />
+      </SurfaceEmitter>
       
-      <!-- Particle system with gravity physics model -->
-      <ParticleSystem 
-          maxParticles='200' particleLifetime='12' 
-          particleSize='0.01 0.01' geometryType='SPRITE'>
-        <Color containerField='colorRamp' color='1 1 1' />
-        <SurfaceEmitter speed='0.4' mass='0.000005' surfaceArea='0.1'>
-          <Cylinder USE='C' containerField='surface' />
-        </SurfaceEmitter>
-        
-        <GravityPhysicsModel 
-            enabled='true'
-            gravity='0 -0.8 0'/>
-      </ParticleSystem>
+      <GravityPhysicsModel 
+          enabled='true'
+          gravity='0 -0.8 0'/>
+    </ParticleSystem>
   </Scene>
 </X3D>

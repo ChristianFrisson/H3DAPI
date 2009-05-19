@@ -37,27 +37,27 @@ Contour2D
 ContourPolyline2D
 CoordBoundField
 Coordinate                        IndexedFaceSet, IndexedTriangleSet, TriangeSet
-CoordinateDeformer
+CoordinateDeformer                DeformableShape
 CoordinateDouble
 CoordinateInterpolator            CoordinateInterpolator
-CoordinateInterpolator2D
+CoordinateInterpolator2D          CoordinateInterpolator2D
 Cylinder                          Cylinder
 CylinderSensor                    CylinderSensor
 DebugOptions
 DefaultAppearance
-DeformableShape
+DeformableShape                   DeformableShape
 DepthMapSurface                   Surfaces
 DeviceInfo                        PhantomDevice,
-DeviceLog
+DeviceLog                         DeviceLog
 DicomImageLoader
 DirectionalLight                  DirectionalLight
 DirectShowDecoder
 Disk2D                            Disk2D
-DynamicTransform
+DynamicTransform                  DynamicTransform
 ElevationGrid                     ElevationGrid, ElevationGrid1
 ExplosionEmitter                  ParticleSystem
 Extrusion                         Extrusion
-FakeHapticsDevice
+FakeHapticsDevice                 FakeHapticsDevice
 FalconDevice                      FalconDevice
 FillProperties                    FillProperties
 FitToBoxTransform                 FitToBoxTransform
@@ -70,20 +70,19 @@ ForceField                        ForceField
 FreeImageLoader
 FrictionalSurface                 Sphere, Surfaces
 FunctionPlotTexture
-GaussianFunction
-GeneralFunction
+GaussianFunction                  DeformableShape
+GeneralFunction                   TimeFunctionEffect, PositionFunctionEffect
 GeneratedCubeMapTexture
 GeometryBoundTreeOptions
 GlobalSettings
 GraphicsCachingOptions
 GravityPhysicsModel               GravityPhysicsModel
 Group                             Group
-H3DFunctionNode
 H3DImageObject
 H3DMultiPassRenderObject
 H3DNavigationDevices
 H3DWindowNode
-HapticLayeredGroup
+HapticLayeredGroup                HapticLayeredGroup
 HapticMasterDevice                HapticMasterDevice
 HapticsOptions
 HapticTexturesSurface             Surfaces
@@ -91,7 +90,7 @@ HaptikDevice                      HaptikDevice
 Image3DTexture
 ImageObjectInfo
 ImageObjectTexture
-ImageTexture
+ImageTexture                      ImageTexture
 ImportLibrary                     ImportLibrary
 IndexedFaceSet                    IndexedFaceSet
 IndexedLineSet                    IndexedLineSet
@@ -143,8 +142,8 @@ PackagedShader
 ParticleSystem                    ParticleSystem
 PhantomDevice                     PhantomDevice
 Pixel3DTexture
-PixelTexture
-PlanarReflector
+PixelTexture                      PixelTexture
+PlanarReflector                   PlanarReflector
 PlaneSensor                       PlaneSensor
 PointEmitter                      ParticleSystem
 PointLight                        PointLight, PointLight1
@@ -192,16 +191,16 @@ SurfaceEmitter                    ParticleSystem
 Switch                            Switch
 TexGenGeometry
 Text                              Text, Text1
-TextureBackground                 
-TextureCoordinate                  
+TextureBackground                 TextureBackground              
+TextureCoordinate                 TextureCoordinate
 TextureCoordinate3D               
 TextureCoordinate4D               
 TextureCoordinateGenerator        
 TextureMatrixTransform            
 TextureProperties                 
-TextureTransform                  
+TextureTransform                  TextureTransform
 TextureTransform3D                
-TimeFunctionEffect                
+TimeFunctionEffect                TimeFunctionEffect              
 TimeSensor                        Switch
 TimeTrigger                       TimeTrigger
 ToggleGroup                       ToggleGroup

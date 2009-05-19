@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='H3DAPI' version='1.4'>
   <head>
-    <meta name='title' content='PositionFunctionEffect.x3d'/>
-    <meta name='description' content='H3DAPI PositionFunctionEffect
+    <meta name='title' content='TimeFunctionEffect.x3d'/>
+    <meta name='description' content='H3DAPI TimeFunctionEffect
       with GeneralFunction.
       This example uses H3DAPI node(s) and runs on H3DAPI-supported 
       browsers only. Visit http://www.h3d.org for more information and 
@@ -14,13 +14,10 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />    
-    <PositionFunctionEffect>
-      <GeneralFunction containerField="xFunction" function="10*y" params="x,y,z"/>
-      <GeneralFunction containerField="yFunction" function="0" params="x,y,z"/>
-      <GeneralFunction containerField="zFunction" function="0" params="x,y,z"/>
-    </PositionFunctionEffect>
+    <TimeFunctionEffect deviceIndices='0'>
+      <GeneralFunction containerField='xFunction' function='sin(2*t)' params='t'/>
+      <GeneralFunction containerField='yFunction' function='cos(2*t)' params='t'/>
+      <GeneralFunction containerField='zFunction' function='0' params='t'/>
+    </TimeFunctionEffect>
   </Scene>
 </X3D>
-
-
-

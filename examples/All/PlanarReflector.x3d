@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='PlanarReflector.x3d'/>
+    <meta name='description' content='H3DAPI PlanarReflector example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.4 0 0.35' orientation='0 1 0 0.85'/>
+    
+    <Transform translation='0 0 -0.2'>
+      <PlanarReflector reflectivity='0.8' color='1 1 1'>
+        <Rectangle2D size='1 0.5'/>
+      </PlanarReflector>
+    </Transform>
+    
+    <Inline url='Cone.x3d' />
+    <Transform translation='-0.2 0 0'>
+      <Inline url='Cylinder.x3d' />
+    </Transform>
+
+  </Scene>
+</X3D>

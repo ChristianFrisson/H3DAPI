@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='PixelTexture.x3d'/>
+    <meta name='description' content='X3D PixelTexture node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Appearance>
+        <PixelTexture 
+            repeatS='true' 
+            repeatT='true'
+            image='3 3 3 
+                   0xff0000 0x00ff00 0xff0000
+                   0x00ff00 0xff0000 0x00ff00
+                   0xff0000 0x00ff00 0xff0000' />
+      </Appearance>      
+      <Box size='0.1 0.1 0.1' />
+    </Shape>
+  </Scene>
+</X3D>

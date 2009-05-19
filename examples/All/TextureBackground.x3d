@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='TextureBackground.x3d'/>
+    <meta name='description' content='X3D TextureBackground node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <TextureBackground>
+      <ImageTexture url='images/b_arch_00000.png' containerField='backTexture' />
+      <ImageTexture url='images/f_arch_00000.png' containerField='frontTexture' />
+      <ImageTexture url='images/l_arch_00000.png' containerField='leftTexture' />
+      <ImageTexture url='images/r_arch_00000.png' containerField='rightTexture' />
+      <ImageTexture url='images/d_arch_00000.png' containerField='bottomTexture' />
+    </TextureBackground>
+  </Scene>
+</X3D>
