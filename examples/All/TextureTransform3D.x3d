@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='TextureTransform3D.x3d'/>
+    <meta name='description' content='X3D TextureTransform3D example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
+    
+    <Transform rotation='1 0 -1 0.6'>
+      <Shape>
+        <Appearance DEF='A'>
+          <Material />
+          <ImageTexture3D url='images/stone_wall.bmp' />
+          <TextureTransform3D DEF='T'
+              center='0 0 0' rotation='0 1 0 0.5'
+              scale='1 1 1' translation='0 0 0'/>
+        </Appearance>
+        <IndexedFaceSet
+            coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'
+            texCoordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'>
+            <Coordinate
+                point=' 0.1  0.1  0.1, -0.1  0.1  0.1,
+                       -0.1 -0.1  0.1,  0.1 -0.1  0.1,
+                        0.1  0.1 -0.1, -0.1  0.1 -0.1,
+                       -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
+            <TextureCoordinate3D
+                point='1 1 0 0 1 0 0 0 0 1 0 0 1 1 1 0 1 1 0 0 1 1 0 1' />
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    
+    <TimeSensor loop='true' cycleInterval='6' DEF='S'/>
+    <OrientationInterpolator DEF='I' key='0 0.5 1' keyValue='0 1 0 0 0 1 0 6.18 0 1 0 0' />
+    <ROUTE fromNode='S' fromField='fraction_changed' toNode='I' toField='set_fraction' />
+    <ROUTE fromNode='I' fromField='value_changed' toNode='T' toField='rotation' />
+  </Scene>
+</X3D>

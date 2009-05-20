@@ -87,7 +87,7 @@ HapticMasterDevice                HapticMasterDevice
 HapticsOptions
 HapticTexturesSurface             Surfaces
 HaptikDevice                      HaptikDevice
-Image3DTexture
+Image3DTexture                    ImageTexture3D
 ImageObjectInfo
 ImageObjectTexture
 ImageTexture                      ImageTexture
@@ -121,9 +121,9 @@ MetadataSet                       MetadataSet
 MetadataString                    Metadata
 MouseSensor                       MouseSensor
 MovieTexture
-MultiTexture
-MultiTextureCoordinate
-MultiTextureTransform
+MultiTexture                      MultiTexture
+MultiTextureCoordinate            MultiTextureCoordinate
+MultiTextureTransform             MultiTextureTransform
 NavigationInfo                    NavigationInfo
 Normal
 NormalInterpolator
@@ -193,7 +193,7 @@ TexGenGeometry
 Text                              Text, Text1
 TextureBackground                 TextureBackground              
 TextureCoordinate                 TextureCoordinate
-TextureCoordinate3D               
+TextureCoordinate3D               ImageTexture3D           
 TextureCoordinate4D               
 TextureCoordinateGenerator        
 TextureMatrixTransform            

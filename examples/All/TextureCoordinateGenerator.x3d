@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='TextureCoordinateGenerator.x3d'/>
+    <meta name='description' content='X3D TextureCoordinateGenerator example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Transform translation='-0.15 0 0'>
+      <Shape>
+        <Appearance DEF='A'>
+          <Material />
+          <ImageTexture url='images/stone_wall.bmp' />
+        </Appearance>
+        <IndexedFaceSet coordIndex='0 1 2 3' solid='false'>
+          <Coordinate
+              point='0.1 0.1 0 0.1 -0.1 0 -0.1 -0.1 0 -0.1 0.1 0' />
+          <TextureCoordinateGenerator mode='GL_SPHERE' parameter='2' />
+          <!--TextureCoordinateGenerator mode='GL_SPHERE' parameter='' /-->
+        </IndexedFaceSet>
+        
+      </Shape>
+    </Transform>
+
+  </Scene>
+</X3D>

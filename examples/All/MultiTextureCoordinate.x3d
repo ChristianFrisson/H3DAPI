@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='MultiTextureCoordinate.x3d'/>
+    <meta name='description' content='X3D MultiTextureCoordinate example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Transform translation='-0.15 0 0'>
+      <Shape>
+        <Appearance DEF='A'>
+          <Material />
+          <MultiTexture 
+              source='DIFFUSE' mode='"DOTPRODUCT3""MODULATE""MODULATE"' 
+              alpha='1' color='1 1 1'>
+            <ImageTexture url='images/stone_wall_normal_map.bmp' />
+            <ImageTexture url='images/stone_wall.bmp' />
+            <PixelTexture
+                repeatS='false' repeatT='false'
+                image='3 3 1 0x00 0x00 0x00 0x00 0xff 0x00 0x00 0x00 0x00' />
+          </MultiTexture>
+        </Appearance>
+        <IndexedFaceSet coordIndex='0 1 2 3' solid='false'>
+          <Coordinate DEF='C'
+              point='0.1 0.1 0 0.1 -0.1 0 -0.1 -0.1 0 -0.1 0.1 0' />
+          
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    
+    <!-- With different texture coordinate -->
+    <Transform translation='0.15 0 0'>
+      <Shape>
+        <Appearance USE='A' />
+        <IndexedFaceSet coordIndex='0 1 2 3' solid='false'>
+          <Coordinate USE='C' />
+          <MultiTextureCoordinate>
+            <TextureCoordinate USE='T' />
+            <TextureCoordinate USE='T' />
+            <TextureCoordinate point='0.8 0.8 0.8 0.2 0.2 0.2 0.2 0.8' />
+          </MultiTextureCoordinate>
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+      
+  </Scene>
+</X3D>

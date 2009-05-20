@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='MultiTextureTransform.x3d'/>
+    <meta name='description' content='X3D MultiTextureTransform example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <Shape>
+      <Appearance>
+        <Material />
+        <MultiTexture 
+            source='DIFFUSE' mode='"DOTPRODUCT3""MODULATE""MODULATE"' 
+            alpha='1' color='1 1 1'>
+          <ImageTexture url='images/stone_wall_normal_map.bmp' />
+          <ImageTexture url='images/stone_wall.bmp' />
+          <PixelTexture
+              repeatS='false' repeatT='false'
+              image='3 3 1 0x00 0x00 0x00 0x00 0xff 0x00 0x00 0x00 0x00' />
+        </MultiTexture>
+        <MultiTextureTransform>
+          <TextureTransform />
+          <TextureTransform />
+          <TextureTransform DEF='T' />
+        </MultiTextureTransform>
+      </Appearance>
+      <Rectangle2D size='0.3 0.3' />
+    </Shape>
+      
+    <TimeSensor DEF='S'
+        loop='true' cycleInterval='10' />
+    <ScalarInterpolator DEF='I'
+        key='0 0.5 1' keyValue='0.5 -0.5 0.5' />
+    <ROUTE
+        fromNode='S' fromField='fraction_changed'
+        toNode='I' toField='set_fraction' />
+    <ROUTE
+        fromNode='I' fromField='value_changed'
+        toNode='T' toField='rotation' />
+  </Scene>
+</X3D>
