@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='HapticsOptions.x3d'/>
+    <meta name='description' content='H3DAPI HapticsOptions.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported
+      browsers only. Visit http://www.h3d.org for more information and to
+      download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <GlobalSettings>
+      <DebugOptions drawHapticTriangles='true' />
+    </GlobalSettings>
+
+    <Transform translation='-0.15 0 0' rotation='1 0 0 -0.5'>
+      <Shape>
+        <Appearance DEF='A'>
+          <Material />
+          <FrictionalSurface />
+        </Appearance>
+        <Cone 
+            bottomRadius='0.1' height='0.2' 
+            bottom='false' solid='false'>        
+          <HapticsOptions 
+              touchableFace='AS_GRAPHICS'
+              maxDistance='0.01'
+              lookAheadFactor='3'
+              useBoundTree='true'
+              interpolateForceEffects='true' />
+        </Cone>
+      </Shape>
+    </Transform>
+    
+    <Transform translation='0.15 0 0' rotation='1 0 0 -0.5'>
+      <Shape>
+        <Appearance USE='A' />
+        <Cone 
+            bottomRadius='0.1' height='0.2' 
+            bottom='false' solid='false'> 
+          <HapticsOptions 
+              touchableFace='FRONT'
+              maxDistance='0.3'
+              lookAheadFactor='3'
+              useBoundTree='true'
+              interpolateForceEffects='true' />
+        </Cone>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>
