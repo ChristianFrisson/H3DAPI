@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='TexGenGeometry.x3d'/>
+    <meta name='description' content='H3DAPI TexGenGeometry example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 6'/>
+
+    <Shape>
+      <Appearance>
+        <Material />
+        <ImageTexture url='../textures/Day.jpg' />
+      </Appearance>
+      <TexGenGeometry>
+        <SuperShape DEF="SS" resolution="128"
+                    ss1_m='1' ss1_a='1.1' ss1_b='1.88'
+                    ss1_n1='3.41' ss1_n2='-0.24' ss1_n3='19.07'
+                    ss2_m='4' ss2_a='1' ss2_b='1'
+                    ss2_n1='110' ss2_n2='100' ss2_n3='90'  />
+
+        <TextureCoordinateGenerator mode='CAMERASPACEREFLECTIONVECTOR' />
+      </TexGenGeometry>
+    </Shape>
+  </Scene>
+</X3D>

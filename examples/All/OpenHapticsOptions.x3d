@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='OpenHapticsOptions.x3d'/>
+    <meta name='description' content='H3DAPI OpenHapticsOptions.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported
+      browsers only. Visit http://www.h3d.org for more information and to
+      download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+
+    <Transform translation='-0.15 0 0'>
+      <Shape>
+        <Appearance DEF='A'>
+          <Material />
+          <FrictionalSurface />
+        </Appearance>
+        <Sphere radius='0.1'>        
+          <OpenHapticsOptions 
+              GLShape='FEEDBACK_BUFFER' 
+              useAdaptiveViewport='true' 
+              useHapticCameraView='true'
+              forceFullGeometryRender='false' />
+        </Sphere>
+      </Shape>
+    </Transform>
+    
+    <Transform translation='0.15 0 0'>
+      <Shape>
+        <Appearance USE='A' />
+        <Sphere radius='0.1'>        
+          <OpenHapticsOptions 
+              GLShape='DEPTH_BUFFER' 
+              useAdaptiveViewport='true' 
+              useHapticCameraView='true'
+              forceFullGeometryRender='false' />
+        </Sphere>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

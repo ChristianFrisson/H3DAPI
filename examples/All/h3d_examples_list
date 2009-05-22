@@ -24,11 +24,11 @@ Box                               Box
 Circle2D                          Circle2D
 ClipPlane                         ClipPlane
 Collision                         Collision
-CollisionOptions
+CollisionOptions                  CollisionOptions
 Color                             IndexedFaceSet, 
 ColorInterpolator                 ColorInterpolator
 ColorRGBA                         ColorRGBA
-Composed3DTexture
+Composed3DTexture                 ComposedTexture3D.x3d
 ComposedCubeMapTexture
 ComposedShader
 Cone                              Cone
@@ -43,7 +43,7 @@ CoordinateInterpolator            CoordinateInterpolator
 CoordinateInterpolator2D          CoordinateInterpolator2D
 Cylinder                          Cylinder
 CylinderSensor                    CylinderSensor
-DebugOptions
+DebugOptions                      DebugOptions
 DefaultAppearance
 DeformableShape                   DeformableShape
 DepthMapSurface                   Surfaces
@@ -73,9 +73,9 @@ FunctionPlotTexture
 GaussianFunction                  DeformableShape
 GeneralFunction                   TimeFunctionEffect, PositionFunctionEffect
 GeneratedCubeMapTexture
-GeometryBoundTreeOptions
-GlobalSettings
-GraphicsCachingOptions
+GeometryBoundTreeOptions          GeometryBoundTreeOptions
+GlobalSettings                    GlobalSettings
+GraphicsCachingOptions            GraphicsCachingOptions
 GravityPhysicsModel               GravityPhysicsModel
 Group                             Group
 H3DImageObject
@@ -84,7 +84,7 @@ H3DNavigationDevices
 H3DWindowNode
 HapticLayeredGroup                HapticLayeredGroup
 HapticMasterDevice                HapticMasterDevice
-HapticsOptions
+HapticsOptions                    HapticsOptions
 HapticTexturesSurface             Surfaces
 HaptikDevice                      HaptikDevice
 Image3DTexture                    ImageTexture3D
@@ -125,8 +125,8 @@ MultiTexture                      MultiTexture
 MultiTextureCoordinate            MultiTextureCoordinate
 MultiTextureTransform             MultiTextureTransform
 NavigationInfo                    NavigationInfo
-Normal
-NormalInterpolator
+Normal                            Normal
+NormalInterpolator                NormalInterpolator
 NrrdImageLoader
 NurbsCurve
 NurbsCurve2D
@@ -134,14 +134,14 @@ NurbsPatchSurface
 NurbsTextureCoordinate
 NurbsTrimmedSurface
 OggFileReader
-OpenHapticsOptions
-OpenHapticsSurface
+OpenHapticsOptions                OpenHapticsOptions
+OpenHapticsSurface                OpenHapticsSurface
 OrientationInterpolator           OrientationInterpolator
 OrthoViewpoint                    OrthoViewpoint
 PackagedShader
 ParticleSystem                    ParticleSystem
 PhantomDevice                     PhantomDevice
-Pixel3DTexture
+Pixel3DTexture                    PixelTexture3D
 PixelTexture                      PixelTexture
 PlanarReflector                   PlanarReflector
 PlaneSensor                       PlaneSensor
@@ -179,33 +179,33 @@ SpaceWareHapticsDevice            SpaceWareHapticsDevice
 SpaceWareSensor
 Sphere                            Sphere
 SphereSensor                      SphereSensor
-SplinePositionInterpolator
-SplinePositionInterpolator2D
-SplineScalarInterpolator
+SplinePositionInterpolator        SplinePositionInterpolator
+SplinePositionInterpolator2D      SplinePositionInterpolator2D
+SplineScalarInterpolator          SplineScalarInterpolator
 SpotLight                         SpotLight
 SpringEffect                      SpringEffect
-StereoInfo
+StereoInfo                        StereoInfo
 StringSensor                      StringSensor
 SuperShape                        SuperShape
 SurfaceEmitter                    ParticleSystem
 Switch                            Switch
-TexGenGeometry
+TexGenGeometry                    TexGenGeometry
 Text                              Text, Text1
 TextureBackground                 TextureBackground              
 TextureCoordinate                 TextureCoordinate
 TextureCoordinate3D               ImageTexture3D           
-TextureCoordinate4D               
-TextureCoordinateGenerator        
-TextureMatrixTransform            
+TextureCoordinate4D               TextureCoordinate4D           
+TextureCoordinateGenerator        TextureCoordinateGenerator     
+TextureMatrixTransform            TextureMatrixTransform           
 TextureProperties                 
 TextureTransform                  TextureTransform
-TextureTransform3D                
+TextureTransform3D                TextureTransform3D            
 TimeFunctionEffect                TimeFunctionEffect              
 TimeSensor                        Switch
 TimeTrigger                       TimeTrigger
 ToggleGroup                       ToggleGroup
 TouchSensor                       TouchSensor, TouchSensor1, TouchSensor2
-TransferFunctionTexture
+TransferFunctionTexture           TransferFunctionTexture
 Transform                         Transform
 TransformInfo                     TransformInfo
 TriangleFanSet                    TriangleFanSet

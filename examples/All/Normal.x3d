@@ -1,36 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='ImageTexture3D.x3d'/>
-    <meta name='description' content='X3D ImageTexture3D example with
-      TextureCoordinate3D.'/>
+    <meta name='title' content='Normal.x3d'/>
+    <meta name='description' content='X3D Normal node example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
   
   <Scene>
     <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
-    
     <Transform rotation='1 0 -1 0.6'>
       <Shape>
-        <Appearance>
-          <Material />
-          <ImageTexture3D url='images/stone_wall.bmp' />
-        </Appearance>
-        <IndexedFaceSet
+        <IndexedFaceSet           
+            convex='true' normalPerVertex='true' solid='true'
             coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
                         1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'
-            texCoordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
-                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'>
+            normalIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'
+            texCoordIndex=''>
             <Coordinate
                 point=' 0.1  0.1  0.1, -0.1  0.1  0.1,
                        -0.1 -0.1  0.1,  0.1 -0.1  0.1,
                         0.1  0.1 -0.1, -0.1  0.1 -0.1,
                        -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
-            <TextureCoordinate3D
-                point='1 1 0 0 1 0 0 0 0 1 0 0 1 1 1 0 1 1 0 0 1 1 0 1' />
+            <Normal
+                vector='1 1 1, -1 1 1, -1 -1 1, 1 -1 1,
+                        1 1 -1, -1 1 -1, -1 -1 -1, 1 -1 -1' />
         </IndexedFaceSet>
+        <Appearance>
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
       </Shape>
     </Transform>
-    
   </Scene>
 </X3D>

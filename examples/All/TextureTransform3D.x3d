@@ -9,7 +9,7 @@
   <Scene>
     <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
     
-    <Transform rotation='1 0 -1 0.6'>
+    <Transform rotation='1 0 -1 0.6' >
       <Shape>
         <Appearance DEF='A'>
           <Material />
@@ -34,8 +34,8 @@
       </Shape>
     </Transform>
     
-    <TimeSensor loop='true' cycleInterval='6' DEF='S'/>
-    <OrientationInterpolator DEF='I' key='0 0.5 1' keyValue='0 1 0 0 0 1 0 6.18 0 1 0 0' />
+    <TimeSensor loop='true' cycleInterval='16' DEF='S'/>
+    <OrientationInterpolator DEF='I' key='0 0.5 1' keyValue='0 1 0 0 0 1 0 3.14 0 1 0 0' />
     <ROUTE fromNode='S' fromField='fraction_changed' toNode='I' toField='set_fraction' />
     <ROUTE fromNode='I' fromField='value_changed' toNode='T' toField='rotation' />
   </Scene>

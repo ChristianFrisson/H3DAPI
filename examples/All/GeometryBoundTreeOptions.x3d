@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='GeometryBoundTreeOptions.x3d'/>
+    <meta name='description' content='H3DAPI GeometryBoundTreeOptions.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported
+      browsers only. Visit http://www.h3d.org for more information and to
+      download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <GlobalSettings>
+      <DebugOptions drawBoundTree='1' />
+    </GlobalSettings>    
+    
+    <Transform translation='0.2 0 0' rotation='0 1 1 0.8'>
+      <Shape>
+        <Appearance>
+          <Material />
+        </Appearance>
+        <Box size='0.1 0.1 0.1'>        
+          <GeometryBoundTreeOptions boundType='OBB' maxTrianglesInLeaf='1' />
+        </Box>
+      </Shape>
+    </Transform>
+    
+    <Transform rotation='0 1 1 0.8'>
+      <Shape>
+        <Appearance>
+          <Material />
+        </Appearance>
+        <Box size='0.1 0.1 0.1'>
+          <GeometryBoundTreeOptions boundType='AABB' maxTrianglesInLeaf='1' />
+        </Box>
+      </Shape>
+    </Transform>
+        
+    <Transform translation='-0.2 0 0' rotation='0 1 1 0.8'>
+      <Shape>
+        <Appearance>
+          <Material />
+        </Appearance>
+        <Box size='0.1 0.1 0.1'>
+          <GeometryBoundTreeOptions boundType='SPHERE' maxTrianglesInLeaf='1' />
+        </Box>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='ImageTexture3D.x3d'/>
-    <meta name='description' content='X3D ImageTexture3D example with
+    <meta name='title' content='TextureCoordinate4D.x3d'/>
+    <meta name='description' content='X3D TextureCoordinate4D example with
       TextureCoordinate3D.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
@@ -26,8 +26,8 @@
                        -0.1 -0.1  0.1,  0.1 -0.1  0.1,
                         0.1  0.1 -0.1, -0.1  0.1 -0.1,
                        -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
-            <TextureCoordinate3D
-                point='1 1 0 0 1 0 0 0 0 1 0 0 1 1 1 0 1 1 0 0 1 1 0 1' />
+            <TextureCoordinate4D
+                point='1 1 0 1 0 1 0 1 0 0 0 1 1 0 0 1 1 1 1 1 0 1 1 1 0 0 1 1 1 0 1 1' />
         </IndexedFaceSet>
       </Shape>
     </Transform>

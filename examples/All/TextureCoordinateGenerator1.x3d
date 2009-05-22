@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='TextureCoordinateGenerator.x3d'/>
-    <meta name='description' content='X3D TextureCoordinateGenerator example.
-      Experiment with the modes to see the differences.'/>
+    <meta name='title' content='ImageTexture.x3d'/>
+    <meta name='description' content='X3D ImageTexture node example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
   
@@ -21,14 +20,13 @@
                      -0.1 -0.1  0.1,  0.1 -0.1  0.1,
                       0.1  0.1 -0.1, -0.1  0.1 -0.1,
                      -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
-          <TextureCoordinateGenerator mode='CAMERASPACEREFLECTIONVECTOR' />
+          <TextureCoordinateGenerator mode="CAMERASPACEREFLECTIONVECTOR" />
           <!--TextureCoordinateGenerator mode='GL_SPHERE' /-->
           <!--TextureCoordinateGenerator mode='CAMERASPACEPOSITION' /-->
           <!--TextureCoordinateGenerator mode='COORD' /-->
           <!--TextureCoordinateGenerator mode='COORD-EYE' /-->
           <!--TextureCoordinateGenerator mode='CAMERASPACENORMAL' /-->
-          <!--TextureCoordinateGenerator mode='MATRIX' 
-            parameter='1 0 0 1 0 1 0 1 0 0 1 1' /-->
+          <!--TextureCoordinateGenerator mode='MATRIX' parameter='1 0 0 1 0 1 0 1 0 0 1 1' /-->
       </IndexedFaceSet>
     </Shape>
   </Scene>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='TransferFunctionTexture.x3d'/>
+    <meta name='description' content='H3DAPI TransferFunctionTexture example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
+    
+    <Transform rotation='1 0 -1 0.6'>
+      <Shape>
+        <Appearance>
+          <Material />
+          <TransferFunctionTexture>
+            <GeneralFunction containerField='redFunction' function='x+y' params='x,y' />
+            <GeneralFunction containerField='blueFunction' function='x*y' params='x,y' />
+            <GeneralFunction containerField='greenFunction' function='1' params='x,y' />
+          </TransferFunctionTexture>
+        </Appearance>
+        <Box size='0.1 0.1 0.1' />
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>

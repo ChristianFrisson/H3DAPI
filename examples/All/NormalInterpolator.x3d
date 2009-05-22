@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='NormalInterpolator.x3d'/>
+    <meta name='description' content='X3D NormalInterpolator node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
+    <Transform rotation='1 0 -1 0.6'>
+      <Shape>
+        <IndexedFaceSet           
+            convex='true' normalPerVertex='false' solid='true'
+            coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'
+            normalIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'
+            texCoordIndex=''>
+            <Coordinate
+                point=' 0.1  0.1  0.1, -0.1  0.1  0.1,
+                       -0.1 -0.1  0.1,  0.1 -0.1  0.1,
+                        0.1  0.1 -0.1, -0.1  0.1 -0.1,
+                       -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
+            <Normal DEF='N'
+                vector='0 0 1, 1 0 0, 0 0 -1, -1 0 0, 0 1 0, 0 -1 0' />
+        </IndexedFaceSet>
+        <Appearance>
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <TimeSensor DEF='S' loop='true' cycleInterval='6' />
+    <NormalInterpolator DEF='I'
+        key='0 0.5 1'
+        keyValue='1 1 1, -1 1 1, -1 -1 1, 1 -1 1,
+                  1 1 -1, -1 1 -1, -1 -1 -1, 1 -1 -1,
+                  -1 1 1, 1 1 1, 1 -1 1, -1 -1 1,
+                  -1 1 -1, 1 1 -1, 1 -1 -1, -1 -1 -1,
+                  1 1 1, -1 1 1, -1 -1 1, 1 -1 1,
+                  1 1 -1, -1 1 -1, -1 -1 -1, 1 -1 -1' />
+    
+    <ROUTE 
+        fromNode='S' fromField='fraction_changed'
+        toNode='I' toField='set_fraction' />
+    <ROUTE 
+        fromNode='I' fromField='value_changed'
+        toNode='N' toField='vector' />
+  </Scene>
+</X3D>

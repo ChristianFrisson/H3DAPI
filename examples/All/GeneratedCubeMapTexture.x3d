@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='TexGenGeometry.x3d'/>
+    <meta name='description' content='H3DAPI TexGenGeometry example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <!--NavigationInfo type = 'NONE' /-->
+    <Viewpoint position='0 0 0.6' />
+    <!--Background
+       backUrl  ='../textures/b_arch_00000.png'
+       frontUrl ='../textures/f_arch_00000.png'
+       leftUrl  ='../textures/l_arch_00000.png'
+       rightUrl ='../textures/r_arch_00000.png'
+       bottomUrl='../textures/d_arch_00000.png'
+       topUrl   ='../textures/t_arch_00000.png'   /-->
+
+    <!--DynamicTransform angularMomentum="0.1 0.25 0">
+      <FitToBoxTransform boxCenter="0 0 0" boxSize="0.25 0.25 0.25"
+                         uniformScalingOnly="true" active="true"-->
+        <Shape>
+          <Appearance>
+            <Material />
+            <GeneratedCubeMapTexture update='ALWAYS' size='128' />
+          </Appearance>
+          <IndexedFaceSet
+            coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'
+            texCoordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'>
+            <Coordinate
+                point=' 0.1  0.1  0.1, -0.1  0.1  0.1,
+                       -0.1 -0.1  0.1,  0.1 -0.1  0.1,
+                        0.1  0.1 -0.1, -0.1  0.1 -0.1,
+                       -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
+            <TextureCoordinateGenerator mode="CAMERASPACEREFLECTIONVECTOR" />
+        </IndexedFaceSet>
+          <!--TexGenGeometry>
+            <SuperShape DEF="SS" resolution="128"
+                        ss1_m="1" ss1_a="1.1" ss1_b="1.88"
+                        ss1_n1="3.41" ss1_n2="-0.24" ss1_n3="19.07"
+                        ss2_m="4" ss2_a="1" ss2_b="1"
+                        ss2_n1="110" ss2_n2="100" ss2_n3="90"  />
+
+            <TextureCoordinateGenerator mode="CAMERASPACEREFLECTIONVECTOR" />
+          </TexGenGeometry-->
+        </Shape>
+      <!--/FitToBoxTransform>
+    </DynamicTransform-->
+    
+    <Transform translation='0.2 0 0'>
+    <Shape>
+      <Appearance>
+        <ImageTexture url='../textures/Day.jpg' />
+      </Appearance>      
+      <Sphere radius='0.1' />
+    </Shape>
+    </Transform>
+  </Scene>
+</X3D>

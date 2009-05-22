@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='ImageTexture3D.x3d'/>
-    <meta name='description' content='X3D ImageTexture3D example with
-      TextureCoordinate3D.'/>
+    <meta name='title' content='TextureMatrixTransform.x3d'/>
+    <meta name='description' content='X3D TextureMatrixTransform example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
   
   <Scene>
     <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
     
-    <Transform rotation='1 0 -1 0.6'>
+    <Transform rotation='1 0 -1 0.6' >
       <Shape>
-        <Appearance>
+        <Appearance DEF='A'>
           <Material />
           <ImageTexture3D url='images/stone_wall.bmp' />
+          <TextureMatrixTransform 
+              matrix='0.5 0 0 0
+                      0 0.5 0 0
+                      0 0 0.5 0
+                      0 0 0 1' />
         </Appearance>
         <IndexedFaceSet
             coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
@@ -31,6 +35,6 @@
         </IndexedFaceSet>
       </Shape>
     </Transform>
-    
+  
   </Scene>
 </X3D>

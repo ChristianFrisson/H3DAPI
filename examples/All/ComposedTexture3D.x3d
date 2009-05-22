@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='ImageTexture3D.x3d'/>
-    <meta name='description' content='X3D ImageTexture3D example with
+    <meta name='title' content='ComposedTexture3D.x3d'/>
+    <meta name='description' content='X3D ComposedTexture3D example with
       TextureCoordinate3D.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
@@ -14,7 +14,10 @@
       <Shape>
         <Appearance>
           <Material />
-          <ImageTexture3D url='images/stone_wall.bmp' />
+          <ComposedTexture3D>
+            <ImageTexture url='images/stone_wall.bmp' />
+            <ImageTexture url='images/stone_wall_normal_map.bmp' />
+          </ComposedTexture3D>
         </Appearance>
         <IndexedFaceSet
             coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
@@ -29,6 +32,7 @@
             <TextureCoordinate3D
                 point='1 1 0 0 1 0 0 0 0 1 0 0 1 1 1 0 1 1 0 0 1 1 0 1' />
         </IndexedFaceSet>
+        <!--Box size='0.1 0.1 0.1' /-->
       </Shape>
     </Transform>
     

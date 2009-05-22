@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='SplineScalarInterpolator.x3d'/>
+    <meta name='description' content='X3D SplineScalarInterpolator example.
+      Compares spline-interpolation with non-spline interpolation'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    
+    <!-- Non-spline interpolation -->
+    <Transform translation='-0.15 0 0'>
+      <Inline url='./ScalarInterpolator.x3d' />
+    </Transform>
+    
+    <!-- Spline interpolation -->
+    <Transform translation='0.15 0 0'>
+      <Shape>
+        <Appearance>
+          <Material DEF='M' diffuseColor='0 1 0' />
+        </Appearance>
+        <Sphere radius='0.1' />
+      </Shape>
+    </Transform>
+   
+    <TimeSensor DEF='T' 
+      cycleInterval='6' loop='true' enabled='true' />
+    
+    <SplineScalarInterpolator DEF='I'
+      closed='false'
+      key='0.1 0.5 0.9'
+      keyValue='0 1 0'
+      keyVelocity='0.1 5 0.1'
+      normalizeVelocity='false' />
+
+    <ROUTE
+      fromNode='T' fromField='fraction_changed'
+      toNode='I' toField='set_fraction' />
+    <ROUTE
+      fromNode='I' fromField='value_changed'
+      toNode='M' toField='transparency' />
+ 
+  </Scene>
+</X3D>
