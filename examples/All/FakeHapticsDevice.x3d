@@ -11,6 +11,10 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6'/>
-    <FakeHapticsDevice />
+    <DeviceInfo>
+      <FakeHapticsDevice>
+        <RuspiniRenderer />
+      </FakeHapticsDevice>
+    </DeviceInfo>
   </Scene>
 </X3D>

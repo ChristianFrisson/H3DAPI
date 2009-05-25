@@ -11,14 +11,12 @@ Appearance                        FillProperties, LineProperties, Material,
 Arc2D                             Arc2D
 ArcClose2D                        ArcClose2D
 AudioClip                         Sound
-AudioFileReader
 Background                        Background, Background1
 Billboard                         Billboard
 BooleanFilter                     BooleanFilter
 BooleanSequencer                  BooleanSequencer
 BooleanToggle                     BooleanToggle
 BooleanTrigger                    BooleanTrigger
-Bound
 BoundedPhysicsModel               BoundedPhysicsModel
 Box                               Box
 Circle2D                          Circle2D
@@ -30,28 +28,26 @@ ColorInterpolator                 ColorInterpolator
 ColorRGBA                         ColorRGBA
 Composed3DTexture                 ComposedTexture3D.x3d
 ComposedCubeMapTexture
-ComposedShader
+ComposedShader                    /demos glsl_earthshader.x3d
 Cone                              Cone
 ConeEmitter                       ParticleSystem
 Contour2D
 ContourPolyline2D
-CoordBoundField
-Coordinate                        IndexedFaceSet, IndexedTriangleSet, TriangeSet
+Coordinate                        IndexedFaceSet, IndexedTriangleSet
 CoordinateDeformer                DeformableShape
-CoordinateDouble
+CoordinateDouble                  TriangleSet
 CoordinateInterpolator            CoordinateInterpolator
 CoordinateInterpolator2D          CoordinateInterpolator2D
 Cylinder                          Cylinder
 CylinderSensor                    CylinderSensor
 DebugOptions                      DebugOptions
-DefaultAppearance
+DefaultAppearance                 DefaultAppearance
 DeformableShape                   DeformableShape
 DepthMapSurface                   Surfaces
-DeviceInfo                        PhantomDevice,
+DeviceInfo                        PhantomDevice, ForceDimensionDevice, FalconDevice
 DeviceLog                         DeviceLog
-DicomImageLoader
+DicomImageLoader                  ImageLoaders
 DirectionalLight                  DirectionalLight
-DirectShowDecoder
 Disk2D                            Disk2D
 DynamicTransform                  DynamicTransform
 ElevationGrid                     ElevationGrid, ElevationGrid1
@@ -67,9 +63,9 @@ FogCoordinate                     FogCoordinate
 FontStyle                         FontStyle
 ForceDimensionDevice              ForceDimensionDevice
 ForceField                        ForceField
-FreeImageLoader
+FreeImageLoader                   ImageLoaders
 FrictionalSurface                 Sphere, Surfaces
-FunctionPlotTexture
+FunctionPlotTexture               FunctionPlotTexture
 GaussianFunction                  DeformableShape
 GeneralFunction                   TimeFunctionEffect, PositionFunctionEffect
 GeneratedCubeMapTexture
@@ -78,18 +74,14 @@ GlobalSettings                    GlobalSettings
 GraphicsCachingOptions            GraphicsCachingOptions
 GravityPhysicsModel               GravityPhysicsModel
 Group                             Group
-H3DImageObject
-H3DMultiPassRenderObject
-H3DNavigationDevices
-H3DWindowNode
 HapticLayeredGroup                HapticLayeredGroup
 HapticMasterDevice                HapticMasterDevice
 HapticsOptions                    HapticsOptions
 HapticTexturesSurface             Surfaces
 HaptikDevice                      HaptikDevice
 Image3DTexture                    ImageTexture3D
-ImageObjectInfo
-ImageObjectTexture
+ImageObjectInfo                   ImageObjectInfo
+ImageObjectTexture                ImageObjectTexture
 ImageTexture                      ImageTexture
 ImportLibrary                     ImportLibrary
 IndexedFaceSet                    IndexedFaceSet
@@ -100,8 +92,6 @@ IndexedTriangleStripSet           IndexedTriangleStripSet
 Inline                            Switch
 IntegerSequencer                  Switch
 IntegerTrigger                    IntegerTrigger
-IStreamInputSource
-IStreamInputStream
 KeySensor                         KeySensor
 LineProperties                    LineProperties
 LineSet                           LineSet
@@ -113,7 +103,7 @@ MagneticSurface                   Surfaces
 Material                          Material
 Matrix3VertexAttribute
 Matrix4VertexAttribute
-MatrixTransform
+MatrixTransform                   MatrixTransform
 MetadataDouble                    Metadata
 MetadataFloat                     Metadata
 MetadataInteger                   Metadata
@@ -127,13 +117,12 @@ MultiTextureTransform             MultiTextureTransform
 NavigationInfo                    NavigationInfo
 Normal                            Normal
 NormalInterpolator                NormalInterpolator
-NrrdImageLoader
+NrrdImageLoader                   ImageLoaders
 NurbsCurve
 NurbsCurve2D
 NurbsPatchSurface
 NurbsTextureCoordinate
 NurbsTrimmedSurface
-OggFileReader
 OpenHapticsOptions                OpenHapticsOptions
 OpenHapticsSurface                OpenHapticsSurface
 OrientationInterpolator           OrientationInterpolator
@@ -147,28 +136,25 @@ PlanarReflector                   PlanarReflector
 PlaneSensor                       PlaneSensor
 PointEmitter                      ParticleSystem
 PointLight                        PointLight, PointLight1
-PointNormalClipPlane
+PointNormalClipPlane              PointNormalClipPlane
 PointSet                          PointSet
 Polyline2D                        Polyline2D
 Polypoint2D                       Polypoint2D
 PositionFunctionEffect            PositionFunctionEffect
 PositionInterpolator              PositionInterpolator
 PositionInterpolator2D            PositionInterpolator2D
-ProgramShader
+ProgramShader                     /demos cg_earthshader.x3d
 ProtoDeclaration                  Prototype, Surfaces
 PrototypeInstance                 Prototype
 ProximitySensor                   ProximitySensor
-PythonScript                      PythonScript
+PythonScript                      PythonScript, ImageObjectInfo, DeformableShape
 QuanserDevice                     QuanserDevice
-RawImageLoader
+RawImageLoader                    ImageLoaders
 Rectangle2D                       Rectangle2D
 RenderProperties                  RenderProperties, RenderProperties1, RenderProperties2
 ScalarInterpolator                ScalarInterpolator
-Scene
-Script
-ShaderFunctions
-ShaderPart
-ShaderProgram
+ShaderPart                        /demos glsl_earthshader.x3d
+ShaderProgram                     /demos cg_earthshader.x3d
 Shape                             Box, Cone, Sphere
 SimballDevice                     SimballDevice
 SimpleMovieTexture

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='MatrixTransform.x3d'/>
+    <meta name='description' content='H3DAPI MatrixTransform example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <PointNormalClipPlane
+        enabled='true'
+        clipHaptics='true'
+        clipGraphics='true'
+        normal='0 0 -1'
+        point='0 0 0.05'/>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='1 0 0' />
+          <SmoothSurface />
+        </Appearance>
+        <Cone bottomRadius='0.1' height='0.2' solid='false'/>
+      </Shape>
+
+  </Scene>
+</X3D>
