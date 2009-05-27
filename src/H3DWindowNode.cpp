@@ -77,33 +77,46 @@ H3DNodeDatabase H3DWindowNode::database( "H3DWindowNode",
 
 
 namespace H3DWindowNodeInternals {
+  FIELDDB_ELEMENT( H3DWindowNode, posX, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, posY, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, width, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, height, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, fullscreen, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, mirrored, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, renderMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, viewpoint, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, manualCursorControl, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, cursorType, INPUT_OUTPUT );
 }
 
 bool H3DWindowNode::GLEW_init = false;
 set< H3DWindowNode* > H3DWindowNode::windows;
 
-H3DWindowNode::H3DWindowNode( 
+H3DWindowNode::H3DWindowNode(
                    Inst< SFInt32     > _width,
                    Inst< SFInt32     > _height,
                    Inst< SFBool      > _fullscreen,
                    Inst< SFBool      > _mirrored,
                    Inst< RenderMode  > _renderMode, 
-                   Inst< SFViewpoint > _viewpoint ) :
+                   Inst< SFViewpoint > _viewpoint, 
+                   Inst< SFInt32     > _posX,
+                   Inst< SFInt32     > _posY,
+                   Inst< SFBool      > _manualCursorControl,
+                   Inst< SFString    > _cursorType ) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
+  posX      ( _posX        ),
+  posY      ( _posY        ),
   width     ( _width      ),
   height    ( _height     ),
   fullscreen( _fullscreen ),
   mirrored  ( _mirrored   ),
   renderMode( _renderMode ),
   viewpoint( _viewpoint ),
+  manualCursorControl( _manualCursorControl ),
+  cursorType( _cursorType ),
+  multi_pass_transparency( false ),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -111,7 +124,8 @@ H3DWindowNode::H3DWindowNode(
   stencil_mask_height( 0 ),
   stencil_mask_width( 0 ),
   last_loop_mirrored( false ),
-  last_render_mode( RenderMode::MONO ) {
+  last_render_mode( RenderMode::MONO ),
+  current_cursor( "DEFAULT" ) {
   
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -120,10 +134,13 @@ H3DWindowNode::H3DWindowNode(
   windowInstance = GetModuleHandle( NULL );
 #endif
 
+  posX->setValue( -1 );
+  posY->setValue( -1 );
   width->setValue( 800 );
   height->setValue( 600 );
   fullscreen->setValue( false );
   mirrored->setValue( false );
+
   renderMode->addValidValue( "MONO" );
   renderMode->addValidValue( "QUAD_BUFFERED_STEREO" );
   renderMode->addValidValue( "VERTICAL_SPLIT" );
@@ -138,6 +155,11 @@ H3DWindowNode::H3DWindowNode(
   renderMode->addValidValue( "RED_CYAN_STEREO" );
   renderMode->addValidValue( "VERTICAL_INTERLACED_GREEN_SHIFT" );
   renderMode->setValue( "MONO" );  
+
+  cursorType->addValidValue( "DEFAULT" );
+  cursorType->setValue( "DEFAULT" ); 
+
+  manualCursorControl->setValue( false );
 
 #ifdef WIN32
   wpOrigProc = (WNDPROC)DefWindowProc;
@@ -1058,6 +1080,29 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     swapBuffers();
   }
   glPopAttrib();
+
+  // if we are using automatic cursor control we now choose cursor 
+  // depending on scene state.
+  if( !manualCursorControl->getValue () ) {
+    if ( X3DPointingDeviceSensorNode::anyIsActive() ) {
+      cursorType->setValue( getCursorForMode( "ON_SENSOR_ACTIVE" ) );
+    } else if ( X3DPointingDeviceSensorNode::anyIsOver() ) {
+      cursorType->setValue( getCursorForMode( "ON_SENSOR_OVER" ) );
+    } else if( (nav_info && nav_info->getUsedNavType() == "LOOKAT") ||
+               (!nav_info && default_nav == "LOOKAT" ) ) {
+      cursorType->setValue( getCursorForMode( "ON_NAV_LOOKAT" ) );
+    } else {
+      cursorType->setValue("DEFAULT");
+    }
+  }
+
+  // update cursor if cursor changed.
+  const string &cursor_type = cursorType->getValue();
+  if( current_cursor != cursor_type ) {
+    if( setCursorType( cursor_type ) == 0 ) {
+      current_cursor = cursor_type;
+    }
+  }
 
   // TODO: This should only be done once per scene.
   // two windows in the same scene will probably

@@ -198,6 +198,22 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors( Node * n ) {
   }
 }
 
+bool X3DPointingDeviceSensorNode::anyIsOver() {
+  for( unsigned int i = 0; i < instances.size(); ++i ) {
+    if (instances[i]->isOver->getValue())
+      return true;
+  }
+  return false;
+}
+
+bool X3DPointingDeviceSensorNode::anyIsActive() {
+  for( unsigned int i = 0; i < instances.size(); ++i ) {
+    if (instances[i]->isActive->getValue())
+      return true;
+  }
+  return false;
+}
+
 void X3DPointingDeviceSensorNode::SetIsActive::update() {
   SFBool::update();
   X3DPointingDeviceSensorNode *ts = 
@@ -233,7 +249,8 @@ void X3DPointingDeviceSensorNode::SetIsActive::update() {
       }
       else {
         number_of_active--;
-        if( number_of_active == 0 ) {
+        if( number_of_active <= 0 ) {
+          number_of_active = 0;
           //TODO: give option to only try to enable those that actually
           // existed before disable.
           //H3DNavigation::enableDevice( H3DNavigation::ALL );
@@ -241,6 +258,36 @@ void X3DPointingDeviceSensorNode::SetIsActive::update() {
         }
       }
       ts->isActive->setValue( itIsActive, ts->id );
+    }
+  }
+}
+
+void X3DPointingDeviceSensorNode::SetIsEnabled::update() {
+  SFBool::update();
+  bool _enabled = static_cast< SFBool * >( routes_in[0] )->getValue();
+  bool leftButton = static_cast< SFBool * >( routes_in[1] )->getValue();
+        
+  X3DPointingDeviceSensorNode *pdsn = 
+    static_cast< X3DPointingDeviceSensorNode * >( getOwner() );
+  if( _enabled != pdsn->is_enabled ) {
+    if( leftButton && _enabled && !pdsn->is_enabled ) { // TODO : This is a no-op
+      pdsn->is_enabled = false;                         // This is a no-op
+    }                                                   // This is a no-op   
+    else {
+      pdsn->is_enabled = _enabled;
+    }
+  }
+
+  if( routes_in[0] == event.ptr && 
+      !_enabled && pdsn->isActive->getValue( pdsn->id ) ) {
+    pdsn->isActive->setValue( false, pdsn->id );
+    number_of_active--;
+    if( number_of_active <= 0 ) {
+      number_of_active = 0;
+      //TODO: give option to only try to enable those that actually
+      // existed before disable.
+      //H3DNavigation::enableDevice( H3DNavigation::ALL );
+      H3DNavigation::enableDevice( H3DNavigation::MOUSE );
     }
   }
 }

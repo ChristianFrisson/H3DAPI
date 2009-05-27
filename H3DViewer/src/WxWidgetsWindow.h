@@ -48,6 +48,9 @@ namespace H3D {
   /// \class WxWidgetsWindow
   /// \brief H3DWindowNode implemented using wxWidgets. 
   /// 
+  /// Valid values for the cursorType field depend on the platform and
+  /// are different on Windows, OSX and Linux. Use cursorType->getValidValues()
+  /// to get the ones supported.
   class WxWidgetsWindow : public H3DWindowNode {
   public:
 
@@ -92,12 +95,16 @@ namespace H3D {
 
     /// Constructor.
     WxWidgetsWindow( wxWindow *_theParent = 0,
-      Inst< SFInt32     > _width      = 0,
-                Inst< SFInt32     > _height     = 0,
-                Inst< SFBool      > _fullscreen = 0,
-                Inst< SFBool      > _mirrored   = 0,
-                Inst< RenderMode  > _renderMode = 0, 
-                Inst< SFViewpoint > _viewpoint  = 0 );
+                     Inst< SFInt32     > _width      = 0,
+                     Inst< SFInt32     > _height     = 0,
+                     Inst< SFBool      > _fullscreen = 0,
+                     Inst< SFBool      > _mirrored   = 0,
+                     Inst< RenderMode  > _renderMode = 0, 
+                     Inst< SFViewpoint > _viewpoint  = 0,
+                     Inst< SFInt32     > _posX       = 0,
+                     Inst< SFInt32     > _posY       = 0,
+                     Inst< SFBool      > _manualCursorControl = 0,
+                     Inst< SFString    > _cursorType = 0 );
 
     ///// Destructor.
     ~WxWidgetsWindow() {
@@ -137,6 +144,27 @@ namespace H3D {
     }
 
   protected:
+
+    /// Set the cursor to the given cursor type. See cursorType field
+    /// for valid values. Returns 0 on success. -1 if the cursor_type is 
+    /// not supported.
+    virtual int setCursorType( const std::string & cursor_type );
+
+    /// Return the cursor type to use for given modes. This should
+    /// be implemented for each subclass to choose appropriate cursors.
+    /// The standard modes are:
+    /// "DEFAULT" - normal mode
+    /// "ON_SENSOR_OVER" - when mouse pointer is over a pointing device
+    /// sensor.
+    /// "ON_SENSOR_ACTIVE" - when a sensor node is active
+    /// "ON_NAV_LOOKAT" - when lookat mode is chosen
+    string getCursorForMode( const string &mode );
+
+    /// Adds the supported cursor type for the current platform to the
+    /// given vector.
+    void getSupportedCursorsTypes( vector< string > &types );
+
+
 #if wxUSE_DRAG_AND_DROP
     
     class DragAndDropFile : public wxFileDropTarget {
@@ -158,6 +186,7 @@ namespace H3D {
     friend class DragAndDropFile;
     OnDropFileFunc drag_file_func;
     void *drag_file_func_arg;
+
     bool is_initialized;
     bool have_parent;
     wxWindow * theWindow;

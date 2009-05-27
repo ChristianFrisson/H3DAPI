@@ -153,28 +153,7 @@ namespace H3D {
         SFBool::setValue( b, id );
       }
     protected:
-      virtual void update() {
-        SFBool::update();
-        bool _enabled = static_cast< SFBool * >( routes_in[0] )->getValue();
-        bool leftButton = static_cast< SFBool * >( routes_in[1] )->getValue();
-        
-        X3DPointingDeviceSensorNode *pdsn = 
-            static_cast< X3DPointingDeviceSensorNode * >( getOwner() );
-        if( _enabled != pdsn->is_enabled ) {
-          if( leftButton && _enabled && !pdsn->is_enabled ) {
-            pdsn->is_enabled = false;
-          }
-          else {
-            pdsn->is_enabled = _enabled;
-          }
-        }
-
-        if( routes_in[0] == event.ptr && 
-            !_enabled && pdsn->isActive->getValue( pdsn->id ) ) {
-          pdsn->isActive->setValue( _enabled, pdsn->id );
-          number_of_active--;
-        }
-      }
+      virtual void update(); 
     };
 #ifdef __BORLANDC__
     friend class SetIsEnabled;
@@ -225,6 +204,14 @@ namespace H3D {
     /// more calls to lineIntersect.
     /// \param n The node to do intersection tests with, e.g. the sceneRoot.
     static void updateX3DPointingDeviceSensors( Node * n );
+
+    /// Called to query, whether any X3DPointingDeviceSensors is in isOver
+    /// state.
+    static bool anyIsOver();
+
+    /// Called to query, whether any X3DPointingDeviceSensors is in isActive
+    /// state.
+    static bool anyIsActive();
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

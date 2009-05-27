@@ -37,16 +37,27 @@ namespace H3D {
   /// \class GLUTWindow
   /// \brief H3DWindowNode implementet using GLUT. 
   /// 
+  /// Valid values for the cursorType field are:
+  /// "RIGHT_ARROW", "LEFT_ARROW", "INFO", "DESTROY", "HELP",
+  /// "CYCLE", SPRAYCAN", "WAIT", "TEXT", "CROSSHAIR", "UP_DOWN",
+  /// "LEFT_RIGHT", "TOP_SIDE", "BOTTOM_SIDE", "LEFT_SIDE", 
+  /// "RIGHT_SIDE", "TOP_LEFT_CORNER", "TOP_RIGHT_CORNER",
+  /// "BOTTOM_RIGHT_CORNER", "BOTTOM_LEFT_CORNER",
+  /// "FULL_CROSSHAIR", "NONE", "DEFAULT"
   class H3DAPI_API GLUTWindow : public H3DWindowNode {
   public:
-    
+
     /// Constructor.
-    GLUTWindow( Inst< SFInt32     > _width      = 0,
-                Inst< SFInt32     > _height     = 0,
-                Inst< SFBool      > _fullscreen = 0,
-                Inst< SFBool      > _mirrored   = 0,
-                Inst< RenderMode  > _renderMode = 0, 
-                Inst< SFViewpoint > _viewpoint  = 0 );
+    GLUTWindow( Inst< SFInt32       > _width      = 0,
+                Inst< SFInt32       > _height     = 0,
+                Inst< SFBool        > _fullscreen = 0,
+                Inst< SFBool        > _mirrored   = 0,
+                Inst< RenderMode    > _renderMode = 0, 
+                Inst< SFViewpoint   > _viewpoint  = 0, 
+                Inst< SFInt32       > _posX       = 0,
+                Inst< SFInt32       > _posY       = 0,
+                Inst< SFBool        > _manualCursorControl = 0,
+                Inst< SFString      > _cursorType = 0  );
 
     /// Destructor.
     ~GLUTWindow();
@@ -110,11 +121,25 @@ namespace H3D {
 
     /// Initialize GLUT. 
     static void initGLUT();
-    
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   protected:
+    /// Set cursor shape according to given cursor mode.
+    virtual int setCursorType( const std::string & cursor_type );
+
+    /// Return the cursor type to use for given mode. This should
+    /// be implemented for each subclass to choose appropriate cursors.
+    /// 
+    /// The standard events are:
+    /// "DEFAULT" - normal mode ("DEFAULT")
+    /// "ON_SENSOR_OVER" - when mouse pointer is over a pointing device
+    /// sensor ("CROSS")
+    /// "ON_SENSOR_ACTIVE" - when a sensor node is active ("NAVIGATE" )
+    /// "ON_NAV_LOOKAT" - when lookat mode is chosen 
+    virtual string getCursorForMode( const string &mode );
+
     static bool GLUT_init;
     int window_id;
   };

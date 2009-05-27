@@ -77,7 +77,7 @@ bool GLUTWindow::GLUT_init = false;
 
 void GLUTWindow::initGLUT() {
   if ( !GLUT_init ) {
-    char *argv[1] = { "H3DLoad" };
+    char *argv[1] = { (char *)("H3DLoad") };
     int argc = 1;
     glutInit(&argc, argv);
     GLUT_init = true;
@@ -89,12 +89,39 @@ GLUTWindow::GLUTWindow( Inst< SFInt32     > _width,
                         Inst< SFBool      > _fullscreen,
                         Inst< SFBool      > _mirrored,
                         Inst< RenderMode  > _renderMode, 
-                        Inst< SFViewpoint > _viewpoint ) :
+                        Inst< SFViewpoint > _viewpoint,
+                        Inst< SFInt32     > _posX,
+                        Inst< SFInt32     > _posY,
+                        Inst< SFBool      > _manualCursorControl,
+                        Inst< SFString    > _cursorType ) :
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
-                 _viewpoint ) {
+                 _viewpoint, _posX, _posY, _manualCursorControl, _cursorType ) {
   
   type_name = "GLUTWindow";
   database.initFields( this );
+
+  cursorType->addValidValue( "RIGHT_ARROW" ); 
+  cursorType->addValidValue( "LEFT_ARROW" ); 
+  cursorType->addValidValue( "INFO" ); 
+  cursorType->addValidValue( "DESTROY" ); 
+  cursorType->addValidValue( "HELP" ); 
+  cursorType->addValidValue( "CYCLE" ); 
+  cursorType->addValidValue( "SPRAY" ); 
+  cursorType->addValidValue( "WAIT" ); 
+  cursorType->addValidValue( "TEXT" ); 
+  cursorType->addValidValue( "CROSSHAIR" ); 
+  cursorType->addValidValue( "UP_DOWN" ); 
+  cursorType->addValidValue( "LEFT_RIGHT" ); 
+  cursorType->addValidValue( "TOP_SIDE" ); 
+  cursorType->addValidValue( "BOTTOM_SIDE" ); 
+  cursorType->addValidValue( "LEFT_SIDE" ); 
+  cursorType->addValidValue( "RIGHT_SIDE" ); 
+  cursorType->addValidValue( "TOP_LEFT_CORNER" ); 
+  cursorType->addValidValue( "TOP_RIGHT_CORNER" ); 
+  cursorType->addValidValue( "BOTTOM_RIGHT_CORNER" ); 
+  cursorType->addValidValue( "BOTTOM_LEFT_CORNER" ); 
+  cursorType->addValidValue( "FULL_CROSSHAIR" ); 
+  cursorType->addValidValue( "NONE" );
 }
 
 GLUTWindow::~GLUTWindow() {
@@ -135,6 +162,7 @@ void GLUTWindow::initWindow() {
   }
   glutInitDisplayMode( mode );
   glutInitWindowSize( width->getValue(), height->getValue() );
+  glutInitWindowPosition( posX->getValue(), posY->getValue() );
   window_id = glutCreateWindow( "H3D" );
   glutSetWindow( window_id );
   // set up GLUT callback functions
@@ -198,6 +226,58 @@ void GLUTWindow::swapBuffers() {
 
 void GLUTWindow::makeWindowActive() {
   glutSetWindow( window_id );
+}
+
+
+int GLUTWindow::setCursorType(const std::string & cursor_type) {
+  static map<std::string, int> cursor_shapes;
+
+  if( cursor_shapes.size() == 0 ) {
+    // see man glutSetCursor(3)
+    cursor_shapes[ "DEFAULT"    ]  = GLUT_CURSOR_INHERIT;
+    cursor_shapes[ "RIGHT_ARROW" ]  = GLUT_CURSOR_RIGHT_ARROW;
+    cursor_shapes[ "LEFT_ARROW"    ]  = GLUT_CURSOR_LEFT_ARROW;
+    cursor_shapes[ "INFO"    ]  = GLUT_CURSOR_INFO;
+    cursor_shapes[ "DESTROY" ]  = GLUT_CURSOR_DESTROY;           
+    cursor_shapes[ "HELP"     ]  = GLUT_CURSOR_HELP;
+    cursor_shapes[ "CYCLE"  ]  = GLUT_CURSOR_CYCLE;
+    cursor_shapes[ "SPRAYCAN" ]  = GLUT_CURSOR_WAIT;
+    cursor_shapes[ "WAIT"  ]  = GLUT_CURSOR_WAIT;
+    cursor_shapes[ "TEXT"  ]  = GLUT_CURSOR_TEXT;
+    cursor_shapes[ "CROSSHAIR"  ]  = GLUT_CURSOR_CROSSHAIR;
+    cursor_shapes[ "UP_DOWN"  ]  = GLUT_CURSOR_UP_DOWN;
+    cursor_shapes[ "LEFT_RIGHT"  ]  = GLUT_CURSOR_LEFT_RIGHT;
+    cursor_shapes[ "TOP_SIDE"  ]  = GLUT_CURSOR_TOP_SIDE;
+    cursor_shapes[ "BOTTOM_SIDE"  ]  = GLUT_CURSOR_BOTTOM_SIDE;
+    cursor_shapes[ "LEFT_SIDE"  ]  = GLUT_CURSOR_LEFT_SIDE;
+    cursor_shapes[ "RIGHT_SIDE"  ]  = GLUT_CURSOR_RIGHT_SIDE;
+    cursor_shapes[ "TOP_LEFT_CORNER"  ]  = GLUT_CURSOR_TOP_LEFT_CORNER;
+    cursor_shapes[ "TOP_RIGHT_CORNER" ]  = GLUT_CURSOR_TOP_RIGHT_CORNER;
+    cursor_shapes[ "BOTTOM_RIGHT_CORNER" ]  = GLUT_CURSOR_BOTTOM_RIGHT_CORNER;
+    cursor_shapes[ "BOTTOM_LEFT_CORNER"  ]  = GLUT_CURSOR_BOTTOM_LEFT_CORNER;
+    cursor_shapes[ "FULL_CROSSHAIR"  ]  = GLUT_CURSOR_FULL_CROSSHAIR;
+    cursor_shapes[ "NONE"  ]  = GLUT_CURSOR_NONE;
+  }
+
+  if ( GLUT_init ) {
+    int current_window_id = glutGetWindow();
+    if (current_window_id != window_id)
+      glutSetWindow( window_id );
+
+  
+    std::map<std::string, int>::iterator itr = cursor_shapes.find( cursor_type );
+    if( itr != cursor_shapes.end() ) {
+      glutSetCursor( itr->second );
+    } 
+    
+    if (current_window_id != 0 && current_window_id != window_id)
+      glutSetWindow( current_window_id );
+
+    if(  itr != cursor_shapes.end() ) return 0;
+    return -1;
+  }
+
+  return -1;
 }
 
 
@@ -389,3 +469,14 @@ void GLUTWindow::glutMouseWheelCallback( int wheel,
 #endif
 }
 
+string GLUTWindow::getCursorForMode( const string &mode ) {
+  if( mode == "ON_SENSOR_OVER" ) {
+    return "CROSSHAIR";
+  } else if( mode == "ON_SENSOR_ACTIVE" ) {
+    return "CYCLE";
+  } else if( mode == "ON_NAV_LOOKAT" ) {
+    return "CROSSHAIR";
+  } 
+
+  return "DEFAULT";
+}

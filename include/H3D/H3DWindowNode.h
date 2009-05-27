@@ -42,10 +42,12 @@ namespace H3D {
   /// 
   /// A H3DWindowNode handles creation of windows and window properties for 
   /// looking into a Scene. To implement a new window class the following
-  /// functions has to be specified:
+  /// functions have to be specified:
   ///   swapBuffers(), initWindow(), initWindowHandler(), setFullscreen( bool fullscreen )
-  ///   makeWindowActive(). 
+  ///   makeWindowActive(), setCursorType( const std::string & cursor_mode )
+  /// and getCursorForMode.
   /// For example implementation see GLUTWindow.
+
   class H3DAPI_API H3DWindowNode : public Node {
   public:
     
@@ -109,7 +111,7 @@ namespace H3D {
 
       } Mode;
 
-      /// setValue is specialized so that the stecil mask is rebuilt if
+      /// setValue is specialized so that the stencil mask is rebuilt if
       /// the mode choosen is one that requires a stencil mask
       virtual void setValue( const string &v,  int id = 0 ) {
         SFString::setValue( v, id );
@@ -150,7 +152,11 @@ namespace H3D {
                    Inst< SFBool      > _fullscreen = 0,
                    Inst< SFBool      > _mirrored   = 0,
                    Inst< RenderMode  > _renderMode = 0, 
-                   Inst< SFViewpoint > _viewpoint  = 0 );
+                   Inst< SFViewpoint > _viewpoint  = 0, 
+                   Inst< SFInt32     > _posX       = 0,
+                   Inst< SFInt32     > _posY       = 0,
+                   Inst< SFBool      > _manualCursorControl = 0,
+                   Inst< SFString    > _cursorType = 0 );
 
     /// Destructor.
     ~H3DWindowNode();
@@ -172,7 +178,7 @@ namespace H3D {
     /// Virtual function to make the current window active, i.e. make subsequent
     /// OpenGL calls draw in the context of this window.
     virtual void makeWindowActive() = 0;
-    
+
     /// Initialize the window node. 
     virtual void initialize();
 
@@ -242,6 +248,18 @@ namespace H3D {
                                    X3DViewpointNode *vp,
                                    bool include_stylus );
 
+    /// The x coordinate in pixels of the window in screen coordinates.
+    ///  
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> -1 meaning let the window manager choose\n
+    auto_ptr< SFInt32 >  posX;
+
+    /// The y coordinate in pixels of the window in screen coordinates.
+    ///  
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> -1  meaning let the window manager choose\n
+    auto_ptr< SFInt32 >  posY;
+
     /// The width in pixels of the window.
     ///  
     /// <b>Access type:</b> inputOutput \n
@@ -284,6 +302,28 @@ namespace H3D {
     /// <b>Default value:</b> NULL \n
     auto_ptr< SFViewpoint > viewpoint;
 
+    /// If set to true changes of cursor is totally up to the user of
+    /// the window by changing the cursorType. If false, H3D API will 
+    /// control which cursor to show, changing cursor when e.g. a
+    /// X3DPointingDeviceSensorNode is being pointed at.
+    ///  
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    auto_ptr< SFBool > manualCursorControl;
+
+    /// The cursorType field specifies the look of the mouse pointer.
+    /// For the user to be in control of what cursorType should be 
+    /// shown the manualCursorControl field must be set to true.
+    /// The valid values depend on the underlying window system
+    /// so query the valid values before setting a cursor type. See
+    /// implementations of H3DWindowNode such as GLUTWindow or
+    /// wxWindowNode to see that cursors they support.
+    ///  
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "DEFAULT" \n
+    /// <b>Valid values:</b> Different depending on implementation.
+    auto_ptr< SFString >  cursorType;
+
     static set< H3DWindowNode* > windows;
     
     /// This function shares the rendering context between this H3DWindowNode
@@ -292,7 +332,7 @@ namespace H3D {
     /// H3DWindowNode instances are created this function will always be called
     /// to share the rendering context between them, i.e. all H3DWindowNode
     /// instances share rendering context by default.
-    void shareRenderingContext( H3DWindowNode *w );
+    virtual void shareRenderingContext( H3DWindowNode *w );
 
 #ifdef WIN32
     HGLRC getRenderingContext() {
@@ -352,6 +392,23 @@ namespace H3D {
     // needs to be rendered.
     void renderChild( X3DChildNode *c );
 
+    /// Set the cursor to the given cursor type. See cursorType field
+    /// for valid values. Returns 0 on success. -1 if the cursor_type is 
+    /// not supported.
+    virtual int setCursorType( const std::string & cursor_type ) { 
+      return -1; 
+    }
+
+    /// Return the cursor type to use for given modes. This should
+    /// be implemented for each subclass to choose appropriate cursors.
+    /// The standard modes are:
+    /// "DEFAULT" - normal mode
+    /// "ON_SENSOR_OVER" - when mouse pointer is over a pointing device
+    /// sensor.
+    /// "ON_SENSOR_ACTIVE" - when a sensor node is active
+    /// "ON_NAV_LOOKAT" - when lookat mode is chosen
+    virtual string getCursorForMode( const string &) { return "DEFAULT"; }
+
     friend class Scene; 
 
     bool multi_pass_transparency;
@@ -368,6 +425,9 @@ namespace H3D {
 
     /// The render mode used in the last render loop.
     RenderMode::Mode last_render_mode;
+
+    /// The cursor currently in use.
+    string current_cursor;
   };
 }
 
