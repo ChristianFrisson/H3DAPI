@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='NurbsTrimmedSurface.x3d'/>
+    <meta name='description' content='X3D NurbsTrimmedSurface example
+      with Contour2D, NurbsCurve2D and Polyline2D.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.15 0.6 0.15' orientation='1 0 0 -1.57'/>
+    <Shape>
+      <NurbsTrimmedSurface
+          uTessellation='60'
+          vTessellation='60'
+          weight='1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1'
+          solid='false'
+          uClosed='false'
+          uDimension='4'
+          uKnot='8'
+          uOrder='3'
+          vClosed='false'
+          vDimension='4'
+          vKnot=''
+          vOrder='3'>
+        <Coordinate DEF='P' containerField='controlPoint'
+            point='
+               0 0 0 
+               0 0 0.1
+               0 0 0.2
+               0 0 0.3
+               0.1 0 0
+               0.1 0.1 0.1
+               0.1 0.1 0.2
+               0.1 0 0.3
+               0.2 0 0
+               0.2 0.1 0.1
+               0.2 0.1 0.2
+               0.2 0 0.3
+               0.3 0 0
+               0.3 0 0.1
+               0.3 0 0.2
+               0.3 0 0.3' />
+        <Contour2D 
+            containerField='trimmingContour'>
+          <NurbsCurve2D 
+              controlPoint='1 0 1 1 0 1 0 0 1 0' 
+              knot='0 0 0.25 0.5 0.75 1 1' 
+              order='2' 
+              closed='false'/>
+        </Contour2D>
+        <Contour2D 
+            containerField='trimmingContour'>
+          <ContourPolyline2D 
+              controlPoint='.4 .4 .4 .5' />
+          <NurbsCurve2D 
+              controlPoint='.4 .5 .6 .6 .5 .4' 
+              knot='1 1 1 3 3 3' 
+              tessellation='0' 
+              closed='false'/>
+          <ContourPolyline2D 
+              controlPoint='.5 .4 .4 .4' />
+        </Contour2D>
+      </NurbsTrimmedSurface>
+      <Appearance>
+        <Material diffuseColor='1 0 0' /> 
+      </Appearance>
+    </Shape>    
+  </Scene>
+</X3D>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='NurbsTextureCoordinate.x3d'/>
+    <meta name='description' content='X3D NurbsTextureCoordinate example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.15 0.1 0.7' /> 
+    <Shape>
+      <NurbsPatchSurface
+          uTessellation='60'
+          vTessellation='60'
+          weight='1 1 1 1 1 1 1.6 1 1 1 1.0 1 1 1 1 1'
+          solid='false'
+          uClosed='false'
+          uDimension='4'
+          uKnot=''
+          uOrder='3'
+          vClosed='false'
+          vDimension='4'
+          vKnot=''
+          vOrder='3'>
+        <Coordinate DEF='P' containerField='controlPoint'
+            point='
+               0 0 0 
+               0 0 0.1
+               0 0 0.2
+               0 0 0.3
+               0.1 0 0
+               0.1 0.1 0.1
+               0.1 0.1 0.2
+               0.1 0 0.3
+               0.2 0 0
+               0.2 0.1 0.1
+               0.2 0.25 0.2
+               0.2 0 0.3
+               0.3 0 0
+               0.3 0 0.1
+               0.3 0 0.2
+               0.3 0 0.3'/>
+      <NurbsTextureCoordinate
+            weight=''
+            uDimension='2'
+            uKnot='0 0 1 1'
+            uOrder='2'
+            vDimension='2'
+            vKnot='0 0 1 1'
+            vOrder='2'
+            controlPoint='0 0 0 1 1 0 1 1' />
+      </NurbsPatchSurface>
+      <Appearance>
+        <Material diffuseColor='1 0 0' />
+        <ImageTexture url='images/nautilus.jpg' />
+      </Appearance>
+    </Shape>
+  </Scene>
+</X3D>

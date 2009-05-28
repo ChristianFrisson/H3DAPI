@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='VertexAttributes.x3d'/>
+    <meta name='description' content='X3D shader example with vertex attributes.
+      This example ses H3DAPI node(s) and runs on H3DAPI-supported browsers 
+      only. Visit http://www.h3d.org for more information and to download an
+      H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
+    
+    <Transform rotation='1 0 -1 0.6'>
+    <Inline url='coordaxes.x3d' />
+      <Shape>
+        <Appearance>
+          <Material />
+          <ComposedShader DEF="SHADER" language="GLSL" >
+            <ShaderPart type='FRAGMENT' url='shaders/glsl_cube.frag' />
+            <ShaderPart type='VERTEX' url='shaders/glsl_cube.vert' />
+            
+          </ComposedShader>
+        </Appearance>
+        <IndexedFaceSet
+            convex='true' normalPerVertex='false' solid='true'
+            coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'>
+            <Coordinate
+                point=' 0.1  0.1  0.1, -0.1  0.1  0.1,
+                       -0.1 -0.1  0.1,  0.1 -0.1  0.1,
+                        0.1  0.1 -0.1, -0.1  0.1 -0.1,
+                       -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
+            <FloatVertexAttribute
+                name='temperature'
+                numComponents='1'
+                value='0.0 0.0 30.0 30.0 0.0 0.0 30.0 30.0' />
+            <Matrix4VertexAttribute DEF='A'
+                name='transformation'
+                value='1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0,
+                       1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0,
+                       1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0,
+                       1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0,
+                       1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0,
+                       1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0,
+                       1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0,
+                       1.0 0.0 0.0 0.0
+                       0.0 1.0 0.0 0.0
+                       0.0 0.0 1.0 0.0
+                       0.0 0.0 0.0 1.0'/>
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    
+    <!--PythonScript DEF='P' url='VertexAttributes.py' />
+    <TimeSensor DEF='S'
+        loop='true'
+        cycleInterval='6' />
+    <OrientationInterpolator DEF='I' 
+        keyValue='0 1 0 0 0 1 0 0.78 0 1 0 0'
+        key='0 0.5 1' />
+    <ROUTE 
+        fromNode='S' fromField='fraction_changed'
+        toNode='I' toField='set_fraction' />
+    <ROUTE 
+        fromNode='I' fromField='value_changed'
+        toNode='P' toField='set_attrib' />
+    <ROUTE 
+        fromNode='P' fromField='set_attrib'
+        toNode='A' toField='value' /-->
+  </Scene>
+</X3D>

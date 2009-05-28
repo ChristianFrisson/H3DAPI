@@ -7,7 +7,10 @@ Anchor                            Anchor
 AnyDevice                         AnyDevice
 Appearance                        FillProperties, LineProperties, Material, 
                                   TwoSidedMaterial, RenderProperties, 
-                                  (Texture, Shaders)
+                                  /demos CubeMap.x3d, 
+                                  /demos glsl_earthshader.x3d
+                                  /demos cg_earthshader.x3d
+                                  ImageTexture
 Arc2D                             Arc2D
 ArcClose2D                        ArcClose2D
 AudioClip                         Sound
@@ -27,12 +30,12 @@ Color                             IndexedFaceSet,
 ColorInterpolator                 ColorInterpolator
 ColorRGBA                         ColorRGBA
 Composed3DTexture                 ComposedTexture3D.x3d
-ComposedCubeMapTexture
+ComposedCubeMapTexture            /demos CubeMap.x3d
 ComposedShader                    /demos glsl_earthshader.x3d
 Cone                              Cone
 ConeEmitter                       ParticleSystem
-Contour2D
-ContourPolyline2D
+Contour2D                         NurbsTrimmedSurface
+ContourPolyline2D                 NurbsTrimmedSurface
 Coordinate                        IndexedFaceSet, IndexedTriangleSet
 CoordinateDeformer                DeformableShape
 CoordinateDouble                  TriangleSet
@@ -57,7 +60,7 @@ FakeHapticsDevice                 FakeHapticsDevice
 FalconDevice                      FalconDevice
 FillProperties                    FillProperties
 FitToBoxTransform                 FitToBoxTransform
-FloatVertexAttribute
+FloatVertexAttribute              VertexAttributes
 Fog                               Fog
 FogCoordinate                     FogCoordinate
 FontStyle                         FontStyle
@@ -68,7 +71,7 @@ FrictionalSurface                 Sphere, Surfaces
 FunctionPlotTexture               FunctionPlotTexture
 GaussianFunction                  DeformableShape
 GeneralFunction                   TimeFunctionEffect, PositionFunctionEffect
-GeneratedCubeMapTexture
+GeneratedCubeMapTexture           GeneratedCubeMapTexture
 GeometryBoundTreeOptions          GeometryBoundTreeOptions
 GlobalSettings                    GlobalSettings
 GraphicsCachingOptions            GraphicsCachingOptions
@@ -95,14 +98,14 @@ IntegerTrigger                    IntegerTrigger
 KeySensor                         KeySensor
 LineProperties                    LineProperties
 LineSet                           LineSet
-LoadSensor
+LoadSensor                        LoadSensor
 LocalFog                          LocalFog
 LOD                               LOD
 MagneticGeometryEffect            MagneticGeometryEffect
 MagneticSurface                   Surfaces
 Material                          Material
-Matrix3VertexAttribute
-Matrix4VertexAttribute
+Matrix3VertexAttribute            VertexAttributes1
+Matrix4VertexAttribute            VertexAttributes
 MatrixTransform                   MatrixTransform
 MetadataDouble                    Metadata
 MetadataFloat                     Metadata
@@ -118,11 +121,11 @@ NavigationInfo                    NavigationInfo
 Normal                            Normal
 NormalInterpolator                NormalInterpolator
 NrrdImageLoader                   ImageLoaders
-NurbsCurve
-NurbsCurve2D
-NurbsPatchSurface
-NurbsTextureCoordinate
-NurbsTrimmedSurface
+NurbsCurve                        NurbsCurve
+NurbsCurve2D                      NurbsTrimmedSurface
+NurbsPatchSurface                 NurbsPatchSurface
+NurbsTextureCoordinate            NurbsTextureCoordinate
+NurbsTrimmedSurface               NurbsTrimmedSurface
 OpenHapticsOptions                OpenHapticsOptions
 OpenHapticsSurface                OpenHapticsSurface
 OrientationInterpolator           OrientationInterpolator
@@ -157,12 +160,12 @@ ShaderPart                        /demos glsl_earthshader.x3d
 ShaderProgram                     /demos cg_earthshader.x3d
 Shape                             Box, Cone, Sphere
 SimballDevice                     SimballDevice
-SimpleMovieTexture
+SimpleMovieTexture                SimpleMovieTexture
 SmoothSurface                     Surfaces
 Sound                             Sound
-SpaceballSensor
+SpaceballSensor                   SpaceballSensor
 SpaceWareHapticsDevice            SpaceWareHapticsDevice
-SpaceWareSensor
+SpaceWareSensor                   SpaceWareSensor
 Sphere                            Sphere
 SphereSensor                      SphereSensor
 SplinePositionInterpolator        SplinePositionInterpolator
@@ -182,8 +185,8 @@ TextureCoordinate                 TextureCoordinate
 TextureCoordinate3D               ImageTexture3D           
 TextureCoordinate4D               TextureCoordinate4D           
 TextureCoordinateGenerator        TextureCoordinateGenerator     
-TextureMatrixTransform            TextureMatrixTransform           
-TextureProperties                 
+TextureMatrixTransform            TextureMatrixTransform
+TextureProperties                 TextureProperties
 TextureTransform                  TextureTransform
 TextureTransform3D                TextureTransform3D            
 TimeFunctionEffect                TimeFunctionEffect              
