@@ -154,7 +154,11 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
   for( unsigned int i = 0; i < noWeights.size(); i++ ) {
     withWeights[ i * sizeOfVertex ] = (GLfloat)noWeights[i].x;
     withWeights[ i * sizeOfVertex + 1 ] = (GLfloat)noWeights[i].y;
-    withWeights[ i * sizeOfVertex + 2 ] = (GLfloat)theWeights[i];
+    if ( theWeights.size() == 0 || theWeights.size() < u_dimension * v_dimension ) {
+      withWeights[ i * sizeOfVertex + 2 ] = (GLfloat)1.0;
+    } else {
+      withWeights[ i * sizeOfVertex + 2 ] = (GLfloat)theWeights[i];
+    }
   }
 
   const vector< H3DDouble > &uk = uKnot->getValue();
