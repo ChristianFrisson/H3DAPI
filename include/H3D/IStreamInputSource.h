@@ -46,7 +46,7 @@ namespace H3D {
     /// This class is a derivative of the standard Xerxes C InputSource class. 
     /// It provides the parser access to data via a general istream. 
     /// 
-    class IStreamInputSource : public InputSource {
+    class H3DAPI_API IStreamInputSource : public InputSource {
     public :
       /// Constructor.
       /// \param _is the istream to use as input to the parser.

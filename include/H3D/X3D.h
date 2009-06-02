@@ -164,7 +164,7 @@ namespace H3D {
            bool change_base_path_during_parsing = true );
 
 #ifdef HAVE_XERCES
-    SAX2XMLReader* getNewXMLParser();
+    H3DAPI_API SAX2XMLReader* getNewXMLParser();
 #endif
     
     /// Write the scene graph part of the node given in X3D/XML format

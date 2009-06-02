@@ -513,6 +513,8 @@ IF(TEEM_FOUND)
   SET(requiredLibs ${requiredLibs} ${TEEM_LIBRARIES} )
 ENDIF(TEEM_FOUND)
 
+INCLUDE( AddVirtualHand.txt )
+
 # If cpack project should be generated and windows is the system on which to generate
 # a number of extra directories needs to be added to be installed.
 IF( GENERATE_CPACK_PROJECT )
@@ -635,8 +637,6 @@ IF( WIN32 )
   IF(CHAI3D_FOUND)
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\"" )
     SET( H3DAPI_LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
-    SET( H3DAPI_LINK_FLAGS_MINSIZEREL "${H3DAPI_LINK_FLAGS_MINSIZEREL} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
-    SET( H3DAPI_LINK_FLAGS_RELWITHDEBINFO "${H3DAPI_LINK_FLAGS_RELWITHDEBINFO} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
   ENDIF(CHAI3D_FOUND)
   
   IF(OPENHAPTICS_FOUND)
@@ -649,7 +649,9 @@ IF( WIN32 )
   SET_TARGET_PROPERTIES( H3DAPI
                          PROPERTIES  
                          LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG}"
-                         LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE}" )
+                         LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE}"
+                         LINK_FLAGS_RELWITHDEBINFO "${H3DAPI_LINK_FLAGS_RELEASE}"
+                         H3DAPI_LINK_FLAGS_MINSIZEREL "${H3DAPI_LINK_FLAGS_RELEASE}" )
 ENDIF( WIN32 )
 
 # Set compile properties for H3DAPI.
