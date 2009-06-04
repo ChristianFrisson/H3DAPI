@@ -513,7 +513,6 @@ IF(TEEM_FOUND)
   SET(requiredLibs ${requiredLibs} ${TEEM_LIBRARIES} )
 ENDIF(TEEM_FOUND)
 
-INCLUDE( AddVirtualHand.txt )
 
 # If cpack project should be generated and windows is the system on which to generate
 # a number of extra directories needs to be added to be installed.
