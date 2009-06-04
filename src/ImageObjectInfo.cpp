@@ -153,5 +153,14 @@ void ImageObjectInfo::UpdateFields::update() {
     info->totalSize->setValue( Vec3f( image->width() * pixel_size.x, 
                                       image->height() * pixel_size.y, 
                                       image->depth() * pixel_size.z ), info->id ); 
+  } else {
+    info->pixelSize->setValue( Vec3f(), info->id );
+    info->width->setValue( 0, info->id );
+    info->height->setValue( 0, info->id );
+    info->depth->setValue( 0, info->id );
+    info->bitsPerPixel->setValue( 0, info->id );
+    info->pixelType->setValue( "UNKNOWN", info->id );
+    info->pixelComponentType->setValue( "UNKNOWN", info->id );
+    info->totalSize->setValue( Vec3f(), info->id ); 
   }
 }
