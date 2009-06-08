@@ -74,7 +74,7 @@ namespace H3D {
 
 
   string toString( const XMLCh * const xmls ) {
-    unsigned int str_len = XMLString::stringLen( xmls );
+    XMLSize_t str_len = XMLString::stringLen( xmls );
     string s( str_len, 'a' );
     for( unsigned int i = 0; i < str_len; i++)
       s[i] = (char)xmls[i];
@@ -116,13 +116,13 @@ string X3DSAX2Handlers::getLocationString() {
 
 void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs ) {
   if( proto_declaration ) {
-    int nr_attrs = attrs.getLength();
+    XMLSize_t nr_attrs = attrs.getLength();
     const XMLCh *field_name  = NULL;
     const XMLCh *field_type = NULL;
     const XMLCh *field_access_type    = NULL;
     const XMLCh *field_value    = NULL;
     
-    for( int i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
       string name = toString( attrs.getQName( i ) );
       if( !field_name && name == "name" ) {
         field_name = attrs.getValue( i );
@@ -205,13 +205,13 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
   H3DDynamicFieldsObject *dyn_object = 
     dynamic_cast< H3DDynamicFieldsObject * >( parent );
   if( dyn_object ) {
-    int nr_attrs = attrs.getLength();
+    XMLSize_t nr_attrs = attrs.getLength();
     const XMLCh *field_name  = NULL;
     const XMLCh *field_type = NULL;
     const XMLCh *field_access_type    = NULL;
     const XMLCh *field_value    = NULL;
     
-    for( int i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
       string name = toString( attrs.getQName( i ) );
       if( !field_name && name == "name" ) {
         field_name = attrs.getValue( i );
@@ -338,14 +338,14 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
 
 void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs, 
                                           bool route_no_event  ) {
-  int nr_attrs = attrs.getLength();
+  XMLSize_t nr_attrs = attrs.getLength();
   const XMLCh *from_node_name  = NULL;
   const XMLCh *from_field_name = NULL;
   const XMLCh *to_node_name    = NULL;
   const XMLCh *to_field_name   = NULL;
   
   // get all the route specific attributes
-  for( int i = 0; i < nr_attrs; i++ ) {
+  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
     string name = toString( attrs.getQName( i ) );
     if( !from_node_name && name == "fromNode" ) {
       from_node_name = attrs.getValue( i );
@@ -430,13 +430,13 @@ void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs,
 
 
 void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
-  int nr_attrs = attrs.getLength();
+  XMLSize_t nr_attrs = attrs.getLength();
   const XMLCh *inline_def_name  = NULL;
   const XMLCh *exported_def_name = NULL;
   const XMLCh *as_name    = NULL;
   
   // get all the route specific attributes
-  for( int i = 0; i < nr_attrs; i++ ) {
+  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
     string name = toString( attrs.getQName( i ) );
     if( !inline_def_name && name == "inlineDEF" ) {
       inline_def_name = attrs.getValue( i );
@@ -515,12 +515,12 @@ void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
 }
 
 void X3DSAX2Handlers::handleExportElement( const Attributes &attrs  ) {
-  int nr_attrs = attrs.getLength();
+  XMLSize_t nr_attrs = attrs.getLength();
   const XMLCh *local_def_name  = NULL;
   const XMLCh *as_name    = NULL;
   
   // get all the route specific attributes
-  for( int i = 0; i < nr_attrs; i++ ) {
+  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
     string name = toString( attrs.getQName( i ) );
     if( !local_def_name && name == "localDEF" ) {
       local_def_name = attrs.getValue( i );
@@ -568,12 +568,12 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
          << getLocationString() << endl;
   } else if( proto_instance ) {
   
-    int nr_attrs = attrs.getLength();
+    XMLSize_t nr_attrs = attrs.getLength();
     const XMLCh *node_field_name  = NULL;
     const XMLCh *proto_field_name    = NULL;
     
     // get all the route specific attributes
-    for( int i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
       string name = toString( attrs.getQName( i ) );
       if( !node_field_name && name == "nodeField" ) {
         node_field_name = attrs.getValue( i );
@@ -1045,10 +1045,10 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                                 (int)locator->getLineNumber()  );
     else {
       //cerr << "localname " << localname << endl;
-      int nr_attrs = attrs.getLength();
+      XMLSize_t nr_attrs = attrs.getLength();
       string profile_name;
       string version;
-      for( int i = 0; i < nr_attrs; i++ ) {
+      for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
         string name = toString( attrs.getQName( i ) );
         if( name == "profile" ) {
           profile_name = toString( attrs.getValue(i) );
@@ -1162,10 +1162,10 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             (int)locator->getLineNumber()  );
         }
         else {
-          int nr_attrs = attrs.getLength();
+          XMLSize_t nr_attrs = attrs.getLength();
           string component_name;
           int level = 0;
-          for( int i = 0; i < nr_attrs; i++ ) {
+          for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
             string name = toString( attrs.getQName( i ) );
             if( name == "name" ) {
               component_name = toString( attrs.getValue(i) );
@@ -1205,6 +1205,10 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         if( localname_string == "ProtoInstance" ) {
           // if a ProtoInstance create a new instance of the prototype.
           new_node = handleProtoInstanceElement( attrs );
+		  // remove the initialization that occurs on first reference
+          // since we don't want it to occur until all child nodes
+          // have been created and set.
+		  if( new_node ) new_node->setManualInitialize( true );
           proto_instance = true;
         } else if( use_name ) {
           // if we have a USE attribute, lookup the matching node and use that.
@@ -1243,8 +1247,8 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
           new_node->defaultXMLContainerField():(string)"" ;
 
         if( new_node ) {
-          int nr_attrs = attrs.getLength();
-          for( int i = 0; i < nr_attrs; i++ ) {
+          XMLSize_t nr_attrs = attrs.getLength();
+          for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
             string name = toString( attrs.getQName( i ) );
       
             if( name == "USE" ) {
@@ -1345,20 +1349,13 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             }
           } else if( parent ) {
             FieldValue *fv = static_cast< FieldValue * >(parent);
+ 	
             if( fv && fv->fv_parent && 
                 fv->fv_parent->getTypeName() == "PrototypeInstance" ) {
               if( fv->field &&  
                   ( fv->field->getX3DType() == X3DTypes::MFNODE ||
-                    fv->field->getX3DType() == X3DTypes::SFNODE ) &&
-                  fv->field->getName() != container_field ) {
-                stringstream s;
-                s << "Invalid containerField attribute \"" 
-                  <<  container_field 
-                  << "\". The field does not exist in parent fieldValue "
-                  << "with name (" << parent->getName() << ")";
-                throw X3D::XMLParseError( s.str(), "", 
-                                          toString( locator->getSystemId() ),
-                                          (int)locator->getLineNumber() ); 
+                    fv->field->getX3DType() == X3DTypes::SFNODE ) ) { 
+                    container_field = fv->field->getName();
               }
             }
           }
