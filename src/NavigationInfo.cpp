@@ -148,12 +148,7 @@ void NavigationInfo::doNavigation( X3DViewpointNode * vp,
 
       if( transition == "TELEPORT" ) {
         transitionComplete->setValue( true, id );
-      }
-      else if( transition == "ANIMATE" ) {
-        // there should be some other kind of behaviour here.
-        transitionComplete->setValue( true, id );
-      }
-      else {
+      } else {
         linear_interpolate = true;
         const Matrix4f &vp_acc_inv_mtx = vp->accInverseMatrix->getValue();
         const Matrix4f &old_vp_acc_frw_mtx = 
