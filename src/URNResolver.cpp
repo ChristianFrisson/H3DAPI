@@ -141,3 +141,21 @@ string URNResolver::resolveURN( const string &urn ) {
   }
   return urn;
 }
+
+string URNResolver::fromURLtoURN( const string &url ) {
+  if( !initialised && config_file != "" ) {
+    loadConfigFile( config_file );
+    initialised=true;
+  }
+
+  for( URNmap::reverse_iterator i = urn_prefix_map.rbegin(); 
+       i != urn_prefix_map.rend(); i++ ) {
+    if( (*i).second == url.substr( 0, (*i).second.size() ) ) {
+      string urn = url;
+      urn.replace( 0, (*i).second.size(), (*i).first );
+      return urn;
+    }
+  }
+  return url;
+}
+

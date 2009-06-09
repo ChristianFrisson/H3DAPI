@@ -91,6 +91,12 @@ namespace H3D {
     /// could be found using the rules, urn is returned.
     string resolveURN( const string &urn );
 
+    /// Given a URL the corresponding path containing URN is returned.
+    /// \param url The url input.
+    /// \param returns The transformed urn. If no match is found the
+    /// inputed url is returned.
+    string fromURLtoURN( const string &url );
+
   protected:
 
     static const unsigned int MAX_LINE_SIZE = 1024;
