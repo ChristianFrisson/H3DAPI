@@ -289,7 +289,6 @@ void WxWidgetsWindow::MyWxGLCanvas::OnEraseBackground(
 int WxWidgetsWindow::setCursorType( const std::string & cursor_type ) {
   if( cursor_type == "DEFAULT" ) {
     theWxGLCanvas->SetCursor( wxNullCursor );
-    theWxGLCanvas->SetCursor( *wxHOURGLASS_CURSOR );
   } else if( cursor_type == "HOURGLASS" ) {
     theWxGLCanvas->SetCursor( *wxHOURGLASS_CURSOR );
   } else if( cursor_type == "STANDARD" ) {
