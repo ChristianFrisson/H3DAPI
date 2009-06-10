@@ -64,11 +64,19 @@ Circle2D::Circle2D( Inst< SFNode      > _metadata,
 }
 
 void Circle2D::render() {
+  // Save the old state of GL_LIGHTING 
+  GLboolean lighting_enabled;
+  glGetBooleanv( GL_LIGHTING, &lighting_enabled );
+  glDisable( GL_LIGHTING );
+
+  // get the current emissiveColor
+  float v[4];
+  glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
+  glColor3f( v[0], v[1], v[2] );
+
   H3DFloat theta, angle_increment;
   H3DFloat nr_segments = 40;
-
   angle_increment = (H3DFloat) Constants::pi*2 / nr_segments;
-
   H3DFloat r = radius->getValue();
 
   // draw a circle with lines
@@ -88,5 +96,9 @@ void Circle2D::render() {
   
   glVertex2f(x, y);
   glEnd ();
+
+  // reenable lighting if it was enabled before
+  if( lighting_enabled )
+    glEnable( GL_LIGHTING );
 }
 
