@@ -56,6 +56,7 @@
 #endif
 
 #include <H3D/Viewpoint.h>
+#include <H3D/ViewpointGroup.h>
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/DeviceInfo.h>
 #include <H3D/INIFile.h>
@@ -171,14 +172,15 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         const wxString& _title, const wxPoint& _pos,
                         const wxSize& _size, long _style,
                         const wxString& _name ):
-  viewpointCount(0),
   navTypeCount(0),
   deviceCount(0),
   navigationDevices(0),
   wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
   avatar_collision( true ),
   loaded_first_file( false ),
-  change_nav_type( new ChangeNavType )
+  change_nav_type( new ChangeNavType ),
+  itemIdViewpointMap(),
+  current_viewpoint_id(0)
 {
   wxAcceleratorEntry entries[1];
   entries[0].Set(wxACCEL_NORMAL, (int) WXK_F11, FRAME_RESTORE);
@@ -191,7 +193,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   ss.reset (0);
 #endif
   t.reset ( new Transform );
-  viewpoint.reset( new Viewpoint );
+  viewpoint.reset( NULL );
   device_info.reset (NULL);
   g.reset ( new Group );
 
@@ -217,7 +219,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   plugins_dialog = new H3DViewerPluginsDialog( this ); 
   frameRates = new FrameRateDialog( this );
 
-  defaultvp = (X3DViewpointNode *) NULL;
+  current_viewpoint = (X3DViewpointNode *) NULL;
   mydevice = (DeviceInfo *) NULL;
   mynav = (NavigationInfo *) NULL;
 
@@ -488,6 +490,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
   EVT_MENU (wxID_ABOUT, WxFrame::OnAbout)
   EVT_MENU (FRAME_HELP, WxFrame::OnHelp)
+  EVT_IDLE (WxFrame::OnIdle)
   EVT_CLOSE(WxFrame::OnWindowExit)
 END_EVENT_TABLE()
 
@@ -696,13 +699,13 @@ bool WxFrame::loadFile( const string &filename) {
                               common_path + "/stylus/",
                               common_path + "/stylus/",
                               "haptics device","stylus" );
-  
+/*  
   viewpoint_file =
     GET_ENV_INI_DEFAULT_FILE( ini_file, "H3D_DEFAULT_VIEWPOINT",
                               settings_path + "/viewpoint/",
                               common_path + "/viewpoint/",
                               "graphical", "viewpoint" );
-
+                              */
   render_mode = GET4( "H3D_RENDERMODE",
                              "graphical", "rendermode",
                              (string)"MONO" );
@@ -867,72 +870,22 @@ bool WxFrame::loadFile( const string &filename) {
     if( use_space_mouse )
     g->children->push_back(ss.get());
 #endif
-    //create a Viewpoint if it does not exist.
-    if( !Viewpoint::getActive() && viewpoint_file.size() ) {
-      try {
-        viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
-      } catch( const Exception::H3DException &e ) {
-        viewpoint.reset( new Viewpoint );
-        Console(3) << "Warning: Could not create default Viewpoint node "
-                   << "from file \"" << viewpoint_file << "\": "
-                   << e << endl;
-      }
-    }
+
 
 /****************************Intialize Viewpoints***************************/
   //Enable Viewpoints Menu
   menuBar->EnableTop(2, true);
-  VPlist = X3DViewpointNode::getViewpointHierarchy();
-  defaultvp = Viewpoint::getActive();
+  VPlist = GetTopLevelViews();
+  current_viewpoint = Viewpoint::getActive();
+  current_viewpoint_id = FRAME_VIEWPOINT;
   
-  //Store number of viewpoints for processing later
-  viewpointCount = VPlist.size();
-  
-  //Create Viewpoints menu using list
-  //If no viewpoints are specified in the file
-  if (viewpointCount <= 1) {
-    viewpointMenu->Append(FRAME_VIEWPOINT, wxT("Default"), wxT("Default Viewpoint"));
-    viewpointMenu->Enable(FRAME_VIEWPOINT, true);
-  }
-  else {
-    int i = 0;
-    int unnamed = 1;
-    for (X3DViewpointNode::ViewpointList::iterator vp = VPlist.begin(); 
-           vp != VPlist.end(); vp++) {
-      string vp_description = (*vp)->description->getValue();
-      if( vp_description == "" ) {
-        if( i == 0 )
-          vp_description = "Unnamed Default Viewpoint";
-        else {
-          stringstream vp_dscr;
-          vp_dscr << "Unnamed Viewpoint " << unnamed;
-          vp_description = vp_dscr.str();
-        }
-        unnamed++;
-      }
-      viewpointMenu->AppendRadioItem(FRAME_VIEWPOINT + i, 
-                                     wxString(vp_description.c_str(),wxConvUTF8),
-                                     wxT("Select a viewpoint"));
-      if ((*vp) == Viewpoint::getActive()) {
-        viewpointMenu->Check(FRAME_VIEWPOINT+i, true);
-      }
-      Connect(FRAME_VIEWPOINT +i,wxEVT_MENU_HIGHLIGHT,
-              wxMenuEventHandler(WxFrame::GetSelection));
-      Connect(FRAME_VIEWPOINT +i,wxEVT_COMMAND_MENU_SELECTED,
-              wxCommandEventHandler(WxFrame::ChangeViewpoint));
-      i++;
-    }
-  }
-  viewpointMenu->AppendSeparator();
-  viewpointMenu->Append(FRAME_RESET_VIEWPOINT, 
-                                     wxT("Reset"),
-                                     wxT("Reset current viewpoint"));
-    
-    if( X3DBindableNode::getStack( "DeviceInfo" ).size() > 1 ) {
-      device_info.reset( NULL );
-    }
+  BuildViewpointsMenu( VPlist );
 
-    // create a window to display
+  if( X3DBindableNode::getStack( "DeviceInfo" ).size() > 1 ) {
+    device_info.reset( NULL );
+  }
+
+  // create a window to display
     
   //This next line is used to set the icon file h3d.ico, when created.
   //theWxframe->SetIcon(wxIcon(wxT("h3d_icn")));
@@ -1246,25 +1199,7 @@ void WxFrame::clearData () {
   t->children->clear();
   viewpoint.reset( new Viewpoint );
 
-  //Delete items from viewpoint menu & disconnect events
-  if( viewpointMenu->GetMenuItemCount() != 0 ) {
-    if( viewpointCount <= 1 ) {
-      viewpointMenu->Destroy(FRAME_VIEWPOINT );
-      Disconnect(FRAME_VIEWPOINT ,wxEVT_MENU_HIGHLIGHT,
-		 wxMenuEventHandler(WxFrame::GetSelection));
-      Disconnect(FRAME_VIEWPOINT,wxEVT_COMMAND_MENU_SELECTED,
-		 wxCommandEventHandler(WxFrame::ChangeViewpoint));
-    } else {
-      for (int i = 0; i < viewpointCount; i++) {
-        viewpointMenu->Destroy(FRAME_VIEWPOINT + i);
-        Disconnect(FRAME_VIEWPOINT + i,wxEVT_MENU_HIGHLIGHT,
-                   wxMenuEventHandler(WxFrame::GetSelection));
-        Disconnect(FRAME_VIEWPOINT + i,wxEVT_COMMAND_MENU_SELECTED,
-                   wxCommandEventHandler(WxFrame::ChangeViewpoint));
-      } 
-    }
-    viewpointMenu->Destroy( FRAME_RESET_VIEWPOINT ); 
-  }
+  DestroyViewpointsMenu();
 
   
   
@@ -1401,6 +1336,17 @@ void WxFrame::OnAbout(wxCommandEvent & event)
 void WxFrame::OnHelp(wxCommandEvent & event)
 {
 
+}
+
+//Idle event
+void WxFrame::OnIdle(wxIdleEvent &event) {
+  static bool flag;
+  TimeStamp now;
+  if ( now - last_viewmenu_update > 0.5 && X3DViewpointNode::viewpointsChanged() ) {
+    list< Node * > v = GetTopLevelViews();
+    DestroyViewpointsMenu();
+    BuildViewpointsMenu( v );
+  }
 }
 
 //Fullscreen mode
@@ -1610,31 +1556,24 @@ void WxFrame::ShowFrameRate(wxCommandEvent & event)
 void WxFrame::ChangeViewpoint (wxCommandEvent & event)
 {  
   //Default viewpoint
-  if (viewpointCount <= 1) {
-    //do nothing
+  if ( X3DViewpointNode::getAllViewpoints().size() <= 1) {
+    viewpointMenu->Check(selection, true);
   }
   else {
-    //Find viewpoint index
-    int index = selection - FRAME_VIEWPOINT;
-    //Get to that index in the viewpoint list
-    X3DViewpointNode::ViewpointList::iterator vp = VPlist.begin();
-    int i = 0;
-    for (i = 0; i < index; i++) {
-      vp++;
-    }
-    //Enable that viewpoint
-    (*vp)->set_bind->setValue(true);
-    defaultvp = *vp;
+    itemIdViewpointMap[selection]->set_bind->setValue(true);
+    current_viewpoint = itemIdViewpointMap[selection];
+    viewpointMenu->Check(current_viewpoint_id, false);
     viewpointMenu->Check(selection, true);
+    current_viewpoint_id = selection;
   }
 }
 
 //Reset Active Viewpoint
 void WxFrame::ResetViewpoint(wxCommandEvent & event)
 {
-  if (defaultvp) {
-      defaultvp->relOrn->setValue( Rotation() );
-      defaultvp->relPos->setValue( Vec3f() );
+  if (current_viewpoint) {
+      current_viewpoint->relOrn->setValue( Rotation() );
+      current_viewpoint->relPos->setValue( Vec3f() );
   }
 }
 
@@ -2527,6 +2466,115 @@ void FrameRateDialog::updateFrameRates() {
     haptics_time->SetLabel( wxString(hts.str().c_str(),wxConvUTF8) );
   }
 }
+
+
+//-------------
+// Viewpoints
+//-------------
+//Build Viewpoints Menu
+void WxFrame::BuildViewpointsMenu( list< Node * > v_list ) {
+  int i = 0;
+  int unnamed_vp = 1;
+  int unnamed_vg = 1;
+  BuildViewpointsSubMenu( v_list, viewpointMenu, i, unnamed_vp, unnamed_vg );
+  viewpointMenu->AppendSeparator();
+  viewpointMenu->Append(FRAME_RESET_VIEWPOINT, 
+                                     wxT("Reset"),
+                                     wxT("Reset current viewpoint"));
+  current_viewpoint = X3DViewpointNode::getActive();
+}
+
+void WxFrame::BuildViewpointsSubMenu( 
+  list< Node* > v_list, wxMenu * menu, int &count, int &unnamed_vp, int &unnamed_vg ) {
+  for ( list<Node*>::iterator v = v_list.begin(); v != v_list.end(); v++ ) {
+    if ( ViewpointGroup * vg = dynamic_cast< ViewpointGroup* >(*v) ) {
+      string v_description = vg->description->getValue();
+      if( v_description == "" ) {
+        stringstream v_dscr;
+        v_dscr << "Unnamed Viewpoint Group " << unnamed_vg;
+        v_description = v_dscr.str();
+        unnamed_vg++;
+      }
+      // create submenu
+      wxMenu *submenu = new wxMenu();
+      menu->AppendSubMenu( submenu, v_description );
+      BuildViewpointsSubMenu( vg->getChildrenAsList(), submenu, count, unnamed_vp, unnamed_vg );
+    } else {
+      X3DViewpointNode * vp = static_cast< X3DViewpointNode * >( *v ); 
+      string v_description = vp->description->getValue();
+      if( v_description == "" ) {
+        stringstream v_dscr;
+        v_dscr << "Unnamed Viewpoint " << unnamed_vp;
+        v_description = v_dscr.str();
+        unnamed_vp++;
+      }      
+      int id = FRAME_VIEWPOINT+count;
+      menu->AppendCheckItem( id, wxString(v_description.c_str(),wxConvUTF8),
+                            wxT("Select a viewpoint"));
+      if ( vp == Viewpoint::getActive() ) {
+        menu->Check(id, true);
+        current_viewpoint_id = id;
+      }
+      Connect(id ,wxEVT_MENU_HIGHLIGHT,
+              wxMenuEventHandler(WxFrame::GetSelection));
+      Connect(id, wxEVT_COMMAND_MENU_SELECTED,
+              wxCommandEventHandler(WxFrame::ChangeViewpoint));
+      itemIdViewpointMap[id] = vp;
+      Console(4) << "Add id: " << id << endl;
+      count++;
+    }
+  }
+}
+
+void WxFrame::DestroyViewpointsMenu() {
+  DestroyViewpointsSubMenu( viewpointMenu );
+  itemIdViewpointMap.clear();
+}
+
+void WxFrame::DestroyViewpointsSubMenu( wxMenu * menu ) {
+  //Delete items from viewpoint menu & disconnect events
+  wxMenuItemList items = menu->GetMenuItems();
+  for ( wxMenuItemList::iterator i = items.begin();
+    i != items.end(); i++ ) {
+    int id = (*i)->GetId();
+    Console(4) << "getId: " << id << endl;
+    wxMenu * submenu = (*i)->GetSubMenu();
+    if ( submenu != NULL ) {          
+      DestroyViewpointsSubMenu( submenu );
+      viewpointMenu->Destroy( *i );
+    } else {
+      // if is a viewpoint, disconnect events
+      if ( !(*i)->IsSeparator() && id != FRAME_RESET_VIEWPOINT ) {
+        viewpointMenu->Destroy( id );
+        Disconnect(id, wxEVT_MENU_HIGHLIGHT,
+                  wxMenuEventHandler(WxFrame::GetSelection));
+        Disconnect(id, wxEVT_COMMAND_MENU_SELECTED,
+                  wxCommandEventHandler(WxFrame::ChangeViewpoint));
+      }
+      viewpointMenu->Destroy( id );
+    }
+  }
+}
+
+list< Node * > WxFrame::GetTopLevelViews() {
+  X3DViewpointNode::ViewpointList vp_list = 
+    X3DViewpointNode::getAllViewpoints();
+  ViewpointGroup::ViewpointGroupList vg_list = 
+    ViewpointGroup::getAllViewpointGroups();
+  list< Node * > v_list;
+  for ( ViewpointGroup::ViewpointGroupList::iterator i = vg_list.begin();
+    i != vg_list.end(); i++ ) {
+    if ( (*i)->isTopLevel() || !(*i)->inSceneGraph() )
+      v_list.push_back( *i );
+  }
+  for ( X3DViewpointNode::ViewpointList::iterator i = vp_list.begin();
+    i != vp_list.end(); i++ ) {
+    if ( (*i)->isTopLevel() || !(*i)->inSceneGraph() )
+      v_list.push_back( *i );
+  }
+  return v_list;
+}
+
 
 // ----------------------------------------------------------------------------
 // SettingsDialog

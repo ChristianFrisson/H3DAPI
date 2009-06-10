@@ -259,6 +259,7 @@ public:
   void ChangeRenderer( wxCommandEvent & event );
   void ToggleHaptics( wxCommandEvent & event );
   void OnSettings( wxCommandEvent & event );
+  void OnIdle( wxIdleEvent &event );
 
   /***************Standard trivial functions***************/
   wxString GetCurrentFilename();
@@ -280,6 +281,12 @@ public:
   void LoadSettings( bool from_config );
   void LoadPlugins();
   void buildNavMenu();
+  void BuildViewpointsMenu( list< Node * > vp_list );
+  void BuildViewpointsSubMenu( list< Node* > vp_list, wxMenu * menu, int &count, int &unnamed_vp, int &unnamed_vg );
+  void DestroyViewpointsMenu();
+  void DestroyViewpointsSubMenu( wxMenu * menu );
+  // returns a list of "top level" viewpoints and viewpoint groups
+  list< Node * > GetTopLevelViews();
 
   void setProxyRadius( float r );
 
@@ -334,15 +341,14 @@ private:
   bool lastmirror;
   bool lastDeviceStatus;
   int selection;
-  int viewpointCount;
   int navTypeCount;
   int deviceCount;
-  X3DViewpointNode::ViewpointList VPlist;
+  list< Node * > VPlist;
   NavigationInfo *mynav;
   DeviceInfo *mydevice;
   H3DHapticsDevice *myH3Ddevice;
   NodeVector allDevices;
-  X3DViewpointNode *defaultvp;
+  X3DViewpointNode *current_viewpoint;
 
   // Check if the first file is loaded.
   bool loaded_first_file;
@@ -352,7 +358,7 @@ private:
   string common_path;
   string deviceinfo_file;
   string stylus_file;
-  string viewpoint_file;
+  //string viewpoint_file;
   string render_mode;
 
   // Autoref Variables
@@ -365,6 +371,10 @@ private:
   AutoRef< Group > g;
 
   X3D::DEFNodes default_stylus_dn;
+
+  // Used in updating viewpoint menu
+  TimeStamp last_viewmenu_update;
+
 public:
   consoleDialog *  theConsole;
   H3DViewerTreeViewDialog * tree_view_dialog;
@@ -395,6 +405,8 @@ public:
   };
 
   auto_ptr< ChangeNavType > change_nav_type;
+  map< int, X3DViewpointNode * > itemIdViewpointMap;
+  int current_viewpoint_id;
 
 protected:
   DECLARE_EVENT_TABLE()

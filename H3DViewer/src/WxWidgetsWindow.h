@@ -113,6 +113,10 @@ namespace H3D {
       }
     }
 
+    /// This function renders the X3DChildNode given into the 
+    /// window of the WxWidgetsWindow
+    virtual void render( X3DChildNode *child_to_render );
+
     /// Calls wxGLCanvas::SwapBuffers
     virtual void swapBuffers(); 
 
@@ -187,6 +191,7 @@ namespace H3D {
     OnDropFileFunc drag_file_func;
     void *drag_file_func_arg;
 
+    bool use_h3d_settings;
     bool is_initialized;
     bool have_parent;
     wxWindow * theWindow;
@@ -195,6 +200,9 @@ namespace H3D {
     wxGLContext * theWxGLContext;
 #endif
 	bool last_fullscreen;
+
+  private:
+      string viewpoint_file;
   };
 }
 

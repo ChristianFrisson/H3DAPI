@@ -35,6 +35,7 @@
 using namespace H3D;
 
 list<X3DViewpointNode *> X3DViewpointNode::viewpoints;
+bool X3DViewpointNode::viewpoints_changed;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase X3DViewpointNode::database( 
@@ -73,8 +74,6 @@ namespace X3DViewpointNodeInternals {
   }
 }
 
-
-
 X3DViewpointNode::X3DViewpointNode( Inst< SFSetBind     > _set_bind,
                                     Inst< SFVec3f       > _centerOfRotation,
                                     Inst< SFString      > _description,
@@ -102,7 +101,9 @@ X3DViewpointNode::X3DViewpointNode( Inst< SFSetBind     > _set_bind,
   totalPosition    ( _totalPosition ),
   totalOrientation ( _totalOrientation ),
   relPos( new SFVec3f() ),
-  relOrn( new SFRotation() ) {
+  relOrn( new SFRotation() ),
+  in_scene_graph( false ),
+  is_top_level( false ) {
   
   type_name = "X3DViewpointNode";
   database.initFields( this );
@@ -125,6 +126,25 @@ X3DViewpointNode::X3DViewpointNode( Inst< SFSetBind     > _set_bind,
   relOrn->route( totalOrientation, id );
 
   viewpoints.push_back( this );
+  viewpoints_changed = true;
+}
+
+void X3DViewpointNode::traverseSG( TraverseInfo &ti ) {
+  accInverseMatrix->setValue( ti.getAccInverseMatrix(), id );
+  accForwardMatrix->setValue( ti.getAccForwardMatrix(), id );
+  ViewpointGroup * dummy;
+  if ( !in_scene_graph ) in_scene_graph = true;
+  if ( ti.getUserData("ViewpointGroup", (void **) &dummy) != 0 ) {
+    // user data has not been set, this is a viewpoint that exists 
+    // outside a ViewpointGroup
+    is_top_level = true;
+  }
+  // set dirty status on first traversal
+  static bool flag = true;
+  if ( flag ) {
+    viewpoints_changed = true;
+    flag = false;
+  }
 }
 
 void X3DViewpointNode::removeFromStack() {
@@ -191,38 +211,6 @@ void X3DViewpointNode::toStackTop() {
     }
     X3DBindableNode::toStackTop();
   }
-}
-
-
-X3DViewpointNode::ViewpointList X3DViewpointNode::getViewpointHierarchy() {
-  list< ViewpointGroup *> groups;
-  
-  ViewpointList vps;
-
-  for( ViewpointList::iterator i = viewpoints.begin();
-       i != viewpoints.end(); i++ ) {
-    if( ViewpointGroup *vg = dynamic_cast< ViewpointGroup * >( *i ) ) {
-      groups.push_back( vg );
-    }
-  }
-
-  if( groups.size() == 0 ) return viewpoints;
-  for( ViewpointList::iterator i = viewpoints.begin();
-       i != viewpoints.end(); i++ ) {
-    bool standalone_vp = true;
-    if( !dynamic_cast< ViewpointGroup * >( *i ) ) {
-      for( list< ViewpointGroup * >::iterator g = groups.begin();
-           g != groups.end(); g++ ) {
-        if( (*g)->containsViewpoint( *i ) ) {
-          standalone_vp = false;
-          break;
-        }
-      }
-    }
-    if( standalone_vp ) vps.push_back( *i );
-  }
-
-  return vps;
 }
 
 void X3DViewpointNode::rotateAround( Rotation rotation, bool collision,

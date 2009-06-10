@@ -29,8 +29,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/ViewpointGroup.h>
+#include <H3D/X3DViewpointNode.h>
 
 using namespace H3D;
+
+list< ViewpointGroup * > ViewpointGroup::viewpoint_groups;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase ViewpointGroup::database( 
@@ -42,59 +45,65 @@ H3DNodeDatabase ViewpointGroup::database(
 namespace ViewpointGroupInternals {
   FIELDDB_ELEMENT( ViewpointGroup, center, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ViewpointGroup, children, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ViewpointGroup, description, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ViewpointGroup, displayed, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ViewpointGroup, retainUserOffsets, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ViewpointGroup, size, INPUT_OUTPUT );
 }
 
-
-
 ViewpointGroup::ViewpointGroup(
-                    Inst< SFSetBind >  _set_bind,
-                    Inst< SFVec3f   >  _centerOfRotation,
-                    Inst< SFString  >  _description,
-                    Inst< SFBool    >  _jump,
-                    Inst< SFNode    >  _metadata,
-                    Inst< SFOrientation>  _orientation,
-                    Inst< SFPosition >  _position,
-                    Inst< SFBool    >  _retainUserOffsets,
-                    Inst< SFTime    >  _bindTime,
-                    Inst< SFBool    >  _isBound,
-                    Inst< SFMatrix4f > _accForwardMatrix,
-                    Inst< SFMatrix4f > _accInverseMatrix,
-                    Inst< SFVec3f >  _center,
-                    Inst< MFChild >   _children,
-                    Inst< SFBool >   _displayed,
-                    Inst< SFVec3f >  _size ) :
-  X3DViewpointNode( _set_bind, _centerOfRotation, _description, _jump,
-                    _metadata, _orientation, _position,
-                    _retainUserOffsets, _bindTime, _isBound,
-                    _accForwardMatrix, _accInverseMatrix ),
+                    Inst< SFVec3f  >  _center,
+                    Inst< MFChild  >  _children,
+                    Inst< SFString >  _description,
+                    Inst< SFBool   >  _displayed,
+                    Inst< SFNode   >  _metadata,
+                    Inst< SFBool   >  _retainUserOffsets,
+                    Inst< SFVec3f  >  _size ) :
+  X3DChildNode( _metadata ),
   center( _center ),
   children( _children ),
+  description( _description ),
   displayed( _displayed ),
-  size( _size ) {
+  retainUserOffsets( _retainUserOffsets ),
+  size( _size ),
+  in_scene_graph( false ),
+  is_top_level( false ) {
   
   type_name = "ViewpointGroup";
   database.initFields( this );
 
+  description->setValue( "" );
   displayed->setValue( true );
   center->setValue( Vec3f( 0, 0, 0 ) );
+  children->setValue( NULL );
+  retainUserOffsets->setValue( false );
   size->setValue( Vec3f( 0, 0, 0 ) );
 
+  viewpoint_groups.push_back( this );
+  /*
   X3DViewpointNode * vp = getActive();
   if( vp ) {
     last_position = vp->totalPosition->getValue();
   }
+  */
 }
 
 void ViewpointGroup::traverseSG( TraverseInfo &ti ) {
+  ViewpointGroup * dummy;
+  if ( !in_scene_graph ) in_scene_graph = true;
+  if ( ti.getUserData("ViewpointGroup", (void **) &dummy) != 0 ) {
+    // user data has not been set, this is a top level ViewpointGroup
+    is_top_level = true;
+    ti.setUserData( "ViewpointGroup", this );
+  }
+
   if( displayed->getValue() ) {
     Vec3f the_center = center->getValue();
     if( the_center.lengthSqr() <= Constants::f_epsilon ) {
       display_in_list = true;
     }
     else {
-      X3DViewpointNode * vp = getActive();
+      X3DViewpointNode * vp = X3DViewpointNode::getActive();
       if( vp ) {
         Vec3f vp_full_position = vp->totalPosition->getValue();
         Vec3f box_size_half = size->getValue() / 2;
@@ -114,6 +123,12 @@ void ViewpointGroup::traverseSG( TraverseInfo &ti ) {
   else {
     display_in_list = false;
   }
+
+  for( MFChild::const_iterator i = children->begin();
+       i != children->end(); i++ ) {
+    (*i)->traverseSG( ti );
+  }
+  ti.deleteUserData( "ViewpointGroup" );
 }
 
 bool ViewpointGroup::containsViewpoint( X3DViewpointNode *vp ) const {
@@ -126,4 +141,31 @@ bool ViewpointGroup::containsViewpoint( X3DViewpointNode *vp ) const {
     }
   }
   return false;
+}
+
+list< Node * > ViewpointGroup::getChildrenAsList() {
+  list< Node * > list;
+  for( MFChild::const_iterator i = children->begin();
+       i != children->end(); i++ ) {
+    list.push_back( *i );
+  }
+  return list;
+}
+
+void ViewpointGroup::MFChild::onAdd( Node * n ) {
+  // Check if node is of type X3DViewpointNode or ViewpointGroup
+  if ( !dynamic_cast< X3DViewpointNode * >(n) && 
+      !dynamic_cast< ViewpointGroup * >(n) ) {
+    Node *pi = getPrototypeNode( n );
+    if( !dynamic_cast< X3DViewpointNode * >(pi) &&
+        !dynamic_cast< ViewpointGroup * >(pi) ) {
+      stringstream s;
+      s << "Expecting " << typeid( X3DViewpointNode ).name();
+      s << " or " << typeid( ViewpointGroup ).name();
+      throw InvalidNodeType( n->getTypeName(),
+                            s.str(),
+                            H3D_FULL_LOCATION );
+    }
+  }
+  MFNode::onAdd( n );
 }

@@ -58,27 +58,22 @@ namespace H3D {
   /// originally defined viewpoint position/orientation after local navigation.
   ///
 
-  class H3DAPI_API ViewpointGroup : public X3DViewpointNode {
+  class H3DAPI_API ViewpointGroup : public X3DChildNode {
   public:
-    typedef TypedMFNode< X3DViewpointNode > MFChild;
+
+    /// Type class of children field
+    class H3DAPI_API MFChild: public MFNode {
+      virtual void onAdd( Node * n );
+    };
 
     /// Constructor.
-    ViewpointGroup( Inst< SFSetBind >  _set_bind         = 0,
-                    Inst< SFVec3f   >  _centerOfRotation = 0,
-                    Inst< SFString  >  _description      = 0,
-                    Inst< SFBool    >  _jump             = 0,
-                    Inst< SFNode    >  _metadata         = 0,
-                    Inst< SFOrientation>  _orientation      = 0,
-                    Inst< SFPosition >  _position         = 0,
-                    Inst< SFBool    >  _retainUserOffsets = 0,
-                    Inst< SFTime    >  _bindTime         = 0,
-                    Inst< SFBool    >  _isBound          = 0,
-                    Inst< SFMatrix4f > _accForwardMatrix = 0,
-                    Inst< SFMatrix4f > _accInverseMatrix = 0,
-                    Inst< SFVec3f >  _center            = 0,
-                    Inst< MFChild >   _children          = 0,
-                    Inst< SFBool >   _displayed         = 0,
-                    Inst< SFVec3f >  _size              = 0 );
+    ViewpointGroup( Inst< SFVec3f  >  _center           = 0,
+                    Inst< MFChild  >  _children         = 0,
+                    Inst< SFString >  _description      = 0,
+                    Inst< SFBool   >  _displayed        = 0,
+                    Inst< SFNode   >  _metadata         = 0,
+                    Inst< SFBool   >  _retainUserOffsets = 0,
+                    Inst< SFVec3f  >  _size             = 0 );
 
     virtual bool windowFromfieldOfView( H3DFloat width, H3DFloat height,
                                         H3DFloat clip_near,
@@ -93,21 +88,28 @@ namespace H3D {
     /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
-     /// Move this instance to the stack top. 
-    virtual void toStackTop() {}
-
-    /// Remove the bindable node from the stack.
-    virtual void removeFromStack() {}
-
-    /// Returns true if the given viewpoint is in the children field
-    /// any ViewpointGroups in the the children field.
+    /// Returns true if the given viewpoint is in the children field of this
+    /// ViewpointGroup.
     bool containsViewpoint( X3DViewpointNode *vp ) const;
+    
+    list< Node * > getChildrenAsList();
 
-    /// Overridden to do nothing.
-    virtual void setupProjection( EyeMode eye_mode,
-                                  H3DFloat width, H3DFloat height,
-                                  H3DFloat clip_near, H3DFloat clip_far,
-                                  StereoInfo * stereo_info = 0 ) {}
+    /// Returns true if this node exists outside of another ViewpointGroup
+    inline bool isTopLevel() {
+      return is_top_level;
+    }
+
+    /// Returns true if this node exists in the scene graph
+    inline bool inSceneGraph() {
+      return in_scene_graph;
+    }
+
+    typedef list< ViewpointGroup * > ViewpointGroupList;
+
+    /// Returns a list of all current ViewpointGroup instances.
+    static const ViewpointGroupList &getAllViewpointGroups() {
+      return viewpoint_groups;
+    }
 
     /// The center field provides a position offset from origin of local
     /// coordinate system.
@@ -122,12 +124,26 @@ namespace H3D {
     /// <b>Default value:</b> NULL \n
     auto_ptr< MFChild > children;
 
+    /// The description field provides a simple description or navigation 
+    /// hint to be displayed for this ViewpointGroup. 
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "" \n
+    auto_ptr< SFString > description;
+
     /// The displayed field determines whether this ViewpointGroup is displayed
     /// in the current viewpoint list. 
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     auto_ptr< SFBool > displayed;
+
+    /// The retainUserOffsets field specifies whether the user is returned to the
+    /// originally defined viewpoint position/orientation after local navigation.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> FALSE \n
+    auto_ptr< SFBool > retainUserOffsets;
 
     /// The size field provides the size of a proximity box within which the
     /// ViewpointGroup is usable and displayed on the viewpoint list. A size
@@ -138,11 +154,23 @@ namespace H3D {
     /// <b>Default value:</b> TRUE \n
     auto_ptr< SFVec3f > size;
 
+    /// Flag to show whether this ViewpointGroup should be displayed in 
+    /// browser list of viewpoints.
     bool display_in_list;
     
     static H3DNodeDatabase database;
+
   protected:
+    //static NodeVector groups;
+    static ViewpointGroupList viewpoint_groups;
+
     Vec3f last_position;
+
+    /// True if this ViewpointGroup exists outside of a another ViewpointGroup
+    bool is_top_level;
+
+    /// True if this ViewpointGroup exists in scene graph
+    bool in_scene_graph;
   };
 }
 

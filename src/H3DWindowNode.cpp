@@ -661,7 +661,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   }
   if ( ! vp ) {
     vp = new Viewpoint;
-    vp->setName( "Default Viewpoint" );
+    vp->setName( "Default X3D Viewpoint" );
+    vp->description->setValue( "Default X3D Viewpoint" );
     vp_ref.reset( static_cast<Viewpoint *>(vp) );
   }
 
