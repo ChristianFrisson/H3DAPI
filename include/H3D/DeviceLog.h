@@ -73,7 +73,7 @@ namespace H3D {
     /// The index of the haptics device to log.
     ///
     /// <b>Access type:</b> initializeOnly \n
-    /// <b>Default value:</b> 100 \n
+    /// <b>Default value:</b> 0 \n
     auto_ptr< SFInt32 > deviceIndex;
 
     /// If true the logging will be done to a binary file. If false

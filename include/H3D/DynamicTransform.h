@@ -228,7 +228,7 @@ namespace H3D {
     /// Specifies the mass, in kg
     ///
     /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
+    /// <b>Default value:</b> 1.0 \n
     ///
     /// \dotfile DynamicTransform_mass.dot
     auto_ptr<    SFFloat    >  mass;

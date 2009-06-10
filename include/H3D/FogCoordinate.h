@@ -57,7 +57,7 @@ namespace H3D {
     FogCoordinate(  Inst< MFFloat  > _depth         = 0,
                     Inst< SFNode   > _metadata      = 0);
 
-    /// Perform the OpenGL commands to render fog until 
+    /// Perform the OpenGL commands to render fog until
     /// the given index.
     virtual void render( int depth_index );
 
@@ -77,6 +77,7 @@ namespace H3D {
 
     /// Depth used to replace the automatic depth.
     /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> [] \n
     ///
     /// \dotfile FogCoordinate_depth.dot
     auto_ptr< MFFloat >  depth;
