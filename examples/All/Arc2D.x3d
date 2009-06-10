@@ -8,11 +8,10 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
-    <!--Inline url='coordaxes.x3d'/-->
     <Shape>
       <Appearance>
-        <Material diffuseColor='1 1 0' />
-      </Appearance>      
+        <Material emissiveColor='1 1 0' />
+      </Appearance>
       <Arc2D endAngle='3.14' startAngle='0' radius='0.1' />
     </Shape>
   </Scene>

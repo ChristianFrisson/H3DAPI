@@ -8,10 +8,9 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
-    <!--Inline url='coordaxes.x3d'/-->
     <Shape>
       <Appearance>
-        <Material diffuseColor='1 1 0' />
+        <Material emissiveColor='1 1 0' />
       </Appearance>      
       <Circle2D radius='0.1'/>
     </Shape>

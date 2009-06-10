@@ -2,9 +2,9 @@
 <X3D profile='Full' version='3.2'>
   <head>
     <meta name='title' content='LOD.x3d'/>
-    <meta name='description' content='X3D LOD example.
-      Move closer to/further from the object to see
-      the difference.'/>
+    <meta name='description' content='X3D LOD example. Geometry changes when
+      viewing distance to the object changes. Use the UP and DOWN keys to 
+      move closer to/further from the object to see the difference.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
   
@@ -12,7 +12,7 @@
     <Viewpoint position='0 0 0.6' />
     <NavigationInfo type='"FLY"' />
     
-    <LOD center='0 0 0' forceTransitions='false' range='1 1.5'>
+    <LOD center='0 0 0' forceTransitions='true' range='1 1.5'>
       <Shape>
         <Appearance DEF='A'>
           <Material />
