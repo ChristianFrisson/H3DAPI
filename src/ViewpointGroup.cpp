@@ -34,13 +34,14 @@
 using namespace H3D;
 
 list< ViewpointGroup * > ViewpointGroup::viewpoint_groups;
+bool ViewpointGroup::viewpoint_groups_changed;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase ViewpointGroup::database( 
                                     "ViewpointGroup", 
                                     &(newInstance<ViewpointGroup>), 
                                     typeid( ViewpointGroup ),
-                                    &X3DViewpointNode::database );
+                                    &X3DChildNode::database );
 
 namespace ViewpointGroupInternals {
   FIELDDB_ELEMENT( ViewpointGroup, center, INPUT_OUTPUT );
@@ -80,6 +81,7 @@ ViewpointGroup::ViewpointGroup(
   size->setValue( Vec3f( 0, 0, 0 ) );
 
   viewpoint_groups.push_back( this );
+  viewpoint_groups_changed = true;
   /*
   X3DViewpointNode * vp = getActive();
   if( vp ) {
@@ -122,6 +124,13 @@ void ViewpointGroup::traverseSG( TraverseInfo &ti ) {
   }
   else {
     display_in_list = false;
+  }
+
+  // set dirty status on first traversal
+  static bool flag = true;
+  if ( flag ) {
+    viewpoint_groups_changed = true;
+    flag = false;
   }
 
   for( MFChild::const_iterator i = children->begin();

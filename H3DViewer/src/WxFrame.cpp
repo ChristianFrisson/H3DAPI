@@ -1201,20 +1201,6 @@ void WxFrame::clearData () {
 
   DestroyViewpointsMenu();
 
-  
-  
-  // Find all separators and destroy them, if the item is not a separator
-  // something is wrong but not enough to quit.
-  while( viewpointMenu->GetMenuItemCount() != 0 ) {
-    wxMenuItem * temp_menu_item = viewpointMenu->FindItemByPosition( 0 );
-    if( temp_menu_item->IsSeparator() ) {
-      viewpointMenu->Destroy( temp_menu_item->GetId() );
-    } else {
-      Console(4) << "Viewpoint menu might look strange from now on." << endl;
-      break;
-    }
-  }
-
   //Delete items from navigation menu & disconnect events
   for (int j = 0; j < navTypeCount; j++) {
     navigationMenu->Destroy(FRAME_NAVIGATION + j);
@@ -1342,7 +1328,9 @@ void WxFrame::OnHelp(wxCommandEvent & event)
 void WxFrame::OnIdle(wxIdleEvent &event) {
   static bool flag;
   TimeStamp now;
-  if ( now - last_viewmenu_update > 0.5 && X3DViewpointNode::viewpointsChanged() ) {
+  if ( now - last_viewmenu_update > 0.5 && 
+       (X3DViewpointNode::viewpointsChanged() || 
+       ViewpointGroup::viewpointGroupsChanged()) ) {
     list< Node * > v = GetTopLevelViews();
     DestroyViewpointsMenu();
     BuildViewpointsMenu( v );
@@ -2520,7 +2508,6 @@ void WxFrame::BuildViewpointsSubMenu(
       Connect(id, wxEVT_COMMAND_MENU_SELECTED,
               wxCommandEventHandler(WxFrame::ChangeViewpoint));
       itemIdViewpointMap[id] = vp;
-      Console(4) << "Add id: " << id << endl;
       count++;
     }
   }
@@ -2537,7 +2524,6 @@ void WxFrame::DestroyViewpointsSubMenu( wxMenu * menu ) {
   for ( wxMenuItemList::iterator i = items.begin();
     i != items.end(); i++ ) {
     int id = (*i)->GetId();
-    Console(4) << "getId: " << id << endl;
     wxMenu * submenu = (*i)->GetSubMenu();
     if ( submenu != NULL ) {          
       DestroyViewpointsSubMenu( submenu );

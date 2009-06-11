@@ -75,6 +75,11 @@ namespace H3D {
                     Inst< SFBool   >  _retainUserOffsets = 0,
                     Inst< SFVec3f  >  _size             = 0 );
 
+    virtual ~ViewpointGroup() {
+      viewpoint_groups.remove( this );
+      viewpoint_groups_changed = true;
+    }
+
     virtual bool windowFromfieldOfView( H3DFloat width, H3DFloat height,
                                         H3DFloat clip_near,
                                         H3DFloat &top, H3DFloat &bottom,
@@ -109,6 +114,14 @@ namespace H3D {
     /// Returns a list of all current ViewpointGroup instances.
     static const ViewpointGroupList &getAllViewpointGroups() {
       return viewpoint_groups;
+    }
+
+    /// True on any addition/deletion/in_scene_graph status change
+    /// of viewpoint group, reset once inquired
+    static bool viewpointGroupsChanged() {
+      bool status = viewpoint_groups_changed;
+      viewpoint_groups_changed = false;
+      return status;
     }
 
     /// The center field provides a position offset from origin of local
@@ -163,6 +176,9 @@ namespace H3D {
   protected:
     //static NodeVector groups;
     static ViewpointGroupList viewpoint_groups;
+
+    //on any change of is_top_level or in_scene_graph of any node in viewpoint_groups
+    static bool viewpoint_groups_changed;
 
     Vec3f last_position;
 

@@ -427,7 +427,8 @@ namespace H3D {
       return viewpoints;
     }
     
-    /// True on any addition/deletion of viewpoints, reset once inquired
+    /// True on any addition/deletion/in_scene_graph status change
+    /// of viewpoints, reset once inquired
     static bool viewpointsChanged() {
       bool status = viewpoints_changed;
       viewpoints_changed = false;
