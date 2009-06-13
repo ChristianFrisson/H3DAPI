@@ -2485,7 +2485,8 @@ void WxFrame::BuildViewpointsSubMenu(
       }
       // create submenu
       wxMenu *submenu = new wxMenu();
-      menu->AppendSubMenu( submenu, v_description );
+      menu->AppendSubMenu( submenu, wxString(v_description.c_str(),
+					     wxConvUTF8) );
       BuildViewpointsSubMenu( vg->getChildrenAsList(), submenu, count, unnamed_vp, unnamed_vg );
     } else {
       X3DViewpointNode * vp = static_cast< X3DViewpointNode * >( *v ); 
