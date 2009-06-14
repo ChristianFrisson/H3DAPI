@@ -35,6 +35,28 @@
 
 #include <HAPI/HAPI.h>
 
+#if defined(__APPLE__) && defined(__MACH__)
+#define MACOSX
+#define H3D_OSX
+#define H3DAPI_API
+#define HAVE_SYS_TIME_H
+#endif
+
+#if defined(__linux)
+#define LINUX
+#define H3D_LINUX
+#define H3DAPI_API 
+#define HAVE_SYS_TIME_H
+#endif
+
+#if( defined( _WIN64 ) || defined(WIN64) )
+// set when on 64 bit Windows
+#define H3D_WIN64
+#elif( defined( _WIN32 ) || defined(WIN32) )
+// set when on 32 bit Windows
+#define H3D_WIN32
+#endif
+
 /// Undef if you do not have xerces-c(http://xerces.apache.org/xerces-c/) 
 /// installed. Required for parsing xml based x3d files.
 #cmakedefine HAVE_XERCES
@@ -81,9 +103,13 @@
 
 /// Undef if you do not have DirectShow available. Needed for the 
 /// DirectShowDecoder node.
-#ifdef WIN32
+#ifdef H3D_WINDOWS
 #cmakedefine HAVE_DSHOW
 #endif
+
+/// Undef if you do not have FFmpeg available. Needed for the 
+/// FFmpegDecoder node.
+#cmakedefine HAVE_FFMPEG
 
 #define XML_USE_WIN32_TRANSCODER
 #define XML_USE_INMEM_MESSAGELOADER
@@ -139,27 +165,6 @@
 #define _ftime64 ftime
 #endif
 
-#if defined(__APPLE__) && defined(__MACH__)
-#define MACOSX
-#define H3D_OSX
-#define H3DAPI_API
-#define HAVE_SYS_TIME_H
-#endif
-
-#if defined(__linux)
-#define LINUX
-#define H3D_LINUX
-#define H3DAPI_API 
-#define HAVE_SYS_TIME_H
-#endif
-
-#if( defined( _WIN64 ) || defined(WIN64) )
-// set when on 64 bit Windows
-#define H3D_WIN64
-#elif( defined( _WIN32 ) || defined(WIN32) )
-// set when on 32 bit Windows
-#define H3D_WIN32
-#endif
 
 #if( defined( H3D_WIN32 ) || defined( H3D_WIN64 ) )
 // set when on 32 or 64 bit Windows

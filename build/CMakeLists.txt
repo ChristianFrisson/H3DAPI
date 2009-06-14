@@ -483,6 +483,8 @@ IF(HAPTIK_FOUND)
 ENDIF(HAPTIK_FOUND)
 
 IF(WIN32)
+  # Windows specific libraries
+
   # Optional extra library. Used to render movies as textures.
   FIND_PACKAGE(DirectShow)
   IF(DIRECTSHOW_FOUND)
@@ -493,12 +495,22 @@ IF(WIN32)
 ENDIF(WIN32)
 
 IF(NOT WIN32 AND NOT APPLE)
+  # Linux specific libraries
+
   FIND_PACKAGE(FontConfig)
   IF(FONTCONFIG_FOUND)
     SET(HAVE_FONTCONFIG 1)
     INCLUDE_DIRECTORIES( ${FONTCONFIG_INCLUDE_DIR} ) 
     SET(optionalLibs ${optionalLibs} ${FONTCONFIG_LIBRARIES} )
   ENDIF(FONTCONFIG_FOUND)
+
+  # Optional extra library. Used to render movies as textures.
+  FIND_PACKAGE(FFmpeg)
+  IF(FFMPEG_FOUND)
+    SET(HAVE_FFMPEG 1)
+    INCLUDE_DIRECTORIES( ${FFMPEG_INCLUDE_DIRS} )  
+    LIST( APPEND optionalLibs ${FFMPEG_LIBRARIES} )
+  ENDIF(FFMPEG_FOUND)  
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 FIND_PACKAGE(DCMTK)
