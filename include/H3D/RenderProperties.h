@@ -40,10 +40,6 @@ namespace H3D {
   /// \brief The RenderProperties node specifies additional rendering options
   /// that cannot be specified with the X3D Appearance node. 
   ///
-  /// The lightingEnabled field specifies if the geometry should take 
-  /// lighting into account when calculating colors. If false the color
-  /// for each vertex will be used directly.
-  ///
   /// The depthTestEnabled field specifies if depth test should be enabled
   /// or not. If depth test is disabled geometries will be drawn over the 
   /// current values in the frame buffer regardless of if it is in front of 

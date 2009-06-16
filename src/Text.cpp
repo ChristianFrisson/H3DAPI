@@ -47,6 +47,9 @@ namespace TextInternals {
   FIELDDB_ELEMENT( Text, length, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Text, maxExtent, INPUT_OUTPUT );
   FieldDBInsert string( INPUT_OUTPUT( &Text::database, "string", &Text::stringF ) );
+  FIELDDB_ELEMENT( Text, lineBounds, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( Text, origin, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( Text, textBounds, OUTPUT_ONLY );
   FIELDDB_ELEMENT( Text, solid, INPUT_OUTPUT );
 }
 
@@ -57,13 +60,21 @@ Text::Text( Inst< SFNode          > _metadata,
             Inst< MFFloat         > _length,
             Inst< SFFloat         > _maxExtent,
             Inst< MFString        > _string,
-            Inst< SFBool          > _solid ) :
+            Inst< MFVec2f         > _lineBounds,
+            Inst< SFVec3f         > _origin,
+            Inst< SFVec2f         > _textBounds,
+            Inst< SFBool          > _solid,
+            Inst< OutputUpdater   > _outputUpdater ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   fontStyle( _fontStyle ),
   length   ( _length    ),
   maxExtent( _maxExtent ),
   stringF  ( _string   ),
-  solid    ( _solid     ) {
+  lineBounds( _lineBounds ),
+  origin( _origin ),
+  textBounds( _textBounds ),
+  solid    ( _solid     ),
+  outputUpdater( _outputUpdater ) {
 
   type_name = "Text";
   
@@ -83,11 +94,15 @@ Text::Text( Inst< SFNode          > _metadata,
   maxExtent->route( bound );
   stringF->route( bound );
 
+  outputUpdater->setName( "outputUpdater" );
+  outputUpdater->setOwner( this );
+  fontStyle->route( outputUpdater );
+  stringF->route( outputUpdater );
+
   // initialize static default font.
   if( !default_font_style.get() ) {
     default_font_style.reset( new FontStyle );
   }
-
 }
 
 void Text::justifyMinor( const vector< string > &lines,
@@ -377,15 +392,13 @@ void Text::render() {
     justifyLine( *line, font ); 
     // render the line of text in the style of the font.
     renderTextLine( *line, font );
-
+    
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
-
     // translate to the next line. What the next line is depends on the 
     // values in the font node.
     if( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) 
       moveToNewLine( *line, font );
-      
   }
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
@@ -495,4 +508,99 @@ bool Text::lineIntersect(
       }
   }
   return returnValue;
+}
+
+void Text::OutputUpdater::update() {
+  Text * text_node = static_cast< Text * >( getOwner() );
+  // Do not bother if length and maxExtent are not defaults
+  if ( text_node->length->getValue().size() != 0 || 
+       text_node->maxExtent->getValue() != 0 ) 
+    return;
+
+  BoxBound * bb = dynamic_cast< BoxBound *>( text_node->bound->getValue() );
+  if ( bb == NULL ) return;
+
+  X3DFontStyleNode * font_style = 
+    static_cast< SFFontStyleNode * >( routes_in[0] )->getValue();
+  const vector< string > &text = 
+    static_cast< MFString * >( routes_in[1] )->getValue();
+  
+  const Vec3f &size = bb->size->getValue();
+	Vec3f center = bb->center->getValue();
+
+	// update textBounds
+	text_node->textBounds->setValue( 
+    Vec2f(size.x, size.y), text_node->id );
+	// update origin
+	text_node->origin->setValue( 
+    Vec3f(center.x-(size.x/2), center.y+(size.y/2), 0), text_node->id );
+  // update line bounds
+  text_node->updateLineBounds();
+}
+
+void Text::updateLineBounds() {  
+  BoxBound * bb = dynamic_cast< BoxBound * >( bound->getValue() );
+  if ( bb == NULL ) return;
+
+  X3DFontStyleNode * font_style 
+    = static_cast< X3DFontStyleNode * >( fontStyle->getValue() );
+  X3DFontStyleNode::Alignment alignment 
+    = font_style->getAlignment();
+  X3DFontStyleNode::Justification justification 
+    = font_style->getMajorJustification();
+
+  vector< string > text = stringF->getValue();
+  lineBounds->clear( id );
+
+  if ( alignment == X3DFontStyleNode::HORIZONTAL ) {
+    // Case of horizontal alignment
+    H3DFloat offset = bb->size->getValue().x;
+    for ( vector<string>::const_iterator i = text.begin(); 
+      i != text.end(); i++ ) {
+      const string &line = *i;
+      Vec3f &dim = font_style->
+        stringDimensions( line, X3DFontStyleNode::HORIZONTAL );
+      Vec2f line_bound( 0, 0 );
+
+      switch( justification ) {
+        case X3DFontStyleNode::BEGIN:
+        case X3DFontStyleNode::FIRST:
+            line_bound.x = dim.x;
+            break;
+        case X3DFontStyleNode::END:
+            line_bound.x = offset;
+            break;
+        case X3DFontStyleNode::MIDDLE:
+            line_bound.x = dim.x + (offset-dim.x)/2;
+            break;
+      }
+      line_bound.y = dim.y;
+      lineBounds->push_back( line_bound, id );
+    }
+  } else {
+    // Case of vertical alignment
+    H3DFloat offset = bb->size->getValue().y;
+    for ( vector<string>::const_iterator i = text.begin(); 
+      i != text.end(); i++ ) {
+      const string &line = *i;
+      Vec3f &dim = font_style->
+        stringDimensions( line, X3DFontStyleNode::VERTICAL );
+      Vec2f line_bound( 0, 0 );
+
+      switch( justification ) {
+        case X3DFontStyleNode::BEGIN:
+        case X3DFontStyleNode::FIRST:
+            line_bound.y = dim.y;
+            break;
+        case X3DFontStyleNode::END:
+            line_bound.y = offset;
+            break;
+        case X3DFontStyleNode::MIDDLE:
+            line_bound.y = dim.y + (offset-dim.y)/2;
+            break;
+      }
+      line_bound.x = dim.x;
+      lineBounds->push_back( line_bound, id );
+    }
+  }
 }

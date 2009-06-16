@@ -34,7 +34,11 @@
 #include <H3D/MFFloat.h>
 #include <H3D/SFFloat.h>
 #include <H3D/MFString.h>
+#include <H3D/MFVec2f.h>
+#include <H3D/SFVec2f.h>
+#include <H3D/SFVec3f.h>
 #include <H3D/FontStyle.h>
+#include <H3D/PeriodicUpdate.h>
 
 namespace H3D {
 
@@ -115,17 +119,32 @@ namespace H3D {
       virtual void callList( bool build_list );
     };
 
+    /// Internal field class to update values of origin, textBounds, 
+    /// lineBounds. Only outputs values if default length and maxExtent
+    /// are used. Changes on string and fontStyle changes.
+    class H3DAPI_API OutputUpdater : 
+      public PeriodicUpdate< TypedField< Field, 
+                             Types<SFFontStyleNode, MFString> > > {
+    protected:
+      /// Updates values of origin, lineBounds and textBounds
+      virtual void update();
+    };
+
   public:
     
     /// Constructor.
-    Text( Inst< SFNode          > _metadata    = 0,
+    Text( Inst< SFNode         > _metadata    = 0,
           Inst< SFBound         > _bound       = 0,
           Inst< DisplayList     > _displayList = 0,
           Inst< SFFontStyleNode > _fontStyle   = 0,
           Inst< MFFloat         > _length      = 0,
           Inst< SFFloat         > _maxExtent   = 0,
           Inst< MFString        > _string      = 0,
-          Inst< SFBool          > _solid       = 0 );
+          Inst< MFVec2f         > _lineBounds  = 0,
+          Inst< SFVec3f         > _origin      = 0,
+          Inst< SFVec2f         > _textBounds  = 0, 
+          Inst< SFBool          > _solid       = 0,
+          Inst< OutputUpdater   > _outputUpdater = 0 );
 
     /// Render the text with OpenGL.
     virtual void render();
@@ -198,6 +217,32 @@ namespace H3D {
     /// \dotfile Text_string.dot
     auto_ptr< MFString >  stringF;
 
+    /// A set of 2D vectors where each vector contains the size of the 2D 
+    /// bounding box for each line of rendered text in local text x and y 
+    /// units.
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile Text_lineBounds.dot
+    auto_ptr< MFVec2f > lineBounds;
+
+    /// 3D position that specifies the origin of the text local coordinate 
+    /// system in units of the coordinate system in which the Text node is
+    /// embedded. The value of the origin field represents the upper left 
+    /// corner of the textBounds.
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile Text_origin.dot
+    auto_ptr< SFVec3f > origin;
+
+    /// The dimensions of Text node’s 2D bounding box.
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    /// 
+    /// \dotfile Text_textBounds.dot
+    auto_ptr< SFVec2f > textBounds;
+
     /// The solid field determines whether one or both sides of each polygon
     /// shall be displayed. If solid is FALSE, each polygon is visible
     /// regardless of the viewing direction and if it is TRUE back face culling
@@ -211,7 +256,13 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
   protected:
+    /// Internal field to update output fields origin, lineBounds, textBounds.
+    auto_ptr< OutputUpdater > outputUpdater;
+
+    /// Calculates and updates lineBounds field value
+    void updateLineBounds();
 
     /// The font style to use when no style is specified.
     static AutoRef< FontStyle > default_font_style;
