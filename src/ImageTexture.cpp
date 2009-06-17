@@ -30,6 +30,7 @@
 
 #include <H3D/ImageTexture.h>
 #include <H3D/ResourceResolver.h>
+#include <H3D/DicomImageLoader.h>
 
 using namespace H3D;
 
@@ -100,6 +101,18 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
     if( !url.empty() ) {
       auto_ptr< H3DImageLoaderNode > 
         il( H3DImageLoaderNode::getSupportedFileReader( url ) );
+
+      // special case for if we have a DicomImageLoader. Since DICOM 3d image
+      // files often are distributed over several files the default behavior
+      // is to combine all these files into one image. In this case we want
+      // to use only the file the url points to so we modify the reader
+      // to do that.
+#ifdef HAVE_DCMTK
+      DicomImageLoader *dicom_loader = 
+        dynamic_cast< DicomImageLoader * >( il.get() );
+      if( dicom_loader ) dicom_loader->loadSingleFile->setValue( true );
+#endif
+
       if( il.get() ) {
         texture->setURLUsed( *i );
         Image *image = il->loadImage( url );
