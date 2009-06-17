@@ -183,7 +183,7 @@ unsigned char * X3D::Convert::readImageData( const char *s,
   unsigned char *data = new unsigned char[ nr_pixels * nr_components ];
   int x, y, z;
   for( z = 0; z < depth; z++ )
-    for( y = height - 1; y >= 0; y-- )
+    for( y = 0; y < height; y++ )
       for( x = 0; x < width; x++ ) {
         // pixel_index is the index in the data vector where
         // the current pixel starts
@@ -274,8 +274,8 @@ unsigned char * X3D::Convert::readImageData( const char *s,
         }           
         
       }
-  // y has been counted down so we have to compensate for that
-  int pixels_processed = x * (y + height + 1) * z;
+  
+  int pixels_processed = x * y * z;
   if( pixels_processed != nr_pixels ) {
     delete data;
     stringstream s;
