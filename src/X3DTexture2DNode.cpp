@@ -166,6 +166,21 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
 
   TextureProperties *texture_properties = textureProperties->getValue();
   
+  if( texture_properties ) {
+    glPushAttrib( GL_PIXEL_MODE_BIT );	
+    const Vec4f &scale = texture_properties->textureTransferScale->getValue();
+    glPixelTransferf( GL_RED_SCALE, scale.x );
+    glPixelTransferf( GL_BLUE_SCALE, scale.y );
+    glPixelTransferf( GL_GREEN_SCALE, scale.z );
+    glPixelTransferf( GL_ALPHA_SCALE, scale.w );
+
+    const Vec4f &bias = texture_properties->textureTransferBias->getValue();
+    glPixelTransferf( GL_RED_BIAS, bias.x );
+    glPixelTransferf( GL_BLUE_BIAS, bias.y );
+    glPixelTransferf( GL_GREEN_BIAS, bias.z );
+    glPixelTransferf( GL_ALPHA_BIAS, bias.w );
+  }
+
   if( texture_properties && texture_properties->generateMipMaps->getValue() ) {
     gluBuild2DMipmaps(  texture_target, 
                         glInternalFormat( i ),
@@ -199,6 +214,9 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
   }
 
   glPixelStorei( GL_UNPACK_ALIGNMENT, byte_alignment );
+
+  // restore scale and bias pixel transfer components
+  if( texture_properties ) glPopAttrib();
 
   // free the temporary image data if necessary.
   if( free_image_data ) 
@@ -480,6 +498,26 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
             width * bytes_per_pixel );
   }
 
+ GLint byte_alignment;
+  glGetIntegerv( GL_UNPACK_ALIGNMENT, &byte_alignment );
+  glPixelStorei( GL_UNPACK_ALIGNMENT, image->byteAlignment() );
+
+  TextureProperties *texture_properties = textureProperties->getValue();
+  if( texture_properties ) {
+    glPushAttrib( GL_PIXEL_MODE_BIT );	
+    const Vec4f &scale = texture_properties->textureTransferScale->getValue();
+    glPixelTransferf( GL_RED_SCALE, scale.x );
+    glPixelTransferf( GL_BLUE_SCALE, scale.y );
+    glPixelTransferf( GL_GREEN_SCALE, scale.z );
+    glPixelTransferf( GL_ALPHA_SCALE, scale.w );
+
+    const Vec4f &bias = texture_properties->textureTransferBias->getValue();
+    glPixelTransferf( GL_RED_BIAS, bias.x );
+    glPixelTransferf( GL_BLUE_BIAS, bias.y );
+    glPixelTransferf( GL_GREEN_BIAS, bias.z );
+    glPixelTransferf( GL_ALPHA_BIAS, bias.w );
+  }
+
   glTexSubImage2D( GL_TEXTURE_2D, 0, 
                    x_offset, y_offset, 
                    width, height, 
@@ -487,6 +525,7 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
                    glPixelComponentType( image ), 
                    modified_data );
 
+  if( texture_properties ) glPopAttrib();
 
   delete [] modified_data;
 }

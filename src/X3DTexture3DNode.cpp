@@ -157,6 +157,22 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
   GLint byte_alignment;
   glGetIntegerv( GL_UNPACK_ALIGNMENT, &byte_alignment );
   glPixelStorei( GL_UNPACK_ALIGNMENT, i->byteAlignment() );
+
+  if( texture_properties ) {
+    glPushAttrib( GL_PIXEL_MODE_BIT );	
+    const Vec4f &scale = texture_properties->textureTransferScale->getValue();
+    glPixelTransferf( GL_RED_SCALE, scale.x );
+    glPixelTransferf( GL_BLUE_SCALE, scale.y );
+    glPixelTransferf( GL_GREEN_SCALE, scale.z );
+    glPixelTransferf( GL_ALPHA_SCALE, scale.w );
+
+    const Vec4f &bias = texture_properties->textureTransferBias->getValue();
+    glPixelTransferf( GL_RED_BIAS, bias.x );
+    glPixelTransferf( GL_BLUE_BIAS, bias.y );
+    glPixelTransferf( GL_GREEN_BIAS, bias.z );
+    glPixelTransferf( GL_ALPHA_BIAS, bias.w );
+  }
+
   if( texture_properties && texture_properties->generateMipMaps->getValue() ) {
 #if( GLU_VERSION_1_3 )
     gluBuild3DMipmaps(  texture_target, 
@@ -194,6 +210,9 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
   }
 
   glPixelStorei( GL_UNPACK_ALIGNMENT, byte_alignment );
+
+  // restore scale and bias pixel transfer components
+  if( texture_properties ) glPopAttrib();
 
   if( free_image_data ) 
     free( image_data );
@@ -276,7 +295,7 @@ void X3DTexture3DNode::renderTextureProperties() {
         glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, 
                          GL_CLAMP_TO_BORDER );
       } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+        Console(3) << "Warning: CLAMP_TO_BOUNDARY boundary mode not "
                    << "supported by your graphics card (in " << getName()
                    << ")" << endl;
       }
@@ -308,7 +327,7 @@ void X3DTexture3DNode::renderTextureProperties() {
         glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, 
                          GL_CLAMP_TO_BORDER );
       } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+        Console(3) << "Warning: CLAMP_TO_BOUNDARY boundary mode not "
                    << "supported by your graphics card (in " << getName()
                    << ")" << endl;
       }
@@ -341,7 +360,7 @@ void X3DTexture3DNode::renderTextureProperties() {
         glTexParameteri( GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, 
                          GL_CLAMP_TO_BORDER );
       } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+        Console(3) << "Warning: CLAMP_TO_BOUNDARY boundary mode not "
                    << "supported by your graphics card (in " << getName()
                    << ")" << endl;
       }
@@ -488,6 +507,26 @@ void X3DTexture3DNode::renderSubImage( Image *image,
     }
   }
 
+  GLint byte_alignment;
+  glGetIntegerv( GL_UNPACK_ALIGNMENT, &byte_alignment );
+  glPixelStorei( GL_UNPACK_ALIGNMENT, image->byteAlignment() );
+
+  TextureProperties *texture_properties = textureProperties->getValue();
+  if( texture_properties ) {
+    glPushAttrib( GL_PIXEL_MODE_BIT );	
+    const Vec4f &scale = texture_properties->textureTransferScale->getValue();
+    glPixelTransferf( GL_RED_SCALE, scale.x );
+    glPixelTransferf( GL_BLUE_SCALE, scale.y );
+    glPixelTransferf( GL_GREEN_SCALE, scale.z );
+    glPixelTransferf( GL_ALPHA_SCALE, scale.w );
+
+    const Vec4f &bias = texture_properties->textureTransferBias->getValue();
+    glPixelTransferf( GL_RED_BIAS, bias.x );
+    glPixelTransferf( GL_BLUE_BIAS, bias.y );
+    glPixelTransferf( GL_GREEN_BIAS, bias.z );
+    glPixelTransferf( GL_ALPHA_BIAS, bias.w );
+  }
+
   glTexSubImage3D( GL_TEXTURE_3D, 0, 
                    x_offset, y_offset, z_offset, 
                    width, height, depth, 
@@ -495,6 +534,7 @@ void X3DTexture3DNode::renderSubImage( Image *image,
                    glPixelComponentType( image ), 
                    modified_data );
 
+  if( texture_properties ) glPopAttrib();
 
   delete [] modified_data;
 }
