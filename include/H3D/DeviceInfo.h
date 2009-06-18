@@ -53,6 +53,7 @@ namespace H3D {
 
     virtual ~DeviceInfo() {
       removeFromStack();
+      deviceinfos.remove( this );
     }
 
     /// Convenience function to get the top of the DeviceInfo stack.
