@@ -22,6 +22,7 @@
       <field accessType='inputOutput' name='string' type='MFString'/>
     </ExternProtoDeclare>    
 
+    <!-- BEGIN DISPLAY OF KEY AND ACTION KEY FIELD VALUES -->
     <!-- key display -->
     <Transform translation='-0.15 0 0'>
       <ProtoInstance name='Text'>
@@ -32,7 +33,7 @@
         <fieldValue name='offset' value='0 0.02 0' />
         <fieldValue name='string' value='"Last key released:"' />
       </ProtoInstance>
-        <ProtoInstance DEF='T0' name='Text'>
+      <ProtoInstance DEF='T0' name='Text'>
         <fieldValue name='offset' value='0 0.08 0' />
       </ProtoInstance>
       <ProtoInstance DEF='T1' name='Text' />
@@ -81,6 +82,62 @@
     <ROUTE
       fromNode='P' fromField='intToMFString1'
       toNode='T3' toField='string' />
-
+      
+    <!-- BEGIN DISPLAY OF ALT, CTRL, SHIFT KEY FIELD VALUES -->
+    <!-- Sphere prototype -->
+    <ProtoDeclare name='Sphere'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='color' type='SFColor' value='0.7 0.7 0.7' />
+      </ProtoInterface>
+      <ProtoBody>
+        <Shape>
+          <Sphere radius='0.02' />
+          <Appearance>
+            <Material>
+              <IS>
+                <connect nodeField='diffuseColor' protoField='color' />
+              </IS>
+            </Material>
+          </Appearance>
+        </Shape>
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <!-- Spheres and instruction -->
+    <Transform translation='0 -0.1 0'>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.03 0' />
+        <fieldValue name='string' value='"Press the ALT, SHIFT and CTRL keys to color the spheres"' />
+      </ProtoInstance>      
+      <Transform translation='-0.1 0 0'>
+        <ProtoInstance DEF='ALT' name='Sphere' />
+      </Transform>
+      <Transform translation='0 0 0'>
+        <ProtoInstance DEF='SHIFT' name='Sphere' />
+      </Transform>
+      <Transform translation='0.1 0 0'>
+        <ProtoInstance DEF='CTRL' name='Sphere' />
+      </Transform>
+    </Transform>
+    
+    <!-- Routes to color the spheres on key press --> 
+    <ROUTE
+      fromNode='K' fromField='altKey'
+      toNode='P' toField='colorToRed' />
+    <ROUTE_NO_EVENT
+      fromNode='P' fromField='colorToRed'
+      toNode='ALT' toField='color' />
+    <ROUTE
+      fromNode='K' fromField='shiftKey'
+      toNode='P' toField='colorToYellow' />
+    <ROUTE_NO_EVENT
+      fromNode='P' fromField='colorToYellow'
+      toNode='SHIFT' toField='color' />
+    <ROUTE
+      fromNode='K' fromField='controlKey'
+      toNode='P' toField='colorToGreen' />
+    <ROUTE_NO_EVENT
+      fromNode='P' fromField='colorToGreen'
+      toNode='CTRL' toField='color' />
   </Scene>
 </X3D>

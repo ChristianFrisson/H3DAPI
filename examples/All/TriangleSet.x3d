@@ -15,10 +15,17 @@
           normalPerVertex='true' solid='false'>
         <CoordinateDouble
             point='0 0.1 0.1, 0 -0.1 0.1, -0.1 0 0,
-                   0 0.1 0.1, 0 -0.1 0.1, 0.1 0 0'/>
+                   0 0.1 0.1, 0.1 0 0, 0 -0.1 0.1'/>
       </TriangleSet>
       <Appearance>
-        <Material />
+        <TwoSidedMaterial 
+            ambientIntensity='0.2' diffuseColor='0.8 0.8 0.8'
+            emissiveColor='0 1 0' shininess='0.2'
+            specularColor='0 0 0' transparency='0'
+            backAmbientIntensity='0.2' backDiffuseColor='0.3 0.3 0.3'
+            backEmissiveColor='0 0 0' backShininess='0.2'
+            backSpecularColor='1 0 1' backTransparency='0' 
+            separateBackColor='true' />
       </Appearance>
     </Shape>
   </Scene>

@@ -79,3 +79,7 @@ spacePressed = SpacePressed()
 
 # used in TouchSensor.x3d
 colorToRed = BoolToColor( RGB(0.7,0.7,0.7), RGB(1,0,0) )
+
+# used in KeySensor.x3d
+colorToYellow = BoolToColor( RGB(0.7,0.7,0.7), RGB(1,1,0) )
+colorToGreen = BoolToColor( RGB(0.7,0.7,0.7), RGB(0,1,0) )

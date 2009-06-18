@@ -8,16 +8,33 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
-    <Shape>
-      <Appearance>
-        <Material diffuseColor='0 1 1' />
-      </Appearance>      
-      <Text string='"H3DAPI rocks!"":)"' length='' maxExtent='' solid='true'>
-        <FontStyle family='SERIF' horizontal='true' 
-                   justify='MIDDLE' language='en' 
-                   leftToRight='true' size='0.1' spacing='1.0' 
-                   style='ITALIC' topToBottom='true' renderType='TEXTURE' />
-      </Text>
-    </Shape>
+    <Transform translation='0.1 0 0'>
+    <Transform translation='0.1 0 0' rotation='1 1 0 0.5' scale=''>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0 1 1' />
+        </Appearance>
+        <Text DEF='TX' string='"H3DAPI rocks!"":)"' length='' maxExtent='' solid='true'>
+          <FontStyle family='SERIF' horizontal='true' 
+                     justify='MIDDLE' language='en' 
+                     leftToRight='true' size='0.1' spacing='1.0' 
+                     style='ITALIC' topToBottom='true' renderType='TEXTURE' />
+        </Text>
+      </Shape>
+      
+      <Transform DEF='T'>
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='1 0 0' />
+          </Appearance>
+          <Sphere radius='0.005' />
+        </Shape>
+      </Transform>
+    
+    </Transform>
+    </Transform>
+    
+    <ROUTE fromNode='TX' fromField='origin' toNode='T' toField='translation' />
+
   </Scene>
 </X3D>

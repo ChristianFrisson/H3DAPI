@@ -22,7 +22,7 @@
             <GeneralFunction containerField='greenFunction' function='1' params='x,y' />
           </TransferFunctionTexture>
         </Appearance>
-        <Box size='0.1 0.1 0.1' />
+        <Box size='0.2 0.2 0.2' />
       </Shape>
     </Transform>
   </Scene>
