@@ -46,6 +46,7 @@ namespace X3DBackgroundNodeInternals {
   FIELDDB_ELEMENT( X3DBackgroundNode, groundColor, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DBackgroundNode, skyAngle, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DBackgroundNode, skyColor, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DBackgroundNode, transparency, INPUT_OUTPUT );
 }
 
 X3DBackgroundNode::X3DBackgroundNode( Inst< SFSetBind > _set_bind,
@@ -56,13 +57,15 @@ X3DBackgroundNode::X3DBackgroundNode( Inst< SFSetBind > _set_bind,
                                       Inst< MFFloat   > _groundAngle,
                                       Inst< MFColor   > _groundColor,
                                       Inst< MFFloat   > _skyAngle,
-                                      Inst< MFColor   > _skyColor ) :
+                                      Inst< MFColor   > _skyColor,
+                                      Inst< SFFloat   > _transparency ) :
   X3DBindableNode( "X3DBackgroundNode", _set_bind, _metadata, _bindTime, _isBound ),
   displayList( _displayList ),
   groundAngle( _groundAngle ),
   groundColor( _groundColor ),
   skyAngle( _skyAngle ),
   skyColor( _skyColor ),
+  transparency( _transparency ),
   localToGlobal( new SFMatrix4f ),
   render_enabled( false ) {
   
@@ -75,11 +78,13 @@ X3DBackgroundNode::X3DBackgroundNode( Inst< SFSetBind > _set_bind,
   database.initFields( this );
 
   skyColor->push_back( RGB( 0, 0, 0 ) );
+  transparency->setValue( 0 );
 
   groundAngle->route( displayList );
   groundColor->route( displayList );
   skyAngle->route( displayList );
   skyColor->route( displayList );
+  transparency->route( displayList );
   localToGlobal->route( displayList );
 }
 
@@ -119,9 +124,14 @@ void X3DBackgroundNode::render() {
     const vector< H3DFloat > &sky_angle = skyAngle->getValue();
     const vector< RGB > &ground_color = groundColor->getValue();
     const vector< H3DFloat > &ground_angle = groundAngle->getValue();
+
     glCullFace( GL_BACK );
     glEnable( GL_CULL_FACE );
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glDisable( GL_LIGHTING );
+
+    H3DFloat alpha = 1 - transparency->getValue();
 
     Matrix3f m = localToGlobal->getValue().getRotationPart();
     GLfloat mv[] = { 
@@ -159,7 +169,7 @@ void X3DBackgroundNode::render() {
           glNormal3f(e.x,e.y,e.z);
           RGB color = getColor( (H3DFloat)(-(theta2 + PID2)+Constants::pi), 
                                 sky_color, sky_angle );
-          glColor3f( color.r, color.g, color.b );
+          glColor4f( color.r, color.g, color.b, alpha );
           glVertex3f(p.x,p.y,p.z);
           e.x = cos(theta1) * cos(theta3);
           e.y = sin(theta1);
@@ -170,7 +180,7 @@ void X3DBackgroundNode::render() {
           glNormal3f(e.x,e.y,e.z);
           color = getColor( (H3DFloat)( -(theta1 + PID2)+Constants::pi ),
                             sky_color, sky_angle );
-          glColor3f( color.r, color.g, color.b );
+          glColor4f( color.r, color.g, color.b, alpha );
           glVertex3f(p.x,p.y,p.z);
         }
         glEnd();
@@ -195,7 +205,7 @@ void X3DBackgroundNode::render() {
           p.z = c.z + r * e.z;
           glNormal3f(e.x,e.y,e.z);
           RGB color =  getColor( theta2 + PID2 , ground_color, ground_angle );
-          glColor3f( color.r, color.g, color.b );
+          glColor4f( color.r, color.g, color.b, alpha );
           glVertex3f(p.x,p.y,p.z);
           e.x = cos(theta1) * cos(theta3);
           e.y = sin(theta1);
@@ -205,7 +215,7 @@ void X3DBackgroundNode::render() {
           p.z = c.z + r * e.z;
           glNormal3f(e.x,e.y,e.z);
           color = getColor( theta1 + PID2, ground_color, ground_angle );
-          glColor3f( color.r, color.g, color.b );
+          glColor4f( color.r, color.g, color.b, alpha );
           glVertex3f(p.x,p.y,p.z);
         }
         glEnd();

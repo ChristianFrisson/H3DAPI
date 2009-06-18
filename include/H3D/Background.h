@@ -90,7 +90,8 @@ namespace H3D {
 		Inst< MFString  > _leftUrl     = 0,
 		Inst< MFString  > _rightUrl    = 0,
 		Inst< MFString  > _topUrl      = 0,
-		Inst< MFString  > _bottomUrl   = 0 );
+		Inst< MFString  > _bottomUrl   = 0,
+		Inst< SFFloat   > _transparency   = 0 );
 
     /// Renders the background with OpenGL.
     virtual void render();

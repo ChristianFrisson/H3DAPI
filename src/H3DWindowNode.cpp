@@ -577,10 +577,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   X3DBackgroundNode *background = X3DBackgroundNode::getActive();
   Fog *fog = Fog::getActive();
-  RGB clear_color = RGB( 0, 0, 0 );
+  RGBA clear_color = RGBA( 0, 0, 0, 0 );
   if( background ) clear_color = background->glClearColor();
   if( fog ) fog->renderFog(); 
-  glClearColor( clear_color.r, clear_color.g, clear_color.b, 1 );
+  glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   
   glEnable( GL_DEPTH_TEST ); 

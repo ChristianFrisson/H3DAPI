@@ -46,7 +46,6 @@ namespace TextureBackgroundInternals {
   FIELDDB_ELEMENT( TextureBackground, rightTexture, INPUT_OUTPUT );
   FIELDDB_ELEMENT( TextureBackground, topTexture, INPUT_OUTPUT );
   FIELDDB_ELEMENT( TextureBackground, bottomTexture, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( TextureBackground, transparency, INPUT_OUTPUT );
 }
 
 TextureBackground::TextureBackground( Inst< SFSetBind > _set_bind,
@@ -66,14 +65,13 @@ TextureBackground::TextureBackground( Inst< SFSetBind > _set_bind,
                                       Inst< SFTextureNode  > _bottomTexture,
                                       Inst< SFFloat   > _transparency ) :
   X3DBackgroundNode( _set_bind, _metadata, _bindTime, _isBound, _displayList,
-                    _groundAngle, _groundColor, _skyAngle, _skyColor ),
+                    _groundAngle, _groundColor, _skyAngle, _skyColor, _transparency ),
   backTexture( _backTexture ),
   frontTexture( _frontTexture ),
   leftTexture( _leftTexture ),
   rightTexture( _rightTexture ),
   topTexture( _topTexture ),
-  bottomTexture( _bottomTexture ),
-  transparency( _transparency ) {
+  bottomTexture( _bottomTexture ) {
     
   type_name = "TextureBackground";
   database.initFields( this );

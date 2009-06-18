@@ -62,9 +62,10 @@ Background::Background( Inst< SFSetBind > _set_bind,
                         Inst< MFString  > _leftUrl,
                         Inst< MFString  > _rightUrl,
                         Inst< MFString  > _topUrl,
-                        Inst< MFString  > _bottomUrl ) :
+                        Inst< MFString  > _bottomUrl,
+                        Inst< SFFloat   > _transparency ) :
   X3DBackgroundNode( _set_bind, _metadata, _bindTime, _isBound, _displayList,
-                   _groundAngle, _groundColor, _skyAngle, _skyColor ),
+                   _groundAngle, _groundColor, _skyAngle, _skyColor, _transparency ),
   backUrl( _backUrl ),
   frontUrl( _frontUrl ),
   leftUrl( _leftUrl ),

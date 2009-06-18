@@ -34,6 +34,7 @@
 #include <H3D/MFFloat.h>
 #include <H3D/MFColor.h>
 #include <H3D/SFMatrix4f.h>
+#include <H3D/SFFloat.h>
 
 namespace H3D {
 
@@ -135,7 +136,8 @@ namespace H3D {
 		       Inst< MFFloat   > _groundAngle = 0,
 		       Inst< MFColor   > _groundColor = 0,
 		       Inst< MFFloat   > _skyAngle    = 0,
-		       Inst< MFColor   > _skyColor    = 0 );
+		       Inst< MFColor   > _skyColor    = 0,
+           Inst< SFFloat   > _transparency = 0);
 
     /// Convenience function to get the top of the X3DBackgroundNode stack.
     static inline X3DBackgroundNode *getActive() {
@@ -162,11 +164,14 @@ namespace H3D {
 
     /// Returns the color that OpenGL should clear the buffer with before
     /// starting to render to it. 
-    virtual RGB glClearColor() {
-      if( skyColor->size() > 0 )
-        return skyColor->getValueByIndex( 0 );
-      else 
-        return RGB( 0, 0, 0 );
+    virtual RGBA glClearColor() {
+      if( skyColor->size() == 1 ) {
+        RGB c = skyColor->getValueByIndex( 0 );
+        H3DFloat a = 1.0f - transparency->getValue();
+        return RGBA( c.r*a, c.g*a, c.b*a, a );
+      } else  {
+        return RGBA( 0, 0, 0, 0 );
+      }
     }
 
     /// Render the background. It will render one sphere with radius 0.05
@@ -231,6 +236,8 @@ namespace H3D {
     /// 
     /// \dotfile X3DBackgroundNode_groundAngle.dot
     auto_ptr< MFColor >  skyColor;
+
+    auto_ptr< SFFloat > transparency;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
