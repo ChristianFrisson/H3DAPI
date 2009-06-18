@@ -433,7 +433,11 @@ namespace H3D {
     Vec3f thread_rotation;
     // translation values from the last motion event.
     Vec3f thread_translation;
-   /// The H3DNodeDatabase for this node.
+    // is_active in thread. Will be false if thread main loop
+    // can not run due to some error.
+    bool thread_is_active;
+
+    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
     // instance of the first SpaceWareSensor created

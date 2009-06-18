@@ -220,13 +220,14 @@ namespace SpaceWareSensorInternal {
       SiGetEventData event_data;  /* Platform-specific event data */
       SiSpwEvent si_event;        /* 3DxWare data event */
 
+      space_ware_sensor->thread_is_active = true;
       // main message loop
       while( ret = GetMessage (&msg, NULL, 0, 0) ) {
         if (ret == -1) {
           throw WindowGetMessageError( getWindowErrorMessage(),
                                        H3D_FULL_LOCATION );
         }
-      
+
         // init Window platform specific data for a call to SiGetEvent
         SiGetEventWinInit (&event_data, msg.message, msg.wParam,
                            msg.lParam);
@@ -273,6 +274,10 @@ namespace SpaceWareSensorInternal {
       }
     }
     catch (const Exception::H3DException &e) {
+      // the creator of this thread
+      SpaceWareSensor *space_ware_sensor = 
+        static_cast< SpaceWareSensor * >( data );
+      space_ware_sensor->thread_is_active = false;
       Console(4) << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
       Console(4) << e << endl;
     }
@@ -307,8 +312,8 @@ namespace SpaceWareSensorInternal {
       
       display = XOpenDisplay( NULL );
       if ( display == NULL ) {
-	throw CreateWindowError( "Could not ppen X display",
-				 H3D_FULL_LOCATION );  
+  throw CreateWindowError( "Could not ppen X display",
+         H3D_FULL_LOCATION );  
       };
     
       screennumber = DefaultScreen(display);
@@ -316,8 +321,8 @@ namespace SpaceWareSensorInternal {
       height = DisplayHeight(display,screennumber);
       root   = DefaultRootWindow(display);
       window = XCreateSimpleWindow( display, root, 0,0, width/5*3,height/8, 20,
-				    BlackPixel(display,screennumber),
-				    WhitePixel(display,screennumber) );
+            BlackPixel(display,screennumber),
+            WhitePixel(display,screennumber) );
     
       
       XStringListToTextProperty( &WinName, 1, &WindowName );
@@ -338,75 +343,75 @@ namespace SpaceWareSensorInternal {
       classhints->res_class = "BasicWindow";
       
       XSetWMProperties( display, window, &WindowName, NULL, NULL,
-			0, sizehints, wmhints, classhints );
+      0, sizehints, wmhints, classhints );
       
       //XMapWindow( display, window ); 
     
       /************************* Create 3D Event Types ***************************/
       if ( !MagellanInit( display, window ) ) {
-	throw CouldNotInitSpaceWare( "No driver is running." );
+  throw CouldNotInitSpaceWare( "No driver is running." );
       };
       
       /************************* Main Loop ***************************************/
       //XSelectInput( display, window, KeyPressMask | KeyReleaseMask );
       
-      while( MagellanDemoEnd == FALSE )	{
-	XNextEvent( display, &report );
-	switch( report.type ) {
-	case ClientMessage :
-	  switch( MagellanTranslateEvent( display, &report, &MagellanEvent, 1.0, 1.0 ) )
-	    {
-	    case MagellanInputMotionEvent :
-	      MagellanRemoveMotionEvents( display );
-	      /*sprintf( MagellanBuffer, 
-		"x=%+5.0lf y=%+5.0lf z=%+5.0lf a=%+5.0lf b=%+5.0lf c=%+5.0lf   \n",
-		       MagellanEvent.MagellanData[ MagellanX ],
-		       MagellanEvent.MagellanData[ MagellanY ],
-		       MagellanEvent.MagellanData[ MagellanZ ],
-		       MagellanEvent.MagellanData[ MagellanA ],
-		       MagellanEvent.MagellanData[ MagellanB ],
-		       MagellanEvent.MagellanData[ MagellanC ] );
+      while( MagellanDemoEnd == FALSE )  {
+  XNextEvent( display, &report );
+  switch( report.type ) {
+  case ClientMessage :
+    switch( MagellanTranslateEvent( display, &report, &MagellanEvent, 1.0, 1.0 ) )
+      {
+      case MagellanInputMotionEvent :
+        MagellanRemoveMotionEvents( display );
+        /*sprintf( MagellanBuffer, 
+    "x=%+5.0lf y=%+5.0lf z=%+5.0lf a=%+5.0lf b=%+5.0lf c=%+5.0lf   \n",
+           MagellanEvent.MagellanData[ MagellanX ],
+           MagellanEvent.MagellanData[ MagellanY ],
+           MagellanEvent.MagellanData[ MagellanZ ],
+           MagellanEvent.MagellanData[ MagellanA ],
+           MagellanEvent.MagellanData[ MagellanB ],
+           MagellanEvent.MagellanData[ MagellanC ] );
 
-	      printf( MagellanBuffer );
-	      */
-	      // we have to negate the z component since H3D API
-	      // and the SpaceWare have different coordinate systems.
-	      space_ware_sensor->thread_translation =
-		Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanX ],
-		       (H3DFloat)MagellanEvent.MagellanData[ MagellanY ],
-		       (H3DFloat)-MagellanEvent.MagellanData[ MagellanZ ] );
-	      // convert to radians
-	      space_ware_sensor->thread_rotation = 
-		Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanA ],
-		       (H3DFloat)MagellanEvent.MagellanData[ MagellanB ],
-		       (H3DFloat)-MagellanEvent.MagellanData[ MagellanC ] ) * ( Constants::pi / 180 );
-	      space_ware_sensor->thread_motion_event = true;
-	      break;
-	 
-	    case MagellanInputButtonPressEvent :
-	      sprintf( MagellanBuffer, "Button pressed [%c]  \n",
-		       MagellanEvent.MagellanButton ==  9 ? '*' :
-		       MagellanEvent.MagellanButton == 10 ? '+' :
-		       MagellanEvent.MagellanButton == 11 ? '-' :
-		       '0'+MagellanEvent.MagellanButton );
+        printf( MagellanBuffer );
+        */
+        // we have to negate the z component since H3D API
+        // and the SpaceWare have different coordinate systems.
+        space_ware_sensor->thread_translation =
+    Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanX ],
+           (H3DFloat)MagellanEvent.MagellanData[ MagellanY ],
+           (H3DFloat)-MagellanEvent.MagellanData[ MagellanZ ] );
+        // convert to radians
+        space_ware_sensor->thread_rotation = 
+    Vec3f( (H3DFloat)MagellanEvent.MagellanData[ MagellanA ],
+           (H3DFloat)MagellanEvent.MagellanData[ MagellanB ],
+           (H3DFloat)-MagellanEvent.MagellanData[ MagellanC ] ) * ( Constants::pi / 180 );
+        space_ware_sensor->thread_motion_event = true;
+        break;
+   
+      case MagellanInputButtonPressEvent :
+        sprintf( MagellanBuffer, "Button pressed [%c]  \n",
+           MagellanEvent.MagellanButton ==  9 ? '*' :
+           MagellanEvent.MagellanButton == 10 ? '+' :
+           MagellanEvent.MagellanButton == 11 ? '-' :
+           '0'+MagellanEvent.MagellanButton );
          
-	      printf( MagellanBuffer );
-	      break;
-	  
-	    case MagellanInputButtonReleaseEvent :
-	      sprintf( MagellanBuffer, "Button released [%c] \n",
-		       MagellanEvent.MagellanButton == 9  ? '*' :
-		       MagellanEvent.MagellanButton == 10 ? '+' :
-		       MagellanEvent.MagellanButton == 11 ? '-' :
-		       '0'+MagellanEvent.MagellanButton ); 
-	      printf( MagellanBuffer );
-	      break;
-	
-	    default : /* another ClientMessage event */
-	      break;
-	    };
-	  break;
-	};
+        printf( MagellanBuffer );
+        break;
+    
+      case MagellanInputButtonReleaseEvent :
+        sprintf( MagellanBuffer, "Button released [%c] \n",
+           MagellanEvent.MagellanButton == 9  ? '*' :
+           MagellanEvent.MagellanButton == 10 ? '+' :
+           MagellanEvent.MagellanButton == 11 ? '-' :
+           '0'+MagellanEvent.MagellanButton ); 
+        printf( MagellanBuffer );
+        break;
+  
+      default : /* another ClientMessage event */
+        break;
+      };
+    break;
+  };
       };
 
       MagellanClose( display );
@@ -477,7 +482,8 @@ SpaceWareSensor::SpaceWareSensor(
   resetAccumulatedTranslation( _resetAccumulatedTranslation ),
   resetAccumulatedRotation(_resetAccumulatedRotation ),
   update( new Update ),
-  thread_motion_event( false ) {
+  thread_motion_event( false ),
+  thread_is_active( false ) {
 
   type_name = "SpaceWareSensor";
 
@@ -548,6 +554,9 @@ void SpaceWareSensor::updateValues(){
   using namespace SpaceWareSensorInternal;
   // TODO: lock
 
+
+  if( isActive->getValue() != thread_is_active )
+    isActive->setValue( thread_is_active, id );
 
   // transfer  the motion data if an event has occured since
   // last scenegraph loop
