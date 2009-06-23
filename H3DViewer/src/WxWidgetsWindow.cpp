@@ -410,49 +410,6 @@ string WxWidgetsWindow::getCursorForMode( const string &mode ) {
   return "DEFAULT";
 }
 
-void WxWidgetsWindow::render( X3DChildNode *child_to_render ) {
-  if ( use_h3d_settings ) {
-    X3DViewpointNode *vp =
-      static_cast< X3DViewpointNode * >( viewpoint->getValue() );
-    X3DViewpointNode::ViewpointList vps = X3DViewpointNode::getAllViewpoints();
-
-    // set up path to default H3D Viewpoint file
-    char *r = getenv( "H3D_ROOT" );
-    string h3d_root = r ? r : ""; 
-    INIFile ini_file( h3d_root + "/settings/h3dload.ini" );
-    string settings_path = 
-      GET_ENV_INI_DEFAULT( "H3D_DISPLAY",
-                        h3d_root + "/settings/display/",
-                        "display","type",
-                        h3d_root + "/settings/common/" );
-    string common_path =  h3d_root + "/settings/common/";
-
-    viewpoint_file =
-      GET_ENV_INI_DEFAULT_FILE( ini_file, "H3D_DEFAULT_VIEWPOINT",
-                                settings_path + "/viewpoint/",
-                                common_path + "/viewpoint/",
-                                "graphical", "viewpoint" );
-
-    if ( !vp && viewpoint_file.size() && vps.size() < 1 ) {      
-      //create an H3D viewpoint
-      try {
-        AutoRef< Node > temp = X3D::createX3DNodeFromURL( viewpoint_file );
-        vp = static_cast< X3DViewpointNode * >( temp.get() );
-        vp_ref.reset( vp );
-      } catch( const Exception::H3DException &e ) {
-        vp = new Viewpoint;
-        Console(3) << "Warning: Could not create default H3D Viewpoint node "
-                   << "from file \"" << viewpoint_file << "\": "
-                   << e << endl;
-      }
-      vp->setName( "Default H3D Viewpoint" );
-      vp->description->setValue( "Default H3D Viewpoint" );
-    }
-  }
-  H3DWindowNode::render( child_to_render );
-}
-
-
 #ifndef WIN32
 void WxWidgetsWindow::MyWxGLCanvas::OnKeyDown(wxKeyEvent& event)
 {

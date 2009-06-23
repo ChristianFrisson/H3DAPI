@@ -358,7 +358,7 @@ private:
   string common_path;
   string deviceinfo_file;
   string stylus_file;
-  //string viewpoint_file;
+  string viewpoint_file;
   string render_mode;
 
   // Autoref Variables

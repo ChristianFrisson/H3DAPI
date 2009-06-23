@@ -113,10 +113,6 @@ namespace H3D {
       }
     }
 
-    /// This function renders the X3DChildNode given into the 
-    /// window of the WxWidgetsWindow
-    virtual void render( X3DChildNode *child_to_render );
-
     /// Calls wxGLCanvas::SwapBuffers
     virtual void swapBuffers(); 
 

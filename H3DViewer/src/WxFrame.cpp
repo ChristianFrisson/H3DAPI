@@ -193,7 +193,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   ss.reset (0);
 #endif
   t.reset ( new Transform );
-  viewpoint.reset( NULL );
+  viewpoint.reset( new Viewpoint );
   device_info.reset (NULL);
   g.reset ( new Group );
 
@@ -699,13 +699,13 @@ bool WxFrame::loadFile( const string &filename) {
                               common_path + "/stylus/",
                               common_path + "/stylus/",
                               "haptics device","stylus" );
-/*  
+
   viewpoint_file =
     GET_ENV_INI_DEFAULT_FILE( ini_file, "H3D_DEFAULT_VIEWPOINT",
                               settings_path + "/viewpoint/",
                               common_path + "/viewpoint/",
                               "graphical", "viewpoint" );
-                              */
+                              
   render_mode = GET4( "H3D_RENDERMODE",
                              "graphical", "rendermode",
                              (string)"MONO" );
@@ -870,7 +870,18 @@ bool WxFrame::loadFile( const string &filename) {
     if( use_space_mouse )
     g->children->push_back(ss.get());
 #endif
-
+    //create a Viewpoint if it does not exist.
+    if( !Viewpoint::getActive() && viewpoint_file.size() ) {
+      try {
+        viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
+        Console( 4 ) << viewpoint_file;
+      } catch( const Exception::H3DException &e ) {
+        viewpoint.reset( new Viewpoint );
+        Console(3) << "Warning: Could not create default Viewpoint node "
+                   << "from file \"" << viewpoint_file << "\": "
+                   << e << endl;
+      }
+    }
 
 /****************************Intialize Viewpoints***************************/
   //Enable Viewpoints Menu
