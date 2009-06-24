@@ -33,7 +33,7 @@
 #include <H3D/CoordinateDouble.h>
 using namespace H3D;
 
-//TODO: Fix so that it works for all X3DCoordinateNode
+
 void CoordBoundField::update() {
   X3DCoordinateNode *coord = static_cast< TypedSFNode< X3DCoordinateNode> * >
                                   ( routes_in[0] )->getValue();
@@ -46,9 +46,10 @@ void CoordBoundField::update() {
   } else if ( CoordinateDouble *c = 
     dynamic_cast< CoordinateDouble * >( coord ) ) {
     bound->fitAroundPoints( c->point->begin(), c->point->end() );
-  } else if ( c == NULL ) {
+  } else if ( coord == NULL ) {
+    // do nothing
   } else {
-    bound->fitAroundPoints( c->pointBegin(), c->pointEnd() );
+    bound->fitAroundPoints( coord->pointBegin(), coord->pointEnd() );
   }
   value = bound;
 }
