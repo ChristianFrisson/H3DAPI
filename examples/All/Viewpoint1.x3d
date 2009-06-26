@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Viewpoint.x3d'/>
+    <meta name='description' content='X3D Viewpoint example.
+      This is specific to showing the effect of retainUserOffset.
+      Experiement with the field values to observe their effects.
+      Use the browser to switch viewpoints, or follow instructions
+      in scene.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>    
+    <Viewpoint DEF='A'
+        description='View A'
+        centerOfRotation='0 0 0'
+        position='0 0 0.6'
+        orientation='1 0 0 0'
+        fieldOfView='0.78'
+        jump='true'
+        retainUserOffsets='true' />
+    <Viewpoint DEF='B'
+        description='View B'
+        centerOfRotation='0 0 0'
+        position='0 0.6 0'
+        orientation='1 0 0 -1.57'
+        fieldOfView='0.78'
+        jump='true'
+        retainUserOffsets='false' />
+    
+    <!-- Box -->
+    <Transform rotation='1 0 -1 0.5'>
+      <Shape>
+        <Box size='0.2 0.2 0.2' />
+        <Appearance>
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <!-- Text display -->
+    <Group>
+      <ProximitySensor DEF='S' size='10 10 10' center='0 0 0'/>
+      <Transform DEF='HUD'>      
+        <Transform translation='-0.05 0.03 0.5'>        
+          <Shape>
+            <Appearance DEF='Ap'>
+              <Material diffuseColor='1 1 1' />
+            </Appearance>
+            <Text DEF='T' string='"H3DAPI rocks!"":)"' solid='true'>
+              <FontStyle size='0.003' />
+            </Text>
+          </Shape>
+        </Transform>
+        <Transform translation='0.05 -0.028 0.5'>        
+          <Shape>
+            <Appearance USE='Ap' />
+            <Text string='"Observe the effect of retainUserOffsets."
+                          "Hit the A and B keys to switch between viewpoints."
+                          "Navigate with mouse."' solid='true'>
+              <FontStyle size='0.003' justify='END' />
+            </Text>
+          </Shape>        
+        </Transform>
+      </Transform>
+      
+      <ROUTE
+        fromNode='S' fromField='orientation_changed' 
+        toNode='HUD' toField='rotation' />
+    </Group>
+    
+    <!-- KeySensor and script used to change viewpoints, and subsequently
+         the descritpion text -->
+    <KeySensor DEF='K' />
+    <PythonScript DEF='P' url='Viewpoint1.py'>
+      <Viewpoint USE='A' containerField='references' />
+      <Viewpoint USE='B' containerField='references' />
+    </PythonScript>
+    
+    <ROUTE 
+      fromNode='K' fromField='keyPress' 
+      toNode='P' toField='switchView' />
+    <ROUTE 
+      fromNode='P' fromField='switchView' 
+      toNode='T' toField='string' />
+
+  </Scene>
+</X3D>

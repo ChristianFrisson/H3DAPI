@@ -4,7 +4,7 @@
     <meta name='title' content='VisibilitySensor.x3d'/>
     <meta name='description' content='X3D VisibilitySensor example.
       Navigate until box (representing the VisibilitySensor) exits
-      scene to disable sound. Moving box into view enabled sound.
+      scene to disable sound. Moving box into view enables sound.
       Use the keyboard or mouse to navigate (browser dependent).
       If using H3DViewer or H3DLoad, use the UP/DOWN/LEFT/RIGHT '/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
@@ -15,16 +15,16 @@
     <NavigationInfo type='"FLY"' />
     
     <VisibilitySensor DEF='V'
-        center='0.1 0 0'
+        center='0 0 0'
         enabled='true'
-        size='0.1 0.1 0.1' />
+        size='0.11 0.11 0.11' />
     
     <Transform DEF='T'>
       <Shape>
         <Appearance>
           <Material diffuseColor='1 0 0' />
         </Appearance>
-        <Box DEF='B' />
+        <Box DEF='B' size='0.1 0.1 0.1' />
       </Shape>
     </Transform>
     
@@ -40,17 +40,15 @@
     <ROUTE
         fromNode='V' fromField='exitTime'
         toNode='A' toField='stopTime' />
-        
-    <!-- Set box position/size and origin of sound
+      
+    <!-- Set box position and origin of sound
          to origin of sensor -->
     <ROUTE
         fromNode='V' fromField='center'
         toNode='T' toField='translation' />
     <ROUTE
-        fromNode='V' fromField='size'
-        toNode='B' toField='size' />
-    <ROUTE
         fromNode='V' fromField='center'
         toNode='S' toField='location' />
+        
   </Scene>
 </X3D>

@@ -14,28 +14,35 @@
       deletionAllowed='true'
       enabled='true' />
 
+    <!-- import the external Text prototype -->
     <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
       <field accessType='inputOutput' name='offset' type='SFVec3f'/>
       <field accessType='inputOutput' name='string' type='MFString'/>
     </ExternProtoDeclare>
 
-    <ProtoInstance name='Text'>
-      <fieldValue name='offset' value='0 0.12 0' />
-      <fieldValue name='string' value='"Final text:"' />
-    </ProtoInstance>    
+    <!-- Texts for description -->
     <ProtoInstance name='Text'>
       <fieldValue name='offset' value='0 0.02 0' />
-      <fieldValue name='string' value='"Entered text:"' />
+      <fieldValue name='string' value='"You typed:"' />
     </ProtoInstance>    
+    <ProtoInstance name='Text'>
+      <fieldValue name='offset' value='0 0.12 0' />
+      <fieldValue name='string' value='"Type something and hit ENTER:"' />
+    </ProtoInstance>
+    
+    <!-- Texts to display finalText and enteredText from StringSensor -->
     <ProtoInstance DEF='T1' name='Text'>
-      <fieldValue name='offset' value='0 0.10 0' />
+      <fieldValue name='offset' value='0 0 0' />
     </ProtoInstance>
     <ProtoInstance DEF='T2' name='Text'>
-      <fieldValue name='offset' value='0 0 0' />
+      <fieldValue name='offset' value='0 0.10 0' />
     </ProtoInstance>
     
     <PythonScript DEF='P' url='script.py' />
     
+    <!-- Route finalText and enteredText to fields in python script to 
+         change field type from SFString to MFString
+         -->
     <ROUTE
       fromNode='S' fromField='finalText'
       toNode='P' toField='stringSFtoMF0' />
@@ -43,6 +50,7 @@
       fromNode='S' fromField='enteredText'
       toNode='P' toField='stringSFtoMF1' />
     
+    <!-- route the resulting MFString fields to be displayed -->
     <ROUTE
       fromNode='P' fromField='stringSFtoMF0'
       toNode='T1' toField='string' />

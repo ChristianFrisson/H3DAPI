@@ -8,43 +8,41 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
-    
-    <Transform translation='-0.15 0 0'>
-      <Shape>
-        <Appearance DEF='A'>
-          <Material />
-          <MultiTexture 
-              source='DIFFUSE' mode='"DOTPRODUCT3""MODULATE""MODULATE"' 
-              alpha='1' color='1 1 1'>
-            <ImageTexture url='images/stone_wall_normal_map.bmp' />
-            <ImageTexture url='images/stone_wall.bmp' />
-            <PixelTexture
-                repeatS='false' repeatT='false'
-                image='3 3 1 0x00 0x00 0x00 0x00 0xff 0x00 0x00 0x00 0x00' />
-          </MultiTexture>
-        </Appearance>
-        <IndexedFaceSet coordIndex='0 1 2 3' solid='false'>
-          <Coordinate DEF='C'
-              point='0.1 0.1 0 0.1 -0.1 0 -0.1 -0.1 0 -0.1 0.1 0' />
-          
-        </IndexedFaceSet>
-      </Shape>
-    </Transform>
-    
-    <!-- With different texture coordinate -->
-    <Transform translation='0.15 0 0'>
-      <Shape>
-        <Appearance USE='A' />
-        <IndexedFaceSet coordIndex='0 1 2 3' solid='false'>
-          <Coordinate USE='C' />
-          <MultiTextureCoordinate>
-            <TextureCoordinate USE='T' />
-            <TextureCoordinate USE='T' />
-            <TextureCoordinate point='0.8 0.8 0.8 0.2 0.2 0.2 0.2 0.8' />
-          </MultiTextureCoordinate>
-        </IndexedFaceSet>
-      </Shape>
-    </Transform>
+    <Shape>
+      <Appearance>
+        <Material />
+        <MultiTexture 
+            source='DIFFUSE' mode='"DOTPRODUCT3""MODULATE""MODULATE"' 
+            alpha='1' color='1 1 1'>
+          <ImageTexture url='images/stone_wall_normal_map.bmp' />
+          <ImageTexture url='images/stone_wall.bmp' />
+          <PixelTexture
+              repeatS='false' repeatT='false'
+              image='3 3 1 0x00 0x00 0x00 0x00 0xff 0x00 0x00 0x00 0x00' />
+        </MultiTexture>
+      </Appearance>
+      <IndexedFaceSet coordIndex='0 1 2 3' solid='false'>
+        <Coordinate 
+            point='0.15 0.15 0 0.15 -0.15 0 -0.15 -0.15 0 -0.15 0.15 0' />
+        <MultiTextureCoordinate>
+          <TextureCoordinate DEF='C1' 
+            point='1 1 1 0 0 0 0 1' />
+          <TextureCoordinate USE='C1' />
+          <TextureCoordinate DEF='C' />
+        </MultiTextureCoordinate>
+      </IndexedFaceSet>
+    </Shape>
       
+    <TimeSensor DEF='S'
+        loop='true' cycleInterval='6' />
+    <CoordinateInterpolator2D DEF='I'
+        key='0 0.5 1' 
+        keyValue='1 1 1 0 0 0 0 1 0.7 0.7 0.7 0.3 0.3 0.3 0.3 0.7 1 1 1 0 0 0 0 1' />
+    <ROUTE
+        fromNode='S' fromField='fraction_changed'
+        toNode='I' toField='set_fraction' />
+    <ROUTE
+        fromNode='I' fromField='value_changed'
+        toNode='C' toField='point' />
   </Scene>
 </X3D>

@@ -20,14 +20,16 @@
         enabled='true'
         size='0.3 0.3 0.3' />
     
-    <Transform DEF='T'>
-      <Shape>
-        <Appearance>
-          <Material diffuseColor='1 0 0' transparency='0.5' />
-        </Appearance>
-        <Box DEF='B' solid='false' />
-      </Shape>
-    </Transform>
+    <Collision enabled='false'>
+      <Transform DEF='T'>
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='1 0 0' transparency='0.5' />
+          </Appearance>
+          <Box DEF='B' solid='false' />
+        </Shape>
+      </Transform>
+    </Collision>
     
     <Sound DEF='S'>
       <AudioClip DEF='A' url='ding.wav' />
