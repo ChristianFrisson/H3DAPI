@@ -132,7 +132,7 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
   // calculate reflection matrix
   Matrix4f full_vp = vp_transform * local_to_global;
   Vec3f P = full_vp * Vec3f( 0, 0, 0 );
-  Vec3f V = full_vp.getScaleRotationPart() * Vec3f( 0, 0, 1 );
+  Vec3f V = full_vp.getRotationPart() * Vec3f( 0, 0, 1 );
   Matrix4f m( 1 - 2*V.x*V.x, -2*V.x*V.y, -2*V.x*V.z, 2*(P*V)*V.x,
               -2*V.x*V.y, 1 - 2*V.y*V.y, -2*V.y*V.z, 2*(P*V)*V.y,
               -2*V.x*V.z, -2*V.y*V.z, 1 - 2*V.z*V.z, 2*(P*V)*V.z,
