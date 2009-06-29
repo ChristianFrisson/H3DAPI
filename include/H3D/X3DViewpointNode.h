@@ -584,17 +584,22 @@ namespace H3D {
       if( eye_mode == LEFT_EYE || eye_mode == RIGHT_EYE ) {
         if( !stereo_info )
           stereo_info = StereoInfo::getActive();
+
+        H3DFloat interocular_distance = (H3DFloat) 0.06;
+        H3DFloat focal_distance = (H3DFloat) 0.6;
         if( stereo_info ) {
-          frustum_shift = ( stereo_info->interocularDistance->getValue() / 2 )
-                          * clip_near / stereo_info->focalDistance->getValue();
-          if( eye_mode == RIGHT_EYE )
-            frustum_shift = -frustum_shift;
+          interocular_distance = stereo_info->interocularDistance->getValue();
+          focal_distance = stereo_info->focalDistance->getValue();
         }
-      }
+        
+        frustum_shift = ( interocular_distance / 2 )
+          * clip_near / focal_distance;
+        if( eye_mode == RIGHT_EYE )
+          frustum_shift = -frustum_shift;
+      } 
       left += frustum_shift;
       right += frustum_shift;
     }
-
   };
 }
 
