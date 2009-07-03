@@ -85,6 +85,9 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
   set_deviceOrientation->setName( "set_deviceOrientation" );
   set_mainButton->setOwner( this );
   set_mainButton->setName( "set_mainButton" );
+  // set_mainButton have to be set to false because the value of this
+  // field is used to set the buttons variable.
+  set_mainButton->setValue( false );
 
   H3DFakeHapticsDevice::FakeHapticsDevice *fd = 
     new H3DFakeHapticsDevice::FakeHapticsDevice;
@@ -102,7 +105,12 @@ void H3DFakeHapticsDevice::FakeHapticsDevice::updateDeviceValues(
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
   dv.position = owner->set_devicePosition->getValue();
   dv.orientation = owner->set_deviceOrientation->getValue();
-  dv.button_status = owner->set_mainButton->getValue();
+  // Button status is an int, if we want to make sure that the mainButton
+  // bit is set then the integer have to be 1 and nothing else.
+  if( owner->set_mainButton->getValue() )
+    dv.button_status = 1;
+  else
+    dv.button_status = 0;
 }
 
 
