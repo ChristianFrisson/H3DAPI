@@ -371,6 +371,10 @@ namespace H3D {
 
     /// Remove all DynamicFieldDBElements from the database
     void clearDynamicFields();
+
+    /// Remove all DynamicFieldDBElements from the database belonging to the
+    /// node n;
+    void clearDynamicFields( Node *n );
     
 	private:
     /// Help function for getField.

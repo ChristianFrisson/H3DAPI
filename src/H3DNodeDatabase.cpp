@@ -278,6 +278,20 @@ void H3DNodeDatabase::clearDynamicFields() {
   }
 }
 
+void H3DNodeDatabase::clearDynamicFields( Node *n ) {
+  for( FieldDBType::iterator i = fields.begin(); i != fields.end();  ) {
+    DynamicFieldDBElement *fdb = 
+      dynamic_cast< DynamicFieldDBElement * >( (*i).second );
+    FieldDBType::iterator to_erase = i;
+    i++;
+    // Only remove the entry if its contained field belongs to the
+    // specified node.
+    if( fdb && fdb->getField( n ) ) {
+      fields.erase( to_erase );
+    } 
+  }
+}
+
 H3DNodeDatabase::FieldDBConstIterator::FieldDBConstIterator( const FieldDBConstIterator &f ):
   status( f.status ),
   local_iterator( f.local_iterator ),

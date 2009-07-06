@@ -44,10 +44,13 @@ namespace H3D {
   public:
     /// Constructor. 
     H3DDynamicFieldsObject( H3DNodeDatabase *_database ):
-      database( _database ) {}
+      database( _database ), inherited_node( 0 ) {}
 
     /// Destructor. Virtual to make H3DDynamicFieldsObject a polymorphic type.
-    virtual ~H3DDynamicFieldsObject() {}
+    virtual ~H3DDynamicFieldsObject() {
+      // Remove dynamic fields from database.
+      database->clearDynamicFields( inherited_node );
+    }
 
     /// Add a field to the Node. 
     /// \param name The name of the field.
@@ -61,6 +64,8 @@ namespace H3D {
                                   Field *field ) {
       Node *n = dynamic_cast< Node * >( this );
       if( n && !database->getField( n, name.c_str() ) ) {
+        // Set the placeholder to the node address.
+        inherited_node = n;
         field->setOwner( n );
         field->setName( name );
         field->setAccessType( access );
@@ -100,6 +105,10 @@ namespace H3D {
   protected:
     H3DNodeDatabase *database;
     AutoPtrVector< Field > dynamic_fields;
+    // Holds a pointer to the node instance to which dynamic fields
+    // belong to. Note that this pointer should only be used for pointer
+    // comparasion and never for access to any node members.
+    Node * inherited_node;
   };
 }
 
