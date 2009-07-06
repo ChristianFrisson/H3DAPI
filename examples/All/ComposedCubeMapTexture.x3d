@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='GeneratedCubeMapTexture.x3d'/>
-    <meta name='description' content='X3D GeneratedCubeMapTexture example'/>
+    <meta name='title' content='ComposedCubeMapTexture.x3d'/>
+    <meta name='description' content='X3D ComposedCubeMapTexture example'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
   
@@ -19,7 +19,20 @@
     <Shape>
       <Appearance>
         <Material />
-        <GeneratedCubeMapTexture update='ALWAYS' size='128' />
+        <ComposedCubeMapTexture>
+          <ImageTexture url="../textures/b_arch_00000rot.png"
+                        containerField="back"/>
+          <ImageTexture url="../textures/f_arch_00000rot.png"
+                        containerField="front"/>
+          <ImageTexture url="../textures/l_arch_00000rot.png"
+                        containerField="left"/>
+          <ImageTexture url="../textures/r_arch_00000rot.png"
+                        containerField="right"/>
+          <ImageTexture url="../textures/t_arch_00000.png"
+                        containerField="top"/>
+          <ImageTexture url="../textures/d_arch_00000.png"
+                        containerField="bottom"/>
+        </ComposedCubeMapTexture>
       </Appearance>
       <IndexedFaceSet
           coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
