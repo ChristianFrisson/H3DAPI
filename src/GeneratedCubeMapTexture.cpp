@@ -52,6 +52,7 @@ GeneratedCubeMapTexture::GeneratedCubeMapTexture(
                                           Inst< SFString    > _update,
                                           Inst< SFInt32     > _size ) :
   X3DEnvironmentTextureNode( _displayList, _metadata ),
+  H3DMultiPassRenderObject(),
   update( _update ),
   size( _size ),
   textures_initialized( false ),
@@ -124,6 +125,7 @@ void GeneratedCubeMapTexture::disableTexturing() {
 
 void GeneratedCubeMapTexture::traverseSG( TraverseInfo &ti ) {
   X3DEnvironmentTextureNode::traverseSG( ti );
+  H3DMultiPassRenderObject::traverseSG( ti );
   local_to_global = ti.getAccForwardMatrix();
 }
 

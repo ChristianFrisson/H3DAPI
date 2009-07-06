@@ -67,7 +67,9 @@ namespace H3D {
   /// 
   /// \par Internal routes:
   /// \dotfile GeneratedCubeMapTexture.dot
-  class H3DAPI_API GeneratedCubeMapTexture : public X3DEnvironmentTextureNode {
+  class H3DAPI_API GeneratedCubeMapTexture : 
+    public X3DEnvironmentTextureNode,
+    public H3DMultiPassRenderObject {
   public:
     /// Constructor.
     GeneratedCubeMapTexture( Inst< DisplayList > _displayList = 0,
