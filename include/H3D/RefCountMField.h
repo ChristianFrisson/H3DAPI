@@ -154,6 +154,32 @@ namespace H3D {
       this->checkAccessTypeSet( id );
       this->upToDate();
       this->value.erase( a );
+      this->startEvent();
+    } 
+
+    /// Erase the element at the specified index.
+    /// \param pos Index of the element to remove.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
+    inline virtual void erase( unsigned int pos, int id = 0 ) {
+      this->checkAccessTypeSet( id );
+      this->upToDate();
+      this->value.erase( pos );
+      this->startEvent();
+    } 
+
+    /// Insert an element before the index given by pos. 
+    /// \param pos Position before which to insert.
+    /// \param a Value to insert.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
+    inline virtual void insert( unsigned int pos, 
+                                RefClass *a, 
+                                int id = 0 ) {
+      this->checkAccessTypeSet( id );
+      this->upToDate();
+      this->value.insert( pos, a );
+      this->startEvent();
     } 
     
     /// Returns a string name for this field type i.e. SFNode
