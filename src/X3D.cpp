@@ -104,10 +104,6 @@ Group* X3D::createX3DFromURL( const string &url,
                               DEFNodes *exported_nodes,
                               PrototypeVector *prototypes,
                               bool change_base_path_during_parsing ) {
-  URNResolver *urn_resolver = ResourceResolver::getURNResolver();
-  string urn = url;
-  if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
-
   bool is_tmp_file;
   string resolved_url = ResourceResolver::resolveURLAsFile( url, 
     &is_tmp_file );
@@ -272,10 +268,6 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
                                            DEFNodes *exported_nodes,
                                            PrototypeVector *prototypes,
                                            bool change_base_path_during_parsing ) {
-
-  URNResolver *urn_resolver = ResourceResolver::getURNResolver();
-  string urn = url;
-  if( urn_resolver ) urn = urn_resolver->resolveURN( urn );
 
   bool is_tmp_file;
   string resolved_url = ResourceResolver::resolveURLAsFile( url, 
