@@ -558,7 +558,7 @@ void Text::updateLineBounds() {
     for ( vector<string>::const_iterator i = text.begin(); 
       i != text.end(); i++ ) {
       const string &line = *i;
-      Vec3f &dim = font_style->
+      Vec3f dim = font_style->
         stringDimensions( line, X3DFontStyleNode::HORIZONTAL );
       Vec2f line_bound( 0, 0 );
 
@@ -583,7 +583,7 @@ void Text::updateLineBounds() {
     for ( vector<string>::const_iterator i = text.begin(); 
       i != text.end(); i++ ) {
       const string &line = *i;
-      Vec3f &dim = font_style->
+      Vec3f dim = font_style->
         stringDimensions( line, X3DFontStyleNode::VERTICAL );
       Vec2f line_bound( 0, 0 );
 
