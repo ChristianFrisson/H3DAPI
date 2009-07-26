@@ -1,14 +1,30 @@
-SET( OSX_DEPENDENT_LIBRARIES "/usr/local/lib/libH3DAPI.2.0.0.dylib"
-     			     "/usr/local/lib/libHAPI.1.0.0.dylib"	
-     			     "/usr/local/lib/libH3DUtil.1.0.0.dylib"
-			     "/usr/local/lib/libGLEW.1.5.0.dylib"
-			     "/usr/local/lib/libaudiofile.0.0.2.dylib"
-			     "/usr/local/lib/libfreeimage-3.10.0.dylib"
-			     "/usr/local/lib/libfreetype.6.dylib"
-			     "/usr/local/lib/libftgl.2.dylib"
-			     "/usr/local/lib/libogg.0.5.3.dylib"
-			     "/usr/local/lib/libteem.1.10.0.dylib"
-			     "/usr/local/lib/libvorbis.0.4.0.dylib"
-			     "/usr/local/lib/libvorbisfile.3.2.0.dylib"
-			     "/usr/local/lib/libxerces-c.28.0.dylib" 
+FILE(GLOB H3DAPI_FILES "/usr/local/lib/libH3DAPI.*.dylib")
+FILE(GLOB HAPI_FILES "/usr/local/lib/libHAPI.*.dylib")
+FILE(GLOB H3DUTIL_FILES "/usr/local/lib/libH3DUtil.*.dylib")
+FILE(GLOB GLEW_FILES "/usr/local/lib/libGLEW.*.dylib")
+FILE(GLOB AUDIOFILE_FILES "/usr/local/lib/libaudiofile.*.dylib")
+FILE(GLOB FREEIMAGE_FILES "/usr/local/lib/libfreeimage*dylib*")
+FILE(GLOB FREETYPE_FILES "/usr/local/lib/libfreetype.*.dylib")
+FILE(GLOB FTGL_FILES "/usr/local/lib/libftgl.*.dylib")
+FILE(GLOB OGG_FILES "/usr/local/lib/libogg.*.dylib")
+FILE(GLOB TEEM_FILES "/usr/local/lib/libteem.*.dylib")
+FILE(GLOB VORBIS_FILES "/usr/local/lib/libvorbis.*.dylib")
+FILE(GLOB VORBISFILE_FILES "/usr/local/lib/libvorbisfile.*.dylib")
+FILE(GLOB XERCES_FILES "/usr/local/lib/libxerces-c.*.dylib")
+
+SET( OSX_DEPENDENT_LIBRARIES ${H3DAPI_FILES}
+     			     ${HAPI_FILES}
+			     ${H3DUTIL_FILES}
+			     ${GLEW_FILES}
+			     ${AUDIOFILE_FILES}
+			     ${FREEIMAGE_FILES}
+			     ${FREETYPE_FILES}
+			     ${FTGL_FILES}
+			     ${OGG_FILES}
+			     ${TEEM_FILES}
+			     ${VORBIS_FILES}
+			     ${VORBISFILE_FILES}
+			     ${XERCES_FILES}
 )
+
+SET( OSX_PLUGIN_LIBRARIES "/usr/local/lib/libMedX3D.dylib" )

@@ -1890,7 +1890,7 @@ void WxFrame::LoadPlugins() {
   wxString library_spec = plugin_dir + "\\*.dll";
 #else
 #ifdef H3D_OSX
-  wxString plugin_dir = executable_dir + wxT("/../Contents/Plugins");
+  wxString plugin_dir = executable_dir + wxT("/../Plugins");
   wxString library_spec = plugin_dir + "/*.dylib";
 #else
   wxString plugin_dir = executable_dir + wxT("/../plugins");
