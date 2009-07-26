@@ -3,6 +3,7 @@
 #include <wx/confbase.h>
 #include <memory>
 
+#include "H3DViewerConfig.h"
 #include <H3D/LibraryInfo.h>
 #include <H3DUtil/DynamicLibrary.h>
 
@@ -17,6 +18,11 @@ PluginsDialog( parent ) {
   wxString str;
   long dummy;
 
+#ifndef ALLOW_ADDING_PLUGINS 
+  AddPluginButton->Hide();
+  RemovePluginButton->Hide();
+#endif 
+ 
   h3dConfig->SetPath( wxT("/Plugins") );
 
   bool checked = false;
@@ -136,60 +142,14 @@ void H3DViewerPluginsDialog::OnAddPluginButton( wxCommandEvent& event ) {
   if (openFileDialog->ShowModal() == wxID_OK) {
     wxString file = openFileDialog->GetPath();
 
-    wxString name = openFileDialog->GetFilename();
-    wxString version(wxT(""));
-    wxString developer(wxT(""));
-    wxString developer_web(wxT(""));
-    wxString web(wxT(""));
-    wxString info(wxT(""));
+    bool res = addPlugin( file );
 
-    H3DUtil::DynamicLibrary::LIBHANDLE lib = 
-      H3DUtil::DynamicLibrary::load( string( file.mb_str() ) );
-
-    if( lib == NULL  ) {
+    if( !res  ) {
       wxMessageBox( wxT("Invalid library file"), wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
       return;
     }
-
-    H3D::LibraryInfo (*info_func)(void) = (H3D::LibraryInfo (*)(void)) H3DUtil::DynamicLibrary::getSymbolAddress( lib, "getLibraryInfo" );
-
-    if( info_func ) {
-      H3D::LibraryInfo lib_info;
-      lib_info = info_func();
-      name = wxString( lib_info.name, wxConvUTF8 );
-      version = wxString( lib_info.version, wxConvUTF8 );
-      developer = wxString( lib_info.developer, wxConvUTF8 ); 
-      developer_web = wxString( lib_info.developer_web, wxConvUTF8 ); 
-      web = wxString( lib_info.web, wxConvUTF8 ); 
-      info = wxString( lib_info.info, wxConvUTF8 ); 
-    }
-
-    wxConfigBase *h3dConfig = wxConfigBase::Get();
-
-    h3dConfig->SetPath( wxT("/Plugins" ) );
-    if( !h3dConfig->HasGroup( name ) ){
-      InstalledPluginsList->Insert( name, 0 );
-    } else {
-      int answer = wxMessageBox( wxT("Plugin named \"") + name + wxT("\" already installed. Replace current plugin?" ), 
-                                 wxT("Warning"),
-                                 wxYES_NO| wxICON_EXCLAMATION);
-      if( answer == wxNO ) return;
-    }
-
-    h3dConfig->SetPath( wxT("/Plugins/") + name );
-    h3dConfig->Write( wxT(""), name );
-    h3dConfig->Write( wxT("Plugin"), name );
-    h3dConfig->Write( wxT("Version"), version );
-    h3dConfig->Write( wxT("Developer"), developer );
-    h3dConfig->Write( wxT("DeveloperWeb"), developer_web );
-    h3dConfig->Write( wxT("Web"), web );
-    h3dConfig->Write( wxT("Info"), info );
-    h3dConfig->Write( wxT("Library"), file );
-    h3dConfig->Flush();
-
-
-  }  
+  }
 }
 
 void H3DViewerPluginsDialog::OnRemovePluginButton( wxCommandEvent& event ) {
@@ -198,11 +158,7 @@ void H3DViewerPluginsDialog::OnRemovePluginButton( wxCommandEvent& event ) {
 
 	wxString selected_plugin = InstalledPluginsList->GetStringSelection();
   
-  wxConfigBase *h3dConfig = wxConfigBase::Get();
-  h3dConfig->SetPath( wxT("/Plugins") );
-  
-  h3dConfig->DeleteGroup( selected_plugin );
-  InstalledPluginsList->Delete( selected_index );
+  removePlugin( selected_plugin );
 }
 
 void H3DViewerPluginsDialog::OnDisablePluginCheckbox( wxCommandEvent& event ) {
@@ -214,4 +170,86 @@ void H3DViewerPluginsDialog::OnDisablePluginCheckbox( wxCommandEvent& event ) {
 
 void H3DViewerPluginsDialog::OnURLEvent( wxTextUrlEvent& event ) {
   wxLaunchDefaultBrowser( event.GetString() );
+}
+
+
+bool H3DViewerPluginsDialog::addPlugin( const wxString &path, bool force_overwrite ) {
+  H3DUtil::DynamicLibrary::LIBHANDLE lib = 
+    H3DUtil::DynamicLibrary::load( path.mb_str() );
+
+  // Could not load library. 
+  if( lib == NULL  ) {
+    return false;
+  }
+
+  H3D::LibraryInfo (*info_func)(void) = 
+    (H3D::LibraryInfo (*)(void)) H3DUtil::DynamicLibrary::getSymbolAddress( lib, "getLibraryInfo" );
+
+  wxString name(wxT("") );
+  wxString version(wxT(""));
+  wxString developer(wxT(""));
+  wxString developer_web(wxT(""));
+  wxString web(wxT(""));
+  wxString info(wxT(""));
+
+  if( info_func ) {
+    H3D::LibraryInfo lib_info;
+    lib_info = info_func();
+    name = wxString( lib_info.name, wxConvUTF8 );
+    version = wxString( lib_info.version, wxConvUTF8 );
+    developer = wxString( lib_info.developer, wxConvUTF8 ); 
+    developer_web = wxString( lib_info.developer_web, wxConvUTF8 ); 
+    web = wxString( lib_info.web, wxConvUTF8 ); 
+    info = wxString( lib_info.info, wxConvUTF8 ); 
+  } else {
+    size_t pos = path.find_last_of( "/\\" );
+    if( pos != string::npos ) {
+      name = path.substr( pos + 1, path.size() - (pos + 1) );
+    } else { 
+      name = path;
+    }
+  }
+
+
+
+  wxConfigBase *h3dConfig = wxConfigBase::Get();
+  
+  h3dConfig->SetPath( wxT("/Plugins" ) );
+  if( !h3dConfig->HasGroup( name ) ){
+    InstalledPluginsList->Insert( name, 0 );
+  } else {
+    if( !force_overwrite ) {
+      int answer = wxMessageBox( wxT("Plugin named \"") + name + wxT("\" already installed. Replace current plugin?" ), 
+                                 wxT("Warning"),
+                                 wxYES_NO| wxICON_EXCLAMATION);
+      if( answer == wxNO ) return false;
+    }
+  }
+
+  h3dConfig->SetPath( wxT("/Plugins/") + name );
+  h3dConfig->Write( wxT(""), name );
+  h3dConfig->Write( wxT("Plugin"), name );
+  h3dConfig->Write( wxT("Version"), version );
+  h3dConfig->Write( wxT("Developer"), developer );
+  h3dConfig->Write( wxT("DeveloperWeb"), developer_web );
+  h3dConfig->Write( wxT("Web"), web );
+  h3dConfig->Write( wxT("Info"), info );
+  h3dConfig->Write( wxT("Library"), path );
+  h3dConfig->Flush();
+  return true;
+}
+
+bool H3DViewerPluginsDialog::removePlugin( const wxString &plugin_name ) {
+  wxConfigBase *h3dConfig = wxConfigBase::Get();
+  h3dConfig->SetPath( wxT("/Plugins") );
+  
+  int pos = InstalledPluginsList->FindString( plugin_name );
+  
+  if( pos != wxNOT_FOUND ) {
+    h3dConfig->DeleteGroup( plugin_name );
+    InstalledPluginsList->Delete( pos );
+    return true;
+  } else {
+    return false;
+  }
 }

@@ -231,37 +231,35 @@ PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& t
 	wxBoxSizer* bSizer5;
 	bSizer5 = new wxBoxSizer( wxHORIZONTAL );
 	
-	wxBoxSizer* bSizer6;
-	bSizer6 = new wxBoxSizer( wxVERTICAL );
+	PluginsSizer = new wxBoxSizer( wxVERTICAL );
 	
 	m_staticText1 = new wxStaticText( this, wxID_ANY, wxT("Installed plugins:"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText1->Wrap( -1 );
-	bSizer6->Add( m_staticText1, 0, wxALL, 5 );
+	PluginsSizer->Add( m_staticText1, 0, wxALL, 5 );
 	
 	InstalledPluginsList = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
 	InstalledPluginsList->SetMinSize( wxSize( 180,200 ) );
 	
-	bSizer6->Add( InstalledPluginsList, 0, wxALL, 5 );
+	PluginsSizer->Add( InstalledPluginsList, 0, wxALL, 5 );
 	
-	wxBoxSizer* bSizer8;
-	bSizer8 = new wxBoxSizer( wxHORIZONTAL );
+	AddRemoveButtonSizer = new wxBoxSizer( wxHORIZONTAL );
 	
-	m_button2 = new wxButton( this, wxID_ANY, wxT("Add.."), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer8->Add( m_button2, 0, wxALL, 5 );
+	AddPluginButton = new wxButton( this, wxID_ANY, wxT("Add.."), wxDefaultPosition, wxDefaultSize, 0 );
+	AddRemoveButtonSizer->Add( AddPluginButton, 0, wxALL, 5 );
 	
-	m_button1 = new wxButton( this, wxID_ANY, wxT("Remove.."), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer8->Add( m_button1, 0, wxALL, 5 );
+	RemovePluginButton = new wxButton( this, wxID_ANY, wxT("Remove.."), wxDefaultPosition, wxDefaultSize, 0 );
+	AddRemoveButtonSizer->Add( RemovePluginButton, 0, wxALL, 5 );
 	
-	bSizer6->Add( bSizer8, 1, wxEXPAND, 5 );
+	PluginsSizer->Add( AddRemoveButtonSizer, 1, wxEXPAND, 5 );
 	
 	
-	bSizer6->Add( 0, 15, 0, wxEXPAND, 15 );
+	PluginsSizer->Add( 0, 15, 0, wxEXPAND, 15 );
 	
 	DisablePluginsCheckBox = new wxCheckBox( this, wxID_ANY, wxT("Disable plugins"), wxDefaultPosition, wxDefaultSize, 0 );
 	
-	bSizer6->Add( DisablePluginsCheckBox, 0, wxALL, 5 );
+	PluginsSizer->Add( DisablePluginsCheckBox, 0, wxALL, 5 );
 	
-	bSizer5->Add( bSizer6, 1, wxEXPAND, 5 );
+	bSizer5->Add( PluginsSizer, 1, wxEXPAND, 5 );
 	
 	wxBoxSizer* bSizer7;
 	bSizer7 = new wxBoxSizer( wxVERTICAL );
@@ -278,8 +276,8 @@ PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	// Connect Events
 	InstalledPluginsList->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( PluginsDialog::OnInstalledPluginSelected ), NULL, this );
-	m_button2->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnAddPluginButton ), NULL, this );
-	m_button1->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnRemovePluginButton ), NULL, this );
+	AddPluginButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnAddPluginButton ), NULL, this );
+	RemovePluginButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnRemovePluginButton ), NULL, this );
 	DisablePluginsCheckBox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( PluginsDialog::OnDisablePluginCheckbox ), NULL, this );
 	PluginInfoText->Connect( wxEVT_COMMAND_TEXT_URL, wxTextUrlEventHandler( PluginsDialog::OnURLEvent ), NULL, this );
 }
@@ -288,8 +286,8 @@ PluginsDialog::~PluginsDialog()
 {
 	// Disconnect Events
 	InstalledPluginsList->Disconnect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( PluginsDialog::OnInstalledPluginSelected ), NULL, this );
-	m_button2->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnAddPluginButton ), NULL, this );
-	m_button1->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnRemovePluginButton ), NULL, this );
+	AddPluginButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnAddPluginButton ), NULL, this );
+	RemovePluginButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnRemovePluginButton ), NULL, this );
 	DisablePluginsCheckBox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( PluginsDialog::OnDisablePluginCheckbox ), NULL, this );
 	PluginInfoText->Disconnect( wxEVT_COMMAND_TEXT_URL, wxTextUrlEventHandler( PluginsDialog::OnURLEvent ), NULL, this );
 }

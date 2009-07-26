@@ -21,6 +21,9 @@ protected:
 public:
 	/** Constructor */
 	H3DViewerPluginsDialog( wxWindow* parent );
+
+  bool addPlugin( const wxString &path, bool force_overwrite = false );
+  bool removePlugin( const wxString &plugin_name );
 };
 
 #endif // __H3DViewerPluginsDialog__

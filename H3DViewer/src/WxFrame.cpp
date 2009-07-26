@@ -32,11 +32,15 @@
 //  Includes
 // ---------------------------------------------------------------------------
 
+#include <wx/apptrait.h>
+#include <wx/stdpaths.h>
+#include <wx/filename.h>
 #include "WxFrame.h"
 #include "ConsoleDialog.h"
 #include <vector>
 #include "WxWidgetsWindow.h"
 
+#include "H3DViewer.h"
 #include <wx/wx.h>
 #include "Envini.h"
 
@@ -1874,7 +1878,36 @@ void WxFrame::LoadPlugins() {
 
   h3dConfig->SetPath( wxT("/Plugins") );
 
+#ifdef INCLUDE_PLUGINS_DIR_PLUGINS
+  // add all plugins from the plugins directory
+  wxFileName executable_path( 
+    wxTheApp->GetTraits()->GetStandardPaths().GetExecutablePath() );
+    
+  wxString executable_dir = executable_path.GetPath();
+  
+#ifdef H3D_WINDOWS
+  wxString plugin_dir = executable_dir + wxT("\\..\\plugins" );
+  wxString library_spec = plugin_dir + "\\*.dll";
+#else
+#ifdef H3D_OSX
+  wxString plugin_dir = executable_dir + wxT("/../Contents/Plugins");
+  wxString library_spec = plugin_dir + "/*.dylib";
+#else
+  wxString plugin_dir = executable_dir + wxT("/../plugins");
+  wxString library_spec = plugin_dir + "/*.so";
+#endif
+#endif
 
+ if( wxDirExists( plugin_dir ) ) {
+   wxString f = wxFindFirstFile( library_spec );
+   while ( !f.empty() ) {
+     plugins_dialog->addPlugin( f, true );
+     f = wxFindNextFile();
+   }
+ }
+
+
+#endif  // INCLUDE_PLUGINS_DIR_PLUGINS
 
   // iterate through all plugins
   bool  bCont = h3dConfig->GetFirstGroup(str, dummy);

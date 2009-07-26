@@ -105,10 +105,12 @@ class PluginsDialog : public wxDialog
 	private:
 	
 	protected:
+		wxBoxSizer* PluginsSizer;
 		wxStaticText* m_staticText1;
 		wxListBox* InstalledPluginsList;
-		wxButton* m_button2;
-		wxButton* m_button1;
+		wxBoxSizer* AddRemoveButtonSizer;
+		wxButton* AddPluginButton;
+		wxButton* RemovePluginButton;
 		
 		wxRichTextCtrl* PluginInfoText;
 		
