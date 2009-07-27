@@ -21,8 +21,8 @@ ELSE( PKG_CONFIG_FOUND )
 
   # Look for the header file.
   FIND_PATH(AVCODEC_INCLUDE_DIR NAMES avcodec.h
-                               PATHS /usr/local/include/libavformat
-                                     /usr/include/libavformat
+                               PATHS /usr/local/include/libavcodec
+                                     /usr/include/libavcodec
                                      /usr/local/include/ffmpeg
                                      /usr/include/ffmpeg
                                      $ENV{H3D_EXTERNAL_ROOT}/include  
