@@ -73,6 +73,11 @@ SAX2XMLReader* X3D::getNewXMLParser() {
     parser->setFeature(XMLUni::fgXercesDynamic, true);
   }
   if (valScheme == SAX2XMLReader::Val_Never) {
+    // make sure that the DTD is not loaded. Otherwise a NetAccessorException
+    // is thrown if the DTD is not available, e.g. when offline. 
+    parser->setFeature(XMLUni::fgXercesLoadExternalDTD, false);
+    
+    // disable validation
     parser->setFeature(XMLUni::fgSAX2CoreValidation, false);
   }
   if (valScheme == SAX2XMLReader::Val_Always) {
