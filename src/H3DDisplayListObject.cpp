@@ -118,6 +118,7 @@ void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
 }
 
 void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
+  bool was_active = isActive->getValue();
   isActive->callListCalled();
 
   GLuint err = glGetError();
@@ -145,7 +146,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     } else {
       // if we do not have any event pending and still have no valid
       // display list, try to build a new one.
-      if( !haveValidDisplayList() ) {
+      if( !haveValidDisplayList() && was_active ) {
         have_valid_display_list = tryBuildDisplayList( false );
         if( have_valid_display_list ) return;
       }
@@ -213,7 +214,7 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
                    dl->usingFrustumCulling() ) ) {
               have_all_needed_display_lists = false;
               break;
-            }
+            } 
           }
         }
       }
@@ -245,7 +246,7 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
                       dlo->displayList->usingFrustumCulling() ) ) {
                   have_all_needed_display_lists = false;
                   break;
-                }
+                } 
               }
             }
           }
