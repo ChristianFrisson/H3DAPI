@@ -30,6 +30,7 @@
 
 #include <H3D/FalconDevice.h>
 #include <HAPI/FalconHapticsDevice.h>
+#include <HAPI/NiFalconHapticsDevice.h>
 
 using namespace H3D;
 
@@ -39,6 +40,7 @@ H3DNodeDatabase FalconDevice::database( "FalconDevice",
                                           &H3DHapticsDevice::database ); 
 namespace FalconDeviceInternals {
   FIELDDB_ELEMENT( FalconDevice, deviceName, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( FalconDevice, deviceIndex, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FalconDevice, deviceModelType, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FalconDevice, maxWorkspaceDimensions, OUTPUT_ONLY );
 
@@ -69,7 +71,8 @@ FalconDevice::FalconDevice(
                Inst< SFHapticsRendererNode > _hapticsRenderer,
                Inst< MFVec3f         > _proxyPositions,
                Inst< SFBool          > _followViewpoint,
-               Inst< SFString        > _deviceName ) :
+               Inst< SFString        > _deviceName,
+               Inst< SFInt32         > _deviceIndex ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
               _trackerOrientation, _positionCalibration, 
               _orientationCalibration, _proxyPosition,
@@ -77,26 +80,70 @@ FalconDevice::FalconDevice(
               _secondaryButton, _buttons,_force, _torque, _inputDOF,
               _outputDOF, _hapticsRate, _desiredHapticsRate, _stylus,
               _hapticsRenderer, _proxyPositions, _followViewpoint ),
-    deviceName( _deviceName ),
-    deviceModelType ( new SFString ),
-  maxWorkspaceDimensions( new MFVec3f ){ 
+  deviceName( _deviceName ),
+  deviceIndex( _deviceIndex ),
+  deviceModelType ( new SFString ),
+  maxWorkspaceDimensions( new MFVec3f ),
+  preferredDriver( new SFString ),
+  usedDriver( new SFString ) { 
 
   type_name = "FalconDevice";  
   database.initFields( this );
   hapi_device.reset(0);
   maxWorkspaceDimensions->resize( 2, Vec3f(0,0,0), id );
+  preferredDriver->addValidValue( "NOVINT" );
+  preferredDriver->addValidValue( "NIFALCON" );
+  preferredDriver->setValue( "NOVINT" );
+  deviceIndex->setValue( 0 );
+
+  usedDriver->setValue( "NONE", id );
 }
 
 void FalconDevice::initialize() {
   H3DHapticsDevice::initialize();
+  H3DInt32 index     = deviceIndex->getValue();
+  const string &name = deviceName->getValue();
+
+  const string &preferred_driver = preferredDriver->getValue();
+
+  if( preferred_driver == "NIFALCON" ) {
+#ifdef HAVE_NIFALCONAPI
+    hapi_device.reset( new HAPI::NiFalconHapticsDevice( index ) );
+  usedDriver->setValue( "NIFALCON" );
+#else
 #ifdef HAVE_FALCONAPI
-  hapi_device.reset( new HAPI::FalconHapticsDevice( deviceName->getValue() ) );
+  hapi_device.reset( new HAPI::FalconHapticsDevice( name ) );
+  usedDriver->setValue( "NOVINT" );
 #else
   Console(4) << "Cannot use FalconDevice. HAPI compiled without"
              << " FalconAPI support. Recompile HAPI with "
              << "HAVE_FALCONAPI defined"
              << " in order to use it." << endl;
-#endif
+#endif // HAVE_FALCONAPI
+#endif // HAVE_NIFALCONAPI
+  } 
+  else {
+    if( preferred_driver != "NOVINT" ) {
+      Console(4) << "Invalid value \"" << preferred_driver 
+		 << "\" of preferredDriver field in FalconDevice node." 
+		 << "Should be \"NOVINT\" or \"NIFALCON\". Using "
+		 << "\"NOVINT\" instead" << endl;
+    }
+#ifdef HAVE_FALCONAPI
+    hapi_device.reset( new HAPI::FalconHapticsDevice( name->getValue() ) );
+    usedDriver->setValue( "NOVINT" );
+#else
+#ifdef HAVE_NIFALCONAPI
+    hapi_device.reset( new HAPI::NiFalconHapticsDevice( index ) );
+    usedDriver->setValue( "NIFALCON" );
+#else
+    Console(4) << "Cannot use FalconDevice. HAPI compiled without"
+	       << " FalconAPI support. Recompile HAPI with "
+	       << "HAVE_FALCONAPI defined"
+	       << " in order to use it." << endl;
+#endif // HAVE_NIFALCONAPI
+#endif // HAVE_FALCONAPI
+  }
 }
 
 H3DHapticsDevice::ErrorCode FalconDevice::initDevice() {
