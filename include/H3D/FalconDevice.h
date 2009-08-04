@@ -80,8 +80,9 @@ namespace H3D {
     /// with name deviceName
     virtual void initialize();
 
-    /// The name of the device, as specified in Falcon Configuration
-    /// utility. If set to "", the default device will be used.
+    /// The name of the device, as specified in hdal.ini file for
+    /// Falcon Configuration. If set to "", the default device with
+    /// index 0 will be used.
     /// Only valid if usedDriver field is "NOVINT". Use deviceIndex
     /// field instead to work with any driver.
     ///
@@ -93,9 +94,7 @@ namespace H3D {
     /// Falcon device to use if several are connected to the computer.
     /// 
     /// If usedDriver is "NOVINT" and deviceName is specified this 
-    /// field will be an outputOnly field instead specifying the 
-    /// index of the device specified in deviceName after the device
-    /// has been initialized.
+    /// field will be ignored.
     ///
     /// <b>Access type:</b> initializeOnly \n
     /// <b>Default value:</b> 0 \n
