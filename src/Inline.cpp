@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -119,16 +119,23 @@ void Inline::LoadedScene::update() {
 #ifdef HAVE_XERCES
         try 
 #endif
-	  {
+        {
+          string old_url_base = ResourceResolver::getBaseURL();
+          if( is_tmp_file && (*i).find( "://" ) != string::npos ) {
+            string::size_type pos = (*i).find_last_of( "/\\" );
+            if( pos != string::npos )
+              ResourceResolver::setBaseURL( (*i).substr( 0, pos + 1 ) );
+          }
           Group *g = X3D::createX3DFromURL( url, NULL, 
                                             &inline_node->exported_nodes,
                                             NULL, !is_tmp_file );
           if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
           value.push_back( g );
           inline_node->setURLUsed( *i );
+          ResourceResolver::setBaseURL( old_url_base );
         } 
 #ifdef HAVE_XERCES
-	catch( const X3D::XMLParseError &e ) {
+        catch( const X3D::XMLParseError &e ) {
           Console(3) << "Warning: Error when parsing \"" << *i << "\" in \"" 
                      << getOwner()->getName() << "\" (" << e << ")." << endl;
         } 
