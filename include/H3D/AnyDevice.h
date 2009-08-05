@@ -37,6 +37,11 @@ namespace H3D {
   /// \class AnyDevice
   /// \brief AnyDevice tries to initialize all available HAPI haptics
   /// device nodes and uses the first one that succeeds.
+  ///
+  /// NOTE that the default value for desiredHapticsRate will produce a warning
+  /// about not being able to start or maintain the scheduler if the AnyDevice
+  /// finds a PhantomDevice. This is just a warning and everything should
+  /// function properly anyways.
   class H3DAPI_API AnyDevice: public H3DHapticsDevice {
   public:
 

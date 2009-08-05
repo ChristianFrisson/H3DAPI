@@ -52,6 +52,9 @@ namespace H3D {
   /// OpenHaptics even for dual device configurations. The default value for
   /// the field desiredHapticsRate is different from the default value of
   /// H3DHapticsDevice since the allowed values of this field differs.
+  /// If the value for desiredHapticsRate is not one of the valid values
+  /// a warning about not being able to start or maintain the scheduler will
+  /// be printed. The node will function properly anyways.
   class H3DAPI_API PhantomDevice: public H3DHapticsDevice {
   public:
 

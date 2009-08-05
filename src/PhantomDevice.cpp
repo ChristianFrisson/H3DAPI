@@ -176,6 +176,7 @@ H3DHapticsDevice::ErrorCode PhantomDevice::releaseDevice() {
   if( e == HAPI::HAPIHapticsDevice::SUCCESS ) {
     nr_initialized_devices--;
   }
+  HAPI::PhantomHapticsDevice::setEnableStartScheduler( true );
 #endif
   return e;
 }
