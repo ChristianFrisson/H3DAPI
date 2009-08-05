@@ -98,13 +98,13 @@ void MouseNavigation::CalculateMouseMoveInfo::update( ) {
       value = false;
     }
   } else if( event.ptr == routes_in[2] ) {
-    if( nav_type == "EXAMINE" ) {
+    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
       the_owner->move_dir += Vec3f( 0, 0, -2 );
       the_owner->zoom = true;
       value = true;
     }
   } else if( event.ptr == routes_in[3] ) {
-    if( nav_type == "EXAMINE" ) {
+    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
       the_owner->move_dir += Vec3f( 0, 0, 2 );
       the_owner->zoom = true;
       value = true;
