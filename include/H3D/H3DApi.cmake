@@ -111,6 +111,10 @@
 /// FFmpegDecoder node.
 #cmakedefine HAVE_FFMPEG
 
+/// Undef if you do not Virtual Hand SDK available. Needed for the
+/// CyberGloveSensor and HumanHand nodes.
+#cmakedefine HAVE_VIRTUAL_HAND_SDK
+
 #define XML_USE_WIN32_TRANSCODER
 #define XML_USE_INMEM_MESSAGELOADER
 #define XML_USE_NETACCESSOR_WINSOCK

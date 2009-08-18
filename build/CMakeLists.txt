@@ -525,6 +525,13 @@ IF(TEEM_FOUND)
   SET(requiredLibs ${requiredLibs} ${TEEM_LIBRARIES} )
 ENDIF(TEEM_FOUND)
 
+FIND_PACKAGE(VirtualHand)
+IF(VirtualHand_FOUND)
+  SET( HAVE_VIRTUAL_HAND_SDK 1 )
+  INCLUDE_DIRECTORIES( ${VirtualHand_INCLUDE_DIR} ) 
+  SET(requiredLibs ${requiredLibs} ${VirtualHand_LIBRARIES} )
+ENDIF(VirtualHand_FOUND)
+
 
 # If cpack project should be generated and windows is the system on which to generate
 # a number of extra directories needs to be added to be installed.

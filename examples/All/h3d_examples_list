@@ -41,6 +41,7 @@ CoordinateDeformer                DeformableShape
 CoordinateDouble                  TriangleSet
 CoordinateInterpolator            CoordinateInterpolator
 CoordinateInterpolator2D          CoordinateInterpolator2D
+CyberGloveSensor                  HumanHand
 Cylinder                          Cylinder
 CylinderSensor                    CylinderSensor
 DebugOptions                      DebugOptions
@@ -82,6 +83,7 @@ HapticMasterDevice                HapticMasterDevice
 HapticsOptions                    HapticsOptions
 HapticTexturesSurface             Surfaces
 HaptikDevice                      HaptikDevice
+HumanHand                         HumanHand
 Image3DTexture                    ImageTexture3D
 ImageObjectInfo                   ImageObjectInfo
 ImageObjectTexture                ImageObjectTexture
