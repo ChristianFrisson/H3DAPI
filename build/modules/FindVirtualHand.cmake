@@ -5,7 +5,10 @@
 #  VirtualHand_LIBRARIES    - List of libraries when using VirtualHand.
 #  VirtualHand_FOUND        - True if VirtualHand found.
 
-GET_FILENAME_COMPONENT(vti_registry_file_path $ENV{VTI_REGISTRY_FILE} PATH )
+SET( vti_registry_file_path "" )
+IF( $ENV{VTI_REGISTRY_FILE} )
+  GET_FILENAME_COMPONENT(vti_registry_file_path $ENV{VTI_REGISTRY_FILE} PATH )
+ENDIF( $ENV{VTI_REGISTRY_FILE} )
 
 # Look for the header file.
 FIND_PATH( VirtualHand_INCLUDE_DIR NAMES vhandtk/vht.h
