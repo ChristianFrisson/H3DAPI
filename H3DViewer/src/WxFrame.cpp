@@ -1908,6 +1908,7 @@ void WxFrame::LoadPlugins() {
 #endif  // INCLUDE_PLUGINS_DIR_PLUGINS
 
   // iterate through all plugins
+  h3dConfig->SetPath( wxT("/Plugins") );
   bool  bCont = h3dConfig->GetFirstGroup(str, dummy);
   while ( bCont ) {
     // TODO: add handles somewhere so we can unload libraries if we want to.
