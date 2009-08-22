@@ -133,9 +133,7 @@ static const wxChar *TITLE     = wxT("H3DViewer ");
 static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2009.\n"
                                     "All Rights Reserved.");
 static const wxChar *ABOUT     = wxT("About");
-static const wxChar *FILETYPES = wxT( "x3d files|*.x3d|"
-                                     "vrml files|*.wrl|"
-                                     "All files|*.*"
+static const wxChar *FILETYPES = wxT( "x3d or vrml 2.0 files|*.x3d;*.x3dv;*.wrl|All files|*.*"
                                    );
 
 /******************Internal definitions**************/
