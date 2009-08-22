@@ -175,7 +175,7 @@ void H3DViewerPluginsDialog::OnURLEvent( wxTextUrlEvent& event ) {
 
 bool H3DViewerPluginsDialog::addPlugin( const wxString &path, bool force_overwrite ) {
   H3DUtil::DynamicLibrary::LIBHANDLE lib = 
-    H3DUtil::DynamicLibrary::load( path.mb_str() );
+    H3DUtil::DynamicLibrary::load( string(path.mb_str()) );
 
   // Could not load library. 
   if( lib == NULL  ) {
@@ -202,7 +202,7 @@ bool H3DViewerPluginsDialog::addPlugin( const wxString &path, bool force_overwri
     web = wxString( lib_info.web, wxConvUTF8 ); 
     info = wxString( lib_info.info, wxConvUTF8 ); 
   } else {
-    size_t pos = path.find_last_of( "/\\" );
+    size_t pos = path.find_last_of( wxT("/\\") );
     if( pos != string::npos ) {
       name = path.substr( pos + 1, path.size() - (pos + 1) );
     } else { 
