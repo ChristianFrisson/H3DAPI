@@ -11,17 +11,60 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type="NONE" />
+
+    <!-- The shape to play the movie on -->
     <Shape>
       <Appearance>
-        <SimpleMovieTexture 
-            play='true'
-            stop='false'
-            pause='false'
-            playAudio='true'
-            loop='false'
-            url='../textures/Day.jpg' />
+        <SimpleMovieTexture DEF = "MOVIE"
+			    url='/home/daniel/Desktop/2jird.mpg' />
       </Appearance>      
-      <Sphere radius='0.1' />
+      <Rectangle2D size="0.2 0.15" />
     </Shape>
+
+    <Group>
+      <!-- Play button -->
+      <Transform translation="-0.05 -0.15 0" >
+	<TouchSensor DEF="PLAY_TS" />
+	<Shape>
+	  <Appearance> 
+	    <Material /> 
+	  </Appearance>
+	  <Rectangle2D size="0.04 0.04" />
+	</Shape>
+      </Transform>
+
+      <!-- Stop button -->
+      <Transform translation="0 -0.15 0" >
+	<TouchSensor DEF="STOP_TS" />
+	<Shape>
+	  <Appearance> 
+	    <Material /> 
+	  </Appearance>
+	  <Rectangle2D size="0.04 0.04" />
+	</Shape>
+      </Transform>
+
+      <!-- Pause button -->
+      <Transform translation="0.05 -0.15 0" >
+	<TouchSensor DEF="PAUSE_TS" />
+	<Shape>
+	  <Appearance> 
+	    <Material /> 
+	  </Appearance>
+	  <Rectangle2D size="0.04 0.04" />
+	</Shape>
+      </Transform>
+
+    </Group>
+
+    <ROUTE fromNode="PLAY_TS" fromField="isActive" 
+	   toNode="MOVIE" toField="play" />
+    <ROUTE fromNode="STOP_TS" fromField="isActive" 
+	   toNode="MOVIE" toField="stop" />
+    <ROUTE fromNode="PAUSE_TS" fromField="isActive" 
+	   toNode="MOVIE" toField="pause" />
+
+
   </Scene>
 </X3D>
