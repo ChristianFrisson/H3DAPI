@@ -148,7 +148,8 @@ namespace H3D {
         cyber_glove->resetGlove();
 #ifdef HAVE_VIRTUAL_HAND_SDK
       drawer.reset( 0 );
-      hand->disconnect();
+      if( hand.get() )
+        hand->disconnect();
       hand.reset( 0 );
 #endif
     }
