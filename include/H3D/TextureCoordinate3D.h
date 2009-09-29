@@ -42,6 +42,10 @@ namespace H3D {
   /// geometry nodes (EXAMPLE  IndexedFaceSet and ElevationGrid) to map 
   /// textures to vertices.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImageTexture3D.x3d">ImageTexture3D.x3d</a>
+  ///     ( <a href="examples/ImageTexture3D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TextureCoordinate3D.dot
   class H3DAPI_API TextureCoordinate3D : public X3DTextureCoordinateNode {

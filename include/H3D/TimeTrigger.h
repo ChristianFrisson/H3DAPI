@@ -43,6 +43,11 @@ namespace H3D {
   /// a set_boolean event. The value of triggerTime shall be the time at which
   /// set_boolean is received. The value of set_boolean shall be ignored.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TimeTrigger.x3d">TimeTrigger.x3d</a>
+  ///     ( <a href="examples/TimeTrigger.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TimeTrigger.dot
   

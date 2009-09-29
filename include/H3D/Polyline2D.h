@@ -42,6 +42,11 @@ namespace H3D {
   ///
   /// The lineSegments field specifies the vertices to be connected.
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Polyline2D.x3d">Polyline2D.x3d</a>
+  ///     ( <a href="examples/Polyline2D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Polyline2D.dot
   

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='Viewpoint.x3d'/>
+    <meta name='title' content='Viewpoint1.x3d'/>
     <meta name='description' content='X3D Viewpoint example.
       This is specific to showing the effect of retainUserOffset.
       Experiement with the field values to observe their effects.

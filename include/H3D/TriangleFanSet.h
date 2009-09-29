@@ -64,6 +64,11 @@ namespace H3D {
   /// - If normalPerVertex is FALSE, the normal shall be generated
   /// for the current triangle based on the ccw field. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TriangleFanSet.x3d">TriangleFanSet.x3d</a>
+  ///     ( <a href="examples/TriangleFanSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TriangleFanSet.dot
   class H3DAPI_API TriangleFanSet : public X3DComposedGeometryNode {

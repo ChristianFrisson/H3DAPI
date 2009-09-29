@@ -40,6 +40,11 @@ namespace H3D {
   /// local 2D coordinate system.  The radius field specifies the radius
   /// of the Circle2D. The value of radius shall be greater than zero.
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Circle2D.x3d">Circle2D.x3d</a>
+  ///     ( <a href="examples/Circle2D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Circle2D.dot
   

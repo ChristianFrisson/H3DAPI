@@ -45,6 +45,11 @@ namespace H3D {
   /// \brief This is a X3DSensorNode for reading values from a 3DConnexion motion
   /// controller such as the SpaceTraveller or SpaceMouse 5000.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SpaceWareSensor.x3d">SpaceWareSensor.x3d</a>
+  ///     ( <a href="examples/SpaceWareSensor.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile SpaceWareSensor.dot
   class H3DAPI_API SpaceWareSensor : public X3DSensorNode {

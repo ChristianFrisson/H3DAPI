@@ -84,6 +84,10 @@ namespace H3D {
   ///
   /// The KeySensor is not affected by its position in the transformation
   /// hierarchy.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/KeySensor.x3d">KeySensor.x3d</a>
+  ///     ( <a href="examples/KeySensor.x3d.html">Source</a> )
   class H3DAPI_API KeySensor : public X3DKeyDeviceSensorNode {
   public:
 

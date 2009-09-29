@@ -15,6 +15,12 @@
     <Viewpoint position='0 0 0.6' />    
     <DeviceInfo>
       <AnyDevice>
+        <Shape containerField='stylus'>
+          <Appearance>
+            <Material/>
+          </Appearance>
+          <Sphere radius='0.0025'/>
+        </Shape>
         <RuspiniRenderer />
       </AnyDevice>
     </DeviceInfo>    

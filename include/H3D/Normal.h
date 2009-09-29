@@ -46,6 +46,11 @@ namespace H3D {
   /// ElevationGrid). This node contains one multiple-valued field that
   /// contains the normal vectors. Normals shall be of unit length. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Normal.x3d">Normal.x3d</a>
+  ///     ( <a href="examples/Normal.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Normal.dot
   class H3DAPI_API Normal : public X3DNormalNode {

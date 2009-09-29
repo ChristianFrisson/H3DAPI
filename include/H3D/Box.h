@@ -61,6 +61,11 @@ namespace H3D {
   /// The solid field determines whether the box is visible when viewed from
   /// the inside. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Box.x3d">Box.x3d</a>
+  ///     ( <a href="examples/Box.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Box.dot
   class H3DAPI_API Box : public X3DGeometryNode {

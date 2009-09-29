@@ -102,7 +102,8 @@ void X3DTextureTransformNode::postRender() {
   }
 }
 
-void X3DTextureTransformNode::renderForTextureUnit( unsigned texture_unit ) {
+void X3DTextureTransformNode::renderForTextureUnit(
+  unsigned int texture_unit ) {
   GLint saved_texture;
   glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &saved_texture );
   glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) texture_unit );

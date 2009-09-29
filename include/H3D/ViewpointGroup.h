@@ -57,7 +57,10 @@ namespace H3D {
   /// The retainUserOffsets field specifies whether the user is returned to the
   /// originally defined viewpoint position/orientation after local navigation.
   ///
-
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ViewpointGroup.x3d">ViewpointGroup.x3d</a>
+  ///     ( <a href="examples/ViewpointGroup.x3d.html">Source</a> )
   class H3DAPI_API ViewpointGroup : public X3DChildNode {
   public:
 

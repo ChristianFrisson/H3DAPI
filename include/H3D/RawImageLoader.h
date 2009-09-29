@@ -65,7 +65,10 @@ namespace H3D {
   /// 
   /// This loader can also automatically detect and decompress gzip
   /// packaged data
-  /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImageLoaders.x3d">ImageLoaders.x3d</a>
+  ///     ( <a href="examples/ImageLoaders.x3d.html">Source</a> )
   class H3DAPI_API RawImageLoader : public H3DImageLoaderNode {
   public:
     /// Constructor.

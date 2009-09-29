@@ -77,6 +77,10 @@ namespace H3D {
   /// 
   /// \par Internal routes:
   /// \dotfile TextureBackground.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TextureBackground.x3d">TextureBackground.x3d</a>
+  ///     ( <a href="examples/TextureBackground.x3d.html">Source</a> )
   class H3DAPI_API TextureBackground : 
     public X3DBackgroundNode {
   public:

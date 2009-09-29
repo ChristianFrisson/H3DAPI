@@ -111,6 +111,11 @@ namespace H3D {
   /// in the given parametric direction allowing the object to be closed in
   /// one direction, but not the other (EXAMPLE  cylinder).
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/NurbsPatchSurface.x3d">NurbsPatchSurface.x3d</a>
+  ///     ( <a href="examples/NurbsPatchSurface.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile NurbsPatchSurface.dot
   class NurbsPatchSurface : 

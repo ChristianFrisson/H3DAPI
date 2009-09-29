@@ -131,7 +131,7 @@ namespace H3D {
         event_field.reset( new EventField( this ) );
       }
             
-      /// Constructor.
+      // Constructor.
       //            DependentNodeField( Node *_value ) : 
       //                BaseFieldType( _value ) {
       //                event_field.reset( new EventField( this ) );

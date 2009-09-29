@@ -50,6 +50,10 @@ namespace H3D {
   /// force (y1, 0, 0) rendered on the haptics device provided that the haptics
   /// device is only affected by the PositionFunctionEffect.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PositionFunctionEffect.x3d">PositionFunctionEffect.x3d</a>
+  ///     ( <a href="examples/PositionFunctionEffect.x3d.html">Source</a> )
   class H3DAPI_API PositionFunctionEffect: public H3DForceEffect {
   public:
 

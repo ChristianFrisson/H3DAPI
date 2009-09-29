@@ -39,6 +39,10 @@ namespace H3D {
   /// \class DebugOptions
   /// \brief Specifies parameters for if displaying debug information
   /// like bounding boxes, haptically rendered triangles etc.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/DebugOptions.x3d">DebugOptions.x3d</a>
+  ///     ( <a href="examples/DebugOptions.x3d.html">Source</a> )
   class H3DAPI_API DebugOptions : public H3DOptionNode {
   public:
     

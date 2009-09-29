@@ -85,6 +85,10 @@ namespace H3D {
   /// 
   /// \par Internal routes:
   /// \dotfile TextureTransform3D.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TextureTransform3D.x3d">TextureTransform3D.x3d</a>
+  ///     ( <a href="examples/TextureTransform3D.x3d.html">Source</a> )
   class H3DAPI_API TextureTransform3D : public X3DTextureTransformNode {
   public:
     /// Constructor.

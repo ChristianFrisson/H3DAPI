@@ -61,6 +61,13 @@ IF(UI_FOUND)
   INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} ) 
   SET(optionalLibs ${optionalLibs} ${UI_LIBRARIES} )
 ENDIF(UI_FOUND)
+
+FIND_PACKAGE(RigidBodyPhysics)
+
+IF(RigidBodyPhysics_FOUND)
+  INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} ) 
+  SET(optionalLibs ${optionalLibs} ${RigidBodyPhysics_LIBRARIES} )
+ENDIF(RigidBodyPhysics_FOUND)
 SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
 
 # Create build filess.
@@ -78,6 +85,10 @@ IF(WIN32)
   IF( UI_FOUND )
     SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS} -DHAVE_UI" )
   ENDIF( UI_FOUND )
+
+  IF( RigidBodyPhysics_FOUND )
+    SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS} -DHAVE_RigidBodyPhysics" )
+  ENDIF( RigidBodyPhysics_FOUND )
 
   # Set compile and link properties for projects.
   IF(MSVC80)

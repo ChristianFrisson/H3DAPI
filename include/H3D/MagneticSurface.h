@@ -49,6 +49,10 @@ namespace H3D {
   ///
   /// TODO: This node only works for OpenHapticsRenderer. All values has
   /// to be given relative to maximum.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Surfaces.x3d">Surfaces.x3d</a>
+  ///     ( <a href="examples/Surfaces.x3d.html">Source</a> )
   class H3DAPI_API MagneticSurface:  public H3DSurfaceNode {
   public:
 

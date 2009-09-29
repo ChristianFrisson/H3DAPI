@@ -63,6 +63,11 @@ namespace H3D {
   /// FALSE, the normal shall be generated for the triangle based on the ccw
   /// field.  
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TriangleStripSet.x3d">TriangleStripSet.x3d</a>
+  ///     ( <a href="examples/TriangleStripSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TriangleStripSet.dot
   class H3DAPI_API TriangleStripSet : public X3DComposedGeometryNode {

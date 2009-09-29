@@ -46,6 +46,11 @@ namespace H3D {
   /// node. If no trimming contours are defined, The NurbsTrimmedSurface node 
   /// shall have the same semantics as the NurbsPatchSurface node.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/NurbsTrimmedSurface.x3d">NurbsTrimmedSurface.x3d</a>
+  ///     ( <a href="examples/NurbsTrimmedSurface.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile NurbsTrimmedSurface.dot
   class NurbsTrimmedSurface : 

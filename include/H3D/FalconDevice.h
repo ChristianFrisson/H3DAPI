@@ -42,6 +42,10 @@ namespace H3D {
   /// \brief A FalconDevice is a node for handling communication
   /// with a haptics device from Novint, such as the Falcon Novint.
   /// Note: The value of desiredHapticsRate is ignored for this node.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FalconDevice.x3d">FalconDevice.x3d</a>
+  ///     ( <a href="examples/FalconDevice.x3d.html">Source</a> )
   class H3DAPI_API FalconDevice: public H3DHapticsDevice {
   public:
 

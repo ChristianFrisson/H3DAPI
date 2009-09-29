@@ -62,6 +62,11 @@ namespace H3D {
   /// collision detection. The width of lines is implementation dependent
   /// and each line segment is solid (i.e., not dashed). 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/LineSet.x3d">LineSet.x3d</a>
+  ///     ( <a href="examples/LineSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile LineSet.dot
   class H3DAPI_API LineSet : public X3DGeometryNode {

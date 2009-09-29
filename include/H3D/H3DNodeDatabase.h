@@ -194,7 +194,7 @@ namespace H3D {
   /// database in order to be available to X3D. To register a static 
   /// H3DNodeDatabase member variable must be defined in the node class
   /// with the (nodename, constructor) pair that is wanted.
-	struct H3DAPI_API H3DNodeDatabase {
+  struct H3DAPI_API H3DNodeDatabase {
 
     /// Wrapper class to be able to put type_info as a key in a map.
     struct TypeInfoWrapper {
@@ -275,6 +275,7 @@ namespace H3D {
       FieldDBConstIterator():
         inherited_iterator( NULL ) {}
 
+      /// Defines the status of the iterator.
       typedef enum {
         /// The iterator is currently iterating through the local field 
         /// definitions. 
@@ -304,7 +305,7 @@ namespace H3D {
 
 
     /// Constructor.
-	  H3DNodeDatabase( const string&_name, 
+    H3DNodeDatabase( const string&_name, 
                      H3DCreateNodeFunc _createf,
                      const type_info &_ti,
                      H3DNodeDatabase *_parent = 0 );
@@ -312,7 +313,7 @@ namespace H3D {
     /// Constructor. Allows the adding of one alias name as well
     /// as the ordinary name. Any extra alias names must be added
     /// with the addAlias method.
-	  H3DNodeDatabase( const string&_name, 
+    H3DNodeDatabase( const string&_name, 
                      const string &_alias,
                      H3DCreateNodeFunc _createf,
                      const type_info &_ti,
@@ -320,7 +321,7 @@ namespace H3D {
 
     /// Unnamed constructor, for nodes that cannot be instantiated but
     /// instead act as base classes for other nodes.
-	  H3DNodeDatabase( const type_info &_ti,
+    H3DNodeDatabase( const type_info &_ti,
                      H3DNodeDatabase *_parent = 0 );
     ~H3DNodeDatabase(void);
     
@@ -339,7 +340,7 @@ namespace H3D {
     /// \param name The name of the node in the database.
     /// \returns A new instance of the node if it exists in the database,
     /// otherwise NULL is returned.
-	  static Node *createNode( const string &name );
+    static Node *createNode( const string &name );
 
     /// Get the name of the node in the database object.
     inline const string &getName() {
@@ -365,7 +366,7 @@ namespace H3D {
     /// the given name and returning a pointer to the field if found.
     Field *getField( Node *n, const string& f ) const;
     
-	  /// initialise the given Node using the contents of the database - 
+    /// initialise the given Node using the contents of the database - 
     /// initialise field names, field owner pointers and access restrictors.
     void initFields( Node* ) const;
 
@@ -376,7 +377,7 @@ namespace H3D {
     /// node n;
     void clearDynamicFields( Node *n );
     
-	private:
+  private:
     /// Help function for getField.
     Field *getFieldHelp( Node *n, const string& f ) const;
 
@@ -396,7 +397,7 @@ namespace H3D {
     FieldDBType fields;
     
     /// Static map of nodes that have initialised themselves into the database
-		static bool initialized;
+    static bool initialized;
 
     /// A list of aliases for this node, i.e. other names this node is known
     /// as.
@@ -409,25 +410,25 @@ namespace H3D {
     /// Iterator to the first element in the database. Can be used to iterate 
     /// over all H3DNodeDatabase instances that have been created.
     ///
-  	static NodeDatabaseConstIterator begin() {
+    static NodeDatabaseConstIterator begin() {
       return database->begin();
-		}
-		
+    }
+    
     /// Returns an iterator pointing at the end of the H3DNodeDatabase created.
-		static NodeDatabaseConstIterator end() {
-		  return database->end();
-		}
+    static NodeDatabaseConstIterator end() {
+      return database->end();
+    }
  
     /// Gets an iterator to the beginning first field in the H3DNodeDatabase.
     /// Can be used to iteratate through all the fields in the database.
     FieldDBConstIterator fieldDBBegin() {
       return FieldDBConstIterator( this, 0 );
-		}
-		
+    }
+    
     /// Returns an iterator pointing at the end of fields in the H3DNodeDatabase.
     FieldDBConstIterator fieldDBEnd()  {
-		  return FieldDBConstIterator( this,1 );
-		}
+      return FieldDBConstIterator( this,1 );
+    }
     
     /// Returns the number of fields in the H3DNodeDatabase.
     inline size_t fieldDBSize() {
@@ -436,10 +437,10 @@ namespace H3D {
       } else {
         return fields.size() + parent->fieldDBSize();
       }
-		}
+    }
     
-	};
-	  
+  };
+    
   struct FieldDBInsert {
     FieldDBInsert( FieldDBElement *f ) {
       f->getContainer()->addField( f );

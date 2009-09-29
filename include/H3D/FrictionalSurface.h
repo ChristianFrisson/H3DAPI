@@ -37,6 +37,10 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \class FrictionalSurface
   /// Surface with friction.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Surfaces.x3d">Surfaces.x3d</a>
+  ///     ( <a href="examples/Surfaces.x3d.html">Source</a> )
   class H3DAPI_API FrictionalSurface: public H3DFrictionalSurfaceNode {
   public:
 

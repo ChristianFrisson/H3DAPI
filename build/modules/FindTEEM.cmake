@@ -52,7 +52,7 @@ FIND_PATH(TEEM_INCLUDE_DIR NAMES teem/nrrd.h
 MARK_AS_ADVANCED(TEEM_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(TEEM_LIBRARY NAMES nrrd teem 
+FIND_LIBRARY(TEEM_LIBRARY NAMES teem 
                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                 $ENV{H3D_ROOT}/../External/lib
                                 ../../External/lib
@@ -108,32 +108,6 @@ IF( TEEM_BZIP2 )
     SET( FOUND_TEEM_LIBRARIES 0 )
   ENDIF( NOT BZ2_LIBRARY )
 ENDIF( TEEM_BZIP2 )
-
-IF( NOT WIN32 AND UNIX )
-  FIND_LIBRARY(AIR_LIBRARY NAMES air
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 $ENV{H3D_ROOT}/../External/lib
-                                 ../../External/lib
-                                 ${module_file_path}/../../../External/lib
-                                 /usr/lib
-                                 ${module_file_path}/../../teem/lib )
-  MARK_AS_ADVANCED(AIR_LIBRARY)
-  IF( NOT AIR_LIBRARY )
-    SET( FOUND_TEEM_LIBRARIES 0 )
-  ENDIF( NOT AIR_LIBRARY )
-
-  FIND_LIBRARY(BIFF_LIBRARY NAMES biff
-                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                  $ENV{H3D_ROOT}/../External/lib
-                                  ../../External/lib
-                                  ${module_file_path}/../../../External/lib
-                                  /usr/lib
-                                  ${module_file_path}/../../teem/lib )
-  MARK_AS_ADVANCED(BIFF_LIBRARY)
-  IF( NOT BIFF_LIBRARY )
-    SET( FOUND_TEEM_LIBRARIES 0 )
-  ENDIF( NOT BIFF_LIBRARY )
-ENDIF( NOT WIN32 AND UNIX )
 
 # Copy the results to the output variables.
 IF(TEEM_INCLUDE_DIR AND FOUND_TEEM_LIBRARIES)

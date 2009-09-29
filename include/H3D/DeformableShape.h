@@ -61,6 +61,10 @@ namespace H3D {
   /// go back to when there are no contacts to the geometry any longer. If
   /// the deformation is non-plastic, this will be the same as origCoord.
   
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/DeformableShape.x3d">DeformableShape.x3d</a>
+  ///     ( <a href="examples/DeformableShape.x3d.html">Source</a> )
   class H3DAPI_API DeformableShape : public X3DShapeNode {
   public:
     typedef TypedSFNode< Coordinate > SFCoordinateNode;

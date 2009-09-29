@@ -57,6 +57,11 @@ namespace H3D {
   /// -1, -1), implies that the bounding box is not specified and, if
   /// needed, is calculated by the browser. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Switch.x3d">Switch.x3d</a>
+  ///     ( <a href="examples/Switch.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Switch.dot
   class H3DAPI_API Switch : public X3DGroupingNode {

@@ -75,6 +75,8 @@ ImageObjectInfo::ImageObjectInfo( Inst< SFImageObjectNode > _texture,
   type_name = "ImageObjectInfo";
   database.initFields( this );
 
+  // Name set to not have unknown fields in the doxygen documentation.
+  update_fields->setName( "update_fields(internal)" );
   update_fields->setOwner( this );
 
   texture->route( update_fields );

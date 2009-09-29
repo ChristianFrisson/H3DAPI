@@ -47,6 +47,11 @@ namespace H3D {
   /// +Z-axis, the texture is mapped onto each face with the same orientation
   /// as if the image were displayed normally in 2D. 
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TriangleSet2D.x3d">TriangleSet2D.x3d</a>
+  ///     ( <a href="examples/TriangleSet2D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TriangleSet2D.dot
   

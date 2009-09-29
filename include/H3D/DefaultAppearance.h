@@ -41,6 +41,10 @@ namespace H3D {
   /// graphical rendering. The appearance parameters set here will be 
   /// the default parameters that are used if a part is not specified
   /// in the appearance field of a Shape node.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/DefaultAppearance.x3d">DefaultAppearance.x3d</a>
+  ///     ( <a href="examples/DefaultAppearance.x3d.html">Source</a> )
   class H3DAPI_API DefaultAppearance : public H3DOptionNode {
   public:
     /// SFAppearanceNode is dependent on the displayList field of its

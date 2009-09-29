@@ -54,6 +54,11 @@ namespace H3D {
   /// system of the children). The results are undefined if the specified
   /// bounding box is smaller than the true bounding box of the group. 
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MatrixTransform.x3d">MatrixTransform.x3d</a>
+  ///     ( <a href="examples/MatrixTransform.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile MatrixTransform.dot
   class H3DAPI_API MatrixTransform : public X3DGroupingNode {
@@ -172,21 +177,26 @@ namespace H3D {
     /// <b>Default value:</b> Unit matrix \n
     /// 
     /// \dotfile MatrixTransform_matrix.dot
- 
     auto_ptr< SFMatrix4f > matrix;
     
-    /// The accumulated forward transform matrix
+    /// The accumulated forward transform matrix, i.e. the
+    /// transformation matrix from the local space at the current 
+    /// traversal position to global space. Note that this field will not stay
+    /// constant for a constant scene graph if the DEF/USE feature is used for
+    /// instances of this node.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Unit matrix \n
- 
     auto_ptr< SFMatrix4f > accumulatedForward;
     
-    /// The accumulated inverse transform matrix
+    /// The accumulated inverse transform matrix, i.e. the
+    /// transformation matrix from global space to the local space 
+    /// at the current traversal position. Note that this field will not stay
+    /// constant for a constant scene graph if the DEF/USE feature is used for
+    /// instances of this node.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Unit matrix \n
- 
     auto_ptr< SFMatrix4f > accumulatedInverse;
     
     /// This is the same as the bound field, but with the transformation 

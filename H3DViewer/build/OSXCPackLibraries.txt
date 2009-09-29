@@ -6,6 +6,9 @@ FILE(GLOB AUDIOFILE_FILES "/usr/local/lib/libaudiofile.*.dylib")
 FILE(GLOB FREEIMAGE_FILES "/usr/local/lib/libfreeimage*dylib*")
 FILE(GLOB FREETYPE_FILES "/usr/local/lib/libfreetype.*.dylib")
 FILE(GLOB FTGL_FILES "/usr/local/lib/libftgl.*.dylib")
+FILE(GLOB NIFALCON_FILES "/usr/local/lib/libnifalcon*.dylib")
+#libusb required for nifalcon
+FILE(GLOB LIBUSB_FILES  /usr/local/lib/libusb*.dylib )
 FILE(GLOB OGG_FILES "/usr/local/lib/libogg.*.dylib")
 FILE(GLOB TEEM_FILES "/usr/local/lib/libteem.*.dylib")
 FILE(GLOB VORBIS_FILES "/usr/local/lib/libvorbis.*.dylib")
@@ -20,6 +23,8 @@ SET( OSX_DEPENDENT_LIBRARIES ${H3DAPI_FILES}
 			     ${FREEIMAGE_FILES}
 			     ${FREETYPE_FILES}
 			     ${FTGL_FILES}
+			     ${NIFALCON_FILES}
+			     ${LIBUSB_FILES}
 			     ${OGG_FILES}
 			     ${TEEM_FILES}
 			     ${VORBIS_FILES}
@@ -27,4 +32,4 @@ SET( OSX_DEPENDENT_LIBRARIES ${H3DAPI_FILES}
 			     ${XERCES_FILES}
 )
 
-SET( OSX_PLUGIN_LIBRARIES "/usr/local/lib/libMedX3D.dylib" )
+SET( OSX_PLUGIN_LIBRARIES "/usr/local/lib/libMedX3D.dylib" "/usr/local/lib/libUI.2.1.0.dylib" "/usr/local/lib/libRigidBodyPhysics.dylib" )

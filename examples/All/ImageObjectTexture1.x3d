@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='H3DAPI' version='1.4'>
   <head>
-    <meta name='title' content='ImageObjectTexture.x3d'/>
+    <meta name='title' content='ImageObjectTexture1.x3d'/>
     <meta name='description' content='H3DAPI ImageObjectTexture example.
       This example uses H3DAPI node(s) and runs on H3DAPI-supported 
       browsers only. Visit http://www.h3d.org for more information and 

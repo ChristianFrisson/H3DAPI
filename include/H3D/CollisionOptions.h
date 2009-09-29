@@ -39,6 +39,10 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \class CollisionOptions
   /// \brief Specifies parameters to use for graphical rendering of nodes.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/CollisionOptions.x3d">CollisionOptions.x3d</a>
+  ///     ( <a href="examples/CollisionOptions.x3d.html">Source</a> )
   class H3DAPI_API CollisionOptions : public H3DOptionNode {
   public:
     

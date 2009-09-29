@@ -64,7 +64,11 @@ namespace H3D {
   /// affects the texture coordinates of the Cone.
   ///
   /// The solid field determines whether the cone is visible when viewed
-  /// from the inside. 
+  /// from the inside.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Cone.x3d">Cone.x3d</a>
+  ///     ( <a href="examples/Cone.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile Cone.dot

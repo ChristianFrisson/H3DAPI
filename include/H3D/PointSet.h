@@ -61,6 +61,11 @@ namespace H3D {
   /// Appearance node affecting this PointSet node, the emissiveColor of the
   /// Material node shall be used to draw the points. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PointSet.x3d">PointSet.x3d</a>
+  ///     ( <a href="examples/PointSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile PointSet.dot
   class H3DAPI_API PointSet : public X3DGeometryNode {

@@ -86,6 +86,10 @@ namespace H3D {
   /// (i.e., greyscale) image, with the bottom pixel white and the top
   /// pixel black.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PixelTexture3D.x3d">PixelTexture3D.x3d</a>
+  ///     ( <a href="examples/PixelTexture3D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Pixel3DTexture.dot  
   class H3DAPI_API Pixel3DTexture : public X3DTexture3DNode {

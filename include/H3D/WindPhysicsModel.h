@@ -57,6 +57,10 @@ namespace H3D {
   /// with the direction, and how much variation is applied in directions
   /// other than the wind direction. This is determined per-particle to
   /// model how the particle is effected by turbulence.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/WindPhysicsModel.x3d">WindPhysicsModel.x3d</a>
+  ///     ( <a href="examples/WindPhysicsModel.x3d.html">Source</a> )
   class H3DAPI_API WindPhysicsModel : public X3DParticlePhysicsModelNode {
   public:
 

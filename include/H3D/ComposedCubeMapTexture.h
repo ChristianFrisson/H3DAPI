@@ -44,6 +44,10 @@ namespace H3D {
   /// 
   /// \par Internal routes:
   /// \dotfile ComposedCubeMapTexture.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ComposedCubeMapTexture.x3d">ComposedCubeMapTexture.x3d</a>
+  ///     ( <a href="examples/ComposedCubeMapTexture.x3d.html">Source</a> )
   class H3DAPI_API ComposedCubeMapTexture : public X3DEnvironmentTextureNode {
   public:
     /// The SFTexture2DNode field is dependent on the displayList field

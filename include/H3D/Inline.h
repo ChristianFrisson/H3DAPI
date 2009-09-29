@@ -239,6 +239,7 @@ namespace H3D {
     /// If the load field is set to FALSE, no action is taken.
     ///
     /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
     /// \dotfile Inline_load.dot
     auto_ptr< SFBool >  load;
     

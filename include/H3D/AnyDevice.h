@@ -42,6 +42,10 @@ namespace H3D {
   /// about not being able to start or maintain the scheduler if the AnyDevice
   /// finds a PhantomDevice. This is just a warning and everything should
   /// function properly anyways.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/AnyDevice.x3d">AnyDevice.x3d</a>
+  ///     ( <a href="examples/AnyDevice.x3d.html">Source</a> )
   class H3DAPI_API AnyDevice: public H3DHapticsDevice {
   public:
 

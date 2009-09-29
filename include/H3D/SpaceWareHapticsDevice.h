@@ -39,6 +39,11 @@ namespace H3D {
   /// \brief A fake haptics device where the position and orientation is
   /// controlled via a SpaceWare device such as the SpaceMouse or SpaceTraveller.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SpaceWareHapticsDevice.x3d">SpaceWareHapticsDevice.x3d</a>
+  ///     ( <a href="examples/SpaceWareHapticsDevice.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile SpaceWareHapticsDevice.dot
   class H3DAPI_API SpaceWareHapticsDevice: public H3DFakeHapticsDevice {

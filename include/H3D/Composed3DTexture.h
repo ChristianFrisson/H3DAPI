@@ -47,6 +47,10 @@ namespace H3D {
   /// in this array. The individual source textures will ignore their repeat
   /// field values.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ComposedTexture3D.x3d">ComposedTexture3D.x3d</a>
+  ///     ( <a href="examples/ComposedTexture3D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Composed3DTexture.dot  
   class H3DAPI_API Composed3DTexture : public X3DTexture3DNode {

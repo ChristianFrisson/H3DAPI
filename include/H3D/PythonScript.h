@@ -42,6 +42,10 @@ namespace H3D {
   /// \class PythonScript
   /// \brief Interface to the dynamic Python library for executing script
   ///  code as part of the API
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PythonScript.x3d">PythonScript.x3d</a>
+  ///     ( <a href="examples/PythonScript.x3d.html">Source</a> )
   struct H3DAPI_API PythonScript : public H3DScriptNode {
     ///Constructor.
     PythonScript( Inst< MFString > _url = 0,

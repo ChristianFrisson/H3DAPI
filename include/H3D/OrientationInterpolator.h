@@ -63,6 +63,11 @@ namespace H3D {
   ///
   /// (0, 1, 0, 2*pi) and (0, 1, 0, 5.0).
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/OrientationInterpolator.x3d">OrientationInterpolator.x3d</a>
+  ///     ( <a href="examples/OrientationInterpolator.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile OrientationInterpolator.dot
   class H3DAPI_API OrientationInterpolator : public X3DInterpolatorNode {

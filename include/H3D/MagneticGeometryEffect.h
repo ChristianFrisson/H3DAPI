@@ -45,6 +45,10 @@ namespace H3D {
   /// is not rendered visually in the scene.
   /// The force is calculated as follows:
   /// force = (closest_point_to_surface - device_position) * springConstant
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MagneticGeometryEffect.x3d">MagneticGeometryEffect.x3d</a>
+  ///     ( <a href="examples/MagneticGeometryEffect.x3d.html">Source</a> )
   class H3DAPI_API MagneticGeometryEffect: public H3DForceEffect {
   public:
 

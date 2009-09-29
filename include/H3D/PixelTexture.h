@@ -86,6 +86,10 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile PixelTexture.dot  
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PixelTexture.x3d">PixelTexture.x3d</a>
+  ///     ( <a href="examples/PixelTexture.x3d.html">Source</a> )
   class H3DAPI_API PixelTexture : public X3DTexture2DNode {
   public:
 

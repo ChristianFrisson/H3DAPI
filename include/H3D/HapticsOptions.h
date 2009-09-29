@@ -40,6 +40,10 @@ namespace H3D {
   /// \class HapticsOptions
   /// \brief Specifies parameters to use when rendering an object with haptics.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/HapticsOptions.x3d">HapticsOptions.x3d</a>
+  ///     ( <a href="examples/HapticsOptions.x3d.html">Source</a> )
   class H3DAPI_API HapticsOptions : public H3DOptionNode {
   public:
     

@@ -43,6 +43,9 @@ namespace H3D {
   /// Most image file types are supported including PNG, JPEG, GIF, BMP,
   /// TIFF and PSD
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImageLoaders.x3d">ImageLoaders.x3d</a>
+  ///     ( <a href="examples/ImageLoaders.x3d.html">Source</a> )
   class H3DAPI_API FreeImageLoader : public H3DImageLoaderNode {
   public:
     /// Constructor.

@@ -441,7 +441,12 @@ namespace H3D {
     virtual void setupProjection( EyeMode eye_mode,
                                   H3DFloat width, H3DFloat height,
                                   H3DFloat clip_near, H3DFloat clip_far,
-                                  StereoInfo * stereo_info = 0 ) = 0;
+                                  StereoInfo * stereo_info = 0 )
+#ifndef H3D_GENERATE_DOTROUTE_FILES
+                                        = 0;
+#else
+    {}
+#endif
 
     /// True if this viewpoint node exists outside a ViewpointGroup
     inline bool isTopLevel() {

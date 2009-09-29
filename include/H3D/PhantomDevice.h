@@ -55,6 +55,10 @@ namespace H3D {
   /// If the value for desiredHapticsRate is not one of the valid values
   /// a warning about not being able to start or maintain the scheduler will
   /// be printed. The node will function properly anyways.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PhantomDevice.x3d">PhantomDevice.x3d</a>
+  ///     ( <a href="examples/PhantomDevice.x3d.html">Source</a> )
   class H3DAPI_API PhantomDevice: public H3DHapticsDevice {
   public:
 

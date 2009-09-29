@@ -49,6 +49,11 @@ namespace H3D {
   /// matrix should be updated or not. If active is true the matrix will
   /// be updated.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FitToBoxTransform.x3d">FitToBoxTransform.x3d</a>
+  ///     ( <a href="examples/FitToBoxTransform.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile FitToBoxTransform.dot
 

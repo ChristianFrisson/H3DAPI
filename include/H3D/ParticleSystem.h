@@ -172,7 +172,11 @@ namespace H3D {
   /// - "GEOMETRY": Texture coordinates ramps are ignored for this type.
   /// Texture coordinates from the geometry representation are used or 
   /// automatic texture coordinate generation from the appearance node
-  /// is used.  
+  /// is used.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ParticleSystem.x3d">ParticleSystem.x3d</a>
+  ///     ( <a href="examples/ParticleSystem.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile ParticleSystem.dot

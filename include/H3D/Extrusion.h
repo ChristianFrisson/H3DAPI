@@ -43,6 +43,11 @@ namespace H3D {
   /// dimensional cross-section extruded along a three dimensional spine 
   /// in the local coordinate system. The cross-section can be scaled and 
   /// rotated at each spine point to produce a wide variety of shapes.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Extrusion.x3d">Extrusion.x3d</a>
+  ///     ( <a href="examples/Extrusion.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Extrusion.dot 
   class H3DAPI_API Extrusion : public X3DGeometryNode {

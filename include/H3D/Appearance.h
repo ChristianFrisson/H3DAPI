@@ -82,6 +82,18 @@ namespace H3D {
   ///   the renderProperties field has no effect (this field is not part of the
   ///   X3D specification)
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FillProperties.x3d">FillProperties.x3d</a>
+  ///     ( <a href="examples/FillProperties.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/LineProperties.x3d">LineProperties.x3d</a>
+  ///     ( <a href="examples/LineProperties.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/Material.x3d">Material.x3d</a>
+  ///     ( <a href="examples/Material.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/TwoSidedMaterial.x3d">TwoSidedMaterial.x3d</a>
+  ///     ( <a href="examples/TwoSidedMaterial.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/RenderProperties.x3d">RenderProperties.x3d</a>
+  ///     ( <a href="examples/RenderProperties.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Appearance.dot
   class H3DAPI_API Appearance : public X3DAppearanceNode {

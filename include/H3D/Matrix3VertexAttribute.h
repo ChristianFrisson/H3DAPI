@@ -36,10 +36,14 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class Matrix3VertexAttribute
-  /// Defines a set of per-vertex 3×3 matrix attributes.
+  /// Defines a set of per-vertex 3*3 matrix attributes.
   /// 
   /// The value field specifies an arbitrary collection of matrix values that 
   /// will be passed to the shader as per-vertex information.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/VertexAttributes1.x3d">VertexAttributes1.x3d</a>
+  ///     ( <a href="examples/VertexAttributes1.x3d.html">Source</a> )
   class H3DAPI_API Matrix3VertexAttribute: public X3DVertexAttributeNode {
   public:
     /// Constructor.

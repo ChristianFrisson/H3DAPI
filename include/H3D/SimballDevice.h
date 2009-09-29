@@ -39,6 +39,10 @@ namespace H3D {
   /// \brief A SimballDevice is a node for handling communication
   /// with a haptics device from ForceDimension, such as the Omega and
   /// Delta haptics devices.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SimballDevice.x3d">SimballDevice.x3d</a>
+  ///     ( <a href="examples/SimballDevice.x3d.html">Source</a> )
   class H3DAPI_API SimballDevice: public H3DHapticsDevice {
   public:
 

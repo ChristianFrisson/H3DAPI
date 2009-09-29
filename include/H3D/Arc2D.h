@@ -45,10 +45,13 @@ namespace H3D {
   /// to the endAngle. The value of radius shall be greater than zero. 
   /// The values of startAngle and endAngle shall be in the range (0, 2pi).
   /// If startAngle and endAngle have the same value, a circle is specified.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Arc2D.x3d">Arc2D.x3d</a>
+  ///     ( <a href="examples/Arc2D.x3d.html">Source</a> )
   /// 
   /// \par Internal routes:
   /// \dotfile Arc2D.dot
-  
   class H3DAPI_API Arc2D : 
     public X3DGeometryNode {
   public:

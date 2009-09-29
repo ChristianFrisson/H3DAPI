@@ -48,6 +48,14 @@ namespace H3D {
   /// The smoothShading field specifies if smooth shading should be used.
   /// If false, flat shading is used.
   /// 
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/RenderProperties.x3d">RenderProperties.x3d</a>
+  ///     ( <a href="examples/RenderProperties.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/RenderProperties1.x3d">RenderProperties1.x3d</a>
+  ///     ( <a href="examples/RenderProperties1.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/RenderProperties2.x3d">RenderProperties2.x3d</a>
+  ///     ( <a href="examples/RenderProperties2.x3d.html">Source</a> )
+  /// 
   /// \par Internal routes:
   /// \dotfile RenderProperties.dot
   class H3DAPI_API RenderProperties : public X3DAppearanceChildNode {

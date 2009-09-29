@@ -41,6 +41,11 @@ namespace H3D {
   /// a TextureCoordinateGenerator node to generate the texture coordinates
   /// of a geometry instead of using the default ones.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TexGenGeometry.x3d">TexGenGeometry.x3d</a>
+  ///     ( <a href="examples/TexGenGeometry.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TexGenGeometry.dot
   class H3DAPI_API TexGenGeometry : 

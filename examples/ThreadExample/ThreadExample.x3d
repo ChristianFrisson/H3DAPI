@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Group>
+  <ImportLibrary library="..\\..\\..\\bin\\ThreadExample" />
+  <ImportLibrary library="/usr/local/lib/libThreadExample.so" />
   <Shape>
     <Appearance>
       <Material/>

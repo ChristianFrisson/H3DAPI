@@ -52,6 +52,11 @@ namespace H3D {
   /// two functions. The parameter names for one function is ss1_x and for the
   /// other it is ss2. Experiment with values to see what they do.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SuperShape.x3d">SuperShape.x3d</a>
+  ///     ( <a href="examples/SuperShape.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile SuperShape.dot
   class H3DAPI_API SuperShape : public X3DGeometryNode {

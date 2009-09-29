@@ -52,6 +52,11 @@ namespace H3D {
   /// from the inside. If solid is false both sides of the sphere will be 
   /// rendered.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Sphere.x3d">Sphere.x3d</a>
+  ///     ( <a href="examples/Sphere.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Sphere.dot
   class H3DAPI_API Sphere : public X3DGeometryNode {

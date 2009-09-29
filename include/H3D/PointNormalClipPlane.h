@@ -42,6 +42,10 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile PointNormalClipPlane.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PointNormalClipPlane.x3d">PointNormalClipPlane.x3d</a>
+  ///     ( <a href="examples/PointNormalClipPlane.x3d.html">Source</a> )
   class H3DAPI_API PointNormalClipPlane : 
     public ClipPlane {
   public:

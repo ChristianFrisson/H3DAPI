@@ -102,6 +102,11 @@ namespace H3D {
   /// Appearance affecting this IndexedLineSet, the emissiveColor of the
   /// Material shall be used to draw the lines. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/IndexedLineSet.x3d">IndexedLineSet.x3d</a>
+  ///     ( <a href="examples/IndexedLineSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile IndexedLineSet.dot
   class H3DAPI_API IndexedLineSet : public X3DGeometryNode {

@@ -68,6 +68,10 @@ namespace H3D {
   ///   }
   /// }
   /// \endcode
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MultiTextureCoordinate.x3d">MultiTextureCoordinate.x3d</a>
+  ///     ( <a href="examples/MultiTextureCoordinate.x3d.html">Source</a> )
   class H3DAPI_API MultiTextureCoordinate : public X3DTextureCoordinateNode {
   public:
     

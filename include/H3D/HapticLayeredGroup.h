@@ -43,6 +43,10 @@ namespace H3D {
   /// shape using a harder surface (surface with higher stiffness).
   ///
   /// All childs of HapticLayeredGroup will be rendered in separate layers.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/HapticLayeredGroup.x3d">HapticLayeredGroup.x3d</a>
+  ///     ( <a href="examples/HapticLayeredGroup.x3d.html">Source</a> )
   class H3DAPI_API HapticLayeredGroup : public X3DGroupingNode {
   public:
     /// Constructor.

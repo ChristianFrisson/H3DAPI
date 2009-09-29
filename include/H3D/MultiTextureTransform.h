@@ -70,6 +70,10 @@ namespace H3D {
   ///   }
   /// }
   /// \endcode
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MultiTextureTransform.x3d">MultiTextureTransform.x3d</a>
+  ///     ( <a href="examples/MultiTextureTransform.x3d.html">Source</a> )
   class H3DAPI_API MultiTextureTransform : public X3DTextureTransformNode {
   public:
     

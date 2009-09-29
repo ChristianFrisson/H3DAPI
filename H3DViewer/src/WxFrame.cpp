@@ -129,7 +129,7 @@ void onDropFiles(wxCoord x, wxCoord y,
 #endif
 
 /*******************Global Constants*********************/
-static const wxChar *TITLE     = wxT("H3DViewer ");
+static const wxChar *TITLE     = wxT("H3DViewer 2.1");
 static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2009.\n"
                                     "All Rights Reserved.");
 static const wxChar *ABOUT     = wxT("About");
@@ -189,7 +189,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   wxAcceleratorTable accel(1, entries);
   SetAcceleratorTable(accel);
 
-    scene.reset( new Scene );
+  scene.reset( new Scene );
   ks.reset ( new KeySensor );
 #ifndef MACOSX
   ss.reset (0);
@@ -312,6 +312,9 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                               wxT("Quad Buffered Stereo"));
   renderMode->AppendRadioItem(FRAME_HORZSPLIT, wxT("Horizontal Split"),
                               wxT("Horizontal Split"));
+  renderMode->AppendRadioItem(FRAME_HORZSPLITKEEPASPECT,
+                              wxT("Horizontal Split Keep Aspect"),
+                       wxT("Horizontal Split with aspect ratio kept the same."));
   renderMode->AppendRadioItem(FRAME_VERTSPLIT, wxT("Vertical Split"),
                               wxT("Vertical Split"));
   renderMode->AppendRadioItem(FRAME_VERTSPLITKEEPASPECT,
@@ -393,6 +396,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 
   change_nav_type->setOwnerWindow( glwindow );
   ks->keyPress->route( change_nav_type );
+#ifdef WIN32
+  wxIcon tmpIcon( wxT( "IDI_ICON1" ), wxBITMAP_TYPE_ICO_RESOURCE );
+  SetIcon( tmpIcon );
+#endif
 }
 
 void WxFrame::ChangeNavType::update() {
@@ -674,9 +681,19 @@ bool WxFrame::loadFile( const string &filename) {
   char *r = getenv( "H3D_ROOT" );
 
   string h3d_root = r ? r : ""; 
-  
-  INIFile ini_file( h3d_root + "/settings/h3dload.ini" );
-  
+
+  string ini_file_path = h3d_root + "/settings/h3dload.ini";
+
+  bool ini_file_exists = false;
+  ifstream check_ini_file( ini_file_path.c_str() );
+  if( check_ini_file.is_open() ) {
+    ini_file_exists = true;
+  }
+  check_ini_file.close();
+
+  INIFile ini_file( ini_file_path );
+
+
   //Clear existing data
   t->children->clear();
   viewpoint.reset( NULL );
@@ -799,7 +816,7 @@ bool WxFrame::loadFile( const string &filename) {
       for( DeviceInfo::DeviceInfoList::iterator i = device_infos.begin();
            i != device_infos.end(); i++ ) {
         if( j < device_info_size )
-          di->set_bind->setValue( false );
+          (*i)->set_bind->setValue( false );
         else {
           (*i)->set_bind->setValue( true );
           break;
@@ -873,15 +890,75 @@ bool WxFrame::loadFile( const string &filename) {
     g->children->push_back(ss.get());
 #endif
     //create a Viewpoint if it does not exist.
-    if( !Viewpoint::getActive() && viewpoint_file.size() ) {
-      try {
-        viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
-        Console( 4 ) << viewpoint_file;
-      } catch( const Exception::H3DException &e ) {
+    if( !Viewpoint::getActive() ) {
+      if( viewpoint_file.size() ) {
+        try {
+          viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
+          Console( 4 ) << viewpoint_file;
+        } catch( const Exception::H3DException &e ) {
+          viewpoint.reset( new Viewpoint );
+          Console(3) << "Warning: Could not create default Viewpoint node "
+                     << "from file \"" << viewpoint_file << "\": "
+                     << e << endl;
+        }
+      } else if( !ini_file_exists )
         viewpoint.reset( new Viewpoint );
-        Console(3) << "Warning: Could not create default Viewpoint node "
-                   << "from file \"" << viewpoint_file << "\": "
-                   << e << endl;
+    }
+
+    if( !ini_file_exists && device_infos.empty() ) {
+      // No device info exists and no device info file either. Simply
+      // create an anydevice and use that one in the scene.
+      device_info = X3D::createX3DNodeFromString(
+        "<DeviceInfo>"
+        "  <AnyDevice>"
+        "    <GodObjectRenderer/>"
+        "  </AnyDevice>"
+        "</DeviceInfo>" );
+
+      di = DeviceInfo::getActive();
+      if( di ) {
+        // Create stylus.
+        AutoRef< Node > default_stylus( 0 );
+        default_stylus = X3D::createX3DNodeFromString(
+          "  <Group>"
+          "    <Transform>"
+          "      <Shape>"
+          "        <Appearance>"
+          "          <Material/>"
+          "        </Appearance>"
+          "        <Sphere DEF=\"PROXY\" radius=\"0.0025\" />"
+          "      </Shape>"
+          "    </Transform>"
+          "  </Group>",
+          &default_stylus_dn );
+
+        // Create a calibration matrix that will account for not being the H3D
+        // default viewpoint.
+        X3DViewpointNode * active_vp = X3DViewpointNode::getActive();
+        // Set matrix to calibrate the device for a default X3D Viewpoint.
+        // That is, no orientation and position 0, 0, 10. 
+        Matrix4f pos_cal_matrix( 1, 0, 0, 0,
+                                 0, 1, 0, 0,
+                                 0, 0, 1, 9.4,
+                                 0, 0, 0, 1 );
+        if( active_vp ) {
+          // There is already a viewpoint defined, use this one.
+          Vec3f position_part = active_vp->position->getValue();
+          position_part.z -= 0.6f;
+          pos_cal_matrix = Matrix4f( active_vp->orientation->getValue() );
+          pos_cal_matrix[0][3] = position_part.x;
+          pos_cal_matrix[1][3] = position_part.y;
+          pos_cal_matrix[2][3] = position_part.z;
+        }
+
+        // Set stylus and calibration matrix.
+        for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
+             i != di->device->end(); i++ ) {
+          H3DHapticsDevice *d = static_cast< H3DHapticsDevice * >(*i);
+          d->positionCalibration->setValue( pos_cal_matrix );
+          if( !d->stylus->getValue() )
+            d->stylus->setValue( default_stylus );
+        }
       }
     }
 
@@ -919,6 +996,8 @@ bool WxFrame::loadFile( const string &filename) {
         renderMode->Check( FRAME_QUADBUFFERED, true );
       else if( render_mode == "HORIZONTAL_SPLIT" )
         renderMode->Check( FRAME_HORZSPLIT, true );
+      else if( render_mode == "HORIZONTAL_SPLIT_KEEP_RATIO" )
+        renderMode->Check( FRAME_HORZSPLITKEEPASPECT, true );
       else if( render_mode == "VERTICAL_SPLIT" )
         renderMode->Check( FRAME_VERTSPLIT, true );
       else if( render_mode == "VERTICAL_SPLIT_KEEP_RATIO" )
@@ -1285,9 +1364,25 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
 void WxFrame::OnMRUFile(wxCommandEvent & event)
 {
   wxString filename(recentFiles->GetHistoryFile(event.GetId() - wxID_FILE1));
-  if (filename != wxT("")) {
+  if(!filename.IsEmpty()) {
+#ifdef WIN32
+    SetCurrentFilename(filename.AfterLast('\\') );
+    SetCurrentPath(filename.BeforeLast('\\') );
+#else
+    SetCurrentFilename(filename.AfterLast('/') );
+    SetCurrentPath(filename.BeforeLast('/') );
+#endif
+
+    SetStatusText(GetCurrentFilename(), 0);
+    SetStatusText(GetCurrentPath(),1);
+#ifdef WIN32
+    wxString wx_filename = currentPath + wxT("\\") + currentFilename;
+#else
+    wxString wx_filename = currentPath + wxT("/") + currentFilename;
+#endif
+    string filename(wx_filename.mb_str());
     clearData();
-    loadFile( toStr( filename ) );
+    loadFile( filename );
   }
 }
 
@@ -1397,6 +1492,9 @@ void WxFrame::RenderMode(wxCommandEvent & event)
       break;
     case FRAME_HORZSPLIT:
       renderMode = "HORIZONTAL_SPLIT";
+      break;
+    case FRAME_HORZSPLITKEEPASPECT:
+      renderMode = "HORIZONTAL_SPLIT_KEEP_RATIO";
       break;
     case FRAME_VERTSPLIT:
       renderMode = "VERTICAL_SPLIT";
@@ -2036,14 +2134,14 @@ void WxFrame::LoadSettings( bool from_config ) {
     if( from_config ) {
       if (h3dConfig->Exists(wxT("/Settings/GraphicsCaching"))) {
         h3dConfig->SetPath(wxT("/Settings/GraphicsCaching"));
-        h3dConfig->Read(wxT("useCaching"), &use_caching);
-        h3dConfig->Read(wxT("cacheOnlyGeometries"), &cache_only_geometries);
-        h3dConfig->Read(wxT("cachingDelay"), &caching_delay);
+        h3dConfig->Read(wxT("useCaching"), &use_caching, true );
+        h3dConfig->Read(wxT("cacheOnlyGeometries"), &cache_only_geometries, false);
+        h3dConfig->Read(wxT("cachingDelay"), &caching_delay, 5);
       } else {
         // on clean system
         use_caching = gco->useCaching->getValue();
         cache_only_geometries = gco->cacheOnlyGeometries->getValue();
-        caching_delay = gco->cacheOnlyGeometries->getValue();
+        caching_delay = gco->cachingDelay->getValue();
       }
     } else {
       use_caching = non_conf_opt.use_caching;

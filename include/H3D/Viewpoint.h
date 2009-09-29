@@ -55,7 +55,12 @@ namespace H3D {
   /// equals the fieldOfView (the larger angle is computed using the relationship
   /// described above). The larger angle shall not exceed pi and may force the smaller
   /// angle to be less than fieldOfView in order to sustain the aspect ratio.
-
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Viewpoint.x3d">Viewpoint.x3d</a>
+  ///     ( <a href="examples/Viewpoint.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/Viewpoint1.x3d">Viewpoint1.x3d</a>
+  ///     ( <a href="examples/Viewpoint1.x3d.html">Source</a> )
   class H3DAPI_API Viewpoint : public X3DViewpointNode {
   public:
     /// Constructor.

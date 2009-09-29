@@ -38,6 +38,10 @@ namespace H3D {
   /// \class MetadataInteger
   /// \brief  The metadata provided by this node is contained in the 
   /// integers of the value field.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Metadata.x3d">Metadata.x3d</a>
+  ///     ( <a href="examples/Metadata.x3d.html">Source</a> )
   class H3DAPI_API MetadataInteger: 
     public X3DNode,
     public X3DMetadataObject {

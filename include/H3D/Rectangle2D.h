@@ -50,6 +50,11 @@ namespace H3D {
   /// orientation as if the image were displayed normally in 2D. 
   /// TextureTransform affects the texture coordinates of the Rectangle2D
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Rectangle2D.x3d">Rectangle2D.x3d</a>
+  ///     ( <a href="examples/Rectangle2D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Rectangle2D.dot
   

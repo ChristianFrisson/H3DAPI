@@ -43,6 +43,10 @@ namespace H3D {
   /// for different areas such as volume rendering nodes etc. The X3D file
   /// just needs to use the ImportLibrary node to import it and after that
   /// the nodes defined in the toolkit can be used in the X3D file.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImportLibrary.x3d">ImportLibrary.x3d</a>
+  ///     ( <a href="examples/ImportLibrary.x3d.html">Source</a> )
   class H3DAPI_API ImportLibrary : public X3DChildNode,
                                    public X3DUrlObject {
   public:

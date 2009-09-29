@@ -808,11 +808,11 @@ namespace H3D {
 
     /// Convert a string to a specified type according to the X3D/XML
     /// field encoding.
-    /// \param Type The type to convert the string to.
+    /// \tparam Type The type to convert the string to.
     /// \param x3d_string The string to convert.
     /// \returns The converted value.
     /// \throws Convert::X3DFieldConversionError
-    ///
+    /// \ returns The string converted to class Type.
     template< class Type >
     Type X3DStringToValue( const string &x3d_string ) {
       typedef Convert::X3DFieldConversionError ConversionError;
@@ -834,7 +834,7 @@ namespace H3D {
 
     /// Convert a string to a vector of a specified type according
     /// to the X3D/XML field encoding.
-    /// \param Type The type to convert the string to.
+    /// \tparam VectorType The vector type to store the converted types in.
     /// \param x3d_string The string to convert.
     /// \param values The return vector.
     /// \throws Convert::X3DFieldConversionError
@@ -864,7 +864,6 @@ namespace H3D {
 
     /// Template specializaion for handling the case of MFString where the
     /// the values are specified as e.g. '"WALK" "ANY"'
-    /// \param Type The type to convert the string to.
     /// \param x3d_string The string to convert.
     /// \param values The return vector.
     /// \throws Convert::X3DFieldConversionError

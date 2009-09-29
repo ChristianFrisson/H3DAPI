@@ -138,6 +138,10 @@ namespace H3D {
   /// For streamed media types, the first frame of data available means
   /// successful load of the URL object (i.e., the browser can render one frame
   /// of a movie or start playing an audio file).
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/LoadSensor.x3d">LoadSensor.x3d</a>
+  ///     ( <a href="examples/LoadSensor.x3d.html">Source</a> )
   class H3DAPI_API LoadSensor : public X3DNetworkSensorNode {
   public:
     

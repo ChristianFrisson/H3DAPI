@@ -40,6 +40,11 @@ namespace H3D {
   /// \brief BooleanTrigger is a trigger node that generates boolean events 
   /// upon receiving time events.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/BooleanTrigger.x3d">BooleanTrigger.x3d</a>
+  ///     ( <a href="examples/BooleanTrigger.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile BooleanTrigger.dot
 

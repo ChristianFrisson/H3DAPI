@@ -82,6 +82,11 @@ namespace H3D {
   /// sphere). Each movement of the pointing device while isActive is TRUE
   /// generates trackPoint_changed and rotation_changed events.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SphereSensor.x3d">SphereSensor.x3d</a>
+  ///     ( <a href="examples/SphereSensor.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile SphereSensor.dot
  

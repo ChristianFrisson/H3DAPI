@@ -57,13 +57,16 @@ namespace H3D {
   /// NurbsTextureCoordinate nodes are accessed through the texCoord field 
   /// of a node derived from NurbsTextureCoordinate.
   /// A NurbsTextureCoordinate node separately encountered is ignored.
-
-  // according to the X3D standard NurbsTextureCoordinate should inherit 
-  // from X3DNode so we cheat here to make it easier in 
-  // NurbsTextureCoordinate.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/NurbsTextureCoordinate.x3d">NurbsTextureCoordinate.x3d</a>
+  ///     ( <a href="examples/NurbsTextureCoordinate.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile NurbsTextureCoordinate.dot
+  // according to the X3D standard NurbsTextureCoordinate should inherit 
+  // from X3DNode so we cheat here to make it easier in 
+  // NurbsTextureCoordinate.
   class H3DAPI_API NurbsTextureCoordinate : 
     public X3DGeometricPropertyNode {
   public:

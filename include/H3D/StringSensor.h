@@ -70,8 +70,10 @@ namespace H3D {
   ///
   ///  The StringSensor is not affected by its position in the
   ///  transformation hierarchy.
-
-
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/StringSensor.x3d">StringSensor.x3d</a>
+  ///     ( <a href="examples/StringSensor.x3d.html">Source</a> )
   class H3DAPI_API StringSensor : public X3DKeyDeviceSensorNode {
   public:
 

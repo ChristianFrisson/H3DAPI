@@ -46,6 +46,10 @@ namespace H3D {
   /// that at time t the force rendered on the haptcis device will be
   /// (sin(t), 0, 0).
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TimeFunctionEffect.x3d">TimeFunctionEffect.x3d</a>
+  ///     ( <a href="examples/TimeFunctionEffect.x3d.html">Source</a> )
   class H3DAPI_API TimeFunctionEffect: public H3DForceEffect {
   public:
 

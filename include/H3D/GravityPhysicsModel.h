@@ -44,6 +44,10 @@ namespace H3D {
   /// in metres per seconds-squared (m/s2). If the particles are defined
   /// to have zero mass by the emitter, the GravityPhysicsModel node has 
   /// no effect.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/GravityPhysicsModel.x3d">GravityPhysicsModel.x3d</a>
+  ///     ( <a href="examples/GravityPhysicsModel.x3d.html">Source</a> )
   class H3DAPI_API GravityPhysicsModel : public X3DParticlePhysicsModelNode {
   public:
 

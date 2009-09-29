@@ -44,6 +44,9 @@ namespace H3D {
   /// maximum stiffness the device can handle. Otherwise the stiffness is
   /// in N/m.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Surfaces.x3d">Surfaces.x3d</a>
+  ///     ( <a href="examples/Surfaces.x3d.html">Source</a> )
   class H3DAPI_API SmoothSurface: public H3DStiffnessSurfaceNode {
   public:
 

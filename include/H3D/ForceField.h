@@ -37,6 +37,10 @@ namespace H3D {
   /// \ingroup H3DNodes 
   /// \class ForceField
   /// This effect adds a constant force to all haptics devices at all times.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ForceField.x3d">ForceField.x3d</a>
+  ///     ( <a href="examples/ForceField.x3d.html">Source</a> )
   class H3DAPI_API ForceField: public H3DForceEffect {
   public:
     /// Constructor

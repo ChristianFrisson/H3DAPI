@@ -54,6 +54,11 @@ namespace H3D {
   /// equal length. The results are undefined if P and Q are diagonally
   /// opposite. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/NormalInterpolator.x3d">NormalInterpolator.x3d</a>
+  ///     ( <a href="examples/NormalInterpolator.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile NormalInterpolator.dot
   class H3DAPI_API NormalInterpolator : public X3DInterpolatorNode {

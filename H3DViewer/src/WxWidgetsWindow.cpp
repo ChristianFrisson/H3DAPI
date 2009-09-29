@@ -134,11 +134,17 @@ void WxWidgetsWindow::initWindow() {
     tmp_sizer->Add( theWxGLCanvas, 1, wxEXPAND );
     theWindow->Layout();
   }
-#ifdef WIN32
+
+
+#ifdef H3D_WINDOWS
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
-  if( hWnd )
-    wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
-                          GWL_WNDPROC, (LONG_PTR) WindowProc);
+#ifdef H3D_WIN64
+  wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                GWLP_WNDPROC, (LONG_PTR) WindowProc);
+#else
+  wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                GWL_WNDPROC, (LONG_PTR) WindowProc);
+#endif
 #endif
 
   last_fullscreen = !fullscreen->getValue();

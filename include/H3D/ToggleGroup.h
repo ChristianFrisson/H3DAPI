@@ -44,6 +44,11 @@ namespace H3D {
   /// The graphicsOn field specifies if nodes in the children field of 
   /// this group should be rendered graphically or not.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ToggleGroup.x3d">ToggleGroup.x3d</a>
+  ///     ( <a href="examples/ToggleGroup.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ToggleGroup.dot
   class H3DAPI_API ToggleGroup : public X3DGroupingNode {

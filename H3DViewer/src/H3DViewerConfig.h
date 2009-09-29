@@ -40,4 +40,10 @@
 /// a user to select any file at all and load it as a plugin.
 #define ALLOW_ADDING_PLUGINS
 
+/// This will be the H3DViewer application name and is therefore the registry
+/// key for where recent history and settings will be stored. The application
+/// name depends on whether H3DViewer is built for a stand alone release or as
+/// a part of H3DAPI release.
+#define H3DVIEWER_APP_NAME wxT("H3DViewer 2.1")
+
 #endif

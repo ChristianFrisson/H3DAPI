@@ -106,7 +106,9 @@ namespace H3D {
   /// sampling the positions of collidable objects and the user.
   /// The NavigationInfo node contains additional information for parameters
   /// that control the avatar size.
-
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Collision.x3d">Collision.x3d</a>
+  ///     ( <a href="examples/Collision.x3d.html">Source</a> )
   // According to X3D-spec Collision should inherit from X3DSensorNode
   // but since this is not allowed (for the database and such) the fields
   // in common with X3DSensorNode (enabled and isActive)

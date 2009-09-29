@@ -81,6 +81,11 @@ namespace H3D {
   ///    P' = T * C * R * SR * S * -SR * -C * P
   /// </center>
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Transform.x3d">Transform.x3d</a>
+  ///     ( <a href="examples/Transform.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Transform.dot
   class H3DAPI_API Transform : public MatrixTransform {

@@ -39,7 +39,7 @@ namespace H3D {
   /// 
   /// Valid values for the cursorType field are:
   /// "RIGHT_ARROW", "LEFT_ARROW", "INFO", "DESTROY", "HELP",
-  /// "CYCLE", SPRAYCAN", "WAIT", "TEXT", "CROSSHAIR", "UP_DOWN",
+  /// "CYCLE", "SPRAYCAN", "WAIT", "TEXT", "CROSSHAIR", "UP_DOWN",
   /// "LEFT_RIGHT", "TOP_SIDE", "BOTTOM_SIDE", "LEFT_SIDE", 
   /// "RIGHT_SIDE", "TOP_LEFT_CORNER", "TOP_RIGHT_CORNER",
   /// "BOTTOM_RIGHT_CORNER", "BOTTOM_LEFT_CORNER",

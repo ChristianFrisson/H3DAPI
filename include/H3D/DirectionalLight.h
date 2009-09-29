@@ -50,6 +50,11 @@ namespace H3D {
   ///
   /// DirectionalLight nodes do not attenuate with distance. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/DirectionalLight.x3d">DirectionalLight.x3d</a>
+  ///     ( <a href="examples/DirectionalLight.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile DirectionalLight.dot
   class H3DAPI_API DirectionalLight : public X3DLightNode {

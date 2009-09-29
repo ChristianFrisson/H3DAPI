@@ -181,7 +181,7 @@ namespace H3D {
 
       /// Returns true if we have a valid display list built that can
       /// be called.
-      inline bool haveValidDisplayList() {
+      inline virtual bool haveValidDisplayList() {
         return have_valid_display_list;
       }
       
@@ -193,7 +193,7 @@ namespace H3D {
       /// \returns true if the list was successfully built, false otherwise.
       bool tryBuildDisplayList( bool cache_broken ); 
 
-    private:
+    protected:
       /// The fields that has generated an event since the last call to
       /// update()
       set< Field * > event_fields;

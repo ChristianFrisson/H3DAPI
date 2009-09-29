@@ -41,6 +41,10 @@ namespace H3D {
   /// \class GlobalSettings
   /// GlobalSettings is a X3DBindableNode that specifies default settings
   /// for use in H3D API, such as caching options, haptic rendering options etc
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/GlobalSettings.x3d">GlobalSettings.x3d</a>
+  ///     ( <a href="examples/GlobalSettings.x3d.html">Source</a> )
   class H3DAPI_API GlobalSettings : public X3DBindableNode {
   public:
 

@@ -1,0 +1,49 @@
+This software uses the following libraries.
+
+FreeImage open source image library. See http://freeimage.sourceforge.net for details.
+FreeImage is used under the FIPL, version 1.0.
+
+
+zlib open source library.
+It is available at http://www.zlib.net/
+
+
+Pthread open source library. Pthread is used under the GNU LGPL, version 2.0.
+The Windows version is available here http://sources.redhat.com/pthreads-win32/
+Contributers to pthread can be found here http://sources.redhat.com/pthreads-win32/contributors.html
+
+
+Chai3d (http://www.chai3d.org/).
+Chai3D is used under GNU GPL, version 2.0.
+
+fparser library (Function parser) developed by Juha Nieminen (warp@iki.fi).
+It can be obtained from http://iki.fi/warp/FunctionParser/
+
+
+OpenAL library. OpenAL is used under the GNU LGPL, version 2.0.
+The homepage of OpenAL is http://connect.creativelabs.com/openal/default.aspx
+
+
+Audio File Library. Audio File Library is used under the GNU LGPL, version 2.0.
+The homepage of Audio File Library is http://www.68k.org/~michael/audiofile/
+
+
+FTGL. FTGL can be found here http://ftgl.wiki.sourceforge.net/
+
+WxWidgets open source library.
+It is available at http://www.wxwidgets.org/
+WxWidgets is used under the wxWindows Library License, version 3.1.
+
+Curl. See http://curl.haxx.se/ for more information
+
+3D connexion SDK. See http://www.3dconnexion.com/ for more information.
+
+Dicom Toolkit, see http://dicom.offis.de/dcmtk for more information.
+
+DHD-API. See http://www.forcedimension.com/sdk-overview for more information.
+
+FreeType project. See http://www.freetype.org/ for more information.
+
+libvorbis and libogg. See http://www.xiph.org/ for more information.
+
+Teem, See http://teem.sourceforge.net/ for more information.

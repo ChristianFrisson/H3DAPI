@@ -50,6 +50,10 @@ namespace H3D {
   /// HSV space (see [FOLEY] for description of RGB and HSV colour
   /// spaces). The results are undefined when interpolating between two
   /// consecutive keys with complementary hues.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ColorInterpolator.x3d">ColorInterpolator.x3d</a>
+  ///     ( <a href="examples/ColorInterpolator.x3d.html">Source</a> )
   /// 
   /// \par Internal routes:
   /// \dotfile ColorInterpolator.dot

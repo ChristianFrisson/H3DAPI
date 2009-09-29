@@ -152,7 +152,7 @@ bool MyApp::OnExceptionInMainLoop() {
   }
   catch (const Exception::H3DException &e) {
      stringstream s;
-	 s << e;
+   s << e;
      wxMessageBox( wxString(s.str().c_str(),wxConvLibc),
                    wxT("Error"), wxOK | wxICON_EXCLAMATION);
     return false;
@@ -166,10 +166,16 @@ bool MyApp::OnInit()
     // call default behaviour (mandatory)
     if (!wxApp::OnInit())
       return false;
-    
+
     SetVendorName(_T("SenseGraphics AB"));
-    SetAppName(_T("H3DViewer 2.1"));
-    
+#ifdef H3DVIEWER_STANDALONE
+    SetAppName(_T(H3DVIEWER_APP_NAME));
+#else
+    wxString tmp_string = H3DVIEWER_APP_NAME;
+    tmp_string += wxT("(dev)");
+    SetAppName( tmp_string );
+#endif
+
     Console.setShowLevel( false );
 
 #ifdef H3DAPI_LIB
@@ -188,7 +194,7 @@ bool MyApp::OnInit()
     
     // create a window to display
     theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
-			     wxDefaultPosition, wxSize(800, 600));
+           wxDefaultPosition, wxSize(800, 600));
     
     theWxFrame->Show(true);
     

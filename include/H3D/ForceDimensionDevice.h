@@ -39,6 +39,10 @@ namespace H3D {
   /// \brief A ForceDimensionDevice is a node for handling communication
   /// with a haptics device from ForceDimension, such as the Omega and
   /// Delta haptics devices.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ForceDimensionDevice.x3d">ForceDimensionDevice.x3d</a>
+  ///     ( <a href="examples/ForceDimensionDevice.x3d.html">Source</a> )
   class H3DAPI_API ForceDimensionDevice: public H3DHapticsDevice {
   public:
 

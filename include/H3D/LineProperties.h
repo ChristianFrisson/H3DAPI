@@ -66,6 +66,11 @@ namespace H3D {
   /// Changing the line types does NOT CHANGE THE HAPTIC RENDERING of lines.
   /// It only changes the visual appearance.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/LineProperties.x3d">LineProperties.x3d</a>
+  ///     ( <a href="examples/LineProperties.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile LineProperties.dot
   class H3DAPI_API LineProperties : public X3DAppearanceChildNode {
@@ -115,7 +120,7 @@ namespace H3D {
 
     /// The linetype field selects a line pattern to be used for lines. For 
     /// more information see the 
-    /// \ref Lineproperties_details "Detailed description" 
+    /// \ref LineProperties_details "Detailed description" 
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n

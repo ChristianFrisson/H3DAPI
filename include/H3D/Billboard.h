@@ -90,6 +90,11 @@ namespace H3D {
   /// that the bounding box is not specified and if needed shall be
   /// calculated by the browser. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Billboard.x3d">Billboard.x3d</a>
+  ///     ( <a href="examples/Billboard.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Billboard.dot
   class H3DAPI_API Billboard : public MatrixTransform {

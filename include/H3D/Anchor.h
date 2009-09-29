@@ -109,6 +109,10 @@ namespace H3D {
   /// the current world when the sphere is activated. In this case, if the
   /// Viewpoint is not found, no action occurs on activation.
   /// NOTE: This node is not fully tested and may crash now and then when used.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Anchor.x3d">Anchor.x3d</a>
+  ///     ( <a href="examples/Anchor.x3d.html">Source</a> )
   class H3DAPI_API Anchor : public X3DGroupingNode {
   public:
 

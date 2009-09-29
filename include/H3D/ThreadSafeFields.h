@@ -372,7 +372,7 @@ namespace H3D {
     }
 
     /// Returns the size of the vector.
-    inline virtual typename BaseField::size_type size() { 
+    inline virtual unsigned int size() { 
       if(  H3DUtil::HapticThread::inHapticThread() ) {
         return rt_value.size();
       } else {

@@ -124,6 +124,11 @@ namespace H3D {
   /// are not clamped. The minAngle and maxAngle fields are restricted to the
   /// range [-2pi, 2pi].
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/CylinderSensor.x3d">CylinderSensor.x3d</a>
+  ///     ( <a href="examples/CylinderSensor.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile CylinderSensor.dot
  

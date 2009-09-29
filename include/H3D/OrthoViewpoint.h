@@ -54,7 +54,10 @@ namespace H3D {
   /// relationship:
   ///
   /// (display width) / (display height) = (maximum_x - minimum_x) / (maximum_y - minimum_y)
-
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/OrthoViewpoint.x3d">OrthoViewpoint.x3d</a>
+  ///     ( <a href="examples/OrthoViewpoint.x3d.html">Source</a> )
   class H3DAPI_API OrthoViewpoint : public X3DViewpointNode {
   public:
     /// Constructor.

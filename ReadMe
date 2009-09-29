@@ -12,7 +12,8 @@ compile others are optional. The build system used by H3DAPI will detect which
 libraries are installed on the system and only enable the features that the
 system can support. For Windows most libraries are included. Those missing must
 be downloaded, compiled and installed on the system used if that feature is
-desired. The libraries used by H3DAPI are:
+desired. Note that all libraries that are required or optional in HAPI also
+are required and optional by H3DAPI. The libraries used by H3DAPI are:
  
  Required libraries. Without these H3DAPI will not function.
   - GLEW, extended OpenGL functions. http://glew.sourceforge.net/
@@ -38,6 +39,14 @@ desired. The libraries used by H3DAPI are:
     http://www.3dconnexion.com
   - Cg. Shading language for NVIDIA. http://developer.nvidia.com/object/cg_toolkit.html
   - libogg. Ogg vorbis  sound file support. http://xiph.org/downloads/
+  - zlib. Required for parsing zipped files. http://www.zlib.net/
+  - Teem. Required for reading the Nrrd file format. http://teem.sourceforge.net/
+  - DICOM toolkit. Required for reading dicom files. http://dicom.offis.de/dcmtk
+  - DirectShow. Required for the DirectShowDecoder which is used for MovieTextures on
+    Windows. Older versions are included with DirectX SDK. Newer versions are included
+    with the Windows SDK.
+  - FFmpeg. Required for the FFmpegDecoder class which is used for MovieTextures.
+    http://ffmpeg.org/
 
 -------------------------------------------------------------------------------
 
@@ -63,7 +72,10 @@ on Linux follow these steps.
    For linux the library fontconfig1 is also needed. www.fontconfig.org
 
    If using Ubuntu, several of these libraries can be obtained by using the
-   apt-get feature. In a terminal write:
+   apt-get feature. Note that for later versions of Ubuntu than
+   7.10 the required and/or optional libraries might be of newer versions that
+   those given here. The newer versions shold work with H3DAPI but it might not
+   be guaranteed. In a terminal write:
     sudo apt-get update
     sudo apt-get install gcc g++ libxerces27 libxerces27-dev ftgl-dev \
     libopenal0a libalut0 libalut-dev libopenal-dev libglew-dev libglut \

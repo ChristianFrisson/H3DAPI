@@ -71,6 +71,15 @@ namespace H3D {
     /// 
     virtual void traverseSG( TraverseInfo &ti ) {}
 
+    /// Used as input to intersection functions.
+    /// If the intersection function succeeds this struct will contain
+    /// the nodes that were intersected, the transform matrices from
+    /// local to global for each intersected node and a vector of
+    /// IntersectionInfo structs containing information about the 
+    /// intersection for each intersected node geometry. The meaning of
+    /// global coordinates in the comments regarding this struct refers to
+    /// the coordinate system of the input to the function for which this
+    /// struct contains collision information.
     struct H3DAPI_API NodeIntersectResult {
       // Constructor.
       NodeIntersectResult( void * _user_data = 0 ) :
@@ -83,7 +92,10 @@ namespace H3D {
       vector< Node * > theNodes;
 
       /// A vector of HAPI::IntersectionInfo that stores result of intersection
-      /// such as point and normal.
+      /// such as point and normal. The point and normal will be in local
+      /// coordinates of the intersected node. For convenience there is a
+      /// function called transformResults() which changes the point and normal
+      /// into global coordinates.
       vector< IntersectionInfo > result;
 
       /// Optional user_data in case someone want to do add some extra feature
@@ -151,6 +163,9 @@ namespace H3D {
 
     };
 
+    /// Used as input to lineIntersect functions.
+    /// It is basically like NodeIntersectResult with the additional feature of
+    /// handling X3DPointingDeviceNode features as per X3D specification.
     struct H3DAPI_API LineIntersectResult : public NodeIntersectResult {
       // Constructor.
       LineIntersectResult( bool _override_no_collision = false,

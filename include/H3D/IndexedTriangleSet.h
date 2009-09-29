@@ -67,6 +67,11 @@ namespace H3D {
   /// - If normalPerVertex is FALSE, the normal at each vertex shall be
   /// perpendicular to the face for that triangle. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/IndexedTriangleSet.x3d">IndexedTriangleSet.x3d</a>
+  ///     ( <a href="examples/IndexedTriangleSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile IndexedTriangleSet.dot
   class H3DAPI_API IndexedTriangleSet : public X3DComposedGeometryNode {

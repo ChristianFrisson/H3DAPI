@@ -134,7 +134,7 @@ ENDIF(wxWidgets_INCLUDE_DIR  AND wxWidgets_core_LIBRARY AND wxWidgets_base_LIBRA
 # Report the results.
 IF(NOT wxWidgets_FOUND)
   SET(wxWidgets_DIR_MESSAGE
-    "WxWidgets was not found. Make sure wxWidgets_core_LIBRARY, wxWidgets_base_LIBRARY")
+    "WxWidgets was not found. Make sure wxWidgets_core_LIBRARY, wxWidgets_base_LIBRARY, wxWidgets_html_LIBRARY, wxWidgets_richtext_LIBRARY")
   IF( WXWINDOWS_USE_GL )
     SET( wxWidgets_DIR_MESSAGE "${wxWidgets_DIR_MESSAGE}, wxWidgets_gl_LIBRARY, wxWidgets_adv_LIBRARY")
   ENDIF( WXWINDOWS_USE_GL )

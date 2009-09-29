@@ -41,6 +41,10 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile FakeHapticsDevice.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FakeHapticsDevice.x3d">FakeHapticsDevice.x3d</a>
+  ///     ( <a href="examples/FakeHapticsDevice.x3d.html">Source</a> )
   class H3DAPI_API FakeHapticsDevice: public H3DFakeHapticsDevice {
   public:
 

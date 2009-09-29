@@ -39,6 +39,10 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \class GraphicsCachingOptions
   /// \brief Specifies parameters to use for graphical rendering of nodes.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/GraphicsCachingOptions.x3d">GraphicsCachingOptions.x3d</a>
+  ///     ( <a href="examples/GraphicsCachingOptions.x3d.html">Source</a> )
   class H3DAPI_API GraphicsCachingOptions : public H3DOptionNode {
   public:
     

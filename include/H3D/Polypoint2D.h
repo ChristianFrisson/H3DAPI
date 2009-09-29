@@ -41,6 +41,11 @@ namespace H3D {
   /// 
   /// The points field specifies the vertices to be displayed.
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Polypoint2D.x3d">Polypoint2D.x3d</a>
+  ///     ( <a href="examples/Polypoint2D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Polypoint2D.dot
   

@@ -85,6 +85,12 @@ namespace H3D {
   /// regardless of the viewing direction and if it is TRUE back face culling
   /// is performed to only show the front face of the polygons.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Text.x3d">Text.x3d</a>
+  ///     ( <a href="examples/Text.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/Text1.x3d">Text1.x3d</a>
+  ///     ( <a href="examples/Text1.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Text.dot
   class H3DAPI_API Text : public X3DGeometryNode {

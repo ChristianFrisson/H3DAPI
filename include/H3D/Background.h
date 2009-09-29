@@ -68,7 +68,13 @@ namespace H3D {
   /// mountains or other distant scenery. 
   /// 
   /// The other fields work just as in X3DBackgroundNode.
-  /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Background.x3d">Background.x3d</a>
+  ///     ( <a href="examples/Background.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/Background1.x3d">Background1.x3d</a>
+  ///     ( <a href="examples/Background1.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Background.dot
   class H3DAPI_API Background : 

@@ -115,6 +115,8 @@ void ThreadExample::render() {
 }
 
 void ThreadExample::mySimulation() {
+  // Updates the properties of the simulation. That is, simply
+  // move the points a bit.
   vector< Vec3f > tempPoints = rt_points;
   lock.lock();
   swap( tempPoints, l_points );
@@ -149,7 +151,9 @@ void ThreadExample::mySimulation() {
   }
 }
 
-PeriodicThread::CallbackCode ThreadExample::simulate( void *_data ) {  
+PeriodicThread::CallbackCode ThreadExample::simulate( void *_data ) {
+  // The callback function simply calls mySimulation of the ThreadExample class
+  // contained in the data.
   ThreadExample * myThreadExample = static_cast< ThreadExample * >(_data);
   if( myThreadExample ) {
     myThreadExample->mySimulation();

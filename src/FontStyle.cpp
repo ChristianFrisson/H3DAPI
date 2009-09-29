@@ -34,6 +34,7 @@
 #endif
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
+#include <FTGL/FTGL.h>
 #include <FTGL/FTGLTextureFont.h>
 #include <FTGL/FTGLPolygonFont.h>
 #include <FTGL/FTGLOutlineFont.h>
@@ -580,6 +581,58 @@ X3DFontStyleNode::Justification FontStyle::getMinorJustification() {
          << ". Valid values are \"BEGIN\", \"FIRST\", \"MIDDLE\" and \"END\"";
     throw InvalidFontStyleJustify( s, serr.str(), H3D_FULL_LOCATION ); 
   }
+}
+
+void FontStyle::renderChar( unsigned char c ) {
+  char t[2];  t[0]=c; t[1]='\0';
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  H3DFloat s = size->getValue();
+  H3DFloat default_size = font->Ascender() - font->Descender();
+  H3DFloat scale_factor = s / default_size;
+  glScalef( scale_factor, scale_factor, scale_factor );
+  
+  if( renderType->getValue() == "TEXTURE" ) {
+    glEnable( GL_TEXTURE_2D);
+    glEnable( GL_ALPHA_TEST );
+    glAlphaFunc (GL_GREATER, 0);
+  }
+  
+  glNormal3f( 0, 0, 1 );
+  font->Render( t );
+  
+  if( renderType->getValue() == "TEXTURE" ) {
+    glDisable( GL_ALPHA_TEST );
+    glDisable( GL_TEXTURE_2D);
+  }
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
+}
+
+H3DFloat FontStyle::ascender() {
+  H3DFloat default_size = font->Ascender() - font->Descender();
+  H3DFloat scale_factor = size->getValue() / default_size;
+  return font->Ascender() * scale_factor;
+}
+
+H3DFloat FontStyle::descender() {
+  H3DFloat default_size = font->Ascender() - font->Descender();
+  H3DFloat scale_factor = size->getValue() / default_size;
+  return font->Descender() * scale_factor;
+}
+
+Vec3f FontStyle::charDimensions( unsigned char c ) {
+      
+  H3DFloat default_size = font->Ascender() - font->Descender();
+  H3DFloat scale_factor = size->getValue() / default_size;
+  char t[2];  t[0]=c; t[1]='\0';
+  float llx, lly, llz, urx, ury, urz;
+  font->BBox( t, llx, lly, llz, urx, ury, urz );
+  
+  return Vec3f(font->Advance(t),
+	       font->Ascender()-font->Descender(),
+	       llz-urz) * scale_factor;
+
 }
 
 #endif

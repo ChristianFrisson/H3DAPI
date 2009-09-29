@@ -39,8 +39,12 @@
 namespace H3D {
   /// \ingroup H3DNodes
   /// \class NrrdImageLoader
-  /// NrrdImageLoader
+  /// NrrdImageLoader is a class which takes care of loading the nrrd image
+  /// format. See <a href="http://teem.sourceforge.net/nrrd/">Nrrd Homepage</a>
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImageLoaders.x3d">ImageLoaders.x3d</a>
+  ///     ( <a href="examples/ImageLoaders.x3d.html">Source</a> )
   class H3DAPI_API NrrdImageLoader : public H3DImageLoaderNode {
   public:
     /// Constructor.

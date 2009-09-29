@@ -46,6 +46,10 @@ namespace H3D {
   ///
   /// 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SpaceballSensor.x3d">SpaceballSensor.x3d</a>
+  ///     ( <a href="examples/SpaceballSensor.x3d.html">Source</a> )
   class H3DAPI_API SpaceballSensor : public X3DSensorNode {
   public:
 

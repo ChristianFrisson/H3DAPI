@@ -57,6 +57,7 @@ namespace H3D {
 
     virtual ~X3DUrlObject() {}
 
+    /// The load status of the given url.
     typedef enum {
       /// The url has not been tried to load yet.
       INIT,

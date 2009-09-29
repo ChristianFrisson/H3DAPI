@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticTexturesSurface.cpp
+/// \file H3DAPI/src/HapticTexturesSurface.cpp
 /// \brief cpp file for HapticTexturesSurface
 ///
 //

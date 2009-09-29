@@ -37,7 +37,8 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \class HaptikDevice
   /// \brief The HaptikDevice uses the Haptik library
-  /// (www.haptiklibrary.org) to access haptics devices.
+  /// (www.haptiklibrary.org) to access haptics devices. NOTE that this class
+  /// is extremely untested.
   /// 
   /// The deviceName, modelName and manufacturer fields contain a string
   /// for each device available through the Haptik library interface, 
@@ -67,6 +68,11 @@ namespace H3D {
   /// - "FREEDOM6S" - Freedom6S device.
   /// - "CUBIC" - Cubic device.
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/HaptikDevice.x3d">HaptikDevice.x3d</a>
+  ///     ( <a href="examples/HaptikDevice.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile HaptikDevice.dot
   class H3DAPI_API HaptikDevice: public H3DHapticsDevice {

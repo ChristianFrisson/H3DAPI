@@ -54,6 +54,10 @@ namespace H3D {
   /// backDiffuseColor, backEmissiveColor, backShininess, and backTransparency
   /// as the appropriate components in the lighting equations.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TwoSidedMaterial.x3d">TwoSidedMaterial.x3d</a>
+  ///     ( <a href="examples/TwoSidedMaterial.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TwoSidedMaterial.dot
   class H3DAPI_API TwoSidedMaterial : public X3DMaterialNode {

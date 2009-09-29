@@ -51,6 +51,10 @@ namespace H3D {
   /// The force generated will be 
   /// force = (position - device_position) * springConstant
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SpringEffect.x3d">SpringEffect.x3d</a>
+  ///     ( <a href="examples/SpringEffect.x3d.html">Source</a> )
   class H3DAPI_API SpringEffect: public H3DForceEffect {
   public:
     /// Constructor

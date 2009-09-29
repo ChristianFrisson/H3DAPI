@@ -45,6 +45,10 @@ namespace H3D {
   /// as author information, copyright, and usage instructions. This is
   /// the base node type for all nodes that contain only 
   /// information without visual semantics.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/WorldInfo.x3d">WorldInfo.x3d</a>
+  ///     ( <a href="examples/WorldInfo.x3d.html">Source</a> )
   class H3DAPI_API WorldInfo : public X3DInfoNode {
   public:
     /// Constructor.

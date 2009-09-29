@@ -44,6 +44,10 @@ namespace H3D {
   /// that the user will feel. Non-gray-scale images will use the red channel
   /// to modify depth.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Surfaces.x3d">Surfaces.x3d</a>
+  ///     ( <a href="examples/Surfaces.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile DepthMapSurface.dot
   class H3DAPI_API DepthMapSurface: public H3DFrictionalSurfaceNode {

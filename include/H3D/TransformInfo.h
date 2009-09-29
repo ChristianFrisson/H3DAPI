@@ -45,6 +45,10 @@ namespace H3D {
   /// The accInverseMatrix field is the matrix that transforms from the 
   /// global coordinate space to the coordinate space this Node resides
   /// in in the scenegraph.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TransformInfo.x3d">TransformInfo.x3d</a>
+  ///     ( <a href="examples/TransformInfo.x3d.html">Source</a> )
   class H3DAPI_API TransformInfo : 
     public X3DChildNode {
   public:

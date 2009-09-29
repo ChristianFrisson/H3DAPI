@@ -34,6 +34,9 @@
 
 namespace H3D {
 
+  /// This class is just a simple example of how to set up a thread that
+  /// can take care of some calculations and then transfer this to the graphics
+  /// loop.
   class ThreadExample : public X3DGeometryNode {
   public:
 
@@ -72,6 +75,7 @@ namespace H3D {
     static PeriodicThread::CallbackCode simulate(void *data);
     MutexLock lock;
 
+    /// Function which takes care of one simulation step.
     void mySimulation();
     
     // The variables without a prefix belongs to the

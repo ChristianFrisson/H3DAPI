@@ -57,7 +57,13 @@ namespace H3D {
   /// where r is the distance from the light to the surface being
   /// illuminated. The default is no attenuation. An attenuation value of
   /// (0, 0, 0) is identical to (1, 0, 0). Attenuation values shall be
-  /// greater than or equal to zero. 
+  /// greater than or equal to zero.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PointLight.x3d">PointLight.x3d</a>
+  ///     ( <a href="examples/PointLight.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/PointLight1.x3d">PointLight1.x3d</a>
+  ///     ( <a href="examples/PointLight1.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile PointLight.dot

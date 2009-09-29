@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file HapticTexturesSurface.h
+/// \file H3D/HapticTexturesSurface.h
 /// \brief Header file for HapticTexturesSurface
 ///
 //
@@ -44,6 +44,10 @@ namespace H3D {
   /// integers from 0 to 255. Black (0) corresponds
   /// to the lowest allowed value and White(255) corresponds to the highest
   /// allowed value.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Surfaces.x3d">Surfaces.x3d</a>
+  ///     ( <a href="examples/Surfaces.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile HapticTexturesSurface.dot

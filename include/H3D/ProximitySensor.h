@@ -111,6 +111,11 @@ namespace H3D {
   /// orientation_changed and exitTime events if the sensor is enabled and the
   /// viewer is inside the proximity region.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ProximitySensor.x3d">ProximitySensor.x3d</a>
+  ///     ( <a href="examples/ProximitySensor.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ProximitySensor.dot
 

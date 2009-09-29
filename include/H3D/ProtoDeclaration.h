@@ -40,6 +40,12 @@ namespace H3D {
   /// the X3D standard. It contains everything that is needed to now about the prototype
   /// and allows you to create new instances of the prototype with the newProtoInstance 
   /// function.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Prototype.x3d">Prototype.x3d</a>
+  ///     ( <a href="examples/Prototype.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/Surfaces.x3d">Surfaces.x3d</a>
+  ///     ( <a href="examples/Surfaces.x3d.html">Source</a> )
   class H3DAPI_API ProtoDeclaration {
   public:
     /// Class that contains information about a field that is part of the prototype

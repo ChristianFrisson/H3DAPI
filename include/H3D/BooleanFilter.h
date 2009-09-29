@@ -44,6 +44,11 @@ namespace H3D {
   /// boolean value received; and inputNegate, which contains the negation
   /// of the value received.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/BooleanFilter.x3d">BooleanFilter.x3d</a>
+  ///     ( <a href="examples/BooleanFilter.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile BooleanFilter.dot
   class H3DAPI_API BooleanFilter : public X3DChildNode {

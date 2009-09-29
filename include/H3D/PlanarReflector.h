@@ -41,6 +41,12 @@
 namespace H3D {
   /// \ingroup AbstractNodes
   /// \class PlanarReflector
+  /// \brief The PlanarReflector defines a geometry which will act as a mirror
+  /// in the scene.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PlanarReflector.x3d">PlanarReflector.x3d</a>
+  ///     ( <a href="examples/PlanarReflector.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile PlanarReflector.dot

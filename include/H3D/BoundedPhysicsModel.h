@@ -52,6 +52,10 @@ namespace H3D {
   ///
   /// EXAMPLE  A particle can be made to bounce off an elevation grid
   /// representing terrain.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/BoundedPhysicsModel.x3d">BoundedPhysicsModel.x3d</a>
+  ///     ( <a href="examples/BoundedPhysicsModel.x3d.html">Source</a> )
   class H3DAPI_API BoundedPhysicsModel : public X3DParticlePhysicsModelNode {
   public:
     typedef TypedSFNode< X3DGeometryNode > SFGeometryNode;

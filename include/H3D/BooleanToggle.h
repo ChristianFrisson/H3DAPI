@@ -38,18 +38,22 @@ namespace H3D {
   /// \class BooleanToggle
   /// \brief BooleanToggle stores a boolean value for toggling on/off.
   /// When a set_boolean TRUE event is received, the BooleanToggle negates 
-	/// the value of the toggle field and generates the corresponding toggle
-	/// field output event. set_boolean FALSE events are ignored.
-	/// The BooleanToggle can be reset to a specific state by directly setting
-	/// the value of the inputOutput toggle field.
+  /// the value of the toggle field and generates the corresponding toggle
+  /// field output event. set_boolean FALSE events are ignored.
+  /// The BooleanToggle can be reset to a specific state by directly setting
+  /// the value of the inputOutput toggle field.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/BooleanToggle.x3d">BooleanToggle.x3d</a>
+  ///     ( <a href="examples/BooleanToggle.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile BooleanToggle.dot
-	class H3DAPI_API BooleanToggle : public X3DChildNode {
+  class H3DAPI_API BooleanToggle : public X3DChildNode {
   public:
 
     /// The SetBoolean class is specialize to negate the value of the
-		/// toggle field if a true event is given.
+    /// toggle field if a true event is given.
     class H3DAPI_API SetBoolean: public AutoUpdate< SFBool > {
     public:
       // Negates the toggle field if true.
@@ -58,7 +62,7 @@ namespace H3D {
         BooleanToggle *bf = 
           static_cast< BooleanToggle * >( getOwner() );
         if( value )
-					bf->toggle->setValue( !( bf->toggle->getValue() ) );
+          bf->toggle->setValue( !( bf->toggle->getValue() ) );
       }
     protected:
       // Negates the vaule of the toggle field if true.
@@ -67,7 +71,7 @@ namespace H3D {
         BooleanToggle *bf = 
           static_cast< BooleanToggle * >( getOwner() );
         if( value )
-					bf->toggle->setValue( !( bf->toggle->getValue() ) );
+          bf->toggle->setValue( !( bf->toggle->getValue() ) );
       }
     };
 #ifdef __BORLANDC__
@@ -89,7 +93,7 @@ namespace H3D {
     /// The boolean field to toggle.
     /// 
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> FALSE \n
+    /// <b>Default value:</b> FALSE \n
     /// 
     /// \dotfile BooleanToggle_toggle.dot
     auto_ptr< SFBool > toggle;

@@ -82,6 +82,12 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile TextureCoordinateGenerator.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TextureCoordinateGenerator.x3d">TextureCoordinateGenerator.x3d</a>
+  ///     ( <a href="examples/TextureCoordinateGenerator.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/TextureCoordinateGenerator1.x3d">TextureCoordinateGenerator1.x3d</a>
+  ///     ( <a href="examples/TextureCoordinateGenerator1.x3d.html">Source</a> )
   class H3DAPI_API TextureCoordinateGenerator : 
     public X3DTextureCoordinateNode {
   public:

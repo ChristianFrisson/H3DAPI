@@ -48,9 +48,12 @@ namespace H3D {
   /// ImageLoader, if none of those succeed the next ImageLoader
   /// will be tried on all the urls and so on.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImageTexture3D.x3d">ImageTexture3D.x3d</a>
+  ///     ( <a href="examples/ImageTexture3D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Image3DTexture.dot
-
   class H3DAPI_API Image3DTexture : 
     public X3DTexture3DNode,
     public X3DUrlObject {

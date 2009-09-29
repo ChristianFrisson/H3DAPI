@@ -47,6 +47,11 @@ namespace H3D {
   /// If a function is not specified for a component the function will be
   /// F(x) = x for that component.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TransferFunctionTexture.x3d">TransferFunctionTexture.x3d</a>
+  ///     ( <a href="examples/TransferFunctionTexture.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TransferFunctionTexture.dot
   class H3DAPI_API TransferFunctionTexture : public X3DTexture2DNode {

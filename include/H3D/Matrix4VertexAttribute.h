@@ -36,10 +36,14 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class Matrix4VertexAttribute
-  /// Defines a set of per-vertex 4×4 matrix attributes.
+  /// Defines a set of per-vertex 4*4 matrix attributes.
   ///
   /// The value field specifies an arbitrary collection of matrix values
   /// that will be passed to the shader as per-vertex information.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/VertexAttributes.x3d">VertexAttributes.x3d</a>
+  ///     ( <a href="examples/VertexAttributes.x3d.html">Source</a> )
   class H3DAPI_API Matrix4VertexAttribute: public X3DVertexAttributeNode {
   public:
     /// Constructor.

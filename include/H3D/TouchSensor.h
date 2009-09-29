@@ -50,6 +50,14 @@ namespace H3D {
   /// texture coordinates of that surface at the hitPoint. The values of
   /// hitTexCoord_changed and hitNormal_changed events are computed as
   /// appropriate for the associated shape.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TouchSensor.x3d">TouchSensor.x3d</a>
+  ///     ( <a href="examples/TouchSensor.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/TouchSensor1.x3d">TouchSensor1.x3d</a>
+  ///     ( <a href="examples/TouchSensor1.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/TouchSensor2.x3d">TouchSensor2.x3d</a>
+  ///     ( <a href="examples/TouchSensor2.x3d.html">Source</a> )
   class H3DAPI_API TouchSensor : 
     public X3DTouchSensorNode {
   public:

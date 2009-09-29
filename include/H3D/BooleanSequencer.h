@@ -42,6 +42,11 @@ namespace H3D {
   /// X3DBindableNodes via set_bind events.
   /// A BooleanSequencer shall be instanced for every node enabled or bound.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/BooleanSequencer.x3d">BooleanSequencer.x3d</a>
+  ///     ( <a href="examples/BooleanSequencer.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile BooleanSequencer.dot 
   class H3DAPI_API BooleanSequencer : public X3DSequencerNode {

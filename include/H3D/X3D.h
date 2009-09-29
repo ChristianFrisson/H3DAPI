@@ -89,7 +89,7 @@ namespace H3D {
     
     
     /// Create H3D nodes given X3D data as a URL.
-    /// \param str The input URL to read X3D data from.
+    /// \param urn The input URL to read X3D data from.
     /// \param dn A DEFNodes structure to store the DEF nodes found
     /// in the URL.
     /// \param exported_nodes A DEFNodes structure to store the nodes
@@ -143,7 +143,7 @@ namespace H3D {
     
 
     /// Create a H3D Node given X3D data as a URL.
-    /// \param str The input URL to read X3D data from.
+    /// \param urn The input URL to read X3D data from.
     /// \param dn A DEFNodes structure to store the DEF nodes found
     /// in the URL.
     /// \param exported_nodes A DEFNodes structure to store the nodes
@@ -171,7 +171,7 @@ namespace H3D {
     /// to the given ostream.
     H3DAPI_API void writeNodeAsX3D( ostream& os, 
                                     Node *node,
-				    const string &container_field = "" );
+                                    const string &container_field = "" );
 
     /// Write the triangles rendered by the geometry node as STL to
     /// the given ostream. The name parameter specifies the name to
@@ -182,10 +182,10 @@ namespace H3D {
 
     /// Help function for writeNodeAsX3D.
     H3DAPI_API void writeNodeAsX3DHelp( ostream& os, 
-					Node *node,
-					const string& container_field,
-					const string & prefix,
-					std::set< Node * > &visited_nodes );
+                                        Node *node,
+                                        const string& container_field,
+                                        const string & prefix,
+                                        std::set< Node * > &visited_nodes );
 
   }
 };

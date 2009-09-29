@@ -41,6 +41,10 @@ namespace H3D {
   /// \brief Specifies parameters to use for when rendering an object
   /// with OpenHaptics.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/OpenHapticsOptions.x3d">OpenHapticsOptions.x3d</a>
+  ///     ( <a href="examples/OpenHapticsOptions.x3d.html">Source</a> )
   class H3DAPI_API OpenHapticsOptions : public H3DOptionNode {
   public:
     

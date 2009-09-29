@@ -68,7 +68,11 @@ namespace H3D {
   /// values result in sharper, smaller highlights.  
   ///
   /// - The transparency field specifies how "clear" an object is, with 1.0
-  /// being completely transparent, and 0.0 completely opaque. 
+  /// being completely transparent, and 0.0 completely opaque.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Material.x3d">Material.x3d</a>
+  ///     ( <a href="examples/Material.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile Material.dot

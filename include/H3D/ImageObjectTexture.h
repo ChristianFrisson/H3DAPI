@@ -39,6 +39,12 @@ namespace H3D {
   ///
   /// The imageObject field contains the H3DImageObject, which image
   /// data will be used as texture.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImageObjectTexture.x3d">ImageObjectTexture.x3d</a>
+  ///     ( <a href="examples/ImageObjectTexture.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/ImageObjectTexture1.x3d">ImageObjectTexture1.x3d</a>
+  ///     ( <a href="examples/ImageObjectTexture1.x3d.html">Source</a> )
   class H3DAPI_API ImageObjectTexture : public X3DTexture3DNode {
   public:
     

@@ -90,12 +90,14 @@ namespace H3D {
   /// the pointing device, while isActive is TRUE, generates trackPoint_changed
   /// and translation_changed events.
   ///
-  // NOTE: If the scenegraph is changed while isActive is true for a 
-  // planeSensor the planeSensor might not be working correctly anymore.
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PlaneSensor.x3d">PlaneSensor.x3d</a>
+  ///     ( <a href="examples/PlaneSensor.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile PlaneSensor.dot
-  
+  // NOTE: If the scenegraph is changed while isActive is true for a 
+  // planeSensor the planeSensor might not be working correctly anymore.
   class H3DAPI_API PlaneSensor : 
     public X3DDragSensorNode {
   public:

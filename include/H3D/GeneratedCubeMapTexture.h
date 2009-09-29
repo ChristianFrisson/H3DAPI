@@ -65,6 +65,11 @@ namespace H3D {
   /// rendering has taken place already. Since this is a field change value,
   /// it will automatically generate an output event that may be routed.
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/GeneratedCubeMapTexture.x3d">GeneratedCubeMapTexture.x3d</a>
+  ///     ( <a href="examples/GeneratedCubeMapTexture.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile GeneratedCubeMapTexture.dot
   class H3DAPI_API GeneratedCubeMapTexture : 

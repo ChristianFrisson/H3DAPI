@@ -39,6 +39,10 @@ namespace H3D {
   /// \class GeometryBoundTreeOptions
   /// \brief Specifies parameters to use for the tree of bounding primitives
   /// that are built for each X3DGeometryNode for collision detection purposes.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/GeometryBoundTreeOptions.x3d">GeometryBoundTreeOptions.x3d</a>
+  ///     ( <a href="examples/GeometryBoundTreeOptions.x3d.html">Source</a> )
   class H3DAPI_API GeometryBoundTreeOptions : public H3DOptionNode {
   public:
     

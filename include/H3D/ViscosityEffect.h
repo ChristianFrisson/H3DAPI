@@ -39,6 +39,10 @@ namespace H3D {
   /// \ingroup H3DNodes 
   /// \class ViscosityEffect
   /// ViscosityEffect is a localized haptic effect
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ViscosityEffect.x3d">ViscosityEffect.x3d</a>
+  ///     ( <a href="examples/ViscosityEffect.x3d.html">Source</a> )
   class H3DAPI_API ViscosityEffect: public H3DForceEffect {
   public:
     /// Constructor

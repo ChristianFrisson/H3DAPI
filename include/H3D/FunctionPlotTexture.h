@@ -38,6 +38,11 @@ namespace H3D {
   /// \class FunctionPlotTexture
   /// \brief Texture showing a plot of a function.
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FunctionPlotTexture.x3d">FunctionPlotTexture.x3d</a>
+  ///     ( <a href="examples/FunctionPlotTexture.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile FunctionPlotTexture.dot
   class H3DAPI_API FunctionPlotTexture : 

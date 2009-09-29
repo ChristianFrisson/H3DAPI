@@ -54,6 +54,10 @@ namespace H3D {
   /// of blending is a linear function of the distance, resulting in a depth
   /// cueing effect. If fogType is "EXPONENTIAL", an exponential increase in
   /// blending is used, resulting in a more natural fog appearance.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/LocalFog.x3d">LocalFog.x3d</a>
+  ///     ( <a href="examples/LocalFog.x3d.html">Source</a> )
   class H3DAPI_API LocalFog : 
     public X3DChildNode,
     public X3DFogObject,

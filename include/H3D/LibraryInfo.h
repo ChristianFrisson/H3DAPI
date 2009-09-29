@@ -25,6 +25,8 @@
 /// \brief Contains the LibraryInfo class.
 //
 //////////////////////////////////////////////////////////////////////////////
+#ifndef __H3D_LIBRARY_INFO_H__
+#define __H3D_LIBRARY_INFO_H__
 
 #include <H3D/H3DApi.h>
 
@@ -64,3 +66,5 @@ namespace H3D {
 
 
 }
+
+#endif

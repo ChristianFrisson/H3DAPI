@@ -51,6 +51,11 @@ namespace H3D {
   /// RGB or RGBA texture and a Color node for geometric shape will result
   /// in the Color node being ignored. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ColorRGBA.x3d">ColorRGBA.x3d</a>
+  ///     ( <a href="examples/ColorRGBA.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ColorRGBA.dot
   class H3DAPI_API ColorRGBA : public X3DColorNode {

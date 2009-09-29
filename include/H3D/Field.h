@@ -194,7 +194,7 @@ namespace H3D {
     typedef vector< Field * > FieldSet;
     typedef vector< Field * > FieldVector;
 
-    /// Returns true of this field is routed to the field given
+    /// Returns true if this field is routed to the field given
     /// as argument.
     inline bool routesTo( Field *f ) {
       for( FieldSet::const_iterator i = routes_out.begin();
@@ -204,7 +204,7 @@ namespace H3D {
       return false;
     }
 
-    /// Returns true of the field given as argumet is routed to
+    /// Returns true if the field given as argument is routed to
     /// this field.
     inline bool hasRouteFrom( Field *f ) {
       for( FieldVector::const_iterator i = routes_in.begin();

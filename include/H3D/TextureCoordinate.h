@@ -44,6 +44,10 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile TextureCoordinate.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TextureCoordinate.x3d">TextureCoordinate.x3d</a>
+  ///     ( <a href="examples/TextureCoordinate.x3d.html">Source</a> )
   class H3DAPI_API TextureCoordinate : public X3DTextureCoordinateNode {
   public:
     /// Constructor.

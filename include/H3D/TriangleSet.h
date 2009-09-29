@@ -56,6 +56,11 @@ namespace H3D {
   /// If the normal field is not supplied, the normal shall be generated
   /// as perpendicular to the face for either version of normalPerVertex. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TriangleSet.x3d">TriangleSet.x3d</a>
+  ///     ( <a href="examples/TriangleSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile TriangleSet.dot
   class H3DAPI_API TriangleSet : public X3DComposedGeometryNode {

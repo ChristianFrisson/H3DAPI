@@ -54,6 +54,11 @@ namespace H3D {
   /// the device and the clipGraphics field specifies if the graphics should
   /// be clipped when the ClipPlane is enabled.
   /// 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ClipPlane.x3d">ClipPlane.x3d</a>
+  ///     ( <a href="examples/ClipPlane.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ClipPlane.dot
   class H3DAPI_API ClipPlane : 

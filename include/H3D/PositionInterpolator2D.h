@@ -43,6 +43,11 @@ namespace H3D {
   /// The keyValue field shall contain exactly as many values as in the key
   /// field. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PositionInterpolator2D.x3d">PositionInterpolator2D.x3d</a>
+  ///     ( <a href="examples/PositionInterpolator2D.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile PositionInterpolator2D.dot
   class H3DAPI_API PositionInterpolator2D : public X3DInterpolatorNode {

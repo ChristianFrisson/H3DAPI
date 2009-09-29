@@ -29,8 +29,11 @@
 #ifndef __PYTHONTYPES_H__
 #define __PYTHONTYPES_H__
 
+// If the following comment is read through the generated documentation then
+// ignore this comment section.
 // The following is doxygen comment in order to generate a page explaining the
-// connection between python and H3DAPI.
+// connection between python and H3DAPI. The % sign is a doxygen feature and
+// can be ignored when reading the documentation directly in this header file.
 /// \page PythonSyntax How to use H3DAPI from python.
 /// \section TheBasics The Basics
 /// The PythonScript node is a binding to the Python scripting language, which
@@ -41,14 +44,14 @@
 /// <pre>print "Hello"</pre>
 /// You can get this code to execute by adding a PythonScript node to your
 /// scenegraph. This can be done by specifying it directly in an x3d file, e.g.
-/// <pre><Scene><br><PythonScript url="Hello.py" /><br></Scene></pre>
+/// <pre>\<Scene\><br>&nbsp;&nbsp;\<PythonScript url="Hello.py" /\><br>\</Scene\></pre>
 /// If you use H3DLoad on the x3d file the Python code should execute and 
 /// "Hello" should be printed to the command prompt.
 ///
-/// H3D API also adds its own types and field types and classes to be used from
+/// %H3D API also adds its own types and field types and classes to be used from
 /// python. All these are defined in the H3DInterface module. In order to get
 /// access to these types and classes you have to import the Python module
-/// named H3DInterface. This contains all H3D specific Python bindings. It can
+/// named H3DInterface. This contains all %H3D specific Python bindings. It can
 /// be imported by writing 
 /// <pre>from H3DInterface import *</pre>
 /// in your Python file.
@@ -85,9 +88,15 @@
 ///   - getActiveNavigationInfo() 
 ///   - getActiveStereoInfo() 
 ///   - getActiveBackground() 
+///   - getActiveFog() 
+///   - getActiveGlobalSettings() 
+///   - getActiveBindableNode( bindable ) - The string argument <em>bindable</em>
+///     specifies the type of bindable node to return.
 /// - Scene instance access 
 ///   - getCurrentScenes() - returns a list of all currently instantiated
 ///     Scene instances.
+/// - Resource resolver - access to the %H3D API ResourceResolver
+///   - resolverURLAsFile( file )
 ///
 /// Types 
 /// - X3D field types - The field types included are: 
@@ -107,11 +116,11 @@
 /// - SField specific functions - the member functions for all SFields(i.e.
 ///   SFFloat, SFDouble, etc) are 
 ///   - setValue(value) - set the field to the new value 
-///   - getValue() - returns the current value of the field
+///   - %getValue() - returns the current value of the field
 /// - MField specific functions - the member functions for all MFields
 ///   (i.e. MFFloat, MFDouble, etc) are 
 ///   - setValue(list) - set the field to the new value 
-///   - getValue() - get the value of the field as a list 
+///   - %getValue() - get the value of the field as a list 
 ///   - push_back( element ) - add a new element to the end of the list of
 ///     values
 ///   - pop_back() - removes the last element 
@@ -124,6 +133,8 @@
 ///   to it 
 /// - AutoUpdate - used if you want to add AutoUpdate capabilities to a field,
 ///   i.e. make it update its value as soon as it receives an event
+/// - PeriodicUpdate - used if you want to add PeriodicUpdate capabilities to
+///   a field, i.e. make it update its value once per scene-graph loop.
 ///
 /// - X3D Types - The types included are:
 ///   - Matrix3d, Matrix3f, Matrix4d, Matrix4f, Node, Quaternion,
@@ -139,7 +150,7 @@
 ///     With scaling in x,y,z-dimensions.
 ///   - transpose()
 /// - Matrix3f/d methods.
-///   - toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
+///   - %toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
 ///     a Vec3f/d.
 /// - Matrix4f/d methods.
 ///   - transformInverse() - returns the inverse of the matrix assuming that
@@ -158,7 +169,7 @@
 ///   - getName()
 ///   - getTypeName()
 /// - Quaternion methods.
-///   - toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
+///   - %toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
 ///     a Vec3f/d.
 ///   - norm() - returns the quaternion norm.
 ///   - normalize()
@@ -182,7 +193,7 @@
 ///   - b
 ///   - a
 /// - Rotation methods.
-///   - toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
+///   - %toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
 ///     a Vec3f/d.
 ///   - slerp( rot, t ) - spherical linear interpolation between two
 ///     rotations. t is a value between 0 and 1

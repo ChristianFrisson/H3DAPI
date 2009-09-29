@@ -84,6 +84,11 @@ namespace H3D {
   /// (0, 0, 0) is identical to (1, 0, 0). Attenuation values shall be
   /// greater than or equal to zero. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SpotLight.x3d">SpotLight.x3d</a>
+  ///     ( <a href="examples/SpotLight.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile SpotLight.dot
   class H3DAPI_API SpotLight : public X3DLightNode {
@@ -106,7 +111,7 @@ namespace H3D {
     /// Turn on the light and set up spotlight parameters for the light.
     virtual void enableGraphicsState();
 
-    /// The attenuation field defines how the PointLight node's 
+    /// The attenuation field defines how the SpotLight node's 
     /// illumination falls off with distance from the light.
     /// The attenuation factor is: 
     ///

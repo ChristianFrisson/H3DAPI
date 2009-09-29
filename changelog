@@ -1,3 +1,89 @@
+Changes for version 2.1:
+
+- ThreadExample now compiles into separate DLL that can be run time loaded.
+- Falcon support on linux.
+- RefCountMField now have erase and insert functions.
+- New functionality for TextureProperties.
+- Video textures works on linux, thanks to PolyDimensions.
+- Updates to compile on 64 bit systems.
+- Updates to Cmake system. Now files belonging to the various projects are
+listed explicitly.
+- Split the option PREFER_STATIC_LIBRARIES of our CMake build system into 
+PREFER_STATIC_LIBRARIES and FREEGLUT_PREFER_STATIC_LIBRARIES on windows
+systems.
+- Proxy sphere size changes for default styluses and RuspiniRenderer in
+H3DViewer.
+- Various memory leak fixes.
+- Fixes for python H3D connection.
+- getTranslationPart of Matrix4f/d and function writeNodeAsX3D can now be
+used in python.
+- Fixes to ProtoInterface.
+- Fixes to compile on recent versions of gcc.
+- Documentation updates.
+- Updates to navigation system (added zooming with scroll wheel) and Viewpoints.
+- Correct X3D functionality for addChildren and removeChildren of Grouping nodes
+now implemented.
+- Anchor is now implemented. There can be issues with scenes containing python
+scripts though.
+- Fixed a number of bugs reported on www.h3d.org.
+- Added capability for handling moving haptic objects by collecting and sending
+information about movement to HAPI.
+- New stereo modes: CHECKER_INTERLACED and HORIZONTAL_SPLIT_KEEP_RATIO.
+- H3DViewer now has an option of showing the Scene Graph and changing values of
+fields in real time.
+- New function getStackMap in X3DBindableNode.
+- Minor fix to default haptic rate. See comment about available rates in
+H3DHapticsDevice.h.
+- H3DViewer now uses the same keyboard shortcuts as H3DLoad to change
+navigation type. Switching between stereo modes at run-time now works properly.
+- H3DViewer no longer hangs when printing to the Console from multiple threads
+at the same time
+- Drag and drop files now works with H3DViewer.
+- Plugins can be loaded in H3DViewer.
+- Updates to DeviceLog, which can now be used again (it was broken in previous
+releases of H3DAPI 2.x series).
+- Updates to the node database system.
+- MagneticGeometryeffect can now handle lines and points.
+- In C++ it is now possible to specify valid values for SFString.
+- Text node now use default FontStyle if none is set as per X3D specification.
+- Corrections to DeviceInfo calls of toStackTop. All X3DBindableNodes now
+behave as they should.
+- Added writeGeometryAsSTL function (X3D.h).
+- Implemented view frustum culling. Behaviour can be set in
+GraphicsCachingOption.
+- Calls to glFrustum of X3DViewpoint moved to virtual function in order for
+users to create more specialized viewpoint nodes.
+- Updates to automatic normal calculations of IndexedFaceSet.
+- Fixes to remove warnings and error on Window 64 bit compilations
+- Added LibraryInfo struct that stores information about a library built for
+H3DAPI.
+- Fixes to URNResolver and it is now turned on by default if an index.urn file
+can be found.
+- Added simple x3d/python examples showing some features of every node in
+H3DAPI.
+
+New H3D nodes:
+CoordinateDouble
+DicomImageLoader
+EaseInEaseOut
+FFmpedDecoder
+HapticTexturesSurface
+ImageObjectInfo
+NrrdImageLoader
+
+Compatability issues:
+- If a custom made subclass to H3DWindowNode gave all arguments to
+H3DWindowNode constructor there will be a compile error since the last argument
+(time) is now removed.
+- Applications using features of H3DAPI node database systems will need to
+update their code.
+- Pixel(3D)Textures images are flipped in t. Because of a fix to reading of
+image data.
+
+Fields added to existing nodes:
+TextureProperties - scale, bias.
+
+
 Changes for version 2.0:
 
 - Inheritance order for surface nodes changed. Added two base classes and

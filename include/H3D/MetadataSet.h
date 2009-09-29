@@ -38,6 +38,10 @@ namespace H3D {
   /// \class MetadataSet
   /// \brief  The metadata provided by this node is contained in 
   /// the metadata nodes of the value field.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MetadataSet.x3d">MetadataSet.x3d</a>
+  ///     ( <a href="examples/MetadataSet.x3d.html">Source</a> )
   class H3DAPI_API MetadataSet: 
     public X3DNode,
     public X3DMetadataObject {

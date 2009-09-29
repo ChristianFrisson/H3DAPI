@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='ImageTexture.x3d'/>
+    <meta name='title' content='TextureCoordinateGenerator1.x3d'/>
     <meta name='description' content='X3D ImageTexture node example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>

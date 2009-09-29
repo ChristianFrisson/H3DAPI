@@ -46,6 +46,11 @@ namespace H3D {
   /// multiple defines how many coordinates will be contained in the
   /// value_changed events. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/CoordinateInterpolator.x3d">CoordinateInterpolator.x3d</a>
+  ///     ( <a href="examples/CoordinateInterpolator.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile CoordinateInterpolator.dot
   class H3DAPI_API CoordinateInterpolator : public X3DInterpolatorNode {

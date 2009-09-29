@@ -104,6 +104,11 @@ namespace H3D {
   ///   (e.g., ImageTexture, PixelTexture and MultiTexture). 
   ///   The texture field may not contain another MultiTexture node.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MultiTexture.x3d">MultiTexture.x3d</a>
+  ///     ( <a href="examples/MultiTexture.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile MultiTexture.dot
   class H3DAPI_API MultiTexture : public X3DTextureNode {

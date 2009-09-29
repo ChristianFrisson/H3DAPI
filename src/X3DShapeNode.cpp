@@ -198,3 +198,7 @@ bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,
   else
     return false;
 }
+
+bool X3DShapeNode::BugWorkaroundDisplayList::haveValidDisplayList() {
+  return have_valid_display_list && X3DShapeNode::geometry_render_mode == X3DShapeNode::ALL;
+}

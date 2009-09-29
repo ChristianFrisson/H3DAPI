@@ -89,8 +89,18 @@ IF(WIN32)
   IF(MSVC70 OR MSVC71)
     SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
   ELSEIF(MSVC80)
+    SET( ParticleDemo_COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+    
+    # This might be useful for visual studio 2005 users that often recompile the api.
+    IF( NOT DEFINED USE_VC8_MP_FLAG )
+      SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
+    ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+    
+    IF( USE_VC8_MP_FLAG )
+      SET( ParticleDemo_COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS} /MP" )
+    ENDIF( USE_VC8_MP_FLAG )
     # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS}" )
     # Needed to run in debug mode. Removes warning about conflict between libraries.
     SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
   ELSEIF(MSVC90)

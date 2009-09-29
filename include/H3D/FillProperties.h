@@ -68,6 +68,10 @@ namespace H3D {
   ///
   /// Changing the hatch style does NOT CHANGE THE HAPTIC RENDERING of lines.
   /// It only changes the visual appearance.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FillProperties.x3d">FillProperties.x3d</a>
+  ///     ( <a href="examples/FillProperties.x3d.html">Source</a> )
   /// 
   /// \par Internal routes:
   /// \dotfile FillProperties.dot

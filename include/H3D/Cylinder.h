@@ -69,6 +69,10 @@ namespace H3D {
   /// from the inside. If solid is false both sides of the cylinder will be 
   /// rendered.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Cylinder.x3d">Cylinder.x3d</a>
+  ///     ( <a href="examples/Cylinder.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Cylinder.dot
   class H3DAPI_API Cylinder : public X3DGeometryNode {

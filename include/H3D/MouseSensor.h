@@ -40,6 +40,10 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \class MouseSensor
   /// \brief A sensor node for reading mouse values.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MouseSensor.x3d">MouseSensor.x3d</a>
+  ///     ( <a href="examples/MouseSensor.x3d.html">Source</a> )
   class H3DAPI_API MouseSensor : public X3DSensorNode {
   public:
 

@@ -151,6 +151,11 @@ namespace H3D {
   /// ratio of the smallest dimension of the bounding box to the greatest
   /// dimension.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/IndexedFaceSet.x3d">IndexedFaceSet.x3d</a>
+  ///     ( <a href="examples/IndexedFaceSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile IndexedFaceSet.dot
   class H3DAPI_API IndexedFaceSet : 

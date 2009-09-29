@@ -46,6 +46,10 @@ namespace H3D {
   /// at any time. A default bboxSize value, (-1, -1, -1), implies that the
   /// bounding box is not specified and, if needed, is calculated by the
   /// browser. 
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Group.x3d">Group.x3d</a>
+  ///     ( <a href="examples/Group.x3d.html">Source</a> )
   class H3DAPI_API Group : public X3DGroupingNode {
   public:
     /// Constructor.

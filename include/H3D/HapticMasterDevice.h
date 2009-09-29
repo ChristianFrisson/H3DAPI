@@ -45,6 +45,10 @@ namespace H3D {
   /// servers.db file in the current directory when running a program
   /// specifying the address of the haptics device. See the user manual
   /// of your Haptics Master for more details.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/HapticMasterDevice.x3d">HapticMasterDevice.x3d</a>
+  ///     ( <a href="examples/HapticMasterDevice.x3d.html">Source</a> )
   class H3DAPI_API HapticMasterDevice: public H3DHapticsDevice {
   public:
 

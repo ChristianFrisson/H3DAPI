@@ -56,7 +56,6 @@ namespace H3D {
     /// that are exported with the EXPORT statement.
     /// \param prototypes A map from the PROTO declaration nodes specified
     /// in the stream.
-    /// \param system_id Name of the source of the stream, e.g. file name.
     /// \return A Group containing the nodes created.
     H3DAPI_API Group*createVRMLFromStream( 
            istream &in,
@@ -82,7 +81,7 @@ namespace H3D {
 
 
     /// Create H3D nodes given VRML data as a URL.
-    /// \param str The input URL to read VRML data from.
+    /// \param urn The input URL to read VRML data from.
     /// \param dn A DEFNodes structure to store the DEF nodes found
     /// in the URL.
     /// \param exported_nodes A DEFNodes structure to store the nodes
@@ -110,7 +109,6 @@ namespace H3D {
     /// that are exported with the EXPORT statement.
     /// \param prototypes A map from the PROTO declaration nodes specified
     /// in the stream.
-    /// \param system_id Name of the source of the stream, e.g. file name.
     /// \return The created Node. 
     H3DAPI_API AutoRef<Node> createVRMLNodeFromStream( 
          istream &in,
@@ -137,7 +135,7 @@ namespace H3D {
 
 
     /// Create a H3D Node given VRML data as a URL.
-    /// \param str The input URL to read VRML data from.
+    /// \param urn The input URL to read VRML data from.
     /// \param dn A DEFNodes structure to store the DEF nodes found
     /// in the URL.
     /// \param exported_nodes A DEFNodes structure to store the nodes

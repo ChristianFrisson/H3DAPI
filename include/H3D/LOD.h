@@ -70,10 +70,10 @@ namespace H3D {
   ///  point of the LOD node. Then, the LOD node evaluates the step function 
   ///  L(d) to choose a level for a given value of d (where d is the distance
   ///  from the viewer position to the centre of the LOD node).
-  ///  
-
-
-
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/LOD.x3d">LOD.x3d</a>
+  ///     ( <a href="examples/LOD.x3d.html">Source</a> )
   class H3DAPI_API LOD : public MatrixTransform {
   public:
     

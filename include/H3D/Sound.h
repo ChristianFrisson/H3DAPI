@@ -106,10 +106,10 @@ namespace H3D {
   /// loudness, from 0 dB at the minimum ellipsoid to -20 dB at the maximum
   /// ellipsoid:
   ///
-  ///   attenuation = -20 × (d' / d")
+  ///   attenuation = -20 * (d' / d'')
   ///
   /// where d' is the distance along the location-to-viewer vector, measured 
-  /// from the transformed minimum ellipsoid boundary to the viewer, and d" 
+  /// from the transformed minimum ellipsoid boundary to the viewer, and d'' 
   /// is the distance along the location-to-viewer vector from the transformed
   /// minimum ellipsoid boundary to the transformed maximum ellipsoid boundary.
   /// 
@@ -122,6 +122,11 @@ namespace H3D {
   /// ellipsoid dimensions and intensity will still affect the loudness of
   /// the sound. If the sound source is multi-channel, the source shall retain
   /// its channel separation during playback.
+  ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Sound.x3d">Sound.x3d</a>
+  ///     ( <a href="examples/Sound.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile Sound.dot

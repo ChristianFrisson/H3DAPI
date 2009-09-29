@@ -125,8 +125,8 @@ namespace H3D {
       Rotation rt_orn_calibration;
     };
 
-    /// The TrackerPosition field updates itself from the device_position
-    /// and position_calibration fields. 
+    /// The TrackerPosition field updates itself from the devicePosition
+    /// and positionCalibration fields. 
     /// TrackerPosition = positionCalibration * devicePosition 
     ///
     /// - routes_in[0] is the positionCalibration field
@@ -135,7 +135,7 @@ namespace H3D {
     class H3DAPI_API TrackerPosition: 
       public TypedField< SFVec3f, Types< SFMatrix4f, SFVec3f > > {
       
-      /// value = position_calibration * device_position.
+      /// value = positionCalibration * devicePosition.
       virtual void update() {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice *>(owner);
         Matrix4f m;
@@ -151,9 +151,10 @@ namespace H3D {
       }
     };
 
-    /// The TrackerVelocity field updates itself from the device_velocity
-    /// and velocity_calibration fields. 
-    /// TrackerVelocity = velocityCalibration * deviceVelocity 
+    /// The TrackerVelocity field updates itself from the deviceVelocity
+    /// and positionCalibration fields. 
+    /// TrackerVelocity = positionCalibration.getScaleRotationPart() *
+    /// deviceVelocity 
     ///
     /// - routes_in[0] is the positionCalibration field
     /// - routes_in[1] is the deviceVelocity field
@@ -161,7 +162,7 @@ namespace H3D {
     class H3DAPI_API TrackerVelocity: 
       public TypedField< SFVec3f, Types< SFMatrix4f, SFVec3f > > {
       
-      /// value = velocity_calibration * device_velocity.
+      /// value = positionCalibration.getScaleRotationPart() * device_velocity.
       virtual void update() {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice *>(owner);
         Matrix4f m;
@@ -171,15 +172,15 @@ namespace H3D {
         else {
           m = static_cast< SFMatrix4f * >( routes_in[0] )->getValue();
         }
-        const Vec3f &d_pos = 
+        const Vec3f &d_vel = 
           static_cast< SFVec3f * >( routes_in[1] )->getValue();
         
-        value = m.getScaleRotationPart() * d_pos;
+        value = m.getScaleRotationPart() * d_vel;
       }
     };
 
-    /// The TrackerOrientation field updates itself from the device_orientation
-    /// and orientation_calibration fields. 
+    /// The TrackerOrientation field updates itself from the deviceOrientation
+    /// and orientationCalibration fields. 
     /// TrackerOrientation = orientationCalibration * deviceOrientation 
     ///
     /// - routes_in[0] is the orientationCalibration

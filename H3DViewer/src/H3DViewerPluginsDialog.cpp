@@ -7,6 +7,24 @@
 #include <H3D/LibraryInfo.h>
 #include <H3DUtil/DynamicLibrary.h>
 
+inline string toStr( const wxString &s ) {
+# if(wxUSE_UNICODE)
+  char *b = new char[s.size()+1];
+  const wchar_t *wb = s.c_str();
+  for( unsigned int i = 0; i < s.size(); i++ ) {
+    b[i] = (char)(wb[i]);
+  }
+  
+  b[s.size()] = '\0';
+  string sb(b);
+  delete[] b;
+  return sb;
+#else
+  return string( s.c_str() );
+#endif
+}
+
+
 H3DViewerPluginsDialog::H3DViewerPluginsDialog( wxWindow* parent )
 :
 PluginsDialog( parent ) {
@@ -175,7 +193,7 @@ void H3DViewerPluginsDialog::OnURLEvent( wxTextUrlEvent& event ) {
 
 bool H3DViewerPluginsDialog::addPlugin( const wxString &path, bool force_overwrite ) {
   H3DUtil::DynamicLibrary::LIBHANDLE lib = 
-    H3DUtil::DynamicLibrary::load( string(path.mb_str()) );
+    H3DUtil::DynamicLibrary::load( toStr( path ) );
 
   // Could not load library. 
   if( lib == NULL  ) {

@@ -108,6 +108,13 @@ namespace H3D {
   /// the ccw field to FALSE reverses the normal direction. Backface culling
   /// is enabled when the solid field is TRUE.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ElevationGrid.x3d">ElevationGrid.x3d</a>
+  ///     ( <a href="examples/ElevationGrid.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/ElevationGrid1.x3d">ElevationGrid1.x3d</a>
+  ///     ( <a href="examples/ElevationGrid1.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ElevationGrid.dot 
   class H3DAPI_API ElevationGrid : public X3DGeometryNode {

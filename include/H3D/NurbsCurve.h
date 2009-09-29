@@ -69,11 +69,12 @@ namespace H3D {
   ///  chord length deviation in pixels. Implementations doing fully automatic
   ///  tessellation may ignore the tessellation hint parameters.
   /// 
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/NurbsCurve.x3d">NurbsCurve.x3d</a>
+  ///     ( <a href="examples/NurbsCurve.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile NurbsCurve.dot
-
-
-
   class H3DAPI_API NurbsCurve : 
     public X3DParametricGeometryNode {
   public:

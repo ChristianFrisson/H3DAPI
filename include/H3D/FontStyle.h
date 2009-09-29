@@ -35,9 +35,8 @@
 #include <H3D/SFBool.h>
 #include <H3D/SFFloat.h>
 
-#if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
-#include <FTGL/FTGLTextureFont.h>
-#endif
+// forward declaration
+class FTFont;
 
 namespace H3D {
 
@@ -150,6 +149,10 @@ namespace H3D {
   /// and "OUTLINE". "TEXTURE" will use texture maps to render the font,
   /// "POLYGON" will create a polygon model for each character and render
   /// it and "OUTLINE" will render the outlines for each character.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FontStyle.x3d">FontStyle.x3d</a>
+  ///     ( <a href="examples/FontStyle.x3d.html">Source</a> )
   class H3DAPI_API FontStyle : public X3DFontStyleNode {
   public:
     /// Thrown when the string in the style field is an invalid value.
@@ -204,63 +207,19 @@ namespace H3D {
     }
     
     /// Render the character.
-    virtual void renderChar( unsigned char c ) {
-      char t[2];  t[0]=c; t[1]='\0';
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      H3DFloat s = size->getValue();
-      H3DFloat default_size = font->Ascender() - font->Descender();
-      H3DFloat scale_factor = s / default_size;
-      glScalef( scale_factor, scale_factor, scale_factor );
-
-      if( renderType->getValue() == "TEXTURE" ) {
-        glEnable( GL_TEXTURE_2D);
-        glEnable( GL_ALPHA_TEST );
-        glAlphaFunc (GL_GREATER, 0);
-      }
-      
-      glNormal3f( 0, 0, 1 );
-      font->Render( t );
-      
-      if( renderType->getValue() == "TEXTURE" ) {
-        glDisable( GL_ALPHA_TEST );
-        glDisable( GL_TEXTURE_2D);
-      }
-      glMatrixMode(GL_MODELVIEW);
-      glPopMatrix();
-    }
+    virtual void renderChar( unsigned char c );
     
     /// Returns how many metres in the the positive y-direction from the
     /// origin the characters of this font use. 
-    virtual H3DFloat ascender() {
-      H3DFloat default_size = font->Ascender() - font->Descender();
-      H3DFloat scale_factor = size->getValue() / default_size;
-      return font->Ascender() * scale_factor;
-    }
+    virtual H3DFloat ascender();
 
     /// Returns how many metres in the the negative y-direction from the
     /// origin the characters of this font use. 
-    virtual H3DFloat descender() {
-      H3DFloat default_size = font->Ascender() - font->Descender();
-      H3DFloat scale_factor = size->getValue() / default_size;
-      return font->Descender() * scale_factor;
-    }
+    virtual H3DFloat descender();
 
     /// Get the bounding box dimensions of the 3d-representation of
     /// the given character.
-    virtual Vec3f charDimensions( unsigned char c ) {
-      
-      H3DFloat default_size = font->Ascender() - font->Descender();
-      H3DFloat scale_factor = size->getValue() / default_size;
-      char t[2];  t[0]=c; t[1]='\0';
-      float llx, lly, llz, urx, ury, urz;
-      font->BBox( t, llx, lly, llz, urx, ury, urz );
-
-      return Vec3f(font->Advance(t),
-                   font->Ascender()-font->Descender(),
-                   llz-urz) * scale_factor;
-
-    }
+    virtual Vec3f charDimensions( unsigned char c );
 
     /// Gets the justification of the text in the major alignment direction.
     virtual Justification getMajorJustification();

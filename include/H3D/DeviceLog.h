@@ -45,6 +45,10 @@ namespace H3D {
   /// a zero force and logs position data.
   /// For information on how to read the log created by this node see comments
   /// for the logBinary field.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/DeviceLog.x3d">DeviceLog.x3d</a>
+  ///     ( <a href="examples/DeviceLog.x3d.html">Source</a> )
   class H3DAPI_API DeviceLog: public H3DForceEffect,
                               public X3DUrlObject {
   public:
@@ -84,7 +88,7 @@ namespace H3D {
     /// never show up.
     /// When logging to a binary file the file format will be the following.
     /// The first bytes should be read as characters into a string. When two
-    /// consecutive '\0'-characters are found the section with different
+    /// consecutive '\\0'-characters are found the section with different
     /// strings are over. These strings correspond to the first line in a text
     /// file.
     /// When the first strings are read the data that follows will be in the

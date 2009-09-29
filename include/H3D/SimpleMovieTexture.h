@@ -41,6 +41,11 @@ namespace H3D {
   /// \brief SimpleMovieTexture is a node for showing movies as textures
   /// with a simpler interface than the movie texture node.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SimpleMovieTexture.x3d">SimpleMovieTexture.x3d</a>
+  ///     ( <a href="examples/SimpleMovieTexture.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile SimpleMovieTexture.dot
   class H3DAPI_API SimpleMovieTexture : public H3DVideoTextureNode,

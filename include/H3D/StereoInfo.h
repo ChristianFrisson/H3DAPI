@@ -43,6 +43,10 @@ namespace H3D {
   /// 
   /// The focalDistance field specifies the distance in metres at which
   /// objects in the scene will appear to be at zero parallax.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/StereoInfo.x3d">StereoInfo.x3d</a>
+  ///     ( <a href="examples/StereoInfo.x3d.html">Source</a> )
   class H3DAPI_API StereoInfo : public X3DBindableNode {
   public:
     /// Constructor.

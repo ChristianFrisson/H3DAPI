@@ -45,6 +45,10 @@ namespace H3D {
   ///
   /// The value field specifies an arbitrary collection of floating point 
   /// values that will be passed to the shader as per-vertex information.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/VertexAttributes.x3d">VertexAttributes.x3d</a>
+  ///     ( <a href="examples/VertexAttributes.x3d.html">Source</a> )
   class H3DAPI_API FloatVertexAttribute: public X3DVertexAttributeNode {
   public:
     /// Constructor.

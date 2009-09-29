@@ -43,6 +43,11 @@ namespace H3D {
   /// in the implicit depth (specified by the visibilityRange field of a
   /// node derived from X3DFogObject) being ignored. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/FogCoordinate.x3d">FogCoordinate.x3d</a>
+  ///     ( <a href="examples/FogCoordinate.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile FogCoordinate.dot
   //  

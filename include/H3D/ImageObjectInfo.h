@@ -41,6 +41,10 @@ namespace H3D {
   /// \class ImageObjectInfo
   /// \brief This node can be used to get information about dimensions, sizes
   /// pixel types etc from H3DImageObject nodes such as Image3DTexture.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ImageObjectInfo.x3d">ImageObjectInfo.x3d</a>
+  ///     ( <a href="examples/ImageObjectInfo.x3d.html">Source</a> )
   class H3DAPI_API ImageObjectInfo : public X3DChildNode {
   public:
     

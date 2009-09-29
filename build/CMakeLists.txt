@@ -68,11 +68,16 @@ ENDIF( WIN32 )
 
 # Version of H3D API.
 SET( H3DAPI_MAJOR_VERSION 2 )
-SET( H3DAPI_MINOR_VERSION 0 )
+SET( H3DAPI_MINOR_VERSION 1 )
 SET( H3DAPI_BUILD_VERSION 0 )
 
 # Set here already in case a special NSIS template needs to be used by cpack.
 SET(CMAKE_MODULE_PATH ${H3DAPI_SOURCE_DIR}/modules )
+IF( COMMAND cmake_policy )
+  IF( POLICY CMP0011 )
+    cmake_policy( SET CMP0011 NEW )
+  ENDIF( POLICY CMP0011 )
+ENDIF( COMMAND cmake_policy )
 INCLUDE( StripAndAddLibraryDirectories )
 
 # If cpack should be configured.
@@ -108,9 +113,7 @@ IF( GENERATE_CPACK_PROJECT )
                                     /release
                                     /linux
                                     /build/win32/
-                                    /build/vc8
-                                    /build/vc7
-                                    /build/vc9
+                                    "/((C\\\\+\\\\+|ThreadExample)|(build|examples))/vc(7|(8|9))"
                                     /osx
                                     /H3DAPI/Util/
                                     /berk/berk\\\\.wrl$
@@ -133,15 +136,18 @@ IF( GENERATE_CPACK_PROJECT )
   
   # TODO: fix different for windows and unix if needed.
   IF(WIN32 AND NOT UNIX)
-    SET( CPACK_PACKAGE_START_MENU_NAME "H3DAPI 2.0" )
+    SET( CPACK_PACKAGE_START_MENU_NAME "H3DAPI 2.1" )
     # If H3DLoad should be added to the package.
     SET( H3DLoad_cmake_install "" CACHE PATH "Needs to be set if H3DLoad is desired to be packed in the install. Set to location of cmake_install.cmake for H3DLoad." )
     MARK_AS_ADVANCED(H3DLoad_cmake_install)
     IF( H3DLoad_cmake_install )
       SET(CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
                                        "${H3DLoad_cmake_install};H3DLoad;ALL;/" )
-      SET( CPACK_ADD_H3DLOAD_DEMOS_LINKS "ON" )
     ENDIF( H3DLoad_cmake_install )
+
+    IF( H3DLoad_cmake_install OR H3DAPI_LOADER_PROJECTS )
+      SET( CPACK_ADD_H3DLOAD_DEMOS_LINKS "ON" )
+    ENDIF( H3DLoad_cmake_install OR H3DAPI_LOADER_PROJECTS )
 
     # If H3DViewer should be added to package.
     SET( H3DViewer_cmake_install "" CACHE PATH "Needs to be set if H3DViewer is desired to be packed in the install.  Set to location of cmake_install.cmake for H3DViewer." )
@@ -149,12 +155,14 @@ IF( GENERATE_CPACK_PROJECT )
     IF( H3DViewer_cmake_install )
       SET( CPACK_INSTALL_CMAKE_PROJECTS ${CPACK_INSTALL_CMAKE_PROJECTS}
                                         "${H3DViewer_cmake_install};H3DViewer;ALL;/" )
-
-      SET( CPACK_PACKAGE_EXECUTABLES ${CPACK_PACKAGE_EXECUTABLES}
-                                     "H3DViewer;H3DViewer" )
       SET(WXWINDOWS_USE_GL 1)
       FIND_PACKAGE(wxWidgetsWin)
     ENDIF( H3DViewer_cmake_install )
+    
+    IF( H3DViewer_cmake_install OR H3DAPI_LOADER_PROJECTS )
+      SET( CPACK_PACKAGE_EXECUTABLES ${CPACK_PACKAGE_EXECUTABLES}
+                                     "H3DViewer;H3DViewer" )
+    ENDIF( H3DViewer_cmake_install OR H3DAPI_LOADER_PROJECTS )
 
     #If particleDemo should be added to package.
     SET( ParticleDemo_cmake_install "" CACHE PATH "Needs to be set if ParticleDemo is desired to be packed in the install.  Set to location of cmake_install.cmake for ParticleDemo." )
@@ -166,53 +174,113 @@ IF( GENERATE_CPACK_PROJECT )
       SET(H3DAPI_CPACK_IGNORE_PATTERNS ${H3DAPI_CPACK_IGNORE_PATTERNS} /examples/Particledemo/ )
     ENDIF( ParticleDemo_cmake_install )
 
+    IF( NOT PREFER_STATIC_LIBRARIES )
+      # Ignore static libraries.
+      SET( H3DAPI_CPACK_IGNORE_PATTERNS ${H3DAPI_CPACK_IGNORE_PATTERNS}
+                                        /freeglut_static\\\\.lib$
+                                        /glew32_static\\\\.lib$
+                                        "/FreeImage_static(_vc8)*(_vc9)*(_d)*\\\\.lib$"
+                                        "/ftgl_static_MTD(_vc8)*(_vc9)*(_d)*\\\\.lib$"
+                                        /libcurl_static\\\\.lib$
+                                        /ogg_static\\\\.lib$
+                                        /vorbis_static\\\\.lib$
+                                        /vorbisfile_static\\\\.lib$
+                                        "/(X|x)erces-c_static_2(_vc8)*(_vc9)*(_d)*\\\\.lib$" )
+    ENDIF( NOT PREFER_STATIC_LIBRARIES )
+
     # Pattern in folders and files to ignore when adding files to installation package.
     SET(CPACK_IGNORE_FILES ${H3DAPI_CPACK_IGNORE_PATTERNS}
                            /fparser\\\\.lib$
-                           /teem\\\\.lib$
-                           /wxbase28_net\\\\.lib$
-                           /wxbase28_odbc\\\\.lib$
-                           /wxbase28_xml\\\\.lib$
-                           /wxbase28_net\\\\.lib$
-                           /wxbase28_odbc\\\\.lib$
-                           /wxbase28_xml\\\\.lib$
-                           /wxexpat\\\\.lib$
-                           /wxjpeg\\\\.lib$
-                           /wxmsw28_aui\\\\.lib$
-                           /wxmsw28_dbgrid\\\\.lib$
-                           /wxmsw28_html\\\\.lib$
-                           /wxmsw28_media\\\\.lib$
-                           /wxmsw28_qa\\\\.lib$
-                           /wxmsw28_richtext\\\\.lib$
-                           /wxmsw28_xrc\\\\.lib$
-                           /wxpng\\\\.lib$
-                           /wxregex\\\\.lib$
-                           /wxtiff\\\\.lib$
-                           /wxzlib\\\\.lib$
-                           /bz2\\\\.lib$
-                           /z\\\\.lib$
-                           /png\\\\.lib$
+                           "/wxbase28_net(_vc8)*\\\\.lib$"
+                           "/wxbase28_odbc(_vc8)*\\\\.lib$"
+                           "/wxbase28_xml(_vc8)*\\\\.lib$"
+                           "/wxexpat(_vc8)*\\\\.lib$"
+                           "/wxjpeg(_vc8)*\\\\.lib$"
+                           "/wxmsw28_aui(_vc8)*\\\\.lib$"
+                           "/wxmsw28_dbgrid(_vc8)*\\\\.lib$"
+                           "/wxmsw28_media(_vc8)*\\\\.lib$"
+                           "/wxmsw28_qa(_vc8)*\\\\.lib$"
+                           "/wxmsw28_xrc(_vc8)*\\\\.lib$"
+                           "/wxpng(_vc8)*\\\\.lib$"
+                           "/wxregex(_vc8)*\\\\.lib$"
+                           "/wxtiff(_vc8)*\\\\.lib$"
+                           "/wxzlib(_vc8)*\\\\.lib$"
                            /pthreadGC2\\\\.dll$
                            /pthreadGCE2\\\\.dll$
-                           /pthreadVSE2\\\\.dll$
+                           "/pthreadVSE2\\\\.(dll|lib)$"
                            /HAPI/doc/
                            /H3DUtil/doc/
                            /include/fparser
-                           /include/teem
                            /HapticAPI2
                            /xerces-c_2_7\\\\.dll$
                            /xerces-c_2_7D\\\\.dll$
                            /dcmdata\\\\.lib$
                            /dcmimage\\\\.lib$
                            /dcmimgle\\\\.lib$
-                           /z\\\\.lib$
-                           /png\\\\.lib$
-                           /bz2\\\\.lib$
                            /ofstd\\\\.lib$
-                           /Definitions.h$ )
-    
+                           /Definitions.h$
+                           "/DentalSimAPI\\\\.(lib)*(dll)*(h)*$"
+                           "/ogg_d\\\\.dll$"
+                           "/H3DLoad_d\\\\.exe$"
+                           "/H3DViewer_d\\\\.exe$" )
+
+    SET( H3DAPI_CPACK_INSTALLED_DIRECTORIES "" )
+
+    # Create cached variable for getting the plugin folder.
+    SET( H3DVIEWER_PLUGIN_FOLDER "" CACHE PATH "Path to folder containing plugins for H3DViewer." )
+    MARK_AS_ADVANCED(H3DVIEWER_PLUGIN_FOLDER)
+    IF( H3DVIEWER_PLUGIN_FOLDER )
+      SET( H3DAPI_CPACK_INSTALLED_DIRECTORIES ${H3DAPI_CPACK_INSTALLED_DIRECTORIES}
+                                              "${H3DVIEWER_PLUGIN_FOLDER};Plugins" )
+
+      # Create cached variable for getting the UI examples folder.
+      SET( UI_EXAMPLES_FOLDER "" CACHE PATH "Path to folder containing UI examples." )
+      MARK_AS_ADVANCED(UI_EXAMPLES_FOLDER)
+      IF( UI_EXAMPLES_FOLDER )
+        SET( H3DAPI_CPACK_INSTALLED_DIRECTORIES ${H3DAPI_CPACK_INSTALLED_DIRECTORIES}
+                                                "${UI_EXAMPLES_FOLDER};H3DAPI/examples/UI" )
+        SET( CPACK_ADD_UI_DEMOS_LINKS "ON" )
+      ELSE( UI_EXAMPLES_FOLDER )
+        SET( CPACK_ADD_UI_DEMOS_LINKS "OFF" )
+      ENDIF( UI_EXAMPLES_FOLDER )
+
+      # Create cached variable for getting the MedX3D examples folder.
+      SET( MedX3D_EXAMPLES_FOLDER "" CACHE PATH "Path to folder containing MedX3D examples." )
+      MARK_AS_ADVANCED(MedX3D_EXAMPLES_FOLDER)
+      IF( MedX3D_EXAMPLES_FOLDER )
+        SET( H3DAPI_CPACK_INSTALLED_DIRECTORIES ${H3DAPI_CPACK_INSTALLED_DIRECTORIES}
+                                                "${MedX3D_EXAMPLES_FOLDER};H3DAPI/examples/MedX3D" )
+        SET( CPACK_ADD_MedX3D_DEMOS_LINKS "ON" )
+      ELSE( MedX3D_EXAMPLES_FOLDER )
+        SET( CPACK_ADD_MedX3D_DEMOS_LINKS "OFF" )
+      ENDIF( MedX3D_EXAMPLES_FOLDER )
+
+      # Create cached variable for getting the RigidBodyPhysics examples folder.
+      SET( RigidBodyPhysics_EXAMPLES_FOLDER "" CACHE PATH "Path to folder containing RigidBodyPhysics examples." )
+      MARK_AS_ADVANCED(RigidBodyPhysics_EXAMPLES_FOLDER)
+      IF( RigidBodyPhysics_EXAMPLES_FOLDER )
+        SET( H3DAPI_CPACK_INSTALLED_DIRECTORIES ${H3DAPI_CPACK_INSTALLED_DIRECTORIES}
+                                                "${RigidBodyPhysics_EXAMPLES_FOLDER};H3DAPI/examples/RigidBodyPhysics" )
+        SET( CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS "ON" )
+      ELSE( RigidBodyPhysics_EXAMPLES_FOLDER )
+        SET( CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS "OFF" )
+      ENDIF( RigidBodyPhysics_EXAMPLES_FOLDER )
+
+      # Create cached variable for getting the VHTK examples folder.
+      SET( VHTK_EXAMPLES_FOLDER "" CACHE PATH "Path to folder containing VHTK examples." )
+      MARK_AS_ADVANCED(VHTK_EXAMPLES_FOLDER)
+      IF( VHTK_EXAMPLES_FOLDER )
+        SET( H3DAPI_CPACK_INSTALLED_DIRECTORIES ${H3DAPI_CPACK_INSTALLED_DIRECTORIES}
+                                                "${VHTK_EXAMPLES_FOLDER};H3DAPI/examples/VHTK" )
+        SET( CPACK_ADD_VHTK_DEMOS_LINKS "ON" )
+      ELSE( VHTK_EXAMPLES_FOLDER )
+        SET( CPACK_ADD_VHTK_DEMOS_LINKS "OFF" )
+      ENDIF( VHTK_EXAMPLES_FOLDER )
+    ENDIF( H3DVIEWER_PLUGIN_FOLDER )
+
     # Directories to install, and how they should be named. Non-existing folders will be ignored when packing.
-    SET(CPACK_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
+    SET(CPACK_INSTALLED_DIRECTORIES ${H3DAPI_CPACK_INSTALLED_DIRECTORIES}
+                                    "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../HAPI;HAPI"
                                     "${H3DAPI_SOURCE_DIR}/../../H3DUtil;H3DUtil"
                                     "${H3DAPI_SOURCE_DIR}/../../doc;doc"
@@ -234,25 +302,72 @@ IF( GENERATE_CPACK_PROJECT )
       STRING( REGEX MATCH 2\\.[456789] CPACK_PYTHON_VERSION ${PythonInstallMSI} )
       GET_FILENAME_COMPONENT( PYTHON_FILE_NAME ${PythonInstallMSI} NAME )
       STRING( REPLACE "/" "\\\\" TEMP_PythonInstallMSI ${PythonInstallMSI} )
-      #STRING( REPLACE "." "\\\\\\." TEMP_CPACK_PYTHON_VERSION ${CPACK_PYTHON_VERSION} )
-      #STRING( REPLACE "." "\\\\\\." TEMP_PYTHON_FILE_NAME ${PYTHON_FILE_NAME} )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             "   Code to install Python\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n   StrCmp $0 \\\"\\\" 0 +5\\n  file ${TEMP_PythonInstallMSI}\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'\\n  delete $INSTDIR\\\\${PYTHON_FILE_NAME}\\n   ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n" )
+                                             " Code to install Python\\n  ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n"
+                                             " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 +5\\n"
+                                             " Extract python installer\\n  File \\\"${TEMP_PythonInstallMSI}\\\"\\n"
+                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'  $0\\n"
+                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                             " Delete python installer\\n  Delete \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"\\n\\n" )
     ENDIF( PythonInstallMSI )
     
     # Install OpenAL.
     SET( OpenAlInstallExe "" CACHE FILEPATH "Needs to be set to add openal installation to the package." )
     MARK_AS_ADVANCED(OpenAlInstallExe)
     IF( OpenAlInstallExe )
+      GET_FILENAME_COMPONENT( OpenAL_FILE_NAME ${OpenAlInstallExe} NAME )
       STRING( REPLACE "/" "\\\\" TEMP_OpenAlInstallExe ${OpenAlInstallExe} )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             "   Code to install OPENAL\\n   file ${TEMP_OpenAlInstallExe}\\n  ExecWait \\\"$INSTDIR\\\\OpenALwEAX.exe\\\"\\n  delete $INSTDIR\\\\OpenALwEAX.exe\\n" )
+                                             " Code to install OPENAL\\n  File \\\"${TEMP_OpenAlInstallExe}\\\"\\n"
+                                             " Execute install file\\n  ExecWait \\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" $0\\n"
+                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                             " Delete install file\\n  Delete \\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\"\\n\\n" )
     ENDIF( OpenAlInstallExe )
+    
+    # Add cache variable vc8(9)_redist which should be set to the install file
+    # for microsoft visual studio redistributables, they can be found in the
+    # installation folder for each visual studio installation.
+    IF( NOT DEFINED vc8_redist )
+      SET( vc8_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 8" )
+      MARK_AS_ADVANCED(vc8_redist)
+    ENDIF( NOT DEFINED vc8_redist )
+    
+    IF( NOT DEFINED vc9_redist )
+      SET( vc9_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 9." )
+      MARK_AS_ADVANCED(vc9_redist)
+    ENDIF( NOT DEFINED vc9_redist )
 
-    # Do not modify path since this is done by the NSIS template.
+    IF( vc8_redist )
+      STRING( REPLACE "/" "\\\\" Temp_vc8_redist ${vc8_redist} )
+      GET_FILENAME_COMPONENT( VC8_FILE_NAME ${vc8_redist} NAME )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc8\\\"\\n"
+                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc8_redist}\\\"\\n"
+                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
+                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"\\n"
+                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc8\\\"\\n\\n" )
+    ENDIF( vc8_redist )
+    
+    IF( vc9_redist )
+      STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
+      GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc9\\\"\\n"
+                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc9_redist}\\\"\\n"
+                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
+                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
+                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
+    ENDIF( vc9_redist )
+
+    # Modify path in the the NSIS template.
     SET( CPACK_NSIS_MODIFY_PATH "ON" )
   ELSE(WIN32 AND NOT UNIX)
-    SET(H3DAPI_CPACK_IGNORE_PATTERNS ${H3DAPI_CPACK_IGNORE_PATTERNS} /examples/Particledemo/ )
+    SET(H3DAPI_CPACK_IGNORE_PATTERNS ${H3DAPI_CPACK_IGNORE_PATTERNS} /examples/Particledemo/
+                                                                     "~$" )
     SET(CPACK_SOURCE_IGNORE_FILES ${H3DAPI_CPACK_IGNORE_PATTERNS} )
     SET(CPACK_SOURCE_INSTALLED_DIRECTORIES "${H3DAPI_SOURCE_DIR}/../../H3DAPI;H3DAPI" )
   ENDIF(WIN32 AND NOT UNIX)
@@ -605,6 +720,16 @@ IF( WIN32 )
     SET( TEMP_OUTPUT_POSTFIX _vc8 )
     # remove some warnings about deprecated functions.
     SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+    
+    # This might be useful for visual studio 2005 users that often recompile the api.
+    IF( NOT DEFINED USE_VC8_MP_FLAG )
+      SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
+    ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+    
+    IF( USE_VC8_MP_FLAG )
+      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /MP" )
+    ENDIF( USE_VC8_MP_FLAG )
+    
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
     # if we are using 64 bit compiler some object files get too big so we need
     # to add the /bigobj flag
@@ -669,7 +794,7 @@ IF( WIN32 )
                          LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG}"
                          LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE}"
                          LINK_FLAGS_RELWITHDEBINFO "${H3DAPI_LINK_FLAGS_RELEASE}"
-                         H3DAPI_LINK_FLAGS_MINSIZEREL "${H3DAPI_LINK_FLAGS_RELEASE}" )
+                         LINK_FLAGS_MINSIZEREL "${H3DAPI_LINK_FLAGS_RELEASE}" )
 ENDIF( WIN32 )
 
 # Set compile properties for H3DAPI.
@@ -720,12 +845,7 @@ IF( H3DAPI_LOADER_PROJECTS )
   STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../H3DViewer/build H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
                     ${H3DAPI_LOADER_BINARY_DIR} )
-  ADD_DEPENDENCIES( H3DViewer H3DAPI )
-  
-  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../Util/TreeViewer/build H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
-  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../Util/TreeViewer/build
-                    ${H3DAPI_LOADER_BINARY_DIR} )
-  ADD_DEPENDENCIES( TreeViewer H3DAPI )
+  ADD_DEPENDENCIES( H3DViewer H3DAPI )  
 ENDIF( H3DAPI_LOADER_PROJECTS )
 
 IF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
@@ -743,8 +863,15 @@ IF( H3DAPI_EXAMPLE_PROJECTS )
   STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
                     ${H3DAPI_EXAMPLES_BINARY_DIR} )
+
+  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../examples/ThreadExample H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/ThreadExample
+                    ${H3DAPI_EXAMPLES_BINARY_DIR} )
   IF( DEFINED ParticleDemo_SOURCE_DIR )
     ADD_DEPENDENCIES( ParticleDemo H3DAPI )
   ENDIF( DEFINED ParticleDemo_SOURCE_DIR )
+  IF( DEFINED ThreadExample_SOURCE_DIR )
+    ADD_DEPENDENCIES( ThreadExample H3DAPI )
+  ENDIF( DEFINED ThreadExample_SOURCE_DIR )
 ENDIF( H3DAPI_EXAMPLE_PROJECTS )
 

@@ -307,9 +307,11 @@ namespace H3D {
       virtual void update() {
         BoxBound *bb = 
           static_cast< SFBoxBound * >( routes_in[0] )->getValue();
-        const Matrix4f &matrix = 
-          static_cast< SFMatrix4f * >( routes_in[1] )->getValue();
-        value = matrix * bb->center->getValue();
+	if( bb ) {
+	  const Matrix4f &matrix = 
+	    static_cast< SFMatrix4f * >( routes_in[1] )->getValue();
+	  value = matrix * bb->center->getValue();
+	}
       }
     };
 
@@ -328,52 +330,54 @@ namespace H3D {
         const Matrix4f &matrix = 
           static_cast< SFMatrix4f * >( routes_in[1] )->getValue();
   
-        const Vec3f &bb_center       = bb->center->getValue();
-        const Vec3f &half_bb_size    = bb->size->getValue()/2.0;
-  
-        Vec3f trf_bb = bb_center + half_bb_size;
-        Vec3f llc_bb = bb_center - half_bb_size;
-
-        // transform each corder and fit a new BoxBound around them.
-        vector<Vec3f> corners;
-        // +++
-        Vec3f point = trf_bb;
-        corners.push_back( matrix * point );
-        // ++-
-        point.z = llc_bb.z;
-        corners.push_back( matrix * point );
-        // +--
-        point.y = llc_bb.y;
-        corners.push_back( matrix * point );
-        // +-+
-        point.z = trf_bb.z;
-        corners.push_back( matrix * point );
-        // --+
-        point.x = llc_bb.x;
-        corners.push_back( matrix * point );
-        // -++
-        point.y = trf_bb.y;
-        corners.push_back( matrix * point );
-        // -+-
-        point.z = llc_bb.z;
-        corners.push_back( matrix * point );
-        // ---
-        point.y = llc_bb.y;
-        corners.push_back( matrix * point );
-  
-        vector< Vec3f >::iterator i = corners.begin();
-        Vec3f min = *i;
-        Vec3f max = *i;
-        i++;
-        for( ; i != corners.end(); ++i ) {
-          if( (*i).x < min.x ) min.x = (*i).x;
-          if( (*i).y < min.y ) min.y = (*i).y;
-          if( (*i).z < min.z ) min.z = (*i).z;
-          if( (*i).x > max.x ) max.x = (*i).x;
-          if( (*i).y > max.y ) max.y = (*i).y;
-          if( (*i).z > max.z ) max.z = (*i).z;
-        }
-        value = max - min;
+	if( bb ) {
+	  const Vec3f &bb_center       = bb->center->getValue();
+	  const Vec3f &half_bb_size    = bb->size->getValue()/2.0;
+	  
+	  Vec3f trf_bb = bb_center + half_bb_size;
+	  Vec3f llc_bb = bb_center - half_bb_size;
+	  
+	  // transform each corder and fit a new BoxBound around them.
+	  vector<Vec3f> corners;
+	  // +++
+	  Vec3f point = trf_bb;
+	  corners.push_back( matrix * point );
+	  // ++-
+	  point.z = llc_bb.z;
+	  corners.push_back( matrix * point );
+	  // +--
+	  point.y = llc_bb.y;
+	  corners.push_back( matrix * point );
+	  // +-+
+	  point.z = trf_bb.z;
+	  corners.push_back( matrix * point );
+	  // --+
+	  point.x = llc_bb.x;
+	  corners.push_back( matrix * point );
+	  // -++
+	  point.y = trf_bb.y;
+	  corners.push_back( matrix * point );
+	  // -+-
+	  point.z = llc_bb.z;
+	  corners.push_back( matrix * point );
+	  // ---
+	  point.y = llc_bb.y;
+	  corners.push_back( matrix * point );
+	  
+	  vector< Vec3f >::iterator i = corners.begin();
+	  Vec3f min = *i;
+	  Vec3f max = *i;
+	  i++;
+	  for( ; i != corners.end(); ++i ) {
+	    if( (*i).x < min.x ) min.x = (*i).x;
+	    if( (*i).y < min.y ) min.y = (*i).y;
+	    if( (*i).z < min.z ) min.z = (*i).z;
+	    if( (*i).x > max.x ) max.x = (*i).x;
+	    if( (*i).y > max.y ) max.y = (*i).y;
+	    if( (*i).z > max.z ) max.z = (*i).z;
+	  }
+	  value = max - min;
+	}
       }
     };
     

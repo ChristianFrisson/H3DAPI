@@ -44,6 +44,11 @@ namespace H3D {
   /// intensity fields. The keyValue field shall contain exactly as many
   /// numbers as there are key frames in the key field. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ScalarInterpolator.x3d">ScalarInterpolator.x3d</a>
+  ///     ( <a href="examples/ScalarInterpolator.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ScalarInterpolator.dot
   class H3DAPI_API ScalarInterpolator : public X3DInterpolatorNode {

@@ -53,6 +53,7 @@
 ; "Program Files" for AllUsers, "My Documents" for JustMe...
 
 Function .onInit
+  ClearErrors
   StrCpy $SV_ALLUSERS "JustMe"
   StrCpy $INSTDIR "$DOCUMENTS\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
@@ -80,6 +81,72 @@ Function .onInit
   done:
   StrCmp $SV_ALLUSERS "AllUsers" 0 +2
     StrCpy $INSTDIR "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+
+  ReadRegStr $R0 SHCTX \
+  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \
+  ""
+  IfErrors 0 alreadyinstalled
+
+  IfFileExists $INSTDIR 0 checkH3DROOT
+    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+    "It seems like another version of H3DAPI is already installed in the default \
+    location. If you install this version of H3DAPI make sure that you do not \
+    install into the same folder as any previous versions of H3DAPI. \
+    Note that you might also get conlicting paths in the PATH environment variable \
+    $\n$\nClick `OK` to continue installing or `Cancel` to cancel this installation." \
+    IDOK alreadyinstalledchecked
+    Abort
+
+  alreadyinstalled:
+  MessageBox MB_YESNOCANCEL|MB_ICONQUESTION \
+  "This version of H3DAPI is already installed, do you wish to uninstall the \
+  previous installation (recommended). \
+  $\n$\nClick `Yes` to uninstall previous installation. `NO´ to continue \
+  installation without any changes or `Cancel` to cancel this installation." \
+  IDYES uninstallprevious IDNO alreadyinstalledchecked
+  Abort
+
+  uninstallprevious:
+  ReadRegStr $R1 SHCTX \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \
+  "UninstallString"
+  StrCmp $R1 "" alreadyinstalledchecked
+
+  ReadRegStr $R2 SHCTX \
+  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \
+  ""
+
+  StrCpy $R3 $INSTDIR
+  StrCpy $INSTDIR $R2
+  ExecWait '$R1 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+  IfErrors no_remove_uninstaller uninstallsucceeded
+
+  no_remove_uninstaller:
+  MessageBox MB_OK|MB_ICONINFORMATION "Uninstall not completed, setup will exit."
+  Abort
+
+  checkH3DROOT:
+  ReadEnvStr $R0 H3D_ROOT
+  IfErrors alreadyinstalledchecked 0
+    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+    "It seems like another version of H3DAPI is already installed. \
+    If you install this version of H3DAPI the \
+    H3D specific environment variables will be changed to point to the new \
+    installation. If you install this version make sure that you do not install \
+    into the same folder as any previous versions of H3DAPI. \
+    Note that you might also get conlicting paths in the PATH environment variable \
+    $\n$\nClick `OK` to continue installing or `Cancel` to cancel this installation." \
+    IDOK alreadyinstalledchecked
+    Abort
+
+  uninstallsucceeded:
+    ; Wait a bit for system to release files and folders.
+    Sleep 1000
+    Delete $R1
+    RMDir $INSTDIR
+    StrCpy $INSTDIR $R3
+
+  alreadyinstalledchecked:
 
   StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 noOptionsPage
     !insertmacro MUI_INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
@@ -151,7 +218,20 @@ Function AddToPath
   # don't add if the path doesn't exist
   IfFileExists "$0\*.*" "" AddToPath_done
  
-  ReadEnvStr $1 PATH
+  ; Check if nt and read from registry if it is nt, otherwise use path.
+  ; The reason for this is that when uninstalling a previous installation
+  ; the path environment variable might be modified.
+  Call IsNT
+  Pop $1
+  StrCmp $1 1 ReadFromPath_NT
+    ;Not on NT
+    ReadEnvStr $1 PATH
+    Goto +6
+  ReadFromPath_NT:
+    StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
+      ReadRegStr $1 ${NT_all_env} "PATH"
+      Goto +2
+      ReadRegStr $1 ${NT_current_env} "PATH"
   Push "$1;"
   Push "$0;"
   Call StrStr
@@ -518,7 +598,7 @@ Function ConditionalAddToRegisty
   Pop $0
   Pop $1
   StrCmp "$0" "" ConditionalAddToRegisty_EmptyString
-    WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@" \
+    WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" \
     "$1" "$0"
     ;MessageBox MB_OK "Set Registry: '$1' to '$0'"
     DetailPrint "Set install registry entry: '$1' to '$0'"
@@ -625,7 +705,7 @@ Section "Installer Section" InstSection
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 @CPACK_NSIS_CREATE_ICONS@
-  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +20
+  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 AddedH3DLoadDemosDone
     ;Create Demos folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Demos"
 
@@ -643,12 +723,22 @@ Section "Installer Section" InstSection
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Polka Shader.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_polkadot.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Magnetic lines.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\magneticlines\magneticlines.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +2
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\MedX3D\x3d\OpacityMapStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Plane.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\plane\bobcat.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SuperShape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SuperShape\SuperShape.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-  
+    StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\UI\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    StrCmp "@CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS@" "ON" 0 +2
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\RigidBodyPhysics\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+
+  AddedH3DLoadDemosDone:
+
   StrCmp "@CPACK_ADD_H3DDOC_LINKS@" "ON" 0 +5
     ;Create Docs folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Docs"
@@ -741,14 +831,14 @@ FunctionEnd
 
 Section "Uninstall"
   ReadRegStr $START_MENU SHCTX \
-   "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@" "StartMenu"
+   "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "StartMenu"
   ;MessageBox MB_OK "Start menu is in: $START_MENU"
   ReadRegStr $DO_NOT_ADD_TO_PATH SHCTX \
-    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@" "DoNotAddToPath"
+    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "DoNotAddToPath"
   ReadRegStr $ADD_TO_PATH_ALL_USERS SHCTX \
-    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@" "AddToPathAllUsers"
+    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "AddToPathAllUsers"
   ReadRegStr $ADD_TO_PATH_CURRENT_USER SHCTX \
-    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@" "AddToPathCurrentUser"
+    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "AddToPathCurrentUser"
   ;MessageBox MB_OK "Add to path: $DO_NOT_ADD_TO_PATH all users: $ADD_TO_PATH_ALL_USERS"
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
@@ -760,7 +850,7 @@ Section "Uninstall"
 
   ;Remove the uninstaller itself.
   Delete "$INSTDIR\Uninstall.exe"
-  DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+  DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
   ;Remove the installation directory if it is empty.
   RMDir "$INSTDIR"
@@ -772,7 +862,7 @@ Section "Uninstall"
     
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS@
-  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +20
+  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos1Done
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
@@ -792,10 +882,20 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SpaceTennis.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Spring.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SuperShape.lnk"
+    StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\OpacityMappedFoot.lnk"
+    StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\UI Demo.lnk"
+    StrCmp "@CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Tower.lnk"
+    StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\VHTK Demo.lnk"
     
     ;Delete the Demos folder in start menu
     RMDir "$SMPROGRAMS\$MUI_TEMP\Demos"
-  
+
+  RemovedH3DLoadDemos1Done:
+
   StrCmp "@CPACK_ADD_H3DDOC_LINKS@" "ON" 0 +5
     ; Remove links to reference guide and manuals
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\Reference Guide.lnk"
@@ -827,7 +927,7 @@ Section "Uninstall"
   StrCpy $MUI_TEMP "$START_MENU"
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS@
-  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 +20
+  StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos2Done
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
@@ -847,10 +947,20 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SpaceTennis.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Spring.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SuperShape.lnk"
+    StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\OpacityMappedFoot.lnk"
+    StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\UI Demo.lnk"
+    StrCmp "@CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Tower.lnk"
+    StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\VHTK Demo.lnk"
     
     ;Delete the Demos folder in start menu
     RMDir "$SMPROGRAMS\$MUI_TEMP\Demos"
-  
+
+  RemovedH3DLoadDemos2Done:
+
   StrCmp "@CPACK_ADD_H3DDOC_LINKS@" "ON" 0 +5
     ; Remove links to reference guide and manuals
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\Reference Guide.lnk"
@@ -876,11 +986,14 @@ Section "Uninstall"
   
     StrCmp "$MUI_TEMP" "$SMPROGRAMS" secondStartMenuDeleteLoopDone secondStartMenuDeleteLoop
   secondStartMenuDeleteLoopDone:
-
-  DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
-
-  DeleteRegKey HKCU "Software\SenseGraphics AB\H3D Viewer"
-
+  
+  ClearErrors
+  ; Apparently wxWidgets writes to HKCU and HKU. Which means that we have to remove it here.
+  DeleteRegKey HKCU "Software\@CPACK_PACKAGE_VENDOR@\H3DViewer @CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@(dev)"
+  ClearErrors
+  ; Delete the vendor name if it is empty.
+  DeleteRegKey /ifempty HKCU "Software\@CPACK_PACKAGE_VENDOR@"
+  ClearErrors
 
   Push H3D_ROOT
   Call un.DeleteEnvStr

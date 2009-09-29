@@ -36,6 +36,10 @@ namespace H3D {
   /// \ingroup Nodes
   /// \class PrototypeInstance
   /// \brief The PrototypeInstance is an instance of a prototyped node.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Prototype.x3d">Prototype.x3d</a>
+  ///     ( <a href="examples/Prototype.x3d.html">Source</a> )
   class H3DAPI_API PrototypeInstance : public X3DPrototypeInstance {
   public:
     /// Constructor.

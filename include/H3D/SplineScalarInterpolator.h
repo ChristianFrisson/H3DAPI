@@ -44,6 +44,11 @@ namespace H3D {
   /// The keyValue, keyVelocity, and key fields shall each have the same
   /// number of values.
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SplineScalarInterpolator.x3d">SplineScalarInterpolator.x3d</a>
+  ///     ( <a href="examples/SplineScalarInterpolator.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile SplineScalarInterpolator.dot
 
