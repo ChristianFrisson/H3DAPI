@@ -64,7 +64,7 @@ finalText (_finalText){
 
 void StringSensor::keyboardDown( int key, bool special_key) {
   if( enabled->getValue() ) {
-    isActive->setValue( true, id );
+    if( !isActive->getValue() ) isActive->setValue( true, id );
     string enteredKey;
     if(key == 8 && deletionAllowed->getValue()){/* backspace for Windows & Unix */
       string enteredString = enteredText->getValue();
@@ -84,6 +84,8 @@ void StringSensor::keyboardDown( int key, bool special_key) {
       enteredKey = string(1,key );
       enteredText->setValue((enteredText->getValue() + enteredKey), id);
     }
+  } else {
+    // isactive false??
   }
 }
 
