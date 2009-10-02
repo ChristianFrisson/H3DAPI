@@ -1,6 +1,13 @@
 IF(WIN32)
   cmake_minimum_required(VERSION 2.6.0)
 ENDIF(WIN32)
+
+IF( COMMAND cmake_policy )
+  IF( POLICY CMP0003 )
+    cmake_policy( SET CMP0003 NEW )
+  ENDIF( POLICY CMP0003 )
+ENDIF( COMMAND cmake_policy )
+
 # The name of our project is "ParticleDemo".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${ParticleDemo_SOURCE_DIR} and
 # to the root binary directory of the project as ${ParticleDemo_BINARY_DIR}.
