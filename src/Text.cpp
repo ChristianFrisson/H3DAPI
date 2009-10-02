@@ -429,65 +429,63 @@ void Text::SFBound::update() {
   H3DFloat max_extent = static_cast< SFFloat * >( routes_in[2] )->getValue();
   const vector< string > &text = static_cast< MFString * >( routes_in[3] )->getValue();
 
-  if( !font_style )
-    value = new EmptyBound;
-  else {
-    font_style->buildFonts();
-    X3DFontStyleNode::Alignment alignment = font_style->getAlignment();
-    X3DFontStyleNode::Justification minor = font_style->getMinorJustification();
-    X3DFontStyleNode::Justification major = font_style->getMajorJustification();
+  if( !font_style ) font_style = default_font_style.get();
+  
+  font_style->buildFonts();
+  X3DFontStyleNode::Alignment alignment = font_style->getAlignment();
+  X3DFontStyleNode::Justification minor = font_style->getMinorJustification();
+  X3DFontStyleNode::Justification major = font_style->getMajorJustification();
     
-    Vec3f box_center( 0, 0, 0 );
-    Vec3f text_dims = font_style->stringDimensions( text,
-                                                    alignment,
-                                                    length );
-    if( alignment == X3DFontStyleNode::HORIZONTAL ) {
-      if( max_extent > 0 && text_dims.x > max_extent ) text_dims.x = max_extent;
-      if( major == X3DFontStyleNode::BEGIN || 
-          major == X3DFontStyleNode::FIRST ) 
-        box_center.x = text_dims.x / 2;
-      else if( major == X3DFontStyleNode::END )
-        box_center.x = -text_dims.x / 2;
-      if( minor == X3DFontStyleNode::BEGIN ) 
-        box_center.y = -text_dims.y / 2;
-      else if( minor == X3DFontStyleNode::END )
-        box_center.y = text_dims.y / 2;
-      else if( minor == X3DFontStyleNode::MIDDLE )
-        box_center.y = -font_style->descender();
-      else if( minor == X3DFontStyleNode::FIRST ) {
-        box_center.y = -text_dims.y / 2;
-        if( font_style->isTopToBottom() && text.size() > 0 ) { 
-          Vec3f line_dims = font_style->stringDimensions( text[0],
-                                                          alignment );
-          box_center.y += line_dims.y;
-        }
+  Vec3f box_center( 0, 0, 0 );
+  Vec3f text_dims = font_style->stringDimensions( text,
+                                                  alignment,
+                                                  length );
+  if( alignment == X3DFontStyleNode::HORIZONTAL ) {
+    if( max_extent > 0 && text_dims.x > max_extent ) text_dims.x = max_extent;
+    if( major == X3DFontStyleNode::BEGIN || 
+        major == X3DFontStyleNode::FIRST ) 
+      box_center.x = text_dims.x / 2;
+    else if( major == X3DFontStyleNode::END )
+      box_center.x = -text_dims.x / 2;
+    if( minor == X3DFontStyleNode::BEGIN ) 
+      box_center.y = -text_dims.y / 2;
+    else if( minor == X3DFontStyleNode::END )
+      box_center.y = text_dims.y / 2;
+    else if( minor == X3DFontStyleNode::MIDDLE )
+      box_center.y = -font_style->descender();
+    else if( minor == X3DFontStyleNode::FIRST ) {
+      box_center.y = -text_dims.y / 2;
+      if( font_style->isTopToBottom() && text.size() > 0 ) { 
+        Vec3f line_dims = font_style->stringDimensions( text[0],
+                                                        alignment );
+        box_center.y += line_dims.y;
       }
-    } else {
-      if( max_extent > 0 && text_dims.y > max_extent ) text_dims.y = max_extent;
-      if( major == X3DFontStyleNode::BEGIN || 
-          major == X3DFontStyleNode::FIRST  ) 
-        box_center.y = -text_dims.y / 2;
-      else if( major == X3DFontStyleNode::END )
-        box_center.y = text_dims.y / 2;
-      else if( major == X3DFontStyleNode::MIDDLE )
-        box_center.y = font_style->descender();
-      if( minor == X3DFontStyleNode::BEGIN || 
-          minor == X3DFontStyleNode::FIRST ) 
-        box_center.x = text_dims.x / 2;
-      else if( minor == X3DFontStyleNode::END )
-        box_center.x = -text_dims.x / 2;
     }
-    
-    if( !font_style->isLeftToRight() ) box_center.x = -box_center.x;
-    if( !font_style->isTopToBottom() ) box_center.y = -box_center.y;
-
-    box_center.y += font_style->descender();
-
-    BoxBound *bb= new BoxBound;
-    bb->size->setValue( text_dims );
-    bb->center->setValue( box_center );
-    value = bb;
+  } else {
+    if( max_extent > 0 && text_dims.y > max_extent ) text_dims.y = max_extent;
+    if( major == X3DFontStyleNode::BEGIN || 
+        major == X3DFontStyleNode::FIRST  ) 
+      box_center.y = -text_dims.y / 2;
+    else if( major == X3DFontStyleNode::END )
+      box_center.y = text_dims.y / 2;
+    else if( major == X3DFontStyleNode::MIDDLE )
+      box_center.y = font_style->descender();
+    if( minor == X3DFontStyleNode::BEGIN || 
+        minor == X3DFontStyleNode::FIRST ) 
+      box_center.x = text_dims.x / 2;
+    else if( minor == X3DFontStyleNode::END )
+      box_center.x = -text_dims.x / 2;
   }
+  
+  if( !font_style->isLeftToRight() ) box_center.x = -box_center.x;
+  if( !font_style->isTopToBottom() ) box_center.y = -box_center.y;
+  
+  box_center.y += font_style->descender();
+  
+  BoxBound *bb= new BoxBound;
+  bb->size->setValue( text_dims );
+  bb->center->setValue( box_center );
+  value = bb;
 }
 
 bool Text::lineIntersect(
