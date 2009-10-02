@@ -109,7 +109,7 @@ namespace H3D {
     ///
     /// inputs[0] is the load field.
     /// inputs[1] is the url field.
-    class LoadedScene: 
+    class H3DAPI_API LoadedScene: 
       public TypedField< DependentMFNode< Group,
                              FieldRef< H3DDisplayListObject,
                                        H3DDisplayListObject::DisplayList,
