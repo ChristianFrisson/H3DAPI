@@ -128,8 +128,14 @@ void Field::checkAccessTypeRouteFrom( Field *f, int id ) {
 
 void Field::checkAccessTypeGet( int id ) {
   if( owner ) {
+    // TODO: the check for routes out makes it possible to get the 
+    // value of the INPUT_ONLY field if a route has been successfully
+    // set up from it. This is needed in many cases. However it also 
+    // allows a user to get the value from it even if they should not
+    // be able to.
     if( access_type == INPUT_ONLY && 
-        owner->id != id ) {
+        owner->id != id &&
+        routes_out.empty() ) {
       stringstream s;
       s << "Trying to get the value of INPUT_ONLY field " 
         << getFullName() << " from outside the Node that contain it. ";

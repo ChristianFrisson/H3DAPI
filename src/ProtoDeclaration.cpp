@@ -76,7 +76,8 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
                          << "in order to be parsable. " << endl;
             }
             if( (*i).access_type == Field::INITIALIZE_ONLY ||
-                (*i).access_type == Field::INPUT_OUTPUT ) {
+                (*i).access_type == Field::INPUT_OUTPUT ||
+                (*i).access_type == Field::INPUT_ONLY ) {
               try {
                 pfield->setValueFromString( (*i).value ); 
               }
@@ -93,7 +94,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
               }
             } else {
               Console(3) << "Warning: 'value' attribute ignored. Only used if "
-                   << "accesstype is initializeOnly or inputOutput " 
+                   << "accesstype is initializeOnly, inputOnly or inputOutput " 
                    << endl;
             }
           } 

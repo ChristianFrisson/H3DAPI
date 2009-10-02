@@ -291,7 +291,8 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
                                   (int)locator->getLineNumber() );
       }
       if( access_type == Field::INITIALIZE_ONLY ||
-          access_type == Field::INPUT_OUTPUT ) {
+          access_type == Field::INPUT_OUTPUT ||
+          access_type == Field::INPUT_ONLY ) {
         try {
           pfield->setValueFromString( toString( field_value ) ); 
         }
@@ -317,7 +318,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
         }
       } else {
         Console(3) << "Warning: 'value' attribute ignored. Only used if "
-             << "accesstype is initializeOnly or inputOutput " 
+             << "accesstype is initializeOnly, inputOnly or inputOutput " 
              << getLocationString() << endl;
       }
     }
