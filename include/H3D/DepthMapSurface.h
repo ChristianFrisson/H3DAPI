@@ -55,10 +55,11 @@ namespace H3D {
 
     /// Field that contains an X3DTexture2DNode. Need to override onAdd
     /// and onRemove in order to update the Image used by HAPI.
-    class SFTexture2DNode : public DependentSFNode< X3DTexture2DNode, 
-                                    FieldRef< H3DDisplayListObject,
-                                       H3DDisplayListObject::DisplayList,
-                                       &H3DDisplayListObject::displayList >, 
+    class H3DAPI_API SFTexture2DNode :
+      public DependentSFNode< X3DTexture2DNode,
+                              FieldRef< H3DDisplayListObject,
+                                        H3DDisplayListObject::DisplayList,
+                                        &H3DDisplayListObject::displayList >, 
                               true > {
     public:
       typedef DependentSFNode< X3DTexture2DNode, 
