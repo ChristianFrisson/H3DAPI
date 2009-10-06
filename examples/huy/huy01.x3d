@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<X3D profile="Full" version="3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\x3dschemas\x3d-3.2.xsd">
+	<Scene>
+		<!-- Use the ImportLibrary to load the RigidBodyPhysics dynamic library if needed.-->
+		<!--ImportLibrary library='..\\bin\\RigidBodyPhysics_vc9'/-->
+		<!--ImportLibrary library='libRigidBodyPhysics.so'/-->
+		<Viewpoint DEF='V' position='0 0 0.6'/>
+
+		<Transform rotation='1 0 0 0.8'>
+
+			<Transform translation="0 -.05 0">
+				<Shape DEF="PIVOT-S">
+					<IndexedTriangleStripSet index='0 1 2 4 5 3 2 0 3 1 4 -1'
+					 solid='false' ccw='true' colorPerVertex='true' normalPerVertex='false' containerField='geometry'>
+						<Coordinate point='
+							.05		0	.1
+							-.05	0	.1
+							0		.05	.1
+							.05		0	-.1
+							-.05	0	-.1
+							0		.05	-.1 '/>
+					</IndexedTriangleStripSet>
+					<Appearance>
+						<FrictionalSurface />
+						<Material diffuseColor="0 0 1" />
+					</Appearance>
+				</Shape>
+			</Transform>
+
+			<Transform DEF="PLANE-T">
+				<Shape DEF="PLANE-S">
+					<Appearance>
+						<Material diffuseColor="1 0 0" />
+					</Appearance>
+					<Box DEF="PLANE-G" size="0.6 0.02 0.6" />
+				</Shape>
+			</Transform>
+
+			<Transform DEF="SLAT-T">
+				<Shape DEF="SLAT-S">
+					<Appearance>
+						<Material diffuseColor="0 0 1" />
+						<FrictionalSurface />
+					</Appearance>
+					<Box DEF="SLAT-G" size="0.6 0.01 0.10" />
+				</Shape>
+			</Transform>
+
+			<Transform DEF="OBJ-T">
+				<Shape DEF="OBJ-S">
+					<Appearance>
+						<Material diffuseColor="0 1 1" />
+						<FrictionalSurface />
+					</Appearance>
+					<Box DEF="OBJ-G" size="0.025 0.025 0.025" />
+				</Shape>
+			</Transform>
+
+			<RigidBodyCollection DEF="RBC" physicsEngine='ODE'>
+				<CollisionCollection frictionCoefficients='1 1' bounce="0" slipFactors='0 0' containerField='collider'>
+					<CollidableShape DEF='PLANE-C' containerField='collidables'>
+						<Shape USE='PLANE-S' containerField='shape'/>
+					</CollidableShape>
+					<CollidableShape DEF='SLAT-C' containerField='collidables'>
+						<Shape USE='SLAT-S' containerField='shape'/>
+					</CollidableShape>
+
+					<CollidableShape DEF='OBJ-C' containerField='collidables'>
+						<Shape USE='OBJ-S' containerField='shape'/>
+					</CollidableShape>
+				</CollisionCollection>
+
+				<RigidBody DEF='PLANE-R' mass="0.5" fixed="TRUE" position="0 -0.05 0">
+					<Geometry USE='PLANE-C' containerField='geometry'/>
+				</RigidBody>
+				<RigidBody DEF='SLAT-R' mass=".1" fixed="FALSE" position="0 .01 0" >
+					<Geometry USE='SLAT-C' containerField='geometry'/>
+					<Box USE="SLAT-G" containerField="massDensityModel" />
+				</RigidBody>
+				<RigidBody DEF='OBJ-R' mass=".1" autoDamp="TRUE" position="-0.25 .05 0" >
+					<Geometry USE='OBJ-C' containerField='geometry'/>
+				</RigidBody>
+
+				<SingleAxisHingeJoint anchorPoint='0.0 0.0 0.0' forceOutput="angle" axis='0 0 1' stopBounce="0." DEF='SLAT-J'>
+					<RigidBody USE='SLAT-R' containerField='body2' />
+				</SingleAxisHingeJoint>
+
+			</RigidBodyCollection>
+		</Transform>
+
+		<ROUTE fromNode='SLAT-R' fromField='position' toNode='SLAT-T' toField='translation'/>
+		<ROUTE fromNode='SLAT-R' fromField='orientation' toNode='SLAT-T' toField='rotation'/>
+
+		<ROUTE fromNode='PLANE-R' fromField='position' toNode='PLANE-T' toField='translation'/>
+		<ROUTE fromNode='PLANE-R' fromField='orientation' toNode='PLANE-T' toField='rotation'/>
+
+		<ROUTE fromNode='OBJ-R' fromField='position' toNode='OBJ-T' toField='translation'/>
+		<ROUTE fromNode='OBJ-R' fromField='orientation' toNode='OBJ-T' toField='rotation'/>
+
+
+		<KeySensor DEF='KS'/>
+
+		<PythonScript DEF='PY' url='huy01.py'>
+			<RigidBodyCollection USE='RBC' containerField="references" />
+			<RigidBody USE='PLANE-R' containerField="references" />
+			<Box USE="PLANE-G" containerField="references" />
+			<RigidBody USE='SLAT-R' containerField="references" />
+		</PythonScript>
+
+		<ROUTE fromNode='KS' fromField='keyPress' toNode='PY' toField='toggleRBP' />
+	</Scene>
+</X3D>

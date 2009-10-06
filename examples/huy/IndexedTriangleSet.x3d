@@ -1,0 +1,15 @@
+<Scene>
+	<Shape>
+		<IndexedTriangleStripSet index='0 1 2 -1'
+		solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
+			<Coordinate point='
+			.05		0		.1
+			-.05	0		.1
+			0			.1	.1
+			'/>
+		</IndexedTriangleStripSet>
+		<Appearance>
+			<Material diffuseColor="0 0 1" />
+		</Appearance>
+	</Shape>
+</Scene>
