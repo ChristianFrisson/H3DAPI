@@ -57,6 +57,7 @@ protected:
   std::stringstream other_thread_output;
   std::auto_ptr< std::ostream >console_stream;
 	void OnConsoleClose (wxCommandEvent & event);
+  void OnConsoleClear (wxCommandEvent & event);
   void OnIdle( wxIdleEvent &event );
 	DECLARE_EVENT_TABLE();
  

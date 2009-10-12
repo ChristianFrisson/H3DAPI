@@ -88,8 +88,7 @@ consoleDialog::consoleDialog ( wxWindow *parent,
 							   const wxPoint& pos,
 							   const wxSize& size,
 							   long style
-							   ):
-wxDialog (parent, id, title, pos, size, style)
+							   ): wxDialog (parent, id, title, pos, size, style)
 {
 	wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
   
@@ -98,22 +97,34 @@ wxDialog (parent, id, title, pos, size, style)
 	logText = new wxTextCtrl ( this, -1, wxT(""),
                              wxDefaultPosition, wxSize(400, 200),
                              wxTE_MULTILINE | wxTE_READONLY );
-  
+
 	topsizer->Add(logText, 
                 1,            // make vertically stretchable
                 wxEXPAND |    // make horizontally stretchable
                 wxALL,        //   and make border all around
                 10 );         // set border width to 10 */
-  
+
+  // Clear button
+  wxButton *clearBtn = new wxButton(this, wxID_CLEAR);
+
+  // Close button
   wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("Close") );
-  
+
+  // boxsizer for the buttons
   wxBoxSizer *button_sizer = new wxBoxSizer( wxHORIZONTAL );
+  button_sizer->Add(clearBtn,
+                    0,          // make horizontally unstretchable
+                    wxALL,      // make border all around (implicit top alignment)
+                    10 );       // set border width to 10
+
   button_sizer->Add(closeButton, 
                     0,           // make horizontally unstretchable
                     wxALL,       // make border all around (implicit top alignment)
                     10 );        // set border width to 10
-  
-	topsizer->Add(button_sizer,
+
+
+
+  topsizer->Add(button_sizer,
                 0,                // make vertically unstretchable
                 wxALIGN_CENTER ); // no border and centre horizontally
   
@@ -131,12 +142,17 @@ wxDialog (parent, id, title, pos, size, style)
 /*******************Event Table*********************/
 BEGIN_EVENT_TABLE(consoleDialog, wxDialog)
   EVT_BUTTON (wxID_CLOSE, consoleDialog::OnConsoleClose)
+  EVT_BUTTON (wxID_CLEAR, consoleDialog::OnConsoleClear)
   EVT_IDLE (consoleDialog::OnIdle)
 END_EVENT_TABLE()
 
 /*******************Member Functions*********************/
 void consoleDialog::OnConsoleClose(wxCommandEvent &event) {
   Close(TRUE);
+}
+
+void consoleDialog::OnConsoleClear(wxCommandEvent &event) {
+  consoleDialog::logText->Clear();
 }
 
 void consoleDialog::OnIdle(wxIdleEvent &event) {
