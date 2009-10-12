@@ -151,6 +151,7 @@ void ShaderPart::SFShaderString::update() {
         buffer[length] = '\0';
         shader_part->setURLUsed( *i );
         value = string( buffer );
+        delete [] buffer;
         return;
       }
       is.close();
