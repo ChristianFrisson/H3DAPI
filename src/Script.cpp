@@ -27,6 +27,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <H3D/Script.h>
+#include <H3D/ResourceResolver.h>
+#include <H3D/SpiderMonkeySAI.h>
+#include <fstream>
 
 using namespace H3D;
 
@@ -54,4 +57,17 @@ mustEvaluate( _mustEvaluate ) {
   database.initFields( this );
   directOutput->setValue( false );
   mustEvaluate->setValue( false );
+}
+
+void Script::initialize() {
+  X3DScriptNode::initialize();
+
+  string script = scriptString->getValue();
+
+#ifdef HAVE_SPIDERMONKEY
+  SpiderMonkeySAI sai;
+  
+  sai.initializeScriptEngine();
+  Console(4) << sai.loadScript( script, getURLUsed() ) << endl; 
+#endif
 }

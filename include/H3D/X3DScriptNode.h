@@ -31,6 +31,7 @@
 
 #include <H3D/X3DChildNode.h>
 #include <H3D/X3DUrlObject.h>
+#include <H3D/SFString.h>
 
 namespace H3D {
 
@@ -39,12 +40,26 @@ namespace H3D {
   struct H3DAPI_API X3DScriptNode : public X3DChildNode,
                                     public X3DUrlObject {
     
+    /// Update the string to use as script depending from the urls given.
+    class H3DAPI_API SFScriptString: 
+        public TypedField< SFString, MFString > {
+    protected:
+      virtual void update();
+    };
+
     // Constructor
     X3DScriptNode( Inst< SFNode>  _metadata = 0,
-                   Inst< MFString > _url = 0 );
-    
+                   Inst< MFString > _url = 0,
+                   Inst< SFScriptString > _scriptString = 0 );
+
     /// The X3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// Internal field that contains the string loaded from file and
+    /// to be used as input to the shader.
+    /// 
+    /// \dotfile ShaderPart_shaderString.dot
+    auto_ptr< SFScriptString > scriptString;
   };
 }
 

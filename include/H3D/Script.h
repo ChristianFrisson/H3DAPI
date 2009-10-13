@@ -46,6 +46,8 @@ namespace H3D {
             Inst< MFString > _url = 0,
             Inst< SFBool   > _directOutput = 0,
             Inst< SFBool   > _mustEvaluate = 0 );
+
+    virtual void initialize();    
     
     auto_ptr< SFBool > directOutput;
     auto_ptr< SFBool > mustEvaluate;

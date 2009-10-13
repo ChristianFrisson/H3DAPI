@@ -27,24 +27,79 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <H3D/X3DScriptNode.h>
+#include <H3D/ResourceResolver.h>
 
+#include <fstream>
 using namespace H3D;
 
 H3DNodeDatabase X3DScriptNode::database( 
-        "X3DScriptNode", 
-        NULL,
-        typeid( X3DScriptNode ),
-        &X3DChildNode::database 
-        );
+                                        "X3DScriptNode", 
+                                        NULL,
+                                        typeid( X3DScriptNode ),
+                                        &X3DChildNode::database 
+                                         );
 
 namespace X3DScriptNodeInternals {
   FIELDDB_ELEMENT( X3DScriptNode, url, INITIALIZE_ONLY );
 }
 
 X3DScriptNode::X3DScriptNode( Inst< SFNode>  _metadata,
-                              Inst< MFString > _url ) : 
+                              Inst< MFString > _url,
+                              Inst< SFScriptString > _scriptString ): 
   X3DChildNode( _metadata ),
-  X3DUrlObject( _url ) {
+  X3DUrlObject( _url ),
+  scriptString( _scriptString ) {
   type_name = "X3DScriptNode";
   database.initFields( this );
+  
+  scriptString->setOwner( this );
+
+  addInlinePrefix( "ecmascript" );
+
+  // set up internal routes
+  url->route( scriptString );
+}
+
+void X3DScriptNode::SFScriptString::update() {
+  X3DScriptNode *script_node = static_cast< X3DScriptNode * >( getOwner() ); 
+  MFString *urls = static_cast< MFString * >( routes_in[0] );
+
+  for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
+    bool is_tmp_file;
+    string url = script_node->resolveURLAsFile( *i, &is_tmp_file );
+    if( url != "" ) {
+      ifstream is( url.c_str() );
+      if( is.good() ) {
+        std::streamsize length;
+        char * buffer;
+        
+        // get length of file:
+        is.seekg (0, ios::end);
+        length = is.tellg();
+        is.seekg (0, ios::beg);
+        
+      // allocate memory:
+        buffer = new char [length + 1];
+        // read data as a block:
+        is.read (buffer,length);
+        length = is.gcount();
+        is.close();
+        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+        buffer[length] = '\0';
+        script_node->setURLUsed( *i );
+        value = string( buffer );
+        delete [] buffer;
+        return;
+      }
+      is.close();
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+     }
+  }
+  Console(4) << "None of the urls in ShaderPart with url [";
+  for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
+    Console(4) << " \"" << *i << "\"";
+  }
+  Console(4) << "] could be loaded.";
+  script_node->setURLUsed( "" );
+  value = "";
 }
