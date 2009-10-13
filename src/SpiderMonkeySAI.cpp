@@ -33,7 +33,13 @@
 
 #ifdef HAVE_SPIDERMONKEY
 
+// defines needed for include of jsapi.h
+#ifdef H3D_WINDOWS
 #define XP_WIN
+#else
+#define XP_UNIX
+#endif
+
 #include <jsapi.h>
 
 using namespace H3D;
@@ -52,8 +58,8 @@ JSBool SAIPrint(JSContext *cx,
 
 
 static JSFunctionSpec sai_global_functions[] = {
-    JS_FS("println",   SAIPrint,   0, 0, 0),
-    JS_FS_END
+  {"println",   SAIPrint,   0, 0, 0 },
+  {0}
 };
 
 /*
@@ -149,7 +155,7 @@ bool SpiderMonkeySAI::initializeScriptEngine() {
   if (cx == NULL)
     return false;
   JS_SetOptions(cx, JSOPTION_VAROBJFIX);
-  JS_SetVersion(cx, JSVERSION_LATEST);
+  JS_SetVersion(cx, JSVERSION_ECMA_3);
   JS_SetErrorReporter(cx, reportError);
   
   /* Create the global object. */
