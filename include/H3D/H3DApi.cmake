@@ -101,6 +101,12 @@
 /// supported. Only local filenames can be used. 
 #cmakedefine HAVE_LIBCURL
 
+/// Undef if you do not have SpiderMonkey Javascript engine
+/// (http://www.mozilla.org/js/spidermonkey/)
+/// installed. Ecmascript support in Script node will not be available
+/// without it
+#cmakedefine HAVE_SPIDERMONKEY
+
 /// Undef if you do not have DirectShow available. Needed for the 
 /// DirectShowDecoder node.
 #ifdef H3D_WINDOWS
