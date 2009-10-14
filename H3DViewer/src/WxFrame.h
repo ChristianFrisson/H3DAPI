@@ -261,6 +261,7 @@ public:
   void ToggleHaptics( wxCommandEvent & event );
   void OnSettings( wxCommandEvent & event );
   void OnIdle( wxIdleEvent &event );
+  void OnReload( wxCommandEvent &event);
 
   /***************Standard trivial functions***************/
   wxString GetCurrentFilename();
@@ -337,6 +338,7 @@ private:
   // CollisionOptions
   bool avatar_collision;
 
+  string lastOpenedFilepath;
   wxString currentFilename;
   wxString currentPath;
   bool lastmirror;
@@ -473,8 +475,6 @@ enum
   FRAME_MOUSE_NAV,
   FRAME_KEYBOARD_NAV,
   FRAME_SWS_NAV,
-  FRAME_HAPTICSDEVICE_NAV
+  FRAME_HAPTICSDEVICE_NAV,
+  FRAME_RELOAD
 };
-
-
-

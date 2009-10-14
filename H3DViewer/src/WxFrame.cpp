@@ -184,6 +184,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   itemIdViewpointMap(),
   current_viewpoint_id(0)
 {
+  lastOpenedFilepath = "";
   wxAcceleratorEntry entries[1];
   entries[0].Set(wxACCEL_NORMAL, (int) WXK_F11, FRAME_RESTORE);
   wxAcceleratorTable accel(1, entries);
@@ -266,10 +267,13 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   fileMenu->Append(FRAME_OPEN,wxT("&Open file...\tCtrl+O"),wxT("Open a file"));
   fileMenu->Append(FRAME_OPEN_URL, wxT("&Open file from URL..."), wxT("Open a file ")
                    wxT("from UR") );
-  fileMenu->Append(FRAME_CLOSE, wxT("&Close file"),wxT("Close file"));
+  fileMenu->Append(FRAME_CLOSE, wxT("&Close file\tCtrl+F4"),wxT("Close file"));
   fileMenu->AppendSeparator();
   fileMenu->Append(FRAME_CHOOSEDIR, wxT("Change Working Directory"), wxT("Change ")
                    wxT("working directory..."));
+  // 09.10.14 reload page
+  fileMenu->Append(FRAME_RELOAD, wxT("&Reload\tF5"), wxT("Reload the file"));
+
   fileMenu->AppendSeparator();
   fileMenu->Append(FRAME_PLUGINS, wxT("Plugins"),
                    wxT("Show/change installed plugins")); 
@@ -340,7 +344,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 
   //Renderer Menu
   rendererMenu = new wxMenu;
-  rendererMenu->AppendCheckItem(FRAME_FULLSCREEN, wxT("Fullscreen Mode"),
+  rendererMenu->AppendCheckItem(FRAME_FULLSCREEN, wxT("Fullscreen Mode\tF11"),
                                 wxT("View in fullscreen"));
   rendererMenu->AppendCheckItem(FRAME_MIRROR, wxT("Mirror in Y"),
                                 wxT("Mirror Scene in Y"));
@@ -361,11 +365,11 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 
   //Advanced Menu
   advancedMenu = new wxMenu;
-  advancedMenu->Append(FRAME_CONSOLE, wxT("Show Console"),
+  advancedMenu->Append(FRAME_CONSOLE, wxT("Show Console\tF10"),
                        wxT("Show the message console"));
-  advancedMenu->Append(FRAME_FRAMERATE, wxT("Show frame rates"),
+  advancedMenu->Append(FRAME_FRAMERATE, wxT("Show frame rates\tF9"),
                        wxT("Show the frame rates of graphics and haptics loop"));
-  advancedMenu->Append(FRAME_TREEVIEW, wxT("Show tree view"),
+  advancedMenu->Append(FRAME_TREEVIEW, wxT("Show tree view\tF8"),
                        wxT("Show the scene as a tree, making it possible to inspect and change values at runtime."));
    
   //Help Menu
@@ -473,6 +477,7 @@ void WxFrame::ChangeNavType::update() {
 BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_EXIT, WxFrame::OnExit)
   EVT_MENU (FRAME_OPEN, WxFrame::OnOpenFile)
+  EVT_MENU (FRAME_RELOAD, WxFrame::OnReload)    // 09.10.14 reload frame
   EVT_MENU_RANGE (wxID_FILE1, wxID_FILE9, WxFrame::OnMRUFile)
   EVT_MENU (FRAME_OPEN_URL, WxFrame::OnOpenFileURL)
   EVT_MENU (FRAME_CLOSE, WxFrame::OnCloseFile)
@@ -939,7 +944,7 @@ bool WxFrame::loadFile( const string &filename) {
         // That is, no orientation and position 0, 0, 10. 
         Matrix4f pos_cal_matrix( 1, 0, 0, 0,
                                  0, 1, 0, 0,
-                                 0, 0, 1, 9.4,
+                                 0, 0, 1, (H3DFloat)9.4,
                                  0, 0, 0, 1 );
         if( active_vp ) {
           // There is already a viewpoint defined, use this one.
@@ -1328,7 +1333,10 @@ void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
    if( text_dialog->ShowModal() == wxID_OK ) {
      string s(text_dialog->GetValue().mb_str());
      clearData();
+     lastOpenedFilepath = s;
      loadFile( s );
+     SetStatusText(s, 1);
+     SetStatusText(wxT("URL loaded"), 0);
    }
 }
 
@@ -1346,17 +1354,18 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
   if (openFileDialog->ShowModal() == wxID_OK) {
     SetCurrentFilename(openFileDialog->GetFilename());  
     SetCurrentPath(openFileDialog->GetDirectory());
-    SetStatusText(GetCurrentFilename(), 0);
-    SetStatusText(openFileDialog->GetDirectory(),1);
 #ifdef WIN32
     wxString wx_filename = currentPath + wxT("\\") + currentFilename;
 #else
     wxString wx_filename = currentPath + wxT("/") + currentFilename;
 #endif
     string filename(wx_filename.mb_str());
+    lastOpenedFilepath = filename;
     clearData();
     loadFile( filename );
     recentFiles->AddFileToHistory ( wx_filename );
+    SetStatusText(wxT("File loaded"), 0);
+    SetStatusText(filename,1);
   }
 }
 
@@ -1372,9 +1381,6 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
     SetCurrentFilename(filename.AfterLast('/') );
     SetCurrentPath(filename.BeforeLast('/') );
 #endif
-
-    SetStatusText(GetCurrentFilename(), 0);
-    SetStatusText(GetCurrentPath(),1);
 #ifdef WIN32
     wxString wx_filename = currentPath + wxT("\\") + currentFilename;
 #else
@@ -1383,16 +1389,23 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
     string filename(wx_filename.mb_str());
     clearData();
     loadFile( filename );
+    lastOpenedFilepath = filename;
+    SetStatusText(wxT("File loaded"), 0);
+    SetStatusText(lastOpenedFilepath, 1);
   }
 }
 
 //Close File
 void WxFrame::OnCloseFile(wxCommandEvent & event) {
+  if (lastOpenedFilepath.empty()) {
+    return;
+  }
+  lastOpenedFilepath.clear();
   //clearData();
   t->children->clear();
   if( !Viewpoint::getActive() )
     viewpoint.reset( new Viewpoint );
-  SetStatusText(wxT("Open a file..."), 0);
+  SetStatusText(wxT("File closed"), 0);
   SetStatusText(wxT(""),1);
 
   //Disable menus again
@@ -1701,6 +1714,18 @@ void WxFrame::ChangeNavigation (wxCommandEvent & event)
     glwindow->default_nav = toStr( navigationMenu->GetLabel(selection));
   }
 }
+
+// 09.10.14 Reload
+void WxFrame::OnReload (wxCommandEvent & event)
+{
+  if (lastOpenedFilepath.empty())
+    return;
+  clearData();
+  loadFile(lastOpenedFilepath);
+  SetStatusText(wxT("Reloaded"), 0);
+  SetStatusText(lastOpenedFilepath, 1);
+}
+
 
 //Gets Menu Selections
 void WxFrame::GetSelection (wxMenuEvent & event)
