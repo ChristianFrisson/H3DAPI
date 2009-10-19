@@ -22,10 +22,10 @@
 #include <wx/panel.h>
 #include <wx/grid.h>
 #include <wx/splitter.h>
+#include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/stattext.h>
 #include <wx/listbox.h>
-#include <wx/button.h>
 #include <wx/checkbox.h>
 #include <wx/richtext/richtextctrl.h>
 #include <wx/dialog.h>
@@ -47,6 +47,7 @@ class TreeViewDialog : public wxFrame
 		wxSplitterWindow* m_splitter1;
 		wxPanel* m_panel1;
 		wxPanel* m_panel2;
+		wxButton* btnClose;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ){ event.Skip(); }
@@ -60,16 +61,17 @@ class TreeViewDialog : public wxFrame
 		virtual void OnTreeRightClick( wxTreeEvent& event ){ event.Skip(); }
 		virtual void OnNodeSelected( wxTreeEvent& event ){ event.Skip(); }
 		virtual void OnCellEdit( wxGridEvent& event ){ event.Skip(); }
+		virtual void btnCloseClick( wxCommandEvent& event ){ event.Skip(); }
 		
 	
 	public:
 		wxTreeCtrl* TreeViewTree;
 		wxGrid* FieldValuesGrid;
-		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Scene tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 594,453 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Scene tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 594,496 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		~TreeViewDialog();
 		void m_splitter1OnIdle( wxIdleEvent& )
 		{
-		m_splitter1->SetSashPosition( 346 );
+		m_splitter1->SetSashPosition( 283 );
 		m_splitter1->Disconnect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::m_splitter1OnIdle ), NULL, this );
 		}
 		
@@ -115,6 +117,7 @@ class PluginsDialog : public wxDialog
 		wxRichTextCtrl* PluginInfoText;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnKeyDown( wxKeyEvent& event ){ event.Skip(); }
 		virtual void OnInstalledPluginSelected( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnAddPluginButton( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnRemovePluginButton( wxCommandEvent& event ){ event.Skip(); }

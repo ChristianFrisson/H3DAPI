@@ -21,7 +21,6 @@ H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
   SetMenuBar( NULL );
 }
 
-
 void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
 
  TreeIdMap::iterator ni = node_map.find( event.GetItem().m_pItem );
@@ -547,8 +546,11 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
   }
 }
 
-
 void H3DViewerTreeViewDialog::OnClose( wxCloseEvent& event ) {
+  Hide();
+}
+
+void H3DViewerTreeViewDialog::btnCloseClick(wxCommandEvent& event) {
   Hide();
 }
 

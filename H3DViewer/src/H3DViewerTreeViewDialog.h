@@ -21,6 +21,8 @@ public:
 	/** Constructor */
 	H3DViewerTreeViewDialog( wxWindow* parent );
 
+  virtual void btnCloseClick(wxCommandEvent& event);
+
   /// Callback for when the window is closed. Hides the window
   /// instead of destroying it.
   virtual void OnClose( wxCloseEvent& event );

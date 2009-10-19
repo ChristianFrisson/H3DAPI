@@ -76,12 +76,17 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 	
-	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+	wxBoxSizer* bSizer14;
+	bSizer14 = new wxBoxSizer( wxVERTICAL );
+	
+	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxSize( -1,500 ), wxSP_3D );
 	m_splitter1->SetSashGravity( 1 );
 	m_splitter1->Connect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::m_splitter1OnIdle ), NULL, this );
+	m_splitter1->SetMinSize( wxSize( -1,500 ) );
+	
 	m_panel1 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer3;
-	bSizer3 = new wxBoxSizer( wxHORIZONTAL );
+	bSizer3 = new wxBoxSizer( wxVERTICAL );
 	
 	TreeViewTree = new wxTreeCtrl( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
 	bSizer3->Add( TreeViewTree, 1, wxALL|wxEXPAND, 5 );
@@ -104,7 +109,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	
 	// Columns
 	FieldValuesGrid->SetColSize( 0, 114 );
-	FieldValuesGrid->SetColSize( 1, 102 );
+	FieldValuesGrid->SetColSize( 1, 165 );
 	FieldValuesGrid->EnableDragColMove( false );
 	FieldValuesGrid->EnableDragColSize( true );
 	FieldValuesGrid->SetColLabelSize( 15 );
@@ -126,8 +131,13 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	m_panel2->SetSizer( bSizer4 );
 	m_panel2->Layout();
 	bSizer4->Fit( m_panel2 );
-	m_splitter1->SplitVertically( m_panel1, m_panel2, 346 );
-	bSizer1->Add( m_splitter1, 1, wxEXPAND, 5 );
+	m_splitter1->SplitVertically( m_panel1, m_panel2, 283 );
+	bSizer14->Add( m_splitter1, 1, wxEXPAND, 5 );
+	
+	btnClose = new wxButton( this, wxID_CANCEL, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer14->Add( btnClose, 0, wxALIGN_RIGHT|wxALL, 5 );
+	
+	bSizer1->Add( bSizer14, 1, wxEXPAND, 5 );
 	
 	this->SetSizer( bSizer1 );
 	this->Layout();
@@ -149,6 +159,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
 	FieldValuesGrid->Connect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( TreeViewDialog::OnCellEdit ), NULL, this );
+	btnClose->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
 }
 
 TreeViewDialog::~TreeViewDialog()
@@ -170,6 +181,7 @@ TreeViewDialog::~TreeViewDialog()
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
 	FieldValuesGrid->Disconnect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( TreeViewDialog::OnCellEdit ), NULL, this );
+	btnClose->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
 }
 
 FieldValuesDialog::FieldValuesDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
@@ -275,6 +287,7 @@ PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& t
 	this->Layout();
 	
 	// Connect Events
+	this->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler( PluginsDialog::OnKeyDown ) );
 	InstalledPluginsList->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( PluginsDialog::OnInstalledPluginSelected ), NULL, this );
 	AddPluginButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnAddPluginButton ), NULL, this );
 	RemovePluginButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnRemovePluginButton ), NULL, this );
@@ -285,6 +298,7 @@ PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& t
 PluginsDialog::~PluginsDialog()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler( PluginsDialog::OnKeyDown ) );
 	InstalledPluginsList->Disconnect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( PluginsDialog::OnInstalledPluginSelected ), NULL, this );
 	AddPluginButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnAddPluginButton ), NULL, this );
 	RemovePluginButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnRemovePluginButton ), NULL, this );

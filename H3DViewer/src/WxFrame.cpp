@@ -2541,6 +2541,7 @@ void WxFrame::OnSettings (wxCommandEvent & event) {
 IMPLEMENT_CLASS(FrameRateDialog, wxDialog)
 
 BEGIN_EVENT_TABLE(FrameRateDialog, wxDialog)
+  EVT_KEY_DOWN(FrameRateDialog::OnKeyDown)
 END_EVENT_TABLE()
 
 FrameRateDialog::FrameRateDialog(wxWindow* win ) :
@@ -2552,9 +2553,18 @@ FrameRateDialog::FrameRateDialog(wxWindow* win ) :
   topsizer = new wxBoxSizer( wxVERTICAL );
   updateMenuItems();
 
+  Connect(wxEVT_KEY_DOWN, wxKeyEventHandler(FrameRateDialog::OnKeyDown));
+
   SetSizer( topsizer );      // use the sizer for layout
 
   topsizer->SetSizeHints( this );   // set size hints to honour minimum size
+}
+
+void FrameRateDialog::OnKeyDown(wxKeyEvent& event) {
+  wxMessageBox("hello from  framerate");
+  if (event.GetKeyCode() == WXK_ESCAPE || event.GetKeyCode() == WXK_F9) {
+    Hide();
+  }
 }
 
 void FrameRateDialog::updateMenuItems() {
