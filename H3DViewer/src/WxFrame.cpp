@@ -1335,8 +1335,8 @@ void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
      clearData();
      lastOpenedFilepath = s;
      loadFile( s );
-     SetStatusText(s, 1);
-     SetStatusText(wxT("URL loaded"), 0);
+     SetStatusText( wxString(s.c_str(),wxConvUTF8), 1 );
+     SetStatusText( wxT("URL loaded"), 0 );
    }
 }
 
@@ -1365,7 +1365,7 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
     loadFile( filename );
     recentFiles->AddFileToHistory ( wx_filename );
     SetStatusText(wxT("File loaded"), 0);
-    SetStatusText(filename,1);
+    SetStatusText( wxString(filename.c_str(),wxConvUTF8), 1 );
   }
 }
 
@@ -1391,7 +1391,7 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
     loadFile( filename );
     lastOpenedFilepath = filename;
     SetStatusText(wxT("File loaded"), 0);
-    SetStatusText(lastOpenedFilepath, 1);
+    SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
   }
 }
 
@@ -1723,7 +1723,7 @@ void WxFrame::OnReload (wxCommandEvent & event)
   clearData();
   loadFile(lastOpenedFilepath);
   SetStatusText(wxT("Reloaded"), 0);
-  SetStatusText(lastOpenedFilepath, 1);
+  SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
 }
 
 
@@ -2561,7 +2561,7 @@ FrameRateDialog::FrameRateDialog(wxWindow* win ) :
 }
 
 void FrameRateDialog::OnKeyDown(wxKeyEvent& event) {
-  wxMessageBox("hello from  framerate");
+  wxMessageBox(wxT("hello from  framerate"));
   if (event.GetKeyCode() == WXK_ESCAPE || event.GetKeyCode() == WXK_F9) {
     Hide();
   }
