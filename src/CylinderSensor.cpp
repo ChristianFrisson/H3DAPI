@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -52,9 +52,9 @@ CylinderSensor::CylinderSensor(
                       Inst< SFString > _description,
                       Inst< SFFloat > _diskAngle,
                       Inst< SFBool >  _enabled,
-                      Inst< Check_Angle_Limits > _maxAngle,
+                      Inst< CheckAngleLimits > _maxAngle,
                       Inst< SFNode >  _metadata,
-                      Inst< Check_Angle_Limits > _minAngle,
+                      Inst< CheckAngleLimits > _minAngle,
                       Inst< SFFloat > _offset,
                       Inst< SFBool >  _isActive,
                       Inst< SFBool > _isOver,
@@ -67,7 +67,9 @@ CylinderSensor::CylinderSensor(
   minAngle( _minAngle ),
   offset( _offset ),
   rotation_changed( _rotation_changed ),
-  set_CylinderEvents( new Set_CylinderEvents ) {
+  new_cylinder( true ),
+  y_axis( Vec3f( 0, 1, 0 ) ),
+  plane_d( 0.0f ) {
 
   type_name = "CylinderSensor";
   database.initFields( this );
@@ -76,11 +78,6 @@ CylinderSensor::CylinderSensor(
   maxAngle->setValue( -1 );
   minAngle->setValue( 0 );
   offset->setValue( 0 );
-
-  set_CylinderEvents->setOwner( this );
-  set_CylinderEvents->setName( "set_CylinderEvents" );
-  mouse_sensor->position->routeNoEvent( set_CylinderEvents );
-  isActive->routeNoEvent( set_CylinderEvents );
 }
 
 /// Destructor. 
@@ -93,13 +90,14 @@ void CylinderSensor::onIsOver( IntersectionInfo *result,
     X3DPointingDeviceSensorNode::onIsOver( result,
                                            global_to_local );
     if( new_value ) {
-      intersection_matrix = *global_to_local;
-      intersection_point = intersection_matrix * Vec3f( result->point );
+      geometry_global_to_local = *global_to_local;
+      geometry_intersection =
+        geometry_global_to_local * Vec3f( result->point );
     }
   }
 }
 
-int CylinderSensor::Set_CylinderEvents::intersectSegmentCylinder( 
+int CylinderSensor::intersectSegmentCylinder( 
   Vec3f sa, Vec3f sb, float &t ) {
   Vec3f d = cb - ca, m = sa - ca, n = sb - sa;
 
@@ -155,7 +153,7 @@ int CylinderSensor::Set_CylinderEvents::intersectSegmentCylinder(
   return t >= 0.0f && t <= 1.0f;
 }
 
-int CylinderSensor::Set_CylinderEvents::intersectLinePlane(
+int CylinderSensor::intersectLinePlane(
   Vec3f a, Vec3f b, float &t, Vec3f &q ) {
   // Compute the t value for the directed line ab intersecting the plane
   Vec3f ab = b - a;
@@ -165,53 +163,50 @@ int CylinderSensor::Set_CylinderEvents::intersectLinePlane(
   return 1;
 }
 
-void CylinderSensor::Set_CylinderEvents::update() {
-  SFBool::update();
-  CylinderSensor *cs = 
-    static_cast< CylinderSensor * >( getOwner() );
-  if( cs->enabled->getValue() ) {
-    bool isActive = static_cast< SFBool * >(routes_in[1])->getValue();
-    if( isActive ) {
+void CylinderSensor::setDragOutputEvents( bool _enabled,
+                                          const Vec3f &from,
+                                          const Vec3f &to ) {
+  if( _enabled ) {
+    if( isActive->getValue() ) {
       if( new_cylinder ) {
-        cs->send_warning_message = true;
-        original_transform_matrix = cs->intersection_matrix;
-        Vec3f bearing = original_transform_matrix * far_plane_pos -
-                        original_transform_matrix * near_plane_pos;
+        // Initialize variabels needed for outputting events.
+        send_warning_message = true;
+        geometry_global_to_local_original = geometry_global_to_local;
+        Vec3f bearing = geometry_global_to_local_original * from -
+                        geometry_global_to_local_original * to;
         bearing.normalize();
         H3DFloat dot_product = y_axis * bearing;
         use_caps = 
-          H3DAcos( H3DAbs( dot_product ) ) < cs->diskAngle->getValue();
+          H3DAcos( H3DAbs( dot_product ) ) < diskAngle->getValue();
 
         // create a new invisible cylinder if a cylinder will be used.
-        original_intersection = cs->intersection_point;
-        original_intersection.y = 0.0f;
+        last_intersection = geometry_intersection;
+        last_intersection.y = 0.0f;
         if( !use_caps )
-          radius = original_intersection.length();
+          radius = last_intersection.length();
 
-        original_intersection.normalizeSafe();
-        cs->trackPoint_changed->setValue( original_intersection, cs->id );
-        cs->rotation_changed->setValue( Rotation( y_axis, 
-                                                  cs->offset->getValue() ),
-                                        cs->id );
+        last_intersection.normalizeSafe();
+        trackPoint_changed->setValue( geometry_intersection, id );
+        rotation_changed->setValue( Rotation( y_axis, 
+                                              offset->getValue() ),
+                                        id );
         new_cylinder = false;
-      }
-      else {
+      } else {
         // Check intersection with cylinder or plane.
         H3DFloat t;
         Vec3f intersectionPoint;
         bool intersected = false;
-        if( use_caps && 
-            intersectLinePlane( 
-              original_transform_matrix * near_plane_pos,
-              original_transform_matrix * far_plane_pos,
-              t, intersectionPoint ) ) {
+        if( use_caps ) {
+          if( intersectLinePlane( 
+              geometry_global_to_local_original * from,
+              geometry_global_to_local_original * to,
+              t, intersectionPoint ) )
           intersected = true;
-        }
-        else {
-          Vec3f nearPlaneTransformed = original_transform_matrix * 
-                                       near_plane_pos;
-          Vec3f farPlaneTransformed = original_transform_matrix *
-                                      far_plane_pos;
+        } else {
+          Vec3f nearPlaneTransformed = geometry_global_to_local_original * 
+                                       from;
+          Vec3f farPlaneTransformed = geometry_global_to_local_original *
+                                      to;
 
           // The cylinder is along the y_axis and we do want it to be long
           // enough to intersect the segment.
@@ -240,8 +235,8 @@ void CylinderSensor::Set_CylinderEvents::update() {
 
         // if intersection send events.
         if( intersected ) {
-          cs->send_warning_message = true;
-          cs->trackPoint_changed->setValue( intersectionPoint, cs->id );
+          send_warning_message = true;
+          trackPoint_changed->setValue( intersectionPoint, id );
           intersectionPoint.y = 0.0f;
           intersectionPoint.normalizeSafe();
           H3DFloat angle = 0;
@@ -249,50 +244,49 @@ void CylinderSensor::Set_CylinderEvents::update() {
           // need to clamp the calculated angle because sometimes the scalar
           // product return a value slightly above 1 or below -1 which means
           // that H3DAcos returns an undefined value.
-          if( (original_intersection % intersectionPoint).y < 0.0f ) {
-            angle = -H3DAcos( cs->Clamp( original_intersection *
+          if( (last_intersection % intersectionPoint).y < 0.0f ) {
+            angle = -H3DAcos( Clamp( last_intersection *
                                          intersectionPoint, -1, 1 ) );
-          }
-          else {
-            angle = H3DAcos( cs->Clamp( original_intersection * 
+          } else {
+            angle = H3DAcos( Clamp( last_intersection * 
                                         intersectionPoint, -1, 1 ) );
           }
 
-          original_intersection = intersectionPoint;
+          last_intersection = intersectionPoint;
 
-          H3DFloat minAngle = cs->minAngle->getValue();
-          H3DFloat maxAngle = cs->maxAngle->getValue();
+          H3DFloat min_angle = minAngle->getValue();
+          H3DFloat max_angle = maxAngle->getValue();
           
-          angle += cs->rotation_changed->getValue().angle;
-          if( minAngle <= maxAngle )
-            angle = cs->Clamp( angle, minAngle, maxAngle );
+          angle += rotation_changed->getValue().angle;
+          if( min_angle <= max_angle )
+            angle = Clamp( angle, min_angle, max_angle );
 
-          cs->rotation_changed->setValue( Rotation( y_axis, angle ),
-                                          cs->id );
+          rotation_changed->setValue( Rotation( y_axis, angle ),
+                                          id );
         } else {
-          if( cs->send_warning_message ) {
+          if( send_warning_message ) {
             // X3D specification states that in the case of no Cylinder
             // (or plane) intersection "browsers may interpret this in a
             // variety of ways" which means doing whatever feels natural.
             // H3DAPI resends last event.
-            Console(3) << "Warning: No intersection with invisible cylinder"
+            Console(3) << "Warning: No intersection with invisible "
+                       << ( use_caps ? "plane" : "cylinder" )
                        << " in CylinderSensor node( "
-                       << cs->getName() 
+                       << getName() 
                        << " ). Last event resent." << endl;
-            cs->send_warning_message = false;
+            send_warning_message = false;
           }
-          cs->trackPoint_changed->touch();
-          cs->rotation_changed->touch();
+          trackPoint_changed->touch();
+          rotation_changed->touch();
         }
       }
-    }
-    else {
+    } else {
       // not active anymore
       if( !new_cylinder ) {
         new_cylinder = true;
-        if( cs->autoOffset->getValue() )
-          cs->offset->setValue( cs->rotation_changed->getValue().angle,
-                                cs->id );
+        if( autoOffset->getValue() )
+          offset->setValue( rotation_changed->getValue().angle,
+                                id );
       }
     }
   }

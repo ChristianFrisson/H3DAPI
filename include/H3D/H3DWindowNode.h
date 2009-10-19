@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -101,13 +101,13 @@ namespace H3D {
         /// when e.g. extending the desktop in order for rendering each
         /// the left eye for one projector and the right for another.
         VERTICAL_SPLIT_KEEP_RATIO,
-		
+    
         /// Stereo mode where the left eye is rendered as the top half 
         /// of the screen and the right eye as the bottom half of the screen.
         /// The aspect ratio is preserved in this mode, so that it can be used
         /// when e.g. extending the desktop in order for rendering each
-        /// the left eye for one projector and the right for another.	
-		    HORIZONTAL_SPLIT_KEEP_RATIO 
+        /// the left eye for one projector and the right for another.  
+        HORIZONTAL_SPLIT_KEEP_RATIO 
 
       } Mode;
 
@@ -347,7 +347,7 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
-
+    // Variables containing default values for navigation.
     string default_nav;
     vector< H3DFloat > default_avatar;
     H3DFloat default_speed;
@@ -428,6 +428,18 @@ namespace H3D {
 
     /// The cursor currently in use.
     string current_cursor;
+
+    // Stores the current mouse_position as it was when updating MouseSensors.
+    // Used as input to updateX3DPointingDeviceSensors.
+    H3DInt32 mouse_position[2];
+    // Stores the previous mouse position.
+    H3DInt32 previous_mouse_position[2];
+    // Flag needed because of some kind of bug which is only apparent in
+    // H3DLoad (maybe glut). See bug report.
+    // TODO: This is only a work around, not really an optimal solution. To
+    // test bug report 0000176 simply set this value to true in
+    // H3DWindowNode constructor.
+    bool render_already_run_once;
   };
 }
 

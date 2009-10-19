@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,7 @@
 #ifndef __X3DPOINTINGDEVICESENSORNODE_H__
 #define __X3DPOINTINGDEVICESENSORNODE_H__
 
-#include <H3D/MouseSensor.h>
+#include <H3D/X3DSensorNode.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/SFString.h>
 
@@ -111,60 +111,12 @@ namespace H3D {
     public X3DSensorNode {
   public:
 
-    /// The SetIsActive class is specialize field to set the isActive field.
-    /// isActive is set to true if the primary pointing device button is
-    /// pressed while isOver is true. isActive is set to false when the
-    /// primary pointing device button is released if it was previously 
-    /// pressed.
-    ///
-    /// - routes_in[0] is the leftButton field of a MouseSensor
-    class H3DAPI_API SetIsActive: 
-      public AutoUpdate< SFBool > {
-    public:
-      SetIsActive() {
-        left_mouse_miss = false;
-      }
-
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b, id );
-      }
-    protected:
-      virtual void update();
-
-      bool left_mouse_miss;
-    };
-#ifdef __BORLANDC__
-    friend class SetIsActive;
-#endif
-
-    /// The SetIsEnabled class is specialize to check if the primary pointing
-    /// device button is pressed when the enabled field is set to true. 
-    /// If so then enabled will not
-    /// cause events until the primary pointing device button is released.
-    /// Also if the enabled field is false and isActive is true then isActive
-    /// is set to false.
-    ///
-    /// - routes_in[0] is the enabled field of X3DPointingDeviceSensorNode
-    /// - routes_in[1] is the leftButton field of MouseSensor
-    class H3DAPI_API SetIsEnabled: 
-      public AutoUpdate< TypedField < SFBool, Types< SFBool, SFBool > > > {
-    public:
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b, id );
-      }
-    protected:
-      virtual void update(); 
-    };
-#ifdef __BORLANDC__
-    friend class SetIsEnabled;
-#endif
-
     /// Constructor.
     X3DPointingDeviceSensorNode( Inst< SFString > _description = 0,
-                                 Inst< SFBool >  _enabled  = 0,
-                                 Inst< SFNode >  _metadata = 0,
-                                 Inst< SFBool >  _isActive = 0,
-                                 Inst< SFBool > _isOver = 0 );
+                                 Inst< SFBool   > _enabled  = 0,
+                                 Inst< SFNode   > _metadata = 0,
+                                 Inst< SFBool   > _isActive = 0,
+                                 Inst< SFBool   > _isOver = 0 );
 
     ~X3DPointingDeviceSensorNode();
 
@@ -199,11 +151,17 @@ namespace H3D {
     auto_ptr< SFBool > isOver;
 
     /// Called to detect and set properties of X3DPointingDeviceSensors.
-    /// This is not done in traverseSG since that would give prolems with
-    /// DEF/USE feature and X3DPointingDevice hierarchy. It would also mean
-    /// more calls to lineIntersect.
+    /// The call to this function is done in H3DWindowNode::render
     /// \param n The node to do intersection tests with, e.g. the sceneRoot.
-    static void updateX3DPointingDeviceSensors( Node * n );
+    /// \param from The start of the line segment for which to intersect with.
+    /// \param to The end of the line segment for which to intersect with..
+    static void updateX3DPointingDeviceSensors( Node * n,
+                                                const Vec3f &from,
+                                                const Vec3f &to );
+
+    /// Update fields that depends on the status of the primary pointing device
+    /// button. So far only implemented for mouse.
+    static void updateButtonDependentFields( bool primary_button );
 
     /// Called to query, whether any X3DPointingDeviceSensors is in isOver
     /// state.
@@ -213,22 +171,56 @@ namespace H3D {
     /// state.
     static bool anyIsActive();
 
+    /// Returns true if there are any X3DPointingDeviceSensors in the scene.
+    static inline bool instancesExists() {
+      return !instances.empty();
+    }
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   protected:
 
-    /// This value is used in onIsOver. Set here instead of sending as argument
-    /// cause it is more effective to go through all instances of
-    /// X3DPointingDeviceSensorNodes twice than it is to compare pointers for
-    /// all devices to know if it should be true or not.
+    // The SetIsEnabled class is specialized to call setIsEnabled function
+    // when the enabled field chances value. If enabled is set to true while
+    // the primary pointing device button is pressed then no events are sent
+    // until the primary pointing device button is released.
+    // If the enabled field is set to false and isActive and isOver are true
+    // then those are set to false.
+    //
+    // - routes_in[0] is the enabled field of X3DPointingDeviceSensorNode
+    class H3DAPI_API SetIsEnabled: 
+      public AutoUpdate< SFBool > {
+    public:
+      virtual void setValue( const bool &b, int id = 0 ) {
+        AutoUpdate< SFBool >::setValue( b, id );
+        X3DPointingDeviceSensorNode *pdsn =
+          static_cast< X3DPointingDeviceSensorNode * >(owner);
+        pdsn->setIsEnabled( pdsn->last_primary_button_value );
+      }
+    protected:
+      virtual void update() {
+        AutoUpdate< SFBool >::update();
+        X3DPointingDeviceSensorNode *pdsn =
+          static_cast< X3DPointingDeviceSensorNode * >(owner);
+        pdsn->setIsEnabled( pdsn->last_primary_button_value );
+      }
+    };
+#ifdef __BORLANDC__
+    friend class SetIsEnabled;
+#endif
+
+    // This value is used in onIsOver. Set here instead of sending as argument
+    // cause it is more effective to go through all instances of
+    // X3DPointingDeviceSensorNodes twice than it is to compare pointers for
+    // all devices to know if it should be true or not.
     bool new_value;
 
-    /// This value must be true for a sensor to become active.
+    // This value must be true for a sensor to become active.
     bool lowest_enabled;
 
-    /// Called to generate isOver events if they should be
-    /// generated.
+    // Called to generate isOver events if they should be
+    // generated.
     virtual void onIsOver( IntersectionInfo *result = 0,
                            Matrix4f *global_to_local = 0 ) {
       if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
@@ -237,16 +229,6 @@ namespace H3D {
       }
     }
 
-    /// \brief Used to find out if the 2D pointing device ( e.g. the mouse )
-    /// has moved. In that case collision with all geometries need to be done.
-    static bool has2DPointingDeviceMoved( Vec2f & pos );
-
-    // static variables for pointing Device 2D (e.g. mouse )
-    static MouseSensor *mouse_sensor;
-    static Vec2f pos_device2D;
-    static Vec3f near_plane_pos;
-    static Vec3f far_plane_pos;
-
     // To indicate how many active devices there are.
     static int number_of_active;
     
@@ -254,10 +236,31 @@ namespace H3D {
     // correctly.
     bool is_enabled;
 
-    // Instances of specialized fields.
-    auto_ptr< SetIsEnabled > setIsEnabled;
-    auto_ptr< SetIsActive > setIsActive;
-    
+    // Used to call setIsEnabled when the enabled field is changed.
+    // C++ only field.
+    auto_ptr< SetIsEnabled > setIsEnabledField;
+
+    // Contains information about the last value of the primary button of the
+    // pointing device sensor and the intersection points.
+    static bool last_primary_button_value;
+    static Vec3f last_from;
+    static Vec3f last_to;
+
+    // Used to setIsEnabled if needed.
+    void setIsEnabled( bool primary_button );
+    void setIsActive( bool primary_button );
+
+    // Virtual function that should check the isActive field and if it
+    // is true then update specific fields. If isActive field is false then
+    // reset state of internal variables. Do not call enabled->getValue() in
+    // this function.
+    // _enabled - Should be treated as enabled->getValue().
+    // from - The start of the line segment for which to intersect with.
+    // to - The end of the line segment for which to intersect with.
+    virtual void setDragOutputEvents( bool _enabled,
+                                      const Vec3f &from,
+                                      const Vec3f &to ) {};
+
   private:
     // The instances of X3DPointingDeviceSensorNode that has been created.
     static vector< X3DPointingDeviceSensorNode * > instances;

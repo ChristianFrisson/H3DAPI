@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,6 +31,7 @@
 
 #include <H3D/X3DDragSensorNode.h>
 #include <H3D/SFRotation.h>
+#include <H3D/SFVec2f.h>
 
 namespace H3D {
 
@@ -89,48 +90,9 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile SphereSensor.dot
- 
   class H3DAPI_API SphereSensor : 
     public X3DDragSensorNode {
   public:
-
-
-    /// The Set_SphereEvents field takes care of sending trackPoint_changed,
-    /// rotation_changed, and offset events when they should be sent.
-    ///
-    /// - routes_in[0] is the position field of a MouseSensor
-    /// - routes_in[1] is the isActive field.
-    class H3DAPI_API Set_SphereEvents: 
-      public AutoUpdate< TypedField < SFBool, Types< SFVec2f, SFBool > > > {
-    public:
-
-      /// Constructor
-      Set_SphereEvents() {
-        new_radius = true;
-        center = Vec3f( 0, 0, 0 );
-      }
-
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b, id );
-      }
-    protected:
-      /// update the value of this field and set the fields mentioned above
-      virtual void update();
-
-      /// Intersects segment s = a1 + t(a2-a1) with sphere defined by center
-      /// and radius (see below), if intersecting, returns t value of
-      /// intersection and intersection point q.
-      int intersectSegmentSphere( Vec3f a1, Vec3f a2, H3DFloat & t, Vec3f &q );
-
-      H3DFloat radius;
-      Vec3f original_intersection, center;
-      Matrix4f original_transform_matrix;
-      /// If true a new radius will be defined.
-      bool new_radius;
-    };
-#ifdef __BORLANDC__
-    friend class Set_SphereEvents;
-#endif
 
     /// Constructor.
     SphereSensor(     Inst< SFBool >  _autoOffset = 0,
@@ -167,14 +129,50 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-    /// Called to generate isOver events and other events (dependent on isOver)
-    /// if they should be generated.
+
+    // Virtual function that should check the isActive field and if it
+    // is true then update specific fields. If isActive field is false then
+    // reset state of internal variables. Do not call enabled->getValue() in
+    // this function.
+    // _enabled - Should be treated as enabled->getValue().
+    // from - The start of the line segment for which to intersect with.
+    // to - The end of the line segment for which to intersect with.
+    virtual void setDragOutputEvents( bool _enabled,
+                                      const Vec3f &from,
+                                      const Vec3f &to );
+
+    // Called to generate isOver events and other events which dependens on
+    // isOver.
     virtual void onIsOver( IntersectionInfo *result = 0,
                            Matrix4f *global_to_local = 0 );
 
-    auto_ptr< Set_SphereEvents > set_SphereEvents;
-    Vec3f original_intersection;
-    Matrix4f intersection_matrix;
+    // Stores points of intersection with any of the geometry which causes this
+    // sensor to generate isOver events.
+    Vec3f geometry_intersection;
+
+    // Stores global_to_local matrix of the geometry which causes this
+    // sensor to generate isOver events.
+    Matrix4f geometry_global_to_local;
+
+    /// Intersects segment s = a1 + t(a2-a1) with sphere defined by center
+    /// and radius (see below), if intersecting, returns t value of
+    /// intersection and intersection point q.
+    int intersectSegmentSphere( Vec3f a1, Vec3f a2, H3DFloat & t, Vec3f &q );
+
+    // Radius of the sphere.
+    H3DFloat radius;
+
+    // Last intersection point with the cylinder. Only used when sensor is
+    // active.
+    Vec3f last_intersection;
+    // The center of the sphere. Is always Vec3f( 0, 0, 0 ).
+    Vec3f center;
+
+    // The transformation from global to local of the geometry for which this
+    // sensor is active. It will not change while sensor is active.
+    Matrix4f active_global_to_local_matrix;
+    /// If true a new radius will be defined.
+    bool new_radius;
   };
 }
 

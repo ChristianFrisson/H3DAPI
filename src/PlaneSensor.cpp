@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -64,7 +64,8 @@ PlaneSensor::PlaneSensor(
   minPosition( _minPosition ),
   offset( _offset ),
   translation_changed( _translation_changed ),
-  set_PlaneEvents( new Set_PlaneEvents ) {
+  new_plane( true ),
+  plane_normal( Vec3f( 0, 0, 1) ) {
 
   type_name = "PlaneSensor";
   database.initFields( this );
@@ -72,15 +73,9 @@ PlaneSensor::PlaneSensor(
   maxPosition->setValue( Vec2f( -1, -1 ) );
   minPosition->setValue( Vec2f( 0, 0 ) );
   offset->setValue( Vec3f( 0, 0, 0 ) );
-
-  set_PlaneEvents->setValue( true );
-  set_PlaneEvents->setOwner( this );
-  set_PlaneEvents->setName( "set_PlaneEvents" );
-  mouse_sensor->position->routeNoEvent( set_PlaneEvents );
-  isActive->routeNoEvent( set_PlaneEvents );
 }
 
-/// Destructor. 
+// Destructor. 
 PlaneSensor::~PlaneSensor() {
 }
 
@@ -90,84 +85,82 @@ void PlaneSensor::onIsOver( IntersectionInfo *result,
     X3DPointingDeviceSensorNode::onIsOver( result,
                                            global_to_local );
     if( new_value ) {
-      intersection_matrix = *global_to_local;
-      intersection_point = intersection_matrix * Vec3f( result->point );
+      geometry_global_to_local = *global_to_local;
+      geometry_intersection =
+        geometry_global_to_local * Vec3f( result->point );
     }
   }
 }
 
-int PlaneSensor::Set_PlaneEvents::intersectLinePlane(
+int PlaneSensor::intersectLinePlane(
   Vec3f a, Vec3f b, float &t, Vec3f &q ) {
   // Compute the t value for the directed line ab intersecting the plane
   Vec3f ab = b - a;
-  t = (planeD - planeNormal * a ) / ( planeNormal * ab );
+  t = (plane_d - plane_normal * a ) / ( plane_normal * ab );
 
   q = a + t * ab;
   return 1;
 }
 
-void PlaneSensor::Set_PlaneEvents::update() {
-  SFBool::update();
-  PlaneSensor *ps = 
-    static_cast< PlaneSensor * >( getOwner() );
-
-  if( ps->enabled->getValue() ) {
-    bool isActive = static_cast< SFBool * >(routes_in[1])->getValue();
-    if( isActive ) {
+void PlaneSensor::setDragOutputEvents( bool _enabled,
+                                       const Vec3f &from,
+                                       const Vec3f &to ) {
+  if( _enabled ) {
+    if( isActive->getValue() ) {
       if( new_plane ) {
-        ps->send_warning_message = true;
-        originalIntersection = ps->intersection_point;
-        active_matrix = ps->intersection_matrix;
+        // Initialize variables used when active.
+        send_warning_message = true;
+        last_intersection = geometry_intersection;
+        active_global_to_local_matrix = geometry_global_to_local;
         new_plane = false;
-        planeD = planeNormal * originalIntersection;
-        ps->trackPoint_changed->setValue( originalIntersection, ps->id );
-        ps->translation_changed->setValue( Vec3f( 0, 0, 0 ) + 
-                                           ps->offset->getValue(), ps->id );
-      }
-      else {
+        plane_d = plane_normal * last_intersection;
+        trackPoint_changed->setValue( last_intersection, id );
+        translation_changed->setValue( Vec3f( 0, 0, 0 ) +
+                                       offset->getValue(), id );
+      } else {
+        // Calculate intersection and send events.
         H3DFloat t;
         Vec3f intersectionPoint;
-        if( intersectLinePlane( active_matrix * near_plane_pos,
-                                   active_matrix * far_plane_pos, t,
-                                   intersectionPoint ) ) {
-          ps->send_warning_message = true;
-          Vec3f translation_changed = intersectionPoint - originalIntersection
-                                      + ps->offset->getValue();
-          Vec2f minPosition = ps->minPosition->getValue();
-          Vec2f maxPosition = ps->maxPosition->getValue();
-          if( minPosition.x <= maxPosition.x ) {
-            translation_changed.x = ps->Clamp( translation_changed.x,
-                                           minPosition.x,
-                                           maxPosition.x );
+        if( intersectLinePlane( active_global_to_local_matrix * from,
+                                active_global_to_local_matrix * to, t,
+                                intersectionPoint ) ) {
+          send_warning_message = true;
+          Vec3f trans_changed = intersectionPoint - last_intersection
+                                + offset->getValue();
+          Vec2f min_position = minPosition->getValue();
+          Vec2f max_position = maxPosition->getValue();
+          if( min_position.x <= max_position.x ) {
+            trans_changed.x = Clamp( trans_changed.x,
+                                     min_position.x,
+                                     max_position.x );
           }
-          if( minPosition.y <= maxPosition.y ) {
-            translation_changed.y = ps->Clamp( translation_changed.y,
-                                           minPosition.y,
-                                           maxPosition.y );
+          if( min_position.y <= max_position.y ) {
+            trans_changed.y = Clamp( trans_changed.y,
+                                     min_position.y,
+                                     max_position.y );
           }
-          ps->trackPoint_changed->setValue( intersectionPoint, ps->id );
-          ps->translation_changed->setValue( translation_changed , ps->id );
-        }
-        else {
-          if( ps->send_warning_message ) {
+          trackPoint_changed->setValue( intersectionPoint, id );
+          translation_changed->setValue( trans_changed , id );
+        } else {
+          if( send_warning_message ) {
             // X3D specification states that in the case of no plane
             // intersection "browsers may interpret this in a variety of ways"
             // which means doing whatever feels natural.
             // H3DAPI resends last event.
             Console(3) << "Outside the plane due to near- and farplane" <<
                     " clipping or other reason, last event resent." << endl;
-            ps->send_warning_message = false;
+            send_warning_message = false;
           }
-          ps->trackPoint_changed->touch();
-          ps->translation_changed->touch();
+          trackPoint_changed->touch();
+          translation_changed->touch();
         }
       }
-    }
-    else {
+    } else {
+      // Reset variables when not active anymore.
       if( !new_plane ) {
         new_plane = true;
-        if( ps->autoOffset->getValue() )
-          ps->offset->setValue( ps->translation_changed->getValue(), ps->id );
+        if( autoOffset->getValue() )
+          offset->setValue( translation_changed->getValue(), id );
       }
     }
   }

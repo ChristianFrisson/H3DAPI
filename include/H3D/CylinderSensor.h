@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -136,58 +136,13 @@ namespace H3D {
     public X3DDragSensorNode {
   public:
 
-
-    /// The Set_CylinderEvents field takes care of sending trackPoint_changed,
-    /// rotation_changed, and offset events when they should be sent.
-    ///
-    /// routes_in[0] is the position field of a MouseSensor
-    ///
-    /// routes_in[1] is the isActive field.
-    class H3DAPI_API Set_CylinderEvents: 
-      public AutoUpdate< TypedField < SFBool, Types< SFVec2f, SFBool > > > {
-    public:
-
-      // Constructor
-      Set_CylinderEvents() {
-        new_cylinder = true;
-        y_axis = Vec3f( 0, 1, 0 );
-        plane_d = 0.0f;
-      }
-
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b, id );
-      }
-    protected:
-      // update the value of this field and set the fields mentioned above
-      virtual void update();
-
-      // Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder specified
-      // by ca, cb and r (see below).
-      int intersectSegmentCylinder( Vec3f sa, Vec3f sb, float &t );
-
-      // intersection between the segment from a to b and the plane defined
-      // by planeD and planeNormal (see below). Results are stored in
-      // t and q.
-      int intersectLinePlane( Vec3f a, Vec3f b, float &t, Vec3f &q );
-
-      Vec3f original_intersection, ca, cb, y_axis;
-      H3DFloat radius, plane_d;
-      Matrix4f original_transform_matrix;
-      // If true a new Cylinder will be defined.
-      bool new_cylinder, use_caps;
-    };
-#ifdef __BORLANDC__
-    friend class Set_CylinderEvents;
-#endif
-
-
-    /// The Check_Angle_Limits field checks that the float is in the
+    /// The CheckAngleLimits field checks that the float is in the
     /// correct range. In case it is not within range an error message
     /// is sent and the value is clamped to be within range.
-    class H3DAPI_API Check_Angle_Limits: 
+    class H3DAPI_API CheckAngleLimits: 
       public SFFloat {
     public:
-      Check_Angle_Limits() { limit = 2 * (H3DFloat)Constants::pi; }
+      CheckAngleLimits() { limit = 2 * (H3DFloat)Constants::pi; }
 
       virtual void setValue( const H3DFloat &b, int id = 0 ) {
         if( b < -limit ) {
@@ -233,23 +188,24 @@ namespace H3D {
       H3DFloat limit;
     };
 #ifdef __BORLANDC__
-    friend class Check_Angle_Limits;
+    friend class CheckAngleLimits;
 #endif
 
     /// Constructor.
-    CylinderSensor(   Inst< SFBool >  _autoOffset = 0,
-                      Inst< SFString > _description = 0,
-                      Inst< SFFloat > _diskAngle = 0,
-                      Inst< SFBool >  _enabled = 0,
-                      Inst< Check_Angle_Limits > _maxAngle = 0,
-                      Inst< SFNode >  _metadata = 0,
-                      Inst< Check_Angle_Limits > _minAngle = 0,
-                      Inst< SFFloat  > _offset = 0,
-                      Inst< SFBool >  _isActive = 0,
-                      Inst< SFBool > _isOver = 0,
-                      Inst< SFRotation  >  _rotation_changed = 0,
-                      Inst< SFVec3f >  _trackPoint_changed = 0 );
+    CylinderSensor( Inst< SFBool           > _autoOffset = 0,
+                    Inst< SFString         > _description = 0,
+                    Inst< SFFloat          > _diskAngle = 0,
+                    Inst< SFBool           > _enabled = 0,
+                    Inst< CheckAngleLimits > _maxAngle = 0,
+                    Inst< SFNode           > _metadata = 0,
+                    Inst< CheckAngleLimits > _minAngle = 0,
+                    Inst< SFFloat          > _offset = 0,
+                    Inst< SFBool           > _isActive = 0,
+                    Inst< SFBool           > _isOver = 0,
+                    Inst< SFRotation       > _rotation_changed = 0,
+                    Inst< SFVec3f          > _trackPoint_changed = 0 );
 
+    /// Destructor
     ~CylinderSensor();
 
     // fields
@@ -273,7 +229,7 @@ namespace H3D {
     /// <b>Default value:</b> -1 \n
     ///
     /// \dotfile CylinderSensor_maxAngle.dot
-    auto_ptr< Check_Angle_Limits > maxAngle;
+    auto_ptr< CheckAngleLimits > maxAngle;
 
     /// Used to clamp rotation values. If minAngle < maxAngle no clamping
     /// is done.
@@ -284,7 +240,7 @@ namespace H3D {
     /// <b>Default value:</b> 0 \n
     ///
     /// \dotfile CylinderSensor_minAngle.dot
-    auto_ptr< Check_Angle_Limits > minAngle;
+    auto_ptr< CheckAngleLimits > minAngle;
 
     /// When the pointing device is deactivated and autoOffset is TRUE,
     /// offset is set to the last rotation angle
@@ -296,7 +252,6 @@ namespace H3D {
     /// \dotfile CylinderSensor_offset.dot
     auto_ptr< SFFloat > offset;
 
-    // fields
     /// For each position of the bearing when isActive is true,
     /// a rotation_changed event is sent which corresponds to the sum of
     /// the relative rotation from the original intersection point plus
@@ -311,14 +266,61 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-    /// Called to generate isOver events and other events (dependent on isOver)
-    /// if they should be generated.
+    // Virtual function that should check the isActive field and if it
+    // is true then update specific fields. If isActive field is false then
+    // reset state of internal variables. Do not call enabled->getValue() in
+    // this function.
+    // _enabled - Should be treated as enabled->getValue().
+    // from - The start of the line segment for which to intersect with.
+    // to - The end of the line segment for which to intersect with.
+    virtual void setDragOutputEvents( bool _enabled,
+                                      const Vec3f &from,
+                                      const Vec3f &to );
+
+    // Called to generate isOver events and other events which dependens on
+    // isOver.
     virtual void onIsOver( IntersectionInfo *result = 0,
                            Matrix4f *global_to_local = 0 );
 
-    auto_ptr< Set_CylinderEvents > set_CylinderEvents;
-    Vec3f intersection_point;
-    Matrix4f intersection_matrix;
+    // Stores points of intersection with any of the geometry which causes this
+    // sensor to generate isOver events.
+    Vec3f geometry_intersection;
+    // Stores global_to_local matrix of the geometry which causes this
+    // sensor to generate isOver events.
+    Matrix4f geometry_global_to_local;
+
+    // Intersect segment S(t)=sa+t(sb-sa), 0<=t<=1 against cylinder specified
+    // by ca, cb and r (see below).
+    int intersectSegmentCylinder( Vec3f sa, Vec3f sb, float &t );
+
+    // intersection between the segment from a to b and the plane defined
+    // by planeD and planeNormal (see below). Results are stored in
+    // t and q.
+    int intersectLinePlane( Vec3f a, Vec3f b, float &t, Vec3f &q );
+
+    // Last intersection point with the cylinder. Only used when sensor is
+    // active.
+    Vec3f last_intersection;
+
+    // Cylinder segment points. These are modified to make sure that
+    // intersection with cylinder fails only when outside the radius, not the
+    // caps.
+    Vec3f ca, cb;
+    // The y_axis, that is, the direction of the cylinder. Used to simplify
+    // some calculations since it is always the same value.
+    Vec3f y_axis;
+
+    // The radius of the cylinder.
+    H3DFloat radius;
+    // A number used for plane equation and cylinder cap plane intersections.
+    H3DFloat plane_d;
+
+    // The transformation from global to local of the geometry for which this
+    // sensor is active. It will not change while sensor is active.
+    Matrix4f geometry_global_to_local_original;
+
+    // If true a new Cylinder will be defined.
+    bool new_cylinder, use_caps;
   };
 }
 

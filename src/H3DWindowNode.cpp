@@ -125,7 +125,8 @@ H3DWindowNode::H3DWindowNode(
   stencil_mask_width( 0 ),
   last_loop_mirrored( false ),
   last_render_mode( RenderMode::MONO ),
-  current_cursor( "DEFAULT" ) {
+  current_cursor( "DEFAULT" ),
+  render_already_run_once( false ) {
   
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -174,6 +175,10 @@ H3DWindowNode::H3DWindowNode(
   default_speed = 1;
   default_collision = true;
   H3DNavigationDevices::setNavTypeForAll( default_nav );
+  mouse_position[0] = 0;
+  mouse_position[1] = 0;
+  previous_mouse_position[0] = 0;
+  previous_mouse_position[1] = 0;
 }
 
 H3DWindowNode::~H3DWindowNode() {
@@ -750,6 +755,14 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   last_loop_mirrored = mirror_in_y;
 
+  // Variables needed for calculating the from and to arguments to
+  // X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensor.
+  // Projection matrix for mono. Depends on Viewpoint.
+  GLdouble mono_projmatrix[16], mono_mvmatrix[16];
+  bool any_pointing_device_sensors =
+    X3DPointingDeviceSensorNode::instancesExists();
+
+
   if( renderMode->isStereoMode() ) {
     // make sure the focal plane is between the near and far 
     // clipping planes.
@@ -824,7 +837,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glStencilFunc(GL_EQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
     } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
-			   stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
+         stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, height->getValue() / 2, 
                   width->getValue(), height->getValue() / 2 );
     } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
@@ -862,9 +875,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
 
-    X3DPointingDeviceSensorNode::
-      updateX3DPointingDeviceSensors( child_to_render );
-    
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
 
@@ -920,7 +930,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glStencilFunc(GL_NOTEQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
     } if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
-		  stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
+      stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, 0, 
                   width->getValue(), height->getValue() / 2 );
     } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
@@ -957,9 +967,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.y, 
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
-
-    X3DPointingDeviceSensorNode::
-      updateX3DPointingDeviceSensors( child_to_render );
 
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
@@ -1021,6 +1028,43 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glPopAttrib();
     }
     swapBuffers();
+
+    if( any_pointing_device_sensors ) {
+      // Get values for mono_projmatrix and mono_mvmatrix which should
+      // be used when calculating argument for
+      // X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors
+      // Values for the matrices should be the same as when rendering mono.
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+      glLoadIdentity();
+
+      if( mirror_in_y ) {
+        glScalef( 1, -1, 1 );
+      }
+
+      // Use viewpoint to set up GL_PROJECTION matrix.
+      vp->setupProjection( X3DViewpointNode::MONO,
+                           (H3DFloat)width->getValue(),
+                           (H3DFloat)height->getValue(),
+                           clip_near, clip_far );
+      glGetDoublev( GL_PROJECTION_MATRIX, mono_projmatrix );
+      glPopMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+      glLoadIdentity();
+
+      glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
+                 vp_orientation.axis.x, 
+                 vp_orientation.axis.y,
+                 vp_orientation.axis.z );
+
+      glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
+      glMultMatrixf( vp_inv_transform );
+
+      glGetDoublev( GL_MODELVIEW_MATRIX, mono_mvmatrix );
+      glPopMatrix();
+    }
   } else {
     // MONO
 
@@ -1068,8 +1112,12 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
     glMultMatrixf( vp_inv_transform );
 
-    X3DPointingDeviceSensorNode::
-      updateX3DPointingDeviceSensors( child_to_render );
+    if( any_pointing_device_sensors ) {
+      // Get matrices used to calculate arguments for
+      // X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors
+      glGetDoublev( GL_PROJECTION_MATRIX, mono_projmatrix );
+      glGetDoublev( GL_MODELVIEW_MATRIX, mono_mvmatrix );
+    }
 
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
@@ -1108,25 +1156,57 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // TODO: This should only be done once per scene.
   // two windows in the same scene will probably
   // give some strange results.
-  if( nav_info )
-    nav_info->doNavigation( navigation_vp, child_to_render );
-  else {
-    bool use_collision = default_collision;
-    
-    GlobalSettings *default_settings = GlobalSettings::getActive();
-    if( default_settings ) {
-      CollisionOptions * collision_option = 0;
-      default_settings->getOptionNode( collision_option );
-      if( collision_option )
-        use_collision = collision_option->avatarCollision->getValue();
+  if( render_already_run_once ) {
+    if( any_pointing_device_sensors &&
+        ( mouse_position[0]- previous_mouse_position[0] != 0 ||
+          mouse_position[1]- previous_mouse_position[1] != 0 ) ) {
+      // If mouse moved the transform mouse to world coordinate space and send
+      // to updateX3DPointingDeviceSensors function.
+      GLint mono_viewport[4] = { 0, 0, width->getValue(), height->getValue() };
+      GLdouble wx, wy, wz;
+
+      H3DInt32 tmp_mouse_pos[2];
+      tmp_mouse_pos[0] = mouse_position[0];
+      tmp_mouse_pos[1] = mono_viewport[3] - mouse_position[1] - 1;
+      gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
+        0.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
+      Vec3f near_plane_pos = Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+      gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
+        1.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
+      Vec3f far_plane_pos = Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+      // Update pointing device sensors in order to have them correctly
+      // calculated for next turn.
+      X3DPointingDeviceSensorNode::
+        updateX3DPointingDeviceSensors( child_to_render,
+                                        near_plane_pos,
+                                        far_plane_pos );
     }
 
-    H3DNavigation::doNavigation( default_nav,
-                                 vp, child_to_render,
-                                 use_collision,
-                                 default_avatar,
-                                 default_speed );
-    H3DNavigationDevices::setNavTypeForAll( default_nav );
+    if( nav_info )
+      nav_info->doNavigation( navigation_vp, child_to_render );
+    else {
+      bool use_collision = default_collision;
+      
+      GlobalSettings *default_settings = GlobalSettings::getActive();
+      if( default_settings ) {
+        CollisionOptions * collision_option = 0;
+        default_settings->getOptionNode( collision_option );
+        if( collision_option )
+          use_collision = collision_option->avatarCollision->getValue();
+      }
+
+      H3DNavigation::doNavigation( default_nav,
+                                   vp, child_to_render,
+                                   use_collision,
+                                   default_avatar,
+                                   default_speed );
+      H3DNavigationDevices::setNavTypeForAll( default_nav );
+    }
+    // Store previous mouse position
+    previous_mouse_position[0] = mouse_position[0];
+    previous_mouse_position[1] = mouse_position[1];
+  } else {
+    render_already_run_once = true;
   }
 
   if( ti ) {
@@ -1231,6 +1311,8 @@ void H3DWindowNode::onMouseButtonAction( int button, int state ) {
 
 void H3DWindowNode::onMouseMotionAction( int x, int y ) {
   MouseSensor::motionCallback( x, y );
+  mouse_position[0] = x;
+  mouse_position[1] = y;
 }
 
 void H3DWindowNode::onMouseWheelAction( int direction ) {
@@ -1391,45 +1473,48 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK: {
       MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
-                                      MouseSensor::DOWN );
+                                   MouseSensor::DOWN );
       break;
     }
 
     case WM_LBUTTONUP: {
       MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
-                                      MouseSensor::UP );
+                                   MouseSensor::UP );
       break;
     }
 
     case WM_MBUTTONDOWN:
     case WM_MBUTTONDBLCLK: {
       MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
-                                      MouseSensor::DOWN );
+                                   MouseSensor::DOWN );
       break;
     }
 
     case WM_MBUTTONUP: {
       MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
-                                      MouseSensor::UP );
+                                   MouseSensor::UP );
       break;
     }
 
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK: {
       MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
-                                      MouseSensor::DOWN );
+                                   MouseSensor::DOWN );
       break;
     }
 
     case WM_RBUTTONUP: {
       MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
-                                      MouseSensor::UP );
+                                   MouseSensor::UP );
       break;
     }
 
     case WM_MOUSEMOVE: {
-      MouseSensor::motionCallback( LOWORD(lParam),
-                                   HIWORD(lParam) );
+      // Set mouse_position variable and call MouseSensor function.
+      mouse_position[0] = LOWORD(lParam);
+      mouse_position[1] = HIWORD(lParam);
+      MouseSensor::motionCallback( mouse_position[0],
+                                   mouse_position[1] );
       break;
     }
 

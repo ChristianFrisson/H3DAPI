@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -58,17 +58,13 @@ SphereSensor::SphereSensor(
                      _metadata, _isActive, _isOver, _trackPoint_changed ),
   offset( _offset ),
   rotation_changed( _rotation_changed ),
-  set_SphereEvents( new Set_SphereEvents ) {
+  new_radius( true ),
+  center( Vec3f( 0, 0, 0 ) ) {
 
   type_name = "SphereSensor";
   database.initFields( this );
 
   offset->setValue( Rotation( 0, 1, 0, 0 ) );
-
-  set_SphereEvents->setOwner( this );
-  set_SphereEvents->setName( "set_SphereEvents" );
-  mouse_sensor->position->routeNoEvent( set_SphereEvents );
-  isActive->routeNoEvent( set_SphereEvents );
 }
 
 void SphereSensor::onIsOver( IntersectionInfo *result,
@@ -77,13 +73,14 @@ void SphereSensor::onIsOver( IntersectionInfo *result,
     X3DPointingDeviceSensorNode::onIsOver( result,
                                            global_to_local );
     if( new_value ) {
-      intersection_matrix = *global_to_local;
-      original_intersection = intersection_matrix * Vec3f( result->point );
+      geometry_global_to_local = *global_to_local;
+      geometry_intersection =
+        geometry_global_to_local * Vec3f( result->point );
     }
   }
 }
 
-int SphereSensor::Set_SphereEvents::intersectSegmentSphere( 
+int SphereSensor::intersectSegmentSphere( 
   Vec3f a1, Vec3f a2, H3DFloat & t, Vec3f &q ) {
     Vec3f a1a2 = a2 - a1;
     H3DFloat length = a1a2.length();
@@ -109,60 +106,58 @@ int SphereSensor::Set_SphereEvents::intersectSegmentSphere(
     return 1;
 }
 
-void SphereSensor::Set_SphereEvents::update() {
-  SFBool::update();
-  SphereSensor *ss = 
-    static_cast< SphereSensor * >( getOwner() );
-  if( ss->enabled->getValue() ) {
-    bool isActive = static_cast< SFBool * >(routes_in[1])->getValue();
-    if( isActive ) {
+void SphereSensor::setDragOutputEvents( bool _enabled,
+                                        const Vec3f &from,
+                                        const Vec3f &to ) {
+  if( _enabled ) {
+    if( isActive->getValue() ) {
       if( new_radius ) {
-        ss->send_warning_message = true;
-        original_intersection = ss->original_intersection;
-        original_transform_matrix = ss->intersection_matrix;
+        // Initialize variables used when active.
+        send_warning_message = true;
+        last_intersection = geometry_intersection;
+        active_global_to_local_matrix = geometry_global_to_local;
         new_radius = false;
-        radius = original_intersection.length();
-        ss->trackPoint_changed->setValue( original_intersection, ss->id );
-        ss->rotation_changed->setValue( Rotation( 0, 1, 0, 0 ) * 
-                                        ss->offset->getValue(), ss->id );
-        original_intersection.normalize();
-      }
-      else {
+        radius = last_intersection.length();
+        trackPoint_changed->setValue( last_intersection, id );
+        rotation_changed->setValue( Rotation( 0, 1, 0, 0 ) * 
+                                        offset->getValue(), id );
+        last_intersection.normalize();
+      } else {
+        // Calculate intersection and send events.
         H3DFloat t;
         Vec3f intersectionPoint;
         if( intersectSegmentSphere( 
-                                 original_transform_matrix * near_plane_pos,
-                                 original_transform_matrix * far_plane_pos,
+                                 active_global_to_local_matrix * from,
+                                 active_global_to_local_matrix * to,
                                  t, intersectionPoint ) ) {
-          ss->send_warning_message = true;
-          ss->trackPoint_changed->setValue( intersectionPoint, ss->id );
+          send_warning_message = true;
+          trackPoint_changed->setValue( intersectionPoint, id );
           intersectionPoint.normalize();
-          ss->rotation_changed->setValue( Rotation( original_intersection,
+          rotation_changed->setValue( Rotation( last_intersection,
                                                     intersectionPoint) *
-                                          ss->offset->getValue(), ss->id );
-        }
-        else {
-          if( ss->send_warning_message ) {
+                                          offset->getValue(), id );
+        } else {
+          if( send_warning_message ) {
             // X3D specification states that in the case of no sphere
             // intersection "browsers may interpret this in a variety of ways"
             // which means doing whatever feels natural.
             // H3DAPI resends last event.
             Console(3) << "Warning: No intersection with invisible sphere"
                        << " in SphereSensor node( "
-                       << ss->getName() 
+                       << getName() 
                        << " ). Last event resent." << endl;
-            ss->send_warning_message = false;
+            send_warning_message = false;
           }
-          ss->trackPoint_changed->touch();
-          ss->rotation_changed->touch();
+          trackPoint_changed->touch();
+          rotation_changed->touch();
         }
       }
-    }
-    else {
+    } else {
+      // Reset variables when isActive is set to false after being true.
       if( !new_radius ) {
         new_radius = true;
-        if( ss->autoOffset->getValue() )
-          ss->offset->setValue( ss->rotation_changed->getValue(), ss->id );
+        if( autoOffset->getValue() )
+          offset->setValue( rotation_changed->getValue(), id );
       }
     }
   }

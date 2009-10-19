@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -132,7 +132,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> true \n
     /// 
-    /// \dotfile FillProperties_filled.dot 
+    /// \dotfile FillProperties_hatched.dot 
     auto_ptr< SFBool  >  hatched;
 
     /// The hatchStyle field selects a hatch pattern to be used. For 

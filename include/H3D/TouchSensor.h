@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,7 @@
 #define __TOUCHSENSOR_H__
 
 #include <H3D/X3DTouchSensorNode.h>
+#include <H3D/SFVec2f.h>
 
 namespace H3D {
 
@@ -97,8 +98,8 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-    /// Called to generate isOver events and other events (dependent on isOver)
-    // if they should be generated.
+    // Called to generate isOver events and other events which dependens on
+    // isOver.
     virtual void onIsOver( IntersectionInfo *result = 0,
                            Matrix4f *global_to_local = 0 );
   };

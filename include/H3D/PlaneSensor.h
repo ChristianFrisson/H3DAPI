@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2009, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,7 @@
 #define __PLANESENSOR_H__
 
 #include <H3D/X3DDragSensorNode.h>
+#include <H3D/SFVec2f.h>
 
 namespace H3D {
 
@@ -102,46 +103,6 @@ namespace H3D {
     public X3DDragSensorNode {
   public:
 
-
-    /// The Set_PlaneEvents field takes care of sending trackPoint_changed,
-    /// translation_changed, and offset events when they should be sent.
-    ///
-    /// - routes_in[0] is the position field of a MouseSensor
-    /// - routes_in[1] is the isActive field.
-    class H3DAPI_API Set_PlaneEvents: 
-      public AutoUpdate< TypedField < SFBool, Types< SFVec2f, SFBool > > > {
-    public:
-
-      // Constructor
-      Set_PlaneEvents() { 
-        originalGeometry = -1;
-        new_plane = true;
-        planeNormal = Vec3f( 0, 0, 1);
-      }
-
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b, id );
-      }
-    protected:
-      // update the value of this field and set the fields mentioned above
-      virtual void update();
-
-      // intersection between the segment from a to b and the plane defined
-      // by planeD and planeNormal (see below). Results are stored in
-      // t and q.
-      int intersectLinePlane( Vec3f a, Vec3f b, float &t, Vec3f &q );
-
-      Vec3f originalIntersection, planeNormal;;
-      H3DInt32 originalGeometry;
-      H3DFloat planeD;
-      Matrix4f active_matrix;
-      // If true a new plane will be defined.
-      bool new_plane;
-    };
-#ifdef __BORLANDC__
-    friend class Set_PlaneEvents;
-#endif
-
     /// Constructor.
     PlaneSensor(      Inst< SFBool >  _autoOffset = 0,
                       Inst< SFString > _description = 0,
@@ -200,15 +161,48 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-    auto_ptr< Set_PlaneEvents > set_PlaneEvents;
-    
-    /// Called to generate isOver events and other events (dependent on isOver)
-    // if they should be generated.
+    // Virtual function that should check the isActive field and if it
+    // is true then update specific fields. If isActive field is false then
+    // reset state of internal variables. Do not call enabled->getValue() in
+    // this function.
+    // _enabled - Should be treated as enabled->getValue().
+    // from - The start of the line segment for which to intersect with.
+    // to - The end of the line segment for which to intersect with.
+    virtual void setDragOutputEvents( bool _enabled,
+                                      const Vec3f &from,
+                                      const Vec3f &to );
+
+    // Called to generate isOver events and other events which dependens on
+    // isOver.
     virtual void onIsOver( IntersectionInfo *result = 0,
                            Matrix4f *global_to_local = 0 );
 
-    Vec3f intersection_point;
-    Matrix4f intersection_matrix;
+    // Stores points of intersection with any of the geometry which causes this
+    // sensor to generate isOver events.
+    Vec3f geometry_intersection;
+
+    // Stores global_to_local matrix of the geometry which causes this
+    // sensor to generate isOver events.
+    Matrix4f geometry_global_to_local;
+
+    // intersection between the segment from a to b and the plane defined
+    // by planeD and planeNormal (see below). Results are stored in
+    // t and q.
+    int intersectLinePlane( Vec3f a, Vec3f b, float &t, Vec3f &q );
+
+    // Last intersection point with the cylinder. Only used when sensor is
+    // active.
+    Vec3f last_intersection;
+
+    // Normal of the plane to intersect with.
+    Vec3f plane_normal;
+    // A number used for plane equation and intersections.
+    H3DFloat plane_d;
+    // The transformation from global to local of the geometry for which this
+    // sensor is active. It will not change while sensor is active.
+    Matrix4f active_global_to_local_matrix;
+    // If true a new plane will be defined.
+    bool new_plane;
   };
 }
 
