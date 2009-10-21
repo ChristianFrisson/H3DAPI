@@ -1377,13 +1377,10 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
 #ifdef WIN32
     SetCurrentFilename(filename.AfterLast('\\') );
     SetCurrentPath(filename.BeforeLast('\\') );
+    wxString wx_filename = currentPath + wxT("\\") + currentFilename;
 #else
     SetCurrentFilename(filename.AfterLast('/') );
     SetCurrentPath(filename.BeforeLast('/') );
-#endif
-#ifdef WIN32
-    wxString wx_filename = currentPath + wxT("\\") + currentFilename;
-#else
     wxString wx_filename = currentPath + wxT("/") + currentFilename;
 #endif
     string filename(wx_filename.mb_str());
@@ -1392,6 +1389,10 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
     lastOpenedFilepath = filename;
     SetStatusText(wxT("File loaded"), 0);
     SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
+    // remove and add back, to make the file jump on top
+    recentFiles->RemoveFileFromHistory( event.GetId() );
+    recentFiles->AddFileToHistory ( wx_filename );
+
   }
 }
 
@@ -1637,13 +1638,18 @@ void WxFrame::ToggleHaptics (wxCommandEvent & event) {
 //Show console event
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
-  theConsole->Show();
+  if (!theConsole->Show()) {
+    // already shown, bring it up
+    theConsole->SetFocus();
+  }
 }
 
 //Show console event
 void WxFrame::ShowTreeView(wxCommandEvent & event)
 {
-  tree_view_dialog->Show();
+  if (!tree_view_dialog->Show()) {
+    tree_view_dialog->SetFocus();
+  }
 }
 
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)
@@ -1661,7 +1667,9 @@ void WxFrame::ShowFrameRate(wxCommandEvent & event)
   frameRates->graphics_rate->SetLabel( wxT("100") );
   frameRates->haptics_rate->SetLabel( wxT("1000") );
   frameRates->haptics_time->SetLabel( wxT("100") );
-  frameRates->Show();
+  if (!frameRates->Show()) {
+    frameRates->SetFocus();
+  }
 }
 
 //Change Viewpoint

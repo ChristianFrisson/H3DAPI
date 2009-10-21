@@ -105,10 +105,10 @@ consoleDialog::consoleDialog ( wxWindow *parent,
                 10 );         // set border width to 10 */
 
   // Clear button
-  wxButton *clearBtn = new wxButton(this, wxID_CLEAR);
+  wxButton *clearBtn = new wxButton(this, wxID_CLEAR, wxT("Cle&ar"));
 
   // Close button
-  wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("Close") );
+  wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("&Close") );
 
   // boxsizer for the buttons
   wxBoxSizer *button_sizer = new wxBoxSizer( wxHORIZONTAL );
