@@ -54,7 +54,8 @@ using namespace H3D;
 
 H3DNodeDatabase X3DGeometryNode::database( "X3DGeometryNode", 
                                            NULL,
-                                           typeid( X3DGeometryNode ) );
+                                           typeid( X3DGeometryNode ),
+                                           &X3DChildNode::database );
 
 namespace X3DGeometryNodeInternals {
   FIELDDB_ELEMENT( X3DGeometryNode, isTouched, OUTPUT_ONLY );
@@ -102,6 +103,7 @@ X3DGeometryNode::X3DGeometryNode(
 }
 
 void X3DGeometryNode::initialize() {
+  X3DChildNode::initialize();
   // The introduction of a ref_count_lock_pointer is changed here
   // in order to not have to change the constructor definition of
   // every single node. The ref_count_lock_pointer is deleted by the

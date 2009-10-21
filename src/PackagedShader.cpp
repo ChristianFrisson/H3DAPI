@@ -55,7 +55,7 @@ PackagedShader::PackagedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFString     > _language,
                                 Inst< MFString     > _url ) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
-                 _isValid, _activate),
+                 _isValid, _activate, _language ),
   X3DUrlObject( _url ),
   X3DProgrammableShaderObject( &database )
 #ifdef HAVE_CG

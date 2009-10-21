@@ -288,6 +288,9 @@ void H3DNodeDatabase::clearDynamicFields( Node *n ) {
     // specified node.
     if( fdb && fdb->getField( n ) ) {
       fields.erase( to_erase );
+      // Delete the DynamicFieldDBElement. It is not used anymore, and not
+      // deleted anywhere else.
+      delete fdb;
     } 
   }
 }

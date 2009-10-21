@@ -147,7 +147,7 @@ namespace H3D {
       class EventField: public AutoUpdate< Field > {
       public:
         /// Constructor.
-        /// \param f The conaining DependentSFNode.
+        /// \param f The containing DependentSFNode.
         EventField( Field *f ):
           field( f ) {
           name = "EventField";

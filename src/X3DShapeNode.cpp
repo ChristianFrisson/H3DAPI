@@ -175,7 +175,7 @@ bool X3DShapeNode::lineIntersect(
                            LineIntersectResult &result ) {
   X3DGeometryNode *tmp_geom = geometry->getValue();
   if( tmp_geom )
-    return geometry->getValue()->lineIntersect( from, to, result );
+    return tmp_geom->lineIntersect( from, to, result );
   else
     return false;
 }
@@ -184,7 +184,7 @@ void X3DShapeNode::closestPoint( const Vec3f &p,
                                  NodeIntersectResult &result ) {
   X3DGeometryNode *tmp_geom = geometry->getValue();
   if( tmp_geom )
-    geometry->getValue()->closestPoint( p, result );
+    tmp_geom->closestPoint( p, result );
 }
 
 bool X3DShapeNode::movingSphereIntersect( H3DFloat radius,

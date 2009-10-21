@@ -54,7 +54,7 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFString     > _language,
                                 Inst< MFShaderPart > _parts ) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
-                 _isValid, _activate),
+                 _isValid, _activate, _language),
   X3DProgrammableShaderObject( &database ),
   parts( _parts ),
   program_handle( 0 ) {
@@ -161,6 +161,7 @@ void ComposedShader::render() {
                        << log << endl;
             glDeleteObjectARB( program_handle );
             program_handle = 0;
+            delete log;
           }
         } else {
           glDeleteObjectARB( program_handle );
