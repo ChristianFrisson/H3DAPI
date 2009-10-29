@@ -367,10 +367,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   advancedMenu = new wxMenu;
   advancedMenu->Append(FRAME_CONSOLE, wxT("Show Console\tF10"),
                        wxT("Show the message console"));
-  advancedMenu->Append(FRAME_FRAMERATE, wxT("Show frame rates\tF9"),
-                       wxT("Show the frame rates of graphics and haptics loop"));
-  advancedMenu->Append(FRAME_TREEVIEW, wxT("Show tree view\tF8"),
+  advancedMenu->Append(FRAME_TREEVIEW, wxT("Show Tree View\tF9"),
                        wxT("Show the scene as a tree, making it possible to inspect and change values at runtime."));
+  advancedMenu->Append(FRAME_FRAMERATE, wxT("Show Framerates\tF8"),
+                       wxT("Show the frame rates of graphics and haptics loop"));
    
   //Help Menu
   helpMenu = new wxMenu;

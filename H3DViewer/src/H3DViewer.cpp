@@ -134,7 +134,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	m_splitter1->SplitVertically( m_panel1, m_panel2, 283 );
 	bSizer14->Add( m_splitter1, 1, wxEXPAND, 5 );
 	
-	btnClose = new wxButton( this, wxID_CANCEL, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+	btnClose = new wxButton( this, wxID_CANCEL, wxT("&Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer14->Add( btnClose, 0, wxALIGN_RIGHT|wxALL, 5 );
 	
 	bSizer1->Add( bSizer14, 1, wxEXPAND, 5 );
