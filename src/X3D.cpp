@@ -454,7 +454,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
   bool use_node = i != visited_nodes.end();
 
   stringstream s;
-  s << "NODE_" << (unsigned int) node;
+  s << "NODE_" << (H3DPtrUint) node;
   string name = node->hasName() ? node->getName() : s.str();
 
   // handle DEF/USE cases

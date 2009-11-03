@@ -34,7 +34,8 @@
 #endif
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
-#include <FTGL/FTGL.h>
+//#include <FTGL/FTGL.h>
+#include <FTGL/ftgl.h>
 #include <FTGL/FTGLTextureFont.h>
 #include <FTGL/FTGLPolygonFont.h>
 #include <FTGL/FTGLOutlineFont.h>
@@ -256,7 +257,7 @@ string FC_GetFontByName( const char *font_name ) {
   FcPattern   *pat;
 
   pat = FcPatternCreate ();
-  os = FcObjectSetBuild (FC_FAMILY, FC_FILE, 0);
+  os = FcObjectSetBuild (FC_FAMILY, FC_FILE, NULL);
   fs = FcFontList (0, pat, os);
   if (pat)
     FcPatternDestroy (pat);
@@ -495,7 +496,7 @@ void FontStyle::buildFonts() {
        n != family->end();
        n++ ) {
     const char *font_name = (*n).c_str();
-    if( std::strcmp( font_name, "SANS" ) == 0 ) {
+    if( strcmp( font_name, "SANS" ) == 0 ) {
       font_name = DEFAULT_SANS_FONT;
     } else if( strcmp( font_name, "SERIF" ) == 0 ) {
       font_name = DEFAULT_SERIF_FONT;

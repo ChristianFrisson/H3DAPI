@@ -83,7 +83,7 @@ namespace yy
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
+#include <stdio.h>
 #include <H3D/H3DApi.h>
 #include <H3D/Node.h>
 #include <H3D/Group.h>
