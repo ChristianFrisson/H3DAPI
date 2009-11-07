@@ -40,16 +40,7 @@
 #include <H3DUtil/AutoRef.h>
 #include <H3D/PrototypeVector.h>
 
-#ifdef HAVE_XERCES
-#include <xercesc/sax2/XMLReaderFactory.hpp>
-#include <xercesc/sax2/SAX2XMLReader.hpp>
-XERCES_CPP_NAMESPACE_USE
-#else
-typedef char XMLCh;
-#endif
-
 using namespace std;
-
 
 namespace H3D {
   /// X3D namespace
@@ -70,7 +61,7 @@ namespace H3D {
            DEFNodes *dn = NULL,
            DEFNodes *exported_nodes = NULL,
            PrototypeVector *prototypes = NULL,
-           const XMLCh *const system_id =(const XMLCh *const)L"<stream input>"
+           const string & system_id = "<stream input>"
          );
 
     /// Create H3D nodes given X3D data as a string.
@@ -123,7 +114,7 @@ namespace H3D {
            DEFNodes *dn = NULL,
            DEFNodes *exported_nodes = NULL,
            PrototypeVector *prototypes = NULL,
-           const XMLCh *const system_id =(const XMLCh *const)L"<stream input>"
+           const string & system_id = "<stream input>"
            );
 
     /// Create a H3D Node given X3D data as a string.
@@ -163,10 +154,6 @@ namespace H3D {
            PrototypeVector *prototypes = NULL,
            bool change_base_path_during_parsing = true );
 
-#ifdef HAVE_XERCES
-    H3DAPI_API SAX2XMLReader* getNewXMLParser();
-#endif
-    
     /// Write the scene graph part of the node given in X3D/XML format
     /// to the given ostream.
     H3DAPI_API void writeNodeAsX3D( ostream& os, 

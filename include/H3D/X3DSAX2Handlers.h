@@ -46,10 +46,10 @@
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/sax/Locator.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
+#include <xercesc/sax2/SAX2XMLReader.hpp>
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
 XERCES_CPP_NAMESPACE_USE
-#endif
 
 #endif
 
@@ -359,6 +359,9 @@ namespace H3D {
       bool inside_head;
         
     };
+
+    H3DAPI_API SAX2XMLReader* getNewXMLParser();
+
 #endif
   } 
 }

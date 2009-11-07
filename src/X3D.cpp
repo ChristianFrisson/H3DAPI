@@ -48,47 +48,6 @@
 
 using namespace H3D;
 
-#ifdef HAVE_XERCES
-
-SAX2XMLReader* X3D::getNewXMLParser() {
-  SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Never;
-  bool                         doNamespaces = true;
-  bool                         doSchema = false;
-  bool                         schemaFullChecking = false;
-  //bool                         doList = false;
-  //bool                         errorOccurred = false;
-  bool                         namespacePrefixes = false;
-  //bool                         recognizeNEL = false;
-  char                         localeStr[64];
-  memset(localeStr, 0, sizeof localeStr);
-  SAX2XMLReader* parser = XMLReaderFactory::createXMLReader();
-  parser->setFeature(XMLUni::fgSAX2CoreNameSpaces, doNamespaces);
-  parser->setFeature(XMLUni::fgXercesSchema, doSchema);
-  parser->setFeature(XMLUni::fgXercesSchemaFullChecking, 
-                     schemaFullChecking);
-  parser->setFeature(XMLUni::fgSAX2CoreNameSpacePrefixes, 
-                     namespacePrefixes);
-  if (valScheme == SAX2XMLReader::Val_Auto) {
-    parser->setFeature(XMLUni::fgSAX2CoreValidation, true);
-    parser->setFeature(XMLUni::fgXercesDynamic, true);
-  }
-  if (valScheme == SAX2XMLReader::Val_Never) {
-    // make sure that the DTD is not loaded. Otherwise a NetAccessorException
-    // is thrown if the DTD is not available, e.g. when offline. 
-    parser->setFeature(XMLUni::fgXercesLoadExternalDTD, false);
-    
-    // disable validation
-    parser->setFeature(XMLUni::fgSAX2CoreValidation, false);
-  }
-  if (valScheme == SAX2XMLReader::Val_Always) {
-    parser->setFeature(XMLUni::fgSAX2CoreValidation, true);
-    parser->setFeature(XMLUni::fgXercesDynamic, false);
-  }
-  return parser;
-}
-
-#endif
-
 Group* X3D::createX3DFromString( const string &str,
                                  DEFNodes *dn,
                                  DEFNodes *exported_nodes,
@@ -232,9 +191,9 @@ Group* X3D::createX3DFromURL( const string &url,
 
 Group* X3D::createX3DFromStream( istream &is, 
                                  DEFNodes *dn,
-         DEFNodes *exported_nodes,
-         PrototypeVector *prototypes,
-                                 const XMLCh *const system_id ) {
+                                 DEFNodes *exported_nodes,
+                                 PrototypeVector *prototypes,
+                                 const string &system_id ) {
   Group *g = new Group;
   AutoRef< Node > n = createX3DNodeFromStream( is, dn, exported_nodes, 
                  prototypes,system_id );
@@ -398,13 +357,19 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
                                               DEFNodes *dn,
                                               DEFNodes *exported_nodes,
                                               PrototypeVector *prototypes,
-                                              const XMLCh *const system_id ) {
+                                              const string & system_id ) {
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
   X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
-  parser->parse( IStreamInputSource( is, system_id ) );
+  XMLCh *system_id_ch = new XMLCh[ system_id.size() + 1 ];
+  for( unsigned int i = 0; i < system_id.size(); i++ ) {
+    system_id_ch[i] = system_id[i];
+  }
+  system_id_ch[ system_id.size() ] = '\0'; 
+  parser->parse( IStreamInputSource( is, system_id_ch ) );
+  delete[] system_id_ch;
   return handler.getResultingNode();
 #else
   Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "

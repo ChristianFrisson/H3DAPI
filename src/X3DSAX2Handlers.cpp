@@ -55,6 +55,43 @@ using namespace H3D;
 using namespace X3D;
 
 
+SAX2XMLReader* X3D::getNewXMLParser() {
+  SAX2XMLReader::ValSchemes    valScheme    = SAX2XMLReader::Val_Never;
+  bool                         doNamespaces = true;
+  bool                         doSchema = false;
+  bool                         schemaFullChecking = false;
+  //bool                         doList = false;
+  //bool                         errorOccurred = false;
+  bool                         namespacePrefixes = false;
+  //bool                         recognizeNEL = false;
+  char                         localeStr[64];
+  memset(localeStr, 0, sizeof localeStr);
+  SAX2XMLReader* parser = XMLReaderFactory::createXMLReader();
+  parser->setFeature(XMLUni::fgSAX2CoreNameSpaces, doNamespaces);
+  parser->setFeature(XMLUni::fgXercesSchema, doSchema);
+  parser->setFeature(XMLUni::fgXercesSchemaFullChecking, 
+                     schemaFullChecking);
+  parser->setFeature(XMLUni::fgSAX2CoreNameSpacePrefixes, 
+                     namespacePrefixes);
+  if (valScheme == SAX2XMLReader::Val_Auto) {
+    parser->setFeature(XMLUni::fgSAX2CoreValidation, true);
+    parser->setFeature(XMLUni::fgXercesDynamic, true);
+  }
+  if (valScheme == SAX2XMLReader::Val_Never) {
+    // make sure that the DTD is not loaded. Otherwise a NetAccessorException
+    // is thrown if the DTD is not available, e.g. when offline. 
+    parser->setFeature(XMLUni::fgXercesLoadExternalDTD, false);
+    
+    // disable validation
+    parser->setFeature(XMLUni::fgSAX2CoreValidation, false);
+  }
+  if (valScheme == SAX2XMLReader::Val_Always) {
+    parser->setFeature(XMLUni::fgSAX2CoreValidation, true);
+    parser->setFeature(XMLUni::fgXercesDynamic, false);
+  }
+  return parser;
+}
+
 namespace H3D {
   
   // Temporary solution to be able to print XMLCh *
