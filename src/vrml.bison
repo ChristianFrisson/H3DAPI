@@ -266,10 +266,10 @@ interfaceDeclarations:   interfaceDeclaration |
 
 restrictedInterfaceDeclaration: 
                          inputOnly fieldType inputOnlyId {
-  driver.setProtoField( $3, $2, Field::INPUT_ONLY, NULL );
+   driver.setProtoField( $3, $2, Field::INPUT_ONLY );
 }|
                          outputOnly fieldType outputOnlyId {
-  driver.setProtoField( $3, $2, Field::OUTPUT_ONLY, NULL );
+  driver.setProtoField( $3, $2, Field::OUTPUT_ONLY );
 } |
                          initializeOnly fieldType initializeOnlyId fieldValue {
   driver.setProtoField( $3, $2, Field::INITIALIZE_ONLY, $4 );

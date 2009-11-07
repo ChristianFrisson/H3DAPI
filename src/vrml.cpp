@@ -525,14 +525,14 @@ if( driver.proto_declarations.size()==0 ) {
   case 47:
 #line 268 "vrml.bison"
     {
-  driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_ONLY, NULL );
+      driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_ONLY );
 }
     break;
 
   case 48:
 #line 271 "vrml.bison"
     {
-  driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::OUTPUT_ONLY, NULL );
+      driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::OUTPUT_ONLY );
 }
     break;
 

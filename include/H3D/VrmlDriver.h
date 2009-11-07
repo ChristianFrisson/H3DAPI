@@ -92,7 +92,7 @@ public:
   void setProtoField( const string &name, 
                       const string& type, 
                       const Field::AccessType &access_type, 
-                      const string & value = 0 );
+                      const string & value = "" );
 
   // VRML specific functions:
 
