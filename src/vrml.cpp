@@ -42,7 +42,7 @@
 #line 43 "vrml.cpp"
 
 #ifndef YY_
-# if YYENABLE_NLS
+# if defined YYENABLE_NLS && YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* FIXME: INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -275,7 +275,7 @@ namespace yy
   // Initialize the initial location.
   yylloc.begin.filename = yylloc.end.filename = &driver.file;
 }
-  /* Line 547 of yacc.c.  */
+  /* Line 555 of yacc.c.  */
 #line 280 "vrml.cpp"
     /* Initialize the stacks.  The initial state will be pushed in
        yynewstate, since the latter expects the semantical and the
@@ -305,7 +305,7 @@ namespace yy
     if (yychar == yyempty_)
       {
 	YYCDEBUG << "Reading a token: ";
-	yychar = yylex ((YYSTYPE *)(&yylval), &yylloc, driver);
+	yychar = yylex (&yylval, &yylloc, driver);
       }
 
 
@@ -393,7 +393,7 @@ namespace yy
       {
 	  case 2:
 #line 111 "vrml.bison"
-      { driver.root.reset( new Group() ); }
+    { driver.root.reset( new Group() ); ;}
     break;
 
   case 13:
@@ -411,14 +411,14 @@ namespace yy
                << (yysemantic_stack_[(4) - (2)]) << "\" does not exist."
                << driver.getLocationString() << endl;
   }
-}
+;}
     break;
 
   case 14:
 #line 147 "vrml.bison"
     {
 if( driver.proto_declarations.size()==0 ) {
-  if( yysemantic_stack_[(6) - (2)] == "H3D_EXPORTS" ) {
+  if(  (yysemantic_stack_[(6) - (2)]) == "H3D_EXPORTS" ) {
     Node *import_node = 
       H3DExports::getH3DExportNode( (yysemantic_stack_[(6) - (4)]) );
     if( import_node ) {
@@ -457,7 +457,7 @@ if( driver.proto_declarations.size()==0 ) {
     }
   }
 }
-}
+;}
     break;
 
   case 24:
@@ -469,7 +469,7 @@ if( driver.proto_declarations.size()==0 ) {
                               if ( node ) 
                                 driver.root->children->push_back( node );
                            }
-                         }
+                         ;}
     break;
 
   case 30:
@@ -480,7 +480,7 @@ if( driver.proto_declarations.size()==0 ) {
     driver.DEF_map->addNode( (yysemantic_stack_[(3) - (2)]), driver.node_stack.back() );
     driver.node_stack.back()->setName( (yysemantic_stack_[(3) - (2)]) );
   } 
-}
+;}
     break;
 
   case 31:
@@ -488,7 +488,7 @@ if( driver.proto_declarations.size()==0 ) {
     {
   if ( driver.proto_declarations.size()==0 )
     driver.node_stack.push_back( driver.DEF_map->getNode( (yysemantic_stack_[(2) - (2)]) ) );
-  }
+  ;}
     break;
 
   case 39:
@@ -501,12 +501,12 @@ if( driver.proto_declarations.size()==0 ) {
        driver.proto_vector->push_back( driver.proto_declarations.back() );
      }
    }
-}
+;}
     break;
 
   case 40:
 #line 249 "vrml.bison"
-    { if ( driver.proto_declarations.size()==1 ) driver.proto_body = ""; }
+    { if ( driver.proto_declarations.size()==1 ) driver.proto_body = ""; ;}
     break;
 
   case 41:
@@ -519,35 +519,35 @@ if( driver.proto_declarations.size()==0 ) {
      driver.proto_declarations.back()->setProtoBody( driver.proto_body );
    }
    driver.proto_declarations.pop_back();
-}
+;}
     break;
 
   case 47:
 #line 268 "vrml.bison"
     {
-      driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_ONLY );
-}
+   driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_ONLY );
+;}
     break;
 
   case 48:
 #line 271 "vrml.bison"
     {
-      driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::OUTPUT_ONLY );
-}
+  driver.setProtoField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::OUTPUT_ONLY );
+;}
     break;
 
   case 49:
 #line 274 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[(4) - (3)]), (yysemantic_stack_[(4) - (2)]), Field::INITIALIZE_ONLY, (yysemantic_stack_[(4) - (4)]) );
-}
+;}
     break;
 
   case 51:
 #line 279 "vrml.bison"
     {
   driver.setProtoField( (yysemantic_stack_[(4) - (3)]), (yysemantic_stack_[(4) - (2)]), Field::INPUT_OUTPUT, (yysemantic_stack_[(4) - (4)]) );
-}
+;}
     break;
 
   case 60:
@@ -588,7 +588,7 @@ if ( driver.proto_declarations.size()==0 ) {
                << driver.getLocationString() << endl;
   }
 }
-}
+;}
     break;
 
   case 63:
@@ -614,13 +614,13 @@ if ( driver.proto_declarations.size()==0 ) {
   }
   driver.node_stack.push_back( new_node ); 
   }
-}
+;}
     break;
 
   case 78:
 #line 383 "vrml.bison"
     { 
-                            driver.field_stack.push_back( (yysemantic_stack_[(1) - (1)]) ); }
+                            driver.field_stack.push_back( (yysemantic_stack_[(1) - (1)]) ); ;}
     break;
 
   case 79:
@@ -628,7 +628,7 @@ if ( driver.proto_declarations.size()==0 ) {
     {
                            if ( driver.proto_declarations.size()==0 )
                                 driver.field_stack.pop_back();
-                            }
+                            ;}
     break;
 
   case 80:
@@ -653,53 +653,53 @@ if ( driver.proto_declarations.size()==0 ) {
       }
     }
   }
-}
+;}
     break;
 
   case 92:
 #line 431 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
-  driver.setFieldValue( (yysemantic_stack_[(1) - (1)]).c_str() );
-}
+  driver.setFieldValue( ((yysemantic_stack_[(1) - (1)])).c_str() );
+;}
     break;
 
   case 93:
 #line 435 "vrml.bison"
     { 
 if ( driver.proto_declarations.size()==0 )
-  driver.setFieldValue( (yysemantic_stack_[(1) - (1)]).c_str() );
-                        }
+  driver.setFieldValue( ((yysemantic_stack_[(1) - (1)])).c_str() );
+                        ;}
     break;
 
   case 94:
 #line 439 "vrml.bison"
-    {}
+    {;}
     break;
 
   case 95:
 #line 440 "vrml.bison"
-    {}
+    {;}
     break;
 
   case 97:
 #line 443 "vrml.bison"
-    { (yyval) = "TRUE"; }
+    { (yyval) = "TRUE"; ;}
     break;
 
   case 98:
 #line 444 "vrml.bison"
-    { (yyval) = "FALSE";}
+    { (yyval) = "FALSE";;}
     break;
 
   case 100:
 #line 447 "vrml.bison"
-    { (yyval) = ""; }
+    { (yyval) = ""; ;}
     break;
 
   case 101:
 #line 448 "vrml.bison"
-    { (yyval) = (yysemantic_stack_[(3) - (2)]); }
+    { (yyval) = (yysemantic_stack_[(3) - (2)]); ;}
     break;
 
   case 102:
@@ -707,7 +707,7 @@ if ( driver.proto_declarations.size()==0 )
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
-                        }
+                        ;}
     break;
 
   case 103:
@@ -715,7 +715,7 @@ if ( driver.proto_declarations.size()==0 )
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 1 );
-                        }
+                        ;}
     break;
 
   case 104:
@@ -723,7 +723,7 @@ if ( driver.proto_declarations.size()==0 )
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
-                        }
+                        ;}
     break;
 
   case 105:
@@ -732,7 +732,7 @@ if ( driver.proto_declarations.size()==0 )
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 1 );
 
-                        }
+                        ;}
     break;
 
   case 107:
@@ -740,7 +740,7 @@ if ( driver.proto_declarations.size()==0 )
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
-                        }
+                        ;}
     break;
 
   case 108:
@@ -748,7 +748,7 @@ if ( driver.proto_declarations.size()==0 )
     {
 if ( driver.proto_declarations.size()==0 )
   driver.setNodeStatement( 0 );
-                        }
+                        ;}
     break;
 
 

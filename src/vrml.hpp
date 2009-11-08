@@ -83,7 +83,7 @@ namespace yy
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
+
 #include <H3D/H3DApi.h>
 #include <H3D/Node.h>
 #include <H3D/Group.h>
@@ -113,7 +113,7 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 
 
 
-/* Line 35 of lalr1.cc.  */
+/* Line 303 of lalr1.cc.  */
 #line 118 "vrml.hpp"
 
 #include "location.hh"
@@ -164,14 +164,7 @@ namespace yy
   public:
     /// Symbol semantic values.
 #ifndef YYSTYPE
-    union semantic_type
-#line 84 "vrml.bison"
-{
-  char* val;
-}
-/* Line 35 of lalr1.cc.  */
-#line 174 "vrml.hpp"
-	;
+    typedef int semantic_type;
 #else
     typedef YYSTYPE semantic_type;
 #endif

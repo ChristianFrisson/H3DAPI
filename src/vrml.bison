@@ -81,17 +81,6 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 %debug
 %error-verbose
 
-%union {
-  char* val;
-}
-
-%type<val> fieldValue sfValue
-%type<val> mfValue STRING VRMLTRUE VRMLFALSE
-%type<val> nodeNameId inputOnlyId outputOnlyId initializeOnlyId
-%type<val> inlineNodeNameId exportedNodeNameId
-%type<val> nodeTypeId 
-%type<val> VRMLID fieldType fieldId
-
 
 %token VRMLID   "identifier"
 %token STRING   "field value"
@@ -430,11 +419,11 @@ fieldType:              VRMLID ;
 
 fieldValue:             sfValue  { 
 if ( driver.proto_declarations.size()==0 )
-  driver.setFieldValue( $1 );
+  driver.setFieldValue( ($1).c_str() );
 } |
                         mfValue  { 
 if ( driver.proto_declarations.size()==0 )
-  driver.setFieldValue( $1 );
+  driver.setFieldValue( ($1).c_str() );
                         } |
                         sfnodeValue {} |
                         mfnodeValue {};
