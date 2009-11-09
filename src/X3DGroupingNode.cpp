@@ -33,6 +33,7 @@
 #include <H3D/MatrixTransform.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/X3DShapeNode.h>
+#include <H3D/ClipPlane.h>
 
 using namespace H3D;
 
@@ -159,10 +160,28 @@ bool X3DGroupingNode::lineIntersect(
   }
   if( !the_bound ||
       the_bound->lineSegmentIntersect( from, to ) ) {
+    Vec3f local_to = to;
+    Vec3f local_from = from;
+    bool below_one_plane = false;
     const NodeVector &children_nodes = children->getValue();
     for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-      if( children_nodes[i]->lineIntersect( from, to, result ) ) {
-          intersect = true;
+      ClipPlane * cp = dynamic_cast< ClipPlane * >(children_nodes[i]);
+      if( cp ) {
+        if( !cp->truncateLine( local_from, local_to,
+                               local_from, local_to ) ) {
+          below_one_plane = true;
+          break;
+        }
+      }
+    }
+
+    if( !below_one_plane ) {
+      for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
+        if( children_nodes[i]->lineIntersect( local_from,
+                                              local_to,
+                                              result ) ) {
+            intersect = true;
+        }
       }
     }
   }

@@ -90,6 +90,17 @@ namespace H3D {
     /// \param ti The TraverseInfo object containing information about the
     /// traversal.
     virtual void disableHapticsState( TraverseInfo &ti );
+
+    /// Changes the line defined by [ from, to ] so that only the part of the
+    // line which satisfies the inequation above ( the part of the line which 
+    /// is above the plane ) is returned.
+    /// \param from The start point of the the line segment.
+    /// \param to The end point of the line segment.
+    /// \param result_from The start point of the the truncated line segment.
+    /// \param result_to The end point of the truncated line segment.
+    /// \returns true if some part of the line is above the plane.
+    bool truncateLine( const Vec3f &from, const Vec3f &to,
+                       Vec3f &result_from, Vec3f &result_to );
   
     /// Specifies if the clipping plane should be enabled or not.
     ///

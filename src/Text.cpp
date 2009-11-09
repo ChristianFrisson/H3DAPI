@@ -542,6 +542,7 @@ void Text::updateLineBounds() {
 
   X3DFontStyleNode * font_style 
     = static_cast< X3DFontStyleNode * >( fontStyle->getValue() );
+  if( !font_style ) font_style = default_font_style.get();
   X3DFontStyleNode::Alignment alignment 
     = font_style->getAlignment();
   X3DFontStyleNode::Justification justification 

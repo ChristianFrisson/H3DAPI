@@ -45,8 +45,7 @@ namespace H3D {
   /// vertices that define the triangle. Each triangle is formed from a
   /// consecutive set of three vertices of the coordinate node. If the
   /// coordinate node does not contain a multiple of three coordinate
-  /// values, the remaining vertices the remaining vertices shall be
-  /// ignored. 
+  /// values, the remaining vertices shall be ignored.
   ///
   /// The TriangleSet node is specified in the local coordinate system and
   /// is affected by the transformations of its ancestors. If values are 

@@ -154,8 +154,6 @@ void LOD::traverseSG( TraverseInfo &ti ){
     }
   }
 }
-  
-
 
 
 void LOD::render(){ 
@@ -166,5 +164,38 @@ void LOD::render(){
   } else {
     children->getValueByIndex(display_index->getValue())->render(); 
   }
-}   
+}
+
+bool LOD::lineIntersect(
+                  const Vec3f &from, 
+                  const Vec3f &to,    
+                  LineIntersectResult &result ) {
+  int index = display_index->getValue();
+  if( index >= 0 && index < (int)children->size() - 1 ) return false;
+  X3DChildNode *child_node = children->getValueByIndex( index );
+  if( child_node ) return child_node->lineIntersect(from, to, result);
+  return false;
+}
+
+void LOD::closestPoint(
+                  const Vec3f &p,
+                  NodeIntersectResult &result ) {
+  int index = display_index->getValue();
+  if( index >= 0 && index < (int)children->size() - 1 ) return;
+  X3DChildNode *child_node = children->getValueByIndex( index );
+  if( child_node ) child_node->closestPoint( p, result );
+}
+
+bool LOD::movingSphereIntersect(
+                  H3DFloat radius,
+                  const Vec3f &from,
+                  const Vec3f &to,
+                  NodeIntersectResult &result ) {
+  int index = display_index->getValue();
+  if( index >= 0 && index < (int)children->size() - 1 ) return false;
+  X3DChildNode *child_node = children->getValueByIndex( index );
+  if( child_node ) return child_node->movingSphereIntersect( radius, from,
+                                                             to, result );
+  return false;
+}
 

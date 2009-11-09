@@ -103,6 +103,42 @@ namespace H3D {
     /// Only traverse the childe defined by whichChoice
     virtual void traverseSG( TraverseInfo &ti ); 
 
+    /// Detect intersection between a line segment and a Node.
+    /// Calls lineIntersect for the same child as the one that should be
+    /// rendered.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect(
+      const Vec3f &from, 
+      const Vec3f &to,    
+      LineIntersectResult &result );
+
+    /// Find closest point on Node to p. Calls closestPoint for the same child
+    /// as the one that should be rendered.
+    /// \param p The point to find the closest point to.
+    /// \param result A struct containing various results of closest
+    /// points such as which geometries the closest points where
+    /// detected on.
+    virtual void closestPoint( const Vec3f &p,
+                               NodeIntersectResult &result );
+
+    /// Detect collision between a moving sphere and the Node.
+    /// Calls movingSphereIntersect for the same child as the one that should
+    /// be rendered.
+    /// \param radius The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \param result A struct containing various results of intersections
+    /// such as which geometries intersected the moving sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersect( H3DFloat radius,
+                                        const Vec3f &from, 
+                                        const Vec3f &to,
+                                        NodeIntersectResult &result );
+
     /// The whichChoice field specifies the index of the child to traverse,
     /// with the first child having index 0. If whichChoice is less than zero
     /// or greater than the number of nodes in the choice field, nothing is

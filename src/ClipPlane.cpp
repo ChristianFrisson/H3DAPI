@@ -114,10 +114,55 @@ void ClipPlane::enableGraphicsState() {
 void ClipPlane::disableGraphicsState() { 
   if( enabled->getValue() && 
       clipGraphics->getValue() && 
-	  plane_index < max_nr_clip_planes ) {
+    plane_index < max_nr_clip_planes ) {
     glDisable( GL_CLIP_PLANE0 + plane_index );
     nr_active_clip_planes--;
     plane_index = -1;
   }
 };
+
+bool ClipPlane::truncateLine( const Vec3f &from, const Vec3f &to,
+                              Vec3f &result_from, Vec3f &result_to ) {
+  Vec4d plane_eq = plane->getValue();
+  Vec3f plane_normal = Vec3f( (H3DFloat)plane_eq.x,
+                              (H3DFloat)plane_eq.y,
+                              (H3DFloat)plane_eq.z );
+  // Check if both points below plane.
+  // Calculate first intersection and replace result_from or result_to.
+  H3DFloat plane_d = -(H3DFloat)plane_eq.w;
+  // Compute t-value for plane.
+  Vec3f ab = to - from;
+  H3DFloat numerator = plane_d - plane_normal * from;
+  H3DFloat denominator = plane_normal * ab;
+  // No check if the denomintator is 0 since we assume IEEE 754 floating-point
+  // arithmetic. That means that t will be above 1 or below 0 which means that
+  // it never goes into the first case in the if check below.
+  H3DFloat t = numerator / denominator;
+
+  // If t in [0,1] compute and return intersection point.
+  if( t >= 0.0f && t <= 1.0f ) {
+    if( denominator > 0 ) {
+      // Normal is in the direction of the line segment. Which means that
+      // from is below the plane because otherwise there should not be an
+      // intersection. Therefore the result_from is changed to the new point.
+      result_from = from + t * ab;
+      result_to = to;
+    } else {
+      // Normal is in the opposite direction of the line segment. Which means
+      // that from is above the plane because otherwise there should not be an
+      // intersection. Therefore the result_to is changed to the new point.
+      result_from = from;
+      result_to = from + t * ab;
+    }
+    return true;
+  } else if( -numerator >= 0 ) {
+    // from is above or in the plane which means that the line segment is above
+    // the plane since it does not intersect it. Return true.
+    result_from = from;
+    result_to = to;
+    return true;
+  }
+
+  return false;
+}
 

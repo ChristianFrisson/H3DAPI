@@ -90,3 +90,38 @@ void Switch::traverseSG( TraverseInfo &ti ) {
   X3DChildNode *child_node = children->getValueByIndex( choice );
   if( child_node ) child_node->traverseSG( ti );
 }
+
+
+bool Switch::lineIntersect(
+                  const Vec3f &from, 
+                  const Vec3f &to,    
+                  LineIntersectResult &result ) {
+  int choice = whichChoice->getValue();
+  if( choice < 0 || choice > (int)children->size() - 1 ) return false;
+  X3DChildNode *child_node = children->getValueByIndex( choice );
+  if( child_node ) return child_node->lineIntersect( from, to, result );
+  return false;
+}
+
+void Switch::closestPoint(
+                  const Vec3f &p,
+                  NodeIntersectResult &result ) {
+  int choice = whichChoice->getValue();
+  if( choice < 0 || choice > (int)children->size() - 1 ) return;
+  X3DChildNode *child_node = children->getValueByIndex( choice );
+  if( child_node ) child_node->closestPoint( p, result );
+}
+
+bool Switch::movingSphereIntersect(
+                  H3DFloat radius,
+                  const Vec3f &from,
+                  const Vec3f &to,
+                  NodeIntersectResult &result ) {
+  int choice = whichChoice->getValue();
+  if( choice < 0 || choice > (int)children->size() - 1 ) return false;
+  X3DChildNode *child_node = children->getValueByIndex( choice );
+  if( child_node ) return child_node->movingSphereIntersect( radius, from,
+                                                             to, result );
+  return false;
+}
+
