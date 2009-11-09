@@ -416,8 +416,9 @@ IF(NOT WIN32)
     INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
   ENDIF(HAPI_FOUND)
-ELSEIF( MSVC70 OR MSVC71 )
-  # On other versions of visual studio dependency setting is enough to link correctly.
+ELSEIF( MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7)
+  # On other versions than vc7 visual studio dependency setting is enough to 
+  # link correctly( except from cmake v2.8 and forward)
   SET(requiredLibs ${requiredLibs} H3DUtil HAPI)
 
   IF(CHAI3D_FOUND)
@@ -697,7 +698,7 @@ IF( MSVC )
   ADD_CUSTOM_COMMAND( TARGET H3DAPI 
                       PRE_BUILD 
                       COMMAND ${H3DAPI_SOURCE_DIR}/UpdateResourceFile 
-                      ARGS H3DAPI ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc H3DAPI.rc.cmake
+                      ARGS H3DAPI ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${H3DAPI_SOURCE_DIR}/H3DAPI.rc.cmake
                       ${H3DAPI_MAJOR_VERSION} ${H3DAPI_MINOR_VERSION}
                       ${H3DAPI_BUILD_VERSION}
                       ${H3DAPI_SOURCE_DIR}/../src/.svn/entries )
@@ -775,7 +776,27 @@ IF( WIN32 )
     IF( CMAKE_CL_64 )
       SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
     ENDIF( CMAKE_CL_64 )
-    # H3D API is now to big to link incrementally with vc9.
+    # H3D API is now too big to link incrementally with vc9.
+    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt /INCREMENTAL:NO" )
+    # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
+    IF(OPENHAPTICS_FOUND)
+      SET_SOURCE_FILES_PROPERTIES( "${H3DAPI_SOURCE_DIR}/../src/MagneticSurface.cpp"
+                                   "${H3DAPI_SOURCE_DIR}/../src/OpenHapticsSurface.cpp"
+                                   "${H3DAPI_SOURCE_DIR}/../src/X3DGeometryNode.cpp"
+                                   PROPERTIES COMPILE_FLAGS "/Od" )
+    ENDIF(OPENHAPTICS_FOUND)
+
+  ELSEIF(MSVC10)
+    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc10 )
+    SET( TEMP_OUTPUT_POSTFIX _vc10 )
+    # remove some warnings about deprecated functions.
+    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+    # if we are using 64 bit compiler some object files get too big so we need
+    # to add the /bigobj flag
+    IF( CMAKE_CL_64 )
+      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
+    ENDIF( CMAKE_CL_64 )
+    # H3D API is now to big to link incrementally with vc10.
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt /INCREMENTAL:NO" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
     IF(OPENHAPTICS_FOUND)
