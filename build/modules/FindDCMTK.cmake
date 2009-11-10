@@ -23,8 +23,10 @@ SET( DCMTK_LIBRARY_POSTFIX "" )
 
 IF( MSVC80 )
   SET( DCMTK_LIBRARY_POSTFIX "_vc8" )
-ELSEIF( MSVC90 )
+ELSEIF( MSVC90)
   SET( DCMTK_LIBRARY_POSTFIX "_vc9" )
+ELSEIF( MSVC10)
+  SET( DCMTK_LIBRARY_POSTFIX "_vc10" )
 ENDIF( MSVC80 )
 
 IF( NOT WIN32 )
@@ -215,6 +217,131 @@ FIND_LIBRARY( DCMTK_dcmimage_LIBRARY dcmimage${DCMTK_LIBRARY_POSTFIX}
  		    /usr/local/dicom/lib )
 MARK_AS_ADVANCED(DCMTK_dcmimage_LIBRARY)
 
+IF( MSVC10 )
+  # Visual Studio 2010 needs debug versions to compile in debug
+  FIND_LIBRARY( DCMTK_ofstd_DEBUG_LIBRARY "ofstd${DCMTK_LIBRARY_POSTFIX}_d"
+              PATHS ${DCMTK_DIR}/ofstd/libsrc
+                    ${DCMTK_DIR}/ofstd/libsrc/Release
+                    ${DCMTK_DIR}/ofstd/libsrc/Debug
+                    ${DCMTK_DIR}/ofstd/Release
+                    ${DCMTK_DIR}/ofstd/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib
+                    /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_ofstd_DEBUG_LIBRARY)
+
+  FIND_LIBRARY( DCMTK_dcmjpeg_DEBUG_LIBRARY dcmjpeg${DCMTK_LIBRARY_POSTFIX}_d
+                PATHS ${DCMTK_DIR}/dcmjpeg/libsrc
+                    ${DCMTK_DIR}/dcmjpeg/libsrc/Release
+                    ${DCMTK_DIR}/dcmjpeg/libsrc/Debug
+                    ${DCMTK_DIR}/dcmjpeg/Release
+                    ${DCMTK_DIR}/dcmjpeg/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib
+		    /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_dcmjpeg_DEBUG_LIBRARY)
+
+
+  FIND_LIBRARY( DCMTK_ijg8_DEBUG_LIBRARY ijg8${DCMTK_LIBRARY_POSTFIX}_d
+              PATHS ${DCMTK_DIR}/dcmjpeg/libijg8/libsrc
+                    ${DCMTK_DIR}/dcmjpeg/libijg8/libsrc/Release
+                    ${DCMTK_DIR}/dcmjpeg/libijg8/libsrc/Debug
+                    ${DCMTK_DIR}/dcmjpeg/libijg8/Release
+                    ${DCMTK_DIR}/dcmjpeg/libijg8/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib
+      	            /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_ijg8_DEBUG_LIBRARY)
+
+  FIND_LIBRARY( DCMTK_ijg12_DEBUG_LIBRARY ijg12${DCMTK_LIBRARY_POSTFIX}_d
+              PATHS ${DCMTK_DIR}/dcmjpeg/libijg12/libsrc
+                    ${DCMTK_DIR}/dcmjpeg/libijg12/libsrc/Release
+                    ${DCMTK_DIR}/dcmjpeg/libijg12/libsrc/Debug
+                    ${DCMTK_DIR}/dcmjpeg/libijg12/Release
+                    ${DCMTK_DIR}/dcmjpeg/libijg12/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib 
+	                  /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_ijg12_DEBUG_LIBRARY)
+
+  FIND_LIBRARY( DCMTK_ijg16_DEBUG_LIBRARY ijg16${DCMTK_LIBRARY_POSTFIX}_d
+                PATHS ${DCMTK_DIR}/dcmjpeg/libijg16/libsrc
+                    ${DCMTK_DIR}/dcmjpeg/libijg16/libsrc/Release
+                    ${DCMTK_DIR}/dcmjpeg/libijg16/libsrc/Debug
+                    ${DCMTK_DIR}/dcmjpeg/libijg16/Release
+                    ${DCMTK_DIR}/dcmjpeg/libijg16/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib 
+		    /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_ijg16_DEBUG_LIBRARY)
+
+  FIND_LIBRARY( DCMTK_dcmdata_DEBUG_LIBRARY dcmdata${DCMTK_LIBRARY_POSTFIX}_d
+                PATHS ${DCMTK_DIR}/dcmdata/libsrc
+                    ${DCMTK_DIR}/dcmdata/libsrc/Release
+                    ${DCMTK_DIR}/dcmdata/libsrc/Debug
+                    ${DCMTK_DIR}/dcmdata/Release
+                    ${DCMTK_DIR}/dcmdata/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib 
+            		    /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_dcmdata_DEBUG_LIBRARY)
+
+  FIND_LIBRARY( DCMTK_dcmimgle_DEBUG_LIBRARY dcmimgle${DCMTK_LIBRARY_POSTFIX}_d
+              PATHS ${DCMTK_DIR}/dcmimgle/libsrc
+                    ${DCMTK_DIR}/dcmimgle/libsrc/Release
+                    ${DCMTK_DIR}/dcmimgle/libsrc/Debug
+                    ${DCMTK_DIR}/dcmimgle/Release
+                    ${DCMTK_DIR}/dcmimgle/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib
+		                /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_dcmimgle_DEBUG_LIBRARY)
+
+  FIND_LIBRARY( DCMTK_dcmimage_DEBUG_LIBRARY dcmimage${DCMTK_LIBRARY_POSTFIX}_d
+              PATHS ${DCMTK_DIR}/dcmimage/libsrc
+                    ${DCMTK_DIR}/dcmimage/libsrc/Release
+                    ${DCMTK_DIR}/dcmimage/libsrc/Debug
+                    ${DCMTK_DIR}/dcmimage/Release
+                    ${DCMTK_DIR}/dcmimage/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/lib
+                    $ENV{H3D_ROOT}/../External/lib
+                    ../../External/lib
+                    ${module_file_path}/../../../External/lib
+                    ${module_file_path}/../../dcmtk/lib
+ 	                  /usr/local/dicom/lib )
+  MARK_AS_ADVANCED(DCMTK_dcmimage_DEBUG_LIBRARY)
+ENDIF( MSVC10 )
+
+
 #FIND_LIBRARY(DCMTK_dcmnet_LIBRARY dcmnet${DCMTK_LIBRARY_POSTFIX}
 #${DCMTK_DIR}/dcmnet/libsrc/Release
 #${DCMTK_DIR}/dcmnet/libsrc/Debug
@@ -226,16 +353,50 @@ MARK_AS_ADVANCED(DCMTK_dcmimage_LIBRARY)
 #)
 
 
-IF( DCMTK_config_INCLUDE_DIR )
-IF( DCMTK_ofstd_INCLUDE_DIR )
-IF( DCMTK_ofstd_LIBRARY )
-IF( DCMTK_dcmdata_INCLUDE_DIR )
-IF( DCMTK_dcmdata_LIBRARY )
-IF( DCMTK_dcmimgle_INCLUDE_DIR )
-IF( DCMTK_dcmimgle_LIBRARY )
-IF( DCMTK_dcmimage_LIBRARY )
-IF( DCMTK_dcmjpeg_INCLUDE_DIR )
-IF( DCMTK_dcmjpeg_LIBRARY )
+SET( HAVE_INCLUDE_DIRS "FALSE" )
+SET( HAVE_RELEASE_LIBS "FALSE" )
+SET( HAVE_DEBUG_LIBS "FALSE" )
+
+# check that we have all include dirs
+IF( DCMTK_config_INCLUDE_DIR AND  
+    DCMTK_ofstd_INCLUDE_DIR AND 
+    DCMTK_dcmdata_INCLUDE_DIR AND 
+    DCMTK_dcmimgle_INCLUDE_DIR AND
+    DCMTK_dcmjpeg_INCLUDE_DIR )
+  SET( HAVE_INCLUDE_DIRS "TRUE" )
+ENDIF( DCMTK_config_INCLUDE_DIR AND  
+       DCMTK_ofstd_INCLUDE_DIR AND 
+       DCMTK_dcmdata_INCLUDE_DIR AND 
+       DCMTK_dcmimgle_INCLUDE_DIR AND
+       DCMTK_dcmjpeg_INCLUDE_DIR )
+
+# check that we have all release libs
+IF( DCMTK_ofstd_LIBRARY AND 
+    DCMTK_dcmdata_LIBRARY AND 
+    DCMTK_dcmimgle_LIBRARY AND
+    DCMTK_dcmimage_LIBRARY AND
+    DCMTK_dcmjpeg_LIBRARY )
+  SET( HAVE_RELEASE_LIBS "TRUE" )
+ENDIF( DCMTK_ofstd_LIBRARY AND 
+       DCMTK_dcmdata_LIBRARY AND 
+       DCMTK_dcmimgle_LIBRARY AND
+       DCMTK_dcmimage_LIBRARY AND
+       DCMTK_dcmjpeg_LIBRARY )
+
+# check if we have the debug libs
+IF( DCMTK_ofstd_DEBUG_LIBRARY AND 
+    DCMTK_dcmdata_DEBUG_LIBRARY AND 
+    DCMTK_dcmimgle_DEBUG_LIBRARY AND
+    DCMTK_dcmimage_DEBUG_LIBRARY AND
+    DCMTK_dcmjpeg_DEBUG_LIBRARY )
+  SET( HAVE_DEBUG_LIBS "TRUE" )
+ENDIF( DCMTK_ofstd_DEBUG_LIBRARY AND 
+       DCMTK_dcmdata_DEBUG_LIBRARY AND 
+       DCMTK_dcmimgle_DEBUG_LIBRARY AND
+       DCMTK_dcmimage_DEBUG_LIBRARY AND
+       DCMTK_dcmjpeg_DEBUG_LIBRARY )
+
+IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
 
   SET( DCMTK_FOUND "YES" )
   SET( DCMTK_INCLUDE_DIR
@@ -246,17 +407,46 @@ IF( DCMTK_dcmjpeg_LIBRARY )
     ${DCMTK_dcmjpeg_INCLUDE_DIR}
   )
 
-  SET( DCMTK_LIBRARIES
-    ${DCMTK_dcmimgle_LIBRARY}
-    ${DCMTK_dcmdata_LIBRARY}
-    ${DCMTK_ofstd_LIBRARY}
-    ${DCMTK_config_LIBRARY}
-    ${DCMTK_dcmimage_LIBRARY}
-    ${DCMTK_dcmjpeg_LIBRARY}
-    ${DCMTK_ijg8_LIBRARY}
-    ${DCMTK_ijg12_LIBRARY}
-    ${DCMTK_ijg16_LIBRARY}
-  )
+  IF( MSVC10 AND HAVE_DEBUG_LIBS )
+    # MSVC10 needs debug libraries since it cannot compile with
+    # the release versions
+    SET( DCMTK_LIBRARIES 
+         optimized ${DCMTK_dcmimgle_LIBRARY}
+         optimized ${DCMTK_dcmdata_LIBRARY}
+         optimized ${DCMTK_ofstd_LIBRARY}
+         optimized ${DCMTK_dcmimage_LIBRARY}
+         optimized ${DCMTK_dcmjpeg_LIBRARY}
+         optimized ${DCMTK_ijg8_LIBRARY}
+         optimized ${DCMTK_ijg12_LIBRARY}
+         optimized ${DCMTK_ijg16_LIBRARY}
+        )
+
+     SET( DCMTK_LIBRARIES  ${DCMTK_LIBRARIES} 
+         debug ${DCMTK_dcmimgle_DEBUG_LIBRARY}
+         debug ${DCMTK_dcmdata_DEBUG_LIBRARY}
+         debug ${DCMTK_ofstd_DEBUG_LIBRARY}
+         debug ${DCMTK_dcmimage_DEBUG_LIBRARY}
+         debug ${DCMTK_dcmjpeg_DEBUG_LIBRARY}
+         debug ${DCMTK_ijg8_DEBUG_LIBRARY}
+         debug ${DCMTK_ijg12_DEBUG_LIBRARY}
+         debug ${DCMTK_ijg16_DEBUG_LIBRARY}
+        )
+
+  ELSE( MSVC10 AND HAVE_DEBUG_LIBS)
+    MESSAGE( STATUS, "DCMTK debug libraries not found. Debug compilation might not work with DCMTK." )
+
+
+    SET( DCMTK_LIBRARIES 
+         ${DCMTK_dcmimgle_LIBRARY}
+         ${DCMTK_dcmdata_LIBRARY}
+         ${DCMTK_ofstd_LIBRARY}
+         ${DCMTK_dcmimage_LIBRARY}
+         ${DCMTK_dcmjpeg_LIBRARY}
+         ${DCMTK_ijg8_LIBRARY}
+         ${DCMTK_ijg12_LIBRARY}
+         ${DCMTK_ijg16_LIBRARY}
+        )
+  ENDIF( MSVC10 AND HAVE_DEBUG_LIBS)
 
   IF(DCMTK_imagedb_LIBRARY)
    SET( DCMTK_LIBRARIES
@@ -276,16 +466,7 @@ IF( DCMTK_dcmjpeg_LIBRARY )
     SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} netapi32 ws2_32 )
   ENDIF( WIN32 )
 
-ENDIF( DCMTK_dcmjpeg_LIBRARY )
-ENDIF( DCMTK_dcmjpeg_INCLUDE_DIR )
-ENDIF( DCMTK_dcmimage_LIBRARY )
-ENDIF( DCMTK_dcmimgle_LIBRARY )
-ENDIF( DCMTK_dcmimgle_INCLUDE_DIR )
-ENDIF( DCMTK_dcmdata_LIBRARY )
-ENDIF( DCMTK_dcmdata_INCLUDE_DIR )
-ENDIF( DCMTK_ofstd_LIBRARY )
-ENDIF( DCMTK_ofstd_INCLUDE_DIR )
-ENDIF( DCMTK_config_INCLUDE_DIR )
+ENDIF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
 
 # Report the results.
 IF(NOT DCMTK_FOUND)
