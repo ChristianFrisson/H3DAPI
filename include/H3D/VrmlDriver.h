@@ -89,10 +89,23 @@ public:
   void setProtoInstance ( X3DPrototypeInstance *p ) {
     proto_instance = p;
   }
+
+  /// Adds a field declaration to the top-most proto declaration
+  /// if we are not inside a nested proto declaration.
   void setProtoField( const string &name, 
                       const string& type, 
                       const Field::AccessType &access_type, 
                       const string & value = "" );
+
+  /// Adds a new field to the current node if it is a H3DDynamicFieldsObject
+  bool addDynamicField( const string &name, 
+			const string& type, 
+			const Field::AccessType &access_type, 
+			const string & value = "" );
+
+  /// Connects the current proto instance field with the node field from the
+  /// not at the top of the node_stack.
+  bool connectProtoField( const string &proto_field, const string &node_field );
 
   // VRML specific functions:
 
@@ -103,6 +116,25 @@ public:
   string getOldLocationString();
 
   void addLine( const char* );
+
+  /// Returns true if we are inside a proto declatarion
+  inline bool insideProtoDeclaration() {
+    return !proto_declarations.empty();
+  }
+
+  /// Returns true if the parser is currently parsing text inside
+  /// a top-most proto declaration and not inside a nested proto
+  /// declaration.
+  inline bool insideTopMostProtoDeclaration() {
+    return proto_declarations.size() == 1;
+  }
+
+  /// Return true if the current node being parsed is a H3DDynamicFields object,
+  /// that is if it is possible to defined new fields for it at run-time.
+  inline bool insideDynamicFieldsObject() {
+    if( node_stack.empty() ) return false;
+    return dynamic_cast< H3DDynamicFieldsObject * >( node_stack.back() );
+  }
 
   auto_ptr< VRMLFlexLexer > lexer;
   AutoRef< Group > root;
@@ -121,11 +153,20 @@ public:
   string vrml_line;
   const char *file_name;
   
+  /// 
   vector< ProtoDeclaration *> proto_declarations;
-  
+
+  /// Place to put the 
   PrototypeVector *proto_vector;
+
+  /// This PrototypeVector is used to store proto definitions during
+  /// a call to parse() if a place is not provided to the parse function.
   auto_ptr< PrototypeVector > local_proto_vector;
+
   static PrototypeVector *global_proto_vector;
+
+  /// Used to collect the proto body part of a file as a string in 
+  /// a prototype declaration.
   string proto_body;
   
   /// If this is set to non-NULL then the parser is used to create an 

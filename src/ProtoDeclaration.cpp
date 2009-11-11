@@ -64,7 +64,6 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
             } catch( const Exception::H3DException &e ) {
               Console(3) << "Could not create default value for " << f->getFullName() << endl;
               Console(3) << e << endl;
-              return NULL;
             }
           } else {
             ParsableField *pfield = 

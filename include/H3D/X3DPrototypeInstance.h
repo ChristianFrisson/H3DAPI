@@ -37,6 +37,7 @@ namespace yy {
   class VrmlParser;
   class location;
 }
+
 namespace H3D {
 
   // forward declaration.
@@ -141,7 +142,14 @@ namespace H3D {
     /// And the same for the VRML parser. Bison code handles routing,
     /// so yy::vrml_parser must be a friend:
     friend class yy::VrmlParser;
+    friend class VrmlDriver;
+
+    /// The friend declaration for VrmlDriver above does not work,
+    /// so adding a function to access the id. Don't know why since
+    /// it works for VrmlParser and X3DSAX2Handlers.
+    inline int getId( ) { return id; }
   protected:
+
     AutoRef< Node > prototyped_node;
   };
 }

@@ -134,7 +134,7 @@ exportStatement:         EXPORT nodeNameId AS exportedNodeNameId {
 
 importStatement:         IMPORT inlineNodeNameId '.' exportedNodeNameId 
                          AS nodeNameId {
-if( driver.proto_declarations.size()==0 ) {
+if( !driver.insideProtoDeclaration() ) {
   if(  $2 == "H3D_EXPORTS" ) {
     Node *import_node = 
       H3DExports::getH3DExportNode( $4 );
@@ -191,7 +191,7 @@ statements:              statement |
                          empty ;
 
 statement:               nodeStatement {
-                           if ( driver.proto_declarations.size()==0 ) {
+                           if ( !driver.insideProtoDeclaration() ) {
                               Node *node = driver.node_stack.back();
                               driver.node_stack.pop_back();
                               if ( node ) 
@@ -205,14 +205,14 @@ statement:               nodeStatement {
 
 nodeStatement:           node  |
                          DEF nodeNameId node {
-  if ( driver.proto_declarations.size()==0 &&
+  if ( !driver.insideProtoDeclaration() &&
        driver.node_stack.back() ) {
     driver.DEF_map->addNode( $2, driver.node_stack.back() );
     driver.node_stack.back()->setName( $2 );
   } 
 } |
                          USE nodeNameId {
-  if ( driver.proto_declarations.size()==0 )
+  if ( !driver.insideProtoDeclaration() )
     driver.node_stack.push_back( driver.DEF_map->getNode( $2 ) );
   };
 
@@ -229,20 +229,29 @@ protoStatements:         protoStatement |
 proto:                   PROTO nodeTypeId {
    if ( driver.proto_vector ) {
      driver.proto_declarations.push_back( new ProtoDeclaration( $2 ) );
-     if ( driver.proto_declarations.size()==1 ) {
+
+     // only process proto declaration if not nested in another proto declaration.
+     if ( driver.insideTopMostProtoDeclaration() ) {
        driver.proto_body = "";
        driver.proto_vector->push_back( driver.proto_declarations.back() );
      }
    }
 } '[' interfaceDeclarations ']'  
-  '{' { if ( driver.proto_declarations.size()==1 ) driver.proto_body = ""; } 
+  '{' {  
+    // if in top-most proto declaration, reset proto_body to start
+    // collecting the string to use
+    if ( driver.insideTopMostProtoDeclaration() ) driver.proto_body = ""; 
+   } 
    protoBody  {
-   if ( driver.proto_declarations.size()==1 ) {
+
+   // only process proto declaration if not nested in another proto declaration.
+   if ( driver.insideTopMostProtoDeclaration() ) {
      // remove trailing '}'
      int pos = driver.proto_body.find_last_of( "}" );
      driver.proto_body[pos]=' ';
      driver.proto_declarations.back()->setProtoBody( driver.proto_body );
    }
+   // TODO: delete proto declaration if nested?
    driver.proto_declarations.pop_back();
 }
   '}' ;
@@ -286,7 +295,7 @@ externInterfaceDeclaration:
 
 routeStatement:          ROUTE nodeNameId '.' outputOnlyId 
                          TO nodeNameId '.' inputOnlyId {
-if ( driver.proto_declarations.size()==0 ) {
+if ( !driver.insideProtoDeclaration() ) {
   Node *fr = driver.DEF_map->getNode( $2 );
   if ( fr ) {
     Field *frf = fr->getField( $4 );
@@ -329,7 +338,7 @@ empty:                   ;
 
 
 node:                    nodeTypeId { 
-if ( driver.proto_declarations.size()==0 ) {
+if ( !driver.insideProtoDeclaration() ) {
   Node *new_node = NULL;     
   if ( driver.node_stack.size() == 0 || 
        driver.node_stack.back() != NULL ) {
@@ -343,7 +352,7 @@ if ( driver.proto_declarations.size()==0 ) {
       }
       if ( !new_node )
         Console(3) << "WARNING: Could not create node \"" << yylval << 
-          "\" - name not found in the node database ( " <<
+          "\" - name not found in the node database and is not a proto name ( " <<
           driver.getLocationString() << " )." << endl;
     }
   }
@@ -370,34 +379,60 @@ scriptBodyElement:       nodeBodyElement |
                          inputOutput fieldType inputOutputId IS inputOutputId;
 
 nodeBodyElement:         initializeOnlyId { 
-                            driver.field_stack.push_back( $1 ); } fieldValue
-                            {
-                           if ( driver.proto_declarations.size()==0 )
-                                driver.field_stack.pop_back();
-                            } |
+			   if( !driver.insideProtoDeclaration() )	
+                             driver.field_stack.push_back( $1 );		
+                         } 
+			 fieldValue {
+                           if ( !driver.insideProtoDeclaration() )
+                              driver.field_stack.pop_back();
+                          } |
                          initializeOnlyId IS initializeOnlyId {
-  if ( driver.proto_instance != NULL ) {
-    Node *node = driver.node_stack.back();
-    Field *node_field = node->getField( $1 );
-    Field *proto_field =  
-        driver.proto_instance->getField( $3 );
-    if ( node && node_field && proto_field ) {
-      Field::AccessType access_type = node_field->getAccessType();
-        
-      if( access_type == Field::OUTPUT_ONLY ) {
-        node_field->route( proto_field, driver.proto_instance->id );
-      } else if ( access_type == Field::INPUT_OUTPUT ) {
-        node_field->routeNoEvent( proto_field, driver.proto_instance->id );
-      }
-      
-      if( access_type != Field::OUTPUT_ONLY ) {
-        proto_field->route( node_field, driver.proto_instance->id );
-      }
-    }
-  }
+    driver.connectProtoField( $3, $1 ); 
 }|
                          routeStatement |
-                         protoStatement ;
+                         protoStatement |
+                         inputOnly fieldType inputOnlyId {
+                            driver.addDynamicField( $3, $2, Field::INPUT_ONLY );		 
+			 } |
+                         outputOnly fieldType outputOnlyId {
+                           driver.addDynamicField( $3, $2, Field::OUTPUT_ONLY );		 
+                         } |
+                         initializeOnly fieldType initializeOnlyId {
+                           if( !driver.insideProtoDeclaration() )	
+                             driver.field_stack.push_back( $3 );	
+			   driver.addDynamicField( $3, $2, Field::INITIALIZE_ONLY );
+                         } 
+                         fieldValue {
+                           if( !driver.insideProtoDeclaration() ) {
+			     driver.field_stack.pop_back();
+                           }
+                         } |
+                         inputOutput fieldType fieldId {
+                           if( !driver.insideProtoDeclaration() )	
+                             driver.field_stack.push_back( $3 );	
+			   driver.addDynamicField( $3, $2, Field::INPUT_OUTPUT );
+                         } 
+                         fieldValue {
+                           if( !driver.insideProtoDeclaration() ) {
+			     driver.field_stack.pop_back();
+                           }
+                         } |
+                         inputOnly fieldType inputOnlyId IS inputOnlyId {
+                            driver.addDynamicField( $3, $2, Field::INPUT_ONLY );
+                            driver.connectProtoField( $5, $3 );
+			 } |
+                         outputOnly fieldType outputOnlyId IS outputOnlyId {
+                           driver.addDynamicField( $3, $2, Field::OUTPUT_ONLY );
+                           driver.connectProtoField( $5, $3 );
+                         }|
+                         initializeOnly fieldType initializeOnlyId IS initializeOnlyId {
+			   driver.addDynamicField( $3, $2, Field::INITIALIZE_ONLY );
+                           driver.connectProtoField( $5, $3 );
+                         } |
+                         inputOutput fieldType inputOutputId IS inputOutputId {
+			   driver.addDynamicField( $3, $2, Field::INPUT_OUTPUT );
+                           driver.connectProtoField( $5, $3 );
+                         } ;
 
 nodeNameId:              VRMLID ;
 
@@ -418,11 +453,11 @@ outputOnlyId:            VRMLID ;
 fieldType:              VRMLID ;
 
 fieldValue:             sfValue  { 
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setFieldValue( ($1).c_str() );
 } |
                         mfValue  { 
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setFieldValue( ($1).c_str() );
                         } |
                         sfnodeValue {} |
@@ -438,31 +473,31 @@ mfValue:                sfValue |
 
 
 sfnodeValue:            nodeStatement {
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setNodeStatement( 0 );
                         } |
                         VRMLNULL {
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setNodeStatement( 1 );
                         };
 
 mfnodeValue:            nodeStatement  {
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setNodeStatement( 0 );
                         } |
                         '[' ']' { 
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setNodeStatement( 1 );
 
                         } |
                         '[' nodeStatements ']' ;
 
 nodeStatements:         nodeStatement  {
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setNodeStatement( 0 );
                         } |
                         nodeStatement  {
-if ( driver.proto_declarations.size()==0 )
+if ( !driver.insideProtoDeclaration() )
   driver.setNodeStatement( 0 );
                         }  nodeStatements ;
 

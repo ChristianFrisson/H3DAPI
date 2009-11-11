@@ -206,7 +206,7 @@ void VrmlDriver::setProtoField( const string& name,
                                 const string& type, 
                                 const Field::AccessType &access_type, 
                                 const string & value ) {
-  if ( proto_declarations.size()==1 ) {
+  if ( insideTopMostProtoDeclaration() ) {
     X3DTypes::X3DType x3d_type = 
       X3DTypes::stringToType(  type.c_str() );
     if( x3d_type == X3DTypes::UNKNOWN_X3D_TYPE ) {
@@ -257,4 +257,53 @@ string VrmlDriver::getOldLocationString() {
 int yyFlexLexer::yylex() {
   Console(3) << "BAD yylex called" << endl;
   return 0;
+}
+
+
+/// Adds a new field to the current node if it is a H3DDynamicFieldsObject
+bool VrmlDriver::addDynamicField( const string &name, 
+				  const string& type, 
+				  const Field::AccessType &access_type, 
+				  const string & value ) {
+  if( node_stack.empty() ) return false;
+  
+  H3DDynamicFieldsObject *df = 
+    dynamic_cast< H3DDynamicFieldsObject * >( node_stack.back() );
+  if( !df ) return false;
+
+  Field *f = X3DTypes::newFieldInstance( type.c_str() );
+    
+  if( !f ) {
+    string message = 
+      "Invalid value for 'type' attribute of 'field' specification.";
+    return false;
+  }
+    
+  return df->addField( name, access_type, f );
+}
+
+
+/// Connects the current proto instance field with the node field from the
+/// not at the top of the node_stack.
+bool VrmlDriver::connectProtoField( const string &proto_field_name, 
+				    const string &node_field_name ) {
+  if ( proto_instance != NULL ) {
+    Node *node = node_stack.back();
+    Field *node_field = node->getField( node_field_name );
+    Field *proto_field =  
+        proto_instance->getField( proto_field_name );
+    if ( node && node_field && proto_field ) {
+      Field::AccessType access_type = node_field->getAccessType();
+        
+      if( access_type == Field::OUTPUT_ONLY ) {
+	node_field->route( proto_field, proto_instance->getId() );
+      } else if ( access_type == Field::INPUT_OUTPUT ) {
+	node_field->routeNoEvent( proto_field, proto_instance->getId() );
+      }
+      
+      if( access_type != Field::OUTPUT_ONLY ) {
+	proto_field->route( node_field, proto_instance->getId() );
+      }
+    }
+  }
 }
