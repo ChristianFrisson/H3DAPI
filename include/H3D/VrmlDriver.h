@@ -133,7 +133,7 @@ public:
   /// that is if it is possible to defined new fields for it at run-time.
   inline bool insideDynamicFieldsObject() {
     if( node_stack.empty() ) return false;
-    return dynamic_cast< H3DDynamicFieldsObject * >( node_stack.back() );
+    return dynamic_cast< H3DDynamicFieldsObject * >( node_stack.back() ) != NULL;
   }
 
   auto_ptr< VRMLFlexLexer > lexer;
