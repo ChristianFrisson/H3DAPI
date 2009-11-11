@@ -41,6 +41,10 @@ H3DNodeDatabase Switch::database(
 
 namespace SwitchInternals {
   FIELDDB_ELEMENT( Switch, whichChoice, INPUT_OUTPUT );
+
+  // add an alias for the children field to work with VRML 2.0 that defines the 
+  // choice field instead of children.
+  FieldDBInsert string( INPUT_OUTPUT( &Switch::database, "choice", &Switch::children ) );
 }
 
 Switch::Switch( Inst< AddChildren    > _addChildren,
