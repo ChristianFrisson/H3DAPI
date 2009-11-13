@@ -217,6 +217,10 @@ void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row,
 
     if( SFString *sfstring = dynamic_cast< SFString * >( f ) ) {
       // set renderer to string renderer
+      // GetCellRenderer increases reference count.
+      // Decrease reference count to clean up memory properly before
+      // replacing pointer.
+      renderer->DecRef();
       renderer = FieldValuesGrid->GetDefaultRenderer();
       // use a choice editor if a set of valid values have been
       // specified for the field.
@@ -231,10 +235,18 @@ void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row,
                i != valid_values.end(); i++ ) {
             choices.Add( wxString( (*i).c_str(), wxConvUTF8 ));
           }
+          // GetCellEditor increases reference count.
+          // Decrease reference count to clean up memory properly before
+          // replacing pointer.
+          editor->DecRef();
           editor = new wxGridCellChoiceEditor( choices, false );
         }
       } else {
         // no valid values specified, use string editor.
+        // GetCellEditor increases reference count.
+        // Decrease reference count to clean up memory properly before
+        // replacing pointer.
+        editor->DecRef();
         editor = FieldValuesGrid->GetDefaultEditor();
       }
       
@@ -247,11 +259,19 @@ void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row,
     } else if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
       // set renderer
       if( !dynamic_cast< wxGridCellBoolRenderer * >( current_renderer ) ) {
+        // GetCellRenderer increases reference count.
+        // Decrease reference count to clean up memory properly before
+        // replacing pointer.
+        renderer->DecRef();
         renderer = new wxGridCellBoolRenderer;
       }
       
       // set editor
       if( !dynamic_cast< wxGridCellBoolEditor * >( current_editor ) ) {
+        // GetCellEditor increases reference count.
+        // Decrease reference count to clean up memory properly before
+        // replacing pointer.
+        editor->DecRef();
         editor = new wxGridCellBoolEditor;
       }
       
@@ -277,6 +297,11 @@ void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row,
       }
     }  else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
       // set renderer and editor
+      // GetCellEditor and GetCellRenderer increases reference count.
+      // Decrease reference count to clean up memory properly before
+      // replacing pointer.
+      editor->DecRef();
+      renderer->DecRef();
       editor = FieldValuesGrid->GetDefaultEditor();
       renderer = FieldValuesGrid->GetDefaultRenderer();
       

@@ -36,12 +36,12 @@
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
 #include "WxFrame.h"
-#include "ConsoleDialog.h"
-#include <vector>
-#include "WxWidgetsWindow.h"
+//#include "ConsoleDialog.h"
+//#include <vector>
+//#include "WxWidgetsWindow.h"
 
-#include "H3DViewer.h"
-#include <wx/wx.h>
+//#include "H3DViewer.h"
+//#include <wx/wx.h>
 #include "Envini.h"
 
 // ---------------------------------------------------------------------------
@@ -50,32 +50,32 @@
 
 #include <H3D/VrmlParser.h>
 #include <H3D/Group.h>
-#include <H3D/Transform.h>
-#include <H3D/Scene.h>
-#include <H3D/KeySensor.h>
-#include <H3D/MouseSensor.h>
-
-#ifndef MACOSX
-#include <H3D/SpaceWareSensor.h>
-#endif
-
+//#include <H3D/Transform.h>
+//#include <H3D/Scene.h>
+//#include <H3D/KeySensor.h>
+//#include <H3D/MouseSensor.h>
+//
+//#ifndef MACOSX
+//#include <H3D/SpaceWareSensor.h>
+//#endif
+//
 #include <H3D/Viewpoint.h>
 #include <H3D/ViewpointGroup.h>
-#include <H3D/X3DViewpointNode.h>
-#include <H3D/DeviceInfo.h>
+//#include <H3D/X3DViewpointNode.h>
+//#include <H3D/DeviceInfo.h>
 #include <H3D/INIFile.h>
-#include <H3D/ResourceResolver.h>
+//#include <H3D/ResourceResolver.h>
 #include <H3D/GraphicsCachingOptions.h>
 #include <H3D/DebugOptions.h>
 #include <H3D/HapticsOptions.h>
 #include <H3D/GeometryBoundTreeOptions.h>
-#include <H3D/OpenHapticsOptions.h>
+//#include <H3D/OpenHapticsOptions.h>
 #include <H3D/CollisionOptions.h>
 #include <H3D/H3DNavigation.h>
 #include <H3D/HapticsRenderers.h>
 
-#include <HAPI/HAPIHapticsRenderer.h>
-#include <H3DUtil/Console.h>
+//#include <HAPI/HAPIHapticsRenderer.h>
+//#include <H3DUtil/Console.h>
 #include <H3DUtil/DynamicLibrary.h>
 
 using namespace std;
@@ -114,9 +114,9 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 #if wxUSE_DRAG_AND_DROP
 
-void onDropFiles(wxCoord x, wxCoord y,
-		 const wxArrayString& filenames,
-		 void *arg ) {
+void onDropFiles( wxCoord x, wxCoord y,
+                  const wxArrayString& filenames,
+                  void *arg ) {
   WxFrame *f = static_cast< WxFrame * >( arg );
   size_t n_files = filenames.GetCount();
   // load the first file, ignore the rest
@@ -174,10 +174,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         const wxString& _title, const wxPoint& _pos,
                         const wxSize& _size, long _style,
                         const wxString& _name ):
+  wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
   navTypeCount(0),
   deviceCount(0),
-  navigationDevices(0),
-  wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
+  navigationDevices(NULL),
   avatar_collision( true ),
   loaded_first_file( false ),
   change_nav_type( new ChangeNavType ),
@@ -212,12 +212,12 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   t->children->clear();
   g->children->push_back( t.get() );
   scene->window->push_back( glwindow );
-  scene->sceneRoot->setValue( g.get() );
+  scene->sceneRoot->setValue( g );
 
   wxString console_string = wxT("Console");
-  theConsole = new consoleDialog(this, wxID_ANY, console_string, 
-                                 wxDefaultPosition, wxDefaultSize,
-                                 wxDEFAULT_DIALOG_STYLE);
+  the_console = new ConsoleDialog( this, wxID_ANY, console_string,
+                                   wxDefaultPosition, wxDefaultSize,
+                                   wxDEFAULT_DIALOG_STYLE );
   tree_view_dialog = new H3DViewerTreeViewDialog( this ); 
   plugins_dialog = new H3DViewerPluginsDialog( this ); 
   frameRates = new FrameRateDialog( this );
@@ -228,7 +228,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 
   //Haptics on by default
   /*********TODO: Save this in registry for next session**************/
-  lastDeviceStatus = true;
+  //lastDeviceStatus = true;
 
   //Main Menu Bar
   menuBar  = (wxMenuBar *) NULL;
@@ -500,10 +500,9 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (BASIC_COLLISION, WxFrame::ChangeCollision )
   EVT_MENU (FRAME_SPEED, WxFrame::OnSpeed )
   EVT_MENU_RANGE (FRAME_OPENHAPTICS, FRAME_RUSPINI, WxFrame::ChangeRenderer)
-  EVT_MENU (FRAME_DEVICECONTROL, WxFrame::ToggleHaptics)
-  EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
+  //EVT_MENU (FRAME_DEVICECONTROL, WxFrame::ToggleHaptics)
   EVT_MENU (wxID_ABOUT, WxFrame::OnAbout)
-  EVT_MENU (FRAME_HELP, WxFrame::OnHelp)
+  //EVT_MENU (FRAME_HELP, WxFrame::OnHelp)
   EVT_IDLE (WxFrame::OnIdle)
   EVT_CLOSE(WxFrame::OnWindowExit)
 END_EVENT_TABLE()
@@ -768,7 +767,6 @@ bool WxFrame::loadFile( const string &filename) {
     if( use_space_mouse ) ss.reset( new SpaceWareSensor );
 #endif
     X3D::DEFNodes dn;
-    QuitAPIField *quit_api = new QuitAPIField;
 
     DeviceInfo *di = DeviceInfo::getActive();
     if( !di ) {
@@ -1311,7 +1309,7 @@ void WxFrame::clearData () {
   // then just remove it.
   while( navigationMenu->GetMenuItemCount() != 0 ) {
     wxMenuItem * temp_menu_item = navigationMenu->FindItemByPosition( 0 );
-    if( temp_menu_item->IsSeparator() ) {
+    if( temp_menu_item != navigationDevices ) {
       navigationMenu->Destroy( temp_menu_item->GetId() );
     } else {
       navigationMenu->Remove( temp_menu_item->GetId() );
@@ -1419,11 +1417,11 @@ void WxFrame::OnCloseFile(wxCommandEvent & event) {
 }
 
 void WxFrame::OnChooseDir(wxCommandEvent & event) {
-  wxDirDialog *d = new wxDirDialog (this, 
-                                    wxT("Choose a directory"), 
-                                    GetCurrentPath(), 
-                                    0, 
-                                    wxDefaultPosition);
+  auto_ptr< wxDirDialog >  d( new wxDirDialog( this, 
+                                               wxT("Choose a directory"),
+                                               GetCurrentPath(), 
+                                               0, 
+                                               wxDefaultPosition ) );
   if (d->ShowModal() == wxID_OK)
   {
     SetCurrentPath(d->GetPath());
@@ -1441,10 +1439,10 @@ void WxFrame::OnAbout(wxCommandEvent & event)
 }
 
 //Help event
-void WxFrame::OnHelp(wxCommandEvent & event)
-{
-
-}
+//void WxFrame::OnHelp(wxCommandEvent & event)
+//{
+//
+//}
 
 //Idle event
 void WxFrame::OnIdle(wxIdleEvent &event) {
@@ -1621,26 +1619,26 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
 }
 
 //Toggle haptics
-void WxFrame::ToggleHaptics (wxCommandEvent & event) {
-  for (NodeVector::const_iterator nv = allDevices.begin(); 
-        nv != allDevices.end(); nv++) {
-    if (lastDeviceStatus) {
-      static_cast < H3DHapticsDevice *> (*nv)->disableDevice();
-      lastDeviceStatus = false;
-    }
-    else {
-      static_cast < H3DHapticsDevice *> (*nv)->enableDevice();
-      lastDeviceStatus = true;
-    }
-  }
-}
+//void WxFrame::ToggleHaptics (wxCommandEvent & event) {
+//  for (NodeVector::const_iterator nv = allDevices.begin(); 
+//        nv != allDevices.end(); nv++) {
+//    if (lastDeviceStatus) {
+//      static_cast < H3DHapticsDevice *> (*nv)->disableDevice();
+//      lastDeviceStatus = false;
+//    }
+//    else {
+//      static_cast < H3DHapticsDevice *> (*nv)->enableDevice();
+//      lastDeviceStatus = true;
+//    }
+//  }
+//}
 
 //Show console event
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
-  if (!theConsole->Show()) {
+  if (!the_console->Show()) {
     // already shown, bring it up
-    theConsole->SetFocus();
+    the_console->SetFocus();
   }
 }
 
@@ -1734,7 +1732,6 @@ void WxFrame::OnReload (wxCommandEvent & event)
   SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
 }
 
-
 //Gets Menu Selections
 void WxFrame::GetSelection (wxMenuEvent & event)
 {
@@ -1757,12 +1754,12 @@ void WxFrame::OnWindowExit (wxCloseEvent & event)
   delete wxConfigBase::Set((wxConfigBase *) NULL);
 }
 
-/*******************Standard trivial functions*********************/
-//Get current filename
-wxString WxFrame::GetCurrentFilename()
-{
- return currentFilename;
-}
+///*******************Standard trivial functions*********************/
+////Get current filename
+//wxString WxFrame::GetCurrentFilename()
+//{
+// return currentFilename;
+//}
 
 //Set current filename
 void WxFrame::SetCurrentFilename(wxString n)
@@ -2391,8 +2388,7 @@ void WxFrame::buildNavMenu () {
       navigationMenu->Append(FRAME_NAVIGATION, wxT("Unavailable"),
                              wxT("Navigation Disabled"));
       navigationMenu->Enable(FRAME_NAVIGATION, false);
-    }
-    else {
+    } else {
       vector<string> allowedTypes;
       vector<string>::iterator navList = navTypes.begin();
       bool hasAny = false;
@@ -2511,21 +2507,24 @@ void WxFrame::buildNavMenu () {
 
   navigationMenu->AppendSeparator();
   if( !navigationDevices ) {
-    navigationDevices = new wxMenu;
-    navigationDevices->AppendCheckItem(FRAME_MOUSE_NAV, wxT("Mouse"), 
+    wxMenu *tmp_menu = new wxMenu;
+    tmp_menu->AppendCheckItem(FRAME_MOUSE_NAV, wxT("Mouse"), 
                                        wxT("Mouse can be used to navigate scene"));
-    navigationDevices->Check( FRAME_MOUSE_NAV, true );
-    navigationDevices->AppendCheckItem(FRAME_KEYBOARD_NAV, wxT("Keyboard"),
+    tmp_menu->Check( FRAME_MOUSE_NAV, true );
+    tmp_menu->AppendCheckItem(FRAME_KEYBOARD_NAV, wxT("Keyboard"),
                               wxT("Keyboard can be used to navigate scene"));
-    navigationDevices->Check( FRAME_KEYBOARD_NAV, true );
-    navigationDevices->AppendCheckItem(FRAME_SWS_NAV, wxT("SpaceWareSensor"), 
+    tmp_menu->Check( FRAME_KEYBOARD_NAV, true );
+    tmp_menu->AppendCheckItem(FRAME_SWS_NAV, wxT("SpaceWareSensor"), 
       wxT("SpaceWareSensor can be used to navigate scene."));
-    navigationDevices->AppendCheckItem( FRAME_HAPTICSDEVICE_NAV,
+    tmp_menu->AppendCheckItem( FRAME_HAPTICSDEVICE_NAV,
                                         wxT("Haptics Device"),
                           wxT("A haptics device can be used to navigate scene"));
+    navigationDevices =
+      navigationMenu->AppendSubMenu( tmp_menu, wxT("Navigation Devices"),
+                    wxT("Toggle on an off which devices to use for navigation") );
+  } else {
+    navigationMenu->Append( navigationDevices );
   }
-  navigationMenu->AppendSubMenu( navigationDevices, wxT("Navigation Devices"),
-                  wxT("Toggle on an off which devices to use for navigation") );
 }
 
 
@@ -2559,6 +2558,7 @@ FrameRateDialog::FrameRateDialog(wxWindow* win ) :
   haptics_rate = NULL;
 
   topsizer = new wxBoxSizer( wxVERTICAL );
+
   updateMenuItems();
 
   Connect(wxEVT_KEY_DOWN, wxKeyEventHandler(FrameRateDialog::OnKeyDown));
@@ -2581,8 +2581,6 @@ void FrameRateDialog::updateMenuItems() {
   if( di ) {
     nr_devices = di->device->size();
   }
-
-  topsizer = new wxBoxSizer( wxVERTICAL );
 
   wxBoxSizer* framerate_sizer = new wxBoxSizer( wxHORIZONTAL );
   framerate_sizer->Add( new wxStaticText( this, wxID_ANY, wxT("&Graphics:")), 0,
@@ -2670,7 +2668,7 @@ void WxFrame::BuildViewpointsSubMenu(
       // create submenu
       wxMenu *submenu = new wxMenu();
       menu->AppendSubMenu( submenu, wxString(v_description.c_str(),
-					     wxConvUTF8) );
+               wxConvUTF8) );
       BuildViewpointsSubMenu( vg->getChildrenAsList(), submenu, count, unnamed_vp, unnamed_vg );
     } else {
       X3DViewpointNode * vp = static_cast< X3DViewpointNode * >( *v ); 
@@ -2789,7 +2787,7 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
 
 END_EVENT_TABLE()
 
-  SettingsDialog::SettingsDialog(wxWindow* win, WxFrame *w ):
+SettingsDialog::SettingsDialog(wxWindow* win, WxFrame *w ):
     wx_frame( w ), on_cancel_rebuild_displaylist( false )
 {
 
@@ -2832,7 +2830,6 @@ END_EVENT_TABLE()
 
 SettingsDialog::~SettingsDialog()
 {
-    
 }
 
 wxPanel* SettingsDialog::CreateDebugSettingsPage(wxWindow* parent ) {
@@ -3265,6 +3262,12 @@ SpeedDialog::SpeedDialog( wxWindow* parent, WxFrame *f ):
   top_sizer->Fit(this);
 }
 
+IMPLEMENT_CLASS(SpeedDialog, wxDialog)
+BEGIN_EVENT_TABLE(SpeedDialog, wxDialog)
+  EVT_COMMAND_SCROLL( FRAME_SPEED_SLIDER, 
+                      SpeedDialog::handleSliderEvent)
+END_EVENT_TABLE()
+
 void SpeedDialog::handleSliderEvent( wxScrollEvent &event ) {
   int id = event.GetId();
 
@@ -3277,11 +3280,4 @@ void SpeedDialog::handleSliderEvent( wxScrollEvent &event ) {
     }
   }
 }
-
-
-IMPLEMENT_CLASS(SpeedDialog, wxDialog)
-BEGIN_EVENT_TABLE(SpeedDialog, wxDialog)
-  EVT_COMMAND_SCROLL( FRAME_SPEED_SLIDER, 
-                      SpeedDialog::handleSliderEvent)
-END_EVENT_TABLE()
 

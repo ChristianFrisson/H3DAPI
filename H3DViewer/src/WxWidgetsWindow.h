@@ -70,6 +70,14 @@ namespace H3D {
                    int* _attribList = 0, long _style=0, 
                    const wxString& _name = wxT("MyWxGLCanvas"),
                    const wxPalette& _palette = wxNullPalette );
+
+      // Destructor
+      ~MyWxGLCanvas() {
+        // Set new drop target, which deletes the old one. Needed for memory
+        // cleanup since it seems like wxWidgets does not automatically clean
+        // up the drop target at glCanvas deletion.
+        SetDropTarget( NULL );
+      }
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
       void OnEraseBackground(wxEraseEvent& WXUNUSED(event));

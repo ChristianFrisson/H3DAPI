@@ -214,6 +214,11 @@ public:
               long _style = wxDEFAULT_FRAME_STYLE,
               const wxString& name = wxT("H3D Player") );
 
+  ~WxFrame() {
+    if( recentFiles )
+      delete recentFiles;
+  }
+
   //Pointer to WxWidgetsWindow
   WxWidgetsWindow *glwindow;
 
@@ -222,7 +227,8 @@ public:
   wxMenuBar  *menuBar;
   //Menu Bar Items
   wxMenu     *fileMenu, *rendererMenu, *viewpointMenu,
-             *navigationMenu, *advancedMenu, *helpMenu, *navigationDevices;
+             *navigationMenu, *advancedMenu, *helpMenu;
+  wxMenuItem *navigationDevices;
   //Submenu items
   wxMenu     *hapticsRenderer, *renderMode;
   //File History Menu
@@ -260,7 +266,7 @@ public:
   void ChangeCollision( wxCommandEvent & event );
   void OnSpeed( wxCommandEvent & event );
   void ChangeRenderer( wxCommandEvent & event );
-  void ToggleHaptics( wxCommandEvent & event );
+  //void ToggleHaptics( wxCommandEvent & event );
   void OnSettings( wxCommandEvent & event );
   void OnIdle( wxIdleEvent &event );
   void OnReload( wxCommandEvent &event);
@@ -344,7 +350,7 @@ private:
   wxString currentFilename;
   wxString currentPath;
   bool lastmirror;
-  bool lastDeviceStatus;
+  //bool lastDeviceStatus;
   int selection;
   int navTypeCount;
   int deviceCount;
@@ -381,7 +387,7 @@ private:
   TimeStamp last_viewmenu_update;
 
 public:
-  consoleDialog *  theConsole;
+  ConsoleDialog * the_console;
   H3DViewerTreeViewDialog * tree_view_dialog;
   H3DViewerPluginsDialog * plugins_dialog;
   FrameRateDialog *  frameRates;
@@ -456,7 +462,7 @@ enum
   FRAME_REDBLUE,
   FRAME_REDGREEN,
   FRAME_REDCYAN,
-  FRAME_DEVICECONTROL,
+  //FRAME_DEVICECONTROL,
   FRAME_HAPTICSCONTROL,
   BASIC_PREFRENDERER,
   BASIC_WIREFRAME,
@@ -470,8 +476,7 @@ enum
   BASIC_COLLISION,
   FRAME_SPEED,
   FRAME_SPEED_SLIDER,
-  FRAME_ABOUT,
-  FRAME_HELP,
+  //FRAME_HELP,
   FRAME_SETTINGS,
   FRAME_RESET_VIEWPOINT,
   FRAME_MOUSE_NAV,

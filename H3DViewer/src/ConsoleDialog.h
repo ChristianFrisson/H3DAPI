@@ -37,29 +37,44 @@
 #include <wx/wx.h>
 #include <sstream>
 #include <memory>
-class consoleDialog: public wxDialog
+class ConsoleDialog: public wxDialog
 {
 public:
-	consoleDialog ( wxWindow *parent,
-					wxWindowID id,
-					const wxString &title,
-					const wxPoint& pos = wxDefaultPosition,
-					const wxSize& size = wxDefaultSize,
-					long style = wxDEFAULT_DIALOG_STYLE
-					);
-	wxTextCtrl *logText;
-	wxString GetText();
+  /// Constructor
+  ConsoleDialog ( wxWindow *parent,
+          wxWindowID id,
+          const wxString &title,
+          const wxPoint& pos = wxDefaultPosition,
+          const wxSize& size = wxDefaultSize,
+          long style = wxDEFAULT_DIALOG_STYLE
+          );
 
+  /// Destructor.
+  ~ConsoleDialog();
+
+  /// wx interface.
+  wxTextCtrl *logText;
+
+  /// Used to make sure that output is done in the main wx thread.
   friend void wxLockGUI( void * );
+
+  /// Reset changes in wxLockGUI.
   friend void wxUnlockGUI( void * );
 
 protected:
+  // Stream used for temporary input in other thread.
   std::stringstream other_thread_output;
+  // The console stream. The contents of other_thread_output is eventuelly
+  // transferred to this stream.
   std::auto_ptr< std::ostream >console_stream;
-	void OnConsoleClose (wxCommandEvent & event);
+  // Called when console is closed.
+  void OnConsoleClose (wxCommandEvent & event);
+  // Called when clear button is pressed.
   void OnConsoleClear (wxCommandEvent & event);
+  // Called on idle.
   void OnIdle( wxIdleEvent &event );
-	DECLARE_EVENT_TABLE();
+  // Declare event table.
+  DECLARE_EVENT_TABLE();
  
 };
 

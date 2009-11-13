@@ -18,8 +18,11 @@ using namespace H3D;
 class H3DViewerTreeViewDialog : public TreeViewDialog
 {
 public:
-	/** Constructor */
-	H3DViewerTreeViewDialog( wxWindow* parent );
+  /** Constructor */
+  H3DViewerTreeViewDialog( wxWindow* parent );
+
+  /// Destructor
+  ~H3DViewerTreeViewDialog();
 
   virtual void btnCloseClick(wxCommandEvent& event);
 
@@ -35,10 +38,10 @@ public:
   virtual void OnCellEdit( wxGridEvent& event );
 
   /// Callback for when user right clicked on a tree node.
-	virtual void OnTreeRightClick( wxTreeEvent& event );
+  virtual void OnTreeRightClick( wxTreeEvent& event );
 
   /// Callback for collapse all menu choice.
-	virtual void OnTreeViewCollapseAll( wxCommandEvent& event );
+  virtual void OnTreeViewCollapseAll( wxCommandEvent& event );
 
   /// Callback for expand all menu choice.
   virtual void OnTreeViewExpandAll( wxCommandEvent& event );
@@ -53,7 +56,7 @@ public:
   virtual void OnTreeViewSaveX3D( wxCommandEvent& event );
 
   /// Callback for node save stl menu choice.
-	virtual void OnTreeViewSaveSTL( wxCommandEvent& event );
+  virtual void OnTreeViewSaveSTL( wxCommandEvent& event );
 
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );

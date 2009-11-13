@@ -17,8 +17,15 @@ H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
   // add the bindable nodes in the tree view
   bindable_tree_id = TreeViewTree->AppendItem( TreeViewTree->GetRootItem(), 
                                                wxT("Active bindable nodes") );
-  TreeViewTree->Expand( TreeViewTree->GetRootItem() ); 
+  TreeViewTree->Expand( TreeViewTree->GetRootItem() );
   SetMenuBar( NULL );
+}
+
+H3DViewerTreeViewDialog::~H3DViewerTreeViewDialog() {
+  // If the menu bar is set to NULL in the constructor it will not be
+  // cleaned up. Done here explicitly.
+  if( GetMenuBar() == NULL )
+    delete m_menubar1;
 }
 
 void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
@@ -464,13 +471,13 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
                   wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
   } else {
-    wxFileDialog *file_dialog = new wxFileDialog ( this,
+    auto_ptr< wxFileDialog > file_dialog ( new wxFileDialog ( this,
                                                    wxT("File to save as.."),
                                                    wxT(""),
                                                    wxT(""),
                                                    wxT("*.*"),
                                                    wxSAVE,
-                                                   wxDefaultPosition) ;
+                                                   wxDefaultPosition) );
 
     if (file_dialog->ShowModal() == wxID_OK) {
       std::string filename(file_dialog->GetPath().mb_str());
@@ -516,13 +523,13 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
       return;
     }
 
-    wxFileDialog *file_dialog = new wxFileDialog ( this,
+    auto_ptr< wxFileDialog > file_dialog( new wxFileDialog ( this,
                                                    wxT("File to save as.."),
                                                    wxT(""),
                                                    wxT(""),
                                                    wxT("*.*"),
                                                    wxSAVE,
-                                                   wxDefaultPosition) ;
+                                                   wxDefaultPosition) );
 
     if (file_dialog->ShowModal() == wxID_OK) {
       std::string filename(file_dialog->GetPath().mb_str());
@@ -593,6 +600,10 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
 
     if( SFString *sfstring = dynamic_cast< SFString * >( f ) ) {
       // set renderer to string renderer
+      // GetCellRenderer increases reference count.
+      // Decrease reference count to clean up memory properly before
+      // replacing pointer.
+      renderer->DecRef();
       renderer = FieldValuesGrid->GetDefaultRenderer();
       // use a choice editor if a set of valid values have been
       // specified for the field.
@@ -607,10 +618,18 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
                i != valid_values.end(); i++ ) {
             choices.Add( wxString( (*i).c_str(), wxConvUTF8 ));
           }
+          // GetCellEditor increases reference count.
+          // Decrease reference count to clean up memory properly before
+          // replacing pointer.
+          editor->DecRef();
           editor = new wxGridCellChoiceEditor( choices, false );
         }
       } else {
         // no valid values specified, use string editor.
+        // GetCellEditor increases reference count.
+        // Decrease reference count to clean up memory properly before
+        // replacing pointer.
+        editor->DecRef();
         editor = FieldValuesGrid->GetDefaultEditor();
       }
       
@@ -623,11 +642,19 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
     } else if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
       // set renderer
       if( !dynamic_cast< wxGridCellBoolRenderer * >( current_renderer ) ) {
+        // GetCellRenderer increases reference count.
+        // Decrease reference count to clean up memory properly before
+        // replacing pointer.
+        renderer->DecRef();
         renderer = new wxGridCellBoolRenderer;
       }
       
       // set editor
       if( !dynamic_cast< wxGridCellBoolEditor * >( current_editor ) ) {
+        // GetCellEditor increases reference count.
+        // Decrease reference count to clean up memory properly before
+        // replacing pointer.
+        editor->DecRef();
         editor = new wxGridCellBoolEditor;
       }
       
@@ -653,9 +680,14 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
       }
     }  else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
       // set renderer and editor
+      // GetCellEditor and GetCellRenderer increases reference count.
+      // Decrease reference count to clean up memory properly before
+      // replacing pointer.
+      editor->DecRef();
+      renderer->DecRef();
       editor = FieldValuesGrid->GetDefaultEditor();
       renderer = FieldValuesGrid->GetDefaultRenderer();
-      
+
       // set value
       if( pfield->getAccessType() != Field::INPUT_ONLY ) {
         value = pfield->getValueAsString();
@@ -672,11 +704,11 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
     // if not enough row, append a new one
     if( row >= FieldValuesGrid->GetNumberRows() )
       FieldValuesGrid->AppendRows(1);
-    
+
     // set the editor and renderer of the cell
     FieldValuesGrid->SetCellRenderer( row, 1, renderer );
     FieldValuesGrid->SetCellEditor( row, 1, editor );
-    
+
     bool changed_color = false;
 #ifdef DEFAULT_VALUES
     wxColour current_color = FieldValuesGrid->GetCellTextColour( row, 0 );
