@@ -29,6 +29,7 @@
 #define __VRMLDRIVER__H__
 
 #include <string>
+#include <stdio.h>
 #include <H3D/Group.h>
 #include <H3D/DEFNodes.h>
 #include <H3D/FlexLexer.h>
