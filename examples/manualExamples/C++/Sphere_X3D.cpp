@@ -13,6 +13,7 @@ using namespace H3D;
 // the SFBool field that is routed to it. If its value is true the color
 // is red, otherwise it is blue.
 class Color : public TypedField< SFColor, SFBool > {
+protected:
   virtual void update() {
     if( static_cast< SFBool * >(event.ptr)->getValue() )
       value = RGB( 1, 0, 0 );
@@ -22,7 +23,6 @@ class Color : public TypedField< SFColor, SFBool > {
 };
 
 int main(int argc, char* argv[]) {
-  
   // Set up the scene graph by specifying a string 
   // and using createX3DNodeFromString
   string theSceneGraphString = "<Group>"
@@ -38,21 +38,21 @@ int main(int argc, char* argv[]) {
 
   // myDefNodes contains functions for getting a Node from the scenegraph
   // by giving the DEF name of the node as a string.
-  X3D::DEFNodes *myDefNodes = new X3D::DEFNodes();
+  X3D::DEFNodes myDefNodes = X3D::DEFNodes();
 
   // createX3DNodeFromString returns an AutoRef containing a pointer 
   // to the top most node in the given string
   AutoRef< Node > myGroup( X3D::createX3DNodeFromString( 
-                              theSceneGraphString, myDefNodes ) );
+                              theSceneGraphString, &myDefNodes ) );
 
   // Getting the nodes needed for routes
   MouseSensor *myMouseSensor = 
-    static_cast< MouseSensor * > (myDefNodes->getNode("MS"));
+    static_cast< MouseSensor * > (myDefNodes.getNode("MS"));
   Material *myMaterial = 
-    static_cast< Material * > (myDefNodes->getNode("MATERIAL"));
+    static_cast< Material * > (myDefNodes.getNode("MATERIAL"));
   
   // Creating and instance of the Color class needed for routes.
-  Color *myColor = new Color();
+  auto_ptr< Color > myColor( new Color() );
 
   // Setting up routes
   myMouseSensor->leftButton->route( myColor );

@@ -124,49 +124,50 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         const wxString& _name ):
 wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
 {
- 	scene.reset( new Scene );
-	ks.reset ( new KeySensor );
-	ms.reset ( new MouseSensor );
-	#ifndef MACOSX
-	//ss.reset (new SpaceWareSensor);
-	#endif
-	t.reset ( new Transform );
-	default_stylus.reset (new Node);
-	viewpoint.reset (NULL);
-	device_info.reset (NULL);
-	g.reset ( new Group );
+   scene.reset( new Scene );
+  ks.reset ( new KeySensor );
+  ms.reset ( new MouseSensor );
+  #ifndef MACOSX
+  //ss.reset (new SpaceWareSensor);
+  #endif
+  t.reset ( new Transform );
+  default_stylus.reset (new Node);
+  viewpoint.reset (NULL);
+  device_info.reset (NULL);
+  g.reset ( new Group );
 
-	glwindow = new WxWidgetsWindow(this);
-	int width, height;
-	GetClientSize(&width, &height);
-	glwindow->width->setValue(width);
+  glwindow = new WxWidgetsWindow(this);
+  int width, height;
+  GetClientSize(&width, &height);
+  glwindow->width->setValue(width);
   glwindow->height->setValue(height);
 
   t->children->clear();
-	//g->children->clear();
+  //g->children->clear();
 
-	//t->children->push_back( X3D::createVRMLFromString( "<Group />") );
-	g->children->push_back( t.get() );
-	scene->window->push_back( glwindow );
-	scene->sceneRoot->setValue( g.get() );
+  //t->children->push_back( X3D::createVRMLFromString( "<Group />") );
+  g->children->push_back( t.get() );
+  scene->window->push_back( glwindow );
+  scene->sceneRoot->setValue( g.get() );
 
-	//scene->window->push_back( glwindow );
+  //scene->window->push_back( glwindow );
 
   wxString console_string = wxT("Console");
-  theConsole = new consoleDialog(this, wxID_ANY, console_string, wxDefaultPosition, 
-                                     wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
+  the_console = new ConsoleDialog( this, wxID_ANY, console_string,
+                                   wxDefaultPosition,
+                                   wxDefaultSize, wxDEFAULT_DIALOG_STYLE);
 
   //WxWidgetsWindow *glwindow = new WxWidgetsWindow(theWxFrame);
   //Main Menu Bar
   menuBar  = (wxMenuBar *) NULL;
 
   //Top level menus
-  fileMenu = (wxMenu *)	NULL;
+  fileMenu = (wxMenu *)  NULL;
   particleMenu = (wxMenu *) NULL;
   physicsMenu = (wxMenu *) NULL;
   emitterMenu = (wxMenu *) NULL;
   advancedMenu = (wxMenu *) NULL;
-  helpMenu = (wxMenu *)	NULL;
+  helpMenu = (wxMenu *)  NULL;
 
   //Sub Menus
   geometryMenu = (wxMenu *) NULL;
@@ -260,14 +261,14 @@ wxFrame(_parent, _id, _title, _pos, _size, _style, _name )
 
 /*******************Event Table*********************/
 BEGIN_EVENT_TABLE(WxFrame, wxFrame)
-	EVT_MENU (FRAME_EXIT, WxFrame::OnExit)
-	EVT_MENU (FRAME_OPEN, WxFrame::OnOpenFile)
+  EVT_MENU (FRAME_EXIT, WxFrame::OnExit)
+  EVT_MENU (FRAME_OPEN, WxFrame::OnOpenFile)
   EVT_MENU (FRAME_OPEN_URL, WxFrame::OnOpenFileURL)
-	EVT_MENU (FRAME_CLOSE, WxFrame::OnCloseFile)
-	EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
-	EVT_MENU_HIGHLIGHT (FRAME_SELECTION, WxFrame::GetSelection)
-	EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
-	EVT_MENU (FRAME_HELP, WxFrame::OnHelp)
+  EVT_MENU (FRAME_CLOSE, WxFrame::OnCloseFile)
+  EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
+  EVT_MENU_HIGHLIGHT (FRAME_SELECTION, WxFrame::GetSelection)
+  EVT_MENU (FRAME_ABOUT, WxFrame::OnAbout)
+  EVT_MENU (FRAME_HELP, WxFrame::OnHelp)
   EVT_MENU_RANGE (FRAME_QUAD, FRAME_LINE, WxFrame::OnParticleGeometry)
   EVT_MENU (FRAME_PARTICLECONTROL, WxFrame::ToggleParticles)
   EVT_MENU (FRAME_PARTICLECREATION, WxFrame::ParticleGeneration)
@@ -418,8 +419,8 @@ bool WxFrame::loadFile( const string &filename) {
 
     ParticleSystem::ParticleSystemList PSList = ParticleSystem::getAllParticleSystems();
 
-	  ParticleSystem::ParticleSystemList::iterator psiterator = PSList.begin();
-  	//for (psiterator = PSList.begin(); psiterator != PSList.end(); psiterator++) {
+    ParticleSystem::ParticleSystemList::iterator psiterator = PSList.begin();
+    //for (psiterator = PSList.begin(); psiterator != PSList.end(); psiterator++) {
     if(!PSList.empty()) {
       PS = PSList.front();
       if (PS->enabled->getValue()) {
@@ -459,8 +460,8 @@ bool WxFrame::loadFile( const string &filename) {
     surfaceEmitterSettings =  new SurfaceEmitterDialog(this, PS, hdev);
     //}
 
-	/****************************Device Info****************************/
-	//Enable Device Menu
+  /****************************Device Info****************************/
+  //Enable Device Menu
 
 #ifndef MACOSX
     if( use_space_mouse )
@@ -481,11 +482,11 @@ bool WxFrame::loadFile( const string &filename) {
       device_info.reset( NULL );
     }
 
-  	this->glwindow->fullscreen->setValue( fullscreen );
+    this->glwindow->fullscreen->setValue( fullscreen );
     this->glwindow->mirrored->setValue( mirrored );
     this->glwindow->renderMode->setValue( render_mode );
 
-	
+  
     scene->window->push_back( glwindow );
     scene->sceneRoot->setValue( g.get() );
   }
@@ -500,16 +501,16 @@ bool WxFrame::loadFile( const string &filename) {
 //Clear data when closing file
 void WxFrame::clearData () {
   t->children->clear();
-	viewpoint.reset (NULL);
+  viewpoint.reset (NULL);
 }
 
 
 //Open a file
 void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
    auto_ptr< wxTextEntryDialog > text_dialog( new wxTextEntryDialog ( this,
-													   wxT("Enter the location of the file here"),
-													   wxT("Open file from URL"),
-													   wxT("") ) );
+                             wxT("Enter the location of the file here"),
+                             wxT("Open file from URL"),
+                             wxT("") ) );
    if( text_dialog->ShowModal() == wxID_OK ) {
      string s( toStr( text_dialog->GetValue() ) );
      clearData();
@@ -519,18 +520,18 @@ void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
 
 void WxFrame::OnOpenFile(wxCommandEvent & event)
 {
-	auto_ptr< wxFileDialog > openFileDialog( new wxFileDialog ( this,
-													   wxT("Open file"),
-													   GetCurrentPath(),
-													   wxT(""),
-													   FILETYPES,
-													   wxOPEN,
-													   wxDefaultPosition) );
+  auto_ptr< wxFileDialog > openFileDialog( new wxFileDialog ( this,
+                             wxT("Open file"),
+                             GetCurrentPath(),
+                             wxT(""),
+                             FILETYPES,
+                             wxOPEN,
+                             wxDefaultPosition) );
 
-	//Open an X3D file
-	if (openFileDialog->ShowModal() == wxID_OK) {
-	  SetCurrentFilename(openFileDialog->GetFilename());	
-	  SetCurrentPath(openFileDialog->GetDirectory());
+  //Open an X3D file
+  if (openFileDialog->ShowModal() == wxID_OK) {
+    SetCurrentFilename(openFileDialog->GetFilename());  
+    SetCurrentPath(openFileDialog->GetDirectory());
     SetStatusText(GetCurrentFilename(), 0);
     SetStatusText(openFileDialog->GetDirectory(),1);
 #ifdef WIN32
@@ -548,7 +549,7 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
 void WxFrame::OnCloseFile(wxCommandEvent & event) {
   //clearData();
   t->children->clear();
-	SetStatusText(wxT("Open a file..."), 0);
+  SetStatusText(wxT("Open a file..."), 0);
   SetStatusText(wxT(""),1);
 }
 
@@ -571,19 +572,19 @@ void WxFrame::OnParticleGeometry(wxCommandEvent & event)
     case FRAME_QUAD:
       geometry = "QUAD";
       break;
-		case FRAME_TRIANGLE:
-			geometry = "TRIANGLE";
-			break;
-		case FRAME_POINT:
-  		geometry = "POINT";
-			break;
-		case FRAME_SPRITE:
-			geometry = "SPRITE";
-			break;
+    case FRAME_TRIANGLE:
+      geometry = "TRIANGLE";
+      break;
+    case FRAME_POINT:
+      geometry = "POINT";
+      break;
+    case FRAME_SPRITE:
+      geometry = "SPRITE";
+      break;
     case FRAME_LINE:
       geometry = "LINE";
       break;
-	}
+  }
   PS->geometryType->setValue( geometry.c_str() );
 }
 
@@ -690,19 +691,19 @@ void WxFrame::OnHelp(wxCommandEvent & event)
 //Show console event
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
-  theConsole->Show();
+  the_console->Show();
 }
 
 //Gets Menu Selections
 void WxFrame::GetSelection (wxMenuEvent & event)
 {
-	selection = event.GetMenuId();
+  selection = event.GetMenuId();
 }
 
 //Exit via menu
 void WxFrame::OnExit (wxCommandEvent & event)
 {
-	Close(true);
+  Close(true);
 }
 
 //Exit via window manager

@@ -28,10 +28,11 @@ AutoRef< Node > group(
 // The AddSphere class adds a new sphere to the group nodes children
 // field each time a field routed to it generates an event.
 class AddSphere : public AutoUpdate< SFBool > { 
+protected:
   virtual void update() { 
     AutoUpdate< SFBool >::update();
     if( value ) { 
-      X3D::DEFNodes *tempDefNodes = new X3D::DEFNodes();
+      X3D::DEFNodes tempDefNodes;
       AutoRef< Transform > tempTransform(
                      static_cast< Transform * >(  X3D::createX3DNodeFromString(
 "<Transform>\n"
@@ -40,17 +41,17 @@ class AddSphere : public AutoUpdate< SFBool > {
 "        <Material DEF=\"MATERIAL\" />\n"
 "     </Appearance>\n"
 "  </Shape> \n"
-"</Transform>", tempDefNodes ).get() ) );
+"</Transform>", &tempDefNodes ).get() ) );
 
       RGB c = RGB( (H3DFloat)rand()/RAND_MAX,
                    (H3DFloat)rand()/RAND_MAX,
                    (H3DFloat)rand()/RAND_MAX );
       Material *m;
-      tempDefNodes->getNode( "MATERIAL", m );
+      tempDefNodes.getNode( "MATERIAL", m );
       m->diffuseColor->setValue( c );
 
       Shape *s;
-      tempDefNodes->getNode( "SHAPE", s );
+      tempDefNodes.getNode( "SHAPE", s );
       s->geometry->setValue( sphere );
 
       tempTransform->translation->setValue( Vec3f( c.r * 0.5f - 0.25f,
@@ -65,7 +66,7 @@ class AddSphere : public AutoUpdate< SFBool > {
 
 int main(int argc, char* argv[]) {
   // Creating and instance of the AddSphere class needed for routes.
-  AddSphere *myAddSphere = new AddSphere();
+  auto_ptr< AddSphere > myAddSphere( new AddSphere() );
   // Setting up routes
   MouseSensor *ms;
   myDefNodes.getNode( "MS", ms );

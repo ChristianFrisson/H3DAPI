@@ -97,14 +97,14 @@ public:
   void clearData();
 
   /***************Member Functions*****************/
-  void OnOpenFile	(wxCommandEvent & event);
-  void OnOpenFileURL	(wxCommandEvent & event);
-  void OnCloseFile	(wxCommandEvent & event);
-  void OnExit     	(wxCommandEvent & event);
+  void OnOpenFile  (wxCommandEvent & event);
+  void OnOpenFileURL  (wxCommandEvent & event);
+  void OnCloseFile  (wxCommandEvent & event);
+  void OnExit       (wxCommandEvent & event);
   void OnWindowExit (wxCloseEvent & event);
-  void OnAbout		(wxCommandEvent & event);
-  void OnHelp		(wxCommandEvent & event);
-  void ShowConsole	(wxCommandEvent & event);
+  void OnAbout    (wxCommandEvent & event);
+  void OnHelp    (wxCommandEvent & event);
+  void ShowConsole  (wxCommandEvent & event);
   void GetSelection (wxMenuEvent & event);
   void OnParticleGeometry (wxCommandEvent & event);
   void ToggleParticles (wxCommandEvent & event);
@@ -131,36 +131,36 @@ public:
   //void readSettingsFromINIFile( const string &filename,GlobalSettings *gs );
 
 private:
-	wxString currentFilename;
-	wxString currentPath;
+  wxString currentFilename;
+  wxString currentPath;
   DeviceInfo *di;
   H3DHapticsDevice *hdev;
   ParticleSystem *PS;
 
-	int selection;
+  int selection;
 
-	//One time intialization variables
-	string settings_path;
-	string common_path;
-	string deviceinfo_file;
-	string stylus_file;
-	string viewpoint_file;
-	string render_mode;
+  //One time intialization variables
+  string settings_path;
+  string common_path;
+  string deviceinfo_file;
+  string stylus_file;
+  string viewpoint_file;
+  string render_mode;
 
-	//KeyRotation *kr;
+  //KeyRotation *kr;
 
-	//Autoref Variables
-	AutoRef< Scene > scene;
-	AutoRef< KeySensor > ks;
-	AutoRef< MouseSensor > ms;
-	AutoRef< SpaceWareSensor > ss;
-	AutoRef< Transform > t;
-	AutoRef< Node > device_info;
-	AutoRef< Node > viewpoint;
-	AutoRef< Node > default_stylus;
-	AutoRef< Group > g;
+  //Autoref Variables
+  AutoRef< Scene > scene;
+  AutoRef< KeySensor > ks;
+  AutoRef< MouseSensor > ms;
+  AutoRef< SpaceWareSensor > ss;
+  AutoRef< Transform > t;
+  AutoRef< Node > device_info;
+  AutoRef< Node > viewpoint;
+  AutoRef< Node > default_stylus;
+  AutoRef< Group > g;
 
-	consoleDialog *  theConsole;
+  ConsoleDialog *  the_console;
 
   //Emitters
   ConeEmitterDialog * coneEmitterSettings;

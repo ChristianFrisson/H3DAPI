@@ -68,58 +68,69 @@ void wxLockGUI( void *data ) {
     // and then later output the contents of the stringstream
     // to the output stream.
     //wxMutexGuiEnter();
-    consoleDialog *dialog =  static_cast< consoleDialog * >( data );
+    ConsoleDialog *dialog =  static_cast< ConsoleDialog * >( data );
     H3DUtil::Console.setOutputStream( dialog->other_thread_output );
   }
 } 
 
 void wxUnlockGUI( void *data ) {
   if( !wxIsMainThread() ) {
-    consoleDialog *dialog =  static_cast< consoleDialog * >( data );
+    ConsoleDialog *dialog =  static_cast< ConsoleDialog * >( data );
     H3DUtil::Console.setOutputStream( *dialog->console_stream );
     //    wxMutexGuiLeave();
   }
 }
 
 
-consoleDialog::consoleDialog ( wxWindow *parent,
-							   wxWindowID id,
-							   const wxString &title,
-							   const wxPoint& pos,
-							   const wxSize& size,
-							   long style
-							   ):
-wxDialog (parent, id, title, pos, size, style)
+ConsoleDialog::ConsoleDialog ( wxWindow *parent,
+                 wxWindowID id,
+                 const wxString &title,
+                 const wxPoint& pos,
+                 const wxSize& size,
+                 long style
+                 ): wxDialog (parent, id, title, pos, size, style)
 {
-	wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
+  wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
   
-	// create text ctrl with minimal size 400x200
-	logText = (wxTextCtrl *) NULL;
-	logText = new wxTextCtrl ( this, -1, wxT(""),
+  // create text ctrl with minimal size 400x200
+  logText = (wxTextCtrl *) NULL;
+  logText = new wxTextCtrl ( this, -1, wxT(""),
                              wxDefaultPosition, wxSize(400, 200),
                              wxTE_MULTILINE | wxTE_READONLY );
-  
-	topsizer->Add(logText, 
+
+  topsizer->Add(logText, 
                 1,            // make vertically stretchable
                 wxEXPAND |    // make horizontally stretchable
                 wxALL,        //   and make border all around
                 10 );         // set border width to 10 */
-  
-  wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("Close") );
-  
+
+  // Clear button
+  wxButton *clearBtn = new wxButton(this, wxID_CLEAR, wxT("Cle&ar"));
+
+  // Close button
+  wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("&Close") );
+
+  // boxsizer for the buttons
   wxBoxSizer *button_sizer = new wxBoxSizer( wxHORIZONTAL );
+  button_sizer->Add(clearBtn,
+                    0,          // make horizontally unstretchable
+                    wxALL,      // make border all around (implicit top alignment)
+                    10 );       // set border width to 10
+
   button_sizer->Add(closeButton, 
                     0,           // make horizontally unstretchable
                     wxALL,       // make border all around (implicit top alignment)
                     10 );        // set border width to 10
-  
-	topsizer->Add(button_sizer,
+
+
+
+  topsizer->Add(button_sizer,
                 0,                // make vertically unstretchable
                 wxALIGN_CENTER ); // no border and centre horizontally
   
-	SetSizer( topsizer );      // use the sizer for layout
+  SetSizer( topsizer );      // use the sizer for layout
   
-	topsizer->SetSizeHints( this );   // set size hints to honour minimum size
+  topsizer->SetSizeHints( this );   // set size hints to honour minimum size
   
   // redirect the console to logText wxTextCtrl.
   console_stream.reset( new ostream(new ConsoleStreamBuf( logText) ) );
@@ -128,19 +139,32 @@ wxDialog (parent, id, title, pos, size, style)
   H3DUtil::Console.setUnlockMutexFunction( wxUnlockGUI, this );
 }
 
+ConsoleDialog::~ConsoleDialog() {
+  // The contained buffer is not deleted, set a new buffer and delete
+  // buffer to clear up memory.
+  streambuf * tmp_buf = console_stream->rdbuf(NULL);
+  console_stream.reset( NULL );
+  delete tmp_buf;
+}
+
 /*******************Event Table*********************/
-BEGIN_EVENT_TABLE(consoleDialog, wxDialog)
-  EVT_BUTTON (wxID_CLOSE, consoleDialog::OnConsoleClose)
-  EVT_IDLE (consoleDialog::OnIdle)
+BEGIN_EVENT_TABLE(ConsoleDialog, wxDialog)
+  EVT_BUTTON (wxID_CLOSE, ConsoleDialog::OnConsoleClose)
+  EVT_BUTTON (wxID_CLEAR, ConsoleDialog::OnConsoleClear)
+  EVT_IDLE (ConsoleDialog::OnIdle)
 END_EVENT_TABLE()
 
 /*******************Member Functions*********************/
-void consoleDialog::OnConsoleClose(wxCommandEvent &event) {
+void ConsoleDialog::OnConsoleClose(wxCommandEvent &event) {
   Close(TRUE);
 }
 
-void consoleDialog::OnIdle(wxIdleEvent &event) {
-	if( other_thread_output.str().size() > 0 ) {
+void ConsoleDialog::OnConsoleClear(wxCommandEvent &event) {
+  ConsoleDialog::logText->Clear();
+}
+
+void ConsoleDialog::OnIdle(wxIdleEvent &event) {
+  if( other_thread_output.str().size() > 0 ) {
     H3DUtil::Console.getOutputStream() << other_thread_output.str();
     H3DUtil::Console.getOutputStream().flush();
     other_thread_output.str( "" );
