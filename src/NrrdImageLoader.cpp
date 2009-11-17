@@ -60,7 +60,7 @@ bool NrrdImageLoader::supportsFileType( const string &url ) {
   string end_of_url =  url.substr( url.size() - 5, url.size() );
   std::transform(end_of_url.begin(), end_of_url.end(),
 		 end_of_url.begin(), ::tolower);
-  if( end_of_url != ".nrrd" ) return false;
+  if( end_of_url != ".nrrd" && end_of_url != ".vtk" end) return false;
 
   NrrdIoState *nio;
   Nrrd *nin;
