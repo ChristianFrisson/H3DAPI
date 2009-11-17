@@ -79,7 +79,14 @@ X3DParametricGeometryNode( _metadata, _bound, _displayList,
   tessellation->setValue( 0 );
   order->setValue( 3 );
   closed->setValue( false );
-  controlPoint->route(bound); 
+  controlPoint->route(bound);
+
+  tessellation->route ( displayList );
+  weight->route ( displayList );
+  knot->route ( displayList );
+  order->route ( displayList );
+  closed->route ( displayList );
+  controlPoint->route ( displayList );
 }
 
 
