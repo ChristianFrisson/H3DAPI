@@ -30,6 +30,8 @@
 
 #include <H3D/NrrdImageLoader.h>
 
+#include <algorithm>
+
 #ifdef HAVE_TEEM
 #include <H3DUtil/PixelImage.h>
 
@@ -51,6 +53,15 @@ NrrdImageLoader::reader_registration(
                             );
 
 bool NrrdImageLoader::supportsFileType( const string &url ) {
+  // only allow it to read files with the extension .nrrd since
+  // otherwise nrrd can crash or hand when it gets a .gif or .jpg 
+  // file in the code below (at least on Linux).
+  if( url.size() < 5 ) return false;
+  string end_of_url =  url.substr( url.size() - 5, url.size() );
+  std::transform(end_of_url.begin(), end_of_url.end(),
+		 end_of_url.begin(), ::tolower);
+  if( end_of_url != ".nrrd" ) return false;
+
   NrrdIoState *nio;
   Nrrd *nin;
   
