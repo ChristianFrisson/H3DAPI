@@ -55,7 +55,21 @@ using namespace H3D;
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 namespace FontStyleInternals {
-	static map< string, FTFont* > font_db;
+  // Internal map where the destructor deletes allocated
+  // FTFonts. Note, this code will not work if FTGL is delayloaded
+  // in Windows because of different initialization order.
+  class FontStyleMap : public map< string, FTFont* > {
+  public:
+    // This will not work if FTGL is delayloaded.
+    ~FontStyleMap() {
+      while( !empty() ) {
+        iterator i = begin();
+        delete (*i).second;
+        erase( i );
+      }
+    }
+  };
+  static FontStyleMap font_db;
 
 #if defined(__APPLE__) && defined(__MACH__)
 FT_Error  xFT_GetFile_From_Mac_Name( const char* fontName,
@@ -146,72 +160,72 @@ FT_Error  xFT_GetFile_From_Mac_Name( const char* fontName,
 
 LONG GetNameValue(HKEY key, LPCTSTR subkey, LPCTSTR valuename, LPTSTR retdata)
 {
-	HKEY hkey;
-	LONG retval = RegOpenKeyEx(key, subkey, 0, KEY_QUERY_VALUE, &hkey);
-	
-	*retdata = 0;
+  HKEY hkey;
+  LONG retval = RegOpenKeyEx(key, subkey, 0, KEY_QUERY_VALUE, &hkey);
+  
+  *retdata = 0;
 
-	if (retval == ERROR_SUCCESS) 
-	{
-		DWORD datasize = MAX_PATH;
-		BYTE data[MAX_PATH];
-		DWORD type = 0;
+  if (retval == ERROR_SUCCESS) 
+  {
+    DWORD datasize = MAX_PATH;
+    BYTE data[MAX_PATH];
+    DWORD type = 0;
 
-		retval = RegQueryValueEx(hkey, valuename, NULL, &type, data, &datasize);
-		if (retval == ERROR_SUCCESS) 
-		{
-			lstrcpy(retdata, (const char *)data);
-		}
+    retval = RegQueryValueEx(hkey, valuename, NULL, &type, data, &datasize);
+    if (retval == ERROR_SUCCESS) 
+    {
+      lstrcpy(retdata, (const char *)data);
+    }
 
-		RegCloseKey(hkey);
-	}
+    RegCloseKey(hkey);
+  }
 
 
-	return retval;
+  return retval;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // GetNextNameValue
 LONG GetNextNameValue(HKEY key, LPCTSTR subkey, LPTSTR szName, LPTSTR szData)
 {
-	static HKEY hkey = NULL;
-	static DWORD dwIndex = 0;
-	LONG retval;
+  static HKEY hkey = NULL;
+  static DWORD dwIndex = 0;
+  LONG retval;
 
-	if (subkey == NULL && szName == NULL && szData == NULL)	{
-		if (hkey)
-			RegCloseKey(hkey);
-		hkey = NULL;
-		return ERROR_SUCCESS;
-	}
+  if (subkey == NULL && szName == NULL && szData == NULL)  {
+    if (hkey)
+      RegCloseKey(hkey);
+    hkey = NULL;
+    return ERROR_SUCCESS;
+  }
 
-	if (subkey && subkey[0] != 0)	{
-		retval = RegOpenKeyEx(key, subkey, 0, KEY_READ, &hkey);
-		if (retval != ERROR_SUCCESS){
-			return retval;
-		}
-		dwIndex = 0;
-	}	else	{
-		dwIndex++;
-	}
-	
-	*szName = 0;
-	*szData = 0;
+  if (subkey && subkey[0] != 0)  {
+    retval = RegOpenKeyEx(key, subkey, 0, KEY_READ, &hkey);
+    if (retval != ERROR_SUCCESS){
+      return retval;
+    }
+    dwIndex = 0;
+  }  else  {
+    dwIndex++;
+  }
+  
+  *szName = 0;
+  *szData = 0;
 
-	char szValueName[MAX_PATH];
-	DWORD dwValueNameSize = sizeof(szValueName)-1;
-	BYTE szValueData[MAX_PATH];
-	DWORD dwValueDataSize = sizeof(szValueData)-1;
-	DWORD dwType = 0;
+  char szValueName[MAX_PATH];
+  DWORD dwValueNameSize = sizeof(szValueName)-1;
+  BYTE szValueData[MAX_PATH];
+  DWORD dwValueDataSize = sizeof(szValueData)-1;
+  DWORD dwType = 0;
 
-	retval = RegEnumValue(hkey, dwIndex, szValueName, &dwValueNameSize, NULL, 
-		&dwType, szValueData, &dwValueDataSize);
-	if (retval == ERROR_SUCCESS) 	{
-		lstrcpy(szName, (char *)szValueName);
-		lstrcpy(szData, (char *)szValueData);
-	}
+  retval = RegEnumValue(hkey, dwIndex, szValueName, &dwValueNameSize, NULL, 
+    &dwType, szValueData, &dwValueDataSize);
+  if (retval == ERROR_SUCCESS)   {
+    lstrcpy(szName, (char *)szValueName);
+    lstrcpy(szData, (char *)szValueData);
+  }
 
-	return retval;
+  return retval;
 }
 
 BOOL GetFontFile(LPCTSTR lpszFontName, 
@@ -219,31 +233,31 @@ BOOL GetFontFile(LPCTSTR lpszFontName,
                  string& strFontFile)
 {
 
-	TCHAR szName[2 * MAX_PATH];
-	TCHAR szData[2 * MAX_PATH];
+  TCHAR szName[2 * MAX_PATH];
+  TCHAR szData[2 * MAX_PATH];
 
-	LPCTSTR strFont = "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
+  LPCTSTR strFont = "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
 
-	BOOL bResult = FALSE;
+  BOOL bResult = FALSE;
 
-	while (GetNextNameValue(HKEY_LOCAL_MACHINE, strFont, szName, szData) == 
+  while (GetNextNameValue(HKEY_LOCAL_MACHINE, strFont, szName, szData) == 
          ERROR_SUCCESS)
-	{
-		if (_strnicmp(lpszFontName, szName, strlen(lpszFontName)) == 0)
-		{
-			strDisplayName = szName;
-			strFontFile = szData;
-			bResult = TRUE;
-			break;
-		}
+  {
+    if (_strnicmp(lpszFontName, szName, strlen(lpszFontName)) == 0)
+    {
+      strDisplayName = szName;
+      strFontFile = szData;
+      bResult = TRUE;
+      break;
+    }
     strFont = "";
 
 
-	}
+  }
   // close the registry key
-	GetNextNameValue(HKEY_LOCAL_MACHINE, NULL, NULL, NULL);	
+  GetNextNameValue(HKEY_LOCAL_MACHINE, NULL, NULL, NULL);  
 
-	return bResult;
+  return bResult;
 }
 
 
@@ -253,7 +267,7 @@ BOOL GetFontFile(LPCTSTR lpszFontName,
 string FC_GetFontByName( const char *font_name ) {
   string fn="";
   FcObjectSet *os = 0;
-  FcFontSet	*fs;
+  FcFontSet  *fs;
   FcPattern   *pat;
 
   pat = FcPatternCreate ();
@@ -263,7 +277,7 @@ string FC_GetFontByName( const char *font_name ) {
     FcPatternDestroy (pat);
   
   if (fs) {
-    int	j;
+    int  j;
     
     for (j = 0; j < fs->nfont; j++) {
       FcChar8 *font;
@@ -271,11 +285,11 @@ string FC_GetFontByName( const char *font_name ) {
       
       font = FcNameUnparse(fs->fonts[j]);
       if ( FcPatternGetString(fs->fonts[j], FC_FILE, 0, &file) 
-	   == FcResultMatch) {
-	if (strncasecmp(font_name, (char*)font, strlen(font_name)) == 0)
-	  fn=string((char*)file);
-	//printf ("%s\n ", file);
-	//printf ("%s: ", font);
+     == FcResultMatch) {
+  if (strncasecmp(font_name, (char*)font, strlen(font_name)) == 0)
+    fn=string((char*)file);
+  //printf ("%s\n ", file);
+  //printf ("%s: ", font);
 
       }
       free (font);
@@ -295,7 +309,7 @@ string FC_GetFontByName( const char *font_name ) {
                          bool italic,
                          const string &render_type ) {
 
-	string full_font_path;
+  string full_font_path;
 #if defined(__APPLE__) && defined(__MACH__)
     FSSpec ps;
     FT_Long face_index;
@@ -342,11 +356,12 @@ string FC_GetFontByName( const char *font_name ) {
     full_font_path = FC_GetFontByName( font_name.c_str() );
 #endif
     FTFont *font = NULL;
-	// search font cache first:
+  // search font cache first:
     string font_to_search = render_type + full_font_path;
-	map<string,FTFont*>::iterator f = font_db.find( font_to_search );
-	if ( f != font_db.end() )
-	  return (*f).second;
+    FontStyleInternals::FontStyleMap::iterator f =
+      font_db.find( font_to_search );
+  if ( f != font_db.end() )
+    return (*f).second;
   if( render_type == "POLYGON" ) {
     font = new FTGLPolygonFont( full_font_path.c_str() ); 
   } else if( render_type == "TEXTURE" ) {
@@ -357,13 +372,13 @@ string FC_GetFontByName( const char *font_name ) {
     font = new FTGLExtrdFont( full_font_path.c_str() ); 
   }
   if( !font || font->Error() ) return NULL;
-	else {
-	  font->FaceSize( 72 );
-	  font->CharMap(ft_encoding_unicode);
-	  font->UseDisplayList( true );
-	  font_db[font_to_search]=font;
-	  return font;
-	}
+  else {
+    font->FaceSize( 72 );
+    font->CharMap(ft_encoding_unicode);
+    font->UseDisplayList( true );
+    font_db[font_to_search]=font;
+    return font;
+  }
   }
 
 }
@@ -504,7 +519,7 @@ void FontStyle::buildFonts() {
       font_name = DEFAULT_TYPEWRITER_FONT;
     } 
     
-	font =FontStyleInternals::getFontByName( font_name, bold, italic, render_type );
+  font =FontStyleInternals::getFontByName( font_name, bold, italic, render_type );
     // if bold or italic font was not found try to get the plain font
     // instead.
     if( !font && ( bold||italic) ) 
@@ -532,12 +547,12 @@ void FontStyle::buildFonts() {
     font = FontStyleInternals::getFontByName( DEFAULT_SERIF_FONT, 
                                               bold, 
                                               italic,
-											  render_type);
+                        render_type);
     if( !font && ( bold||italic) )
       font = FontStyleInternals::getFontByName( DEFAULT_SERIF_FONT, 
                                          false, 
                                          false,
-										 render_type);
+                     render_type);
 
 
     if( !font ) {
@@ -631,8 +646,8 @@ Vec3f FontStyle::charDimensions( unsigned char c ) {
   font->BBox( t, llx, lly, llz, urx, ury, urz );
   
   return Vec3f(font->Advance(t),
-	       font->Ascender()-font->Descender(),
-	       llz-urz) * scale_factor;
+         font->Ascender()-font->Descender(),
+         llz-urz) * scale_factor;
 
 }
 
