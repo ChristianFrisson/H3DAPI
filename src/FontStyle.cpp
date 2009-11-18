@@ -34,12 +34,18 @@
 #endif
 
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
-//#include <FTGL/FTGL.h>
+
+#ifdef FTGL_INCLUDE_IS_UPPER
+#include <FTGL/FTGL.h>
+#else
 #include <FTGL/ftgl.h>
+#endif
+
 #include <FTGL/FTGLTextureFont.h>
 #include <FTGL/FTGLPolygonFont.h>
 #include <FTGL/FTGLOutlineFont.h>
 #include <FTGL/FTGLExtrdFont.h>
+
 #if defined(__APPLE__) && defined(__MACH__)
 #include <freetype/ftmac.h>
 #else

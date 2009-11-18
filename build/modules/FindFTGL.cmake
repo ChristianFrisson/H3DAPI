@@ -4,11 +4,12 @@
 #  FTGL_INCLUDE_DIR -  where to find FTGL.h, etc.
 #  FTGL_LIBRARIES    - List of libraries when using FTGL.
 #  FTGL_FOUND        - True if FTGL found.
+#  FTGL_INCLUDE_IS_UPPER - True if the include file to use is FTGL.h.
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
-FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/FTGL.h
+FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/ftgl.h 
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                  $ENV{H3D_ROOT}/../External/include
                                  ../../External/include
@@ -17,7 +18,24 @@ FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/FTGL.h
                                  $ENV{H3D_ROOT}/../External/include/FTGL
                                  ../../External/include/FTGL
                                  ${module_file_path}/../../../External/include/FTGL)
+
+SET( FTGL_INCLUDE_IS_UPPER 0 )
+
+IF( NOT FTGL_INCLUDE_DIR )
+  FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/FTGL.h 
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/include
+                                 $ENV{H3D_ROOT}/../External/include
+                                 ../../External/include
+                                 ${module_file_path}/../../../External/include
+                                 $ENV{H3D_EXTERNAL_ROOT}/include/FTGL
+                                 $ENV{H3D_ROOT}/../External/include/FTGL
+                                 ../../External/include/FTGL
+                                 ${module_file_path}/../../../External/include/FTGL)
+  SET( FTGL_INCLUDE_IS_UPPER 1 )
+ENDIF( NOT FTGL_INCLUDE_DIR )
+
 MARK_AS_ADVANCED(FTGL_INCLUDE_DIR)
+MARK_AS_ADVANCED(FTGL_INCLUDE_IS_UPPER)
 
 # Look for the library.
 FIND_LIBRARY(FTGL_LIBRARY NAMES ftgl ftgl_dynamic_213rc5 ftgl_dynamic_MTD
