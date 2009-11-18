@@ -10,14 +10,14 @@ IF(WIN32 OR APPLE)
   MESSAGE(FATAL_ERROR "FindFFmpeg not yet ready for Windows and Mac! Please contribute")
 ENDIF(WIN32 OR APPLE)
 
+
 # Try to use pkgconfig
-INCLUDE(FindPkgConfig)
+#INCLUDE(FindPkgConfig)
+# pkg-config is disabled for now since it does not seem to find
+# the directories we want always. 
 IF( PKG_CONFIG_FOUND )
-
   PKG_CHECK_MODULES(FFMPEGMODULES libavcodec libavformat libswscale)
-
 ELSE( PKG_CONFIG_FOUND )
-
 
   # Look for the header file.
   FIND_PATH(AVCODEC_INCLUDE_DIR NAMES avcodec.h
@@ -93,6 +93,9 @@ ELSE(FFMPEGMODULES_FOUND)
   SET(FFMPEG_LIBRARIES)
   SET(FFMPEG_INCLUDE_DIRS)
 ENDIF(FFMPEGMODULES_FOUND)
+
+MARK_AS_ADVANCED( FFMPEG_LIBRARIES )
+MARK_AS_ADVANCED( FFMPEG_INCLUDE_DIRS )
 
 # Report the results.
 IF(NOT FFMPEG_FOUND)
