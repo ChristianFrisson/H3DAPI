@@ -62,7 +62,7 @@ IF( NOT FREETYPE_INCLUDE_DIR )
 ENDIF( NOT FREETYPE_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype235
+FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype2311 freetype235
                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                     $ENV{H3D_ROOT}/../External/lib
                                     ../../External/lib

@@ -8,15 +8,19 @@
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 # Look for the header file.
-FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/FTGL.h 
+FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/FTGL.h
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                  $ENV{H3D_ROOT}/../External/include
                                  ../../External/include
-                                 ${module_file_path}/../../../External/include)
+                                 ${module_file_path}/../../../External/include
+                                 $ENV{H3D_EXTERNAL_ROOT}/include/FTGL
+                                 $ENV{H3D_ROOT}/../External/include/FTGL
+                                 ../../External/include/FTGL
+                                 ${module_file_path}/../../../External/include/FTGL)
 MARK_AS_ADVANCED(FTGL_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(FTGL_LIBRARY NAMES ftgl ftgl_dynamic_MTD
+FIND_LIBRARY(FTGL_LIBRARY NAMES ftgl ftgl_dynamic_213rc5 ftgl_dynamic_MTD
                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                 $ENV{H3D_ROOT}/../External/lib
                                 ../../External/lib

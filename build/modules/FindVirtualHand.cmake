@@ -6,9 +6,9 @@
 #  VirtualHand_FOUND        - True if VirtualHand found.
 
 SET( vti_registry_file_path "" )
-IF( $ENV{VTI_REGISTRY_FILE} )
-  GET_FILENAME_COMPONENT(vti_registry_file_path $ENV{VTI_REGISTRY_FILE} PATH )
-ENDIF( $ENV{VTI_REGISTRY_FILE} )
+IF( NOT "$ENV{VTI_REGISTRY_FILE}" STREQUAL  "" )
+  GET_FILENAME_COMPONENT(vti_registry_file_path "$ENV{VTI_REGISTRY_FILE}" PATH )
+ENDIF( NOT "$ENV{VTI_REGISTRY_FILE}" STREQUAL  "" )
 
 # Look for the header file.
 FIND_PATH( VirtualHand_INCLUDE_DIR NAMES vhandtk/vht.h
