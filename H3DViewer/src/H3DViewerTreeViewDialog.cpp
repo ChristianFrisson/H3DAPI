@@ -637,7 +637,10 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
       value = "";
       if( sfstring->getAccessType() != Field::INPUT_ONLY ) {
         value = sfstring->getValue();
-        default_value = static_cast< SFString * >( default_field )->getValue();
+        if( default_field ) {
+          default_value = 
+            static_cast< SFString * >( default_field )->getValue();
+        }
       }
     } else if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
       // set renderer
@@ -674,9 +677,11 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
       // set default value
       default_value = "0";
       if( sfbool->getAccessType() != Field::INPUT_ONLY  ) {
-        SFBool *sf = static_cast< SFBool *>( default_field );
-        bool checked = sf->getValue();
-        default_value = checked ? "1" : "0";
+        if( default_field ) {
+          SFBool *sf = static_cast< SFBool *>( default_field );
+          bool checked = sf->getValue();
+          default_value = checked ? "1" : "0";
+        }
       }
     }  else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
       // set renderer and editor
@@ -696,8 +701,10 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
       // set default value
       default_value = "0";
       if( pfield->getAccessType() != Field::INPUT_ONLY  ) {
-        ParsableField *df = static_cast< ParsableField * >( default_field );
-        default_value = df->getValueAsString();
+        if( default_field ) {
+          ParsableField *df = static_cast< ParsableField * >( default_field );
+          default_value = df->getValueAsString();
+        }
       }
     }
     
