@@ -60,7 +60,8 @@ X3DTexture2DNode::X3DTexture2DNode(
   repeatT ( _repeatT  ),
   scaleToPowerOfTwo( _scaleToP2 ),
   textureProperties( _textureProp ),
-  texture_id( 0 ) {
+  texture_id( 0 ),
+  texture_unit( GL_TEXTURE0_ARB ) {
 
   type_name = "X3DTexture2DNode";
 

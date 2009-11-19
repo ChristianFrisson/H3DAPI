@@ -63,7 +63,8 @@ X3DTexture3DNode::X3DTexture3DNode(
   repeatR ( _repeatR  ),
   scaleToPowerOfTwo( _scaleToP2 ),
   textureProperties( _textureProp ),
-  texture_id( 0 ) {
+  texture_id( 0 ),
+  texture_unit( GL_TEXTURE0_ARB ) {
 
   type_name = "X3DTexture3DNode";
 

@@ -61,7 +61,7 @@ namespace H3D {
                                Inst< SFNode>  _metadata = 0 ) :
       X3DTextureNode( _displayList, _metadata ),
       cube_map_id( 0 ),
-      texture_unit( 0 ) {}
+      texture_unit( GL_TEXTURE0_ARB ) {}
 
     /// Get the OpenGL texture id that is used for this texture.
     inline GLuint getTextureId() {
