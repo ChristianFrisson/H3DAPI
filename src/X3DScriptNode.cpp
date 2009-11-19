@@ -95,11 +95,11 @@ void X3DScriptNode::SFScriptString::update() {
       if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
      }
   }
-  Console(4) << "None of the urls in ShaderPart with url [";
+  Console(4) << "None of the urls [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
     Console(4) << " \"" << *i << "\"";
   }
-  Console(4) << "] could be loaded.";
+  Console(4) << "] could be loaded in Script node.";
   script_node->setURLUsed( "" );
   value = "";
 }
