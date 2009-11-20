@@ -270,15 +270,36 @@ BOOL GetFontFile(LPCTSTR lpszFontName,
 #endif
 
 #ifdef LINUX
-string FC_GetFontByName( const char *font_name ) {
-  string fn="";
+string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
+  // the fn_canditate variable will be set if we have found a font
+  // of the given family but with an unrecognised style. It will be
+  // used of no appropriate style is found for the family.
+  string fn_candidate = "";
   FcObjectSet *os = 0;
   FcFontSet  *fs;
   FcPattern   *pat;
 
+  vector< string > styles;
+
+  if( bold && italic ) {
+    styles.push_back( "BoldItalic" );
+    styles.push_back( "Bold Italic" );
+    styles.push_back( "Bold Oblique" );
+    styles.push_back( "BoldOblique" );
+  } else if( bold ) {
+    styles.push_back( "Bold" );
+  }  else if( italic ) {
+    styles.push_back( "Italic" );
+    styles.push_back( "Oblique" );
+  } else {
+    styles.push_back( "Regular" );
+    styles.push_back( "Normal" );
+    styles.push_back( "Medium" );
+  }
+
   pat = FcPatternCreate ();
-  os = FcObjectSetBuild (FC_FAMILY, FC_FILE, NULL);
-  fs = FcFontList (0, pat, os);
+  os = FcObjectSetBuild (FC_FAMILY, FC_FILE, FC_STYLE, NULL);
+  fs = FcFontList (NULL, pat, os);
   if (pat)
     FcPatternDestroy (pat);
   
@@ -286,23 +307,32 @@ string FC_GetFontByName( const char *font_name ) {
     int  j;
     
     for (j = 0; j < fs->nfont; j++) {
-      FcChar8 *font;
       FcChar8 *file;
-      
-      font = FcNameUnparse(fs->fonts[j]);
-      if ( FcPatternGetString(fs->fonts[j], FC_FILE, 0, &file) 
-     == FcResultMatch) {
-  if (strncasecmp(font_name, (char*)font, strlen(font_name)) == 0)
-    fn=string((char*)file);
-  //printf ("%s\n ", file);
-  //printf ("%s: ", font);
+      FcChar8 *style;
+      FcChar8 *family;
 
+      FcPatternGetString(fs->fonts[j], FC_FILE, 0, &file); 
+      FcPatternGetString(fs->fonts[j], FC_STYLE, 0, &style );
+      FcPatternGetString(fs->fonts[j], FC_FAMILY, 0, &family );
+   
+      if (strncasecmp(font_name, (char*)family, strlen(font_name)) == 0) {
+	// check if the font is of the correct type.
+	for( size_t s = 0; s < styles.size(); s++ ) {
+	  if (strcasecmp( styles[s].c_str(), 
+			  (char*)style ) == 0) {
+	    FcFontSetDestroy (fs);
+	    return( string((char*)file) );
+	  }
+	  
+	  // set value to use if no more correct font of same family is found.
+	  fn_candidate = string( (char *)file );
+	}
+	
       }
-      free (font);
     }
     FcFontSetDestroy (fs);
   }
-  return fn;
+  return fn_candidate;
 }
 
 
@@ -359,7 +389,9 @@ string FC_GetFontByName( const char *font_name ) {
     full_font_path = path + font_file_name;
 #endif
 #ifdef LINUX
-    full_font_path = FC_GetFontByName( font_name.c_str() );
+    string full_font_name = font_name;
+    full_font_path = FC_GetFontByName( font_name.c_str(), bold, italic );
+    if( full_font_path == "" ) return NULL;
 #endif
     FTFont *font = NULL;
   // search font cache first:
