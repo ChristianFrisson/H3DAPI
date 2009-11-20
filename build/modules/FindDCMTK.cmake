@@ -433,7 +433,10 @@ IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
         )
 
   ELSE( MSVC10 AND HAVE_DEBUG_LIBS)
-    MESSAGE( STATUS, "DCMTK debug libraries not found. Debug compilation might not work with DCMTK." )
+    
+    IF( MSVC10 )
+      MESSAGE( STATUS, "DCMTK debug libraries not found. Debug compilation might not work with DCMTK." )
+    ENDIF( MSVC10 )
 
 
     SET( DCMTK_LIBRARIES 
