@@ -257,7 +257,7 @@ namespace H3D {
     static H3DNodeDatabase database;
 
     /// A DEFMap from the name of nodes exported with the EXPORT statement
-    /// in thr url of the Inline node, to the acutal node.
+    /// in the url of the Inline node, to the acutal node.
     X3D::DEFNodes exported_nodes;
   };
 }

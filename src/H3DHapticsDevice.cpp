@@ -239,8 +239,10 @@ void H3DHapticsDevice::renderEffects(
       dt = 0;
   }
 
-  if( hapi_device.get() )
+  if( hapi_device.get() ) {
     hapi_device->setEffects( effects, dt );
+    hapi_device->transferObjects();
+  }
 }
 
 void H3DHapticsDevice::renderShapes( 
@@ -261,7 +263,6 @@ void H3DHapticsDevice::renderShapes(
     }
 
     hapi_device->setShapes( shapes, layer );
-    hapi_device->transferObjects();
   }
 }
 
