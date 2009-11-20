@@ -77,91 +77,6 @@ namespace FontStyleInternals {
   };
   static FontStyleMap font_db;
 
-#if defined(__APPLE__) && defined(__MACH__)
-FT_Error  xFT_GetFile_From_Mac_Name( const char* fontName,
-                                     FSSpec*     pathSpec,
-                                     FT_Long*    face_index )
-{
-    OptionBits            options = kFMUseGlobalScopeOption;
-    
-    FMFontFamilyIterator  famIter;
-    OSStatus              status = FMCreateFontFamilyIterator( NULL, NULL,
-                                                               options,
-                                                               &famIter );
-    FMFont                the_font = NULL;
-    FMFontFamily          family   = NULL;
-    
-    
-    *face_index = 0;
-    while ( status == 0 && !the_font )
-    {
-      status = FMGetNextFontFamily( &famIter, &family );
-      if ( status == 0 )
-      {
-        int                           stat2;
-        FMFontFamilyInstanceIterator  instIter;
-        Str255                        famNameStr;
-        char                          famName[256];
-        
-        
-        /* get the family name */
-        FMGetFontFamilyName( family, famNameStr );
-        CopyPascalStringToC( famNameStr, famName );
-        
-        /* iterate through the styles */
-        FMCreateFontFamilyInstanceIterator( family, &instIter );
-        
-        *face_index = 0;
-        stat2 = 0;
-        while ( stat2 == 0 && !the_font )
-        {
-          FMFontStyle  style;
-          FMFontSize   size;
-          FMFont       font;
-          
-          
-          stat2 = FMGetNextFontFamilyInstance( &instIter, &font,
-                                               &style, &size );
-          if ( stat2 == 0 && size == 0 )
-          {
-            char  fullName[256];
-            
-            
-            /* build up a complete face name */
-            ft_strcpy( fullName, famName );
-            if ( style & bold )
-              strcat( fullName, " Bold" );
-            if ( style & italic )
-              strcat( fullName, " Italic" );
-            
-            /* compare with the name we are looking for */
-            if ( ft_strcmp( fullName, fontName ) == 0 )
-            {
-              /* found it! */
-              the_font = font;
-            }
-            else
-              ++(*face_index);
-          }
-        }
-        
-        FMDisposeFontFamilyInstanceIterator( &instIter );
-      }
-    }
-    
-    FMDisposeFontFamilyIterator( &famIter );
-    
-    if ( the_font )
-    {
-      FMGetFontContainer( the_font, pathSpec );
-      return FT_Err_Ok;
-    }
-    else
-      return FT_Err_Unknown_File_Format;
-}
-
-#endif
-
 #ifdef WIN32
 
 LONG GetNameValue(HKEY key, LPCTSTR subkey, LPCTSTR valuename, LPTSTR retdata)
@@ -346,41 +261,32 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
                          const string &render_type ) {
 
   string full_font_path;
+
+  string full_font_name = font_name;
+  if( bold ) {
+    full_font_name = full_font_name + " Bold";
+  }
+  
+  if( italic ) {
+    full_font_name = full_font_name + " Italic";
+  }
+
 #if defined(__APPLE__) && defined(__MACH__)
-    FSSpec ps;
+    char path[1024];
     FT_Long face_index;
-    FT_Error r = xFT_GetFile_From_Mac_Name( font_name.c_str(), &ps, &face_index );
+    FT_Error r = FT_GetFilePath_From_Mac_ATS_Name( full_font_name.c_str(), 
+						   (UInt8 * )path,
+						   1024,
+						   &face_index );
     if ( r != FT_Err_Ok ) {
       return NULL;
     }
     
-    FSRef  ref;
-    char  path[256];
-    OSErr  err;
-    
-      
-    err = FSpMakeFSRef(&ps, &ref);
-    if ( !err ) {
-      err = FSRefMakePath( &ref, (UInt8*)path, sizeof ( path ) );
-      if ( !err ) {
-        full_font_path = path;
-      } else {
-        return NULL;
-      }
-    } else {
-      return NULL;
-    }
+    full_font_path = path;
+
 #endif
 #ifdef WIN32
     string font_display_name, font_file_name;
-    string full_font_name = font_name;
-    if( bold ) {
-      full_font_name = full_font_name + " Bold";
-    }
-    
-    if( italic ) {
-      full_font_name = full_font_name + " Italic";
-    }
     if( !GetFontFile( full_font_name.c_str(), font_display_name, font_file_name ) ) {
       return NULL;
     } 
