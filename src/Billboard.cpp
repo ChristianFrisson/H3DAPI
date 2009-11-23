@@ -115,7 +115,7 @@ void Billboard::SFMatrix4f::update() {
         
         if( n2 * billboard_to_viewer < 0 )
           angle = -angle;
-        value = Rotation( axis_of_rotation, angle );
+        value = Matrix4f( Rotation( axis_of_rotation, angle ) );
       } else {
         value = Matrix4f();
       }

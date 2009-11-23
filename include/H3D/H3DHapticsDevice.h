@@ -83,14 +83,14 @@ namespace H3D {
       /// Update the rt variables.
       virtual void setValue( const Matrix4f &v, int id = 0 ) {
         SFMatrix4f::setValue( v, id );
-        rt_pos_calibration = value;
+        rt_pos_calibration = Matrix4d( value );
         rt_inv_pos_rotation = rt_pos_calibration.getRotationPart().inverse();
       }
 
       /// Update the rt variables.
       inline virtual void update() {
         SFMatrix4f::update();
-        rt_pos_calibration = value;
+        rt_pos_calibration = Matrix4d( value );
         rt_inv_pos_rotation = rt_pos_calibration.getRotationPart().inverse();
       }
 

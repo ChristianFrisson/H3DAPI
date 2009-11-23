@@ -154,7 +154,7 @@ void DynamicTransform::SFMotion::update() {
   state.vel = ds->velocity->getValue();
   state.mom = ds->momentum->getValue();
   state.force = ds->force->getValue(); 
-  state.orn = ds->orientation->getValue(); 
+  state.orn = Quaternion( ds->orientation->getValue() ); 
   state.spin = ds->spin->getValue();
   state.angVel = ds->angularVelocity->getValue();
   state.angMom = ds->angularMomentum->getValue();
@@ -166,7 +166,7 @@ void DynamicTransform::SFMotion::update() {
 
   ds->position->setValue( state.pos );
   ds->momentum->setValue( state.mom );
-  ds->orientation->setValue( state.orn );
+  ds->orientation->setValue( Rotation( state.orn ) );
   ds->angularMomentum->setValue( state.angMom );
 }
 

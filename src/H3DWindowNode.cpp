@@ -381,7 +381,7 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
             //const Rotation &rot = hd->trackerOrientation->getValue();
             TransformedBoxBound *tbb = new TransformedBoxBound();
             tbb->boxBound->setValue( bb );
-            Matrix4f m = hd->trackerOrientation->getValue();
+            Matrix4f m( hd->trackerOrientation->getValue() );
             m[0][3] = pos.x;
             m[1][3] = pos.y;
             m[2][3] = pos.z;

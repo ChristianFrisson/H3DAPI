@@ -167,9 +167,9 @@ void Sound::ALrender() {
     const Matrix3f &vp_to_global_rot = vp_to_global.getRotationPart();
     listener_pos = vp_to_global * vp->totalPosition->getValue(); 
     Rotation vp_orn = vp->totalOrientation->getValue();
-    Vec3f listener_up  = vp_to_global_rot * vp_orn * 
+    Vec3f listener_up  = vp_to_global_rot * (Matrix3f) vp_orn * 
       Vec3f( 0, 1, 0 ); 
-    Vec3f listener_lookat  = vp_to_global_rot * vp_orn
+    Vec3f listener_lookat  = vp_to_global_rot * (Matrix3f)vp_orn
       * Vec3f( 0, 0, -1 ); 
     alListener3f( AL_POSITION, 
                   listener_pos.x, listener_pos.y, listener_pos.z ); 

@@ -115,7 +115,7 @@ namespace H3D {
       if( PyMatrix3d_Check( o ) ) {
         return PyMatrix3d_AsMatrix3d( o );
       } if( PyMatrix3f_Check( o ) ) {
-        return PyMatrix3f_AsMatrix3f( o );
+        return Matrix3d( PyMatrix3f_AsMatrix3f( o ) );
       } else {
         throw Exception::H3DAPIException( "PyObject * is not a PyMatrix3d *", 
                                           H3D_FULL_LOCATION );
@@ -127,7 +127,7 @@ namespace H3D {
       if( PyMatrix4d_Check( o ) ) {
         return PyMatrix4d_AsMatrix4d( o );
       } if( PyMatrix4f_Check( o ) ) {
-        return PyMatrix4f_AsMatrix4f( o );
+        return Matrix4d( PyMatrix4f_AsMatrix4f( o ) );
       } else {
         throw Exception::H3DAPIException( "PyObject * is not a PyMatrix4d *", 
                                           H3D_FULL_LOCATION );
@@ -1700,10 +1700,10 @@ self, name, field_type, access_type )" );
       Matrix3f *self_m = (Matrix3f *)self;
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
-        *self_m = r;
+        *self_m = Matrix3f(r);
       } else if( PyQuaternion_Check( o ) ) {
         Quaternion q = PyQuaternion_AsQuaternion( o );
-        *self_m = q;
+        *self_m = Matrix3f(q);
       } else if( PyMatrix3f_Check( o ) ) {
         Matrix3f m = PyMatrix3f_AsMatrix3f( o );
         *self_m = m;
@@ -1742,7 +1742,7 @@ self, name, field_type, access_type )" );
         return PyMatrix3f_FromMatrix3f( ma * mb );
       } else if( PyMatrix3d_Check( b ) ) {
         Matrix3d mb = PyMatrix3d_AsMatrix3d( b );
-        return PyMatrix3d_FromMatrix3d( ma * mb );
+        return PyMatrix3d_FromMatrix3d( Matrix3d(ma) * mb );
       } else if( PyVec3f_Check( b ) ) {
         Vec3f vb = PyVec3f_AsVec3f( b );
         return PyVec3f_FromVec3f( ma * vb );
@@ -1956,10 +1956,10 @@ self, name, field_type, access_type )" );
       Matrix4f *self_m = (Matrix4f *)self;
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
-        *self_m = r;
+        *self_m = Matrix4f(r);
       } else if( PyQuaternion_Check( o ) ) {
         Quaternion q = PyQuaternion_AsQuaternion( o );
-        *self_m = q;
+        *self_m = Matrix4f(q);
       } else if( PyMatrix4f_Check( o ) ) {
         Matrix4f m = PyMatrix4f_AsMatrix4f( o );
         *self_m = m;
@@ -2298,16 +2298,16 @@ self, name, field_type, access_type )" );
       Matrix3d *self_m = (Matrix3d *)self;
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
-        *self_m = r;
+        *self_m = Matrix3d(r);
       } else if( PyQuaternion_Check( o ) ) {
         Quaternion q = PyQuaternion_AsQuaternion( o );
-        *self_m = q;
+        *self_m = Matrix3d(q);
       } else if( PyMatrix3d_Check( o ) ) {
         Matrix3d m = PyMatrix3d_AsMatrix3d( o );
         *self_m = m;
       } else if( PyMatrix3f_Check( o ) ) {
         Matrix3f m = PyMatrix3f_AsMatrix3f( o );
-        *self_m = m;
+        *self_m = Matrix3d(m);
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix3d constructor." );
@@ -2610,16 +2610,16 @@ self, name, field_type, access_type )" );
       Matrix4d *self_m = (Matrix4d *)self;
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
-        *self_m = r;
+        *self_m = Matrix4d(r);
       } else if( PyQuaternion_Check( o ) ) {
         Quaternion q = PyQuaternion_AsQuaternion( o );
-        *self_m = q;
+        *self_m = Matrix4d(q);
       } else if( PyMatrix4d_Check( o ) ) {
         Matrix4d m = PyMatrix4d_AsMatrix4d( o );
         *self_m = m;
       } else if( PyMatrix4f_Check( o ) ) {
         Matrix4f m = PyMatrix4f_AsMatrix4f( o );
-        *self_m = m;
+        *self_m = Matrix4d(m);
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix4d constructor." );
@@ -2972,7 +2972,7 @@ self, name, field_type, access_type )" );
         *self_r = r;
       } else if( PyQuaternion_Check( o ) ) {
         Quaternion q = PyQuaternion_AsQuaternion( o );
-        *self_r = q;
+        *self_r = Rotation(q);
       } else if( PyMatrix3d_Check( o ) ) {
         Matrix3f m = PyMatrix3f_AsMatrix3f( o );
         *self_r = (Rotation)m;
@@ -3213,7 +3213,7 @@ self, name, field_type, access_type )" );
       Quaternion *self_m = (Quaternion *)self;
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
-        *self_m = r;
+        *self_m = Quaternion(r);
       } else if( PyQuaternion_Check( o ) ) {
         Quaternion q = PyQuaternion_AsQuaternion( o );
         *self_m = q;

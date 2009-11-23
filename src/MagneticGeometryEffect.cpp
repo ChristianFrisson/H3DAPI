@@ -182,7 +182,7 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                 }
                 /// The HapticPrimitiveSet hold a reference to all primitives.
                 HapticPrimitiveSet *haptic_primitive_set =
-                  new HapticPrimitiveSet( ti.getAccForwardMatrix(),
+                  new HapticPrimitiveSet( Matrix4d( ti.getAccForwardMatrix() ),
                                           primitives, NULL );
                 ti.addForceEffect( i,
                   new HapticShapeConstraint( haptic_primitive_set,
