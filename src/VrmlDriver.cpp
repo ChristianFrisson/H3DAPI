@@ -293,18 +293,7 @@ bool VrmlDriver::connectProtoField( const string &proto_field_name,
     Field *proto_field =  
         proto_instance->getField( proto_field_name );
     if ( node && node_field && proto_field ) {
-      Field::AccessType access_type = node_field->getAccessType();
-        
-      if( access_type == Field::OUTPUT_ONLY ) {
-        node_field->route( proto_field, proto_instance->getId() );
-      } else if ( access_type == Field::INPUT_OUTPUT ) {
-        node_field->routeNoEvent( proto_field, proto_instance->getId() );
-      }
-      
-      if( access_type != Field::OUTPUT_ONLY ) {
-        proto_field->route( node_field, proto_instance->getId() );
-      }
-      return true;
+      return proto_instance->connectField( proto_field_name, node_field );
     }  
   }
   return false;

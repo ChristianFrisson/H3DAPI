@@ -678,17 +678,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
         return;
       }
       
-      Field::AccessType access_type = node_field->getAccessType();
-      
-      if( access_type == Field::OUTPUT_ONLY ) {
-        node_field->route( proto_field, proto_instance->id );
-      } else if ( access_type == Field::INPUT_OUTPUT ) {
-        node_field->routeNoEvent( proto_field, proto_instance->id );
-      }
-      
-      if( access_type != Field::OUTPUT_ONLY ) {
-        proto_field->route( node_field, proto_instance->id );
-      }
+      proto_instance->connectField( toString( proto_field_name ), node_field );
     }
   }
 }

@@ -64,4 +64,28 @@ void X3DPrototypeInstance::traverseSG( TraverseInfo &ti ) {
     prototyped_node.get()->traverseSG( ti );
 }
 
+bool X3DPrototypeInstance::connectField( const string &proto_field_name,
+                                         Field *node_field ) {
+  Field *proto_field = 
+    this->getField( proto_field_name );
+
+  if( !proto_field ) return false;
+
+  Field::AccessType access_type = node_field->getAccessType();
+  
+  // set up routes from node_field to proto field
+  if( access_type == Field::OUTPUT_ONLY ) {
+    node_field->route( proto_field, this->id );
+  } else if ( access_type == Field::INPUT_OUTPUT ) {
+    node_field->routeNoEvent( proto_field, this->id );
+  }
+  
+  // and the other way around proto_field -> node_field
+  if( access_type != Field::OUTPUT_ONLY ) {
+    proto_field->route( node_field, this->id );
+  }
+
+  return true;
+}
+
 

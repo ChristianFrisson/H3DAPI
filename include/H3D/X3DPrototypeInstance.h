@@ -134,22 +134,14 @@ namespace H3D {
       else return false;
     }
 
+    /// Connect the field from the prototype node named proto_field_name 
+    /// with the specified field. Returns true on success.
+    virtual bool connectField( const string &proto_field_name,
+                               Field *f );
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
     
-    /// We need to make it possible for X3DSAX2Handlers to set up routes to fields
-    /// withing the X3DPrototypeNode, so it must have access to the id member variable.
-    friend class X3D::X3DSAX2Handlers;
-
-    /// And the same for the VRML parser. Bison code handles routing,
-    /// so yy::vrml_parser must be a friend:
-    friend class yy::VrmlParser;
-    friend class ::VrmlDriver;
-
-    /// The friend declaration for VrmlDriver above does not work,
-    /// so adding a function to access the id. Don't know why since
-    /// it works for VrmlParser and X3DSAX2Handlers.
-    inline int getId( ) { return id; }
   protected:
 
     AutoRef< Node > prototyped_node;
