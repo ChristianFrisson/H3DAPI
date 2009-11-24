@@ -255,8 +255,11 @@ void PythonScript::initialize() {
   H3DScriptNode::initialize();
 
   module_name = moduleName->getValue();
+
+  // if no module name set by user, use the instance name which is
+  // a unique identifier for each PythonScript instance.
   if( module_name == "" )
-    module_name = name;
+    module_name = getInstanceName();
 
   PyObject *temp_sys_module_dict = PyImport_GetModuleDict(); // borrowed ref
   if( PyDict_GetItemString( temp_sys_module_dict,
