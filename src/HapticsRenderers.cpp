@@ -150,16 +150,20 @@ void OpenHapticsRenderer::CameraView::onValueChange( const bool &v ) {
 HAPI::HAPIHapticsRenderer *OpenHapticsRenderer::getNewHapticsRenderer() {
 #ifdef HAVE_OPENHAPTICS
   const string &default_shape_type = defaultShapeType->getValue();
+  // The fourth argument is false because we want to use OpenGL MODELVIEW
+  // matrix for setting matrices in OpenHaptics.
   if( default_shape_type == "FEEDBACK_BUFFER" ) {
       return new HAPI::OpenHapticsRenderer(
         HAPI::OpenHapticsRenderer::OpenHapticsOptions::FEEDBACK_BUFFER,
         defaultAdaptiveViewport->getValue(),
-        defaultHapticCameraView->getValue() );
+        defaultHapticCameraView->getValue(),
+        false );
     } else if( default_shape_type == "DEPTH_BUFFER" ) {
       return new HAPI::OpenHapticsRenderer(
         HAPI::OpenHapticsRenderer::OpenHapticsOptions::DEPTH_BUFFER,
         defaultAdaptiveViewport->getValue(),
-        defaultHapticCameraView->getValue() );
+        defaultHapticCameraView->getValue(),
+        false );
     } else {
       Console(4) << "Warning: Invalid OpenHaptics shape type: "
                  << default_shape_type
@@ -168,7 +172,8 @@ HAPI::HAPIHapticsRenderer *OpenHapticsRenderer::getNewHapticsRenderer() {
       return new HAPI::OpenHapticsRenderer(
         HAPI::OpenHapticsRenderer::OpenHapticsOptions::FEEDBACK_BUFFER,
         defaultAdaptiveViewport->getValue(),
-        defaultHapticCameraView->getValue() );
+        defaultHapticCameraView->getValue(),
+        false );
     }
 #else
   return NULL;
