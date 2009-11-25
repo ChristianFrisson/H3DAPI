@@ -76,6 +76,7 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
 void LineSet::render() {
   X3DColorNode *color_node = color->getValue();
   X3DCoordinateNode *coordinate_node = coord->getValue();
+  FogCoordinate *fog_coord_node = fogCoord->getValue();
   const vector< int > &vertex_count     = vertexCount->getValue();
 
   if( coordinate_node ) {
@@ -95,6 +96,12 @@ void LineSet::render() {
       glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
       glColor3f( v[0], v[1], v[2] );
     }
+
+    // set fog to get fog depth from fog coordinates if available
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPushAttrib( GL_FOG_BIT );
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+    }    
 
     // index of the current vertex being rendered. It will be incremented
     // for each vertex that is rendered.
@@ -126,14 +133,19 @@ void LineSet::render() {
           
         // Render the vertices.
         coordinate_node->render( vertex_counter );
-        if( fogCoord->getValue()){
-          fogCoord->getValue()->render(vertex_counter);
+        if( fog_coord_node){
+          fog_coord_node->render(vertex_counter);
         }
       }
       // end GL_POLY_LINE
       glEnd();
     }
   
+    // restore previous fog attributes
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPopAttrib();
+    }  
+
     // reenable lighting if it was enabled before
     if( lighting_enabled )
       glEnable( GL_LIGHTING );

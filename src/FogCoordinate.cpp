@@ -57,41 +57,31 @@ FogCoordinate::FogCoordinate(   Inst< MFFloat  > _depth,
 // Perform the OpenGL commands to render fog until 
 // the given index.
 void FogCoordinate::render( int depth_index ) {
-  const GLfloat d = depth->getValueByIndex( depth_index );
-  glFogCoordfEXT( d);
+  if( GLEW_EXT_fog_coord ) {
+    // according to FogCoordinate spec:
+    // If the user does not provide a  sufficient number of depth values, 
+    // the last value defined shall be replicated for any further vertices.
+    if( depth_index >= depth->size() && depth->size() > 0 ) {
+      depth_index = depth->size() - 1;
+    }
+    
+    const GLfloat d = depth->getValueByIndex( depth_index );
+    glFogCoordfEXT( d);
+  }
 }
 
 // Perform the OpenGL commands to render the fog for
 // the whole fog array.
 void FogCoordinate::renderArray() {
-  if( !depth->empty() ) {
-
-  //  float test_array [] = {5, 10, 15, 20, 25, 30 },
+  if( GLEW_EXT_fog_coord  && !depth->empty() ) {
     glEnableClientState(GL_FOG_COORD_ARRAY);
     glFogCoordPointerEXT(GL_FLOAT, 0,
                      &(*depth->begin()) );
-   
-  
-    // *depth->begin() gives the first value of the MFFloat depth
-    // &(*depth->begin()) gives a pointer to the adress of the 
-    //   first value in depth
   }
-
-  //void glFogCoordPointer( GLenum type, GLsizei stride, GLvoid *pointer)
-  //
-  //type - Specifies the data type of each fog coordinate. Symbolic 
-  //constants GL_FLOAT, or GL_DOUBLE are accepted. The initial value is
-  //GL_FLOAT.
-  //
-  //stride - Specifies the byte offset between consecutive fog coordinates.
-  //If stride is 0, the array elements are understood to be tightly packed. 
-  //The initial value is 0. 
-  //
-  //pointer - Specifies a pointer to the first coordinate of the first 
-  //fog coordinate in the array. The initial value is 0. 
-  }
+}
 
 void FogCoordinate::disableArray() {
-  glDisableClientState(GL_FOG_COORD_ARRAY);
+  if( GLEW_EXT_fog_coord )
+    glDisableClientState(GL_FOG_COORD_ARRAY);
 }
 

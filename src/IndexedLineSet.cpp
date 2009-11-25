@@ -92,6 +92,7 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
 void IndexedLineSet::render() {
   X3DColorNode *color_node = color->getValue();
   X3DCoordinateNode *coordinate_node = coord->getValue();
+  FogCoordinate *fog_coord_node = fogCoord->getValue();
 
   const vector< int > &color_index     = colorIndex->getValue();
   const vector< int > &coord_index     = coordIndex->getValue();
@@ -124,6 +125,12 @@ void IndexedLineSet::render() {
       float v[4];
       glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
       glColor3f( v[0], v[1], v[2] );
+    }
+
+    // set fog to get fog depth from fog coordinates if available
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPushAttrib( GL_FOG_BIT );
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
     }
 
     // index of the current polyline being rendered. It will be incremented
@@ -178,8 +185,8 @@ void IndexedLineSet::render() {
       
         // Render the vertices.
         coordinate_node->render( coord_index[ i ] );
-        if( fogCoord->getValue()){
-          fogCoord->getValue()->render(coord_index[ i ]);
+        if( fog_coord_node ){
+          fog_coord_node->render(coord_index[ i ]);
         }
 
       }
@@ -188,6 +195,11 @@ void IndexedLineSet::render() {
 
       line_count++;
     }
+
+    // restore previous fog attributes
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPopAttrib();
+    }  
 
     // reenable lighting if it was enabled before
     if( lighting_enabled )

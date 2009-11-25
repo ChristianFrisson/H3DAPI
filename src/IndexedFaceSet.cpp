@@ -132,6 +132,7 @@ void IndexedFaceSet::render() {
   //  X3DCoordinateNode *coords = static_cast< X3DCoordinateNode * >( coord->getValue() );
   X3DCoordinateNode *coords = getCoord();
   X3DTextureCoordinateNode *tex_coords = texCoord->getValue();
+  FogCoordinate *fog_coords = fogCoord->getValue();
 
   X3DColorNode *colors = color->getValue();
   X3DNormalNode *normals = normal->getValue();
@@ -163,6 +164,12 @@ void IndexedFaceSet::render() {
     if ( colors ) {
       colors->preRender();
     } 
+
+    // set fog to get fog depth from fog coordinates if available
+    if( GLEW_EXT_fog_coord && fog_coords ) {
+      glPushAttrib( GL_FOG_BIT );
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+    }
 
     GLhandleARB shader_program = 0;
     // Set the attribute index to use for all vertex attributes
@@ -308,8 +315,8 @@ void IndexedFaceSet::render() {
           }
         }
         // Set up fogCoordinates
-        if(fogCoord->getValue()){
-           fogCoord->getValue()->render(coord_index[i]);
+        if(fog_coords ){
+           fog_coords->render(coord_index[i]);
         }
 
         // Render the vertices.
@@ -319,6 +326,11 @@ void IndexedFaceSet::render() {
       glEnd();
       face_count++;
     }
+
+    // restore previous fog attributes
+    if( GLEW_EXT_fog_coord && fog_coords ) {
+      glPopAttrib();
+    }    
 
     // disable texture coordinate generation.
     if( tex_coord_gen ) stopTexGen( tex_coords );

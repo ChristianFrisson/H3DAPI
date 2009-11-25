@@ -72,6 +72,7 @@ PointSet::PointSet(  Inst< SFNode           > _metadata,
 void PointSet::render() {
   X3DColorNode *color_node = color->getValue();
   X3DCoordinateNode *coordinate_node = coord->getValue();
+  FogCoordinate *fog_coord_node = fogCoord->getValue();
 
   if( coordinate_node ) {
     // Save the old state of GL_LIGHTING 
@@ -101,6 +102,12 @@ void PointSet::render() {
       }
     }
     
+    // set fog to get fog depth from fog coordinates if available
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPushAttrib( GL_FOG_BIT );
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+    }
+
     // render the points
     glBegin( GL_POINTS );
     for( unsigned int i = 0; i < coordinate_node->nrAvailableCoords(); i++ ) {
@@ -110,11 +117,16 @@ void PointSet::render() {
       }
       // Render the vertices.
       coordinate_node->render( i );
-       if( fogCoord->getValue()) fogCoord->getValue()->render(i);
+       if( fog_coord_node) fog_coord_node->render(i);
     }
     // end GL_POLY_LINE
     glEnd();
     
+    // restore previous fog attributes
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPopAttrib();
+    }  
+
     // reenable lighting if it was enabled before
     if( lighting_enabled )
       glEnable( GL_LIGHTING );

@@ -210,6 +210,7 @@ void ElevationGrid::render() {
   bool color_per_vertex = colorPerVertex->getValue();
   X3DColorNode *color_node = color->getValue();
   X3DTextureCoordinateNode *tex_coord_node = texCoord->getValue();
+  FogCoordinate *fog_coord_node = fogCoord->getValue();
   TextureCoordinateGenerator *tex_coord_gen = 
     dynamic_cast< TextureCoordinateGenerator * >( tex_coord_node );
 
@@ -236,6 +237,12 @@ void ElevationGrid::render() {
 
     if( tex_coord_gen ) {
       startTexGen( tex_coord_gen );
+    }
+
+    // fog coordinates
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPushAttrib( GL_FOG_BIT );
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
     }
 
     GLhandleARB shader_program = 0;
@@ -269,7 +276,6 @@ void ElevationGrid::render() {
         }
 
         glBegin( GL_QUADS );
-
       
         // vertex 0
         vertex_index = z * xdim + x;
@@ -310,8 +316,8 @@ void ElevationGrid::render() {
         if( color_node && color_per_vertex ) {
           color_node->render( vertex_index );
         }
-        if( fogCoord->getValue()){
-          fogCoord->getValue()->render(vertex_index);
+        if(  fog_coord_node ){
+          fog_coord_node->render(vertex_index);
         }
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
@@ -345,8 +351,8 @@ void ElevationGrid::render() {
         if( color_node && color_per_vertex ) {
           color_node->render( vertex_index );
         }
-        if( fogCoord->getValue()){
-          fogCoord->getValue()->render(vertex_index);
+        if( fog_coord_node){
+          fog_coord_node->render(vertex_index);
         }
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
@@ -380,8 +386,8 @@ void ElevationGrid::render() {
         if( color_node && color_per_vertex ) {
           color_node->render( vertex_index );
         }
-        if( fogCoord->getValue()){
-          fogCoord->getValue()->render(vertex_index);
+        if( fog_coord_node){
+          fog_coord_node->render(vertex_index);
         }
         if( !tex_coord_gen ) {
           if( tex_coord_node ) {
@@ -414,12 +420,19 @@ void ElevationGrid::render() {
         quad_index++;
       }
     }
+
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPopAttrib();
+    }
+
     if( tex_coord_gen ) {
       stopTexGen( tex_coord_gen );
     }
     if ( color_node ) {
       color_node->postRender();
     }
+
+   
   } 
 }
 

@@ -92,6 +92,7 @@ void IndexedTriangleStripSet::render() {
   X3DCoordinateNode *coordinate_node = coord->getValue();
   X3DTextureCoordinateNode *tex_coord_node = texCoord->getValue();
   X3DColorNode *color_node = color->getValue();
+  FogCoordinate *fog_coord_node = fogCoord->getValue();
   X3DNormalNode *normal_node = normal->getValue();
 
   if( !normal_node ) {
@@ -137,6 +138,12 @@ void IndexedTriangleStripSet::render() {
       color_node->preRender();
     }
 
+    // set fog to get fog depth from fog coordinates if available
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPushAttrib( GL_FOG_BIT );
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+    }
+
     GLhandleARB shader_program = 0;
     // Set the attribute index to use for all vertex attributes
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
@@ -161,7 +168,7 @@ void IndexedTriangleStripSet::render() {
       normal_node->renderArray();
       if( color_node ) color_node->renderArray();
       if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
-      if( fogCoord->getValue()) fogCoord->getValue()->renderArray();
+      if( fog_coord_node) fog_coord_node->renderArray();
       // Set up shader vertex attributes.
       for( unsigned int attrib_index = 0;
            attrib_index < attrib->size(); attrib_index++ ) {
@@ -189,7 +196,7 @@ void IndexedTriangleStripSet::render() {
       normal_node->disableArray();
       if( color_node ) color_node->disableArray();
       if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
-      if( fogCoord->getValue()) fogCoord->getValue()->disableArray();
+      if( fog_coord_node) fog_coord_node->disableArray();
       for( unsigned int attrib_index = 0;
            attrib_index < attrib->size(); attrib_index++ ) {
         X3DVertexAttributeNode *attr = 
@@ -221,8 +228,7 @@ void IndexedTriangleStripSet::render() {
               if( color_node ) color_node->render( indices[i] );
               if( tex_coords_per_vertex ) renderTexCoord( indices[i], 
                                                           tex_coord_node );
-              if( fogCoord->getValue()) fogCoord->getValue()->
-                                                  render(indices[i]);
+              if( fog_coord_node) fog_coord_node->render(indices[i]);
               for( unsigned int attrib_index = 0;
                    attrib_index < attrib->size(); attrib_index++ ) {
                 X3DVertexAttributeNode *attr = 
@@ -235,8 +241,7 @@ void IndexedTriangleStripSet::render() {
               if( color_node ) color_node->render( indices[i+1] );
               if( tex_coords_per_vertex ) renderTexCoord( indices[i+1],
                                                           tex_coord_node );
-              if( fogCoord->getValue()) fogCoord->getValue()->
-                                                      render(indices[i+1]);
+              if( fog_coord_node) fog_coord_node->render(indices[i+1]);
               for( unsigned int attrib_index = 0;
                    attrib_index < attrib->size(); attrib_index++ ) {
                 X3DVertexAttributeNode *attr = 
@@ -249,8 +254,7 @@ void IndexedTriangleStripSet::render() {
               if( color_node ) color_node->render( indices[i+2] );
               if( tex_coords_per_vertex ) renderTexCoord( indices[i+2],
                                                           tex_coord_node );
-              if( fogCoord->getValue()) fogCoord->getValue()->
-                                                  render(indices[i+2]);
+              if( fog_coord_node) fog_coord_node->render(indices[i+2]);
               for( unsigned int attrib_index = 0;
                    attrib_index < attrib->size(); attrib_index++ ) {
                 X3DVertexAttributeNode *attr = 
@@ -302,6 +306,12 @@ void IndexedTriangleStripSet::render() {
         glEnd();
       }
     }
+
+    // restore previous fog attributes
+    if( GLEW_EXT_fog_coord && fog_coord_node ) {
+      glPopAttrib();
+    }      
+
     // disable texture coordinate generation.
     if( tex_coord_gen ) stopTexGen( tex_coord_node );
 
