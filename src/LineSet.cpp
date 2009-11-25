@@ -73,6 +73,21 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
   coord->route( bound );
 }
 
+void LineSet::DisplayList::callList( bool build_list ) {
+  LineSet *line_set = 
+   static_cast< LineSet * >( owner );
+
+  // If color field is NULL, we use the emissive Color from the current material
+  // as color.
+  if( !line_set->color->getValue() ) {
+    float v[4];
+    glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
+    glColor3f( v[0], v[1], v[2] );
+  }
+
+  X3DGeometryNode::DisplayList::callList( build_list );
+}
+
 void LineSet::render() {
   X3DColorNode *color_node = color->getValue();
   X3DCoordinateNode *coordinate_node = coord->getValue();
@@ -88,14 +103,6 @@ void LineSet::render() {
     // disable texturing
     X3DTextureNode *texture = X3DTextureNode::getActiveTexture();
     if( texture ) texture->disableTexturing();
-
-    // If color field is NULL, we use the emissive Color from the current material
-    // as color.
-    if( !color_node ) {
-      float v[4];
-      glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
-      glColor3f( v[0], v[1], v[2] );
-    }
 
     // set fog to get fog depth from fog coordinates if available
     if( GLEW_EXT_fog_coord && fog_coord_node ) {

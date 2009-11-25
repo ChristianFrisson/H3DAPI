@@ -68,6 +68,16 @@ namespace H3D {
       }
     };
 
+    /// Display list is extended in order to set color to emissive
+    /// color from material outside of display list, since we have to
+    /// do a glGet to get the value. If we have it inside, the display
+    /// list will not be rebuilt and the color not change.
+    class H3DAPI_API DisplayList: public X3DGeometryNode::DisplayList {
+    public:
+      /// Set the color of the lineset outside display list.
+      virtual void callList( bool build_list = true );
+    };
+
     /// Constructor.
     Circle2D( Inst< SFNode      > _metadata = 0,
            Inst< SFBound     > _bound = 0,

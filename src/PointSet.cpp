@@ -68,6 +68,22 @@ PointSet::PointSet(  Inst< SFNode           > _metadata,
 
 }
 
+void PointSet::DisplayList::callList( bool build_list ) {
+  PointSet *point_set = 
+   static_cast< PointSet * >( owner );
+
+  // If color field is NULL, we use the emissive Color from the current material
+  // as color.
+  if( !point_set->color->getValue() ) {
+    float v[4];
+    glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
+    glColor3f( v[0], v[1], v[2] );
+  }
+
+  X3DGeometryNode::DisplayList::callList( build_list );
+}   
+
+
 
 void PointSet::render() {
   X3DColorNode *color_node = color->getValue();
@@ -86,11 +102,7 @@ void PointSet::render() {
     
     // If color field is NULL, we use the emissive Color from the current material
     // as color.
-    if( !color_node ) {
-      float v[4];
-      glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
-      glColor3f( v[0], v[1], v[2] );
-    } else {
+    if( color_node ) {
       // make sure we have enough colors
       if( coordinate_node->nrAvailableCoords() > color_node->nrAvailableColors() ) {
         stringstream s;

@@ -63,16 +63,23 @@ Circle2D::Circle2D( Inst< SFNode      > _metadata,
   radius->route( displayList );
 }
 
+
+void Circle2D::DisplayList::callList( bool build_list ) {
+  Circle2D *circle = 
+   static_cast< Circle2D * >( owner );
+
+  float v[4];
+  glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
+  glColor3f( v[0], v[1], v[2] );
+
+  X3DGeometryNode::DisplayList::callList( build_list );
+}
+
 void Circle2D::render() {
   // Save the old state of GL_LIGHTING 
   GLboolean lighting_enabled;
   glGetBooleanv( GL_LIGHTING, &lighting_enabled );
   glDisable( GL_LIGHTING );
-
-  // get the current emissiveColor
-  float v[4];
-  glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
-  glColor3f( v[0], v[1], v[2] );
 
   H3DFloat theta, angle_increment;
   H3DFloat nr_segments = 40;
