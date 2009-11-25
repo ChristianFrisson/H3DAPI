@@ -70,13 +70,10 @@ void LocalFog::enableGraphicsState() {
     if( type == "LINEAR" ) {
       glFogi( GL_FOG_MODE, GL_LINEAR );
     } else if( type == "EXPONENTIAL" ) {
-      // TODO:
-      // Don't know how to set the density to best work like x3d spec.
-      // su using linear instead
-      // f = e(-density*z )
-      //glFogf( GL_DENSITY, ?? );
-      //  glFogi( GL_FOG_MODE, GL_EXP );
-      glFogi( GL_FOG_MODE, GL_LINEAR );
+      // Don't think is is possible to set the density to work like x3d spec.
+      // Setting it so that the exponent is the same at z = visibility_range / 2 => (exponent=1)
+      glFogf( GL_FOG_DENSITY, 2 / visibilityRange->getValue() );
+      glFogi( GL_FOG_MODE, GL_EXP );
     } else {
       Console(3) << "Invalid fogType \"" << type << "\". Must be one of \"LINEAR\""
                  << " or \"EXPONENTIAL\" (in \"" << getName() << "\" node )" << endl;
