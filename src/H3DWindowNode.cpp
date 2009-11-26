@@ -909,19 +909,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE);
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
       glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_TRUE);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_ONE, GL_ONE);
     } else if( stereo_mode == RenderMode::RED_GREEN_STEREO ) {
       glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE);
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
       glColorMask(GL_FALSE, GL_TRUE, GL_FALSE, GL_TRUE);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_ONE, GL_ONE);
     } else if( stereo_mode == RenderMode::RED_CYAN_STEREO ) {
       glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE);
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_ONE, GL_ONE);
     } else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
                stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
                stereo_mode == RenderMode::CHECKER_INTERLACED ||
@@ -977,11 +971,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp );
 
-    if( stereo_mode == RenderMode::RED_BLUE_STEREO ||
-        stereo_mode == RenderMode::RED_GREEN_STEREO ||
-        stereo_mode == RenderMode::RED_CYAN_STEREO )
-      glDisable( GL_BLEND );
-    else if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
+    if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
              stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
              stereo_mode == RenderMode::CHECKER_INTERLACED ) 
       glDisable( GL_STENCIL_TEST );
