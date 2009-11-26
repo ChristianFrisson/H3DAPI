@@ -48,31 +48,6 @@ H3DSoundFileNode::FileReaderRegistration OggFileReader::reader_registration(
                             &OggFileReader::supportsFileType 
                             );
 
-namespace OggFileReaderInternals {
-  // funcions for use with the ov_callback structure.
-  size_t read(void *ptr, size_t size, size_t nmemb, void *datasource) {
-    ifstream *is = static_cast< ifstream * >( datasource );
-    is->read( (char *)ptr, size * nmemb );
-    return is->gcount();
-  }
-
-  int seek(void *datasource, ogg_int64_t offset, int whence) {
-    return -1;
-  }
-
-  int close(void *datasource) {
-    ifstream *is = static_cast< ifstream * >( datasource );
-    is->close();
-    delete is;
-    return 0;
-  }
-  
-  long tell(void *datasource) {
-    ifstream *is = static_cast< ifstream * >( datasource );
-    return is->tellg();
-  }
-}
-
 unsigned int OggFileReader::read( char *buffer, unsigned int size ) {
       
   int section;
@@ -91,19 +66,13 @@ unsigned int OggFileReader::read( char *buffer, unsigned int size ) {
 
 unsigned int OggFileReader::load( const string &_url ) {
   url = _url;
-  ov_callbacks cb;
-  cb.read_func = &OggFileReaderInternals::read;
-  cb.seek_func = &OggFileReaderInternals::seek;
-  cb.close_func = &OggFileReaderInternals::close;
-  cb.tell_func = &OggFileReaderInternals::tell;
-
-  ifstream *is= new ifstream( url.c_str(), ios::binary );
-  if( is->good() ) {
-    if( ov_open_callbacks( is, &ogg_file, NULL, 0, cb ) < 0 ) {
+ 
+  FILE *f= fopen( url.c_str(), "rb" );
+  if( f != NULL ) {
+    if( ov_open_callbacks( f, &ogg_file, NULL, 0, OV_CALLBACKS_DEFAULT ) < 0 ) {
       if( !should_clear )
         should_clear = true;
-      is->close();
-      delete is;
+      fclose( f );
       return 0;
     } else {
       info = ov_info(&ogg_file, -1);
@@ -116,18 +85,13 @@ unsigned int OggFileReader::load( const string &_url ) {
 }
 
 bool OggFileReader::supportsFileType( const string &url ) {
-  ov_callbacks cb;
-  cb.read_func = &OggFileReaderInternals::read;
-  cb.seek_func = &OggFileReaderInternals::seek;
-  cb.close_func = &OggFileReaderInternals::close;
-  cb.tell_func = &OggFileReaderInternals::tell;
+ 
 
-  ifstream *is= new ifstream( url.c_str(), ios::binary );
-  if( is->good() ) {
+  FILE *f= fopen( url.c_str(), "rb" );
+  if( f != NULL ) {
     OggVorbis_File tmp_ogg_file;
-    if( ov_open_callbacks( is, &tmp_ogg_file, NULL, 0, cb ) < 0 ) {
-      is->close();
-      delete is;
+    if( ov_open_callbacks( f, &tmp_ogg_file, NULL, 0, OV_CALLBACKS_DEFAULT ) < 0 ) {
+      fclose( f );
       return false;
     } else {
       ov_clear( &tmp_ogg_file );

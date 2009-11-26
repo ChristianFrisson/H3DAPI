@@ -72,7 +72,7 @@ namespace H3D {
     
     /// Returns the total size of the PCM data of the current stream.
     virtual unsigned int totalDataSize() {
-      return (unsigned int)( ov_raw_total( &ogg_file, -1 ) );
+      return (unsigned int)( ov_pcm_total( &ogg_file, -1 ) * bitsPerSample() / 8 );
     }
       
     /// Returns the number of channels per second for the current PCM 
