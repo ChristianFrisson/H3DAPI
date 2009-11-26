@@ -68,15 +68,34 @@ GeneratedCubeMapTexture::GeneratedCubeMapTexture(
   update->setValue( "NONE" );
 }
 
+GeneratedCubeMapTexture::~GeneratedCubeMapTexture() {
+  if( textures_initialized && GLEW_EXT_framebuffer_object ) {
+    glDeleteRenderbuffersEXT( 1, &rbo_id );
+    glDeleteFramebuffersEXT( 1, &fbo_id );
+  }
+}
 
 void GeneratedCubeMapTexture::initializeTextures() {
+  H3DInt32 dim = size->getValue();
+
   if( !cube_map_id ) {
     glGenTextures( 1, &cube_map_id );
   }
   
   glBindTexture( GL_TEXTURE_CUBE_MAP_ARB, cube_map_id );
 
-  H3DInt32 dim = size->getValue();
+
+  if( GLEW_EXT_framebuffer_object ) {
+    // create a framebuffer object
+    glGenFramebuffersEXT(1, &fbo_id);
+    
+    // create a renderbuffer object to store depth info
+    glGenRenderbuffersEXT(1, &rbo_id);
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rbo_id);
+    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
+                             dim, dim );
+  }
+
   if( !textures_initialized ) {
     glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, dim, dim, 
                   0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -137,6 +156,11 @@ void GeneratedCubeMapTexture::updateCubeMapTextures( X3DChildNode *n,
   generating_textures = true;
   displayList->touch();
   glBindTexture( GL_TEXTURE_CUBE_MAP_ARB, cube_map_id );
+
+  if( GLEW_EXT_framebuffer_object ) {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+  }
+
   updateCubeMap( GL_TEXTURE_CUBE_MAP_POSITIVE_Z, Vec3f( 0, 0, 0 ), 
                  Vec3f( 0, 0, 1 ), Vec3f( 0, -1, 0 ), n, vp ); 
   updateCubeMap( GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, Vec3f( 0, 0, 0 ), 
@@ -150,6 +174,12 @@ void GeneratedCubeMapTexture::updateCubeMapTextures( X3DChildNode *n,
   updateCubeMap( GL_TEXTURE_CUBE_MAP_NEGATIVE_X, Vec3f( 0, 0, 0 ), 
                  Vec3f( -1, 0, 0 ), Vec3f( 0, -1, 0 ), n, vp ); 
   generating_textures = false;
+
+  if( GLEW_EXT_framebuffer_object ) {
+    // switch back to window-system-provided framebuffer
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  }
+
   displayList->touch();
 }
 
@@ -159,6 +189,29 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
                                              const Vec3f & camera_up,
                                              X3DChildNode *n,
                                              X3DViewpointNode *vp ) {
+
+  // Use frame buffer object if supported, otherwise we just use the normal 
+  // frame buffer and copy from that. In that case problems will occur if
+  // the frame buffer size is smaller than the texture size, since we
+  // will then copy rubish into the texture.
+  if( GLEW_EXT_framebuffer_object ) {
+    // attach the texture to FBO color attachment point
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                              texture_target, cube_map_id, 0);
+    
+    // attach the renderbuffer to depth attachment point
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+                                 GL_RENDERBUFFER_EXT, rbo_id );
+
+  
+    // check FBO status
+    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+    if(status != GL_FRAMEBUFFER_COMPLETE_EXT) {
+      Console( 4)  << "GeneratedCubeMapTexture error: Error setting up frame "
+                   << "buffer object" << endl;
+      return;
+    }
+  }
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -170,13 +223,16 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
   H3DFloat clip_far  = 10.f; // far viewing plane at 10m
   X3DBackgroundNode *background = X3DBackgroundNode::getActive();
   gluPerspective( 90, 1.0, clip_near, clip_far);
+
   glViewport( 0, 0, size->getValue(), size->getValue() );
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  glDrawBuffer(GL_BACK);
-  glReadBuffer(GL_BACK);
+  if( !GLEW_EXT_framebuffer_object ) {
+    glDrawBuffer(GL_BACK);
+    glReadBuffer(GL_BACK);
+  }
 
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -235,9 +291,14 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
 
   glPopAttrib();
 
-  // Copy the rendered scene to the texture.
-  glCopyTexSubImage2D( texture_target, 0, 0, 0, 0, 0, 
-                       size->getValue(), size->getValue());
+
+
+  // Copy the rendered scene to the texture if not using
+  // frame buffer objects
+  if( !GLEW_EXT_framebuffer_object ) {
+    glCopyTexSubImage2D( texture_target, 0, 0, 0, 0, 0, 
+                         size->getValue(), size->getValue() );
+  }
 }
 
 

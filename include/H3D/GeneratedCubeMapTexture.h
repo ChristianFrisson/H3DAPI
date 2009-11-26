@@ -82,6 +82,9 @@ namespace H3D {
                              Inst< SFString    > _update     = 0,
                              Inst< SFInt32     > _size       = 0 );
 
+    /// Destructor.
+    ~GeneratedCubeMapTexture();
+
     /// Enables cube map texturing.
     virtual void enableTexturing();
 
@@ -156,6 +159,14 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+    /// The id of the frame buffer object we use to render into
+    /// textures.
+    GLuint fbo_id;
+
+    /// The id of the render buffer object we use for depth
+    /// info
+    GLuint rbo_id;
+
     /// True when the cube map textures has been initialized.
     bool textures_initialized;
     
