@@ -91,6 +91,9 @@ unsigned int AudioFileReader::load( const string &_url ) {
 }
 
 bool AudioFileReader::supportsFileType( const string &url ) {
+  // Remove error handler to avoid annoying console messages
+  afSetErrorHandler(NULL);
+  
   AFfilehandle file;
   file = afOpenFile( url.c_str(), "r", NULL );
   if( file ) {
