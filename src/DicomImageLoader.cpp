@@ -35,6 +35,7 @@
 #include <dcmtk/dcmdata/dcmetinf.h>
 #include <dcmtk/dcmdata/dcdatset.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
+#include <dcmtk/ofstd/ofconsol.h>
 
 #ifndef WIN32 
 #include <dirent.h>
@@ -69,9 +70,21 @@ DicomImageLoader::DicomImageLoader():
 }
 
 bool DicomImageLoader::supportsFileType( const string &url ) {
+  // set the dcmtk console to write to the H3D console
+  ofConsole.setCerr( &H3DUtil::Console );
+  ofConsole.setCout( &H3DUtil::Console );
+
+  // temporarily shut down console to avoid warning messages from
+  // dcmtk while checking if supported.
+  int output_level = H3DUtil::Console.getOutputLevel();
+  H3DUtil::Console.setOutputLevel( -1 );
+
   DcmFileFormat fileformat;
   OFCondition status = fileformat.loadFile( url.c_str(), EXS_Unknown, 
                                             EGL_noChange, 0 );
+
+  // restore console output level.
+  H3DUtil::Console.setOutputLevel( output_level );
   return status.good();
 }
 
