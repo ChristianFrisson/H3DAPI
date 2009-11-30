@@ -28,19 +28,22 @@ FIND_PATH( DIRECTSHOW_INCLUDE_DIR_STREAMS_H NAMES streams.h
                  ../../External/include
                  ../../External/include/DirectShow/BaseClasses
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../../External/include/DirectShow/BaseClasses )
+                 ${module_file_path}/../../../External/include/DirectShow/BaseClasses
+           DOC "Path in which the file streams.h is located." )
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_STREAMS_H)
 
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_DDRAW_H NAMES ddraw.h
            PATHS $ENV{DXSDK_DIR}/include
-                 ${DIRECTSHOW_EXTRA_DIR} )
+                 ${DIRECTSHOW_EXTRA_DIR}
+           DOC "Path in which the file ddraw.h is located." )
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_DDRAW_H)
 
 FIND_LIBRARY( DIRECTSHOW_LIBRARY NAMES strmbase
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${module_file_path}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib
+              DOC "Path to strmbase library." )
 MARK_AS_ADVANCED(DIRECTSHOW_LIBRARY)
 
 # Copy the results to the output variables.
@@ -59,7 +62,7 @@ ENDIF(CMake_HAVE_MFC)
 # Report the results.
 IF(NOT DIRECTSHOW_FOUND)
   SET(DIRECTSHOW_DIR_MESSAGE
-    "Directshow was not found. It only works for Visual Studio 7 at the moment.")
+    "Directshow was not found. Set DIRECTSHOW_INCLUDE_DIR_STREAMS_H, DIRECTSHOW_INCLUDE_DIR_DDRAW_H and DIRECTSHOW_LIBRARY to enable Directshow (DSHOW) support.")
   IF(DirectShow_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${DIRECTSHOW_DIR_MESSAGE}")
   ELSEIF(NOT DirectShow_FIND_QUIETLY)

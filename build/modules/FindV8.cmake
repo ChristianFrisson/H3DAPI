@@ -13,7 +13,8 @@ FIND_PATH( V8_INCLUDE_DIR NAMES v8.h
                  $ENV{H3D_EXTERNAL_ROOT}/include  
                  $ENV{H3D_ROOT}/../External/include  
                  ../../External/include
-                 ${module_file_path}/../../../External/include )
+                 ${module_file_path}/../../../External/include
+           DOC "Path in which the file v8.h is located." )
 MARK_AS_ADVANCED(V8_INCLUDE_DIR)
 
 # Look for the library.
@@ -22,7 +23,8 @@ FIND_LIBRARY( V8_LIBRARY NAMES v8
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${module_file_path}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib
+              DOC "Path to v8 library." )
 MARK_AS_ADVANCED(V8_LIBRARY)
 
 # Copy the results to the output variables.

@@ -14,41 +14,42 @@ ENDIF( NOT "$ENV{VTI_REGISTRY_FILE}" STREQUAL  "" )
 FIND_PATH( VirtualHand_INCLUDE_DIR NAMES vhandtk/vht.h
            PATHS ${vti_registry_file_path}/../../Development/include
                   C:/Program/Immersion Corporation/VirtualHand/Development/include
-                  "C:/Program Files/Immersion Corporation/VirtualHand/Development/include" )
+                  "C:/Program Files/Immersion Corporation/VirtualHand/Development/include"
+           DOC "Path in which the file vhandtk/vht.h is located." )
 MARK_AS_ADVANCED(VirtualHand_INCLUDE_DIR)
 
 # Look for the library.
 
-FIND_LIBRARY( VirtualHandDevice_LIBRARY NAMES VirtualHandDevice
+FIND_LIBRARY( VirtualHand_Device_LIBRARY NAMES VirtualHandDevice
               PATHS ${vti_registry_file_path}/../../Development/lib/winnt_386
-                  C:/Program/Immersion Corporation/VirtualHand/Development/lib/winnt_386
-                  "C:/Program Files/Immersion Corporation/VirtualHand/Development/lib/winnt_386" )
+                    C:/Program/Immersion Corporation/VirtualHand/Development/lib/winnt_386
+                    "C:/Program Files/Immersion Corporation/VirtualHand/Development/lib/winnt_386"
+              DOC "Path to VirtualHandDevice library." )
 
-FIND_LIBRARY( VirtualHandCore_LIBRARY NAMES VirtualHandCore
+FIND_LIBRARY( VirtualHand_Core_LIBRARY NAMES VirtualHandCore
               PATHS ${vti_registry_file_path}/../../Development/lib/winnt_386
-                  C:/Program/Immersion Corporation/VirtualHand/Development/lib/winnt_386
-                  "C:/Program Files/Immersion Corporation/VirtualHand/Development/lib/winnt_386" )
+                    C:/Program/Immersion Corporation/VirtualHand/Development/lib/winnt_386
+                    "C:/Program Files/Immersion Corporation/VirtualHand/Development/lib/winnt_386"
+              DOC "Path to VirtualHandCore library." )
 
-MARK_AS_ADVANCED(VirtualHandDevice_LIBRARY)
-MARK_AS_ADVANCED(VirtualHandCore_LIBRARY)
+MARK_AS_ADVANCED(VirtualHand_Device_LIBRARY)
+MARK_AS_ADVANCED(VirtualHand_Core_LIBRARY)
 
 # Copy the results to the output variables.
-IF(VirtualHand_INCLUDE_DIR AND VirtualHandDevice_LIBRARY AND VirtualHandCore_LIBRARY)
-
+IF(VirtualHand_INCLUDE_DIR AND VirtualHand_Device_LIBRARY AND VirtualHand_Core_LIBRARY)
   SET(VirtualHand_FOUND 1)
-  
   SET(VirtualHand_INCLUDE_DIR ${VirtualHand_INCLUDE_DIR} )
-  SET(VirtualHand_LIBRARIES ${VirtualHandDevice_LIBRARY} ${VirtualHandCore_LIBRARY})
-ELSE(VirtualHand_INCLUDE_DIR AND VirtualHandDevice_LIBRARY AND VirtualHandCore_LIBRARY)
+  SET(VirtualHand_LIBRARIES ${VirtualHand_Device_LIBRARY} ${VirtualHand_Core_LIBRARY})
+ELSE(VirtualHand_INCLUDE_DIR AND VirtualHand_Device_LIBRARY AND VirtualHand_Core_LIBRARY)
   SET(VirtualHand_FOUND 0)
   SET(VirtualHand_LIBRARIES)
   SET(VirtualHand_INCLUDE_DIR)
-ENDIF(VirtualHand_INCLUDE_DIR AND VirtualHandDevice_LIBRARY AND VirtualHandCore_LIBRARY)
+ENDIF(VirtualHand_INCLUDE_DIR AND VirtualHand_Device_LIBRARY AND VirtualHand_Core_LIBRARY)
 
 # Report the results.
 IF(NOT VirtualHand_FOUND)
   SET(VirtualHand_DIR_MESSAGE
-    "VirtualHand was not found. Make sure VirtualHandDevice_LIBRARY, VirtualHandCore_LIBRARY and VirtualHand_INCLUDE_DIR are set.")
+    "VirtualHand was not found. Make sure VirtualHand_Device_LIBRARY, VirtualHand_Core_LIBRARY and VirtualHand_INCLUDE_DIR are set.")
   IF(VirtualHand_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "${VirtualHand_DIR_MESSAGE}")
   ELSEIF(NOT VirtualHand_FIND_QUIETLY)

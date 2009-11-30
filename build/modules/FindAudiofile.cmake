@@ -17,7 +17,8 @@ FIND_PATH( AUDIOFILE_INCLUDE_DIR NAMES audiofile.h
                  ../../External/include
                  ../../External/include/libaudiofile
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../../External/include/libaudiofile )
+                 ${module_file_path}/../../../External/include/libaudiofile
+           DOC "Path in which the file audiofile.h is located." )
 MARK_AS_ADVANCED(AUDIOFILE_INCLUDE_DIR)
 
 # Look for the library.
@@ -26,7 +27,8 @@ FIND_LIBRARY( AUDIOFILE_LIBRARY NAMES audiofile
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${module_file_path}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib
+              DOC "Path to audiofile library." )
 MARK_AS_ADVANCED(AUDIOFILE_LIBRARY)
 
 # Copy the results to the output variables.

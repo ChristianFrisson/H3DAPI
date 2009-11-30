@@ -48,7 +48,8 @@ FIND_PATH(TEEM_INCLUDE_DIR NAMES teem/nrrd.h
                                  ../../External/include
                                  /usr/local/include
                                  ${module_file_path}/../../../External/include
-                                 ${module_file_path}/../../teem/include )
+                                 ${module_file_path}/../../teem/include
+                           DOC "Path in which the file teem/nrrd.h is located." )
 MARK_AS_ADVANCED(TEEM_INCLUDE_DIR)
 
 # Look for the library.
@@ -58,7 +59,8 @@ FIND_LIBRARY(TEEM_LIBRARY NAMES teem
                                 ../../External/lib
                                 /usr/local/lib
                                 ${module_file_path}/../../../External/lib
-                                ${module_file_path}/../../teem/lib )
+                                ${module_file_path}/../../teem/lib
+                          DOC "Path to teem library." )
 MARK_AS_ADVANCED(TEEM_LIBRARY)
 
 IF( TEEM_LIBRARY )
@@ -68,45 +70,48 @@ ELSE( TEEM_LIBRARY )
 ENDIF( TEEM_LIBRARY )
 
 IF( TEEM_ZLIB )
-  FIND_LIBRARY(Z_LIBRARY NAMES z
+  FIND_LIBRARY(TEEM_Z_LIBRARY NAMES z
                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                $ENV{H3D_ROOT}/../External/lib
                                ../../External/lib
                                /usr/lib
                                ${module_file_path}/../../../External/lib
-                               ${module_file_path}/../../teem/lib )
-  MARK_AS_ADVANCED(Z_LIBRARY)
-  IF( NOT Z_LIBRARY )
+                               ${module_file_path}/../../teem/lib
+                         DOC "Path to z library." )
+  MARK_AS_ADVANCED(TEEM_Z_LIBRARY)
+  IF( NOT TEEM_Z_LIBRARY )
     SET( FOUND_TEEM_LIBRARIES 0 )
-  ENDIF( NOT Z_LIBRARY )
+  ENDIF( NOT TEEM_Z_LIBRARY )
 ENDIF( TEEM_ZLIB )
 
 IF( TEEM_PNG )
-  FIND_LIBRARY(PNG_LIBRARY NAMES png
+  FIND_LIBRARY(TEEM_PNG_LIBRARY NAMES png
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                  $ENV{H3D_ROOT}/../External/lib
                                   ../../External/lib
                                   /usr/lib
                                   ${module_file_path}/../../../External/lib
-                                  ${module_file_path}/../../teem/lib )
-  MARK_AS_ADVANCED(PNG_LIBRARY)
-  IF( NOT PNG_LIBRARY )
+                                  ${module_file_path}/../../teem/lib
+                           DOC "Path to png library." )
+  MARK_AS_ADVANCED(TEEM_PNG_LIBRARY)
+  IF( NOT TEEM_PNG_LIBRARY )
     SET( FOUND_TEEM_LIBRARIES 0 )
-  ENDIF( NOT PNG_LIBRARY )
+  ENDIF( NOT TEEM_PNG_LIBRARY )
 ENDIF( TEEM_PNG )
 
 IF( TEEM_BZIP2 )
-  FIND_LIBRARY(BZ2_LIBRARY NAMES bz2
+  FIND_LIBRARY(TEEM_BZ2_LIBRARY NAMES bz2
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                  $ENV{H3D_ROOT}/../External/lib
                                  ../../External/lib
                                  /usr/lib
                                  ${module_file_path}/../../../External/lib
-                                 ${module_file_path}/../../teem/lib )
-  MARK_AS_ADVANCED(BZ2_LIBRARY)
-  IF( NOT BZ2_LIBRARY )
+                                 ${module_file_path}/../../teem/lib
+                           DOC "Path to bz2 library." )
+  MARK_AS_ADVANCED(TEEM_BZ2_LIBRARY)
+  IF( NOT TEEM_BZ2_LIBRARY )
     SET( FOUND_TEEM_LIBRARIES 0 )
-  ENDIF( NOT BZ2_LIBRARY )
+  ENDIF( NOT TEEM_BZ2_LIBRARY )
 ENDIF( TEEM_BZIP2 )
 
 # Copy the results to the output variables.
@@ -114,15 +119,15 @@ IF(TEEM_INCLUDE_DIR AND FOUND_TEEM_LIBRARIES)
   SET(TEEM_FOUND 1)
   SET(TEEM_LIBRARIES ${TEEM_LIBRARY})
 
-  IF( Z_LIBRARY )
-    SET(TEEM_LIBRARIES ${TEEM_LIBRARIES} ${Z_LIBRARY})
-  ENDIF( Z_LIBRARY )
-  IF( PNG_LIBRARY )
-    SET(TEEM_LIBRARIES ${TEEM_LIBRARIES} ${PNG_LIBRARY})
-  ENDIF( PNG_LIBRARY )
-  IF( BZ2_LIBRARY )
-    SET(TEEM_LIBRARIES ${TEEM_LIBRARIES} ${BZ2_LIBRARY})
-  ENDIF( BZ2_LIBRARY )
+  IF( TEEM_Z_LIBRARY )
+    SET(TEEM_LIBRARIES ${TEEM_LIBRARIES} ${TEEM_Z_LIBRARY})
+  ENDIF( TEEM_Z_LIBRARY )
+  IF( TEEM_PNG_LIBRARY )
+    SET(TEEM_LIBRARIES ${TEEM_LIBRARIES} ${TEEM_PNG_LIBRARY})
+  ENDIF( TEEM_PNG_LIBRARY )
+  IF( TEEM_BZ2_LIBRARY )
+    SET(TEEM_LIBRARIES ${TEEM_LIBRARIES} ${TEEM_BZ2_LIBRARY})
+  ENDIF( TEEM_BZ2_LIBRARY )
   IF( AIR_LIBRARY )
     SET(TEEM_LIBRARIES ${TEEM_LIBRARIES} ${AIR_LIBRARY})
   ENDIF( AIR_LIBRARY )
@@ -140,10 +145,14 @@ ENDIF(TEEM_INCLUDE_DIR AND FOUND_TEEM_LIBRARIES)
 # Report the results.
 IF(NOT TEEM_FOUND)
   SET(TEEM_DIR_MESSAGE
-    "TEEM was not found. Make sure TEEM_LIBRARY, PNG_LIBRARY, Z_LIBRARY, BZ2_LIBRARY and TEEM_INCLUDE_DIR are set to where you have your teem header and different lib files. If you do not have the libraries you will not be able to use the NrrdImageLoader node. Some of the libraries only need to be set if teem should have support for those features.")
+    "TEEM was not found. Make sure TEEM_LIBRARY, TEEM_PNG_LIBRARY, TEEM_Z_LIBRARY, TEEM_BZ2_LIBRARY and TEEM_INCLUDE_DIR are set.")
   IF(TEEM_FIND_REQUIRED)
-      MESSAGE(FATAL_ERROR "${TEEM_DIR_MESSAGE}")
+    SET( TEEM_DIR_MESSAGE
+         "${TEEM_DIR_MESSAGE} Teem is required to build. Some of the libraries only need to be set if teem should have support for those features.")
+    MESSAGE(FATAL_ERROR "${TEEM_DIR_MESSAGE}")
   ELSEIF(NOT TEEM_FIND_QUIETLY)
+    SET( TEEM_DIR_MESSAGE
+         "${TEEM_DIR_MESSAGE} If you do not have the libraries you will not be able to load nrrd files. Some of the libraries only need to be set if teem should have support for those features.")
     MESSAGE(STATUS "${TEEM_DIR_MESSAGE}")
   ENDIF(TEEM_FIND_REQUIRED)
 ENDIF(NOT TEEM_FOUND)

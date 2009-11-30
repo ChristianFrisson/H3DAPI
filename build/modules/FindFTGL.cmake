@@ -17,7 +17,8 @@ FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/ftgl.h
                                  $ENV{H3D_EXTERNAL_ROOT}/include/FTGL
                                  $ENV{H3D_ROOT}/../External/include/FTGL
                                  ../../External/include/FTGL
-                                 ${module_file_path}/../../../External/include/FTGL)
+                                 ${module_file_path}/../../../External/include/FTGL
+                           DOC "Path in which the file FTGL/ftgl.h is located." )
 
 SET( FTGL_INCLUDE_IS_UPPER 0 )
 
@@ -30,7 +31,8 @@ IF( NOT FTGL_INCLUDE_DIR )
                                  $ENV{H3D_EXTERNAL_ROOT}/include/FTGL
                                  $ENV{H3D_ROOT}/../External/include/FTGL
                                  ../../External/include/FTGL
-                                 ${module_file_path}/../../../External/include/FTGL)
+                                 ${module_file_path}/../../../External/include/FTGL
+                           DOC "Path in which the file FTGL/FTGL.h is located." )
   SET( FTGL_INCLUDE_IS_UPPER 1 )
 ENDIF( NOT FTGL_INCLUDE_DIR )
 
@@ -42,7 +44,8 @@ FIND_LIBRARY(FTGL_LIBRARY NAMES ftgl ftgl_dynamic_213rc5 ftgl_dynamic_MTD
                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                 $ENV{H3D_ROOT}/../External/lib
                                 ../../External/lib
-                                ${module_file_path}/../../../External/lib)
+                                ${module_file_path}/../../../External/lib
+                          DOC "Path to ftgl library." )
 MARK_AS_ADVANCED(FTGL_LIBRARY)
 
 IF( WIN32 AND PREFER_STATIC_LIBRARIES )
@@ -57,14 +60,16 @@ IF( WIN32 AND PREFER_STATIC_LIBRARIES )
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                          $ENV{H3D_ROOT}/../External/lib
                                          ../../External/lib
-                                         ${module_file_path}/../../../External/lib )
+                                         ${module_file_path}/../../../External/lib
+                                    DOC "Path to ftgl static library." )
   MARK_AS_ADVANCED(FTGL_STATIC_LIBRARY)
   
   FIND_LIBRARY( FTGL_STATIC_DEBUG_LIBRARY NAMES ${FTGL_STATIC_LIBRARY_NAME}_d
                                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                                 $ENV{H3D_ROOT}/../External/lib
                                                 ../../External/lib
-                                                ${module_file_path}/../../../External/lib )
+                                                ${module_file_path}/../../../External/lib
+                                          DOC "Path to ftgl static debug library." )
   MARK_AS_ADVANCED(FTGL_STATIC_DEBUG_LIBRARY)
   
   IF( FTGL_STATIC_LIBRARY OR FTGL_STATIC_DEBUG_LIBRARY )

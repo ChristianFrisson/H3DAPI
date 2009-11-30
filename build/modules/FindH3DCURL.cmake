@@ -20,21 +20,24 @@ IF(NOT CURL_FOUND OR PREFER_STATIC_LIBRARIES)
              PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                    $ENV{H3D_ROOT}/../External/include
                    ../../External/include
-                   ${module_file_path}/../../../External/include )
+                   ${module_file_path}/../../../External/include
+             DOC "Path in which the file curl/curl.h is located." )
   
   # Look for the library.
-  FIND_LIBRARY( CURL_LIBRARY NAMES libcurl 
+  FIND_LIBRARY( CURL_LIBRARY NAMES libcurl
                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                       $ENV{H3D_ROOT}/../External/lib
                       ../../External/lib
-                      ${module_file_path}/../../../External/lib )
+                      ${module_file_path}/../../../External/lib
+                DOC "Path to libcurl library." )
 
   IF( PREFER_STATIC_LIBRARIES )
     FIND_LIBRARY( CURL_STATIC_LIBRARY NAMES libcurl_static
                                             PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                             $ENV{H3D_ROOT}/../External/lib
                                             ../../External/lib
-                                            ${module_file_path}/../../../External/lib )
+                                            ${module_file_path}/../../../External/lib
+                                      DOC "Path to libcurl static library." )
     MARK_AS_ADVANCED(CURL_STATIC_LIBRARY)
   ENDIF( PREFER_STATIC_LIBRARIES )
 
@@ -60,10 +63,10 @@ ENDIF( WIN32 )
 # Report the results.
 IF(NOT CURL_FOUND)
   SET(CURL_DIR_MESSAGE
-    "Curl was not found. Make sure CURL_LIBRARY and CURL_INCLUDE_DIR are set if compressed files support is desired.")
+    "Curl was not found. Make sure CURL_LIBRARY (and/or CURL_STATIC_LIBRARY) and CURL_INCLUDE_DIR are set.")
   IF(H3DCURL_FIND_REQUIRED)
     SET(CURL_DIR_MESSAGE
-        "Curl was not found. Make sure CURL_LIBRARY and CURL_INCLUDE_DIR are set. CURL is required to build.")
+        "${CURL_DIR_MESSAGE} CURL is required to build.")
     MESSAGE(FATAL_ERROR "${CURL_DIR_MESSAGE}")
   ELSEIF(NOT H3DCURL_FIND_QUIETLY)
     MESSAGE(STATUS "${CURL_DIR_MESSAGE}")

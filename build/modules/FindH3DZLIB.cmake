@@ -24,14 +24,16 @@ IF( NOT ZLIB_FOUND AND WIN32)
                    ../../External/include
                    ../../External/include/zlib
                    ${module_file_path}/../../../External/include
-                   ${module_file_path}/../../../External/include/zlib )
+                   ${module_file_path}/../../../External/include/zlib
+             DOC "Path in which the file zlib.h is located." )
   
   # Look for the library.
   FIND_LIBRARY( ZLIB_LIBRARY NAMES zdll 
                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                       $ENV{H3D_ROOT}/../External/lib
                       ../../External/lib
-                      ${module_file_path}/../../../External/lib )    
+                      ${module_file_path}/../../../External/lib
+                DOC "Path to zdll library." )
   
   IF(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY)
     SET(ZLIB_FOUND 1)

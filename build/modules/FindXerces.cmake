@@ -12,15 +12,17 @@ FIND_PATH(XERCES_INCLUDE_DIR NAMES xercesc/sax2/Attributes.hpp
                              PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                    $ENV{H3D_ROOT}/../External/include
                                    ../../External/include
-                                   ${module_file_path}/../../../External/include )
+                                   ${module_file_path}/../../../External/include
+                             DOC "Path in which the file xercesc/sax2/Attributes.hpp is located." )
 MARK_AS_ADVANCED(XERCES_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(XERCES_LIBRARY NAMES xerces-c xerces-c_2  
+FIND_LIBRARY(XERCES_LIBRARY NAMES xerces-c xerces-c_2
                             PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                   $ENV{H3D_ROOT}/../External/lib
                                   ../../External/lib
-                                  ${module_file_path}/../../../External/lib )
+                                  ${module_file_path}/../../../External/lib
+                            DOC "Path to xerces library." )
 MARK_AS_ADVANCED(XERCES_LIBRARY)
 
 SET( XERCES_LIBRARIES_FOUND 0 )
@@ -35,16 +37,18 @@ IF( WIN32 AND PREFER_STATIC_LIBRARIES )
   ENDIF( MSVC80 )
   FIND_LIBRARY( XERCES_STATIC_LIBRARY NAMES ${XERCES_STATIC_LIBRARY_NAME}
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                         $ENV{H3D_ROOT}/../External/lib
-                                         ../../External/lib
-                                         ${module_file_path}/../../../External/lib )
+                                               $ENV{H3D_ROOT}/../External/lib
+                                               ../../External/lib
+                                               ${module_file_path}/../../../External/lib
+                                         DOC "Path to xerces static library." )
   MARK_AS_ADVANCED(XERCES_STATIC_LIBRARY)
   
   FIND_LIBRARY( XERCES_STATIC_DEBUG_LIBRARY NAMES ${XERCES_STATIC_LIBRARY_NAME}_d
                                             PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                            $ENV{H3D_ROOT}/../External/lib
-                                            ../../External/lib
-                                            ${module_file_path}/../../../External/lib )
+                                                  $ENV{H3D_ROOT}/../External/lib
+                                                  ../../External/lib
+                                                  ${module_file_path}/../../../External/lib
+                                            DOC "Path to xerces static debug library." )
   MARK_AS_ADVANCED(XERCES_STATIC_DEBUG_LIBRARY)
   
   IF( XERCES_STATIC_LIBRARY OR XERCES_STATIC_DEBUG_LIBRARY )

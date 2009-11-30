@@ -12,15 +12,17 @@ FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                                  $ENV{H3D_ROOT}/../External/include
                                  ../../External/include
-                                 ${module_file_path}/../../../External/include )
+                                 ${module_file_path}/../../../External/include
+                           DOC "Path in which the file GL/glew.h is located." )
 MARK_AS_ADVANCED(GLEW_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW glew32  
+FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW glew32
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                       $ENV{H3D_ROOT}/../External/lib
                                       ../../External/lib
-                                      ${module_file_path}/../../../External/lib )
+                                      ${module_file_path}/../../../External/lib
+                                DOC "Path to glew32 library." )
 MARK_AS_ADVANCED(GLEW_LIBRARY)
 
 IF( WIN32 AND PREFER_STATIC_LIBRARIES )
@@ -28,7 +30,8 @@ IF( WIN32 AND PREFER_STATIC_LIBRARIES )
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                          $ENV{H3D_ROOT}/../External/lib
                                          ../../External/lib
-                                         ${module_file_path}/../../../External/lib )
+                                         ${module_file_path}/../../../External/lib
+                                    DOC "Path to glew32 static library." )
   MARK_AS_ADVANCED(GLEW_STATIC_LIBRARY)
 ENDIF( WIN32 AND PREFER_STATIC_LIBRARIES )
 

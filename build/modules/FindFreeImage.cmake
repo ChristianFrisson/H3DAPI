@@ -16,7 +16,8 @@ FIND_PATH(FREEIMAGE_INCLUDE_DIR NAMES FreeImage.h
                                       ../../External/include
                                       ../../External/include/FreeImage/Dist
                                       ${module_file_path}/../../../External/include
-                                      ${module_file_path}/../../../External/include/FreeImage/Dist)
+                                      ${module_file_path}/../../../External/include/FreeImage/Dist
+                                DOC "Path in which the file FreeImage.h is located." )
 
 MARK_AS_ADVANCED(FREEIMAGE_INCLUDE_DIR)
 
@@ -25,7 +26,8 @@ FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES freeimage
                                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                                      $ENV{H3D_ROOT}/../External/lib
                                      ../../External/lib
-                                     ${module_file_path}/../../../External/lib )
+                                     ${module_file_path}/../../../External/lib
+                               DOC "Path to freeimage library." )
 MARK_AS_ADVANCED(FREEIMAGE_LIBRARY)
 
 IF( WIN32 AND PREFER_STATIC_LIBRARIES )
@@ -39,9 +41,10 @@ IF( WIN32 AND PREFER_STATIC_LIBRARIES )
   
   FIND_LIBRARY( FREEIMAGE_STATIC_LIBRARY NAMES ${FREEIMAGE_STATIC_LIBRARY_NAME}
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                         $ENV{H3D_ROOT}/../External/lib
-                                         ../../External/lib
-                                         ${module_file_path}/../../../External/lib )
+                                               $ENV{H3D_ROOT}/../External/lib
+                                               ../../External/lib
+                                               ${module_file_path}/../../../External/lib
+                                         DOC "Path to freeimage static release library (windows only). For this configuration it might be called ${FREEIMAGE_STATIC_LIBRARY_NAME}" )
   MARK_AS_ADVANCED(FREEIMAGE_STATIC_LIBRARY)
   
   IF( FREEIMAGE_STATIC_LIBRARY )
@@ -50,9 +53,10 @@ IF( WIN32 AND PREFER_STATIC_LIBRARIES )
   
   FIND_LIBRARY( FREEIMAGE_STATIC_DEBUG_LIBRARY NAMES ${FREEIMAGE_STATIC_LIBRARY_NAME}_d
                                                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                               $ENV{H3D_ROOT}/../External/lib
-                                               ../../External/lib
-                                               ${module_file_path}/../../../External/lib )
+                                                     $ENV{H3D_ROOT}/../External/lib
+                                                     ../../External/lib
+                                                     ${module_file_path}/../../../External/lib
+                                               DOC "Path to freeimage static debug library (windows only). For this configuration it might be called ${FREEIMAGE_STATIC_LIBRARY_NAME}_d" )
   MARK_AS_ADVANCED(FREEIMAGE_STATIC_DEBUG_LIBRARY)
     
   IF( FREEIMAGE_STATIC_DEBUG_LIBRARY )
@@ -97,11 +101,21 @@ ENDIF(FREEIMAGE_INCLUDE_DIR AND FREEIMAGE_LIBRARIES_FOUND)
 
 # Report the results.
 IF(NOT FREEIMAGE_FOUND)
-  SET(FREEIMAGE_DIR_MESSAGE
-    "FREEIMAGE was not found. Make sure FREEIMAGE_LIBRARY (or FREEIMAGE_STATIC_LIBRARY) and FREEIMAGE_INCLUDE_DIR are set to the directory of your FreeImage installation. If you do not have it many image formats will not be available to use as textures")
+  SET( FREEIMAGE_DIR_MESSAGE
+       "FREEIMAGE was not found. Make sure FREEIMAGE_LIBRARY")
+  IF( WIN32 )
+  SET( FREEIMAGE_DIR_MESSAGE
+       "${FREEIMAGE_DIR_MESSAGE} ( and/or FREEIMAGE_STATIC_LIBRARY/FREEIMAGE_STATIC_DEBUG_LIBRARY )")
+  ENDIF( WIN32 )
+  SET( FREEIMAGE_DIR_MESSAGE
+       "${FREEIMAGE_DIR_MESSAGE} and FREEIMAGE_INCLUDE_DIR are set.")
   IF(FreeImage_FIND_REQUIRED)
+    SET( FREEIMAGE_DIR_MESSAGE
+         "${FREEIMAGE_DIR_MESSAGE} FREEIMAGE is required to build.")
     MESSAGE(FATAL_ERROR "${FREEIMAGE_DIR_MESSAGE}")
   ELSEIF(NOT FreeImage_FIND_QUIETLY)
+    SET( FREEIMAGE_DIR_MESSAGE
+         "${FREEIMAGE_DIR_MESSAGE} If you do not have it many image formats will not be available to use as textures.")
     MESSAGE(STATUS "${FREEIMAGE_DIR_MESSAGE}")
   ENDIF(FreeImage_FIND_REQUIRED)
 ENDIF(NOT FREEIMAGE_FOUND)

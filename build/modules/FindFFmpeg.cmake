@@ -20,7 +20,7 @@ IF( PKG_CONFIG_FOUND )
 ELSE( PKG_CONFIG_FOUND )
 
   # Look for the header file.
-  FIND_PATH(AVCODEC_INCLUDE_DIR NAMES avcodec.h
+  FIND_PATH(FFMPEG_AVCODEC_INCLUDE_DIR NAMES avcodec.h
                                PATHS /usr/local/include/libavcodec
                                      /usr/include/libavcodec
                                      /usr/local/include/ffmpeg
@@ -28,10 +28,11 @@ ELSE( PKG_CONFIG_FOUND )
                                      $ENV{H3D_EXTERNAL_ROOT}/include  
                                      $ENV{H3D_EXTERNAL_ROOT}/include/ffmpeg/include
                                      ../../External/include    
-                                     ../../External/include/ffmpeg/include)
-  MARK_AS_ADVANCED(AVCODEC_INCLUDE_DIR)
+                                     ../../External/include/ffmpeg/include
+                               DOC "Path in which the file avcodec.h is located." )
+  MARK_AS_ADVANCED(FFMPEG_AVCODEC_INCLUDE_DIR)
 
-  FIND_PATH(AVFORMAT_INCLUDE_DIR NAMES avformat.h
+  FIND_PATH(FFMPEG_AVFORMAT_INCLUDE_DIR NAMES avformat.h
                             PATHS /usr/local/include/libavformat
                                   /usr/include/libavformat
                                   /usr/local/include/ffmpeg
@@ -40,10 +41,11 @@ ELSE( PKG_CONFIG_FOUND )
                                   $ENV{H3D_EXTERNAL_ROOT}/include  
                                   $ENV{H3D_EXTERNAL_ROOT}/include/ffmpeg/include
                                   ../../External/include    
-                                  ../../External/include/ffmpeg/include)
-  MARK_AS_ADVANCED(AVFORMAT_INCLUDE_DIR)
+                                  ../../External/include/ffmpeg/include
+                            DOC "Path in which the file avformat.h is located." )
+  MARK_AS_ADVANCED(FFMPEG_AVFORMAT_INCLUDE_DIR)
 
-  FIND_PATH(SWSCALE_INCLUDE_DIR NAMES swscale.h
+  FIND_PATH(FFMPEG_SWSCALE_INCLUDE_DIR NAMES swscale.h
                             PATHS /usr/local/include/libswscale
                                   /usr/include/libswscale
                                   /usr/local/include/ffmpeg
@@ -52,32 +54,36 @@ ELSE( PKG_CONFIG_FOUND )
                                   $ENV{H3D_EXTERNAL_ROOT}/include  
                                   $ENV{H3D_EXTERNAL_ROOT}/include/ffmpeg/include
                                   ../../External/include    
-                                  ../../External/include/ffmpeg/include)
-  MARK_AS_ADVANCED(SWSCALE_INCLUDE_DIR)
+                                  ../../External/include/ffmpeg/include
+                            DOC "Path in which the file swscale.h is located." )
+  MARK_AS_ADVANCED(FFMPEG_SWSCALE_INCLUDE_DIR)
 
   # Look for the libraries.
-  FIND_LIBRARY(AVCODEC_LIBRARY NAMES avcodec 
+  FIND_LIBRARY(FFMPEG_AVCODEC_LIBRARY NAMES avcodec 
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 ../../External/lib)
-  MARK_AS_ADVANCED(AVCODEC_LIBRARY)
+                                 ../../External/lib
+                           DOC "Path to avcodec library." )
+  MARK_AS_ADVANCED(FFMPEG_AVCODEC_LIBRARY)
 
-  FIND_LIBRARY(AVFORMAT_LIBRARY NAMES avformat
+  FIND_LIBRARY(FFMPEG_AVFORMAT_LIBRARY NAMES avformat
                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                    ../../External/lib)
-  MARK_AS_ADVANCED(AVFORMAT_LIBRARY)
+                                    ../../External/lib
+                              DOC "Path to avformat library." )
+  MARK_AS_ADVANCED(FFMPEG_AVFORMAT_LIBRARY)
 
-  FIND_LIBRARY(SWSCALE_LIBRARY NAMES swscale 
+  FIND_LIBRARY(FFMPEG_SWSCALE_LIBRARY NAMES swscale 
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 ../../External/lib)
-  MARK_AS_ADVANCED(SWSCALE_LIBRARY)
+                                 ../../External/lib
+                           DOC "Path to swscale library." )
+  MARK_AS_ADVANCED(FFMPEG_SWSCALE_LIBRARY)
 
-  IF( AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND SWSCALE_INCLUDE_DIR AND
-      AVCODEC_LIBRARY AND AVFORMAT_LIBRARY AND SWSCALE_LIBRARY  )
+  IF( FFMPEG_AVCODEC_INCLUDE_DIR AND FFMPEG_AVFORMAT_INCLUDE_DIR AND FFMPEG_SWSCALE_INCLUDE_DIR AND
+      FFMPEG_AVCODEC_LIBRARY AND FFMPEG_AVFORMAT_LIBRARY AND FFMPEG_SWSCALE_LIBRARY  )
     SET( FFMPEGMODULES_FOUND 1 )
-    SET( FFMPEGMODULES_LIBRARIES ${AVCODEC_LIBRARY} ${AVFORMAT_LIBRARY} ${SWSCALE_LIBRARY} )
-    SET( FFMPEGMODULES_INCLUDE_DIRS ${AVCODEC_INCLUDE_DIR} ${AVFORMAT_INCLUDE_DIR} ${SWSCALE_INCLUDE_DIR} )
-  ENDIF( AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND SWSCALE_INCLUDE_DIR AND
-         AVCODEC_LIBRARY AND AVFORMAT_LIBRARY AND SWSCALE_LIBRARY  )
+    SET( FFMPEGMODULES_LIBRARIES ${FFMPEG_AVCODEC_LIBRARY} ${FFMPEG_AVFORMAT_LIBRARY} ${FFMPEG_SWSCALE_LIBRARY} )
+    SET( FFMPEGMODULES_INCLUDE_DIRS ${FFMPEG_AVCODEC_INCLUDE_DIR} ${FFMPEG_AVFORMAT_INCLUDE_DIR} ${FFMPEG_SWSCALE_INCLUDE_DIR} )
+  ENDIF( FFMPEG_AVCODEC_INCLUDE_DIR AND FFMPEG_AVFORMAT_INCLUDE_DIR AND FFMPEG_SWSCALE_INCLUDE_DIR AND
+         FFMPEG_AVCODEC_LIBRARY AND FFMPEG_AVFORMAT_LIBRARY AND FFMPEG_SWSCALE_LIBRARY  )
 
 
 
@@ -100,8 +106,7 @@ MARK_AS_ADVANCED( FFMPEG_INCLUDE_DIRS )
 # Report the results.
 IF(NOT FFMPEG_FOUND)
   SET(FFMPEG_DIR_MESSAGE
-    "FFmpeg was not found. Make sure FFMPEG_LIBRARY and
-    FFMPEG_INCLUDE_DIR are set to the directories containing the include and lib files for ffmpeg. If you do not have the library you will not be able to use video textures under linux.")
+    "FFmpeg was not found. Make sure cmake variables with prefix FFMPEG set to the directories containing the include and lib files for ffmpeg. If you do not have the library you will not be able to use video textures under linux.")
   IF(NOT FFMPEG_FIND_QUIETLY)
     MESSAGE(STATUS "${FFMPEG_DIR_MESSAGE}")
   ELSE(NOT FFMPEG_FIND_QUIETLY)

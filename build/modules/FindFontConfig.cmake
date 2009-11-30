@@ -7,11 +7,13 @@
 
 
 # Look for the header file.
-FIND_PATH(FONTCONFIG_INCLUDE_DIR NAMES fontconfig/fontconfig.h)
+FIND_PATH( FONTCONFIG_INCLUDE_DIR NAMES fontconfig/fontconfig.h
+                                  DOC "Path in which the file fontconfig/fontconfig.h is located." )
 MARK_AS_ADVANCED(FONTCONFIG_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(FONTCONFIG_LIBRARY NAMES fontconfig)
+FIND_LIBRARY( FONTCONFIG_LIBRARY NAMES fontconfig
+                                 DOC "Path to fontconfig library." )
 MARK_AS_ADVANCED(FONTCONFIG_LIBRARY)
 
 # Copy the results to the output variables.

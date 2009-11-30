@@ -16,7 +16,8 @@ FIND_PATH( NVIDIACG_INCLUDE_DIR NAMES cg.h cgGL.h
                  ../../External/include
                  ../../External/include/cg
                  ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../../External/include/cg )
+                 ${module_file_path}/../../../External/include/cg
+           DOC "Path in which the file cg.h and cgGL.h are located." )
 MARK_AS_ADVANCED(NVIDIACG_INCLUDE_DIR)
 
 # Look for the library cg.
@@ -25,28 +26,30 @@ FIND_LIBRARY( NVIDIACG_LIBRARY NAMES cg
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${module_file_path}/../../../External/lib )
+                    ${module_file_path}/../../../External/lib
+              DOC "Path to cg library." )
 MARK_AS_ADVANCED(NVIDIACG_LIBRARY)
 
 # Look for the library cg.
 # Does this work on UNIX systems? (LINUX)
-FIND_LIBRARY( NVIDIACGGL_LIBRARY NAMES cgGL
+FIND_LIBRARY( NVIDIACG_CGGL_LIBRARY NAMES cgGL
               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                     $ENV{H3D_ROOT}/../External/lib
                     ../../External/lib
-                    ${module_file_path}/../../../External/lib )
-MARK_AS_ADVANCED(NVIDIACGGL_LIBRARY)
+                    ${module_file_path}/../../../External/lib
+              DOC "Path to cgGL library." )
+MARK_AS_ADVANCED(NVIDIACG_CGGL_LIBRARY)
 
 # Copy the results to the output variables.
-IF(NVIDIACG_INCLUDE_DIR AND NVIDIACG_LIBRARY AND NVIDIACGGL_LIBRARY)
+IF(NVIDIACG_INCLUDE_DIR AND NVIDIACG_LIBRARY AND NVIDIACG_CGGL_LIBRARY)
   SET(NVIDIACG_FOUND 1)
-  SET(NVIDIACG_LIBRARIES ${NVIDIACG_LIBRARY} ${NVIDIACGGL_LIBRARY})
+  SET(NVIDIACG_LIBRARIES ${NVIDIACG_LIBRARY} ${NVIDIACG_CGGL_LIBRARY})
   SET(NVIDIACG_INCLUDE_DIR ${NVIDIACG_INCLUDE_DIR})
-ELSE(NVIDIACG_INCLUDE_DIR AND NVIDIACG_LIBRARY AND NVIDIACGGL_LIBRARY)
+ELSE(NVIDIACG_INCLUDE_DIR AND NVIDIACG_LIBRARY AND NVIDIACG_CGGL_LIBRARY)
   SET(NVIDIACG_FOUND 0)
   SET(NVIDIACG_LIBRARIES)
   SET(NVIDIACG_INCLUDE_DIR)
-ENDIF(NVIDIACG_INCLUDE_DIR AND NVIDIACG_LIBRARY AND NVIDIACGGL_LIBRARY)
+ENDIF(NVIDIACG_INCLUDE_DIR AND NVIDIACG_LIBRARY AND NVIDIACG_CGGL_LIBRARY)
 
 # Report the results.
 IF(NOT NVIDIACG_FOUND)

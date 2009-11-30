@@ -15,15 +15,17 @@ IF(NOT OPENAL_FOUND AND WIN32)
              PATHS $ENV{H3D_EXTERNAL_ROOT}/include
                    $ENV{H3D_ROOT}/../External/include
                    ../../External/include
-                   ${module_file_path}/../../../External/include )
-  
+                   ${module_file_path}/../../../External/include
+             DOC "Path in which the file AL/al.h is located." )
+
   # Look for the library.
   FIND_LIBRARY( OPENAL_LIBRARY NAMES OpenAL32
                 PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
                       $ENV{H3D_ROOT}/../External/lib
                       ../../External/lib
-                      ${module_file_path}/../../../External/lib )
- 
+                      ${module_file_path}/../../../External/lib
+                DOC "Path to OpenAL32 library." )
+
   IF(OPENAL_INCLUDE_DIR AND OPENAL_LIBRARY)
     SET(OPENAL_FOUND 1)
     SET(OPENAL_LIBRARIES ${OPENAL_LIBRARY})
@@ -37,10 +39,10 @@ ENDIF(NOT OPENAL_FOUND AND WIN32)
 # Report the results.
 IF(NOT OPENAL_FOUND)
   SET(OPENAL_DIR_MESSAGE
-    "OpenAL was not found. Make sure OPENAL_LIBRARY and OPENAL_INCLUDE_DIR are set if compressed files support is desired.")
+    "OpenAL was not found. Make sure OPENAL_LIBRARY and OPENAL_INCLUDE_DIR are set.")
   IF(OpenAL_FIND_REQUIRED)
     SET(OPENAL_DIR_MESSAGE
-        "OpenAL was not found. Make sure OPENAL_LIBRARY and OPENAL_INCLUDE_DIR are set. OpenAL is required to build.")
+        "${OPENAL_DIR_MESSAGE} OpenAL is required to build.")
     MESSAGE(FATAL_ERROR "${OPENAL_DIR_MESSAGE}")
   ELSEIF(NOT OpenAL_FIND_QUIETLY)
     MESSAGE(STATUS "${OPENAL_DIR_MESSAGE}")
