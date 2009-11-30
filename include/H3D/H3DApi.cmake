@@ -82,6 +82,10 @@
 /// installed. Text nodes will then not be supported.
 #cmakedefine HAVE_FTGL
 
+/// Declare this if the header file for ftgl is FTGL/FTGL.h instead
+/// of FTGL/ftgl.h. Only used if HAVE_FTGL is defined.
+#cmakedefine FTGL_INCLUDE_IS_UPPER
+
 /// Undef if you do not have FreeType(www.freetype.org)
 /// installed. Text nodes will then not be supported.
 #cmakedefine HAVE_FREETYPE
