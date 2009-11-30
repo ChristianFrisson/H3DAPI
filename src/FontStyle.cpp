@@ -231,18 +231,18 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
       FcPatternGetString(fs->fonts[j], FC_FAMILY, 0, &family );
    
       if (strncasecmp(font_name, (char*)family, strlen(font_name)) == 0) {
-	// check if the font is of the correct type.
-	for( size_t s = 0; s < styles.size(); s++ ) {
-	  if (strcasecmp( styles[s].c_str(), 
-			  (char*)style ) == 0) {
-	    FcFontSetDestroy (fs);
-	    return( string((char*)file) );
-	  }
-	  
-	  // set value to use if no more correct font of same family is found.
-	  fn_candidate = string( (char *)file );
-	}
-	
+        // check if the font is of the correct type.
+        for( size_t s = 0; s < styles.size(); s++ ) {
+          if (strcasecmp( styles[s].c_str(), 
+              (char*)style ) == 0) {
+            FcFontSetDestroy (fs);
+            return( string((char*)file) );
+        }
+
+        // set value to use if no more correct font of same family is found.
+        fn_candidate = string( (char *)file );
+      }
+
       }
     }
     FcFontSetDestroy (fs);
@@ -274,10 +274,10 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
 #if defined(__APPLE__) && defined(__MACH__)
     char path[1024];
     FT_Long face_index;
-    FT_Error r = FT_GetFilePath_From_Mac_ATS_Name( full_font_name.c_str(), 
-						   (UInt8 * )path,
-						   1024,
-						   &face_index );
+    FT_Error r = FT_GetFilePath_From_Mac_ATS_Name( full_font_name.c_str(),
+                                                   (UInt8 * )path,
+                                                   1024,
+                                                   &face_index );
     if ( r != FT_Err_Ok ) {
       return NULL;
     }
@@ -544,7 +544,6 @@ X3DFontStyleNode::Justification FontStyle::getMinorJustification() {
 }
 
 void FontStyle::renderChar( unsigned char c ) {
-  char t[2];  t[0]=c; t[1]='\0';
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   H3DFloat s = size->getValue();
@@ -559,7 +558,27 @@ void FontStyle::renderChar( unsigned char c ) {
   }
   
   glNormal3f( 0, 0, 1 );
-  font->Render( t );
+
+#ifndef FTGL_INCLUDE_IS_UPPER
+  if( c < 128 ) {
+    // Ascii c is below 127 which means that we should not
+    // touch the value.
+#endif
+    char t[2];  t[0]=c; t[1]='\0';
+    font->Render( t );
+#ifndef FTGL_INCLUDE_IS_UPPER
+  } else {
+    // The math to explain this conversion can be found here
+    // http://everything2.com/title/Converting+ASCII+to+UTF-8
+    // It is needed because FTGL added unicode support and H3DAPI does
+    // not support unicode correctly yet. This avoids a crash.
+    char t[3];
+    t[0]=(c >> 6) | 0xC0;
+    t[1]=(c & 0x3F) | 0x80;
+    t[2]='\0';
+    font->Render( t );
+  }
+#endif
   
   if( renderType->getValue() == "TEXTURE" ) {
     glDisable( GL_ALPHA_TEST );
@@ -585,13 +604,35 @@ Vec3f FontStyle::charDimensions( unsigned char c ) {
       
   H3DFloat default_size = font->Ascender() - font->Descender();
   H3DFloat scale_factor = size->getValue() / default_size;
-  char t[2];  t[0]=c; t[1]='\0';
-  float llx, lly, llz, urx, ury, urz;
-  font->BBox( t, llx, lly, llz, urx, ury, urz );
-  
-  return Vec3f(font->Advance(t),
+#ifndef FTGL_INCLUDE_IS_UPPER
+  if( c < 128 ) {
+    // Ascii c is below 127 which means that we should not
+    // touch the value.
+#endif
+    char t[2];
+    t[0]=c; t[1]='\0';
+    float llx, lly, llz, urx, ury, urz;
+    font->BBox( t, llx, lly, llz, urx, ury, urz );
+    return Vec3f(font->Advance(t),
          font->Ascender()-font->Descender(),
          llz-urz) * scale_factor;
+#ifndef FTGL_INCLUDE_IS_UPPER
+  } else {
+    // The math to explain this conversion can be found here
+    // http://everything2.com/title/Converting+ASCII+to+UTF-8
+    // It is needed because FTGL added unicode support and H3DAPI does
+    // not support unicode correctly yet. This avoids a crash.
+    char t[3];
+    t[0]=(c >> 6) | 0xC0;
+    t[1]=(c & 0x3F) | 0x80;
+    t[2]='\0';
+    float llx, lly, llz, urx, ury, urz;
+    font->BBox( t, llx, lly, llz, urx, ury, urz );
+    return Vec3f(font->Advance(t),
+         font->Ascender()-font->Descender(),
+         llz-urz) * scale_factor;
+  }
+#endif
 
 }
 
