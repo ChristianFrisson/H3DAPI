@@ -295,7 +295,6 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
     full_font_path = path + font_file_name;
 #endif
 #ifdef LINUX
-    string full_font_name = font_name;
     full_font_path = FC_GetFontByName( font_name.c_str(), bold, italic );
     if( full_font_path == "" ) return NULL;
 #endif
