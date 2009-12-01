@@ -20,6 +20,12 @@ FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/ftgl.h
                                  ${module_file_path}/../../../External/include/FTGL
                            DOC "Path in which the file FTGL/ftgl.h is located." )
 
+# This variable needs to be cached to know what the previous value was. The reason for this
+# is because otherwise it would be set to 0 the second time FINDFTGL was run. Other solutions
+# to find the file directly does not work since the FIND_FILE and IF( EXISTS file_name ) are not
+# case sensitive.
+SET( FTGL_INCLUDE_IS_UPPER "NO" CACHE BOOL "Variable used to check if FTGL include is upper. Must be changed to the correct value if FTGL_INCLUDE_DIR is set manually." )
+
 IF( NOT FTGL_INCLUDE_DIR )
   FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/FTGL.h 
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/include
@@ -31,9 +37,11 @@ IF( NOT FTGL_INCLUDE_DIR )
                                  ../../External/include/FTGL
                                  ${module_file_path}/../../../External/include/FTGL
                            DOC "Path in which the file FTGL/FTGL.h is located." )
+  # This code is only run if FTGL_INCLUDE_DIR was empty but now is not.
+  IF( FTGL_INCLUDE_DIR )
+    SET( FTGL_INCLUDE_IS_UPPER "YES" CACHE BOOL "Variable used to check if FTGL include is upper. Must be changed to the correct value if FTGL_INCLUDE_DIR is set manually." FORCE )
+  ENDIF( FTGL_INCLUDE_DIR )
 ENDIF( NOT FTGL_INCLUDE_DIR )
-
-SET( FTGL_INCLUDE_IS_UPPER 0 )
 
 MARK_AS_ADVANCED(FTGL_INCLUDE_DIR)
 MARK_AS_ADVANCED(FTGL_INCLUDE_IS_UPPER)
@@ -83,11 +91,6 @@ ENDIF( FTGL_LIBRARY OR FTGL_STATIC_LIBRARIES_FOUND )
 # Copy the results to the output variables.
 IF(FTGL_INCLUDE_DIR AND FTGL_LIBRARIES_FOUND)
   SET(FTGL_FOUND 1)
-
-  SET( FTGL_UPPER_FILE ${FTGL_INCLUDE_DIR}/FTGL/FTGL.h )
-  IF( EXISTS ${FTGL_UPPER_FILE} )
-    SET( FTGL_INCLUDE_IS_UPPER 1 )
-  ENDIF( EXISTS ${FTGL_UPPER_FILE} )
   
   IF( WIN32 AND PREFER_STATIC_LIBRARIES AND FTGL_STATIC_LIBRARIES_FOUND )
     IF(FTGL_STATIC_LIBRARY)
