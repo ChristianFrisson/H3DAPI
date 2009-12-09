@@ -64,7 +64,7 @@ namespace H3D {
     
     /// The default appearance node.
     ///
-    /// <b>Default value: </b> true \n
+    /// <b>Default value: </b> NULL \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFAppearance > defaultAppearance;
 
