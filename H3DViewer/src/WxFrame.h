@@ -71,8 +71,29 @@ class SpeedDialog: public wxDialog {
 public:
   SpeedDialog( wxWindow* parent, WxFrame *f );
   void handleSliderEvent( wxScrollEvent &event );
+
+  // Calls the second version of set speed with the speed taken from
+  // current navigation info if there is one, otherwise the speed is the
+  // current default speed for gl_window.
+  void setSpeed();
+
+  // Called to update speed.
+  // speed is the new speed to set.
+  // update_label decides if the value_label text should be updated.
+  // update_slider decides if the slider tick value should be updated.
+  // update_scene_speed decides if the navigation speed in the scene should
+  // be updated.
+  void setSpeed( float speed,
+                 bool update_label,
+                 bool update_slider,
+                 bool update_scene_speed = true );
+
 protected:
+  // The speed increase for each tick on the slider.
+  float speed_per_tick;
   WxFrame *wx_frame;
+  wxStaticText *value_label;
+  wxSlider* speed_slider;
   DECLARE_EVENT_TABLE()
 };
 
@@ -404,14 +425,17 @@ public:
   public:
     ChangeNavType() : glwindow( 0 ), speed_increment( 0.1f ) {}
 
-    inline void setOwnerWindow( H3DWindowNode * owner_window ) {
+    inline void setOwnerWindows( WxWidgetsWindow * owner_window,
+                                 WxFrame *_frame ) {
       glwindow = owner_window;
+      frame = _frame;
     }
 
   protected:
     virtual void update();
 
-    H3DWindowNode *glwindow;
+    WxWidgetsWindow *glwindow;
+    WxFrame * frame;
     H3DFloat speed_increment;
   };
 

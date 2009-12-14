@@ -35,13 +35,8 @@
 #include <wx/apptrait.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
+#include <wx/gbsizer.h>
 #include "WxFrame.h"
-//#include "ConsoleDialog.h"
-//#include <vector>
-//#include "WxWidgetsWindow.h"
-
-//#include "H3DViewer.h"
-//#include <wx/wx.h>
 #include "Envini.h"
 
 // ---------------------------------------------------------------------------
@@ -50,32 +45,17 @@
 
 #include <H3D/VrmlParser.h>
 #include <H3D/Group.h>
-//#include <H3D/Transform.h>
-//#include <H3D/Scene.h>
-//#include <H3D/KeySensor.h>
-//#include <H3D/MouseSensor.h>
-//
-//#ifndef MACOSX
-//#include <H3D/SpaceWareSensor.h>
-//#endif
-//
 #include <H3D/Viewpoint.h>
 #include <H3D/ViewpointGroup.h>
-//#include <H3D/X3DViewpointNode.h>
-//#include <H3D/DeviceInfo.h>
 #include <H3D/INIFile.h>
-//#include <H3D/ResourceResolver.h>
 #include <H3D/GraphicsCachingOptions.h>
 #include <H3D/DebugOptions.h>
 #include <H3D/HapticsOptions.h>
 #include <H3D/GeometryBoundTreeOptions.h>
-//#include <H3D/OpenHapticsOptions.h>
 #include <H3D/CollisionOptions.h>
 #include <H3D/H3DNavigation.h>
 #include <H3D/HapticsRenderers.h>
 
-//#include <HAPI/HAPIHapticsRenderer.h>
-//#include <H3DUtil/Console.h>
 #include <H3DUtil/DynamicLibrary.h>
 
 using namespace std;
@@ -398,7 +378,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
   rendererMenu->Enable(FRAME_RENDERMODE, false);
 
-  change_nav_type->setOwnerWindow( glwindow );
+  change_nav_type->setOwnerWindows( glwindow, this );
   ks->keyPress->route( change_nav_type );
 #ifdef WIN32
   wxIcon tmpIcon( wxT( "IDI_ICON1" ), wxBITMAP_TYPE_ICO_RESOURCE );
@@ -454,21 +434,19 @@ void WxFrame::ChangeNavType::update() {
     }
   } else if( s == "+" ) {
     if( mynav ) {
-      mynav->speed->setValue( mynav->speed->getValue() + speed_increment );
+      frame->speed_slider->setSpeed(
+        mynav->speed->getValue() + speed_increment, true, true );
     } else {
-      glwindow->default_speed += speed_increment;
+      frame->speed_slider->setSpeed(
+        glwindow->default_speed + speed_increment, true, true );
     }
   } else if( s == "-" ) {
     if( mynav ) {
-      H3DFloat tmp_speed = mynav->speed->getValue() - speed_increment;
-      if( tmp_speed < 0 )
-        tmp_speed = 0;
-      mynav->speed->setValue( tmp_speed );
+      frame->speed_slider->setSpeed(
+        mynav->speed->getValue() - speed_increment, true, true );
     } else {
-      H3DFloat tmp_speed = glwindow->default_speed - speed_increment;
-      if( tmp_speed  < 0 )
-        tmp_speed = 0;
-      glwindow->default_speed = tmp_speed;
+      frame->speed_slider->setSpeed(
+        glwindow->default_speed - speed_increment, true, true );
     }
   }
 }
@@ -835,58 +813,60 @@ bool WxFrame::loadFile( const string &filename) {
       lastmirror = mirrored;
     }
 
-  /****************************Navigation Info****************************/
-  //Enable Navigation Menu
-  menuBar->EnableTop(3, true);
-  buildNavMenu();
+    /****************************Navigation Info****************************/
+    // Reset default speed for window.
+    //Enable Navigation Menu
+    menuBar->EnableTop(3, true);
+    buildNavMenu();
+    speed_slider->setSpeed();
 
-  //Enable graphical rendering options in rendererMenu
-  rendererMenu->Enable(FRAME_RENDERMODE, true);
-  rendererMenu->Enable(FRAME_CHOOSERENDERER, true);
+    //Enable graphical rendering options in rendererMenu
+    rendererMenu->Enable(FRAME_RENDERMODE, true);
+    rendererMenu->Enable(FRAME_CHOOSERENDERER, true);
 
-  /****************************Device Info****************************/
-  //Enable Device Menu
-  mydevice = DeviceInfo::getActive();
-  if (mydevice && (mydevice->device->size() > 0) ) {
-    allDevices = mydevice->device->getValue();
+    /****************************Device Info****************************/
+    //Enable Device Menu
+    mydevice = DeviceInfo::getActive();
+    if (mydevice && (mydevice->device->size() > 0) ) {
+      allDevices = mydevice->device->getValue();
 
-    for( NodeVector::const_iterator nv = allDevices.begin();
-         nv != allDevices.end(); nv++ ) {
-      H3DHapticsRendererNode *renderer =
-        static_cast < H3DHapticsDevice *> (*nv)->hapticsRenderer->getValue();
-      RuspiniRenderer *ruspini_renderer = 
-        dynamic_cast< RuspiniRenderer * >( renderer );
+      for( NodeVector::const_iterator nv = allDevices.begin();
+           nv != allDevices.end(); nv++ ) {
+        H3DHapticsRendererNode *renderer =
+          static_cast < H3DHapticsDevice *> (*nv)->hapticsRenderer->getValue();
+        RuspiniRenderer *ruspini_renderer = 
+          dynamic_cast< RuspiniRenderer * >( renderer );
 
-      if( ruspini_renderer ) {
-        stringstream proxy_text;
-        proxy_text << ruspini_renderer->proxyRadius->getValue();
-        settings->proxy_radius_text->
-          SetValue( wxString(proxy_text.str().c_str(),wxConvUTF8) );
-        SaveRuspiniSettings(false);
-        hapticsRenderer->Check( FRAME_RUSPINI, true );
-        //break;
-      } else if( dynamic_cast< GodObjectRenderer * >(renderer) ) {
-        hapticsRenderer->Check( FRAME_GODOBJECT, true );
+        if( ruspini_renderer ) {
+          stringstream proxy_text;
+          proxy_text << ruspini_renderer->proxyRadius->getValue();
+          settings->proxy_radius_text->
+            SetValue( wxString(proxy_text.str().c_str(),wxConvUTF8) );
+          SaveRuspiniSettings(false);
+          hapticsRenderer->Check( FRAME_RUSPINI, true );
+          //break;
+        } else if( dynamic_cast< GodObjectRenderer * >(renderer) ) {
+          hapticsRenderer->Check( FRAME_GODOBJECT, true );
+        }
+  #ifdef HAVE_CHAI3D
+        else if( dynamic_cast< Chai3DRenderer * >(renderer) ) {
+          hapticsRenderer->Check( FRAME_CHAI3D, true );
+        }
+  #endif
+  #ifdef WIN32
+        else if( DynamicLibrary::load( "hd.dll" ) &&
+            DynamicLibrary::load( "hl.dll" ) ) {
+  #else
+        else
+  #endif
+        if( dynamic_cast< OpenHapticsRenderer * >(renderer) ) {
+          hapticsRenderer->Check( FRAME_OPENHAPTICS, true );
+        }
+  #ifdef WIN32
+        }
+  #endif
       }
-#ifdef HAVE_CHAI3D
-      else if( dynamic_cast< Chai3DRenderer * >(renderer) ) {
-        hapticsRenderer->Check( FRAME_CHAI3D, true );
-      }
-#endif
-#ifdef WIN32
-      else if( DynamicLibrary::load( "hd.dll" ) &&
-          DynamicLibrary::load( "hl.dll" ) ) {
-#else
-      else
-#endif
-      if( dynamic_cast< OpenHapticsRenderer * >(renderer) ) {
-        hapticsRenderer->Check( FRAME_OPENHAPTICS, true );
-      }
-#ifdef WIN32
-      }
-#endif
     }
-  }
 
 #ifndef MACOSX
     if( use_space_mouse )
@@ -965,28 +945,28 @@ bool WxFrame::loadFile( const string &filename) {
       }
     }
 
-/****************************Intialize Viewpoints***************************/
-  //Enable Viewpoints Menu
-  menuBar->EnableTop(2, true);
-  VPlist = GetTopLevelViews();
-  current_viewpoint = Viewpoint::getActive();
-  current_viewpoint_id = FRAME_VIEWPOINT;
-  
-  BuildViewpointsMenu( VPlist );
-
-  if( X3DBindableNode::getStack( "DeviceInfo" ).size() > 1 ) {
-    device_info.reset( NULL );
-  }
-
-  // create a window to display
+  /****************************Intialize Viewpoints***************************/
+    //Enable Viewpoints Menu
+    menuBar->EnableTop(2, true);
+    VPlist = GetTopLevelViews();
+    current_viewpoint = Viewpoint::getActive();
+    current_viewpoint_id = FRAME_VIEWPOINT;
     
-  //This next line is used to set the icon file h3d.ico, when created.
-  //theWxframe->SetIcon(wxIcon(wxT("h3d_icn")));
-  
-  // Using this line instead of the two previous lines will make
-  // WxWidgetsWindow create an instance of a wxframe with no menus and use
-  // this as parent to the canvas.
-  // WxWidgetsWindow *glwindow = new WxWidgetsWindow();
+    BuildViewpointsMenu( VPlist );
+
+    if( X3DBindableNode::getStack( "DeviceInfo" ).size() > 1 ) {
+      device_info.reset( NULL );
+    }
+
+    // create a window to display
+      
+    //This next line is used to set the icon file h3d.ico, when created.
+    //theWxframe->SetIcon(wxIcon(wxT("h3d_icn")));
+    
+    // Using this line instead of the two previous lines will make
+    // WxWidgetsWindow create an instance of a wxframe with no menus and use
+    // this as parent to the canvas.
+    // WxWidgetsWindow *glwindow = new WxWidgetsWindow();
 
     if( !loaded_first_file ) {
       loaded_first_file = true;
@@ -1021,11 +1001,9 @@ bool WxFrame::loadFile( const string &filename) {
         renderMode->Check( FRAME_REDCYAN, true );
     }
 
-  
-  scene->sceneRoot->setValue( g.get() );
-  tree_view_dialog->showEntireSceneAsTree( true );
-  }
-  catch (const Exception::H3DException &e) {
+    scene->sceneRoot->setValue( g.get() );
+    tree_view_dialog->showEntireSceneAsTree( true );
+  } catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
     stringstream s;
     s << e;
@@ -2493,7 +2471,6 @@ void WxFrame::buildNavMenu () {
               wxCommandEventHandler(WxFrame::ChangeNavigation));
       j++;
     }
-    //mynav->setNavType("EXAMINE");
     glwindow->default_nav = "EXAMINE";
   }
 
@@ -3236,25 +3213,58 @@ void WxFrame::setProxyRadius( float r ) {
 SpeedDialog::SpeedDialog( wxWindow* parent, WxFrame *f ):
   wxDialog( parent, wxID_ANY, wxString( _T("Navigation Speed") ) ),
     wx_frame( f ) {
-  wxBoxSizer *top_sizer = new wxBoxSizer(wxVERTICAL);
+  wxGridBagSizer *top_sizer = new wxGridBagSizer;
+  top_sizer->SetFlexibleDirection( wxBOTH );
+  top_sizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+  float max_speed = 50;
+  int max_tick_value = 500;
+  speed_per_tick = max_speed / max_tick_value;
 
-  /*wxBoxSizer *title_sizer = new wxBoxSizer( wxHORIZONTAL );
-  title_sizer->Add(new wxStaticText(this, wxID_ANY,
-                  _("Use the slider to change navigation speed")),
-                   0, wxALL|wxALIGN_CENTER_VERTICAL, 5);*/
+  wxStaticText *min_label =
+    new wxStaticText( this,
+                      wxID_ANY,
+                      wxT( "0" ),
+                      wxDefaultPosition,
+                      wxDefaultSize,
+                      wxALIGN_LEFT|wxST_NO_AUTORESIZE );
+  min_label->Wrap( -1 );
+  min_label->SetMinSize( wxSize( 60, -1 ) );
+  top_sizer->Add( min_label, wxGBPosition( 0, 0 ),
+                  wxGBSpan( 1, 1 ), wxALL, 5 );
 
-  wxSize slider_size( wxDefaultSize );
-  //slider_size.SetDefaults( wxDefaultSize );
-  slider_size.SetWidth( 200 );
+  value_label = new wxStaticText( this,
+                                  wxID_ANY,
+                                  wxT( "1" ),
+                                  wxDefaultPosition,
+                                  wxDefaultSize,
+                                  wxALIGN_CENTER|wxST_NO_AUTORESIZE );
+  value_label->SetMinSize( wxSize( 60, -1 ) );
+  value_label->Wrap( -1 );
+  top_sizer->Add( value_label, wxGBPosition( 0, 1 ),
+                  wxGBSpan( 1, 1 ), wxALL, 5 );
 
-  wxSlider* speed_value_slider = 
-    new wxSlider( this, FRAME_SPEED_SLIDER,
-                  1, 0, 500, wxDefaultPosition,
-                  slider_size,
-                  wxSL_HORIZONTAL | wxSL_LABELS);  
+  stringstream max_speed_stm;
+  max_speed_stm << max_speed;
+  wxStaticText *max_label =
+    new wxStaticText( this,
+                      wxID_ANY,
+                      wxString(max_speed_stm.str().c_str(),wxConvUTF8),
+                      wxDefaultPosition,
+                      wxDefaultSize,
+                      wxALIGN_RIGHT|wxST_NO_AUTORESIZE );
+  max_label->SetMinSize( wxSize( 60, -1 ) );
+  max_label->Wrap( -1 );
+  top_sizer->Add( max_label, wxGBPosition( 0, 2 ),
+                  wxGBSpan( 1, 1 ), wxALL, 5 );
+
+  speed_slider = new wxSlider( this, FRAME_SPEED_SLIDER,
+                               1, 0, max_tick_value );
+  speed_slider->SetMinSize( wxSize( 200, -1 ) );
+
 
   //top_sizer->Add(title_sizer, 0, wxALL, 5);
-  top_sizer->Add( speed_value_slider, 0, wxALL, 5);
+  top_sizer->Add( speed_slider, wxGBPosition( 1, 0 ),
+                  wxGBSpan( 1, 3 ), wxALL, 5 );
 
   SetSizer(top_sizer);
 
@@ -3272,12 +3282,43 @@ void SpeedDialog::handleSliderEvent( wxScrollEvent &event ) {
   int id = event.GetId();
 
   if( id == FRAME_SPEED_SLIDER ) {
+    float new_value = event.GetPosition() * speed_per_tick;
+    setSpeed( new_value, true, false );
+  }
+}
+
+void SpeedDialog::setSpeed() {
+  NavigationInfo *mynav = NavigationInfo::getActive();
+  if( mynav ) {
+    setSpeed( mynav->speed->getValue(), true, true, false );
+  } else {
+    setSpeed( wx_frame->glwindow->default_speed, true, true, false );
+  }
+}
+
+void SpeedDialog::setSpeed( float speed,
+                            bool update_label,
+                            bool update_slider,
+                            bool update_scene_speed ) {
+  if( speed < 0 )
+    speed = 0;
+
+  if( update_label ) {
+    stringstream new_value_stm;
+    new_value_stm << speed;
+    value_label->SetLabel( wxString(new_value_stm.str().c_str(),wxConvUTF8) );
+  }
+
+  if( update_slider ) {
+    speed_slider->SetValue( (int)( speed / speed_per_tick ) );
+  }
+
+  if( update_scene_speed ) {
     NavigationInfo *mynav = NavigationInfo::getActive();
     if( mynav ) {
-      mynav->speed->setValue( event.GetPosition() );
-    } else {
-      wx_frame->glwindow->default_speed = event.GetPosition();
+      mynav->speed->setValue( speed );
     }
+    wx_frame->glwindow->default_speed = speed;
   }
 }
 
