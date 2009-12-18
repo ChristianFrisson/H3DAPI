@@ -44,6 +44,7 @@ H3DNodeDatabase ComposedShader::database(
 
 namespace ComposedShaderInternals {
   FIELDDB_ELEMENT( ComposedShader, parts, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ComposedShader, suppressUniformWarnings, INPUT_OUTPUT );
 }
 
 ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
@@ -52,14 +53,18 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFBool       > _isValid,
                                 Inst< SFBool       > _activate,
                                 Inst< SFString     > _language,
-                                Inst< MFShaderPart > _parts ) :
+                                Inst< MFShaderPart > _parts,
+                                Inst< SFBool       > _suppressUniformWarnings ) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
                  _isValid, _activate, _language),
   X3DProgrammableShaderObject( &database ),
   parts( _parts ),
+  suppressUniformWarnings( _suppressUniformWarnings ),
   program_handle( 0 ) {
   type_name = "ComposedShader";
   database.initFields( this );
+
+  suppressUniformWarnings->setValue( false );
 
   activate->route( displayList, id );
   parts->route( displayList, id );
@@ -176,7 +181,8 @@ void ComposedShader::render() {
 
       for( unsigned int i = 0; i < dynamic_fields.size(); i++ ) {
         if( !Shaders::setGLSLUniformVariableValue( program_handle, 
-                                                   dynamic_fields[i] ) ) {
+                                                   dynamic_fields[i] ) &&
+            !suppressUniformWarnings->getValue() ) {
           Console(3) << "Warning: Uniform variable \"" 
                      <<  dynamic_fields[i]->getName() 
                      << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "

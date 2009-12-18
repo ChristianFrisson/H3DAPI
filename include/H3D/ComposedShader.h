@@ -77,7 +77,8 @@ namespace H3D {
                     Inst< SFBool       > _isValid     = 0,
                     Inst< SFBool       > _activate    = 0,
                     Inst< SFString     > _language    = 0,
-                    Inst< MFShaderPart > _parts       = 0 );
+                    Inst< MFShaderPart > _parts       = 0,
+                    Inst< SFBool       > _suppressUniformWarnings = 0 );
 
     /// The addField method is specialized to add a route from the field
     /// added to the displayList field.
@@ -100,6 +101,22 @@ namespace H3D {
     /// 
     /// \dotfile ComposedShader_parts.dot
     auto_ptr< MFShaderPart > parts;
+
+    /// Suppress the warnings printed to the console about setting uniform fields
+    /// that do not exist in the shader. These warnings are printed when you have
+    /// added a field to your shader which is not defined in the glsl shader code,
+    /// if the uniform variable is defined in the shader code but not used anywhere,
+    /// or when the variable is used in the code but optimized away by the glsl 
+    /// compiler. Usually we would only like to print a warning in the first case
+    /// and not in the others, but there is no way to distinguish between them.
+    /// We therefore leave it to the setting of this field if they should be
+    /// printed or not.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    /// 
+    /// \dotfile ComposedShader_parts.dot
+    auto_ptr< SFBool > suppressUniformWarnings;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
