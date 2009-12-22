@@ -60,9 +60,18 @@ namespace H3D {
 
     class FieldObjectPrivate {
     public:
-      FieldObjectPrivate( Field *field ):
-	f( field ){
+      FieldObjectPrivate( Field *field,
+			  bool _internal_field 
+			  ):
+	f( field ),
+	internal_field( _internal_field ) {
 	
+      }
+
+      ~FieldObjectPrivate() {
+	if( f && internal_field ) {
+	  delete f;
+	}
       }
 
       inline Field *getField() {
@@ -75,6 +84,7 @@ namespace H3D {
       
     protected:
       Field *f;
+      bool internal_field;
     };
 
     //////////////////////////////////////////////

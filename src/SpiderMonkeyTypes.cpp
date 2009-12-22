@@ -111,10 +111,7 @@ void SpiderMonkey::SFVec3f_finalize(JSContext *cx, JSObject *obj) {
   
   // The prototype of SFColor does not have a private member
   if( private_data ) {
-    SFVec3f* f = static_cast<SFVec3f *>(private_data->getField());
-    
-    // TODO: delete only those that need deletion
-    //    if (f) delete f;
+    delete private_data; 
   }
 }
 
@@ -342,7 +339,8 @@ JSObject *SpiderMonkey::SFVec3f_newInstance( JSContext *cx,
 
   JS_DefineProperties(cx, js_field, SFVec3f_properties );
   JS_DefineFunctions(cx, js_field, SFVec3f_functions );
-  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field ) );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
+							       internal_field ) );
   return js_field;
 }
 
@@ -377,6 +375,7 @@ void SpiderMonkey::SFNode_finalize(JSContext *cx, JSObject *obj) {
   cerr << "Finalize SFNode" << endl;
   FieldObjectPrivate *private_data = 
     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  if( private_data ) delete private_data;
   //    SFVec3f* f = static_cast<SFVec3f *>(private_data->getField());
   // TODO: delete only those that need deletion
   //    if (f) delete f;
@@ -434,7 +433,8 @@ JSObject *SpiderMonkey::SFNode_newInstance( JSContext *cx,
 
   //  JS_DefineProperties(cx, js_field, SFVec3f_properties );
   //JS_DefineFunctions(cx, js_field, SFVec3f_functions );
-  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field ) );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
+							       internal_field) );
   return js_field;
 }
 
@@ -491,9 +491,7 @@ void SpiderMonkey::SFColor_finalize(JSContext *cx, JSObject *obj) {
   
   // The prototype of SFColor does not have a private member
   if( private_data ) {
-    SFColor* f = static_cast<SFColor *>(private_data->getField());
-    // TODO: delete only those that need deletion
-    //    if (f) delete f;
+    delete private_data;
   }
 }
 
@@ -643,7 +641,8 @@ JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx,
 
   JS_DefineProperties(cx, js_field, SFColor_properties );
   JS_DefineFunctions(cx, js_field, SFColor_functions );
-  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field ) );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
+							       internal_field) );
   cerr << "SFColor_newInstance: " << js_field << " " << field->getName() << " " << JS_GetPrivate( cx, js_field ) <<endl;
   return js_field;
 }

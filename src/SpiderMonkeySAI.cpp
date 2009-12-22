@@ -190,9 +190,13 @@ bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
   // in order for it to look up fields at global scope.
   SFNode *f = new SFNode;
   f->setValue(script_node );
-  // TODO: fix better
+  // TODO: fix this. The script node will get a reference by being
+  // put into the SFNode. We do not want this since the Script
+  // constructor will then never be run, and the script engine
+  // never uninitialized. Fixing this by unref on the node and 
+  // not deleting the SFNode. Will cause a minor memory leak.
   script_node->unref();
-  JS_SetPrivate( cx, global, (void *) new FieldObjectPrivate( f ) );
+  JS_SetPrivate( cx, global, (void *) new FieldObjectPrivate( f, false ) );
 
   /* Populate the global object with the standard globals,
      like Object and Array. */
@@ -341,7 +345,6 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
 	      jsvalFromField( sai->cx, Scene::time.get(), true ) 
 	    };
 
-	    cerr << "Calling function" << endl;
 	    JS_CallFunctionName( sai->cx, sai->global,
 				 function_name.c_str(),
 				 2,
@@ -352,7 +355,10 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
     }
     
   }
-  
+
+  // possibly run garbage collector to dispose of objects
+  // no longer in use.
+  JS_MaybeGC( sai->cx );
 }
 
 #endif // HAVE_SPIDERMONKEY
