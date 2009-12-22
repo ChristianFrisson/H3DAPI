@@ -229,6 +229,17 @@ namespace H3D {
       return event;
     }
 
+    /// Set access type checking on or off. Access types is checked
+    /// when getting/setting values and setting up routes. 
+    inline void setAccessCheck( bool on ) {
+      access_check_on = on;
+    }
+
+    /// Returns true if checking of access types is on.
+    inline bool isAccessCheckOn() {
+      return access_check_on;
+    }
+
   protected:
     /// Start a new event from this field. Any pending events from incoming
     /// routes will be removed, so that the current value is the value of
@@ -294,6 +305,9 @@ namespace H3D {
     Node *owner;
     /// The type of access to the field.
     AccessType access_type;
+    /// If true, access type checks will be done when getting/setting
+    /// values and setting up routes. If false, everything will be allowed.
+    bool access_check_on;
   };
 
   /// This is a field which value can be set by a string from the X3D 

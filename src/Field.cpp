@@ -41,7 +41,8 @@ Field::Field( ) :
   name( "" ),
   event( 0, 0 ),
   owner( NULL ),
-  access_type( INPUT_OUTPUT ) {
+  access_type( INPUT_OUTPUT ),
+  access_check_on( true ) {
 #ifdef DEBUG
   Console(1) << "Field(" << getFullName() << ")::Field()" << endl;
 #endif
@@ -97,7 +98,7 @@ void Field::route( Field *f, int id ) {
 }
 
 void Field::checkAccessTypeRoute( Field *f, int id ) {
-  if( owner && owner->id != id ) {
+  if( access_check_on && owner && owner->id != id ) {
     if( access_type == INPUT_ONLY ) {
       stringstream s;
       s << "Trying to set up a route from INPUT_ONLY field " 
@@ -109,7 +110,7 @@ void Field::checkAccessTypeRoute( Field *f, int id ) {
 }
 
 void Field::checkAccessTypeRouteFrom( Field *f, int id ) {
-  if( owner && owner->id != id ) {
+  if( access_check_on && owner && owner->id != id ) {
     if( access_type == INITIALIZE_ONLY ) {
       stringstream s;
       s << "Trying to set up a route from " << f->getFullName()
@@ -127,7 +128,7 @@ void Field::checkAccessTypeRouteFrom( Field *f, int id ) {
 }
 
 void Field::checkAccessTypeGet( int id ) {
-  if( owner ) {
+  if( access_check_on && owner ) {
     // TODO: the check for routes out makes it possible to get the 
     // value of the INPUT_ONLY field if a route has been successfully
     // set up from it. This is needed in many cases. However it also 
@@ -145,7 +146,7 @@ void Field::checkAccessTypeGet( int id ) {
 }
 
 void Field::checkAccessTypeSet( int id ) {
-  if( owner ) {
+  if( access_check_on && owner ) {
     if( access_type == INITIALIZE_ONLY ) {
       if( owner->isInitialized() ) {
         stringstream s;
