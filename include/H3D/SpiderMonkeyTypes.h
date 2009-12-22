@@ -58,6 +58,11 @@ namespace H3D {
     jsval jsvalFromField( JSContext* cx, Field *f, bool make_copy );
     JSBool setFieldValueFromjsval( JSContext* cx, Field *f, jsval v );
 
+    /// Returns JS_TRUE if the name is a function in the given object.
+    JSBool haveFunction( JSContext* cx,
+			 JSObject *obj, 
+			 const char * name );
+
     class FieldObjectPrivate {
     public:
       FieldObjectPrivate( Field *field,

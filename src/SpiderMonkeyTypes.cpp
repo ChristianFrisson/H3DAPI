@@ -107,7 +107,7 @@ void SpiderMonkey::SFVec3f_finalize(JSContext *cx, JSObject *obj) {
   FieldObjectPrivate *private_data = 
     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
   
-  cerr << "Finalize SFVec3f: " << obj << " " << private_data << endl;
+  //  cerr << "Finalize SFVec3f: " << obj << " " << private_data << endl;
   
   // The prototype of SFColor does not have a private member
   if( private_data ) {
@@ -235,7 +235,7 @@ JSBool SpiderMonkey::SFVec3f_toString(JSContext *cx, JSObject *obj,
 JSBool
 SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  cerr << "Get Property SFVec3f" << endl;
+  //cerr << "Get Property SFVec3f" << endl;
   if (JSVAL_IS_INT(id)) {
     FieldObjectPrivate *private_data = 
       static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
@@ -277,7 +277,7 @@ SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
 JSBool
 SpiderMonkey::SFVec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  cerr << "Set Property SFVec3f" << endl;
+  //cerr << "Set Property SFVec3f" << endl;
   if (JSVAL_IS_INT(id)) {
     FieldObjectPrivate *private_data = 
       static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
@@ -372,7 +372,7 @@ JSBool SpiderMonkey::SFNode_construct(JSContext *cx, JSObject *obj,
 }
 
 void SpiderMonkey::SFNode_finalize(JSContext *cx, JSObject *obj) {
-  cerr << "Finalize SFNode" << endl;
+  //  cerr << "Finalize SFNode" << endl;
   FieldObjectPrivate *private_data = 
     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
   if( private_data ) delete private_data;
@@ -390,7 +390,7 @@ SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
 
-    cerr << "Get Property SFNode: " << field_name << " " << obj << endl;
+    //    cerr << "Get Property SFNode: " << field_name << " " << obj << endl;
     FieldObjectPrivate *private_data = 
       static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
     SFNode* node_field = static_cast<SFNode *>(private_data->getField());
@@ -409,7 +409,7 @@ SpiderMonkey::SFNode_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *
   if( JSVAL_IS_STRING( id ) ) {
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
-    cerr << "Set Property SFNode: " << field_name << " " << obj << endl;
+    //    cerr << "Set Property SFNode: " << field_name << " " << obj << endl;
     FieldObjectPrivate *private_data = 
       static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
     SFNode* node_field = static_cast<SFNode *>(private_data->getField());
@@ -487,7 +487,7 @@ JSBool SpiderMonkey::SFColor_construct(JSContext *cx, JSObject *obj,
 void SpiderMonkey::SFColor_finalize(JSContext *cx, JSObject *obj) {
   FieldObjectPrivate *private_data = 
     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-  cerr << "Finalize SFColor:" << obj << " " << private_data << endl;
+  //  cerr << "Finalize SFColor:" << obj << " " << private_data << endl;
   
   // The prototype of SFColor does not have a private member
   if( private_data ) {
@@ -579,7 +579,7 @@ JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx,
 JSBool
 SpiderMonkey::SFColor_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  cerr << "Set Property SFColor" << endl;
+  //  cerr << "Set Property SFColor" << endl;
   if (JSVAL_IS_INT(id)) {
     FieldObjectPrivate *private_data = 
       static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
@@ -643,7 +643,7 @@ JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx,
   JS_DefineFunctions(cx, js_field, SFColor_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
 							       internal_field) );
-  cerr << "SFColor_newInstance: " << js_field << " " << field->getName() << " " << JS_GetPrivate( cx, js_field ) <<endl;
+  //  cerr << "SFColor_newInstance: " << js_field << " " << field->getName() << " " << JS_GetPrivate( cx, js_field ) <<endl;
   return js_field;
 }
 
@@ -903,5 +903,25 @@ JSObject *SpiderMonkey::JSObjectFromField( JSContext *cx,
 
   return NULL;
 }
+
+JSBool SpiderMonkey::haveFunction( JSContext *cx, 
+				   JSObject *obj,
+				   const char * name ) { 			
+  jsval res;
+  // get the property
+  JSBool has_property = JS_GetProperty( cx,
+					obj,
+					name,
+					&res );
+  
+  if( has_property && JSVAL_IS_OBJECT( res ) ) {
+    JSObject *fun = JSVAL_TO_OBJECT( res );
+    if( JS_ObjectIsFunction( cx, fun ) ) {
+      return JS_TRUE;
+    }
+  }
+  return JS_FALSE;
+}
+
 #endif // HAVE_SPIDERMONKEY
 

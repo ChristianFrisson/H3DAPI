@@ -162,7 +162,7 @@ void reportError(JSContext *cx, const char *message, JSErrorReport *report) {
 }
 
 bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
-  cerr << "Init" << endl;
+  //  cerr << "Init" << endl;
   script_node = _script_node;
   /* Create a JS runtime. */
   rt = JS_NewRuntime(8L * 1024L * 1024L);
@@ -219,6 +219,8 @@ bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
     addField( *i );
   }
   
+  Scene::time->route( callbackFunctionDispatcher );
+
   return true;
 }
 
@@ -263,6 +265,15 @@ string SpiderMonkeySAI::loadScript( const string &script, const string &filename
 	}
       }
     }
+     
+    // run initialize function if it exists
+    
+    if( haveFunction( cx, global, "initialize" ) ) {
+      jsval arg[] = {};
+      jsval res;
+      JS_CallFunctionName( cx, global, "initialize", 0, arg, &res ); 
+    }
+
     str = JS_ValueToString(cx, rval); 
     return JS_GetStringBytes(str);
   }
@@ -283,7 +294,7 @@ void SpiderMonkeySAI::uninitializeScriptEngine( ) {
 bool SpiderMonkeySAI::addField( Field *field ) {
   if( !isInitialized() ) return false;
 
-  cerr << "addField: " << field->getName() << endl;
+  //  cerr << "addField: " << field->getName() << endl;
   // TODO: when delete?
   string name = field->getName();
   jsval js_field = jsvalFromField( cx, field, false );
@@ -292,7 +303,7 @@ bool SpiderMonkeySAI::addField( Field *field ) {
     //      JS_HasProperty( cx, global, name.c_str(), &found ) &&
     //!found ) { 
     {
-    cerr << "Defining property: " << name << endl;
+      //    cerr << "Defining property: " << name << endl;
     JS_DefineProperty( cx, global, name.c_str(), 
 		       js_field,
 		       SFNode_getProperty, SFNode_setProperty,
@@ -321,44 +332,59 @@ bool SpiderMonkeySAI::addField( Field *field ) {
 
 void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
   SpiderMonkeySAI *sai = (SpiderMonkeySAI *)( getOwner() );
+  bool event_processed = false;
   for( unsigned int i = 0; i < routes_in.size(); i++ ) {
-    if( hasCausedEvent( routes_in[i] ) ) {
-	string field_name = routes_in[i]->getName();
-	string function_name = sai->fieldNameToCallbackName( field_name );
+    if( hasCausedEvent( routes_in[i] ) && routes_in[i] != Scene::time.get() ) {
+      string field_name = routes_in[i]->getName();
+      string function_name = sai->fieldNameToCallbackName( field_name );
+
+      if( haveFunction( sai->cx, sai->global, function_name.c_str() ) ) {
 	// the callback function has the same name as the field
 	// try to find it in the script and execute it.
 	jsval res;
-	JSBool has_property = JS_GetProperty( sai->cx,
-					  sai->global,
-					      function_name.c_str(),
-					      &res );
-	if( has_property && JSVAL_IS_OBJECT( res ) ) {
-	  JSObject *fun = JSVAL_TO_OBJECT( res );
-	  if( JS_ObjectIsFunction( sai->cx, fun ) ) {
-	    cerr << "Run function: " << field_name << endl;
-	    //	  JS_GetFunctionArity( fun ) ) {
-	    jsval fun_res;
-	    
-	    // TODO: memory handling
-	    jsval arg[] = { 
-	      jsvalFromField( sai->cx, routes_in[i], true ),
-	      jsvalFromField( sai->cx, Scene::time.get(), true ) 
-	    };
-
-	    JS_CallFunctionName( sai->cx, sai->global,
-				 function_name.c_str(),
-				 2,
-				 arg,
-				 &fun_res );
-	  }
-	}
+	jsval arg[] = { 
+	  jsvalFromField( sai->cx, routes_in[i], true ),
+	  jsvalFromField( sai->cx, Scene::time.get(), true ) 
+	};
+	
+	//cerr << "Calling function: " << function_name << endl;
+	JS_CallFunctionName( sai->cx, sai->global,
+			     function_name.c_str(),
+			     2,
+			     arg,
+			     &res );
+	
+	event_processed = true;
+      }
     }
-    
+  }
+
+  // run initialize function if it exists
+  jsval arg[] = {};
+  jsval res;
+
+  // call eventsProcessed callback function if we have processed
+  // and event.
+  if( event_processed && 
+      haveFunction( sai->cx, sai->global, "eventsProcessed" ) ) {
+    JS_CallFunctionName( sai->cx, sai->global, 
+			 "eventsProcessed", 0, arg, &res ); 
+  }
+
+  // call prepareEvents callback function if the Scene::time has
+  // advanced one tick.
+  if( hasCausedEvent( Scene::time ) &&
+      haveFunction( sai->cx, sai->global, "prepareEvents" )) {
+    JS_CallFunctionName( sai->cx, sai->global, 
+			 "prepareEvents", 0, arg, &res ); 
   }
 
   // possibly run garbage collector to dispose of objects
   // no longer in use.
   JS_MaybeGC( sai->cx );
+
+  // call base class
+  PeriodicUpdate< EventCollectingField< Field > >::update();
 }
 
 #endif // HAVE_SPIDERMONKEY
