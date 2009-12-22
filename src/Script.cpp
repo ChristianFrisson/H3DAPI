@@ -84,8 +84,9 @@ void Script::initialize() {
 bool Script::addField( const string &name,
 		       const Field::AccessType &access,
 		       Field *field ) {
-  H3DDynamicFieldsObject::addField( name, access, field );
+  bool b = H3DDynamicFieldsObject::addField( name, access, field );
   if( sai.isInitialized() ) {
     sai.addField( field );
   }
+  return b;
 }

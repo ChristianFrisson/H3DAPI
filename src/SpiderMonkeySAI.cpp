@@ -283,7 +283,7 @@ bool SpiderMonkeySAI::addField( Field *field ) {
   // TODO: when delete?
   string name = field->getName();
   jsval js_field = jsvalFromField( cx, field, false );
-  JSBool found;
+
   if( js_field != JSVAL_VOID ) //&&
     //      JS_HasProperty( cx, global, name.c_str(), &found ) &&
     //!found ) { 
@@ -312,6 +312,7 @@ bool SpiderMonkeySAI::addField( Field *field ) {
   field->setAccessCheck( false );
   field->routeNoEvent( callbackFunctionDispatcher );
   field->setAccessCheck( access_allowed );
+  return true;
 }
 
 void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
