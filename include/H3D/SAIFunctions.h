@@ -50,6 +50,11 @@ namespace H3D{
     struct H3DAPI_API ExecutionContext {
 
     };
+
+    //struct H3DAPI_API X3DField {
+      
+    //  Field *field;
+    //};
     
     /// The ComponentInfo object stores information about a particular
     /// X3D component. The object consists solely of read-only properties.

@@ -59,15 +59,33 @@ mustEvaluate( _mustEvaluate ) {
   mustEvaluate->setValue( false );
 }
 
+Script::~Script() {
+#ifdef HAVE_SPIDERMONKEY
+  sai.uninitializeScriptEngine( );
+#endif
+}
+
 void Script::initialize() {
   X3DScriptNode::initialize();
 
   string script = scriptString->getValue();
 
 #ifdef HAVE_SPIDERMONKEY
-  SpiderMonkeySAI sai;
-  
-  sai.initializeScriptEngine();
+  sai.initializeScriptEngine( this );
   Console(4) << sai.loadScript( script, getURLUsed() ) << endl; 
+  
 #endif
+}
+
+
+
+/// Override the addField method from H3DDynamicFieldsObject
+/// to add the field to the script engine.
+bool Script::addField( const string &name,
+		       const Field::AccessType &access,
+		       Field *field ) {
+  H3DDynamicFieldsObject::addField( name, access, field );
+  if( sai.isInitialized() ) {
+    sai.addField( field );
+  }
 }

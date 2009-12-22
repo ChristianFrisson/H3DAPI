@@ -32,6 +32,7 @@
 #include <H3D/X3DScriptNode.h>
 #include <H3D/H3DDynamicFieldsObject.h>
 #include <H3D/SFBool.h>
+#include <H3D/SpiderMonkeySAI.h>
 
 namespace H3D {
 
@@ -46,14 +47,28 @@ namespace H3D {
             Inst< MFString > _url = 0,
             Inst< SFBool   > _directOutput = 0,
             Inst< SFBool   > _mustEvaluate = 0 );
+    
+    /// Destructor.
+    ~Script();
 
     virtual void initialize();    
+
+    /// Override the addField method from H3DDynamicFieldsObject
+    /// to add the field to the script engine.
+    virtual bool addField( const string &name,
+			   const Field::AccessType &access,
+			   Field *field );
     
     auto_ptr< SFBool > directOutput;
     auto_ptr< SFBool > mustEvaluate;
 
     /// The X3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+  protected:
+#ifdef HAVE_SPIDERMONKEY
+    SpiderMonkeySAI sai;
+#endif
   };
 }
 
