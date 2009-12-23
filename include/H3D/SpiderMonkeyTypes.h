@@ -52,10 +52,18 @@ namespace H3D {
     /// into the context and object given.
     bool insertH3DTypes( JSContext *cx, JSObject *obj );
 
-    JSObject *JSObjectFromField( JSContext* cx, Field *f, bool make_copy );
-
-    
+    /// Create a jsval object containing the value of the field(and possibly
+    /// encapsulating the field). If the field is of a type that matches
+    /// a simple type such as Boolean or Numberic in the X3D Ecmascript
+    /// specification a new such value is returned. If it is more complicated
+    /// type that uses a JSObject the value is represented by the field inside
+    /// this object. In this case make_copy dtermines if the encapsulated field
+    /// should be the field given to the function or a copy of it.
+    /// The new hsval is returned. JSVAL_VOID is returned on failure.
     jsval jsvalFromField( JSContext* cx, Field *f, bool make_copy );
+
+    /// Sets the field value to the value of the jsval v.
+    /// Returns JS_TRUE on success, JS_FALSE otherwise.
     JSBool setFieldValueFromjsval( JSContext* cx, Field *f, jsval v );
 
     /// Returns JS_TRUE if the name is a function in the given object.
@@ -63,8 +71,13 @@ namespace H3D {
 			 JSObject *obj, 
 			 const char * name );
 
+    /// Class used as the private data in field JSObject classes.
     class FieldObjectPrivate {
     public:
+      /// Constructor.
+      /// \params field The field the JSObject represents.
+      /// \params _internal field If true, the field will be deleted
+      /// when the FieldObjectPrivate object is destructed.
       FieldObjectPrivate( Field *field,
 			  bool _internal_field 
 			  ):
@@ -73,16 +86,20 @@ namespace H3D {
 	
       }
 
+      /// Destructor.
       ~FieldObjectPrivate() {
 	if( f && internal_field ) {
 	  delete f;
 	}
       }
 
+      /// Get the field the JSObject encapsulates.
       inline Field *getField() {
 	return f;
       }
       
+
+      /// Set the field the JSObject encapsulates
       inline void setField( Field *field ) {
 	f = field;
       }
@@ -219,8 +236,7 @@ namespace H3D {
     // class functions
     JSObject *SFNode_newInstance( JSContext *cx,
 				  SFNode *field,
-				  bool internal_field,
-				  JSObject *obj = NULL );
+				  bool internal_field );
 
     JSBool SFNode_setProperty(JSContext *cx, 
 			      JSObject *obj, 

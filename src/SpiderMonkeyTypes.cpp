@@ -424,8 +424,7 @@ SpiderMonkey::SFNode_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *
 
 JSObject *SpiderMonkey::SFNode_newInstance( JSContext *cx,
 					    SFNode *field,
-					    bool internal_field,
-					    JSObject *obj ) {
+					    bool internal_field ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
@@ -719,103 +718,52 @@ bool SpiderMonkey::insertH3DTypes( JSContext *cx, JSObject *obj ) {
   return true;
 }
 
+template< class FieldType, JSObject *(*NewInstanceFunc)( JSContext *,
+							 FieldType *, bool ) >
+jsval newInstanceFromField( JSContext *cx,
+				Field *field,
+				bool make_copy ) {
+  FieldType *f = static_cast< FieldType * >( field );
+  if( make_copy ) { 
+    f = new FieldType;
+    f->setValue( static_cast< FieldType * >(field)->getValue() );
+  }
+  return OBJECT_TO_JSVAL( NewInstanceFunc( cx, f, make_copy ));
+}
+
+
 jsval SpiderMonkey::jsvalFromField( JSContext *cx, 
 				    Field *field, bool make_copy ) {
-  JSObject *object = JSObjectFromField( cx, field, make_copy );
-  if( object ) return OBJECT_TO_JSVAL( object );
-  else {
-    X3DTypes::X3DType x3d_type = field->getX3DType();
-    switch( x3d_type ) { 
-      /*    case X3DTypes::SFDOUBLE: { 
-      break;
-    } 
-    case X3DTypes::SFTIME: { 
-      break;
-    } 
-    case X3DTypes::SFINT32: { 
-      break;
-      }*/
-    case X3DTypes::SFBOOL: { 
-      SFBool *f = static_cast< SFBool * >( field );
-      bool b = getValueNoAccessCheck( f );
-      return BOOLEAN_TO_JSVAL( b );
-    }
-    default:
-      return JSVAL_VOID;
-    }
-  }
-}
 
-JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, 
-					     Field *field, 
-					     jsval value ) {
-  X3DTypes::X3DType field_x3d_type = field->getX3DType();
-  switch( field_x3d_type ) { 
-  case X3DTypes::SFBOOL: { 
-    SFBool *f = static_cast< SFBool * >( field );
-    JSBool b;
-    if( JS_ValueToBoolean( cx, value, &b ) ) {
-      bool bool_value = JSVAL_TO_BOOLEAN( b ); 
-      setValueNoAccessCheck( f, b );
-      return JS_TRUE;
-    } else {
-      JS_ReportError(cx, "Value not convertable to Boolean" );
-      return JS_FALSE;
-    }
-  }
-  case X3DTypes::SFCOLOR: { 
-    SFColor *f = static_cast< SFColor * >( field );
-
-    if( JSVAL_IS_OBJECT( value ) ) {
-      JSObject *js_object = JSVAL_TO_OBJECT( value );
-      
-      FieldObjectPrivate *private_data = 
-	static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
-
-      Field *value_field = private_data->getField();
-      if( value_field->getX3DType() == X3DTypes::SFCOLOR ) {
-	const RGB &c = 
-	  getValueNoAccessCheck( static_cast< SFColor * >( value_field ) );
-	setValueNoAccessCheck( f, c ); 
-	return JS_TRUE;
-      } 
-    }
-
-    JS_ReportError(cx, "Invalid type in assignment. Expecting SFColor." );
-    return JS_FALSE;
-  }
-  default:
-    JS_ReportError(cx, "Field has invalid/unsupported X3DType." );
-    return JS_FALSE;
-  }
-}
-
-
-#define RETURN_NEW_INSTANCE( field_type, new_instance_func ) \
-field_type *f = static_cast< field_type * >( field ); \
-if( make_copy ) {				      \
-  f = new field_type; \
-  f->setValue( static_cast< field_type * >(field)->getValue() );\
-}\
-return new_instance_func( cx, f, make_copy );
-
-JSObject *SpiderMonkey::JSObjectFromField( JSContext *cx, 
-					   Field *field, bool make_copy ) {
   X3DTypes::X3DType x3d_type = field->getX3DType();
   switch( x3d_type ) { 
   case X3DTypes::SFFLOAT: { 
-    //SFFloat *f = new SFFloat;
-    //f->setValue( static_cast< SFFloat * >(f)->getValue() );
-    //return 
+    SFFloat *f = static_cast< SFFloat * >( field );
+    jsdouble v = getValueNoAccessCheck( f );
+    jsval rval;
+    JS_NewNumberValue( cx, v, &rval);
+    return rval;
   } 
   case X3DTypes::SFDOUBLE: { 
-    break;
+    SFDouble *f = static_cast< SFDouble * >( field );
+    jsdouble v = getValueNoAccessCheck( f );
+    jsval rval;
+    JS_NewNumberValue( cx, v, &rval);
+    return rval;
   } 
   case X3DTypes::SFTIME: { 
-    break;
+    SFTime *f = static_cast< SFTime * >( field );
+    jsdouble v = getValueNoAccessCheck( f );
+    jsval rval;
+    JS_NewNumberValue( cx, v, &rval);
+    return rval;
   } 
   case X3DTypes::SFINT32: { 
-    break;
+    SFInt32 *f = static_cast< SFInt32 * >( field );
+    jsdouble v = getValueNoAccessCheck( f );
+    jsval rval;
+    JS_NewNumberValue( cx, v, &rval);
+    return rval;
   } 
   case X3DTypes::SFVEC2F: { 
     break;
@@ -824,7 +772,9 @@ JSObject *SpiderMonkey::JSObjectFromField( JSContext *cx,
     break;
   } 
   case X3DTypes::SFVEC3F: { 
-    RETURN_NEW_INSTANCE( SFVec3f, SFVec3f_newInstance );
+    return newInstanceFromField< SFVec3f, SFVec3f_newInstance >( cx, 
+								 field, 
+								 make_copy );
   } 
   case X3DTypes::SFVEC3D: { 
   } 
@@ -833,15 +783,25 @@ JSObject *SpiderMonkey::JSObjectFromField( JSContext *cx,
   case X3DTypes::SFVEC4D: { 
   } 
   case X3DTypes::SFBOOL: { 
+    SFBool *f = static_cast< SFBool * >( field );
+    bool b = getValueNoAccessCheck( f );
+    return BOOLEAN_TO_JSVAL( b );
   } 
   case X3DTypes::SFSTRING: { 
-    break;
+    SFString *f = static_cast< SFString * >( field );
+    const string &s = getValueNoAccessCheck( f );
+    JSString *js_s = JS_NewStringCopyN( cx, s.c_str(), s.size() );
+    return STRING_TO_JSVAL( js_s );
   } 
   case X3DTypes::SFNODE: { 
-    RETURN_NEW_INSTANCE( SFNode, SFNode_newInstance );
+    return newInstanceFromField< SFNode, SFNode_newInstance >( cx, 
+							       field, 
+							       make_copy );
   } 
   case X3DTypes::SFCOLOR: { 
-    RETURN_NEW_INSTANCE( SFColor, SFColor_newInstance );
+     return newInstanceFromField< SFColor, SFColor_newInstance >( cx, 
+								  field, 
+								  make_copy );
   } 
   case X3DTypes::SFCOLORRGBA: { 
   } 
@@ -900,9 +860,177 @@ JSObject *SpiderMonkey::JSObjectFromField( JSContext *cx,
   case X3DTypes::MFMATRIX4D: { 
   }
   } 
-
-  return NULL;
+  return JSVAL_VOID;
 }
+
+
+template< class FieldType, X3DTypes::X3DType x3d_type >
+JSBool setFieldValueFromjsvalTmpl( JSContext *cx, 
+				   Field *field, 
+				   jsval value ) {
+  FieldType *f = static_cast< FieldType * >( field );
+
+  if( JSVAL_IS_OBJECT( value ) ) {
+    JSObject *js_object = JSVAL_TO_OBJECT( value );
+      
+    FieldObjectPrivate *private_data = 
+      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
+
+    Field *value_field = private_data->getField();
+    if( value_field->getX3DType() == x3d_type ) {
+      const typename FieldType::value_type &c = 
+	  getValueNoAccessCheck( static_cast< FieldType * >( value_field ) );
+      setValueNoAccessCheck( f, c ); 
+      return JS_TRUE;
+    } 
+  }
+
+  stringstream s;
+  s << "Invalid type in assignment. Expecting " << field->getTypeName();
+  JS_ReportError(cx, s.str().c_str() );
+  return JS_FALSE;
+}
+
+
+template< class FieldType, 
+	  class JSType,
+	  JSBool (*ConvertFunc)( JSContext *,
+				 jsval, JSType *) >
+JSBool setFieldValueFromjsvalSimple( JSContext *cx, 
+				     Field *field, 
+				     jsval value ) {
+  FieldType *f = static_cast< FieldType * >( field );
+  JSType v;
+  if( ConvertFunc( cx, value, &v ) ) {
+    bool value = (typename FieldType::value_type) v;
+    setValueNoAccessCheck( f, value );
+    return JS_TRUE;
+  } else {
+    stringstream s;
+    s <<  "Value not convertable to ";
+    X3DTypes::X3DType type = field->getX3DType();
+    if( type == X3DTypes::SFBOOL ) s << "Boolean.";
+    else if( type == X3DTypes::SFSTRING ) s << "String";
+    else s << "Numeric";
+    JS_ReportError(cx, s.str().c_str() );
+    return JS_FALSE;
+  }
+}
+
+JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, 
+					     Field *field, 
+					     jsval value ) {
+  X3DTypes::X3DType field_x3d_type = field->getX3DType();
+  switch( field_x3d_type ) { 
+  case X3DTypes::SFFLOAT: { 
+   return setFieldValueFromjsvalSimple< SFFloat, jsdouble, JS_ValueToNumber >( cx, field, value ) ;
+  } 
+  case X3DTypes::SFDOUBLE: { 
+    return setFieldValueFromjsvalSimple< SFDouble, jsdouble, JS_ValueToNumber >( cx, field, value ) ;
+  } 
+  case X3DTypes::SFTIME: { 
+    return setFieldValueFromjsvalSimple< SFTime, jsdouble, JS_ValueToNumber >( cx, field, value ) ;
+  } 
+  case X3DTypes::SFINT32: { 
+    return setFieldValueFromjsvalSimple< SFInt32, jsint, JS_ValueToInt32 >( cx, field, value ) ;
+  } 
+  case X3DTypes::SFVEC2F: { 
+    break;
+  } 
+  case X3DTypes::SFVEC2D: { 
+    break;
+  } 
+  case X3DTypes::SFVEC3F: { 
+    return setFieldValueFromjsvalTmpl< SFVec3f, X3DTypes::SFVEC3F >( cx, field, value ) ;
+  } 
+  case X3DTypes::SFVEC3D: { 
+  } 
+  case X3DTypes::SFVEC4F: { 
+  } 
+  case X3DTypes::SFVEC4D: { 
+  } 
+  case X3DTypes::SFBOOL: { 
+    return setFieldValueFromjsvalSimple< SFBool, JSBool, JS_ValueToBoolean >( cx, field, value ) ;
+  } 
+  case X3DTypes::SFSTRING: { 
+    SFString *f = static_cast< SFString * >( field );
+    JSString *s = JS_ValueToString( cx, value );
+    if( s ) {
+      setValueNoAccessCheck( f, JS_GetStringBytes(s) );
+      return JS_TRUE;
+    } else {
+      JS_ReportError(cx, "Value not convertable to String" );
+      return JS_FALSE;
+    }
+  } 
+  case X3DTypes::SFNODE: { 
+    break;
+  } 
+  case X3DTypes::SFCOLOR: { 
+    return setFieldValueFromjsvalTmpl< SFColor, X3DTypes::SFCOLOR >( cx, field, value ) ;
+  } 
+  case X3DTypes::SFCOLORRGBA: { 
+  } 
+  case X3DTypes::SFROTATION: { 
+  } 
+  case X3DTypes::SFQUATERNION: { 
+  }
+  case X3DTypes::SFMATRIX3F: { 
+  } 
+  case X3DTypes::SFMATRIX4F: { 
+  } 
+  case X3DTypes::SFMATRIX3D: { 
+  } 
+  case X3DTypes::SFMATRIX4D: { 
+  } 
+  case X3DTypes::MFFLOAT: { 
+  } 
+  case X3DTypes::MFDOUBLE: { 
+  } 
+  case X3DTypes::MFTIME: { 
+  } 
+  case X3DTypes::MFINT32: { 
+  } 
+  case X3DTypes::MFVEC2F: { 
+  } 
+  case X3DTypes::MFVEC2D: { 
+  } 
+  case X3DTypes::MFVEC3F: { 
+  } 
+  case X3DTypes::MFVEC3D: { 
+  } 
+  case X3DTypes::MFVEC4F: { 
+  } 
+  case X3DTypes::MFVEC4D: { 
+  } 
+  case X3DTypes::MFBOOL: { 
+  } 
+  case X3DTypes::MFSTRING: { 
+  } 
+  case X3DTypes::MFNODE: { 
+  } 
+  case X3DTypes::MFCOLOR: { 
+  } 
+  case X3DTypes::MFCOLORRGBA: { 
+  } 
+  case X3DTypes::MFROTATION: { 
+  } 
+  case X3DTypes::MFQUATERNION: { 
+  } 
+  case X3DTypes::MFMATRIX3F: { 
+  } 
+  case X3DTypes::MFMATRIX4F: { 
+  } 
+  case X3DTypes::MFMATRIX3D: { 
+  }
+  case X3DTypes::MFMATRIX4D: { 
+  }
+  }
+
+  JS_ReportError(cx, "Field has invalid/unsupported X3DType." );
+  return JS_FALSE;
+}
+
 
 JSBool SpiderMonkey::haveFunction( JSContext *cx, 
 				   JSObject *obj,
