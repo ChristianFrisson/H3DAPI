@@ -233,37 +233,64 @@ namespace H3D {
     ///
 
 
-    // class functions
+    /// Returns a new SFNode object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
     JSObject *SFNode_newInstance( JSContext *cx,
 				  SFNode *field,
 				  bool internal_field );
 
+    /// Callback setter function for properties of a SFNode
+    /// object.
     JSBool SFNode_setProperty(JSContext *cx, 
 			      JSObject *obj, 
 			      jsval id, 
 			      jsval *vp);
 
+    /// Callback getter function for properties of a SFNode
+    /// object.
     JSBool SFNode_getProperty(JSContext *cx, 
 			      JSObject *obj, 
 			      jsval id, 
 			      jsval *vp);
 
+    /// Construct callback function for creating a new instance
+    /// of SFNode.
     JSBool SFNode_construct(JSContext *cx, JSObject *obj, 
 			    uintN argc, jsval *argv,
 			    jsval *rval);
     
-    void SFNode_finalize(JSContext *cx, JSObject *obj);
+    /// Destruct callback for when SFNode is destructed.
+      void SFNode_finalize(JSContext *cx, JSObject *obj);
 
     // member functions
-    /*    JSBool SFNode_subtract(JSContext *cx, JSObject *obj, 
-			    uintN argc, jsval *argv,
-			    jsval *rval);
-    JSBool SFNode_toString(JSContext *cx, JSObject *obj, 
-			    uintN argc, jsval *argv,
-			    jsval *rval);
-    */
+    JSBool SFNode_getNodeName(JSContext *cx, JSObject *obj, 
+			      uintN argc, jsval *argv,
+			      jsval *rval);
+    JSBool SFNode_getNodeType(JSContext *cx, JSObject *obj, 
+			      uintN argc, jsval *argv,
+			      jsval *rval);
+    JSBool SFNode_getFieldDefinitions(JSContext *cx, JSObject *obj, 
+				      uintN argc, jsval *argv,
+				      jsval *rval);
+    JSBool SFNode_toVRMLString(JSContext *cx, JSObject *obj, 
+			       uintN argc, jsval *argv,
+			       jsval *rval);
+    JSBool SFNode_toX3DString(JSContext *cx, JSObject *obj, 
+			      uintN argc, jsval *argv,
+			      jsval *rval);
+    
+
     static JSFunctionSpec SFNode_functions[] = {
-      //      {"toString", SFNode_toString, 0, 0, 0 },
+      {"getNodeName", SFNode_getNodeName, 0, 0, 0 },
+      {"getNodeType", SFNode_getNodeType, 0, 0, 0 },
+      {"getFieldDefinitions", SFNode_getFieldDefinitions, 0, 0, 0 },
+      {"toString", SFNode_toX3DString, 0, 0, 0 },
+      {"toX3DString", SFNode_toX3DString, 0, 0, 0 },
+      {"toVRMLString", SFNode_toVRMLString, 0, 0, 0 },
       {0}
     };
     

@@ -34,6 +34,7 @@
 #include <H3D/X3DFieldConversion.h>
 #include <H3D/X3DTypeFunctions.h>
 #include <H3D/SAIFunctions.h>
+#include <H3D/X3D.h>
 
 #ifdef HAVE_SPIDERMONKEY
 
@@ -390,7 +391,7 @@ SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
 
-    //    cerr << "Get Property SFNode: " << field_name << " " << obj << endl;
+    //cerr << "Get Property SFNode: " << field_name << " " << obj << endl;
     FieldObjectPrivate *private_data = 
       static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
     SFNode* node_field = static_cast<SFNode *>(private_data->getField());
@@ -435,6 +436,91 @@ JSObject *SpiderMonkey::SFNode_newInstance( JSContext *cx,
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
 							       internal_field) );
   return js_field;
+}
+
+JSBool SpiderMonkey::SFNode_getNodeName(JSContext *cx, JSObject *obj, 
+					uintN argc, jsval *argv,
+					jsval *rval) {
+  // check that this object is a SFNode_class 
+  if (!JS_InstanceOf(cx, obj, &SFNodeClass, argv))
+    return JS_FALSE;
+
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if( argc != 0 )
+    return JS_FALSE;
+  
+  FieldObjectPrivate *this_private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  SFNode* this_sfnode = static_cast<SFNode *>(this_private_data->getField());
+  
+  // make sure we have a value
+  if (!this_sfnode ) return JS_FALSE;
+   
+  // create return value
+  Node *n = this_sfnode->getValue();
+  string type_name;
+  if( n ) {
+    type_name = n->getTypeName();
+  } else {
+    type_name = "NULL";
+  }
+  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, 
+					      type_name.c_str(), 
+					      type_name.size()) ); 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFNode_getNodeType(JSContext *cx, JSObject *obj, 
+					uintN argc, jsval *argv,
+					jsval *rval) {
+   cerr << "SFNode_getNodeType" << endl;
+   return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFNode_getFieldDefinitions(JSContext *cx, JSObject *obj, 
+					uintN argc, jsval *argv,
+					jsval *rval) {
+   cerr << "SFNode_getFieldDefinitions" << endl;
+   return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFNode_toX3DString(JSContext *cx, JSObject *obj, 
+					uintN argc, jsval *argv,
+					jsval *rval) {
+    // check that this object is a SFNode_class 
+  if (!JS_InstanceOf(cx, obj, &SFNodeClass, argv))
+    return JS_FALSE;
+
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if( argc != 0 )
+    return JS_FALSE;
+  
+  FieldObjectPrivate *this_private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  SFNode* this_sfnode = static_cast<SFNode *>(this_private_data->getField());
+  
+  // make sure we have a value
+  if (!this_sfnode ) return JS_FALSE;
+   
+  // create return value
+  stringstream s;
+  X3D::writeNodeAsX3D( s, this_sfnode->getValue() );
+  string x3d_string = s.str();
+  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, 
+					      x3d_string.c_str(), 
+					      x3d_string.size()) ); 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFNode_toVRMLString(JSContext *cx, JSObject *obj, 
+					 uintN argc, jsval *argv,
+					 jsval *rval) {
+   cerr << "SFNode_toVRMLString" << endl;
+   return JS_TRUE;
 }
 
 
