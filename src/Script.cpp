@@ -82,11 +82,13 @@ void Script::initialize() {
 /// Override the addField method from H3DDynamicFieldsObject
 /// to add the field to the script engine.
 bool Script::addField( const string &name,
-		       const Field::AccessType &access,
-		       Field *field ) {
+                       const Field::AccessType &access,
+                       Field *field ) {
   bool b = H3DDynamicFieldsObject::addField( name, access, field );
+#ifdef HAVE_SPIDERMONKEY
   if( sai.isInitialized() ) {
     sai.addField( field );
   }
+#endif
   return b;
 }
