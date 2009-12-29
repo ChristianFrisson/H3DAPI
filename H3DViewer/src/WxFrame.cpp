@@ -1380,6 +1380,7 @@ void WxFrame::OnCloseFile(wxCommandEvent & event) {
   lastOpenedFilepath.clear();
   //clearData();
   t->children->clear();
+  tree_view_dialog->clearTreeView();
   if( !Viewpoint::getActive() )
     viewpoint.reset( new Viewpoint );
   SetStatusText(wxT("File closed"), 0);
