@@ -52,6 +52,7 @@ namespace H3D {
     ~Script();
 
     virtual void initialize();    
+    virtual void traverseSG( TraverseInfo &ti );
 
     /// Override the addField method from H3DDynamicFieldsObject
     /// to add the field to the script engine.
@@ -66,6 +67,8 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+
+    static Scene::CallbackCode initEngineCallback( void *data );
 #ifdef HAVE_SPIDERMONKEY
     SpiderMonkeySAI sai;
 #endif

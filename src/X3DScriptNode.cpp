@@ -54,7 +54,9 @@ X3DScriptNode::X3DScriptNode( Inst< SFNode>  _metadata,
   
   scriptString->setOwner( this );
 
+#ifdef HAVE_SPIDERMONKEY
   addInlinePrefix( "ecmascript" );
+#endif
 
   // set up internal routes
   url->route( scriptString );
@@ -97,7 +99,7 @@ void X3DScriptNode::SFScriptString::update() {
   }
   Console(4) << "None of the urls [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-    Console(4) << " \"" << *i << "\"";
+    //  Console(4) << " \"" << *i << "\"";
   }
   Console(4) << "] could be loaded in Script node.";
   script_node->setURLUsed( "" );

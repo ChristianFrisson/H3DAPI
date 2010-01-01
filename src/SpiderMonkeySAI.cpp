@@ -49,6 +49,7 @@ SpiderMonkeySAI::SpiderMonkeySAI():
   callbackFunctionDispatcher->setOwner( (Node*) this );
 }
 
+
 JSBool SAIPrint(JSContext *cx, 
                 JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
 
@@ -77,12 +78,13 @@ static JSFunctionSpec browser_functions[] = {
  * in switch statements (in a common my_getProperty function, for example).
  */
 enum BrowserPropertyId {
-    BROWSER_NAME, BROWSER_VERSION
+  BROWSER_NAME, BROWSER_VERSION, BROWSER_CURRENT_SCENE
 };
 
 static JSPropertySpec browser_properties[] = {
-    {"version", BROWSER_VERSION, JSPROP_READONLY},
-    {"name",    BROWSER_NAME,    JSPROP_READONLY},
+    {"version",      BROWSER_VERSION,       JSPROP_READONLY},
+    {"name",         BROWSER_NAME,          JSPROP_READONLY},
+    {"currentScene", BROWSER_CURRENT_SCENE, JSPROP_READONLY},
     {0}
 };
 
@@ -105,6 +107,13 @@ BrowserGetProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
                                                     name.length() ) );
           break;
         }
+	case BROWSER_CURRENT_SCENE: {
+	  // TODO: sometime should return scene instead of 
+	  // execution context
+	  SAI::ExecutionContext *c = SAI::browser.getExecutionContext();
+	  *vp = OBJECT_TO_JSVAL(X3DExecutionContext_newInstance( cx, c, false ));
+	  break;
+	}
         }
         return JS_TRUE;
     } else {

@@ -33,6 +33,8 @@
 
 #include <H3D/H3DApi.h>
 #include <H3D/H3DTypes.h>
+#include <H3D/Node.h>
+#include <H3D/MFNode.h>
 
 #include <vector>
 
@@ -44,11 +46,46 @@ namespace H3D{
     };
 
     struct H3DAPI_API SAIScene {
+      //      void setMetaData( const string &key, const string &value );
+      //      string getMetaData( const string &key );
+      
+      //      const string &getSpecificationVersion();
 
+      //      Node *getExportedNode( const string &node_name );
+      //      void updateExportedNode( const string &node_name, Node * );
+      //      void removeExportedNode( const string &node_name );
+      
     };
 
     struct H3DAPI_API ExecutionContext {
+      
+      //const string &getSpecificationVersion();
+      //const string &getEncoding();
 
+      // TODO: 
+      //      const ProfileInfo &getProfileInfo();
+      // const ComponentInfo      
+      // ...
+
+      /*      X3DRoute *addRoute( Node *from_node, const string &from_field,
+			  Node *to_node, const string &to_field ) { return NULL;}
+      
+      void deleteRoute( X3DRoute * ){}
+      */
+      Node *createNode( const string &node_name );
+      // Returns a new MFNode object with all the root nodes. Ownership of
+      // new object is given to the caller.
+      MFNode *getRootNodes();
+      /*
+      Node *createProto( const string &node_name ){return NULL;}
+
+      Node *getImportedNode( const string &node_name ) { return NULL;}
+      void updateImportedNode( const string &node_name, Node * ){}
+      void removeImportedNode( const string &node_name ){}
+
+      Node *getNamedNode( const string &node_name ) {return NULL; }
+      void updateNamedNode( const string &node_name, Node * ) {}
+      void removeNamedNode( const string &node_name ) {} */
     };
 
     //struct H3DAPI_API X3DField {

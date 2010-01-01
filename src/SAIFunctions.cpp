@@ -32,6 +32,7 @@
 
 //#include <H3D/Console.h>
 #include <H3D/Scene.h>
+#include <H3D/X3DGroupingNode.h>
 
 using namespace H3D;
 using namespace SAI;
@@ -87,7 +88,7 @@ const ComponentInfo &Browser::getComponent( const string &component,
 
 ExecutionContext *Browser::getExecutionContext() {
   // TODO
-  return NULL;
+  return new ExecutionContext;
 }
 
 SAIScene *Browser::createScene( ProfileInfo *pi,
@@ -185,3 +186,24 @@ void Browser::dispose() {
     /// bool setBrowserOption( const string &
 
 
+Node *ExecutionContext::createNode( const string &node_name ){
+  // TODO: check profile and components
+  // throw exception of not found/
+  return H3DNodeDatabase::createNode( node_name );
+}
+
+MFNode *ExecutionContext::getRootNodes(){
+  // TODO: should not use scene root. Should use whatever wa loded.
+
+  if( Scene::scenes.size() > 0 ) {
+    Node *n = (*Scene::scenes.begin())->sceneRoot->getValue();
+    X3DGroupingNode *root = 
+      dynamic_cast< X3DGroupingNode * >((*Scene::scenes.begin())->sceneRoot->getValue());
+    cerr << "getRootNodes: " << (n ? n->getTypeName():"NULL") << endl;
+    if( root ) {
+      return root->children.get();
+    }
+  } 
+
+  return NULL;
+}

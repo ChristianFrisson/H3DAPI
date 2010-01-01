@@ -61,34 +61,46 @@ mustEvaluate( _mustEvaluate ) {
 
 Script::~Script() {
 #ifdef HAVE_SPIDERMONKEY
-  sai.uninitializeScriptEngine( );
+  if( sai.isInitialized() ) {
+    sai.uninitializeScriptEngine( );
+  }
+#endif
+ // cerr << "Delete" << endl;
+}
+
+
+Scene::CallbackCode Script::initEngineCallback( void *data ) {
+  Script *script = static_cast< Script * >( data );
+#ifdef HAVE_SPIDERMONKEY
+  string s = script->scriptString->getValue();
+  script->sai.initializeScriptEngine( script );
+  Console(4) << script->sai.loadScript( s, script->getURLUsed() ) << endl; 
 #endif
 }
 
 void Script::initialize() {
   X3DScriptNode::initialize();
-
-  string script = scriptString->getValue();
-
-#ifdef HAVE_SPIDERMONKEY
-  sai.initializeScriptEngine( this );
-  Console(4) << sai.loadScript( script, getURLUsed() ) << endl; 
   
-#endif
 }
+
+void Script::traverseSG( TraverseInfo &ti ) {
+  if( !sai.isInitialized() ) {
+    Scene::addCallback( initEngineCallback, this );
+    //cerr << "init" << endl;
+  }
+}
+
 
 
 
 /// Override the addField method from H3DDynamicFieldsObject
 /// to add the field to the script engine.
 bool Script::addField( const string &name,
-                       const Field::AccessType &access,
-                       Field *field ) {
+		       const Field::AccessType &access,
+		       Field *field ) {
   bool b = H3DDynamicFieldsObject::addField( name, access, field );
-#ifdef HAVE_SPIDERMONKEY
   if( sai.isInitialized() ) {
     sai.addField( field );
   }
-#endif
   return b;
 }
