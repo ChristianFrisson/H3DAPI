@@ -77,6 +77,30 @@ void MField_setValueNoAccessCheck( FieldType *field,
   field->setAccessCheck( access );
 }
 
+JSBool SpiderMonkey::FieldObject_toString(JSContext *cx, JSObject *obj, 
+					  uintN argc, jsval *argv,
+					  jsval *rval) {
+
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  Field* this_field = static_cast<Field *>(private_data->getPointer());
+  
+ 
+  // make sure we have a value
+  if (!this_field ) return JS_FALSE;
+  
+  ParsableField *pfield = dynamic_cast< ParsableField * >( this_field );
+  if( !pfield ) return JSVAL_FALSE;
+  
+  // return string representation of the Vec3f
+  string s = pfield->getValueAsString();
+  
+  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
+					      (char *)s.c_str(),
+					      s.length() ) );
+  return JS_TRUE;
+} 
+
 //////////////////////////////////////////////////////////
 // SFVec3f object
 
@@ -120,18 +144,6 @@ JSBool SpiderMonkey::SFVec3f_construct(JSContext *cx, JSObject *obj,
 						return_vec3f,
 						true ) ); 
   return JS_TRUE;
-}
-
-void SpiderMonkey::SFVec3f_finalize(JSContext *cx, JSObject *obj) {
-  FieldObjectPrivate *private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-  
-  //  cerr << "Finalize SFVec3f: " << obj << " " << private_data << endl;
-  
-  // The prototype of SFColor does not have a private member
-  if( private_data ) {
-    delete private_data; 
-  }
 }
 
 
@@ -224,31 +236,6 @@ JSBool SpiderMonkey::SFVec3f_subtract(JSContext *cx, JSObject *obj,
 				      jsval *rval) {
    cerr << "subtract" << endl;
    return JS_TRUE;
-}
-
-JSBool SpiderMonkey::SFVec3f_toString(JSContext *cx, JSObject *obj, 
-				      uintN argc, jsval *argv,
-				      jsval *rval) {
-  // check that this object is a SFVec3f_class 
-  if (!JS_InstanceOf(cx, obj, &SFVec3fClass, argv))
-    return JS_FALSE;
-
- FieldObjectPrivate *private_data = 
-   static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
- SFVec3f* this_vec3f = static_cast<SFVec3f *>(private_data->getPointer());
-
-  // make sure we have a value
-  if (!this_vec3f ) return JS_FALSE;
-
-  // return string representation of the Vec3f
-  const Vec3f &v = this_vec3f->getValue(); 
-  stringstream s;
-  s << v;
-  string str = s.str();
-  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
-					      (char *)str.c_str(),
-					      str.length() ) );
-  return JS_TRUE;
 }
 
 JSBool
@@ -389,17 +376,6 @@ JSBool SpiderMonkey::SFNode_construct(JSContext *cx, JSObject *obj,
 					       true ) ); 
   return JS_TRUE;
 }
-
-void SpiderMonkey::SFNode_finalize(JSContext *cx, JSObject *obj) {
-  //  cerr << "Finalize SFNode" << endl;
-  FieldObjectPrivate *private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-  if( private_data ) delete private_data;
-  //    SFVec3f* f = static_cast<SFVec3f *>(private_data->getPointer());
-  // TODO: delete only those that need deletion
-  //    if (f) delete f;
-}
-
 
 JSBool
 SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
@@ -587,18 +563,6 @@ JSBool SpiderMonkey::SFColor_construct(JSContext *cx, JSObject *obj,
   return JS_TRUE;
 } 
 
-void SpiderMonkey::SFColor_finalize(JSContext *cx, JSObject *obj) {
-  FieldObjectPrivate *private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-  //  cerr << "Finalize SFColor:" << obj << " " << private_data << endl;
-  
-  // The prototype of SFColor does not have a private member
-  if( private_data ) {
-    delete private_data;
-  }
-}
-
-
 JSBool SpiderMonkey::SFColor_getHSV(JSContext *cx, JSObject *obj, 
 				    uintN argc, jsval *argv,
 				    jsval *rval) {
@@ -611,31 +575,6 @@ JSBool SpiderMonkey::SFColor_setHSV(JSContext *cx, JSObject *obj,
 				    jsval *rval) {
   cerr << "SFColor_setHSV" << endl;
   return JS_TRUE;
-}
-
-JSBool SpiderMonkey::SFColor_toString(JSContext *cx, JSObject *obj, 
-				      uintN argc, jsval *argv,
-				      jsval *rval) {
-  // check that this object is a SFColor_class 
-  if (!JS_InstanceOf(cx, obj, &SFColorClass, argv))
-    return JS_FALSE;
-
- FieldObjectPrivate *private_data = 
-   static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
- SFColor* this_color = static_cast<SFColor *>(private_data->getPointer());
-
-  // make sure we have a value
-  if (!this_color ) return JS_FALSE;
-
-  // return string representation of the Vec3f
-  const RGB &rgb = this_color->getValue(); 
-  stringstream s;
-  s << rgb;
-  string str = s.str();
-  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
-					      (char *)str.c_str(),
-					      str.length() ) );
-  return JS_TRUE; 
 }
 
 JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx, 
@@ -753,17 +692,6 @@ JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx,
 
 //////////////////////////////////////////////////////////
 // X3DExecutionContext object
-
-void SpiderMonkey::X3DExecutionContext_finalize(JSContext *cx, JSObject *obj) {
-  ExecutionContextPrivate *private_data = 
-    static_cast<ExecutionContextPrivate *>(JS_GetPrivate(cx,obj));
-  
-  // The prototype of SFColor does not have a private member
-  if( private_data ) {
-    delete private_data; 
-  }
-}
-
 
 JSBool SpiderMonkey::X3DExecutionContext_createNode(JSContext *cx, 
 						    JSObject *obj, 

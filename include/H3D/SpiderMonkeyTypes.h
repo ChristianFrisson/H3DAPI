@@ -152,6 +152,23 @@ namespace H3D {
     typedef PointerPrivateData< Field > FieldObjectPrivate;
     typedef PointerPrivateData< SAI::ExecutionContext > ExecutionContextPrivate;
 
+    /// Destruct callback for JSObject with a private datamember. It converts
+    /// the pointer in JS_GetPrivate to PointerType and deletes it.
+    template< class PointerType >
+    void PrivatePointer_finalize(JSContext *cx, JSObject *obj) {
+      PointerType *private_data = 
+	static_cast<PointerType *>(JS_GetPrivate(cx,obj));
+      if( private_data ) {
+	delete private_data;
+      }  
+    }
+    
+    /// Callback function for converting a JSObject with a FieldObjectPrivate
+    /// private data member to a JSString. Only works for fields where the 
+    /// encapsulated field is a ParsableField.
+    JSBool FieldObject_toString(JSContext *cx, JSObject *obj, 
+				uintN argc, jsval *argv,
+				jsval *rval);
 
     //////////////////////////////////////////////
     /// SFVec3f 
@@ -191,9 +208,6 @@ namespace H3D {
 			     uintN argc, jsval *argv,
 			     jsval *rval);
     
-    /// Destruct callback for when SFVec3f is destructed.
-    void SFVec3f_finalize(JSContext *cx, JSObject *obj);
-
     // member functions
     JSBool SFVec3f_add(JSContext *cx, JSObject *obj, 
 		       uintN argc, jsval *argv,
@@ -222,9 +236,6 @@ namespace H3D {
     JSBool SFVec3f_subtract(JSContext *cx, JSObject *obj, 
 			    uintN argc, jsval *argv,
 			    jsval *rval);
-    JSBool SFVec3f_toString(JSContext *cx, JSObject *obj, 
-			    uintN argc, jsval *argv,
-			    jsval *rval);
 
     // properties
     static JSPropertySpec SFVec3f_properties[] = {
@@ -244,7 +255,7 @@ namespace H3D {
       {"negate", SFVec3f_negate, 0, 0, 0 },
       {"normalize", SFVec3f_normalize, 0, 0, 0 },
       {"subtract", SFVec3f_subtract, 1, 0, 0 },
-      {"toString", SFVec3f_toString, 0, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
       {0}
     };
     
@@ -261,7 +272,7 @@ namespace H3D {
       JS_EnumerateStub, // enumerate
       JS_ResolveStub,   // resolve
       JS_ConvertStub,   // convert
-      SFVec3f_finalize,  // finalize
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
       NULL, // getObjectOps
       NULL, // checkAccess
       NULL, // call
@@ -307,9 +318,6 @@ namespace H3D {
 			    uintN argc, jsval *argv,
 			    jsval *rval);
     
-    /// Destruct callback for when SFNode is destructed.
-      void SFNode_finalize(JSContext *cx, JSObject *obj);
-
     // member functions
     JSBool SFNode_getNodeName(JSContext *cx, JSObject *obj, 
 			      uintN argc, jsval *argv,
@@ -351,7 +359,7 @@ namespace H3D {
       JS_EnumerateStub, // enumerate
       JS_ResolveStub,   // resolve
       JS_ConvertStub,   // convert
-      SFNode_finalize,  // finalize
+      PrivatePointer_finalize< FieldObjectPrivate >,  // finalize
       NULL, // getObjectOps
       NULL, // checkAccess
       NULL, // call
@@ -399,9 +407,6 @@ namespace H3D {
     JSBool SFColor_construct(JSContext *cx, JSObject *obj, 
 			     uintN argc, jsval *argv,
 			     jsval *rval);
-    
-    /// Destruct callback for when SFColor is destructed.
-    void SFColor_finalize(JSContext *cx, JSObject *obj);
 
     // member functions
     JSBool SFColor_getHSV(JSContext *cx, JSObject *obj, 
@@ -410,9 +415,6 @@ namespace H3D {
     JSBool SFColor_setHSV(JSContext *cx, JSObject *obj, 
 			  uintN argc, jsval *argv,
 			  jsval *rval);
-    JSBool SFColor_toString(JSContext *cx, JSObject *obj, 
-			    uintN argc, jsval *argv,
-			    jsval *rval);
 
     // properties
     static JSPropertySpec SFColor_properties[] = {
@@ -425,7 +427,7 @@ namespace H3D {
     static JSFunctionSpec SFColor_functions[] = {
       {"getHSV", SFColor_getHSV, 1, 0, 0 },
       {"setHSV", SFColor_setHSV, 1, 0, 0 },
-      {"toString", SFColor_toString, 0, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
       {0}
     };
     
@@ -442,7 +444,7 @@ namespace H3D {
       JS_EnumerateStub, // enumerate
       JS_ResolveStub,   // resolve
       JS_ConvertStub,   // convert
-      SFColor_finalize,  // finalize
+      PrivatePointer_finalize< FieldObjectPrivate >,  // finalize
       NULL, // getObjectOps
       NULL, // checkAccess
       NULL, // call
@@ -492,8 +494,6 @@ namespace H3D {
 					 uintN argc, jsval *argv,
 					 jsval *rval);
     
-    /// Destruct callback for when X3DExecutionContext is destructed.
-    void X3DExecutionContext_finalize(JSContext *cx, JSObject *obj);
 
     // member functions
     JSBool X3DExecutionContext_createNode(JSContext *cx, JSObject *obj, 
@@ -524,7 +524,7 @@ namespace H3D {
       JS_EnumerateStub, // enumerate
       JS_ResolveStub,   // resolve
       JS_ConvertStub,   // convert
-      X3DExecutionContext_finalize,  // finalize
+      PrivatePointer_finalize< ExecutionContextPrivate >,  // finalize
       NULL, // getObjectOps
       NULL, // checkAccess
       NULL, // call
@@ -572,14 +572,7 @@ namespace H3D {
 			      uintN argc, jsval *argv,
 			      jsval *rval);
     
-      /// Destruct callback for when JS_MField is destructed.
-      static void finalize(JSContext *cx, JSObject *obj);
-
       /// Member functions
-      static JSBool toString(JSContext *cx, JSObject *obj, 
-			     uintN argc, jsval *argv,
-			     jsval *rval);
-
       static JSFunctionSpec functions[2];
       static JSClass js_class;
       static JSPropertySpec properties[1];
@@ -593,7 +586,7 @@ namespace H3D {
 	properties[0] = p[0];
 
 	JSFunctionSpec f[2] = {
-	  {"toString", toString, 0, 0, 0 },
+	  {"toString", FieldObject_toString, 0, 0, 0 },
 	  {0}
 	};
 
@@ -613,7 +606,7 @@ namespace H3D {
 	JS_EnumerateStub, // enumerate
 	JS_ResolveStub,   // resolve
 	JS_ConvertStub,   // convert
-	finalize,  // finalize
+	PrivatePointer_finalize< FieldObjectPrivate >,  // finalize
 	NULL, // getObjectOps
 	NULL, // checkAccess
 	NULL, // call
@@ -787,39 +780,6 @@ namespace H3D {
       return JS_TRUE;
     }
     
-    /// Destruct callback for when JS_MField is destructed.
-    template< class MFieldType, class ElementType >
-    void JS_MField< MFieldType, ElementType >::finalize(JSContext *cx, JSObject *obj) {
-      FieldObjectPrivate *private_data = 
-	static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-      if( private_data ) {
-	delete private_data;
-      }      
-    }
-    
-    /// Member functions
-    template< class MFieldType, class ElementType >
-    JSBool JS_MField< MFieldType, ElementType >::toString(JSContext *cx, JSObject *obj, 
-							  uintN argc, jsval *argv,
-							  jsval *rval) {
-      FieldObjectPrivate *private_data = 
-	static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-      Field* this_field = static_cast<Field *>(private_data->getPointer());
-
-      // make sure we have a value
-      if (!this_field ) return JS_FALSE;
-
-      ParsableField *pfield = dynamic_cast< ParsableField * >( this_field );
-      if( !pfield ) return JSVAL_VOID;
-
-      // return string representation of the Vec3f
-      string s = pfield->getValueAsString();
-      *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
-						  (char *)s.c_str(),
-						  s.length() ) );
-      return JS_TRUE;
-    }
-
     /// The JSAPI type encapsulating an MFFloat object.
     typedef JS_MField< MFFloat,  SFFloat  > JS_MFFloat;
 
