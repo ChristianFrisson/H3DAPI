@@ -34,29 +34,165 @@
 #include <H3D/H3DApi.h>
 #include <H3D/H3DTypes.h>
 #include <H3D/Node.h>
+#include <H3D/X3DGroupingNode.h>
+#include <H3D/X3D.h>
 #include <H3D/MFNode.h>
+#include <H3D/MFString.h>
 
 #include <vector>
 
 namespace H3D{ 
   namespace SAI {
 
+    /// This section defines the error types that may be generated in response
+    /// to service requests. Errors are generated as synchronous values from a
+    /// service request and returned as variables of type SAIError. 
+      ///
+
+    class H3DUTIL_API SAIError: public H3DUtil::Exception::H3DException {
+    public:
+      typedef enum {
+	/// This error type appear in the errors definition of a service 
+	/// request. A language binding shall define the representation for
+	/// the SAIError data type and assign values for each of the errors
+	/// defined below but may also define additional error data types to these.
+	SAI_BROWSER_UNAVAILABLE,
+
+	/// An error has occurred that resulted in the connection between the
+	/// browser and external application becoming non-functional. 
+	/// Therefore, the service request could not be executed. This is a
+	/// different error condition from SAI_BROWSER_UNAVAILABLE as it
+	/// assumes that a valid reference has already been obtained and the
+	/// error occurred at a later time.
+	SAI_CONNECTION_ERROR,
+
+	/// The request made of the current SAINode, SAIField or
+	/// SAIBrowserRef reference is being made to an object that has
+	/// already been disposed prior to this service request.
+	SAI_DISPOSED,
+
+	/// An operation was attempted that used an imported node when it
+	/// is not permitted as defined in 4.4.6 Import/Export semantics
+	/// in ISO/IEC 19775-1. For example, adding the imported node as a
+	/// child to another node in the current scene
+	SAI_IMPORTED_NODE,
+
+	/// The user is attempting to add a node to an execution context
+	/// that is greater than the capabilities defined by the profile
+	/// and components definition for that scene.
+	SAI_INSUFFICIENT_CAPABILITIES,
+
+	/// The attempt to perform an operation of a field failed because
+	/// it is an invalid action for that field type. For example, an 
+	/// attempt made to read the value of an inputOnly field would 
+	/// generate this error.
+	SAI_INVALID_ACCESS_TYPE,
+
+	/// The instance of browser data type provided as part of the
+	/// parameters to the service request has been disposed of prior to this request.
+	SAI_INVALID_BROWSER,
+	
+	/// When the user has attempted to import a W3C DOM document into
+	/// an X3D scene and the document cannot be completely resolved to an
+	///  X3D scene graph. There are many cases where this error might be 
+	/// generated. Examples are - an invalid document structure or not 
+	/// having the correct root element.
+	SAI_INVALID_DOCUMENT,
+
+	/// The instance of ExecutionContext data type provided as part of the
+	/// parameters to this service request has been disposed of prior to 
+	/// this request.
+	SAI_INVALID_EXECUTION_CONTEXT,
+
+	/// The instance of field data type provided as part of the parameters
+	/// to this service request has been disposed of prior to this request.
+	SAI_INVALID_FIELD,
+
+	/// The name provided to a service request is invalid or cannot be 
+	/// found in the context of that object.
+	SAI_INVALID_NAME,
+
+	/// The instance of the node type provided as part of the parameters
+	/// to this service request has been disposed of prior to this request.
+	SAI_INVALID_NODE,
+
+	/// The user is attempting to make a service request that is performed
+	/// outside of the context that such operations are permitted in. 
+	/// 4.8.3.7 User code lifecycle. Where a service defines this as being
+	/// a possible error type, this shall only be thrown by internal 
+	/// interactions. External interactions shall never generate this 
+	/// error.
+	SAI_INVALID_OPERATION_TIMING,
+
+	/// The instance of SAIURL data type provided as part of the parameters
+	/// to this service request is invalid due to a syntax error. Errors due
+	/// to the requested URL not being available shall generate either an 
+	/// SAI_URL_UNAVAILABLE error or an asynchronous event notifying of 
+	/// such a problem.
+	SAI_INVALID_URL,
+
+	/// The SAIString or X3D file (for example as a result of the 
+	/// fetching of a URL reference) passed to this service request 
+	/// contains invalid syntax and cannot be parsed to produce legal 
+	/// data types for use in other service requests.
+	SAI_INVALID_X3D,
+
+	/// Indication that a named node handling action has attempted to 
+	/// re-use a name that is already defined elsewhere in this current 
+	/// scene.
+	SAI_NODE_IN_USE,
+	
+	/// An error condition used for IMPORTed nodes. The user has described
+	/// a node that the IMPORT statement has said is valid, but the 
+	/// underlying Inline has not yet been loaded to verify that it is a 
+	/// correctly EXPORTed node.
+	SAI_NODE_NOT_AVAILABLE,
+
+	/// A service request was made that assumed the browser was currently
+	/// participating in a shared scene graph when it was not.
+	SAI_NOT_SHARED,
+
+	/// Generalised error for when a service request is made for a
+	/// capability that is not available in this browser implementation.
+	/// For example, if the user requests a profile declaration for a
+	/// profile that is not supported by the browser, this error may 
+	/// be generated.
+	SAI_NOT_SUPPORTED,
+
+	/// The service request requiring the browser to have a world URL set
+	/// cannot be completed because no URL has been set. This error is
+	/// typically generated from a getWorldURL or getNode service request.
+	SAI_URL_UNAVAILABLE
+      } ErrorType;
+
+      /// Constructor
+      /// \param _message optional message associtiated with the exception.
+      SAIError( ErrorType _type,
+		const string &_message = "" ) : 
+	H3DUtil::Exception::H3DException( _message ),
+	type(_type) {}
+
+      /// Returns the SAI error type.
+      inline ErrorType getErrorType() const {
+	return type; 
+      }
+
+      /// Returns the error message of the SAIError.
+      inline const string & getErrorMessage() const {
+	return message; 
+      }
+
+    protected:
+      ErrorType type;
+    };
+
+    
+
     struct H3DAPI_API DOMNode {
 
     };
 
-    struct H3DAPI_API SAIScene {
-      //      void setMetaData( const string &key, const string &value );
-      //      string getMetaData( const string &key );
-      
-      //      const string &getSpecificationVersion();
-
-      //      Node *getExportedNode( const string &node_name );
-      //      void updateExportedNode( const string &node_name, Node * );
-      //      void removeExportedNode( const string &node_name );
-      
-    };
-
+    
     struct H3DAPI_API ExecutionContext {
       
       //const string &getSpecificationVersion();
@@ -86,7 +222,26 @@ namespace H3D{
       Node *getNamedNode( const string &node_name ) {return NULL; }
       void updateNamedNode( const string &node_name, Node * ) {}
       void removeNamedNode( const string &node_name ) {} */
+
+      AutoRef< X3DGroupingNode > root_node;
+      X3D::DEFNodes named_nodes;
+      X3D::DEFNodes exported_nodes;
+      X3D::PrototypeVector protos;
+      string world_url;
     };
+
+    struct H3DAPI_API SAIScene: public ExecutionContext {
+      //      void setMetaData( const string &key, const string &value );
+      //      string getMetaData( const string &key );
+      
+      //      const string &getSpecificationVersion();
+
+      //      Node *getExportedNode( const string &node_name );
+      //      void updateExportedNode( const string &node_name, Node * );
+      //      void removeExportedNode( const string &node_name );
+      
+    };
+
 
     //struct H3DAPI_API X3DField {
       
@@ -340,7 +495,7 @@ public:
     /// URL which is considered to be using the browser location as the
     /// base document. The scene described by that URL shall be identified
     /// by the returned SAIScene value.
-    SAIScene *createX3DFromURL( const string &url );
+    SAIScene *createX3DFromURL( MFString *urls );
 
     // TODO:
     //void updateControl( 

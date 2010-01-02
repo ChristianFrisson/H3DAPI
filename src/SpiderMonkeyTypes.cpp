@@ -718,12 +718,9 @@ JSBool SpiderMonkey::X3DExecutionContext_createNode(JSContext *cx,
   
   // make sure we have a value
   if (!context ) { 
-    cerr << private_data << " " << context << endl;
     return JS_TRUE;
   }
   
-  cerr << "FDASFDASFDSA" << endl;
-
   // create return value
 
   // TODO: exception SAIInvalidName 
@@ -763,7 +760,7 @@ SpiderMonkey::X3DExecutionContext_getProperty(JSContext *cx, JSObject *obj, jsva
     // If it is JSVAL_VOID the attribute does not exist.
     if( *vp == JSVAL_VOID ) {
       JSString *s = JSVAL_TO_STRING( id );
-      JS_ReportError(cx, "X3DExecutionObject object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      JS_ReportError(cx, "X3DExecutionContext object does not have property \"%s\".", JS_GetStringBytes( s ) );
       return JS_FALSE;
     } else {
       return JS_TRUE;
@@ -838,6 +835,63 @@ JSObject *SpiderMonkey::X3DExecutionContext_newInstance( JSContext *cx,
 
   JS_DefineProperties(cx, js_field, X3DExecutionContext_properties );
   JS_DefineFunctions(cx, js_field, X3DExecutionContext_functions );
+  JS_SetPrivate(cx, js_field, (void *) new ExecutionContextPrivate( context, 
+								    internal_field ) );
+  return js_field;
+}
+
+
+
+JSBool
+SpiderMonkey::X3DScene_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  //cerr << "Get Property X3DScene" << endl;
+  if (JSVAL_IS_INT(id)) {
+    ExecutionContextPrivate *private_data = 
+      static_cast<ExecutionContextPrivate *>(JS_GetPrivate(cx,obj));
+
+    SAI::ExecutionContext* context = private_data->getPointer();
+
+    switch (JSVAL_TO_INT(id)) {
+    case X3DEXECUTIONCONTEXT_ROOTNODES: {
+      *vp = OBJECT_TO_JSVAL(JS_MFNode::newInstance( cx, context->getRootNodes(), false ));
+      break;
+    }
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // sfvec3f_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "X3DScene object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool
+SpiderMonkey::X3DScene_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  return JS_TRUE;
+}
+
+
+JSObject *SpiderMonkey::X3DScene_newInstance( JSContext *cx,
+					      SAI::SAIScene *context,
+					      bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, 
+			   &X3DSceneClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, X3DScene_properties );
+  JS_DefineFunctions(cx, js_field, X3DScene_functions );
   JS_SetPrivate(cx, js_field, (void *) new ExecutionContextPrivate( context, 
 								    internal_field ) );
   return js_field;
@@ -1364,6 +1418,28 @@ JSBool SpiderMonkey::haveFunction( JSContext *cx,
     }
   }
   return JS_FALSE;
+}
+
+void SpiderMonkey::setJSException( JSContext *cx, const SAI::SAIError &e ) {
+  switch( e.getErrorType() ) {
+  case SAI::SAIError::SAI_INVALID_X3D: {
+    string msg = string( "InvalidX3DException: " ) + e.getErrorMessage();
+    JS_ReportError( cx, msg.c_str() );
+    break;
+  }
+  case SAI::SAIError::SAI_INVALID_URL: {
+    string msg = string( "InvalidURLException: " ) + e.getErrorMessage();
+    JS_ReportError( cx, msg.c_str() );
+    break;
+  }
+  case SAI::SAIError::SAI_URL_UNAVAILABLE: {
+    string msg = string( "URLUnavailableException: " ) + e.getErrorMessage();
+    JS_ReportError( cx, msg.c_str() );
+    break;
+  }
+  default:
+    JS_ReportError( cx, e.getErrorMessage().c_str() );
+  }
 }
 
 #endif // HAVE_SPIDERMONKEY

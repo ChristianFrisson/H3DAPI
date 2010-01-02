@@ -50,8 +50,8 @@ SpiderMonkeySAI::SpiderMonkeySAI():
 }
 
 
-JSBool SAIPrint(JSContext *cx, 
-                JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+JSBool Browser_print(JSContext *cx, 
+		     JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
 
   const char *s;
   if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
@@ -62,9 +62,78 @@ JSBool SAIPrint(JSContext *cx,
   return JS_TRUE;
 }
 
+JSBool Browser_println(JSContext *cx, 
+		       JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+
+  const char *s;
+  if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
+    return JS_FALSE;
+
+  SAI::browser.print( string(s) + "\n" );
+  *rval = JSVAL_VOID;  /* return undefined */
+  return JS_TRUE;
+}
+
+JSBool Browser_createX3DFromString(JSContext *cx, 
+				   JSObject *obj, uintN argc, 
+				   jsval *argv, jsval *rval) {
+  
+  try {
+    if( argc != 1 ) {
+      JS_ReportError(cx, "createX3DFromString requires one argument." );
+      return JS_FALSE;
+    }
+
+    JSString *s = JSVAL_TO_STRING( argv[0] );
+    if( !s ) {
+      JS_ReportError(cx, "createX3DFromString argument must be convertable to String." );
+      return JS_FALSE;
+    }
+
+    SAI::SAIScene *scene = SAI::browser.createX3DFromString( JS_GetStringBytes( s ) );
+    *rval = OBJECT_TO_JSVAL( X3DScene_newInstance( cx, scene, true ) );
+
+  } catch( SAI::SAIError &e ) {
+    setJSException( cx, e );
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool Browser_createX3DFromURL(JSContext *cx, 
+				JSObject *obj, uintN argc, 
+				jsval *argv, jsval *rval) {
+  
+  if( argc == 0 ) {
+    JS_ReportError(cx, "createX3DFromURL requires at least one argument." );
+    return JS_FALSE;
+  }
+  
+  if (!JS_InstanceOf(cx, JSVAL_TO_OBJECT( argv[0] ), &JS_MFString::js_class, argv)) {
+    JS_ReportError(cx, "arg 0 to createX3DFromURL must be of MFString type." );
+    return JS_FALSE;
+  }
+
+  try {
+    MFString urls;
+    setFieldValueFromjsval( cx, &urls, argv[0] );
+    SAI::SAIScene *scene = 
+      SAI::browser.createX3DFromURL( &urls );
+    *rval = OBJECT_TO_JSVAL( X3DScene_newInstance( cx, scene, true ) );
+    return JS_TRUE;
+  } catch( SAI::SAIError &e ) {
+    setJSException( cx, e );
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
 
 static JSFunctionSpec browser_functions[] = {
-  {"println",   SAIPrint,   0, 0, 0 },
+  {"println",   Browser_println,   0, 0, 0 },
+  {"print",   Browser_print,   0, 0, 0 },
+  {"createX3DFromString",   Browser_createX3DFromString,   0, 0, 0 },
+  {"createX3DFromURL",   Browser_createX3DFromURL,   0, 0, 0 },
   {0}
 };
 

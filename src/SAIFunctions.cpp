@@ -33,6 +33,7 @@
 //#include <H3D/Console.h>
 #include <H3D/Scene.h>
 #include <H3D/X3DGroupingNode.h>
+#include <H3D/ResourceResolver.h>
 
 using namespace H3D;
 using namespace SAI;
@@ -67,42 +68,59 @@ H3DFloat Browser::getCurrentFrameRate() {
 
 const vector< ProfileInfo > &Browser::getSupportedProfiles() {
   // TODO
-  return vector< ProfileInfo >();
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 const ProfileInfo &Browser::getProfile( const string &profile ) {
   // TODO
-  return ProfileInfo();
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 const vector< ComponentInfo > &Browser::getSupportedComponents() {
   // TODO
-  return vector< ComponentInfo >();
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 const ComponentInfo &Browser::getComponent( const string &component,
                                             H3DUInt32 level ) {
   // TODO
-  return ComponentInfo();
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 ExecutionContext *Browser::getExecutionContext() {
   // TODO
+
+  if( Scene::scenes.size() > 0 ) {
+    Node *n = (*Scene::scenes.begin())->sceneRoot->getValue();
+    X3DGroupingNode *root = 
+      dynamic_cast< X3DGroupingNode * >((*Scene::scenes.begin())->sceneRoot->getValue());
+    cerr << "getRootNodes: " << (n ? n->getTypeName():"NULL") << endl;
+    if( root ) {
+      ExecutionContext *ec = new ExecutionContext;
+      ec->root_node.reset( root );
+      return ec;
+    }
+  } 
+
   return new ExecutionContext;
+
 }
 
 SAIScene *Browser::createScene( ProfileInfo *pi,
                              const vector< ComponentInfo > &cis ) {
   // TODO
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
   return NULL;
 }
 
 void Browser::replaceWorld( SAIScene *scene ) {
   // TODO
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 SAIScene *Browser::importDocument( DOMNode *node ) {
   // TODO
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
   return NULL;
 }
 
@@ -110,26 +128,69 @@ SAIScene *Browser::importDocument( DOMNode *node ) {
 void Browser::loadURL( const string &url,
                        const vector< string > &property_list  ) {
   // TODO
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 
 void Browser::setDescription( const string &description ) {
   // TODO
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 SAIScene *Browser::createX3DFromString( const string &s ) {
-  // TODO
+  SAIScene *scene = new SAIScene;
+  try {
+    scene->root_node.reset( X3D::createX3DFromString( s, 
+						      &scene->named_nodes, 
+						      &scene->exported_nodes, 
+						      &scene->protos ) );
+    
+
+    return scene;
+  } catch( const Exception::H3DException &e ) {
+    delete scene;
+    throw SAIError( SAIError::SAI_INVALID_X3D, e.message );
+  }
   return NULL;
 }
 
 SAIScene *Browser::createX3DFromStream( const istream &s ) {
   // TODO
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
   return NULL;
 }
 
-SAIScene *Browser::createX3DFromURL( const string &url ) {
-  // TODO
-  return NULL;
+SAIScene *Browser::createX3DFromURL( MFString *urls ) {
+  SAIScene *scene = new SAIScene;
+  
+  for( MFString::const_iterator i = urls->begin();
+       i != urls->end(); i++ ) {
+    try {
+      scene->root_node.reset( X3D::createX3DFromURL( *i, 
+						     &scene->named_nodes, 
+						     &scene->exported_nodes, 
+						     &scene->protos ) );
+      return scene;
+    } catch( Exception::H3DException &e ) {
+      // If there was an exception while reading a file, we check if the
+      // file exists. If it does not exist we continue by trying the next file
+      // in the MFString. If it did exist, there is something wrong in the 
+      // file itself so we throw an exception reflecting this.
+      bool is_tmp_file = false;
+      string resolved_url = ResourceResolver::resolveURLAsFile( *i, 
+								&is_tmp_file );
+      if( is_tmp_file ) 
+	ResourceResolver::releaseTmpFileName( resolved_url );
+      
+      if( resolved_url != "" ) {
+	delete scene;
+	throw SAIError( SAIError::SAI_INVALID_URL );
+      }
+    }
+  }
+
+  delete scene;
+  throw SAIError( SAIError::SAI_URL_UNAVAILABLE );
 }
 
 // TODO
@@ -138,41 +199,43 @@ SAIScene *Browser::createX3DFromURL( const string &url ) {
 
 
 const vector< string > &Browser::getRenderingProperties() {
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
   // TODO
-  return vector< string >();
+
 }
 
 const vector< string > &Browser::getBrowserProperties() {
   // TODO
-  return vector< string > ();
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 void Browser::nextViewpoint( H3DInt32 layer  ) {
   // TODO
-
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
  
 void Browser::previousViewpoint( H3DInt32 layer  ) {
   // TODO
-
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 void Browser::firstViewpoint( H3DInt32 layer  ) {
   // TODO
-
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 void Browser::lastViewpoint( H3DInt32 layer ) {
   // TODO
-
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
 void Browser::print( const string &s ) {
-  Console( 4 ) << s << endl;
+  Console( 4 ) << s;
 }
 
 void Browser::dispose() {
   // TODO
+  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
 }
 
     /// TODO?:
@@ -193,17 +256,5 @@ Node *ExecutionContext::createNode( const string &node_name ){
 }
 
 MFNode *ExecutionContext::getRootNodes(){
-  // TODO: should not use scene root. Should use whatever wa loded.
-
-  if( Scene::scenes.size() > 0 ) {
-    Node *n = (*Scene::scenes.begin())->sceneRoot->getValue();
-    X3DGroupingNode *root = 
-      dynamic_cast< X3DGroupingNode * >((*Scene::scenes.begin())->sceneRoot->getValue());
-    cerr << "getRootNodes: " << (n ? n->getTypeName():"NULL") << endl;
-    if( root ) {
-      return root->children.get();
-    }
-  } 
-
-  return NULL;
+  return root_node->children.get();
 }

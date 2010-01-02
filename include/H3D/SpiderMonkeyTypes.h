@@ -93,6 +93,9 @@
 namespace H3D {
   namespace SpiderMonkey {
 
+    /// Set a JS API exception based on the c++ SAIError exception.
+    void setJSException( JSContext *cx, const SAI::SAIError &e );
+
     /// Insert the H3D data types, such as SFFloat, MFInt32 etc
     /// into the context and object given.
     bool insertH3DTypes( JSContext *cx, JSObject *obj );
@@ -534,6 +537,86 @@ namespace H3D {
       NULL, // mark
       NULL //reserveSlots
     };
+
+
+  //////////////////////////////////////////////
+  /// X3DScene 
+  ///
+
+    enum X3DScenePropertyId {
+      X3DSCENE_ROOTNODES
+    };
+
+    /// Returns a new X3DScene object encapsulating a 
+    /// SAI::ExecutionContext object.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *X3DScene_newInstance( JSContext *cx,
+				    SAI::SAIScene *field,
+				    bool internal_field );
+
+    /// Callback setter function for properties of a X3DScene
+    /// object.
+    JSBool X3DScene_setProperty(JSContext *cx, 
+				JSObject *obj, 
+				jsval id, 
+				jsval *vp);
+
+    /// Callback getter function for properties of a X3DScene
+    /// object.
+    JSBool X3DScene_getProperty(JSContext *cx, 
+				JSObject *obj, 
+				jsval id, 
+				jsval *vp);
+
+    /// Construct callback function for creating a new instance
+    /// of X3DScene.
+    JSBool X3DScene_construct(JSContext *cx, JSObject *obj, 
+			      uintN argc, jsval *argv,
+			      jsval *rval);
+    
+
+    // member functions
+
+    // properties
+    static JSPropertySpec X3DScene_properties[] = {
+      {"rootNodes", X3DSCENE_ROOTNODES, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec X3DScene_functions[] = {
+      {"createNode", X3DExecutionContext_createNode, 0, 0, 0 },
+      {0}
+    };
+    
+    static JSClass X3DSceneClass = {
+      "X3DScene",
+      JSCLASS_HAS_PRIVATE,
+      
+      /* All of these can be replaced with the corresponding JS_*Stub
+	 function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::X3DScene_getProperty, // get property
+      SpiderMonkey::X3DScene_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize< ExecutionContextPrivate >,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      NULL, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+
 
 
     //////////////////////////////////////////////
