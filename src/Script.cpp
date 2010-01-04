@@ -76,6 +76,7 @@ Scene::CallbackCode Script::initEngineCallback( void *data ) {
   script->sai.initializeScriptEngine( script );
   Console(4) << script->sai.loadScript( s, script->getURLUsed() ) << endl; 
 #endif
+  return Scene::CALLBACK_DONE;
 }
 
 void Script::initialize() {
@@ -84,10 +85,12 @@ void Script::initialize() {
 }
 
 void Script::traverseSG( TraverseInfo &ti ) {
+#ifdef HAVE_SPIDERMONKEY
   if( !sai.isInitialized() ) {
     Scene::addCallback( initEngineCallback, this );
     //cerr << "init" << endl;
   }
+#endif
 }
 
 
@@ -96,11 +99,13 @@ void Script::traverseSG( TraverseInfo &ti ) {
 /// Override the addField method from H3DDynamicFieldsObject
 /// to add the field to the script engine.
 bool Script::addField( const string &name,
-		       const Field::AccessType &access,
-		       Field *field ) {
+                       const Field::AccessType &access,
+                       Field *field ) {
   bool b = H3DDynamicFieldsObject::addField( name, access, field );
+#ifdef HAVE_SPIDERMONKEY
   if( sai.isInitialized() ) {
     sai.addField( field );
   }
+#endif
   return b;
 }
