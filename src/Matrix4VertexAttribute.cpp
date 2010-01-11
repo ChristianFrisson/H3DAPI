@@ -50,6 +50,8 @@ Matrix4VertexAttribute::Matrix4VertexAttribute( Inst< SFNode   > _metadata,
   X3DVertexAttributeNode( _metadata, _name ),
   value( _value ) {
 
+  value->route(propertyChanged);
+
   type_name = "Matrix4VertexAttribute";
   database.initFields( this );
 }

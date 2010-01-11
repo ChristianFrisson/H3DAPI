@@ -56,6 +56,9 @@ FloatVertexAttribute::FloatVertexAttribute( Inst< SFNode   > _metadata,
   type_name = "FloatVertexAttribute";
   database.initFields( this );
 
+  value->route(propertyChanged);
+  numComponents->route(propertyChanged);
+
   numComponents->setValue( 4 );
 }
 
