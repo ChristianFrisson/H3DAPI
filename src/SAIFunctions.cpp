@@ -38,14 +38,11 @@
 using namespace H3D;
 using namespace SAI;
 
-string Browser::getName() {
-  // TODO
-  return "H3DViewer";
-}
-
-string Browser::getVersion() {
-  // TODO
-  return "2.1";
+Browser::Browser( Scene *s ) :
+  name( "Unnamed H3D browser" ),
+  version( "Unknown" ),
+  SAI_scene( new SAIScene ),
+  scene( s ) {
 }
 
 /// The getCurrentSpeed service returns the navigation speed 
@@ -113,9 +110,11 @@ SAIScene *Browser::createScene( ProfileInfo *pi,
   return NULL;
 }
 
-void Browser::replaceWorld( SAIScene *scene ) {
-  // TODO
-  throw SAIError( SAIError::SAI_NOT_SUPPORTED );
+void Browser::replaceWorld( SAIScene *new_scene ) {
+  // TODO: check spec. this is a simple implementation. 
+  // need to do shutdown and initialize events
+  SAI_scene.reset( new_scene );
+  scene->sceneRoot->setValue( SAI_scene->root_node );
 }
 
 SAIScene *Browser::importDocument( DOMNode *node ) {
@@ -170,6 +169,7 @@ SAIScene *Browser::createX3DFromURL( MFString *urls ) {
 						     &scene->named_nodes, 
 						     &scene->exported_nodes, 
 						     &scene->protos ) );
+      
       return scene;
     } catch( Exception::H3DException &e ) {
       // If there was an exception while reading a file, we check if the
@@ -184,7 +184,7 @@ SAIScene *Browser::createX3DFromURL( MFString *urls ) {
       
       if( resolved_url != "" ) {
 	delete scene;
-	throw SAIError( SAIError::SAI_INVALID_URL );
+	throw SAIError( SAIError::SAI_INVALID_URL, e.message );
       }
     }
   }

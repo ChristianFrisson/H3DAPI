@@ -154,6 +154,7 @@ namespace H3D {
 
     typedef PointerPrivateData< Field > FieldObjectPrivate;
     typedef PointerPrivateData< SAI::ExecutionContext > ExecutionContextPrivate;
+    typedef PointerPrivateData< SAI::Browser > BrowserPrivate;
 
     /// Destruct callback for JSObject with a private datamember. It converts
     /// the pointer in JS_GetPrivate to PointerType and deletes it.
@@ -616,8 +617,76 @@ namespace H3D {
       NULL //reserveSlots
     };
 
+    //////////////////////////////////////////////
+    /// Browser 
+    ///
 
+    JSBool Browser_getProperty(JSContext *cx, 
+			       JSObject *obj, 
+			       jsval id, 
+			       jsval *vp);
 
+    JSBool Browser_setProperty(JSContext *cx, 
+			       JSObject *obj, 
+			       jsval id, 
+			       jsval *vp);
+
+    JSObject *Browser_newInstance( JSContext *cx,
+				   SAI::Browser *browser,
+				   bool internal_field );
+
+    // Functions
+    JSBool Browser_print(JSContext *cx, 
+			 JSObject *obj, uintN argc, 
+			 jsval *argv, jsval *rval);
+
+    JSBool Browser_println(JSContext *cx, 
+			   JSObject *obj, uintN argc, 
+			   jsval *argv, jsval *rval);
+    
+    JSBool Browser_createX3DFromString(JSContext *cx, 
+				       JSObject *obj, uintN argc, 
+				       jsval *argv, jsval *rval);
+
+    JSBool Browser_createX3DFromURL(JSContext *cx, 
+				    JSObject *obj, uintN argc, 
+				    jsval *argv, jsval *rval);
+
+    enum BrowserPropertyId {
+      BROWSER_NAME, BROWSER_VERSION, BROWSER_CURRENT_SCENE
+    };
+    
+    static JSPropertySpec browser_properties[] = {
+      {"version",      BROWSER_VERSION,       JSPROP_READONLY},
+      {"name",         BROWSER_NAME,          JSPROP_READONLY},
+      {"currentScene", BROWSER_CURRENT_SCENE, JSPROP_READONLY},
+      {0}
+    };
+
+    static JSFunctionSpec browser_functions[] = {
+      {"println",   Browser_println,   0, 0, 0 },
+      {"print",   Browser_print,   0, 0, 0 },
+      {"createX3DFromString",   Browser_createX3DFromString,   0, 0, 0 },
+      {"createX3DFromURL",   Browser_createX3DFromURL,   0, 0, 0 },
+      {0}
+    };
+
+    static JSClass BrowserClass = {
+      "Browser",
+    JSCLASS_HAS_PRIVATE,
+      
+      /* All of these can be replaced with the corresponding JS_*Stub
+	 function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      Browser_getProperty, // get property
+      Browser_setProperty, // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      JS_FinalizeStub,  // finalize
+      JSCLASS_NO_OPTIONAL_MEMBERS
+    };
 
     //////////////////////////////////////////////
     /// MField template 

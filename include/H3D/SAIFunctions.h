@@ -42,6 +42,9 @@
 #include <vector>
 
 namespace H3D{ 
+
+  /// Forward declaration
+  class Scene;
   namespace SAI {
 
     /// This section defines the error types that may be generated in response
@@ -193,7 +196,7 @@ namespace H3D{
     };
 
     
-    struct H3DAPI_API ExecutionContext {
+    struct H3DAPI_API ExecutionContext: public H3DUtil::RefCountedClass {
       
       //const string &getSpecificationVersion();
       //const string &getEncoding();
@@ -284,14 +287,31 @@ namespace H3D{
     };
 
     class H3DAPI_API Browser {
-public:
-    /// The getName service returns the name of the browser. 
-    string getName();
+    public:
+      /// Constructor.
+      Browser( Scene *s );
 
-    /// The getVersion service returns the current version of the 
-    /// browser application. The version number of the browser is
-    /// implementation dependent.
-    string getVersion();
+      /// The getName service returns the name of the browser. 
+      inline string getName() {
+	return name;
+      }
+
+      /// The setName function sets the name of the browser. 
+      inline void setName( const string &n) {
+	name = n;
+      }
+
+      /// The getVersion service returns the current version of the 
+      /// browser application. The version number of the browser is
+      /// implementation dependent.
+      inline string getVersion() {
+	return version;
+      }
+
+      /// The setVersion function sets the version string of the browser. 
+      inline void setVersion( const string &n) {
+	version = n;
+      }
 
     /// The getCurrentSpeed service returns the navigation speed 
     /// of the current world. The current speed is the average 
@@ -616,10 +636,11 @@ public:
     /// of FALSE shall be returned.
     /// bool setBrowserOption( const string &
 
+    protected:
+    string name, version;
+    AutoRef< SAIScene > SAI_scene; 
+    Scene *scene;
     };
-
-    /// The global browser instance.
-    static Browser browser;
   }
 }
 

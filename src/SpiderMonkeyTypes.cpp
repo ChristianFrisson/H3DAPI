@@ -898,6 +898,172 @@ JSObject *SpiderMonkey::X3DScene_newInstance( JSContext *cx,
 }
 
 
+JSObject *SpiderMonkey::Browser_newInstance( JSContext *cx,
+					     SAI::Browser *browser,
+					     bool internal_ptr ) {
+  JSObject *js_browser;
+
+  js_browser = JS_NewObject( cx, 
+			     &BrowserClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_browser, browser_properties );
+  JS_DefineFunctions(cx, js_browser, browser_functions );
+  JS_SetPrivate(cx, js_browser, (void *) new BrowserPrivate( browser, 
+							   internal_ptr ) );
+  return js_browser; 
+}
+
+JSBool SpiderMonkey::Browser_print(JSContext *cx, 
+				   JSObject *obj, uintN argc, 
+				   jsval *argv, jsval *rval) {
+
+  const char *s;
+  if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
+    return JS_FALSE;
+
+  BrowserPrivate *private_data = 
+      static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+  SAI::Browser* browser = private_data->getPointer();
+  browser->print( s );
+  *rval = JSVAL_VOID;  /* return undefined */
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::Browser_println(JSContext *cx, 
+				     JSObject *obj, uintN argc, 
+				     jsval *argv, jsval *rval) {
+
+  const char *s;
+  if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
+    return JS_FALSE;
+
+  BrowserPrivate *private_data = 
+      static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+  SAI::Browser* browser = private_data->getPointer();
+  browser->print( string(s) + "\n" );
+  *rval = JSVAL_VOID;  /* return undefined */
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::Browser_createX3DFromString(JSContext *cx, 
+						 JSObject *obj, uintN argc, 
+						 jsval *argv, jsval *rval) {
+  
+  try {
+    if( argc != 1 ) {
+      JS_ReportError(cx, "createX3DFromString requires one argument." );
+      return JS_FALSE;
+    }
+
+    JSString *s = JSVAL_TO_STRING( argv[0] );
+    if( !s ) {
+      JS_ReportError(cx, "createX3DFromString argument must be convertable to String." );
+      return JS_FALSE;
+    }
+
+    BrowserPrivate *private_data = 
+      static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+    SAI::Browser* browser = private_data->getPointer();
+    SAI::SAIScene *scene = 
+      browser->createX3DFromString( JS_GetStringBytes( s ) );
+    *rval = OBJECT_TO_JSVAL( X3DScene_newInstance( cx, scene, true ) );
+
+  } catch( SAI::SAIError &e ) {
+    setJSException( cx, e );
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::Browser_createX3DFromURL(JSContext *cx, 
+					      JSObject *obj, uintN argc, 
+					      jsval *argv, jsval *rval) {
+  
+  if( argc == 0 ) {
+    JS_ReportError(cx, "createX3DFromURL requires at least one argument." );
+    return JS_FALSE;
+  }
+  
+  if (!JS_InstanceOf(cx, JSVAL_TO_OBJECT( argv[0] ), &JS_MFString::js_class, argv)) {
+    JS_ReportError(cx, "arg 0 to createX3DFromURL must be of MFString type." );
+    return JS_FALSE;
+  }
+
+  try {
+    MFString urls;
+    setFieldValueFromjsval( cx, &urls, argv[0] );
+    BrowserPrivate *private_data = 
+      static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+    SAI::Browser* browser = private_data->getPointer();
+    SAI::SAIScene *scene = 
+      browser->createX3DFromURL( &urls );
+    *rval = OBJECT_TO_JSVAL( X3DScene_newInstance( cx, scene, true ) );
+    return JS_TRUE;
+  } catch( SAI::SAIError &e ) {
+    setJSException( cx, e );
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::Browser_setProperty(JSContext *cx, 
+					 JSObject *obj, 
+					 jsval id, 
+					 jsval *vp) {
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, 
+					 JSObject *obj, 
+					 jsval id, 
+					 jsval *vp)
+{
+  BrowserPrivate *private_data = 
+    static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+  SAI::Browser* browser = private_data->getPointer();
+  
+  if (JSVAL_IS_INT(id)) {
+        switch (JSVAL_TO_INT(id)) {
+        case BROWSER_VERSION: {
+          string version = browser->getVersion();
+          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
+                                                    (char *)version.c_str(),
+                                                    version.length() ) );
+          break;
+        }
+        case BROWSER_NAME: {
+          string name = browser->getName();
+          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx, 
+                                                   (char * )name.c_str(), 
+                                                    name.length() ) );
+          break;
+        }
+	case BROWSER_CURRENT_SCENE: {
+	  // TODO: sometime should return scene instead of 
+	  // execution context
+	  SAI::ExecutionContext *c = browser->getExecutionContext();
+	  *vp = OBJECT_TO_JSVAL(X3DExecutionContext_newInstance( cx, c, false ));
+	  break;
+	}
+        }
+        return JS_TRUE;
+    } else {
+      // if we get here the property was not one of the ones defined in
+      // browser_properties. It can be another property such as a function
+      // so we check if the previous value of vp contains anything. On call 
+      // of this function it contains the current value of the attribute.
+      // If it is JSVAL_VOID the attribute does not exist.
+      if( *vp == JSVAL_VOID ) {
+	JSString *s = JSVAL_TO_STRING( id );
+	JS_ReportError(cx, "Browser object does not have property \"%s\".", JS_GetStringBytes( s ) );
+	return JS_FALSE;
+      } else {
+	return JS_TRUE;
+      }
+    }
+}
+
+
 
 
 

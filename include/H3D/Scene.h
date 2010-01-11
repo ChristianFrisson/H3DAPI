@@ -31,6 +31,7 @@
 
 #include <H3D/X3DChildNode.h>
 #include <H3D/H3DWindowNode.h>
+#include <H3D/SAIFunctions.h>
 
 // HAPI includes
 #include <H3DUtil/Threads.h>
@@ -47,6 +48,47 @@ namespace H3D {
   /// 
   class H3DAPI_API Scene : public Node {
   public:
+
+    /*    /// Class for storing meta information about the scene. This meta
+    /// information is used by e.g. SAI functions in e.g. Ecmascript
+    /// to provide information about the currently loaded scene.
+    /// The creator of a scene should always make sure that the 
+    /// scene info is up to date. The scene info is updated automatically
+    /// when using the loadSceneRoot function, but if a user sets the sceneRoot
+    /// directly he should also update the scene root directly to match
+    /// his change.
+    class H3DAPI_API SceneInfo {
+
+      /// Get the name of the browser used to view the scene. 
+      inline const string &getBrowserName() {
+	return browser_name;
+      }
+
+      /// Set the name of the browser used to view the scene, e.g.
+      /// "H3DLoad" or "H3DViewer"
+      inline void setBrowserName( const string& name) {
+	browser_name = name;
+      }
+
+    protected:
+      string browser_name;
+      string browser_version;
+
+      string world_url;
+      string specification_version;
+      string encoding;
+      
+      string metadata;
+
+      DEFNodes named_nodes;
+      DEFNodes exported_nodes;
+      DEFNodes imported_nodes;
+      PrototypeVector protos;
+      // TODO:
+      //      routes
+    };
+    */
+
 
     typedef TypedMFNode< H3DWindowNode > MFWindow;
     typedef TypedSFNode< X3DChildNode > SFChildNode;
@@ -71,7 +113,7 @@ namespace H3D {
     }
 
     /// Returns if the Scene instance is active or not.
-    bool isActive() {
+    inline bool isActive() {
       return active;
     }
 
@@ -79,6 +121,19 @@ namespace H3D {
     /// events to process and the Scene is active. Performs the rendering.
     virtual void idle();
 
+    /// Load the scene graph that is to be the root of the Scene object.
+    /// This function should always be used instead of setting sceneRoot
+    /// directly in order to keep SAI information up to data.
+    void loadSceneRoot( const string &url );
+
+    /// Set the scene to use based on a SAIScene object.
+    void setSceneRoot( SAI::SAIScene *scene_info );
+
+    /// Returns the SAI::Browser object for this Scene.
+    inline SAI::Browser *getSAIBrowser() {
+      return &SAI_browser;
+    }
+    
     /// Static function that is called to start the main event loop.
     /// Before this function is called at least one instance
     /// of Scene must have created and be active. 
@@ -131,6 +186,8 @@ namespace H3D {
 
     
   protected:
+    SAI::Browser SAI_browser;
+
     static H3DUtil::MutexLock callback_lock;
 
     typedef std::list< std::pair< CallbackFunc, void * > > CallbackList;

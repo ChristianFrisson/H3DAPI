@@ -50,175 +50,6 @@ SpiderMonkeySAI::SpiderMonkeySAI():
 }
 
 
-JSBool Browser_print(JSContext *cx, 
-		     JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
-
-  const char *s;
-  if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
-    return JS_FALSE;
-
-  SAI::browser.print( s );
-  *rval = JSVAL_VOID;  /* return undefined */
-  return JS_TRUE;
-}
-
-JSBool Browser_println(JSContext *cx, 
-		       JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
-
-  const char *s;
-  if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
-    return JS_FALSE;
-
-  SAI::browser.print( string(s) + "\n" );
-  *rval = JSVAL_VOID;  /* return undefined */
-  return JS_TRUE;
-}
-
-JSBool Browser_createX3DFromString(JSContext *cx, 
-				   JSObject *obj, uintN argc, 
-				   jsval *argv, jsval *rval) {
-  
-  try {
-    if( argc != 1 ) {
-      JS_ReportError(cx, "createX3DFromString requires one argument." );
-      return JS_FALSE;
-    }
-
-    JSString *s = JSVAL_TO_STRING( argv[0] );
-    if( !s ) {
-      JS_ReportError(cx, "createX3DFromString argument must be convertable to String." );
-      return JS_FALSE;
-    }
-
-    SAI::SAIScene *scene = SAI::browser.createX3DFromString( JS_GetStringBytes( s ) );
-    *rval = OBJECT_TO_JSVAL( X3DScene_newInstance( cx, scene, true ) );
-
-  } catch( SAI::SAIError &e ) {
-    setJSException( cx, e );
-    return JS_FALSE;
-  }
-  return JS_TRUE;
-}
-
-JSBool Browser_createX3DFromURL(JSContext *cx, 
-				JSObject *obj, uintN argc, 
-				jsval *argv, jsval *rval) {
-  
-  if( argc == 0 ) {
-    JS_ReportError(cx, "createX3DFromURL requires at least one argument." );
-    return JS_FALSE;
-  }
-  
-  if (!JS_InstanceOf(cx, JSVAL_TO_OBJECT( argv[0] ), &JS_MFString::js_class, argv)) {
-    JS_ReportError(cx, "arg 0 to createX3DFromURL must be of MFString type." );
-    return JS_FALSE;
-  }
-
-  try {
-    MFString urls;
-    setFieldValueFromjsval( cx, &urls, argv[0] );
-    SAI::SAIScene *scene = 
-      SAI::browser.createX3DFromURL( &urls );
-    *rval = OBJECT_TO_JSVAL( X3DScene_newInstance( cx, scene, true ) );
-    return JS_TRUE;
-  } catch( SAI::SAIError &e ) {
-    setJSException( cx, e );
-    return JS_FALSE;
-  }
-  return JS_TRUE;
-}
-
-
-static JSFunctionSpec browser_functions[] = {
-  {"println",   Browser_println,   0, 0, 0 },
-  {"print",   Browser_print,   0, 0, 0 },
-  {"createX3DFromString",   Browser_createX3DFromString,   0, 0, 0 },
-  {"createX3DFromURL",   Browser_createX3DFromURL,   0, 0, 0 },
-  {0}
-};
-
-////////////////////////////////////////////////////////////////////
-// Browser object
-
-/*
- * Define a bunch of properties with a JSPropertySpec array statically
- * initialized and terminated with a null-name entry.  Besides its name,
- * each property has a "tiny" identifier (MY_COLOR, e.g.) that can be used
- * in switch statements (in a common my_getProperty function, for example).
- */
-enum BrowserPropertyId {
-  BROWSER_NAME, BROWSER_VERSION, BROWSER_CURRENT_SCENE
-};
-
-static JSPropertySpec browser_properties[] = {
-    {"version",      BROWSER_VERSION,       JSPROP_READONLY},
-    {"name",         BROWSER_NAME,          JSPROP_READONLY},
-    {"currentScene", BROWSER_CURRENT_SCENE, JSPROP_READONLY},
-    {0}
-};
-
-static JSBool
-BrowserGetProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-{
-    if (JSVAL_IS_INT(id)) {
-        switch (JSVAL_TO_INT(id)) {
-        case BROWSER_VERSION: {
-          string version = SAI::browser.getVersion();
-          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
-                                                    (char *)version.c_str(),
-                                                    version.length() ) );
-          break;
-        }
-        case BROWSER_NAME: {
-          string name = SAI::browser.getName();
-          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx, 
-                                                   (char * )name.c_str(), 
-                                                    name.length() ) );
-          break;
-        }
-	case BROWSER_CURRENT_SCENE: {
-	  // TODO: sometime should return scene instead of 
-	  // execution context
-	  SAI::ExecutionContext *c = SAI::browser.getExecutionContext();
-	  *vp = OBJECT_TO_JSVAL(X3DExecutionContext_newInstance( cx, c, false ));
-	  break;
-	}
-        }
-        return JS_TRUE;
-    } else {
-      // if we get here the property was not one of the ones defined in
-      // browser_properties. It can be another property such as a function
-      // so we check if the previous value of vp contains anything. On call 
-      // of this function it contains the current value of the attribute.
-      // If it is JSVAL_VOID the attribute does not exist.
-      if( *vp == JSVAL_VOID ) {
-	JSString *s = JSVAL_TO_STRING( id );
-	JS_ReportError(cx, "Browser object does not have property \"%s\".", JS_GetStringBytes( s ) );
-	return JS_FALSE;
-      } else {
-	return JS_TRUE;
-      }
-    }
-}
-
-static JSClass BrowserClass = {
-    "Browser",
-    0,
-
-    /* All of these can be replaced with the corresponding JS_*Stub
-       function pointers. */
-    JS_PropertyStub,  // add property
-    JS_PropertyStub,  // del property
-    BrowserGetProperty, // get property
-    JS_PropertyStub,  // set property
-    JS_EnumerateStub, // enumerate
-    JS_ResolveStub,   // resolve
-    JS_ConvertStub,   // convert
-    JS_FinalizeStub,  // finalize
-    JSCLASS_NO_OPTIONAL_MEMBERS
-};
-
-
 /////////////////////////////////////////////////////////////
 // global object
 
@@ -283,20 +114,34 @@ bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
 
   // if (!JS_DefineFunctions(cx, global, sai_global_functions))
   //    return JS_FALSE;
-    
-  //TODO: what to with the object? When delete it?
-  JSObject *browser = 
-    JS_DefineObject( cx, global, "Browser", &BrowserClass, 0, JSPROP_READONLY | JSPROP_PERMANENT );  
-  JS_DefineProperties(cx, browser, browser_properties );
-  JS_DefineFunctions(cx, browser, browser_functions);
 
+  // create the Browser property
+  JSObject *browser = 
+    Browser_newInstance( cx, 
+			 (*Scene::scenes.begin())->getSAIBrowser(), 
+			 false );
+
+  // add it as the name "Browser" to the global object.
+  JS_DefineProperty( cx, global, 
+		     "Browser", 
+		     OBJECT_TO_JSVAL(browser),
+		     JS_PropertyStub, JS_PropertyStub,
+		     JSPROP_READONLY | JSPROP_PERMANENT  );
+
+  // Add all H3D field types such as SFVec3f, MFBool, SFNode etc to 
+  // the global object.
   insertH3DTypes( cx, global );
 
+  // Add all fields specificed in the script to the global object in order
+  // to be able to access them directly in the ecmascript source code.
   for( H3DDynamicFieldsObject::field_iterator i = script_node->firstField();
        i != script_node->endField(); i++ ) {
     addField( *i );
   }
   
+  // Set up route to callbackFunctionDispatcher which controls the
+  // calling of the special functions initialize, prepareEvents and
+  // eventsProcessed.
   Scene::time->route( callbackFunctionDispatcher );
 
   return true;

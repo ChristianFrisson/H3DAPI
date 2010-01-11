@@ -263,8 +263,9 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   window   ( _window    ),
   frameRate( _frameRate ),
   active( true ),
-  last_traverseinfo( NULL )	{
-  
+  last_traverseinfo( NULL ),
+  SAI_browser( this ) {
+
   scenes.insert( this );
   
   type_name = "Scene";
@@ -303,4 +304,18 @@ void Scene::EventSink::update() {
       routes_in[i]->upToDate();
     }
   }
+}
+
+void Scene::loadSceneRoot( const string &url ) {
+  SAI::SAIScene *scene = new SAI::SAIScene;
+  // TODO: fill out scene with all values
+  scene->root_node.reset( X3D::createX3DFromURL( url, 
+						 &scene->named_nodes, 
+						 &scene->exported_nodes, 
+						 &scene->protos ) );
+  SAI_browser.replaceWorld( scene );
+}
+
+void Scene::setSceneRoot( SAI::SAIScene *scene ) {
+  SAI_browser.replaceWorld( scene );
 }
