@@ -14,6 +14,12 @@ PROJECT (H3DAPI)
 # files in OSX frameworks. 
 SET(CMAKE_FIND_FRAMEWORK "LAST")
 
+# make sure symbols are exported.
+SET( H3DAPI_COMPILE_FLAGS "-DH3DAPI_EXPORTS" )
+SET( H3DAPI_LINK_FLAGS "" )
+SET( H3DAPI_LINK_FLAGS_RELEASE "" )
+SET( H3DAPI_LINK_FLAGS_DEBUG "" )
+
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
 # for packaging H3DAPI. Default is NO since most people will not use this.
 IF( NOT DEFINED GENERATE_CPACK_PROJECT )
@@ -640,6 +646,18 @@ FIND_PACKAGE(DCMTK)
 IF(DCMTK_FOUND)
   INCLUDE_DIRECTORIES( ${DCMTK_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${DCMTK_LIBRARIES} )
+  IF(NOT WIN32 AND NOT APPLE)
+    # Linux specific libraries. The debian package for dcmtk
+    # seems to not link to libtiff which it is dependent on. In 
+    # order to compile out of the box we include that dependency here 
+    # instead.
+    FIND_PACKAGE(TIFF)
+    IF(TIFF_FOUND)
+      SET(requiredLibs ${requiredLibs} ${TIFF_LIBRARIES} )
+    ELSE(TIFF_FOUND)
+      MESSAGE( STATUS "If you are using dcmtk debian package libtiff might be required since dcmtk depends on it and the packaged version does not itself link with it properly." )
+    ENDIF(TIFF_FOUND)
+  ENDIF(NOT WIN32 AND NOT APPLE)
 ENDIF(DCMTK_FOUND)
 
 FIND_PACKAGE(TEEM)
@@ -710,9 +728,6 @@ IF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
   SET( CMAKE_INSTALL_PREFIX ${H3DAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
 ENDIF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
 
-# make sure symbols are exported.
-SET( H3DAPI_COMPILE_FLAGS "-DH3DAPI_EXPORTS" )
-
 # add the libraries needed for linking
 TARGET_LINK_LIBRARIES( H3DAPI ${requiredLibs} ${optionalLibs} )
 
@@ -725,9 +740,6 @@ SET_TARGET_PROPERTIES( H3DAPI PROPERTIES VERSION ${H3DAPI_FULL_VERSION} )
 IF( WIN32 )
   # Temporary variables used later to set LINK_FLAGS.
   SET( TEMP_OUTPUT_POSTFIX "" )
-  SET( H3DAPI_LINK_FLAGS "" )
-  SET( H3DAPI_LINK_FLAGS_RELEASE "" )
-  SET( H3DAPI_LINK_FLAGS_DEBUG "" )
 
   # change the name depending on compiler to be able to tell them apart
   # since they are not compatible with each other. 
@@ -815,9 +827,7 @@ IF( WIN32 )
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"Haptik.Library.dll\"" )
   ENDIF(HAPTIK_FOUND)
 
-  SET_TARGET_PROPERTIES( H3DAPI
-                         PROPERTIES
-                         LINK_FLAGS "${H3DAPI_LINK_FLAGS}" )
+  
   
   IF(CHAI3D_FOUND)
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\"" )
@@ -829,16 +839,19 @@ IF( WIN32 )
     SET( H3DAPI_LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE} /DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
   ENDIF(OPENHAPTICS_FOUND)
 
+
+ENDIF( WIN32 )
+
+# Set compile and linker flags for H3DAPI.
   SET_TARGET_PROPERTIES( H3DAPI
                          PROPERTIES  
+                         COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS}"
+                         LINK_FLAGS "${H3DAPI_LINK_FLAGS}"
                          LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG}"
                          LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE}"
                          LINK_FLAGS_RELWITHDEBINFO "${H3DAPI_LINK_FLAGS_RELEASE}"
                          LINK_FLAGS_MINSIZEREL "${H3DAPI_LINK_FLAGS_RELEASE}" )
-ENDIF( WIN32 )
 
-# Set compile properties for H3DAPI.
-SET_TARGET_PROPERTIES( H3DAPI PROPERTIES COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS}" )
 
 # autogenerate H3DAPI.h depending on the libraries available.
 CONFIGURE_FILE( ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.cmake ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.h )
