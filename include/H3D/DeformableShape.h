@@ -41,26 +41,25 @@ namespace H3D {
   /// to deform the geometry of the shape when touching it with a haptics
   /// device.
   ///
-  /// The deformer field specifies an H3DCoordinateDeformerNode that 
+  /// The deformer field specifies an H3DCoordinateDeformerNode that
   /// determines how the coordinates should be deformed on contact.
   /// If NULL, no deformation will be done.
   ///
-  /// The geometry field must contain an X3DComposedGeometryNode, and the 
+  /// The geometry field must contain an X3DComposedGeometryNode, and the
   /// coordinates in its coord field are the ones that will be deformed.
   /// 
   /// The origCoord field contains the coordinates that the 
   /// X3DComposedGeometryNode had when it was added to the 
-  /// X3DComposedGeometryNode. These are the coordinates that was used 
+  /// X3DComposedGeometryNode. These are the coordinates that was used
   /// before any deformation started.
   ///
-  /// The deformedCoord field contains the coordiates after deformation of
-  /// current contacts of haptics devices. These are the coordinates that 
+  /// The deformedCoord field contains the coordinates after deformation of
+  /// current contacts of haptics devices. These are the coordinates that
   /// will be used for graphics rendering.
   ///
   /// The restingCoord fields contain the coordinates that the geometry will
   /// go back to when there are no contacts to the geometry any longer. If
   /// the deformation is non-plastic, this will be the same as origCoord.
-  
   ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/DeformableShape.x3d">DeformableShape.x3d</a>
@@ -75,7 +74,7 @@ namespace H3D {
     class SFGeometryNode: public X3DShapeNode::SFGeometryNode {
 
       /// Destructor. Sets the value to NULL in order to get the correct
-      /// onAdd and onRemove functions to be called and initialize the 
+      /// onAdd and onRemove functions to be called and initialize the
       /// different coord fields in the DeformableShape node when changing
       /// the geometry.
       ~SFGeometryNode() {
@@ -138,7 +137,7 @@ namespace H3D {
 
     /// The origCoord field contains the coordinates that the 
     /// X3DComposedGeometryNode had when it was added to the 
-    /// X3DComposedGeometryNode. These are the coordinates that was used 
+    /// X3DComposedGeometryNode. These are the coordinates that was used
     /// before any deformation started.
     ///
     /// <b> Access type: </b> outputOnly
@@ -151,15 +150,15 @@ namespace H3D {
     /// <b> Access type: </b> outputOnly
     auto_ptr< SFCoordinateNode > restingCoord;
 
-    /// The deformedCoord field contains the coordiates after deformation of
-    /// current contacts of haptics devices. These are the coordinates that 
+    /// The deformedCoord field contains the coordinates after deformation of
+    /// current contacts of haptics devices. These are the coordinates that
     /// will be used for graphics rendering.
     ///
     /// <b> Access type: </b> outputOnly
     auto_ptr< SFCoordinateNode > deformedCoord;   
 
-    /// The deformer field specifies an H3DCoordinateDeformerNode that 
-    /// determines how the coordinates should be deformed on contact.
+    /// The deformer field specifies an H3DCoordinateDeformerNode that
+    /// determines how the coordinates should be deformed on contact
     /// If NULL, no deformation will be done.
     ///
     /// <b>Access type:</b> inputOutput \n

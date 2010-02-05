@@ -82,8 +82,12 @@ namespace H3D {
     /// struct contains collision information.
     struct H3DAPI_API NodeIntersectResult {
       // Constructor.
-      NodeIntersectResult( void * _user_data = 0 ) :
-        user_data( _user_data ) {
+      NodeIntersectResult( void * _user_data = 0,
+                           bool _override_no_collision = false,
+                           bool _collide_invisible = false ) :
+        user_data( _user_data ),
+        override_no_collision( _override_no_collision ),
+        collide_invisible( _collide_invisible ) {
         current_matrix.push( Matrix4f() );
       }
 
@@ -99,8 +103,17 @@ namespace H3D {
       vector< IntersectionInfo > result;
 
       /// Optional user_data in case someone want to do add some extra feature
-      /// to lineIntersect and one or several custom made nodes.
+      /// to collision functions in one or several custom made nodes.
       void * user_data;
+
+      /// Flag used to know if collision function should be called for the
+      /// children in the Collision Node regardless if it is enabled or not.
+      bool override_no_collision;
+
+      /// Flag used to know if collision function should be called for the
+      /// children in a ToogleGroup Node even if graphicsOn is false.
+      /// The default behaviour is to only collide with visible objects.
+      bool collide_invisible;
 
       /// Adds the current transform from local coordinate space to global
       /// coordinate space to geometry_transforms.
@@ -170,14 +183,11 @@ namespace H3D {
       // Constructor.
       LineIntersectResult( bool _override_no_collision = false,
                            bool _detect_pt_device = false,
-                           void *_user_data = 0 ) :
-        NodeIntersectResult( _user_data ),
-        override_no_collision( _override_no_collision ),
+                           void *_user_data = 0,
+                           bool _collide_invisible = false ) :
+        NodeIntersectResult( _user_data, _override_no_collision,
+                             _collide_invisible ),
         detect_pt_device( _detect_pt_device ) {}
-
-      /// Flag used to know if lineintersect should be called for the children
-      /// in the Collision Node regardless if it is enabled or not.
-      bool override_no_collision;
 
       /// Flag used to know if lineintersect should bother with keeping track
       /// of X3DPointingDeviceSensorNodes.
@@ -241,10 +251,9 @@ namespace H3D {
     /// \param result Contains info about the closest intersection for every
     /// object that intersects the line.
     /// \returns true if intersected, false otherwise.
-    virtual bool lineIntersect( 
-      const Vec3f &from, 
-      const Vec3f &to,    
-      LineIntersectResult &result ) {
+      virtual bool lineIntersect( const Vec3f &from,
+                                  const Vec3f &to,
+                                  LineIntersectResult &result ) {
       return false;
     }
 
@@ -265,12 +274,12 @@ namespace H3D {
     /// such as which geometries intersected the moving sphere.
     /// \returns true if intersected, false otherwise.
     virtual bool movingSphereIntersect( H3DFloat radius,
-                                        const Vec3f &from, 
+                                        const Vec3f &from,
                                         const Vec3f &to,
                                         NodeIntersectResult &result ){
       return false;
     }
-    
+
     /// Returns the default xml containerField attribute value.
     /// For this node it is "children".
     ///

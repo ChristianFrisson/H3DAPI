@@ -70,6 +70,44 @@ namespace H3D {
     /// Only renders children if graphicsOn is true. 
     virtual void render();
 
+    /// Detect intersection between a line segment and the Node.
+    /// Calls lineIntersect for its children only if graphicsOn is true.
+    /// A setting in the parameter result can override this default behaviour.
+    /// \param from The start of the line segment.
+    /// \param to The end of the line segment.
+    /// \param result Contains info about the closest intersection for every
+    /// object that intersects the line.
+    /// \returns true if intersected, false otherwise.
+    virtual bool lineIntersect( const Vec3f &from,
+                                const Vec3f &to,
+                                LineIntersectResult &result );
+
+    /// Find closest point on Node to p.
+    /// Calls lineIntersect for its children only if graphicsOn is true.
+    /// A setting in the parameter result can override this default behaviour.
+    /// \param p The point to find the closest point to.
+    /// \param result A struct containing various results of closest
+    /// points such as which geometries the closest points where
+    /// detected on.
+    virtual void closestPoint( const Vec3f &p,
+                               NodeIntersectResult &result );
+
+    /// Detect collision between a moving sphere and the Node.
+    /// Only nodes to which collision is possible will return true
+    /// Calls movingSphereIntersect for its children only if graphicsOn is
+    /// true. A setting in the parameter result can override this default
+    /// behaviour.
+    /// \param radius The radius of the sphere
+    /// \param from The start position of the sphere
+    /// \param to The end position of the sphere.
+    /// \param result A struct containing various results of intersections
+    /// such as which geometries intersected the moving sphere.
+    /// \returns true if intersected, false otherwise.
+    virtual bool movingSphereIntersect( H3DFloat radius,
+                                        const Vec3f &from,
+                                        const Vec3f &to,
+                                        NodeIntersectResult &result );
+
     /// The hapticsOn field specifies if nodes in the children field of 
     /// this group should be rendered haptically or not.
     ///

@@ -47,7 +47,7 @@ namespace H3D {
   /// zero. 
   ///
   /// The cylinder has three parts: the side, the top (Y = +height/2) and
-  /// the bottom (Y = height/2). Each part has an associated SFBool field
+  /// the bottom (Y = -height/2). Each part has an associated SFBool field
   /// that indicates whether the part exists (TRUE) or does not exist
   /// (FALSE). Parts which do not exist are not rendered and not eligible
   /// for intersection tests (EXAMPLE collision detection or sensor

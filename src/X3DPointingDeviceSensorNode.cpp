@@ -100,7 +100,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
   Node * n, const Vec3f &from, const Vec3f &to ) {
   if( !instances.empty() ) {
     // Intersect from and to with geometries.
-    LineIntersectResult result( true, true );
+    LineIntersectResult result( true, true, NULL, true );
     if( n->lineIntersect( from, 
                           to,
                           result ) ) {

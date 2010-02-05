@@ -109,7 +109,7 @@ namespace H3D {
   /// <li>Moves the viewpoint directly to some convenient viewing distance
   /// from the bounding box center of the selected object, with the viewpoint
   /// orientation set to aim the view at the approximate "center" of the
-  /// object;</a></li>
+  /// object.</a></li>
   /// <li>Sets the center of rotation in the currently bound Viewpoint node to
   /// the approximate "center" of the selected object.</a></li>
   /// </ul>

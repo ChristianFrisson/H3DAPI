@@ -82,3 +82,30 @@ void ToggleGroup::traverseSG( TraverseInfo &ti ) {
     X3DGroupingNode::traverseSG( ti );
   }
 }
+
+bool ToggleGroup::lineIntersect( const Vec3f &from,
+                                 const Vec3f &to,
+                                 LineIntersectResult &result ) {
+  if( result.collide_invisible || graphicsOn->getValue() ) {
+    return X3DGroupingNode::lineIntersect( from, to, result );
+  }
+  return false;
+}
+
+void ToggleGroup::closestPoint( const Vec3f &p,
+                                NodeIntersectResult &result ) {
+  if( result.collide_invisible || graphicsOn->getValue() ) {
+    X3DGroupingNode::closestPoint( p, result );
+  }
+}
+
+bool ToggleGroup::movingSphereIntersect( H3DFloat radius,
+                                         const Vec3f &from, 
+                                         const Vec3f &to,
+                                         NodeIntersectResult &result ) {
+  if( result.collide_invisible || graphicsOn->getValue() ) {
+    return X3DGroupingNode::movingSphereIntersect( radius, from, to, result );
+  }
+  return false;
+}
+
