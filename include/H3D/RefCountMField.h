@@ -49,6 +49,8 @@ namespace H3D {
                        FieldInternals::MFNodeAutoRefVector< RefClass >,
                        Field > {
   public:   
+
+    typedef NodeVector vector_return_type;
     
     typedef MFieldBase< RefClass *, 
                         FieldInternals::MFNodeAutoRefVector< RefClass >,

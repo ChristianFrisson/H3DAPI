@@ -94,6 +94,8 @@ namespace H3D {
   public:
     /// The type of the value member. 
     typedef VectorClass vector_type;
+    /// The return type of functions that return the value of the field.
+    typedef VectorClass vector_return_type;
     /// The type of the values stored in the vector.
     typedef typename VectorClass::value_type value_type;
     /// Pointer to Type.
