@@ -105,8 +105,8 @@ JSBool SpiderMonkey::FieldObject_toString(JSContext *cx, JSObject *obj,
 // SFVec3f object
 
 JSBool SpiderMonkey::SFVec3f_construct(JSContext *cx, JSObject *obj, 
-			 uintN argc, jsval *argv,
-			 jsval *rval) {
+                                       uintN argc, jsval *argv,
+                                       jsval *rval) {
   // check that we have enough arguments and that they are of
   // correct type.
   if( argc > 3 ||
@@ -148,8 +148,8 @@ JSBool SpiderMonkey::SFVec3f_construct(JSContext *cx, JSObject *obj,
 
 
  JSBool SpiderMonkey::SFVec3f_add(JSContext *cx, JSObject *obj, 
-				  uintN argc, jsval *argv,
-				  jsval *rval) {
+                                  uintN argc, jsval *argv,
+                                  jsval *rval) {
    // check that this object is a SFVec3f_class 
    if (!JS_InstanceOf(cx, obj, &SFVec3fClass, argv))
       return JS_FALSE;
@@ -166,6 +166,12 @@ JSBool SpiderMonkey::SFVec3f_construct(JSContext *cx, JSObject *obj,
      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
    FieldObjectPrivate *arg_private_data = 
      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
+
+   // make sure the objects have not been manually disposed by the user.
+   if( this_private_data->isDisposed() || arg_private_data->isDisposed() ) {
+     setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+     return JS_FALSE;
+   }
 
    SFVec3f* this_vec3f = static_cast<SFVec3f *>(this_private_data->getPointer());
    SFVec3f* arg_vec3f =  static_cast<SFVec3f *>(arg_private_data->getPointer());
@@ -241,10 +247,18 @@ JSBool SpiderMonkey::SFVec3f_subtract(JSContext *cx, JSObject *obj,
 JSBool
 SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   //cerr << "Get Property SFVec3f" << endl;
   if (JSVAL_IS_INT(id)) {
-    FieldObjectPrivate *private_data = 
-      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+   
     SFVec3f* this_vec3f = static_cast<SFVec3f *>(private_data->getPointer());
 
     const Vec3f &v = getValueNoAccessCheck( this_vec3f );
@@ -283,10 +297,17 @@ SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
 JSBool
 SpiderMonkey::SFVec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   //cerr << "Set Property SFVec3f" << endl;
   if (JSVAL_IS_INT(id)) {
-    FieldObjectPrivate *private_data = 
-      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
     SFVec3f* this_vec3f = static_cast<SFVec3f *>(private_data->getPointer());
     Vec3f v = this_vec3f->getValue();
 
@@ -336,8 +357,8 @@ SpiderMonkey::SFVec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
 
 
 JSObject *SpiderMonkey::SFVec3f_newInstance( JSContext *cx,
-					     SFVec3f *field,
-					     bool internal_field ) {
+                                             SFVec3f *field,
+                                             bool internal_field ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
@@ -351,18 +372,12 @@ JSObject *SpiderMonkey::SFVec3f_newInstance( JSContext *cx,
 }
 
 
-
-
-
-
-
-
 //////////////////////////////////////////////////////////
 // SFNode object
 
 JSBool SpiderMonkey::SFNode_construct(JSContext *cx, JSObject *obj, 
-			 uintN argc, jsval *argv,
-			 jsval *rval) {
+                                      uintN argc, jsval *argv,
+                                      jsval *rval) {
   // check that we have enough arguments and that they are of
   // correct type.
   if( argc != 0 ) return JS_FALSE;
@@ -381,13 +396,20 @@ JSBool
 SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
 
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   if( JSVAL_IS_STRING( id ) ) {
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
 
     //cerr << "Get Property SFNode: " << field_name << " " << obj << endl;
-    FieldObjectPrivate *private_data = 
-      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
     SFNode* node_field = static_cast<SFNode *>(private_data->getPointer());
     Node *n = node_field->getValue();
     Field *f = NULL;
@@ -401,12 +423,19 @@ SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *
 JSBool
 SpiderMonkey::SFNode_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   if( JSVAL_IS_STRING( id ) ) {
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
     //    cerr << "Set Property SFNode: " << field_name << " " << obj << endl;
-    FieldObjectPrivate *private_data = 
-      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
     SFNode* node_field = static_cast<SFNode *>(private_data->getPointer());
     Node *n = node_field->getValue();
     Field *f = NULL;
@@ -418,8 +447,8 @@ SpiderMonkey::SFNode_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *
 
 
 JSObject *SpiderMonkey::SFNode_newInstance( JSContext *cx,
-					    SFNode *field,
-					    bool internal_field ) {
+                                            SFNode *field,
+                                            bool internal_field ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
@@ -447,6 +476,12 @@ JSBool SpiderMonkey::SFNode_getNodeName(JSContext *cx, JSObject *obj,
   FieldObjectPrivate *this_private_data = 
     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
 
+  // make sure the object have not been manually disposed by the user.
+  if( this_private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   SFNode* this_sfnode = static_cast<SFNode *>(this_private_data->getPointer());
   
   // make sure we have a value
@@ -467,10 +502,10 @@ JSBool SpiderMonkey::SFNode_getNodeName(JSContext *cx, JSObject *obj,
 }
 
 JSBool SpiderMonkey::SFNode_getNodeType(JSContext *cx, JSObject *obj, 
-					uintN argc, jsval *argv,
-					jsval *rval) {
-   cerr << "SFNode_getNodeType" << endl;
-   return JS_TRUE;
+                                        uintN argc, jsval *argv,
+                                        jsval *rval) {
+  cerr << "SFNode_getNodeType" << endl;
+  return JS_TRUE;
 }
 
 JSBool SpiderMonkey::SFNode_getFieldDefinitions(JSContext *cx, JSObject *obj, 
@@ -481,8 +516,8 @@ JSBool SpiderMonkey::SFNode_getFieldDefinitions(JSContext *cx, JSObject *obj,
 }
 
 JSBool SpiderMonkey::SFNode_toX3DString(JSContext *cx, JSObject *obj, 
-					uintN argc, jsval *argv,
-					jsval *rval) {
+                                        uintN argc, jsval *argv,
+                                        jsval *rval) {
     // check that this object is a SFNode_class 
   if (!JS_InstanceOf(cx, obj, &SFNodeClass, argv))
     return JS_FALSE;
@@ -494,6 +529,12 @@ JSBool SpiderMonkey::SFNode_toX3DString(JSContext *cx, JSObject *obj,
   
   FieldObjectPrivate *this_private_data = 
     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( this_private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
 
   SFNode* this_sfnode = static_cast<SFNode *>(this_private_data->getPointer());
   
@@ -511,8 +552,8 @@ JSBool SpiderMonkey::SFNode_toX3DString(JSContext *cx, JSObject *obj,
 }
 
 JSBool SpiderMonkey::SFNode_toVRMLString(JSContext *cx, JSObject *obj, 
-					 uintN argc, jsval *argv,
-					 jsval *rval) {
+                                         uintN argc, jsval *argv,
+                                         jsval *rval) {
    cerr << "SFNode_toVRMLString" << endl;
    return JS_TRUE;
 }
@@ -522,8 +563,8 @@ JSBool SpiderMonkey::SFNode_toVRMLString(JSContext *cx, JSObject *obj,
 // SFColor object
 
 JSBool SpiderMonkey::SFColor_construct(JSContext *cx, JSObject *obj, 
-				       uintN argc, jsval *argv,
-				       jsval *rval) {
+                                       uintN argc, jsval *argv,
+                                       jsval *rval) {
   // check that we have enough arguments and that they are of
   // correct type.
   if( argc > 3 ||
@@ -578,13 +619,21 @@ JSBool SpiderMonkey::SFColor_setHSV(JSContext *cx, JSObject *obj,
 }
 
 JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx, 
-					 JSObject *obj, 
-					 jsval id, jsval *vp) {
-  if (JSVAL_IS_INT(id)) {
-    FieldObjectPrivate *private_data = 
-      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-    SFColor* this_color = static_cast<SFColor *>(private_data->getPointer());
+                                         JSObject *obj, 
+                                         jsval id, jsval *vp) {
 
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  if (JSVAL_IS_INT(id)) {
+    
+    SFColor* this_color = static_cast<SFColor *>(private_data->getPointer());
     const RGB &rgb = getValueNoAccessCheck( this_color );
 
     switch (JSVAL_TO_INT(id)) {
@@ -621,10 +670,17 @@ JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx,
 JSBool
 SpiderMonkey::SFColor_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   //  cerr << "Set Property SFColor" << endl;
   if (JSVAL_IS_INT(id)) {
-    FieldObjectPrivate *private_data = 
-      static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
     SFColor* this_color = static_cast<SFColor *>(private_data->getPointer());
     RGB v = this_color->getValue();
     
@@ -674,8 +730,8 @@ SpiderMonkey::SFColor_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
 
 
 JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx,
-					     SFColor *field,
-					     bool internal_field ) {
+                                             SFColor *field,
+                                             bool internal_field ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
@@ -713,6 +769,12 @@ JSBool SpiderMonkey::X3DExecutionContext_createNode(JSContext *cx,
 
   ExecutionContextPrivate *private_data = 
     static_cast<ExecutionContextPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
   
   SAI::ExecutionContext* context = private_data->getPointer();
   
@@ -738,11 +800,18 @@ JSBool SpiderMonkey::X3DExecutionContext_createNode(JSContext *cx,
 JSBool
 SpiderMonkey::X3DExecutionContext_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+
+  ExecutionContextPrivate *private_data = 
+    static_cast<ExecutionContextPrivate *>(JS_GetPrivate(cx,obj));
+  
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   //cerr << "Get Property X3DExecutionContext" << endl;
   if (JSVAL_IS_INT(id)) {
-    ExecutionContextPrivate *private_data = 
-      static_cast<ExecutionContextPrivate *>(JS_GetPrivate(cx,obj));
-
     SAI::ExecutionContext* context = private_data->getPointer();
 
     switch (JSVAL_TO_INT(id)) {
@@ -845,11 +914,17 @@ JSObject *SpiderMonkey::X3DExecutionContext_newInstance( JSContext *cx,
 JSBool
 SpiderMonkey::X3DScene_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
+  ExecutionContextPrivate *private_data = 
+    static_cast<ExecutionContextPrivate *>(JS_GetPrivate(cx,obj));
+  
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   //cerr << "Get Property X3DScene" << endl;
   if (JSVAL_IS_INT(id)) {
-    ExecutionContextPrivate *private_data = 
-      static_cast<ExecutionContextPrivate *>(JS_GetPrivate(cx,obj));
-
     SAI::ExecutionContext* context = private_data->getPointer();
 
     switch (JSVAL_TO_INT(id)) {
@@ -899,8 +974,8 @@ JSObject *SpiderMonkey::X3DScene_newInstance( JSContext *cx,
 
 
 JSObject *SpiderMonkey::Browser_newInstance( JSContext *cx,
-					     SAI::Browser *browser,
-					     bool internal_ptr ) {
+                                             SAI::Browser *browser,
+                                             bool internal_ptr ) {
   JSObject *js_browser;
 
   js_browser = JS_NewObject( cx, 
@@ -914,8 +989,8 @@ JSObject *SpiderMonkey::Browser_newInstance( JSContext *cx,
 }
 
 JSBool SpiderMonkey::Browser_print(JSContext *cx, 
-				   JSObject *obj, uintN argc, 
-				   jsval *argv, jsval *rval) {
+                                   JSObject *obj, uintN argc, 
+                                   jsval *argv, jsval *rval) {
 
   const char *s;
   if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
@@ -923,6 +998,13 @@ JSBool SpiderMonkey::Browser_print(JSContext *cx,
 
   BrowserPrivate *private_data = 
       static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   SAI::Browser* browser = private_data->getPointer();
   browser->print( s );
   *rval = JSVAL_VOID;  /* return undefined */
@@ -939,6 +1021,13 @@ JSBool SpiderMonkey::Browser_println(JSContext *cx,
 
   BrowserPrivate *private_data = 
       static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   SAI::Browser* browser = private_data->getPointer();
   browser->print( string(s) + "\n" );
   *rval = JSVAL_VOID;  /* return undefined */
@@ -994,6 +1083,13 @@ JSBool SpiderMonkey::Browser_createX3DFromURL(JSContext *cx,
     setFieldValueFromjsval( cx, &urls, argv[0] );
     BrowserPrivate *private_data = 
       static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+    
+    // make sure the object have not been manually disposed by the user.
+    if( private_data->isDisposed()  ) {
+      setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+      return JS_FALSE;
+    }
+
     SAI::Browser* browser = private_data->getPointer();
     SAI::SAIScene *scene = 
       browser->createX3DFromURL( &urls );
@@ -1020,6 +1116,13 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx,
 {
   BrowserPrivate *private_data = 
     static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
   SAI::Browser* browser = private_data->getPointer();
   
   if (JSVAL_IS_INT(id)) {
@@ -1600,6 +1703,13 @@ void SpiderMonkey::setJSException( JSContext *cx, const SAI::SAIError &e ) {
   }
   case SAI::SAIError::SAI_URL_UNAVAILABLE: {
     string msg = string( "URLUnavailableException: " ) + e.getErrorMessage();
+    JS_ReportError( cx, msg.c_str() );
+    break;
+  }
+  case SAI::SAIError::SAI_DISPOSED: {
+    // TODO: this is an incorrect error. Need to figure out how disposed
+    // objects work.
+    string msg = string( "ObjectDisposed: " ) + e.getErrorMessage();
     JS_ReportError( cx, msg.c_str() );
     break;
   }

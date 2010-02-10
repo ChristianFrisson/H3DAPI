@@ -131,7 +131,8 @@ namespace H3D {
                           bool _internal_pointer 
                           ):
         ptr( _ptr ),
-        internal_pointer( _internal_pointer ) {
+        internal_pointer( _internal_pointer ),
+        disposed( false ) {
         
       }
 
@@ -147,9 +148,20 @@ namespace H3D {
         return ptr;
       }
       
+      /// Returns true if this data object has been disposed.
+      inline bool isDisposed() {
+        return disposed;
+      }
+
+      /// Dispose the object. Sets the dispose flag to true.
+      inline void dispose() {
+        disposed = true;
+      }
+
     protected:
       PointerType *ptr;
       bool internal_pointer;
+      bool disposed;
     };
 
     typedef PointerPrivateData< Field > FieldObjectPrivate;
