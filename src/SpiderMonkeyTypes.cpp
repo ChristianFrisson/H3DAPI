@@ -51,10 +51,10 @@ const typename FieldType::value_type &getValueNoAccessCheck( FieldType *field ) 
 }
 
 template< class FieldType >
-const typename FieldType::vector_type &MField_getValueNoAccessCheck( FieldType *field ) {
+const typename FieldType::vector_return_type &MField_getValueNoAccessCheck( FieldType *field ) {
   bool access = field->isAccessCheckOn();
   field->setAccessCheck( false );
-  const typename FieldType::vector_type &b = field->getValue();
+  const typename FieldType::vector_return_type &b = field->getValue();
   field->setAccessCheck( access );
   return b;
 }
@@ -70,7 +70,7 @@ void setValueNoAccessCheck( FieldType *field,
 
 template< class FieldType >
 void MField_setValueNoAccessCheck( FieldType *field, 
-				   const typename FieldType::vector_type &v ) {
+				   const typename FieldType::vector_return_type &v ) {
   bool access = field->isAccessCheckOn();
   field->setAccessCheck( false );
   field->setValue( v);
@@ -1369,7 +1369,7 @@ JSBool MField_setFieldValueFromjsvalTmpl( JSContext *cx,
 
     Field *value_field = private_data->getPointer();
     if( value_field->getX3DType() == x3d_type ) {
-      const typename FieldType::vector_type &c = 
+      const typename FieldType::vector_return_type &c = 
 	  MField_getValueNoAccessCheck( static_cast< FieldType * >( value_field ) );
       MField_setValueNoAccessCheck( f, c ); 
       return JS_TRUE;

@@ -192,9 +192,9 @@ string SpiderMonkeySAI::loadScript( const string &script, const string &filename
     // run initialize function if it exists
     
     if( haveFunction( cx, global, "initialize" ) ) {
-      jsval arg[] = {};
+      //jsval arg[] = {};
       jsval res;
-      JS_CallFunctionName( cx, global, "initialize", 0, arg, &res ); 
+      JS_CallFunctionName( cx, global, "initialize", 0, NULL, &res ); 
     }
 
     str = JS_ValueToString(cx, rval); 
@@ -283,7 +283,7 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
   }
 
   // run initialize function if it exists
-  jsval arg[] = {};
+  //jsval arg[] = {};
   jsval res;
 
   // call eventsProcessed callback function if we have processed
@@ -291,7 +291,7 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
   if( event_processed && 
       haveFunction( sai->cx, sai->global, "eventsProcessed" ) ) {
     JS_CallFunctionName( sai->cx, sai->global, 
-			 "eventsProcessed", 0, arg, &res ); 
+			 "eventsProcessed", 0, NULL, &res ); 
   }
 
   // call prepareEvents callback function if the Scene::time has
@@ -299,7 +299,7 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
   if( hasCausedEvent( Scene::time ) &&
       haveFunction( sai->cx, sai->global, "prepareEvents" )) {
     JS_CallFunctionName( sai->cx, sai->global, 
-			 "prepareEvents", 0, arg, &res ); 
+			 "prepareEvents", 0, NULL, &res ); 
   }
 
   // possibly run garbage collector to dispose of objects
