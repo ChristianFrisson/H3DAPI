@@ -306,8 +306,14 @@ int main(int argc, char* argv[]) {
 
   // Help message
 
+  stringstream str;
+  str << H3DAPI_MAJOR_VERSION << "." << H3DAPI_MINOR_VERSION << "." << H3DAPI_BUILD_VERSION;
+
+  string version_string = str.str();
+
   string command = argv[0];
   string help_message = "\n";
+  help_message += "H3DLoad(v" + version_string + ")\n";
   help_message += "Usage: " + command + " [Options] <X3D file>\n";
   help_message += "\n";
   help_message += "Options:\n";
@@ -560,6 +566,10 @@ int main(int argc, char* argv[]) {
     AutoRef< Node > viewpoint;
     AutoRef< Scene > scene( new Scene );
 
+    SAI::Browser *sai_browser = scene->getSAIBrowser();
+    sai_browser->setName( "H3DLoad" );
+    sai_browser->setVersion( version_string );
+
     if( deviceinfo_file.size() ){
       try {
         device_info = X3D::createX3DNodeFromURL( deviceinfo_file );
@@ -604,14 +614,8 @@ int main(int argc, char* argv[]) {
     AutoRef< Group > g( new Group );
     for( vector<string>::iterator file = xml_files.begin() ;
       file != xml_files.end() ; file++ ){
-        Console(3) << "Loading " << *file << endl;
-        if ( file->size() > 4 && 
-          file->find( ".wrl", file->size()-5 ) != string::npos )
-          g->children->push_back( X3D::createVRMLFromURL( *file, 
-          &dn ) );
-        else
-          g->children->push_back( X3D::createX3DFromURL( *file, 
-          &dn ) );
+      Console(3) << "Loading " << *file << endl;
+      scene->loadSceneRoot( *file );
     }
 
     DeviceInfo::DeviceInfoList device_infos = DeviceInfo::getAllDeviceInfos();
@@ -655,8 +659,6 @@ int main(int argc, char* argv[]) {
 
     dn.clear();
 
-
-    scene->sceneRoot->setValue( g.get() );
     Scene::mainLoop();
   }
   catch (const Exception::QuitAPI &) {

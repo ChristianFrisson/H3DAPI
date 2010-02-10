@@ -783,13 +783,7 @@ bool WxFrame::loadFile( const string &filename) {
     unsigned int device_info_size = DeviceInfo::getAllDeviceInfos().size();
 
     Console(3) << "Loading " << filename << endl;
-    if ( filename.size() > 4 && 
-         filename.find( ".wrl", filename.size()-5 ) != string::npos )
-      t->children->push_back( X3D::createVRMLFromURL( filename.c_str(), 
-                                                      &dn ) );
-    else
-        t->children->push_back( X3D::createX3DFromURL( filename.c_str(), 
-                                                       &dn ) );
+    scene->loadSceneRoot( filename );
 
     DeviceInfo::DeviceInfoList device_infos = DeviceInfo::getAllDeviceInfos();
     if( di && device_infos.size() > device_info_size ) {
@@ -1001,7 +995,6 @@ bool WxFrame::loadFile( const string &filename) {
         renderMode->Check( FRAME_REDCYAN, true );
     }
 
-    scene->sceneRoot->setValue( g.get() );
     tree_view_dialog->showEntireSceneAsTree( true );
   } catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
