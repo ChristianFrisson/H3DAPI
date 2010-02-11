@@ -247,6 +247,10 @@ void H3DWindowNode::initialize() {
   glLightModelfv( GL_LIGHT_MODEL_AMBIENT, no_ambient);
   glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
   glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+  if( GLEW_EXT_separate_specular_color ) {
+    glLightModeli( GL_LIGHT_MODEL_COLOR_CONTROL_EXT, 
+                   GL_SEPARATE_SPECULAR_COLOR_EXT );
+  }
   Node::initialize();
   last_render_mode = renderMode->getRenderMode();
 }
