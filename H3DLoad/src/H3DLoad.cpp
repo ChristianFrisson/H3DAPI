@@ -64,7 +64,7 @@ using namespace H3D;
 class QuitAPIField: public PeriodicUpdate< SFString > {
   virtual void update() {
     string s = static_cast< SFString * >(routes_in[0])->getValue();
-    if( s[0] == 27 ) {
+    if( !s.empty() && s[0] == 27 ) {
       throw Exception::QuitAPI();
     }
   }
@@ -180,6 +180,7 @@ protected:
       mynav = NavigationInfo::getActive();
     }
     string s = static_cast< SFString * >(routes_in[0])->getValue();
+	if( s.empty() ) return;
     if( s[0] == 119) {
       // Set navigation type to WALK
       if(mynav){

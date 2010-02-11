@@ -392,6 +392,7 @@ void WxFrame::ChangeNavType::update() {
     mynav = NavigationInfo::getActive();
   }
   string s = static_cast< SFString * >(routes_in[0])->getValue();
+  if( s.empty() ) return;
   if( s[0] == 119) {
     // Set navigation type to WALK
     if(mynav){

@@ -43,7 +43,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
   string line;
   while(!is.eof() ) {
     getline( is, line );
-    
+	if(line.empty()) continue;
     unsigned int characters_processed = 0;
     string::size_type pos = 0;
     
