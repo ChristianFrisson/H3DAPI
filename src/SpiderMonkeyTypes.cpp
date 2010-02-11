@@ -50,6 +50,18 @@ const typename FieldType::value_type &getValueNoAccessCheck( FieldType *field ) 
   return b;
 }
 
+// Need special case for SFNode for optimized build
+// using Visual Studio 2010 or the value used when
+// calling the function will be the field pointer given as
+// argument. Don't know why.
+Node *getValueNoAccessCheck( SFNode *field ) {
+  bool access = field->isAccessCheckOn();
+  field->setAccessCheck( false );
+  Node *b = field->getValue();
+  field->setAccessCheck( access );
+  return b;
+}
+
 template< class FieldType >
 const typename FieldType::vector_return_type &MField_getValueNoAccessCheck( FieldType *field ) {
   bool access = field->isAccessCheckOn();
@@ -1563,13 +1575,14 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx,
       JSObject *js_object = JSVAL_TO_OBJECT( value );
       
       FieldObjectPrivate *private_data = 
-	static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
+        static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
 
       Field *value_field = private_data->getPointer();
       if( value_field->getX3DType() == X3DTypes::SFNODE ) {
-	Node *n = getValueNoAccessCheck( static_cast< SFNode * >( value_field ) );
-	setValueNoAccessCheck( f, n ); 
-	return JS_TRUE;
+        SFNode *sfnode = static_cast< SFNode *>( value_field );
+        Node *n = getValueNoAccessCheck( sfnode );
+        setValueNoAccessCheck( f, n ); 
+        return JS_TRUE;
       } 
     }
 
