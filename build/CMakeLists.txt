@@ -748,7 +748,7 @@ IF( WIN32 )
     SET( TEMP_OUTPUT_POSTFIX _vc7 )
     # H3D API is now to big to link incrementally with vc7.
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
-    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt"  )
+    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt /INCREMENTAL:NO" )
   ELSEIF(MSVC80)
     SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc8 )
     SET( TEMP_OUTPUT_POSTFIX _vc8 )
@@ -771,6 +771,7 @@ IF( WIN32 )
       SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
     ENDIF( CMAKE_CL_64 )
     # H3D API is now to big to link incrementally with vc8.
+    SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /INCREMENTAL:NO" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
     IF(OPENHAPTICS_FOUND)
@@ -790,6 +791,7 @@ IF( WIN32 )
       SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
     ENDIF( CMAKE_CL_64 )
     # H3D API is now too big to link incrementally with vc9.
+    SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt /INCREMENTAL:NO" )
     # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
     IF(OPENHAPTICS_FOUND)
