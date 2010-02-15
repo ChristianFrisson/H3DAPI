@@ -90,7 +90,7 @@ bool Collision::lineIntersect(
 
 void Collision::closestPoint( const Vec3f &p,
                               NodeIntersectResult &result ) {
-  if( enabled->getValue() ) {
+  if( result.override_no_collision || enabled->getValue() ) {
     X3DChildNode * temp_proxy = proxy->getValue();
     if( temp_proxy )
       return temp_proxy->closestPoint( p, result );
@@ -103,7 +103,7 @@ bool Collision::movingSphereIntersect( H3DFloat radius,
                                        const Vec3f &from, 
                                        const Vec3f &to,
                                        NodeIntersectResult &result ) {
-  if( enabled->getValue() ) {
+  if( result.override_no_collision || enabled->getValue() ) {
     bool intersect = false;
     X3DChildNode * temp_proxy = proxy->getValue();
     if( temp_proxy )

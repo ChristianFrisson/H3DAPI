@@ -30,6 +30,8 @@
 
 #include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/CollisionOptions.h>
 
 using namespace H3D;
 
@@ -99,8 +101,22 @@ X3DPointingDeviceSensorNode::~X3DPointingDeviceSensorNode() {
 void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
   Node * n, const Vec3f &from, const Vec3f &to ) {
   if( !instances.empty() ) {
+    bool collide_invisible = true;
+    bool collide_collision = true;
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings ) {
+      CollisionOptions * col_opt;
+      default_settings->getOptionNode( col_opt );
+      if( col_opt ) {
+        collide_invisible =
+          col_opt->sensorCollideToggleGraphicsOff->getValue();
+        collide_collision =
+          col_opt->sensorCollideCollisionFalse->getValue();
+      }
+    }
     // Intersect from and to with geometries.
-    LineIntersectResult result( true, true, NULL, true );
+    LineIntersectResult result( collide_collision, true,
+                                NULL, collide_invisible );
     if( n->lineIntersect( from, 
                           to,
                           result ) ) {

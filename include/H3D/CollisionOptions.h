@@ -47,8 +47,10 @@ namespace H3D {
   public:
     
     /// Constructor.
-    CollisionOptions( Inst< SFNode  > _metadata = 0,
-                      Inst< SFBool  > _avatarCollision = 0 );
+    CollisionOptions( Inst< SFNode > _metadata = 0,
+                      Inst< SFBool > _avatarCollision = 0,
+                      Inst< SFBool > _sensorCollideToggleGraphicsOff = 0,
+                      Inst< SFBool > _sensorCollideCollisionFalse = 0 );
     
     /// The avatarCollision field specifies whether collision between
     /// the avatar and the world should be done. If false then it is possible
@@ -59,6 +61,24 @@ namespace H3D {
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFBool > avatarCollision;
+
+    /// The sensorCollideInvisible field specifies whether
+    /// X3DPointingDeviceSensors should consider ToggleGroups
+    /// with graphicsOn set to false. The default value is true
+    /// for the behaviour to be backward compatible.
+    ///
+    /// <b>Default value: </b> true \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool > sensorCollideToggleGraphicsOff;
+
+    /// The sensorCollideInvisible field specifies whether
+    /// X3DPointingDeviceSensors should consider Collision nodes
+    /// with enabled set to false. The default value is true
+    /// for the behaviour to be backward compatible.
+    ///
+    /// <b>Default value: </b> true \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool > sensorCollideCollisionFalse;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -40,16 +40,24 @@ H3DNodeDatabase CollisionOptions::database( "CollisionOptions",
 
 namespace CollisionOptionsInternals {
   FIELDDB_ELEMENT( CollisionOptions, avatarCollision, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( CollisionOptions, sensorCollideToggleGraphicsOff, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( CollisionOptions, sensorCollideCollisionFalse, INPUT_OUTPUT );
 }
 
 CollisionOptions::CollisionOptions( 
                            Inst< SFNode>  _metadata,
-                           Inst< SFBool  > _avatarCollision ) :
+                           Inst< SFBool  > _avatarCollision,
+                           Inst< SFBool > _sensorCollideToggleGraphicsOff,
+                           Inst< SFBool > _sensorCollideCollisionFalse ) :
   H3DOptionNode( _metadata ),
-  avatarCollision( _avatarCollision ) {
+  avatarCollision( _avatarCollision ),
+  sensorCollideToggleGraphicsOff( _sensorCollideToggleGraphicsOff ),
+  sensorCollideCollisionFalse( _sensorCollideCollisionFalse ) {
   
   type_name = "CollisionOptions";
   database.initFields( this );
 
   avatarCollision->setValue( true );
+  sensorCollideToggleGraphicsOff->setValue( true );
+  sensorCollideCollisionFalse->setValue( true );
 }
