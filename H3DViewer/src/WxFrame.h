@@ -279,7 +279,6 @@ public:
   void ShowTreeView( wxCommandEvent & event );
   void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
-  void GetSelection( wxMenuEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
   void ResetViewpoint( wxCommandEvent & event );
   void ChangeNavigation( wxCommandEvent & event );
@@ -371,8 +370,6 @@ private:
   wxString currentFilename;
   wxString currentPath;
   bool lastmirror;
-  //bool lastDeviceStatus;
-  int selection;
   int navTypeCount;
   int deviceCount;
   list< Node * > VPlist;

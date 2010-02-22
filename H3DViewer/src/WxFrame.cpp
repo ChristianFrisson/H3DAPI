@@ -393,47 +393,7 @@ void WxFrame::ChangeNavType::update() {
   }
   string s = static_cast< SFString * >(routes_in[0])->getValue();
   if( s.empty() ) return;
-  if( s[0] == 119) {
-    // Set navigation type to WALK
-    if(mynav){
-      mynav->setNavType("WALK");
-    }
-    else{
-      glwindow->default_nav = "WALK"; 
-    }
-  } else if( s[0] == 102 ) {
-    // Set navigation type to FLY
-    if(mynav){
-      mynav->setNavType("FLY");
-    }
-    else{
-      glwindow->default_nav = "FLY"; 
-    }
-  } else if( s[0] == 101 ) {
-    // Set navigation type to EXAMINE
-    if(mynav){
-      mynav->setNavType("EXAMINE");
-    }
-    else{
-      glwindow->default_nav = "EXAMINE"; 
-    }
-  } else if( s[0] == 108 ) {
-    // Set navigation type to LOOKAT
-    if(mynav){
-      mynav->setNavType("LOOKAT");
-    }
-    else{
-      glwindow->default_nav = "LOOKAT"; 
-    }
-  } else if( s[0] == 110 ) {
-    // Set navigation type to NONE
-    if(mynav){
-      mynav->setNavType("NONE");
-    }
-    else{
-      glwindow->default_nav = "NONE"; 
-    }
-  } else if( s == "+" ) {
+  if( s == "+" ) {
     if( mynav ) {
       frame->speed_slider->setSpeed(
         mynav->speed->getValue() + speed_increment, true, true );
@@ -470,7 +430,6 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_TREEVIEW, WxFrame::ShowTreeView)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
-  EVT_MENU_HIGHLIGHT (FRAME_SELECTION, WxFrame::GetSelection)
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
   EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
@@ -1271,8 +1230,6 @@ void WxFrame::clearData () {
   //Delete items from navigation menu & disconnect events
   for (int j = 0; j < navTypeCount; j++) {
     navigationMenu->Destroy(FRAME_NAVIGATION + j);
-    Disconnect(FRAME_NAVIGATION + j,wxEVT_MENU_HIGHLIGHT,
-               wxMenuEventHandler(WxFrame::GetSelection));
     Disconnect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED,
                wxCommandEventHandler(WxFrame::ChangeNavigation));
   }
@@ -1516,7 +1473,7 @@ void WxFrame::RenderMode(wxCommandEvent & event)
 }
 
 void WxFrame::ChangeNavigationDevice( wxCommandEvent & event ) {
-  
+
   switch ( event.GetId() ) {
     case FRAME_MOUSE_NAV:
       if( H3DNavigation::isEnabled( H3DNavigation::MOUSE ) )
@@ -1645,7 +1602,8 @@ void WxFrame::ShowFrameRate(wxCommandEvent & event)
 
 //Change Viewpoint
 void WxFrame::ChangeViewpoint (wxCommandEvent & event)
-{  
+{
+  int selection = event.GetId();
   //Default viewpoint
   if ( X3DViewpointNode::getAllViewpoints().size() <= 1) {
     viewpointMenu->Check(selection, true);
@@ -1686,11 +1644,12 @@ void WxFrame::OnSpeed( wxCommandEvent & event ) {
 //Change Navigation
 void WxFrame::ChangeNavigation (wxCommandEvent & event)
 {
+  int selection = event.GetId();
   if (mynav) {
-    mynav->setNavType ( toStr((navigationMenu->GetLabel(selection)) ) );
+    mynav->setNavType( toStr( ( navigationMenu->GetLabelText( selection ) ) ));
   }
   else {
-    glwindow->default_nav = toStr( navigationMenu->GetLabel(selection));
+    glwindow->default_nav = toStr( navigationMenu->GetLabelText( selection ) );
   }
 }
 
@@ -1703,12 +1662,6 @@ void WxFrame::OnReload (wxCommandEvent & event)
   loadFile(lastOpenedFilepath);
   SetStatusText(wxT("Reloaded"), 0);
   SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
-}
-
-//Gets Menu Selections
-void WxFrame::GetSelection (wxMenuEvent & event)
-{
-  selection = event.GetMenuId();
 }
 
 //Exit via menu
@@ -2428,8 +2381,6 @@ void WxFrame::buildNavMenu () {
         string typeName = (*menuList);
         navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString(typeName.c_str(),wxConvUTF8),
                                         wxT("Select a navigation mode"));
-        Connect(FRAME_NAVIGATION + j,wxEVT_MENU_HIGHLIGHT,
-                wxMenuEventHandler(WxFrame::GetSelection));
         Connect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(WxFrame::ChangeNavigation));
         j++;
@@ -2449,19 +2400,17 @@ void WxFrame::buildNavMenu () {
   else {
     mynav = 0;
     vector<string> allTypes;
-    allTypes.push_back("EXAMINE");
-    allTypes.push_back("FLY");
-    allTypes.push_back("WALK");
-    allTypes.push_back("LOOKAT");
-    allTypes.push_back("NONE");
+    allTypes.push_back("EXAMINE\te");
+    allTypes.push_back("FLY\tf");
+    allTypes.push_back("WALK\tw");
+    allTypes.push_back("LOOKAT\tl");
+    allTypes.push_back("NONE\tn");
     navTypeCount = 5;
     int j = 0;
     for (vector<string>::iterator allList = allTypes.begin();
          allList != allTypes.end(); allList++) {
       navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString((*allList).c_str(),wxConvUTF8),
                                       wxT("Select a navigation mode"));
-      Connect(FRAME_NAVIGATION + j,wxEVT_MENU_HIGHLIGHT,
-              wxMenuEventHandler(WxFrame::GetSelection));
       Connect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED, 
               wxCommandEventHandler(WxFrame::ChangeNavigation));
       j++;
@@ -2473,9 +2422,11 @@ void WxFrame::buildNavMenu () {
   navigationMenu->AppendCheckItem( BASIC_COLLISION, wxT( "Avatar collision" ),
     wxT("Turn on and off collision between avatar and objects in scene"));
   navigationMenu->
-    FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 )->Check( avatar_collision );
+    FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 )->
+      Check( avatar_collision );
   navigationMenu->Append( FRAME_SPEED, wxT("Speed"),
-                 wxT("Opens a slider bar used to adjust navigation speed" ));
+                 wxT("Adjust navigation speed."
+                     "+ to increase, - to decrease." ));
 
   navigationMenu->AppendSeparator();
   if( !navigationDevices ) {
@@ -2658,8 +2609,6 @@ void WxFrame::BuildViewpointsSubMenu(
         menu->Check(id, true);
         current_viewpoint_id = id;
       }
-      Connect(id ,wxEVT_MENU_HIGHLIGHT,
-              wxMenuEventHandler(WxFrame::GetSelection));
       Connect(id, wxEVT_COMMAND_MENU_SELECTED,
               wxCommandEventHandler(WxFrame::ChangeViewpoint));
       itemIdViewpointMap[id] = vp;
@@ -2687,8 +2636,6 @@ void WxFrame::DestroyViewpointsSubMenu( wxMenu * menu ) {
       // if is a viewpoint, disconnect events
       if ( !(*i)->IsSeparator() && id != FRAME_RESET_VIEWPOINT ) {
         viewpointMenu->Destroy( id );
-        Disconnect(id, wxEVT_MENU_HIGHLIGHT,
-                  wxMenuEventHandler(WxFrame::GetSelection));
         Disconnect(id, wxEVT_COMMAND_MENU_SELECTED,
                   wxCommandEventHandler(WxFrame::ChangeViewpoint));
       }

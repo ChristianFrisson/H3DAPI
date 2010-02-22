@@ -197,7 +197,7 @@ ELSE( APPLE )
 ENDIF( APPLE )
 
 # Add a cache variable GENERATE_H3DVIEWER_CPACK_PROJECT to have the choice of generating a project
-# for packaging H3DAPI. Default is NO since most people will not use this.
+# for packaging H3DViewer. Default is NO since most people will not use this.
 IF( NOT DEFINED GENERATE_H3DVIEWER_CPACK_PROJECT )
   SET( GENERATE_H3DVIEWER_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
   MARK_AS_ADVANCED(GENERATE_H3DVIEWER_CPACK_PROJECT)
