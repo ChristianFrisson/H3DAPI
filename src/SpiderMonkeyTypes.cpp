@@ -35,6 +35,11 @@
 #include <H3D/X3DTypeFunctions.h>
 #include <H3D/SAIFunctions.h>
 #include <H3D/X3D.h>
+#include<typeinfo>
+
+#include<sstream>
+
+
 
 #ifdef HAVE_SPIDERMONKEY
 
@@ -46,18 +51,6 @@ const typename FieldType::value_type &getValueNoAccessCheck( FieldType *field ) 
   bool access = field->isAccessCheckOn();
   field->setAccessCheck( false );
   const typename FieldType::value_type &b = field->getValue();
-  field->setAccessCheck( access );
-  return b;
-}
-
-// Need special case for SFNode for optimized build
-// using Visual Studio 2010 or the value used when
-// calling the function will be the field pointer given as
-// argument. Don't know why.
-Node *getValueNoAccessCheck( SFNode *field ) {
-  bool access = field->isAccessCheckOn();
-  field->setAccessCheck( false );
-  Node *b = field->getValue();
   field->setAccessCheck( access );
   return b;
 }
@@ -89,16 +82,12 @@ void MField_setValueNoAccessCheck( FieldType *field,
   field->setAccessCheck( access );
 }
 
-JSBool SpiderMonkey::FieldObject_toString(JSContext *cx, JSObject *obj, 
-					  uintN argc, jsval *argv,
-					  jsval *rval) {
+JSBool SpiderMonkey::FieldObject_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
 
-  FieldObjectPrivate *private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
   Field* this_field = static_cast<Field *>(private_data->getPointer());
   
- 
-  // make sure we have a value
+   // make sure we have a value
   if (!this_field ) return JS_FALSE;
   
   ParsableField *pfield = dynamic_cast< ParsableField * >( this_field );
@@ -107,157 +96,718 @@ JSBool SpiderMonkey::FieldObject_toString(JSContext *cx, JSObject *obj,
   // return string representation of the Vec3f
   string s = pfield->getValueAsString();
   
-  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
-					      (char *)s.c_str(),
-					      s.length() ) );
+  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char *)s.c_str(), s.length() ) );
   return JS_TRUE;
 } 
 
-//////////////////////////////////////////////////////////
-// SFVec3f object
 
-JSBool SpiderMonkey::SFVec3f_construct(JSContext *cx, JSObject *obj, 
-                                       uintN argc, jsval *argv,
-                                       jsval *rval) {
+//=======================================================
+//=======================================================
+// SFVEC2F
+//=======================================================
+//=======================================================
+
+JSBool SpiderMonkey::SFVec2f_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
   // check that we have enough arguments and that they are of
   // correct type.
-  if( argc > 3 ||
-      ( argc > 2 && !JSVAL_IS_NUMBER( argv[2] ) ) ||
-      ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
-      ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+  if( argc > 2 || 
+    ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
+    ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+    JS_ReportError(cx, "Constructor: Invalid number provided.");
     return JS_FALSE;
   }
-
-  Vec3f v( 0, 0, 0 );
-
+  Vec2f v( 0, 0 );
   if( argc > 0 ) {
     jsdouble x;
     if(!JS_ValueToNumber( cx, argv[0], &x) ) return JS_FALSE;
     v.x = (H3DFloat) x;
   }
-
   if( argc > 1 ) {
     jsdouble y;
     if(!JS_ValueToNumber( cx, argv[1], &y) ) return JS_FALSE;
     v.y = (H3DFloat) y;
   }
+  // create return value
+  SFVec2f *return_f = new SFVec2f(v);
+  *rval = OBJECT_TO_JSVAL( SFVec2f_newInstance( cx, return_f, true ) ); 
+  return JS_TRUE;
+}
 
+JSBool SpiderMonkey::SFVec2f_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec2fClass, &SFVec2fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec2f* rp = new SFVec2f();
+  if ( !helper_calculate2_TTT<SFVec2f>( cx, obj, &argv[0], rp, O_ADD )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec2f_newInstance( cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec2fClass, &SFVec2fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec2f* r_sfv3f = new SFVec2f();
+  if ( !helper_calculate2_TTT<SFVec2f>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec2f_newInstance( cx, r_sfv3f, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec2fClass, &SFNumberClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2f* rp = new SFVec2f();
+  if ( !helper_calculate2_TNT<SFVec2f, H3DFloat>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    return JS_FALSE;
+  }
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec2f_newInstance(cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type SFVec2f
+  JSClass* type_classes[] = { &SFVec2fClass, &SFVec2fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // calculate and return result
+  if ( !helper_calculate2_TTN<SFVec2f, H3DFloat>( cx, obj, &argv[0], rval, O_DOT )) {
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_length(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec2fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2f* v = helper_extractPrivateObject<SFVec2f>( cx, obj );
+
+  if ( !JS_NewNumberValue(cx, v->getValue().length(), rval) )
+    return JS_FALSE; 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_multiple(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec2fClass, &SFNumberClass};
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2f* rp = new SFVec2f();
+  if ( !helper_calculate2_TNT<SFVec2f, H3DFloat>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    return JS_FALSE;
+  }
+
+  *rval = OBJECT_TO_JSVAL(SFVec2f_newInstance(cx, rp, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_negate(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec2fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // extract old value and calculate new value
+  SFVec2f* oldv = helper_extractPrivateObject<SFVec2f>(cx, obj);
+  SFVec2f* v = new SFVec2f( - oldv->getValue() );
+
+  *rval = OBJECT_TO_JSVAL(SFVec2f_newInstance(cx, v , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_normalize(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec2fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2f* oldv = helper_extractPrivateObject<SFVec2f>( cx, obj );
+  Vec2f value = oldv->getValue(); // copy constructor
+  value.normalizeSafe();
+  SFVec2f* newv = new SFVec2f(value);
+
+  *rval = OBJECT_TO_JSVAL(SFVec2f_newInstance(cx, newv , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  //cerr << "Get Property SFVec2f" << endl;
+  if (JSVAL_IS_INT(id)) {
+    SFVec2f* this_vec3f = static_cast<SFVec2f *>(private_data->getPointer());
+    const Vec2f &v = getValueNoAccessCheck( this_vec3f );
+
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC2F_X: {
+      JS_NewNumberValue( cx, v.x, vp ); 
+      break;
+    }
+    case SFVEC2F_Y: {
+      JS_NewNumberValue( cx, v.y, vp ); 
+      break;
+    }
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // sfvec3f_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFVec2f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  if (JSVAL_IS_INT(id)) {
+    SFVec2f* this_vec3f = static_cast<SFVec2f *>(private_data->getPointer());
+    Vec2f v = this_vec3f->getValue();
+
+    JSBool res = JS_TRUE;
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC2F_X: {
+      jsdouble x;
+      res = JS_ValueToNumber( cx, *vp, &x );
+      v.x = (H3DFloat) x;
+      break;
+    }
+    case SFVEC2F_Y: {
+      jsdouble y;
+      res = JS_ValueToNumber( cx, *vp, &y );
+      v.y = (H3DFloat) y;
+      break;
+    }
+    }
+    if( !res ) {
+      JS_ReportError(cx, "SFVec2f attribute must be convertable to Number" );
+      return JS_FALSE;
+    } else {
+      setValueNoAccessCheck( this_vec3f, v );
+      return JS_TRUE;
+    }
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // browser_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFVec2f_newInstance( JSContext *cx, SFVec2f *field, bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, &SFVec2fClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, SFVec2f_properties );
+  JS_DefineFunctions(cx, js_field, SFVec2f_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
+							       internal_field ) );
+  return js_field; 
+}
+
+
+
+//=======================================================
+//=======================================================
+// SFVEC2D
+//=======================================================
+//=======================================================
+
+JSBool SpiderMonkey::SFVec2d_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if( argc > 2 || 
+    ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
+    ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+    JS_ReportError(cx, "Constructor: Invalid number provided.");
+    return JS_FALSE;
+  }
+  Vec2d v( 0, 0 );
+  if( argc > 0 ) {
+    jsdouble x;
+    if(!JS_ValueToNumber( cx, argv[0], &x) ) return JS_FALSE;
+    v.x = (H3DDouble) x;
+  }
+  if( argc > 1 ) {
+    jsdouble y;
+    if(!JS_ValueToNumber( cx, argv[1], &y) ) return JS_FALSE;
+    v.y = (H3DDouble) y;
+  }
+  // create return value
+  SFVec2d *return_f = new SFVec2d(v);
+  *rval = OBJECT_TO_JSVAL( SFVec2d_newInstance( cx, return_f, true ) ); 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec2dClass, &SFVec2dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec2d* rp = new SFVec2d();
+  if ( !helper_calculate2_TTT<SFVec2d>( cx, obj, &argv[0], rp, O_ADD )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec2d_newInstance( cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec2dClass, &SFVec2dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec2d* r_sfv3f = new SFVec2d();
+  if ( !helper_calculate2_TTT<SFVec2d>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec2d_newInstance( cx, r_sfv3f, true ) );
+  return JS_TRUE;
+}
+
+
+JSBool SpiderMonkey::SFVec2d_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec2dClass, &SFNumberClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2d* rp = new SFVec2d();
+  if ( !helper_calculate2_TNT<SFVec2d, H3DDouble>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    return JS_FALSE;
+  }
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec2d_newInstance(cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type SFVec2d
+  JSClass* type_classes[] = { &SFVec2dClass, &SFVec2dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // calculate and return result
+  if ( !helper_calculate2_TTN<SFVec2d, H3DDouble>( cx, obj, &argv[0], rval, O_DOT )) {
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_length(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec2dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2d* v = helper_extractPrivateObject<SFVec2d>( cx, obj );
+
+  if ( !JS_NewNumberValue(cx, v->getValue().length(), rval) )
+    return JS_FALSE; 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_multiple(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec2dClass, &SFNumberClass};
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2d* rp = new SFVec2d();
+  if ( !helper_calculate2_TNT<SFVec2d, H3DDouble>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    return JS_FALSE;
+  }
+
+  *rval = OBJECT_TO_JSVAL(SFVec2d_newInstance(cx, rp, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_negate(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec2dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // extract old value and calculate new value
+  SFVec2d* oldv = helper_extractPrivateObject<SFVec2d>(cx, obj);
+  SFVec2d* v = new SFVec2d( - oldv->getValue() );
+
+  *rval = OBJECT_TO_JSVAL(SFVec2d_newInstance(cx, v , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_normalize(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec2dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec2d* oldv = helper_extractPrivateObject<SFVec2d>( cx, obj );
+  Vec2d value = oldv->getValue(); // copy constructor
+  value.normalizeSafe();
+  SFVec2d* newv = new SFVec2d(value);
+
+  *rval = OBJECT_TO_JSVAL(SFVec2d_newInstance(cx, newv , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec2d_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  //cerr << "Get Property SFVec2d" << endl;
+  if (JSVAL_IS_INT(id)) {
+    SFVec2d* this_vec3f = static_cast<SFVec2d *>(private_data->getPointer());
+    const Vec2d &v = getValueNoAccessCheck( this_vec3f );
+
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC2D_X: {
+      JS_NewNumberValue( cx, v.x, vp ); 
+      break;
+    }
+    case SFVEC2D_Y: {
+      JS_NewNumberValue( cx, v.y, vp ); 
+      break;
+    }
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // sfvec3f_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFVec2d_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  if (JSVAL_IS_INT(id)) {
+    SFVec2d* this_vec3f = static_cast<SFVec2d *>(private_data->getPointer());
+    Vec2d v = this_vec3f->getValue();
+
+    JSBool res = JS_TRUE;
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC2D_X: {
+      jsdouble x;
+      res = JS_ValueToNumber( cx, *vp, &x );
+      v.x = (H3DDouble) x;
+      break;
+    }
+    case SFVEC2D_Y: {
+      jsdouble y;
+      res = JS_ValueToNumber( cx, *vp, &y );
+      v.y = (H3DDouble) y;
+      break;
+    }
+    }
+    if( !res ) {
+      JS_ReportError(cx, "SFVec2d attribute must be convertable to Number" );
+      return JS_FALSE;
+    } else {
+      setValueNoAccessCheck( this_vec3f, v );
+      return JS_TRUE;
+    }
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // browser_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFVec2d_newInstance( JSContext *cx, SFVec2d *field, bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, 
+			   &SFVec2dClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, SFVec2d_properties );
+  JS_DefineFunctions(cx, js_field, SFVec2d_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
+							       internal_field ) );
+  return js_field; 
+}
+
+
+//=======================================================
+//=======================================================
+// SFVEC3F
+//=======================================================
+//=======================================================
+
+JSBool SpiderMonkey::SFVec3f_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if( argc > 3 || 
+    ( argc > 2 && !JSVAL_IS_NUMBER( argv[2] ) ) ||
+    ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
+    ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+    JS_ReportError(cx, "Constructor: Invalid number provided.");
+    return JS_FALSE;
+  }
+  Vec3f v( 0, 0, 0 );
+  if( argc > 0 ) {
+    jsdouble x;
+    if(!JS_ValueToNumber( cx, argv[0], &x) ) return JS_FALSE;
+    v.x = (H3DFloat) x;
+  }
+  if( argc > 1 ) {
+    jsdouble y;
+    if(!JS_ValueToNumber( cx, argv[1], &y) ) return JS_FALSE;
+    v.y = (H3DFloat) y;
+  }
   if( argc > 2 ) {
     jsdouble z;
     if(!JS_ValueToNumber( cx, argv[2], &z) ) return JS_FALSE;
     v.z = (H3DFloat) z;
   }
-  
   // create return value
-  SFVec3f *return_vec3f = new SFVec3f;
-  return_vec3f->setValue( v );
-  
-  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, 
-						return_vec3f,
-						true ) ); 
+  SFVec3f *return_f = new SFVec3f(v);
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, return_f, true ) ); 
   return JS_TRUE;
 }
 
-
- JSBool SpiderMonkey::SFVec3f_add(JSContext *cx, JSObject *obj, 
-                                  uintN argc, jsval *argv,
-                                  jsval *rval) {
-   // check that this object is a SFVec3f_class 
-   if (!JS_InstanceOf(cx, obj, &SFVec3fClass, argv))
-      return JS_FALSE;
-
-   // check that we have enough arguments and that they are of
-   // correct type.
-   if( argc != 1 || 
-       !JSVAL_IS_OBJECT( argv[0] ) ||
-       !JS_InstanceOf( cx, JSVAL_TO_OBJECT( argv[0] ), &SFVec3fClass, argv ) ) {
-     return JS_FALSE;
-   }
-
-   FieldObjectPrivate *this_private_data = 
-     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-   FieldObjectPrivate *arg_private_data = 
-     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx, JSVAL_TO_OBJECT(argv[0])));
-
-   // make sure the objects have not been manually disposed by the user.
-   if( this_private_data->isDisposed() || arg_private_data->isDisposed() ) {
-     setJSException( cx, SAI::SAIError::SAI_DISPOSED );
-     return JS_FALSE;
-   }
-
-   SFVec3f* this_vec3f = static_cast<SFVec3f *>(this_private_data->getPointer());
-   SFVec3f* arg_vec3f =  static_cast<SFVec3f *>(arg_private_data->getPointer());
-
-   // make sure we have a value
-   if (!this_vec3f || !arg_vec3f ) return JS_FALSE;
-   
-   // create return value
-   SFVec3f *return_vec3f = new SFVec3f;
-   return_vec3f->setValue( this_vec3f->getValue() + arg_vec3f->getValue() );
-   
-   *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, 
-						 return_vec3f,
-						 true ) ); 
-   return JS_TRUE;
- }
-
-JSBool SpiderMonkey::SFVec3f_cross(JSContext *cx, JSObject *obj, 
-				   uintN argc, jsval *argv,
-				   jsval *rval) {
-   cerr << "cross" << endl;
-   return JS_TRUE;
+JSBool SpiderMonkey::SFVec3f_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec3fClass, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec3f* rp = new SFVec3f();
+  if ( !helper_calculate2_TTT<SFVec3f>( cx, obj, &argv[0], rp, O_ADD )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, rp, true ) );
+  return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFVec3f_divide(JSContext *cx, JSObject *obj, 
-				    uintN argc, jsval *argv,
-				    jsval *rval) {
-   cerr << "divide" << endl;
-   return JS_TRUE;
+JSBool SpiderMonkey::SFVec3f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec3fClass, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec3f* r_sfv3f = new SFVec3f();
+  if ( !helper_calculate2_TTT<SFVec3f>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, r_sfv3f, true ) );
+  return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFVec3f_dot(JSContext *cx, JSObject *obj, 
-				 uintN argc, jsval *argv,
-				 jsval *rval) {
-   cerr << "dot" << endl;
-   return JS_TRUE;
+JSBool SpiderMonkey::SFVec3f_cross(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec3fClass, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3f* sf1 = helper_extractPrivateObject<SFVec3f>( cx, obj );
+  SFVec3f* sf2 = helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT(argv[0]) );
+  SFVec3f* r_sf = new SFVec3f(sf1->getValue() % sf2->getValue());
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, r_sf, true ) );
+  return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFVec3f_length(JSContext *cx, JSObject *obj, 
-				    uintN argc, jsval *argv,
-				    jsval *rval) {
-   cerr << "length" << endl;
-   return JS_TRUE;
-}
-JSBool SpiderMonkey::SFVec3f_multiple(JSContext *cx, JSObject *obj, 
-				      uintN argc, jsval *argv,
-				      jsval *rval) {
-   cerr << "multiple" << endl;
-   return JS_TRUE;
+JSBool SpiderMonkey::SFVec3f_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec3fClass, &SFNumberClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3f* rp = new SFVec3f();
+  if ( !helper_calculate2_TNT<SFVec3f, H3DFloat>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    return JS_FALSE;
+  }
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance(cx, rp, true ) );
+  return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFVec3f_negate(JSContext *cx, JSObject *obj, 
-				    uintN argc, jsval *argv,
-				    jsval *rval) {
-   cerr << "negate" << endl;
-   return JS_TRUE;
+JSBool SpiderMonkey::SFVec3f_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type SFVec3f
+  JSClass* type_classes[] = { &SFVec3fClass, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // calculate and return result
+  if ( !helper_calculate2_TTN<SFVec3f, H3DFloat>( cx, obj, &argv[0], rval, O_DOT )) {
+    return JS_FALSE;
+  }
+  return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFVec3f_normalize(JSContext *cx, JSObject *obj, 
-				       uintN argc, jsval *argv,
-				       jsval *rval) {
-   cerr << "normalize" << endl;
-   return JS_TRUE;
+JSBool SpiderMonkey::SFVec3f_length(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3f* v = helper_extractPrivateObject<SFVec3f>( cx, obj );
+
+  if ( !JS_NewNumberValue(cx, v->getValue().length(), rval) )
+    return JS_FALSE; 
+  return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFVec3f_subtract(JSContext *cx, JSObject *obj, 
-				      uintN argc, jsval *argv,
-				      jsval *rval) {
-   cerr << "subtract" << endl;
-   return JS_TRUE;
+JSBool SpiderMonkey::SFVec3f_multiple(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec3fClass, &SFNumberClass};
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3f* rp = new SFVec3f();
+  if ( !helper_calculate2_TNT<SFVec3f, H3DFloat>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    return JS_FALSE;
+  }
+
+  *rval = OBJECT_TO_JSVAL(SFVec3f_newInstance(cx, rp, true) );
+  return JS_TRUE;
 }
 
-JSBool
-SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+JSBool SpiderMonkey::SFVec3f_negate(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // extract old value and calculate new value
+  SFVec3f* oldv = helper_extractPrivateObject<SFVec3f>(cx, obj);
+  SFVec3f* v = new SFVec3f( - oldv->getValue() );
+
+  *rval = OBJECT_TO_JSVAL(SFVec3f_newInstance(cx, v , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3f_normalize(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3f* oldv = helper_extractPrivateObject<SFVec3f>( cx, obj );
+  Vec3f value = oldv->getValue(); // copy constructor
+  value.normalizeSafe();
+  SFVec3f* newv = new SFVec3f(value);
+
+  *rval = OBJECT_TO_JSVAL(SFVec3f_newInstance(cx, newv , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
   FieldObjectPrivate *private_data = 
     static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
@@ -270,9 +820,7 @@ SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
 
   //cerr << "Get Property SFVec3f" << endl;
   if (JSVAL_IS_INT(id)) {
-   
     SFVec3f* this_vec3f = static_cast<SFVec3f *>(private_data->getPointer());
-
     const Vec3f &v = getValueNoAccessCheck( this_vec3f );
 
     switch (JSVAL_TO_INT(id)) {
@@ -306,19 +854,15 @@ SpiderMonkey::SFVec3f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
   }
 }
 
-JSBool
-SpiderMonkey::SFVec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+JSBool SpiderMonkey::SFVec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  FieldObjectPrivate *private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-  
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
   // make sure the object have not been manually disposed by the user.
   if( private_data->isDisposed()  ) {
     setJSException( cx, SAI::SAIError::SAI_DISPOSED );
     return JS_FALSE;
   }
 
-  //cerr << "Set Property SFVec3f" << endl;
   if (JSVAL_IS_INT(id)) {
     SFVec3f* this_vec3f = static_cast<SFVec3f *>(private_data->getPointer());
     Vec3f v = this_vec3f->getValue();
@@ -367,10 +911,7 @@ SpiderMonkey::SFVec3f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
   }
 }
 
-
-JSObject *SpiderMonkey::SFVec3f_newInstance( JSContext *cx,
-                                             SFVec3f *field,
-                                             bool internal_field ) {
+JSObject *SpiderMonkey::SFVec3f_newInstance( JSContext *cx, SFVec3f *field, bool internal_field ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
@@ -382,6 +923,1115 @@ JSObject *SpiderMonkey::SFVec3f_newInstance( JSContext *cx,
 							       internal_field ) );
   return js_field; 
 }
+
+
+
+//=======================================================
+//=======================================================
+// SFVEC3D
+//=======================================================
+//=======================================================
+
+JSBool SpiderMonkey::SFVec3d_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if( argc > 3 || 
+    ( argc > 2 && !JSVAL_IS_NUMBER( argv[2] ) ) ||
+    ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
+    ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+    JS_ReportError(cx, "Constructor: Invalid number provided.");
+    return JS_FALSE;
+  }
+  Vec3d v( 0, 0, 0 );
+  if( argc > 0 ) {
+    jsdouble x;
+    if(!JS_ValueToNumber( cx, argv[0], &x) ) return JS_FALSE;
+    v.x = (H3DDouble) x;
+  }
+  if( argc > 1 ) {
+    jsdouble y;
+    if(!JS_ValueToNumber( cx, argv[1], &y) ) return JS_FALSE;
+    v.y = (H3DDouble) y;
+  }
+  if( argc > 2 ) {
+    jsdouble z;
+    if(!JS_ValueToNumber( cx, argv[2], &z) ) return JS_FALSE;
+    v.z = (H3DDouble) z;
+  }
+  // create return value
+  SFVec3d *return_f = new SFVec3d(v);
+  *rval = OBJECT_TO_JSVAL( SFVec3d_newInstance( cx, return_f, true ) ); 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec3dClass, &SFVec3dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec3d* rp = new SFVec3d();
+  if ( !helper_calculate2_TTT<SFVec3d>( cx, obj, &argv[0], rp, O_ADD )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3d_newInstance( cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec3dClass, &SFVec3dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec3d* r_sfv3f = new SFVec3d();
+  if ( !helper_calculate2_TTT<SFVec3d>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3d_newInstance( cx, r_sfv3f, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_cross(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec3dClass, &SFVec3dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3d* sf1 = helper_extractPrivateObject<SFVec3d>( cx, obj );
+  SFVec3d* sf2 = helper_extractPrivateObject<SFVec3d>( cx, JSVAL_TO_OBJECT(argv[0]) );
+  SFVec3d* r_sf = new SFVec3d(sf1->getValue() % sf2->getValue());
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3d_newInstance( cx, r_sf, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec3dClass, &SFNumberClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3d* rp = new SFVec3d();
+  if ( !helper_calculate2_TNT<SFVec3d, H3DDouble>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    return JS_FALSE;
+  }
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec3d_newInstance(cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type SFVec3d
+  JSClass* type_classes[] = { &SFVec3dClass, &SFVec3dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // calculate and return result
+  if ( !helper_calculate2_TTN<SFVec3d, H3DDouble>( cx, obj, &argv[0], rval, O_DOT )) {
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_length(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec3dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3d* v = helper_extractPrivateObject<SFVec3d>( cx, obj );
+
+  if ( !JS_NewNumberValue(cx, v->getValue().length(), rval) )
+    return JS_FALSE; 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_multiple(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec3dClass, &SFNumberClass};
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3d* rp = new SFVec3d();
+  if ( !helper_calculate2_TNT<SFVec3d, H3DDouble>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    return JS_FALSE;
+  }
+
+  *rval = OBJECT_TO_JSVAL(SFVec3d_newInstance(cx, rp, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_negate(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec3dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // extract old value and calculate new value
+  SFVec3d* oldv = helper_extractPrivateObject<SFVec3d>(cx, obj);
+  SFVec3d* v = new SFVec3d( - oldv->getValue() );
+
+  *rval = OBJECT_TO_JSVAL(SFVec3d_newInstance(cx, v , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_normalize(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec3dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3d* oldv = helper_extractPrivateObject<SFVec3d>( cx, obj );
+  Vec3d value = oldv->getValue(); // copy constructor
+  value.normalizeSafe();
+  SFVec3d* newv = new SFVec3d(value);
+
+  *rval = OBJECT_TO_JSVAL(SFVec3d_newInstance(cx, newv , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec3d_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  //cerr << "Get Property SFVec3d" << endl;
+  if (JSVAL_IS_INT(id)) {
+    SFVec3d* this_vec3f = static_cast<SFVec3d *>(private_data->getPointer());
+    const Vec3d &v = getValueNoAccessCheck( this_vec3f );
+
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC3D_X: {
+      JS_NewNumberValue( cx, v.x, vp ); 
+      break;
+    }
+    case SFVEC3D_Y: {
+      JS_NewNumberValue( cx, v.y, vp ); 
+      break;
+    }
+    case SFVEC3D_Z: {
+      JS_NewNumberValue( cx, v.z, vp ); 
+      break;
+    }
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // sfvec3f_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFVec3d_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  if (JSVAL_IS_INT(id)) {
+    SFVec3d* this_vec3f = static_cast<SFVec3d *>(private_data->getPointer());
+    Vec3d v = this_vec3f->getValue();
+
+    JSBool res = JS_TRUE;
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC3D_X: {
+      jsdouble x;
+      res = JS_ValueToNumber( cx, *vp, &x );
+      v.x = (H3DDouble) x;
+      break;
+    }
+    case SFVEC3D_Y: {
+      jsdouble y;
+      res = JS_ValueToNumber( cx, *vp, &y );
+      v.y = (H3DDouble) y;
+      break;
+    }
+    case SFVEC3D_Z: {
+      jsdouble z;
+      res = JS_ValueToNumber( cx, *vp, &z );
+      v.z = (H3DDouble) z;
+      break;
+    }
+    }
+    if( !res ) {
+      JS_ReportError(cx, "SFVec3d attribute must be convertable to Number" );
+      return JS_FALSE;
+    } else {
+      setValueNoAccessCheck( this_vec3f, v );
+      return JS_TRUE;
+    }
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // browser_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFVec3d_newInstance( JSContext *cx, SFVec3d *field, bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, 
+			   &SFVec3dClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, SFVec3d_properties );
+  JS_DefineFunctions(cx, js_field, SFVec3d_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
+							       internal_field ) );
+  return js_field; 
+}
+
+
+
+//=======================================================
+//=======================================================
+// SFVEC4F
+//=======================================================
+//=======================================================
+
+JSBool SpiderMonkey::SFVec4f_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if( argc > 4 || 
+    ( argc > 3 && !JSVAL_IS_NUMBER( argv[3] ) ) ||
+    ( argc > 2 && !JSVAL_IS_NUMBER( argv[2] ) ) ||
+    ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
+    ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+    JS_ReportError(cx, "Constructor: Invalid number provided.");
+    return JS_FALSE;
+  }
+  Vec4f v( 0, 0, 0, 0 );
+  if( argc > 0 ) {
+    jsdouble x;
+    if(!JS_ValueToNumber( cx, argv[0], &x) ) return JS_FALSE;
+    v.x = (H3DFloat) x;
+  }
+  if( argc > 1 ) {
+    jsdouble y;
+    if(!JS_ValueToNumber( cx, argv[1], &y) ) return JS_FALSE;
+    v.y = (H3DFloat) y;
+  }
+  if( argc > 2 ) {
+    jsdouble z;
+    if(!JS_ValueToNumber( cx, argv[2], &z) ) return JS_FALSE;
+    v.z = (H3DFloat) z;
+  }
+  if( argc > 3 ) {
+    jsdouble w;
+    if(!JS_ValueToNumber( cx, argv[3], &w) ) return JS_FALSE;
+    v.w = (H3DFloat) w;
+  }
+  // create return value
+  SFVec4f *return_f = new SFVec4f(v);
+  *rval = OBJECT_TO_JSVAL( SFVec4f_newInstance( cx, return_f, true ) ); 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4f_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec4fClass, &SFVec4fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec4f* rp = new SFVec4f();
+  if ( !helper_calculate2_TTT<SFVec4f>( cx, obj, &argv[0], rp, O_ADD )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec4f_newInstance( cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4f_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec4fClass, &SFVec4fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec4f* r_sfv3f = new SFVec4f();
+  if ( !helper_calculate2_TTT<SFVec4f>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec4f_newInstance( cx, r_sfv3f, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4f_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec4fClass, &SFNumberClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec4f* rp = new SFVec4f();
+  if ( !helper_calculate2_TNT<SFVec4f, H3DFloat>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    return JS_FALSE;
+  }
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec4f_newInstance(cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4f_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type SFVec4f
+  JSClass* type_classes[] = { &SFVec4fClass, &SFVec4fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // calculate and return result
+  if ( !helper_calculate2_TTN<SFVec4f, H3DFloat>( cx, obj, &argv[0], rval, O_DOT )) {
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4f_multiple(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec4fClass, &SFNumberClass};
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec4f* rp = new SFVec4f();
+  if ( !helper_calculate2_TNT<SFVec4f, H3DFloat>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    return JS_FALSE;
+  }
+
+  *rval = OBJECT_TO_JSVAL(SFVec4f_newInstance(cx, rp, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4f_negate(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec4fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // extract old value and calculate new value
+  SFVec4f* oldv = helper_extractPrivateObject<SFVec4f>(cx, obj);
+  SFVec4f* v = new SFVec4f( - oldv->getValue() );
+
+  *rval = OBJECT_TO_JSVAL(SFVec4f_newInstance(cx, v , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  //cerr << "Get Property SFVec4f" << endl;
+  if (JSVAL_IS_INT(id)) {
+    SFVec4f* this_vec3f = static_cast<SFVec4f *>(private_data->getPointer());
+    const Vec4f &v = getValueNoAccessCheck( this_vec3f );
+
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC4F_X: {
+      JS_NewNumberValue( cx, v.x, vp ); 
+      break;
+    }
+    case SFVEC4F_Y: {
+      JS_NewNumberValue( cx, v.y, vp ); 
+      break;
+    }
+    case SFVEC4F_Z: {
+      JS_NewNumberValue( cx, v.z, vp ); 
+      break;
+    }
+    case SFVEC4F_W:
+      JS_NewNumberValue( cx, v.w, vp ); 
+      break;
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // sfvec3f_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFVec4f_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  if (JSVAL_IS_INT(id)) {
+    SFVec4f* this_vec3f = static_cast<SFVec4f *>(private_data->getPointer());
+    Vec4f v = this_vec3f->getValue();
+
+    JSBool res = JS_TRUE;
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC4F_X: {
+      jsdouble x;
+      res = JS_ValueToNumber( cx, *vp, &x );
+      v.x = (H3DFloat) x;
+      break;
+    }
+    case SFVEC4F_Y: {
+      jsdouble y;
+      res = JS_ValueToNumber( cx, *vp, &y );
+      v.y = (H3DFloat) y;
+      break;
+    }
+    case SFVEC4F_Z: {
+      jsdouble z;
+      res = JS_ValueToNumber( cx, *vp, &z );
+      v.z = (H3DFloat) z;
+      break;
+    }
+    case SFVEC4F_W: {
+      jsdouble w;
+      res = JS_ValueToNumber( cx, *vp, &w );
+      v.w = (H3DFloat) w;
+      break;
+    }
+    }
+    if( !res ) {
+      JS_ReportError(cx, "SFVec4f attribute must be convertable to Number" );
+      return JS_FALSE;
+    } else {
+      setValueNoAccessCheck( this_vec3f, v );
+      return JS_TRUE;
+    }
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // browser_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFVec4f_newInstance( JSContext *cx, SFVec4f *field, bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, &SFVec4fClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, SFVec4f_properties );
+  JS_DefineFunctions(cx, js_field, SFVec4f_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
+							       internal_field ) );
+  return js_field; 
+}
+
+//=======================================================
+//=======================================================
+// SFVEC4D
+//=======================================================
+//=======================================================
+
+JSBool SpiderMonkey::SFVec4d_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if( argc > 4 || 
+    ( argc > 3 && !JSVAL_IS_NUMBER( argv[3] ) ) ||
+    ( argc > 2 && !JSVAL_IS_NUMBER( argv[2] ) ) ||
+    ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
+    ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+    JS_ReportError(cx, "Constructor: Invalid number provided.");
+    return JS_FALSE;
+  }
+  Vec4d v( 0, 0, 0, 0 );
+  if( argc > 0 ) {
+    jsdouble x;
+    if(!JS_ValueToNumber( cx, argv[0], &x) ) return JS_FALSE;
+    v.x = (H3DDouble) x;
+  }
+  if( argc > 1 ) {
+    jsdouble y;
+    if(!JS_ValueToNumber( cx, argv[1], &y) ) return JS_FALSE;
+    v.y = (H3DDouble) y;
+  }
+  if( argc > 2 ) {
+    jsdouble z;
+    if(!JS_ValueToNumber( cx, argv[2], &z) ) return JS_FALSE;
+    v.z = (H3DDouble) z;
+  }
+  if( argc > 3 ) {
+    jsdouble w;
+    if(!JS_ValueToNumber( cx, argv[3], &w) ) return JS_FALSE;
+    v.w = (H3DDouble) w;
+  }
+  // create return value
+  SFVec4d *return_f = new SFVec4d(v);
+  *rval = OBJECT_TO_JSVAL( SFVec4d_newInstance( cx, return_f, true ) ); 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4d_add(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec4dClass, &SFVec4dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec4d* rp = new SFVec4d();
+  if ( !helper_calculate2_TTT<SFVec4d>( cx, obj, &argv[0], rp, O_ADD )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec4d_newInstance( cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4d_subtract(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class sfvec3f
+  JSClass* type_classes[] = { &SFVec4dClass, &SFVec4dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // calculate the result
+  SFVec4d* r_sfv3f = new SFVec4d();
+  if ( !helper_calculate2_TTT<SFVec4d>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+    return JS_FALSE;
+  }
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec4d_newInstance( cx, r_sfv3f, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4d_divide(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec4dClass, &SFNumberClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec4d* rp = new SFVec4d();
+  if ( !helper_calculate2_TNT<SFVec4d, H3DDouble>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    return JS_FALSE;
+  }
+
+  // now convert to jsval and return it
+  *rval = OBJECT_TO_JSVAL( SFVec4d_newInstance(cx, rp, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4d_dot(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type SFVec4d
+  JSClass* type_classes[] = { &SFVec4dClass, &SFVec4dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // calculate and return result
+  if ( !helper_calculate2_TTN<SFVec4d, H3DDouble>( cx, obj, &argv[0], rval, O_DOT )) {
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4d_multiple(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of type number
+  JSClass* type_classes[] = { &SFVec4dClass, &SFNumberClass};
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec4d* rp = new SFVec4d();
+  if ( !helper_calculate2_TNT<SFVec4d, H3DDouble>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    return JS_FALSE;
+  }
+
+  *rval = OBJECT_TO_JSVAL(SFVec4d_newInstance(cx, rp, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4d_negate(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &SFVec4dClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  // extract old value and calculate new value
+  SFVec4d* oldv = helper_extractPrivateObject<SFVec4d>(cx, obj);
+  SFVec4d* v = new SFVec4d( - oldv->getValue() );
+
+  *rval = OBJECT_TO_JSVAL(SFVec4d_newInstance(cx, v , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFVec4d_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = 
+    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  //cerr << "Get Property SFVec4d" << endl;
+  if (JSVAL_IS_INT(id)) {
+    SFVec4d* this_vec3f = static_cast<SFVec4d *>(private_data->getPointer());
+    const Vec4d &v = getValueNoAccessCheck( this_vec3f );
+
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC4D_X: {
+      JS_NewNumberValue( cx, v.x, vp ); 
+      break;
+    }
+    case SFVEC4D_Y: {
+      JS_NewNumberValue( cx, v.y, vp ); 
+      break;
+    }
+    case SFVEC4D_Z: {
+      JS_NewNumberValue( cx, v.z, vp ); 
+      break;
+    }
+    case SFVEC4D_W: {
+      JS_NewNumberValue( cx, v.w, vp ); 
+      break;
+    }
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // sfvec3f_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFVec4d_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  // make sure the object have not been manually disposed by the user.
+  if( private_data->isDisposed()  ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return JS_FALSE;
+  }
+
+  if (JSVAL_IS_INT(id)) {
+    SFVec4d* this_vec3f = static_cast<SFVec4d *>(private_data->getPointer());
+    Vec4d v = this_vec3f->getValue();
+
+    JSBool res = JS_TRUE;
+    switch (JSVAL_TO_INT(id)) {
+    case SFVEC4D_X: {
+      jsdouble x;
+      res = JS_ValueToNumber( cx, *vp, &x );
+      v.x = (H3DDouble) x;
+      break;
+    }
+    case SFVEC4D_Y: {
+      jsdouble y;
+      res = JS_ValueToNumber( cx, *vp, &y );
+      v.y = (H3DDouble) y;
+      break;
+    }
+    case SFVEC4D_Z: {
+      jsdouble z;
+      res = JS_ValueToNumber( cx, *vp, &z );
+      v.z = (H3DDouble) z;
+      break;
+    }
+    case SFVEC4D_W: {
+      jsdouble w;
+      res = JS_ValueToNumber( cx, *vp, &w );
+      v.w = (H3DDouble) w;
+      break;
+    }
+    }
+    if( !res ) {
+      JS_ReportError(cx, "SFVec4d attribute must be convertable to Number" );
+      return JS_FALSE;
+    } else {
+      setValueNoAccessCheck( this_vec3f, v );
+      return JS_TRUE;
+    }
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // browser_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFVec4d_newInstance( JSContext *cx, SFVec4d *field, bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, &SFVec4dClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, SFVec4d_properties );
+  JS_DefineFunctions(cx, js_field, SFVec4d_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
+							       internal_field ) );
+  return js_field; 
+}
+
+
+
+//=======================================================
+//=======================================================
+// SFRotation
+//=======================================================
+//=======================================================
+
+JSBool SpiderMonkey::SFRotation_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+
+  auto_ptr<Rotation> vp;
+
+  // 2 arguments, (Vec3f, Vec3f) -- 3rd case
+  if ( argc == 2 
+    && JSVAL_IS_OBJECT(argv[0]) && JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]), &SFVec3fClass, argv)
+    && JSVAL_IS_OBJECT(argv[1]) && JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[1]), &SFVec3fClass, argv) )
+  {
+    SFVec3f* v1 = helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT( argv[0] ) );
+    SFVec3f* v2 = helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT( argv[1] ) );
+
+    if ( H3DAbs(v1->getValue().length()-1) > std::numeric_limits< H3DFloat >::epsilon()
+      || H3DAbs(v2->getValue().length()-1) > std::numeric_limits< H3DFloat >::epsilon() )
+    {
+      JS_ReportError(cx, "Provided vectors are not normalized" );
+      return JS_FALSE;
+    }
+    vp.reset( new Rotation( v1->getValue(), v2->getValue() ) );
+  }
+  // 2 arguments, (Vec3f, num) -- 2nd case
+  else if ( argc == 2
+    && JSVAL_IS_OBJECT(argv[0]) && JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[0]), &SFVec3fClass, argv)
+    && JSVAL_IS_NUMBER( argv[1] ) )
+  {
+    SFVec3f* v = helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT( argv[0] ) );
+    jsdouble jsd;
+    JS_ValueToNumber(cx, argv[1], &jsd );
+    vp.reset( new Rotation( v->getValue(), (H3DFloat)jsd ) );
+  }
+  // wrong arguments
+  else if ( argc > 4 || 
+    ( argc > 3 && !JSVAL_IS_NUMBER( argv[3] ) ) ||
+    ( argc > 2 && !JSVAL_IS_NUMBER( argv[2] ) ) ||
+    ( argc > 1 && !JSVAL_IS_NUMBER( argv[1] ) ) ||
+    ( argc > 0 && !JSVAL_IS_NUMBER( argv[0] ) ) ) {
+    JS_ReportError(cx, "Constructor: Invalid number provided.");
+    return JS_FALSE;
+  }
+  else {
+    // first case
+    vp.reset( new Rotation( 0, 1, 0, 0 ) );
+    if( argc > 0 ) {
+      jsdouble x;
+      if(!JS_ValueToNumber( cx, argv[0], &x) ) return JS_FALSE;
+      vp->axis.x = (H3DFloat) x;
+    }
+    if( argc > 1 ) {
+      jsdouble y;
+      if(!JS_ValueToNumber( cx, argv[1], &y) ) return JS_FALSE;
+      vp->axis.y = (H3DFloat) y;
+    }
+    if( argc > 2 ) {
+      jsdouble z;
+      if(!JS_ValueToNumber( cx, argv[2], &z) ) return JS_FALSE;
+      vp->axis.z = (H3DFloat) z;
+    }
+    if( argc > 3 ) {
+      jsdouble angle;
+      if(!JS_ValueToNumber( cx, argv[3], &angle) ) return JS_FALSE;
+      vp->angle = (H3DFloat) angle;
+    }
+  }
+
+  // create return value
+  SFRotation *return_f = new SFRotation( *vp );
+  *rval = OBJECT_TO_JSVAL( SFRotation_newInstance( cx, return_f, true ) ); 
+  return JS_TRUE;
+}
+
+// member functions
+JSBool SpiderMonkey::SFRotation_getAxis( JSContext *cx, JSObject *obj, uintN argc, 
+                                        jsval *argv, jsval *rval )
+{
+  JSClass* arg_classes[] = { &SFRotationClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, arg_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFRotation* sfr_p = helper_extractPrivateObject<SFRotation>( cx, obj );
+  
+  SFVec3f* sfreturn_p = new SFVec3f( sfr_p->getValue().axis );
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, sfreturn_p, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFRotation_inverse( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval ) {
+  JSClass* arg_classes[] = { &SFRotationClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, arg_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFRotation* sfr_p = helper_extractPrivateObject<SFRotation>( cx, obj );
+  
+  SFRotation* sfreturn_p = new SFRotation( -sfr_p->getValue() );
+  *rval = OBJECT_TO_JSVAL( SFRotation_newInstance( cx, sfreturn_p, true ) );
+  return JS_TRUE;
+}
+JSBool SpiderMonkey::SFRotation_multiply( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval ) {
+  JSClass* arg_classes[] = { &SFRotationClass, &SFRotationClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, arg_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFRotation* sfr1 = helper_extractPrivateObject<SFRotation>( cx, JSVAL_TO_OBJECT( argv[0] ) );
+  SFRotation* sfr_p = helper_extractPrivateObject<SFRotation>( cx, obj );
+
+  SFRotation* sfreturn_p = new SFRotation( sfr_p->getValue() * sfr1->getValue() );
+  *rval = OBJECT_TO_JSVAL( SFRotation_newInstance( cx, sfreturn_p, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFRotation_multiVec( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval ) {
+  JSClass* arg_classes[] = { &SFRotationClass, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, arg_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3f* sfv = helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT( argv[0] ) );
+  SFRotation* sfr_p = helper_extractPrivateObject<SFRotation>( cx, obj );
+
+  SFVec3f* sfreturn_p = new SFVec3f( sfr_p->getValue() * sfv->getValue() );
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, sfreturn_p, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFRotation_setAxis( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval ) {
+  JSClass* arg_classes[] = { &SFRotationClass, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, arg_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFVec3f* sfv = helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT( argv[0] ) );
+  SFRotation* sfr_p = helper_extractPrivateObject<SFRotation>( cx, obj );
+
+  Rotation r = sfr_p->getValue();
+  r.axis = sfv->getValue();
+  sfr_p->setValue(r);
+
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFRotation_slerp( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval ) {
+  JSClass* arg_classes[] = { &SFRotationClass, &SFRotationClass, &SFNumberClass};
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 2, arg_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFRotation* sfr_p = helper_extractPrivateObject<SFRotation>( cx, obj );
+  SFRotation* sfr1 = helper_extractPrivateObject<SFRotation>( cx, JSVAL_TO_OBJECT( argv[0] ) );
+  jsdouble num;
+  JS_ValueToNumber( cx, argv[1], &num );
+
+  SFRotation* sfreturn_p = new SFRotation( sfr_p->getValue().slerp( sfr1->getValue(), (H3DFloat)num ) );
+  *rval = OBJECT_TO_JSVAL( SFRotation_newInstance( cx, sfreturn_p, true ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFRotation_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  if (JSVAL_IS_INT(id))
+  {
+    SFRotation* sf = helper_extractPrivateObject<SFRotation>( cx, obj );
+    if (sf == 0) {
+      return JS_FALSE;
+    }
+    const Rotation &v = getValueNoAccessCheck( sf );
+
+    switch (JSVAL_TO_INT(id)) {
+      case SFRotation_X:
+        JS_NewNumberValue( cx, v.axis.x, vp ); 
+        break;
+        
+      case SFRotation_Y:
+        JS_NewNumberValue( cx, v.axis.y, vp ); 
+        break;
+
+      case SFRotation_Z:
+        JS_NewNumberValue( cx, v.axis.z, vp ); 
+        break;
+      
+      case SFRotation_ANGLE:
+        JS_NewNumberValue( cx, v.angle, vp ); 
+        break;
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // sfvec3f_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if ( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFRotation_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+
+  if (JSVAL_IS_INT(id))
+  {
+    SFRotation* sf = helper_extractPrivateObject<SFRotation>( cx, obj );
+    if (sf == 0) return JS_FALSE;
+
+    Rotation v = sf->getValue();
+    JSBool res = JS_TRUE;
+
+    switch (JSVAL_TO_INT(id))
+    {
+      case SFRotation_X:
+        jsdouble x;
+        res = JS_ValueToNumber( cx, *vp, &x );
+        v.axis.x = (H3DFloat) x;
+        break;
+      case SFRotation_Y:
+        jsdouble y;
+        res = JS_ValueToNumber( cx, *vp, &y );
+        v.axis.y = (H3DFloat) y;
+        break;
+      
+      case SFRotation_Z: 
+        jsdouble z;
+        res = JS_ValueToNumber( cx, *vp, &z );
+        v.axis.z = (H3DFloat) z;
+        break;
+      
+      case SFRotation_ANGLE: 
+        jsdouble angle;
+        res = JS_ValueToNumber( cx, *vp, &angle );
+        v.angle = (H3DFloat) angle;
+        break;
+    }
+
+    if( !res ) {
+      JS_ReportError(cx, "SFRotation attribute must be convertable to Number" );
+      return JS_FALSE;
+    } else {
+      setValueNoAccessCheck( sf, v );
+      return JS_TRUE;
+    }
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // browser_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFRotation_newInstance( JSContext *cx, SFRotation *field, bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, &SFRotationClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, SFRotation_properties );
+  JS_DefineFunctions(cx, js_field, SFRotation_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field ) );
+  return js_field; 
+}
+
 
 
 //////////////////////////////////////////////////////////
@@ -404,8 +2054,7 @@ JSBool SpiderMonkey::SFNode_construct(JSContext *cx, JSObject *obj,
   return JS_TRUE;
 }
 
-JSBool
-SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+JSBool SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
 
   FieldObjectPrivate *private_data = 
@@ -458,16 +2107,11 @@ SpiderMonkey::SFNode_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *
 }
 
 
-JSObject *SpiderMonkey::SFNode_newInstance( JSContext *cx,
-                                            SFNode *field,
-                                            bool internal_field ) {
+JSObject *SpiderMonkey::SFNode_newInstance( JSContext *cx,SFNode *field,bool internal_field ) {
   JSObject *js_field;
 
-  js_field = JS_NewObject( cx, 
-			   &SFNodeClass, NULL, NULL );  
+  js_field = JS_NewObject( cx, &SFNodeClass, NULL, NULL );  
 
-  //  JS_DefineProperties(cx, js_field, SFVec3f_properties );
-  //JS_DefineFunctions(cx, js_field, SFVec3f_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
 							       internal_field) );
   return js_field;
@@ -485,8 +2129,7 @@ JSBool SpiderMonkey::SFNode_getNodeName(JSContext *cx, JSObject *obj,
   if( argc != 0 )
     return JS_FALSE;
   
-  FieldObjectPrivate *this_private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+  FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
 
   // make sure the object have not been manually disposed by the user.
   if( this_private_data->isDisposed()  ) {
@@ -563,9 +2206,7 @@ JSBool SpiderMonkey::SFNode_toX3DString(JSContext *cx, JSObject *obj,
   return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFNode_toVRMLString(JSContext *cx, JSObject *obj, 
-                                         uintN argc, jsval *argv,
-                                         jsval *rval) {
+JSBool SpiderMonkey::SFNode_toVRMLString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
    cerr << "SFNode_toVRMLString" << endl;
    return JS_TRUE;
 }
@@ -574,9 +2215,7 @@ JSBool SpiderMonkey::SFNode_toVRMLString(JSContext *cx, JSObject *obj,
 //////////////////////////////////////////////////////////
 // SFColor object
 
-JSBool SpiderMonkey::SFColor_construct(JSContext *cx, JSObject *obj, 
-                                       uintN argc, jsval *argv,
-                                       jsval *rval) {
+JSBool SpiderMonkey::SFColor_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
   // check that we have enough arguments and that they are of
   // correct type.
   if( argc > 3 ||
@@ -586,7 +2225,7 @@ JSBool SpiderMonkey::SFColor_construct(JSContext *cx, JSObject *obj,
     return JS_FALSE;
   }
 
-  RGB v( 0, 0, 0 );
+  H3DUtil::RGB v( 0, 0, 0 );
 
   if( argc > 0 ) {
     jsdouble r;
@@ -610,43 +2249,61 @@ JSBool SpiderMonkey::SFColor_construct(JSContext *cx, JSObject *obj,
   SFColor *return_color = new SFColor;
   return_color->setValue( v );
   
-  *rval = OBJECT_TO_JSVAL( SFColor_newInstance( cx, 
-						return_color,
-						true ) ); 
+  *rval = OBJECT_TO_JSVAL( SFColor_newInstance( cx,  return_color, true ) ); 
   return JS_TRUE;
 } 
 
-JSBool SpiderMonkey::SFColor_getHSV(JSContext *cx, JSObject *obj, 
-				    uintN argc, jsval *argv,
-				    jsval *rval) {
-  cerr <<  "SFColor_getHSV" << endl;
+JSBool SpiderMonkey::SFColor_getHSV(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  SFColor* sfc = helper_extractPrivateObject<SFColor>( cx, obj );
+  if (sfc == 0) return JS_FALSE;
+
+  H3DUtil::RGB rgb = sfc->getValue();
+  Vec3f hsv = rgb.toHSV();
+  JSObject* jshsv = JS_NewArrayObject(cx, 3, NULL);
+  *rval = OBJECT_TO_JSVAL(jshsv);
+  jsval a, b, c;
+  JS_NewNumberValue(cx, hsv.x, &a);
+  JS_SetElement(cx, jshsv, 0, &a);
+  JS_NewNumberValue(cx, hsv.y, &b);
+  JS_SetElement(cx, jshsv, 1, &b);
+  JS_NewNumberValue(cx, hsv.z, &c);
+  JS_SetElement(cx, jshsv, 2, &c);
+
   return JS_TRUE;
 }
 
-JSBool SpiderMonkey::SFColor_setHSV(JSContext *cx, JSObject *obj, 
-				    uintN argc, jsval *argv,
-				    jsval *rval) {
-  cerr << "SFColor_setHSV" << endl;
-  return JS_TRUE;
-}
-
-JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx, 
-                                         JSObject *obj, 
-                                         jsval id, jsval *vp) {
-
-  FieldObjectPrivate *private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-
-  // make sure the object have not been manually disposed by the user.
-  if( private_data->isDisposed()  ) {
-    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+JSBool SpiderMonkey::SFColor_setHSV(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  JSClass* type_classes[] = { &SFColorClass, &SFNumberClass, &SFNumberClass, &SFNumberClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 3, type_classes ) ) {
     return JS_FALSE;
   }
 
+  SFColor* sfc = helper_extractPrivateObject<SFColor>(cx, obj );
+  if (sfc == 0)
+    return JS_FALSE;
+
+  Vec3f hsv;
+  jsdouble x, y, z;
+  JS_ValueToNumber(cx, argv[0], &x);
+  hsv.x = (H3DFloat) x;
+  JS_ValueToNumber(cx, argv[1], &y);
+  hsv.y = (H3DFloat) y;
+  JS_ValueToNumber(cx, argv[2], &z);
+  hsv.z = (H3DFloat) z;
+  H3DUtil::RGB rgb = sfc->getValue();
+  rgb.fromHSV(hsv);
+  sfc->setValue(rgb);
+
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  SFColor* sfc = helper_extractPrivateObject<SFColor>( cx, obj );
+  if (sfc == 0) return JS_FALSE;
+
   if (JSVAL_IS_INT(id)) {
-    
-    SFColor* this_color = static_cast<SFColor *>(private_data->getPointer());
-    const RGB &rgb = getValueNoAccessCheck( this_color );
+
+    const RGB &rgb = getValueNoAccessCheck( sfc  );
 
     switch (JSVAL_TO_INT(id)) {
     case SFCOLOR_R: {
@@ -679,21 +2336,10 @@ JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx,
     }
 }
 
-JSBool
-SpiderMonkey::SFColor_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+JSBool SpiderMonkey::SFColor_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
-  FieldObjectPrivate *private_data = 
-    static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-  
-  // make sure the object have not been manually disposed by the user.
-  if( private_data->isDisposed()  ) {
-    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
-    return JS_FALSE;
-  }
-
-  //  cerr << "Set Property SFColor" << endl;
+  SFColor* this_color = helper_extractPrivateObject<SFColor>( cx, obj );
   if (JSVAL_IS_INT(id)) {
-    SFColor* this_color = static_cast<SFColor *>(private_data->getPointer());
     RGB v = this_color->getValue();
     
     JSBool res = JS_TRUE;
@@ -740,23 +2386,195 @@ SpiderMonkey::SFColor_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval 
   }
 }
 
-
-JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx,
-                                             SFColor *field,
-                                             bool internal_field ) {
+JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx, SFColor *field, bool internal_field ) {
   JSObject *js_field;
 
-  js_field = JS_NewObject( cx, 
-			   &SFColorClass, NULL, NULL );  
+  js_field = JS_NewObject( cx, &SFColorClass, NULL, NULL );  
 
   JS_DefineProperties(cx, js_field, SFColor_properties );
   JS_DefineFunctions(cx, js_field, SFColor_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
 							       internal_field) );
-  //  cerr << "SFColor_newInstance: " << js_field << " " << field->getName() << " " << JS_GetPrivate( cx, js_field ) <<endl;
   return js_field;
 }
 
+
+//////////////////////////////////////////////////////////
+// SFImage object
+
+JSBool SpiderMonkey::SFImage_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if (! (argc == 4 && JSVAL_IS_NUMBER( argv[0] ) // width
+                && JSVAL_IS_NUMBER( argv[1] ) // height
+                && JSVAL_IS_INT( argv[2] )    // comp
+                && JSVAL_IS_OBJECT( argv[3] ) && JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[3]), &JS_MFInt32::js_class, argv) ) ) {
+    JS_ReportError(cx, "Wrong arguments");
+    return JS_FALSE;
+  }
+
+  jsdouble dx, dy, dcomp;
+  JS_ValueToNumber(cx, argv[0], &dx);
+  JS_ValueToNumber(cx, argv[1], &dy);
+  JS_ValueToNumber(cx, argv[2], &dcomp);
+  int x = (int)dx;
+  int y = (int)dy;
+  int comp = (int)dcomp;
+
+  MFInt32* arr_obj = helper_extractPrivateObject<MFInt32>( cx, JSVAL_TO_OBJECT(argv[3]) );
+  ImagePrivate* ip = new ImagePrivate(x, y, comp, arr_obj->getValue());
+
+  SFImagePrivate* sfimg = new SFImagePrivate(*ip);
+  *rval = OBJECT_TO_JSVAL( SFImage_newInstance( cx, sfimg, true ) ); 
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFImage_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  SFImagePrivate* sfimg = helper_extractPrivateObject<SFImagePrivate>( cx, obj );
+  ImagePrivate ip = sfimg->getValue();
+
+  if (sfimg == 0) return JS_FALSE;
+
+  if (JSVAL_IS_INT(id)) {
+    switch (JSVAL_TO_INT(id))
+    {
+      case SFImage_WIDTH:
+        *vp = INT_TO_JSVAL(ip.x());
+        return JS_TRUE;
+      case SFImage_HEIGHT:
+        *vp = INT_TO_JSVAL(ip.y());
+        return JS_TRUE;
+      case SFImage_COMP:
+        *vp = INT_TO_JSVAL( ip.comp() );
+        return JS_TRUE;
+      case SFImage_ARRAY:
+        // create jsobject wrapping the mfint32 object
+        MFInt32* mfint32 = new MFInt32();
+        mfint32->setValue(ip.arr());
+        JSObject* r_jsobj = JS_NewObject(cx, &JS_MFInt32::js_class, NULL, NULL);
+        JS_SetPrivate(cx, r_jsobj, (void *) new FieldObjectPrivate( mfint32 , true) );
+        *vp = OBJECT_TO_JSVAL( r_jsobj );
+
+        return JS_TRUE;
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // SFImage_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+	return JS_FALSE;
+      } else {
+	return JS_TRUE;
+      }
+    }
+}
+
+JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  SFImagePrivate* sfimg = helper_extractPrivateObject<SFImagePrivate>( cx, obj );
+  ImagePrivate ip = sfimg->getValue();
+
+  if (JSVAL_IS_INT(id)) {
+
+    JSBool res = JS_TRUE;
+    jsint i;
+    switch (JSVAL_TO_INT(id))
+    {
+      case SFImage_WIDTH:
+        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
+          JS_ReportError(cx, "Value must be number" );
+          return JS_FALSE;
+        }
+        if ( i <= 0 ) {
+          JS_ReportError(cx, "Value must be positive" );
+          return JS_FALSE;
+        }
+        ip.setX(i);
+        break;
+
+      case SFImage_HEIGHT:
+
+        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
+          JS_ReportError(cx, "Value must be number" );
+          return JS_FALSE;
+        }
+        if ( i <= 0 ) {
+          JS_ReportError(cx, "Value must be positive" );
+          return JS_FALSE;
+        }
+        ip.setY(i);
+        break;
+
+      case SFImage_COMP:
+        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
+          JS_ReportError(cx, "Value must be number" );
+          return JS_FALSE;
+        }
+        // must be either 1, 2, 3 or 4
+        if ( i <= 0 || i >= 5 ) {
+          JS_ReportError(cx, "Value must be either 1, 2, 3 or 4" );
+          return JS_FALSE;
+        }
+        ip.setComp(i);
+        break;
+
+      case SFImage_ARRAY:
+        // sanity check
+        if ( !JSVAL_IS_OBJECT(*vp) ) {
+          JS_ReportError(cx, "RHS must be object.");
+          return JS_FALSE;
+        }
+        if ( !JS_InstanceOf(cx, JSVAL_TO_OBJECT(*vp), &JS_MFInt32::js_class, 0) ) {
+          JS_ReportError(cx, "RHS must be an int array");
+          return JS_FALSE;
+        }
+        MFInt32* mfint32 = helper_extractPrivateObject<MFInt32>( cx, JSVAL_TO_OBJECT(*vp) );
+
+        // check for array size
+        vector<int> vals = mfint32->getValue();
+        if ( vals.size() != vals[0] * vals[1] + 3 ) {
+          JS_ReportError(cx, "Supplied int array has wrong number of arguments");
+          return JS_FALSE;
+        }
+
+        // convert to vector
+        ip.setArray(mfint32->getValue());
+
+        break;
+    }
+    setValueNoAccessCheck(sfimg, ip);
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // SFImage_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFImage_newInstance( JSContext *cx, SFImagePrivate *field, bool internal_field ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, &SFImageClass, NULL, NULL );  
+
+  JS_DefineProperties(cx, js_field, SFImage_properties );
+  JS_DefineFunctions(cx, js_field, SFImage_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field) );
+  return js_field;
+}
 
 //////////////////////////////////////////////////////////
 // X3DExecutionContext object
@@ -985,18 +2803,14 @@ JSObject *SpiderMonkey::X3DScene_newInstance( JSContext *cx,
 }
 
 
-JSObject *SpiderMonkey::Browser_newInstance( JSContext *cx,
-                                             SAI::Browser *browser,
-                                             bool internal_ptr ) {
+JSObject *SpiderMonkey::Browser_newInstance( JSContext *cx, SAI::Browser *browser, bool internal_ptr ) {
   JSObject *js_browser;
 
-  js_browser = JS_NewObject( cx, 
-			     &BrowserClass, NULL, NULL );  
-
+  js_browser = JS_NewObject( cx, &BrowserClass, NULL, NULL );  
   JS_DefineProperties(cx, js_browser, browser_properties );
   JS_DefineFunctions(cx, js_browser, browser_functions );
-  JS_SetPrivate(cx, js_browser, (void *) new BrowserPrivate( browser, 
-							   internal_ptr ) );
+
+  JS_SetPrivate(cx, js_browser, (void *) new BrowserPrivate( browser, internal_ptr ) );
   return js_browser; 
 }
 
@@ -1046,10 +2860,10 @@ JSBool SpiderMonkey::Browser_println(JSContext *cx,
   return JS_TRUE;
 }
 
-JSBool SpiderMonkey::Browser_createX3DFromString(JSContext *cx, 
-						 JSObject *obj, uintN argc, 
-						 jsval *argv, jsval *rval) {
-  
+JSBool SpiderMonkey::Browser_createX3DFromString(JSContext *cx, JSObject *obj, 
+                                                 uintN argc, jsval *argv, jsval *rval)
+{
+
   try {
     if( argc != 1 ) {
       JS_ReportError(cx, "createX3DFromString requires one argument." );
@@ -1114,17 +2928,11 @@ JSBool SpiderMonkey::Browser_createX3DFromURL(JSContext *cx,
   return JS_TRUE;
 }
 
-JSBool SpiderMonkey::Browser_setProperty(JSContext *cx, 
-					 JSObject *obj, 
-					 jsval id, 
-					 jsval *vp) {
+JSBool SpiderMonkey::Browser_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
   return JS_TRUE;
 }
 
-JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, 
-					 JSObject *obj, 
-					 jsval id, 
-					 jsval *vp)
+JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
   BrowserPrivate *private_data = 
     static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
@@ -1141,16 +2949,12 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx,
         switch (JSVAL_TO_INT(id)) {
         case BROWSER_VERSION: {
           string version = browser->getVersion();
-          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx,
-                                                    (char *)version.c_str(),
-                                                    version.length() ) );
+          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char *)version.c_str(), version.length() ) );
           break;
         }
         case BROWSER_NAME: {
           string name = browser->getName();
-          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx, 
-                                                   (char * )name.c_str(), 
-                                                    name.length() ) );
+          *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char * )name.c_str(), name.length() ) );
           break;
         }
 	case BROWSER_CURRENT_SCENE: {
@@ -1182,91 +2986,68 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 bool SpiderMonkey::insertH3DTypes( JSContext *cx, JSObject *obj ) {
   // TODO: FIX!!
-  JSObject *proto = JS_InitClass( cx, obj, NULL, 
+  JS_InitClass( cx, obj, NULL, 
+				  &SFVec2fClass, SFVec2f_construct, 3, 
+				  SFVec2f_properties, SFVec2f_functions, NULL, NULL );
+
+  JS_InitClass( cx, obj, NULL, 
+				  &SFVec2dClass, SFVec2d_construct, 3, 
+				  SFVec2d_properties, SFVec2d_functions, NULL, NULL );
+
+  JS_InitClass( cx, obj, NULL, 
 				  &SFVec3fClass, SFVec3f_construct, 3, 
 				  SFVec3f_properties, SFVec3f_functions, NULL, NULL );
-  proto = JS_InitClass( cx, obj, NULL, 
+
+  JS_InitClass( cx, obj, NULL, 
+				  &SFVec3dClass, SFVec3d_construct, 3, 
+				  SFVec3d_properties, SFVec3d_functions, NULL, NULL );
+
+  JS_InitClass( cx, obj, NULL, 
+				  &SFVec4fClass, SFVec4f_construct, 3, 
+				  SFVec4f_properties, SFVec4f_functions, NULL, NULL );
+
+  JS_InitClass( cx, obj, NULL, 
+				  &SFVec4dClass, SFVec4d_construct, 3, 
+				  SFVec4d_properties, SFVec4d_functions, NULL, NULL );
+
+  JS_InitClass( cx, obj, NULL, 
 			&SFNodeClass, SFNode_construct, 3, 
 			NULL, SFNode_functions, NULL, NULL );
-  proto = JS_InitClass( cx, obj, NULL, 
+  JS_InitClass( cx, obj, NULL, 
 			&SFColorClass, SFColor_construct, 3, 
 			SFColor_properties, SFColor_functions, NULL, NULL );
+
+  JS_InitClass( cx, obj, NULL, &SFImageClass, SFImage_construct, 3,
+    SFImage_properties, SFImage_functions, NULL, NULL);
+
+  JS_InitClass( cx, obj, NULL, &SFRotationClass, SFRotation_construct, 3,
+    SFRotation_properties, SFRotation_functions, NULL, NULL);
+
 
   JS_MFFloat::initClass( cx, obj, "MFFloat" );
   JS_MFDouble::initClass( cx, obj, "MFDouble" );
   JS_MFTime::initClass( cx, obj, "MFTime" );
   JS_MFInt32::initClass( cx, obj, "MFInt32" );
+  JS_MFVec2f::initClass( cx, obj, "MFVec2f" );
+  JS_MFVec2d::initClass( cx, obj, "MFVec2d" );
   JS_MFVec3f::initClass( cx, obj, "MFVec3f" );
+  JS_MFVec3d::initClass( cx, obj, "MFVec3d" );
+  JS_MFVec4f::initClass( cx, obj, "MFVec4f" );
+  JS_MFVec4d::initClass( cx, obj, "MFVec4d" );
   JS_MFBool::initClass( cx, obj, "MFBool" );
   JS_MFString::initClass( cx, obj, "MFString" );
   JS_MFNode::initClass( cx, obj, "MFNode" );
   JS_MFColor::initClass( cx, obj, "MFColor" );
+  JS_MFRotation::initClass( cx, obj, "MFRotation" );
+//  JS_MFImage::initClass( cx, obj, "MFImage" );
 
   return true;
 }
 
-template< class FieldType, JSObject *(*NewInstanceFunc)( JSContext *,
-						 	 FieldType *, bool ) >
-jsval newInstanceFromField( JSContext *cx,
-				Field *field,
-				bool make_copy ) {
+template< class FieldType, JSObject *(*NewInstanceFunc)( JSContext *, FieldType *, bool ) >
+jsval newInstanceFromField( JSContext *cx, Field *field, bool make_copy ) {
   FieldType *f = static_cast< FieldType * >( field );
   if( make_copy ) { 
     f = new FieldType;
@@ -1275,9 +3056,7 @@ jsval newInstanceFromField( JSContext *cx,
   return OBJECT_TO_JSVAL( NewInstanceFunc( cx, f, make_copy ));
 }
 
-
-jsval SpiderMonkey::jsvalFromField( JSContext *cx, 
-				    Field *field, bool make_copy ) {
+jsval SpiderMonkey::jsvalFromField( JSContext *cx, Field *field, bool make_copy ) {
 
   X3DTypes::X3DType x3d_type = field->getX3DType();
   switch( x3d_type ) { 
@@ -1310,21 +3089,22 @@ jsval SpiderMonkey::jsvalFromField( JSContext *cx,
     return rval;
   } 
   case X3DTypes::SFVEC2F: { 
-    break;
+    return newInstanceFromField< SFVec2f, SFVec2f_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFVEC2D: { 
-    break;
+    return newInstanceFromField< SFVec2d, SFVec2d_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFVEC3F: { 
-    return newInstanceFromField< SFVec3f, SFVec3f_newInstance >( cx, 
-								 field, 
-								 make_copy );
+    return newInstanceFromField< SFVec3f, SFVec3f_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFVEC3D: { 
+    return newInstanceFromField< SFVec3d, SFVec3d_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFVEC4F: { 
+    return newInstanceFromField< SFVec4f, SFVec4f_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFVEC4D: { 
+    return newInstanceFromField< SFVec4d, SFVec4d_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFBOOL: { 
     SFBool *f = static_cast< SFBool * >( field );
@@ -1338,18 +3118,15 @@ jsval SpiderMonkey::jsvalFromField( JSContext *cx,
     return STRING_TO_JSVAL( js_s );
   } 
   case X3DTypes::SFNODE: { 
-    return newInstanceFromField< SFNode, SFNode_newInstance >( cx, 
-							       field, 
-							       make_copy );
+    return newInstanceFromField< SFNode, SFNode_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFCOLOR: { 
-     return newInstanceFromField< SFColor, SFColor_newInstance >( cx, 
-								  field, 
-								  make_copy );
+     return newInstanceFromField< SFColor, SFColor_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFCOLORRGBA: { 
   } 
   case X3DTypes::SFROTATION: { 
+    return newInstanceFromField< SFRotation, SFRotation_newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::SFQUATERNION: { 
   }
@@ -1363,70 +3140,53 @@ jsval SpiderMonkey::jsvalFromField( JSContext *cx,
     break;
   } 
   case X3DTypes::MFFLOAT: { 
-    return newInstanceFromField< MFFloat, JS_MFFloat::newInstance >( cx, 
-								     field, 
-								     make_copy );
+    return newInstanceFromField< MFFloat, JS_MFFloat::newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::MFDOUBLE: { 
-    return newInstanceFromField< MFDouble, JS_MFDouble::newInstance >( cx, 
-								       field, 
-								       make_copy );
+    return newInstanceFromField< MFDouble, JS_MFDouble::newInstance >( cx, field, make_copy );
  
   } 
   case X3DTypes::MFTIME: { 
-    return newInstanceFromField< MFTime, JS_MFTime::newInstance >( cx, 
-								   field, 
-								   make_copy );
+    return newInstanceFromField< MFTime, JS_MFTime::newInstance >( cx, field, make_copy );
  
   } 
   case X3DTypes::MFINT32: { 
-    return newInstanceFromField< MFInt32, JS_MFInt32::newInstance >( cx, 
-								     field, 
-								     make_copy );
+    return newInstanceFromField< MFInt32, JS_MFInt32::newInstance >( cx, field, make_copy );
  
   } 
   case X3DTypes::MFVEC2F: { 
+    return newInstanceFromField< MFVec2f, JS_MFVec2f::newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::MFVEC2D: { 
+    return newInstanceFromField< MFVec2d, JS_MFVec2d::newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::MFVEC3F: { 
-    return newInstanceFromField< MFVec3f, JS_MFVec3f::newInstance >( cx, 
-								     field, 
-								     make_copy );
- 
+    return newInstanceFromField< MFVec3f, JS_MFVec3f::newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::MFVEC3D: { 
-  }  
+    return newInstanceFromField< MFVec3d, JS_MFVec3d::newInstance >( cx, field, make_copy );
+  }
   case X3DTypes::MFVEC4F: { 
+    return newInstanceFromField< MFVec4f, JS_MFVec4f::newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::MFVEC4D: { 
-    break;
+    return newInstanceFromField< MFVec4d, JS_MFVec4d::newInstance >( cx, field, make_copy );
   } 
   case X3DTypes::MFBOOL: { 
-    return newInstanceFromField< MFBool, JS_MFBool::newInstance >( cx, 
-								   field, 
-								   make_copy );
+    return newInstanceFromField< MFBool, JS_MFBool::newInstance >( cx, field, make_copy );
   }  
   case X3DTypes::MFSTRING: { 
-    return newInstanceFromField< MFString, JS_MFString::newInstance >( cx, 
-								       field, 
-								       make_copy );
+    return newInstanceFromField< MFString, JS_MFString::newInstance >( cx, field, make_copy );
  
   } 
   case X3DTypes::MFNODE: { 
-    return newInstanceFromField< MFNode, JS_MFNode::newInstance >( cx, 
-								   field, 
-								   make_copy );
+    return newInstanceFromField< MFNode, JS_MFNode::newInstance >( cx, field, make_copy );
   } 
-  case X3DTypes::MFCOLOR: { 
-    return newInstanceFromField< MFColor, JS_MFColor::newInstance >( cx, 
-								     field, 
-								     make_copy );
- 
-  } 
+  case X3DTypes::MFCOLOR:
+    return newInstanceFromField< MFColor, JS_MFColor::newInstance >( cx, field, make_copy );
+  case X3DTypes::MFROTATION:
+    return newInstanceFromField< MFRotation, JS_MFRotation::newInstance >( cx, field, make_copy );
   case X3DTypes::MFCOLORRGBA: { 
-  } 
-  case X3DTypes::MFROTATION: { 
   } 
   case X3DTypes::MFQUATERNION: { 
   } 
@@ -1522,9 +3282,7 @@ JSBool setFieldValueFromjsvalSimple( JSContext *cx,
   }
 }
 
-JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, 
-					     Field *field, 
-					     jsval value ) {
+JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval value ) {
   X3DTypes::X3DType field_x3d_type = field->getX3DType();
   switch( field_x3d_type ) { 
   case X3DTypes::SFFLOAT: { 
@@ -1540,19 +3298,22 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx,
     return setFieldValueFromjsvalSimple< SFInt32, jsint, JS_ValueToInt32 >( cx, field, value ) ;
   } 
   case X3DTypes::SFVEC2F: { 
-    break;
+    return setFieldValueFromjsvalTmpl< SFVec2f, X3DTypes::SFVEC2F >( cx, field, value ) ;
   } 
   case X3DTypes::SFVEC2D: { 
-    break;
+    return setFieldValueFromjsvalTmpl< SFVec2d, X3DTypes::SFVEC2D >( cx, field, value ) ;
   } 
   case X3DTypes::SFVEC3F: { 
     return setFieldValueFromjsvalTmpl< SFVec3f, X3DTypes::SFVEC3F >( cx, field, value ) ;
   } 
   case X3DTypes::SFVEC3D: { 
+    return setFieldValueFromjsvalTmpl< SFVec3d, X3DTypes::SFVEC3D >( cx, field, value ) ;
   } 
   case X3DTypes::SFVEC4F: { 
+    return setFieldValueFromjsvalTmpl< SFVec4f, X3DTypes::SFVEC4F >( cx, field, value ) ;
   } 
   case X3DTypes::SFVEC4D: { 
+    return setFieldValueFromjsvalTmpl< SFVec4d, X3DTypes::SFVEC4D >( cx, field, value ) ;
   } 
   case X3DTypes::SFBOOL: { 
     return setFieldValueFromjsvalSimple< SFBool, JSBool, JS_ValueToBoolean >( cx, field, value ) ;
@@ -1575,14 +3336,13 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx,
       JSObject *js_object = JSVAL_TO_OBJECT( value );
       
       FieldObjectPrivate *private_data = 
-        static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
+	static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
 
       Field *value_field = private_data->getPointer();
       if( value_field->getX3DType() == X3DTypes::SFNODE ) {
-        SFNode *sfnode = static_cast< SFNode *>( value_field );
-        Node *n = getValueNoAccessCheck( sfnode );
-        setValueNoAccessCheck( f, n ); 
-        return JS_TRUE;
+	Node *n = getValueNoAccessCheck( static_cast< SFNode * >( value_field ) );
+	setValueNoAccessCheck( f, n ); 
+	return JS_TRUE;
       } 
     }
 
@@ -1598,6 +3358,7 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx,
   case X3DTypes::SFCOLORRGBA: { 
   } 
   case X3DTypes::SFROTATION: { 
+    return setFieldValueFromjsvalTmpl< SFRotation, X3DTypes::SFROTATION>( cx, field, value ) ;
   } 
   case X3DTypes::SFQUATERNION: { 
   }
@@ -1611,50 +3372,41 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx,
     break;
   } 
   case X3DTypes::MFFLOAT: { 
-    return MField_setFieldValueFromjsvalTmpl< MFFloat, X3DTypes::MFFLOAT >( cx, 
-									    field, 
-									    value ) ;
+    return MField_setFieldValueFromjsvalTmpl< MFFloat, X3DTypes::MFFLOAT >( cx, field, value ) ;
   } 
   case X3DTypes::MFDOUBLE: { 
-    return MField_setFieldValueFromjsvalTmpl< MFDouble, X3DTypes::MFDOUBLE >( cx, 
-									      field, 
-									      value ) ;
+    return MField_setFieldValueFromjsvalTmpl< MFDouble, X3DTypes::MFDOUBLE >( cx, field, value ) ;
   } 
   case X3DTypes::MFTIME: { 
-    return MField_setFieldValueFromjsvalTmpl< MFTime, X3DTypes::MFTIME >( cx, 
-									  field, 
-									  value ) ;
+    return MField_setFieldValueFromjsvalTmpl< MFTime, X3DTypes::MFTIME >( cx, field, value ) ;
   } 
   case X3DTypes::MFINT32: { 
-    return MField_setFieldValueFromjsvalTmpl< MFInt32, X3DTypes::MFINT32 >( cx, 
-									    field, 
-									    value );
+    return MField_setFieldValueFromjsvalTmpl< MFInt32, X3DTypes::MFINT32 >( cx, field, value );
   } 
   case X3DTypes::MFVEC2F: { 
+    return MField_setFieldValueFromjsvalTmpl< MFVec2f, X3DTypes::MFVEC2F >( cx, field, value );
   } 
   case X3DTypes::MFVEC2D: { 
-    break;
+    return MField_setFieldValueFromjsvalTmpl< MFVec2d, X3DTypes::MFVEC2D >( cx, field, value );
   } 
   case X3DTypes::MFVEC3F: { 
-    return MField_setFieldValueFromjsvalTmpl< MFVec3f, X3DTypes::MFVEC3F >( cx, 
-									    field, 
-									    value );
+    return MField_setFieldValueFromjsvalTmpl< MFVec3f, X3DTypes::MFVEC3F >( cx, field, value );
   } 
   case X3DTypes::MFVEC3D: { 
+    return MField_setFieldValueFromjsvalTmpl< MFVec3d, X3DTypes::MFVEC3D >( cx, field, value );
   } 
   case X3DTypes::MFVEC4F: { 
+    return MField_setFieldValueFromjsvalTmpl< MFVec4f, X3DTypes::MFVEC4F >( cx, field, value );
   } 
   case X3DTypes::MFVEC4D: { 
-    break;
+    return MField_setFieldValueFromjsvalTmpl< MFVec4d, X3DTypes::MFVEC4D >( cx, field, value );
   } 
   case X3DTypes::MFBOOL: { 
     return MField_setFieldValueFromjsvalTmpl< MFBool, X3DTypes::MFBOOL >( cx, field, value ) ;
    
   } 
   case X3DTypes::MFSTRING: { 
-    return MField_setFieldValueFromjsvalTmpl< MFString, X3DTypes::MFSTRING >( cx, 
-									      field, 
-									      value );
+    return MField_setFieldValueFromjsvalTmpl< MFString, X3DTypes::MFSTRING >( cx, field, value );
   } 
   case X3DTypes::MFNODE: { 
     return MField_setFieldValueFromjsvalTmpl< MFNode, X3DTypes::MFNODE >( cx, field, value ) ;
@@ -1662,9 +3414,9 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx,
   case X3DTypes::MFCOLOR: { 
     return MField_setFieldValueFromjsvalTmpl< MFColor, X3DTypes::MFCOLOR >( cx, field, value ) ;
   } 
+  case X3DTypes::MFROTATION:
+    return MField_setFieldValueFromjsvalTmpl< MFRotation, X3DTypes::MFROTATION>( cx, field, value ) ;
   case X3DTypes::MFCOLORRGBA: { 
-  } 
-  case X3DTypes::MFROTATION: { 
   } 
   case X3DTypes::MFQUATERNION: { 
   } 
@@ -1683,15 +3435,10 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx,
 }
 
 
-JSBool SpiderMonkey::haveFunction( JSContext *cx, 
-				   JSObject *obj,
-				   const char * name ) { 			
+JSBool SpiderMonkey::haveFunction( JSContext *cx, JSObject *obj, const char * name ) { 			
   jsval res;
   // get the property
-  JSBool has_property = JS_GetProperty( cx,
-					obj,
-					name,
-					&res );
+  JSBool has_property = JS_GetProperty( cx, obj, name, &res );
   
   if( has_property && JSVAL_IS_OBJECT( res ) ) {
     JSObject *fun = JSVAL_TO_OBJECT( res );
@@ -1731,5 +3478,131 @@ void SpiderMonkey::setJSException( JSContext *cx, const SAI::SAIError &e ) {
   }
 }
 
-#endif // HAVE_SPIDERMONKEY
 
+// e_argtypes[0] contains type of the object
+// types of arguments starting from 1
+bool SpiderMonkey::helper_sanityCheck(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+                               uintN e_argc, JSClass** e_argtypes) {
+  // check that this object is a Type_class 
+  if (!JS_InstanceOf(cx, obj, e_argtypes[0], argv)) {
+    JS_ReportError(cx, "Object is of wrong type");
+    return false;
+  }
+
+  // check number of arguments
+  if (argc != e_argc) {
+    JS_ReportError(cx, "Wrong number of arguments.");
+    return false;
+  }
+
+  // check if the arguments are of correct type (number or object)
+  for (uintN i = 0; i < argc; i++) {
+    if (e_argtypes[i+1] == &SFNumberClass) {
+      if ( !JSVAL_IS_NUMBER(argv[i]) ) {
+        JS_ReportError(cx, "Argument %d is not number.", i);
+        return false;
+      }
+    } else if ( !JSVAL_IS_OBJECT(argv[i]) ||
+        !JS_InstanceOf( cx, JSVAL_TO_OBJECT(argv[i]), e_argtypes[i+1], argv )) {
+      JS_ReportError(cx, "Argument of wrong type.");
+      return false;
+    }
+  }
+
+  return true;
+}
+
+template <class T>
+bool SpiderMonkey::helper_calculate2_TTT(JSContext *cx, JSObject *this_obj, jsval *arg, T* const rval, BinaryOperator op) {
+  T* obj1 = helper_extractPrivateObject<T>( cx, this_obj );
+  T* obj2 = helper_extractPrivateObject<T>( cx, JSVAL_TO_OBJECT(*arg) );
+
+  // calculate the result
+  if (op == O_ADD) {
+    rval->setValue( obj1->getValue() + obj2->getValue() );
+  } else if (op == O_SUBTRACT) {
+    rval->setValue( obj1->getValue() - obj2->getValue() );
+  } else {
+    return false;
+  }
+
+  return true;
+}
+
+template <class T, class N>
+bool SpiderMonkey::helper_calculate2_TNT(JSContext *cx, JSObject *this_obj, jsval *arg, T* const rval, BinaryOperator op) {
+  // convert lhs to object
+  FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>( JS_GetPrivate( cx, this_obj ) );
+  if ( this_private_data->isDisposed() ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return false;
+  }
+  T* obj1 = dynamic_cast<T*>( this_private_data->getPointer() );
+
+  // convert rhs to number
+  jsdouble d;
+  if ( !JS_ValueToNumber(cx, *arg, &d) ) {
+    JS_ReportError( cx, "Can't convert to number." );
+    return false;
+  }
+  N num = (N) d;
+
+  // calculate the result
+  if (op == O_DIVIDE) {
+    // division by zero check
+    if ( abs(num) < 0.000000001 ) {
+      JS_ReportError(cx, "Division by zero.");
+      return false;
+    }
+    rval->setValue( obj1->getValue() / num );
+  } else if (op == O_MULTIPLE) {
+    rval->setValue( obj1->getValue() * num );
+  } else {
+    return false;
+  }
+
+  return true;
+}
+
+
+template <class T, class N>
+bool SpiderMonkey::helper_calculate2_TTN(JSContext *cx, JSObject *this_obj, jsval *arg, jsval* const rjsval, BinaryOperator op) {
+  T* obj1 = helper_extractPrivateObject<T>( cx, this_obj );
+  T* obj2 = helper_extractPrivateObject<T>( cx, JSVAL_TO_OBJECT( *arg ) );
+
+  if (obj1 == 0 || obj2 == 0)
+    return false;
+
+  N num;
+  // calculate the result
+  if (op == O_DOT) {
+    num = obj1->getValue() * obj2->getValue(); 
+  } else {
+    return false;
+  }
+
+  JS_NewNumberValue(cx, num, rjsval);
+
+  return true;
+}
+
+
+template<class T>
+T* SpiderMonkey::helper_extractPrivateObject<SFVec3f>( JSContext* cx, JSObject* jsobj) {
+  // convert lhs to object
+  FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>( JS_GetPrivate( cx, jsobj ) );
+  if ( this_private_data->isDisposed() ) {
+    setJSException( cx, SAI::SAIError::SAI_DISPOSED );
+    return 0;
+  }
+
+  T* p = dynamic_cast<T*>( this_private_data->getPointer() );
+  if ( !p ) {
+    JS_ReportError(cx, "Internal value not found.");
+    return 0;
+  }
+  return p;
+}
+
+
+#endif // HAVE_SPIDERMONKEY

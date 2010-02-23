@@ -231,6 +231,7 @@ void Browser::lastViewpoint( H3DInt32 layer ) {
 
 void Browser::print( const string &s ) {
   Console( 4 ) << s;
+  Console.flush();
 }
 
 void Browser::dispose() {
