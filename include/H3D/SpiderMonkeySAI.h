@@ -49,7 +49,7 @@ namespace H3D {
   /// The SpiderMonkeySAI class is an implementation of the X3D Ecmascript
   /// SAI specification using SpiderMonkey(the Javascript engine used by 
   /// Firefox)
-  class H3DAPI_API SpiderMonkeySAI {
+  class SpiderMonkeySAI {
   public:
     /// Constructor.
     SpiderMonkeySAI();
@@ -92,7 +92,7 @@ namespace H3D {
 
     /// The CallbackFunctionDispatcher class handles the calls
     /// of the ecmascript callback functions for the fields.
-    class H3DAPI_API CallbackFunctionDispatcher: 
+    class CallbackFunctionDispatcher: 
 	public PeriodicUpdate< EventCollectingField<Field> > {
       virtual void update();
     };

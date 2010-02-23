@@ -50,15 +50,24 @@
 #ifndef __SPIDERMONKEYTYPES_H__
 #define __SPIDERMONKEYTYPES_H__
 
+#include<iostream>
+
 #include <H3D/SFFloat.h>
 #include <H3D/SFDouble.h>
 #include <H3D/SFTime.h>
 #include <H3D/SFInt32.h>
 #include <H3D/SFString.h>
 #include <H3D/SFVec3f.h>
+#include <H3D/SFVec3d.h>
+#include <H3D/SFVec4f.h>
+#include <H3D/SFVec4d.h>
+#include <H3D/SFVec2f.h>
+#include <H3D/SFVec2d.h>
 #include <H3D/SFColor.h>
+#include <H3D/SFRotation.h>
 #include <H3D/SFNode.h>
 #include <H3D/SFBool.h>
+#include <H3D/X3DTexture2DNode.h>
 
 #include <H3D/MFFloat.h>
 #include <H3D/MFDouble.h>
@@ -66,7 +75,13 @@
 #include <H3D/MFInt32.h>
 #include <H3D/MFString.h>
 #include <H3D/MFVec3f.h>
+#include <H3D/MFVec3d.h>
+#include <H3D/MFVec2f.h>
+#include <H3D/MFVec2d.h>
+#include <H3D/MFVec4f.h>
+#include <H3D/MFVec4d.h>
 #include <H3D/MFColor.h>
+#include <H3D/MFRotation.h>
 #include <H3D/MFNode.h>
 #include <H3D/MFBool.h>
 #include <H3D/SAIFunctions.h>
@@ -186,6 +201,222 @@ namespace H3D {
                                 uintN argc, jsval *argv,
                                 jsval *rval);
 
+
+
+    //////////////////////////////////////////////
+    /// SFVec2f 
+    ///
+
+    enum SFVec2fPropertyId {
+      SFVEC2F_X, SFVEC2F_Y, SFVEC2F_Z
+    };
+
+    /// Returns a new SFVec2f object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFVec2f_newInstance( JSContext *cx, SFVec2f *field, bool internal_field );
+    
+    /// Callback setter function for properties of a SFVec2f
+    /// object.
+    JSBool SFVec2f_setProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Callback getter function for properties of a SFVec2f
+    /// object.
+    JSBool SFVec2f_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    
+    /// Construct callback function for creating a new instance
+    /// of SFVec2f.
+    JSBool SFVec2f_construct(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    
+    // member functions
+    JSBool SFVec2f_add(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec2f_divide(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec2f_dot(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec2f_length(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec2f_multiple(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    JSBool SFVec2f_negate(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec2f_normalize(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    JSBool SFVec2f_subtract(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    
+    // properties
+    static JSPropertySpec SFVec2f_properties[] = {
+      {"x", SFVEC2F_X, JSPROP_PERMANENT},
+      {"y", SFVEC2F_Y, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFVec2f_functions[] = {
+      {"add", SFVec2f_add, 1, 0, 0 },
+      {"divide", SFVec2f_divide, 1, 0, 0 },
+      {"dot", SFVec2f_dot, 1, 0, 0 },
+      {"length", SFVec2f_length, 0, 0, 0 },
+      {"multiple", SFVec2f_multiple, 1, 0, 0 },
+      {"negate", SFVec2f_negate, 0, 0, 0 },
+      {"normalize", SFVec2f_normalize, 0, 0, 0 },
+      {"subtract", SFVec2f_subtract, 1, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
+      {0}
+    };
+
+    
+    static JSClass SFVec2fClass = {
+      "SFVec2f",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFVec2f_getProperty, // get property
+      SpiderMonkey::SFVec2f_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFVec2f_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+    //////////////////////////////////////////////
+    /// SFVec2d 
+    ///
+
+    enum SFVec2dPropertyId {
+      SFVEC2D_X, SFVEC2D_Y, SFVEC2D_Z
+    };
+
+    /// Returns a new SFVec2d object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFVec2d_newInstance( JSContext *cx, SFVec2d *field, bool internal_field );
+    
+    /// Callback setter function for properties of a SFVec2d
+    /// object.
+    JSBool SFVec2d_setProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Callback getter function for properties of a SFVec2d
+    /// object.
+    JSBool SFVec2d_getProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Construct callback function for creating a new instance
+    /// of SFVec2d.
+    JSBool SFVec2d_construct(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    
+    // member functions
+    JSBool SFVec2d_add(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec2d_divide(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec2d_dot(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec2d_length(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec2d_multiple(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    JSBool SFVec2d_negate(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec2d_normalize(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    JSBool SFVec2d_subtract(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    
+    // properties
+    static JSPropertySpec SFVec2d_properties[] = {
+      {"x", SFVEC2D_X, JSPROP_PERMANENT},
+      {"y", SFVEC2D_Y, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFVec2d_functions[] = {
+      {"add", SFVec2d_add, 1, 0, 0 },
+      {"divide", SFVec2d_divide, 1, 0, 0 },
+      {"dot", SFVec2d_dot, 1, 0, 0 },
+      {"length", SFVec2d_length, 0, 0, 0 },
+      {"multiple", SFVec2d_multiple, 1, 0, 0 },
+      {"negate", SFVec2d_negate, 0, 0, 0 },
+      {"normalize", SFVec2d_normalize, 0, 0, 0 },
+      {"subtract", SFVec2d_subtract, 1, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
+      {0}
+    };
+
+    
+    static JSClass SFVec2dClass = {
+      "SFVec2d",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFVec2d_getProperty, // get property
+      SpiderMonkey::SFVec2d_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFVec2d_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+
+
+
     //////////////////////////////////////////////
     /// SFVec3f 
     ///
@@ -200,9 +431,7 @@ namespace H3D {
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFVec3f_newInstance( JSContext *cx,
-                                   SFVec3f *field,
-                                   bool internal_field );
+    JSObject *SFVec3f_newInstance( JSContext *cx, SFVec3f *field, bool internal_field );
     
     /// Callback setter function for properties of a SFVec3f
     /// object.
@@ -274,11 +503,12 @@ namespace H3D {
       {"toString", FieldObject_toString, 0, 0, 0 },
       {0}
     };
+
     
     static JSClass SFVec3fClass = {
       "SFVec3f",
       JSCLASS_HAS_PRIVATE,
-      
+
       /* All of these can be replaced with the corresponding JS_*Stub
          function pointers. */
       JS_PropertyStub,  // add property
@@ -298,6 +528,403 @@ namespace H3D {
       NULL, // mark
       NULL //reserveSlots
     };
+
+    //////////////////////////////////////////////
+    /// SFVec3d 
+    ///
+
+    enum SFVec3dPropertyId {
+      SFVEC3D_X, SFVEC3D_Y, SFVEC3D_Z
+    };
+
+    /// Returns a new SFVec3d object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFVec3d_newInstance( JSContext *cx, SFVec3d *field, bool internal_field );
+    
+    /// Callback setter function for properties of a SFVec3d
+    /// object.
+    JSBool SFVec3d_setProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Callback getter function for properties of a SFVec3d
+    /// object.
+    JSBool SFVec3d_getProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Construct callback function for creating a new instance
+    /// of SFVec3d.
+    JSBool SFVec3d_construct(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    
+    // member functions
+    JSBool SFVec3d_add(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec3d_cross(JSContext *cx, JSObject *obj, 
+                         uintN argc, jsval *argv,
+                         jsval *rval);
+    JSBool SFVec3d_divide(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec3d_dot(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec3d_length(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec3d_multiple(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    JSBool SFVec3d_negate(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec3d_normalize(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    JSBool SFVec3d_subtract(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    
+    // properties
+    static JSPropertySpec SFVec3d_properties[] = {
+      {"x", SFVEC3D_X, JSPROP_PERMANENT},
+      {"y", SFVEC3D_Y, JSPROP_PERMANENT},
+      {"z", SFVEC3D_Z, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFVec3d_functions[] = {
+      {"add", SFVec3d_add, 1, 0, 0 },
+      {"cross", SFVec3d_cross, 1, 0, 0 },
+      {"divide", SFVec3d_divide, 1, 0, 0 },
+      {"dot", SFVec3d_dot, 1, 0, 0 },
+      {"length", SFVec3d_length, 0, 0, 0 },
+      {"multiple", SFVec3d_multiple, 1, 0, 0 },
+      {"negate", SFVec3d_negate, 0, 0, 0 },
+      {"normalize", SFVec3d_normalize, 0, 0, 0 },
+      {"subtract", SFVec3d_subtract, 1, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
+      {0}
+    };
+
+    
+    static JSClass SFVec3dClass = {
+      "SFVec3d",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFVec3d_getProperty, // get property
+      SpiderMonkey::SFVec3d_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFVec3d_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+
+    //////////////////////////////////////////////
+    /// SFVec4f 
+    ///
+
+    enum SFVec4fPropertyId {
+      SFVEC4F_X, SFVEC4F_Y, SFVEC4F_Z, SFVEC4F_W,
+    };
+
+    /// Returns a new SFVec4f object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFVec4f_newInstance( JSContext *cx, SFVec4f *field, bool internal_field );
+    
+    /// Callback setter function for properties of a SFVec4f
+    /// object.
+    JSBool SFVec4f_setProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Callback getter function for properties of a SFVec4f
+    /// object.
+    JSBool SFVec4f_getProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Construct callback function for creating a new instance
+    /// of SFVec4f.
+    JSBool SFVec4f_construct(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    
+    // member functions
+    JSBool SFVec4f_add(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec4f_divide(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec4f_dot(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec4f_multiple(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    JSBool SFVec4f_negate(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec4f_subtract(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    
+    // properties
+    static JSPropertySpec SFVec4f_properties[] = {
+      {"x", SFVEC4F_X, JSPROP_PERMANENT},
+      {"y", SFVEC4F_Y, JSPROP_PERMANENT},
+      {"z", SFVEC4F_Z, JSPROP_PERMANENT},
+      {"w", SFVEC4F_W, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFVec4f_functions[] = {
+      {"add", SFVec4f_add, 1, 0, 0 },
+      {"divide", SFVec4f_divide, 1, 0, 0 },
+      {"dot", SFVec4f_dot, 1, 0, 0 },
+      {"multiple", SFVec4f_multiple, 1, 0, 0 },
+      {"negate", SFVec4f_negate, 0, 0, 0 },
+      {"subtract", SFVec4f_subtract, 1, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
+      {0}
+    };
+
+    
+    static JSClass SFVec4fClass = {
+      "SFVec4f",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFVec4f_getProperty, // get property
+      SpiderMonkey::SFVec4f_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFVec4f_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+    //////////////////////////////////////////////
+    /// SFVec4d 
+    ///
+
+    enum SFVec4dPropertyId {
+      SFVEC4D_X, SFVEC4D_Y, SFVEC4D_Z, SFVEC4D_W,
+    };
+
+    /// Returns a new SFVec4d object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFVec4d_newInstance( JSContext *cx, SFVec4d *field, bool internal_field );
+    
+    /// Callback setter function for properties of a SFVec4d
+    /// object.
+    JSBool SFVec4d_setProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Callback getter function for properties of a SFVec4d
+    /// object.
+    JSBool SFVec4d_getProperty(JSContext *cx, 
+                               JSObject *obj, 
+                               jsval id, 
+                               jsval *vp);
+    
+    /// Construct callback function for creating a new instance
+    /// of SFVec4d.
+    JSBool SFVec4d_construct(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+    
+    // member functions
+    JSBool SFVec4d_add(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec4d_divide(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec4d_dot(JSContext *cx, JSObject *obj, 
+                       uintN argc, jsval *argv,
+                       jsval *rval);
+    JSBool SFVec4d_multiple(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    JSBool SFVec4d_negate(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+    JSBool SFVec4d_subtract(JSContext *cx, JSObject *obj, 
+                            uintN argc, jsval *argv,
+                            jsval *rval);
+    
+    // properties
+    static JSPropertySpec SFVec4d_properties[] = {
+      {"x", SFVEC4D_X, JSPROP_PERMANENT},
+      {"y", SFVEC4D_Y, JSPROP_PERMANENT},
+      {"z", SFVEC4D_Z, JSPROP_PERMANENT},
+      {"w", SFVEC4D_W, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFVec4d_functions[] = {
+      {"add", SFVec4d_add, 1, 0, 0 },
+      {"divide", SFVec4d_divide, 1, 0, 0 },
+      {"dot", SFVec4d_dot, 1, 0, 0 },
+      {"multiple", SFVec4d_multiple, 1, 0, 0 },
+      {"negate", SFVec4d_negate, 0, 0, 0 },
+      {"subtract", SFVec4d_subtract, 1, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
+      {0}
+    };
+
+    
+    static JSClass SFVec4dClass = {
+      "SFVec4d",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFVec4d_getProperty, // get property
+      SpiderMonkey::SFVec4d_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFVec4d_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+
+    //////////////////////////////////////////////
+    /// SFRotation 
+    ///
+
+    enum SFRotationPropertyId {
+      SFRotation_X, SFRotation_Y, SFRotation_Z, SFRotation_ANGLE,
+    };
+
+    /// Returns a new SFRotation object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFRotation_newInstance( JSContext *cx, SFRotation *field, bool internal_field );
+    
+    /// Callback setter function for properties of a SFRotation
+    /// object.
+    JSBool SFRotation_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    
+    /// Callback getter function for properties of a SFRotation
+    /// object.
+    JSBool SFRotation_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    
+    /// Construct callback function for creating a new instance
+    /// of SFRotation.
+    JSBool SFRotation_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval);
+    
+    // member functions
+    JSBool SFRotation_getAxis( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval );
+    JSBool SFRotation_inverse( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval );
+    JSBool SFRotation_multiply( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval );
+    JSBool SFRotation_multiVec( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval );
+    JSBool SFRotation_setAxis( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval );
+    JSBool SFRotation_slerp( JSContext *cx, JSObject *obj, uintN argc, jsval *argv,jsval *rval );
+
+    // properties
+    static JSPropertySpec SFRotation_properties[] = {
+      {"x", SFRotation_X, JSPROP_PERMANENT},
+      {"y", SFRotation_Y, JSPROP_PERMANENT},
+      {"z", SFRotation_Z, JSPROP_PERMANENT},
+      {"angle", SFRotation_ANGLE, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFRotation_functions[] = {
+      {"getAxis", SFRotation_getAxis, 0, 0, 0 },
+      {"inverse", SFRotation_inverse, 0, 0, 0 },
+      {"multiply", SFRotation_multiply, 1, 0, 0 },
+      {"multiVec", SFRotation_multiVec, 1, 0, 0 },
+      {"setAxis", SFRotation_setAxis, 1, 0, 0 },
+      {"slerp", SFRotation_slerp, 2, 0, 0 },
+      {"toString", FieldObject_toString, 0, 0, 0 },
+      {0}
+    };
+
+    static JSClass SFRotationClass = {
+      "SFRotation",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFRotation_getProperty, // get property
+      SpiderMonkey::SFRotation_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFRotation_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
 
     //////////////////////////////////////////////
     /// SFNode 
@@ -470,6 +1097,142 @@ namespace H3D {
       NULL, // mark
       NULL //reserveSlots
     };
+
+    //////////////////////////////////////////////
+    /// SFImage 
+    ///
+
+    struct ImagePrivate {
+      // Preclusion: sizeof(arr_v) = x * y
+      ImagePrivate(int x, int y, int comp, const vector<int>& arr_v) {
+        values.reserve(x * y + 3);
+        values.push_back(x);
+        values.push_back(y);
+        values.push_back(comp);
+        for ( int i = 0; i < x * y; i++) {
+          values.push_back( arr_v[i] );
+        }
+      }
+      const int x() { return values[0]; };
+      const int y() { return values[1]; };
+      const int comp() { return values[2]; };
+      const vector<int>& arr() { return values; }
+
+      void setComp(int comp) { values[2] = comp; }
+
+      // resize the dimension (fill the gap with zeros if needed)
+      void setX(int newx) {
+        values.resize(3 + newx * y(), 0);
+        values[0] = newx;
+      }
+
+      // resize the dimension (fill the gap with zeros if needed)
+      void setY(int newy) {
+        values.resize(3 + x() * newy, 0);
+        values[1] = newy;
+      }
+
+      // Preclusion: arr.size = arr[0] * arr[1] + 3;
+      void setArray(const vector<int>& arr) {
+        values = arr;
+      }
+
+      ImagePrivate() { }
+
+    private:
+      // x, y, comp, values...
+      vector<int> values;
+    };
+
+    inline ostream& operator<<(ostream& os, const ImagePrivate& ip) {
+      return os;
+    }
+
+    class SFImagePrivate: public SField< ImagePrivate > {
+    public:
+      SFImagePrivate() {}
+      SFImagePrivate( const ImagePrivate &_value ): SField< ImagePrivate >( _value ){}
+
+      /// Get the value of the field as a string.
+      inline virtual string getValueAsString( const string& separator = " " ) {
+        ImagePrivate ip = getValue();
+        stringstream ss;
+        ss<< ip.x() << " " << ip.y() << " " << ip.comp();
+        for (int i = 0; i < ip.x() * ip.y(); i++) {
+          ss<< " " << ip.arr()[i + 3];
+        }
+        return ss.str();
+      }
+
+    };
+
+    enum SFImagePropertyId {
+      SFImage_WIDTH, SFImage_HEIGHT, SFImage_COMP, SFImage_ARRAY
+    };
+
+    /// Returns a new SFImage object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFImage_newInstance( JSContext *cx, SFImagePrivate *field, bool internal_field );
+
+    /// Callback setter function for properties of a SFImage
+    /// object.
+    JSBool SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+
+    /// Callback getter function for properties of a SFImage
+    /// object.
+    JSBool SFImage_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+
+    /// Construct callback function for creating a new instance
+    /// of SFImage.
+    JSBool SFImage_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+
+    // properties
+    static JSPropertySpec SFImage_properties[] = {
+      {"width", SFImage_WIDTH, JSPROP_PERMANENT},
+      {"height", SFImage_HEIGHT, JSPROP_PERMANENT},
+      {"comp", SFImage_COMP, JSPROP_PERMANENT},
+      {"array", SFImage_ARRAY, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFImage_functions[] = {
+      {"toString", FieldObject_toString, 0, 0, 0 },
+      {0}
+    };
+    
+    static JSClass SFImageClass = {
+      "SFImage",
+      JSCLASS_HAS_PRIVATE,
+      
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFImage_getProperty, // get property
+      SpiderMonkey::SFImage_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize< FieldObjectPrivate >,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFImage_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+    //class MFImage: public MField< ImagePrivate > {
+    //public:
+    //  MFImage(){}
+    //  MFImage( size_type sz ): MField< ImagePrivate >( sz ) { }
+    //};
 
     //////////////////////////////////////////////
     /// X3DExecutionContext 
@@ -941,10 +1704,7 @@ namespace H3D {
       }
   
       // create return value
-      *rval = OBJECT_TO_JSVAL( (JS_MField< MFieldType, 
-                                ElementType >::newInstance( cx, 
-                                                            mfield,
-                                                            true )) ); 
+      *rval = OBJECT_TO_JSVAL( (JS_MField< MFieldType, ElementType >::newInstance( cx, mfield, true )) ); 
       return JS_TRUE;
     }
     
@@ -960,8 +1720,23 @@ namespace H3D {
     /// The JSAPI type encapsulating an MFInt32 object.
     typedef JS_MField< MFInt32,  SFInt32  > JS_MFInt32;
 
+    /// The JSAPI type encapsulating an MFVec2f object.
+    typedef JS_MField< MFVec2f,  SFVec2f  > JS_MFVec2f;
+
+    /// The JSAPI type encapsulating an MFVec2d object.
+    typedef JS_MField< MFVec2d,  SFVec2d  > JS_MFVec2d;
+
     /// The JSAPI type encapsulating an MFVec3f object.
     typedef JS_MField< MFVec3f,  SFVec3f  > JS_MFVec3f;
+
+    /// The JSAPI type encapsulating an MFVec3f object.
+    typedef JS_MField< MFVec3d,  SFVec3d  > JS_MFVec3d;
+
+    /// The JSAPI type encapsulating an MFVec4f object.
+    typedef JS_MField< MFVec4f,  SFVec4f  > JS_MFVec4f;
+
+    /// The JSAPI type encapsulating an MFVec4d object.
+    typedef JS_MField< MFVec4d,  SFVec4d  > JS_MFVec4d;
 
     /// The JSAPI type encapsulating an MFBool object.
     typedef JS_MField< MFBool,   SFBool   > JS_MFBool;
@@ -975,6 +1750,41 @@ namespace H3D {
     /// The JSAPI type encapsulating an MFColor object.
     typedef JS_MField< MFColor,  SFColor > JS_MFColor;
 
+    /// The JSAPI type encapsulating an MFRotation object.
+    typedef JS_MField< MFRotation,  SFRotation > JS_MFRotation;
+
+    ///// The JSAPI type encapsulating an MFImage object.
+    //typedef JS_MField< MFImage,  SFImagePrivate > JS_MFImage;
+
+    typedef enum { O_ADD, O_SUBTRACT, O_CROSS, O_DOT, O_DIVIDE, O_MULTIPLE, } BinaryOperator;
+
+    // get the private pointer from a JSObject
+    template<class T>
+    T* helper_extractPrivateObject( JSContext* cx, JSObject* jsobj);
+
+    // templates for binary-operator functions
+
+    template <class T>
+    bool helper_calculate2_TTT(JSContext *cx, JSObject *this_obj, jsval *arg, T* const rval, BinaryOperator op);
+    template <class T, class N>
+    bool helper_calculate2_TNT(JSContext *cx, JSObject *this_obj, jsval *arg, T* const rval, BinaryOperator op);
+    template <class T, class N>
+    bool helper_calculate2_TTN(JSContext *cx, JSObject *this_obj, jsval *arg, jsval* const rjsval, BinaryOperator op);
+
+    /// constant to help sanity check function
+    static JSClass SFNumberClass = {
+      "SFNumber",
+      JSCLASS_HAS_PRIVATE,
+      JS_PropertyStub, JS_PropertyStub, 
+      JS_PropertyStub, JS_PropertyStub, 
+      JS_EnumerateStub, JS_ResolveStub,  
+      JS_ConvertStub, JS_FinalizeStub,
+      NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+    };
+
+    // sanity check the parameters against a particular set
+    bool helper_sanityCheck(JSContext *cx, JSObject *obj, uintN argc, 
+      jsval *argv, uintN e_argc, JSClass** e_argtypes);
   }
 }
 
