@@ -123,16 +123,15 @@ namespace H3D {
     /// this object. In this case make_copy dtermines if the encapsulated field
     /// should be the field given to the function or a copy of it.
     /// The new hsval is returned. JSVAL_VOID is returned on failure.
-    jsval jsvalFromField( JSContext* cx, Field *f, bool make_copy );
+    jsval jsvalFromField( JSContext* cx, Field *f, bool make_copy, 
+      int array_index = -1, X3DTypes::X3DType x3dt = X3DTypes::UNKNOWN_X3D_TYPE );
 
     /// Sets the field value to the value of the jsval v.
     /// Returns JS_TRUE on success, JS_FALSE otherwise.
     JSBool setFieldValueFromjsval( JSContext* cx, Field *f, jsval v );
 
     /// Returns JS_TRUE if the name is a function in the given object.
-    JSBool haveFunction( JSContext* cx,
-                         JSObject *obj, 
-                         const char * name );
+    JSBool haveFunction( JSContext* cx, JSObject *obj, const char * name );
 
     /// Class used as the private data in field JSObject classes.
     template< class PointerType >
@@ -143,10 +142,12 @@ namespace H3D {
       /// \params _internal_pointer If true, the field will be deleted
       /// when the FieldObjectPrivate object is destructed.
       PointerPrivateData( PointerType *_ptr,
-                          bool _internal_pointer 
+                          bool _internal_pointer,
+                          int _array_index = -1
                           ):
         ptr( _ptr ),
         internal_pointer( _internal_pointer ),
+        array_index( _array_index ),
         disposed( false ) {
         
       }
@@ -168,6 +169,12 @@ namespace H3D {
         return disposed;
       }
 
+      /// Return the array index (in case we using (MF, index) to represent an SF object
+      /// Return -1 if it IS an SF object.
+      inline int getArrayIndex() {
+        return array_index;
+      }
+
       /// Dispose the object. Sets the dispose flag to true.
       inline void dispose() {
         disposed = true;
@@ -177,6 +184,7 @@ namespace H3D {
       PointerType *ptr;
       bool internal_pointer;
       bool disposed;
+      int array_index;
     };
 
     typedef PointerPrivateData< Field > FieldObjectPrivate;
@@ -193,7 +201,7 @@ namespace H3D {
         delete private_data;
       }  
     }
-    
+
     /// Callback function for converting a JSObject with a FieldObjectPrivate
     /// private data member to a JSString. Only works for fields where the 
     /// encapsulated field is a ParsableField.
@@ -201,6 +209,10 @@ namespace H3D {
                                 uintN argc, jsval *argv,
                                 jsval *rval);
 
+
+    template<class FieldType>
+    JSBool FieldObject_toString2(JSContext *cx, JSObject *obj, 
+      uintN argc, jsval *argv, jsval *rval);
 
 
     //////////////////////////////////////////////
@@ -211,13 +223,18 @@ namespace H3D {
       SFVEC2F_X, SFVEC2F_Y, SFVEC2F_Z
     };
 
+    JSBool SFVec2f_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
+
     /// Returns a new SFVec2f object encapsulating a field.
     /// \params cx The context in which to create the object.
     /// \params field The field to encapsulate.
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFVec2f_newInstance( JSContext *cx, SFVec2f *field, bool internal_field );
+    JSObject *SFVec2f_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFVec2f
     /// object.
@@ -278,7 +295,7 @@ namespace H3D {
       {"negate", SFVec2f_negate, 0, 0, 0 },
       {"normalize", SFVec2f_normalize, 0, 0, 0 },
       {"subtract", SFVec2f_subtract, 1, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFVec2f_toString, 0, 0, 0 },
       {0}
     };
 
@@ -315,27 +332,26 @@ namespace H3D {
       SFVEC2D_X, SFVEC2D_Y, SFVEC2D_Z
     };
 
+    JSBool SFVec2d_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
+
     /// Returns a new SFVec2d object encapsulating a field.
     /// \params cx The context in which to create the object.
     /// \params field The field to encapsulate.
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFVec2d_newInstance( JSContext *cx, SFVec2d *field, bool internal_field );
+    JSObject *SFVec2d_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFVec2d
     /// object.
-    JSBool SFVec2d_setProperty(JSContext *cx, 
-                               JSObject *obj, 
-                               jsval id, 
-                               jsval *vp);
+    JSBool SFVec2d_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
     
     /// Callback getter function for properties of a SFVec2d
     /// object.
-    JSBool SFVec2d_getProperty(JSContext *cx, 
-                               JSObject *obj, 
-                               jsval id, 
-                               jsval *vp);
+    JSBool SFVec2d_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
     
     /// Construct callback function for creating a new instance
     /// of SFVec2d.
@@ -385,7 +401,7 @@ namespace H3D {
       {"negate", SFVec2d_negate, 0, 0, 0 },
       {"normalize", SFVec2d_normalize, 0, 0, 0 },
       {"subtract", SFVec2d_subtract, 1, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFVec2d_toString, 0, 0, 0 },
       {0}
     };
 
@@ -425,13 +441,18 @@ namespace H3D {
       SFVEC3F_X, SFVEC3F_Y, SFVEC3F_Z
     };
 
+    JSBool SFVec3f_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
+
     /// Returns a new SFVec3f object encapsulating a field.
     /// \params cx The context in which to create the object.
     /// \params field The field to encapsulate.
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFVec3f_newInstance( JSContext *cx, SFVec3f *field, bool internal_field );
+    JSObject *SFVec3f_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFVec3f
     /// object.
@@ -500,7 +521,7 @@ namespace H3D {
       {"negate", SFVec3f_negate, 0, 0, 0 },
       {"normalize", SFVec3f_normalize, 0, 0, 0 },
       {"subtract", SFVec3f_subtract, 1, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFVec3f_toString, 0, 0, 0 },
       {0}
     };
 
@@ -537,13 +558,18 @@ namespace H3D {
       SFVEC3D_X, SFVEC3D_Y, SFVEC3D_Z
     };
 
+    JSBool SFVec3d_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
+
     /// Returns a new SFVec3d object encapsulating a field.
     /// \params cx The context in which to create the object.
     /// \params field The field to encapsulate.
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFVec3d_newInstance( JSContext *cx, SFVec3d *field, bool internal_field );
+    JSObject *SFVec3d_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFVec3d
     /// object.
@@ -612,7 +638,7 @@ namespace H3D {
       {"negate", SFVec3d_negate, 0, 0, 0 },
       {"normalize", SFVec3d_normalize, 0, 0, 0 },
       {"subtract", SFVec3d_subtract, 1, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFVec3d_toString, 0, 0, 0 },
       {0}
     };
 
@@ -650,13 +676,19 @@ namespace H3D {
       SFVEC4F_X, SFVEC4F_Y, SFVEC4F_Z, SFVEC4F_W,
     };
 
+
+        JSBool SFVec4f_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
+
     /// Returns a new SFVec4f object encapsulating a field.
     /// \params cx The context in which to create the object.
     /// \params field The field to encapsulate.
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFVec4f_newInstance( JSContext *cx, SFVec4f *field, bool internal_field );
+    JSObject *SFVec4f_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFVec4f
     /// object.
@@ -714,7 +746,7 @@ namespace H3D {
       {"multiple", SFVec4f_multiple, 1, 0, 0 },
       {"negate", SFVec4f_negate, 0, 0, 0 },
       {"subtract", SFVec4f_subtract, 1, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFVec4f_toString, 0, 0, 0 },
       {0}
     };
 
@@ -751,13 +783,17 @@ namespace H3D {
       SFVEC4D_X, SFVEC4D_Y, SFVEC4D_Z, SFVEC4D_W,
     };
 
+    JSBool SFVec4d_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
     /// Returns a new SFVec4d object encapsulating a field.
     /// \params cx The context in which to create the object.
     /// \params field The field to encapsulate.
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFVec4d_newInstance( JSContext *cx, SFVec4d *field, bool internal_field );
+    JSObject *SFVec4d_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFVec4d
     /// object.
@@ -815,7 +851,7 @@ namespace H3D {
       {"multiple", SFVec4d_multiple, 1, 0, 0 },
       {"negate", SFVec4d_negate, 0, 0, 0 },
       {"subtract", SFVec4d_subtract, 1, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFVec4d_toString, 0, 0, 0 },
       {0}
     };
 
@@ -846,12 +882,16 @@ namespace H3D {
 
 
     //////////////////////////////////////////////
-    /// SFRotation 
+    /// SFRotation
     ///
 
     enum SFRotationPropertyId {
       SFRotation_X, SFRotation_Y, SFRotation_Z, SFRotation_ANGLE,
     };
+
+    JSBool SFRotation_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
 
     /// Returns a new SFRotation object encapsulating a field.
     /// \params cx The context in which to create the object.
@@ -859,7 +899,7 @@ namespace H3D {
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFRotation_newInstance( JSContext *cx, SFRotation *field, bool internal_field );
+    JSObject *SFRotation_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFRotation
     /// object.
@@ -897,7 +937,7 @@ namespace H3D {
       {"multiVec", SFRotation_multiVec, 1, 0, 0 },
       {"setAxis", SFRotation_setAxis, 1, 0, 0 },
       {"slerp", SFRotation_slerp, 2, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFRotation_toString, 0, 0, 0 },
       {0}
     };
 
@@ -938,8 +978,8 @@ namespace H3D {
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFNode_newInstance( JSContext *cx,
-                                  SFNode *field,
-                                  bool internal_field );
+                                  Field *field,
+                                  bool internal_field, int array_index = -1 );
 
     /// Callback setter function for properties of a SFNode
     /// object.
@@ -1028,15 +1068,12 @@ namespace H3D {
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFColor_newInstance( JSContext *cx,
-                                   SFColor *field,
-                                   bool internal_field );
+                                   Field *field,
+                                   bool internal_field, int array_index = -1 );
 
     /// Callback setter function for properties of a SFColor
     /// object.
-    JSBool SFColor_setProperty(JSContext *cx, 
-                               JSObject *obj, 
-                               jsval id, 
-                               jsval *vp);
+    JSBool SFColor_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
 
     /// Callback getter function for properties of a SFColor
     /// object.
@@ -1059,6 +1096,10 @@ namespace H3D {
                           uintN argc, jsval *argv,
                           jsval *rval);
 
+    JSBool SFColor_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
     // properties
     static JSPropertySpec SFColor_properties[] = {
       {"r", SFCOLOR_R, JSPROP_PERMANENT},
@@ -1070,7 +1111,7 @@ namespace H3D {
     static JSFunctionSpec SFColor_functions[] = {
       {"getHSV", SFColor_getHSV, 1, 0, 0 },
       {"setHSV", SFColor_setHSV, 1, 0, 0 },
-      {"toString", FieldObject_toString, 0, 0, 0 },
+      {"toString", SFColor_toString, 0, 0, 0 },
       {0}
     };
     
@@ -1098,141 +1139,141 @@ namespace H3D {
       NULL //reserveSlots
     };
 
-    //////////////////////////////////////////////
-    /// SFImage 
-    ///
+    ////////////////////////////////////////////////
+    ///// SFImage 
+    /////
 
-    struct ImagePrivate {
-      // Preclusion: sizeof(arr_v) = x * y
-      ImagePrivate(int x, int y, int comp, const vector<int>& arr_v) {
-        values.reserve(x * y + 3);
-        values.push_back(x);
-        values.push_back(y);
-        values.push_back(comp);
-        for ( int i = 0; i < x * y; i++) {
-          values.push_back( arr_v[i] );
-        }
-      }
-      const int x() { return values[0]; };
-      const int y() { return values[1]; };
-      const int comp() { return values[2]; };
-      const vector<int>& arr() { return values; }
+    //struct ImagePrivate {
+    //  // Preclusion: sizeof(arr_v) = x * y
+    //  ImagePrivate(int x, int y, int comp, const vector<int>& arr_v) {
+    //    values.reserve(x * y + 3);
+    //    values.push_back(x);
+    //    values.push_back(y);
+    //    values.push_back(comp);
+    //    for ( int i = 0; i < x * y; i++) {
+    //      values.push_back( arr_v[i] );
+    //    }
+    //  }
+    //  const int x() { return values[0]; };
+    //  const int y() { return values[1]; };
+    //  const int comp() { return values[2]; };
+    //  const vector<int>& arr() { return values; }
 
-      void setComp(int comp) { values[2] = comp; }
+    //  void setComp(int comp) { values[2] = comp; }
 
-      // resize the dimension (fill the gap with zeros if needed)
-      void setX(int newx) {
-        values.resize(3 + newx * y(), 0);
-        values[0] = newx;
-      }
+    //  // resize the dimension (fill the gap with zeros if needed)
+    //  void setX(int newx) {
+    //    values.resize(3 + newx * y(), 0);
+    //    values[0] = newx;
+    //  }
 
-      // resize the dimension (fill the gap with zeros if needed)
-      void setY(int newy) {
-        values.resize(3 + x() * newy, 0);
-        values[1] = newy;
-      }
+    //  // resize the dimension (fill the gap with zeros if needed)
+    //  void setY(int newy) {
+    //    values.resize(3 + x() * newy, 0);
+    //    values[1] = newy;
+    //  }
 
-      // Preclusion: arr.size = arr[0] * arr[1] + 3;
-      void setArray(const vector<int>& arr) {
-        values = arr;
-      }
+    //  // Preclusion: arr.size = arr[0] * arr[1] + 3;
+    //  void setArray(const vector<int>& arr) {
+    //    values = arr;
+    //  }
 
-      ImagePrivate() { }
+    //  ImagePrivate() { }
 
-    private:
-      // x, y, comp, values...
-      vector<int> values;
-    };
-
-    inline ostream& operator<<(ostream& os, const ImagePrivate& ip) {
-      return os;
-    }
-
-    class SFImagePrivate: public SField< ImagePrivate > {
-    public:
-      SFImagePrivate() {}
-      SFImagePrivate( const ImagePrivate &_value ): SField< ImagePrivate >( _value ){}
-
-      /// Get the value of the field as a string.
-      inline virtual string getValueAsString( const string& separator = " " ) {
-        ImagePrivate ip = getValue();
-        stringstream ss;
-        ss<< ip.x() << " " << ip.y() << " " << ip.comp();
-        for (int i = 0; i < ip.x() * ip.y(); i++) {
-          ss<< " " << ip.arr()[i + 3];
-        }
-        return ss.str();
-      }
-
-    };
-
-    enum SFImagePropertyId {
-      SFImage_WIDTH, SFImage_HEIGHT, SFImage_COMP, SFImage_ARRAY
-    };
-
-    /// Returns a new SFImage object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
-    /// will be deleted upon destruction of the JSObject 
-    /// encapsulating it.
-    JSObject *SFImage_newInstance( JSContext *cx, SFImagePrivate *field, bool internal_field );
-
-    /// Callback setter function for properties of a SFImage
-    /// object.
-    JSBool SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
-
-    /// Callback getter function for properties of a SFImage
-    /// object.
-    JSBool SFImage_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
-
-    /// Construct callback function for creating a new instance
-    /// of SFImage.
-    JSBool SFImage_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
-
-    // properties
-    static JSPropertySpec SFImage_properties[] = {
-      {"width", SFImage_WIDTH, JSPROP_PERMANENT},
-      {"height", SFImage_HEIGHT, JSPROP_PERMANENT},
-      {"comp", SFImage_COMP, JSPROP_PERMANENT},
-      {"array", SFImage_ARRAY, JSPROP_PERMANENT},
-      {0}
-    };
-
-    static JSFunctionSpec SFImage_functions[] = {
-      {"toString", FieldObject_toString, 0, 0, 0 },
-      {0}
-    };
-    
-    static JSClass SFImageClass = {
-      "SFImage",
-      JSCLASS_HAS_PRIVATE,
-      
-      /* All of these can be replaced with the corresponding JS_*Stub
-         function pointers. */
-      JS_PropertyStub,  // add property
-      JS_PropertyStub,  // del property
-      SpiderMonkey::SFImage_getProperty, // get property
-      SpiderMonkey::SFImage_setProperty,  // set property
-      JS_EnumerateStub, // enumerate
-      JS_ResolveStub,   // resolve
-      JS_ConvertStub,   // convert
-      PrivatePointer_finalize< FieldObjectPrivate >,  // finalize
-      NULL, // getObjectOps
-      NULL, // checkAccess
-      NULL, // call
-      SFImage_construct, // construct
-      NULL, // xdrObject
-      NULL, // hasInstance
-      NULL, // mark
-      NULL //reserveSlots
-    };
-
-    //class MFImage: public MField< ImagePrivate > {
-    //public:
-    //  MFImage(){}
-    //  MFImage( size_type sz ): MField< ImagePrivate >( sz ) { }
+    //private:
+    //  // x, y, comp, values...
+    //  vector<int> values;
     //};
+
+    //inline ostream& operator<<(ostream& os, const ImagePrivate& ip) {
+    //  return os;
+    //}
+
+    //class SFImagePrivate: public SField< ImagePrivate > {
+    //public:
+    //  SFImagePrivate() {}
+    //  SFImagePrivate( const ImagePrivate &_value ): SField< ImagePrivate >( _value ){}
+
+    //  /// Get the value of the field as a string.
+    //  inline virtual string getValueAsString( const string& separator = " " ) {
+    //    ImagePrivate ip = getValue();
+    //    stringstream ss;
+    //    ss<< ip.x() << " " << ip.y() << " " << ip.comp();
+    //    for (int i = 0; i < ip.x() * ip.y(); i++) {
+    //      ss<< " " << ip.arr()[i + 3];
+    //    }
+    //    return ss.str();
+    //  }
+
+    //};
+
+    //enum SFImagePropertyId {
+    //  SFImage_WIDTH, SFImage_HEIGHT, SFImage_COMP, SFImage_ARRAY
+    //};
+
+    ///// Returns a new SFImage object encapsulating a field.
+    ///// \params cx The context in which to create the object.
+    ///// \params field The field to encapsulate.
+    ///// \params internal_field If true, the encapsulated field
+    ///// will be deleted upon destruction of the JSObject 
+    ///// encapsulating it.
+    //JSObject *SFImage_newInstance( JSContext *cx, SFImagePrivate *field, bool internal_field, int array_index = -1 );
+
+    ///// Callback setter function for properties of a SFImage
+    ///// object.
+    //JSBool SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+
+    ///// Callback getter function for properties of a SFImage
+    ///// object.
+    //JSBool SFImage_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+
+    ///// Construct callback function for creating a new instance
+    ///// of SFImage.
+    //JSBool SFImage_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+
+    //// properties
+    //static JSPropertySpec SFImage_properties[] = {
+    //  {"width", SFImage_WIDTH, JSPROP_PERMANENT},
+    //  {"height", SFImage_HEIGHT, JSPROP_PERMANENT},
+    //  {"comp", SFImage_COMP, JSPROP_PERMANENT},
+    //  {"array", SFImage_ARRAY, JSPROP_PERMANENT},
+    //  {0}
+    //};
+
+    //static JSFunctionSpec SFImage_functions[] = {
+    //  {"toString", FieldObject_toString, 0, 0, 0 },
+    //  {0}
+    //};
+    //
+    //static JSClass SFImageClass = {
+    //  "SFImage",
+    //  JSCLASS_HAS_PRIVATE,
+    //  
+    //  /* All of these can be replaced with the corresponding JS_*Stub
+    //     function pointers. */
+    //  JS_PropertyStub,  // add property
+    //  JS_PropertyStub,  // del property
+    //  SpiderMonkey::SFImage_getProperty, // get property
+    //  SpiderMonkey::SFImage_setProperty,  // set property
+    //  JS_EnumerateStub, // enumerate
+    //  JS_ResolveStub,   // resolve
+    //  JS_ConvertStub,   // convert
+    //  PrivatePointer_finalize< FieldObjectPrivate >,  // finalize
+    //  NULL, // getObjectOps
+    //  NULL, // checkAccess
+    //  NULL, // call
+    //  SFImage_construct, // construct
+    //  NULL, // xdrObject
+    //  NULL, // hasInstance
+    //  NULL, // mark
+    //  NULL //reserveSlots
+    //};
+
+    ////class MFImage: public MField< ImagePrivate > {
+    ////public:
+    ////  MFImage(){}
+    ////  MFImage( size_type sz ): MField< ImagePrivate >( sz ) { }
+    ////};
 
     //////////////////////////////////////////////
     /// X3DExecutionContext 
@@ -1476,8 +1517,9 @@ namespace H3D {
       /// will be deleted upon destruction of the JSObject 
       /// encapsulating it.
       static JSObject *newInstance( JSContext *cx,
-                                    MFieldType *field,
-                                    bool internal_field );
+                                    //MFieldType *field,
+                                    Field *field,
+                                    bool internal_field, int array_index = -1 );
 
       /// Callback setter function for properties of a JS_MField
       /// object.
@@ -1571,13 +1613,15 @@ namespace H3D {
     /// encapsulating it.
     template< class MFieldType, class ElementType >
     JSObject *JS_MField< MFieldType, ElementType >::newInstance( JSContext *cx,
-                                                                 MFieldType *field,
-                                                                 bool internal_field ) {
+                                                                 //MFieldType *field,
+                                                                 Field *field,
+                                                                 bool internal_field,
+                                                                 int array_index = -1
+                                                                 ) {
       //      cerr << "MFNode newInstance: " << field->getName() << endl;
       JSObject *js_field;
       
-      js_field = JS_NewObject( cx, 
-                               &js_class, NULL, NULL );  
+      js_field = JS_NewObject( cx, &js_class, NULL, NULL );  
       
       JS_DefineProperties(cx, js_field, 
                           JS_MField< MFieldType, ElementType >::properties );
@@ -1588,126 +1632,7 @@ namespace H3D {
       return js_field;
     }
     
-    /// Callback setter function for properties of a JS_MField
-    /// object.
-    template< class MFieldType, class ElementType >
-    JSBool JS_MField< MFieldType, ElementType >::setProperty(JSContext *cx, 
-                                                             JSObject *obj, 
-                                                             jsval id, 
-                                                             jsval *vp) {
-      //      cerr << "MFNode setProperty: "<< endl;
-      FieldObjectPrivate *private_data = 
-        static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-      MFieldType* mfield = 
-        static_cast<MFieldType *>(private_data->getPointer());
-      if (JSVAL_IS_INT(id)) {
-        // value is integer so it is an array index
-        JSBool res = JS_TRUE;
-        int index = JSVAL_TO_INT(id);
-
-        // resize mfield if it is not big enough.
-        if( index >= (int)mfield->size() ) {
-          mfield->resize( index+1 );
-        }
-
-        auto_ptr< ElementType > n( new ElementType );
-
-        if(setFieldValueFromjsval( cx, n.get(), *vp ) ) {
-          mfield->setValue( index, n->getValue() );  
-          //	  mfield->push_back( n->getValue() );
-        } else {
-          stringstream s;
-          s << mfield->getTypeName() << " element must be of type " 
-            << n->getValue();
-          JS_ReportError(cx, s.str().c_str() );
-          return JS_FALSE; 
-        }
-
-      } else if( JSVAL_IS_STRING( id ) ){
-        // value is string, so it is a named property
-        JSString *s = JSVAL_TO_STRING( id );
-        string prop = JS_GetStringBytes( s );
-        if( prop == "length" ) {
-          int32 size;
-          if( JS_ValueToInt32( cx, *vp, &size ) ) {
-            mfield->resize( size );
-          } else {
-            JS_ReportError(cx, "Could not convert to integer value." );
-            return JS_FALSE; 
-          }
-        }
-      }
-
-      return JS_TRUE;
-    }
-    
-    /// Callback getter function for properties of a JS_MField
-    /// object.
-    template< class MFieldType, class ElementType >
-    JSBool JS_MField< MFieldType, ElementType >::getProperty(JSContext *cx, 
-                                                             JSObject *obj, 
-                                                             jsval id, 
-                                                             jsval *vp) {
-      
-      //      cerr << "MFNode getProperty: "<< endl;
-      FieldObjectPrivate *private_data = 
-        static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-      MFieldType* mfield = 
-        static_cast<MFieldType *>(private_data->getPointer());
-      
-      if (JSVAL_IS_INT(id)) {
-        // value is integer so it is an array index
-        JSBool res = JS_TRUE;
-        int index = JSVAL_TO_INT(id);
-        
-        if( index < (int)mfield->size() ) {
-          ElementType *sfield = new ElementType;
-          sfield->setValue( MField_getValueNoAccessCheck( mfield )[index] );
-          *vp = jsvalFromField( cx, sfield, false );
-        }
-      } else if( JSVAL_IS_STRING( id ) ){
-        // value is string, so it is a named property
-        JSString *s = JSVAL_TO_STRING( id );
-        string prop = JS_GetStringBytes( s );
-        if( prop == "length" ) {
-          *vp = INT_TO_JSVAL( mfield->size() );
-        }
-      }
-      return JS_TRUE;
-    }
-    
-    /// Construct callback function for creating a new instance
-    /// of SFNode.
-    template< class MFieldType, class ElementType >
-    JSBool JS_MField< MFieldType, 
-                      ElementType >::construct(JSContext *cx, 
-                                               JSObject *obj, 
-                                               uintN argc, 
-                                               jsval *argv,
-                                               jsval *rval) {
-
-      // the constructor arguments should be a sequence of jsval representing
-      // a number of ElementType values. 
-      
-      MFieldType *mfield = new MFieldType;
-      auto_ptr< ElementType > element( new ElementType );
-      for( unsigned int i = 0; i < argc; i++ ) {
-        if( setFieldValueFromjsval( cx, element.get(), argv[i] ) ) {
-          mfield->push_back( element->getValue() );
-        } else {
-          delete mfield;
-          stringstream s;
-          s << "Could not convert argument " << i << " to " << element->getTypeName();
-          JS_ReportError(cx, s.str().c_str() );
-          return JS_FALSE;
-        }
-      }
   
-      // create return value
-      *rval = OBJECT_TO_JSVAL( (JS_MField< MFieldType, ElementType >::newInstance( cx, mfield, true )) ); 
-      return JS_TRUE;
-    }
-    
     /// The JSAPI type encapsulating an MFFloat object.
     typedef JS_MField< MFFloat,  SFFloat  > JS_MFFloat;
     

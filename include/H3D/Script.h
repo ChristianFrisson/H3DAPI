@@ -39,7 +39,7 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \brief No scripting is supported with the Script node 
   /// yet.
-  class H3DAPI_API Script : public X3DScriptNode,
+  class Script : public X3DScriptNode,
                              public H3DDynamicFieldsObject {
   public:
     // Constructor
