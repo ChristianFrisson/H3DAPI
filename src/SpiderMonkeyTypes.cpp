@@ -3668,7 +3668,7 @@ bool SpiderMonkey::helper_calculate2_TNT(JSContext *cx, JSObject *this_obj, jsva
   // calculate the result
   if (op == O_DIVIDE) {
     // division by zero check
-    if ( abs(num) < 0.000000001 ) {
+    if ( num == 0 ) {
       JS_ReportError(cx, "Division by zero.");
       return false;
     }
@@ -3706,7 +3706,7 @@ bool SpiderMonkey::helper_calculate2_TTN(JSContext *cx, JSObject *this_obj, jsva
 
 
 template<class T>
-T* SpiderMonkey::helper_extractPrivateObject<SFVec3f>( JSContext* cx, JSObject* jsobj) {
+T* SpiderMonkey::helper_extractPrivateObject( JSContext* cx, JSObject* jsobj) {
   // convert lhs to object
   FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>( JS_GetPrivate( cx, jsobj ) );
   if ( this_private_data->isDisposed() ) {

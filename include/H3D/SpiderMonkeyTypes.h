@@ -1616,7 +1616,7 @@ namespace H3D {
                                                                  //MFieldType *field,
                                                                  Field *field,
                                                                  bool internal_field,
-                                                                 int array_index = -1
+                                                                 int array_index
                                                                  ) {
       //      cerr << "MFNode newInstance: " << field->getName() << endl;
       JSObject *js_field;
