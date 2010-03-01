@@ -160,6 +160,12 @@ namespace H3D {
                                     Node *node,
                                     const string &container_field = "" );
 
+    /// Write the scene graph part of the node given in X3D/VRML format
+    /// to the given ostream.
+    H3DAPI_API void writeNodeAsVRML( ostream& os, 
+                                     Node *node );
+
+
     /// Write the triangles rendered by the geometry node as STL to
     /// the given ostream. The name parameter specifies the name to
     /// use in the stl file for the solid. 
@@ -167,12 +173,14 @@ namespace H3D {
                                         X3DGeometryNode *geom,
                                         const string &name = "" );
 
-    /// Help function for writeNodeAsX3D.
+    /// Help function for writeNodeAsX3D and writeNodeAsVRML
+    /// output_type = 0 means xml output, 1 means vrml output.
     H3DAPI_API void writeNodeAsX3DHelp( ostream& os, 
                                         Node *node,
                                         const string& container_field,
                                         const string & prefix,
-                                        std::set< Node * > &visited_nodes );
+                                        std::set< Node * > &visited_nodes,
+                                        unsigned int output_type = 0 );
 
   }
 };

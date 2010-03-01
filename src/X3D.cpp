@@ -383,14 +383,25 @@ void X3D::writeNodeAsX3D( ostream& os,
 			  const string &container_field ) {
   std::set< Node *> visited_nodes;
   writeNodeAsX3DHelp( os, node, container_field, "", 
-		      visited_nodes );
+                      visited_nodes, 0 );
 }
 
+void X3D::writeNodeAsVRML( ostream& os, 
+                           Node *node ) {
+  std::set< Node *> visited_nodes;
+  writeNodeAsX3DHelp( os, node, "", "", 
+                      visited_nodes, 1 );
+}
+
+#define X3D_OUTPUT 0
+#define VRML_OUTPUT 1
+
 void X3D::writeNodeAsX3DHelp( ostream& os, 
-			      Node *node, 
-			      const string& container_field,
-			      const string & prefix,
-			      std::set< Node * > &visited_nodes ) {
+                              Node *node, 
+                              const string& container_field,
+                              const string & prefix,
+                              std::set< Node * > &visited_nodes,
+                              unsigned int output_type ) {
   if( !node ) {
     return;
   }
@@ -398,37 +409,44 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
   
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *node ) );
   string node_name = node->getTypeName();
+
+  // construct a unique name for this node.
+  stringstream s;
+  s << "NODE_" << (H3DPtrUint) node;
+  string name = node->hasName() ? node->getName() : s.str();
   
   // the following nodes have changed name in the X3D spec. Use the 
   // one from the new specification instead.
   if( node_name == "Image3DTexture" ) node_name = "ImageTexture3D";
   else if( node_name == "Pixel3DTexture" ) node_name = "PixelTexture3D";
-  else if( node_name == "Composed3DTexture" ) node_name = "ComposedTexture3D";        
-
-  os << prefix << "<" << node_name << " ";
-  string new_prefix = prefix + "  "; 
-
-  // only use container field if it is needed.
-  if( node->defaultXMLContainerField() != container_field && 
-      container_field != "" ) {
-    os << "containerField=\"" << container_field << "\" ";
-  }
-
+  else if( node_name == "Composed3DTexture" ) node_name = "ComposedTexture3D";   
   set< Node * >::iterator i = visited_nodes.find( node );    
-
   bool use_node = i != visited_nodes.end();
-
-  stringstream s;
-  s << "NODE_" << (H3DPtrUint) node;
-  string name = node->hasName() ? node->getName() : s.str();
-
-  // handle DEF/USE cases
-  if( !use_node ) {
-    os << "DEF=\"" << name << "\" ";
-    visited_nodes.insert( node );
-  } else {
-    os << "USE=\"" << name << "\" ";
+     
+  if( output_type == X3D_OUTPUT ) {
+    os << prefix << "<" << node_name << " ";
+    // only use container field if it is needed.
+    if( node->defaultXMLContainerField() != container_field && 
+        container_field != "" ) {
+      os << "containerField=\"" << container_field << "\" ";
+    }
+    // handle DEF/USE cases
+    if( !use_node ) {
+      os << "DEF=\"" << name << "\" ";
+      visited_nodes.insert( node );
+    } else {
+      os << "USE=\"" << name << "\" ";
+    }
+  } else if( output_type == VRML_OUTPUT ) {
+    if( !use_node ) {
+      os << prefix << "DEF " << name << " " << node_name << " {" << endl;;
+      visited_nodes.insert( node );
+    } else {
+      os << prefix << "USE " << name << endl;
+    }
   }
+
+  string new_prefix = prefix + "  "; 
 
   vector< pair< string, SFNode * > > sf_nodes;
   vector< pair< string, MFNode * > > mf_nodes;
@@ -452,8 +470,27 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
           ParsableField *default_field = 
              dynamic_cast< ParsableField * >(default_value_node->getField( *i ));
           string v = p_field->getValueAsString();
-          if( default_field->getValueAsString() != v )
-            os << *i << "=\'" << v << "\' ";
+          if( default_field->getValueAsString() != v ) {
+            if( output_type == X3D_OUTPUT ) {
+              os << *i << "=\'" << v << "\' ";
+            } else if( output_type == VRML_OUTPUT ) {
+              // VRML versions of true and false are upper case.
+              if( dynamic_cast< MFBool * >( default_field ) || 
+                  dynamic_cast< SFBool * >( default_field ) ){
+                for (size_t j=0; j<v.length(); ++j) {
+                  v[j]=toupper(v[j]);
+                }
+              }
+
+              if( dynamic_cast< MFieldClass * >( default_field ) ) { 
+                os << new_prefix << *i << " [" << v << "]" << endl;
+              } else if( dynamic_cast< SFString *>( default_field ) ) {
+                os << new_prefix << *i << " \"" << v << "\"" << endl;
+              } else {
+                os << new_prefix << *i << " " << v << endl;
+              }
+            }
+          }
         }
       }
     }
@@ -461,32 +498,57 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
 
   
   if( sf_nodes.empty() && mf_nodes.empty() ) {
-    // if no nodes as children, end tag on same line
-    os << " />" << endl;
+    if( output_type == X3D_OUTPUT ) {
+      // if no nodes as children, end tag on same line
+      os << " />" << endl;
+    } else if( output_type == VRML_OUTPUT ) {
+      os << prefix << "}" << endl;
+	}
   } else {
-    os << ">" << endl;
+    if( output_type == X3D_OUTPUT ) {
+      os << ">" << endl;
+    }
 
     // process child nodes
     for( unsigned int i = 0; i < sf_nodes.size(); i++ ) {
+      if( output_type == VRML_OUTPUT ) {
+        os << new_prefix << sf_nodes[i].first << " ";
+      }
+
       X3D::writeNodeAsX3DHelp( os, 
 			       sf_nodes[i].second->getValue(), 
 			       sf_nodes[i].first,
 			       new_prefix,
-			       visited_nodes );
+			       visited_nodes,
+				   output_type);
     }
 
     for( unsigned int i = 0; i < mf_nodes.size(); i++ ) {
+      if( output_type == VRML_OUTPUT ) {
+         os << new_prefix << mf_nodes[i].first << " ["<< endl;
+      }
+
       for( MFNode::const_iterator n = mf_nodes[i].second->begin();
            n != mf_nodes[i].second->end(); n++ ) {
         X3D::writeNodeAsX3DHelp( os, 
 				 *n, 
 				 mf_nodes[i].first, 
-				 new_prefix, 
-				 visited_nodes );
+				 new_prefix + "  ", 
+				 visited_nodes,
+				 output_type );  
       }
+
+	  if( output_type == VRML_OUTPUT ) {
+          os << new_prefix << "]" << endl;
+      } 
     }
-    // end tag
-    os << prefix << "</" << node_name << ">" << endl;
+
+    if( output_type == X3D_OUTPUT ) {
+      // end tag
+      os << prefix << "</" << node_name << ">" << endl;
+    } else if( output_type == VRML_OUTPUT ) {
+      os << prefix << "}" << endl;
+    }
   }
 }
 
