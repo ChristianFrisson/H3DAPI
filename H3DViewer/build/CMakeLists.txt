@@ -124,7 +124,7 @@ IF( MSVC )
   ADD_CUSTOM_COMMAND( TARGET H3DViewer 
                       PRE_BUILD 
                       COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
-                      ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc H3DViewer.rc.cmake
+                      ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
                       ${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
                       ${H3DViewer_BUILD_VERSION}
                       ${H3DViewer_SOURCE_DIR}/../src/.svn/entries )
@@ -169,7 +169,7 @@ IF(WIN32)
 
     # Needed to run in debug mode. Removes warning about conflict between libraries.
     SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  ELSEIF(MSVC90)
+  ELSEIF(MSVC90 OR MSVC10)
     # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
     SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
     # Needed to run in debug mode. Removes warning about conflict between libraries.
