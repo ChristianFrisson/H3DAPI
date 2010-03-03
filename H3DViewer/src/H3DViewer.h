@@ -55,8 +55,12 @@ class TreeViewDialog : public wxFrame
 		virtual void OnTreeViewCollapseAll( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewExpandAll( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewCollapseChildren( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewDeleteNode( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewAddChildNode( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewNodeWatch( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewSaveX3D( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewSaveVRML( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ){ event.Skip(); }
 		virtual void OnTreeRightClick( wxTreeEvent& event ){ event.Skip(); }
 		virtual void OnNodeSelected( wxTreeEvent& event ){ event.Skip(); }

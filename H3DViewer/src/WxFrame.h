@@ -44,7 +44,6 @@
 #include <H3D/Transform.h>
 #include <H3D/Scene.h>
 #include <H3D/KeySensor.h>
-#include <H3D/SpaceWareSensor.h>
 #include <H3D/DeviceInfo.h>
 #include <H3D/ResourceResolver.h>
 #include <H3D/NavigationInfo.h>
@@ -393,11 +392,8 @@ private:
   // Autoref Variables
   AutoRef< Scene > scene;
   AutoRef< KeySensor > ks;
-  AutoRef< SpaceWareSensor > ss;
-  AutoRef< Transform > t;
   AutoRef< Node > device_info;
   AutoRef< Node > viewpoint;
-  AutoRef< Group > g;
 
   X3D::DEFNodes default_stylus_dn;
 

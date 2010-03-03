@@ -24,6 +24,10 @@ public:
   /// Destructor
   ~H3DViewerTreeViewDialog();
 
+  void collectAllTriangles( Node *n, 
+                            const Matrix4f &transform,
+                            vector< Vec3f > &triangles );
+
   virtual void btnCloseClick(wxCommandEvent& event);
 
   /// Callback for when the window is closed. Hides the window
@@ -55,9 +59,21 @@ public:
   /// Callback for node save x3d menu choice.
   virtual void OnTreeViewSaveX3D( wxCommandEvent& event );
 
+  /// Callback for node save VRML menu choice.
+  virtual void OnTreeViewSaveVRML( wxCommandEvent& event );
+
   /// Callback for node save stl menu choice.
   virtual void OnTreeViewSaveSTL( wxCommandEvent& event );
 
+  /// Callback for triangle save menu choice.
+	virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event );
+
+  /// Callback for delete node menu choice.
+	virtual void OnTreeViewDeleteNode( wxCommandEvent& event );
+
+  /// Callback for add child menu choice.
+  virtual void OnTreeViewAddChildNode( wxCommandEvent& event );
+	
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );
 
@@ -96,14 +112,17 @@ protected:
 
   // Add a view of the node as a child to the tree. expand determines
   // if the tree should be expanded from the start or node.
-  void addNodeToTree( wxTreeItemId tree_id, H3D::Node *n, bool expand = true );
+  void addNodeToTree( wxTreeItemId tree_id, 
+	                    H3D::Node *n, 
+                      string container_field,
+                      bool expand = true );
 
   // Update a current tree. The list of nodes is a list of all the nodes
   // that are supposed to be children to tree_id. All nodes that are already
   // there are updated, new nodes are added and parts that are nod in the list
   // are deleted.
   void updateNodeTree( wxTreeItemId tree_id, 
-                       std::list< H3D::Node *>, 
+                       std::list< pair< H3D::Node *, string > >,
                        bool expand_new = true );
 
   // The time of the last update to the tree view.

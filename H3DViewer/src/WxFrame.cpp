@@ -172,13 +172,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 
   scene.reset( new Scene );
   ks.reset ( new KeySensor );
-#ifndef MACOSX
-  ss.reset (0);
-#endif
-  t.reset ( new Transform );
   viewpoint.reset( new Viewpoint );
   device_info.reset (NULL);
-  g.reset ( new Group );
 
   glwindow = new WxWidgetsWindow(this);
 #if wxUSE_DRAG_AND_DROP
@@ -189,11 +184,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   glwindow->width->setValue(width);
   glwindow->height->setValue(height);
     
-  t->children->clear();
-  g->children->push_back( t.get() );
   scene->window->push_back( glwindow );
-  scene->sceneRoot->setValue( g );
-
+  
   wxString console_string = wxT("Console");
   the_console = new ConsoleDialog( this, wxID_ANY, console_string,
                                    wxDefaultPosition, wxDefaultSize,
@@ -637,7 +629,6 @@ bool WxFrame::loadFile( const string &filename) {
 
 
   //Clear existing data
-  t->children->clear();
   viewpoint.reset( NULL );
   tree_view_dialog->clearTreeView();
 
@@ -701,9 +692,6 @@ bool WxFrame::loadFile( const string &filename) {
   // Loading X3D file and setting up VR environment ---
   
   try {
-#ifndef MACOSX
-    if( use_space_mouse ) ss.reset( new SpaceWareSensor );
-#endif
     X3D::DEFNodes dn;
 
     DeviceInfo *di = DeviceInfo::getActive();
@@ -822,10 +810,6 @@ bool WxFrame::loadFile( const string &filename) {
       }
     }
 
-#ifndef MACOSX
-    if( use_space_mouse )
-    g->children->push_back(ss.get());
-#endif
     //create a Viewpoint if it does not exist.
     if( !Viewpoint::getActive() ) {
       if( viewpoint_file.size() ) {
@@ -1222,7 +1206,7 @@ bool WxFrame::loadFile( const string &filename) {
 
 //Clear data when closing file
 void WxFrame::clearData () {
-  t->children->clear();
+  scene->setSceneRoot( NULL );
   viewpoint.reset( new Viewpoint );
 
   DestroyViewpointsMenu();
@@ -1330,7 +1314,8 @@ void WxFrame::OnCloseFile(wxCommandEvent & event) {
   }
   lastOpenedFilepath.clear();
   //clearData();
-  t->children->clear();
+  scene->setSceneRoot( NULL );
+  //t->children->clear();
   tree_view_dialog->clearTreeView();
   if( !Viewpoint::getActive() )
     viewpoint.reset( new Viewpoint );

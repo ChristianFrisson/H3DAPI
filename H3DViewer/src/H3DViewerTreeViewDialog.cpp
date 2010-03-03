@@ -4,6 +4,10 @@
 #include <wx/wx.h>
 #include <H3D/Scene.h>
 #include <H3D/Viewpoint.h>
+#include <H3D/IndexedTriangleSet.h>
+#include <H3D/Coordinate.h>
+#include <H3D/MatrixTransform.h>
+#include <H3D/X3DShapeNode.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
 
@@ -40,8 +44,9 @@ void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
 
 void H3DViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
   // show the scene in the tree view.
-  list< H3D::Node * > l;
-  l.push_back( *Scene::scenes.begin() );
+  list< pair< H3D::Node *, string > > l;
+  Scene *s =  *Scene::scenes.begin();
+  l.push_back(make_pair(s, s->defaultXMLContainerField() ) );
 
   updateNodeTree( TreeViewTree->GetRootItem(), l, expand_new );
 
@@ -50,14 +55,15 @@ void H3DViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
   for( X3DBindableNode::StackMapType::const_iterator i = stacks.begin(); 
        i != stacks.end();i++ ) {
     X3DBindableNode *b = X3DBindableNode::getActive( (*i).first );
-    if( b ) l.push_back( b );
+    if( b ) l.push_back( make_pair(b, b->defaultXMLContainerField() ) );
   }
   updateNodeTree( bindable_tree_id, l, false );
 }
 
 void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id, 
-                                              H3D::Node *n,
-                                              bool expand ) {
+                                             H3D::Node *n,
+                                             string container_field,
+                                             bool expand ) {
   if( !n ) return;
 
   // the name in the tree is NodeType(DEFed name)
@@ -66,6 +72,9 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
     tree_string = tree_string + " (" + n->getName() + ")";
   }
 
+  if( container_field != n->defaultXMLContainerField() ) {
+    tree_string = tree_string + " (cf: " + container_field + ")";
+  }
   // add an item for this node in the tree
   wxTreeItemId new_id = TreeViewTree->AppendItem( tree_id, wxString( tree_string.c_str(), wxConvUTF8 ) );
   unsigned int s1 = node_map.size();
@@ -82,12 +91,12 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
     
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
       if( sfnode->getAccessType() != Field::INPUT_ONLY ) {
-        addNodeToTree( new_id, sfnode->getValue(), expand );
+        addNodeToTree( new_id, sfnode->getValue(), sfnode->getName(), expand );
       }
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
       if( mfnode->getAccessType() != Field::INPUT_ONLY ) {
         for( MFNode::const_iterator i = mfnode->begin(); i != mfnode->end(); i++ ) {
-          addNodeToTree( new_id, *i, expand );
+          addNodeToTree( new_id, *i, mfnode->getName(), expand );
         }
       }
     }
@@ -100,8 +109,8 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
 
 
 void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id, 
-                                               list< H3D::Node *> nodes,
-                                               bool expand_new ) {
+                                              list< pair< H3D::Node *, string > > nodes,
+                                              bool expand_new ) {
 
   // find all children of tree_id
   list< wxTreeItemId > children_ids;
@@ -126,13 +135,17 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
     Node *id_node = node_map[ (*i).m_pItem ].get(); 
 
     // check if this node still exists in the new node structure
-    list< H3D::Node * >::iterator ni = std::find( nodes.begin(), nodes.end(), id_node );
+    list< pair< H3D::Node *, string > >::iterator ni;
+    for( ni = nodes.begin(); ni != nodes.end(); ni++ ) {
+      if( (*ni).first == id_node ) break;
+    }
+
     if( ni != nodes.end() ) {
       // the node the tree id refers to still exists on this level
       // so recurse down.
 
       // find all child nodes of the node
-      list< H3D::Node * > child_nodes;
+      list< pair< H3D::Node *, string > > child_nodes;
       H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *id_node ) );
       for( H3DNodeDatabase::FieldDBConstIterator j = db->fieldDBBegin();
            db->fieldDBEnd() != j; j++ ) {
@@ -141,13 +154,13 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
         if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
           if( sfnode->getAccessType() != Field::INPUT_ONLY ) {
             Node *n = sfnode->getValue();
-            if( n ) child_nodes.push_back( sfnode->getValue() );
+            if( n ) child_nodes.push_back( make_pair( sfnode->getValue(), sfnode->getName() ) );
           }
         } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
           if( mfnode->getAccessType() != Field::INPUT_ONLY ) {
             for( MFNode::const_iterator mf = mfnode->begin(); 
                  mf != mfnode->end(); mf++ ) {
-              if( *mf ) child_nodes.push_back( *mf );
+              if( *mf ) child_nodes.push_back( make_pair( *mf, mfnode->getName() ) );
             }
           }
         }        
@@ -162,9 +175,9 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
   }
 
   // add all new nodes to the tree. 
-  for( list< H3D::Node *>::iterator i = nodes.begin();
+  for( list< pair< H3D::Node *, string > >::iterator i = nodes.begin();
        i != nodes.end(); i++ ) {
-    addNodeToTree( tree_id, *i, expand_new );
+    addNodeToTree( tree_id, (*i).first, (*i).second, expand_new );
   }
 
   // make the tree be open down to leaves by default.
@@ -328,7 +341,7 @@ void H3DViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
 }
 
 void H3DViewerTreeViewDialog::clearTreeView() {
-  list< Node * > l;
+  list< pair< Node *, string> > l;
   updateNodeTree( TreeViewTree->GetRootItem(), l );
   updateNodeTree( bindable_tree_id, l, false );
   displayFieldsFromNode( NULL );
@@ -501,6 +514,48 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
     }
   }
 }
+
+/// Callback for node save VRML menu choice.
+void H3DViewerTreeViewDialog::OnTreeViewSaveVRML( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  
+  TreeIdMap::iterator ni = node_map.find( id.m_pItem );
+  if( ni == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } else {
+    auto_ptr< wxFileDialog > file_dialog ( new wxFileDialog ( this,
+                                                   wxT("File to save as.."),
+                                                   wxT(""),
+                                                   wxT(""),
+                                                   wxT("*.*"),
+                                                   wxSAVE,
+                                                   wxDefaultPosition) );
+
+    if (file_dialog->ShowModal() == wxID_OK) {
+      std::string filename(file_dialog->GetPath().mb_str());
+      std::ofstream os( filename.c_str() );
+      if( os.fail() ) {
+        wxMessageBox( wxT("Unable to open selected file"), 
+                      wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      
+      try {
+        X3D::writeNodeAsVRML( os,
+                              (*ni).second.get() );
+      } catch (const Exception::H3DException &e) {
+        stringstream s;
+        s << e;
+        wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      os.close();
+    }
+  }
+}
+
 
 /// Callback for node save x3d menu choice.
 void H3DViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
@@ -744,3 +799,267 @@ void H3DViewerTreeViewDialog::updateRowFromFieldDB( int row,
   }
 }
 
+/// Callback for node save x3d menu choice.
+void H3DViewerTreeViewDialog::OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  
+  TreeIdMap::iterator ni = node_map.find( id.m_pItem );
+  if( ni == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } else {
+    wxFileDialog *file_dialog = new wxFileDialog ( this,
+                                                   wxT("File to save as.."),
+                                                   wxT(""),
+                                                   wxT(""),
+                                                   wxT("*.*"),
+                                                   wxSAVE,
+                                                   wxDefaultPosition) ;
+
+    if (file_dialog->ShowModal() == wxID_OK) {
+      std::string filename(file_dialog->GetPath().mb_str());
+      std::ofstream os( filename.c_str() );
+      if( os.fail() ) {
+        wxMessageBox( wxT("Unable to open selected file"), 
+                      wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      
+      try {
+        Node *n = (*ni).second.get();
+
+        AutoRef< IndexedTriangleSet > its( new IndexedTriangleSet );
+
+        vector< Vec3f > triangles;
+        triangles.reserve( 200 );
+        collectAllTriangles( n, Matrix4f(), triangles ); 
+
+        Coordinate *c = new Coordinate;
+        c->point->setValue( triangles );
+        vector< int > indices;
+        indices.reserve( triangles.size() );
+        for( unsigned int i = 0; i < triangles.size(); i++ ) {
+          indices.push_back( i );
+        }
+
+        its->coord->setValue( c );
+        its->index->setValue( indices );
+       
+        X3D::writeNodeAsX3D( os, its.get() );
+      } catch (const Exception::H3DException &e) {
+        stringstream s;
+        s << e;
+        wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+      os.close();
+    }
+  }
+}
+
+void H3DViewerTreeViewDialog::collectAllTriangles( Node *n, 
+                                                   const Matrix4f &transform,
+                                                   vector< Vec3f > &triangles ) {
+
+  if( !n ) return;
+
+  
+  if( X3DShapeNode *shape = dynamic_cast< X3DShapeNode * >( n ) ) {
+    X3DGeometryNode *geom = shape->geometry->getValue();
+    if( geom ) {
+      vector< HAPI::Collision::Triangle > tris;
+      geom->boundTree->getValue()->getAllTriangles( tris );
+      for( unsigned int i = 0; i < tris.size(); i++ ) {
+        triangles.push_back( transform * (Vec3f) tris[i].a );
+        triangles.push_back( transform * (Vec3f) tris[i].b );
+        triangles.push_back( transform * (Vec3f) tris[i].c );
+      }
+    }
+  } 
+
+  MatrixTransform *t = dynamic_cast< MatrixTransform * >( n );
+  Matrix4f new_transform = t ? t->matrix->getValue() * transform :transform;
+
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+  for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
+       db->fieldDBEnd() != i; i++ ) {
+    Field *f = i.getField( n ); 
+    if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
+      collectAllTriangles( sfnode->getValue(), new_transform, triangles );
+    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
+      for( unsigned int j = 0; j < mfnode->size(); j++ ) {
+        Node *n = mfnode->getValueByIndex( j ); 
+        collectAllTriangles( n, new_transform, triangles );
+      }
+    }
+  }
+}
+
+void H3DViewerTreeViewDialog::OnTreeViewDeleteNode( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  
+  TreeIdMap::iterator ni = node_map.find( id.m_pItem );
+  if( ni == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+    return;
+  }
+
+  Node *selected_node = (*ni).second.get();
+
+  if( dynamic_cast< Scene * >( selected_node ) ) {
+    wxMessageBox( wxT("Deletion of Scene node not allowed."),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+    return;
+  }
+
+  if( dynamic_cast< H3DWindowNode * >( selected_node ) ) {
+    wxMessageBox( wxT("Deletion of H3DWindowNode node not allowed."),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+    return;
+  }
+
+  wxTreeItemId parent_id = TreeViewTree->GetItemParent( id );
+  TreeIdMap::iterator ni_parent = node_map.find( parent_id.m_pItem );
+
+  if( ni_parent == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item does not have a parent"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+    return;
+  }
+
+  Node *n = (*ni_parent).second.get();
+
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+  for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
+       db->fieldDBEnd() != i; i++ ) {
+    Field *f = i.getField( n ); 
+    if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
+      if( sfnode->getValue() == selected_node ) {
+        if( sfnode->getAccessType() == Field::OUTPUT_ONLY ||
+            sfnode->getAccessType() == Field::INITIALIZE_ONLY ) {
+           wxMessageBox( wxT("Deletion of node in INITIALIZE_ONLY or OUTPUT_ONLY field not allowed."),
+                         wxT("Error"),
+                         wxOK | wxICON_EXCLAMATION);
+        } else {
+          sfnode->setValue( NULL );
+        }
+        return;
+      }
+    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
+      for( unsigned int j = 0; j < mfnode->size(); j++ ) {
+        if( mfnode->getValueByIndex( j ) == selected_node ) { 
+          if( mfnode->getAccessType() == Field::OUTPUT_ONLY ||
+              mfnode->getAccessType() == Field::INITIALIZE_ONLY ) {
+            wxMessageBox( wxT("Deletion of node in INITIALIZE_ONLY or OUTPUT_ONLY field not allowed."),
+                          wxT("Error"),
+                          wxOK | wxICON_EXCLAMATION);
+          } else {
+            mfnode->erase( selected_node );
+          }
+        }
+      }
+    }
+  }
+}
+
+void H3DViewerTreeViewDialog::OnTreeViewAddChildNode( wxCommandEvent& event ) {
+  wxTreeItemId id = TreeViewTree->GetSelection();
+  
+  TreeIdMap::iterator ni = node_map.find( id.m_pItem );
+  if( ni == node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  }
+
+  vector< wxString > node_fields;
+
+  Node *selected_node = (*ni).second.get();
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *selected_node ) );
+  for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
+       db->fieldDBEnd() != i; i++ ) {
+    Field *f = i.getField( selected_node ); 
+    if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
+      if( sfnode->getAccessType() == Field::INPUT_ONLY ||
+            sfnode->getAccessType() == Field::INPUT_OUTPUT ) {
+          node_fields.push_back( sfnode->getName() );
+      } 
+    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
+      if( mfnode->getAccessType() == Field::INPUT_ONLY ||
+          mfnode->getAccessType() == Field::INPUT_OUTPUT ) {
+         node_fields.push_back( mfnode->getName() );
+      }
+    }
+  }
+  
+  if( node_fields.empty() ) {
+     wxMessageBox( wxT("Selected node does not have a SFNode or MFNode field."),
+                   wxT("Error"),
+                   wxOK | wxICON_EXCLAMATION);
+    return;
+  }
+
+  string field_to_change;
+
+  if( node_fields.size() > 1 ) {
+    wxString *choices = new wxString[ node_fields.size() ];
+    for( unsigned int i = 0; i < node_fields.size(); i++ ) {
+      choices[i] = node_fields[i];
+    }
+    wxSingleChoiceDialog *choice_dialog = new wxSingleChoiceDialog ( this,
+                                                                     wxT("Add/replace node in which field.."),
+                                                                     wxT(""),
+                                                                     node_fields.size(),
+                                                                     choices );
+    delete [] choices;
+
+    if (choice_dialog->ShowModal() == wxID_OK) {
+      field_to_change = node_fields[ choice_dialog->GetSelection() ];
+    } else {
+      return;
+    }
+  }
+
+  wxTextEntryDialog *node_name_dialog = 
+            new wxTextEntryDialog(this, 
+                                  wxT("Enter the name of the node type you want to use" ),
+                                  wxT("Add/replace node" ) );
+  if (node_name_dialog->ShowModal() == wxID_OK) {
+     Node *new_node = H3DNodeDatabase::createNode( node_name_dialog->GetValue().mb_str() );
+     if( !new_node ) {
+       wxMessageBox( wxT("No such node type exists: " + node_name_dialog->GetValue()),
+                     wxT("Error"),
+                     wxOK | wxICON_EXCLAMATION);
+     } else {
+       Field *f = selected_node->getField( field_to_change );
+       SFNode *sfnode = dynamic_cast< SFNode * >( f );
+       MFNode *mfnode = dynamic_cast< MFNode * >( f );
+       
+       if( sfnode ) {
+         AutoRef< Node > old_node( sfnode->getValue() );
+         try { 
+           sfnode->setValue( new_node );
+         } catch (...) {
+           sfnode->setValue( old_node.get() );
+           wxMessageBox( wxT("Invalid node type for field"),
+                         wxT("Error"),
+                         wxOK | wxICON_EXCLAMATION);
+         }
+       } else if( mfnode ) {
+         try { 
+           mfnode->push_back( new_node );
+         } catch (...) {
+            wxMessageBox( wxT("Invalid node type for field"),
+                          wxT("Error"),
+                          wxOK | wxICON_EXCLAMATION);
+         }
+       }
+     }
+  } 
+}
