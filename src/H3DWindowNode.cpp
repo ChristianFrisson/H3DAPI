@@ -560,7 +560,6 @@ void H3DWindowNode::initWindowWithContext() {
 }
 
 void H3DWindowNode::render( X3DChildNode *child_to_render ) {
-  if( !child_to_render ) return;
   
   if ( !isInitialized() )
     initialize();
@@ -582,6 +581,22 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // set fullscreen mode
   setFullscreen( fullscreen->getValue() );
 
+  if( !child_to_render ) {
+	// clear the buffers
+	 glClearColor( 0, 0, 0, 0 );
+	if( stereo_mode != RenderMode::QUAD_BUFFERED_STEREO ) {
+      glDrawBuffer( GL_BACK );
+	  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	} else {
+	  glDrawBuffer( GL_BACK_LEFT );
+	  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); 
+	  glDrawBuffer( GL_BACK_RIGHT );
+	  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	} 
+	swapBuffers();
+	return;
+  }
+
   glPushAttrib( GL_ENABLE_BIT );
 
   X3DBackgroundNode *background = X3DBackgroundNode::getActive();
@@ -590,6 +605,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   if( background ) clear_color = background->glClearColor();
   if( fog ) fog->renderFog(); 
   glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   
   glEnable( GL_DEPTH_TEST ); 
