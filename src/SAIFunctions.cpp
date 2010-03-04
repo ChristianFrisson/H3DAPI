@@ -114,7 +114,11 @@ void Browser::replaceWorld( SAIScene *new_scene ) {
   // TODO: check spec. this is a simple implementation. 
   // need to do shutdown and initialize events
   SAI_scene.reset( new_scene );
-  scene->sceneRoot->setValue( SAI_scene->root_node );
+  if( new_scene ) {
+    scene->sceneRoot->setValue( SAI_scene->root_node );
+  } else {
+    scene->sceneRoot->setValue( NULL );
+  }
 }
 
 SAIScene *Browser::importDocument( DOMNode *node ) {
