@@ -628,9 +628,11 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else {
     return false;
   }
+
+  GLenum glerr = glGetError();
   
   // ignore any errors that occurs when setting uniform variables.
-  return glGetError() == GL_NO_ERROR;
+  return glerr == GL_NO_ERROR;
 }
 
 #ifdef HAVE_CG

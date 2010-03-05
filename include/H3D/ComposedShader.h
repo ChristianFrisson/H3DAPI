@@ -33,6 +33,7 @@
 #include <H3D/ShaderPart.h>
 #include <H3D/X3DProgrammableShaderObject.h>
 #include <H3D/DependentNodeFields.h>
+#include<string>
 
 namespace H3D {
 
@@ -56,7 +57,7 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ComposedShader.dot
-  class H3DAPI_API ComposedShader : 
+  class ComposedShader : 
     public X3DShaderNode, 
     public X3DProgrammableShaderObject {
   public:
@@ -129,6 +130,17 @@ namespace H3D {
     /// A vector of the handles to all shader objects that are currently
     /// linked into the program object.
     vector< GLhandleARB > current_shaders;
+
+    // list of program handles separated by key
+    static map<string, GLhandleARB> phandles_map;
+    static map<GLhandleARB, int> phandle_counts;
+
+    // create program handle for a shader
+    static GLhandleARB createHandle(const ComposedShader* shader);
+
+    // try to find existing handle (with the same signature), if not, go create one
+    static std::string genKeyFromShader(const ComposedShader* shader);
+
   };
 }
 

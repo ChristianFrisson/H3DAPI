@@ -33,7 +33,14 @@
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
 
+#include<sstream>
+#include<algorithm>
+
 using namespace H3D;
+using namespace std;
+
+map<string, GLhandleARB> ComposedShader::phandles_map;
+map<GLhandleARB, int> ComposedShader::phandle_counts;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase ComposedShader::database( 
@@ -72,12 +79,9 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
 
 bool ComposedShader::shader_support_checked = false;
 
-bool ComposedShader::addField( const string &name,
-                               const Field::AccessType &access,
-                               Field *field ) {
-  bool success = X3DProgrammableShaderObject::addField( name, 
-                                                        access, 
-                                                        field  );	
+bool ComposedShader::addField( const string &name, 
+                               const Field::AccessType &access, Field *field ) {
+  bool success = X3DProgrammableShaderObject::addField( name, access, field  );	
   if( success ) {
     field->route( displayList );
   }
@@ -103,79 +107,93 @@ void ComposedShader::postRender() {
 void ComposedShader::render() {
   if( !GLEW_ARB_shader_objects ) {
     if( !shader_support_checked ) {
-      Console(4) << "Your graphic card driver does not support "
-                 << "shader objects( ARB_shader_objects) so you cannot"
-                 << " use the ComposedShader node. Shader will be disabled"
-                 << endl;
+      Console(4) << "Your graphic card driver does not support shader objects( ARB_shader_objects) so you cannot"
+                 << " use the ComposedShader node. Shader will be disabled" << endl;
       shader_support_checked = true;
     } 
     if( isValid->getValue() ) isValid->setValue( false, id );
   } else {
     bool all_parts_valid = true;
     // compile all shader parts
-    for( MFShaderPart::const_iterator i = parts->begin();
-         i != parts->end(); i++ ) {
+
+    for( MFShaderPart::const_iterator i = parts->begin(); i != parts->end(); i++ ) {
       if( static_cast< ShaderPart * >(*i)->compileShader() == 0 ) {
         all_parts_valid = false;
       }
     }
-    
+
     if( isValid->getValue() != all_parts_valid )
       isValid->setValue( all_parts_valid, id );
     
-    if( all_parts_valid ) {
-      // if the first time we run the shader or a TRUE event has been sent
-      // to the activate field we must relink the program.
-      if( ( displayList->hasCausedEvent( activate ) && activate->getValue( id ) )
-          || !program_handle ) {
-        if( !program_handle ) program_handle = glCreateProgramObjectARB();
-        // detach the old shaders from the program
-        for( vector< GLhandleARB >::iterator i = current_shaders.begin();
-             i != current_shaders.end(); i++ ) {
-          glDetachObjectARB( program_handle, *i );
-        }
-        current_shaders.clear();
-        if( parts->size() > 0 ) {
-          // add the new ones.
-          for( MFShaderPart::const_iterator i = parts->begin();
-               i != parts->end(); i++ ) {
-            GLhandleARB handle = 
-              static_cast< ShaderPart * >(*i)->getShaderHandle();
-            glAttachObjectARB( program_handle, handle );
-            current_shaders.push_back( handle );
+    if( all_parts_valid )
+    {
+      // if the first time we run the shader and there is some part attached
+      if ( !program_handle && parts->size() ) {
+        std::string key = ComposedShader::genKeyFromShader( this );
+
+        if (phandles_map.find(key) != phandles_map.end()) {
+          // if a handle found, use that!
+          program_handle = phandles_map[key];
+          phandle_counts[program_handle]++;
+          //std::cout<< getName() << " use program handle " << program_handle << std::endl;
+          glUseProgramObjectARB( program_handle );
+        } else {
+          // if not, create one, link to shaderparts
+          GLhandleARB h = createHandle( this );
+          if (h != 0) {
+            // use that handle
+            program_handle = h;
+            glUseProgramObjectARB( h );
+            phandle_counts[h] = 1;
+            std::string key = genKeyFromShader( this );
+            phandles_map[key] = h;
+            // register shader objects
+            for ( MFShaderPart::const_iterator i = parts->begin(); i != parts->end(); i++ ) {
+              current_shaders.push_back( static_cast< ShaderPart * >(*i)->getShaderHandle() );
+            }
           }
-          // link shader program
-          glLinkProgramARB( program_handle );
-          GLint link_success;
-          glGetObjectParameterivARB( program_handle,
-                                     GL_OBJECT_LINK_STATUS_ARB,
-                                     &link_success );
-          if( link_success == GL_FALSE ) {
-            // linking failed, print error message
-            GLint nr_characters;
-            glGetObjectParameterivARB( program_handle,
-                                       GL_OBJECT_INFO_LOG_LENGTH_ARB,
-                                       &nr_characters );
-            GLcharARB *log = new GLcharARB[nr_characters];
-            glGetInfoLogARB( program_handle,
-                             nr_characters,
-                             NULL,
-                             log );
-            Console(3) << "Warning: Error while linking shader parts in \""
-                       << getName() << "\" node. " << endl
-                       << log << endl;
+        }
+      }
+
+      // if a TRUE event has been sent to the activate field we 
+      // relink the program (without looking up)
+      else if ( ( displayList->hasCausedEvent( activate ) && activate->getValue( id ) ))
+      {
+        // deallocate old instance if not used anywhere
+        if (phandle_counts.find(program_handle) != phandle_counts.end()) {
+          phandle_counts[program_handle]--;
+          if (phandle_counts[program_handle] == 0) {
+            // detach the old shaders from the program
+            for( vector< GLhandleARB >::iterator i = current_shaders.begin();
+              i != current_shaders.end(); i++ ) {
+              glDetachObjectARB( program_handle, *i );
+            }
+            current_shaders.clear();
+            // delete object
+            //std::cout<< this->getName() << " remove phandle " << program_handle << std::endl;
             glDeleteObjectARB( program_handle );
-            program_handle = 0;
-            delete log;
+            phandle_counts.erase( program_handle );
           }
         } else {
+          // if not, this is a floating program handle. delete it anyway
+          //std::cout<< this->getName() << " remove phandle " << program_handle << std::endl;
           glDeleteObjectARB( program_handle );
-          program_handle = 0;
         }
-        glUseProgramObjectARB( program_handle );
+
+        // we can't use the old instance (b'coz that forces other shaders to re-link)
+
+        GLhandleARB h = createHandle(this);
+        if (h != 0) {
+          program_handle = h;
+          glUseProgramObjectARB( h );
+          // register shader objects
+          for ( MFShaderPart::const_iterator i = parts->begin(); i != parts->end(); i++ ) {
+            current_shaders.push_back( static_cast< ShaderPart * >(*i)->getShaderHandle() );
+          }
+        }
       }
     }
-    
+
     if( program_handle ) {
       Shaders::renderTextures( this );
 
@@ -183,8 +201,7 @@ void ComposedShader::render() {
         if( !Shaders::setGLSLUniformVariableValue( program_handle, 
                                                    dynamic_fields[i] ) &&
             !suppressUniformWarnings->getValue() ) {
-          Console(3) << "Warning: Uniform variable \"" 
-                     <<  dynamic_fields[i]->getName() 
+          Console(3) << "Warning: Uniform variable \"" << dynamic_fields[i]->getName() 
                      << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
                      << "in the node \"" << getName() << "\"" << endl;
         }
@@ -193,3 +210,60 @@ void ComposedShader::render() {
   }
 }
 
+// check if any existing program handle using the same set of ShaderParts
+// so that we can reuse the program handle
+// Return the handle if found, zero if not found
+std::string ComposedShader::genKeyFromShader(const ComposedShader* shader)
+{
+  // build the key as string. we use simple key building method 
+  // by making a string of all the shaderParts' handles combined.
+  vector<GLhandleARB> keys;
+  keys.reserve( shader->parts->size() );
+  for( MFShaderPart::const_iterator i = shader->parts->begin(); i != shader->parts->end(); i++ ) {
+    GLhandleARB handle = static_cast< ShaderPart * >(*i)->getShaderHandle();
+    keys.push_back( handle );
+  }
+  sort( keys.begin(), keys.end() );
+  stringstream ss;
+  for (int i = 0; i < keys.size(); i++ ) ss << keys[i] << "_";
+  return ss.str();
+}
+
+
+// create handle and link to shaderparts. return 0 if failed.
+// Preclusion: parts > 0
+GLhandleARB ComposedShader::createHandle(const ComposedShader* shader) {
+  if ( !shader->parts->size() )
+    return 0;
+
+  GLhandleARB program_handle = glCreateProgramObjectARB();
+
+  // add the shaders to program
+  for ( MFShaderPart::const_iterator i = shader->parts->begin(); i != shader->parts->end(); i++ ) {
+    GLhandleARB handle = static_cast< ShaderPart * >(*i)->getShaderHandle();
+    glAttachObjectARB( program_handle, handle );
+  }
+
+  // link shader program
+  glLinkProgramARB( program_handle );
+  GLint link_success;
+  glGetObjectParameterivARB( program_handle, GL_OBJECT_LINK_STATUS_ARB, &link_success );
+  if( link_success == GL_FALSE ) {
+    // linking failed, print error message
+    GLint nr_characters;
+    glGetObjectParameterivARB( program_handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nr_characters );
+    GLcharARB *log = new GLcharARB[nr_characters];
+    glGetInfoLogARB( program_handle, nr_characters, NULL, log );
+    Console(3) << "Warning: Error while linking shader parts in \""
+               << const_cast<ComposedShader&>(*shader).getName() << "\" node. " << endl << log << endl;
+    glDeleteObjectARB( program_handle );
+    delete log;
+
+    return 0;
+  }
+
+  //std::cout<< const_cast<ComposedShader&>(*shader).getName() << " created program handle " << program_handle << std::endl;
+
+
+  return program_handle;
+}

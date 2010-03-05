@@ -32,6 +32,7 @@
 #include "H3D/ResourceResolver.h"
 #include <fstream>
 
+
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
@@ -74,6 +75,7 @@ GLhandleARB ShaderPart::compileShader() {
   if( shaderString->isUpToDate() ) {
     return shader_handle;
   } else {
+    //PROFILE_START("shaderpart: compile");
     if( shader_handle ) {
       glDeleteObjectARB( shader_handle );
       shader_handle = 0;
@@ -92,6 +94,7 @@ GLhandleARB ShaderPart::compileShader() {
       Console(3) << "Warning: Unsupported shader type \"" << shader_type
                  << "\" in ShaderPart node. Must be either \"FRAGMENT\"" 
                  << " or \"VERTEX\"." << endl;
+      //PROFILE_END();
       return shader_handle;
     }
     
@@ -121,11 +124,13 @@ GLhandleARB ShaderPart::compileShader() {
       delete log;
       shader_handle = 0;
     }
+    //PROFILE_END();
     return shader_handle;
   }
 }
 
 void ShaderPart::SFShaderString::update() {
+  //PROFILE_START("shaderpart: update");
   ShaderPart *shader_part = static_cast< ShaderPart * >( getOwner() ); 
   MFString *urls = static_cast< MFString * >( routes_in[0] );
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
@@ -153,6 +158,7 @@ void ShaderPart::SFShaderString::update() {
         shader_part->setURLUsed( *i );
         value = string( buffer );
         delete [] buffer;
+        //PROFILE_END();
         return;
       }
       is.close();
@@ -166,6 +172,7 @@ void ShaderPart::SFShaderString::update() {
   Console(4) << "] could be loaded.";
   shader_part->setURLUsed( "" );
   value = "";
+  //PROFILE_END();
 }
 
 X3DUrlObject::LoadStatus ShaderPart::loadStatus() {
