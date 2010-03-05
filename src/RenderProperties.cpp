@@ -41,6 +41,11 @@ H3DNodeDatabase RenderProperties::database(
 
 namespace RenderPropertiesInternals {
   FIELDDB_ELEMENT( RenderProperties, depthTestEnabled, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, depthBufferWriteEnabled, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, colorBufferRedWriteEnabled, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, colorBufferGreenWriteEnabled, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, colorBufferBlueWriteEnabled, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, colorBufferAlphaWriteEnabled, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, smoothShading, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, multiPassTransparency, INPUT_OUTPUT );
 }
@@ -50,11 +55,21 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
                                     Inst< DisplayList > _displayList,
                                     Inst< SFBool      > _depthTestEnabled,
                                     Inst< SFBool      > _smoothShading,
-                                    Inst< SFBool      > _multiPassTransparency ) :
+                                    Inst< SFBool      > _multiPassTransparency,
+                                    Inst< SFBool      > _depthBufferWriteEnabled,
+                                    Inst< SFBool      > _colorBufferRedWriteEnabled,
+                                    Inst< SFBool      > _colorBufferGreenWriteEnabled,
+                                    Inst< SFBool      > _colorBufferBlueWriteEnabled,
+                                    Inst< SFBool      > _colorBufferAlphaWriteEnabled ) :
   X3DAppearanceChildNode( _displayList, _metadata ),
   depthTestEnabled      ( _depthTestEnabled ),
   smoothShading         ( _smoothShading ),
-  multiPassTransparency( _multiPassTransparency ) {
+  multiPassTransparency( _multiPassTransparency ),
+  depthBufferWriteEnabled( _depthBufferWriteEnabled ),
+  colorBufferRedWriteEnabled( _colorBufferRedWriteEnabled ),
+  colorBufferGreenWriteEnabled( _colorBufferGreenWriteEnabled ),
+  colorBufferBlueWriteEnabled( _colorBufferBlueWriteEnabled ),
+  colorBufferAlphaWriteEnabled( _colorBufferAlphaWriteEnabled ) {
 
   type_name = "RenderProperties";
   database.initFields( this );
@@ -62,10 +77,21 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   depthTestEnabled->setValue( true );
   smoothShading->setValue( true );
   multiPassTransparency->setValue( true );
+  depthBufferWriteEnabled->setValue( true );
+  colorBufferRedWriteEnabled->setValue( true );
+  colorBufferGreenWriteEnabled->setValue( true );
+  colorBufferBlueWriteEnabled->setValue( true );
+  colorBufferAlphaWriteEnabled->setValue( true );
 
   depthTestEnabled->route( displayList );
   smoothShading->route( displayList );
   multiPassTransparency->route( displayList );
+  depthBufferWriteEnabled->route( displayList );
+  colorBufferRedWriteEnabled->route( displayList );
+  colorBufferGreenWriteEnabled->route( displayList );
+  colorBufferBlueWriteEnabled->route( displayList );
+  colorBufferAlphaWriteEnabled->route( displayList );
+
 }
 
 
@@ -82,5 +108,16 @@ void RenderProperties::render() {
   } else {
     glShadeModel( GL_FLAT );
   }
+
+  if( depthBufferWriteEnabled->getValue() ) {
+    glDepthMask( GL_TRUE );
+  } else {
+    glDepthMask( GL_FALSE );
+  }
+
+  glColorMask( colorBufferRedWriteEnabled->getValue(),
+               colorBufferGreenWriteEnabled->getValue(),
+               colorBufferBlueWriteEnabled->getValue(),
+               colorBufferAlphaWriteEnabled->getValue() );
 
 }

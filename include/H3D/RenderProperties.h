@@ -47,7 +47,22 @@ namespace H3D {
   ///
   /// The smoothShading field specifies if smooth shading should be used.
   /// If false, flat shading is used.
+  ///
+  /// The depthBufferWriteEnabled field specifies if depth values should be written
+  /// to the depth buffer of not during rendering.
   /// 
+  /// The colorBufferRedWriteEnabled field specifies if red color values should be written
+  /// to the color buffer of not during rendering.
+  ///
+  /// The colorBufferGreenWriteEnabled field specifies if green color values should be written
+  /// to the color buffer of not during rendering.
+  ///
+  /// The colorBufferBlueWriteEnabled field specifies if blue color values should be written
+  /// to the color buffer of not during rendering.
+  /// 
+  /// The colorBufferAlphaWriteEnabled field specifies if alpha values should be written
+  /// to the color buffer of not during rendering.
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/RenderProperties.x3d">RenderProperties.x3d</a>
   ///     ( <a href="examples/RenderProperties.x3d.html">Source</a> )
@@ -66,14 +81,20 @@ namespace H3D {
                       Inst< DisplayList > _displayList      = 0,
                       Inst< SFBool      > _depthTestEnabled = 0,
                       Inst< SFBool      > _smoothShading    = 0,
-                      Inst< SFBool      > _multiPassTransparency = 0 );
+                      Inst< SFBool      > _multiPassTransparency = 0,
+                      Inst< SFBool      > _depthBufferWriteEnabled = 0,
+                      Inst< SFBool      > _colorBufferRedWriteEnabled = 0,
+                      Inst< SFBool      > _colorBufferGreenWriteEnabled = 0,
+                      Inst< SFBool      > _colorBufferBlueWriteEnabled = 0,
+                      Inst< SFBool      > _colorBufferAlphaWriteEnabled = 0
+                      );
 
     /// This function will be called by the X3DShapeNode before any rendering 
     /// of geometry and before the call to the render function. So this is the
     /// place to save the states that are going to be changed in render() in
     /// order to restore it in postRender().
     virtual void preRender() {
-      glPushAttrib( GL_LIGHTING_BIT | GL_ENABLE_BIT );
+      glPushAttrib( GL_LIGHTING_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     }
 
     /// This function will be called by the X3DShapeNode after the geometry
@@ -127,6 +148,51 @@ namespace H3D {
     /// 
     /// \dotfile RenderProperties_multiPassTransparency.dot 
     auto_ptr< SFBool > multiPassTransparency;
+
+    /// The depthBufferWriteEnabled field specifies if depth values should be written
+    /// to the depth buffer of not during rendering.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    /// 
+    /// \dotfile RenderProperties_depthBufferWriteEnabled.dot 
+    auto_ptr< SFBool >  depthBufferWriteEnabled;
+
+    /// The colorBufferRedWriteEnabled field specifies if red color values should be written
+    /// to the color buffer of not during rendering.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    /// 
+    /// \dotfile RenderProperties_colorBufferRedWriteEnabled.dot 
+    auto_ptr< SFBool >  colorBufferRedWriteEnabled;
+
+    /// The colorBufferGreenWriteEnabled field specifies if green color values should be written
+    /// to the color buffer of not during rendering.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    /// 
+    /// \dotfile RenderProperties_colorBufferGreenWriteEnabled.dot 
+    auto_ptr< SFBool >  colorBufferGreenWriteEnabled;
+
+    /// The colorBufferBlueWriteEnabled field specifies if blue color values should be written
+    /// to the color buffer of not during rendering.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    /// 
+    /// \dotfile RenderProperties_colorBufferBlueWriteEnabled.dot 
+    auto_ptr< SFBool >  colorBufferBlueWriteEnabled;
+
+    /// The colorBufferAlphaWriteEnabled field specifies if alpha values should be written
+    /// to the color buffer of not during rendering.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    /// 
+    /// \dotfile RenderProperties_colorBufferAlphaWriteEnabled.dot 
+    auto_ptr< SFBool >  colorBufferAlphaWriteEnabled;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
