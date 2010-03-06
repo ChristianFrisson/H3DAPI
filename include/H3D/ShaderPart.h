@@ -52,12 +52,12 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ShaderPart.dot
-  class ShaderPart : 
+  class H3DAPI_API ShaderPart : 
     public X3DNode, 
     public X3DUrlObject {
   public:
     /// Update the string to use as shader depending from the urls given.
-    class SFShaderString: 
+    class H3DAPI_API SFShaderString: 
       public TypedField< SFString,
                          MFString > {
     protected:

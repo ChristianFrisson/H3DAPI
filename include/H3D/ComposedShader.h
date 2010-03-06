@@ -57,7 +57,7 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ComposedShader.dot
-  class ComposedShader : 
+  class H3DAPI_API ComposedShader : 
     public X3DShaderNode, 
     public X3DProgrammableShaderObject {
   public:
