@@ -1005,7 +1005,7 @@ void H3DViewerTreeViewDialog::OnTreeViewAddChildNode( wxCommandEvent& event ) {
     return;
   }
 
-  wxString field_to_change;
+  string field_to_change;
 
   if( node_fields.size() > 1 ) {
     wxString *choices = new wxString[ node_fields.size() ];
@@ -1020,7 +1020,7 @@ void H3DViewerTreeViewDialog::OnTreeViewAddChildNode( wxCommandEvent& event ) {
     delete [] choices;
 
     if (choice_dialog->ShowModal() == wxID_OK) {
-      field_to_change = node_fields[ choice_dialog->GetSelection() ];
+      field_to_change = std::string( node_fields[ choice_dialog->GetSelection() ].mb_str() );
     } else {
       return;
     }
@@ -1031,13 +1031,13 @@ void H3DViewerTreeViewDialog::OnTreeViewAddChildNode( wxCommandEvent& event ) {
                                   wxT("Enter the name of the node type you want to use" ),
                                   wxT("Add/replace node" ) );
   if (node_name_dialog->ShowModal() == wxID_OK) {
-     Node *new_node = H3DNodeDatabase::createNode( (const char*)node_name_dialog->GetValue().mb_str() );
+     Node *new_node = H3DNodeDatabase::createNode( std::string(node_name_dialog->GetValue().mb_str()) );
      if( !new_node ) {
        wxMessageBox( wxT("No such node type exists: " + node_name_dialog->GetValue()),
                      wxT("Error"),
                      wxOK | wxICON_EXCLAMATION);
      } else {
-       Field *f = selected_node->getField( (const char*)field_to_change.mb_str() );
+       Field *f = selected_node->getField( field_to_change );
        SFNode *sfnode = dynamic_cast< SFNode * >( f );
        MFNode *mfnode = dynamic_cast< MFNode * >( f );
        
