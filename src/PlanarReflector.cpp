@@ -32,6 +32,7 @@
 #include <H3D/X3DTextureNode.h>
 #include <H3D/Scene.h>
 #include <H3D/X3DBackgroundNode.h>
+#include <H3D/ClipPlane.h>
 
 using namespace H3D;
 
@@ -96,15 +97,20 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
 
   // draw mirror geometry into stencil buffer
   glPushMatrix();
-  GLfloat t[16] = { local_to_global[0][0], local_to_global[1][0], local_to_global[2][0], local_to_global[3][0],
-  local_to_global[0][1], local_to_global[1][1], local_to_global[2][1], local_to_global[3][1],
-  local_to_global[0][2], local_to_global[1][2], local_to_global[2][2], local_to_global[3][2],
-  local_to_global[0][3], local_to_global[1][3], local_to_global[2][3], local_to_global[3][3] };
+  GLfloat t[16] = { local_to_global[0][0], local_to_global[1][0],
+                    local_to_global[2][0], local_to_global[3][0],
+                    local_to_global[0][1], local_to_global[1][1],
+                    local_to_global[2][1], local_to_global[3][1],
+                    local_to_global[0][2], local_to_global[1][2],
+                    local_to_global[2][2], local_to_global[3][2],
+                    local_to_global[0][3], local_to_global[1][3],
+                    local_to_global[2][3], local_to_global[3][3] };
   glMultMatrixf( t );
   
   glClear( GL_STENCIL_BUFFER_BIT );
 
-  // write 1 into all values in the stencil buffer used when rendering the geomtery
+  // write 1 into all values in the stencil buffer used when rendering the
+  // geometry
   glStencilOp( GL_REPLACE, GL_REPLACE, GL_REPLACE );
   glStencilFunc( GL_ALWAYS, 1, 1 );
   glEnable( GL_STENCIL_TEST );
@@ -122,7 +128,8 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
 
   glPopMatrix();
 
-  // set up test to only render the parts where the mirror geometry was rendered
+  // set up test to only render the parts where the mirror geometry was
+  // rendered
   glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
   glStencilFunc( GL_EQUAL, 1, 1 );
   glClear( GL_DEPTH_BUFFER_BIT );
@@ -145,10 +152,14 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
   m[0][3], m[1][3], m[2][3], m[3][3] };
 
   // the transformation used for viewpoint
-  GLfloat vp_m[16] = { vp_transform[0][0], vp_transform[1][0], vp_transform[2][0], vp_transform[3][0],
-  vp_transform[0][1], vp_transform[1][1], vp_transform[2][1], vp_transform[3][1],
-  vp_transform[0][2], vp_transform[1][2], vp_transform[2][2], vp_transform[3][2],
-  vp_transform[0][3], vp_transform[1][3], vp_transform[2][3], vp_transform[3][3] };
+  GLfloat vp_m[16] = { vp_transform[0][0], vp_transform[1][0],
+                       vp_transform[2][0], vp_transform[3][0],
+                       vp_transform[0][1], vp_transform[1][1],
+                       vp_transform[2][1], vp_transform[3][1],
+                       vp_transform[0][2], vp_transform[1][2],
+                       vp_transform[2][2], vp_transform[3][2],
+                       vp_transform[0][3], vp_transform[1][3],
+                       vp_transform[2][3], vp_transform[3][3] };
 
   // draw background
   X3DBackgroundNode *background = X3DBackgroundNode::getActive();
@@ -182,31 +193,38 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
 
   // set up clip plane to clip everything behind the mirror
   glMultMatrixf( t );
-  int plane_index = 0;
-  Vec3f point( 0, 0, 0 );
-  Vec3f normal( 0, 0, -1 );
-  GLdouble e[] = {  normal.x, normal.y, normal.z, 
-                 -normal.x*point.x - normal.y*point.y - normal.z*point.z };
-  glClipPlane( GL_CLIP_PLANE0 + plane_index, e );
-  glEnable( GL_CLIP_PLANE0 + plane_index );
-  
-  // draw scene
-  glLoadMatrixf( rm );
-  glMultMatrixf( vp_m );
-  
-  // reflection matrix contains a negative scaling so we need to change front face.
   GLint front_face;
-  glGetIntegerv( GL_FRONT_FACE, &front_face );
-  if( front_face == GL_CW ) {
-    // we are in mirrored mode, so we have to set the front face
-      // to the opposite in order for it to be right when mirrored.
-    glFrontFace( GL_CCW );
-  } else {
-    glFrontFace( GL_CW );
-  }
+  // Make sure that there are enough free clip plane indicies and
+  // use the correct one and increase nr_active_clip_planes so that
+  // ClipPlane nodes work fine.
+  if( ClipPlane::checkIfFreeClipPlaneIndex() ) {
+    int plane_index = ClipPlane::nr_active_clip_planes++;
+    Vec3f point( 0, 0, 0 );
+    Vec3f normal( 0, 0, -1 );
+    GLdouble e[] = {  normal.x, normal.y, normal.z, 
+                   -normal.x*point.x - normal.y*point.y - normal.z*point.z };
+    glClipPlane( GL_CLIP_PLANE0 + plane_index, e );
+    glEnable( GL_CLIP_PLANE0 + plane_index );
+    
+    // draw scene
+    glLoadMatrixf( rm );
+    glMultMatrixf( vp_m );
+    
+    // reflection matrix contains a negative scaling so we need to change
+    // front face.
+    glGetIntegerv( GL_FRONT_FACE, &front_face );
+    if( front_face == GL_CW ) {
+      // we are in mirrored mode, so we have to set the front face
+        // to the opposite in order for it to be right when mirrored.
+      glFrontFace( GL_CCW );
+    } else {
+      glFrontFace( GL_CW );
+    }
 
-  n->render();
-  glDisable( GL_CLIP_PLANE0 + plane_index );
+    n->render();
+    glDisable( GL_CLIP_PLANE0 + plane_index );
+    ClipPlane::nr_active_clip_planes--;
+  }
   glPopMatrix();
   glDisable( GL_STENCIL_TEST );
 
@@ -228,10 +246,14 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
   glFrontFace( front_face );
     /*
   glPushMatrix();
-  GLfloat t[16] = { local_to_global[0][0], local_to_global[1][0], local_to_global[2][0], local_to_global[3][0],
-  local_to_global[0][1], local_to_global[1][1], local_to_global[2][1], local_to_global[3][1],
-  local_to_global[0][2], local_to_global[1][2], local_to_global[2][2], local_to_global[3][2],
-  local_to_global[0][3], local_to_global[1][3], local_to_global[2][3], m[3][3] };
+  GLfloat t[16] = { local_to_global[0][0], local_to_global[1][0],
+                    local_to_global[2][0], local_to_global[3][0],
+                    local_to_global[0][1], local_to_global[1][1],
+                    local_to_global[2][1], local_to_global[3][1],
+                    local_to_global[0][2], local_to_global[1][2],
+                    local_to_global[2][2], local_to_global[3][2],
+                    local_to_global[0][3], local_to_global[1][3],
+                    local_to_global[2][3], m[3][3] };
   glMultMatrixf( t );
   
   glClear( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );

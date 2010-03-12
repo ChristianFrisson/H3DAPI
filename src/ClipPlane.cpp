@@ -98,11 +98,10 @@ void ClipPlane::disableHapticsState( TraverseInfo &ti ) {
 }
 
 void ClipPlane::enableGraphicsState() { 
-  if( max_nr_clip_planes == -1 )
-    glGetIntegerv( GL_MAX_CLIP_PLANES, &max_nr_clip_planes );
+  bool clip_nr_is_free = checkIfFreeClipPlaneIndex();
   if ( enabled->getValue() && 
        clipGraphics->getValue() && 
-       nr_active_clip_planes < max_nr_clip_planes ) {
+       clip_nr_is_free ) {
     plane_index = nr_active_clip_planes++;
     const Vec4d &v = plane->getValue();
     GLdouble e[] = { v.x, v.y, v.z, v.w };

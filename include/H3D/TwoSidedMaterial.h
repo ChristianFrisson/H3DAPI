@@ -124,7 +124,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> RGB( 0.8, 0.8, 0.8 ) \n
-    /// <b>Valid range:</b> [0-1]
+    /// <b>Valid range:</b> [0-1, 0-1, 0-1]
     /// 
     /// \dotfile TwoSidedMaterial_diffuseColor.dot
     auto_ptr< SFColor >  diffuseColor;
@@ -135,7 +135,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> RGB( 0, 0, 0 ) \n
-    /// <b>Valid range:</b> [0-1]
+    /// <b>Valid range:</b> [0-1, 0-1, 0-1]
     /// 
     /// \dotfile TwoSidedMaterial_emissiveColor.dot
     auto_ptr< SFColor >  emissiveColor;
@@ -155,7 +155,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> RGB( 0, 0, 0 ) \n
-    /// <b>Valid range:</b> [0-1]
+    /// <b>Valid range:</b> [0-1, 0-1, 0-1]
     /// 
     /// \dotfile TwoSidedMaterial_specularColor.dot
     auto_ptr< SFColor >  specularColor;
@@ -187,7 +187,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> RGB( 0.8, 0.8, 0.8 ) \n
-    /// <b>Valid range:</b> [0-1]
+    /// <b>Valid range:</b> [0-1, 0-1, 0-1]
     /// 
     /// \dotfile TwoSidedMaterial_backDiffuseColor.dot
     auto_ptr< SFColor >  backDiffuseColor;
@@ -199,7 +199,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> RGB( 0, 0, 0 ) \n
-    /// <b>Valid range:</b> [0-1]
+    /// <b>Valid range:</b> [0-1, 0-1, 0-1]
     /// 
     /// \dotfile TwoSidedMaterial_backEmissiveColor.dot
     auto_ptr< SFColor >  backEmissiveColor;
@@ -222,7 +222,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> RGB( 0, 0, 0 ) \n
-    /// <b>Valid range:</b> [0-1]
+    /// <b>Valid range:</b> [0-1, 0-1, 0-1]
     /// 
     /// \dotfile TwoSidedMaterial_backSpecularColor.dot
     auto_ptr< SFColor >  backSpecularColor;
@@ -244,8 +244,7 @@ namespace H3D {
     /// front and back side of the polygon,
     ///
     /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> 0 \n
-    /// <b>Valid range:</b> [0-1]
+    /// <b>Default value:</b> false \n
     /// 
     /// \dotfile TwoSidedMaterial_separateBackColor.dot
     auto_ptr< SFBool >  separateBackColor;

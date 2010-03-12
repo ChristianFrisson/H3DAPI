@@ -101,6 +101,12 @@ namespace H3D {
     /// \returns true if some part of the line is above the plane.
     bool truncateLine( const Vec3f &from, const Vec3f &to,
                        Vec3f &result_from, Vec3f &result_to );
+
+    static bool checkIfFreeClipPlaneIndex() {
+      if( max_nr_clip_planes == -1 )
+        glGetIntegerv( GL_MAX_CLIP_PLANES, &max_nr_clip_planes );
+      return nr_active_clip_planes < max_nr_clip_planes;
+    }
   
     /// Specifies if the clipping plane should be enabled or not.
     ///
