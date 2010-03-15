@@ -174,6 +174,8 @@ H3DWindowNode::H3DWindowNode(
   default_avatar.push_back( 0.75f );
   default_speed = 1;
   default_collision = true;
+  default_transition_type.push_back( "LINEAR" );
+  default_transition_time = 1.0;
   H3DNavigationDevices::setNavTypeForAll( default_nav );
   mouse_position[0] = 0;
   mouse_position[1] = 0;
@@ -692,8 +694,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   }
 
   X3DViewpointNode *navigation_vp = vp;
-  if( nav_info )
-    vp = nav_info->viewpointToUse( vp );
+  vp = H3DNavigation::viewpointToUse( vp );
 
   Vec3f vp_position = vp->totalPosition->getValue();
   Rotation vp_orientation = vp->totalOrientation->getValue();
@@ -1192,26 +1193,29 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                                         far_plane_pos );
     }
 
-    if( nav_info )
-      nav_info->doNavigation( navigation_vp, child_to_render );
-    else {
-      bool use_collision = default_collision;
-      
-      GlobalSettings *default_settings = GlobalSettings::getActive();
-      if( default_settings ) {
-        CollisionOptions * collision_option = 0;
-        default_settings->getOptionNode( collision_option );
-        if( collision_option )
-          use_collision = collision_option->avatarCollision->getValue();
-      }
-
-      H3DNavigation::doNavigation( default_nav,
-                                   vp, child_to_render,
-                                   use_collision,
-                                   default_avatar,
-                                   default_speed );
-      H3DNavigationDevices::setNavTypeForAll( default_nav );
+    string nav_type = default_nav;
+    bool use_collision = default_collision;
+    vector< H3DFloat > &avatar_size = default_avatar;
+    H3DFloat nav_speed = default_speed;
+    vector< string > &transition_type = default_transition_type;
+    H3DTime transition_time = default_transition_time;
+    if( nav_info ) {
+      nav_type = nav_info->getUsedNavType();
+      use_collision = true;
+      avatar_size = nav_info->avatarSize->getValue();
+      nav_speed = nav_info->speed->getValue();
+      transition_type = nav_info->transitionType->getValue();
+      transition_time = nav_info->transitionTime->getValue();
     }
+
+    H3DNavigation::doNavigation( nav_type,
+                                 navigation_vp,
+                                 child_to_render,
+                                 use_collision,
+                                 avatar_size,
+                                 nav_speed,
+                                 transition_type,
+                                 transition_time );
     // Store previous mouse position
     previous_mouse_position[0] = mouse_position[0];
     previous_mouse_position[1] = mouse_position[1];

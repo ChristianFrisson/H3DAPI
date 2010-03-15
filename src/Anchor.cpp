@@ -31,7 +31,6 @@
 #include <H3D/Anchor.h>
 #include <H3D/TouchSensor.h>
 #include <H3D/X3D.h>
-#include <H3D/NavigationInfo.h>
 #include <H3D/H3DNavigation.h>
 
 using namespace H3D;
@@ -150,7 +149,7 @@ void Anchor::GeometrySelected::update() {
           for( X3DViewpointNode::ViewpointList::const_iterator j = vp_list.begin();
                j != vp_list.end() ; j++ ) {
             if( vp_name == (*j)->getName() ) {
-              NavigationInfo::force_jump = true;
+              H3DNavigation::force_jump = true;
               (*j)->set_bind->setValue( true );
               found = true;
               break;

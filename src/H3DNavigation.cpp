@@ -31,31 +31,39 @@
 #include <H3D/H3DNavigation.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/Scene.h>
+#include <H3D/NavigationInfo.h>
 
 using namespace H3D;
 
 H3DNavigation * H3DNavigation::instance = 0;
+AutoRef< X3DViewpointNode > H3DNavigation::old_vp( 0 );
+bool H3DNavigation::force_jump = false;
 
 H3DNavigation::H3DNavigation() : mouse_nav( new MouseNavigation() ),
                                  keyboard_nav( new KeyboardNavigation() ),
                                  haptic_device_nav( 0 ),
-                                 sws_navigation( 0 ) {
+                                 sws_navigation( 0 ),
+                                 linear_interpolate( false ) {
 }
 
 void H3DNavigation::doNavigation(
                                 string navigation_type, X3DViewpointNode * vp,
                                 X3DChildNode *topNode, bool detect_collision,
                                 const vector< H3DFloat > &avatar_size, 
-                                H3DFloat speed ) {
+                                H3DFloat speed,
+                                const vector< string > &transition_type,
+                   H3DTime transition_time ) {
   if( instance ) {
     instance->navigate( navigation_type, vp, topNode,
-      detect_collision, avatar_size, speed );
+      detect_collision, avatar_size, speed, transition_type,
+                   transition_time );
   }
   else {
     instance = new H3DNavigation();
     instance->last_time = Scene::time->getValue();
     instance->navigate( navigation_type, vp, topNode,
-      detect_collision, avatar_size, speed );
+      detect_collision, avatar_size, speed, transition_type,
+                   transition_time );
   }
 }
 
@@ -70,9 +78,93 @@ void H3DNavigation::destroy() {
 void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
                               X3DChildNode *topNode, bool detect_collision, 
                               const vector< H3DFloat > &avatar_size, 
-                              H3DFloat speed ) {
-  Rotation vp_full_orientation = vp->totalOrientation->getValue();
+                              H3DFloat speed,
+                              const vector< string > &transition_type,
+                   H3DTime transition_time ) {
+  Vec3f vp_pos = vp->position->getValue();
+  Vec3f vp_full_pos = vp_pos + vp->relPos->getValue();
+  Rotation vp_orientation = vp->orientation->getValue();
+  Rotation vp_full_orientation = vp_orientation * vp->relOrn->getValue();
   H3DTime current_time = Scene::time->getValue();
+  if( old_vp.get() && old_vp.get() != vp ) {
+    // if the viewpoint is switched when a transition is going on
+    // reset the old viewpoint and calculate the new transition from
+    // current position and viewpoint.
+    if( linear_interpolate ) {
+      if( !old_vp.get()->retainUserOffsets->getValue() ) {
+        old_vp.get()->relPos->setValue( goal_position );
+        old_vp.get()->relOrn->setValue( goal_orientation );
+      }
+      linear_interpolate = false;
+    }
+
+    if( vp->jump->getValue() || force_jump ) {
+      force_jump = false;
+
+      string transition = getTransitionType( transition_type );
+
+      if( transition == "TELEPORT" ) {
+        // Instant movement.
+        NavigationInfo *nav_info = NavigationInfo::getActive();
+        if( nav_info ) {
+          nav_info->setTransitionComplete( true );
+        }
+      } else {
+        // For all other types than teleport, use LINEAR movement.
+        linear_interpolate = true;
+        const Matrix4f &vp_acc_inv_mtx = vp->accInverseMatrix->getValue();
+        const Matrix4f &old_vp_acc_frw_mtx = 
+          old_vp->accForwardMatrix->getValue();
+
+        start_orientation = -vp_orientation * 
+          ( (Rotation)vp_acc_inv_mtx.getScaleRotationPart() *
+          ( (Rotation)old_vp_acc_frw_mtx.getScaleRotationPart()
+          * old_vp_orientation ) );
+
+        goal_orientation = vp->relOrn->getValue();
+
+        start_position = vp_acc_inv_mtx * 
+          (old_vp_acc_frw_mtx * old_vp_pos) - vp_pos;
+        goal_position = vp->relPos->getValue();
+        move_direction = goal_position - start_position;
+        start_time = current_time;
+      }
+    }
+    old_vp.reset( vp );
+  }
+  else if( !old_vp.get() ) {
+    old_vp.reset( vp );
+    old_vp_pos = old_vp->totalPosition->getValue();
+    old_vp_orientation = old_vp->totalOrientation->getValue();
+  }
+
+  // When a transition takes place navigationinfo negates external
+  // use of setValue of the position field of a viewpoint
+  if( linear_interpolate ) {
+    H3DTime elapsed_time = current_time - start_time;
+    H3DTime total_time = transition_time;
+    if( elapsed_time < total_time ) {
+      H3DDouble interpolation = elapsed_time / total_time;
+      vp->relPos->setValue( start_position +
+        move_direction * interpolation );
+      vp->relOrn->setValue( start_orientation.slerp( goal_orientation,
+        (H3DFloat)interpolation ) );
+    } else {
+      linear_interpolate = false;
+      NavigationInfo *nav_info = NavigationInfo::getActive();
+      if( nav_info ) {
+        nav_info->setTransitionComplete( true );
+      }
+      vp->relPos->setValue( goal_position );
+      vp_full_pos = vp_pos + goal_position;
+      vp->relOrn->setValue( goal_orientation );
+      vp_full_orientation = vp_orientation * goal_orientation;
+    }
+  }
+
+  if( !linear_interpolate ) {
+
+  Rotation vp_full_orientation = vp->totalOrientation->getValue();
   H3DTime delta_time = current_time - last_time;
   last_time = current_time;
 
@@ -248,7 +340,22 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
         Vec3f backward = vp_full_orientation * Vec3f( 0, 0, 1 );
         vp->centerOfRotation->setValue( approx_center );
 
-        vp->moveTo( approx_center + viewing_distance * backward );
+        string transition = getTransitionType( transition_type );
+        if( transition == "TELEPORT" ) {
+          // Instant movement.
+          vp->moveTo( approx_center + viewing_distance * backward );
+        } else {
+          // For all other types than teleport, use LINEAR movement.
+          linear_interpolate = true;
+          start_orientation = vp->relOrn->getValue();
+          goal_orientation = start_orientation;
+
+          start_position = vp->relPos->getValue();
+          goal_position = ( approx_center + viewing_distance * backward ) -
+                          vp->position->getValue();
+          move_direction = goal_position - start_position;
+          start_time = current_time;
+        }
 
         // No check is done to make sure that the selected object is not
         // obscured by other objects or that the new position is in a place
@@ -262,6 +369,11 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
     if( detect_collision )
       vp->detectCollision( avatar_size, topNode );
   }
+  }
+
+  old_vp_pos = vp_full_pos;
+  old_vp_orientation = vp_full_orientation;
+  H3DNavigationDevices::setNavTypeForAll( navigation_type );
 }
 
 void H3DNavigation::disableDevice( int device ) {
@@ -392,3 +504,23 @@ bool H3DNavigation::isEnabled( int device ) {
   }
   return false;
 }
+
+X3DViewpointNode *
+H3DNavigation::viewpointToUse( X3DViewpointNode *potential_vp ) {
+  if( old_vp.get() && old_vp.get() != potential_vp ) {
+     return old_vp.get();
+  }
+  return potential_vp;
+}
+
+string H3DNavigation::getTransitionType(
+  const vector< string > &transition_types ) {
+  for( unsigned int i = 0; i < transition_types.size(); i++ ) {
+    if( transition_types[i] == "LINEAR" ||
+        transition_types[i] == "TELEPORT" ||
+        transition_types[i] == "ANIMATE" )
+    return transition_types[i];
+  }
+  return string( "LINEAR" );
+}
+

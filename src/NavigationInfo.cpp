@@ -36,15 +36,6 @@
 
 using namespace H3D;
 
-AutoRef< X3DViewpointNode > NavigationInfo::old_vp( 0 );
-bool NavigationInfo::linear_interpolate = false;
-Vec3f NavigationInfo::goal_position = Vec3f();
-Rotation NavigationInfo::goal_orientation = Rotation();
-Vec3f NavigationInfo::old_vp_pos = Vec3f();
-Rotation NavigationInfo::old_vp_orientation = Rotation();
-list<NavigationInfo *> NavigationInfo::navigationInfos;
-bool NavigationInfo::force_jump = false;
-
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase NavigationInfo::database( 
                                     "NavigationInfo", 
@@ -102,118 +93,7 @@ NavigationInfo::NavigationInfo( Inst< SFSetBind > _set_bind,
   type->push_back( "ANY" );
   visibilityLimit->setValue( 0 );
 
-  last_time = TimeStamp();
   nav_type = "";
-
-  navigationInfos.push_back( this );
-}
-
-X3DViewpointNode *
-NavigationInfo::viewpointToUse( X3DViewpointNode *potential_vp ) {
-  if( old_vp.get() && old_vp.get() != potential_vp ) {
-     return old_vp.get();
-  }
-  return potential_vp;
-}
-
-void NavigationInfo::doNavigation( X3DViewpointNode * vp,
-                                      X3DChildNode *topNode ) {
-  Vec3f vp_pos = vp->position->getValue();
-  Vec3f vp_full_pos = vp_pos + vp->relPos->getValue();
-  Rotation vp_orientation = vp->orientation->getValue();
-  Rotation vp_full_orientation = vp_orientation * vp->relOrn->getValue();
-  H3DTime current_time = Scene::time->getValue();
-  last_time = current_time;
-  string navigation_type = getUsedNavType();
-  if( old_vp.get() && old_vp.get() != vp ) {
-    // if the viewpoint is switched when a transition is going on
-    // reset the old viewpoint and calculate the new transition from
-    // current position and viewpoint.
-    if( linear_interpolate ) {
-      if( !old_vp->retainUserOffsets->getValue() ) {
-        old_vp->relPos->setValue( goal_position );
-        old_vp->relOrn->setValue( goal_orientation );
-      }
-      linear_interpolate = false;
-    }
-
-    if( vp->jump->getValue() || force_jump ) {
-      force_jump = false;
-
-      string transition = "LINEAR";
-
-      // checking which values are allowed. (transitionType is a MFString).
-      if( !transitionType->empty() )
-        transition = transitionType->getValueByIndex( 0 );
-
-      if( transition == "TELEPORT" ) {
-        transitionComplete->setValue( true, id );
-      } else {
-        linear_interpolate = true;
-        const Matrix4f &vp_acc_inv_mtx = vp->accInverseMatrix->getValue();
-        const Matrix4f &old_vp_acc_frw_mtx = 
-          old_vp->accForwardMatrix->getValue();
-
-        start_orientation = -vp_orientation * 
-          ( (Rotation)vp_acc_inv_mtx.getScaleRotationPart() *
-          ( (Rotation)old_vp_acc_frw_mtx.getScaleRotationPart()
-          * old_vp_orientation ) );
-
-        goal_orientation = vp->relOrn->getValue();
-
-        start_position = vp_acc_inv_mtx * 
-          (old_vp_acc_frw_mtx * old_vp_pos) - vp_pos;
-        goal_position = vp->relPos->getValue();
-        move_direction = goal_position - start_position;
-        start_time = current_time;
-      }
-    }
-    old_vp.reset( vp );
-  }
-  else if( !old_vp.get() ) {
-    old_vp.reset( vp );
-    old_vp_pos = old_vp->totalPosition->getValue();
-    old_vp_orientation = old_vp->totalOrientation->getValue();
-  }
-
-  // When a transition takes place navigationinfo negates external
-  // use of setValue of the position field of a viewpoint
-  if( linear_interpolate ) {
-    H3DTime elapsed_time = current_time - start_time;
-    H3DTime total_time = transitionTime->getValue();
-    if( elapsed_time < total_time ) {
-      H3DDouble interpolation = elapsed_time / total_time;
-      vp->relPos->setValue( start_position +
-        move_direction * interpolation );
-      vp->relOrn->setValue( start_orientation.slerp( goal_orientation,
-        (H3DFloat)interpolation ) );
-    }
-    else {
-      linear_interpolate = false;
-      transitionComplete->setValue( true, id );
-      vp->relPos->setValue( goal_position );
-      vp_full_pos = vp_pos + goal_position;
-      vp->relOrn->setValue( goal_orientation );
-      vp_full_orientation = vp_orientation * goal_orientation;
-    }
-  }
-
-  if( !linear_interpolate ) {
-    bool use_collision = true;
-    GlobalSettings *default_settings = GlobalSettings::getActive();
-    if( default_settings ) {
-      CollisionOptions * collision_option = 0;
-      default_settings->getOptionNode( collision_option );
-      if( collision_option )
-        use_collision = collision_option->avatarCollision->getValue();
-    }
-    H3DNavigation::doNavigation( navigation_type, vp, topNode,
-      use_collision, avatarSize->getValue(), speed->getValue() );
-  }
-
-  old_vp_pos = vp_full_pos;
-  old_vp_orientation = vp_full_orientation;
-  H3DNavigationDevices::setNavTypeForAll( navigation_type );
 }
 
 string NavigationInfo::getUsedNavType() {

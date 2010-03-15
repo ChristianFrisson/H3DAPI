@@ -43,7 +43,7 @@
 #endif
 
 #include <H3D/ResourceResolver.h>
-#include <H3D/NavigationInfo.h>
+#include <H3D/H3DNavigation.h>
 
 #ifdef HAVE_FREEIMAGE
 #include <FreeImage.h>
@@ -103,7 +103,7 @@ void H3D::deinitializeH3D() {
 
   // this is needed because of static variable destruction order
   // cause crashes otherwise.
-  NavigationInfo::old_vp.reset( NULL );
+  H3DNavigation::old_vp.reset( NULL );
 }
 
 double H3D::getH3DApiVersion() {

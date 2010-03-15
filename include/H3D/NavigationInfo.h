@@ -257,38 +257,18 @@ namespace H3D {
                     Inst< SFFloat   > _visibilityLimit  = 0,
                     Inst< SFBool    > _transitionComplete = 0 );
 
-    virtual ~NavigationInfo() {
-      navigationInfos.remove( this );
-      if( navigationInfos.empty() )
-        old_vp.reset( 0 );
-    }
-    
     /// Convenience function to get the top of the NavigationInfo stack.
     static inline NavigationInfo *getActive() {
       return static_cast< NavigationInfo * >( X3DBindableNode::getActive( "NavigationInfo" ) );
     }
 
-    void doNavigation( X3DViewpointNode * vp, X3DChildNode *topNode );
-
-    /// Compares the given X3DViewpointNode to the X3DViewpointNode used by
-    /// the NavigationInfo. Used in order to make sure that the same viewpoint
-    /// is used for graphics and haptics when a NavigationInfo is in use.
-    X3DViewpointNode * viewpointToUse( X3DViewpointNode *potential_vp );
-
     inline void setNavType( string type ) { nav_type = type; }
 
     string getUsedNavType();
 
-    typedef list< NavigationInfo * > NavigationInfoList;
-    
-    /// Returns a list of all current X3DViewpointNode instances.
-    static const NavigationInfoList &getAllNavigationInfos() {
-      return navigationInfos;
+    inline void setTransitionComplete( bool value ) {
+      transitionComplete->setValue( value, id );
     }
-
-    // set when a node forces the jump regardless of value in the
-    // current viewpoints jump field. Set by Anchor for example.
-    static bool force_jump;
 
     /// The avatarSize field specifies the user's physical dimensions 
     /// in the world for the purpose of collision detection and terrain
@@ -356,21 +336,7 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-    static bool linear_interpolate;
-    static Vec3f goal_position;
-    static Rotation goal_orientation;
-    static Vec3f old_vp_pos;
-    static Rotation old_vp_orientation;
-    H3DTime start_time;
-    Vec3f start_position, move_direction;
-    Rotation start_orientation;
-
     string nav_type;
-
-    H3DTime last_time;
-    static NavigationInfoList navigationInfos;
-    static AutoRef< X3DViewpointNode > old_vp;
-    friend void H3D::deinitializeH3D();
   };
 }
 

@@ -55,7 +55,9 @@ namespace H3D {
     static void doNavigation( string navigation_type, X3DViewpointNode * vp,
                               X3DChildNode *topNode, bool detect_collision,
                               const vector< H3DFloat > &avatar_size, 
-                              H3DFloat speed );
+                              H3DFloat speed,
+                              const vector< string > &transition_type,
+                              H3DTime transition_time );
 
     /// Use values in the enum NavigationDevices to disable a certain device
     static void disableDevice( int device );
@@ -65,12 +67,24 @@ namespace H3D {
 
     static bool isEnabled( int device );
 
+    /// Compares the given X3DViewpointNode to the X3DViewpointNode used by
+    /// the NavigationInfo. Used in order to make sure that the same viewpoint
+    /// is used for graphics and haptics when a NavigationInfo is in use.
+    static X3DViewpointNode * viewpointToUse( X3DViewpointNode *potential_vp );
+
+    static string getTransitionType(
+      const vector< string > &transition_types );
+
+    static bool force_jump;
+
   private:
     /// Takes care of navigation
     void navigate( string navigation_type, X3DViewpointNode * vp,
                    X3DChildNode *topNode, bool detect_collision,
                    const vector< H3DFloat > &avatar_size, 
-                   H3DFloat speed );
+                   H3DFloat speed,
+                   const vector< string > &transition_type,
+                   H3DTime transition_time );
     
     /// An instance of this class
     static H3DNavigation * instance;
@@ -79,7 +93,9 @@ namespace H3D {
     H3DNavigation();
     H3DNavigation(const H3DNavigation&) {}
     H3DNavigation& operator = (const H3DNavigation&) { return *this; }
-    ~H3DNavigation() {}
+    ~H3DNavigation() {
+      old_vp.reset( 0 );
+    }
 
     /// Devices which it is possible to use for navigation.
     auto_ptr< MouseNavigation > mouse_nav;
@@ -88,6 +104,17 @@ namespace H3D {
     auto_ptr< SWSNavigation > sws_navigation;
 
     H3DTime last_time;
+
+    bool linear_interpolate;
+    Vec3f goal_position;
+    Rotation goal_orientation;
+    Rotation old_vp_orientation;
+    Vec3f start_position, move_direction;
+    Rotation start_orientation;
+    Vec3f old_vp_pos;
+    H3DTime start_time;
+    static AutoRef< X3DViewpointNode > old_vp;
+    friend void H3D::deinitializeH3D();
   };
 
 }

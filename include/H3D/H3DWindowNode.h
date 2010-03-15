@@ -352,6 +352,8 @@ namespace H3D {
     vector< H3DFloat > default_avatar;
     H3DFloat default_speed;
     bool default_collision;
+    vector< string > default_transition_type;
+    H3DTime default_transition_time;
 
   protected:
     /// internal help function to initialise the window and

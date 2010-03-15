@@ -33,7 +33,7 @@
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/GlobalSettings.h>
 #include <H3D/HapticsOptions.h>
-#include <H3D/NavigationInfo.h>
+#include <H3D/H3DNavigation.h>
 
 #include <HAPI/HAPIHapticsRenderer.h>
 #include <HAPI/HAPIProxyBasedRenderer.h>
@@ -274,9 +274,7 @@ void H3DHapticsDevice::updateDeviceValues() {
 
   if( hapi_device.get() ) {
     X3DViewpointNode *vp = X3DViewpointNode::getActive();
-    NavigationInfo *nav_info = NavigationInfo::getActive();
-    if( nav_info )
-      vp = nav_info->viewpointToUse( vp );
+    vp = H3DNavigation::viewpointToUse( vp );
     if( followViewpoint->getValue() && vp ) {
       // Haptic device should follow the viewpoint.
 
