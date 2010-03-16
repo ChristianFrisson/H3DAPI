@@ -168,20 +168,14 @@ bool MyApp::OnInit()
       return false;
 
     SetVendorName(_T("SenseGraphics AB"));
-#ifdef H3DVIEWER_STANDALONE
     wxString tmp_string = H3DVIEWER_APP_NAME;
-#ifdef _DEBUG
-    tmp_string += wxT("(debug)");
-#endif
-    SetAppName( tmp_string );
-#else
-    wxString tmp_string = H3DVIEWER_APP_NAME;
+#ifndef H3DVIEWER_STANDALONE
     tmp_string += wxT("(dev)");
+#endif
 #ifdef _DEBUG
     tmp_string += wxT("(debug)");
 #endif
     SetAppName( tmp_string );
-#endif
 
     Console.setShowLevel( false );
 
