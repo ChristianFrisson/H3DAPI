@@ -53,6 +53,7 @@ namespace H3D {
       SFMATRIX4F,   MFMATRIX4F,
       SFMATRIX3D,   MFMATRIX3D,
       SFMATRIX4D,   MFMATRIX4D,
+      SFIMAGE,      MFIMAGE,
       UNKNOWN_X3D_TYPE 
     };
   }

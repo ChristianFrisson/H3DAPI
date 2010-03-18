@@ -35,8 +35,9 @@
 #include <H3D/X3DTypeFunctions.h>
 #include <H3D/SAIFunctions.h>
 #include <H3D/X3D.h>
+#include <H3DUtil/PixelImage.h>
 #include<typeinfo>
-
+#include<algorithm>
 #include<sstream>
 
 
@@ -47,6 +48,37 @@ using namespace H3D;
 using namespace H3D::SpiderMonkey;
 
 
+/// change dimension and preserve old spaces, or fill new spaces with zero
+void changePixelImageDimension(PixelImage* img, unsigned int nw, unsigned int nh) {
+  unsigned int ow = img->width(); unsigned int oh = img->height();
+  if (nw == -1) nw = ow;
+  if (nh == -1) nh = oh;
+  unsigned char* dataOld = (unsigned char*) img->getImageData();
+  unsigned char bytes_per_pixel = img->bitsPerPixel() / 8;
+  unsigned char* dataNew = new unsigned char[(nw * nh * bytes_per_pixel)];
+  memset(dataNew, 0, sizeof(dataNew));
+  for (int x = 0; x < std::min<int>( nw, ow); x++) {
+    for (int y = 0; y < std::min<int>(nh, ow); y++) {
+      memcpy( (void*)(dataNew + (y*nw+x)*bytes_per_pixel),
+              (dataOld + (y * ow + x)*bytes_per_pixel), bytes_per_pixel);
+    }
+  }
+  img->setImageData(dataNew, false);
+  img->setWidth(nw);
+  img->setHeight(nh);
+}
+
+/// when changed comp type, create a new data array
+void changePixelImageComponent(PixelImage* img, int comp) {
+  std::cout<< img->bitsPerPixel();
+  img->setPixelType( (H3DUtil::Image::PixelType)(comp-1) );
+  img->setbitsPerPixel(comp * 8);
+  unsigned char* data = new unsigned char[img->width() * img->height() * comp ];
+  img->setImageData(data, false);
+}
+
+/// return the actual value wrapped inside a JS object
+/// Use this function because we currently have 2 ways to represent SField: (SField) or (MField, index)
 template<class FieldType>
 JSBool getValueInJSObject(JSContext* cx, JSObject* obj, typename FieldType::value_type* rval) {
   typedef MField<typename FieldType::value_type> MFieldType;
@@ -134,7 +166,7 @@ JSBool SpiderMonkey::FieldObject_toString(JSContext *cx, JSObject *obj, uintN ar
   } else {
     return JS_FALSE;
   }
-} 
+}
 
 template<class FieldType>
 JSBool SpiderMonkey::FieldObject_toString2(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
@@ -165,8 +197,44 @@ template< class MFieldType, class ElementType >
 JSBool SpiderMonkey::JS_MField<MFieldType, ElementType>::getProperty(JSContext *cx, JSObject *obj, 
                                                          jsval id, jsval *vp) {
 
-  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
-  MFieldType* mfield = static_cast<MFieldType *>(private_data->getPointer());
+  FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate*>(JS_GetPrivate(cx,obj));
+
+  if (private_data->getPointer()->getX3DType() == X3DTypes::SFIMAGE) {
+    SFImage* sfimg = dynamic_cast<SFImage*>( private_data->getPointer() );
+    PixelImage* img = dynamic_cast<PixelImage*>( sfimg->getValue() );
+
+    if ( JSVAL_IS_INT(id) ) {
+      int index = JSVAL_TO_INT(id);
+
+      int intval;
+      if (index == 0) intval = img->width();
+      else if (index == 1) intval = img->height();
+      else if (index == 2) intval = (int)img->pixelType() + 1;
+      else {
+        index = index - 3;
+        int ix = index % img->width();
+        int iy = index / img->width();
+        RGBA color = img->getPixel( ix, iy );
+        unsigned char bytes_per_pixel = img->pixelType() + 1;
+        unsigned char* data = new unsigned char[ bytes_per_pixel ];
+        img->RGBAToImageValue(color, (void*) data);
+        intval = 0;
+        for (int i = 0; i < bytes_per_pixel; i++) {
+          intval = intval << 8;
+          intval = intval | data[i];
+        }
+        delete data;
+      }
+      jsval aa;
+      JS_NewNumberValue( cx, intval, &aa);
+      *vp = aa;
+
+      return JS_TRUE;
+    }
+    return JS_FALSE;
+  }
+
+  MFieldType* mfield = dynamic_cast<MFieldType *>(private_data->getPointer());
 
   if (JSVAL_IS_INT(id)) {
     // value is integer so it is an array index
@@ -174,11 +242,10 @@ JSBool SpiderMonkey::JS_MField<MFieldType, ElementType>::getProperty(JSContext *
     int index = JSVAL_TO_INT(id);
 
     if( index < (int)mfield->size() ) {
-      //ElementType *sfield = new ElementType;
-      //sfield->setValue( MField_getValueNoAccessCheck( mfield )[index] );
-      //*vp = jsvalFromField( cx, sfield, false );
       ElementType sfield;
       *vp = jsvalFromField(cx, mfield, false, index, sfield.getX3DType() );
+    } else {
+      return JS_FALSE;
     }
   } else if( JSVAL_IS_STRING( id ) ){
     // value is string, so it is a named property
@@ -231,6 +298,41 @@ JSBool SpiderMonkey::JS_MField< MFieldType, ElementType >::setProperty(JSContext
                                                          jsval id, jsval *vp) {
   //      cerr << "MFNode setProperty: "<< endl;
   FieldObjectPrivate *private_data = static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,obj));
+
+  
+  if (private_data->getPointer()->getX3DType() == X3DTypes::SFIMAGE) {
+
+    SFImage* sfimg = dynamic_cast<SFImage*>( private_data->getPointer() );
+    PixelImage* img = (PixelImage*) sfimg->getValue();
+
+    int intval = JSVAL_TO_INT( *vp );
+
+    if ( JSVAL_IS_INT(id) ) {
+      int index = JSVAL_TO_INT(id);
+      
+      if (index == 0) changePixelImageDimension(img, intval, -1);
+      else if (index == 1) changePixelImageDimension(img, -1, intval);
+      else if (index == 2) changePixelImageComponent(img, intval );
+      else {
+        index = index - 3;
+        int ix = index % img->width();
+        int iy = index / img->width();
+        unsigned char bytes_per_pixel = img->pixelType() + 1;
+        unsigned char* data = new unsigned char[ bytes_per_pixel ];
+        for (int i = bytes_per_pixel-1; i >= 0; i--) {
+          data[i] = intval & 0x0000FF;
+          intval = intval >> 8;
+        }
+        RGBA color = img->imageValueToRGBA((void*) data);
+        delete data;
+        img->setPixel(color, ix, iy);
+      }
+
+      return JS_TRUE;
+    }
+    return JS_FALSE;
+  }
+
   MFieldType* mfield = static_cast<MFieldType *>(private_data->getPointer());
   if (JSVAL_IS_INT(id)) {
     // value is integer so it is an array index
@@ -242,15 +344,11 @@ JSBool SpiderMonkey::JS_MField< MFieldType, ElementType >::setProperty(JSContext
       mfield->resize( index+1 );
     }
 
-    //typename ElementType::value_type v;
-    //getValueInJSObject< ElementType, MField< typename ElementType::value_type> >( cx, obj, &v );
-
     //// retrieve the value to n
     auto_ptr< ElementType > n( new ElementType );
 
     if (setFieldValueFromjsval( cx, n.get(), *vp ) ) {
       mfield->setValue( index, n->getValue() );  
-      //	  mfield->push_back( n->getValue() );
     } else {
       stringstream s;
       s << mfield->getTypeName() << " element must be of type " 
@@ -2495,183 +2593,196 @@ JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx, Field *field, bool i
 }
 
 
-//
-////////////////////////////////////////////////////////////
-//// SFImage object
-//
-//JSBool SpiderMonkey::SFImage_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
-//  // check that we have enough arguments and that they are of
-//  // correct type.
-//  if (! (argc == 4 && JSVAL_IS_NUMBER( argv[0] ) // width
-//                && JSVAL_IS_NUMBER( argv[1] ) // height
-//                && JSVAL_IS_INT( argv[2] )    // comp
-//                && JSVAL_IS_OBJECT( argv[3] ) && JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[3]), &JS_MFInt32::js_class, argv) ) ) {
-//    JS_ReportError(cx, "Wrong arguments");
-//    return JS_FALSE;
-//  }
-//
-//  jsdouble dx, dy, dcomp;
-//  JS_ValueToNumber(cx, argv[0], &dx);
-//  JS_ValueToNumber(cx, argv[1], &dy);
-//  JS_ValueToNumber(cx, argv[2], &dcomp);
-//  int x = (int)dx;
-//  int y = (int)dy;
-//  int comp = (int)dcomp;
-//
-//  MFInt32* arr_obj = helper_extractPrivateObject<MFInt32>( cx, JSVAL_TO_OBJECT(argv[3]) );
-//  ImagePrivate* ip = new ImagePrivate(x, y, comp, arr_obj->getValue());
-//
-//  SFImagePrivate* sfimg = new SFImagePrivate(*ip);
-//  *rval = OBJECT_TO_JSVAL( SFImage_newInstance( cx, sfimg, true ) ); 
-//  return JS_TRUE;
-//}
-//
-//JSBool SpiderMonkey::SFImage_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
-//  SFImagePrivate* sfimg = helper_extractPrivateObject<SFImagePrivate>( cx, obj );
-//  ImagePrivate ip = sfimg->getValue();
-//
-//  if (sfimg == 0) return JS_FALSE;
-//
-//  if (JSVAL_IS_INT(id)) {
-//    switch (JSVAL_TO_INT(id))
-//    {
-//      case SFImage_WIDTH:
-//        *vp = INT_TO_JSVAL(ip.x());
-//        return JS_TRUE;
-//      case SFImage_HEIGHT:
-//        *vp = INT_TO_JSVAL(ip.y());
-//        return JS_TRUE;
-//      case SFImage_COMP:
-//        *vp = INT_TO_JSVAL( ip.comp() );
-//        return JS_TRUE;
-//      case SFImage_ARRAY:
-//        // create jsobject wrapping the mfint32 object
-//        MFInt32* mfint32 = new MFInt32();
-//        mfint32->setValue(ip.arr());
-//        JSObject* r_jsobj = JS_NewObject(cx, &JS_MFInt32::js_class, NULL, NULL);
-//        JS_SetPrivate(cx, r_jsobj, (void *) new FieldObjectPrivate( mfint32 , true) );
-//        *vp = OBJECT_TO_JSVAL( r_jsobj );
-//
-//        return JS_TRUE;
-//    }
-//    return JS_TRUE;
-//  } else {
-//    // if we get here the property was not one of the ones defined in
-//    // SFImage_properties. It can be another property such as a function
-//    // so we check if the previous value of vp contains anything. On call 
-//    // of this function it contains the current value of the attribute.
-//    // If it is JSVAL_VOID the attribute does not exist.
-//    if( *vp == JSVAL_VOID ) {
-//      JSString *s = JSVAL_TO_STRING( id );
-//      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
-//	return JS_FALSE;
-//      } else {
-//	return JS_TRUE;
-//      }
-//    }
-//}
-//
-//JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
-//{
-//  SFImagePrivate* sfimg = helper_extractPrivateObject<SFImagePrivate>( cx, obj );
-//  ImagePrivate ip = sfimg->getValue();
-//
-//  if (JSVAL_IS_INT(id)) {
-//
-//    JSBool res = JS_TRUE;
-//    jsint i;
-//    switch (JSVAL_TO_INT(id))
-//    {
-//      case SFImage_WIDTH:
-//        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
-//          JS_ReportError(cx, "Value must be number" );
-//          return JS_FALSE;
-//        }
-//        if ( i <= 0 ) {
-//          JS_ReportError(cx, "Value must be positive" );
-//          return JS_FALSE;
-//        }
-//        ip.setX(i);
-//        break;
-//
-//      case SFImage_HEIGHT:
-//
-//        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
-//          JS_ReportError(cx, "Value must be number" );
-//          return JS_FALSE;
-//        }
-//        if ( i <= 0 ) {
-//          JS_ReportError(cx, "Value must be positive" );
-//          return JS_FALSE;
-//        }
-//        ip.setY(i);
-//        break;
-//
-//      case SFImage_COMP:
-//        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
-//          JS_ReportError(cx, "Value must be number" );
-//          return JS_FALSE;
-//        }
-//        // must be either 1, 2, 3 or 4
-//        if ( i <= 0 || i >= 5 ) {
-//          JS_ReportError(cx, "Value must be either 1, 2, 3 or 4" );
-//          return JS_FALSE;
-//        }
-//        ip.setComp(i);
-//        break;
-//
-//      case SFImage_ARRAY:
-//        // sanity check
-//        if ( !JSVAL_IS_OBJECT(*vp) ) {
-//          JS_ReportError(cx, "RHS must be object.");
-//          return JS_FALSE;
-//        }
-//        if ( !JS_InstanceOf(cx, JSVAL_TO_OBJECT(*vp), &JS_MFInt32::js_class, 0) ) {
-//          JS_ReportError(cx, "RHS must be an int array");
-//          return JS_FALSE;
-//        }
-//        MFInt32* mfint32 = helper_extractPrivateObject<MFInt32>( cx, JSVAL_TO_OBJECT(*vp) );
-//
-//        // check for array size
-//        vector<int> vals = mfint32->getValue();
-//        if ( vals.size() != vals[0] * vals[1] + 3 ) {
-//          JS_ReportError(cx, "Supplied int array has wrong number of arguments");
-//          return JS_FALSE;
-//        }
-//
-//        // convert to vector
-//        ip.setArray(mfint32->getValue());
-//
-//        break;
-//    }
-//    setValueNoAccessCheck(sfimg, ip);
-//    return JS_TRUE;
-//  } else {
-//    // if we get here the property was not one of the ones defined in
-//    // SFImage_properties. It can be another property such as a function
-//    // so we check if the previous value of vp contains anything. On call 
-//    // of this function it contains the current value of the attribute.
-//    // If it is JSVAL_VOID the attribute does not exist.
-//    if( *vp == JSVAL_VOID ) {
-//      JSString *s = JSVAL_TO_STRING( id );
-//      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
-//      return JS_FALSE;
-//    } else {
-//      return JS_TRUE;
-//    }
-//  }
-//}
-//
-//JSObject *SpiderMonkey::SFImage_newInstance( JSContext *cx, SFImagePrivate *field, bool internal_field ) {
-//  JSObject *js_field;
-//
-//  js_field = JS_NewObject( cx, &SFImageClass, NULL, NULL );  
-//
-//  JS_DefineProperties(cx, js_field, SFImage_properties );
-//  JS_DefineFunctions(cx, js_field, SFImage_functions );
-//  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field) );
-//  return js_field;
-//}
+//////////////////////////////////////////////////////////
+// SFImage object
+
+JSBool SpiderMonkey::SFImage_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // check that we have enough arguments and that they are of
+  // correct type.
+  if (! (argc == 4 && JSVAL_IS_NUMBER( argv[0] ) // width
+                && JSVAL_IS_NUMBER( argv[1] ) // height
+                && JSVAL_IS_INT( argv[2] )    // comp
+                && JSVAL_IS_OBJECT( argv[3] ) && JS_InstanceOf(cx, JSVAL_TO_OBJECT(argv[3]), &JS_MFInt32::js_class, argv) ) ) {
+    JS_ReportError(cx, "Wrong arguments");
+    return JS_FALSE;
+  }
+
+  jsdouble dx, dy, dcomp;
+  JS_ValueToNumber(cx, argv[0], &dx);
+  JS_ValueToNumber(cx, argv[1], &dy);
+  JS_ValueToNumber(cx, argv[2], &dcomp);
+  int x = (int)dx;
+  int y = (int)dy;
+  int comp = (int)dcomp;
+
+  // make the string
+  MFInt32* arr_obj = helper_extractPrivateObject<MFInt32>( cx, JSVAL_TO_OBJECT(argv[3]) );
+  vector<int> arr_v = arr_obj->getValue();
+  stringstream ss;
+  ss<< x << " " << y << " " << comp;
+  for (size_t i = 0; i < arr_v.size(); i++) {
+    ss<< " " << arr_v[i];
+  }
+
+  SFImage* sfimg = new SFImage();
+  sfimg->setValueFromString( ss.str() ) ;
+
+
+  *rval = OBJECT_TO_JSVAL( SFImage_newInstance( cx,  sfimg, true ) ); 
+
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFImage_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  SFImage* sfimg = helper_extractPrivateObject<SFImage>( cx, obj );
+  // PixelImage is child of Image class.
+  PixelImage* img = dynamic_cast<PixelImage*> ( sfimg->getValue() );
+
+  if (sfimg == 0) return JS_FALSE;
+
+  if (JSVAL_IS_INT(id)) {
+    switch (JSVAL_TO_INT(id))
+    {
+      case SFImage_WIDTH:
+        *vp = INT_TO_JSVAL(img->width());
+        return JS_TRUE;
+      case SFImage_HEIGHT:
+        *vp = INT_TO_JSVAL(img->height());
+        return JS_TRUE;
+      case SFImage_COMP:
+        *vp = INT_TO_JSVAL( ((int)img->pixelType()) + 1 );
+        return JS_TRUE;
+      case SFImage_ARRAY:
+
+        JSObject* r_jsobj = JS_NewObject(cx, &JS_MFInt32::js_class, NULL, NULL);
+        JS_SetPrivate(cx, r_jsobj, (void *) new FieldObjectPrivate( sfimg , false) );
+        *vp = OBJECT_TO_JSVAL( r_jsobj );
+
+        return JS_TRUE;
+    }
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // SFImage_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+	return JS_FALSE;
+      } else {
+	return JS_TRUE;
+      }
+    }
+}
+
+JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
+{
+  SFImage* sfimg = helper_extractPrivateObject<SFImage>( cx, obj );
+  PixelImage* img = dynamic_cast<PixelImage*>( sfimg->getValue() );
+
+  if (JSVAL_IS_INT(id)) {
+
+    JSBool res = JS_TRUE;
+    jsint i;
+    switch (JSVAL_TO_INT(id))
+    {
+      case SFImage_WIDTH:
+        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
+          JS_ReportError(cx, "Value must be number" );
+          return JS_FALSE;
+        }
+        if ( i <= 0 ) {
+          JS_ReportError(cx, "Value must be positive" );
+          return JS_FALSE;
+        }
+        changePixelImageDimension(img, i, -1);
+        break;
+
+      case SFImage_HEIGHT:
+
+        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
+          JS_ReportError(cx, "Value must be number" );
+          return JS_FALSE;
+        }
+        if ( i <= 0 ) {
+          JS_ReportError(cx, "Value must be positive" );
+          return JS_FALSE;
+        }
+        changePixelImageDimension(img, -1, i);
+        break;
+
+      case SFImage_COMP:
+        if ( !JS_ValueToInt32(cx, *vp, &i) ) {
+          JS_ReportError(cx, "Value must be number" );
+          return JS_FALSE;
+        }
+        // must be either 1, 2, 3 or 4
+        if ( i <= 0 || i >= 5 ) {
+          JS_ReportError(cx, "Value must be either 1, 2, 3 or 4" );
+          return JS_FALSE;
+        }
+        changePixelImageComponent(img, i );
+        break;
+
+      case SFImage_ARRAY:
+        // sanity check
+        if ( !JSVAL_IS_OBJECT(*vp) ) {
+          JS_ReportError(cx, "RHS must be object.");
+          return JS_FALSE;
+        }
+        if ( !JS_InstanceOf(cx, JSVAL_TO_OBJECT(*vp), &JS_MFInt32::js_class, 0) ) {
+          JS_ReportError(cx, "RHS must be an int array");
+          return JS_FALSE;
+        }
+        MFInt32* mfint32 = helper_extractPrivateObject<MFInt32>( cx, JSVAL_TO_OBJECT(*vp) );
+
+        // check for array size
+        vector<int> vals = mfint32->getValue();
+        if ( vals.size() != vals[0] * vals[1] + 3 ) {
+          JS_ReportError(cx, "Supplied int array has wrong number of arguments");
+          return JS_FALSE;
+        }
+
+        stringstream ss;
+        ss<< img->width() << "" << img->height() << " " << (int)img->pixelType() + 1;
+        for (int i = 0; i < vals.size(); i++) {
+          ss<< " " << vals[i];
+        }
+        string s = ss.str();
+        sfimg->setValueFromString( s );
+
+        break;
+    }
+    //setValueNoAccessCheck(sfimg, ip);
+    return JS_TRUE;
+  } else {
+    // if we get here the property was not one of the ones defined in
+    // SFImage_properties. It can be another property such as a function
+    // so we check if the previous value of vp contains anything. On call 
+    // of this function it contains the current value of the attribute.
+    // If it is JSVAL_VOID the attribute does not exist.
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFImage_newInstance( JSContext *cx, SFImage *field, bool internal_field, int array_index ) {
+  JSObject *js_field;
+
+  js_field = JS_NewObject( cx, &SFImageClass, NULL, NULL );
+
+  JS_DefineProperties(cx, js_field, SFImage_properties );
+  JS_DefineFunctions(cx, js_field, SFImage_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field) );
+  return js_field;
+}
 
 //////////////////////////////////////////////////////////
 // X3DExecutionContext object
@@ -3112,12 +3223,13 @@ bool SpiderMonkey::insertH3DTypes( JSContext *cx, JSObject *obj ) {
   JS_InitClass( cx, obj, NULL, 
 			&SFNodeClass, SFNode_construct, 3, 
 			NULL, SFNode_functions, NULL, NULL );
+
   JS_InitClass( cx, obj, NULL, 
 			&SFColorClass, SFColor_construct, 3, 
 			SFColor_properties, SFColor_functions, NULL, NULL );
 
-  //JS_InitClass( cx, obj, NULL, &SFImageClass, SFImage_construct, 3,
-  //  SFImage_properties, SFImage_functions, NULL, NULL);
+  JS_InitClass( cx, obj, NULL, &SFImageClass, SFImage_construct, 3,
+    SFImage_properties, SFImage_functions, NULL, NULL);
 
   JS_InitClass( cx, obj, NULL, &SFRotationClass, SFRotation_construct, 3,
     SFRotation_properties, SFRotation_functions, NULL, NULL);
@@ -3138,7 +3250,7 @@ bool SpiderMonkey::insertH3DTypes( JSContext *cx, JSObject *obj ) {
   JS_MFNode::initClass( cx, obj, "MFNode" );
   JS_MFColor::initClass( cx, obj, "MFColor" );
   JS_MFRotation::initClass( cx, obj, "MFRotation" );
-//  JS_MFImage::initClass( cx, obj, "MFImage" );
+  //JS_MFImage::initClass( cx, obj, "MFImage" );
 
   return true;
 }
@@ -3402,6 +3514,7 @@ JSBool setFieldValueFromjsvalSimple( JSContext *cx, Field *field, jsval value ) 
 
 JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval value ) {
   X3DTypes::X3DType field_x3d_type = field->getX3DType();
+
   switch( field_x3d_type ) { 
   case X3DTypes::SFFLOAT: { 
    return setFieldValueFromjsvalSimple< SFFloat, jsdouble, JS_ValueToNumber >( cx, field, value ) ;
@@ -3467,17 +3580,22 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval 
     stringstream s;
     s << "Invalid type in assignment. Expecting SFNode.";
     JS_ReportError(cx, s.str().c_str() );
-    return JS_FALSE;
-    //    return setFieldValueFromjsvalTmpl< SFNode, X3DTypes::SFNODE >( cx, field, value ) ;
+    return setFieldValueFromjsvalTmpl< SFNode, X3DTypes::SFNODE >( cx, field, value ) ;
   } 
   case X3DTypes::SFCOLOR: { 
     return setFieldValueFromjsvalTmpl< SFColor, X3DTypes::SFCOLOR >( cx, field, value ) ;
   } 
+  case X3DTypes::SFIMAGE: { 
+    return setFieldValueFromjsvalTmpl< SFImage, X3DTypes::SFIMAGE >( cx, field, value ) ;
+  } 
   case X3DTypes::SFCOLORRGBA: { 
   } 
-  case X3DTypes::SFROTATION: { 
+  case X3DTypes::SFROTATION:
     return setFieldValueFromjsvalTmpl< SFRotation, X3DTypes::SFROTATION>( cx, field, value ) ;
-  } 
+  
+
+
+
   case X3DTypes::SFQUATERNION: { 
   }
   case X3DTypes::SFMATRIX3F: { 
@@ -3521,7 +3639,6 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval 
   } 
   case X3DTypes::MFBOOL: { 
     return MField_setFieldValueFromjsvalTmpl< MFBool, X3DTypes::MFBOOL >( cx, field, value ) ;
-   
   } 
   case X3DTypes::MFSTRING: { 
     return MField_setFieldValueFromjsvalTmpl< MFString, X3DTypes::MFSTRING >( cx, field, value );
@@ -3746,5 +3863,10 @@ JSBool SpiderMonkey::SFVec4f_toString(JSContext *cx, JSObject *obj, uintN argc, 
 JSBool SpiderMonkey::SFVec4d_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
   return FieldObject_toString2<SFVec4d>( cx, obj, argc, argv, rval);
 }
+
+JSBool SpiderMonkey::SFImage_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  return FieldObject_toString( cx, obj, argc, argv, rval);
+}
+
 
 #endif // HAVE_SPIDERMONKEY

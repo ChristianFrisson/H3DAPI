@@ -70,6 +70,7 @@
 #include <H3D/X3DTexture2DNode.h>
 
 #include <H3D/MFFloat.h>
+//#include<H3D/MFImage.h>
 #include <H3D/MFDouble.h>
 #include <H3D/MFTime.h>
 #include <H3D/MFInt32.h>
@@ -149,7 +150,7 @@ namespace H3D {
         internal_pointer( _internal_pointer ),
         array_index( _array_index ),
         disposed( false ) {
-        
+
       }
 
       /// Destructor.
@@ -158,7 +159,7 @@ namespace H3D {
           delete ptr;
         }
       }
-      
+
       /// Get the pointer the JSObject encapsulates.
       inline PointerType *getPointer() {
         return ptr;
@@ -431,6 +432,89 @@ namespace H3D {
     };
 
 
+
+
+    //////////////////////////////////////////////
+    /// SFImage 
+    ///
+
+    typedef X3DTexture2DNode::SFImage SFImage;
+
+    enum SFImagePropertyId {
+      SFImage_WIDTH, SFImage_HEIGHT, SFImage_COMP, SFImage_ARRAY,
+    };
+
+    JSBool SFImage_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv, jsval *rval);
+
+
+    /// Returns a new SFImage object encapsulating a field.
+    /// \params cx The context in which to create the object.
+    /// \params field The field to encapsulate.
+    /// \params internal_field If true, the encapsulated field
+    /// will be deleted upon destruction of the JSObject 
+    /// encapsulating it.
+    JSObject *SFImage_newInstance( JSContext *cx, SFImage *field, bool internal_field, int array_index = -1 );
+    
+    /// Callback setter function for properties of a SFImage
+    /// object.
+    JSBool SFImage_setProperty(JSContext *cx, JSObject *obj,
+                               jsval id, jsval *vp);
+    
+    /// Callback getter function for properties of a SFImage
+    /// object.
+    JSBool SFImage_getProperty(JSContext *cx, JSObject *obj, 
+                               jsval id, jsval *vp);
+    
+    /// Construct callback function for creating a new instance
+    /// of SFImage.
+    JSBool SFImage_construct(JSContext *cx, JSObject *obj, 
+                             uintN argc, jsval *argv,
+                             jsval *rval);
+
+    JSBool SFImage_toString(JSContext *cx, JSObject *obj, 
+                          uintN argc, jsval *argv,
+                          jsval *rval);
+
+
+    // properties
+    static JSPropertySpec SFImage_properties[] = {
+      {"width", SFImage_WIDTH, JSPROP_PERMANENT},
+      {"height", SFImage_HEIGHT, JSPROP_PERMANENT},
+      {"comp", SFImage_COMP, JSPROP_PERMANENT},
+      {"array", SFImage_ARRAY, JSPROP_PERMANENT},
+      {0}
+    };
+
+    static JSFunctionSpec SFImage_functions[] = {
+      {"toString", SFImage_toString, 0, 0, 0 },
+      {0}
+    };
+
+    
+    static JSClass SFImageClass = {
+      "SFImage",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFImage_getProperty, // get property
+      SpiderMonkey::SFImage_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      SFImage_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
 
 
     //////////////////////////////////////////////
@@ -1554,11 +1638,11 @@ namespace H3D {
 	
         properties[0] = p[0];
 
-        JSFunctionSpec f[2] = {
+
+       JSFunctionSpec f[2] = {
           {"toString", FieldObject_toString, 0, 0, 0 },
           {0}
         };
-
         functions[0] = f[0];
         functions[1] = f[1];
 
@@ -1632,10 +1716,10 @@ namespace H3D {
       return js_field;
     }
     
-  
+
     /// The JSAPI type encapsulating an MFFloat object.
     typedef JS_MField< MFFloat,  SFFloat  > JS_MFFloat;
-    
+
     /// The JSAPI type encapsulating an MFDouble object.
     typedef JS_MField< MFDouble, SFDouble > JS_MFDouble;
     
@@ -1679,7 +1763,7 @@ namespace H3D {
     typedef JS_MField< MFRotation,  SFRotation > JS_MFRotation;
 
     ///// The JSAPI type encapsulating an MFImage object.
-    //typedef JS_MField< MFImage,  SFImagePrivate > JS_MFImage;
+    //typedef JS_MField< MFImage,  SFImage > JS_MFImage;
 
     typedef enum { O_ADD, O_SUBTRACT, O_CROSS, O_DOT, O_DIVIDE, O_MULTIPLE, } BinaryOperator;
 

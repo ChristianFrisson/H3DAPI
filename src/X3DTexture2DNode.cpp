@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/X3DTexture2DNode.h>
+#include <H3DUtil/Image.h>
 
 using namespace H3D;
 
@@ -78,6 +79,30 @@ X3DTexture2DNode::X3DTexture2DNode(
   repeatT->route( displayList );
   scaleToPowerOfTwo->route( displayList );
   textureProperties->route( displayList );
+}
+
+string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
+  // Slow but convenient. is only used for JS engine
+
+  stringstream ss;
+  Image* img = getValue();
+  ss<< img->width() << separator << img->height() << separator << (int)img->pixelType() + 1;
+  for (int index = 0; index < img->width() * img->height(); index++) {
+    int ix = index % img->width();
+    int iy = index / img->width();
+    RGBA color = img->getPixel( ix, iy );
+    unsigned char bytes_per_pixel = img->pixelType() + 1;
+    unsigned char* data = new unsigned char[ bytes_per_pixel ];
+    img->RGBAToImageValue(color, (void*) data);
+    int intval = 0;
+    for (int i = 0; i < bytes_per_pixel; i++) {
+      intval = intval << 8;
+      intval = intval | data[i];
+    }
+    delete data;
+    ss<< separator << intval;
+  }
+  return ss.str();
 }
 
 GLint X3DTexture2DNode::glInternalFormat( Image *i ) {
