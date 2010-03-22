@@ -104,6 +104,11 @@ void ComposedShader::postRender() {
   }
 }
 
+// The ComposedShader is modified to use 1 instance of different program_handlers
+// that share the same set of shader parts. However, a new program_handle object 
+// will be created when the Shader is re-activated (regardsless)
+
+
 void ComposedShader::render() {
   if( !GLEW_ARB_shader_objects ) {
     if( !shader_support_checked ) {
