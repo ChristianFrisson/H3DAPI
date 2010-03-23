@@ -73,14 +73,21 @@ void ToggleGroup::render() {
 }
 
 void ToggleGroup::traverseSG( TraverseInfo &ti ) {
-  bool is_enabled = ti.hapticsEnabled();
-  if( is_enabled && !hapticsOn->getValue() ) {
+  bool haptics_was_enabled = ti.hapticsEnabled();
+  bool graphics_was_enabled = ti.graphicsEnabled();
+  
+  if( haptics_was_enabled && !hapticsOn->getValue() ) {
     ti.disableHaptics();
-    X3DGroupingNode::traverseSG( ti );
-    ti.enableHaptics();
-  } else {
-    X3DGroupingNode::traverseSG( ti );
   }
+
+  if( graphics_was_enabled && !graphicsOn->getValue() ) {
+    ti.disableGraphics();
+  }
+
+  X3DGroupingNode::traverseSG( ti );
+
+  if( haptics_was_enabled ) ti.enableHaptics();
+  if( graphics_was_enabled ) ti.enableGraphics();
 }
 
 bool ToggleGroup::lineIntersect( const Vec3f &from,
