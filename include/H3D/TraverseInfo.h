@@ -73,6 +73,7 @@ namespace H3D {
       haptic_shapes( _haptics_devices.size() ),
       haptic_effects( _haptics_devices.size() ),
       haptics_enabled( true ),
+      graphics_enabled( true ),
       multi_pass_transparency( false ) {
       
       initializeLayers( 1 );
@@ -253,6 +254,22 @@ namespace H3D {
       haptics_enabled = true;
     }
 
+    /// Indicate that this node will not be part of the graphics 
+    /// rendering traversal. This should be set by nodes that disable
+    /// graphics rendering. It does not do anything except setting a 
+    /// state in the TraverseInfo class indicating that this node will
+    /// not be used in graphics rendering.
+    inline void disableGraphics() {
+      graphics_enabled = false;
+    }
+
+    /// Indicate that this node will be part of the graphics 
+    /// rendering traversal. It does not do anything except setting a 
+    /// state in the TraverseInfo class indicating that this node will
+    /// be used in graphics rendering.
+    inline void enableGraphics() {
+      graphics_enabled = true;
+    }
     
     /// If multi pass transparency is set to true the scene will be rendered
     /// three times graphically, once for all solid objects, once for the back
@@ -277,6 +294,11 @@ namespace H3D {
     /// 
     inline bool hapticsEnabled() {
       return haptics_enabled;
+    }
+
+    /// Check whether graphics is enabled or not. 
+    inline bool graphicsEnabled() {
+      return graphics_enabled;
     }
 
     /// This function should be called when we move into a nested
@@ -373,7 +395,7 @@ namespace H3D {
     vector< H3DHapticsDevice * > haptics_devices;
     vector< vector< HapticShapeVector > > haptic_shapes;
     vector< HapticEffectVector > haptic_effects;
-    bool haptics_enabled;
+    bool haptics_enabled, graphics_enabled;
     bool multi_pass_transparency;
 
     typedef std::map< X3DGeometryNode *, int > GeometryCountMap;
