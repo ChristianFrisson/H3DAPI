@@ -437,7 +437,7 @@ namespace H3D {
 
     /// The X3DViewpointNode needs to setup a projection matrix, typically done
     /// by calling glFrustum but this might not look the same for all types of
-    /// X3DViewpointNodes.
+    /// X3DViewpointNodes. clip_far = -1 means far plane at infinity.
     virtual void setupProjection( EyeMode eye_mode,
                                   H3DFloat width, H3DFloat height,
                                   H3DFloat clip_near, H3DFloat clip_far,

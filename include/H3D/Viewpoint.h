@@ -87,6 +87,8 @@ namespace H3D {
                                         H3DFloat &top, H3DFloat &bottom,
                                         H3DFloat &right, H3DFloat &left );
 
+    /// Set up perspective projection matrix. clip_far = -1 means far 
+    /// plane at infinity.
     virtual void setupProjection( EyeMode eye_mode,
                                   H3DFloat width, H3DFloat height,
                                   H3DFloat clip_near, H3DFloat clip_far,

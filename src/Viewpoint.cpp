@@ -125,6 +125,25 @@ void Viewpoint::setupProjection( EyeMode eye_mode,
   getProjectionDimensions( eye_mode, width, height, clip_near, top,
                            bottom, right, left, stereo_info );
 
-  glFrustum( left, right, bottom, top, clip_near, clip_far );
+  GLdouble A = (right+left)/(right - left );
+  GLdouble B = (top+bottom)/(top-bottom);
+  GLdouble C, D;
+
+  if( clip_far != -1 ) {
+    C = -(clip_far + clip_near)/(clip_far-clip_near);
+    D = -2 * clip_far * clip_near /(clip_far-clip_near);
+  } else {
+    // epsilon to use for infinite far plane to prevent artifacts
+    GLdouble epsilon = 0.0001;
+    C = epsilon - 1; 
+    D = -2 * clip_near * (1-epsilon);
+  }
+  
+  GLdouble m[16] = { 2* clip_near/(right-left), 0, 0, 0,
+                     0, 2*clip_near/(top - bottom), 0, 0,
+                     A, B, C, -1,
+                     0, 0, D, 0 };
+
+  glMultMatrixd( m );
 }
 
