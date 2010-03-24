@@ -654,9 +654,12 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glEnable( GL_LIGHT0 + (GLuint)(headlight_index) );
   }
 
+  // add headlight shadows if specified in NavigationInfo
   Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
   TraverseInfo *ti = scene->getLastTraverseInfo();
+  ShadowCaster *shadow_caster = NULL;
   if( ti ) {
+    ti->getUserData( "ShadowCaster",  (void **)&shadow_caster);
     for( TraverseInfo::RefCountedVector::const_iterator i = 
                             ti->x3dlightnode_vector.begin();
          i != ti->x3dlightnode_vector.end();
@@ -755,7 +758,16 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   if( background ) {
     if( clip_near > 0.01f ) clip_near = 0.01f;
-    if( clip_far < 0.051f ) clip_far = 0.1f;
+    if( clip_far < 0.051f && clip_far != -1 ) clip_far = 0.1f;
+  }
+
+  // if using zfail shadow volume technique, far clip plane has to be at
+  // infinity.
+  if( shadow_caster && 
+      !shadow_caster->object->empty() &&
+      !shadow_caster->light->empty() && 
+      shadow_caster->algorithm->getValue() == "ZFAIL" ) {
+    clip_far = -1;
   }
 
   H3DFloat interocular_distance = 0.06f;
@@ -790,7 +802,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if( focal_distance <= clip_near ) {
       clip_near = focal_distance - 0.01f;
     }
-    if( focal_distance >= clip_far ) {
+    if( focal_distance >= clip_far && clip_far != -1 ) {
       clip_far = focal_distance + 0.01f;
     }
 
@@ -905,6 +917,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp ); 
 
+    if( shadow_caster ) shadow_caster->render();
+
     // RIGHT EYE
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -991,6 +1005,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp );
+
+    if( shadow_caster ) shadow_caster->render();
 
     if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
              stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
@@ -1135,6 +1151,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     renderChild( child_to_render );
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp );
+
+    if( shadow_caster ) shadow_caster->render();
+
     if ( !norm ) 
       glDisable( GL_NORMALIZE );
     swapBuffers();

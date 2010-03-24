@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/PointLight.h>
+#include <H3D/ShadowCaster.h>
 
 using namespace H3D;
 
@@ -97,4 +98,16 @@ void PointLight::enableGraphicsState() {
   } else
     had_light_index.push_back( false );
   graphics_state_counter++;
+}
+
+void PointLight::traverseSG( TraverseInfo &ti ) {
+  X3DLightNode::traverseSG( ti );
+  if( shadows->getValue() ) {
+    ShadowCaster *shadow_caster = NULL;
+    if( !ti.getUserData( "ShadowCaster",  (void **)&shadow_caster) ) {
+      PointLight *light = new PointLight;
+      light->location->setValue( ti.getAccForwardMatrix() * location->getValue() );
+      shadow_caster->light->push_back( light );
+    }
+  }
 }

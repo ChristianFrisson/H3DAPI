@@ -36,6 +36,7 @@
 
 #include <H3D/HapticsRenderers.h>
 #include <H3D/H3DHapticsDevice.h>
+#include <H3D/ShadowSphere.h>
 
 // HAPI includes
 #include <HAPI/HapticPrimitive.h>
@@ -80,6 +81,11 @@ Sphere::Sphere(
   solid->route( displayList );
 }
 
+H3DShadowObjectNode *Sphere::getShadowObject() {
+  ShadowSphere *shadow = new ShadowSphere();
+  shadow->radius->setValue( radius->getValue() );
+  return shadow;
+}
 
 void Sphere::render() {
   H3DFloat theta_parts = 50, phi_parts = 25;

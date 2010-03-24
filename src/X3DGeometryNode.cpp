@@ -38,6 +38,7 @@
 #include <H3D/DebugOptions.h>
 #include <H3D/Scene.h>
 #include <H3D/HapticsRenderers.h>
+#include <H3D/ShadowGeometry.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HAPI/HLDepthBufferShape.h>
@@ -109,6 +110,12 @@ void X3DGeometryNode::initialize() {
   // every single node. The ref_count_lock_pointer is deleted by the
   // RefCountedClass destructor.
   ref_count_lock_pointer = new MutexLock();
+}
+
+H3DShadowObjectNode *X3DGeometryNode::getShadowObject() {
+  ShadowGeometry *shadow_geom = new ShadowGeometry;
+  shadow_geom->geometry->setValue( this );
+  return shadow_geom;
 }
 
 int X3DGeometryNode::getHapticShapeId( unsigned int index ) {

@@ -255,7 +255,8 @@ namespace H3D {
                     Inst< MFString  > _transitionType   = 0,
                     Inst< MFString  > _type             = 0,
                     Inst< SFFloat   > _visibilityLimit  = 0,
-                    Inst< SFBool    > _transitionComplete = 0 );
+                    Inst< SFBool    > _transitionComplete = 0,
+                    Inst< SFBool    > _headlightShadows = 0 );
 
     /// Convenience function to get the top of the NavigationInfo stack.
     static inline NavigationInfo *getActive() {
@@ -331,6 +332,13 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFBool > transitionComplete;
+
+    /// Determines if the headlight should be used in shadow calculations
+    /// or not. If FALSE no shadows will be cast using the head light.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> FALSE \n
+    auto_ptr< SFBool > headlightShadows;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

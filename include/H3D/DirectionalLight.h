@@ -72,6 +72,9 @@ namespace H3D {
     /// Turn the light on.
     virtual void enableGraphicsState();
 
+    /// Traversal function. Adding light to shadow caster.
+    virtual void traverseSG( TraverseInfo &ti );
+
     /// The direction field specifies the direction vector of the
     /// illumination emanating from the light source in the local
     /// coordinate system. 

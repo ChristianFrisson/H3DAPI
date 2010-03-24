@@ -47,8 +47,10 @@
 #include <H3D/X3DGroupingNode.h>
 #include <H3D/ProfilesAndComponents.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/NavigationInfo.h>
 #include <H3D/H3DMultiPassRenderObject.h>
 #include <H3D/Anchor.h>
+#include <H3D/DirectionalLight.h>
 
 using namespace H3D;
 
@@ -124,6 +126,8 @@ void Scene::idle() {
   time->setValue( t, id );
 
   H3DMultiPassRenderObject::resetCounters();
+  shadow_caster->object->clear();
+  shadow_caster->light->clear();
 
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {
@@ -142,6 +146,9 @@ void Scene::idle() {
 
     // traverse the scene graph to collect the HapticObject instances to render.
     TraverseInfo *ti = new TraverseInfo( hds );
+
+    ti->setUserData( "ShadowCaster", shadow_caster.get() );
+
     X3DChildNode *c = static_cast< X3DChildNode * >( sceneRoot->getValue() );
     if( c ) {
       c->traverseSG( *ti );
@@ -207,6 +214,7 @@ void Scene::idle() {
     // no HapticDevices exist, but we still have to traverse the scene-graph.
     // Haptics is disabled though to avoid unnecessary calculations.
     TraverseInfo *ti = new TraverseInfo( vector< H3DHapticsDevice * >() );
+    ti->setUserData( "ShadowCaster", shadow_caster.get() );
     ti->disableHaptics();
     X3DChildNode *c = static_cast< X3DChildNode *>( sceneRoot->getValue() );
     if( c ) {
@@ -220,7 +228,31 @@ void Scene::idle() {
       delete last_traverseinfo;
     last_traverseinfo = ti;
   }
-  
+
+  // add the head light to shadow casting nodes if it is active.
+  if( !shadow_caster->object->empty() ) {
+    bool head_light = true;
+    NavigationInfo *ni = NavigationInfo::getActive();
+    if( ni ) {
+      head_light = 
+        ni->headlightShadows->getValue() && 
+        ni->headlight->getValue();
+    }
+
+    if( head_light ) {
+      X3DViewpointNode *vp = X3DViewpointNode::getActive();
+      Vec3f direction = Vec3f( 0, 0, -1 );
+      if( vp ) {
+	direction = 
+	  vp->accForwardMatrix->getValue().getRotationPart() * 
+	  (vp->totalOrientation->getValue() * Vec3f( 0, 0, -1 ));
+      }
+      DirectionalLight *light = new DirectionalLight();
+      light->direction->setValue( direction );
+      shadow_caster->light->push_back( light );
+    }
+  }
+
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
        w != window->end(); w++ ) {
@@ -264,10 +296,13 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   frameRate( _frameRate ),
   active( true ),
   last_traverseinfo( NULL ),
-  SAI_browser( this ) {
+  SAI_browser( this ),
+  shadow_caster( new ShadowCaster ) {
 
   scenes.insert( this );
   
+  shadow_caster->algorithm->setValue( "ZFAIL" );
+
   type_name = "Scene";
   database.initFields( this );
   Scene::eventSink->setName( "Scene::eventSink" );

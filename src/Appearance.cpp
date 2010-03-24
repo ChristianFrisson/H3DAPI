@@ -58,6 +58,7 @@ namespace AppearanceInternals {
   FIELDDB_ELEMENT( Appearance, textureTransform, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Appearance, shaders, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Appearance, renderProperties, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( Appearance, shadow, INPUT_OUTPUT );
 }
 
 Appearance::Appearance( Inst< DisplayList            > _displayList,
@@ -69,7 +70,8 @@ Appearance::Appearance( Inst< DisplayList            > _displayList,
                         Inst< SFTextureTransformNode > _textureTransform,
                         Inst< SFSurface              > _surface,
                         Inst< MFShaderNode           > _shaders,
-                        Inst< SFRenderProperties     > _renderProperties ) :
+                        Inst< SFRenderProperties     > _renderProperties,
+                        Inst< SFBool                 > _shadow ) :
 X3DAppearanceNode( _displayList, _metadata, _surface ),
 fillProperties  ( _fillProperties   ),
 lineProperties  ( _lineProperties   ),
@@ -77,12 +79,15 @@ material        ( _material         ),
 texture         ( _texture          ),
 textureTransform( _textureTransform ),
 shaders          ( _shaders           ),
-renderProperties( _renderProperties ) {
+renderProperties( _renderProperties ),
+shadow          ( _shadow )  {
   
   type_name = "Appearance";
   
   database.initFields( this );
   
+  shadow->setValue( false );
+
   fillProperties->route( displayList );
   lineProperties->route( displayList );
   material->route( displayList );
@@ -90,7 +95,7 @@ renderProperties( _renderProperties ) {
   textureTransform->route( displayList );
   shaders->route( displayList );
   renderProperties->route( displayList );
-  
+  shadow->route( displayList );
 
 }
 

@@ -30,6 +30,7 @@
 
 #include <H3D/X3DShapeNode.h>
 #include <H3D/X3DTextureNode.h>
+#include <H3D/ShadowCaster.h>
 
 using namespace H3D;
 
@@ -140,8 +141,23 @@ void X3DShapeNode::render() {
 
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   X3DAppearanceNode *a = appearance->getValue();
-  Node *g = geometry->getValue();
+  X3DGeometryNode *g = geometry->getValue();
   Node *hg = 0;
+
+  if( ti.graphicsEnabled() && g && a && a->hasGeometryShadow() ) {
+    // add shadow volume
+    ShadowCaster *shadow_caster = NULL;
+    if( !ti.getUserData( "ShadowCaster",  (void **)&shadow_caster) ) {
+      H3DShadowObjectNode *shadow_object = g->getShadowObject();
+      MatrixTransform *mt = new MatrixTransform();
+      mt->matrix->setValue( ti.getAccForwardMatrix() );
+      shadow_object->transform->setValue( mt );
+      shadow_caster->object->push_back( shadow_object ); 
+    } 
+  }
+
+  
+
   if( ti.hapticsEnabled() )
     hg = hapticGeometry->getValue();
   if ( a ) {

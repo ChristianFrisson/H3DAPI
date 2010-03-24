@@ -76,7 +76,8 @@ namespace H3D {
                   Inst< SFColor>  _color            = 0,
                   Inst< SFBool >  _global           = 0,
                   Inst< SFFloat>  _intensity        = 0,
-                  Inst< SFBool >  _on               = 0 );
+                  Inst< SFBool >  _on               = 0,
+                  Inst< SFBool >  _shadows          = 0 );
 
     /// Turn the light on.
     virtual void enableGraphicsState();
@@ -147,6 +148,15 @@ namespace H3D {
     /// 
     /// \dotfile X3DLightNode_on.dot
     auto_ptr< SFBool  >  on;
+
+    /// The shadows field will determine if this light will be part of the
+    /// shadow calculations of the scene. 
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> TRUE \n
+    /// 
+    /// \dotfile X3DLightNode_shadows.dot
+    auto_ptr< SFBool  >  shadows;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

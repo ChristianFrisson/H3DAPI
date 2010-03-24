@@ -170,8 +170,9 @@ namespace H3D {
                 Inst< SFTextureNode          > _texture          = 0,
                 Inst< SFTextureTransformNode > _textureTransform = 0,
                 Inst< SFSurface              > _surface          = 0,
-                Inst< MFShaderNode           > _shaders           = 0,
-                Inst< SFRenderProperties     > _renderProperties  = 0 );
+                Inst< MFShaderNode           > _shaders          = 0,
+                Inst< SFRenderProperties     > _renderProperties = 0,
+                Inst< SFBool                 > _shadow           = 0);
 
     /// Set up the appearance in OpenGL.
     virtual void render();
@@ -197,6 +198,12 @@ namespace H3D {
         return m->isTransparent();
       else
         return false;
+    }
+
+    /// This function return true if the appearance has decided that
+    /// shadow should be cast. 
+    virtual bool hasGeometryShadow() {
+      return shadow->getValue();
     }
 
     /// This function checks if multi-pass transparency should be used or not
@@ -269,6 +276,15 @@ namespace H3D {
     /// 
     /// \dotfile Appearance_renderProperties.dot
     auto_ptr< SFRenderProperties > renderProperties;
+
+    /// The shadow field specifies if the geometry this Appearance is used
+    /// on should cast a shadow or not. 
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> false
+    /// 
+    /// \dotfile Appearance_shadow.dot
+    auto_ptr< SFBool > shadow;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

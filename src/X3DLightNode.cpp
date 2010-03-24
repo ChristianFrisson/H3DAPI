@@ -45,6 +45,7 @@ namespace X3DLightNodeInternals {
   FIELDDB_ELEMENT( X3DLightNode, intensity, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DLightNode, on, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DLightNode, global, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DLightNode, shadows, INPUT_OUTPUT );
 }
 
 GLint X3DLightNode::global_light_index = -1;
@@ -56,13 +57,15 @@ X3DLightNode::X3DLightNode(
                            Inst< SFColor>  _color,
                            Inst< SFBool >  _global,
                            Inst< SFFloat>  _intensity,
-                           Inst< SFBool >  _on ) :
+                           Inst< SFBool >  _on,
+                           Inst< SFBool >  _shadows ) :
   X3DChildNode( _metadata ),
   ambientIntensity( _ambientIntensity ),
   color           ( _color            ),
   global          ( _global           ),
   intensity       ( _intensity        ),
   on              ( _on               ),
+  shadows         ( _shadows          ),
   last_ti_ptr( 0 ),
   act_global( false ) {
 
@@ -76,6 +79,7 @@ X3DLightNode::X3DLightNode(
   global->setValue( false );
   intensity->setValue( 1 );
   on->setValue( true );
+  shadows->setValue( true );
 
   ambientIntensity->route( displayList );
   color->route( displayList );

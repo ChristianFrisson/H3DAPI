@@ -89,6 +89,10 @@ namespace H3D {
       return 50 * 50 * 2;
     }
 
+    /// Get the H3DShadowObjectNode used to create a shadow volume for this
+    /// geometry. Using a ShadowSphere instead of the default ShadowGeometry.
+    virtual H3DShadowObjectNode *getShadowObject();
+
     /// Renders the Sphere with OpenGL.
     virtual void render();
 

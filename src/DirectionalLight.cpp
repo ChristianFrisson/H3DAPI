@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/DirectionalLight.h>
+#include <H3D/ShadowCaster.h>
 
 using namespace H3D;
 
@@ -83,6 +84,19 @@ void DirectionalLight::enableGraphicsState() {
   } else
     had_light_index.push_back( false );
   graphics_state_counter++;
+}
+
+void DirectionalLight::traverseSG( TraverseInfo &ti ) {
+  X3DLightNode::traverseSG( ti );
+
+  if( shadows->getValue() ) {
+    ShadowCaster *shadow_caster = NULL;
+    if( !ti.getUserData( "ShadowCaster",  (void **)&shadow_caster) ) {
+      DirectionalLight *light = new DirectionalLight;
+      light->direction->setValue( ti.getAccForwardMatrix().getRotationPart() * direction->getValue() );
+      shadow_caster->light->push_back( light );
+    }
+  }
 }
 
 

@@ -32,6 +32,7 @@
 #include <H3D/X3DChildNode.h>
 #include <H3D/H3DWindowNode.h>
 #include <H3D/SAIFunctions.h>
+#include <H3D/ShadowCaster.h>
 
 // HAPI includes
 #include <H3DUtil/Threads.h>
@@ -219,6 +220,9 @@ namespace H3D {
     TimeStamp last_time;
     // the TraverseInfo instance from the previous scenegraph loop.
     TraverseInfo *last_traverseinfo;
+    // Reference to shadow caster used to cast shadows for shapes
+    // in scene graph.
+    AutoRef< ShadowCaster > shadow_caster;
   };
 }
 

@@ -48,6 +48,8 @@
 #include <H3DUtil/AutoPtrVector.h>
 
 namespace H3D {
+  // forward declaration
+  class H3DShadowObjectNode;
 
   /// \ingroup AbstractNodes
   /// \class X3DGeometryNode
@@ -142,6 +144,11 @@ namespace H3D {
       draw_debug_options = prev_draw;
       allowCulling( previous_allow );
     }
+
+
+    /// Get the H3DShadowObjectNode used to create a shadow volume for this
+    /// geometry. 
+    virtual H3DShadowObjectNode *getShadowObject();
 
     /// This function should be used by the render() function to disable
     /// or enable face culling. DO NOT USE glEnable/glDisable to do
@@ -327,6 +334,7 @@ namespace H3D {
     bool draw_debug_options;
     GLenum cull_face;
     friend class H3DHapticsDevice;
+
   };
 }
 

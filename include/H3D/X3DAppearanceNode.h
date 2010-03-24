@@ -69,6 +69,12 @@ namespace H3D {
       return false;
     }
 
+    /// This function return true if the appearance has decided that
+    /// shadow should be cast. 
+    virtual bool hasGeometryShadow() {
+      return false;
+    }
+
     /// This function checks if multi-pass transparency should be used or not
     /// (see RenderProperties_multiPassTransparency)
     virtual bool usingMultiPassTransparency() {

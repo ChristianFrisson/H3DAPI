@@ -52,6 +52,7 @@ namespace NavigationInfoInternals {
   FIELDDB_ELEMENT( NavigationInfo, type, INPUT_OUTPUT );
   FIELDDB_ELEMENT( NavigationInfo, visibilityLimit, INPUT_OUTPUT );
   FIELDDB_ELEMENT( NavigationInfo, transitionComplete, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( NavigationInfo, headlightShadows, INPUT_OUTPUT );
 }
 
 
@@ -67,7 +68,8 @@ NavigationInfo::NavigationInfo( Inst< SFSetBind > _set_bind,
                                 Inst< MFString  > _transitionType,
                                 Inst< MFString  > _type,
                                 Inst< SFFloat   > _visibilityLimit,
-                                Inst< SFBool    > _transitionComplete ):
+                                Inst< SFBool    > _transitionComplete,
+                                Inst< SFBool    > _headlightShadows ):
   X3DBindableNode( "NavigationInfo",_set_bind, _metadata, _bindTime,
                    _isBound ),
   avatarSize( _avatarSize ),
@@ -77,7 +79,8 @@ NavigationInfo::NavigationInfo( Inst< SFSetBind > _set_bind,
   transitionType( _transitionType  ),
   type( _type ),
   visibilityLimit( _visibilityLimit ),
-  transitionComplete( _transitionComplete ) {
+  transitionComplete( _transitionComplete ),
+  headlightShadows( _headlightShadows ) {
   
   type_name = "NavigationInfo";
   database.initFields( this );
@@ -92,6 +95,7 @@ NavigationInfo::NavigationInfo( Inst< SFSetBind > _set_bind,
   type->push_back( "EXAMINE" );
   type->push_back( "ANY" );
   visibilityLimit->setValue( 0 );
+  headlightShadows->setValue( false );
 
   nav_type = "";
 }

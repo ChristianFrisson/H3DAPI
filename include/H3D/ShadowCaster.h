@@ -1,0 +1,138 @@
+//////////////////////////////////////////////////////////////////////////////
+//    Copyright 2004, SenseGraphics AB
+//
+//    This file is part of H3D API.
+//
+//    H3D API is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    H3D API is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with H3D API; if not, write to the Free Software
+//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//    A commercial license is also available. Please contact us at 
+//    www.sensegraphics.com for more information.
+//
+//
+/// \file ShadowCaster.h
+/// \brief Header file for ShadowCaster.
+///
+//
+//////////////////////////////////////////////////////////////////////////////
+#ifndef __SHADOWCASTER_H__
+#define __SHADOWCASTER_H__
+
+#include <H3D/H3DShadowObjectNode.h>
+
+#include <H3D/X3DChildNode.h>
+#include <H3D/X3DLightNode.h>
+#include <H3D/MFNode.h>
+#include <H3D/SFString.h>
+
+namespace H3D {
+
+  /// \ingroup H3DNodes
+  /// \class ShadowCaster
+  /// The ShadowCaster node uses shadow volumes using stencil buffer
+  /// to cast shadows from objects in a scene. 
+  ///
+  /// NOTE! Do not use this node unless you really need to. If you 
+  /// just want to use shadows please use the shadow field in the 
+  /// Appearance node for a much easier way of adding shadows.
+  ///
+  /// The object field specifies objects that should cast shadows.
+  ///
+  /// The light field specifies the lights from which the objects
+  /// should cast shadows.
+  ///
+  /// The shadowDarkness field specifies how dark the shadow should be
+  /// with 1 being totally black.
+  /// 
+  /// The algorithm field defines what shadow volume algorithm to use.
+  /// Possible values are "ZPASS" and "ZFAIL". 
+  /// Both have their pros and cons:
+  /// - ZPASS is faster, but is not robust in all cases and fails 
+  /// if the viewer is in shadow.
+  /// - ZFAIL is slower, but more robust. To make it work properly 
+  /// the far clip plane has to be set to infinity(done by setting 
+  /// visibilityLimit to -1 in NavigationInfo). This will decrease
+  /// the precision of the depth buffer, with all the problems
+  /// that comes with that.
+  ///
+  /// The ShadowCaster node is affected by the transform hierarchy
+  /// that it is in and all objects and lighs are specified in 
+  /// local coordinates.
+  ///
+  /// \par Internal routes:
+  /// \dotfile ShadowCaster.dot
+  class ShadowCaster : public X3DChildNode,
+                       public H3DDisplayListObject {
+  public:
+
+    typedef TypedMFNode< X3DLightNode > MFLightNode;
+    typedef TypedMFNode< H3DShadowObjectNode > MFShadowObjectNode;
+
+    /// Constructor.
+    ShadowCaster( Inst< SFNode             > _metadata = 0,
+                  Inst< MFShadowObjectNode > _object = 0,
+                  Inst< MFLightNode        > _light = 0,
+                  Inst< SFFloat            > _shadowDarkness = 0,
+                  Inst< DisplayList        > _displayList = 0,
+                  Inst< SFString           > _algorithm = 0 );
+
+    /// OpenGL render function.
+    virtual void render();
+
+    /// The objects that should cast shadows.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// \dotfile ShadowCaster_object.dot
+    auto_ptr< MFShadowObjectNode > object;
+
+    /// The lights that shines on the objects. Only 
+    /// PointLight and DirectionalLight is supporeted at this time.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// \dotfile ShadowCaster_light.dot
+    auto_ptr< MFLightNode > light;
+
+    /// The shadowDarkness field controls the darkness of the shadow.
+    /// A value of 1 will draw a completely black shadow, while
+    /// a value of 0 will cast no shadow at all.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0.4 \n
+    /// \dotfile ShadowCaster_shadowDarkness.dot
+    auto_ptr< SFFloat > shadowDarkness;
+
+    /// The algorithm field defines what shadow volume algorithm to use.
+    /// Possible values are "ZPASS" and "ZFAIL". 
+    /// Both have their pros and cons:
+    /// - ZPASS is faster, but is not robust in all cases and fails 
+    /// if the viewer is in shadow.
+    /// - ZFAIL is slower, but more robust. To make it work properly 
+    /// the far clip plane has to be set to infinity(done by setting 
+    /// visibilityLimit to -1 in NavigationInfo). This will decrease
+    /// the precision of the depth buffer, with all the problems
+    /// that comes with that.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "ZPASS" \n
+    /// <b>Valid values:</b> "ZPASS" and "ZFAIL" \n
+    /// \dotfile ShadowCaster_algorithm.dot
+    auto_ptr< SFString > algorithm;
+
+    /// The H3DNodeDatablase object for this node.
+    static H3DNodeDatabase database;
+   
+  };
+}
+
+#endif

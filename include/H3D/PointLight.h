@@ -83,6 +83,9 @@ namespace H3D {
     /// Turn the light on.
     virtual void enableGraphicsState();
 
+    /// Traversal function. Adding light to shadow caster.
+    virtual void traverseSG( TraverseInfo &ti );
+
     /// The attenuation field defines how the PointLight node's 
     /// illumination falls off with distance from the light.
     /// The attenuation factor is: 
