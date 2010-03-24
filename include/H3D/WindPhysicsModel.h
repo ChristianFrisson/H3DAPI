@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -86,7 +86,6 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
-    /// <b>Valid range:</b> [-1, 1]
     auto_ptr< SFVec3f > direction;
 
     /// The gustiness specifies how much the wind speed varies from the 
@@ -95,12 +94,14 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.1 \n
+    /// <b>Valid range:</b> [0, inf)
     auto_ptr< SFFloat > gustiness;
 
     /// The speed field specifies the current wind speed in metres per second.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.1 \n
+    /// <b>Valid range:</b> [0, inf)
     auto_ptr< SFFloat > speed;
 
     /// The turbulence field specifies how much the wind acts directly in 

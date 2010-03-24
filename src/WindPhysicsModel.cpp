@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -76,8 +76,7 @@ void WindPhysicsModel::updateParticleValues(
                        H3DTime last_time,
                        H3DTime current_time ) {
   if( !enabled->getValue() || 
-      particle.surface_area == 0 || 
-      particle.mass == 0 ) return;
+      particle.surface_area == 0 ) return;
 
   Vec3f dir = direction->getValue();
   /// TODO: this is not random direction, fix it
@@ -157,15 +156,24 @@ void WindPhysicsModel::updateParticleValues(
   
   }
 
-  // from X3D spec.
-  H3DFloat pressure = 
-    H3DPow( (H3DFloat) 10.0f, 2.0f * H3DLog( wind_speed ) ) * 0.64615f;
-  
-  H3DFloat force = particle.surface_area * pressure;
-  H3DFloat acceleration = force / particle.mass;
-  H3DTime dt = current_time - last_time;
+  H3DFloat wind_diff =  wind_speed - particle.velocity * dir;
+  if( wind_diff > 0 ) {
+    if( particle.mass == 0 ) {
+      particle.velocity += ( wind_diff ) * dir;
+    } else {
+      // from X3D spec.
+      H3DFloat pressure = 
+        H3DPow( (H3DFloat) 10.0f,
+                2.0f * H3DLog( wind_diff ) )
+        * 0.64615f;
+      
+      H3DFloat force = particle.surface_area * pressure;
+      H3DFloat acceleration = force / particle.mass;
+      H3DTime dt = current_time - last_time;
 
-  particle.velocity += dir * acceleration * dt;
+      particle.velocity += dir * acceleration * dt;
+    }
+  }
 }
 
 

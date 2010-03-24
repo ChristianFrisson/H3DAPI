@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='Full' version='3.2'>
   <head>
-    <meta name='title' content='BoundedPhysicsModel.x3d'/>
-    <meta name='description' content='X3D BoundedPhysicsModel example.'/>
+    <meta name='title' content='WindPhysicsModel.x3d'/>
+    <meta name='description' content='X3D WindPhysicsModel example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
   
