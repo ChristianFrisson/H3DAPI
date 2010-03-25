@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2009, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -38,9 +38,12 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class CylinderSensor
   /// \brief The CylinderSensor node maps pointer motion
-  /// (e.g., a mouse or wand) into a rotation on an invisible cylinder
-  /// that is aligned with the Y-axis of the local coordinate system.
-  /// The CylinderSensor uses the descendent geometry of its parent node to
+  /// (e.g., a mouse or wand) into a rotation on an invisible cylinder that
+  /// is aligned with the Y-axis of the local sensor coordinate system.
+  ///
+  /// The local sensor coordinate system is created by applying the
+  /// axisRotation field value to the local coordinate system. The
+  /// CylinderSensor uses the descendent geometry of its parent node to
   /// determine whether it is liable to generate events.
   ///
   /// The description field in the CylinderSensor node specifies a textual
@@ -63,36 +66,38 @@ namespace H3D {
   ///
   /// Upon activation of the pointing device while indicating the sensor's
   /// geometry, an isActive TRUE event is sent. The initial acute angle between
-  /// the bearing vector and the local Y-axis of the CylinderSensor node
-  /// determines whether the sides of the invisible cylinder or the caps
-  /// (disks) are used for manipulation. If the initial angle is less than the
-  /// diskAngle, the geometry is treated as an infinitely large disk lying in
-  /// the local Y=0 plane and coincident with the initial intersection point.
-  /// Dragging motion is mapped into a rotation around the local +Y-axis vector
-  /// of the sensor's coordinate system. The perpendicular vector from the
-  /// initial intersection point to the Y-axis defines zero rotation about the
-  /// Y-axis. For each subsequent position of the bearing, a rotation_changed
-  /// event is sent that equals the sum of the rotation about the +Y-axis
-  /// vector (from the initial intersection to the new intersection) plus the
-  /// offset value. trackPoint_changed events reflect the unclamped drag
-  /// position on the surface of this disk. When the pointing device is
-  /// deactivated and autoOffset is TRUE, offset is set to the last value of
-  /// rotation_changed and an offset_changed event is generated.
+  /// the bearing vector and the local sensor coordinate system Y-axis of the
+  /// CylinderSensor node determines whether the sides of the invisible
+  /// cylinder or the caps (disks) are used for manipulation. If the initial
+  /// angle is less than the diskAngle, the geometry is treated as an
+  /// infinitely large disk lying in Y=0 plane of the local sensor coordinate
+  /// system and coincident with the initial intersection point. Dragging
+  /// motion is mapped into a rotation around the +Y-axis vector of the local
+  /// sensor coordinate system. The perpendicular vector from the initial
+  /// intersection point to the Y-axis defines zero rotation about the Y-axis
+  /// of the local sensor coordinate system. For each subsequent position of
+  /// the bearing, a rotation_changed event is sent that equals the sum of the
+  /// rotation about the +Y-axis vector of the local sensor coordinate system
+  /// (from the initial intersection to the new intersection) plus the offset
+  /// value. trackPoint_changed events reflect the unclamped drag position on
+  /// the surface of this disk. When the pointing device is deactivated and
+  /// autoOffset is TRUE, offset is set to the last value of rotation_changed
+  /// and an offset_changed event is generated.
   ///
   /// If the initial acute angle between the bearing vector and the local
-  /// Y-axis of the CylinderSensor node is greater than or equal to diskAngle,
-  /// then the sensor behaves like a cylinder. The shortest distance between
-  /// the point of intersection (between the bearing and the sensor's geometry)
-  /// and the Y-axis of the parent group's local coordinate system determines
-  /// the radius of an invisible cylinder used to map pointing device motion
-  /// and marks the zero rotation value. For each subsequent position of the
-  /// bearing, a rotation_changed event is sent that equals the sum of the
-  /// right-handed rotation from the original intersection about the +Y-axis
-  /// vector plus the offset value. trackPoint_changed events reflect the
-  /// unclamped drag position on the surface of the invisible cylinder.
-  /// When the pointing device is deactivated and autoOffset is TRUE, offset
-  /// is set to the last rotation angle and an offset_changed event is
-  /// generated.
+  /// sensor coordinate system Y-axis of the CylinderSensor node is greater
+  /// than or equal to diskAngle, then the sensor behaves like a cylinder. The
+  /// shortest distance between the point of intersection (between the bearing
+  /// and the sensor's geometry) and the Y-axis of the parent group's local
+  /// coordinate system determines the radius of an invisible cylinder used to
+  /// map pointing device motion and marks the zero rotation value. For each
+  /// subsequent position of the bearing, a rotation_changed event is sent that
+  /// equals the sum of the right-handed rotation from the original
+  /// intersection about the +Y-axis vector plus the offset value.
+  /// trackPoint_changed events reflect the unclamped drag position on the
+  /// surface of the invisible cylinder. When the pointing device is
+  /// deactivated and autoOffset is TRUE, offset is set to the last rotation
+  /// angle and an offset_changed event is generated.
   ///
   /// When the sensor generates an isActive TRUE event, it grabs all further
   /// motion events from the pointing device until it is released and generates
@@ -131,7 +136,6 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile CylinderSensor.dot
- 
   class H3DAPI_API CylinderSensor : 
     public X3DDragSensorNode {
   public:
@@ -203,7 +207,8 @@ namespace H3D {
                     Inst< SFBool           > _isActive = 0,
                     Inst< SFBool           > _isOver = 0,
                     Inst< SFRotation       > _rotation_changed = 0,
-                    Inst< SFVec3f          > _trackPoint_changed = 0 );
+                    Inst< SFVec3f          > _trackPoint_changed = 0,
+                    Inst< SFRotation > _axisRotation      = 0 );
 
     /// Destructor
     ~CylinderSensor();
@@ -261,6 +266,15 @@ namespace H3D {
     ///
     /// \dotfile CylinderSensor_rotation_changed.dot
     auto_ptr< SFRotation > rotation_changed;
+
+    /// The local sensor coordinate system is created by applying the
+    /// axisRotation field value to the local coordinate system
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 0 1 0 \n
+    ///
+    /// \dotfile CylinderSensor_axisRotation.dot
+    auto_ptr< SFRotation > axisRotation;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

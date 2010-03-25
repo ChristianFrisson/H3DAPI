@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2009, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,6 +31,7 @@
 
 #include <H3D/X3DDragSensorNode.h>
 #include <H3D/SFVec2f.h>
+#include <H3D/SFRotation.h>
 
 namespace H3D {
 
@@ -38,9 +39,12 @@ namespace H3D {
   /// \class PlaneSensor
   /// \brief The PlaneSensor node maps pointing device motion into
   /// two-dimensional translation in a plane parallel to the Z=0 plane of the
-  /// local coordinate system. The PlaneSensor node uses the descendent
-  /// geometry of its parent node to determine whether it is liable to
-  /// generate events.
+  /// local sensor coordinate system.
+  ///
+  /// The local sensor coordinate system is created by applying the
+  /// axisRotation field value to the local coordinate system. The PlaneSensor
+  /// node uses the descendent geometry of its parent node to determine whether
+  /// it is liable to generate events.
   ///
   /// The description field in the PlaneSensor node specifies a textual
   /// description of the PlaneSensor node. This may be used by browser-specific
@@ -61,25 +65,27 @@ namespace H3D {
   /// Upon activation of the pointing device (e.g., mouse button down) while
   /// indicating the sensor's geometry, an isActive TRUE event is sent. Pointer
   /// motion is mapped into relative translation in the tracking plane,
-  /// (a plane parallel to the sensor's local Z=0 plane and coincident with
-  /// the initial point of intersection). For each subsequent movement of the
-  /// bearing, a translation_changed event is output which corresponds to the
-  /// sum of the relative translation from the original intersection point to
-  /// the intersection point of the new bearing in the plane plus the offset
-  /// value. The sign of the translation is defined by the Z=0 plane of the
-  /// sensor's coordinate system. trackPoint_changed events reflect the
-  /// unclamped drag position on the surface of this plane. When the pointing
-  /// device is deactivated and autoOffset is TRUE, offset is set to the last
-  /// translation_changed value and an offset_changed event is generated.
+  /// (a plane parallel to the sensor's local sensor coordinate system Z=0
+  /// plane and coincident with the initial point of intersection). For each 
+  /// subsequent movement of the bearing, a translation_changed event is output
+  /// which corresponds to the sum of the relative translation from the
+  /// original intersection point to the intersection point of the new bearing
+  /// in the plane plus the offset value. The sign of the translation is
+  /// defined by the Z=0 plane of the local sensor coordinate system.
+  /// trackPoint_changed events reflect the unclamped drag position on the
+  /// surface of this plane. When the pointing device is deactivated and
+  /// autoOffset is TRUE, offset is set to the last translation_changed value
+  /// and an offset_changed event is generated.
   /// 
   /// minPosition and maxPosition may be set to clamp translation_changed 
-  /// events to a range of values as measured from the origin of the Z=0 plane.
-  /// If the X or Y component of minPosition is greater than the corresponding
-  /// component of maxPosition, translation_changed events are not clamped in
-  /// that dimension. If the X or Y component of minPosition is equal to the
-  /// corresponding component of maxPosition, that component is constrained to
-  /// the given value. This technique provides a way to implement a line sensor
-  /// that maps dragging motion into a translation in one dimension.
+  /// events to a range of values as measured from the origin of the Z=0 plane
+  /// of the local sensor coordinate system. If the X or Y component of
+  /// minPosition is greater than the corresponding component of maxPosition,
+  /// translation_changed events are not clamped in that dimension. If the X or
+  /// Y component of minPosition is equal to the corresponding component of
+  /// maxPosition, that component is constrained to the given value. This
+  /// technique provides a way to implement a line sensor that maps dragging
+  /// motion into a translation in one dimension.
   ///
   /// While the pointing device is activated and moved, trackPoint_changed and
   /// translation_changed events are sent. trackPoint_changed events represent
@@ -103,18 +109,21 @@ namespace H3D {
     public X3DDragSensorNode {
   public:
 
+    class H3DAPI_API 
+
     /// Constructor.
-    PlaneSensor(      Inst< SFBool >  _autoOffset = 0,
-                      Inst< SFString > _description = 0,
-                      Inst< SFBool >  _enabled = 0,
-                      Inst< SFVec2f > _maxPosition = 0,
-                      Inst< SFNode >  _metadata = 0,
-                      Inst< SFVec2f > _minPosition = 0,
-                      Inst< SFVec3f > _offset = 0,
-                      Inst< SFBool >  _isActive = 0,
-                      Inst< SFBool > _isOver = 0,
-                      Inst< SFVec3f >  _trackPoint_changed = 0,
-                      Inst< SFVec3f >  _translation_changed = 0);
+    PlaneSensor(  Inst< SFBool >  _autoOffset           = 0,
+                  Inst< SFString > _description         = 0,
+                  Inst< SFBool >  _enabled              = 0,
+                  Inst< SFVec2f > _maxPosition          = 0,
+                  Inst< SFNode >  _metadata             = 0,
+                  Inst< SFVec2f > _minPosition          = 0,
+                  Inst< SFVec3f > _offset               = 0,
+                  Inst< SFBool >  _isActive             = 0,
+                  Inst< SFBool > _isOver                = 0,
+                  Inst< SFVec3f >  _trackPoint_changed  = 0,
+                  Inst< SFVec3f >  _translation_changed = 0,
+                  Inst< SFRotation > _axisRotation      = 0 );
 
     ~PlaneSensor();
 
@@ -156,6 +165,15 @@ namespace H3D {
     ///
     /// \dotfile PlaneSensor_translation_changed.dot
     auto_ptr< SFVec3f > translation_changed;
+
+    /// The local sensor coordinate system is created by applying the
+    /// axisRotation field value to the local coordinate system
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 0 1 0 \n
+    ///
+    /// \dotfile PlaneSensor_axisRotation.dot
+    auto_ptr< SFRotation > axisRotation;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

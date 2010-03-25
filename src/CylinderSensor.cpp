@@ -45,6 +45,7 @@ namespace CylinderSensorInternals {
   FIELDDB_ELEMENT( CylinderSensor, minAngle, INPUT_OUTPUT );
   FIELDDB_ELEMENT( CylinderSensor, offset, INPUT_OUTPUT );
   FIELDDB_ELEMENT( CylinderSensor, rotation_changed, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( CylinderSensor, axisRotation, INPUT_OUTPUT );
 }
 
 CylinderSensor::CylinderSensor(
@@ -59,7 +60,8 @@ CylinderSensor::CylinderSensor(
                       Inst< SFBool >  _isActive,
                       Inst< SFBool > _isOver,
                       Inst< SFRotation >  _rotation_changed,
-                      Inst< SFVec3f >  _trackPoint_changed ) :
+                      Inst< SFVec3f >  _trackPoint_changed,
+                      Inst< SFRotation > _axisRotation ) :
   X3DDragSensorNode( _autoOffset, _description, _enabled,
                      _metadata, _isActive, _isOver, _trackPoint_changed ),
   diskAngle( _diskAngle ),
@@ -67,6 +69,7 @@ CylinderSensor::CylinderSensor(
   minAngle( _minAngle ),
   offset( _offset ),
   rotation_changed( _rotation_changed ),
+  axisRotation( _axisRotation ),
   new_cylinder( true ),
   y_axis( Vec3f( 0, 1, 0 ) ),
   plane_d( 0.0f ) {
@@ -78,6 +81,7 @@ CylinderSensor::CylinderSensor(
   maxAngle->setValue( -1 );
   minAngle->setValue( 0 );
   offset->setValue( 0 );
+  axisRotation->setValue( Rotation( 0, 0, 1, 0 ), id );
 }
 
 /// Destructor. 
@@ -175,7 +179,7 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
         Vec3f bearing = geometry_global_to_local_original * from -
                         geometry_global_to_local_original * to;
         bearing.normalize();
-        H3DFloat dot_product = y_axis * bearing;
+        H3DFloat dot_product = ( axisRotation->getValue() * y_axis ) * bearing;
         use_caps = 
           H3DAcos( H3DAbs( dot_product ) ) < diskAngle->getValue();
 
@@ -196,17 +200,16 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
         H3DFloat t;
         Vec3f intersectionPoint;
         bool intersected = false;
+        Matrix4f global_to_local = Matrix4f( axisRotation->getValue() ) *
+                                   geometry_global_to_local_original;
         if( use_caps ) {
-          if( intersectLinePlane( 
-              geometry_global_to_local_original * from,
-              geometry_global_to_local_original * to,
-              t, intersectionPoint ) )
+          if( intersectLinePlane( global_to_local * from,
+                                  global_to_local * to,
+                                  t, intersectionPoint ) )
           intersected = true;
         } else {
-          Vec3f nearPlaneTransformed = geometry_global_to_local_original * 
-                                       from;
-          Vec3f farPlaneTransformed = geometry_global_to_local_original *
-                                      to;
+          Vec3f nearPlaneTransformed = global_to_local * from;
+          Vec3f farPlaneTransformed = global_to_local * to;
 
           // The cylinder is along the y_axis and we do want it to be long
           // enough to intersect the segment.

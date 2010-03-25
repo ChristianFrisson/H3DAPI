@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -78,14 +78,16 @@ void CoordinateDeformer::deformPoints( const vector< bool  > &is_touched,
         Vec3f offset = Vec3f( 0, 0, 0 );
         if( is_touched[0] ) {
           H3DFloat distance = ( resting_points[i] - touch_points[0] ).length();
-          offset = ( penetration_points[0] - touch_points[0] ) * f->get( distance );
+          offset = ( penetration_points[0] - touch_points[0] ) *
+                   f->evaluate( distance );
         }
         H3DFloat max_depth_sqr = offset * offset;
 
         for( unsigned int j = 1; j < nr_devices; j++ ) {
           if( is_touched[j] ) {
             H3DFloat d = ( resting_points[i] - touch_points[j] ).length();
-            Vec3f o = ( penetration_points[j] - touch_points[j] ) * f->get( d );
+            Vec3f o = ( penetration_points[j] - touch_points[j] ) *
+                      f->evaluate( d );
             if( o*o > max_depth_sqr ) {
               offset = o;
             }

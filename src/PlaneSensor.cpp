@@ -44,26 +44,28 @@ namespace PlaneSensorInternals {
   FIELDDB_ELEMENT( PlaneSensor, minPosition, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PlaneSensor, offset, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PlaneSensor, translation_changed, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( PlaneSensor, axisRotation, INPUT_OUTPUT );
 }
 
-PlaneSensor::PlaneSensor(
-                              Inst< SFBool >  _autoOffset,
-                      Inst< SFString > _description,
-                      Inst< SFBool >  _enabled,
-                      Inst< SFVec2f > _maxPosition,
-                      Inst< SFNode >  _metadata,
-                      Inst< SFVec2f > _minPosition,
-                      Inst< SFVec3f > _offset,
-                      Inst< SFBool >  _isActive,
-                      Inst< SFBool > _isOver,
-                      Inst< SFVec3f >  _trackPoint_changed,
-                      Inst< SFVec3f >  _translation_changed ) :
+PlaneSensor::PlaneSensor( Inst< SFBool >  _autoOffset,
+                          Inst< SFString > _description,
+                          Inst< SFBool >  _enabled,
+                          Inst< SFVec2f > _maxPosition,
+                          Inst< SFNode >  _metadata,
+                          Inst< SFVec2f > _minPosition,
+                          Inst< SFVec3f > _offset,
+                          Inst< SFBool >  _isActive,
+                          Inst< SFBool > _isOver,
+                          Inst< SFVec3f >  _trackPoint_changed,
+                          Inst< SFVec3f >  _translation_changed,
+                          Inst< SFRotation > _axisRotation ) :
   X3DDragSensorNode( _autoOffset, _description, _enabled,
                      _metadata, _isActive, _isOver, _trackPoint_changed ),
   maxPosition ( _maxPosition  ),
   minPosition( _minPosition ),
   offset( _offset ),
   translation_changed( _translation_changed ),
+  axisRotation( _axisRotation ),
   new_plane( true ),
   plane_normal( Vec3f( 0, 0, 1) ) {
 
@@ -73,6 +75,7 @@ PlaneSensor::PlaneSensor(
   maxPosition->setValue( Vec2f( -1, -1 ) );
   minPosition->setValue( Vec2f( 0, 0 ) );
   offset->setValue( Vec3f( 0, 0, 0 ) );
+  axisRotation->setValue( Rotation( 0, 0, 1, 0 ), id );
 }
 
 // Destructor. 
@@ -121,9 +124,11 @@ void PlaneSensor::setDragOutputEvents( bool _enabled,
         // Calculate intersection and send events.
         H3DFloat t;
         Vec3f intersectionPoint;
-        if( intersectLinePlane( active_global_to_local_matrix * from,
-                                active_global_to_local_matrix * to, t,
-                                intersectionPoint ) ) {
+        Rotation axis_rotation = axisRotation->getValue();
+        if( intersectLinePlane(
+              axis_rotation * ( active_global_to_local_matrix * from ),
+              axis_rotation * ( active_global_to_local_matrix * to ),
+              t, intersectionPoint ) ) {
           send_warning_message = true;
           Vec3f trans_changed = intersectionPoint - last_intersection
                                 + offset->getValue();
