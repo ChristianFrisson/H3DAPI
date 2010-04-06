@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -199,7 +199,7 @@ H3DHapticsDevice::ErrorCode H3DHapticsDevice::initDevice() {
       HAPI::HAPIHapticsDevice::ErrorCode e = hapi_device->initDevice(
         desiredHapticsRate->getValue() );
       if( e == HAPI::HAPIHapticsDevice::SUCCESS ) {
-        hapi_device->enableDevice();
+        enableDevice();
         initialized->setValue( true, id );
       } else {
         if( !error_msg_printed ) {
@@ -219,7 +219,7 @@ H3DHapticsDevice::ErrorCode H3DHapticsDevice::initDevice() {
 H3DHapticsDevice::ErrorCode H3DHapticsDevice::releaseDevice() {
   initialized->setValue( false, id );
   if( hapi_device.get() ) {
-    hapi_device->disableDevice();
+    disableDevice();
     return hapi_device->releaseDevice();
   } else {
     return HAPI::HAPIHapticsDevice::FAIL;
@@ -310,8 +310,7 @@ void H3DHapticsDevice::updateDeviceValues() {
       Matrix3f vp_full_orn_mtx =
         vp_accFrw.getRotationPart() *
         Matrix3f( vp->totalOrientation->getValue() );
-      Matrix4f rotation_matrix( (vp_accFrw.getRotationPart() *
-        Matrix3f( vp->totalOrientation->getValue() ) ) * default_vp_orn_mtx );
+      Matrix4f rotation_matrix( vp_full_orn_mtx * default_vp_orn_mtx );
 
       // create the matrix used to adjust the positionCalibration
       Matrix4f adjust_matrix = translation_matrix_new *

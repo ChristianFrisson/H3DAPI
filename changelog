@@ -1,3 +1,25 @@
+Changes for version 2.1.1:
+- CMake updates for handling builds with Visual studio 2010 and CMake 2.8.0.
+Still considered test-verison since Visual studio 2010 is not released yet.
+- Various minor bug fixes.
+- Exported some more classes. In case some application needs it.
+- Added clear button to console dialog of H3DViewer.
+- Added reload menu and some keyboard shortcuts to H3DViewer.
+- Varios other updates to H3DViewer.
+- Memory leak fixes.
+- Updates to compile on 64 bit ubuntu and gcc 3.1.1.
+- Added collision detection functions for Lod and Switch.
+- ClipPlane now works properly for lineIntersect functions.
+- Fix to nrrd loader in order to not accidently load jpg files using
+nrrd loader.
+- Updates which improves haptics layers performance.
+- Fog behaviour now matches X3D specification.
+- FogCoordinate now works.
+- Updates to work properly with FTGL 2.1.3 if that is used (default on latest
+ubuntu release).
+- Improvements to CMake system which groups variables belonging to a certain
+external library. Makes it easier to find these when setting manually.
+
 Changes for version 2.1:
 
 - ThreadExample now compiles into separate DLL that can be run time loaded.

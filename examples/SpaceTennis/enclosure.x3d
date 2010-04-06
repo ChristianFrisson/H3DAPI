@@ -40,14 +40,24 @@
 
     <ToggleGroup DEF="INSTRUCTIONS_TOGGLE" graphicsOn="TRUE">
       <Transform translation="0 0 0.01" >
-        <Shape>
-          <Appearance>
-            <Material DEF="MAT" />
-          </Appearance>
-          <Text DEF="BONUS_TEXT" string='"Welcome to the Space Tennis Arena","Use your racket to bounce the ball" ,"Press button to serve"'  >
-            <FontStyle size="0.03" justify="MIDDLE"  />
-          </Text>
-        </Shape>
+        <Switch DEF="INSTRUCTIONS_SWITCH" whichChoice="0" >
+          <Shape>
+            <Appearance>
+              <Material DEF="MAT" />
+            </Appearance>
+            <Text DEF="BONUS_TEXT" string='"Welcome to the Space Tennis Arena","Use your racket to bounce the ball" ,"Press button to serve"'  >
+              <FontStyle size="0.03" justify="MIDDLE"  />
+            </Text>
+          </Shape>
+          <Shape>
+            <Appearance>
+              <Material DEF="MAT" />
+            </Appearance>
+            <Text DEF="BONUS_TEXT" string='"No haptics device detected.","Select a Haptics device using", "the Settings GUI (H3DLoad settings)" ,"and restart SpaceTennis."'  >
+              <FontStyle size="0.03" justify="MIDDLE"  />
+            </Text>
+          </Shape>
+        </Switch>
       </Transform>
     </ToggleGroup>
 

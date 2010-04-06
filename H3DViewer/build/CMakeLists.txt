@@ -13,7 +13,7 @@ project (H3DViewer)
 
 SET(H3DViewer_MAJOR_VERSION "2")
 SET(H3DViewer_MINOR_VERSION "1")
-SET(H3DViewer_BUILD_VERSION "0")
+SET(H3DViewer_BUILD_VERSION "1")
 SET( H3DVIEWER_APP_NAME "H3DViewer ${H3DViewer_MAJOR_VERSION}.${H3DViewer_MINOR_VERSION}" )
 
 # Source files.
@@ -127,7 +127,9 @@ IF( MSVC )
                       ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
                       ${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
                       ${H3DViewer_BUILD_VERSION}
-                      ${H3DViewer_SOURCE_DIR}/../src/.svn/entries )
+                      ${H3DViewer_SOURCE_DIR}/../src/.svn/entries
+                      "H3DViewer_SOURCE_DIR"
+                      ${H3DViewer_SOURCE_DIR} )
 ENDIF(MSVC)
 
 CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )

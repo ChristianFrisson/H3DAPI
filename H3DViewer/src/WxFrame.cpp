@@ -880,6 +880,7 @@ bool WxFrame::loadFile( const string &filename) {
           if( !d->stylus->getValue() )
             d->stylus->setValue( default_stylus );
         }
+        hapticsRenderer->Check( FRAME_GODOBJECT, true );
       }
     }
 
