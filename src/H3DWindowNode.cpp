@@ -326,7 +326,7 @@ void H3DWindowNode::renderChild( X3DChildNode *c ) {
   H3DDisplayListObject *dlo = 
     dynamic_cast< H3DDisplayListObject * >( c );
 
-  renderHapticTriangles(); 
+  renderHapticTriangles();
   if( multi_pass_transparency ) {
     X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
     renderStyli();
@@ -342,6 +342,7 @@ void H3DWindowNode::renderChild( X3DChildNode *c ) {
     renderStyli();
     if( dlo )  dlo->displayList->callList();
     else c->render();
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
   } else {
     X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
     renderStyli();
