@@ -36,15 +36,11 @@ using namespace H3D;
 H3DNodeDatabase Shape::database( 
                                 "Shape", 
                                 &(newInstance<Shape>), 
-                                typeid( Shape ) );
+                                typeid( Shape ),
+				                &X3DShapeNode::database 
+ );
 
 namespace ShapeInternals {
-  FIELDDB_ELEMENT( Shape, appearance, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Shape, geometry, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Shape, hapticGeometry, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Shape, metadata, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Shape, bboxCenter, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( Shape, bboxSize, INPUT_OUTPUT );
 }
 
 

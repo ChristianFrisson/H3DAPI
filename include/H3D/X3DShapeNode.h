@@ -35,6 +35,7 @@
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/DependentNodeFields.h>
 #include <H3D/H3DDisplayListObject.h>
+#include <H3D/H3DShadowObjectNode.h>
 
 namespace H3D {
   /// \ingroup AbstractNodes
@@ -146,6 +147,8 @@ namespace H3D {
     };
 
 
+    typedef TypedSFNode< H3DShadowObjectNode > SFShadowObjectNode;  
+
     /// Constructor.
     X3DShapeNode( Inst< SFAppearanceNode > _appearance     = 0,
                   Inst< SFGeometryNode   > _geometry       = 0,
@@ -256,6 +259,16 @@ namespace H3D {
     /// 
     /// \dotfile X3DShapeNode_hapticGeometry.dot
     auto_ptr<    SFHapticGeometry  >  hapticGeometry;
+
+    /// If specified, contains a H3DShadowObjectNode to be used for
+    /// shadows.
+    /// If NULL the standard shadow volume of the geometry 
+    /// will be used.
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// 
+    /// \dotfile X3DShapeNode_shadowVolume.dot
+    auto_ptr<    SFShadowObjectNode >  shadowVolume;
 
     // if true a route will be set up between the bound field of the
     // geometry node in this field and the bound field of the shape. 

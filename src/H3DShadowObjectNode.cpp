@@ -32,11 +32,23 @@
 
 using namespace H3D;
 
+H3DNodeDatabase H3DShadowObjectNode::database( 
+        "H3DShadowObjectNode", 
+        NULL,
+        typeid( H3DShadowObjectNode ),
+        &X3DChildNode::database 
+        );
+
+namespace H3DShadowObjectNodeInternals {
+  FIELDDB_ELEMENT( H3DShadowObjectNode, transform, INPUT_OUTPUT );
+}
+
 H3DShadowObjectNode::H3DShadowObjectNode(  Inst< SFNode>  _metadata,
 					   Inst< SFTransformNode > _transform ) :
   X3DNode( _metadata ),
   transform( _transform ) {
   type_name = "H3DShadowObjectNode";
+  database.initFields( this );
 }
 
 

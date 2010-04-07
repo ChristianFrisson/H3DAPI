@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file ShadowBox.h
-/// \brief Header file for ShadowBox.
+/// \file ShadowGeometry.h
+/// \brief Header file for ShadowGeometry.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -70,9 +70,23 @@ namespace H3D {
                     Inst< SFGeometryNode  > _geometry  = 0);
 
     /// Render the shadow volume for this shadow object.
-    virtual void renderShadow( X3DLightNode *light, bool render_caps );      
+    virtual void renderShadow( X3DLightNode *light, 
+                               bool render_caps,
+                               const Matrix4f &local_to_global = Matrix4f() );
 
+  protected:
+    /// This field will be sent an event when the triangles in the geometry
+    /// field have changed.
+    //  This field has to be defined before geometry in the node since when
+    //  geometry is destructed this field is used and have to exist.
+    auto_ptr<Field> triangles_changed; 
   public:
+
+    /// The geometry field specifies the X3DGeometryNode that should cast a 
+    /// shadow.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// \dotfile ShadowGeometry_geometry.dot
     auto_ptr< SFGeometryNode > geometry;
 
     /// The H3DNodeDatabase object for this node.
@@ -107,6 +121,14 @@ namespace H3D {
     void updateSilhouetteEdgesPointLight( const vector< HAPI::Collision::Triangle > &,
                                           const vector<int> &neighbours,
                                           const Vec3d &pos );
+
+    /// Array of 3*nr_triangles triangle indices specifying for each triangle
+    /// edge which triangle is its neighbour. 
+    vector< int > neighbours;
+
+    /// The triangles of the geometry. We cache them here instead of 
+    /// getting them from the boundTree since that is quite slow.
+    vector< HAPI::Collision::Triangle > triangles;
 
     /// Array of 3*nr_triangles values, one for each triangle edge. The value
     /// specifies if the edge is a silhouette edge or not, i.e. if the edge

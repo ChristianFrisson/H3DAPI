@@ -57,7 +57,9 @@ ShadowSphere::ShadowSphere( Inst< SFNode>  _metadata,
 }
 
 
-void ShadowSphere::renderShadow( X3DLightNode *light, bool render_caps ) {
+void ShadowSphere::renderShadow( X3DLightNode *light, 
+                                 bool render_caps,
+                                 const Matrix4f &local_to_global ) {
   H3DFloat r = radius->getValue();
   Vec3f pos = position->getValue();
   
@@ -67,10 +69,12 @@ void ShadowSphere::renderShadow( X3DLightNode *light, bool render_caps ) {
 
   Matrix4f m, m_inv;
   if(t) {
-    m = t->matrix->getValue();
-    m_inv = m.inverse();
+    m = local_to_global * t->matrix->getValue();
+  } else {
+    m = local_to_global;
   }
-  
+  m_inv = m.inverse();
+
   DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );     
   PointLight *point_light = dynamic_cast< PointLight * >( light );     
   Vec3f light_dir, light_pos;

@@ -17,61 +17,54 @@
 //    along with H3D API; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//    A commercia l license is also available. Please contact us at 
+//    A commercial license is also available. Please contact us at 
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file ShadowSphere.h
-/// \brief Header file for ShadowSphere.
+/// \file ShadowTransform.h
+/// \brief Header file for ShadowTransform.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __SHADOWSPHERE_H__
-#define __SHADOWSPHERE_H__
+#ifndef __SHADOWTRANSFORM_H__
+#define __SHADOWTRANSFORM_H__
 
 #include <H3D/H3DShadowObjectNode.h>
 #include <H3D/DirectionalLight.h>
 #include <H3D/PointLight.h>
+#include <H3D/SFRotation.h>
+#include <H3D/MatrixTransform.h>
+#include <H3D/X3DGeometryNode.h>
 
 namespace H3D {
 
   /// \ingroup H3DNodes
-  /// \class ShadowSphere
-  /// The ShadowSphere object specifies a sphere casting a shadow for
-  /// use in the ShadowCaster node.
-  ///
-  /// The radius field is the radius of the sphere and the position field
-  /// is the position of the field.
+  /// \class ShadowTransform
+  /// The ShadowTransform transforms another H3DShadowObjectNode with
+  /// the values from the transform field.
   ///
   /// \par Internal routes:
-  /// \dotfile ShadowSphere.dot
-  class ShadowSphere : public H3DShadowObjectNode {
+  /// \dotfile ShadowTransform.dot  
+  class ShadowTransform : public H3DShadowObjectNode {
   public:
 
+    typedef TypedSFNode< H3DShadowObjectNode > SFShadowObjectNode;
+
     /// Constructor.
-    ShadowSphere( Inst< SFNode > _metadata = 0,
-                  Inst< SFFloat > _radius  = 0,
-                  Inst< SFVec3f > _pos     = 0 );
+    ShadowTransform( Inst< SFNode          > _metadata  = 0,
+		     Inst< SFTransformNode > _transform = 0,
+		     Inst< SFShadowObjectNode  > _shadowVolume  = 0);
 
+    /// Render the shadow volume for this shadow object.
     virtual void renderShadow( X3DLightNode *light, 
-                       	       bool render_caps,
-                               const Matrix4f &local_to_global = Matrix4f() );
- 
-    /// The radius of the sphere.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> 1 \n
-    /// \dotfile ShadowSphere_radius.dot
-    auto_ptr< SFFloat > radius;
+			       bool render_caps,
+			       const Matrix4f &local_to_global = Matrix4f() );      
 
-    /// The position of the sphere.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> Vec3f(0,0,0) \n
-    /// \dotfile ShadowSphere_position.dot
-    auto_ptr< SFVec3f > position;
-    
-    /// The H3DNodeDatabase for this node.
+  public:
+    /// The shadow volume we want to transform.
+    auto_ptr< SFShadowObjectNode > shadowVolume;
+
+    /// The H3DNodeDatabase object for this node.
     static H3DNodeDatabase database;
   };
 }

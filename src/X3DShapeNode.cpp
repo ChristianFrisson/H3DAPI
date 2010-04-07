@@ -31,6 +31,7 @@
 #include <H3D/X3DShapeNode.h>
 #include <H3D/X3DTextureNode.h>
 #include <H3D/ShadowCaster.h>
+#include <H3D/ShadowTransform.h>
 
 using namespace H3D;
 
@@ -47,6 +48,7 @@ namespace X3DShapeNodeInternals {
   FIELDDB_ELEMENT( X3DShapeNode, appearance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DShapeNode, geometry, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DShapeNode, hapticGeometry, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DShapeNode, shadowVolume, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DShapeNode, bboxCenter, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( X3DShapeNode, bboxSize, INITIALIZE_ONLY );
 }
@@ -68,6 +70,7 @@ X3DShapeNode::X3DShapeNode(
   appearance( _appearance ),
   geometry  ( _geometry   ),
   hapticGeometry( _hapticGeometry ),
+  shadowVolume( new SFShadowObjectNode ),
   use_geometry_bound( false ) {
 
   geometry->owner = this;
@@ -148,11 +151,15 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
     // add shadow volume
     ShadowCaster *shadow_caster = NULL;
     if( !ti.getUserData( "ShadowCaster",  (void **)&shadow_caster) ) {
-      H3DShadowObjectNode *shadow_object = g->getShadowObject();
-      MatrixTransform *mt = new MatrixTransform();
+      
+      H3DShadowObjectNode *shadow_object = shadowVolume->getValue();
+      if( !shadow_object ) shadow_object = g->getShadowObject();
+      ShadowTransform *t = new ShadowTransform;
+      MatrixTransform *mt = new MatrixTransform;
+      t->transform->setValue( mt );
+      t->shadowVolume->setValue( shadow_object );
       mt->matrix->setValue( ti.getAccForwardMatrix() );
-      shadow_object->transform->setValue( mt );
-      shadow_caster->object->push_back( shadow_object ); 
+      shadow_caster->object->push_back( t ); 
     } 
   }
 

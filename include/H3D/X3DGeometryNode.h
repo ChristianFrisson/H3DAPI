@@ -307,6 +307,9 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+    /// The shadow volume used for this geometry when shadows enabled.
+    AutoRef< Node >shadow_volume;
+
     /// Function sent to HAPIHapticsShape created to allow for deletion of
     /// X3DGeometryNode at the correct time. The X3DGeometryNode is not
     /// automatically reference counted when sent to HAPIHapticShape.

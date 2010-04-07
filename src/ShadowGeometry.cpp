@@ -40,14 +40,14 @@ H3DNodeDatabase ShadowGeometry::database( "ShadowGeometry",
 
 namespace ShadowGeometryInternals {
   FIELDDB_ELEMENT( ShadowGeometry, geometry, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( ShadowGeometry, transform, INPUT_OUTPUT );
 }
 
 ShadowGeometry::ShadowGeometry( Inst< SFNode>  _metadata,
                                 Inst< SFTransformNode > _transform,
                                 Inst< SFGeometryNode > _geometry ) :
   H3DShadowObjectNode( _metadata, _transform ),
-  geometry( _geometry ) {
+  geometry( _geometry ),
+  triangles_changed( new Field ) {
 
   type_name = "ShadowGeometry";
   database.initFields( this );
@@ -79,7 +79,9 @@ void ShadowGeometry::renderPointLightQuad( const Vec3d &v1, const Vec3d &v2,
  
 }
 
-void ShadowGeometry::renderShadow( X3DLightNode *light, bool draw_caps ) {
+void ShadowGeometry::renderShadow( X3DLightNode *light, 
+                              	   bool draw_caps,
+                                   const Matrix4f &local_to_global ) {
   
   MatrixTransform *t = transform->getValue();
   X3DGeometryNode *g = geometry->getValue();
@@ -88,16 +90,18 @@ void ShadowGeometry::renderShadow( X3DLightNode *light, bool draw_caps ) {
 
   Matrix4f m, m_inv;
   if(t) {
-    m = t->matrix->getValue();
-    m_inv = m.inverse();
+    m = local_to_global * t->matrix->getValue();
+  } else {
+    m = local_to_global;
   }
+  m_inv = m.inverse();
 
-  // get all triangles from the geometry
-  vector< HAPI::Collision::Triangle > triangles;
-  const vector<int> &neighbours = g->boundTree->getValue()->getNeighbours();
-  triangles.reserve( neighbours.size() / 3 );
-  g->boundTree->getValue()->getAllTriangles( triangles );
-
+  if(!triangles_changed->isUpToDate() ) {
+    triangles_changed->upToDate();
+    triangles.clear();
+    g->boundTree->getValue()->getAllTriangles( triangles );
+    updateNeighbours( triangles );
+  }
 
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
@@ -185,8 +189,8 @@ void ShadowGeometry::renderShadow( X3DLightNode *light, bool draw_caps ) {
           glVertex4d(	v3.x, v3.y, v3.z, 0 );
         }
       }
-		}
-		glEnd();
+    }
+    glEnd();
   }
   glPopMatrix();
 }
@@ -238,12 +242,93 @@ void ShadowGeometry::updateSilhouetteEdgesPointLight( const vector< HAPI::Collis
  }
 
 
+bool operator< (const Vec3d & s1, const Vec3d &s2) {
+  return (s1.x < s2.x || 
+          (s2.x == s1.x && s1.y < s2.y) ||
+          ( s2.x == s1.x && s2.y == s1.y && s1.z < s2.z) );
+}
+
+struct lt {
+  bool operator()(const pair<Vec3d, Vec3d>& _Left,
+                  const pair<Vec3d, Vec3d >& _Right ) const {
+    return (_Left.first < _Right.first ||
+            !(_Right.first < _Left.first) && _Left.second < _Right.second);
+  }
+};
+
+void ShadowGeometry::updateNeighbours( const vector< HAPI::Collision::Triangle > &triangles ) {
+
+  neighbours.resize( triangles.size()*3, -1 );
+
+  // map from triangle edge(as pair of vertex) to pair of 
+  // (triangle index, edge index within triangle) 
+  typedef map< pair< Vec3d, Vec3d >, pair<int, int>, lt >  EdgeTriangleMap;
+  EdgeTriangleMap edges;
+ 
+  for( size_t i = 0; i < triangles.size(); i++ ) {
+    const HAPI::Collision::Triangle &tri = triangles[i];
+
+    // ignore invalid triangles that are lines or points
+    if( tri.a == tri.b || tri.b == tri.c || tri.a == tri.c ) {
+      continue;
+    }
+
+    // edges of the triangles. We keep a strict ordering when defining an edge so that 
+    // the edge (a,b) will be the same as (b,a).
+    pair< Vec3d, Vec3d > edge0 = tri.a < tri.b ? make_pair(tri.a, tri.b) : make_pair(tri.b, tri.a );
+    pair< Vec3d, Vec3d > edge1 = tri.b < tri.c ? make_pair(tri.b, tri.c) : make_pair(tri.c, tri.b );
+    pair< Vec3d, Vec3d > edge2 = tri.c < tri.a ? make_pair(tri.c, tri.a) : make_pair(tri.a, tri.c );
+
+    // Check if the edge exists in previously processed triangle.
+    EdgeTriangleMap::iterator edge0_i = edges.find( edge0 );
+    EdgeTriangleMap::iterator edge1_i = edges.find( edge1 );
+    EdgeTriangleMap::iterator edge2_i = edges.find( edge2 );
+
+    if( edge0_i != edges.end() ) {
+      // shared edge found, update the neighbour array.
+      int triangle = (*edge0_i).second.first;
+      int edge =  (*edge0_i).second.second;
+      neighbours[i*3] = triangle;
+      if( neighbours[triangle*3+edge] == -1 ) {
+         neighbours[triangle*3+edge] = i;
+      }
+    } else {
+      edges[edge0] = make_pair(i, 0);
+    }
+
+   if( edge1_i != edges.end() ) {
+      // shared edge found, update the neighbour array.
+      int triangle = (*edge1_i).second.first;
+      int edge =  (*edge1_i).second.second;
+      neighbours[i*3+1] = triangle;
+      if( neighbours[triangle*3+edge] == -1 ) {
+         neighbours[triangle*3+edge] = i;
+      }
+    } else {
+      edges[edge1] = make_pair(i, 1);
+    }
+
+   if( edge2_i != edges.end() ) {
+     // shared edge found, update the neighbour array.
+      int triangle = (*edge2_i).second.first;
+      int edge =  (*edge2_i).second.second;
+      neighbours[i*3+2] = triangle;
+      if( neighbours[triangle*3+edge] == -1 ) {
+        neighbours[triangle*3+edge] = i;
+      }
+    } else {
+      edges[edge2] = make_pair(i, 2);
+    }
+  }
+}
+
+
 void ShadowGeometry::SFGeometryNode::onAdd( Node *n ) {
   TypedSFNode< X3DGeometryNode >::onAdd( n );
   X3DGeometryNode*geom = dynamic_cast< X3DGeometryNode * >( n );
   ShadowGeometry*shadow_geom = dynamic_cast< ShadowGeometry * >( getOwner() );
   if( geom ) {
-    //    geom->boundTree->route( shadow_geom->triangles_changed );
+    geom->boundTree->route( shadow_geom->triangles_changed );
   }
 }
 
@@ -251,7 +336,7 @@ void ShadowGeometry::SFGeometryNode::onRemove( Node *n ) {
   X3DGeometryNode*geom = dynamic_cast< X3DGeometryNode * >( n );
   ShadowGeometry*shadow_geom = dynamic_cast< ShadowGeometry * >( getOwner() );
   if( geom ) {
-    //    geom->boundTree->unroute( shadow_geom->triangles_changed );
+    geom->boundTree->unroute( shadow_geom->triangles_changed );
   }
   TypedSFNode< X3DGeometryNode >::onRemove( n );
 }

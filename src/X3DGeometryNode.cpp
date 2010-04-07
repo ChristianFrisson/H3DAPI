@@ -87,6 +87,7 @@ X3DGeometryNode::X3DGeometryNode(
   contactNormal( _contactNormal ),
   boundTree( _boundTree ),
   options( new MFOptionsNode ),
+  shadow_volume( NULL ),
   use_culling( false ),
   allow_culling( true ),
   draw_debug_options( true ),
@@ -113,9 +114,12 @@ void X3DGeometryNode::initialize() {
 }
 
 H3DShadowObjectNode *X3DGeometryNode::getShadowObject() {
-  ShadowGeometry *shadow_geom = new ShadowGeometry;
-  shadow_geom->geometry->setValue( this );
-  return shadow_geom;
+  if( !shadow_volume.get() ) {
+    ShadowGeometry *shadow_geom = new ShadowGeometry;
+    shadow_geom->geometry->setValue( this );
+    shadow_volume.reset( shadow_geom );
+  }
+  return static_cast< H3DShadowObjectNode * >( shadow_volume.get() );
 }
 
 int X3DGeometryNode::getHapticShapeId( unsigned int index ) {
