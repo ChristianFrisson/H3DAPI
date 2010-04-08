@@ -109,8 +109,6 @@ namespace H3D {
     public X3DDragSensorNode {
   public:
 
-    class H3DAPI_API 
-
     /// Constructor.
     PlaneSensor(  Inst< SFBool >  _autoOffset           = 0,
                   Inst< SFString > _description         = 0,
