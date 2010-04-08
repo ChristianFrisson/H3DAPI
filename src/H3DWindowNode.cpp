@@ -661,12 +661,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   ShadowCaster *shadow_caster = NULL;
   if( ti ) {
     ti->getUserData( "ShadowCaster",  (void **)&shadow_caster);
-    for( TraverseInfo::RefCountedVector::const_iterator i = 
-                            ti->x3dlightnode_vector.begin();
-         i != ti->x3dlightnode_vector.end();
-         i++ ) {
-      static_cast< X3DLightNode * >(*i)->enableGraphicsState();
-    }
   }
 
   // get the viewpoint. If the H3DWindowNode viewpoint field is set use that
@@ -909,6 +903,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
 
+    if( ti ) {
+      for( TraverseInfo::RefCountedVector::const_iterator i = 
+                              ti->x3dlightnode_vector.begin();
+           i != ti->x3dlightnode_vector.end();
+           i++ ) {
+        static_cast< X3DLightNode * >(*i)->enableGraphicsState();
+      }
+    }
+
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
 
@@ -919,6 +922,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                                                   vp ); 
 
     if( shadow_caster ) shadow_caster->render();
+
+    if( ti ) {
+      for( TraverseInfo::RefCountedVector::const_iterator i = 
+                              ti->x3dlightnode_vector.begin();
+           i != ti->x3dlightnode_vector.end();
+           i++ ) {
+        static_cast< X3DLightNode * >(*i)->disableGraphicsState();
+      }
+    }
 
     // RIGHT EYE
     glMatrixMode(GL_PROJECTION);
@@ -998,6 +1010,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                   -vp_position.z );
     glMultMatrixf( vp_inv_transform );
 
+    if( ti ) {
+      for( TraverseInfo::RefCountedVector::const_iterator i = 
+                              ti->x3dlightnode_vector.begin();
+           i != ti->x3dlightnode_vector.end();
+           i++ ) {
+        static_cast< X3DLightNode * >(*i)->enableGraphicsState();
+      }
+    }
+
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
 
@@ -1008,6 +1029,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                                                   vp );
 
     if( shadow_caster ) shadow_caster->render();
+
+    if( ti ) {
+      for( TraverseInfo::RefCountedVector::const_iterator i = 
+                              ti->x3dlightnode_vector.begin();
+           i != ti->x3dlightnode_vector.end();
+           i++ ) {
+        static_cast< X3DLightNode * >(*i)->disableGraphicsState();
+      }
+    }
 
     if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
              stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
@@ -1147,6 +1177,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glGetDoublev( GL_MODELVIEW_MATRIX, mono_mvmatrix );
     }
 
+    if( ti ) {
+      for( TraverseInfo::RefCountedVector::const_iterator i = 
+                              ti->x3dlightnode_vector.begin();
+           i != ti->x3dlightnode_vector.end();
+           i++ ) {
+        static_cast< X3DLightNode * >(*i)->enableGraphicsState();
+      }
+    }
+
     H3DMultiPassRenderObject::renderPostViewpointAll( child_to_render, 
                                                       vp );
     renderChild( child_to_render );
@@ -1154,6 +1193,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                                                   vp );
 
     if( shadow_caster ) shadow_caster->render();
+
+    if( ti ) {
+      for( TraverseInfo::RefCountedVector::const_iterator i = 
+                              ti->x3dlightnode_vector.begin();
+           i != ti->x3dlightnode_vector.end();
+           i++ ) {
+        static_cast< X3DLightNode * >(*i)->disableGraphicsState();
+      }
+    }
 
     if ( !norm ) 
       glDisable( GL_NORMALIZE );
@@ -1243,14 +1291,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     render_already_run_once = true;
   }
 
-  if( ti ) {
-    for( TraverseInfo::RefCountedVector::const_iterator i = 
-                            ti->x3dlightnode_vector.begin();
-         i != ti->x3dlightnode_vector.end();
-         i++ ) {
-      static_cast< X3DLightNode * >(*i)->disableGraphicsState();
-    }
-  }
   if( headlight_index != -1 ) {
     glPopAttrib();
     X3DLightNode::decreaseLightIndex();
