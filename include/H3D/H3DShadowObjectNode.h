@@ -46,7 +46,7 @@ namespace H3D {
   /// source would create a shadow volume that is a cylinder starting at the 
   /// position of the sphere and going off into infinity in the same direction
   /// as the light direction.
-  class H3DShadowObjectNode : public X3DNode {
+  class H3DAPI_API H3DShadowObjectNode : public X3DNode {
   public:
     typedef TypedSFNode< MatrixTransform > SFTransformNode;
 

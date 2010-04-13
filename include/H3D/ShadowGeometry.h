@@ -51,7 +51,7 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ShadowGeometry.dot  
-  class ShadowGeometry : public H3DShadowObjectNode {
+  class H3DAPI_API ShadowGeometry : public H3DShadowObjectNode {
   public:
 
     /// SFGeometryNode is specialized to route the boundTree field

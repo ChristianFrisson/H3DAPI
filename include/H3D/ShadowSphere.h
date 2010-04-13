@@ -45,7 +45,7 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ShadowSphere.dot
-  class ShadowSphere : public H3DShadowObjectNode {
+  class H3DAPI_API ShadowSphere : public H3DShadowObjectNode {
   public:
 
     /// Constructor.

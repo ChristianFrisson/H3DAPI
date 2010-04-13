@@ -72,8 +72,8 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ShadowCaster.dot
-  class ShadowCaster : public X3DChildNode,
-                       public H3DDisplayListObject {
+  class H3DAPI_API ShadowCaster : public X3DChildNode,
+                                  public H3DDisplayListObject {
   public:
 
     typedef TypedMFNode< X3DLightNode > MFLightNode;
