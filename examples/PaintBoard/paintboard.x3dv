@@ -1,0 +1,62 @@
+#X3D V3.0 utf8
+#(c) 2010 SenseGraphics AB
+
+PROFILE Immersive
+
+Transform {
+  translation 0 0 0
+  rotation 1 0 0 -0.5
+  children [
+    Shape {
+      appearance Appearance {
+        material DEF MAT Material {
+          diffuseColor 0 0 1
+        }
+        surface FrictionalSurface { }
+        texture DEF PT PixelTexture {
+          repeatS TRUE
+          repeatT TRUE
+        }
+      }
+      geometry DEF G Rectangle2D {
+      }
+    }
+  ]
+}
+
+DEF JS Script {
+  field SFNode PT USE PT
+  field SFNode G USE G
+  inputOnly MFVec3f pointHit
+
+  url ["ecmascript:
+    function initialize() {
+      colors = new MFInt32();
+      width = 0.3; height = 0.2;
+      tex_width = 30; tex_height = 20;
+
+      G.size = SFVec2f(width, height);
+      
+      for (i = 0; i < tex_width * tex_height; i++) {
+        colors[i] = 0xff0000;
+      }
+
+      sfimage = SFImage(tex_width, tex_height, 3, colors);
+      PT.set_image = sfimage;
+    }
+
+    function pointHit(val) {
+      point = val[0];
+      x = point.x; y = point.y;
+      idw = parseInt(((x + width/2)/width) * tex_width);
+      idh = parseInt(((y + height/2)/height) * tex_height);
+      if (idw == tex_width) idw--;
+      if (idh == tex_height) idh--;
+      id = idh * tex_width + idw;
+      sfimage.array[3+id] = 0x00ff00;
+      PT.set_image = sfimage;
+    }
+
+  "]
+}
+ROUTE G.contactPoint TO JS.pointHit
