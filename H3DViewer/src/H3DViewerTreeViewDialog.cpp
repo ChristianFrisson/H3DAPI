@@ -225,6 +225,11 @@ void H3DViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
 #ifdef DEFAULT_VALUES
   if( new_node ) {
     default_values_node.reset( db->createNode() );
+    Scene * default_scene =
+      dynamic_cast< Scene * >( default_values_node.get() );
+    if( default_scene ) {
+      default_scene->setActive( false );
+    }
   }
 #endif
 

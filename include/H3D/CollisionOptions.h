@@ -38,7 +38,11 @@ namespace H3D {
 
   /// \ingroup H3DNodes
   /// \class CollisionOptions
-  /// \brief Specifies parameters to use for graphical rendering of nodes.
+  /// \brief Options related to collision in H3DAPI.
+  ///
+  /// Collision may refer to collision between the avatar in the scene or
+  /// actions by the users such as trying to select objects with a pointing
+  /// device sensor.
   ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/CollisionOptions.x3d">CollisionOptions.x3d</a>
@@ -65,16 +69,16 @@ namespace H3D {
     /// The sensorCollideInvisible field specifies whether
     /// X3DPointingDeviceSensors should consider ToggleGroups
     /// with graphicsOn set to false. The default value is true
-    /// for the behaviour to be backward compatible.
+    /// for the behaviour to be backwards compatible.
     ///
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFBool > sensorCollideToggleGraphicsOff;
 
-    /// The sensorCollideInvisible field specifies whether
+    /// The sensorCollideCollisionFalse field specifies whether
     /// X3DPointingDeviceSensors should consider Collision nodes
     /// with enabled set to false. The default value is true
-    /// for the behaviour to be backward compatible.
+    /// for the behaviour to be backwards compatible.
     ///
     /// <b>Default value: </b> true \n
     /// <b>Access type: </b> inputOutput \n
