@@ -36,7 +36,11 @@
 #include <H3D/SpaceWareSensor.h>
 
 namespace H3D {
-  
+
+  // Forward Declaration
+  class H3DNavigation;
+
+  /// Base class for devices that should be used to navigate the scene.
   class H3DAPI_API H3DNavigationDevices {
   public:
 
@@ -54,20 +58,25 @@ namespace H3D {
     };
 
     /// Constructor.
-    H3DNavigationDevices();
+    H3DNavigationDevices( H3DNavigation * h3d_navigation );
 
     /// Destructor
     virtual ~H3DNavigationDevices() {
-      h3dnavigations.remove( this );
+      for( DeviceMap::iterator i = all_devices.begin();
+           i != all_devices.end(); i++ ) {
+        (*i).second.remove( this );
+      }
     }
 
     /// Call this function to sum up movement changes from all devices
     /// returns true if there are changes.
-    static bool getMoveInfo( MoveInfo &move_info ) {
+    static bool getMoveInfo( MoveInfo &move_info,
+                             H3DNavigation * h3d_navigation ) {
       bool somethingmoved = false;
       int centerCounter = 0;
-      for( list< H3DNavigationDevices * >::iterator i = h3dnavigations.begin();
-           i != h3dnavigations.end(); i++ ) {
+      for( list< H3DNavigationDevices * >::iterator i =
+             all_devices[h3d_navigation].begin();
+           i != all_devices[h3d_navigation].end(); i++ ) {
         if( (*i)->shouldGetInfo->getValue() ) {
           move_info.translation_sum += (*i)->move_dir;
           move_info.rotation_sum = move_info.rotation_sum * (*i)->rel_rot;
@@ -96,9 +105,11 @@ namespace H3D {
     virtual void enableDevice() {};
     
     /// sets type of navigation for all devices
-    static void setNavTypeForAll( string &_nav_type ) {
-      for( list< H3DNavigationDevices * >::iterator i = h3dnavigations.begin();
-           i != h3dnavigations.end(); i++ ) {
+    static void setNavTypeForAll( string &_nav_type,
+                                  H3DNavigation * h3d_navigation ) {
+      for( list< H3DNavigationDevices * >::iterator i =
+             all_devices[h3d_navigation].begin();
+           i != all_devices[h3d_navigation].end(); i++ ) {
           (*i)->setNavType( _nav_type );
       }
     }
@@ -120,13 +131,19 @@ namespace H3D {
     bool use_center;
     bool zoom;
 
+    /// Get the center or rotation.
     virtual Vec3f getCenterOfRot(){
       return center_of_rot;
     }
 
   protected:
+    // If this field is true then move_dir, rel_rot, center_of_rot, use_center
+    // and zoom contains something useful.
     auto_ptr< SFBool > shouldGetInfo;
-    static list< H3DNavigationDevices * > h3dnavigations;
+    // Need to map device to H3DNavigation.
+    typedef map< H3DNavigation*, list< H3DNavigationDevices * > > DeviceMap;
+    static DeviceMap all_devices;
+    // Navigation type.
     string nav_type;
   };
 
@@ -134,21 +151,10 @@ namespace H3D {
   /// Take care of mouseNavigation
   class H3DAPI_API MouseNavigation : public H3DNavigationDevices {
   public:
-
-    class CalculateMouseMoveInfo :
-      public AutoUpdate< TypedField< SFBool, Types< SFBool, SFVec2f,
-                                                    SFBool, SFBool > > > {
-    public:
-      virtual void update();
-      MouseNavigation *the_owner;
-    };
-#ifdef __BORLANDC__
-    friend class CalculateMouseMoveInfo;
-#endif
-
     /// Constructor.
-    MouseNavigation();
+    MouseNavigation( H3DNavigation * h3d_navigation );
 
+    /// Reset all variables
     virtual void resetAll();
 
     /// virtual function to remove routes for this device.
@@ -157,47 +163,47 @@ namespace H3D {
     /// virtual function to enable routes for this device.
     virtual void enableDevice();
 
+    /// Check if MouseNavigation is enabled.
     inline bool isEnabled() { 
-      if( mouseSensor.get() && mouseSensor->enabled->getValue() ) return true;
-      return false;
+      return enabled;
     }
 
+    /// Called when left button has changed.
+    void leftButtonUpdate( bool _left_button );
+
+    /// Called for each movement change
+    void motionUpdate( int x, int y );
+
+    /// Called when scroll wheel updates.
+    void scrollWheelUpdate( bool up );
   protected:
-    auto_ptr< CalculateMouseMoveInfo > calculateMouseMoveInfo;
-    auto_ptr< MouseSensor > mouseSensor;
+    // Contains left button value
+    bool left_button;
+    // Contains mouse pos value
+    Vec2f mouse_pos;
+    // True if MouseNavigation is enabled.
+    bool enabled;
   };
 
   /// Takes care of navigation using keyboard.
   class H3DAPI_API KeyboardNavigation : public H3DNavigationDevices {
   public:
 
-    class CalculateKeyboardMoveInfo :
-      public AutoUpdate< TypedField< SFBool, Types< SFInt32, SFInt32 > > > {
-    public:
-      CalculateKeyboardMoveInfo() {
-        upPressed = downPressed = leftPressed = rightPressed = false;
-      }
-      virtual void update();
-
-      KeyboardNavigation *the_owner;
-    protected:
-      bool upPressed;
-      bool downPressed;
-      bool leftPressed;
-      bool rightPressed;
-    };
-#ifdef __BORLANDC__
-    friend class CalculateKeyboardMoveInfo;
-#endif
-
     /// Constructor.
-    KeyboardNavigation();
+    KeyboardNavigation( H3DNavigation * h3d_navigation );
 
+    /// Reset variables.
     virtual void resetAll();
 
+    /// Handle key pressed to set navigation correctly.
+    void handleKeyAction( int key, bool pressed );
+
   protected:
-    auto_ptr< CalculateKeyboardMoveInfo > calculateKeyboardMoveInfo;
-    auto_ptr< KeySensor > keySensor;
+    // Variables used to indicate which keys are pressed and which are not.
+    bool upPressed;
+    bool downPressed;
+    bool leftPressed;
+    bool rightPressed;
   };
 
   /// Takes care of navigation using a haptics device.
@@ -226,7 +232,7 @@ namespace H3D {
 #endif
 
     /// Constructor.
-    HapticDeviceNavigation();
+    HapticDeviceNavigation( H3DNavigation * h3d_navigation );
 
     virtual void resetAll();
 
@@ -262,7 +268,7 @@ namespace H3D {
 #endif
 
     /// Constructor.
-    SWSNavigation();
+    SWSNavigation( H3DNavigation * h3d_navigation );
 
     virtual void resetAll();
 

@@ -48,7 +48,6 @@
 #include <H3D/DebugOptions.h>
 #include <H3D/X3DKeyDeviceSensorNode.h>
 #include <H3D/MouseSensor.h>
-#include <H3D/H3DNavigation.h>
 #include <H3D/X3DLightNode.h>
 #include <H3D/CollisionOptions.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
@@ -126,7 +125,8 @@ H3DWindowNode::H3DWindowNode(
   last_loop_mirrored( false ),
   last_render_mode( RenderMode::MONO ),
   current_cursor( "DEFAULT" ),
-  render_already_run_once( false ) {
+  render_already_run_once( false ),
+  h3d_navigation( new H3DNavigation ) {
   
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -176,7 +176,7 @@ H3DWindowNode::H3DWindowNode(
   default_collision = true;
   default_transition_type.push_back( "LINEAR" );
   default_transition_time = 1.0;
-  H3DNavigationDevices::setNavTypeForAll( default_nav );
+  H3DNavigationDevices::setNavTypeForAll( default_nav, h3d_navigation.get() );
   mouse_position[0] = 0;
   mouse_position[1] = 0;
   previous_mouse_position[0] = 0;
@@ -184,10 +184,10 @@ H3DWindowNode::H3DWindowNode(
 }
 
 H3DWindowNode::~H3DWindowNode() {
+  h3d_navigation.reset( NULL );
   if( stencil_mask )
     free( stencil_mask );
   windows.erase( this );
-  H3DNavigation::destroy();
 }
 
 void H3DWindowNode::shareRenderingContext( H3DWindowNode *w ) {
@@ -692,7 +692,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   }
 
   X3DViewpointNode *navigation_vp = vp;
-  vp = H3DNavigation::viewpointToUse( vp );
+  vp = h3d_navigation->viewpointToUse( vp );
 
   Vec3f vp_position = vp->totalPosition->getValue();
   Rotation vp_orientation = vp->totalOrientation->getValue();
@@ -1276,14 +1276,14 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       transition_time = nav_info->transitionTime->getValue();
     }
 
-    H3DNavigation::doNavigation( nav_type,
-                                 navigation_vp,
-                                 child_to_render,
-                                 use_collision,
-                                 avatar_size,
-                                 nav_speed,
-                                 transition_type,
-                                 transition_time );
+    h3d_navigation->doNavigation( nav_type,
+                                  navigation_vp,
+                                  child_to_render,
+                                  use_collision,
+                                  avatar_size,
+                                  nav_speed,
+                                  transition_type,
+                                  transition_time );
     // Store previous mouse position
     previous_mouse_position[0] = mouse_position[0];
     previous_mouse_position[1] = mouse_position[1];
@@ -1366,14 +1366,15 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
 void H3DWindowNode::onKeyDown( int key, bool special ) {
   if( special ) {
     X3DKeyDeviceSensorNode::keyboardSpecialDownCallback( key );
-  }
-  else
+    h3d_navigation->handleKeyAction( key, true );
+  } else
     X3DKeyDeviceSensorNode::keyboardDownCallback( key );
 }
 
 void H3DWindowNode::onKeyUp( int key, bool special ) {
   if( special ) {
     X3DKeyDeviceSensorNode::keyboardSpecialUpCallback( key );
+    h3d_navigation->handleKeyAction( key, false );
   }
   else
     X3DKeyDeviceSensorNode::keyboardUpCallback( key );
@@ -1381,16 +1382,20 @@ void H3DWindowNode::onKeyUp( int key, bool special ) {
 
 void H3DWindowNode::onMouseButtonAction( int button, int state ) {
   MouseSensor::buttonCallback( button, state );
+  if( button == MouseSensor::LEFT_BUTTON )
+    h3d_navigation->leftButtonUpdate( state == MouseSensor::DOWN );
 }
 
 void H3DWindowNode::onMouseMotionAction( int x, int y ) {
   MouseSensor::motionCallback( x, y );
   mouse_position[0] = x;
   mouse_position[1] = y;
+  h3d_navigation->motionUpdate( x, y );
 }
 
 void H3DWindowNode::onMouseWheelAction( int direction ) {
   MouseSensor::wheelCallback( direction );
+  h3d_navigation->scrollWheelUpdate( direction == MouseSensor::FROM );
 }
 
 #ifdef WIN32
@@ -1548,12 +1553,14 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
     case WM_LBUTTONDBLCLK: {
       MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
                                    MouseSensor::DOWN );
+      h3d_navigation->leftButtonUpdate( true );
       break;
     }
 
     case WM_LBUTTONUP: {
       MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
                                    MouseSensor::UP );
+      h3d_navigation->leftButtonUpdate( false );
       break;
     }
 
@@ -1589,6 +1596,8 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
       mouse_position[1] = HIWORD(lParam);
       MouseSensor::motionCallback( mouse_position[0],
                                    mouse_position[1] );
+      h3d_navigation->motionUpdate( mouse_position[0],
+                                    mouse_position[1] );
       break;
     }
 
@@ -1598,6 +1607,7 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
       short upOrDown = HIWORD( wParam );
       MouseSensor::wheelCallback( upOrDown > 0 ? 
                           MouseSensor::FROM : MouseSensor::TOWARDS );
+      h3d_navigation->scrollWheelUpdate( upOrDown > 0 );
       break;
     }
   }

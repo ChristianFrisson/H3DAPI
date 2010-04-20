@@ -35,8 +35,9 @@
 
 namespace H3D {
   
-  /// H3DNavigation is a Singleton class used for navigation in H3DAPI.
+  /// H3DNavigation is a class used for navigation in H3DAPI.
   /// By default navigation can be done with mouse and keyboard.
+  /// Each H3DWindowNode should have a H3DNavigation instance.
   class H3DAPI_API H3DNavigation {
   public:
 
@@ -48,11 +49,17 @@ namespace H3D {
       SWS = 5
     } NavigationDevices;
 
-    /// destroy the instance when not needed anymore
-    static void destroy();
+    /// Constructor
+    H3DNavigation();
 
-    /// does navigation for different navigation modes.
-    static void doNavigation( string navigation_type, X3DViewpointNode * vp,
+    /// Destructor
+    ~H3DNavigation() {
+      old_vp.reset( NULL );
+      h3d_navigations.remove( this );
+    }
+
+    /// Does navigation for different navigation modes.
+    void doNavigation( string navigation_type, X3DViewpointNode * vp,
                               X3DChildNode *topNode, bool detect_collision,
                               const vector< H3DFloat > &avatar_size, 
                               H3DFloat speed,
@@ -70,41 +77,64 @@ namespace H3D {
     /// Compares the given X3DViewpointNode to the X3DViewpointNode used by
     /// the NavigationInfo. Used in order to make sure that the same viewpoint
     /// is used for graphics and haptics when a NavigationInfo is in use.
-    static X3DViewpointNode * viewpointToUse( X3DViewpointNode *potential_vp );
+    inline X3DViewpointNode * viewpointToUse(
+      X3DViewpointNode *potential_vp ) {
+      if( old_vp.get() && old_vp.get() != potential_vp ) {
+         return old_vp.get();
+      }
+      return potential_vp;
+    }
+
+    /// Same as the non-static version but can be used to give an index from
+    /// the list instead. Used in order to call viewpointToUse from nodes that
+    /// does not actually know which window they belong to, or which does not
+    /// belong to any window, such as H3DHapticsDevice.
+    static X3DViewpointNode * viewpointToUse( X3DViewpointNode *potential_vp,
+                                              int nav_index );
 
     static string getTransitionType(
       const vector< string > &transition_types );
 
-    static bool force_jump;
-
-  private:
-    /// Takes care of navigation
-    void navigate( string navigation_type, X3DViewpointNode * vp,
-                   X3DChildNode *topNode, bool detect_collision,
-                   const vector< H3DFloat > &avatar_size, 
-                   H3DFloat speed,
-                   const vector< string > &transition_type,
-                   H3DTime transition_time );
-    
-    /// An instance of this class
-    static H3DNavigation * instance;
-
-    /// Private declarations of constructors for singleton class.
-    H3DNavigation();
-    H3DNavigation(const H3DNavigation&) {}
-    H3DNavigation& operator = (const H3DNavigation&) { return *this; }
-    ~H3DNavigation() {
-      old_vp.reset( 0 );
+    /// Called when left button has changed.
+    inline void leftButtonUpdate( bool _left_button ) {
+      if( mouse_nav.get() )
+        mouse_nav->leftButtonUpdate( _left_button );
     }
 
+    /// Called for each movement change
+    inline void motionUpdate( int x, int y ) {
+      if( mouse_nav.get() )
+        mouse_nav->motionUpdate( x, y );
+    }
+
+    /// Called when scroll wheel updates.
+    inline void scrollWheelUpdate( bool up ) {
+      if( mouse_nav.get() )
+        mouse_nav->scrollWheelUpdate( up );
+    }
+
+    inline void handleKeyAction( int key, bool pressed ) {
+      if( keyboard_nav.get() )
+        keyboard_nav->handleKeyAction( key, pressed );
+    }
+
+    // Used to force jump of a viewpoint, for example when an anchor is
+    // selected.
+    static bool force_jump;
+
+  protected:
     /// Devices which it is possible to use for navigation.
     auto_ptr< MouseNavigation > mouse_nav;
     auto_ptr< KeyboardNavigation > keyboard_nav;
     auto_ptr< HapticDeviceNavigation > haptic_device_nav;
     auto_ptr< SWSNavigation > sws_navigation;
 
+    // Time of last update.
     H3DTime last_time;
 
+    // Variables needed to correctly do linear interpolation between
+    // two viewpoints.
+    // Flag used to know if we are in linear interpolation mode.
     bool linear_interpolate;
     Vec3f goal_position;
     Rotation goal_orientation;
@@ -113,8 +143,9 @@ namespace H3D {
     Rotation start_orientation;
     Vec3f old_vp_pos;
     H3DTime start_time;
-    static AutoRef< X3DViewpointNode > old_vp;
-    friend void H3D::deinitializeH3D();
+    AutoRef< X3DViewpointNode > old_vp;
+    // List of H3DNavigation instances, needed by the static functions.
+    static list< H3DNavigation * > h3d_navigations;
   };
 
 }

@@ -156,8 +156,7 @@ void X3DViewpointNode::removeFromStack() {
       if( s.size() > 0 ) {
         X3DViewpointNode * new_vp =
           static_cast<X3DViewpointNode * >(s.front());
-        bool local_jump =
-          H3DNavigation::force_jump ? true : new_vp->jump->getValue();
+        bool local_jump = H3DNavigation::force_jump || new_vp->jump->getValue();
         if( !local_jump ) {
 
           const Matrix4f &vp_acc_inv_mtx =
@@ -184,7 +183,7 @@ void X3DViewpointNode::toStackTop() {
   X3DBindableNode *active = NULL;
   if( s.size() > 0 ) active = s.front();
   if ( active != this ) {
-    bool local_jump = H3DNavigation::force_jump ? true : jump->getValue();
+    bool local_jump = H3DNavigation::force_jump || jump->getValue();
     if( local_jump ) {
       if( !retainUserOffsets->getValue() ) {
         relPos->setValue( Vec3f( 0, 0, 0 ) );

@@ -33,6 +33,7 @@
 #include <H3D/MFNode.h>
 #include <H3D/SFInt32.h>
 #include <H3D/DefaultAppearance.h>
+#include <H3D/H3DNavigation.h>
 
 namespace H3D {
 
@@ -442,6 +443,9 @@ namespace H3D {
     // test bug report 0000176 simply set this value to true in
     // H3DWindowNode constructor.
     bool render_already_run_once;
+
+    // Instance to class handling navigation for this window.
+    auto_ptr< H3DNavigation > h3d_navigation;
   };
 }
 

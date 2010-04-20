@@ -274,7 +274,7 @@ void H3DHapticsDevice::updateDeviceValues() {
 
   if( hapi_device.get() ) {
     X3DViewpointNode *vp = X3DViewpointNode::getActive();
-    vp = H3DNavigation::viewpointToUse( vp );
+    vp = H3DNavigation::viewpointToUse( vp, 0 );
     if( followViewpoint->getValue() && vp ) {
       // Haptic device should follow the viewpoint.
 

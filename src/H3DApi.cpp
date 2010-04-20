@@ -100,10 +100,6 @@ void H3D::deinitializeH3D() {
   XERCES_CPP_NAMESPACE_USE
   XMLPlatformUtils::Terminate();
 #endif
-
-  // this is needed because of static variable destruction order
-  // cause crashes otherwise.
-  H3DNavigation::old_vp.reset( NULL );
 }
 
 double H3D::getH3DApiVersion() {

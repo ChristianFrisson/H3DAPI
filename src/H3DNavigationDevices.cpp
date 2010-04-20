@@ -33,11 +33,12 @@
 
 using namespace H3D;
 
-list<H3DNavigationDevices *> H3DNavigationDevices::h3dnavigations;
+H3DNavigationDevices::DeviceMap H3DNavigationDevices::all_devices;
 
-H3DNavigationDevices::H3DNavigationDevices() : shouldGetInfo( new SFBool ) {
+H3DNavigationDevices::H3DNavigationDevices( H3DNavigation * h3d_navigation ) :
+shouldGetInfo( new SFBool ) {
   shouldGetInfo->setValue( false );
-  h3dnavigations.push_back( this );
+  all_devices[h3d_navigation].push_back( this );
   use_center = false;
   zoom = false;
 }
@@ -49,125 +50,112 @@ void H3DNavigationDevices::resetAll() {
   zoom = false;
 }
 
-MouseNavigation::MouseNavigation() :
-  calculateMouseMoveInfo( new CalculateMouseMoveInfo ),
-  mouseSensor( new MouseSensor() ) {
-
-  calculateMouseMoveInfo->the_owner = this;
-  calculateMouseMoveInfo->setValue( false );
-  mouseSensor->leftButton->routeNoEvent( calculateMouseMoveInfo );
-  mouseSensor->motion->routeNoEvent( calculateMouseMoveInfo );
-  mouseSensor->scrollUp->routeNoEvent( calculateMouseMoveInfo );
-  mouseSensor->scrollDown->routeNoEvent( calculateMouseMoveInfo );
-  calculateMouseMoveInfo->route( shouldGetInfo );
+MouseNavigation::MouseNavigation( H3DNavigation * h3d_navigation ) :
+  H3DNavigationDevices( h3d_navigation ),
+  left_button( false ),
+  enabled( true ) {
 }
 
 void MouseNavigation::resetAll() {
   H3DNavigationDevices::resetAll();
-  calculateMouseMoveInfo->setValue( false );
+  shouldGetInfo->setValue( false );
 }
 
 void MouseNavigation::disableDevice() {
-  mouseSensor->enabled->setValue( false );
+  enabled = false;
 }
 
 void MouseNavigation::enableDevice() {
-  mouseSensor->enabled->setValue( true );
+  enabled = true;
 }
 
-void MouseNavigation::CalculateMouseMoveInfo::update( ) {
-  bool button_pressed = static_cast< SFBool * >(routes_in[0])->getValue();
-  Vec2f motion = static_cast< SFVec2f * >(routes_in[1])->getValue();
-  string nav_type = the_owner->getNavType();
-
-  the_owner->use_center = false;
-  if( event.ptr == routes_in[0] ) {
+void MouseNavigation::leftButtonUpdate( bool _left_button ) {
+  if( enabled ) {
     if( nav_type == "LOOKAT" ) {
-      if( button_pressed ) {
-         Vec2f temp_pos = the_owner->mouseSensor->position->getValue();
-         the_owner->move_dir = Vec3f( temp_pos.x, temp_pos.y, 0 );
-         the_owner->rel_rot = Rotation();
-         the_owner->center_of_rot = Vec3f();
-         value = true;
+      if( _left_button ) {
+        move_dir = Vec3f( mouse_pos.x, mouse_pos.y, 0 );
+        rel_rot = Rotation();
+        center_of_rot = Vec3f();
+        shouldGetInfo->setValue( true );
       }
     }
     else {
-      the_owner->move_dir = Vec3f();
-      the_owner->rel_rot = Rotation();
-      the_owner->center_of_rot = Vec3f();
-      value = false;
+      move_dir = Vec3f();
+      rel_rot = Rotation();
+      center_of_rot = Vec3f();
+      shouldGetInfo->setValue( false );
     }
-  } else if( event.ptr == routes_in[2] ) {
-    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
-      the_owner->move_dir += Vec3f( 0, 0, -2 );
-      the_owner->zoom = true;
-      value = true;
-    }
-  } else if( event.ptr == routes_in[3] ) {
-    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
-      the_owner->move_dir += Vec3f( 0, 0, 2 );
-      the_owner->zoom = true;
-      value = true;
-    }
-  } else if( button_pressed ) {
-    Vec2f perp = Vec2f( -motion.y, -motion.x );
-    perp.normalize();
-    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
-      the_owner->rel_rot *=
-        Rotation( perp.x, perp.y, 0, motion.length() * 0.01f );
-      the_owner->center_of_rot = Vec3f();
-    }
-    else if( nav_type == "WALK" ) {
-      H3DFloat abs_x = H3DAbs( motion.x );
-      if( abs_x > Constants::f_epsilon ) {
-        the_owner->rel_rot *=
-          Rotation( 0, -motion.x / abs_x, 0, abs_x * 0.01f );
+  }
+  left_button = _left_button;
+}
+
+void MouseNavigation::motionUpdate( int x, int y ) {
+  if( enabled ) {
+    if( left_button ) {
+      Vec2f motion( x - mouse_pos.x, y - mouse_pos.y );
+      if( motion * motion > Constants::f_epsilon ) {
+        Vec2f perp = Vec2f( -motion.y, -motion.x );
+        perp.normalize();
+        if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
+          rel_rot *=
+            Rotation( perp.x, perp.y, 0, motion.length() * 0.01f );
+          center_of_rot = Vec3f();
+        }
+        else if( nav_type == "WALK" ) {
+          H3DFloat abs_x = H3DAbs( motion.x );
+          if( abs_x > Constants::f_epsilon ) {
+            rel_rot *= Rotation( 0, -motion.x / abs_x, 0, abs_x * 0.01f );
+          }
+          else
+            rel_rot *= Rotation();
+          move_dir = Vec3f();
+          center_of_rot = Vec3f();
+        }
+        else if( nav_type == "FLY" ) {
+          rel_rot *= Rotation( perp.x, perp.y, 0, motion.length() * 0.01f );
+          move_dir = Vec3f();
+          center_of_rot = Vec3f();
+        }
+        else {
+          rel_rot = Rotation();
+          move_dir = Vec3f();
+          center_of_rot = Vec3f();
+        }
+        shouldGetInfo->setValue( true );
       }
-      else
-        the_owner->rel_rot *= Rotation();
-      the_owner->move_dir = Vec3f();
-      the_owner->center_of_rot = Vec3f();
+    } else {
+      if( nav_type != "LOOKAT" ) {
+        move_dir = Vec3f();
+        rel_rot = Rotation();
+        center_of_rot = Vec3f();
+        shouldGetInfo->setValue( false );
+        use_center = false;
+      }
     }
-    else if( nav_type == "FLY" ) {
-      the_owner->rel_rot *=
-        Rotation( perp.x, perp.y, 0, motion.length() * 0.01f );
-      the_owner->move_dir = Vec3f();
-      the_owner->center_of_rot = Vec3f();
-    }
-    else {
-      the_owner->rel_rot = Rotation();
-      the_owner->move_dir = Vec3f();
-      the_owner->center_of_rot = Vec3f();
-    }
-    value = true;
-  } else {
-    if( nav_type != "LOOKAT" ) {
-      the_owner->move_dir = Vec3f();
-      the_owner->rel_rot = Rotation();
-      the_owner->center_of_rot = Vec3f();
-      value = false;
-      the_owner->use_center = false;
-    }
+  }
+  mouse_pos = Vec2f( (H3DFloat)x, (H3DFloat)y );
+}
+
+void MouseNavigation::scrollWheelUpdate( bool up ) {
+  if( enabled && ( nav_type == "EXAMINE" || nav_type == "ANY" ) ) {
+    if( up ) move_dir += Vec3f( 0, 0, -2 );
+    else move_dir += Vec3f( 0, 0, 2 );
+    zoom = true;
+    shouldGetInfo->setValue( true );
   }
 }
 
-KeyboardNavigation::KeyboardNavigation() :
-  calculateKeyboardMoveInfo( new CalculateKeyboardMoveInfo ),
-  keySensor( new KeySensor() ) {
-
-  calculateKeyboardMoveInfo->the_owner = this;
-  calculateKeyboardMoveInfo->setValue( false );
-  keySensor->actionKeyPress->route( calculateKeyboardMoveInfo );
-  keySensor->actionKeyRelease->route( calculateKeyboardMoveInfo );
-  calculateKeyboardMoveInfo->route( shouldGetInfo );
+KeyboardNavigation::KeyboardNavigation( H3DNavigation * h3d_navigation ) :
+  H3DNavigationDevices( h3d_navigation ) {
+  upPressed = downPressed = leftPressed = rightPressed = false;
 }
 
 void KeyboardNavigation::resetAll() {
+  shouldGetInfo->setValue( false );
 }
 
-void KeyboardNavigation::CalculateKeyboardMoveInfo::update( ) {
-  if( event.ptr == routes_in[0] ) {
-    int key = static_cast< SFInt32 * >(routes_in[0])->getValue();
+void KeyboardNavigation::handleKeyAction( int key, bool pressed ) {
+  if( pressed ) {
     switch( key ) {
       case KeySensor::UP: {
         upPressed = true;
@@ -187,9 +175,7 @@ void KeyboardNavigation::CalculateKeyboardMoveInfo::update( ) {
       }
       default: { }
     }
-  }
-  else if( event.ptr == routes_in[1] ) {
-    int key = static_cast< SFInt32 * >(routes_in[1])->getValue();
+  } else {
     switch( key ) {
       case KeySensor::UP: {
         upPressed = false;
@@ -210,10 +196,11 @@ void KeyboardNavigation::CalculateKeyboardMoveInfo::update( ) {
       default: { }
     }
   }
+
   Vec3f temp_move_dir;
   Rotation temp_rel_rot;
   bool temp_value = false;
-  string nav_type = the_owner->getNavType();
+  string nav_type = getNavType();
   if( nav_type == "WALK" || nav_type == "FLY" ) {
     if( upPressed ) {
       temp_move_dir += Vec3f( 0, 0, -1 );
@@ -258,13 +245,15 @@ void KeyboardNavigation::CalculateKeyboardMoveInfo::update( ) {
       temp_value = true;
     }
   }
-  the_owner->move_dir = temp_move_dir;
-  the_owner->rel_rot = temp_rel_rot;
-  the_owner->center_of_rot = Vec3f();
-  value = temp_value;
+  move_dir = temp_move_dir;
+  rel_rot = temp_rel_rot;
+  center_of_rot = Vec3f();
+  shouldGetInfo->setValue( temp_value );
 }
 
-HapticDeviceNavigation::HapticDeviceNavigation() :
+HapticDeviceNavigation::HapticDeviceNavigation(
+  H3DNavigation * h3d_navigation ) :
+  H3DNavigationDevices( h3d_navigation ),
   calculateHapticDeviceMoveInfo( new CalculateHapticDeviceMoveInfo ) {
 
   calculateHapticDeviceMoveInfo->the_owner = this;
@@ -401,7 +390,8 @@ Vec3f HapticDeviceNavigation::getCenterOfRot() {
   } else return Vec3f();
 }
 
-SWSNavigation::SWSNavigation() :
+SWSNavigation::SWSNavigation( H3DNavigation * h3d_navigation ) :
+  H3DNavigationDevices( h3d_navigation ),
   calculateSWSMoveInfo( new CalculateSWSMoveInfo ),
   sws( new SpaceWareSensor ) {
   calculateSWSMoveInfo->the_owner = this;

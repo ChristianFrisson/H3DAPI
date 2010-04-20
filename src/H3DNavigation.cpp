@@ -35,15 +35,18 @@
 
 using namespace H3D;
 
-H3DNavigation * H3DNavigation::instance = 0;
-AutoRef< X3DViewpointNode > H3DNavigation::old_vp( 0 );
+list< H3DNavigation * > H3DNavigation::h3d_navigations;
 bool H3DNavigation::force_jump = false;
 
-H3DNavigation::H3DNavigation() : mouse_nav( new MouseNavigation() ),
-                                 keyboard_nav( new KeyboardNavigation() ),
-                                 haptic_device_nav( 0 ),
-                                 sws_navigation( 0 ),
-                                 linear_interpolate( false ) {
+H3DNavigation::H3DNavigation() : haptic_device_nav( NULL ),
+                                 sws_navigation( NULL ),
+                                 linear_interpolate( false ),
+                                 old_vp( NULL ),
+                                 last_time( 0 ) {
+  mouse_nav.reset( new MouseNavigation( this ) );
+  keyboard_nav.reset( new KeyboardNavigation( this ) );
+
+  h3d_navigations.push_back( this );
 }
 
 void H3DNavigation::doNavigation(
@@ -52,35 +55,7 @@ void H3DNavigation::doNavigation(
                                 const vector< H3DFloat > &avatar_size, 
                                 H3DFloat speed,
                                 const vector< string > &transition_type,
-                   H3DTime transition_time ) {
-  if( instance ) {
-    instance->navigate( navigation_type, vp, topNode,
-      detect_collision, avatar_size, speed, transition_type,
-                   transition_time );
-  }
-  else {
-    instance = new H3DNavigation();
-    instance->last_time = Scene::time->getValue();
-    instance->navigate( navigation_type, vp, topNode,
-      detect_collision, avatar_size, speed, transition_type,
-                   transition_time );
-  }
-}
-
-void H3DNavigation::destroy() {
-  if( instance )
-  {
-    delete instance;
-    instance = 0;
-  }
-}
-
-void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
-                              X3DChildNode *topNode, bool detect_collision, 
-                              const vector< H3DFloat > &avatar_size, 
-                              H3DFloat speed,
-                              const vector< string > &transition_type,
-                   H3DTime transition_time ) {
+                                H3DTime transition_time ) {
   Vec3f vp_pos = vp->position->getValue();
   Vec3f vp_full_pos = vp_pos + vp->relPos->getValue();
   Rotation vp_orientation = vp->orientation->getValue();
@@ -170,7 +145,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
 
   if( navigation_type == "EXAMINE" || navigation_type == "ANY" ) {
     H3DNavigationDevices::MoveInfo move_info;
-    if( H3DNavigationDevices::getMoveInfo( move_info ) ) {
+    if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
       if( move_info.zoom ) {
         Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
         if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
@@ -241,7 +216,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
         temp_avatar_size[i] *= scaling.x;
       }
       H3DNavigationDevices::MoveInfo move_info;
-      if( H3DNavigationDevices::getMoveInfo( move_info ) ) {
+      if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
         vp->rotateAroundSelf( move_info.rotation_sum );
         vp->translate( move_info.translation_sum * speed *
                         delta_time * scaling.x,
@@ -258,7 +233,7 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
     }
   } else if( navigation_type == "LOOKAT" ) {
     H3DNavigationDevices::MoveInfo move_info;
-    if( H3DNavigationDevices::getMoveInfo( move_info ) ) {
+    if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
 
       // TODO: maybe change this to allow for other devices to specify what
       // to look at ( for example by supply a point and direction ).
@@ -373,36 +348,36 @@ void H3DNavigation::navigate( string navigation_type, X3DViewpointNode * vp,
 
   old_vp_pos = vp_full_pos;
   old_vp_orientation = vp_full_orientation;
-  H3DNavigationDevices::setNavTypeForAll( navigation_type );
+  H3DNavigationDevices::setNavTypeForAll( navigation_type, this );
 }
 
 void H3DNavigation::disableDevice( int device ) {
-  if( instance )
-  {
+  for( list< H3DNavigation * >::iterator i = h3d_navigations.begin();
+       i != h3d_navigations.end(); i++ ) {
     switch( device ) {
       case ALL: {
-        if( instance->mouse_nav.get() )
-          instance->mouse_nav->disableDevice();
-        instance->keyboard_nav.reset(0);
-        instance->haptic_device_nav.reset(0);
-        instance->sws_navigation.reset( 0 );
+        if( (*i)->mouse_nav.get() )
+          (*i)->mouse_nav->disableDevice();
+        (*i)->keyboard_nav.reset( NULL );
+        (*i)->haptic_device_nav.reset( NULL );
+        (*i)->sws_navigation.reset( NULL );
         break;
       }
       case MOUSE: {
-        if( instance->mouse_nav.get() )
-          instance->mouse_nav->disableDevice();
+        if( (*i)->mouse_nav.get() )
+          (*i)->mouse_nav->disableDevice();
         break;
       }
       case KEYBOARD: {
-        instance->keyboard_nav.reset( 0 );
+        (*i)->keyboard_nav.reset( NULL );
         break;
       }
       case HAPTICSDEVICE: {
-        instance->haptic_device_nav.reset( 0 );
+        (*i)->haptic_device_nav.reset( NULL );
         break;
       }
       case SWS: {
-        instance->sws_navigation.reset( 0 );
+        (*i)->sws_navigation.reset( NULL );
         break;
       }
       default: {}
@@ -411,50 +386,46 @@ void H3DNavigation::disableDevice( int device ) {
 }
 
 void H3DNavigation::enableDevice( int device ) {
-  if( !instance ) {
-    instance = new H3DNavigation();
-    instance->last_time = Scene::time->getValue();
-  }
-  if( instance )
-  {
+  for( list< H3DNavigation * >::iterator i = h3d_navigations.begin();
+       i != h3d_navigations.end(); i++ ) {
     switch( device ) {
       case ALL: {
-        if( instance->mouse_nav.get() ) {
-          instance->mouse_nav->enableDevice();
+        if( (*i)->mouse_nav.get() ) {
+          (*i)->mouse_nav->enableDevice();
         }
         else {
-          instance->mouse_nav.reset( new MouseNavigation() );
+          (*i)->mouse_nav.reset( new MouseNavigation( (*i) ) );
         }
-        if( !instance->keyboard_nav.get() )
-          instance->keyboard_nav.reset( new KeyboardNavigation() );
-        if( !instance->haptic_device_nav.get() )
-          instance->haptic_device_nav.reset( new HapticDeviceNavigation() );
-        if( !instance->sws_navigation.get() )
-          instance->sws_navigation.reset( new SWSNavigation() );
+        if( !(*i)->keyboard_nav.get() )
+          (*i)->keyboard_nav.reset( new KeyboardNavigation( (*i) ) );
+        if( !(*i)->haptic_device_nav.get() )
+          (*i)->haptic_device_nav.reset( new HapticDeviceNavigation( (*i) ) );
+        if( !(*i)->sws_navigation.get() )
+          (*i)->sws_navigation.reset( new SWSNavigation( (*i) ) );
         break;
       }
       case MOUSE: {
-        if( instance->mouse_nav.get() ) {
-          instance->mouse_nav->enableDevice();
+        if( (*i)->mouse_nav.get() ) {
+          (*i)->mouse_nav->enableDevice();
         }
         else {
-          instance->mouse_nav.reset( new MouseNavigation() );
+          (*i)->mouse_nav.reset( new MouseNavigation( (*i) ) );
         }
         break;
       }
       case KEYBOARD: {
-        if( !instance->keyboard_nav.get() )
-          instance->keyboard_nav.reset( new KeyboardNavigation() );
+        if( !(*i)->keyboard_nav.get() )
+          (*i)->keyboard_nav.reset( new KeyboardNavigation( (*i) ) );
         break;
       }
       case HAPTICSDEVICE: {
-        if( !instance->haptic_device_nav.get() )
-          instance->haptic_device_nav.reset( new HapticDeviceNavigation() );
+        if( !(*i)->haptic_device_nav.get() )
+          (*i)->haptic_device_nav.reset( new HapticDeviceNavigation( (*i) ) );
         break;
       }
       case SWS: {
-        if( !instance->sws_navigation.get() )
-          instance->sws_navigation.reset( new SWSNavigation() );
+        if( !(*i)->sws_navigation.get() )
+          (*i)->sws_navigation.reset( new SWSNavigation( (*i) ) );
         break;
       }
       default: {}
@@ -463,39 +434,39 @@ void H3DNavigation::enableDevice( int device ) {
 }
 
 bool H3DNavigation::isEnabled( int device ) {
-  if( instance )
-  {
+  for( list< H3DNavigation * >::iterator i = h3d_navigations.begin();
+       i != h3d_navigations.end(); i++ ) {
     switch( device ) {
       case ALL: {
-        if( !instance->mouse_nav.get() || !instance->mouse_nav->isEnabled() ) {
+        if( !(*i)->mouse_nav.get() || !(*i)->mouse_nav->isEnabled() ) {
            return false;
         }
-        if( !instance->keyboard_nav.get() )
+        if( !(*i)->keyboard_nav.get() )
           return false;
-        if( !instance->haptic_device_nav.get() )
+        if( !(*i)->haptic_device_nav.get() )
           return false;
-        if( !instance->sws_navigation.get() )
+        if( !(*i)->sws_navigation.get() )
           return false;
         return true;
       }
       case MOUSE: {
-        if( !instance->mouse_nav.get() || !instance->mouse_nav->isEnabled() ) {
+        if( !(*i)->mouse_nav.get() || !(*i)->mouse_nav->isEnabled() ) {
            return false;
         }
         return true;
       }
       case KEYBOARD: {
-        if( instance->keyboard_nav.get() )
+        if( (*i)->keyboard_nav.get() )
           return true;
         return false;
       }
       case HAPTICSDEVICE: {
-        if( instance->haptic_device_nav.get() )
+        if( (*i)->haptic_device_nav.get() )
           return true;
         return false;
       }
       case SWS: {
-        if( instance->sws_navigation.get() )
+        if( (*i)->sws_navigation.get() )
           return true;
         return false;
       }
@@ -506,11 +477,16 @@ bool H3DNavigation::isEnabled( int device ) {
 }
 
 X3DViewpointNode *
-H3DNavigation::viewpointToUse( X3DViewpointNode *potential_vp ) {
-  if( old_vp.get() && old_vp.get() != potential_vp ) {
-     return old_vp.get();
+H3DNavigation::viewpointToUse( X3DViewpointNode *potential_vp,
+                               int nav_index ) {
+  if( nav_index >= 0 && nav_index < (int)h3d_navigations.size() ) {
+    list< H3DNavigation * >::iterator i = h3d_navigations.begin();
+    for( int j = 0; j < nav_index; j++ ) {
+      i++;
+    }
+    return (*i)->viewpointToUse( potential_vp );
   }
-  return potential_vp;
+  return NULL;
 }
 
 string H3DNavigation::getTransitionType(
