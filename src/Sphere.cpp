@@ -221,7 +221,7 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
                 ti.getAccForwardMatrix(),
                 new HAPI::Collision::Sphere( Vec3f( 0, 0, 0 ),
                                              radius->getValue() ),
-                ti.getCurrentSurface()->getSurface(),
+                ti.getCurrentSurface()->getSurface(i),
                 touchable_face,
                 this,
                 -1,

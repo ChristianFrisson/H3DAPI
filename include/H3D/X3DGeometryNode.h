@@ -224,7 +224,8 @@ namespace H3D {
     /// the X3DGeometryNode. Which type depents on possible 
     /// OpenHapticsOptions nodes in the options field and
     /// the default settings in OpenHapticsSettings bindable node.
-    HAPI::HAPIHapticShape *getOpenGLHapticShape( H3DSurfaceNode *_surface,
+    HAPI::HAPIHapticShape *getOpenGLHapticShape( unsigned int hd_index,
+                                                 H3DSurfaceNode *_surface,
                                                  const Matrix4f &_transform,
                                                  int _nr_vertices = -1 );
 #endif

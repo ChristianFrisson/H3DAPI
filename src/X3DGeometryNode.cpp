@@ -140,6 +140,7 @@ X3DGeometryNode::~X3DGeometryNode() {
 
 #ifdef HAVE_OPENHAPTICS
 HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
+                                                    unsigned int hd_index,
                                                     H3DSurfaceNode *_surface,
                                                     const Matrix4f &_transform,
                                                     HLint _nr_vertices ) {
@@ -202,7 +203,7 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
     ref();
     return new HAPI::HLDepthBufferShape( this,
                                       _transform,
-                                      _surface->getSurface(),
+                                      _surface->getSurface( hd_index ),
                                       touchable_face,
                                       camera_view,
                                       adaptive_viewport,
@@ -215,7 +216,7 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
     ref();
     return new HAPI::HLFeedbackShape( this,
                                       _transform,
-                                      _surface->getSurface(),
+                                      _surface->getSurface( hd_index ),
                                       touchable_face,
                                       camera_view,
                                       adaptive_viewport,
@@ -387,7 +388,8 @@ void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
 
       if( tmp_force_full_oh ) {
 #ifdef HAVE_OPENHAPTICS
-        ti.addHapticShape( i, getOpenGLHapticShape( ti.getCurrentSurface(),
+        ti.addHapticShape( i, getOpenGLHapticShape( i,
+                                                    ti.getCurrentSurface(),
                                                     ti.getAccForwardMatrix(),
                                                     nrVertices() ) );
 #endif
@@ -533,7 +535,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     HAPI::HapticTriangleSet * tri_set = 
       new HAPI::HapticTriangleSet(  ti.getAccForwardMatrix(),
                                     tris ,
-                                    ti.getCurrentSurface()->getSurface(),
+                                    ti.getCurrentSurface()->getSurface( hd_index ),
                                     HAPI::HapticTriangleSet::NOT_CONVEX,
                                     touchable_face,
                                     this,
@@ -585,7 +587,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     HAPI::HapticLineSet * lin_set = 
       new HAPI::HapticLineSet( ti.getAccForwardMatrix(),
                                lines,
-                               ti.getCurrentSurface()->getSurface(),
+                               ti.getCurrentSurface()->getSurface( hd_index ),
                                touchable_face,
                                this,
                                -1,
@@ -636,7 +638,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     HAPI::HapticPointSet * pt_set = 
       new HAPI::HapticPointSet(  ti.getAccForwardMatrix(),
                                  points ,
-                                 ti.getCurrentSurface()->getSurface(),
+                                 ti.getCurrentSurface()->getSurface( hd_index ),
                                  touchable_face,
                                  this,
                                  -1,
