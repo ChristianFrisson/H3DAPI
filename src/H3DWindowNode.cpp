@@ -86,6 +86,7 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, viewpoint, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, manualCursorControl, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, cursorType, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, navigationInfo, INPUT_OUTPUT );
 }
 
 bool H3DWindowNode::GLEW_init = false;
@@ -101,7 +102,8 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFInt32     > _posX,
                    Inst< SFInt32     > _posY,
                    Inst< SFBool      > _manualCursorControl,
-                   Inst< SFString    > _cursorType ) :
+                   Inst< SFString    > _cursorType,
+                   Inst< SFNavigationInfo > _navigationInfo ) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -115,6 +117,7 @@ H3DWindowNode::H3DWindowNode(
   viewpoint( _viewpoint ),
   manualCursorControl( _manualCursorControl ),
   cursorType( _cursorType ),
+  navigationInfo( _navigationInfo ),
   multi_pass_transparency( false ),
   last_render_child( NULL ),
   window_id( 0 ),
@@ -127,7 +130,7 @@ H3DWindowNode::H3DWindowNode(
   current_cursor( "DEFAULT" ),
   render_already_run_once( false ),
   h3d_navigation( new H3DNavigation ) {
-  
+
   type_name = "H3DWindowNode";
   database.initFields( this );
 
@@ -646,7 +649,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   }
 
   // enable headlight
-  NavigationInfo *nav_info = NavigationInfo::getActive();
+  NavigationInfo *nav_info = navigationInfo->getValue();
+  if( !nav_info ) nav_info = NavigationInfo::getActive();
   GLint headlight_index = -1;
   if( !nav_info || nav_info->headlight->getValue() ) {
     glPushAttrib( GL_LIGHTING_BIT );

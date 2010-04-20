@@ -34,6 +34,7 @@
 #include <H3D/SFInt32.h>
 #include <H3D/DefaultAppearance.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/NavigationInfo.h>
 
 namespace H3D {
 
@@ -51,8 +52,9 @@ namespace H3D {
 
   class H3DAPI_API H3DWindowNode : public Node {
   public:
-    
+
     typedef TypedSFNode< X3DViewpointNode > SFViewpoint;
+    typedef TypedSFNode< NavigationInfo > SFNavigationInfo;
 
     /// The mode for rendering specified as a string.
     class H3DAPI_API RenderMode: public SFString {
@@ -152,12 +154,13 @@ namespace H3D {
                    Inst< SFInt32     > _height     = 0,
                    Inst< SFBool      > _fullscreen = 0,
                    Inst< SFBool      > _mirrored   = 0,
-                   Inst< RenderMode  > _renderMode = 0, 
-                   Inst< SFViewpoint > _viewpoint  = 0, 
+                   Inst< RenderMode  > _renderMode = 0,
+                   Inst< SFViewpoint > _viewpoint  = 0,
                    Inst< SFInt32     > _posX       = 0,
                    Inst< SFInt32     > _posY       = 0,
                    Inst< SFBool      > _manualCursorControl = 0,
-                   Inst< SFString    > _cursorType = 0 );
+                   Inst< SFString    > _cursorType = 0,
+                   Inst< SFNavigationInfo > _navigationInfo = 0 );
 
     /// Destructor.
     ~H3DWindowNode();
@@ -293,7 +296,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> "MONO" \n
     auto_ptr< RenderMode >  renderMode;
-    
+
     /// If the viewpoint field is specified, that viewpoint is used 
     /// by the rendering in H3DWindowNode instead of the stack top of 
     /// the Viewpoint bindable stack. This is so that multiple windows
@@ -325,8 +328,17 @@ namespace H3D {
     /// <b>Valid values:</b> Different depending on implementation.
     auto_ptr< SFString >  cursorType;
 
+    /// If the navigationInfo field is specified, that NavigationInfo is used 
+    /// for rendering in H3DWindowNode instead of the stack top of 
+    /// the NavigationInfo bindable stack. This is so that multiple windows
+    /// with different NavigationInfos can be specified.
+    ///  
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> NULL \n
+    auto_ptr< SFNavigationInfo > navigationInfo;
+
     static set< H3DWindowNode* > windows;
-    
+
     /// This function shares the rendering context between this H3DWindowNode
     /// and the one given as an argument. This means that the two windows
     /// after the call can share display lists and textures. When several
