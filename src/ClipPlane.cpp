@@ -45,6 +45,7 @@ namespace ClipPlaneInternals {
   FIELDDB_ELEMENT( ClipPlane, plane, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ClipPlane, clipGraphics, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ClipPlane, clipHaptics, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ClipPlane, clipHapticsDevice, INPUT_OUTPUT );
 }
 
 int ClipPlane::nr_active_clip_planes = 0;
@@ -54,12 +55,14 @@ ClipPlane::ClipPlane( Inst< SFNode  >  _metadata,
                       Inst< SFBool  >  _enabled,
                       Inst< SFVec4d >  _plane,
                       Inst< SFBool  >  _clipHaptics,
-                      Inst< SFBool  >  _clipGraphics ) :
+                      Inst< SFBool  >  _clipGraphics,
+		      Inst< MFBool  >  _clipHapticsDevice) :
   X3DChildNode( _metadata ),
   enabled( _enabled ),
   plane( _plane ),
   clipHaptics( _clipHaptics ),
-  clipGraphics( _clipGraphics ) {
+  clipGraphics( _clipGraphics ),
+  clipHapticsDevice( _clipHapticsDevice ) {
 
   type_name = "ClipPlane";
   database.initFields( this );
@@ -72,29 +75,51 @@ ClipPlane::ClipPlane( Inst< SFNode  >  _metadata,
   clipGraphics->setValue( true );
 
   plane_index = -1;
-  haptics_enabled = true;
 
   clipGraphics->route( displayList );
   plane->route( displayList );
 }
 
 void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
-  haptics_enabled = ti.hapticsEnabled();
-  if( clipHaptics->getValue() && ti.getHapticsDevices().size() > 0 ) {
-    const Vec4d &v = plane->getValue();
-    H3DHapticsDevice *hd = ti.getHapticsDevice( 0 );
-    const Vec3f &pos = ti.getAccInverseMatrix() 
-      * hd->trackerPosition->getValue();
-    if( pos.x * v.x + pos.y * v.y + pos.z * v.z + v.w < 0 )
-      ti.disableHaptics();
+  haptics_enabled = ti.getHapticsEnabled();
+  const vector< bool > &clip_per_device = clipHapticsDevice->getValue();
+  const Vec4d &v = plane->getValue();
+  
+  if( clip_per_device.empty() ) {
+    // no per device values, so use the clipHaptics field to decide
+    // if clipping should be done for all devices or not.
+    if( clipHaptics->getValue()  ) {
+      const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
+      for( unsigned int i = 0; i < devices.size(); i++ ) {
+	H3DHapticsDevice *hd = ti.getHapticsDevice( i );
+	const Vec3f &pos = ti.getAccInverseMatrix() 
+	  * hd->trackerPosition->getValue();
+	if( pos.x * v.x + pos.y * v.y + pos.z * v.z + v.w < 0 )
+	  ti.disableHaptics(i);
+      }
+    }
+  } else {
+    // we have per device values, so use them to determine if clipping
+    // should be done.
+    const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
+    for( unsigned int i = 0; i < devices.size(); i++ ) {
+      unsigned int index =  
+	i < clip_per_device.size() ? i : clip_per_device.size() - 1;
+
+      if( clip_per_device[ index ] ) {
+	H3DHapticsDevice *hd = ti.getHapticsDevice( i );
+	const Vec3f &pos = ti.getAccInverseMatrix() 
+	  * hd->trackerPosition->getValue();
+	if( pos.x * v.x + pos.y * v.y + pos.z * v.z + v.w < 0 )
+	  ti.disableHaptics(i);
+      }
+    }
+
   }
 }
 
 void ClipPlane::disableHapticsState( TraverseInfo &ti ) {
-  if( haptics_enabled )
-    ti.enableHaptics();
-  else
-    ti.disableHaptics();
+  ti.setHapticsEnabled( haptics_enabled );
 }
 
 void ClipPlane::enableGraphicsState() { 

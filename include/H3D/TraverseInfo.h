@@ -72,7 +72,6 @@ namespace H3D {
       haptics_devices( _haptics_devices ),
       haptic_shapes( _haptics_devices.size() ),
       haptic_effects( _haptics_devices.size() ),
-      haptics_enabled( true ),
       graphics_enabled( true ),
       multi_pass_transparency( false ) {
       
@@ -198,7 +197,7 @@ namespace H3D {
     /// \param effect The HAPIForceEffect to render.
     ///
     void addForceEffectToAll( HAPI::HAPIForceEffect *effect );
-		
+                
     /// Get the HAPIForceEffects that has been added for the H3DHapticsDevice
     /// with the given device_index.
     ///
@@ -244,14 +243,26 @@ namespace H3D {
 
     /// When called, future calls to addHapticShapes() and addForceEffects() 
     /// functions will not add any shapes until enableHaptics() is called.
-    inline void disableHaptics() {
-      haptics_enabled = false;
+    inline void disableHaptics( unsigned int i = -1 ) {
+      if( i == -1 ) {
+        for( unsigned int j = 0; j < haptics_enabled.size(); j++ ) {
+          haptics_enabled[j] = false;
+        }
+      } else {
+        haptics_enabled[i] = false;
+      }
     }
 
     /// When called, the addHapticShapes() and addForceEffects() functions
     /// calls will add HapticShapes to render. Haptics is enabled by default.
-    inline void enableHaptics() {
-      haptics_enabled = true;
+    inline void enableHaptics( unsigned int i = -1 ) {
+      if( i == -1 ) {
+        for( unsigned int j = 0; j < haptics_enabled.size(); j++ ) {
+          haptics_enabled[j] = true;
+        }
+      } else {
+        haptics_enabled[i] = true;
+      }
     }
 
     /// Indicate that this node will not be part of the graphics 
@@ -285,15 +296,53 @@ namespace H3D {
       return multi_pass_transparency;
     }
 
-    /// Check whether haptics is enabled or not. If disabled the
+    /// Check whether haptics is enabled for a device index 
+    /// or not. If disabled the
     /// addHapticsShapes() functions will have no effect. Geometry
     /// nodes that add shapes should check that haptics is enabled 
     /// before doing any calculations deciding what to render. This is
     /// because any HapticShape created will not be rendered anyway
     /// so no computer resources should be used creating them.
-    /// 
-    inline bool hapticsEnabled() {
+    inline bool hapticsEnabled( unsigned int i = 0 ) {
+      if( i < haptics_enabled.size() ) {
+        return haptics_enabled[i];
+      } else {
+        return false;
+      }
+    }
+
+    /// Returns true if haptics is enabled for all haptics devices.
+    inline bool hapticsEnabledForAll() {
+      for( unsigned int i = 0; i < haptics_enabled.size(); i++ ) {
+        if( !haptics_enabled[i] ) return false;
+      }
+      return true;
+    }
+
+    /// Returns true if haptics is disabled for all haptics devices.
+    inline bool hapticsDisabledForAll() {
+      for( unsigned int i = 0; i < haptics_enabled.size(); i++ ) {
+        if( haptics_enabled[i] ) return false;
+      }
+      return true;
+    }
+
+    /// Get a vector the same size as the haptics device vector
+    /// indicating if haptics is disabled for that device or not
+    inline const vector< bool >&getHapticsEnabled() {
       return haptics_enabled;
+    }
+
+    /// Set a vector indicating for each haptics device if haptics
+    /// is disabled or enabled. The vector must be the same size
+    /// as the number of haptics devices available. Returns -1 on
+    /// error, 0 on success.
+    inline int setHapticsEnabled( const vector< bool > &enabled) {
+      if( enabled.size() == haptics_enabled.size() ) return -1;
+      else {
+        haptics_enabled = enabled;
+        return 0;
+      }
     }
 
     /// Check whether graphics is enabled or not. 
@@ -309,7 +358,7 @@ namespace H3D {
     /// \param inverse The inverse of forward.
     ///
     inline void pushMatrices( const Matrix4f &forward,
-		       const Matrix4f &inverse ) {
+                              const Matrix4f &inverse ) {
       const TransformInfo &top = transform_stack.top();
       transform_stack.push( TransformInfo( top.acc_frw * forward,
                                            inverse * top.acc_inv ) );
@@ -395,8 +444,11 @@ namespace H3D {
     vector< H3DHapticsDevice * > haptics_devices;
     vector< vector< HapticShapeVector > > haptic_shapes;
     vector< HapticEffectVector > haptic_effects;
-    bool haptics_enabled, graphics_enabled;
+    bool graphics_enabled;
     bool multi_pass_transparency;
+    // When the global haptics_enabled is true the following vector contains
+    // per devceinformation about which devices have haptics enabled.
+    vector< bool > haptics_enabled;
 
     typedef std::map< X3DGeometryNode *, int > GeometryCountMap;
     GeometryCountMap geometry_count;

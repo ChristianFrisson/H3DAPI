@@ -65,18 +65,19 @@ PositionFunctionEffect::PositionFunctionEffect(
 }
 
 void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
-  if( ti.hapticsEnabled() ) {
-    H3DFunctionNode * x_function = xFunction->getValue();
-    H3DFunctionNode * y_function = yFunction->getValue();
-    H3DFunctionNode * z_function = zFunction->getValue();
 
-    if( x_function && x_function->nrInputValues() == 3 &&
-        y_function && y_function->nrInputValues() == 3 &&
-        z_function && z_function->nrInputValues() == 3 ) {
-      H3DInt32 nr_of_devices = (H3DInt32)ti.getHapticsDevices().size();
-      if( deviceIndices->empty() ) {
-        // Render the force on all devices.
-        for( int i = 0; i < nr_of_devices; i++ ) {
+  H3DFunctionNode * x_function = xFunction->getValue();
+  H3DFunctionNode * y_function = yFunction->getValue();
+  H3DFunctionNode * z_function = zFunction->getValue();
+  
+  if( x_function && x_function->nrInputValues() == 3 &&
+      y_function && y_function->nrInputValues() == 3 &&
+      z_function && z_function->nrInputValues() == 3 ) {
+    H3DInt32 nr_of_devices = (H3DInt32)ti.getHapticsDevices().size();
+    if( deviceIndices->empty() ) {
+      // Render the force on all devices.
+      for( int i = 0; i < nr_of_devices; i++ ) {
+        if( ti.hapticsEnabled( i ) ) {      
           HAPI::HAPIFunctionObject * x_hapi_func =
             x_function->getAsHAPIFunctionObject();
           HAPI::HAPIFunctionObject * y_hapi_func =
@@ -90,13 +91,15 @@ void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
                                                       z_hapi_func ) );
           }
         }
-      } else {
-        // Only render the force on the devices specified by the indices
-        // in the deviceIndices field.
-        const vector< H3DInt32 > &device_indices = deviceIndices->getValue();
-        for( unsigned int i = 0; i < device_indices.size(); i++ ) {
-          if( device_indices[i] < nr_of_devices ) {
-            HAPI::HAPIFunctionObject * x_hapi_func =
+      }
+    } else {
+      // Only render the force on the devices specified by the indices
+      // in the deviceIndices field.
+      const vector< H3DInt32 > &device_indices = deviceIndices->getValue();
+      for( unsigned int i = 0; i < device_indices.size(); i++ ) {
+      if( ti.hapticsEnabled( i ) ) {      
+        if( device_indices[i] < nr_of_devices ) {
+           HAPI::HAPIFunctionObject * x_hapi_func =
               x_function->getAsHAPIFunctionObject();
             HAPI::HAPIFunctionObject * y_hapi_func =
               y_function->getAsHAPIFunctionObject();
@@ -111,12 +114,12 @@ void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
           }
         }
       }
-    } else {
-      Console(3) << "Warning: One or more of the H3DFunctionNodes in node "
-                 << getName() << " is either missing or has the wrong number "
-                << "of input values to work with PositionFunctionEffect nodes."
-                 << "The number of input values to the functions should be 3."
-                 << endl;
     }
+  } else {
+    Console(3) << "Warning: One or more of the H3DFunctionNodes in node "
+               << getName() << " is either missing or has the wrong number "
+               << "of input values to work with PositionFunctionEffect nodes."
+               << "The number of input values to the functions should be 3."
+               << endl;
   }
 }

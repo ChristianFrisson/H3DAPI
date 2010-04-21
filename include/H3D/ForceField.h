@@ -49,7 +49,7 @@ namespace H3D {
 
     /// Adds a HapticForceField effect to the TraverseInfo.
     virtual void traverseSG( TraverseInfo &ti ) {
-      if( ti.hapticsEnabled() ) {
+      if( !ti.hapticsDisabledForAll() ) {
         ti.addForceEffectToAll( new HAPI::HapticForceField( 
                                  ti.getAccForwardMatrix().getRotationPart() *
                                                force->getValue() ) );

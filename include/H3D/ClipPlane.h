@@ -33,6 +33,7 @@
 #include <H3D/H3DDisplayListObject.h>
 #include <H3D/H3DRenderStateObject.h>
 #include <H3D/SFVec4d.h>
+#include <H3D/MFBool.h>
 
 namespace H3D {
 
@@ -51,7 +52,15 @@ namespace H3D {
   /// The clipHaptics field specifies if the clipping plane should clip
   /// the haptics if enabled, i.e. if the haptics device is in a position that
   /// is clipped by the plane no haptics will be rendered for
-  /// the device and the clipGraphics field specifies if the graphics should
+  /// the device. This applies to all haptics devices. For per device
+  /// control use the clipHapticsDevice field instead. If the clipHapticsDevice
+  /// field is non-empty the clipHaptics field is ignored. This allows you 
+  /// to specify the, for each device, if it should be clipped or not.
+  /// Each entry matches agains the the device with the same device index
+  /// as the index in the field. If a device with a higher device index 
+  /// than values available is specified, the last value is used. 
+  ///
+  /// The clipGraphics field specifies if the graphics should
   /// be clipped when the ClipPlane is enabled.
   /// 
   ///
@@ -72,7 +81,8 @@ namespace H3D {
                Inst< SFBool  >  _enabled          = 0,
                Inst< SFVec4d >  _plane            = 0,
                Inst< SFBool  >  _clipHaptics      = 0,
-               Inst< SFBool  >  _clipGraphics     = 0 );
+               Inst< SFBool  >  _clipGraphics     = 0,
+               Inst< MFBool  >  _clipHapticsDevice = 0 );
 
     /// Turn the clip plane on.
     virtual void enableGraphicsState();
@@ -130,13 +140,28 @@ namespace H3D {
     /// Specifies if the clipping plane should clip the haptics if
     /// enabled, i.e. if the haptics device is in a position that
     /// is clipped by the plane no haptics will be rendered for
-    /// the device.
+    /// the device. This field only has effect if clipHapticsDevice
+    /// field is empty.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> true \n
     /// 
     /// \dotfile ClipPlane_clipHaptics.dot
     auto_ptr< SFBool >  clipHaptics;
+
+    /// The clipHapticsDevice field provides per haptics device control
+    /// for clipping. This allows you to specify, for each device, if it
+    /// should be clipped or not. Each entry matches agains the the 
+    /// device with the same device index
+    /// as the index in the field. If a device with a higher device index 
+    /// than values available is specified, the last value is used. 
+    /// When the clipHapticsDevice is empty the clipHaptics field is
+    /// used to determine clipping for all devices.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// 
+    /// \dotfile ClipPlane_clipHapticsDevice.dot
+    auto_ptr< MFBool >  clipHapticsDevice;
 
     /// Specifies if the clipping plane should clip the graphics
     /// if enabled.
@@ -157,7 +182,7 @@ namespace H3D {
     /// not rendered.
     int plane_index;
     /// Was haptics enabled in the last call to enableHapticsState()?
-    bool haptics_enabled;
+    vector<bool> haptics_enabled;
     /// The maximum number of clip planes the graphics hardware supports.
     /// Set in the first call to enable().
     static GLint max_nr_clip_planes;

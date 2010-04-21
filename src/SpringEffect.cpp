@@ -90,33 +90,35 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
   if( counter < 5 ) {
     counter++;
   } else {
-    if( ti.hapticsEnabled() && !ti.getHapticsDevices().empty()) {
+    if( !ti.getHapticsDevices().empty()) {
       int device_index = deviceIndex->getValue();
-      H3DHapticsDevice *hd = ti.getHapticsDevice( device_index );
-      // the tracker position in local coordinates.
-      const Vec3f &pos = 
-        ti.getAccInverseMatrix() * 
-        hd->trackerPosition->getValue();
-      const Vec3f &spring_pos = position->getValue();
-      H3DFloat distance = ( pos - spring_pos ).length();
-      if( active->getValue() ) {
-        if( distance >= escapeDistance->getValue() ) {
-          active->setValue( false, id );
-          force->setValue( Vec3f( 0, 0, 0 ) );
-        } else {
-          haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
-          haptic_spring->setSpringConstant( springConstant->getValue() );
-          ti.addForceEffect( device_index, haptic_spring.get() );
-          Vec3f f = (Vec3f) haptic_spring->getLatestForce();
-          force->setValue( f );
-        }
-      } else {
-        if( distance <= startDistance->getValue() ) {
-          active->setValue( true, id );
-          haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
-          haptic_spring->setSpringConstant( springConstant->getValue() );
-          ti.addForceEffect( device_index, haptic_spring.get() );
-        }
+      if( ti.hapticsEnabled( device_index ) ) { 
+	H3DHapticsDevice *hd = ti.getHapticsDevice( device_index );
+	// the tracker position in local coordinates.
+	const Vec3f &pos = 
+	  ti.getAccInverseMatrix() * 
+	  hd->trackerPosition->getValue();
+	const Vec3f &spring_pos = position->getValue();
+	H3DFloat distance = ( pos - spring_pos ).length();
+	if( active->getValue() ) {
+	  if( distance >= escapeDistance->getValue() ) {
+	    active->setValue( false, id );
+	    force->setValue( Vec3f( 0, 0, 0 ) );
+	  } else {
+	    haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
+	    haptic_spring->setSpringConstant( springConstant->getValue() );
+	    ti.addForceEffect( device_index, haptic_spring.get() );
+	    Vec3f f = (Vec3f) haptic_spring->getLatestForce();
+	    force->setValue( f );
+	  }
+	} else {
+	  if( distance <= startDistance->getValue() ) {
+	    active->setValue( true, id );
+	    haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
+	    haptic_spring->setSpringConstant( springConstant->getValue() );
+	    ti.addForceEffect( device_index, haptic_spring.get() );
+	  }
+	}
       }
     }
   }

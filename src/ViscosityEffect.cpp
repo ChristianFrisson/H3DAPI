@@ -84,14 +84,14 @@ void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
   if( viscous_counter < 5 ) {
     viscous_counter++;
   } else {
-    if( ti.hapticsEnabled()  ) {
-      if( enabled->getValue() ) {
-        int device_index = deviceIndex->getValue();
+    if( enabled->getValue() ) {
+      int device_index = deviceIndex->getValue();
+      if( ti.hapticsEnabled( device_index )  ) {      
         ti.addForceEffect( device_index,
                            new HAPI::HapticViscosity(
-                             viscosity->getValue(),
-                             radius->getValue(),
-                             dampingFactor->getValue() ) );
+                                                     viscosity->getValue(),
+                                                     radius->getValue(),
+                                                     dampingFactor->getValue() ) );
       }
     }
   }

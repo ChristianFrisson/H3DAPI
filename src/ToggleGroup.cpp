@@ -41,6 +41,7 @@ H3DNodeDatabase ToggleGroup::database( "ToggleGroup",
 namespace ToggleGroupInternals {
   FIELDDB_ELEMENT( ToggleGroup, hapticsOn, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ToggleGroup, graphicsOn, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ToggleGroup, hapticsOnDevice, INPUT_OUTPUT );
 }
 
 ToggleGroup::ToggleGroup( Inst< AddChildren    > _addChildren,
@@ -51,11 +52,13 @@ ToggleGroup::ToggleGroup( Inst< AddChildren    > _addChildren,
                           Inst< SFVec3f        > _bboxCenter,
                           Inst< SFVec3f        > _bboxSize,
                           Inst< SFBool         > _hapticsOn,
-                          Inst< SFBool         > _graphicsOn ) :
+                          Inst< SFBool         > _graphicsOn,
+                          Inst< MFBool         > _hapticsOnDevice  ) :
   X3DGroupingNode( _addChildren, _removeChildren, _children,
                    _metadata, _bound, _bboxCenter, _bboxSize ),
   hapticsOn( _hapticsOn ),
-  graphicsOn( _graphicsOn ) {
+  graphicsOn( _graphicsOn ),
+  hapticsOnDevice( _hapticsOnDevice ) {
   type_name = "ToggleGroup";
   database.initFields( this );
 
@@ -73,11 +76,25 @@ void ToggleGroup::render() {
 }
 
 void ToggleGroup::traverseSG( TraverseInfo &ti ) {
-  bool haptics_was_enabled = ti.hapticsEnabled();
+  vector<bool> haptics_was_enabled = ti.getHapticsEnabled();
   bool graphics_was_enabled = ti.graphicsEnabled();
-  
-  if( haptics_was_enabled && !hapticsOn->getValue() ) {
-    ti.disableHaptics();
+  const vector<bool> haptics_on_device = hapticsOnDevice->getValue();
+
+  // We need to make sure that we do not enable haptics/graphics 
+  // if it has already been disabled by parent node.
+
+  if( haptics_on_device.empty() ) {
+    if( !hapticsOn->getValue() ) {
+      ti.disableHaptics();
+    }
+  } else {
+    for( unsigned int i = 0; i < haptics_was_enabled.size(); i++ ) {
+      if( haptics_was_enabled[i] ) {
+        unsigned int index =  
+          i < haptics_on_device.size() ? i : haptics_on_device.size() - 1;
+        if( haptics_on_device[index] ) ti.disableHaptics( i );
+      }
+    }
   }
 
   if( graphics_was_enabled && !graphicsOn->getValue() ) {
@@ -86,7 +103,8 @@ void ToggleGroup::traverseSG( TraverseInfo &ti ) {
 
   X3DGroupingNode::traverseSG( ti );
 
-  if( haptics_was_enabled ) ti.enableHaptics();
+  // reset to previous values
+  ti.setHapticsEnabled( haptics_was_enabled );
   if( graphics_was_enabled ) ti.enableGraphics();
 }
 

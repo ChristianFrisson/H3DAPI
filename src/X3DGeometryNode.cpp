@@ -358,7 +358,7 @@ void X3DGeometryNode::SFBoundTree::update() {
 void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
   X3DChildNode::traverseSG( ti );
   
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
+  if( ti.getCurrentSurface() ) {
     bool force_full_oh = false;
     // if we have an OpenHapticsOptions node, then set the OpenHaptics 
     // options in the HapticTriangleSet we just created.
@@ -378,6 +378,9 @@ void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
 
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
     for( unsigned int i = 0; i < devices.size(); i++ ) {
+      
+      if( !ti.hapticsEnabled( i ) ) continue; 
+
       bool tmp_force_full_oh = force_full_oh;
 #ifdef HAVE_OPENHAPTICS
       if( tmp_force_full_oh && 

@@ -90,15 +90,15 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
   if( magneticgeometry_counter < 5 ) {
     magneticgeometry_counter++;
   } else {
-    if( ti.hapticsEnabled()  ) {
-      if( enabled->getValue() ) {
-        const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
-        for( unsigned int i = 0; i < devices.size(); i++ ) {
+    if( enabled->getValue() ) {
+      const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
+      for( unsigned int i = 0; i < devices.size(); i++ ) {
+        if( ti.hapticsEnabled( i ) ) {
           H3DHapticsDevice *hd = devices[i];
           const Vec3f &pos = ti.getAccInverseMatrix() *
             hd->trackerPosition->getValue();
           X3DGeometryNode * the_geometry = geometry->getValue();
-
+	  
           if( the_geometry ) {
             NodeIntersectResult result;
             the_geometry->closestPoint( pos, result );

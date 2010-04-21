@@ -163,10 +163,11 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
   // using an hapticTriangleSet which is used in X3DGeometryNode::traverseSG.
   // It is at the moment implemented to not care about the openhaptics option
   // force full geometry render.
-  if( ti.hapticsEnabled() && ti.getCurrentSurface() ) {
+  if( ti.getCurrentSurface() ) {
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
 
     for( unsigned int i = 0; i < devices.size(); i++ ) {
+      if( ti.hapticsEnabled(i) ) { 
       H3DHapticsDevice *hd = devices[i];
 
       H3DHapticsRendererNode* hd_renderer = hd->hapticsRenderer->getValue();
@@ -251,6 +252,7 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
 #ifdef HAVE_CHAI3D
       }
 #endif
+      }
     }
   }
 

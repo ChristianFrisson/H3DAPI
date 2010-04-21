@@ -145,7 +145,7 @@ void X3DShapeNode::render() {
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   X3DAppearanceNode *a = appearance->getValue();
   X3DGeometryNode *g = geometry->getValue();
-  Node *hg = 0;
+  Node *hg = hapticGeometry->getValue();;
 
   if( ti.graphicsEnabled() && g && a && a->hasGeometryShadow() ) {
     // add shadow volume
@@ -163,10 +163,6 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
     } 
   }
 
-  
-
-  if( ti.hapticsEnabled() )
-    hg = hapticGeometry->getValue();
   if ( a ) {
     a->traverseSG( ti );
     if( a->isTransparent() && a->usingMultiPassTransparency() ) {
@@ -174,11 +170,16 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
       displayList->breakCache();
     }
   }
-  if( hg ) ti.disableHaptics();
-  if ( g ) g->traverseSG( ti );
   if( hg ) {
-    ti.enableHaptics();
+    // temporarily disable all haptics for the normal geometry
+    // and only allow it to be enabled for the haptic geometry. 
+    vector<bool> prev_enabled = ti.getHapticsEnabled(); 
+    ti.disableHaptics();
+    if ( g ) g->traverseSG( ti );
+    ti.setHapticsEnabled( prev_enabled );
     hg->traverseSG( ti );
+  } else {
+    if ( g ) g->traverseSG( ti );
   }
   // the surface should only be available to the geometry of the shape node
   // so we remove it when the geometry has been rendered.

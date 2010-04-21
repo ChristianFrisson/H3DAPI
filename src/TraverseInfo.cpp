@@ -37,10 +37,8 @@ using namespace H3D;
 
 void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
   shape->ref();
-  if( hapticsEnabled() ) {
-    for( vector< vector< HapticShapeVector > >::iterator i = haptic_shapes.begin();
-         i != haptic_shapes.end();
-         i++ ) {
+  for( size_t i = 0; i < haptic_shapes.size(); i++ ) {
+    if( hapticsEnabled(i) ) {
       if( shape->getShapeId() == -1 ) {
         X3DGeometryNode *geometry = 
           static_cast< X3DGeometryNode * >( shape->getUserData() );
@@ -48,7 +46,7 @@ void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
           geometry->getHapticShapeId( geometry_count[ geometry ] ));
         geometry_count[ geometry ]++;
       }
-      (*i)[current_layer].push_back( shape );
+      haptic_shapes[i][current_layer].push_back( shape );
     }
   } 
   shape->unref();
@@ -56,12 +54,9 @@ void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
 
 void TraverseInfo::addForceEffectToAll( HAPI::HAPIForceEffect *effect ) {
   effect->ref();
-  if( hapticsEnabled() ) {
-    for( vector< HapticEffectVector >::iterator i = 
-           haptic_effects.begin();
-         i != haptic_effects.end();
-         i++ ) {
-      (*i).push_back( effect );
+  for( size_t i = 0; i < haptic_effects.size(); i++ ) {
+    if( hapticsEnabled(i) ) {
+      haptic_effects[i].push_back( effect );
     }
   } 
   effect->unref();
@@ -77,7 +72,7 @@ void TraverseInfo::addForceEffect( int device_index,
                                      s.str(),
                                      H3D_FULL_LOCATION );
   }
-  if( hapticsEnabled() )
+  if( hapticsEnabled(device_index) )
     haptic_effects[device_index].push_back( effect );
   else {
     effect->ref();
@@ -95,7 +90,7 @@ void TraverseInfo::addHapticShape( int device_index,
                                      s.str(),
                                      H3D_FULL_LOCATION );
   }
-  if( hapticsEnabled() ) {
+  if( hapticsEnabled( device_index ) ) {
     if( shape->getShapeId() == -1 ) {
         X3DGeometryNode *geometry = 
           static_cast< X3DGeometryNode * >( shape->getUserData() );

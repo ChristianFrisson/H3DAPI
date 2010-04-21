@@ -126,9 +126,11 @@ void DeviceLog::initialize() {
 void DeviceLog::traverseSG( TraverseInfo &ti ) {
   // Add the instance of HAPI::DeviceLog to be rendered on the selected
   // haptics device.
-  if( ti.hapticsEnabled() && !ti.getHapticsDevices().empty()) {
+  if( !ti.getHapticsDevices().empty()) {
     H3DInt32 device_index = deviceIndex->getValue();
-    if( device_index >= 0 && (unsigned int)device_index < ti.getHapticsDevices().size() )
+    if( ti.hapticsEnabled( device_index ) && 
+	device_index >= 0 && 
+	(unsigned int)device_index < ti.getHapticsDevices().size() )
       ti.addForceEffect( device_index, log_force_effect.get() );
   }
 }
