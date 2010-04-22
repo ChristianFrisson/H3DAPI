@@ -74,8 +74,9 @@ namespace H3D {
       haptic_effects( _haptics_devices.size() ),
       graphics_enabled( true ),
       multi_pass_transparency( false ) {
-      
+
       initializeLayers( 1 );
+      haptics_enabled.resize( haptics_devices.size(), true );
 
       // put two unit matrices on the transform stack.
       transform_stack.push( TransformInfo( Matrix4f(), Matrix4f () ) );
