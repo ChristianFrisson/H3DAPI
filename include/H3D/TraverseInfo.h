@@ -339,7 +339,7 @@ namespace H3D {
     /// as the number of haptics devices available. Returns -1 on
     /// error, 0 on success.
     inline int setHapticsEnabled( const vector< bool > &enabled) {
-      if( enabled.size() == haptics_enabled.size() ) return -1;
+      if( enabled.size() != haptics_enabled.size() ) return -1;
       else {
         haptics_enabled = enabled;
         return 0;
