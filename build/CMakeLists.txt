@@ -20,6 +20,9 @@ SET( H3DAPI_LINK_FLAGS "" )
 SET( H3DAPI_LINK_FLAGS_RELEASE "" )
 SET( H3DAPI_LINK_FLAGS_DEBUG "" )
 
+# Include H3D header dir.
+INCLUDE_DIRECTORIES( ../include )
+
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
 # for packaging H3DAPI. Default is NO since most people will not use this.
 IF( NOT DEFINED GENERATE_CPACK_PROJECT )
@@ -440,8 +443,6 @@ ELSEIF( MSVC80 )
   ENDIF(CHAI3D_FOUND)
 ENDIF(NOT WIN32)
 
-# Include directories needed.
-INCLUDE_DIRECTORIES( ../include )
 
 # Extra libs to link against.
 IF(WIN32)
