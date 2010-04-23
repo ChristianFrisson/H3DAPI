@@ -33,10 +33,10 @@
 #include <H3D/MFNode.h>
 #include <H3D/SFInt32.h>
 #include <H3D/DefaultAppearance.h>
-#include <H3D/H3DNavigation.h>
 #include <H3D/NavigationInfo.h>
 
 namespace H3D {
+  class H3DNavigation;
 
   /// \ingroup X3DNodes
   /// \class H3DWindowNode
@@ -457,7 +457,7 @@ namespace H3D {
     bool render_already_run_once;
 
     // Instance to class handling navigation for this window.
-    auto_ptr< H3DNavigation > h3d_navigation;
+    H3DNavigation * h3d_navigation;
   };
 }
 

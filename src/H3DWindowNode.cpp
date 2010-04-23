@@ -56,6 +56,7 @@
 #include <H3DUtil/TimeStamp.h>
 #include <H3DUtil/Exception.h>
 #include <H3DUtil/AutoPtrVector.h>
+#include <H3D/H3DNavigation.h>
 
 #include <GL/glew.h>
 
@@ -179,7 +180,7 @@ H3DWindowNode::H3DWindowNode(
   default_collision = true;
   default_transition_type.push_back( "LINEAR" );
   default_transition_time = 1.0;
-  H3DNavigationDevices::setNavTypeForAll( default_nav, h3d_navigation.get() );
+  H3DNavigationDevices::setNavTypeForAll( default_nav, h3d_navigation );
   mouse_position[0] = 0;
   mouse_position[1] = 0;
   previous_mouse_position[0] = 0;
@@ -187,7 +188,8 @@ H3DWindowNode::H3DWindowNode(
 }
 
 H3DWindowNode::~H3DWindowNode() {
-  h3d_navigation.reset( NULL );
+  delete h3d_navigation;
+  h3d_navigation = NULL;
   if( stencil_mask )
     free( stencil_mask );
   windows.erase( this );

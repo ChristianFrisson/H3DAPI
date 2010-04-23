@@ -43,7 +43,6 @@
 #endif
 
 #include <H3D/ResourceResolver.h>
-#include <H3D/H3DNavigation.h>
 
 #ifdef HAVE_FREEIMAGE
 #include <FreeImage.h>
