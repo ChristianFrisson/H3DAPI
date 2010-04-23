@@ -49,7 +49,8 @@ namespace H3D {
   /// escapeDistance from the spring position.
   /// deviceIndex decides on which haptics device this effect should be on.
   /// The force generated will be 
-  /// force = (position - device_position) * springConstant
+  /// force = (position - device_position) * springConstant - 
+  /// damping * device_velocity
   ///
   ///
   /// <b>Examples:</b>
@@ -65,7 +66,8 @@ namespace H3D {
                   Inst< SFFloat     > _escapeDistance = 0,
                   Inst< SFBool      > _active = 0, 
                   Inst< SFInt32     > _deviceIndex = 0,
-                  Inst< SFNode      >  _metadata = 0 );
+                  Inst< SFNode      >  _metadata = 0,
+                  Inst< SFFloat     > _damping = 0 );
 
     /// Adds the effect if within startDistance and removes it when 
     /// going outside escapeDistance.
@@ -88,7 +90,8 @@ namespace H3D {
     auto_ptr< SFVec3f > force;
     
     /// The spring constant of the spring. 
-    /// force = (position - device_position) * springConstant
+    /// force = (position - device_position) * springConstant - 
+    /// damping * device_velocity
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 100 \n
@@ -120,6 +123,15 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 \n
     auto_ptr< SFInt32 > deviceIndex;  
+
+    /// The damping constant to use in the force calculation.
+    /// 
+    /// force = (position - device_position) * springConstant - 
+    /// damping * device_velocity
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    auto_ptr< SFFloat > damping;  
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
