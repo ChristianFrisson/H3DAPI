@@ -7,12 +7,14 @@ Transform {
   translation 0 0 0
   rotation 1 0 0 -0.5
   children [
+    DEF TS TouchSensor {
+      
+    }
     Shape {
       appearance Appearance {
         material DEF MAT Material {
           diffuseColor 0 0 1
         }
-        surface FrictionalSurface { }
         texture DEF PT PixelTexture {
           repeatS TRUE
           repeatT TRUE
@@ -25,38 +27,45 @@ Transform {
 }
 
 DEF JS Script {
+  field SFNode TS USE TS
   field SFNode PT USE PT
   field SFNode G USE G
-  inputOnly MFVec3f pointHit
+  inputOnly SFBool TS_isActive
+  inputOnly SFVec2f TS_hitTexCoord_changed
 
   url ["ecmascript:
     function initialize() {
       colors = new MFInt32();
-      width = 0.3; height = 0.2;
-      tex_width = 30; tex_height = 20;
-
-      G.size = SFVec2f(width, height);
-      
-      for (i = 0; i < tex_width * tex_height; i++) {
+      width = 0.3; heigh = 0.2;
+      tex_width = 30; tex_heigh = 20;
+      G.size = SFVec2f(width, heigh);
+      for (i = 0; i < tex_width * tex_heigh; i++) {
         colors[i] = 0xff0000;
       }
-
-      sfimage = SFImage(tex_width, tex_height, 3, colors);
-      PT.set_image = sfimage;
+      PT.image = SFImage(tex_width, tex_heigh, 3, colors);
+    }
+    
+    function paint() {
+      if (! TS.isActive ) {
+        return;
+      }
+      x = TS.hitTexCoord_changed.x;
+      y = TS.hitTexCoord_changed.y;
+      w = parseInt(x * tex_width);
+      h = parseInt(y * tex_heigh);
+      id = h * tex_width + w;
+      PT.image.array[3+id] = 0x00ff00;
     }
 
-    function pointHit(val) {
-      point = val[0];
-      x = point.x; y = point.y;
-      idw = parseInt(((x + width/2)/width) * tex_width);
-      idh = parseInt(((y + height/2)/height) * tex_height);
-      if (idw == tex_width) idw--;
-      if (idh == tex_height) idh--;
-      id = idh * tex_width + idw;
-      sfimage.array[3+id] = 0x00ff00;
-      PT.set_image = sfimage;
+    function TS_isActive(val) {
+      paint();
+    }
+    
+    function TS_hitTexCoord_changed(val) {
+      paint();
     }
 
   "]
 }
-ROUTE G.contactPoint TO JS.pointHit
+ROUTE TS.isActive TO JS.TS_isActive
+ROUTE TS.hitTexCoord_changed TO JS.TS_hitTexCoord_changed
