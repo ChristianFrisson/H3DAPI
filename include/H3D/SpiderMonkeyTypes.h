@@ -454,7 +454,7 @@ namespace H3D {
     /// \params internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
-    JSObject *SFImage_newInstance( JSContext *cx, SFImage *field, bool internal_field, int array_index = -1 );
+    JSObject *SFImage_newInstance( JSContext *cx, /*SFImage*/ Field *field, bool internal_field, int array_index = -1 );
     
     /// Callback setter function for properties of a SFImage
     /// object.

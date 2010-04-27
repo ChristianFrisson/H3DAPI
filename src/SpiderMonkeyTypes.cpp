@@ -325,8 +325,13 @@ JSBool SpiderMonkey::JS_MField< MFieldType, ElementType >::setProperty(JSContext
         }
         RGBA color = img->imageValueToRGBA((void*) data);
         delete data;
+        //sfimg->beginEditing();
         img->setPixel(color, ix, iy);
+        //sfimg->endEditing();
+        sfimg->touch();
       }
+      //sfimg->touch();
+      //std::cout<< "touched!" << std::endl;
 
       return JS_TRUE;
     }
@@ -2257,7 +2262,13 @@ JSBool SpiderMonkey::SFNode_getProperty(JSContext *cx, JSObject *obj, jsval id, 
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
 
-    //cerr << "Get Property SFNode: " << field_name << " " << obj << endl;
+    //if (field_name != "prepareEvents") {
+    //  cerr << "Get Property SFNode: " << field_name << " " << obj << endl;
+    //}
+    //if (field_name == "image") {
+    //  cerr<< "";
+    //}
+
     SFNode* node_field = static_cast<SFNode *>(private_data->getPointer());
     Node *n = node_field->getValue();
     Field *f = NULL;
@@ -2283,7 +2294,11 @@ JSBool SpiderMonkey::SFNode_setProperty(JSContext *cx, JSObject *obj, jsval id, 
   if( JSVAL_IS_STRING( id ) ) {
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
-    //    cerr << "Set Property SFNode: " << field_name << " " << obj << endl;
+    if (field_name == "image") {
+      std::cout<<"woo";
+    }
+
+    //std::cout << "Set Property SFNode: " << field_name << " " << obj << endl;
     SFNode* node_field = static_cast<SFNode *>(private_data->getPointer());
     Node *n = node_field->getValue();
     Field *f = NULL;
@@ -2755,6 +2770,7 @@ JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id,
 
         break;
     }
+    sfimg->touch();
     //setValueNoAccessCheck(sfimg, ip);
     return JS_TRUE;
   } else {
@@ -2773,7 +2789,7 @@ JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id,
   }
 }
 
-JSObject *SpiderMonkey::SFImage_newInstance( JSContext *cx, SFImage *field, bool internal_field, int array_index ) {
+JSObject *SpiderMonkey::SFImage_newInstance( JSContext *cx, /*SFImage*/ Field *field, bool internal_field, int array_index ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, &SFImageClass, NULL, NULL );
@@ -3052,6 +3068,17 @@ JSBool SpiderMonkey::Browser_println(JSContext *cx,
   const char *s;
   if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
     return JS_FALSE;
+
+  
+  if (JSVAL_IS_OBJECT( argv[0] )) {
+    JSObject* print_obj = JSVAL_TO_OBJECT(argv[0]);
+    if (JS_InstanceOf(cx, print_obj, &SFImageClass, argv)) {
+      std::cout<<"sfimage";
+    }
+  }
+
+  //FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>( JS_GetPrivate( cx, print_obj ) );
+  //Field* sfield = dynamic_cast<Field*>( this_private_data->getPointer() );
 
   BrowserPrivate *private_data = 
       static_cast<BrowserPrivate *>(JS_GetPrivate(cx,obj));
@@ -3348,6 +3375,9 @@ jsval SpiderMonkey::jsvalFromField( JSContext *cx, Field *field, bool make_copy,
   } 
   case X3DTypes::SFROTATION: { 
     return newInstanceFromField< SFRotation, SFRotation_newInstance >( cx, field, make_copy, array_index );
+  } 
+  case X3DTypes::SFIMAGE: { 
+    return newInstanceFromField< SFImage, SFImage_newInstance>( cx, field, make_copy, array_index );
   } 
   case X3DTypes::SFQUATERNION: { 
   }
