@@ -627,6 +627,8 @@ bool WxFrame::loadFile( const string &filename) {
 
   INIFile ini_file( ini_file_path );
 
+  lastOpenedFilepath = filename;
+
 
   //Clear existing data
   viewpoint.reset( NULL );
@@ -1245,7 +1247,7 @@ void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
    if( text_dialog->ShowModal() == wxID_OK ) {
      string s(text_dialog->GetValue().mb_str());
      clearData();
-     lastOpenedFilepath = s;
+     //lastOpenedFilepath = s;
      loadFile( s );
      SetStatusText( wxString(s.c_str(),wxConvUTF8), 1 );
      SetStatusText( wxT("URL loaded"), 0 );
@@ -1272,7 +1274,7 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
     wxString wx_filename = currentPath + wxT("/") + currentFilename;
 #endif
     string filename(wx_filename.mb_str());
-    lastOpenedFilepath = filename;
+    //lastOpenedFilepath = filename;
     clearData();
     loadFile( filename );
     recentFiles->AddFileToHistory ( wx_filename );
@@ -1298,7 +1300,7 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
     string filename(wx_filename.mb_str());
     clearData();
     loadFile( filename );
-    lastOpenedFilepath = filename;
+    //lastOpenedFilepath = filename;
     SetStatusText(wxT("File loaded"), 0);
     SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
     // remove and add back, to make the file jump on top
