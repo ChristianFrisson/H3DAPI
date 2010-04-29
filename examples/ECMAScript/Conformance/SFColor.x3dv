@@ -1,0 +1,56 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+}
+
+DEF SC Script {
+    url ["ecmascript:
+
+        // print
+        function pr(m) {
+          Browser.println(m);
+        }
+        function ex(m) { 
+          pr('Expect: ' + m);
+        }
+        function re(m) {
+          pr('Result: ' + m);
+          pr('');
+        }    
+
+        function initialize() {
+
+          Browser.println('SFColor Test Unit');
+
+          pr('RGB: 1 0.5 1');
+          c = new SFColor( 1, 0.5, 1 );
+          ex('1 0.5 1');
+          re(c);
+
+          pr('To HSV');
+          ex('5 0.5 1');
+          re(c.getHSV());
+
+          Browser.println('Set HSV to 6, 1, 1');
+          c.setHSV(6, 1, 1);
+
+          ex('1 0 0');
+          re(c);
+
+          pr('Change properties to (0.25, 0.1, 0.5).');
+          c.r = 0.25; c.g = 0; c.b = 0.5;
+          ex('0.25 0 0.5');
+          re(c);
+          Browser.println('New HSV. ');
+          ex('4.5 1 0.5');
+          re(c.getHSV());
+
+          Browser.println('SFColor Test Unit ended.');
+        }
+    "]
+}

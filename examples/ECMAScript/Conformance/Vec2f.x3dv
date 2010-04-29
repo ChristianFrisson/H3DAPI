@@ -1,0 +1,99 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+}
+
+DEF SC Script {
+    url ["ecmascript:
+    
+        function initialize() {
+        
+          Browser.println('SFVec2f Test Unit');
+          
+          Browser.println('Testing constructor with few parameters');
+          a = new SFVec2f();
+          Browser.println('Expect: 0 0');
+          Browser.println(a);
+          a = new SFVec2f(1);
+          Browser.println('Expect: 1 0');
+          Browser.println(a);
+
+          a = new SFVec2f(1, -2.5);
+          b = new SFVec2f(3, -2);
+          Browser.println('a = 1 -2.5');
+          Browser.println('b = 3 -2');
+          
+          Browser.println('Addition. Expect: 4 -4.5');
+          Browser.println(a.add(b));
+          
+          Browser.println('Subtract. Expect: -2, -0.5');
+          Browser.println(a.subtract(b));
+          
+          Browser.println('a divide by 4. Expect: 0.25 -0.625');
+          Browser.println(a.divide(4));
+          
+          Browser.println('a dot b. Expect: 8');
+          Browser.println(a.dot(b));
+          
+          Browser.println('negate of a. Expect: -1 2.5');
+          Browser.println(a.negate());
+          
+          Browser.println('Length of b. Expect (approx): 3.605551275463989');
+          Browser.println(b.length());
+          
+          Browser.println('a multiply by 0.25. Expect: 0.25 -0.625');
+          Browser.println(a.multiple(0.25));
+
+          Browser.println('Change a.x to 5');
+          a.x = 5;
+          Browser.println('Print a.x. Expect: 5');
+          Browser.println(a.x);
+          Browser.println('Print a. Expect: 5 -2.5');
+          Browser.println(a);
+
+          Browser.println('Length of a. Expect: 5.590169943749474');
+          Browser.println(a.length());
+
+          try {
+            Browser.println('constructor with invalid parameter. Expect: crash');
+            a = new SFVec2f(321, 2, 3);
+            Browser.println('Not crash. TEST FAILED!');
+          } catch (e) {
+            Browser.println('Crashed.');
+          }
+
+          try {
+            Browser.println('constructor with invalid number. Expect: crash.');
+            a = new SFVec2f('abcd', 2);
+            Browser.println('Not crash. TEST FAILED!');
+          } catch (e) {
+            Browser.println('Crashed.');
+          }
+
+          try {
+            Browser.println('Wrong number of parameters. Expect: Crash');
+            a = new SFVec2f(1, 2);
+            Browser.println(a.length(1));
+            Browser.println('Not crash. TEST FAILED!');
+          } catch (e) {
+            Browser.println('Crashed.');
+          }
+          
+          try {
+            Browser.println('Division by zero. Expect: Crash');
+            a = new SFVec2f(1, 2);
+            Browser.println(a.divide(0));
+            Browser.println('Not crash. TEST FAILED!');
+          } catch (e) {
+            Browser.println('Crashed.');
+          }
+          
+          Browser.println('SFVec2f Test ended.');
+        }
+    "]
+}

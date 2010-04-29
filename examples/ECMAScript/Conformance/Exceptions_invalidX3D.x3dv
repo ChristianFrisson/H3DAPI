@@ -1,0 +1,17 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+# This example shows the function of the dispose function which will
+# manually 
+
+DEF SC Script {
+    url ["ecmascript:
+        function initialize() {
+          v = Browser.currentScene.createNode('Shapefff');
+          Browser.print( v )
+        }
+    "]
+}
+

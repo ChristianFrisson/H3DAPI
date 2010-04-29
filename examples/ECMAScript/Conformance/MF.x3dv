@@ -1,0 +1,86 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+}
+
+DEF SC Script {
+    field SFNode mat USE MAT
+    url ["ecmascript:
+      function pr(msg) {
+        Browser.println(msg);
+      }
+      function ex(m) { 
+        pr('Expect: ' + m);
+      }
+      function re(m) {
+        pr('Result: ' + m);
+      }
+      function br() {
+        pr('');
+      }
+
+      function initialize()
+      {
+        pr('Testing most MF fields');
+        
+        pr('1. MFBool');
+        bools = new MFBool(false, 5, '0', -1);
+        // extending array by assigning out of normal length
+        bools[5] = true;
+        pr('Expect: false true true true false true');
+        re(bools);
+        // length
+        ex(6);
+        re(bools.length);
+        
+        br();
+
+        pr('2. MFVec3f (similar for all other MFVecs, MFColor and MFRotation');
+
+        a = SFVec3f(1, 2, 3);
+        b = SFVec3f(4, 5, 6);
+        mf = MFVec3f(a, b);
+        mf[2] = SFVec3f(7, 8, 9);
+        mf[3] = a;
+        mf[4] = mf[1];
+        mf[2].x = 7.5;
+        mf[3].y = -mf[1].z;
+        ex('1 2 3 4 5 6 7.5 8 9 1 -6 3 4 5 6');
+        re(mf);
+        ex('7.5 8 9');
+        re(mf[2]);
+
+        br();
+
+        pr('3. MFFloat, MFDouble and MFInt32');
+
+        a = 1.1;
+        b = 5;  // SFFloat(5) is invalid
+        mf = MFFloat(a, b, 8.2 );
+        mf[3] = 0;
+        mf[4] = a;
+        mf[5] = mf[1];
+        mf[6] = mf[1] + mf[0];
+        ex('1.1 5 8.2 0 1.1 5 6.1');
+        re(mf);
+        
+        a = 1;
+        b = -2;
+        mf = MFInt32(a, b, 6);
+        mf[3] = 7;
+        mf[4] = a;
+        mf[5] = mf[1];
+        mf[6] = mf[1] + mf[2];
+        ex('1 -2 6 7 1 -2 4');
+        re(mf);
+        br();
+
+        pr('Testing done.');
+      }
+    "]
+}

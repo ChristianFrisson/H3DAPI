@@ -1,0 +1,89 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Full
+
+Viewpoint {}
+
+Group {
+}
+
+DEF SC Script {
+    url ["ecmascript:
+
+        function initialize() {
+        
+          Browser.println('SFVec4f Test Unit');
+
+          Browser.println('Testing constructor with various parameters');
+          a = SFVec4f();
+          Browser.println('Expect: 0 0 0 0');
+          Browser.println(a);
+          
+          a = SFVec4f(1.5);
+          Browser.println('Expect: 1.5 0 0 0');
+          Browser.println(a);
+
+          a = new SFVec4f(1, 2);
+          Browser.println('Expect: 1 2 0 0');
+          Browser.println(a);
+
+          a = new SFVec4f(1,  0, -2.5, -3);
+          b = new SFVec4f(3, -5,    1, -4);
+          Browser.println('a = 1, 0, -2.5, -3');
+          Browser.println('b = 3, -5, 1, -4');
+          
+          Browser.println('Addition. Expect: 4, -5, -1.5, -7');
+          Browser.println(a.add(b));
+          
+          Browser.println('Subtract. Expect: -2, 5, -3.5, 1');
+          Browser.println(a.subtract(b));
+          
+          Browser.println('a divide by 4. Expect: 0.25 0 -0.625 -0.75');
+          Browser.println(a.divide(4));
+          
+          Browser.println('a dot b. Expect: 12.5');
+          Browser.println(a.dot(b));
+          
+          Browser.println('negate of a. Expect: -1 0 2.5 3');
+          Browser.println(a.negate());
+          
+          Browser.println('a multiply by 0.25. Expect: 0.25 0 -0.625 -0.75');
+          Browser.println(a.multiple(0.25));
+
+          Browser.println('Change a.w to 5');
+          a.w = 5;
+          Browser.println('Print a.w. Expect: 5');
+          Browser.println(a.w);
+          Browser.println('Print a. Expect: 1 0 -2.5 5');
+          Browser.println(a);
+
+          try {
+            Browser.println('constructor with invalid number. Expect: crash');
+            a = new SFVec4f('321', 2, 3);
+            Browser.println('Not crash. TEST FAILED!');
+          } catch (e) {
+            Browser.println('Crashed.');
+          }
+
+          try {
+            Browser.println('constructor with invalid number. Expect: crash.');
+            a = new SFVec4f('abcd', 2, 3);
+            Browser.println('Not crash. TEST FAILED!');
+          } catch (e) {
+            Browser.println('Crashed.');
+          }
+
+          try {
+            Browser.println('Wrong number of parameters. Expect: Crash');
+            a = new SFVec3f(1, 2, 3);
+            Browser.println(a.length(1));
+            Browser.println('Not crash. TEST FAILED!');
+          } catch (e) {
+            Browser.println('Crashed.');
+          }
+
+          Browser.println('SFVec4f Test ended.');
+        }
+    "]
+}

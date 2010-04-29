@@ -1,0 +1,19 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+DEF SC Script {
+    url ["ecmascript:
+        function initialize() {
+            // Create nodes directly in the parent scene
+            shape = Browser.currentScene.createNode('Shape');
+            box = Browser.currentScene.createNode('Box');
+            shape.geometry = box;
+            Browser.currentScene.rootNodes[1] = shape;
+        }
+    "]
+}
+

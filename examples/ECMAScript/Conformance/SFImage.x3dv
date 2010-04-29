@@ -1,0 +1,71 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+}
+
+DEF SC Script {
+    url ["ecmascript:
+        function pr(m) {
+          Browser.println(m);
+        }
+        function ex(m) { 
+          pr('Expect: ' + m);
+        }
+        function re(m) {
+          pr('Result: ' + m);
+          pr('');
+        }        
+    
+        function initialize() {
+          Browser.println('SFImage Test Unit');
+
+          // SFImage creation
+          arr = new MFInt32( 1, 2, 3, 4, 5, 6);
+          img = new SFImage(2, 3, 1, arr);
+
+          pr('Expect: 2 3 1');
+          re(img.width + ' ' + img.height + ' ' + img.comp);
+          pr('Expect: 2 3 1 1 2 3 4 5 6');
+          re(img.array);
+          pr('Expect: 2 3 1 1 2 3 4 5 6');
+          re(img);
+          
+          // Expand the size
+          img.width = 3;
+          img.array[3+9] = 0;
+          img.array[3+10] = 0;
+          pr('Expect: 3 3 1 1 2 3 4 5 6 0 0');
+          re(img.array);
+          
+/*          
+          // Shrink the size
+          img.height = 1;
+          pr('Expect: 3 1 1 1 2 3');
+          re(img.array);
+
+          // Set array from string
+          arr = MFInt32(2, 2, 3, 12, 13, 14, 15);
+          img.array = arr;
+          pr('Expect: 2 2');
+          re(img.width + ' ' + img.height);
+
+          try {
+            // Invalid number of arguments, raise error
+            arr = MFInt32(2, 2, 3, 12, 13, 14);
+            pr('Expect: invalid number of arguments');
+            img.array = arr;
+            re('no error. test fails.');
+          } catch (e) {
+            re('invalid number of arguments');
+          }
+*/
+
+          Browser.println('SFImage Test Unit ended.');
+        }
+    "]
+}

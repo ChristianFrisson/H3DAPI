@@ -1,0 +1,80 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Full
+
+Viewpoint {
+  position 0 0 0.6
+}
+
+Group {
+  children [
+    Shape {
+      appearance Appearance {
+        texture DEF PT PixelTexture {
+          repeatS TRUE
+          repeatT TRUE
+        }
+      }
+      geometry Box {
+        size 0.1 0.1 0.1
+      }
+    }
+  ]
+}
+
+DEF SC Script {
+  field SFNode tx USE PT
+
+    url ["ecmascript:
+    
+  
+        function pr(m) {
+          Browser.println(m);
+        }
+        function ex(m) { 
+          pr('Expect: ' + m);
+        }
+        function re(m) {
+          pr('Result: ' + m);
+          pr('');
+        }        
+    
+        function initialize() {
+          // SFImage creation
+          pr('Starting...');
+          arr = new MFInt32(  0xff0000, 0x00ff10, 0xff0020, 0x125360, 
+                              0x00ff30, 0xff0000, 0x00ff00, 0x473154, 
+                              0xff0000, 0x0fff00, 0xff0000, 0x111111 );
+          pr( arr );
+          a = SFImage(4, 3, 3, arr);
+          tx.set_image = a;
+
+          ex('4 3 3');
+          re(a.width + ' ' + a.height + ' ' + a.comp);
+          ex('16711680 (0xff0000)');
+          re(a.array[0+3]);
+          ex('65296 (0x00ff10)');
+          re(a.array[1+3]);
+          
+          pr('Change array value (pos 1) to 16711680');
+          a.array[3+1] = 16711680;
+          
+          pr('Reprint array value pos 1');
+          ex(16711680);
+          re(a.array[3+1]);
+          
+          pr('Print array');
+          ex('4 3 3 16711680 16711680 16711712 1200992 65328 16711680 65280 4665684 16711680 1048320 16711680 1118481');
+          re(a.array);
+
+          pr('Print sfimage object');
+          ex('4 3 3 16711680 16711680 16711712 1200992 65328 16711680 65280 4665684 16711680 1048320 16711680 1118481');
+          re(a);
+
+          pr(a);
+          pr('End.');
+          
+        }
+    "]
+}

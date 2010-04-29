@@ -1,0 +1,122 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+}
+
+DEF SC Script {
+    url ["ecmascript:
+
+        // print
+        function pr(m) {
+          Browser.println(m);
+        }
+        function ex(m) { 
+          pr('Expect: ' + m);
+        }
+        function re(m) {
+          pr('Result: ' + m);
+          pr('');
+        }
+
+        function initialize() {
+          Browser.println('SFRotation Test Unit');
+
+          // SFRotation creation (first case)
+          
+          pr('1st construction with different number of arguments');
+          r = new SFRotation();
+          ex('0 1 0 0');
+          re(r);
+          
+          r = new SFRotation(5);
+          ex('5 1 0 0');
+          re(r);
+          
+          r = new SFRotation(5, 3, 1);
+          ex('5 3 1 0');
+          re(r);
+
+          r = new SFRotation(1.5, 4, 1.2, 0);
+          ex('1.5 4 1.2 0');
+          re(r);
+          
+          // SFRotation creation (2nd case)
+
+          pr( '2nd construction (vec3, num)' );
+          vec3 = SFVec3f(1.5, 4, 1.2);
+          r = new SFRotation(vec3, 2);
+          ex('1.5 4 1.2 2');
+          re(r);
+          
+          // SFRotation creation (3rd case), providing 2 vectors.
+          pr( '3rd case, (fromvec, tovec) ' );
+          va = SFVec3f(1, 0, 0);
+          vb = SFVec3f(0, 1, 0);
+          pr( 'from vec ' + va); pr( 'to vec ' + vb);
+          r = new SFRotation(va, vb);
+          ex('0 0 1 1.5708');
+          re(r);
+
+          // normalized error
+          pr('normalized error');
+          try {
+            ex('normalized error!');
+            r = new SFRotation(SFVec3f(2, 0, 0), SFVec3f(2, 0, 0) );
+            re('no error. test fails.');
+          } catch (e) {
+            re('normalized error!');
+          }
+
+          
+          pr('setAxis and getAxis');
+          // set and get axis
+          axis = SFVec3f(0.5, 0.3, 0);
+          r = SFRotation( axis, Math.PI / 4 );
+          ex('0.5 0.3 0');
+          re( r.getAxis() );
+          r.setAxis( SFVec3f(-1, 0, 0.2) );
+          ex( '-1 0 0.2' );
+          re( r.getAxis() );
+
+          // inverse
+          r = SFRotation( 0.5, 0.3, 0, 0.2 );
+          pr('inverse of ' + r);
+          ex( '0.5 0.3 0 -0.2' );
+          re( r.inverse() );
+
+          // multiply
+          r1 = SFRotation( 0.5, 0.3, 0, 0.2 );
+          r2 = SFRotation( 0.2, -1, 2, 0.3 );
+          pr(r1 + ' multiply ' + r2);
+          ex( '0.266384 -0.40541 0.874461 0.325133' );
+          re( r1.multiply( r2 ) );
+
+          // multivec
+          v = SFVec3f( 1.5, 0.5, 0.2 );
+          r = SFRotation( 0.5, 0.3, 0, 0.2 );
+          pr(r + ' multivec ' + v);
+          ex( '1.50086 0.478837 0.157595' );
+          re( r.multiVec( v ) );
+
+          // slerp
+          r1 = SFRotation( 0.5, 0.3, 0, 0.2 );
+          r2 = SFRotation( 0.2, -1, 2, 0.3 );
+          pr(r1 + ' slerp ' + r2 + ' ratio 0');
+          ex( '0.857493 0.514496 0 0.2' );
+          re( r1.slerp( r2, 0 ) );
+          pr(r1 + ' slerp ' + r2 + ' ratio 0.3');
+          ex( '0.426982 -0.233085 0.873704 0.150936' );
+          re( r1.slerp( r2, 0.3 ) );
+          pr(r1 + ' slerp ' + r2 + ' ratio 1');
+          ex( '0.0890871 -0.445435 0.890871 0.3' );
+          re( r1.slerp( r2, 1 ) );
+
+          Browser.println('SFRotation Test Unit ended.');
+        }
+    "]
+}

@@ -1,0 +1,19 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+DEF SC Script {
+    url ["ecmascript:
+        function initialize() {
+            // Create children using the createX3DFromString service
+            vrmlCmd = 'PROFILE Interchange  Shape { geometry Sphere{} }'
+            tmpScene = Browser.createX3DFromString(vrmlCmd);
+
+            // add the Shape node as the second root node(this script
+            // being the first 
+            Browser.currentScene.rootNodes[1] = tmpScene.rootNodes[0]
+        }
+    "]
+}
+

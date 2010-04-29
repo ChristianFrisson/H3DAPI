@@ -1,0 +1,39 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+    children [
+        Shape {
+            appearance Appearance {
+                material DEF MAT Material {
+                    diffuseColor 0 0 1
+                }
+            }
+            geometry Box {}
+        }
+        DEF TS TouchSensor {}
+    ]
+}
+
+DEF SC Script {
+    inputOnly SFBool isOver
+    outputOnly SFColor diffuseColor_changed
+
+    url ["ecmascript:
+        function isOver(val) {
+            if (val == true) {
+                diffuseColor_changed = new SFColor(1,0,0.5);
+                Browser.println("Over.");
+            } else {
+                diffuseColor_changed = new SFColor(0,0,1);
+            }
+        }
+    "]
+}
+
+ROUTE TS.isOver TO SC.isOver
+ROUTE SC.diffuseColor_changed TO MAT.set_diffuseColor
