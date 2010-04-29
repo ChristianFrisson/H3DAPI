@@ -301,8 +301,18 @@ namespace H3D {
       releaseDevice();
     }
 
-    /// Get the proxy position from the previous loop.
-    inline Vec3f getPreviousProxyPosition() { return previuos_proxy_pos; }
+    /// Get the proxy position from the previous loop for a certain layer.
+    /// The caller of the function has to be certain that the layer existed
+    /// in the previous loop. 
+    /// \param layer The layer to get the proxy position for, default is 0.
+    inline Vec3f getPreviousProxyPosition( unsigned int layer = 0 ) {
+      return previuos_proxy_pos[layer];
+    }
+
+    /// Get all previous proxy positions.
+    inline const vector< Vec3f > &getPreviousProxyPositions() {
+      return previuos_proxy_pos;
+    }
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "appearance".
@@ -629,7 +639,7 @@ namespace H3D {
     /// Node database entry
     static H3DNodeDatabase database;
   protected:
-    Vec3f previuos_proxy_pos;
+    vector< Vec3f > previuos_proxy_pos;
 
     // int because traverseSG is not run for the viewpoint
     // before the first call to updateDeviceValues

@@ -462,65 +462,70 @@ void X3DGeometryNode::createAndAddHapticShapes(
 
   Vec3f scale = ti.getAccInverseMatrix().getScalePart();
   Matrix4f to_local = ti.getAccInverseMatrix();
-  Vec3f local_proxy =  to_local * hd->proxyPosition->getValue();
-  Vec3f local_last_proxy = to_local * hd->getPreviousProxyPosition();
-  Vec3f movement = local_proxy - local_last_proxy;
+  unsigned int active_layer = ti.getCurrentLayer();
+  const vector< Vec3f > &prev_proxy_pos = hd->getPreviousProxyPositions();
+  if( active_layer < prev_proxy_pos.size() ) {
+    Vec3f local_proxy = to_local *
+      hd->proxyPositions->getValueByIndex( active_layer );
+    Vec3f local_last_proxy = to_local * prev_proxy_pos[active_layer];
+    Vec3f movement = local_proxy - local_last_proxy;
 
-  if( use_bound_tree ) {
-    if( radius < 0 ) {
-      boundTree->getValue()->getAllPrimitives( tris, lines, points );
-    } else {
-      boundTree->getValue()->getPrimitivesIntersectedByMovingSphere(
-        radius * H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
-        local_proxy,
-        local_proxy + movement * lookahead_factor,
-        tris,
-        lines,
-        points );
-    }
-  } else {
-    if( radius < 0 ) {
-      HAPI::FeedbackBufferCollector::collectPrimitives( 
-                                  this, 
-                                  Matrix4d( 1, 0, 0, 0,
-                                            0, 1, 0, 0,
-                                            0, 0, 1, 0,
-                                            0, 0, 0, 1 ),
-                                  tris, 
-                                  lines, 
-                                  points );
-    } else {
-      int nr_values = nrFeedbackBufferValues();
-      if( nr_values < 0 ) nr_values = 200000;
-      bool done = false;
-      H3DFloat d = 2 * radius;
-      Vec3f full_movement = movement * lookahead_factor;
-      Vec3f center = (local_proxy + local_proxy + full_movement)/2; 
-      glMatrixMode( GL_MODELVIEW );
-      glPushMatrix();
-      glLoadIdentity();
-      while( !done ) {
-        HAPI::FeedbackBufferCollector::startCollecting( nr_values, 
-                                center, 
-                                full_movement + 
-                                Vec3f( d, d, d ) *  H3DMax( scale.x,
-                                H3DMax( scale.y, 
-                                scale.z ) ) );
-        glRender();
-        HAPI::FeedbackBufferCollector::ErrorType e = 
-          HAPI::FeedbackBufferCollector::endCollecting( tris,
-                                                        lines,
-                                                        points );
-        if( e != HAPI::FeedbackBufferCollector::
-          NOT_ENOUGH_MEMORY_ALLOCATED  )
-          done = true;
-        else {
-          if( nr_values == 0 ) nr_values = 200000; 
-          else nr_values *= 2;
-        }
+    if( use_bound_tree ) {
+      if( radius < 0 ) {
+        boundTree->getValue()->getAllPrimitives( tris, lines, points );
+      } else {
+        boundTree->getValue()->getPrimitivesIntersectedByMovingSphere(
+          radius * H3DMax( scale.x, H3DMax( scale.y, scale.z ) ),
+          local_proxy,
+          local_proxy + movement * lookahead_factor,
+          tris,
+          lines,
+          points );
       }
-      glMatrixMode( GL_MODELVIEW );
-      glPopMatrix();
+    } else {
+      if( radius < 0 ) {
+        HAPI::FeedbackBufferCollector::collectPrimitives(
+                                    this,
+                                    Matrix4d( 1, 0, 0, 0,
+                                              0, 1, 0, 0,
+                                              0, 0, 1, 0,
+                                              0, 0, 0, 1 ),
+                                    tris,
+                                    lines,
+                                    points );
+      } else {
+        int nr_values = nrFeedbackBufferValues();
+        if( nr_values < 0 ) nr_values = 200000;
+        bool done = false;
+        H3DFloat d = 2 * radius;
+        Vec3f full_movement = movement * lookahead_factor;
+        Vec3f center = (local_proxy + local_proxy + full_movement)/2;
+        glMatrixMode( GL_MODELVIEW );
+        glPushMatrix();
+        glLoadIdentity();
+        while( !done ) {
+          HAPI::FeedbackBufferCollector::startCollecting( nr_values, 
+                                  center, 
+                                  full_movement + 
+                                  Vec3f( d, d, d ) *  H3DMax( scale.x,
+                                  H3DMax( scale.y, 
+                                  scale.z ) ) );
+          glRender();
+          HAPI::FeedbackBufferCollector::ErrorType e = 
+            HAPI::FeedbackBufferCollector::endCollecting( tris,
+                                                          lines,
+                                                          points );
+          if( e != HAPI::FeedbackBufferCollector::
+            NOT_ENOUGH_MEMORY_ALLOCATED  )
+            done = true;
+          else {
+            if( nr_values == 0 ) nr_values = 200000; 
+            else nr_values *= 2;
+          }
+        }
+        glMatrixMode( GL_MODELVIEW );
+        glPopMatrix();
+      }
     }
   }
 
