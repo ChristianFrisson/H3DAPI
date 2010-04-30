@@ -109,6 +109,20 @@ namespace H3D {
     public X3DDragSensorNode {
   public:
 
+    /// Class used to store some information about axisRotation when
+    /// offset is set, in order to set the correct offset value when
+    /// mouse is clicked.
+    class H3DAPI_API SFOffset :
+      public OnValueChangeSField< AutoUpdate< SFVec3f > > {
+    public:
+    protected:
+      virtual void onValueChange( const Vec3f &new_value ) {
+        PlaneSensor * ps = static_cast< PlaneSensor * >(getOwner());
+        ps->last_offset_axis_rotation_inv =
+          Matrix4f( ps->axisRotation->getValue() ).inverse();
+      }
+    };
+
     /// Constructor.
     PlaneSensor(  Inst< SFBool >  _autoOffset           = 0,
                   Inst< SFString > _description         = 0,
@@ -116,7 +130,7 @@ namespace H3D {
                   Inst< SFVec2f > _maxPosition          = 0,
                   Inst< SFNode >  _metadata             = 0,
                   Inst< SFVec2f > _minPosition          = 0,
-                  Inst< SFVec3f > _offset               = 0,
+                  Inst< SFOffset > _offset               = 0,
                   Inst< SFBool >  _isActive             = 0,
                   Inst< SFBool > _isOver                = 0,
                   Inst< SFVec3f >  _trackPoint_changed  = 0,
@@ -152,7 +166,7 @@ namespace H3D {
     /// <b>Default value:</b> 0 0 0 \n
     ///
     /// \dotfile PlaneSensor_offset.dot
-    auto_ptr< SFVec3f > offset;
+    auto_ptr< SFOffset > offset;
 
     /// For each subsequent movement of the bearing, a translation_changed
     /// event is output which corresponds to the sum of the relative
@@ -219,6 +233,8 @@ namespace H3D {
     Matrix4f active_global_to_local_matrix;
     // If true a new plane will be defined.
     bool new_plane;
+    // The last rotation used when offset was set.
+    Matrix4f last_offset_axis_rotation_inv;
   };
 }
 

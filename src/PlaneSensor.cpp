@@ -53,7 +53,7 @@ PlaneSensor::PlaneSensor( Inst< SFBool >  _autoOffset,
                           Inst< SFVec2f > _maxPosition,
                           Inst< SFNode >  _metadata,
                           Inst< SFVec2f > _minPosition,
-                          Inst< SFVec3f > _offset,
+                          Inst< SFOffset > _offset,
                           Inst< SFBool >  _isActive,
                           Inst< SFBool > _isOver,
                           Inst< SFVec3f >  _trackPoint_changed,
@@ -99,10 +99,31 @@ int PlaneSensor::intersectLinePlane(
   Vec3f a, Vec3f b, float &t, Vec3f &q ) {
   // Compute the t value for the directed line ab intersecting the plane
   Vec3f ab = b - a;
-  t = (plane_d - plane_normal * a ) / ( plane_normal * ab );
-
-  q = a + t * ab;
-  return 1;
+  H3DFloat s =  plane_normal * ab;
+  H3DFloat plane_normal_a = plane_normal * a;
+  if( H3DUtil::H3DAbs( s ) < Constants::f_epsilon ) {
+    H3DFloat t2 = plane_normal_a - plane_d;
+    if( H3DUtil::H3DAbs( t2 ) < Constants::f_epsilon ) {
+      t = 0;
+      q = a;
+      return 1;
+    }
+    return 0;
+  } else {
+    t = ( plane_d - plane_normal_a ) / s;
+    q = a + t * ab;
+    if ( t >= 0 && t <= 1 ) {
+      return 1;
+    } else {
+      // Intersection not in view frustum: 
+      // t < 0: pointer may be "over the horizon" of the local sensor
+      // coordinate system's Z-plane or below its intersection with the near
+      // clipping plane. Thus the intersection point lies in front of the near
+      // clipping plane
+      // t > 1: intersection point is behind far clipping plane
+      return 0;
+    }
+  }
 }
 
 void PlaneSensor::setDragOutputEvents( bool _enabled,
@@ -110,28 +131,31 @@ void PlaneSensor::setDragOutputEvents( bool _enabled,
                                        const Vec3f &to ) {
   if( _enabled ) {
     if( isActive->getValue() ) {
+      Matrix4f axis_rotation_matrix = Matrix4f( axisRotation->getValue() );
+      Matrix4f axis_rotation_matrix_inverse = axis_rotation_matrix.transformInverse();
       if( new_plane ) {
         // Initialize variables used when active.
         send_warning_message = true;
-        last_intersection = geometry_intersection;
-        active_global_to_local_matrix = geometry_global_to_local;
+        last_intersection = axis_rotation_matrix_inverse * geometry_intersection;
+        active_global_to_local_matrix = axis_rotation_matrix_inverse * geometry_global_to_local;
         new_plane = false;
         plane_d = plane_normal * last_intersection;
-        trackPoint_changed->setValue( last_intersection, id );
-        translation_changed->setValue( Vec3f( 0, 0, 0 ) +
-                                       offset->getValue(), id );
+        trackPoint_changed->setValue( geometry_intersection, id );
+        Vec3f tmp_plane_normal = axis_rotation_matrix * plane_normal;
+
+        translation_changed->setValue( axis_rotation_matrix *
+          ( last_offset_axis_rotation_inv * offset->getValue() ), id );
       } else {
         // Calculate intersection and send events.
         H3DFloat t;
         Vec3f intersectionPoint;
-        Rotation axis_rotation = axisRotation->getValue();
         if( intersectLinePlane(
-              axis_rotation * ( active_global_to_local_matrix * from ),
-              axis_rotation * ( active_global_to_local_matrix * to ),
+              active_global_to_local_matrix * from,
+              active_global_to_local_matrix * to,
               t, intersectionPoint ) ) {
           send_warning_message = true;
           Vec3f trans_changed = intersectionPoint - last_intersection
-                                + offset->getValue();
+                                + axis_rotation_matrix_inverse * offset->getValue();
           Vec2f min_position = minPosition->getValue();
           Vec2f max_position = maxPosition->getValue();
           if( min_position.x <= max_position.x ) {
@@ -144,8 +168,10 @@ void PlaneSensor::setDragOutputEvents( bool _enabled,
                                      min_position.y,
                                      max_position.y );
           }
-          trackPoint_changed->setValue( intersectionPoint, id );
-          translation_changed->setValue( trans_changed , id );
+          trans_changed.z = 0.0f;
+          // transform from local sensor coordinate to local coordinate system
+          trackPoint_changed->setValue( axis_rotation_matrix * intersectionPoint, id );
+          translation_changed->setValue( axis_rotation_matrix * trans_changed , id );
         } else {
           if( send_warning_message ) {
             // X3D specification states that in the case of no plane
