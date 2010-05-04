@@ -54,14 +54,47 @@ ShadowGeometry::ShadowGeometry( Inst< SFNode>  _metadata,
 
 }
 
+// The shadow geometry does not use the exact same rendering function
+// as the original geometry, since it needs to render triangles facing the
+// light differently from the ones facing away from the light.
+// In order to do this the boundTree triangles of the geometry are used.
+// These triangles have been collected with a HAPI::FeedbackBufferCollector
+// using OpenGL. Somewhere in this process, possibly in the transformation
+// from window coordinates to world coordinates(model view matrix seems ok),
+// the original coordinate used in rendering differs from the coordinate
+// in the boundTree by some epsilon value due to floating point inaccuracies.
+// This means that when drawing caps for ZFAIL algorithm, we can get a case
+// of z-fighting between the original geometry and the shadow geometry,
+// making the geometry flicker.
+// 
+// In order to avoid this we must try to render the shadow geometry so that
+// it is not closer to the light than the original geometry at any time.
+// We try to do this by:
+// - Scaling the shadow geometry down 
+// - Moving the shadow geometry along the light ray
+//
+// This can probably be done properly by using a geometry shader for 
+// graphics cards that support them, rendering the original geometry
+// and using the geometry shader to generate the shadow geometry.
+
+
+// The scale factor to use to scale down the shadow geometry.
+const double scale_factor = 0.999;
+
+// The offset to move silhouetteedges in the light ray direction.
+const double offset_dir_light =1e-4;
 
 void ShadowGeometry::renderDirectionalLightQuad( const Vec3d &v1, 
                                                  const Vec3d &v2, 
                                                  const Vec3d& dir ) {
-  glVertex3d( v1.x, v1.y, v1.z );
+  Vec3d epsilon = offset_dir_light * dir;
+  Vec3d ev1 = v1 + epsilon;
+  Vec3d ev2 = v2 + epsilon;
+
+  glVertex3d( ev1.x, ev1.y, ev1.z );
   glVertex4d( dir.x, dir.y, dir.z, 0 );
   glVertex4d( dir.x, dir.y, dir.z, 0 );
-  glVertex3d( v2.x, v2.y, v2.z );
+  glVertex3d( ev2.x, ev2.y, ev2.z );
 }
 
 void ShadowGeometry::renderPointLightQuad( const Vec3d &v1, const Vec3d &v2, 
@@ -72,10 +105,13 @@ void ShadowGeometry::renderPointLightQuad( const Vec3d &v1, const Vec3d &v2,
   Vec3d dir2 = v2 - light_pos;
   dir2.normalizeSafe();
   
-  glVertex3d( v1.x, v1.y, v1.z );
+  Vec3d ev1 = v1 + dir1 * offset_dir_light;
+  Vec3d ev2 = v2 + dir2 * offset_dir_light;
+
+  glVertex3d( ev1.x, ev1.y, ev1.z );
   glVertex4d( dir1.x, dir1.y, dir1.z, 0 );
   glVertex4d( dir2.x, dir2.y, dir2.z, 0 );
-  glVertex3d( v2.x, v2.y, v2.z );
+  glVertex3d( ev2.x, ev2.y, ev2.z );
  
 }
 
@@ -85,7 +121,7 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
   
   MatrixTransform *t = transform->getValue();
   X3DGeometryNode *g = geometry->getValue();
-  
+
   if( !g ) return;
 
   Matrix4f m, m_inv;
@@ -118,7 +154,7 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
     // if drawing caps make the geometry a little smaller to avoid z-buffer
     // issues since both the shadow volume and geometry itself would be 
     // drawn in the same place, causing flickering.
-    GLfloat scale = 0.999f;
+    GLfloat scale = scale_factor;
     glScalef( scale, scale, scale );
   }
 
@@ -166,25 +202,48 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
     // draw all triangles facing the light as a near cap and all others
     // at infinity.
     glBegin(GL_TRIANGLES);
-	  for( size_t i = 0; i < triangles.size(); i++ ) {
-      if( triangle_facing_light[i] ) {
-        Vec3d v1 = triangles[i].a;
-        Vec3d v2 = triangles[i].b;
-        Vec3d v3 = triangles[i].c;       
-        glVertex3d(	v1.x, v1.y, v1.z);
-        glVertex3d(	v2.x, v2.y, v2.z );
-        glVertex3d(	v3.x, v3.y, v3.z );
-      } else {
+    
+    if( dir_light ) {
+      Vec3d dir = dir_light->direction->getValue();
+      dir = m_inv.getRotationPart() * dir;
+      
+      for( size_t i = 0; i < triangles.size(); i++ ) {
+        if( triangle_facing_light[i] ) {
+          Vec3d v1 = triangles[i].a + offset_dir_light * dir;
+          Vec3d v2 = triangles[i].b + offset_dir_light * dir;
+          Vec3d v3 = triangles[i].c + offset_dir_light * dir;       
+          glVertex3d( v1.x, v1.y, v1.z);
+          glVertex3d( v2.x, v2.y, v2.z );
+          glVertex3d( v3.x, v3.y, v3.z );
+        }
         // directional lights do not need a far cap since the shadow volume
         // converge to the same point at infinity.
-
-        if( point_light ) {
+      }
+    } else if( point_light ) {
+      for( size_t i = 0; i < triangles.size(); i++ ) {
+        if( triangle_facing_light[i] ) {
+          Vec3d dir1 = triangles[i].a - light_pos;
+          Vec3d dir2 = triangles[i].b - light_pos;
+          Vec3d dir3 = triangles[i].c - light_pos;
+          
+          dir1.normalizeSafe();
+          dir2.normalizeSafe();
+          dir3.normalizeSafe();
+          
+          Vec3d v1 = triangles[i].a + offset_dir_light * dir1;
+          Vec3d v2 = triangles[i].b + offset_dir_light * dir2;
+          Vec3d v3 = triangles[i].c + offset_dir_light * dir3;
+          
+          glVertex3d( v1.x, v1.y, v1.z);
+          glVertex3d( v2.x, v2.y, v2.z );
+          glVertex3d( v3.x, v3.y, v3.z );
+        } else {
           const Vec3f &p = light_pos;
           Vec3d v1 = triangles[i].a - p;
           Vec3d v2 = triangles[i].b - p;
           Vec3d v3 = triangles[i].c - p;
-
-			    glVertex4d(	v1.x, v1.y, v1.z, 0 );
+          
+          glVertex4d(	v1.x, v1.y, v1.z, 0 );
           glVertex4d(	v2.x, v2.y, v2.z, 0 );
           glVertex4d(	v3.x, v3.y, v3.z, 0 );
         }
