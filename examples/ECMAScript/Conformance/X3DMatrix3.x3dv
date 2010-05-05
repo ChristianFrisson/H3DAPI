@@ -1,0 +1,66 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+}
+
+DEF SC Script {
+    url ["ecmascript:
+        // print
+        function pr(m) {
+          Browser.println(m);
+        }
+        function ex(m) { 
+          pr('Expect: ' + m);
+        }
+        function re(m) {
+          pr('Result: ' + m);
+          pr('');
+        }    
+
+        function initialize() {
+
+          Browser.println('X3DMatrix3 Test Unit');
+          m = X3DMatrix3(
+            1, 2, 3,
+            0, 1, 0,
+            0, 0, 1
+          );
+          pr('m');
+          pr(m);
+          pr(m[0][0]);
+          pr(m[0][1]);
+          pr(m[0][2]);
+          m[1][2] = 5;
+          pr(m[1][2]);
+          pr(m);
+          pr('inverse');
+          pr(m.inverse());
+          pr('transpose');
+          pr(m.transpose());
+          
+          n = X3DMatrix3(
+            1, 2, 3,
+            6, 7, 4,
+            3, 9, 1
+          );
+          pr('n');
+          pr(n);
+
+          pr('m.multRight(n)');
+          pr(m.multRight(n));
+          pr('m.multLeft(n)');
+          pr(m.multLeft(n));
+          
+          pr('m.multVecMatrix(SFVec3f(3, 9, 1))');
+          pr(m.multVecMatrix(SFVec3f(3, 9, 1)));
+          pr('m.multMatrixVec(SFVec3f(3, 9, 1))');
+          pr(m.multMatrixVec(SFVec3f(3, 9, 1)));
+
+        }
+    "]
+}

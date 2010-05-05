@@ -52,6 +52,8 @@
 
 #include<iostream>
 
+#include <H3D/SFMatrix3f.h>
+#include <H3D/SFMatrix4f.h>
 #include <H3D/SFFloat.h>
 #include <H3D/SFDouble.h>
 #include <H3D/SFTime.h>
@@ -70,7 +72,6 @@
 #include <H3D/X3DTexture2DNode.h>
 
 #include <H3D/MFFloat.h>
-//#include<H3D/MFImage.h>
 #include <H3D/MFDouble.h>
 #include <H3D/MFTime.h>
 #include <H3D/MFInt32.h>
@@ -609,7 +610,7 @@ namespace H3D {
       {0}
     };
 
-    
+
     static JSClass SFVec3fClass = {
       "SFVec3f",
       JSCLASS_HAS_PRIVATE,
@@ -633,6 +634,232 @@ namespace H3D {
       NULL, // mark
       NULL //reserveSlots
     };
+
+
+
+    //////////////////////////////////////////////
+    /// X3DMatrix3 
+    ///
+
+    class SFMatrix3fRow : public Field {
+    public:
+      SFMatrix3fRow() { }
+      SFMatrix3fRow(SFMatrix3f* _sfmatrix, int _row) : row(_row), sfmatrix(_sfmatrix) { }
+      SFMatrix3f* sfmatrix;
+      int row;
+    };
+
+    JSBool SFMatrix3fRow_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool SFMatrix3fRow_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool SFMatrix3fRow_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool SFMatrix3fRow_construct(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval);
+    JSObject *SFMatrix3fRow_newInstance( JSContext *cx, Field *field, bool internal_field );
+
+    enum SFMatrix3fRowPropertyId {
+    };
+
+    static JSPropertySpec SFMatrix3fRow_properties[] = {
+      {0}
+    };
+
+    static JSFunctionSpec SFMatrix3fRow_functions[] = {
+      {"toString", SFMatrix3fRow_toString , 0, 0, 0 },
+      {0}
+    };
+    static JSClass SFMatrix3fRowClass = {
+      "SFMatrix3fRow",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFMatrix3fRow_getProperty, // get property
+      SpiderMonkey::SFMatrix3fRow_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      NULL, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+    JSBool X3DMatrix3_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool X3DMatrix3_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool X3DMatrix3_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_setTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_getTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_inverse(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_transpose(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_multLeft(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_multRight(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_multVecMatrix(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix3_multMatrixVec(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSObject *X3DMatrix3_newInstance( JSContext *cx, Field *field, bool internal_field );
+
+    enum X3DMatrix3PropertyId {
+    };
+
+    static JSPropertySpec X3DMatrix3_properties[] = {
+      {0}
+    };
+
+    static JSFunctionSpec X3DMatrix3_functions[] = {
+      {"inverse", X3DMatrix3_inverse, 0, 0, 0 },
+      {"transpose", X3DMatrix3_transpose,   0, 0, 0 },
+      {"setTransform", X3DMatrix3_setTransform,   5, 0, 0 },
+      {"getTransform", X3DMatrix3_getTransform,   3, 0, 0 },
+      {"multLeft", X3DMatrix3_multLeft,   1, 0, 0 },
+      {"multRight", X3DMatrix3_multRight,   1, 0, 0 },
+      {"multVecMatrix", X3DMatrix3_multVecMatrix,   1, 0, 0 },
+      {"multMatrixVec", X3DMatrix3_multMatrixVec,   1, 0, 0 },
+      {"toString", X3DMatrix3_toString , 0, 0, 0 },
+      {0}
+    };
+    
+    static JSClass X3DMatrix3Class = {
+      "X3DMatrix3",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::X3DMatrix3_getProperty, // get property
+      SpiderMonkey::X3DMatrix3_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      X3DMatrix3_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+
+    //////////////////////////////////////////////
+    /// X3DMatrix4 
+    ///
+
+    class SFMatrix4fRow : public Field {
+    public:
+      SFMatrix4fRow() { }
+      SFMatrix4fRow(SFMatrix4f* _sfmatrix, int _row) : row(_row), sfmatrix(_sfmatrix) { }
+      SFMatrix4f* sfmatrix;
+      int row;
+    };
+
+    JSBool SFMatrix4fRow_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool SFMatrix4fRow_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool SFMatrix4fRow_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool SFMatrix4fRow_construct(JSContext *cx, JSObject *obj,  uintN argc, jsval *argv, jsval *rval);
+    JSObject *SFMatrix4fRow_newInstance( JSContext *cx, Field *field, bool internal_field );
+
+    enum SFMatrix4fRowPropertyId {
+    };
+
+    static JSPropertySpec SFMatrix4fRow_properties[] = {
+      {0}
+    };
+
+    static JSFunctionSpec SFMatrix4fRow_functions[] = {
+      {"toString", SFMatrix4fRow_toString , 0, 0, 0 },
+      {0}
+    };
+    static JSClass SFMatrix4fRowClass = {
+      "SFMatrix4fRow",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::SFMatrix4fRow_getProperty, // get property
+      SpiderMonkey::SFMatrix4fRow_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      NULL, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
+    JSBool X3DMatrix4_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool X3DMatrix4_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    JSBool X3DMatrix4_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_setTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_getTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_inverse(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_transpose(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_multLeft(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_multRight(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_multVecMatrix(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSBool X3DMatrix4_multMatrixVec(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    JSObject *X3DMatrix4_newInstance( JSContext *cx, Field *field, bool internal_field );
+
+    enum X3DMatrix4PropertyId {
+    };
+
+    static JSPropertySpec X3DMatrix4_properties[] = {
+      {0}
+    };
+
+    static JSFunctionSpec X3DMatrix4_functions[] = {
+      {"inverse", X3DMatrix4_inverse, 0, 0, 0 },
+      {"transpose", X3DMatrix4_transpose,   0, 0, 0 },
+      {"setTransform", X3DMatrix4_setTransform,   5, 0, 0 },
+      {"getTransform", X3DMatrix4_getTransform,   3, 0, 0 },
+      {"multLeft", X3DMatrix4_multLeft,   1, 0, 0 },
+      {"multRight", X3DMatrix4_multRight,   1, 0, 0 },
+      {"multVecMatrix", X3DMatrix4_multVecMatrix,   1, 0, 0 },
+      {"multMatrixVec", X3DMatrix4_multMatrixVec,   1, 0, 0 },
+      {"toString", X3DMatrix4_toString , 0, 0, 0 },
+      {0}
+    };
+    
+    static JSClass X3DMatrix4Class = {
+      "X3DMatrix4",
+      JSCLASS_HAS_PRIVATE,
+
+      /* All of these can be replaced with the corresponding JS_*Stub
+         function pointers. */
+      JS_PropertyStub,  // add property
+      JS_PropertyStub,  // del property
+      SpiderMonkey::X3DMatrix4_getProperty, // get property
+      SpiderMonkey::X3DMatrix4_setProperty,  // set property
+      JS_EnumerateStub, // enumerate
+      JS_ResolveStub,   // resolve
+      JS_ConvertStub,   // convert
+      PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+      NULL, // getObjectOps
+      NULL, // checkAccess
+      NULL, // call
+      X3DMatrix4_construct, // construct
+      NULL, // xdrObject
+      NULL, // hasInstance
+      NULL, // mark
+      NULL //reserveSlots
+    };
+
 
     //////////////////////////////////////////////
     /// SFVec3d 
@@ -1587,6 +1814,74 @@ namespace H3D {
       JS_FinalizeStub,  // finalize
       JSCLASS_NO_OPTIONAL_MEMBERS
     };
+
+    //////////////////////////////////////////////
+    /// X3DMatrix3 
+    ///
+
+    //JSBool X3DMatrix3_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    //JSBool X3DMatrix3_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp);
+    //JSObject* X3DMatrix3_newInstance( JSContext *cx, Field *field, bool internal_field);
+
+    //// Members Functions
+    //JSBool X3DMatrix3_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_setTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_getTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_inverse(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_transpose(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_multLeft(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_multRight(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_multVecMatrix(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_multMatrixVec(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+    //JSBool X3DMatrix3_length(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval);
+
+    //enum X3DMatrix3PropertyId {
+    //  X3DMatrix3_ZZ
+    //};
+    //
+    //static JSPropertySpec X3DMatrix3_properties[] = {
+    //  {"zz", X3DMatrix3_ZZ, JSPROP_PERMANENT},
+    //  {0}
+    //};
+
+    //static JSFunctionSpec X3DMatrix3_functions[] = {
+    //  {"length", X3DMatrix3_length, 0, 0, 0 },
+    //  {"inverse", X3DMatrix3_inverse, 0, 0, 0 },
+    //  {"transpose", X3DMatrix3_transpose,   0, 0, 0 },
+    //  {"setTransform", X3DMatrix3_setTransform,   5, 0, 0 },
+    //  {"getTransform", X3DMatrix3_getTransform,   3, 0, 0 },
+    //  {"multLeft", X3DMatrix3_multLeft,   1, 0, 0 },
+    //  {"multRight", X3DMatrix3_multRight,   1, 0, 0 },
+    //  {"multVecMatrix", X3DMatrix3_multVecMatrix,   1, 0, 0 },
+    //  {"multMatrixVec", X3DMatrix3_multMatrixVec,   1, 0, 0 },
+    //  {"toString", X3DMatrix3_toString , 0, 0, 0 },
+    //  {0}
+    //};
+
+    //static JSClass X3DMatrix3Class = {
+    //  "X3DMatrix3",
+    //  JSCLASS_HAS_PRIVATE,
+
+    //  /* All of these can be replaced with the corresponding JS_*Stub
+    //     function pointers. */
+    //  JS_PropertyStub,  // add property
+    //  JS_PropertyStub,  // del property
+    //  X3DMatrix3_getProperty, // get property
+    //  X3DMatrix3_setProperty,  // set property
+    //  JS_EnumerateStub, // enumerate
+    //  JS_ResolveStub,   // resolve
+    //  JS_ConvertStub,   // convert
+    //  PrivatePointer_finalize<FieldObjectPrivate>,  // finalize
+    //  NULL, // getObjectOps
+    //  NULL, // checkAccess
+    //  NULL, // call
+    //  X3DMatrix3_construct, // construct
+    //  NULL, // xdrObject
+    //  NULL, // hasInstance
+    //  NULL, // mark
+    //  NULL //reserveSlots
+    //};
 
     //////////////////////////////////////////////
     /// MField template 

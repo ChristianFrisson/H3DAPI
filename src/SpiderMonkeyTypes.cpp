@@ -39,6 +39,9 @@
 #include<typeinfo>
 #include<algorithm>
 #include<sstream>
+#include<H3D/SFMatrix3f.h>
+#include<H3D/SFMatrix4f.h>
+#include<H3D/Transform.h>
 
 
 
@@ -3219,8 +3222,6 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, JSObject *obj, jsval id,
 
 
 
-
-
 bool SpiderMonkey::insertH3DTypes( JSContext *cx, JSObject *obj ) {
   // TODO: FIX!!
   JS_InitClass( cx, obj, NULL, 
@@ -3261,6 +3262,17 @@ bool SpiderMonkey::insertH3DTypes( JSContext *cx, JSObject *obj ) {
   JS_InitClass( cx, obj, NULL, &SFRotationClass, SFRotation_construct, 3,
     SFRotation_properties, SFRotation_functions, NULL, NULL);
 
+  JS_InitClass( cx, obj, NULL, &X3DMatrix3Class, X3DMatrix3_construct, 3,
+    X3DMatrix3_properties, X3DMatrix3_functions, NULL, NULL);
+
+  JS_InitClass( cx, obj, NULL, &SFMatrix3fRowClass, SFMatrix3fRow_construct, 3,
+    SFMatrix3fRow_properties, SFMatrix3fRow_functions, NULL, NULL);
+
+  JS_InitClass( cx, obj, NULL, &X3DMatrix4Class, X3DMatrix4_construct, 3,
+    X3DMatrix4_properties, X3DMatrix4_functions, NULL, NULL);
+
+  JS_InitClass( cx, obj, NULL, &SFMatrix4fRowClass, SFMatrix4fRow_construct, 3,
+    SFMatrix4fRow_properties, SFMatrix4fRow_functions, NULL, NULL);
 
   JS_MFFloat::initClass( cx, obj, "MFFloat" );
   JS_MFDouble::initClass( cx, obj, "MFDouble" );
@@ -3896,6 +3908,578 @@ JSBool SpiderMonkey::SFVec4d_toString(JSContext *cx, JSObject *obj, uintN argc, 
 
 JSBool SpiderMonkey::SFImage_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
   return FieldObject_toString( cx, obj, argc, argv, rval);
+}
+
+
+//======================================================
+/// X3DMATRIX3
+//======================================================
+
+
+JSBool SpiderMonkey::X3DMatrix3_getTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  JS_ReportError(cx, "getTransform is not implemented.");
+  return JS_FALSE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_setTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  JS_ReportError(cx, "setTransform is not implemented.");
+  return JS_FALSE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_inverse(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &X3DMatrix3Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+  SFMatrix3f* sfmatrix = helper_extractPrivateObject<SFMatrix3f>( cx, obj );
+  SFMatrix3f* sfrval = new SFMatrix3f( sfmatrix->getValue().inverse() );
+  *rval = OBJECT_TO_JSVAL(X3DMatrix3_newInstance(cx, sfrval , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_transpose(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+
+  // expecting 0 argument
+  JSClass* type_classes[] = { &X3DMatrix3Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFMatrix3f* sfmatrix = helper_extractPrivateObject<SFMatrix3f>( cx, obj );
+  SFMatrix3f* sfrval = new SFMatrix3f( sfmatrix->getValue().transpose() );
+  *rval = OBJECT_TO_JSVAL(X3DMatrix3_newInstance(cx, sfrval , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_multLeft(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // arg * obj
+
+  // expecting 1 argument of class X3DMatrix3
+  JSClass* type_classes[] = { &X3DMatrix3Class, &X3DMatrix3Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFMatrix3f* sfobj = helper_extractPrivateObject<SFMatrix3f>( cx, obj );
+  SFMatrix3f* sfarg = helper_extractPrivateObject<SFMatrix3f>( cx, JSVAL_TO_OBJECT(argv[0]) );
+  SFMatrix3f* sfans = new SFMatrix3f(sfarg->getValue() * sfobj->getValue());
+
+  *rval = OBJECT_TO_JSVAL(X3DMatrix3_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_multRight(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // obj * arg
+
+  // expecting 1 argument of class X3DMatrix3
+  JSClass* type_classes[] = { &X3DMatrix3Class, &X3DMatrix3Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFMatrix3f* sfobj = helper_extractPrivateObject<SFMatrix3f>( cx, obj );
+  SFMatrix3f* sfarg = helper_extractPrivateObject<SFMatrix3f>( cx, JSVAL_TO_OBJECT(argv[0]) );
+  SFMatrix3f* sfans = new SFMatrix3f(sfobj->getValue() * sfarg->getValue());
+
+  *rval = OBJECT_TO_JSVAL(X3DMatrix3_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_multVecMatrix(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class SFVec3f
+  JSClass* type_classes[] = { &X3DMatrix3Class, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // row vector
+  SFVec3f* sfarg = helper_extractPrivateObject<SFVec3f>(cx, JSVAL_TO_OBJECT(argv[0]));
+  SFMatrix3f* sfobj = helper_extractPrivateObject<SFMatrix3f>(cx, obj);
+
+  // row_vec * matrix = 1x3matrix
+  Matrix3f m = sfobj->getValue();
+  Vec3f v = sfarg->getValue();
+  Vec3f ans(v * m.getColumn(0), v * m.getColumn(1), v * m.getColumn(2) );
+  SFVec3f* sfans = new SFVec3f(ans);
+
+  *rval = OBJECT_TO_JSVAL(SFVec3f_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_multMatrixVec(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+ // expecting 1 argument of class SFVec3f
+  JSClass* type_classes[] = { &X3DMatrix3Class, &SFVec3fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // col vector
+  SFVec3f* sfarg = helper_extractPrivateObject<SFVec3f>(cx, JSVAL_TO_OBJECT(argv[0]));
+  SFMatrix3f* sfobj = helper_extractPrivateObject<SFMatrix3f>(cx, obj);
+
+  // matrix * col vector = 3x1matrix
+  Matrix3f m = sfobj->getValue();
+  Vec3f v = sfarg->getValue();
+  Vec3f ans(m.getRow(0) * v, m.getRow(1) * v, m.getRow(2) * v);
+  SFVec3f* sfans = new SFVec3f(ans);
+
+  *rval = OBJECT_TO_JSVAL(SFVec3f_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_toString(JSContext *cx, JSObject *obj,
+                                         uintN argc, jsval *argv, jsval *rval) {
+  SFMatrix3f* sfmatrix = helper_extractPrivateObject<SFMatrix3f>( cx, obj );
+  string s = sfmatrix->getValueAsString();
+  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char *)s.c_str(), s.length() ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  if (JSVAL_IS_INT(id)) {
+    int row = JSVAL_TO_INT(id);
+    SFMatrix3f* sfobj = helper_extractPrivateObject<SFMatrix3f>( cx, obj );
+    if (row < 0 || row > 2) {
+      JS_ReportError(cx, "Index out of bound.");
+      return JS_FALSE;
+    }
+    SFMatrix3fRow* sfans = new SFMatrix3fRow(sfobj, row);
+    *vp = OBJECT_TO_JSVAL(SFMatrix3fRow_newInstance(cx, sfans, true) );
+    return JS_TRUE;
+  } else {
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+JSBool SpiderMonkey::X3DMatrix3_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  // TODO
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix3_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  //check that we have enough arguments and that they are of
+  //correct type.
+  if (argc != 9) {
+    return JS_FALSE;
+  }
+  float a[9];
+  for (size_t i = 0; i < argc; i++) {
+    jsdouble r;
+    if (!JS_ValueToNumber( cx, argv[i], &r) ) {
+      std::cout<< "failed in construct" << std::endl;
+      return JS_FALSE;
+    }
+    a[i] = (H3DFloat) r;
+  }
+  Matrix3f m( a[0], a[1], a[2],
+              a[3], a[4], a[5],
+              a[6], a[7], a[8] );
+  SFMatrix3f* sfm = new SFMatrix3f(m);
+  *rval = OBJECT_TO_JSVAL( X3DMatrix3_newInstance( cx, sfm, true ) ); 
+  return JS_TRUE;
+}
+
+JSObject *SpiderMonkey::X3DMatrix3_newInstance( JSContext *cx, Field *field, bool internal_field) {
+  JSObject *js_field;
+  js_field = JS_NewObject( cx, &X3DMatrix3Class, NULL, NULL );  
+  JS_DefineProperties(cx, js_field, X3DMatrix3_properties );
+  JS_DefineFunctions(cx, js_field, X3DMatrix3_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field ) );
+  return js_field; 
+}
+
+JSBool SpiderMonkey::SFMatrix3fRow_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // not supposed to implement this because SFMatrix4fRow type
+  // is assumed to be hidden
+
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFMatrix3fRow_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  if (JSVAL_IS_INT(id)) {
+    int col = JSVAL_TO_INT(id);
+    SFMatrix3fRow* sfobj = helper_extractPrivateObject<SFMatrix3fRow>( cx, obj );
+    if (col < 0 || col > 2) {
+      JS_ReportError(cx, "Column index out of bound.");
+      return JS_FALSE;
+    }
+    jsdouble jsd; JSBool res = JS_ValueToNumber( cx, *vp, &jsd );
+    float f = (H3DFloat) jsd;
+    Matrix3f m = sfobj->sfmatrix->getValue();
+    m.setElement(sfobj->row, col, f);
+    sfobj->sfmatrix->setValue(m);
+    return JS_TRUE;
+  } else {
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFMatrix3fRow_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  if (JSVAL_IS_INT(id)) {
+    int col = JSVAL_TO_INT(id);
+    SFMatrix3fRow* sfobj = helper_extractPrivateObject<SFMatrix3fRow>( cx, obj );
+    if (col < 0 || col > 2) {
+      JS_ReportError(cx, "Column index out of bound.");
+      return JS_FALSE;
+    }
+    float r = sfobj->sfmatrix->getValue().getElement(sfobj->row, col);
+    JS_NewNumberValue( cx, r, vp ); 
+    return JS_TRUE;
+  } else {
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFMatrix3fRow_newInstance( JSContext *cx, Field *field, bool internal_field ) {
+  JSObject *js_field;
+  js_field = JS_NewObject( cx, &SFMatrix3fRowClass, NULL, NULL );  
+  JS_DefineProperties(cx, js_field, SFMatrix3fRow_properties );
+  JS_DefineFunctions(cx, js_field, SFMatrix3fRow_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field ) );
+  return js_field; 
+}
+
+JSBool SpiderMonkey::SFMatrix3fRow_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  return JS_TRUE;
+}
+
+
+//======================================================
+/// X3DMatrix4
+//======================================================
+
+
+JSBool SpiderMonkey::X3DMatrix4_getTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  SFMatrix4f* sfobj = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+  Matrix4f mobj = sfobj->getValue();
+
+  // translation
+  if (argc > 0) {
+    if (JSVAL_IS_OBJECT(argv[0])) {
+      FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>( JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[0])) );
+      if (this_private_data) {
+        SFVec3f* sftranslation = dynamic_cast<SFVec3f*>(this_private_data->getPointer());
+        if (sftranslation) {  // TO CHECK
+          sftranslation->setValue( mobj.getTranslationPart() ); 
+        }
+      }
+    }
+  }
+
+  if (argc > 1) {
+    if (JSVAL_IS_OBJECT(argv[1])) {
+      FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>( JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[1])) );
+      if (this_private_data) {
+        SFRotation* sfrotation = dynamic_cast<SFRotation*>( this_private_data->getPointer() );
+        if (sfrotation) {  // TO CHECK
+          Rotation r( mobj.getRotationPart() );
+          sfrotation->setValue( r ); 
+        }
+      }
+    }
+  }
+
+  if (argc > 2) {
+    if (JSVAL_IS_OBJECT(argv[2])) {
+      FieldObjectPrivate *this_private_data = static_cast<FieldObjectPrivate *>( JS_GetPrivate( cx, JSVAL_TO_OBJECT(argv[2])) );
+      if (this_private_data) {
+        SFVec3f* sfscale = dynamic_cast<SFVec3f*>( this_private_data->getPointer() );
+        if (sfscale) {
+          sfscale->setValue( mobj.getScalePart() );
+        }
+      }
+    }
+  }
+
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_setTransform(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  SFMatrix4f* sfobj = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+
+  Transform::Matrix* transform_matrix = new Transform::Matrix();
+
+  SFVec3f* sftranslation  = (argc < 1 ? new SFVec3f(Vec3f(0, 0, 0)) : 
+    helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT(argv[0]) ) );
+  SFRotation* sfrotation  = (argc < 2 ? new SFRotation(Rotation(0, 0, 1, 0)) : 
+    helper_extractPrivateObject<SFRotation>( cx, JSVAL_TO_OBJECT(argv[1]) ) );
+  SFVec3f* sfscale        = (argc < 3 ? new SFVec3f(Vec3f(1, 1, 1)) : 
+    helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT(argv[2]) ) );
+  SFRotation* sfso        = (argc < 4 ? new SFRotation(Rotation( 0, 0, 1, 0 )) : helper_extractPrivateObject<SFRotation>( cx, JSVAL_TO_OBJECT(argv[3]) ) );
+  SFVec3f* sfcenter       = (argc < 5 ? new SFVec3f(Vec3f(0, 0, 0)) : 
+    helper_extractPrivateObject<SFVec3f>( cx, JSVAL_TO_OBJECT(argv[4]) ) );
+
+      /// routes_in[0] center field
+    /// routes_in[1] rotation field
+    /// routes_in[2] scale field
+    /// routes_in[3] scaleOrientation field
+    /// routes_in[4] translation field
+  sfcenter->routeNoEvent(transform_matrix);
+  sfrotation->routeNoEvent(transform_matrix);
+  sfscale->routeNoEvent(transform_matrix);
+  sfso->routeNoEvent(transform_matrix);
+  sftranslation->route(transform_matrix);
+   
+  sfobj->setValue(transform_matrix->getValue());
+
+  if (argc < 5) delete sfcenter;
+  if (argc < 4) delete sfso;
+  if (argc < 3) delete sfscale;
+  if (argc < 2) delete sfrotation;
+  if (argc < 1) delete sftranslation;
+
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_inverse(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 0 argument
+  JSClass* type_classes[] = { &X3DMatrix4Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+  SFMatrix4f* sfmatrix = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+  SFMatrix4f* sfrval = new SFMatrix4f( sfmatrix->getValue().inverse() );
+  *rval = OBJECT_TO_JSVAL(X3DMatrix4_newInstance(cx, sfrval , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_transpose(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+
+  // expecting 0 argument
+  JSClass* type_classes[] = { &X3DMatrix4Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 0, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFMatrix4f* sfmatrix = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+  SFMatrix4f* sfrval = new SFMatrix4f( sfmatrix->getValue().transpose() );
+  *rval = OBJECT_TO_JSVAL(X3DMatrix4_newInstance(cx, sfrval , true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_multLeft(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // arg * obj
+
+  // expecting 1 argument of class X3DMatrix4
+  JSClass* type_classes[] = { &X3DMatrix4Class, &X3DMatrix4Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFMatrix4f* sfobj = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+  SFMatrix4f* sfarg = helper_extractPrivateObject<SFMatrix4f>( cx, JSVAL_TO_OBJECT(argv[0]) );
+  SFMatrix4f* sfans = new SFMatrix4f(sfarg->getValue() * sfobj->getValue());
+
+  *rval = OBJECT_TO_JSVAL(X3DMatrix4_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_multRight(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // obj * arg
+
+  // expecting 1 argument of class X3DMatrix4
+  JSClass* type_classes[] = { &X3DMatrix4Class, &X3DMatrix4Class };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+
+  SFMatrix4f* sfobj = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+  SFMatrix4f* sfarg = helper_extractPrivateObject<SFMatrix4f>( cx, JSVAL_TO_OBJECT(argv[0]) );
+  SFMatrix4f* sfans = new SFMatrix4f(sfobj->getValue() * sfarg->getValue());
+
+  *rval = OBJECT_TO_JSVAL(X3DMatrix4_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_multVecMatrix(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // expecting 1 argument of class SFVec3f
+  JSClass* type_classes[] = { &X3DMatrix4Class, &SFVec4fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // row vector
+  SFVec4f* sfarg = helper_extractPrivateObject<SFVec4f>(cx, JSVAL_TO_OBJECT(argv[0]));
+  SFMatrix4f* sfobj = helper_extractPrivateObject<SFMatrix4f>(cx, obj);
+
+  // row_vec * matrix = 1x3matrix
+  Matrix4f m = sfobj->getValue();
+  Vec4f v = sfarg->getValue();
+  Vec4f ans(v * m.getColumn(0), v * m.getColumn(1), v * m.getColumn(2), v * m.getColumn(3) );
+  SFVec4f* sfans = new SFVec4f(ans);
+
+  *rval = OBJECT_TO_JSVAL(SFVec4f_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_multMatrixVec(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
+{
+ // expecting 1 argument of class SFVec3f
+  JSClass* type_classes[] = { &X3DMatrix4Class, &SFVec4fClass };
+  if ( !helper_sanityCheck(cx, obj, argc, argv, 1, type_classes ) ) {
+    return JS_FALSE;
+  }
+  // col vector
+  SFVec4f* sfarg = helper_extractPrivateObject<SFVec4f>(cx, JSVAL_TO_OBJECT(argv[0]));
+  SFMatrix4f* sfobj = helper_extractPrivateObject<SFMatrix4f>(cx, obj);
+
+  // matrix * col vector = 4x1matrix
+  Matrix4f m = sfobj->getValue();
+  Vec4f v = sfarg->getValue();
+  Vec4f ans(m.getRow(0) * v, m.getRow(1) * v, m.getRow(2) * v, m.getRow(3) * v);
+  SFVec4f* sfans = new SFVec4f(ans);
+
+  *rval = OBJECT_TO_JSVAL(SFVec4f_newInstance(cx, sfans, true) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_toString(JSContext *cx, JSObject *obj,
+                                         uintN argc, jsval *argv, jsval *rval) {
+  SFMatrix4f* sfmatrix = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+  string s = sfmatrix->getValueAsString();
+  *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char *)s.c_str(), s.length() ) );
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  if (JSVAL_IS_INT(id)) {
+    int row = JSVAL_TO_INT(id);
+    SFMatrix4f* sfobj = helper_extractPrivateObject<SFMatrix4f>( cx, obj );
+    if (row < 0 || row > 3) {
+      JS_ReportError(cx, "Index out of bound.");
+      return JS_FALSE;
+    }
+    SFMatrix4fRow* sfans = new SFMatrix4fRow(sfobj, row);
+    *vp = OBJECT_TO_JSVAL(SFMatrix4fRow_newInstance(cx, sfans, true) );
+    return JS_TRUE;
+  } else {
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+JSBool SpiderMonkey::X3DMatrix4_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  // TODO
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::X3DMatrix4_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  //check that we have enough arguments and that they are of
+  //correct type.
+  if (argc != 16) {
+    return JS_FALSE;
+  }
+  float a[16];
+  for (size_t i = 0; i < argc; i++) {
+    jsdouble r;
+    if (!JS_ValueToNumber( cx, argv[i], &r) ) {
+      std::cout<< "failed in construct" << std::endl;
+      return JS_FALSE;
+    }
+    a[i] = (H3DFloat) r;
+  }
+  Matrix4f m( a[0], a[1], a[2], a[3],
+              a[4], a[5], a[6], a[7],
+              a[8], a[9], a[10], a[11], 
+              a[12], a[13], a[14], a[15] );
+  SFMatrix4f* sfm = new SFMatrix4f(m);
+  *rval = OBJECT_TO_JSVAL( X3DMatrix4_newInstance( cx, sfm, true ) ); 
+  return JS_TRUE;
+}
+
+JSObject *SpiderMonkey::X3DMatrix4_newInstance( JSContext *cx, Field *field, bool internal_field) {
+  JSObject *js_field;
+  js_field = JS_NewObject( cx, &X3DMatrix4Class, NULL, NULL );  
+  JS_DefineProperties(cx, js_field, X3DMatrix4_properties );
+  JS_DefineFunctions(cx, js_field, X3DMatrix4_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field ) );
+  return js_field; 
+}
+
+JSBool SpiderMonkey::SFMatrix4fRow_toString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  // not supposed to implement this because SFMatrix4fRow type
+  // is assumed to be hidden
+  return JS_TRUE;
+}
+
+JSBool SpiderMonkey::SFMatrix4fRow_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  if (JSVAL_IS_INT(id)) {
+    int col = JSVAL_TO_INT(id);
+    SFMatrix4fRow* sfobj = helper_extractPrivateObject<SFMatrix4fRow>( cx, obj );
+    if (col < 0 || col > 3) {
+      JS_ReportError(cx, "Column index out of bound.");
+      return JS_FALSE;
+    }
+    jsdouble jsd; JSBool res = JS_ValueToNumber( cx, *vp, &jsd );
+    float f = (H3DFloat) jsd;
+    Matrix4f m = sfobj->sfmatrix->getValue();
+    m.setElement(sfobj->row, col, f);
+    sfobj->sfmatrix->setValue(m);
+    return JS_TRUE;
+  } else {
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSBool SpiderMonkey::SFMatrix4fRow_getProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp) {
+  if (JSVAL_IS_INT(id)) {
+    int col = JSVAL_TO_INT(id);
+    SFMatrix4fRow* sfobj = helper_extractPrivateObject<SFMatrix4fRow>( cx, obj );
+    if (col < 0 || col > 3) {
+      JS_ReportError(cx, "Column index out of bound.");
+      return JS_FALSE;
+    }
+    float r = sfobj->sfmatrix->getValue().getElement(sfobj->row, col);
+    JS_NewNumberValue( cx, r, vp ); 
+    return JS_TRUE;
+  } else {
+    if( *vp == JSVAL_VOID ) {
+      JSString *s = JSVAL_TO_STRING( id );
+      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
+  }
+}
+
+JSObject *SpiderMonkey::SFMatrix4fRow_newInstance( JSContext *cx, Field *field, bool internal_field ) {
+  JSObject *js_field;
+  js_field = JS_NewObject( cx, &SFMatrix4fRowClass, NULL, NULL );  
+  JS_DefineProperties(cx, js_field, SFMatrix4fRow_properties );
+  JS_DefineFunctions(cx, js_field, SFMatrix4fRow_functions );
+  JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, internal_field ) );
+  return js_field; 
+}
+
+JSBool SpiderMonkey::SFMatrix4fRow_construct(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
+  return JS_TRUE;
 }
 
 

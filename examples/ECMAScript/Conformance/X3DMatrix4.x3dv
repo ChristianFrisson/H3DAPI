@@ -1,0 +1,69 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+PROFILE Immersive
+Viewpoint {}
+Group {}
+
+DEF SC Script {
+    url ["ecmascript:
+        function pr(m) {
+          Browser.println(m);
+        }
+        function ex(m) { 
+          pr('Expect: ' + m);
+        }
+        function re(m) {
+          pr('Result: ' + m);
+          pr('');
+        }    
+
+        function initialize() {
+          Browser.println('X3DMatrix4 Test Unit');
+          m = X3DMatrix4(
+            1, 2, 3, 4,
+            0, 1, 0, 2,
+            0, 0, 1, 5,
+            -2, 4, 0, 1
+          );
+          m.setTransform(SFVec3f(0 ,0 ,0), SFRotation(1, 0.5, 1, 1), SFVec3f(2, 1, 3));
+
+          pr(m);
+          
+          t = SFVec3f();
+          s = SFVec3f();
+          r = SFRotation();
+          m.getTransform(0, r, s);
+          //pr(t);
+          pr(s);
+          
+          
+          
+          pr('Matrix:');
+          pr(m);
+          pr('Inverse');
+          pr(m.inverse());
+          pr('Transpose');
+          pr(m.transpose());
+          
+          n = X3DMatrix4(
+            1, 2, 3, 5,
+            6, 7, 4, -2,
+            3, 9, 1, 9,
+            4, 2, 5, -3
+          );
+          pr('Matrix 2:');
+          pr(n);
+
+          pr('m.multRight(n)');
+          pr(m.multRight(n));
+          pr('m.multLeft(n)');
+          pr(m.multLeft(n));
+
+          pr('m.multVecMatrix(SFVec4f(3, 9, 1, 2))');
+          pr(m.multVecMatrix(SFVec4f(3, 9, 1, 2)));
+          pr('m.multMatrixVec(SFVec4f(3, 9, 1, 2))');
+          pr(m.multMatrixVec(SFVec4f(3, 9, 1, 2)));
+
+        }
+    "]
+}
