@@ -379,7 +379,8 @@ void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
     for( unsigned int i = 0; i < devices.size(); i++ ) {
       
-      if( !ti.hapticsEnabled( i ) ) continue; 
+      if( !ti.hapticsEnabled( i ) || 
+          !ti.getCurrentSurface()->getSurface(i) ) continue; 
 
       bool tmp_force_full_oh = force_full_oh;
 #ifdef HAVE_OPENHAPTICS
