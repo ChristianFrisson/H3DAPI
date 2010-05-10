@@ -165,7 +165,7 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
 
   if ( a ) {
     a->traverseSG( ti );
-    if( a->isTransparent() && a->usingMultiPassTransparency() ) {
+    if( ti.graphicsEnabled() && a->isTransparent() && a->usingMultiPassTransparency() ) {
       ti.setMultiPassTransparency( true );
       displayList->breakCache();
     }
