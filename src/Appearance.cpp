@@ -121,7 +121,11 @@ void Appearance::render()     {
   } else if( texture3d ) {
     image = texture3d->image->getValue();
   }
-  if( image ) {
+
+  // in order to comply with X3D spec we need to set the material
+  // diffuse color to 1 1 1 when RGB or RGBA texture in order to 
+  // modulate it.
+  if( image && shaders->empty() ) {
     Image::PixelType pixel_type = image->pixelType();
     if( pixel_type == Image::RGB ||
         pixel_type == Image::BGR ) {
