@@ -52,6 +52,9 @@ H3DNodeDatabase ComposedShader::database(
 namespace ComposedShaderInternals {
   FIELDDB_ELEMENT( ComposedShader, parts, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, suppressUniformWarnings, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ComposedShader, geometryInputType, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ComposedShader, geometryOutputType, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ComposedShader, geometryVerticesOut, INPUT_OUTPUT );
 }
 
 ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
@@ -61,17 +64,38 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFBool       > _activate,
                                 Inst< SFString     > _language,
                                 Inst< MFShaderPart > _parts,
-                                Inst< SFBool       > _suppressUniformWarnings ) :
+                                Inst< SFBool       > _suppressUniformWarnings,
+                                Inst< SFString     > _geometryInputType,
+                                Inst< SFString     > _geometryOutputType,
+                                Inst< SFInt32      > _geometryVerticesOut) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
                  _isValid, _activate, _language),
   X3DProgrammableShaderObject( &database ),
   parts( _parts ),
   suppressUniformWarnings( _suppressUniformWarnings ),
+  geometryInputType( _geometryInputType ),
+  geometryOutputType( _geometryOutputType ),
+  geometryVerticesOut( _geometryVerticesOut ),
   program_handle( 0 ) {
   type_name = "ComposedShader";
   database.initFields( this );
 
   suppressUniformWarnings->setValue( false );
+
+  geometryInputType->addValidValue( "POINTS");
+  geometryInputType->addValidValue( "LINES");
+  geometryInputType->addValidValue( "TRIANGLES");
+  geometryInputType->addValidValue( "TRIANGLES_ADJACENCY");
+  geometryInputType->addValidValue( "LINES_ADJACENCY");
+  geometryInputType->setValue( "TRIANGLES" );
+
+  geometryOutputType->setValue( "POINTS" );
+  geometryOutputType->setValue( "LINE_STRIP" );
+  geometryOutputType->setValue( "TRIANGLE_STRIP" );
+
+  geometryOutputType->setValue( "TRIANGLE_STRIP" );
+
+  geometryVerticesOut->setValue( 64 );
 
   activate->route( displayList, id );
   parts->route( displayList, id );
@@ -218,7 +242,7 @@ void ComposedShader::render() {
 // check if any existing program handle using the same set of ShaderParts
 // so that we can reuse the program handle
 // Return the handle if found, zero if not found
-std::string ComposedShader::genKeyFromShader(const ComposedShader* shader)
+std::string ComposedShader::genKeyFromShader(ComposedShader* shader)
 {
   // build the key as string. we use simple key building method 
   // by making a string of all the shaderParts' handles combined.
@@ -237,7 +261,7 @@ std::string ComposedShader::genKeyFromShader(const ComposedShader* shader)
 
 // create handle and link to shaderparts. return 0 if failed.
 // Preclusion: parts > 0
-GLhandleARB ComposedShader::createHandle(const ComposedShader* shader) {
+GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
   if ( !shader->parts->size() )
     return 0;
 
@@ -248,6 +272,9 @@ GLhandleARB ComposedShader::createHandle(const ComposedShader* shader) {
     GLhandleARB handle = static_cast< ShaderPart * >(*i)->getShaderHandle();
     glAttachObjectARB( program_handle, handle );
   }
+
+  // set geometry shader values 
+  shader->setGeometryShaderParameters( program_handle );
 
   // link shader program
   glLinkProgramARB( program_handle );
@@ -271,4 +298,71 @@ GLhandleARB ComposedShader::createHandle(const ComposedShader* shader) {
 
 
   return program_handle;
+}
+
+
+void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
+  if( GLEW_EXT_geometry_shader4 ) {
+    // Setting input type.
+    const string &input_type = geometryInputType->getValue();
+    if( input_type == "POINTS" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
+    } else if( input_type == "LINES" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_INPUT_TYPE_EXT,GL_LINES);
+    } else if( input_type == "TRIANGLES" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
+    } else if( input_type == "LINES_ADJACENCY" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_INPUT_TYPE_EXT, GL_LINES_ADJACENCY_EXT );
+    } else if( input_type == "TRIANGLES_ADJACENCY" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_INPUT_TYPE_EXT, 
+                             GL_TRIANGLES_ADJACENCY_EXT );
+    } else {
+      Console(4) << "Invalid geometryInputType \"" << input_type
+                 << "\" in ComposedShader. Using \"TRIANGLES\" instead." << endl;
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
+    }
+
+    // Setting output type.
+    const string &output_type = geometryOutputType->getValue();
+    if( output_type == "POINTS" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_POINTS);
+    } else if( output_type == "LINE_STRIP" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_LINE_STRIP );
+    } else if( output_type == "TRIANGLE_STRIP" ) {
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_OUTPUT_TYPE_EXT, 
+                             GL_TRIANGLE_STRIP );
+    } else {
+      Console(4) << "Invalid geometryOutputType \"" << output_type
+                 << "\" in ComposedShader. Using \"TRIANGLE_STRIP\" instead." << endl;
+      glProgramParameteriEXT(program_handle, 
+                             GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLES);
+    } 
+
+    int max_output_vertices;
+     glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &max_output_vertices);
+
+    int nr_output_vertices = geometryVerticesOut->getValue();
+
+    if( nr_output_vertices > max_output_vertices ) {
+      Console( 4 ) << "Invalid geomtryVerticesOut value " << nr_output_vertices
+                   << " in ComposedShader. Hardware supports a maximum of " 
+                   << max_output_vertices << "." << endl;
+      nr_output_vertices = max_output_vertices;
+    }
+
+    // number of output vertices for geometry shader.
+    glProgramParameteriEXT(program_handle,
+                           GL_GEOMETRY_VERTICES_OUT_EXT,
+                           nr_output_vertices );
+    
+  }
 }

@@ -66,6 +66,7 @@ ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
 
   type->addValidValue( "VERTEX" );
   type->addValidValue( "FRAGMENT" );
+  type->addValidValue( "GEOMETRY" );
   type->setValue( "VERTEX", id );
   url->route( shaderString );
 }
@@ -89,12 +90,17 @@ GLhandleARB ShaderPart::compileShader() {
       shader_handle = glCreateShaderObjectARB( GL_FRAGMENT_SHADER_ARB );
     } else if( shader_type == "VERTEX" ) {
       shader_handle = glCreateShaderObjectARB( GL_VERTEX_SHADER_ARB );
+    } else if( shader_type == "GEOMETRY" ) {
+      if( !GLEW_EXT_geometry_shader4 ) {
+        Console(4) << "Warning: Geometry shaders not supported by your graphics card. ShaderPart with type \"GEOMETRY\" will be ignored." << endl;
+        return 0;
+      }
+      shader_handle = glCreateShaderObjectARB( GL_GEOMETRY_SHADER_EXT );
     } else {
       shader_handle = 0;
       Console(3) << "Warning: Unsupported shader type \"" << shader_type
                  << "\" in ShaderPart node. Must be either \"FRAGMENT\"" 
                  << " or \"VERTEX\"." << endl;
-      //PROFILE_END();
       return shader_handle;
     }
     

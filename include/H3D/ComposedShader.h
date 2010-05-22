@@ -79,7 +79,10 @@ namespace H3D {
                     Inst< SFBool       > _activate    = 0,
                     Inst< SFString     > _language    = 0,
                     Inst< MFShaderPart > _parts       = 0,
-                    Inst< SFBool       > _suppressUniformWarnings = 0 );
+                    Inst< SFBool       > _suppressUniformWarnings = 0,
+                    Inst< SFString     > _geometryInputType = 0,
+                    Inst< SFString     > _geometryOutputType = 0,
+                    Inst< SFInt32      > _geometryVerticesOut = 0  );
 
     /// The addField method is specialized to add a route from the field
     /// added to the displayList field.
@@ -119,6 +122,37 @@ namespace H3D {
     /// \dotfile ComposedShader_parts.dot
     auto_ptr< SFBool > suppressUniformWarnings;
 
+    /// The input geometry type of the geometry being rendered
+    /// with a geometry shader. 
+    /// Only used when type a ShaderPart is of type "GEOMETRY".
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "TRIANGLES" \n
+    /// <b>Valid values:</b> "POINTS", "LINES", "TRIANGLES", 
+    /// "LINES_ADJACENCY", "TRIANGLES_ADJACENCY",
+    /// \dotfile ShaderPart_geometryInputType.dot
+    auto_ptr< SFString > geometryInputType;
+
+    /// The output geometry type of the geometry being rendered
+    /// with a geometry shader. 
+    /// Only used when type a ShaderPart is of type "GEOMETRY".
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "TRIANGLE_STRIP" \n
+    /// <b>Valid values:</b> "POINTS", "LINE_STRIP", "TRIANGLE_STRIP"
+    /// \dotfile ShaderPart_geometryOutputType.dot
+    auto_ptr< SFString > geometryOutputType;
+
+    /// The number of vertices the geometry shader generates. 
+    /// Only used when type a ShaderPart is of type "GEOMETRY".
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 64 \n
+    ///
+    /// \dotfile ShaderPart_geometryVerticesOut.dot
+    auto_ptr< SFInt32  > geometryVerticesOut;
+
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
@@ -136,10 +170,13 @@ namespace H3D {
     static map<GLhandleARB, int> phandle_counts;
 
     // create program handle for a shader
-    static GLhandleARB createHandle(const ComposedShader* shader);
+    static GLhandleARB createHandle(ComposedShader* shader);
 
     // try to find existing handle (with the same signature), if not, go create one
-    static std::string genKeyFromShader(const ComposedShader* shader);
+    static std::string genKeyFromShader(ComposedShader* shader);
+
+    /// Sets geometry shader paramters based on fields.
+    void setGeometryShaderParameters( GLenum program_handle);
 
   };
 }

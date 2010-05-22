@@ -33,6 +33,7 @@
 #include <H3D/X3DUrlObject.h>
 #include <GL/glew.h>
 #include <H3D/SFString.h>
+#include <H3D/SFInt32.h>
 
 namespace H3D {
 
@@ -68,7 +69,7 @@ namespace H3D {
     ShaderPart( Inst< SFNode         > _metadata      = 0,
                 Inst< MFString       > _url           = 0,
                 Inst< SFString       > _type          = 0,
-                Inst< SFShaderString > _shader_string = 0);
+                Inst< SFShaderString > _shader_string = 0 );
     
     /// Compile the shader using the shader_string field as text input.
     /// Returns a handle to the compiled shader or 0 if compiling 
@@ -83,7 +84,7 @@ namespace H3D {
 
     /// The type field indicates whether this object shall be compiled
     /// as a vertex shader, fragment shader, or other future-defined shader 
-    /// type. Valid values are "VERTEX" and "FRAGMENT".
+    /// type. Valid values are "VERTEX", "FRAGMENT" or "GEOMETRY".
     /// 
     /// <b>Access type:</b> initializeOnly \n
     /// \dotfile ShaderPart_type.dot
