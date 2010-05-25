@@ -137,21 +137,28 @@ void PlaneSensor::setDragOutputEvents( bool _enabled,
         // Initialize variables used when active.
         send_warning_message = true;
         last_intersection = axis_rotation_matrix_inverse * geometry_intersection;
-        active_global_to_local_matrix = axis_rotation_matrix_inverse * geometry_global_to_local;
+        active_global_to_local_matrix = geometry_global_to_local;
         new_plane = false;
         plane_d = plane_normal * last_intersection;
-        trackPoint_changed->setValue( geometry_intersection, id );
-        Vec3f tmp_plane_normal = axis_rotation_matrix * plane_normal;
-
-        translation_changed->setValue( axis_rotation_matrix *
-          ( last_offset_axis_rotation_inv * offset->getValue() ), id );
+        // According to section 20.4.2 of the X3D specification
+        // translation_changed and trackPoint_changed events should not be sent
+        // at first activation:
+        // "For each subsequent movement of the bearing, a translation_changed
+        // event is output which corresponds to the sum of the relative
+        // translation from the original intersection point to the intersection
+        // point of the new bearing in the plane plus the offset value. The
+        // sign of the translation is defined by the Z=0 plane of the local
+        // sensor coordinate system. trackPoint_changed events reflect the
+        // unclamped drag position on the surface of this plane."
       } else {
         // Calculate intersection and send events.
         H3DFloat t;
         Vec3f intersectionPoint;
+        Matrix4f global_to_local =
+          axis_rotation_matrix_inverse * active_global_to_local_matrix;
         if( intersectLinePlane(
-              active_global_to_local_matrix * from,
-              active_global_to_local_matrix * to,
+              global_to_local * from,
+              global_to_local * to,
               t, intersectionPoint ) ) {
           send_warning_message = true;
           Vec3f trans_changed = intersectionPoint - last_intersection

@@ -172,6 +172,8 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
                                           const Vec3f &to ) {
   if( _enabled ) {
     if( isActive->getValue() ) {
+      Matrix4f axis_rotation_matrix = Matrix4f( axisRotation->getValue() );
+      Matrix4f axis_rotation_matrix_inverse = axis_rotation_matrix.transformInverse();
       if( new_cylinder ) {
         // Initialize variabels needed for outputting events.
         send_warning_message = true;
@@ -179,34 +181,40 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
         Vec3f bearing = geometry_global_to_local_original * from -
                         geometry_global_to_local_original * to;
         bearing.normalize();
-        H3DFloat dot_product = ( axisRotation->getValue() * y_axis ) * bearing;
+        Vec3f new_y_axis = axis_rotation_matrix * y_axis;
+        H3DFloat dot_product = new_y_axis * bearing;
         use_caps = 
           H3DAcos( H3DAbs( dot_product ) ) < diskAngle->getValue();
 
         // create a new invisible cylinder if a cylinder will be used.
-        last_intersection = geometry_intersection;
+        last_intersection = axis_rotation_matrix_inverse * geometry_intersection;
         last_intersection.y = 0.0f;
         if( !use_caps )
           radius = last_intersection.length();
 
         last_intersection.normalizeSafe();
-        trackPoint_changed->setValue( geometry_intersection, id );
-        rotation_changed->setValue( Rotation( y_axis, 
-                                              offset->getValue() ),
-                                        id );
+        // According to section 20.4.1 of the X3D specification
+        // trackPoint_changed and rotation_changed events should not be sent at
+        // first activation:
+        // "For each SUBSEQUENT position of the bearing, a rotation_changed
+        // event is sent that equals the sum of the rotation about the +Y-axis
+        // vector of the local sensor coordinate system (from the initial
+        // intersection to the new intersection) plus the offset value.
+        // trackPoint_changed events reflect the unclamped drag position on the
+        // surface of this disk."
         new_cylinder = false;
       } else {
         // Check intersection with cylinder or plane.
         H3DFloat t;
         Vec3f intersectionPoint;
         bool intersected = false;
-        Matrix4f global_to_local = Matrix4f( axisRotation->getValue() ) *
+        Matrix4f global_to_local = axis_rotation_matrix_inverse *
                                    geometry_global_to_local_original;
         if( use_caps ) {
           if( intersectLinePlane( global_to_local * from,
                                   global_to_local * to,
                                   t, intersectionPoint ) )
-          intersected = true;
+            intersected = true;
         } else {
           Vec3f nearPlaneTransformed = global_to_local * from;
           Vec3f farPlaneTransformed = global_to_local * to;
@@ -239,7 +247,8 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
         // if intersection send events.
         if( intersected ) {
           send_warning_message = true;
-          trackPoint_changed->setValue( intersectionPoint, id );
+          trackPoint_changed->setValue( axis_rotation_matrix *
+                                        intersectionPoint, id );
           intersectionPoint.y = 0.0f;
           intersectionPoint.normalizeSafe();
           H3DFloat angle = 0;
@@ -264,7 +273,8 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
           if( min_angle <= max_angle )
             angle = Clamp( angle, min_angle, max_angle );
 
-          rotation_changed->setValue( Rotation( y_axis, angle ),
+          rotation_changed->setValue( Rotation( axis_rotation_matrix * y_axis,
+                                                angle ),
                                           id );
         } else {
           if( send_warning_message ) {
