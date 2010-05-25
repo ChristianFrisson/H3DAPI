@@ -132,6 +132,21 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
   }
   m_inv = m.inverse();
 
+  if( GLEW_EXT_geometry_shader4 ) {
+    renderShadowGeometryShader( g, light, draw_caps, m, m_inv );
+  } else {
+    renderShadowFallback( g, light, draw_caps, m, m_inv );
+  }
+
+}
+
+void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
+					   X3DLightNode *light, 
+					   bool draw_caps,
+					   const Matrix4f &m,
+					   const Matrix4f &m_inv ) {
+
+
   if(!triangles_changed->isUpToDate() ) {
     triangles_changed->upToDate();
     triangles.clear();
@@ -398,4 +413,454 @@ void ShadowGeometry::SFGeometryNode::onRemove( Node *n ) {
     geom->boundTree->unroute( shadow_geom->triangles_changed );
   }
   TypedSFNode< X3DGeometryNode >::onRemove( n );
+}
+
+
+const char *vertex_shader_string = 
+"glsl:\n"
+"void main() {\n"
+"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+"} \n";
+
+const char *fragment_shader_string = 
+"glsl:\n"
+"void main() {\n"
+"  gl_FragColor = vec4( vec3(gl_LightSource[0].position), 1.0 ); \n"
+"} \n";
+
+
+void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
+						 X3DLightNode *light, 
+						 bool draw_caps,
+						 const Matrix4f &m,
+						 const Matrix4f &m_inv ) {
+
+  PointLight *point_light = dynamic_cast< PointLight * >( light );
+  DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );
+
+  // initialize shader
+  if( point_light && !point_light_shader.get() ) {
+    point_light_shader.reset( new ComposedShader );
+
+    point_light_shader->geometryInputType->setValue( "TRIANGLES_ADJACENCY" );
+    point_light_shader->geometryOutputType->setValue( "TRIANGLE_STRIP" );
+
+    // add field for uniform variable lightPosition.
+    Field *lightPos = new SFVec3f;
+    point_light_shader->addField( "lightPosition", Field::INPUT_OUTPUT, lightPos );
+    Field *drawCaps = new SFBool;
+    point_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCaps );
+
+    // vertex shader
+    ShaderPart *vertex_shader = new ShaderPart;
+    vertex_shader->type->setValue( "VERTEX" );
+    vertex_shader->url->push_back( vertex_shader_string );
+    point_light_shader->parts->push_back( vertex_shader );
+
+    // geometry shader
+    ShaderPart *geom_shader = new ShaderPart;
+    geom_shader->type->setValue( "GEOMETRY" );
+    geom_shader->url->push_back( getPointLightGeometryShaderString() );
+    point_light_shader->parts->push_back( geom_shader );
+
+    // fragment shader
+    ShaderPart *fragment_shader = new ShaderPart;
+    fragment_shader->type->setValue( "FRAGMENT" );
+    fragment_shader->url->push_back( fragment_shader_string );
+    point_light_shader->parts->push_back( fragment_shader );  
+  }
+
+  if( dir_light && !dir_light_shader.get() ) {
+    dir_light_shader.reset( new ComposedShader );
+
+    dir_light_shader->geometryInputType->setValue( "TRIANGLES_ADJACENCY" );
+    dir_light_shader->geometryOutputType->setValue( "TRIANGLE_STRIP" );
+
+    // add field for uniform variable lightDirection.
+    Field *lightDir = new SFVec3f;
+    dir_light_shader->addField( "lightDirection", Field::INPUT_OUTPUT, lightDir );
+    Field *drawCaps = new SFBool;
+    dir_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCaps );
+
+    // vertex shader
+    ShaderPart *vertex_shader = new ShaderPart;
+    vertex_shader->type->setValue( "VERTEX" );
+    vertex_shader->url->push_back( vertex_shader_string );
+    dir_light_shader->parts->push_back( vertex_shader );
+
+    // geometry shader
+    ShaderPart *geom_shader = new ShaderPart;
+    geom_shader->type->setValue( "GEOMETRY" );
+    cerr << "F"<< endl;
+    geom_shader->url->push_back( getDirLightGeometryShaderString() );
+    cerr << "FDAS"<< endl;
+    dir_light_shader->parts->push_back( geom_shader );
+
+    // fragment shader
+    ShaderPart *fragment_shader = new ShaderPart;
+    fragment_shader->type->setValue( "FRAGMENT" );
+    fragment_shader->url->push_back( fragment_shader_string );
+    dir_light_shader->parts->push_back( fragment_shader );  
+  }
+
+  // update the vertex array and indices for the geometry
+  if(!triangles_changed->isUpToDate() ) {
+    triangles_changed->upToDate();
+    triangles.clear();
+    g->boundTree->getValue()->getAllTriangles( triangles );
+    updateAdjacenctVertexArray( triangles, triangle_points, adjacency_index );
+  }
+
+  // enable appropriate shader
+  if( point_light ) {
+    SFVec3f *lightPos = static_cast< SFVec3f * >(point_light_shader->getField( "lightPosition" ));
+    lightPos->setValue( point_light->location->getValue() );
+    SFBool *drawCaps = static_cast< SFBool * >(point_light_shader->getField( "drawCaps" ));
+    drawCaps->setValue( drawCaps );
+    point_light_shader->preRender();
+    point_light_shader->render();
+  } else if( dir_light ) {
+    SFVec3f *lightDir = static_cast< SFVec3f * >(dir_light_shader->getField( "lightDirection" ));
+    lightDir->setValue( dir_light->direction->getValue() );
+    SFBool *drawCaps = static_cast< SFBool * >(dir_light_shader->getField( "drawCaps" ));
+    drawCaps->setValue( drawCaps );
+    dir_light_shader->preRender();
+    dir_light_shader->render();
+  }
+
+  // draw shadow geometry using vertex arrays
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+
+  GLfloat mv[] = { 
+    m[0][0], m[1][0], m[2][0], 0,
+    m[0][1], m[1][1], m[2][1], 0,
+    m[0][2], m[1][2], m[2][2], 0,
+    m[0][3], m[1][3], m[2][3], 1 };
+
+  glMultMatrixf( mv );
+
+  if( draw_caps ) {
+    // if drawing caps make the geometry a little smaller to avoid z-buffer
+    // issues since both the shadow volume and geometry itself would be 
+    // drawn in the same place, causing flickering.
+    GLfloat scale = scale_factor;
+    glScalef( scale, scale, scale );
+  }
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(3, GL_DOUBLE, 0,
+		  &(*triangle_points.begin()) );
+  glDrawElements( GL_TRIANGLES_ADJACENCY_EXT,
+		  adjacency_index.size(),
+		  GL_UNSIGNED_INT,
+		  &(*(adjacency_index.begin()) ) );
+
+  glDisableClientState(GL_VERTEX_ARRAY);
+
+  glPopMatrix();
+
+  // disable shaders
+  if( point_light ) {
+    point_light_shader->postRender();
+  } else if( dir_light ) {
+    dir_light_shader->postRender();
+  }
+}
+
+
+void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::Triangle > &triangles, 
+						 vector< Vec3d > &triangle_points, 
+						 vector< unsigned int > &adjacency_index ) {
+  updateNeighbours( triangles );
+  
+  triangle_points.clear();
+  triangle_points.reserve( triangles.size() * 3 );
+  adjacency_index.clear();
+  adjacency_index.reserve( triangles.size() * 6 );
+
+  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+    triangle_points.push_back( triangles[i].a );
+    triangle_points.push_back( triangles[i].b );
+    triangle_points.push_back( triangles[i].c );
+
+    //    cerr << triangles[i].a << endl;
+
+    //    adjacency_index.push_back( i*3 );
+    //    adjacency_index.push_back( i*3 +1);
+    //    adjacency_index.push_back( i*3 +2);
+    //    continue;
+    // Triangle adjacency specification order
+    // 1 - - - 2 - - - 3    
+    //          ^\            
+    //    \     | \     |      
+    //          |  \           
+    //      \   |   \   |       
+    //          |    \        
+    //        \ |     \ |      
+    //          |      v          
+    //          0<------4           
+    //
+    //            \     |          
+    //
+    //              \   |              
+    //
+    //                \ |             
+    //
+    //                 5    
+
+    adjacency_index.push_back( i*3 );
+
+    // find neighbour triangle vertex index
+    int n0_index = neighbours[ i*3 ];
+    if( n0_index == -1 ) {
+      // no neighbour so just repeat the vertex
+      adjacency_index.push_back( i*3 );
+    } else {
+      const HAPI::Collision::Triangle &n0 = triangles[n0_index];
+      adjacency_index.push_back( n0_index*3 + 
+				 getMissingPointIndex( n0,
+						       triangles[i].a,
+						       triangles[i].b ) );
+    }
+
+    adjacency_index.push_back( i*3+1 );
+
+    // find neighbour triangle vertex index
+    int n1_index = neighbours[ i*3 + 1];
+    if( n1_index == -1 ) {
+      // no neighbour so just repeat the vertex
+      adjacency_index.push_back( i*3 + 1 );
+    } else {
+      const HAPI::Collision::Triangle &n1 = triangles[n1_index];
+      adjacency_index.push_back( n1_index*3 + 
+				 getMissingPointIndex( n1,
+						       triangles[i].b,
+						       triangles[i].c ) );
+    }
+
+    adjacency_index.push_back( i*3+2 );
+
+    // find neighbour triangle vertex index
+    int n2_index = neighbours[ i*3 + 2];
+    if( n2_index == -1 ) {
+      // no neighbour so just repeat the vertex
+      adjacency_index.push_back( i*3 + 2 );
+    } else {
+      const HAPI::Collision::Triangle &n2 = triangles[n2_index];
+      adjacency_index.push_back( n2_index*3 + 
+				 getMissingPointIndex( n2,
+						       triangles[i].c,
+						       triangles[i].a ) );
+    }
+  }
+}
+
+
+int ShadowGeometry::getMissingPointIndex( const HAPI::Collision::Triangle  &t,
+					  const Vec3d &p0, 
+					  const Vec3d &p1 ) {
+  if( t.a != p0 && t.a != p1 ) return 0;
+  if( t.b != p0 && t.b != p1 ) return 1;
+  if( t.c != p0 && t.c != p1 ) return 2;
+  
+}
+
+
+const char *geometry_shader_functions_string = 
+  "#version 120 \n"
+  "#extension GL_EXT_geometry_shader4 : enable\n"
+  "\n"
+  "// returns true if pos is on the same side of the triangle as the normal is pointing\n"
+  "bool triangleFacingPos(vec3 v0, vec3 v1, vec3 v2, vec4 pos) {\n"
+  "  vec3 e0 = v1 - v0;\n"
+  "  vec3 e1 = v2 - v0;\n"
+  "  vec3 normal = cross(e1, e0);\n"
+  "  return dot(normal, vec3(pos)-v0) >= -1e-7;\n"
+  "}\n"
+  "\n"
+  "// returns true if dir points in the opposite direction of the triangle normal\n"
+  "bool triangleFacingDir(vec3 v0, vec3 v1, vec3 v2, vec3 dir) {\n"
+  "  vec3 e0 = v1 - v0;\n"
+  "  vec3 e1 = v2 - v0;\n"
+  "  vec3 normal = cross(e0, e1);\n"
+  "  return dot(normal, -dir) >= -1e-7;\n"
+  "}\n"
+  "\n"
+  "// given a silhouette edge(v0, v1) and a point light position a quad it drawn \n"
+  "// from the edge to its projection at infinity\n"
+  "// all input in normalized device coordinates.\n"
+  "void edgeToInfinityGeometryPointLight( vec4 v0, vec4 v1, vec4 light_pos ) {\n"
+"  vec4 light_pos_model = gl_ProjectionMatrixInverse * light_pos;\n"
+  "  vec3 dir_v0 = vec3(gl_ProjectionMatrixInverse * v0 - light_pos_model);\n"
+"  vec3 dir_v1 = vec3(gl_ProjectionMatrixInverse * v1 - light_pos_model);\n"
+  "  \n"
+  "  gl_Position = v1;\n"
+  "  EmitVertex();\n"
+  "  gl_Position = v0;\n"
+  "  EmitVertex();\n"
+  "  gl_Position = gl_ProjectionMatrix * vec4( dir_v1, 0.0 );\n"
+  "  EmitVertex();\n"
+  "  gl_Position = gl_ProjectionMatrix * vec4( dir_v0, 0.0 );\n"
+  "  EmitVertex();\n"
+  "  EndPrimitive();\n"
+  "}\n"
+  "\n"
+  "// given a silhouette edge(v0, v1) and a directional light direction a quad it drawn \n"
+  "// from the edge to its projection at infinity.\n"
+  "// All input in view coordinates\n"
+  "void edgeToInfinityGeometryDirLight( vec3 v0, vec3 v1, vec3 light_dir ) {\n"
+  "  gl_Position = gl_ProjectionMatrix * vec4(v1, 1.0);\n"
+  "  EmitVertex();\n"
+  "  gl_Position = gl_ProjectionMatrix * vec4(v0, 1.0 );\n"
+  "  EmitVertex();\n"
+  "  gl_Position = gl_ProjectionMatrix * vec4( light_dir, 0.0 );\n"
+  "  EmitVertex();\n"
+  "  gl_Position = gl_ProjectionMatrix * vec4(  light_dir, 0.0 );\n"
+  "  EmitVertex();\n"
+  "  EndPrimitive();\n"
+  "}\n"
+  "\n"
+  "// light_pos_view is light position in view coordinates\n"
+  "void mainPointLight( vec4 light_pos_view, bool draw_caps ) {\n"
+  "  vec4 light_pos = gl_ProjectionMatrix * light_pos_view;\n"
+  "  \n"
+  "  if( triangleFacingPos( vec3(gl_PositionIn[0]), \n"
+  "			 vec3(gl_PositionIn[2]), \n"
+  "			 vec3(gl_PositionIn[4]),\n"
+  "			 light_pos ) ) {\n"
+  "    // triangle facing light\n"
+  "\n"
+  "    if( draw_caps ) {\n"
+  "      // render the triangle itself\n"
+  "      gl_Position = gl_PositionIn[0];\n"
+  "      EmitVertex();\n"
+  "      gl_Position = gl_PositionIn[2];\n"
+  "      EmitVertex();\n"
+  "      gl_Position = gl_PositionIn[4];\n"
+  "      EmitVertex();\n"
+  "      EndPrimitive();\n"
+  "    }\n"
+  "\n"
+  "    // if a silhouette edge, render edge to infinity.\n"
+  "\n"
+  "    // edge 0 silhouette edge\n"
+  "    if( !triangleFacingPos( vec3(gl_PositionIn[0]), \n"
+  "			    vec3(gl_PositionIn[1]), \n"
+  "			    vec3(gl_PositionIn[2]),\n"
+  "			    light_pos ) ) {\n"
+  "      edgeToInfinityGeometryPointLight( gl_PositionIn[0], \n"
+  "					gl_PositionIn[2], \n"
+  "					light_pos );\n"
+  "    }\n"
+  "\n"
+  "    // edge 1 silhouette edge\n"
+  "    if( !triangleFacingPos( vec3(gl_PositionIn[2]), \n"
+  "			    vec3(gl_PositionIn[3]), \n"
+  "			    vec3(gl_PositionIn[4]),\n"
+  "			    light_pos ) ) {\n"
+  "      edgeToInfinityGeometryPointLight( gl_PositionIn[2], \n"
+  "					gl_PositionIn[4], \n"
+  "					light_pos );\n"
+  "\n"
+  "    }\n"
+  "\n"
+  "    // edge 2 silhouette edge\n"
+  "    if( !triangleFacingPos( vec3(gl_PositionIn[4]), \n"
+  "			    vec3(gl_PositionIn[5]), \n"
+  "			    vec3(gl_PositionIn[0]),\n"
+  "			    light_pos ) ) {\n"
+  "      edgeToInfinityGeometryPointLight( gl_PositionIn[4], \n"
+  "					gl_PositionIn[0], \n"
+  "					light_pos );\n"
+  "\n"
+  "    }\n"
+  "  } else {\n"
+  "    if( draw_caps ) {\n"
+  "      // triangle facing away from light.\n"
+  "      vec4 light_pos_model = gl_ProjectionMatrixInverse * light_pos;\n"
+  "      vec3 dir_v0 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[0] - light_pos_model);\n"
+  "      vec3 dir_v1 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[2] - light_pos_model);\n"
+  "      vec3 dir_v2 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[4] - light_pos_model);\n"
+  "      \n"
+  "      gl_Position = gl_ProjectionMatrix * vec4( dir_v0, 0.0 );\n"
+  "      EmitVertex();\n"
+  "      gl_Position = gl_ProjectionMatrix * vec4( dir_v1, 0.0 );\n"
+  "      EmitVertex();\n"
+  "      gl_Position = gl_ProjectionMatrix * vec4( dir_v2, 0.0 );\n"
+  "      EmitVertex();\n"
+  "      EndPrimitive();\n"
+  "    }\n"
+  "  }\n"
+  "}\n"
+  "\n"
+  "\n"
+  "// light_dir is in view coordinates\n"
+  "void mainDirectionalLight( vec3 light_dir, bool draw_caps ) {\n"
+  "\n"
+  "  // transforming to view space\n"
+  "  vec3 p0 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[0]);\n"
+  "  vec3 p1 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[1]);\n"
+  "  vec3 p2 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[2]);\n"
+  "  vec3 p3 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[3]);\n"
+  "  vec3 p4 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[4]);\n"
+  "  vec3 p5 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[5]);\n"
+  "\n"
+  "  // if a silhouette edge, render edge to infinity.\n"
+  "  if( triangleFacingDir( p0, p2, p4, light_dir ) ) {\n"
+  "\n"
+  "    if( draw_caps ) {\n"
+  "      // render the triangle itself(only when drawing caps)\n"
+  "      // no back cap needed for directional lights since all points \n"
+  "      // converge to the same point at infinity.\n"
+  "      gl_Position = gl_PositionIn[0];\n"
+  "      EmitVertex();\n"
+  "      gl_Position = gl_PositionIn[2];\n"
+  "      EmitVertex();\n"
+  "      gl_Position = gl_PositionIn[4];\n"
+  "      EmitVertex();\n"
+  "      EndPrimitive();\n"
+  "    }\n"
+  "   \n"
+  "    // edge 0 silhouette edge\n"
+  "    if( !triangleFacingDir( p0, p1, p2, light_dir ) ) {\n"
+  "      edgeToInfinityGeometryDirLight( p0, p2, light_dir );\n"
+  "    }\n"
+  "\n"
+  "    // edge 1 silhouette edge\n"
+  "    if( !triangleFacingDir( p2, p3, p4,light_dir ) ) {\n"
+  "      edgeToInfinityGeometryDirLight( p2, p4,light_dir );\n"
+  "    }\n"
+  "\n"
+  "    // edge 2 silhouette edge\n"
+  "    if( !triangleFacingDir( p4, p5, p0, light_dir ) ) {\n"
+  "      edgeToInfinityGeometryDirLight( p4, p0, light_dir );\n"
+  "    }\n"
+  "  }\n"
+  "}\n";
+
+
+
+string ShadowGeometry::getPointLightGeometryShaderString() {
+  stringstream s;
+  s << "glsl:" << endl;
+  s << geometry_shader_functions_string << endl;
+  s << "uniform vec3 lightPosition; " << endl;
+  s << "uniform bool drawCaps; " << endl;
+  s << "void main() { " << endl;
+  s << "  mainPointLight( gl_ModelViewMatrix * vec4( lightPosition, 1.0 ), drawCaps ); " << endl;
+  s << "}" << endl;
+  return s.str();
+}
+
+string ShadowGeometry::getDirLightGeometryShaderString() {
+  stringstream s;
+  s << "glsl:" << endl;
+  s << geometry_shader_functions_string << endl;
+  s << "uniform vec3 lightDirection; " << endl;
+  s << "uniform bool drawCaps; " << endl;
+  s << "void main() { " << endl;
+  s << "  mainDirectionalLight( (gl_ModelViewMatrix * vec4( lightDirection, 0.0 )).xyz, drawCaps ); " << endl;
+  s << "}" << endl;
+  return s.str();
 }
