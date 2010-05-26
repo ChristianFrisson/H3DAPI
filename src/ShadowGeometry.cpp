@@ -418,8 +418,9 @@ void ShadowGeometry::SFGeometryNode::onRemove( Node *n ) {
 
 const char *vertex_shader_string = 
 "glsl:\n"
+"uniform mat4 modelMatrix; \n"
 "void main() {\n"
-"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+"  gl_Position = gl_ModelViewProjectionMatrix * modelMatrix * gl_Vertex;\n"
 "} \n";
 
 const char *fragment_shader_string = 
@@ -448,6 +449,11 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
     // add field for uniform variable lightPosition.
     Field *lightPos = new SFVec3f;
     point_light_shader->addField( "lightPosition", Field::INPUT_OUTPUT, lightPos );
+
+    Field *model_matrix = new SFMatrix4f;
+    point_light_shader->addField( "modelMatrix", 
+				  Field::INPUT_OUTPUT, model_matrix );
+
     Field *drawCaps = new SFBool;
     point_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCaps );
 
@@ -479,6 +485,12 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
     // add field for uniform variable lightDirection.
     Field *lightDir = new SFVec3f;
     dir_light_shader->addField( "lightDirection", Field::INPUT_OUTPUT, lightDir );
+
+    Field *model_matrix = new SFMatrix4f;
+    dir_light_shader->addField( "modelMatrix", 
+				Field::INPUT_OUTPUT, model_matrix );
+
+
     Field *drawCaps = new SFBool;
     dir_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCaps );
 
@@ -491,9 +503,7 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
     // geometry shader
     ShaderPart *geom_shader = new ShaderPart;
     geom_shader->type->setValue( "GEOMETRY" );
-    cerr << "F"<< endl;
     geom_shader->url->push_back( getDirLightGeometryShaderString() );
-    cerr << "FDAS"<< endl;
     dir_light_shader->parts->push_back( geom_shader );
 
     // fragment shader
@@ -511,43 +521,40 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
     updateAdjacenctVertexArray( triangles, triangle_points, adjacency_index );
   }
 
+  Matrix4f model_matrix = m;
+  if( draw_caps ) {
+    // if drawing caps make the geometry a little smaller to avoid z-buffer
+    // issues since both the shadow volume and geometry itself would be 
+    // drawn in the same place, causing flickering.
+    H3DFloat s = (H3DFloat) scale_factor; 
+    model_matrix = model_matrix * Matrix4f( s, 0, 0, 0,
+					    0, s, 0, 0,
+					    0, 0, s, 0,
+					    0, 0, 0, 1 );
+  }
+
   // enable appropriate shader
   if( point_light ) {
     SFVec3f *lightPos = static_cast< SFVec3f * >(point_light_shader->getField( "lightPosition" ));
     lightPos->setValue( point_light->location->getValue() );
     SFBool *drawCaps = static_cast< SFBool * >(point_light_shader->getField( "drawCaps" ));
-    drawCaps->setValue( drawCaps );
+    drawCaps->setValue( draw_caps );
+    SFMatrix4f *modelMatrix = static_cast< SFMatrix4f * >(point_light_shader->getField( "modelMatrix" ));
+    modelMatrix->setValue( model_matrix );
     point_light_shader->preRender();
     point_light_shader->render();
   } else if( dir_light ) {
     SFVec3f *lightDir = static_cast< SFVec3f * >(dir_light_shader->getField( "lightDirection" ));
     lightDir->setValue( dir_light->direction->getValue() );
     SFBool *drawCaps = static_cast< SFBool * >(dir_light_shader->getField( "drawCaps" ));
-    drawCaps->setValue( drawCaps );
+    drawCaps->setValue( draw_caps );
+    SFMatrix4f *modelMatrix = static_cast< SFMatrix4f * >(dir_light_shader->getField( "modelMatrix" ));
+    modelMatrix->setValue( model_matrix );
     dir_light_shader->preRender();
     dir_light_shader->render();
   }
 
   // draw shadow geometry using vertex arrays
-  glMatrixMode( GL_MODELVIEW );
-  glPushMatrix();
-
-  GLfloat mv[] = { 
-    m[0][0], m[1][0], m[2][0], 0,
-    m[0][1], m[1][1], m[2][1], 0,
-    m[0][2], m[1][2], m[2][2], 0,
-    m[0][3], m[1][3], m[2][3], 1 };
-
-  glMultMatrixf( mv );
-
-  if( draw_caps ) {
-    // if drawing caps make the geometry a little smaller to avoid z-buffer
-    // issues since both the shadow volume and geometry itself would be 
-    // drawn in the same place, causing flickering.
-    GLfloat scale = scale_factor;
-    glScalef( scale, scale, scale );
-  }
-
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_DOUBLE, 0,
 		  &(*triangle_points.begin()) );
@@ -557,8 +564,6 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
 		  &(*(adjacency_index.begin()) ) );
 
   glDisableClientState(GL_VERTEX_ARRAY);
-
-  glPopMatrix();
 
   // disable shaders
   if( point_light ) {
