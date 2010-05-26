@@ -5,7 +5,7 @@ ENDIF(WIN32)
 # The name of our project is "UpdateResourceFile".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${UpdateResourceFile_SOURCE_DIR} and
 # to the root binary directory of the project as ${UpdateResourceFile_BINARY_DIR}.
-project (UpdateResourceFile)
+project( UpdateResourceFile )
 
 # Where to find Source files.
 SET( UpdateResourceFile_SRCS "${UpdateResourceFile_SOURCE_DIR}/UpdateResourceFile.cpp" )
@@ -22,8 +22,15 @@ SET(requiredLibs)
 # Where to find modules, used when finding packages.
 SET(CMAKE_MODULE_PATH "${UpdateResourceFile_SOURCE_DIR}/../../build/modules/")
 
+# Set properties so that the project is built statically with MFC to avoid
+# linking against, and hence loading msvcp/r71.dll.
+IF( WIN32 )
+  ADD_DEFINITIONS(-D_AFXDLL)
+  SET(CMAKE_MFC_FLAG 1)
+ENDIF( WIN32 )
+
 # Create build filess.
-ADD_EXECUTABLE(UpdateResourceFile  ${UpdateResourceFile_SRCS})
+ADD_EXECUTABLE(UpdateResourceFile ${UpdateResourceFile_SRCS})
 TARGET_LINK_LIBRARIES( UpdateResourceFile ${requiredLibs} ${optionalLibs} )
 
 # Debug version should have _d postfix.

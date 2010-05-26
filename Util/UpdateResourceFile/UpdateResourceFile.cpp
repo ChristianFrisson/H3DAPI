@@ -37,7 +37,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-  if (argc < 7){
+  if (argc < 8){
     cerr << "Usage: " << argv[0] << " <project name> <rc file> <rc.cmake file> "
          << "<major version> <minor version> <build version> <entries file> "
          << "[var_name1] [value1]" << endl
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
          << "minor version - Integer used to replace \"project name_MINOR_VERSION\"" << endl
          << "build version - Integer used to replace \"project name_BUILD_VERSION\"" << endl
          << "entries file  - A .svn/entries file from which to get subversion  \"project name_SVN_VERSION\"" << endl
-         << "var1 - Optional. Name of a variable to find in rc.cmake file." << endl
+         << "var_name1 - Optional. Name of a variable to find in rc.cmake file." << endl
          << "value1 - Optional. Value used to replace var1 if found. "
          << "The last two variables can be repeated (in pair) as many times as needed." << endl;
     return 1;

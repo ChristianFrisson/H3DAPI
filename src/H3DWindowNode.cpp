@@ -754,8 +754,14 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   calculateFarAndNearPlane( clip_far, clip_near, 
                             child_to_render, vp, true );
   
-  if( nav_info && nav_info->visibilityLimit->getValue() != 0 )
-    clip_far = nav_info->visibilityLimit->getValue();
+  if( nav_info ) {
+    if( nav_info->visibilityLimit->getValue() > 0 )
+      clip_far = nav_info->visibilityLimit->getValue();
+    else
+      // If visibilityLimit is 0.0, then it means infinity.
+      // We accept values below zero to.
+      clip_far = -1; 
+  }
 
   if( background ) {
     if( clip_near > 0.01f ) clip_near = 0.01f;

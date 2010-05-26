@@ -325,6 +325,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.0 \n
+    /// <b>Default value:</b> [0.0,inf) \n
     auto_ptr< SFFloat > visibilityLimit;
 
     /// When a transition completes, a transitionComplete event is

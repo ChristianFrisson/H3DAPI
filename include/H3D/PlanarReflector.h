@@ -44,6 +44,11 @@ namespace H3D {
   /// \brief The PlanarReflector defines a geometry which will act as a mirror
   /// in the scene.
   ///
+  /// Note that it is up to the user to set visibilityLimit of NavigationInfo
+  /// to a value that is big enough for the PlanarReflector to function
+  /// properly. If the user of the application is allowed to navigate anywhere
+  /// in the scene set visibilityLimit to 0.0.
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/PlanarReflector.x3d">PlanarReflector.x3d</a>
   ///     ( <a href="examples/PlanarReflector.x3d.html">Source</a> )

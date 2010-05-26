@@ -11,6 +11,7 @@
   
   <Scene>
     <Viewpoint position='0.4 0 0.35' orientation='0 1 0 0.85'/>
+    <NavigationInfo visibilityLimit="0"/>
     
     <Transform translation='0 0 -0.2'>
       <PlanarReflector reflectivity='0.8' color='1 1 1'>

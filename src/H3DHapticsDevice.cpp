@@ -428,7 +428,7 @@ void H3DHapticsDevice::updateDeviceValues() {
         
         HAPI::HAPISurfaceObject::ContactInfo ci = (*i).second;
 
-        // TODO: shpould be able to do it in a faster/better way.
+        // TODO: should be able to do it in a faster/better way.
         Matrix4d global_to_local = (*i).first->getInverse();
         Matrix3d global_vec_to_local = global_to_local.getRotationPart();
 
