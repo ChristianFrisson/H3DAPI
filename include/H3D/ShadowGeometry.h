@@ -59,7 +59,7 @@ namespace H3D {
     /// from the X3DGeometryNodes that are put into the field to 
     /// the triangles_changed field of the ShadowGeometry that
     /// contains it.
-    class SFGeometryNode: public TypedSFNode< X3DGeometryNode > {
+    class H3DAPI_API SFGeometryNode: public TypedSFNode< X3DGeometryNode > {
     protected:
       virtual void onAdd( Node *n );
       virtual void onRemove( Node *n );
@@ -177,7 +177,13 @@ namespace H3D {
     /// Shader to use for point lights when using a geometry shader to
     /// draw shader volumes,
     AutoRef< ComposedShader > point_light_shader;
-
+    
+    /// Fields used for uniform variables in point_light_shader. The 
+    /// point_light_shader node owns the pointer so it should not be
+    /// removed by the ShadowGeometry node.
+    auto_ptr< SFMatrix4f > modelMatrix;
+    auto_ptr< SFVec3f > lightParam;
+    auto_ptr< SFBool > drawCaps;
     
     /// Shader to use for derectional lights when using a geometry shader to
     /// draw shader volumes,

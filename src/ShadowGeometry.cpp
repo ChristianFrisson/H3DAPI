@@ -47,7 +47,10 @@ ShadowGeometry::ShadowGeometry( Inst< SFNode>  _metadata,
                                 Inst< SFGeometryNode > _geometry ) :
   H3DShadowObjectNode( _metadata, _transform ),
   geometry( _geometry ),
-  triangles_changed( new Field ) {
+  triangles_changed( new Field ),
+  modelMatrix( new SFMatrix4f ),
+  lightParam( new SFVec3f ),
+  drawCaps( new SFBool ) {
 
   type_name = "ShadowGeometry";
   database.initFields( this );
@@ -448,14 +451,17 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
 
     // add field for uniform variable lightPosition.
     Field *lightPos = new SFVec3f;
+    lightParam->route( lightPos );
     point_light_shader->addField( "lightPosition", Field::INPUT_OUTPUT, lightPos );
 
     Field *model_matrix = new SFMatrix4f;
+    modelMatrix->route( model_matrix );
     point_light_shader->addField( "modelMatrix", 
 				  Field::INPUT_OUTPUT, model_matrix );
 
-    Field *drawCaps = new SFBool;
-    point_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCaps );
+    Field *drawCapsField = new SFBool;
+    drawCaps->route( drawCapsField );
+    point_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCapsField );
 
     // vertex shader
     ShaderPart *vertex_shader = new ShaderPart;
@@ -484,15 +490,18 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
 
     // add field for uniform variable lightDirection.
     Field *lightDir = new SFVec3f;
+    lightParam->route( lightDir );
     dir_light_shader->addField( "lightDirection", Field::INPUT_OUTPUT, lightDir );
 
     Field *model_matrix = new SFMatrix4f;
+    modelMatrix->route( model_matrix );
     dir_light_shader->addField( "modelMatrix", 
 				Field::INPUT_OUTPUT, model_matrix );
 
 
-    Field *drawCaps = new SFBool;
-    dir_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCaps );
+    Field *drawCapsField = new SFBool;
+    drawCaps->route( drawCapsField );
+    dir_light_shader->addField( "drawCaps", Field::INPUT_OUTPUT, drawCapsField );
 
     // vertex shader
     ShaderPart *vertex_shader = new ShaderPart;
@@ -532,24 +541,17 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
 					    0, 0, s, 0,
 					    0, 0, 0, 1 );
   }
+    
+  modelMatrix->setValue( model_matrix );
+  drawCaps->setValue( draw_caps );
 
   // enable appropriate shader
   if( point_light ) {
-    SFVec3f *lightPos = static_cast< SFVec3f * >(point_light_shader->getField( "lightPosition" ));
-    lightPos->setValue( point_light->location->getValue() );
-    SFBool *drawCaps = static_cast< SFBool * >(point_light_shader->getField( "drawCaps" ));
-    drawCaps->setValue( draw_caps );
-    SFMatrix4f *modelMatrix = static_cast< SFMatrix4f * >(point_light_shader->getField( "modelMatrix" ));
-    modelMatrix->setValue( model_matrix );
+    lightParam->setValue( point_light->location->getValue() );
     point_light_shader->preRender();
     point_light_shader->render();
   } else if( dir_light ) {
-    SFVec3f *lightDir = static_cast< SFVec3f * >(dir_light_shader->getField( "lightDirection" ));
-    lightDir->setValue( dir_light->direction->getValue() );
-    SFBool *drawCaps = static_cast< SFBool * >(dir_light_shader->getField( "drawCaps" ));
-    drawCaps->setValue( draw_caps );
-    SFMatrix4f *modelMatrix = static_cast< SFMatrix4f * >(dir_light_shader->getField( "modelMatrix" ));
-    modelMatrix->setValue( model_matrix );
+    lightParam->setValue( dir_light->direction->getValue() );
     dir_light_shader->preRender();
     dir_light_shader->render();
   }
@@ -557,14 +559,14 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
   // draw shadow geometry using vertex arrays
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_DOUBLE, 0,
-		  &(*triangle_points.begin()) );
+                  &(*triangle_points.begin()) );
   glDrawElements( GL_TRIANGLES_ADJACENCY_EXT,
-		  adjacency_index.size(),
-		  GL_UNSIGNED_INT,
-		  &(*(adjacency_index.begin()) ) );
-
+                  adjacency_index.size(),
+                  GL_UNSIGNED_INT,
+                  &(*(adjacency_index.begin()) ) );
+  
   glDisableClientState(GL_VERTEX_ARRAY);
-
+  
   // disable shaders
   if( point_light ) {
     point_light_shader->postRender();
@@ -696,9 +698,9 @@ const char *geometry_shader_functions_string =
   "// from the edge to its projection at infinity\n"
   "// all input in normalized device coordinates.\n"
   "void edgeToInfinityGeometryPointLight( vec4 v0, vec4 v1, vec4 light_pos ) {\n"
-"  vec4 light_pos_model = gl_ProjectionMatrixInverse * light_pos;\n"
+  "  vec4 light_pos_model = gl_ProjectionMatrixInverse * light_pos;\n"
   "  vec3 dir_v0 = vec3(gl_ProjectionMatrixInverse * v0 - light_pos_model);\n"
-"  vec3 dir_v1 = vec3(gl_ProjectionMatrixInverse * v1 - light_pos_model);\n"
+  "  vec3 dir_v1 = vec3(gl_ProjectionMatrixInverse * v1 - light_pos_model);\n"
   "  \n"
   "  gl_Position = v1;\n"
   "  EmitVertex();\n"
