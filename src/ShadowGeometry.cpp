@@ -424,6 +424,15 @@ const char *vertex_shader_string =
 "uniform mat4 modelMatrix; \n"
 "void main() {\n"
 "  gl_Position = gl_ModelViewProjectionMatrix * modelMatrix * gl_Vertex;\n"
+"\n"
+"  // if drawing caps make the geometry a little smaller to avoid z-buffer \n"
+"  // issues since both the shadow volume and geometry itself would be \n"
+"  // drawn in the same place, causing flickering. \n"
+" \n"
+"  if( gl_Vertex.w != 0.0 ) {\n"
+"     gl_Position /= gl_Position.w; \n"
+"     gl_Position.z += 1e-5; \n"
+"  } \n"
 "} \n";
 
 const char *fragment_shader_string = 
@@ -530,19 +539,7 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
     updateAdjacenctVertexArray( triangles, triangle_points, adjacency_index );
   }
 
-  Matrix4f model_matrix = m;
-  if( draw_caps ) {
-    // if drawing caps make the geometry a little smaller to avoid z-buffer
-    // issues since both the shadow volume and geometry itself would be 
-    // drawn in the same place, causing flickering.
-    H3DFloat s = (H3DFloat) scale_factor; 
-    model_matrix = model_matrix * Matrix4f( s, 0, 0, 0,
-					    0, s, 0, 0,
-					    0, 0, s, 0,
-					    0, 0, 0, 1 );
-  }
-    
-  modelMatrix->setValue( model_matrix );
+  modelMatrix->setValue( m );
   drawCaps->setValue( draw_caps );
 
   // enable appropriate shader
@@ -677,13 +674,16 @@ int ShadowGeometry::getMissingPointIndex( const HAPI::Collision::Triangle  &t,
 const char *geometry_shader_functions_string = 
   "#version 120 \n"
   "#extension GL_EXT_geometry_shader4 : enable\n"
+  "vec3 toVec3( vec4 v ) { \n"
+  "  return (v / v.w).xyz; \n"
+  "} \n"
   "\n"
   "// returns true if pos is on the same side of the triangle as the normal is pointing\n"
   "bool triangleFacingPos(vec3 v0, vec3 v1, vec3 v2, vec4 pos) {\n"
   "  vec3 e0 = v1 - v0;\n"
   "  vec3 e1 = v2 - v0;\n"
   "  vec3 normal = cross(e1, e0);\n"
-  "  return dot(normal, vec3(pos)-v0) >= -1e-7;\n"
+  "  return dot(normal, toVec3(pos)-v0) >= -1e-7;\n"
   "}\n"
   "\n"
   "// returns true if dir points in the opposite direction of the triangle normal\n"
@@ -699,8 +699,8 @@ const char *geometry_shader_functions_string =
   "// all input in normalized device coordinates.\n"
   "void edgeToInfinityGeometryPointLight( vec4 v0, vec4 v1, vec4 light_pos ) {\n"
   "  vec4 light_pos_model = gl_ProjectionMatrixInverse * light_pos;\n"
-  "  vec3 dir_v0 = vec3(gl_ProjectionMatrixInverse * v0 - light_pos_model);\n"
-  "  vec3 dir_v1 = vec3(gl_ProjectionMatrixInverse * v1 - light_pos_model);\n"
+  "  vec3 dir_v0 = toVec3(gl_ProjectionMatrixInverse * v0 ) - toVec3(light_pos_model);\n"
+  "  vec3 dir_v1 = toVec3(gl_ProjectionMatrixInverse * v1 ) - toVec3(light_pos_model);\n"
   "  \n"
   "  gl_Position = v1;\n"
   "  EmitVertex();\n"
@@ -732,9 +732,9 @@ const char *geometry_shader_functions_string =
   "void mainPointLight( vec4 light_pos_view, bool draw_caps ) {\n"
   "  vec4 light_pos = gl_ProjectionMatrix * light_pos_view;\n"
   "  \n"
-  "  if( triangleFacingPos( vec3(gl_PositionIn[0]), \n"
-  "			 vec3(gl_PositionIn[2]), \n"
-  "			 vec3(gl_PositionIn[4]),\n"
+  "  if( triangleFacingPos( toVec3(gl_PositionIn[0]), \n"
+  "			 toVec3(gl_PositionIn[2]), \n"
+  "			 toVec3(gl_PositionIn[4]),\n"
   "			 light_pos ) ) {\n"
   "    // triangle facing light\n"
   "\n"
@@ -752,9 +752,9 @@ const char *geometry_shader_functions_string =
   "    // if a silhouette edge, render edge to infinity.\n"
   "\n"
   "    // edge 0 silhouette edge\n"
-  "    if( !triangleFacingPos( vec3(gl_PositionIn[0]), \n"
-  "			    vec3(gl_PositionIn[1]), \n"
-  "			    vec3(gl_PositionIn[2]),\n"
+  "    if( !triangleFacingPos( toVec3(gl_PositionIn[0]), \n"
+  "			    toVec3(gl_PositionIn[1]), \n"
+  "			    toVec3(gl_PositionIn[2]),\n"
   "			    light_pos ) ) {\n"
   "      edgeToInfinityGeometryPointLight( gl_PositionIn[0], \n"
   "					gl_PositionIn[2], \n"
@@ -762,9 +762,9 @@ const char *geometry_shader_functions_string =
   "    }\n"
   "\n"
   "    // edge 1 silhouette edge\n"
-  "    if( !triangleFacingPos( vec3(gl_PositionIn[2]), \n"
-  "			    vec3(gl_PositionIn[3]), \n"
-  "			    vec3(gl_PositionIn[4]),\n"
+  "    if( !triangleFacingPos( toVec3(gl_PositionIn[2]), \n"
+  "			    toVec3(gl_PositionIn[3]), \n"
+  "			    toVec3(gl_PositionIn[4]),\n"
   "			    light_pos ) ) {\n"
   "      edgeToInfinityGeometryPointLight( gl_PositionIn[2], \n"
   "					gl_PositionIn[4], \n"
@@ -773,9 +773,9 @@ const char *geometry_shader_functions_string =
   "    }\n"
   "\n"
   "    // edge 2 silhouette edge\n"
-  "    if( !triangleFacingPos( vec3(gl_PositionIn[4]), \n"
-  "			    vec3(gl_PositionIn[5]), \n"
-  "			    vec3(gl_PositionIn[0]),\n"
+  "    if( !triangleFacingPos( toVec3(gl_PositionIn[4]), \n"
+  "			    toVec3(gl_PositionIn[5]), \n"
+  "			    toVec3(gl_PositionIn[0]),\n"
   "			    light_pos ) ) {\n"
   "      edgeToInfinityGeometryPointLight( gl_PositionIn[4], \n"
   "					gl_PositionIn[0], \n"
@@ -786,9 +786,9 @@ const char *geometry_shader_functions_string =
   "    if( draw_caps ) {\n"
   "      // triangle facing away from light.\n"
   "      vec4 light_pos_model = gl_ProjectionMatrixInverse * light_pos;\n"
-  "      vec3 dir_v0 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[0] - light_pos_model);\n"
-  "      vec3 dir_v1 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[2] - light_pos_model);\n"
-  "      vec3 dir_v2 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[4] - light_pos_model);\n"
+  "      vec3 dir_v0 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[0] ) - toVec3( light_pos_model );\n"
+  "      vec3 dir_v1 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[2] ) - toVec3( light_pos_model );\n"
+  "      vec3 dir_v2 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[4] ) - toVec3( light_pos_model );\n"
   "      \n"
   "      gl_Position = gl_ProjectionMatrix * vec4( dir_v0, 0.0 );\n"
   "      EmitVertex();\n"
@@ -806,12 +806,12 @@ const char *geometry_shader_functions_string =
   "void mainDirectionalLight( vec3 light_dir, bool draw_caps ) {\n"
   "\n"
   "  // transforming to view space\n"
-  "  vec3 p0 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[0]);\n"
-  "  vec3 p1 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[1]);\n"
-  "  vec3 p2 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[2]);\n"
-  "  vec3 p3 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[3]);\n"
-  "  vec3 p4 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[4]);\n"
-  "  vec3 p5 = vec3(gl_ProjectionMatrixInverse * gl_PositionIn[5]);\n"
+  "  vec3 p0 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[0]);\n"
+  "  vec3 p1 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[1]);\n"
+  "  vec3 p2 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[2]);\n"
+  "  vec3 p3 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[3]);\n"
+  "  vec3 p4 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[4]);\n"
+  "  vec3 p5 = toVec3(gl_ProjectionMatrixInverse * gl_PositionIn[5]);\n"
   "\n"
   "  // if a silhouette edge, render edge to infinity.\n"
   "  if( triangleFacingDir( p0, p2, p4, light_dir ) ) {\n"
