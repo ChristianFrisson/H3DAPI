@@ -52,6 +52,7 @@
 #include <H3D/CollisionOptions.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/OrthoViewpoint.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 #include <H3DUtil/TimeStamp.h>
 #include <H3DUtil/Exception.h>
@@ -626,9 +627,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   X3DShapeNode::disable_lighting_if_no_app = true;
 
   DefaultAppearance *def_app = NULL;
+  GraphicsCachingOptions *graphics_options = 0;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) {
     default_settings->getOptionNode( def_app );
+    default_settings->getOptionNode( graphics_options );
   }
 
   
@@ -667,6 +670,17 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   ShadowCaster *shadow_caster = NULL;
   if( ti ) {
     ti->getUserData( "ShadowCaster",  (void **)&shadow_caster);
+
+    // set options for default shadows
+    if( graphics_options ) {
+      if( !graphics_options->useDefaultShadows->getValue() ) {
+        shadow_caster = NULL;
+      }
+
+      if( shadow_caster ) {
+        shadow_caster->shadowDarkness->setValue( graphics_options->defaultShadowDarkness->getValue()  );
+      }
+    }
   }
 
   // get the viewpoint. If the H3DWindowNode viewpoint field is set use that

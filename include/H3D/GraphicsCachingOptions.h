@@ -51,7 +51,9 @@ namespace H3D {
                             Inst< SFBool  > _useCaching = 0,
                             Inst< SFInt32 > _cachingDelay  = 0,
                             Inst< SFBool  > _cacheOnlyGeometryNodes = 0,
-                            Inst< SFString > _frustumCulingMode = 0 );
+                            Inst< SFString > _frustumCullingMode = 0,
+                            Inst< SFBool  > _useDefaultShadows = 0,
+                            Inst< SFFloat > _defaultShadowDarkness = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -103,6 +105,23 @@ namespace H3D {
     /// <b>Default value: </b> "NO_CULLING" \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFString > frustumCullingMode;
+
+    /// Controls if shadows created by using the shadow field in Appearance
+    /// nodes should be on or not. This option will only have effect if
+    /// part of a GlobalSettings node.
+    ///
+    /// <b>Default value: </b> true \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool > useDefaultShadows;
+
+    /// Controls the shadow darkness of the default ShadowCaster that is 
+    /// is used by shadows created by using the shadow field in Appearance
+    /// nodes. This option will only have effect if part of a GlobalSettings
+    /// node.
+    ///
+    /// <b>Default value: </b> 0.4 \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFFloat > defaultShadowDarkness;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

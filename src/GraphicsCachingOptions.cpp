@@ -43,6 +43,8 @@ namespace GraphicsCachingOptionsInternals {
   FIELDDB_ELEMENT( GraphicsCachingOptions, cachingDelay, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsCachingOptions, cacheOnlyGeometries, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsCachingOptions, frustumCullingMode, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsCachingOptions, useDefaultShadows, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsCachingOptions, defaultShadowDarkness, INPUT_OUTPUT );
 }
 
 GraphicsCachingOptions::GraphicsCachingOptions( 
@@ -50,12 +52,16 @@ GraphicsCachingOptions::GraphicsCachingOptions(
                            Inst< SFBool  > _useCaching,
                            Inst< SFInt32 > _cachingDelay,
                            Inst< SFBool  > _cacheOnlyGeometryNodes,
-                           Inst< SFString > _frustumCullingMode ) :
+                           Inst< SFString > _frustumCullingMode,
+                           Inst< SFBool  > _useDefaultShadows,
+                           Inst< SFFloat > _defaultShadowDarkness  ) :
   H3DOptionNode( _metadata ),
   useCaching( _useCaching ),
   cachingDelay( _cachingDelay ),
   cacheOnlyGeometries( _cacheOnlyGeometryNodes ),
-  frustumCullingMode( _frustumCullingMode ) {
+  frustumCullingMode( _frustumCullingMode ),
+  useDefaultShadows( _useDefaultShadows ),
+  defaultShadowDarkness( _defaultShadowDarkness ) {
   
   type_name = "GraphicsCachingOptions";
   database.initFields( this );
@@ -67,6 +73,8 @@ GraphicsCachingOptions::GraphicsCachingOptions(
   frustumCullingMode->addValidValue( "GEOMETRY" );
   frustumCullingMode->addValidValue( "ALL" );
   frustumCullingMode->setValue( "NO_CULLING" );
+  useDefaultShadows->setValue( true );
+  defaultShadowDarkness->setValue( 0.4f );
 }
 
 
