@@ -33,4 +33,5 @@
 using namespace H3D;
 
 std::list< H3DMultiPassRenderObject * > H3DMultiPassRenderObject::instances;
+bool H3DMultiPassRenderObject::multi_pass_transparency = false;
 

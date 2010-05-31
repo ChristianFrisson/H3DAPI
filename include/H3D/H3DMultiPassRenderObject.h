@@ -120,12 +120,28 @@ namespace H3D {
       }
     }
 
+    /// If multi pass transparency is set to true the scene should be rendered
+    /// three times graphically, once for all solid objects, once for the back
+    /// side of transparent objects and once for the front face of 
+    /// transparent objects. This is in order to avoid artifacts for 
+    /// transparent objects when rendered in the wrong order. 
+    static void setMultiPassTransparencyAll( bool b ) {
+      multi_pass_transparency = b;
+    }
+
   protected:
     // All instances of H3DMultiPassRenderObject that has been created.
     static std::list< H3DMultiPassRenderObject * > instances;
 
     // The number of times the node appears in the current rendered scene-graph.
     unsigned int nr_times_in_scene;
+
+    // Flag used to know if scene should be rendered three times. See comment
+    // for setMultiPassTransparency function.
+    // Static since it is set just before calling renderPreViewpoint
+    // and it is assumed that H3DWindowNodes are rendered sequentially (and not
+    // from different threads).
+    static bool multi_pass_transparency;
   };
 }
 

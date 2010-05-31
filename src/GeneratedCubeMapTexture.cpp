@@ -31,6 +31,7 @@
 #include <H3D/GeneratedCubeMapTexture.h>
 #include <H3D/X3DBackgroundNode.h>
 #include <H3D/DeviceInfo.h>
+#include <H3D/X3DShapeNode.h>
 
 using namespace H3D;
 
@@ -118,7 +119,7 @@ void GeneratedCubeMapTexture::initializeTextures() {
                     GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, 
                     GL_LINEAR);
-	  textures_initialized = true;
+    textures_initialized = true;
   }
 }
 
@@ -277,17 +278,34 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
              c_ref.x, c_ref.y, c_ref.z, 
              c_up.x, c_up.y, c_up.z );
 
-	// Render the stylus of all haptics devices.
+  // Render the stylus of all haptics devices.
   DeviceInfo *di = DeviceInfo::getActive();
-  if( di ) {
-    di->renderStyli();
-  }
 
   // Render the scene.
   H3DDisplayListObject *dlo = 
     dynamic_cast< H3DDisplayListObject * >( n );
-  if( dlo )  dlo->displayList->callList();
-  else n->render();
+  if( multi_pass_transparency ) {
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
+    if( di ) di->renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else n->render();
+    
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+    if( di ) di->renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else n->render();
+    
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+    if( di ) di->renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else n->render();
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+  } else {
+    X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+    if( di ) di->renderStyli();
+    if( dlo )  dlo->displayList->callList();
+    else n->render();
+  }
 
   glPopAttrib();
 

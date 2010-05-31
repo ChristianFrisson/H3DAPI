@@ -33,6 +33,7 @@
 #include <H3D/Scene.h>
 #include <H3D/X3DBackgroundNode.h>
 #include <H3D/ClipPlane.h>
+#include <H3D/X3DShapeNode.h>
 
 using namespace H3D;
 
@@ -221,7 +222,18 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
       glFrontFace( GL_CW );
     }
 
-    n->render();
+    if( multi_pass_transparency ) {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID; 
+      n->render();
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+      n->render();
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+      n->render();
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+    } else {
+      X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+      n->render();
+    }
     glDisable( GL_CLIP_PLANE0 + plane_index );
     ClipPlane::nr_active_clip_planes--;
   }

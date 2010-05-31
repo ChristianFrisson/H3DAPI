@@ -725,7 +725,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     vp_inv_m[0][2], vp_inv_m[1][2], vp_inv_m[2][2], 0,
     vp_inv_m[0][3], vp_inv_m[1][3], vp_inv_m[2][3], 1 };
 
-  
+  H3DMultiPassRenderObject::setMultiPassTransparencyAll(
+    multi_pass_transparency );
   H3DMultiPassRenderObject::renderPreViewpointAll( child_to_render, vp );
 
   glViewport( 0, 0, width->getValue(), height->getValue() );
