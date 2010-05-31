@@ -80,7 +80,8 @@ void ShadowCaster::render() {
   // set the darkness so that if a point is in shadow from all lights,
   // the darkness should be shadowDarkness.
   // Basically the solution to (1-x)^nr_lights = (1-shadowDarkness)
-  H3DFloat darkness = 1 - H3DPow( 1 - shadowDarkness->getValue(), 1.0/light->size() );
+  H3DFloat darkness = 1 - H3DPow( 1.0 - shadowDarkness->getValue(),
+                                  1.0 / light->size() );
   
   for( MFLightNode::const_iterator l = light->begin(); 
        l != light->end(); l++ ) {
