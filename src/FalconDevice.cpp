@@ -43,8 +43,8 @@ namespace FalconDeviceInternals {
   FIELDDB_ELEMENT( FalconDevice, deviceIndex, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FalconDevice, deviceModelType, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FalconDevice, maxWorkspaceDimensions, OUTPUT_ONLY );
-
-
+  FIELDDB_ELEMENT( FalconDevice, preferredDriver, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FalconDevice, usedDriver, INPUT_OUTPUT );
 }
 
 /// Constructor.
@@ -129,9 +129,9 @@ void FalconDevice::initialize() {
   else {
     if( preferred_driver != "NOVINT" ) {
       Console(4) << "Invalid value \"" << preferred_driver 
-		             << "\" of preferredDriver field in FalconDevice node." 
-		             << "Should be \"NOVINT\" or \"NIFALCON\". Using "
-		             << "\"NOVINT\" instead" << endl;
+                 << "\" of preferredDriver field in FalconDevice node." 
+                 << "Should be \"NOVINT\" or \"NIFALCON\". Using "
+                 << "\"NOVINT\" instead" << endl;
     }
 #ifdef HAVE_FALCONAPI
     if( name != "" ) {
@@ -146,9 +146,9 @@ void FalconDevice::initialize() {
     usedDriver->setValue( "NIFALCON" );
 #else
     Console(4) << "Cannot use FalconDevice. HAPI compiled without"
-	             << " FalconAPI support. Recompile HAPI with "
-	             << "HAVE_FALCONAPI defined"
-	             << " in order to use it." << endl;
+               << " FalconAPI support. Recompile HAPI with "
+               << "HAVE_FALCONAPI defined"
+               << " in order to use it." << endl;
 #endif // HAVE_NIFALCONAPI
 #endif // HAVE_FALCONAPI
   }

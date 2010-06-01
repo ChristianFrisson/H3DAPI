@@ -53,7 +53,7 @@ ENDIF( PREFER_STATIC_LIBRARIES )
 # Include HAPI in the build.
 IF( WIN32 )
   # Should this part only be done for Windows? It is used to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
-  STRING( REPLACE ${H3DAPI_SOURCE_DIR} ${H3DAPI_SOURCE_DIR}/../../HAPI/build BINARY_DIR_FOR_HAPI ${CMAKE_CURRENT_BINARY_DIR} )
+  STRING( REPLACE "H3DAPI" "HAPI" BINARY_DIR_FOR_HAPI ${CMAKE_CURRENT_BINARY_DIR} )
   STRING( COMPARE EQUAL ${BINARY_DIR_FOR_HAPI} ${CMAKE_CURRENT_BINARY_DIR} SPECIAL_BINARY_DIR )
   # If the string was not found when doing replace the default directory should be used for build files.
   IF( SPECIAL_BINARY_DIR )
