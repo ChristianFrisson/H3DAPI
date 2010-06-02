@@ -370,11 +370,33 @@ int main(int argc, char* argv[]) {
   vector<string> xml_files;
 
   char *r = getenv( "H3D_ROOT" );
-
   string h3d_root = r ? r : ""; 
 
-  INIFile ini_file( h3d_root + "/settings/h3dload.ini" );
+#ifdef WIN32
+  char *home = getenv( "HOMEPATH" );
+#else
+  char *home = getenv( "HOME" );
+#endif
+  string ini_file_path = ( home ? home : "" ) + string( "/.h3dload.ini" );
 
+  bool ini_file_exists = false;
+  ifstream check_ini_file( ini_file_path.c_str() );
+  if( check_ini_file.is_open() ) {
+    ini_file_exists = true;
+  }
+  check_ini_file.close();
+  
+  if( !ini_file_exists ){
+    ini_file_path = h3d_root + "/settings/h3dload.ini";
+    
+    ifstream check_ini_file( ini_file_path.c_str() );
+    if( check_ini_file.is_open() ) {
+      ini_file_exists = true; }
+    check_ini_file.close();
+  }
+  
+  INIFile ini_file( ini_file_path );
+  
   // Console settings
 
   bool console_show_time = GET_BOOL("console", "show_time", false);

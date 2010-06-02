@@ -613,10 +613,14 @@ bool WxFrame::loadFile( const string &filename) {
   old_error_mode = SetErrorMode( 0 );
 #endif
   char *r = getenv( "H3D_ROOT" );
-
   string h3d_root = r ? r : ""; 
 
-  string ini_file_path = h3d_root + "/settings/h3dload.ini";
+#ifdef WIN32
+  char *home = getenv( "HOMEPATH" );
+#else
+  char *home = getenv( "HOME" );
+#endif
+  string ini_file_path = ( home ? home : "" ) + string( "/.h3dload.ini" );
 
   bool ini_file_exists = false;
   ifstream check_ini_file( ini_file_path.c_str() );
@@ -624,7 +628,16 @@ bool WxFrame::loadFile( const string &filename) {
     ini_file_exists = true;
   }
   check_ini_file.close();
-
+  
+  if( !ini_file_exists ){
+    ini_file_path = h3d_root + "/settings/h3dload.ini";
+    
+    ifstream check_ini_file( ini_file_path.c_str() );
+    if( check_ini_file.is_open() ) {
+      ini_file_exists = true; }
+    check_ini_file.close();
+  }
+  
   INIFile ini_file( ini_file_path );
 
   lastOpenedFilepath = filename;

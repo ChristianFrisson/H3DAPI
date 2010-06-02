@@ -4,9 +4,22 @@ import os
 import wx
 import ConfigParser
 import string
+import sys
 
+h3dload_ini_path = "h3dload.ini"
+if sys.platform == "win32":
+  HOME = os.getenv( "HOMEPATH" )
+  tmp_h3dload_ini_path = "%s/h3dload.ini"%HOME
+  if HOME and os.path.exists(tmp_h3dload_ini_path):
+    h3dload_ini_path = tmp_h3dload_ini_path
+else:
+  HOME = os.getenv( "HOME" )
+  tmp_h3dload_ini_path = "%s/.h3dload.ini"%HOME
+  if HOME and os.path.exists(tmp_h3dload_ini_path):
+    h3dload_ini_path = tmp_h3dload_ini_path
+    
 cp = ConfigParser.ConfigParser()
-cp.read("h3dload.ini")
+cp.read(h3dload_ini_path)
 
 stereo_mode_box_options = ["No stereo", "Quad buffered", "Horizontal split", "Horizontal split keep ratio", "Vertical split", "Vertical split keep ratio", "Horizontal interlaced", "Vertical interlaced", "Checker Interlaced", "Sharp display", "Red-Blue stereo", "Red-Green stereo", "Red-Cyan stereo" ]
 
@@ -201,7 +214,7 @@ class TestDialog(wx.Dialog):
 
     cp.set( "display", "type", self.display_choice.GetValue() )
 
-    f = open( "h3dload.ini", "w" )
+    f = open( h3dload_ini_path, "w" )
     cp.write( f )
     f.close()
 
