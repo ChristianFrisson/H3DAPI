@@ -102,7 +102,11 @@ void onDropFiles( wxCoord x, wxCoord y,
   // load the first file, ignore the rest
   if( n_files > 0 ) {
     f->clearData();
-    f->loadFile( string(filenames[0].mb_str()) );
+    string filename( filenames[0].mb_str() );
+    f->loadFile( filename );
+    f->recentFiles->AddFileToHistory ( wxString( filename.c_str(), wxConvUTF8) );
+    f->SetStatusText(wxT("File loaded"), 0);
+    f->SetStatusText( wxString(filename.c_str(),wxConvUTF8), 1 );
   }
 };
 
@@ -1260,7 +1264,6 @@ void WxFrame::OnOpenFileURL(wxCommandEvent & event) {
    if( text_dialog->ShowModal() == wxID_OK ) {
      string s(text_dialog->GetValue().mb_str());
      clearData();
-     //lastOpenedFilepath = s;
      loadFile( s );
      SetStatusText( wxString(s.c_str(),wxConvUTF8), 1 );
      SetStatusText( wxT("URL loaded"), 0 );
@@ -1287,7 +1290,6 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
     wxString wx_filename = currentPath + wxT("/") + currentFilename;
 #endif
     string filename(wx_filename.mb_str());
-    //lastOpenedFilepath = filename;
     clearData();
     loadFile( filename );
     recentFiles->AddFileToHistory ( wx_filename );
@@ -1313,7 +1315,6 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
     string filename(wx_filename.mb_str());
     clearData();
     loadFile( filename );
-    //lastOpenedFilepath = filename;
     SetStatusText(wxT("File loaded"), 0);
     SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
     // remove and add back, to make the file jump on top

@@ -365,7 +365,6 @@ private:
   // CollisionOptions
   bool avatar_collision;
 
-  string lastOpenedFilepath;
   wxString currentFilename;
   wxString currentPath;
   bool lastmirror;
@@ -377,6 +376,7 @@ private:
   H3DHapticsDevice *myH3Ddevice;
   NodeVector allDevices;
   X3DViewpointNode *current_viewpoint;
+  string lastOpenedFilepath;
 
   // Check if the first file is loaded.
   bool loaded_first_file;
@@ -395,12 +395,17 @@ private:
   AutoRef< Node > device_info;
   AutoRef< Node > viewpoint;
 
+
   X3D::DEFNodes default_stylus_dn;
 
   // Used in updating viewpoint menu
   TimeStamp last_viewmenu_update;
 
 public:
+
+
+
+
   ConsoleDialog * the_console;
   H3DViewerTreeViewDialog * tree_view_dialog;
   H3DViewerPluginsDialog * plugins_dialog;
