@@ -51,7 +51,6 @@
 #include <H3D/X3DLightNode.h>
 #include <H3D/CollisionOptions.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
-#include <H3D/OrthoViewpoint.h>
 #include <H3D/GraphicsCachingOptions.h>
 
 #include <H3DUtil/TimeStamp.h>
@@ -772,10 +771,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   if( nav_info ) {
     if( nav_info->visibilityLimit->getValue() > 0 )
       clip_far = nav_info->visibilityLimit->getValue();
-    else
-      // If visibilityLimit is 0.0, then it means infinity.
-      // We accept values below zero to.
-      clip_far = -1; 
   }
 
   if( background ) {
@@ -1280,6 +1275,16 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
         1.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
       Vec3f far_plane_pos = Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+      if( clip_far == -1 && dynamic_cast< Viewpoint * >(vp) ) {
+        // I do not like the need for a dynamic_cast here (nor the approach)
+        // but as I can not find any better way to differ between the cases
+        // it will have to do. The reason is that the matrix created by
+        // OrthoViewpoint does not miscalculate the far_plane_pos and
+        // near_plane_pos when far plane is at infinity. But it does for
+        // Viewpoint.
+        far_plane_pos = near_plane_pos - ( far_plane_pos - near_plane_pos );
+      }
+
       // Update pointing device sensors in order to have them correctly
       // calculated for next turn.
       X3DPointingDeviceSensorNode::

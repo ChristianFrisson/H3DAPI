@@ -14,7 +14,7 @@
         centerOfRotation='0 0 0'
         position='0 0 0.6'
         orientation='1 0 0 0'
-        fieldOfView='0.78'
+        fieldOfView='-1 -1 1 1'
         jump='true'
         retainUserOffsets='false' />
     <OrthoViewpoint
@@ -22,7 +22,7 @@
         centerOfRotation='0 0 0'
         position='0 0 0.6'
         orientation='1 0 0 0'
-        fieldOfView='1.57'
+        fieldOfView='-0.5 -0.5 1 1'
         jump='true'
         retainUserOffsets='false' />
     <OrthoViewpoint
@@ -30,7 +30,7 @@
         centerOfRotation='0 0 0'
         position='0.6 0 0.6'
         orientation='0 1 0 0.78'
-        fieldOfView='0.78'
+        fieldOfView='-1 -1 0.2 0.3'
         jump='true'
         retainUserOffsets='false' />
     <OrthoViewpoint
@@ -38,7 +38,7 @@
         centerOfRotation='0.1 0.1 0.1'
         position='0 0.6 0'
         orientation='1 0 0 -1.57'
-        fieldOfView='0.78'
+        fieldOfView='0.1 0 0.2 0.2'
         jump='true'
         retainUserOffsets='false' />
     

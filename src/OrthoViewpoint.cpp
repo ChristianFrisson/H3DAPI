@@ -141,5 +141,35 @@ void OrthoViewpoint::setupProjection( EyeMode eye_mode,
   getProjectionDimensions( eye_mode, width, height, clip_near, top,
                            bottom, right, left, stereo_info );
 
-  glOrtho( left, right, bottom, top, clip_near, clip_far );
+  // Code used to mimic glOrtho but handles infinite plane.
+  // Se documentation for glOrtho to understand the code.
+  GLdouble two_near = 2 * clip_near;
+  GLdouble right_sub_left = right - left;
+  GLdouble top_sub_bottom = top - bottom;
+  GLdouble C, tz;
+
+  if( clip_far != -1 ) {
+    C = -2/(clip_far-clip_near);
+    tz = -(clip_far + clip_near) / (clip_far-clip_near);
+  } else {
+    // epsilon to use for infinite far plane to prevent artifacts
+    // Not sure if this will prevent artifacts or not in this case
+    // since the actual values should be C=0 and tz = -1 for infinite
+    // plane but this will create a non-invertable matrix.
+    // If one would follow the formula used in Viewpoint for
+    // projection matrix then the values should be C = 2*epsilon and
+    // D=epsilon-1 but this will not create the same correct effect
+    // as for projection matrix. Since far plane happens to end up
+    // in the wrong place when using gluunproject.
+    GLdouble epsilon = 1e-10;
+    C = -2*epsilon;
+    tz = -(epsilon + 1);
+  }
+  
+  GLdouble m[16] = { 2/right_sub_left, 0, 0, 0,
+                     0, 2/top_sub_bottom, 0, 0,
+                     0, 0, C, 0,
+    -(right+left)/right_sub_left, -(top + bottom)/top_sub_bottom, tz, 1 };
+
+  glMultMatrixd( m );
 }
