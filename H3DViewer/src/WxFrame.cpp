@@ -621,10 +621,12 @@ bool WxFrame::loadFile( const string &filename) {
 
 #ifdef WIN32
   char *home = getenv( "HOMEPATH" );
-  string ini_file_path = home ? home + string( "/h3dload.ini" ) : "h3dload.ini";
+  string ini_file_path = home ? string(home) + string( "/h3dload.ini" ) :
+                                string("h3dload.ini");
 #else
   char *home = getenv( "HOME" );
-  string ini_file_path = home ? home + string( "/.h3dload.ini" ) : ".h3dload.ini";
+  string ini_file_path = home ? string(home) + string( "/.h3dload.ini" ) :
+                                string(".h3dload.ini");
 #endif
 
   bool ini_file_exists = false;
