@@ -374,10 +374,11 @@ int main(int argc, char* argv[]) {
 
 #ifdef WIN32
   char *home = getenv( "HOMEPATH" );
+  string ini_file_path = home ? home + string( "/h3dload.ini" ) : "h3dload.ini";
 #else
   char *home = getenv( "HOME" );
+  string ini_file_path = home ? home + string( "/.h3dload.ini" ) : ".h3dload.ini";
 #endif
-  string ini_file_path = ( home ? home : "" ) + string( "/.h3dload.ini" );
 
   bool ini_file_exists = false;
   ifstream check_ini_file( ini_file_path.c_str() );
