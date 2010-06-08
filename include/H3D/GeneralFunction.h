@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -22,7 +22,7 @@
 //
 //
 /// \file GeneralFunction.h
-/// \brief Header file for GeneralFunction
+/// \brief Header file for GeneralFunction.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ namespace H3D {
   /// \brief The function node implements a general function R^n -> R
   /// by specifying it by a string.
   ///
-  ///  The function string understood by the class is very similar to the 
+  /// The function string understood by the class is very similar to the 
   /// C-syntax.
   /// Arithmetic float expressions can be created from float literals, 
   /// variables or functions using the following operators in this order of 
@@ -63,7 +63,7 @@ namespace H3D {
   /// Since the unary minus has higher precedence than any other operator, for
   /// example the following expression is valid: x*-y
   ///
-  ///  The class supports these functions:
+  /// The class supports these functions:
   ///
   /// abs(A)    : Absolute value of A. If A is negative, returns -A otherwise
   ///             returns A.
@@ -137,7 +137,7 @@ namespace H3D {
   /// \dotfile GeneralFunction.dot
   class H3DAPI_API GeneralFunction : public H3DFunctionNode {
   public:
-    /// Class for updating an HAPI::ParsedFunction depending
+    /// \brief Class for updating an HAPI::ParsedFunction depending
     /// on field input value.
     /// routes_in[0] is the function field
     /// routes_in[1] is the params field
@@ -149,12 +149,19 @@ namespace H3D {
       SFFunctionObject() {
         value = new HAPI::ParsedFunction;
       }
-      
+
+      ~SFFunctionObject() {
+        if( value ) {
+          delete value;
+          value = NULL;
+        }
+      }
+
     protected:
       virtual void update();
     };
 
-    /// Constructor.       
+    /// Constructor.
     GeneralFunction( Inst< SFNode  > _metadata  = 0,
                      Inst< SFString > _function = 0,
                      Inst< SFString > _param    = 0,

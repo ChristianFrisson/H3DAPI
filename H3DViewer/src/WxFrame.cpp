@@ -837,7 +837,6 @@ bool WxFrame::loadFile( const string &filename) {
       if( viewpoint_file.size() ) {
         try {
           viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
-          Console( 4 ) << viewpoint_file;
         } catch( const Exception::H3DException &e ) {
           viewpoint.reset( new Viewpoint );
           Console(3) << "Warning: Could not create default Viewpoint node "
@@ -1673,6 +1672,10 @@ void WxFrame::OnReload (wxCommandEvent & event)
 void WxFrame::OnExit (wxCommandEvent & event)
 {
   SaveCollisionOptions();
+  wxCommandEvent fake_event;
+  // Close file so that printout in possible destructors does not
+  // cause a crash if done after the console is destroyed.
+  OnCloseFile( fake_event );
   Close(true);
 }
 
@@ -1680,6 +1683,10 @@ void WxFrame::OnExit (wxCommandEvent & event)
 void WxFrame::OnWindowExit (wxCloseEvent & event) 
 {
   SaveCollisionOptions();
+  wxCommandEvent fake_event;
+  // Close file so that printout in possible destructors does not
+  // cause a crash if done after the console is destroyed.
+  OnCloseFile( fake_event );
   Destroy();
   SaveMRU();
   delete wxConfigBase::Set((wxConfigBase *) NULL);

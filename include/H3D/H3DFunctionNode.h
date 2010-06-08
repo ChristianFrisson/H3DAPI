@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -78,7 +78,7 @@ namespace H3D {
     /// ship of the returned HAPIFunctionObject should be considered to belong
     /// to the caller of the function. Returns 0 if the H3DFunctionNode can not
     /// be represented as a HAPIFunctionObject.
-    virtual HAPI::HAPIFunctionObject *getAsHAPIFunctionObject() { return 0; }
+    virtual HAPI::HAPIFunctionObject *getAsHAPIFunctionObject() { return NULL;}
 
     virtual string defaultXMLContainerField() {
       return "function";

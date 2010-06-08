@@ -113,7 +113,7 @@ HAPI::HAPIFunctionObject *GeneralFunction::getAsHAPIFunctionObject() {
                         << function->getValue() << "\" in ParsedFunction node("
                         << getName() << "). " << endl;
     delete return_function;
-    return 0;
+    return NULL;
   }
 
   return return_function;

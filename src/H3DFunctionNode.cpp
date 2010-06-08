@@ -34,6 +34,7 @@ using namespace H3D;
 H3DFunctionNode::H3DFunctionNode( Inst< SFNode>  _metadata,
                                   Inst< MFDouble  > _input,
                                   Inst< Value    > _output ) :
+  X3DNode( _metadata ),
   input( _input ),
   output( _output ),
   functionChanged( new Field ) {
@@ -46,7 +47,7 @@ H3DFunctionNode::H3DFunctionNode( Inst< SFNode>  _metadata,
 
 void H3DFunctionNode::Value::update() {
   H3DFunctionNode *function = static_cast< H3DFunctionNode *>( owner );
-    const vector< H3DDouble > &input = 
+  const vector< H3DDouble > &input = 
     static_cast< MFDouble * >( routes_in[0] )->getValue();
 
   if( input.size() != function->nrInputValues() ) {

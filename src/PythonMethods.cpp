@@ -568,6 +568,8 @@ if( check_func( value ) ) {                                         \
     };
     
     PyMODINIT_FUNC initH3D() {
+      if( H3D_module.get() )
+        return;
 
       H3D_module.reset( Py_InitModule( "H3D", H3DMethods ) );
       H3D_dict = PyModule_GetDict( H3D_module.get() );
@@ -718,7 +720,7 @@ if( check_func( value ) ) {                                         \
         ostringstream err;
         err << "Invalid argument(s) to function H3D.createField( Field, int auto_update, name )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
-        return 0;
+        return NULL;
       }
       PyObject *field = PyTuple_GetItem( args, 0 );
       PyObject *autoupdateobj = PyTuple_GetItem( args, 1 );
@@ -731,6 +733,7 @@ if( check_func( value ) ) {                                         \
 
         PyObject *fieldtype = PyObject_GetAttrString( field, "type" );
         int field_type = PyInt_AsLong( fieldtype );
+        Py_DECREF( fieldtype );
         Field *f;
 
         if ( autoupdate ) {
@@ -767,39 +770,48 @@ if( check_func( value ) ) {                                         \
         Py_DECREF( pfield );
         PyObject *update = PyObject_GetAttrString( field, "update" );
         if( update ) {
-          // field is reference counted one extra if update is found.
-          Py_DECREF( field );
           if( PyMethod_Check( update ) ) {
-            dynamic_cast< PythonFieldBase* >(f)->python_update = update;
+            // Set flag to indicate that this attribute exists
+            // and the method should be run when updating.
+            dynamic_cast< PythonFieldBase* >(f)->have_update = true;
           } else {
+            Py_DECREF( update );
             PyErr_SetString( PyExc_ValueError, 
                              "Symbol 'update' must be a method!" );
-            return 0;
+            return NULL;
           }
+          Py_DECREF( update );
         } else PyErr_Clear();
   
         PyObject *typeinfo = PyObject_GetAttrString( field, "__type_info__" );
         if( typeinfo ) {
           if( PyTuple_Check( typeinfo ) ) {
-            dynamic_cast< PythonFieldBase* >(f)->python_typeinfo = typeinfo;
+            // Set flag to indicate that this attribute exists.
+            // Used by PythonFieldBase::checkFieldType.
+            dynamic_cast< PythonFieldBase* >(f)->have_type_info = true;
           } else {
+            Py_DECREF( typeinfo );
             PyErr_SetString( PyExc_ValueError, 
                              "Symbol '__type_info__' must be a tuple!" );
             return NULL;
           }
+          Py_DECREF( typeinfo );
         } else PyErr_Clear();
 
         PyObject *opttypeinfo = 
           PyObject_GetAttrString( field, "__opt_type_info__" );
         if( opttypeinfo ) {
           if( PyTuple_Check( opttypeinfo ) ) {
-            dynamic_cast< PythonFieldBase* >(f)->python_opttypeinfo = 
-              opttypeinfo;
+            // Set flag to indicate that this attribute exists.
+            // Used by PythonFieldBase::checkFieldType.
+            dynamic_cast< PythonFieldBase* >(f)->have_opt_type_info = true;
           } else {
+            Py_DECREF( opttypeinfo );
             PyErr_SetString( PyExc_ValueError, 
                              "Symbol '__opt_type_info__' must be a tuple!" );
             return NULL;
           }
+          Py_DECREF( opttypeinfo );
         } else PyErr_Clear();
         
         //initField( (PyInstanceObject*) field );
@@ -910,7 +922,7 @@ call the base class __init__ function." );
       
       Py_DECREF( py_field_ptr );
 
-	  if( field_ptr ) { 
+    if( field_ptr ) { 
         bool success;
         APPLY_SFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_SFIELD, success );
         if( !success )
@@ -971,7 +983,7 @@ call the base class __init__ function." );
       Py_DECREF( py_to_field_ptr );
       Py_DECREF( py_from_field_ptr );
 
-	  if( from_field_ptr == 0 ) {
+      if( from_field_ptr == 0 ) {
         ostringstream err;
         err << "Source not a Field class in H3D.unrouteField( fromField, toField )";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
@@ -1093,9 +1105,9 @@ call the base class __init__ function." );
         PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
         return NULL;
       }
-      
-	  Py_DECREF( py_to_field_ptr );
-	  Py_DECREF( py_from_field_ptr );
+
+      Py_DECREF( py_to_field_ptr );
+      Py_DECREF( py_from_field_ptr );
       Py_INCREF(Py_None);
       return Py_None; 
     }
@@ -1323,7 +1335,7 @@ call the base class __init__ function." );
 
       for( unsigned int i = 0; i < routes_in.size() ; i++ ) {
         PyObject *t = (PyObject *)PythonInternals::fieldAsPythonObject( routes_in[i] );
-  	    PyTuple_SetItem( retval, i, t );
+        PyTuple_SetItem( retval, i, t );
       }
       Py_DECREF( py_field_ptr );
       return retval;
@@ -1359,7 +1371,7 @@ call the base class __init__ function." );
       Field::FieldSet::iterator fi = routes_out.begin();
       unsigned int i = 0;
       for( ; fi != routes_out.end(); i++,fi++ ) {
-	    PyObject *t = (PyObject *) PythonInternals::fieldAsPythonObject( *fi );
+      PyObject *t = (PyObject *) PythonInternals::fieldAsPythonObject( *fi );
         PyTuple_SetItem( retval, i, t );
       }
       Py_DECREF( py_field_ptr );

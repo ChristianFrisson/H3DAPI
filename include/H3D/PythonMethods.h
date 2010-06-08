@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -152,46 +152,63 @@ namespace H3D {
   struct PythonFieldBase {
     PythonFieldBase( void *_python_field ) :
       python_field( _python_field ),
-      python_update( 0 ),
-      python_typeinfo( 0 ),
-      python_opttypeinfo( 0 ){}
-    
+      have_update( false ),
+      have_type_info( false ),
+      have_opt_type_info( false ) {}
+
     void *python_field;
-    void *python_update;
-    void *python_typeinfo;
-    void *python_opttypeinfo;
+    // Flags used to know if the "update", "__type_info_", "__opt_type_info__"
+    // attributes of the python fields exists and should be used.
+    // Note that the these attributes can not be added to the field after
+    // pythonCreateField is called.
+    // The reason for not simply storing a pointer to a c-version of those
+    // attributes is because PyObject_GetAttrString increases the reference
+    // count to the field and therefore we would have circular dependency
+    // for destructing. Which means that reloading of new PythonScripts would
+    // not work properly in browsers, for example H3DViewer.
+    bool have_update;
+    bool have_type_info;
+    bool have_opt_type_info;
   };
-  
+
   template< class F >
   struct PythonField : public F, PythonFieldBase {
-    
+
     PythonField( void *_python_field ) : 
       PythonFieldBase( _python_field ) {
     }
+
     virtual void update() {
-      if ( python_update ) {
+      if( have_update ) {
+        PyObject *python_update = PyObject_GetAttrString(
+          static_cast< PyObject * >(python_field), "update" );
         PyErr_Clear();
-        PyObject *args = PyTuple_New(1);
-        PyObject *f = PythonInternals::fieldAsPythonObject( this->event.ptr, false );
-        PyTuple_SetItem( args, 0, f );
-        PyObject *r = PyEval_CallObject( static_cast< PyObject * >(python_update), 
-                                         args );
-        ////const char *value = PyString_AsString( PyObject_Repr( r ) );
-        Py_DECREF( args );
-        if( r == Py_None ) {
-          Console(3) << "Warning: update()-function for Python defined field of type " 
-                     << this->getFullName() << " does not return a value. "<< endl;
-          Py_DECREF( r );
-        } else if ( r ) {
-          if( !PythonInternals::pythonSetFieldValueFromObject( this, r ) ) {
-            Console(3) << "Warning: invalid return value from update()-function"
-                       << " for Python defined field of type " 
-                       << this->getFullName() << endl;
+        if( python_update ) {
+          PyObject *args = PyTuple_New(1);
+          PyObject *f = PythonInternals::fieldAsPythonObject( this->event.ptr, false );
+          PyTuple_SetItem( args, 0, f );
+          PyObject *r = PyEval_CallObject( python_update,
+                                           args );
+          ////const char *value = PyString_AsString( PyObject_Repr( r ) );
+          Py_DECREF( args );
+          if( r == Py_None ) {
+            Console(3) << "Warning: update()-function for Python defined field of type " 
+                       << this->getFullName() << " does not return a value. "<< endl;
+            Py_DECREF( r );
+          } else if ( r ) {
+            if( !PythonInternals::pythonSetFieldValueFromObject( this, r ) ) {
+              Console(3) << "Warning: invalid return value from update()-function"
+                         << " for Python defined field of type " 
+                         << this->getFullName() << endl;
+            }
+            Py_DECREF( r );
+          } else {
+            PyErr_Print();
           }
-          Py_DECREF( r );
+          Py_DECREF( python_update );
         } else {
-          PyErr_Print();
-        }        
+          F::update();
+        }
       } else {
         F::update();
       }
@@ -205,15 +222,23 @@ namespace H3D {
     /// type list.
     /// \throws PythonInvalidFieldType
     void checkFieldType( Field *f, int index ) {
-      if( python_typeinfo == 0 && python_opttypeinfo == 0 ) {
+      if( have_type_info == 0 && have_opt_type_info == 0 ) {
         F::checkFieldType( f, index );
         return;
       }
-      int arg_size = -1;      
+
+      PyObject *python_typeinfo = PyObject_GetAttrString(
+        static_cast< PyObject * >(python_field), "__type_info__" );
+      PyErr_Clear();
+
+      int arg_size = -1;
       if( python_typeinfo )
         arg_size = (int)PyTuple_Size( static_cast< PyObject * >(python_typeinfo) );
 
       if ( index >= arg_size ) {
+        PyObject *python_opttypeinfo = PyObject_GetAttrString(
+          static_cast< PyObject * >(python_field), "__opt_type_info__" );
+        PyErr_Clear();
         int opt_arg_size = -1;
         if( python_opttypeinfo )
           opt_arg_size = (int) PyTuple_Size( static_cast< PyObject * >(python_opttypeinfo) );
@@ -231,36 +256,36 @@ namespace H3D {
                 << " got " << f->getTypeName() << " for route" << index;
             throw H3D::PythonInvalidFieldType( err.str(), "", 
                                                H3D_FULL_LOCATION );
-      }
+          }
         } else {
           ostringstream err;
           err << "Too many inputs, expected " << arg_size+1;
           throw H3D::PythonInvalidFieldType( err.str(), "", 
                                              H3D_FULL_LOCATION );
         }
-      } else {
-      PyObject *type_info = 
-        PyTuple_GetItem( static_cast< PyObject * >(python_typeinfo),
-                         index );
-      PyObject *type_id = PyObject_GetAttrString( type_info, "type" );
-      int type_int = PyInt_AsLong( type_id );
-      //if( ! t || ! PyInt_Check( t ) )
+      } else if( python_typeinfo ) {
+        PyObject *type_info = 
+          PyTuple_GetItem( static_cast< PyObject * >(python_typeinfo),
+                           index );
+        PyObject *type_id = PyObject_GetAttrString( type_info, "type" );
+        int type_int = PyInt_AsLong( type_id );
+        //if( ! t || ! PyInt_Check( t ) )
 
-      // check that field type is of correct type. The comparison
-      // with UNKNOWN_X3D_TYPE is to allow Python fields to accept
-      // Field as input, thus allowing any field type to be routed
-      // to it.
-      if ( f->getTypeName().compare( 
-           X3DTypes::typeToString( (X3DTypes::X3DType)type_int ) ) != 0 &&
-           strcmp( X3DTypes::typeToString( (X3DTypes::X3DType)type_int ),
-                   "UNKNOWN_X3D_TYPE" ) != 0 ) {
-        ostringstream err;
-        err << "Bad input, expected " 
-            << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
-            << " got " << f->getTypeName() << " for route" << index;
-        throw H3D::PythonInvalidFieldType( err.str(), "", 
-                                           H3D_FULL_LOCATION );
-      }
+        // check that field type is of correct type. The comparison
+        // with UNKNOWN_X3D_TYPE is to allow Python fields to accept
+        // Field as input, thus allowing any field type to be routed
+        // to it.
+        if ( f->getTypeName().compare( 
+             X3DTypes::typeToString( (X3DTypes::X3DType)type_int ) ) != 0 &&
+             strcmp( X3DTypes::typeToString( (X3DTypes::X3DType)type_int ),
+                     "UNKNOWN_X3D_TYPE" ) != 0 ) {
+          ostringstream err;
+          err << "Bad input, expected " 
+              << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
+              << " got " << f->getTypeName() << " for route" << index;
+          throw H3D::PythonInvalidFieldType( err.str(), "", 
+                                             H3D_FULL_LOCATION );
+        }
       }
     }
   };

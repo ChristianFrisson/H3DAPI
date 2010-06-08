@@ -103,7 +103,7 @@ void PythonScript::setargv( int _argc, char *_argv[] ) {
 
 
 Field *PythonScript::lookupField( const string &name ) {
-    if( module_dict ) {
+  if( module_dict ) {
     PyObject *fname = 
       PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
                             name.c_str() );
@@ -117,7 +117,7 @@ Field *PythonScript::lookupField( const string &name ) {
         return f;
       }
     } 
-    }
+  }
   return NULL;
 }
 
@@ -266,7 +266,7 @@ void PythonScript::initialize() {
                             (char*)module_name.c_str() ) ) { // borrowed ref
     Console(4) << "The module " << module_name << " already exists. "
                << "It will be overridden which might cause strange behaviour. "
-               << "Check the DEF of PythonsScript "
+               << "Check the moduleName field of PythonScript "
                << "in the scene if this behaviour is undesired." << endl;
   }
 
