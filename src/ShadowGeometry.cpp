@@ -172,7 +172,7 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
     // if drawing caps make the geometry a little smaller to avoid z-buffer
     // issues since both the shadow volume and geometry itself would be 
     // drawn in the same place, causing flickering.
-    GLfloat scale = scale_factor;
+    GLfloat scale = (GLfloat)scale_factor;
     glScalef( scale, scale, scale );
   }
 
@@ -667,7 +667,7 @@ int ShadowGeometry::getMissingPointIndex( const HAPI::Collision::Triangle  &t,
   if( t.a != p0 && t.a != p1 ) return 0;
   if( t.b != p0 && t.b != p1 ) return 1;
   if( t.c != p0 && t.c != p1 ) return 2;
-  
+  return -1;
 }
 
 

@@ -31,7 +31,6 @@
 #include <H3D/NavigationInfo.h>
 #include <H3D/Scene.h>
 #include <H3D/GlobalSettings.h>
-#include <H3D/CollisionOptions.h>
 
 using namespace H3D;
 

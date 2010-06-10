@@ -280,16 +280,14 @@ void renderHapticTriangles() {
   bool global_render_triangles = false;
 
   DebugOptions *debug_options = NULL;
-  
-  if( !debug_options ) {
-    GlobalSettings *default_settings = GlobalSettings::getActive();
-    if( default_settings ) {
-      default_settings->getOptionNode( debug_options );
-    }
-    if( debug_options ) 
-      global_render_triangles = 
-        debug_options->drawHapticTriangles->getValue();
+
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) {
+    default_settings->getOptionNode( debug_options );
   }
+  if( debug_options ) 
+    global_render_triangles = 
+      debug_options->drawHapticTriangles->getValue();
 
   unsigned int current_layer = ti->getCurrentLayer();
 
@@ -626,7 +624,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   X3DShapeNode::disable_lighting_if_no_app = true;
 
   DefaultAppearance *def_app = NULL;
-  GraphicsCachingOptions *graphics_options = 0;
+  GraphicsCachingOptions *graphics_options = NULL;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) {
     default_settings->getOptionNode( def_app );
@@ -1307,6 +1305,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       transition_type = nav_info->transitionType->getValue();
       transition_time = nav_info->transitionTime->getValue();
     }
+
+    CollisionOptions *collision_options = NULL;
+    if( default_settings ) {
+      default_settings->getOptionNode( collision_options );
+    }
+    if( collision_options )
+      use_collision = collision_options->avatarCollision->getValue();
 
     h3d_navigation->doNavigation( nav_type,
                                   navigation_vp,

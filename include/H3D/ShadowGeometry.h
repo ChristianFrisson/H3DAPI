@@ -149,6 +149,7 @@ namespace H3D {
     /// Given a triangle and two of its vertices(p0 and p1) the index of the
     /// third point of the triangle is returned. If point a 0 is returned,
     /// if b then 1 and if c 2.
+    /// If -1 is returned then the functions has been used incorrectly.
     int getMissingPointIndex( const HAPI::Collision::Triangle &t,
                               const Vec3d &p0, const Vec3d &p1 );
 

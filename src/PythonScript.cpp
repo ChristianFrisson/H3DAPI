@@ -146,9 +146,10 @@ PythonScript::PythonScript( Inst< MFString > _url,
 
 PythonScript::~PythonScript() {
   if( module_dict ) {
-    // Clearing the dictionary
-    PyDict_Clear( static_cast< PyObject * >(module_dict) );
-    
+    // Setting module_dict to null just to be on the safe side. It should not
+    // really be needed.
+    module_dict = NULL;
+
     // Removing the PythonScript module module_name from database.
     // If it is already removed then there are two PythonScripts in the
     // scene using the same module_name ( or DEF ).

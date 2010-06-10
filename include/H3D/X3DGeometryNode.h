@@ -79,7 +79,9 @@ namespace H3D {
       virtual void callList( bool build_list = true );
     };
 
-    /// The HAPIBoundTree constructs a 
+    /// The SFBoundTree constructs a BinaryBoundTree that can be used
+    /// for collision detection as well as fast collection of haptic
+    /// primitives (triangles, points, lines).
     class H3DAPI_API SFBoundTree: 
       public RefCountSField< HAPI::Collision::BinaryBoundTree > {
       virtual void update();
