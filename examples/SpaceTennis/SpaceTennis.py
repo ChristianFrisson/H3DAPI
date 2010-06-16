@@ -399,5 +399,11 @@ class SpaceTennisGame:
     self.setup()
     self.game_running = 1
 
+  # Call this function to clean up circular references
+  def cleanUp( self ):
+    self.parent = None
+    self.dn = None
+    self.target_score = None
+    self.button_pressed = None
 
 

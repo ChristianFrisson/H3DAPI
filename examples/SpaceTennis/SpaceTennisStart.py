@@ -170,7 +170,20 @@ spacetennis.restartGame()
 def traverseSG():
   spacetennis.update()
 
+# Class needed to clean up circula references. When this global class
+# is destroyed it means that the PythonScript is unloaded which means
+# that there should be no circular references to the scene graph.
+class CleanUpClass:
+  # classes_to_clean should contain a list of classes which has the cleanUp
+  # function.
+  def __init__(self, classes_to_clean ):
+    self.classes_to_clean = classes_to_clean
 
+  # Call cleanUp for all contained classes. The cleanUp functions should
+  # remove circular references in the class.
+  def __del__(self):
+    for i in self.classes_to_clean:
+      i.cleanUp()
 
-
+cleanUpClass = CleanUpClass( [spacetennis] )
 
