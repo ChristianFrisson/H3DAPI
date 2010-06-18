@@ -124,6 +124,12 @@ namespace H3D {
     /// Stop the texture coordinate generation started with startTexGen().
     virtual void stopTexGenForTextureUnit( unsigned int texture_unit );
 
+    /// Returns true if the getTexCoord function is available for use.
+    virtual bool supportsGetTexCoord( unsigned int texture_unit );
+
+    /// Gets texture coordinate of the given index and texture unit.
+    virtual Vec4f getTexCoord( int index, unsigned int texture_unit );
+
     /// The X3DTextureCoordinate nodes to use for each texture unit.
     /// 
     /// <b>Access type:</b> inputOutput \n

@@ -80,6 +80,17 @@ namespace H3D {
       return point->size();
     }
 
+    /// Returns true if the getTexCoord function is available for use.
+    /// For a TextureCoordinate node it is
+    inline virtual bool supportsGetTexCoord( unsigned int texture_unit ) {
+      return true;
+    }
+
+    /// Gets texture coordinate of the given index and texture unit.
+    virtual Vec4f getTexCoord( int index, unsigned int texture_unit ) {
+      return point->getValueByIndex( index );
+    }
+
     /// A vector of 4d texture coordinates.
     /// 
     /// <b>Access type:</b> inputOutput \n

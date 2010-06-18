@@ -153,6 +153,20 @@ namespace H3D {
     /// Stop the texture coordinate generation started with startTexGen().
     virtual void stopTexGen() {}
 
+    /// Returns true if the getTexCoord function is available for use.
+    /// Some X3DTextureCoordinate nodes do not support getting a coordinate
+    /// by an index and will return false(e.g. TextureCoordinateGenerator)
+    inline virtual bool supportsGetTexCoord( unsigned int texture_unit ) {
+      return false;
+    }
+
+    /// Gets texture coordinate of the given index and texture unit.
+    /// This function is only valid if supporteGetTexCoord returns true.
+    /// TextureCoordinateGenerator e.g. does not support this function.
+    inline virtual Vec4f getTexCoord( int index, unsigned int texture_unit ) {
+      return Vec4f( 0, 0, 0, 1 );
+    }
+
     /// Start hardware texture coordinate generateion for all texture 
     /// units used by the texture 
     virtual void startTexGenForTexture( X3DTextureNode *t );

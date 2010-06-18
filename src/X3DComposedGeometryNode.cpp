@@ -127,129 +127,142 @@ void X3DComposedGeometryNode::DisplayList::callList( bool build_list ) {
     else 
       glFrontFace( GL_CW );
   }
+
   X3DGeometryNode::DisplayList::callList( build_list );
   
   // Restore the front face to its previuos value.
   glFrontFace( front_face );
 }
 
+Matrix4f X3DComposedGeometryNode::getDefaultTexGenMatrix() {
+
+  BoxBound *box_bound = 
+    dynamic_cast< BoxBound * >( bound->getValue() );
+  if( box_bound ) {
+    const Vec3f &center = box_bound->center->getValue();
+    const Vec3f &size = box_bound->size->getValue();
+
+    Matrix4f m;
+    H3DFloat *sparams = m[0];
+    H3DFloat *tparams = m[1];
+    H3DFloat *rparams = m[2];
+      
+    H3DFloat size_vec[]   = { size.x, size.y, size.z };
+    H3DFloat center_vec[] = { center.x, center.y, center.z };
+    
+    // these variables are set to an index representing 
+    // sides of the bounding box. 0 is the x-axis, 1 the y-axis
+    // and 2 the z-axis.
+    int largest_side, middle_side, smallest_side;
+      
+    if( size.x >= size.y ) {
+      if( size.x >= size.z ) {
+	largest_side = 0; 
+	if( size.y >= size.z ) {
+	  // size.x >= size.y >= size.z
+	  middle_side   = 1;
+	  smallest_side = 2;
+	} else { 
+	  // size.x >= size.z > size.y
+	  middle_side   = 2;
+	  smallest_side = 1;
+	}
+      } else {
+	// size.z > size.x >= size.y
+	largest_side  = 2; 
+	middle_side   = 0;
+	smallest_side = 1;
+      }
+    } else {
+      if( size.z >= size.y ) {
+	// size.z >= size.y > size.x
+	largest_side  = 2; 
+	middle_side   = 1;
+	smallest_side = 0;
+      } else if( size.x >= size.z ) {
+	// size.y > size.x >=size.z
+	largest_side  = 0; 
+	middle_side   = 2;
+	smallest_side = 1;
+      } else {
+	// size.y > size.z > size.x
+	largest_side  = 1; 
+	middle_side   = 2;
+	smallest_side = 0;
+      }
+    }
+    
+    H3DFloat largest_length = size_vec[ largest_side ];
+    if( H3DAbs( largest_length ) > Constants::f_epsilon ) {
+      // parameters for the s coordinate
+      H3DFloat length_inv = 1/largest_length;
+      sparams[ largest_side ] = length_inv;
+      sparams[3] = 0.5f - center_vec[ largest_side ] / largest_length;
+      
+      // parameters for the t coordinate
+      tparams[ middle_side ] = length_inv;
+      H3DFloat tcenter = size_vec[ middle_side ] / (2*largest_length);
+      tparams[3] = tcenter - center_vec[ middle_side ] / largest_length;
+      
+      // parameters for the r coordinate
+      rparams[ smallest_side ] = -length_inv;
+      H3DFloat rcenter = size_vec[ smallest_side ] / (2*largest_length);
+      rparams[3] = rcenter + center_vec[ smallest_side ] / largest_length;
+    } else {
+      sparams[3] = 0.5;
+      tparams[3] = size_vec[ middle_side ] / (2*largest_length);
+      rparams[3] = size_vec[ smallest_side ] / (2*largest_length);
+    }
+    return m;
+  } else {
+    stringstream s;
+    s << "Could not calculate default  texture coordinate generation in IndexedFaceSet. "
+      << "Requires bound object of BoxBound type. ";
+    return Matrix4f();
+  }
+}
+
 void X3DComposedGeometryNode::startTexGen( 
                             X3DTextureCoordinateNode *tex_coord_node ) {
   if( !tex_coord_node ) {
-    BoxBound *box_bound = 
-      dynamic_cast< BoxBound * >( bound->getValue() );
-    if( box_bound ) {
-      const Vec3f &center = box_bound->center->getValue();
-      const Vec3f &size = box_bound->size->getValue();
-      
-      H3DFloat sparams[4] = {0,0,0,0};
-      H3DFloat tparams[4] = {0,0,0,0};
-      H3DFloat rparams[4] = {0,0,0,0};
-      
-      H3DFloat size_vec[]   = { size.x, size.y, size.z };
-      H3DFloat center_vec[] = { center.x, center.y, center.z };
-        
-      // these variables are set to an index representing 
-      // sides of the bounding box. 0 is the x-axis, 1 the y-axis
-      // and 2 the z-axis.
-      int largest_side, middle_side, smallest_side;
-      
-      if( size.x >= size.y ) {
-        if( size.x >= size.z ) {
-          largest_side = 0; 
-          if( size.y >= size.z ) {
-            // size.x >= size.y >= size.z
-            middle_side   = 1;
-            smallest_side = 2;
-          } else { 
-            // size.x >= size.z > size.y
-            middle_side   = 2;
-            smallest_side = 1;
-          }
-        } else {
-          // size.z > size.x >= size.y
-          largest_side  = 2; 
-          middle_side   = 0;
-          smallest_side = 1;
-        }
-      } else {
-        if( size.z >= size.y ) {
-          // size.z >= size.y > size.x
-          largest_side  = 2; 
-          middle_side   = 1;
-          smallest_side = 0;
-        } else if( size.x >= size.z ) {
-          // size.y > size.x >=size.z
-          largest_side  = 0; 
-          middle_side   = 2;
-          smallest_side = 1;
-        } else {
-          // size.y > size.z > size.x
-          largest_side  = 1; 
-          middle_side   = 2;
-          smallest_side = 0;
-        }
-      }
-        
-      H3DFloat largest_length = size_vec[ largest_side ];
-      if( H3DAbs( largest_length ) > Constants::f_epsilon ) {
-        // parameters for the s coordinate
-        H3DFloat length_inv = 1/largest_length;
-        sparams[ largest_side ] = length_inv;
-        sparams[3] = 0.5f - center_vec[ largest_side ] / largest_length;
-          
-        // parameters for the t coordinate
-        tparams[ middle_side ] = length_inv;
-        H3DFloat tcenter = size_vec[ middle_side ] / (2*largest_length);
-        tparams[3] = tcenter - center_vec[ middle_side ] / largest_length;
-          
-        // parameters for the r coordinate
-        rparams[ smallest_side ] = -length_inv;
-        H3DFloat rcenter = size_vec[ smallest_side ] / (2*largest_length);
-        rparams[3] = rcenter + center_vec[ smallest_side ] / largest_length;
-      } else {
-        sparams[3] = 0.5;
-        tparams[3] = size_vec[ middle_side ] / (2*largest_length);
-        rparams[3] = size_vec[ smallest_side ] / (2*largest_length);
-      }
+    
+    Matrix4f m = getDefaultTexGenMatrix();
+    
+    H3DFloat *sparams = m[0];
+    H3DFloat *tparams = m[1];
+    H3DFloat *rparams = m[2];
 
-      // TODO: maybe let the texture handle the texture coordinate
-      // generation. Wait until implementation of TextureCoordinateGenerator
-      // before deciding on how to do it.
-      MultiTexture *mt = 
-        dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-      if( mt ) {
-        size_t texture_units = mt->texture->size();
-        for( size_t i = 0; i < texture_units; i++ ) {
-          glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
-          glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-          glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-          glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-          glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
-          glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
-          glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
-          glEnable( GL_TEXTURE_GEN_S );
-          glEnable( GL_TEXTURE_GEN_T );
-          glEnable( GL_TEXTURE_GEN_R );
-        }
-      } else {
-        glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-        glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-        glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-        glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
-        glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
-        glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
-        glEnable( GL_TEXTURE_GEN_S );
-        glEnable( GL_TEXTURE_GEN_T );
-        glEnable( GL_TEXTURE_GEN_R );
+    // TODO: maybe let the texture handle the texture coordinate
+    // generation. Wait until implementation of TextureCoordinateGenerator
+    // before deciding on how to do it.
+    MultiTexture *mt = 
+      dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
+    if( mt ) {
+      size_t texture_units = mt->texture->size();
+      for( size_t i = 0; i < texture_units; i++ ) {
+	glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
+	glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+	glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+	glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+	glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
+	glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
+	glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
+	glEnable( GL_TEXTURE_GEN_S );
+	glEnable( GL_TEXTURE_GEN_T );
+	glEnable( GL_TEXTURE_GEN_R );
       }
     } else {
-      stringstream s;
-      s << "Could not start texture coordinate generation in IndexedFaceSet. "
-        << "Requires bound object of BoxBound type. ";
-      throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
+      glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+      glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+      glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+      glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
+      glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
+      glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
+      glEnable( GL_TEXTURE_GEN_S );
+      glEnable( GL_TEXTURE_GEN_T );
+      glEnable( GL_TEXTURE_GEN_R );
     }
-  }  else {
+  } else {
     tex_coord_node->startTexGenForActiveTexture();
   }    
 }

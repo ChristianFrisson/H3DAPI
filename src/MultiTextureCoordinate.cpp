@@ -177,3 +177,30 @@ void MultiTextureCoordinate::stopTexGen() {
     << "unit to render for. ";
   throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
 }
+
+
+/// Returns true if the getTexCoord function is available for use.
+bool MultiTextureCoordinate::supportsGetTexCoord( unsigned int texture_unit ) {
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return false;
+  
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
+  X3DTextureCoordinateNode *tc = 
+    texCoord->getValueByIndex( index );
+  if( tc ) return tc->supportsGetTexCoord( texture_unit );
+  else return false;
+}
+
+/// Gets texture coordinate of the given index and texture unit.
+Vec4f MultiTextureCoordinate::getTexCoord( int i, 
+					   unsigned int texture_unit ) {
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return Vec4f( 0, 0, 0, 1 );
+   
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
+  X3DTextureCoordinateNode *tc = 
+    texCoord->getValueByIndex( index );
+  if( tc ) return tc->getTexCoord( i, texture_unit );
+  else return Vec4f( 0, 0, 0, 1 );
+
+}

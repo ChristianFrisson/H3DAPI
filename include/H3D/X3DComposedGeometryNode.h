@@ -183,6 +183,11 @@ namespace H3D {
     /// Disable the arrays that were enabled in renderTexCoordArray().
     virtual void disableTexCoordArray( X3DTextureCoordinateNode *tc );
 
+    /// Gets the matrix that transforms from object space to texture
+    /// coordinate space in the default case when no texCoord node
+    /// is specified. 
+    virtual Matrix4f getDefaultTexGenMatrix();
+
     /// Constructor.
     X3DComposedGeometryNode( Inst< SFNode           > _metadata        = 0,
                              Inst< SFBound          > _bound           = 0,

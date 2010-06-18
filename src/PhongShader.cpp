@@ -214,20 +214,44 @@ void PhongShader::FragmentShaderString::update() {
 
 string PhongShader::getVertexShaderString() {
 
-  string s = 
-    "varying vec3 normal, vertex;\n"
-    "\n"
-    "void main() {\n"
-    "  normal = gl_NormalMatrix * gl_Normal;\n"
-    "  vec4 clip_vertex =  gl_ModelViewMatrix * gl_Vertex;\n"
-    "  vertex = vec3( clip_vertex );\n"
-    "\n"
-    "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-    "  gl_ClipVertex = clip_vertex;\n"
-    "  gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-    "} \n";
+  
 
-  return s;
+  if( normalMap->getValue() && normalMapCoordSpace->getValue() == "TANGENT" ) {
+    // tangent space normal map requires definition of binormal and tangent
+    // attributes in order to be able to transform into object space.
+    string s = 
+      "attribute vec3 binormal, tangent;\n"
+      "varying vec3 normal, vertex, binormal_axis, tangent_axis;\n"
+      "\n"
+      "void main() {\n"
+      "  normal = gl_NormalMatrix * gl_Normal;\n"
+      "  binormal_axis = gl_NormalMatrix * binormal;\n"
+      "  tangent_axis = gl_NormalMatrix * tangent;\n"
+      "  vec4 clip_vertex =  gl_ModelViewMatrix * gl_Vertex;\n"
+      "  vertex = vec3( clip_vertex );\n"
+      "\n"
+      "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+      "  gl_ClipVertex = clip_vertex;\n"
+      "  gl_TexCoord[0] = gl_MultiTexCoord0;\n"
+      "} \n";
+    return s;
+  } else {
+    string s = 
+      "varying vec3 normal, vertex;\n"
+      "\n"
+      "void main() {\n"
+      "  normal = gl_NormalMatrix * gl_Normal;\n"
+      "  vec4 clip_vertex =  gl_ModelViewMatrix * gl_Vertex;\n"
+      "  vertex = vec3( clip_vertex );\n"
+      "\n"
+      "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+      "  gl_ClipVertex = clip_vertex;\n"
+      "  gl_TexCoord[0] = gl_MultiTexCoord0;\n"
+      "} \n";
+    return s;
+  }
+
+
 }
 
 string fragment_shader_functions = 
@@ -379,6 +403,9 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( normalMap->getValue() ) {
+    if( normalMapCoordSpace->getValue() == "TANGENT" ) {
+      s<< "varying vec3 binormal_axis, tangent_axis; " << endl;
+    }
     s << "uniform sampler2D normal_map;" << endl;
     s << "uniform mat4 normal_map_matrix;" << endl;
   }
@@ -424,6 +451,7 @@ string PhongShader::getFragmentShaderString() {
   s << "  void main() {" << endl;
 
   s << "    vec3 orig_normal = normalize( normal ); \n" << endl;
+
   bool modulate = modulateMaps->getValue();
   bool back_modulate = backModulateMaps->getValue();
 
@@ -499,13 +527,26 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( normalMap->getValue() ) {
+    string coord_space = normalMapCoordSpace->getValue();
+    if( coord_space != "OBJECT" && coord_space != "TANGENT" ) {
+      Console(4) << "Invalid normalMapCoordSpace value in PhongShader node: \"" 
+		 << coord_space << "\". Using \"OBJECT\" instead." << endl;
+      coord_space == "OBJECT";
+    }
+
     s << "    vec3 N = texture2D( normal_map, gl_TexCoord[0].st ).xyz;" << endl;
     
     // texture values [0-1] -> object space normal [-1,1]
     s << "    N = vec3( normal_map_matrix * vec4( N, 1.0 ) );" << endl;
-
-    // to global space
-    s << "    N = vec3( gl_ModelViewMatrix * vec4(N,0.0) );" << endl;
+    
+    if( coord_space == "TANGENT" ) {
+      // from tangent to global space
+      s << "    mat3 tangent_space_matrix = mat3( tangent_axis, binormal_axis, orig_normal ); " << endl;
+      s << "    N = tangent_space_matrix * N; " << endl;
+    } else {
+      // from object to global space
+      s << "    N = vec3( gl_ModelViewMatrix * vec4(N,0.0) );" << endl;
+    }
     s << "    N = normalize( N ); " << endl;
   } else {
     s << "    vec3 N = orig_normal;\n" << endl;
@@ -678,4 +719,21 @@ void PhongShader::preRender() {
     activate->setValue( true );
   }
   ComposedShader::preRender();
+}
+
+void PhongShader::traverseSG( TraverseInfo &ti ) {
+  ComposedShader::traverseSG( ti );
+
+  static bool requires_tangents;
+
+  ti.setUserData( "shaderRequiresTangents", &requires_tangents );
+
+  requires_tangents = 
+    (normalMap->getValue() && normalMapCoordSpace->getValue() == "TANGENT" ) || 
+    (backNormalMap->getValue() && backNormalMapCoordSpace->getValue() == "TANGENT" );
+  
+  // the shaderRequiresTangents entry is set to false in 
+  // X3DShapeNode::traverseSG in order for it to only be active for one
+  // geometry.
+
 }

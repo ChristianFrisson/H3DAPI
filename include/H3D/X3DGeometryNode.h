@@ -237,6 +237,13 @@ namespace H3D {
     virtual string defaultXMLContainerField() {
       return "geometry";
     }
+
+    /// Returns true if this geometry supports the automatic generation
+    /// of tangents and binormals as FloatVertexAttribues(needed by
+    /// e.g. PhongShader.
+    virtual bool supportsTangentAttributes() {
+      return false;
+    }
     
     /// Overriden from HAPIGLShape to use the bound field in he X3DGeometryNode.
     /// An axis aligned bounding box containing  all the primitives rendered by 

@@ -184,6 +184,14 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   // the surface should only be available to the geometry of the shape node
   // so we remove it when the geometry has been rendered.
   ti.setCurrentSurface( NULL );
+
+  // reset shaderRequiresTangents to false if available(set in
+  // PhongShader).
+  bool * shader_requires_tangents = NULL;
+  if( !ti.getUserData( "shaderRequiresTangents", 
+		       (void **)&shader_requires_tangents) ) {
+    shader_requires_tangents = false;
+  }
 }
 
 void X3DShapeNode::DisplayList::callList( bool build_list ) {

@@ -33,6 +33,7 @@
 #include <H3D/DependentNodeFields.h>
 #include <H3D/X3DCoordinateNode.h>
 #include <H3D/X3DColorNode.h>
+#include <H3D/FloatVertexAttribute.h>
 #include <H3D/CoordBoundField.h>
 #include <H3D/MFInt32.h>
 #include <H3D/SFInt32.h>
@@ -147,6 +148,70 @@ namespace H3D {
 
     };
 
+    /// Specialized field for automatically generating two FloatVertexAttribute
+    /// nodes representing the tangent and binormal of each vertex(or face if
+    /// normalPerVertex is false). These can then be used in shader nodes
+    /// such as PhongShader.
+    ///
+    /// routes_in[0] is the normalPerVertex field.
+    /// routes_in[1] is the coord field.
+    /// routes_in[2] is the index field.
+    /// routes_in[3] is the texCoord field.
+    
+    class H3DAPI_API AutoTangent: 
+      public TypedField< MFVertexAttributeNode,
+	Types< SFBool, SFCoordinateNode, MFInt32, SFTextureCoordinateNode > > {
+
+      /// Calls generateTangentsPerVertex() if routes_in[0] is true, 
+      /// otherwise generateTangentsPerFace() is called.
+      virtual void update();
+
+      /// Set the vales in the tangent and binormal arguments
+      /// to the tangent and binormal for each vertex.
+      ///
+      /// \param coord Node with the coordinates.
+      /// \param coord Node with the texture coordinates.
+      /// \param index The indices in coord for the vertices.
+      virtual void generateTangentsPerVertex( 
+					      X3DCoordinateNode *coord,
+					      X3DTextureCoordinateNode *tex_coord,
+					      const vector< int > &index,
+					      FloatVertexAttribute *tangent,
+					      FloatVertexAttribute *binormal
+					      );
+    
+
+      /// Set the vales in the tangent and binormal arguments
+      /// to the tangent and binormal for each face.
+      ///
+      /// \param coord Node with the coordinates.
+      /// \param coord Node with the texture coordinates.
+      /// \param index The indices in coord for the vertices.
+      virtual void generateTangentsPerFace( 
+					   X3DCoordinateNode *coord,
+					   X3DTextureCoordinateNode *tex_coord,
+					   const vector< int > &index,
+					   FloatVertexAttribute *tangent,
+					   FloatVertexAttribute *binormal );
+
+      /// Returns the texture coordinate for a given index. If no
+      /// texture coordinate node is specified it will use the
+      /// default texture coordinate generation for an IndexedTriangleSet.
+      Vec3f getTexCoord( X3DCoordinateNode *coord,
+                         X3DTextureCoordinateNode *tex_coord,
+                        int index );
+
+      /// Calculate the tangent and binormal for a triangle.
+      /// a,b and c are the coordinates of the triangle vertices.
+      /// ta, tb and tc are the texture coordinates of the triangle vertices.
+      /// tangent and binormal are output parameters that are set by the function.
+      void calculateTangent( const Vec3f &a, const Vec3f &b, const Vec3f &c,
+                             const Vec3f &ta, const Vec3f &tb, const Vec3f &tc,
+                             Vec3f &tangent, Vec3f &binormal );
+
+    };
+
+
     /// Constructor.
     IndexedTriangleSet( Inst< SFNode           > _metadata        = 0,
                         Inst< SFBound          > _bound           = 0,
@@ -177,11 +242,25 @@ namespace H3D {
       return index->size() / 3;
     }
 
+    /// Returns true if this geometry supports the automatic generation
+    /// of tangents and binormals as FloatVertexAttribues(needed by
+    /// e.g. PhongShader.
+    /// IndexedTriangleSet does support this.
+    virtual bool supportsTangentAttributes() {
+      return true;
+    }
+
     /// Auto-generated normals that are used if the normal field is NULL.
     /// Only accessable in C++.
     ///
     /// \dotfile IndexedFaceSet_autoNormal.dot 
     auto_ptr< AutoNormal  >  autoNormal;
+
+    /// Auto-generated vertex attributes for tangents and binormals.
+    /// Only accessable in C++.
+    ///
+    /// \dotfile IndexedFaceSet_autoNormal.dot 
+    auto_ptr< AutoTangent  >  autoTangent;
 
     /// Field for setting the value of the index field.
     /// <b>Access type:</b> inputOnly 
@@ -203,6 +282,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    /// This will be set to true in traverseSG if the render function
+    /// is supposed to render tangent vertex attributes.
+    bool render_tangents;
+
   };
 }
 
