@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <Scene>
+    <DeviceInfo>
+      <AnyDevice DEF='DEVICE'>
+        <Shape containerField='stylus'>
+          <Appearance>
+            <Material/>
+          </Appearance>
+          <Sphere radius='0.0025'/>
+        </Shape>
+        <RuspiniRenderer />
+      </AnyDevice>
+    </DeviceInfo>
+    <Transform>
+      <Shape>
+        <PointSet>
+          <Coordinate DEF='COORD' />
+        </PointSet>
+        <Appearance>
+          <Material emissiveColor='1 1 0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <KeySensor DEF='KS' />
+    
+    <PythonScript url="HapticPen.py" DEF='PY'>
+      <Coordinate USE='COORD' containerField='references' />
+    </PythonScript>
+
+    <ROUTE_NO_EVENT fromNode='DEVICE' fromField='mainButton' toNode='PY' toField='position_change' />
+    <ROUTE fromNode='DEVICE' fromField='trackerPosition' toNode='PY' toField='position_change' />
+    
+    <ROUTE_NO_EVENT fromNode='KS' fromField='keyPress' toNode='PY' toField='keypress' />
+
+  </Scene>
+</X3D>
