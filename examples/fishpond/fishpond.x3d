@@ -1,0 +1,109 @@
+<Scene>
+  <NavigationInfo type="NONE" />
+  <Viewpoint position="0 0 0.6" />
+  <Transform>  <!-- ADJUST VIEWPOINT -->
+    <PointLight DEF='PL' location='0 0.1 0' />
+    <Transform DEF='PL_EMITTER'>
+      <Shape>
+        <Sphere radius='0.001' />
+        <Appearance>
+          <Material diffuseColor='1 1 1' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    <ROUTE fromNode='PL' fromField='location' toNode='PL_EMITTER' toField='translation' />
+
+    <DeviceInfo DEF='DI'>
+      <PhantomDevice>
+        <Shape containerField='stylus'>
+          <Appearance>
+            <Material transparency='1' />
+          </Appearance>
+          <Sphere radius='0.0025'/>
+        </Shape>
+        <RuspiniRenderer />
+      </PhantomDevice>
+    </DeviceInfo>
+
+    <Transform DEF="MAIN_TRANSFORM" translation='0 0 0'>
+    <Transform DEF="ROTATION_TRANSFORM" rotation='1 0 0 0.3'> 
+      <Group DEF='MAIN_GROUP'>
+        <Group DEF='BALLS_G' />
+        <Group DEF='DIRT_G' />
+        
+        <!-- the pond -->
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='0.463 0.337 0.337' />
+          </Appearance>
+          <IndexedTriangleSet normalPerVertex='false' index='0 1 2 0 2 3 0 4 5 0 5 1 1 6 2 1 5 6 0 3 7 0 7 4 4 6 5 4 7 6'>
+            <Coordinate point=' -0.15 0.15 -0.15
+                                0.15 0.15 -0.15
+                                0.15 0.15 0.15
+                                -0.15 0.15 0.15
+                                -0.15 -0.15 -0.15
+                                0.15 -0.15 -0.15
+                                0.15 -0.15 0.15
+                                -0.15 -0.15 0.15' />
+          </IndexedTriangleSet>
+        </Shape>
+
+        <!-- 
+        <Transform translation='0 0 -0.15'>
+          <Shape DEF='WALL_S'>
+            <Appearance DEF='WALL_APR'>
+              <Material diffuseColor='0.463 0.337 0.337' />
+            </Appearance>
+            <Box size="0.3 0.3 0.02" solid='false' />
+            <Rectangle2D DEF='WALL_GEOM' size='0.3 0.3'/>
+          </Shape>
+        </Transform>
+        <Transform translation='0 0.15 0' rotation='-1 0 0 1.57079'>
+          <Shape USE='WALL_S' />
+        </Transform>
+        <Transform translation='0 -0.15 0' rotation='1 0 0 1.57079'>
+          <Shape USE='WALL_S' />
+        </Transform>
+        <Transform translation='0.15 0 0' rotation='0 1 0 1.57079'>
+          <Shape USE='WALL_S' />
+        </Transform>
+        <Transform translation='-0.15 0 0' rotation='0 1 0 1.57079'>
+          <Shape USE='WALL_S' />
+        </Transform>
+        -->
+      </Group>
+    </Transform>  <!-- ROTATION_TRANSFORM -->
+    </Transform>  <!-- MAIN_TRANSFORM -->
+
+    <!-- sidebar -->
+    <Transform DEF='SIDEBAR_T' translation='0 0 0.58'>
+      <Transform translation='-0.010 0.007 0'>
+        <Shape>
+          <Appearance> <Material diffuseColor='1 0 0' /> </Appearance>
+          <Text DEF='STATUS_TXT' string='"Level: ""Time:"' length='' maxExtent='0' solid='true'>
+            <FontStyle family='"SANS"' size='0.001' spacing='1.0' justify='FIRST'/>
+          </Text>
+        </Shape>
+      </Transform>
+    </Transform>
+
+    <SpringEffect position='0 0 0' springConstant='100'
+      startDistance='0.1' escapeDistance='0.2' deviceIndex='0'/>
+  </Transform> <!-- ADJUST VIEWPOINT -->
+
+  <KeySensor DEF='KS' />
+  <TimeSensor enabled='false' DEF="TS" loop="true" cycleInterval="0.05" />
+
+  <PythonScript url="fishpond.py" DEF='PY'>
+    <Group containerField='references' USE='MAIN_GROUP' />
+    <Transform containerField='references' USE='MAIN_TRANSFORM' />
+    <Transform containerField='references' USE='ROTATION_TRANSFORM' />
+    <KeySensor containerField='references' USE='KS' />
+    <TimeSensor containerField='references' USE='TS' />
+    <Group containerField='references' USE='DIRT_G' />
+    <DeviceInfo containerField='references' USE='DI' />
+    <Group containerField='references' USE='BALLS_G' />
+    <Text USE='STATUS_TXT' containerField='references' />
+  </PythonScript>
+
+</Scene>
