@@ -170,7 +170,7 @@ namespace H3D {
       /// to the tangent and binormal for each vertex.
       ///
       /// \param coord Node with the coordinates.
-      /// \param coord Node with the texture coordinates.
+      /// \param tex_coord Node with the texture coordinates.
       /// \param index The indices in coord for the vertices.
       virtual void generateTangentsPerVertex( 
 					      X3DCoordinateNode *coord,
@@ -185,7 +185,7 @@ namespace H3D {
       /// to the tangent and binormal for each face.
       ///
       /// \param coord Node with the coordinates.
-      /// \param coord Node with the texture coordinates.
+      /// \param tex_coord Node with the texture coordinates.
       /// \param index The indices in coord for the vertices.
       virtual void generateTangentsPerFace( 
 					   X3DCoordinateNode *coord,
