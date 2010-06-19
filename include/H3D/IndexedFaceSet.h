@@ -31,6 +31,7 @@
 
 #include <H3D/X3DComposedGeometryNode.h>
 #include <H3D/CoordBoundField.h>
+#include <H3D/FloatVertexAttribute.h>
 #include <H3D/MFInt32.h>
 #include <H3D/SFFloat.h>
 
@@ -188,6 +189,7 @@ namespace H3D {
                                 SFFloat > > {
       virtual void update();
 
+    public:
       /// Create a new X3DNormalNode from the arguments given
       /// with one normal for each vertex specified by coord_index, i.e.
       /// the number of normals will be the number of non-(-1) values
@@ -260,6 +262,111 @@ namespace H3D {
 
     };
 
+
+    /// Specialized field for automatically generating two FloatVertexAttribute
+    /// nodes representing the tangent and binormal of each vertex(or face if
+    /// normalPerVertex is false). These can then be used in shader nodes
+    /// such as PhongShader.
+    ///
+    /// routes_in[0] is the normalPerVertex field.
+    /// routes_in[1] is the coord field.
+    /// routes_in[2] is the coordIndex field.
+    /// routes_in[3] is the texCoord field.
+    /// routes_in[4] is the texCoordIndex field.
+    /// routes_in[5] is the creaseAngle field.
+    /// routes_in[6] is the ccw field.
+    
+    class H3DAPI_API AutoTangent: 
+      public TypedField< MFVertexAttributeNode,
+        Types< SFBool, SFCoordinateNode, MFInt32, SFTextureCoordinateNode, MFInt32, SFFloat, SFBool > > {
+
+      /// Calls generateTangentsPerVertex() if routes_in[0] is true, 
+      /// otherwise generateTangentsPerFace() is called.
+      virtual void update();
+    public:
+      /// Set the vales in the tangent and binormal arguments
+      /// to the tangent and binormal for each vertex. The result will
+      /// be one tangent per coordinate in coord.
+      ///
+      /// \param coord Node with the coordinates.
+      /// \param tex_coord Node with the texture coordinates.
+      /// \param coord_index The indices in coord for the vertices.
+      /// \param tex_coord_index The indices in tex_coord for the texture coordinates.
+      virtual void generateTangentsPerVertex( 
+                                              X3DCoordinateNode *coord,
+                                              X3DTextureCoordinateNode *tex_coord,
+                                              const vector< int > &coord_index,
+                                              const vector< int > &tex_coord_index,
+                                              FloatVertexAttribute *tangent,
+                                              FloatVertexAttribute *binormal
+                                              );
+
+      /// Set the values in the tangent and binormal arguments
+      /// to the tangent and binormal for each vertex. The result will
+      /// be one tangent per value in coord_index.
+      ///
+      /// \param coord Node with the coordinates.
+      /// \param tex_coord Node with the texture coordinates.
+      /// \param coord_index The indices in coord for the vertices.
+      /// \param tex_coord_index The indices in tex_coord for the texture coordinates.
+      /// \param crease_angle If the angle between the geometric normals of two 
+      /// adjacent faces is less than the crease angle, tangents are 
+      /// calculated so that the faces are shaded smoothly across the edge;
+      /// otherwise, tangents are calculated so that a lighting discontinuity
+      /// across the edge is produced.
+      /// \param ccw Defines the ordering of the vertex coordinates of the 
+      /// geometry with respect to generated normal vectors used in the 
+      /// lighting model equations. If ccw is TRUE, the normals shall 
+      /// follow the right hand rule; the orientation of each normal with
+      /// respect to the vertices (taken in order) shall be such that the
+      /// vertices appear to be oriented in a counterclockwise order when 
+      /// the vertices are viewed (in the local coordinate system of the Shape)
+      /// from the opposite direction as the normal.
+      virtual void generateTangentsPerVertex( 
+                                             X3DCoordinateNode *coord,
+                                             X3DTextureCoordinateNode *tex_coord,
+                                             const vector< int > &coord_index,
+                                             const vector< int > &tex_coord_index,
+                                             H3DFloat crease_angle,
+                                             bool ccw,
+                                             FloatVertexAttribute *tangent,
+                                             FloatVertexAttribute *binormal
+                                              );
+
+      /// Set the valees in the tangent and binormal arguments
+      /// to the tangent and binormal for each face. The result will be one
+      /// tangent per face.
+      ///
+      /// \param coord Node with the coordinates.
+      /// \param tex_coord Node with the texture coordinates.
+      /// \param coord_index The indices in coord for the vertices.
+      /// \param tex_coord_index The indices in tex_coord for the texture coordinates.
+      virtual void generateTangentsPerFace( 
+                                           X3DCoordinateNode *coord,
+                                           X3DTextureCoordinateNode *tex_coord,
+                                           const vector< int > &coord_index,
+                                           const vector< int > &tex_coord_index,
+                                           bool normalize_values,
+                                           FloatVertexAttribute *tangent,
+                                           FloatVertexAttribute *binormal );
+
+      /// Returns the texture coordinate for a given index. If no
+      /// texture coordinate node is specified it will use the
+      /// default texture coordinate generation for an IndexedTriangleSet.
+      Vec3f getTexCoord( X3DCoordinateNode *coord,
+                         X3DTextureCoordinateNode *tex_coord,
+                         int index );
+
+      /// Calculate the tangent and binormal for a triangle.
+      /// a,b and c are the coordinates of the triangle vertices.
+      /// ta, tb and tc are the texture coordinates of the triangle vertices.
+      /// tangent and binormal are output parameters that are set by the function.
+      void calculateTangent( const Vec3f &a, const Vec3f &b, const Vec3f &c,
+                             const Vec3f &ta, const Vec3f &tb, const Vec3f &tc,
+                             Vec3f &tangent, Vec3f &binormal );
+
+    };
+
     /// The bound field for IndexedFaceSet is a CoordBoundField.
     typedef CoordBoundField SFBound;
 
@@ -304,6 +411,14 @@ namespace H3D {
     // Traverse the scenegraph. See X3DGeometryNode::traverseSG
     // for more info.
     virtual void traverseSG( TraverseInfo &ti );  
+
+    /// Returns true if this geometry supports the automatic generation
+    /// of tangents and binormals as FloatVertexAttribues(needed by
+    /// e.g. PhongShader.
+    /// IndexedTriangleSet does support this.
+    virtual bool supportsTangentAttributes() {
+      return true;
+    }
 
     /// Field for setting the value of the colorIndex field.
     /// <b>Access type:</b> inputOnly 
@@ -401,8 +516,19 @@ namespace H3D {
     /// \dotfile IndexedFaceSet_autoNormal.dot 
     auto_ptr< AutoNormal  >  autoNormal;
 
+    /// Auto-generated vertex attributes for tangents and binormals.
+    /// Only accessable in C++.
+    ///
+    /// \dotfile IndexedFaceSet_autoNormal.dot 
+    auto_ptr< AutoTangent  >  autoTangent;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+  protected:
+    /// This will be set to true in traverseSG if the render function
+    /// is supposed to render tangent vertex attributes.
+    bool render_tangents;
   };
 }
 
