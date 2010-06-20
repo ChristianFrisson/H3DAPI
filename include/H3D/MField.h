@@ -250,7 +250,6 @@ namespace H3D {
     inline  void clear( int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeSet( id );
-      this->upToDate();
       value.clear();
       this->startEvent();
     }
