@@ -1,6 +1,6 @@
 from H3DInterface import *
 
-COORD, = references.getValue()
+COORD, TEXT_TOGGLE, = references.getValue()
 
 class DevicePositionChangeField( AutoUpdate(TypedField(SFBool, (SFBool, SFVec3f))) ):
   def update(self, event):
@@ -17,6 +17,8 @@ class KeyPress( AutoUpdate(SFString) ):
     if k == ' ':
       print 'Clear board'
       COORD.point.clear()
+    elif k == 'h':
+      TEXT_TOGGLE.graphicsOn.setValue(not TEXT_TOGGLE.graphicsOn.getValue())
     return ''
     
 keypress = KeyPress()

@@ -23,10 +23,26 @@
       </Shape>
     </Transform>
     
+    <ToggleGroup graphicsOn="true" DEF='TEXT_TOGGLE'>
+      <Transform>
+        <Shape>
+          <Appearance DEF='A'>
+            <Material diffuseColor='0 1 1' />
+          </Appearance>      
+          <Text 
+              string='"Hold haptic button to draw""Press `spacebar` to erase the screen""Press h to hide this message"' 
+              length='' maxExtent='0' solid='true'>
+            <FontStyle DEF='F' size='0.02' spacing='1.0' justify='MIDDLE'/>
+          </Text>
+        </Shape>
+      </Transform>
+    </ToggleGroup>
+    
     <KeySensor DEF='KS' />
     
     <PythonScript url="HapticPen.py" DEF='PY'>
       <Coordinate USE='COORD' containerField='references' />
+      <ToggleGroup USE='TEXT_TOGGLE' containerField='references' />
     </PythonScript>
 
     <ROUTE_NO_EVENT fromNode='DEVICE' fromField='mainButton' toNode='PY' toField='position_change' />
