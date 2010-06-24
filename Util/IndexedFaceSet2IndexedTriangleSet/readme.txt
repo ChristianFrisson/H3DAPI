@@ -6,5 +6,3 @@ The program will not work if the IndexedFaceSet contains a polygon with more tha
 3 vertices.
 
 Syntax: h3dload ifs2its.x3d [source_file] [destination_file]
-
-Demo: h3dload ifs2its.x3d face.x3d face_converted.x3d
