@@ -588,19 +588,19 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   setFullscreen( fullscreen->getValue() );
 
   if( !child_to_render ) {
-	// clear the buffers
-	 glClearColor( 0, 0, 0, 0 );
-	if( stereo_mode != RenderMode::QUAD_BUFFERED_STEREO ) {
+    // clear the buffers
+    glClearColor( 0, 0, 0, 0 );
+    if( stereo_mode != RenderMode::QUAD_BUFFERED_STEREO ) {
       glDrawBuffer( GL_BACK );
-	  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	} else {
-	  glDrawBuffer( GL_BACK_LEFT );
-	  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); 
-	  glDrawBuffer( GL_BACK_RIGHT );
-	  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	} 
-	swapBuffers();
-	return;
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    } else {
+      glDrawBuffer( GL_BACK_LEFT );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); 
+      glDrawBuffer( GL_BACK_RIGHT );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    } 
+    swapBuffers();
+    return;
   }
 
   glPushAttrib( GL_ENABLE_BIT );
@@ -741,22 +741,27 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     stencil_mask_height = h;
 
     switch(stereo_mode){
-    case RenderMode::HORIZONTAL_INTERLACED:
-      for( int i = 0; i < h; i++ )
-        for( int j = 0; j < w; j++ )
-          stencil_mask[i*w+j]=(i+1)%2;
-    case RenderMode::VERTICAL_INTERLACED:
-      for( int i = 0; i < h; i++ )
-        for( int j = 0; j < w; j++ )
-          stencil_mask[i*w+j]=(j+1)%2;
-    case RenderMode::CHECKER_INTERLACED:
-      for( int i = 0; i < h; i++ )
-        for( int j = 0; j < w; j++ )
-          stencil_mask[i*w+j]=(i+j+1)%2;
+      case RenderMode::HORIZONTAL_INTERLACED: {
+        for( int i = 0; i < h; i++ )
+          for( int j = 0; j < w; j++ )
+            stencil_mask[i*w+j]=(i+1)%2;
+        break;
+      }
+      case RenderMode::CHECKER_INTERLACED: {
+        for( int i = 0; i < h; i++ )
+          for( int j = 0; j < w; j++ )
+            stencil_mask[i*w+j]=(i+j+1)%2;
+        break;
+      }
+      default: {
+        for( int i = 0; i < h; i++ )
+          for( int j = 0; j < w; j++ )
+            stencil_mask[i*w+j]=(j+1)%2;
+      }
     }
     rebuild_stencil_mask = false;
   }
-  
+
   H3DFloat clip_near = 0.01f;  // near viewing plane at 1cm
   H3DFloat clip_far  = 10.f; // far viewing plane at 10m
 
