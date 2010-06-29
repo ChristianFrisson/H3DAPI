@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/X3DTextureCoordinateNode.h>
-#include "GL/glew.h"
 #include <H3D/MultiTexture.h>
 #include <H3D/X3DTextureNode.h>
 
@@ -59,7 +58,7 @@ void X3DTextureCoordinateNode::renderArrayForTextureUnits( unsigned int start_un
   glClientActiveTexture( saved_texture );
 }
 
-/// Disable the array state enabled in renderArrayForTextureUnits().
+// Disable the array state enabled in renderArrayForTextureUnits().
 void X3DTextureCoordinateNode::disableArrayForTextureUnits( 
                                    unsigned int start_unit,
                                    unsigned int end_unit ) {
@@ -204,7 +203,6 @@ void X3DTextureCoordinateNode::renderArrayForTexture( X3DTextureNode *t ) {
   }
 }
 
-
 void X3DTextureCoordinateNode::renderArrayForActiveTexture() {
   renderArrayForTexture( X3DTextureNode::getActiveTexture() );
 }
@@ -225,3 +223,138 @@ void X3DTextureCoordinateNode::disableArrayForTexture( X3DTextureNode *t ) {
 void X3DTextureCoordinateNode::disableArrayForActiveTexture() {
   disableArrayForTexture( X3DTextureNode::getActiveTexture() );
 }
+
+void X3DTextureCoordinateNode::renderVertexBufferObjectForTextureUnits(
+  unsigned int start_unit,
+  unsigned int end_unit ) {
+  GLint saved_texture;
+  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
+  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+    renderVertexBufferObjectForTextureUnit( i );
+  }
+  glClientActiveTexture( saved_texture );
+}
+
+// Disable the array state enabled in renderArrayForTextureUnits().
+void X3DTextureCoordinateNode::disableVertexBufferObjectForTextureUnits( 
+                                   unsigned int start_unit,
+                                   unsigned int end_unit ) {
+  GLint saved_texture;
+  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
+  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+    disableVertexBufferObjectForTextureUnit( i );
+  }
+  glClientActiveTexture( saved_texture );
+}
+
+void X3DTextureCoordinateNode::renderVertexBufferObjectForTextureUnit(
+                                  unsigned int texture_unit ) {
+  GLint saved_texture;
+  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
+  glClientActiveTexture( GL_TEXTURE0_ARB + texture_unit );
+  renderVertexBufferObject();
+  glClientActiveTexture( saved_texture );
+}
+
+void X3DTextureCoordinateNode::disableVertexBufferObjectForTextureUnit( 
+                                  unsigned int texture_unit ) {
+  GLint saved_texture;
+  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
+  glClientActiveTexture( GL_TEXTURE0_ARB + texture_unit );
+  disableVertexBufferObject();
+  glClientActiveTexture( saved_texture );
+}
+
+void X3DTextureCoordinateNode::renderVertexBufferObjectForTexture(
+  X3DTextureNode *t ) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( t );
+
+  if( mt && mt->texture->size() > 0 ) {
+    size_t texture_units = mt->texture->size();
+    renderVertexBufferObjectForTextureUnits( 0, (unsigned int) texture_units -1 );
+  } else {
+    renderVertexBufferObjectForTextureUnit( 0 );
+  }
+}
+
+void X3DTextureCoordinateNode::renderVertexBufferObjectForActiveTexture() {
+  renderVertexBufferObjectForTexture( X3DTextureNode::getActiveTexture() );
+}
+
+void X3DTextureCoordinateNode::disableVertexBufferObjectForTexture(
+  X3DTextureNode *t ) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( t );
+
+  if( mt && mt->texture->size() > 0 ) {
+    size_t texture_units = mt->texture->size();
+    disableVertexBufferObjectForTextureUnits( 0,
+      (unsigned int) texture_units -1 );
+  } else {
+    disableVertexBufferObjectForTextureUnit( 0 );
+  }
+}
+
+
+void X3DTextureCoordinateNode::disableVertexBufferObjectForActiveTexture() {
+  disableVertexBufferObjectForTexture( X3DTextureNode::getActiveTexture() );
+}
+
+void X3DTextureCoordinateNode::renderVertexBufferObjectForActiveTexture(
+  GLint size, GLenum type, GLsizei stride, const GLvoid *pointer ) {
+  renderVertexBufferObjectForTexture( size, type, stride, pointer,
+    X3DTextureNode::getActiveTexture() );
+}
+
+void X3DTextureCoordinateNode::renderVertexBufferObjectForTexture(
+      GLint size, GLenum type, GLsizei stride, const GLvoid *pointer,
+      X3DTextureNode *t ) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( t );
+  // Store old texture index to restore it later.
+  GLint saved_texture;
+  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
+  if( mt ) {
+    // If multitexture set texture coordinate for each texture.
+    size_t texture_units = mt->texture->size();
+    for( unsigned int i = 0; i < texture_units; i++ ) {
+      glClientActiveTexture( GL_TEXTURE0_ARB + i );
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glTexCoordPointer( 3, GL_FLOAT, 9 * sizeof(GLfloat),
+                         (GLvoid*)(6*sizeof(GLfloat)) );
+    }
+  } else {
+    glClientActiveTexture( GL_TEXTURE0_ARB );
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer( 3, GL_FLOAT, 9 * sizeof(GLfloat),
+                      (GLvoid*)(6*sizeof(GLfloat)) );
+  }
+  glClientActiveTexture( saved_texture );
+}
+
+void X3DTextureCoordinateNode::disableVBOForActiveTexture() {
+  disableVBOForTexture( X3DTextureNode::getActiveTexture() );
+}
+
+void X3DTextureCoordinateNode::disableVBOForTexture( X3DTextureNode *t ) {
+  MultiTexture *mt = 
+    dynamic_cast< MultiTexture * >( t );
+  // Store old texture index to restore it later.
+  GLint saved_texture;
+  glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
+  if( mt ) {
+    // If multitexture disable texture coordinate for each texture.
+    size_t texture_units = mt->texture->size();
+    for( unsigned int i = 0; i < texture_units; i++ ) {
+      glClientActiveTexture( GL_TEXTURE0_ARB + i );
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+  } else {
+    glClientActiveTexture( GL_TEXTURE0_ARB);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  }
+  glClientActiveTexture( saved_texture );
+}
+
+

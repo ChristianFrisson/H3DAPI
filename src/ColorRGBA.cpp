@@ -47,16 +47,28 @@ ColorRGBA::ColorRGBA(
                      Inst< MFColorRGBA>  _color,
                      Inst< SFNode     >  _metadata ) :
   X3DColorNode( _metadata ),
-  color   ( _color    ) {
+  color   ( _color    ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "ColorRGBA";
   database.initFields( this );
 
   color->route( propertyChanged );
+  color->route( vboFieldsUpToDate );
 }
 
-/// Perform the OpenGL commands to render all verties as a vertex
-/// array.
+ColorRGBA::~ColorRGBA() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
+}
+
+// Perform the OpenGL commands to render all vertices as a vertex
+// array.
 void ColorRGBA::renderArray() {
   if( !color->empty() ) {
     glEnableClientState(GL_COLOR_ARRAY);
@@ -65,8 +77,36 @@ void ColorRGBA::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderArray().
+// Disable the array state enabled in renderArray().
 void ColorRGBA::disableArray() {
   glDisableClientState(GL_COLOR_ARRAY);
 }
 
+// Perform the OpenGL commands to render all vertices as a vertex
+// buffer object.
+void ColorRGBA::renderVertexBufferObject() {
+  if( !color->empty() ) {
+    if( !vboFieldsUpToDate->isUpToDate() ) {
+      // Only transfer data when it has been modified.
+      vboFieldsUpToDate->upToDate();
+      if( !vbo_id ) {
+        vbo_id = new GLuint;
+        glGenBuffersARB( 1, vbo_id );
+      }
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                       color->size() * 4 * sizeof(GLfloat),
+                       &(*color->begin()), GL_STATIC_DRAW_ARB );
+    } else {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+    }
+    glEnableClientState(GL_COLOR_ARRAY);
+    glColorPointer(4, GL_FLOAT, 0, NULL );
+  }
+}
+
+// Disable the array state enabled in renderVertexBufferObject().
+void ColorRGBA::disableVertexBufferObject() {
+  glDisableClientState(GL_COLOR_ARRAY);
+  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+}

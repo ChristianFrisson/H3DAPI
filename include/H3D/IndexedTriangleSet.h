@@ -160,7 +160,7 @@ namespace H3D {
     
     class H3DAPI_API AutoTangent: 
       public TypedField< MFVertexAttributeNode,
-	Types< SFBool, SFCoordinateNode, MFInt32, SFTextureCoordinateNode > > {
+  Types< SFBool, SFCoordinateNode, MFInt32, SFTextureCoordinateNode > > {
 
       /// Calls generateTangentsPerVertex() if routes_in[0] is true, 
       /// otherwise generateTangentsPerFace() is called.
@@ -173,12 +173,12 @@ namespace H3D {
       /// \param tex_coord Node with the texture coordinates.
       /// \param index The indices in coord for the vertices.
       virtual void generateTangentsPerVertex( 
-					      X3DCoordinateNode *coord,
-					      X3DTextureCoordinateNode *tex_coord,
-					      const vector< int > &index,
-					      FloatVertexAttribute *tangent,
-					      FloatVertexAttribute *binormal
-					      );
+                X3DCoordinateNode *coord,
+                X3DTextureCoordinateNode *tex_coord,
+                const vector< int > &index,
+                FloatVertexAttribute *tangent,
+                FloatVertexAttribute *binormal
+                );
     
 
       /// Set the vales in the tangent and binormal arguments
@@ -188,11 +188,11 @@ namespace H3D {
       /// \param tex_coord Node with the texture coordinates.
       /// \param index The indices in coord for the vertices.
       virtual void generateTangentsPerFace( 
-					   X3DCoordinateNode *coord,
-					   X3DTextureCoordinateNode *tex_coord,
-					   const vector< int > &index,
-					   FloatVertexAttribute *tangent,
-					   FloatVertexAttribute *binormal );
+             X3DCoordinateNode *coord,
+             X3DTextureCoordinateNode *tex_coord,
+             const vector< int > &index,
+             FloatVertexAttribute *tangent,
+             FloatVertexAttribute *binormal );
 
       /// Returns the texture coordinate for a given index. If no
       /// texture coordinate node is specified it will use the
@@ -229,7 +229,10 @@ namespace H3D {
                         Inst< MFInt32          > _set_index       = 0,
                         Inst< MFInt32          > _index           = 0,
                         Inst< SFFogCoordinate  > _fogCoord        =0 );
- 
+
+    /// Destructor
+    virtual ~IndexedTriangleSet();
+
     // Traverse the scenegraph. See X3DGeometryNode::traverseSG
     // for more info.
     virtual void traverseSG( TraverseInfo &ti );
@@ -254,19 +257,19 @@ namespace H3D {
     /// Only accessable in C++.
     ///
     /// \dotfile IndexedFaceSet_autoNormal.dot 
-    auto_ptr< AutoNormal  >  autoNormal;
+    auto_ptr< AutoNormal > autoNormal;
 
     /// Auto-generated vertex attributes for tangents and binormals.
     /// Only accessable in C++.
     ///
     /// \dotfile IndexedFaceSet_autoNormal.dot 
-    auto_ptr< AutoTangent  >  autoTangent;
+    auto_ptr< AutoTangent > autoTangent;
 
     /// Field for setting the value of the index field.
     /// <b>Access type:</b> inputOnly 
     ///
     /// \dotfile IndexedTriangleSet_set_index.dot 
-    auto_ptr< MFInt32 >  set_index;
+    auto_ptr< MFInt32 > set_index;
 
     /// The index field is used to specify the vertices of each triangle
     /// from the coord field. Each triangle is formed from a set of three 
@@ -278,7 +281,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput 
     ///
     /// \dotfile IndexedTriangleSet_index.dot 
-    auto_ptr< MFInt32 >  index;
+    auto_ptr< MFInt32 > index;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
@@ -286,6 +289,11 @@ namespace H3D {
     /// This will be set to true in traverseSG if the render function
     /// is supposed to render tangent vertex attributes.
     bool render_tangents;
+
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
 
   };
 }

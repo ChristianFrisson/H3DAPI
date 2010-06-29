@@ -34,7 +34,8 @@
 #include <H3D/DeviceInfo.h>
 #include <H3D/H3DSurfaceNode.h>
 #include <H3D/TextureCoordinate.h>
-
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -78,7 +79,9 @@ IndexedTriangleSet::IndexedTriangleSet(
   set_index( _set_index ),
   index( _index ),
   autoTangent( new AutoTangent ),
-  render_tangents( false ) {
+  render_tangents( false ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
   
   type_name = "IndexedTriangleSet";
   database.initFields( this );
@@ -102,6 +105,17 @@ IndexedTriangleSet::IndexedTriangleSet(
   texCoord->route( autoTangent );
   
   coord->route( bound );
+
+  index->route( vboFieldsUpToDate );
+}
+
+IndexedTriangleSet::~IndexedTriangleSet() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 void IndexedTriangleSet::render() {
@@ -123,6 +137,14 @@ void IndexedTriangleSet::render() {
   const vector< int > &indices  = index->getValue();
 
   if( coordinate_node && !indices.empty() ) {
+
+    // Check that the number of available coords are not 0 since we use
+    // "coordinate_node->nrAvailableCoords() - 1" as argument to
+    // glDrawRangeElements and we do not want some strange error. Besides
+    // if the number of coordinates is 0 then nothing will be rendered so
+    // this is a slight optimization.
+    if( coordinate_node->nrAvailableCoords() <= 0 )
+      return;
 
     // no X3DTextureCoordinateNode, so we generate texture coordinates
     // based on the bounding box according to the X3D specification.
@@ -160,7 +182,7 @@ void IndexedTriangleSet::render() {
     // set fog to get fog depth from fog coordinates if available
     if( GLEW_EXT_fog_coord && fog_coord_node ) {
       glPushAttrib( GL_FOG_BIT );
-      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);  
     }
 
     GLhandleARB shader_program = 0;
@@ -193,56 +215,145 @@ void IndexedTriangleSet::render() {
       }
     }
 
-    unsigned int nr_triangles = (unsigned int) indices.size() / 3;
-
-    if( normalPerVertex->getValue() ) {
-      // if normal per vertex we can use arrays to render the geometry
-      // they all use the same indices.
-      coordinate_node->renderArray();
-      normal_node->renderArray();
-      if( color_node ) color_node->renderArray();
-      if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
-      if( fog_coord_node ) fog_coord_node->renderArray();
-
-      if( render_tangents ) {
-        for( unsigned int attrib_index = 0;
-             attrib_index < autoTangent->size(); attrib_index++ ) {
-          X3DVertexAttributeNode *attr = 
-            autoTangent->getValueByIndex( attrib_index );
-          if( attr ) attr->renderArray();
+    bool prefer_vertex_buffer_object = false;
+    if( GLEW_ARB_vertex_buffer_object ) {
+      GraphicsCachingOptions * gco = NULL;
+      getOptionNode( gco );
+      if( !gco ) {
+        GlobalSettings * gs = GlobalSettings::getActive();
+        if( gs ) {
+          gs->getOptionNode( gco );
         }
       }
-
-      for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
-        X3DVertexAttributeNode *attr = 
-            attrib->getValueByIndex( attrib_index );
-          if( attr ) attr->renderArray();
+      if( gco ) {
+        prefer_vertex_buffer_object =
+          gco->preferVertexBufferObject->getValue();
       }
-      
-      glDrawElements( GL_TRIANGLES, 
-                      3*nr_triangles, 
-                      GL_UNSIGNED_INT,
-                      &(*(indices.begin()) ) );
+    }
+    unsigned int nr_triangles = (unsigned int) indices.size() / 3;
+    if( normalPerVertex->getValue() ) {
+      // if normal per vertex we can use arrays or vertex buffer objects
+      // to render the geometry, they all use the same indices.
+      if( prefer_vertex_buffer_object ) {
+        // Create and bind vertex buffer objects for all the different
+        // features.
+        coordinate_node->renderVertexBufferObject();
+        normal_node->renderVertexBufferObject();
+        if( color_node ) color_node->renderVertexBufferObject();
+        if( tex_coords_per_vertex )
+          renderTexCoordVertexBufferObject( tex_coord_node );
+        if( fog_coord_node ) fog_coord_node->renderVertexBufferObject();
+        if( render_tangents ) {
+          for( unsigned int attrib_index = 0;
+               attrib_index < autoTangent->size(); attrib_index++ ) {
+            X3DVertexAttributeNode *attr = 
+              autoTangent->getValueByIndex( attrib_index );
+            if( attr ) attr->renderVertexBufferObject();
+          }
+        }
 
-      coordinate_node->disableArray();
-      normal_node->disableArray();
-      if( color_node ) color_node->disableArray();
-      if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
-      if( fog_coord_node) fog_coord_node->disableArray();
-      for( unsigned int attrib_index = 0;
-        attrib_index < attrib->size(); attrib_index++ ) {
-          X3DVertexAttributeNode *attr = 
-            attrib->getValueByIndex( attrib_index );
-          if( attr ) attr->disableArray();
-      } 
-
-      if( render_tangents ) {
         for( unsigned int attrib_index = 0;
-             attrib_index < autoTangent->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); attrib_index++ ) {
           X3DVertexAttributeNode *attr = 
-            autoTangent->getValueByIndex( attrib_index );
-          if( attr ) attr->disableArray();
+              attrib->getValueByIndex( attrib_index );
+            if( attr ) attr->renderVertexBufferObject();
+        }
+
+        if( !vboFieldsUpToDate->isUpToDate() ) {
+          // Only transfer data when it has been modified.
+          vboFieldsUpToDate->upToDate();
+          if( !vbo_id ) {
+            vbo_id = new GLuint;
+            glGenBuffersARB( 1, vbo_id );
+          }
+          glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, *vbo_id );
+          glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+                           indices.size() * sizeof(GLuint),
+                           &(*(indices.begin()) ), GL_STATIC_DRAW_ARB );
+        } else {
+          glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, *vbo_id );
+        }
+
+        // Draw the triangles, the last parameter is NULL since vertex buffer
+        // objects are used.
+        glDrawRangeElements( GL_TRIANGLES,
+                             0,
+                             coordinate_node->nrAvailableCoords() - 1,
+                             3*nr_triangles,
+                             GL_UNSIGNED_INT,
+                             NULL );
+
+        // Disable all vertex buffer objects.
+        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+        coordinate_node->disableVertexBufferObject();
+        normal_node->disableVertexBufferObject();
+        if( color_node ) color_node->disableVertexBufferObject();
+        if( tex_coords_per_vertex )
+          disableTexCoordVertexBufferObject( tex_coord_node );
+        if( fog_coord_node) fog_coord_node->disableVertexBufferObject();
+          for( unsigned int attrib_index = 0;
+          attrib_index < attrib->size(); attrib_index++ ) {
+            X3DVertexAttributeNode *attr = 
+              attrib->getValueByIndex( attrib_index );
+            if( attr ) attr->disableVertexBufferObject();
+        } 
+
+        if( render_tangents ) {
+          for( unsigned int attrib_index = 0;
+               attrib_index < autoTangent->size(); attrib_index++ ) {
+            X3DVertexAttributeNode *attr = 
+              autoTangent->getValueByIndex( attrib_index );
+            if( attr ) attr->disableVertexBufferObject();
+          }
+        }
+      } else {
+        // Use vertex arrays.
+        coordinate_node->renderArray();
+        normal_node->renderArray();
+        if( color_node ) color_node->renderArray();
+        if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
+        if( fog_coord_node ) fog_coord_node->renderArray();
+        if( render_tangents ) {
+          for( unsigned int attrib_index = 0;
+               attrib_index < autoTangent->size(); attrib_index++ ) {
+            X3DVertexAttributeNode *attr = 
+              autoTangent->getValueByIndex( attrib_index );
+            if( attr ) attr->renderArray();
+          }
+        }
+
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+              attrib->getValueByIndex( attrib_index );
+            if( attr ) attr->renderArray();
+        }
+
+        glDrawRangeElements( GL_TRIANGLES,
+                             0,
+                             coordinate_node->nrAvailableCoords() - 1,
+                             3*nr_triangles, 
+                             GL_UNSIGNED_INT,
+                             &(*(indices.begin()) ) );
+        coordinate_node->disableArray();
+        normal_node->disableArray();
+        if( color_node ) color_node->disableArray();
+        if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
+        if( fog_coord_node) fog_coord_node->disableArray();
+        for( unsigned int attrib_index = 0;
+          attrib_index < attrib->size(); attrib_index++ ) {
+            X3DVertexAttributeNode *attr = 
+              attrib->getValueByIndex( attrib_index );
+            if( attr ) attr->disableArray();
+        } 
+
+        if( render_tangents ) {
+          for( unsigned int attrib_index = 0;
+               attrib_index < autoTangent->size(); attrib_index++ ) {
+            X3DVertexAttributeNode *attr = 
+              autoTangent->getValueByIndex( attrib_index );
+            if( attr ) attr->disableArray();
+          }
         }
       }
     } else {
@@ -334,7 +445,7 @@ void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
   bool * shader_requires_tangents = NULL;
   if( !render_tangents && 
       !ti.getUserData( "shaderRequiresTangents", 
-		       (void **)&shader_requires_tangents) ) {
+           (void **)&shader_requires_tangents) ) {
     render_tangents = true;
     displayList->breakCache();
   }

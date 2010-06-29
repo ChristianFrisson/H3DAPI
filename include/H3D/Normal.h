@@ -33,6 +33,7 @@
 #include <H3D/FieldTemplates.h>
 #include <GL/glew.h>
 #include <H3D/MFVec3f.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -55,9 +56,12 @@ namespace H3D {
   /// \dotfile Normal.dot
   class H3DAPI_API Normal : public X3DNormalNode {
   public:
-    
+
     Normal( Inst< SFNode >  _metadata = 0,
             Inst< MFVec3f>  _vector   = 0 );
+
+    /// Destructor
+    virtual ~Normal();
 
     // Gets the normal of a given index.
     virtual Vec3f getNormal( int index ) {
@@ -71,17 +75,24 @@ namespace H3D {
       glNormal3f( v.x, v.y, v.z );
     }
 
-    /// Perform the OpenGL commands to render all verties as a vertex
+    /// Perform the OpenGL commands to render all vertices as a vertex
     /// array.
     virtual void renderArray();
 
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
 
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject();
+
     /// Returns the number of normals this normal node can render.
     virtual unsigned int nrAvailableNormals() {
       return vector->size();
-    } 
+    }
 
     /// A vector of 3D normal vectors.
     ///
@@ -92,6 +103,12 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
+
   };
 }
 

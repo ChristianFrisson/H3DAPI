@@ -54,7 +54,7 @@ namespace H3D {
     /// of the vertex.
     virtual void render( int index ) {}
 
-    /// Perform the OpenGL commands to render all verties as a vertex
+    /// Perform the OpenGL commands to render all vertices as a vertex
     /// array.
     virtual void renderArray() {}
 
@@ -70,6 +70,13 @@ namespace H3D {
 
     /// Returns the number of coordinates this coordinate node can render.
     virtual unsigned int nrAvailableCoords() = 0; 
+
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject() {}
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject() {}
 
     class Iterator {
     private:

@@ -304,3 +304,14 @@ void X3DComposedGeometryNode::disableTexCoordArray(
                                       X3DTextureCoordinateNode *tc ) {
   tc->disableArrayForActiveTexture();
 }
+
+void X3DComposedGeometryNode::renderTexCoordVertexBufferObject(
+                                      X3DTextureCoordinateNode *tc ) {
+  tc->renderVertexBufferObjectForActiveTexture();
+}
+
+void X3DComposedGeometryNode::disableTexCoordVertexBufferObject(
+                                      X3DTextureCoordinateNode *tc ) {
+  tc->disableVertexBufferObjectForActiveTexture();
+}
+

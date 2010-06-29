@@ -32,6 +32,7 @@
 #include <H3D/X3DVertexAttributeNode.h>
 #include <H3D/MFFloat.h>
 #include <H3D/SFInt32.h>
+#include <GL/glew.h>
 
 namespace H3D {
   /// \ingroup X3DNodes
@@ -57,6 +58,9 @@ namespace H3D {
                           Inst< MFFloat  > _value         = 0,
                           Inst< SFInt32  > _numComponents = 0 );
 
+    /// Destructor.
+    virtual ~FloatVertexAttribute();
+
     /// Perform the OpenGL commands to set the vertex attribute
     /// with the given index. value_index is the index of the 
     /// value in the value field that is to be used. 
@@ -69,6 +73,13 @@ namespace H3D {
 
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
+
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject();
 
      /// The value field specifies an arbitrary collection of floating point 
     /// values that will be passed to the shader as per-vertex information.
@@ -87,6 +98,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

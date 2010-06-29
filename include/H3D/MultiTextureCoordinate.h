@@ -111,6 +111,19 @@ namespace H3D {
     /// Disable the array state enabled in renderArrayForTextureUnit().
     virtual void disableArrayForTextureUnit( unsigned int texture_unit );
 
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Perform the OpenGL commands to render all texture coordinates as 
+    /// an vertex buffer object for the given texture unit.
+    virtual void renderVertexBufferObjectForTextureUnit(
+      unsigned int texture_unit );
+
+    /// Disable the array state enabled in renderArrayForTextureUnit().
+    virtual void disableVertexBufferObjectForTextureUnit(
+      unsigned int texture_unit );
+
     /// Start hardware texture coordinate generation. 
     virtual void startTexGen();
 
@@ -133,11 +146,10 @@ namespace H3D {
     /// The X3DTextureCoordinate nodes to use for each texture unit.
     /// 
     /// <b>Access type:</b> inputOutput \n
-    auto_ptr< MFTextureCoordinateNode >  texCoord;
+    auto_ptr< MFTextureCoordinateNode > texCoord;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-    
   };
 }
 

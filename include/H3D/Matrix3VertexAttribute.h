@@ -31,6 +31,7 @@
 
 #include <H3D/X3DVertexAttributeNode.h>
 #include <H3D/MFMatrix3f.h>
+#include <GL/glew.h>
 
 namespace H3D {
 
@@ -50,6 +51,9 @@ namespace H3D {
     Matrix3VertexAttribute( Inst< SFNode     > _metadata = 0,
                             Inst< SFString   > _name     = 0,
                             Inst< MFMatrix3f > _value  = 0 );
+
+    /// Destructor
+    virtual ~Matrix3VertexAttribute();
    
     /// Perform the OpenGL commands to set the vertex attribute
     /// with the given index. value_index is the index of the 
@@ -64,6 +68,13 @@ namespace H3D {
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
 
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject();
+
     /// The value field specifies an arbitrary collection of Matrix3f values 
     /// that will be passed to the shader as per-vertex information.
     /// 
@@ -72,6 +83,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

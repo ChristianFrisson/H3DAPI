@@ -50,6 +50,9 @@ namespace H3D {
     CoordinateDouble( Inst< SFNode  >  _metadata = 0,
                       Inst< MFVec3d >  _point    = 0 );
 
+    /// Destructor.
+    virtual ~CoordinateDouble();
+
     /// Perform the OpenGL commands to render a vertex given the index
     /// of the vertex. We install the vertex as glVertex3d.
     virtual void render( int index ) { 
@@ -57,7 +60,7 @@ namespace H3D {
       glVertex3d( v.x, v.y, v.z );
     };
 
-    /// Perform the OpenGL commands to render all verties as a vertex
+    /// Perform the OpenGL commands to render all vertices as a vertex
     /// array.
     virtual void renderArray();
 
@@ -75,6 +78,13 @@ namespace H3D {
       return point->size();
     }; 
 
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject();
+
     /// A vector of Vec3d defining points in 3d-space.
     ///
     /// <b>Access type:</b> inputOutput \n
@@ -83,6 +93,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

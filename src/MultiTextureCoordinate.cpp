@@ -193,7 +193,7 @@ bool MultiTextureCoordinate::supportsGetTexCoord( unsigned int texture_unit ) {
 
 /// Gets texture coordinate of the given index and texture unit.
 Vec4f MultiTextureCoordinate::getTexCoord( int i, 
-					   unsigned int texture_unit ) {
+             unsigned int texture_unit ) {
   unsigned int nr_nodes = texCoord->size();
   if( nr_nodes == 0 ) return Vec4f( 0, 0, 0, 1 );
    
@@ -204,3 +204,35 @@ Vec4f MultiTextureCoordinate::getTexCoord( int i,
   else return Vec4f( 0, 0, 0, 1 );
 
 }
+
+void MultiTextureCoordinate::renderVertexBufferObject() {
+  stringstream s;
+  s << "Cannot use renderVertexBufferObject() function in "
+    << "MultiTextureCoordinate. Use renderVertexBufferObjectForTextureUnit() "
+    << "instead to specify which texture unit to render for. ";
+  throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
+}
+
+void MultiTextureCoordinate::renderVertexBufferObjectForTextureUnit(
+  unsigned int texture_unit ){
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return;
+
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
+  X3DTextureCoordinateNode *tc = 
+    texCoord->getValueByIndex( index );
+  if( tc ) tc->renderVertexBufferObjectForTextureUnit( texture_unit );
+}
+
+
+void MultiTextureCoordinate::disableVertexBufferObjectForTextureUnit(
+  unsigned int texture_unit ){
+  unsigned int nr_nodes = texCoord->size();
+  if( nr_nodes == 0 ) return;
+
+  unsigned int index = H3DMin( nr_nodes - 1, texture_unit );
+  X3DTextureCoordinateNode *tc = 
+    texCoord->getValueByIndex( index );
+  if( tc ) tc->disableVertexBufferObjectForTextureUnit( texture_unit );
+}
+

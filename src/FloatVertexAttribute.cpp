@@ -51,15 +51,28 @@ FloatVertexAttribute::FloatVertexAttribute( Inst< SFNode   > _metadata,
                                             Inst< SFInt32  > _numComponents ):
   X3DVertexAttributeNode( _metadata, _name ),
   value( _value ),
-  numComponents( _numComponents ) {
+  numComponents( _numComponents ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "FloatVertexAttribute";
   database.initFields( this );
 
   value->route(propertyChanged);
   numComponents->route(propertyChanged);
+  value->route( vboFieldsUpToDate );
+  numComponents->route( vboFieldsUpToDate );
 
   numComponents->setValue( 4 );
+}
+
+FloatVertexAttribute::~FloatVertexAttribute() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 // Perform the OpenGL commands to set the vertex attribute
@@ -80,8 +93,8 @@ void FloatVertexAttribute::render( int value_index ) {
   }
 }
 
-/// Perform the OpenGL commands to set the vertex attributes
-/// as a an vertex attribute array.
+// Perform the OpenGL commands to set the vertex attributes
+// as a an vertex attribute array.
 void FloatVertexAttribute::renderArray() {
   if( !value->empty() ) {
     if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
@@ -96,9 +109,47 @@ void FloatVertexAttribute::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderArray().
+// Disable the array state enabled in renderArray().
 void FloatVertexAttribute::disableArray() {
   if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     glDisableVertexAttribArrayARB( attrib_index );
+  }
+}
+
+// Perform the OpenGL commands to render all values as a vertex
+// buffer object.
+void FloatVertexAttribute::renderVertexBufferObject() {
+  if( !value->empty() ) {
+    if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
+      if( !vboFieldsUpToDate->isUpToDate() ) {
+        // Only transfer data when it has been modified.
+        vboFieldsUpToDate->upToDate();
+        if( !vbo_id ) {
+          vbo_id = new GLuint;
+          glGenBuffersARB( 1, vbo_id );
+        }
+        glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+        glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                         value->size() * sizeof(GLfloat),
+                         &(*value->begin()), GL_STATIC_DRAW_ARB );
+      } else {
+        glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      }
+      glEnableVertexAttribArrayARB( attrib_index );
+      glVertexAttribPointerARB( attrib_index,
+                                numComponents->getValue(),
+                                GL_FLOAT,
+                                GL_FALSE,
+                                0,
+                                0 );
+    }
+  }
+}
+
+// Disable the array state enabled in renderVertexBufferObject().
+void FloatVertexAttribute::disableVertexBufferObject() {
+  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
+    glDisableVertexAttribArrayARB( attrib_index );
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
   }
 }

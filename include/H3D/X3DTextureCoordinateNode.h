@@ -30,6 +30,7 @@
 #define __X3DTEXTURECOORDINATENODE_H__
 
 #include <H3D/X3DGeometricPropertyNode.h>
+#include <GL/glew.h>
 
 namespace H3D {
   class X3DTextureNode;
@@ -62,10 +63,37 @@ namespace H3D {
     /// the given texture .
     static void renderTexCoordForTexture( const Vec3f &tc, X3DTextureNode *t );
 
-    
+    /// Render the vertex buffer object for all texture units used by the
+    /// texture in X3DTextureNode::getActiveTexture. The arguments to this
+    /// function are the same arguments as to glTexCoordPointer when using
+    /// vertex buffer objects since this function is basically a wrapper
+    /// around that function to handle the case of the texture being a
+    /// MultiTexture.
+    static void renderVertexBufferObjectForActiveTexture(
+      GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
+
+    /// Render the vertex buffer object for all texture units used by the
+    /// given texture. The other arguments to this
+    /// function are the same arguments as to glTexCoordPointer when using
+    /// vertex buffer objects since this function is basically a wrapper
+    /// around that function to handle the case of the texture being a
+    /// MultiTexture.
+    static void renderVertexBufferObjectForTexture(
+      GLint size, GLenum type, GLsizei stride, const GLvoid *pointer,
+      X3DTextureNode *t );
+
+    /// Function that corresponds to the static version of the function
+    /// renderVertexBufferObjectForActiveTexture. Disables state for active
+    /// texture.
+    static void disableVBOForActiveTexture();
+
+    /// Function that corresponds to the static version of the function
+    /// renderVertexBufferObjectForTexture. Disables state for given texture.
+    static void disableVBOForTexture( X3DTextureNode *t );
+
     ////////////////////////////////////////////////////////////////
     // Functions for rendering texture coordinates explicitly
- 
+
     /// Returns true if the node supports rendering of explicit texture 
     /// coordinates.
     virtual bool supportsExplicitTexCoords() {
@@ -120,7 +148,7 @@ namespace H3D {
     /// including start_unit and end_unit.
     void renderArrayForTextureUnits( unsigned int start_unit,
                                      unsigned int end_unit );
-    
+
     /// Disable the array state enabled in renderArray().
     virtual void disableArray() {}
 
@@ -135,6 +163,48 @@ namespace H3D {
 
     /// Disable the array state enabled in renderArrayForTextureUnits().
     void disableArrayForTextureUnits( unsigned int start_unit,
+                                      unsigned int end_unit );
+
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject() {}
+
+    /// Render the texture coordinate for all texture units used by
+    /// the texture
+    void renderVertexBufferObjectForTexture( X3DTextureNode *t );
+
+    /// Render the texture coordinate for all texture units used by
+    /// the texture in X3DTextureNode::getActiveTexture.
+    void renderVertexBufferObjectForActiveTexture();
+
+    /// Perform the OpenGL commands to render all texture coordinates as 
+    /// an vertex buffer object for the given texture unit.
+    virtual void renderVertexBufferObjectForTextureUnit( unsigned int texture_unit );
+
+    /// Perform the OpenGL commands to render all texture coordinates as 
+    /// an vertex buffer object for the texture units between and
+    /// including start_unit and end_unit.
+    void renderVertexBufferObjectForTextureUnits( unsigned int start_unit,
+                                     unsigned int end_unit );
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject() {}
+
+    /// Disable the vertex buffer object state state enabled in
+    /// renderVertexBufferObjectForTexture
+    void disableVertexBufferObjectForTexture( X3DTextureNode *t );
+
+    /// Disable the vertex buffer object state enabled in
+    /// renderVertexBufferObjectForActiveTexture
+    void disableVertexBufferObjectForActiveTexture();
+
+    /// Disable the vertex buffer object state enabled in
+    /// renderVertexBufferObjectForTextureUnit().
+    virtual void disableVertexBufferObjectForTextureUnit( unsigned int texture_unit );
+
+    /// Disable the vertex buffer object state enabled in
+    /// renderVertexBufferObjectForTextureUnits().
+    void disableVertexBufferObjectForTextureUnits( unsigned int start_unit,
                                       unsigned int end_unit );
 
     ////////////////////////////////////////////////////////////////

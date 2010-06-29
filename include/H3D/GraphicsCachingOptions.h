@@ -53,7 +53,8 @@ namespace H3D {
                             Inst< SFBool  > _cacheOnlyGeometryNodes = 0,
                             Inst< SFString > _frustumCullingMode = 0,
                             Inst< SFBool  > _useDefaultShadows = 0,
-                            Inst< SFFloat > _defaultShadowDarkness = 0 );
+                            Inst< SFFloat > _defaultShadowDarkness = 0,
+                            Inst< SFBool > _preferVertexBufferObject = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -123,11 +124,20 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFFloat > defaultShadowDarkness;
 
+    /// Controls rendering of certain geometries, such as IndexedTriangleSet.
+    /// If true then the affected geometries are rendered using vertex buffer
+    /// object otherwise they are rendered as vertex arrays. This can be used
+    /// to increase performance for certain geometries, such as large
+    /// IndexedTriangleSets. Vertex buffer objects are only used if the
+    /// graphics card supports it. Note that useCaching should be set to false
+    /// to get the biggest effect from vertex buffer objects.
+    ///
+    /// <b>Default value: </b> false \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool > preferVertexBufferObject;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-
-  protected:
-    
   };
 }
 

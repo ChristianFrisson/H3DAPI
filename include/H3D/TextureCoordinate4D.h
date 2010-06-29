@@ -54,6 +54,9 @@ namespace H3D {
     TextureCoordinate4D( Inst< SFNode >  _metadata = 0,
                          Inst< MFVec4f>  _point   = 0 );
 
+    /// Destructor
+    virtual ~TextureCoordinate4D();
+
     /// Returns true.
     virtual bool supportsExplicitTexCoords() {
       return true;
@@ -68,12 +71,19 @@ namespace H3D {
     virtual void renderForTextureUnit( int index,
                                        unsigned int texture_unit );
 
-    /// Perform the OpenGL commands to render all verties as a vertex
+    /// Perform the OpenGL commands to render all vertices as a vertex
     /// array.
     virtual void renderArray();
 
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
+
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject();
 
     /// Returns the number of texture coordinates this node can render.
     virtual unsigned int nrAvailableTexCoords() {
@@ -100,6 +110,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

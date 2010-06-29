@@ -48,11 +48,23 @@ TextureCoordinate::TextureCoordinate(
                                      Inst< SFNode >  _metadata,
                                      Inst< MFVec2f>  _point ) :
   X3DTextureCoordinateNode( _metadata ),
-  point( _point ) {
+  point( _point ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "TextureCoordinate";
   database.initFields( this );
   point->route( propertyChanged );
+  point->route( vboFieldsUpToDate );
+}
+
+TextureCoordinate::~TextureCoordinate() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 void TextureCoordinate::render( int index ) {
@@ -74,9 +86,37 @@ void TextureCoordinate::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderArray().
+// Disable the array state enabled in renderArray().
 void TextureCoordinate::disableArray() {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+// Perform the OpenGL commands to render all vertices as a vertex
+// buffer object.
+void TextureCoordinate::renderVertexBufferObject() {
+  if( !point->empty() ) {
+    if( !vboFieldsUpToDate->isUpToDate() ) {
+      // Only transfer data when it has been modified.
+      vboFieldsUpToDate->upToDate();
+      if( !vbo_id ) {
+        vbo_id = new GLuint;
+        glGenBuffersARB( 1, vbo_id );
+      }
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                       point->size() * 2 * sizeof(GLfloat),
+                       &(*point->begin()), GL_STATIC_DRAW_ARB );
+    } else {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+    }
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(2, GL_FLOAT, 0, NULL );
+  }
+}
+
+// Disable the array state enabled in renderVertexBufferObject().
+void TextureCoordinate::disableVertexBufferObject() {
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+}
 

@@ -183,6 +183,17 @@ namespace H3D {
     /// Disable the arrays that were enabled in renderTexCoordArray().
     virtual void disableTexCoordArray( X3DTextureCoordinateNode *tc );
 
+    /// Render the X3DTextureCoordinate as a vertex buffer object. If the
+    /// currently  active texture is a MultiTexture it will be rendered for the
+    /// texture units of all textures in MultiTexture. tc must not be NULL.
+    virtual void renderTexCoordVertexBufferObject(
+                   X3DTextureCoordinateNode *tc );
+
+    /// Disable the vertex buffer objects that were enabled in
+    /// renderTexCoordArray().
+    virtual void disableTexCoordVertexBufferObject(
+                   X3DTextureCoordinateNode *tc );
+
     /// Gets the matrix that transforms from object space to texture
     /// coordinate space in the default case when no texCoord node
     /// is specified. 

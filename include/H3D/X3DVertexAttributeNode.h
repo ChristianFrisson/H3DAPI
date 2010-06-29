@@ -68,6 +68,13 @@ namespace H3D {
       attrib_index = _attrib_index;
     }
 
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject() {}
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject() {}
+
     /// Returns the default xml containerField attribute value.
     /// For this node it is "attrib".
     virtual string defaultXMLContainerField() {

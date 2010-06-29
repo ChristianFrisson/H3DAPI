@@ -48,11 +48,23 @@ TextureCoordinate4D::TextureCoordinate4D(
                                      Inst< SFNode >  _metadata,
                                      Inst< MFVec4f>  _point ) :
   X3DTextureCoordinateNode( _metadata ),
-  point( _point ) {
+  point( _point ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "TextureCoordinate4D";
   database.initFields( this );
   point->route( propertyChanged );
+  point->route( vboFieldsUpToDate );
+}
+
+TextureCoordinate4D::~TextureCoordinate4D() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 void TextureCoordinate4D::render( int index ) {
@@ -74,9 +86,37 @@ void TextureCoordinate4D::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderArray().
+// Disable the array state enabled in renderArray().
 void TextureCoordinate4D::disableArray() {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+// Perform the OpenGL commands to render all vertices as a vertex
+// buffer object.
+void TextureCoordinate4D::renderVertexBufferObject() {
+  if( !point->empty() ) {
+    if( !vboFieldsUpToDate->isUpToDate() ) {
+      // Only transfer data when it has been modified.
+      vboFieldsUpToDate->upToDate();
+      if( !vbo_id ) {
+        vbo_id = new GLuint;
+        glGenBuffersARB( 1, vbo_id );
+      }
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                       point->size() * 4 * sizeof(GLfloat),
+                       &(*point->begin()), GL_STATIC_DRAW_ARB );
+    } else {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+    }
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(4, GL_FLOAT, 0, NULL );
+  }
+}
+
+// Disable the array state enabled in renderVertexBufferObject().
+void TextureCoordinate4D::disableVertexBufferObject() {
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+}
 

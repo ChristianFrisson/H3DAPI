@@ -32,6 +32,7 @@
 #include <H3D/X3DVertexAttributeNode.h>
 #include <H3D/MFFloat.h>
 #include <H3D/SFInt32.h>
+#include <GL/glew.h>
 
 namespace H3D {
   /// \ingroup X3DNodes
@@ -62,6 +63,9 @@ namespace H3D {
     FogCoordinate(  Inst< MFFloat  > _depth         = 0,
                     Inst< SFNode   > _metadata      = 0);
 
+    /// Destructor.
+    virtual ~FogCoordinate();
+
     /// Perform the OpenGL commands to render fog until
     /// the given index.
     virtual void render( int depth_index );
@@ -72,6 +76,13 @@ namespace H3D {
 
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
+
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject();
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "fogCoord".
@@ -89,6 +100,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

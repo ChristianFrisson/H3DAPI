@@ -33,6 +33,7 @@
 #include <H3D/FieldTemplates.h>
 #include <GL/glew.h>
 #include <H3D/MFVec3f.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -49,6 +50,9 @@ namespace H3D {
     Coordinate( Inst< SFNode  >  _metadata = 0,
                 Inst< MFVec3f > _point    = 0 );
 
+    /// Destructor.
+    virtual ~Coordinate();
+
     /// Perform the OpenGL commands to render a vertex given the index
     /// of the vertex. We install the vertex as glVectex3f.
     virtual void render( int index ) { 
@@ -56,7 +60,7 @@ namespace H3D {
       glVertex3f( v.x, v.y, v.z );
     };
 
-    /// Perform the OpenGL commands to render all verties as a vertex
+    /// Perform the OpenGL commands to render all vertices as a vertex
     /// array.
     virtual void renderArray();
 
@@ -71,7 +75,14 @@ namespace H3D {
     /// Returns the number of coordinates this coordinate node can render.
     virtual unsigned int nrAvailableCoords() {
       return point->size();
-    }; 
+    };
+
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject();
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject();
 
     /// A vector of Vec3f defining points in 3d-space.
     ///
@@ -81,6 +92,12 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

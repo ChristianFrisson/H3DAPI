@@ -48,14 +48,25 @@ Matrix3VertexAttribute::Matrix3VertexAttribute( Inst< SFNode     > _metadata,
                                                 Inst< SFString   > _name,
                                                 Inst< MFMatrix3f > _value ):
   X3DVertexAttributeNode( _metadata, _name ),
-  value( _value ) {
+  value( _value ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   value->route(propertyChanged);
+  value->route(vboFieldsUpToDate);
 
   type_name = "Matrix3VertexAttribute";
   database.initFields( this );
 }
 
+Matrix3VertexAttribute::~Matrix3VertexAttribute() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
+}
 
 // Perform the OpenGL commands to set the vertex attribute
 // with the given index.
@@ -74,8 +85,8 @@ void Matrix3VertexAttribute::render( int value_index ) {
   }
 }
 
-/// Perform the OpenGL commands to set the vertex attributes
-/// as a an vertex attribute array.
+// Perform the OpenGL commands to set the vertex attributes
+// as a an vertex attribute array.
 void Matrix3VertexAttribute::renderArray() {
   if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     glEnableVertexAttribArrayARB( attrib_index );
@@ -93,20 +104,72 @@ void Matrix3VertexAttribute::renderArray() {
       data[ i*9+8 ] = m[2][2];
     }
     glVertexAttribPointerARB( attrib_index,
-			      3,
-			      GL_FLOAT,
-			      GL_FALSE,
-			      0,
-			      data );
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            0,
+            data );
     delete[] data;
     // TODO: bind name
   }
 }
 
-/// Disable the array state enabled in renderArray().
+// Disable the array state enabled in renderArray().
 void Matrix3VertexAttribute::disableArray() {
   if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     glDisableVertexAttribArrayARB( attrib_index );
+  }
+}
+
+// Perform the OpenGL commands to render all values as a vertex
+// buffer object.
+void Matrix3VertexAttribute::renderVertexBufferObject() {
+  if( !value->empty() ) {
+    if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
+      if( !vboFieldsUpToDate->isUpToDate() ) {
+        // Only transfer data when it has been modified.
+        vboFieldsUpToDate->upToDate();
+        if( !vbo_id ) {
+          vbo_id = new GLuint;
+          glGenBuffersARB( 1, vbo_id );
+        }
+        glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+        GLfloat *data = new GLfloat[ 9 * value->size() ];
+        for( unsigned int i = 0; i < value->size(); i++ ) {
+          const Matrix3f &m = value->getValueByIndex( i );
+          data[ i*9   ] = m[0][0];
+          data[ i*9+1 ] = m[1][0];
+          data[ i*9+2 ] = m[2][0];
+          data[ i*9+3 ] = m[0][1];
+          data[ i*9+4 ] = m[1][1];
+          data[ i*9+4 ] = m[2][1];
+          data[ i*9+5 ] = m[0][2];
+          data[ i*9+6 ] = m[1][2];
+          data[ i*9+8 ] = m[2][2];
+        }
+        glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                         value->size() * 9 * sizeof(GLfloat),
+                         data, GL_STATIC_DRAW_ARB );
+        delete[] data;
+      } else {
+        glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      }
+      glEnableVertexAttribArrayARB( attrib_index );
+      glVertexAttribPointerARB( attrib_index,
+              3,
+              GL_FLOAT,
+              GL_FALSE,
+              0,
+              0 );
+    }
+  }
+}
+
+// Disable the array state enabled in renderVertexBufferObject().
+void Matrix3VertexAttribute::disableVertexBufferObject() {
+  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
+    glDisableVertexAttribArrayARB( attrib_index );
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
   }
 }
 

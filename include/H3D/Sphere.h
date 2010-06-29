@@ -84,9 +84,12 @@ namespace H3D {
             Inst< SFFloat>  _radius   = 0,
             Inst< SFBool >  _solid    = 0 );
 
+    /// Destructor
+    ~Sphere();
+
     /// The number of triangles renderered in this geometry.
     virtual int nrTriangles() {
-      return 50 * 50 * 2;
+      return 2500;//50 * 25 * 2;
     }
 
     /// Get the H3DShadowObjectNode used to create a shadow volume for this
@@ -150,6 +153,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
 
   };
 }

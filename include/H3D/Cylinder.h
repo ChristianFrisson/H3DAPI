@@ -106,6 +106,9 @@ namespace H3D {
               Inst< SFBool >  _solid    = 0,
               Inst< SFBool >  _top      = 0 );
 
+    /// Destructor
+    ~Cylinder();
+
     /// Renders the Cylinder with OpenGL.
     virtual void render();
 
@@ -169,6 +172,11 @@ namespace H3D {
     auto_ptr< SFBool  >  top;
 
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

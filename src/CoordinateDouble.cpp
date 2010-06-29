@@ -46,15 +46,27 @@ CoordinateDouble::CoordinateDouble(
                             Inst< SFNode  > _metadata,
                             Inst< MFVec3d > _point ) :
   X3DCoordinateNode( _metadata ),
-  point( _point ) {
+  point( _point ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "CoordinateDouble";
   database.initFields( this );
 
   point->route( propertyChanged );
+  point->route( vboFieldsUpToDate );
 }
 
-/// Perform the OpenGL commands to render all verties as a vertex
+CoordinateDouble::~CoordinateDouble() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
+}
+
+// Perform the OpenGL commands to render all vertices as a vertex
 /// array.
 void CoordinateDouble::renderArray() {
   if ( !point->empty() ) {
@@ -65,8 +77,37 @@ void CoordinateDouble::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderArray().
+// Disable the array state enabled in renderArray().
 void CoordinateDouble::disableArray() {
   glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+// Perform the OpenGL commands to render all vertices as a vertex
+// buffer object.
+void CoordinateDouble::renderVertexBufferObject() {
+  if( !point->empty() ) {
+    if( !vboFieldsUpToDate->isUpToDate() ) {
+      // Only transfer data when it has been modified.
+      vboFieldsUpToDate->upToDate();
+      if( !vbo_id ) {
+        vbo_id = new GLuint;
+        glGenBuffersARB( 1, vbo_id );
+      }
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                       point->size() * 3 * sizeof(GLdouble),
+                       &(*point->begin()), GL_STATIC_DRAW_ARB );
+    } else {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+    }
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_DOUBLE, 0, NULL );
+  }
+}
+
+// Disable the array state enabled in renderVertexBufferObject().
+void CoordinateDouble::disableVertexBufferObject() {
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 }
 

@@ -50,7 +50,7 @@ namespace H3D {
     /// of the color.
     virtual void render( int index ) {}
     
-    /// Perform the OpenGL commands to render all verties as a vertex
+    /// Perform the OpenGL commands to render all vertices as a vertex
     /// array.
     virtual void renderArray() {}
 
@@ -62,6 +62,13 @@ namespace H3D {
 
     /// Disable state set in preRender() function.
     virtual void postRender();
+
+    /// Perform the OpenGL commands to render all vertices as a vertex
+    /// buffer object.
+    virtual void renderVertexBufferObject() {}
+
+    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
+    virtual void disableVertexBufferObject() {}
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "color".

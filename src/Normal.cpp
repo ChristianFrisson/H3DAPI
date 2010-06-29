@@ -48,17 +48,28 @@ Normal::Normal(
                Inst< SFNode >  _metadata,
                Inst< MFVec3f>  _vector ) :
   X3DNormalNode( _metadata ),
-  vector  ( _vector   ) {
+  vector  ( _vector ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "Normal";
   database.initFields( this );
 
   vector->route( propertyChanged );
-
+  vector->route( vboFieldsUpToDate );
 }
 
-/// Perform the OpenGL commands to render all verties as a vertex
-/// array.
+Normal::~Normal() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
+}
+
+// Perform the OpenGL commands to render all vertices as a vertex
+// array.
 void Normal::renderArray() {
   if( !vector->empty() ) {
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -67,7 +78,38 @@ void Normal::renderArray() {
   }
 }
 
-/// Disable the array state enabled in renderArray().
+// Disable the array state enabled in renderArray().
 void Normal::disableArray() {
   glDisableClientState(GL_NORMAL_ARRAY);
 }
+
+// Perform the OpenGL commands to render all vertices as a vertex
+// buffer object.
+void Normal::renderVertexBufferObject() {
+  if( !vector->empty() ) {
+    if( !vboFieldsUpToDate->isUpToDate() ) {
+      // Only transfer data when it has been modified.
+      vboFieldsUpToDate->upToDate();
+      if( !vbo_id ) {
+        vbo_id = new GLuint;
+        glGenBuffersARB( 1, vbo_id );
+      }
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                       vector->size() * 3 * sizeof(GLfloat),
+                       &(*vector->begin()), GL_STATIC_DRAW_ARB );
+    } else {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+    }
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glNormalPointer(GL_FLOAT, 0, NULL );
+  }
+}
+
+// Disable the array state enabled in renderVertexBufferObject().
+void Normal::disableVertexBufferObject() {
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+}
+
+
