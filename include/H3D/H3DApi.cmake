@@ -90,9 +90,9 @@
 /// installed. Text nodes will then not be supported.
 #cmakedefine HAVE_FREETYPE
 
+#ifdef WIN32
 /// Undef if you do not have 3dxware(www.3dconnexion.com) installed.
 /// SpaceWareSensor node will then not be supported.
-#ifdef WIN32
 #cmakedefine HAVE_3DXWARE
 #endif
 
@@ -111,9 +111,9 @@
 /// without it
 #cmakedefine HAVE_SPIDERMONKEY
 
+#ifdef H3D_WINDOWS
 /// Undef if you do not have DirectShow available. Needed for the 
 /// DirectShowDecoder node.
-#ifdef H3D_WINDOWS
 #cmakedefine HAVE_DSHOW
 #endif
 

@@ -49,7 +49,6 @@ TARGET_LINK_LIBRARIES( ThreadExample ${requiredLibs} ${optionalLibs} )
 # Debug versions have _d postfix.
 SET_TARGET_PROPERTIES( ThreadExample PROPERTIES DEBUG_POSTFIX "_d" )
 
-# set the install directory to the H3D directory on Windows
 IF(WIN32) 
   IF(MSVC80)
     # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
@@ -59,6 +58,7 @@ IF(WIN32)
     SET_TARGET_PROPERTIES( ThreadExample PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
   ENDIF(MSVC80)
 
+  # set the install directory to the H3D directory on Windows
   IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
     SET( CMAKE_INSTALL_PREFIX ${ThreadExample_SOURCE_DIR}/../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
   ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )

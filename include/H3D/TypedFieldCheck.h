@@ -585,7 +585,7 @@ namespace H3D {
                                       field_index - type_index );
         } else {
           stringstream s;
-          s << "Too many routes. Expecing a maximum of " 
+          s << "Too many routes. Expecting a maximum of " 
             << type_index << " routes.";
           throw H3D::TypedFieldError( s.str() );
         }

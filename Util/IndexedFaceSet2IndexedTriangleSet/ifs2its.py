@@ -8,7 +8,7 @@
 
 from H3DInterface import *
 import re
-from ifs2itslib2 import ifs2its
+from ifs2itslib import ifs2its
 import sys
 
 class Pack:

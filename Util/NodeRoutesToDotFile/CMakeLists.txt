@@ -62,6 +62,7 @@ IF(UI_FOUND)
   SET(optionalLibs ${optionalLibs} ${UI_LIBRARIES} )
 ENDIF(UI_FOUND)
 
+#RigidBodyPhysics
 FIND_PACKAGE(RigidBodyPhysics)
 
 IF(RigidBodyPhysics_FOUND)
