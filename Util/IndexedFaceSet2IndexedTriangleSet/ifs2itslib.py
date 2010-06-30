@@ -13,6 +13,36 @@ import itertools
 import operator
 import random
 
+# Generate normals for a ITS. return a list contains normals
+# This is a python-converted of the function
+# IndexedFaceSet::AutoNormal::generateNormalsPerVertex
+def generateNormalsPerVertex(ITS):
+  coords = ITS.coord.getValue().point.getValue()
+  indexes = ITS.index.getValue()
+  ccw = ITS.ccw.getValue()
+  normals = [Vec3f(0, 0, 0)] * len(coords)
+  
+  for j in range(0, len(indexes), 3):
+    if j+2 >= len(indexes):
+      norm = Vec3f(1, 0, 0)
+    else:
+      A = coords[indexes[j]]
+      B = coords[indexes[j+1]]
+      C = coords[indexes[j+2]]
+      AB = B - A
+      BC = C - B
+      norm = AB % BC
+      norm.normalizeSafe()
+      if not ccw: norm = - norm
+      normals[indexes[ j ]] += norm;
+      normals[indexes[ j+1 ]] += norm;
+      normals[indexes[ j+2 ]] += norm;
+  for normal in normals:
+    normal.normalizeSafe()
+
+  return normals
+
+
 class Pack:
   def __init__(self):
     #self.texs = []  # all the texture (ID) of this coordinate
@@ -20,12 +50,38 @@ class Pack:
     self.next_coord_idx_ptr = -1 # point to the next index that contains point with the same coord as this point
     self.different = 0
 
+# 2 (or more) points with same coordinate will have different
+# normals since they connect to different triangles
+# This function merge their normals together
+def fixNormals(ITS):
+  coords = ITS.coord.getValue().point.getValue()
+  coords_visited = [0] * len(coords)
+  normal_node = ITS.normal.getValue()
+  normals = normal_node.vector.getValue()
+  
+  # this will take O(n^2) but it's modular (separate from the main prog)
+  for i in range(len(coords)):
+    if coords_visited[i]: continue
+    coords_visited[i] = 1
+    normal_sum = normals[i]
+    adjacent_ids = [i] # list of coords that need to set to the same normal
+    for j in range(i + 1, len(coords)):
+      if (coords[i] - coords[j]).length() < 0.001:
+        adjacent_ids += [j]
+        normal_sum = normal_sum + normals[j]
+        coords_visited[j] = 1
+    for id in adjacent_ids:
+      normals[id] = normal_sum
+      normals[id].normalizeSafe()
+  
+  normal_node.vector.setValue(normals)
+
 def ifs2its(IFS):
   """
     IFS: IndexedFaceSet
     Return: IndexedTriangleSet string
   """
-  
+
   COORD = IFS.coord.getValue()
   TEX_COORD = IFS.texCoord.getValue()
 
@@ -91,5 +147,12 @@ def ifs2its(IFS):
   texcoord_node.point.setValue(ans_tex_points)
   its.coord.setValue(coord_node)
   its.texCoord.setValue(texcoord_node)
+  
+  normals = generateNormalsPerVertex(its)
+  normalnode = createX3DNodeFromString("<Normal />")[0]
+  normalnode.vector.setValue(normals)
+  its.normal.setValue(normalnode)
+  
+  fixNormals(its)
 
   return writeNodeAsX3D(its)
