@@ -97,8 +97,10 @@ string ResourceResolver::getTmpFileName() {
   // special version on Windows that supports Windows Vista.
   // using tmpnam gives filenames in the root directory which
   // only administrators have write access to.
-  string tmp_file = _tempnam( "", "" );
-  if ( tmp_file.length() > 0 ) {
+  char * tmp_file_ptr = _tempnam( "", "" );
+  string tmp_file( tmp_file_ptr );
+  delete tmp_file_ptr;
+  if( tmp_file.length() > 0 ) {
       tmp_files.push_back( tmp_file );
       return tmp_file;
   } else {

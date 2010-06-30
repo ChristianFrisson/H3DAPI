@@ -251,10 +251,17 @@ void H3DNavigation::doNavigation(
         0.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
       Vec3f near_plane_pos =
         Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+      // Unproject to position 0.5 and then double the distance. The reason for
+      // this approach instead of using 1.0 as far plane is too handle the case
+      // of an infinite far plane. When the far plane is infinite the
+      // projection matrix is slightly modified to allow for correct shadow
+      // calculation (amongst other things). That projection matrix will give
+      // an incorrect value for far_plane_pos since the actual far plane is not
+      // at 1, but at 1-some_epsilon_value.
       gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
-        1.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
-      Vec3f far_plane_pos =
-        Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+        0.5, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
+      Vec3f far_plane_pos = near_plane_pos + 2 * (
+        Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz ) - near_plane_pos );
 
       Node::LineIntersectResult result( true, true );
       if( topNode->lineIntersect( near_plane_pos,

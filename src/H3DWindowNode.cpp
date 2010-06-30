@@ -1275,18 +1275,17 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
         0.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
       Vec3f near_plane_pos = Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+      // Unproject to position 0.5 and then double the distance. The reason for
+      // this approach instead of using 1.0 as far plane is too handle the case
+      // of an infinite far plane. When the far plane is infinite the
+      // projection matrix is slightly modified to allow for correct shadow
+      // calculation (amongst other things). That projection matrix will give
+      // an incorrect value for far_plane_pos since the actual far plane is not
+      // at 1, but at 1-some_epsilon_value.
       gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
-        1.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
-      Vec3f far_plane_pos = Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-      if( clip_far == -1 && dynamic_cast< Viewpoint * >(vp) ) {
-        // I do not like the need for a dynamic_cast here (nor the approach)
-        // but as I can not find any better way to differ between the cases
-        // it will have to do. The reason is that the matrix created by
-        // OrthoViewpoint does not miscalculate the far_plane_pos and
-        // near_plane_pos when far plane is at infinity. But it does for
-        // Viewpoint.
-        far_plane_pos = near_plane_pos - ( far_plane_pos - near_plane_pos );
-      }
+        0.5, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
+      Vec3f far_plane_pos = near_plane_pos + 2 * (
+        Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz ) - near_plane_pos );
 
       // Update pointing device sensors in order to have them correctly
       // calculated for next turn.

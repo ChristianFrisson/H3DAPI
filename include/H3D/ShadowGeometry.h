@@ -186,7 +186,7 @@ namespace H3D {
     auto_ptr< SFVec3f > lightParam;
     auto_ptr< SFBool > drawCaps;
     
-    /// Shader to use for derectional lights when using a geometry shader to
+    /// Shader to use for directional lights when using a geometry shader to
     /// draw shader volumes,
     AutoRef< ComposedShader > dir_light_shader;
 
