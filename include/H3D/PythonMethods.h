@@ -139,7 +139,9 @@ namespace H3D {
     PyObject* pythonTouchField( PyObject *self, PyObject *arg );
 
     PyObject* pythonResolveURLAsFile( PyObject *self, PyObject *arg );
-    
+
+    PyObject* pythonResolveURLAsFolder( PyObject *self, PyObject *arg );
+
   }
 
     

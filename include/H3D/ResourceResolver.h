@@ -62,10 +62,15 @@ namespace H3D {
     /// Destructor.
     virtual ~ResourceResolver() {}
 
-    /// This function must be implemeted by all subclasses to 
-    /// ResourceResolver. It returns a local filename that contains
+    /// This function should be implemented by resource resolvers that
+    /// extracts file data. It returns a local filename that contains
     /// the resource specified by url.
-    virtual string resolveURLAsTmpFile( const string &url ) = 0;
+    virtual string resolveURLAsTmpFile( const string &url ){ return ""; }
+
+    /// This function should be implemented by resource resolvers that
+    /// extracts folder tree data. It returns a local folder that contains
+    /// the resource data specified by url.
+    virtual string resolveURLAsTmpFolder( const string &url ){ return ""; }
 
     /// Set the URNResolver to use when resolving resource.
     static void setURNResolver( URNResolver *resolver ) {
@@ -97,7 +102,17 @@ namespace H3D {
     /// by urn. The boolean pointed to by the is_tmp_file argument 
     /// is set to true if the resolved file is a temporary file.
     static string resolveURLAsFile( const string &urn,
-                                    bool *is_tmp_file = NULL );
+                                    bool *is_tmp_file = NULL ){
+      return resolveURLAs(urn,is_tmp_file,false);
+    }
+
+    /// Returns a local filename that contains the resource specified
+    /// by urn. The boolean pointed to by the is_tmp_folder argument 
+    /// is set to true if the resolved file is a temporary folder.
+    static string resolveURLAsFolder( const string &urn,
+                                      bool *is_tmp_folder = NULL ){
+      return resolveURLAs(urn,is_tmp_folder,true);
+    }
 
     /// Returns a new unique filename that can be used to create a temporary
     /// file. The filename should be released as soon as it is not needed
@@ -110,6 +125,9 @@ namespace H3D {
     static bool releaseTmpFileName( const string &file );
 
   protected:
+    static string resolveURLAs( const string &urn,
+                                bool *is_tmp_file,
+                                bool folder );
     static auto_ptr< URNResolver > urn_resolver;
     static H3DUtil::AutoPtrVector< ResourceResolver > resolvers;
     static string baseURL;

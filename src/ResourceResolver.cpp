@@ -29,6 +29,16 @@
 
 #include <H3D/ResourceResolver.h>
 
+#include <sys/stat.h>
+
+#ifndef S_ISREG
+#define S_ISREG(x) (((x) & S_IFMT) == S_IFREG)
+#endif
+
+#ifndef S_ISDIR
+#define S_ISDIR(x) (((x) & S_IFMT) == S_IFDIR)
+#endif
+
 using namespace H3D;
 using namespace H3DUtil;
 
@@ -38,8 +48,9 @@ AutoPtrVector< ResourceResolver > ResourceResolver::resolvers;
 string ResourceResolver::baseURL( "" );
 ResourceResolver::TmpFileNameList ResourceResolver::tmp_files;
 
-string ResourceResolver::resolveURLAsFile( const string &urn,
-                                           bool *is_tmp_file ) {
+string ResourceResolver::resolveURLAs( const string &urn,
+                                       bool *is_tmp_file,
+                                       bool folder ) {
   if( urn == "" ) return "";
   string filename = urn;
   if( urn_resolver.get() ) {
@@ -51,9 +62,11 @@ string ResourceResolver::resolveURLAsFile( const string &urn,
     string full_url = baseURL + filename;
     
     // if is a local file, just return the file name
-    ifstream is( full_url.c_str() );
-    is.close();
-    if( !is.fail() ) {
+    struct stat file_info;
+    int file_status = ::stat(full_url.c_str(),&file_info);
+    if( file_status == 0 && ( folder ?
+                              S_ISDIR(file_info.st_mode) :
+                              S_ISREG(file_info.st_mode) ) != 0 ) {
       if( is_tmp_file ) *is_tmp_file = false;
       return full_url;
     }
@@ -72,9 +85,11 @@ string ResourceResolver::resolveURLAsFile( const string &urn,
   // try as absolute path
   
   // if is a local file, just return the file name
-  ifstream is( filename.c_str() );
-  is.close();
-  if( !is.fail() ) {
+  struct stat file_info;
+  int file_status = ::stat(filename.c_str(),&file_info);
+  if( file_status == 0 && ( folder ?
+                            S_ISDIR(file_info.st_mode) :
+                            S_ISREG(file_info.st_mode) ) != 0 ) {
     if( is_tmp_file ) *is_tmp_file = false;
     return filename;
   }

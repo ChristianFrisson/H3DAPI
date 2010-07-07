@@ -564,6 +564,7 @@ if( check_func( value ) ) {                                         \
       { "MFieldPopBack", pythonMFieldPopBack, 0 },
       { "touchField", pythonTouchField, 0 },
       { "resolveURLAsFile", pythonResolveURLAsFile, 0 },
+      { "resolveURLAsFolder", pythonResolveURLAsFolder, 0 },
       { NULL, NULL }      
     };
     
@@ -1839,6 +1840,20 @@ call the base class __init__ function." );
 
       char *url = PyString_AsString( args );
       string resolved_url = ResourceResolver::resolveURLAsFile( url );
+      return PyString_FromString( resolved_url.c_str() );
+    }
+
+    PyObject *pythonResolveURLAsFolder( PyObject *self, PyObject *args ) {
+
+      if( !args || !PyString_Check( args ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.resolveURLAsFolder( url )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      char *url = PyString_AsString( args );
+      string resolved_url = ResourceResolver::resolveURLAsFolder( url );
       return PyString_FromString( resolved_url.c_str() );
     }
 
