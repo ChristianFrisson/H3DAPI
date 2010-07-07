@@ -97,6 +97,9 @@
 ///     Scene instances.
 /// - Resource resolver - access to the %H3D API ResourceResolver
 ///   - resolverURLAsFile( file )
+///   - resolverURLAsFolder( file )
+/// - Other functions - various other functions
+///   - throwQuitAPIException - Can be used to quit H3DLoad.
 ///
 /// Types 
 /// - X3D field types - The field types included are: 

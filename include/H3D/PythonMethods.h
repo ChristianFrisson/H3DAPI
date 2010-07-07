@@ -142,6 +142,8 @@ namespace H3D {
 
     PyObject* pythonResolveURLAsFolder( PyObject *self, PyObject *arg );
 
+    PyObject* throwQuitAPIException( PyObject *self, PyObject *arg );
+
   }
 
     

@@ -565,6 +565,7 @@ if( check_func( value ) ) {                                         \
       { "touchField", pythonTouchField, 0 },
       { "resolveURLAsFile", pythonResolveURLAsFile, 0 },
       { "resolveURLAsFolder", pythonResolveURLAsFolder, 0 },
+      { "throwQuitAPIException", throwQuitAPIException, 0 },
       { NULL, NULL }      
     };
     
@@ -1855,6 +1856,12 @@ call the base class __init__ function." );
       char *url = PyString_AsString( args );
       string resolved_url = ResourceResolver::resolveURLAsFolder( url );
       return PyString_FromString( resolved_url.c_str() );
+    }
+
+    PyObject *throwQuitAPIException( PyObject *self, PyObject *args ) {
+      throw Exception::QuitAPI();
+      Py_INCREF(Py_None);
+      return Py_None; 
     }
 
   }
