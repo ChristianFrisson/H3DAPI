@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -167,7 +167,12 @@ Group* X3D::createX3DFromURL( const string &url,
       url_ch[i] = url[i];
     }
     url_ch[ url.size() ] = '\0'; 
-    parser->parse( IStreamInputSource( is, url_ch ) );
+    try {
+      parser->parse( IStreamInputSource( is, url_ch ) );
+    } catch(...) {
+      delete[] url_ch;
+      throw;
+    }
     delete[] url_ch;
     is.close();
 #endif   

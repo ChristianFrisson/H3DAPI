@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -88,10 +88,10 @@ namespace SceneInternal {
   void idle() {
     try {
       for( set< Scene * >::iterator i = Scene::scenes.begin();
-	   i != Scene::scenes.end();
-	   i++ ) {
-	if( (*i)->isActive() )
-	  (*i)->idle();
+           i != Scene::scenes.end();
+           i++ ) {
+        if( (*i)->isActive() )
+          (*i)->idle();
       }
     }
     catch (const Exception::QuitAPI &) {
@@ -243,9 +243,9 @@ void Scene::idle() {
       X3DViewpointNode *vp = X3DViewpointNode::getActive();
       Vec3f direction = Vec3f( 0, 0, -1 );
       if( vp ) {
-	direction = 
-	  vp->accForwardMatrix->getValue().getRotationPart() * 
-	  (vp->totalOrientation->getValue() * Vec3f( 0, 0, -1 ));
+        direction = 
+          vp->accForwardMatrix->getValue().getRotationPart() * 
+          (vp->totalOrientation->getValue() * Vec3f( 0, 0, -1 ));
       }
       DirectionalLight *light = new DirectionalLight();
       light->direction->setValue( direction );
@@ -310,7 +310,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   time->setAccessType( Field::OUTPUT_ONLY );
   frameRate->setValue( 0, id );
   ThreadBase::setThreadName( ThreadBase::getMainThreadId(), 
-			     "H3D API Main Thread" );
+                             "H3D API Main Thread" );
   Scene::time->route( eventSink );
 }
 
@@ -343,11 +343,16 @@ void Scene::EventSink::update() {
 
 void Scene::loadSceneRoot( const string &url ) {
   SAI::SAIScene *scene = new SAI::SAIScene;
+  try {
   // TODO: fill out scene with all values
-  scene->root_node.reset( X3D::createX3DFromURL( url, 
-						 &scene->named_nodes, 
-						 &scene->exported_nodes, 
-						 &scene->protos ) );
+  scene->root_node.reset( X3D::createX3DFromURL( url,
+                                                 &scene->named_nodes,
+                                                 &scene->exported_nodes,
+                                                 &scene->protos ) );
+  } catch(...) {
+    delete scene;
+    throw;
+  }
   SAI_browser.replaceWorld( scene );
 }
 
