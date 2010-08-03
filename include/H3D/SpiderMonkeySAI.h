@@ -60,8 +60,8 @@ namespace H3D {
     bool initializeScriptEngine( Script *s );
 
     /// Run the script specified by s. 
-    /// \params s A string with the script code to run.
-    /// \params filename A filename/identifier identifying the
+    /// \param s A string with the script code to run.
+    /// \param filename A filename/identifier identifying the
     /// source of the string. Used for error messages.
     string loadScript( const string &s, const string &filename );
 

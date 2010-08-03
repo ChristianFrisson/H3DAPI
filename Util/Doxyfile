@@ -576,7 +576,8 @@ WARN_LOGFILE           =
 
 INPUT                  = ../include/H3D \
                          ../src \
-                         examples_doxygen_page
+                         examples_doxygen_page \
+                         nodesFieldslist
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 

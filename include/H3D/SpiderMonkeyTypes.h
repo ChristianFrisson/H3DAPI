@@ -140,9 +140,11 @@ namespace H3D {
     class PointerPrivateData {
     public:
       /// Constructor.
-      /// \params field The field the JSObject represents.
-      /// \params _internal_pointer If true, the field will be deleted
+      /// \param _ptr A pointer to the class for which this private data
+      /// should be created.
+      /// \param _internal_pointer If true, the field will be deleted
       /// when the FieldObjectPrivate object is destructed.
+      /// \param _array_index Index into array if MF object.
       PointerPrivateData( PointerType *_ptr,
                           bool _internal_pointer,
                           int _array_index = -1
@@ -231,9 +233,9 @@ namespace H3D {
 
 
     /// Returns a new SFVec2f object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFVec2f_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
@@ -340,9 +342,9 @@ namespace H3D {
 
 
     /// Returns a new SFVec2d object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFVec2d_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
@@ -450,9 +452,9 @@ namespace H3D {
 
 
     /// Returns a new SFImage object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFImage_newInstance( JSContext *cx, /*SFImage*/ Field *field, bool internal_field, int array_index = -1 );
@@ -532,9 +534,9 @@ namespace H3D {
 
 
     /// Returns a new SFVec3f object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFVec3f_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
@@ -875,9 +877,9 @@ namespace H3D {
 
 
     /// Returns a new SFVec3d object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFVec3d_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
@@ -994,9 +996,9 @@ namespace H3D {
 
 
     /// Returns a new SFVec4f object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFVec4f_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
@@ -1099,9 +1101,9 @@ namespace H3D {
                           jsval *rval);
 
     /// Returns a new SFVec4d object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFVec4d_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
@@ -1205,9 +1207,9 @@ namespace H3D {
                           jsval *rval);
 
     /// Returns a new SFRotation object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFRotation_newInstance( JSContext *cx, Field *field, bool internal_field, int array_index = -1 );
@@ -1283,9 +1285,9 @@ namespace H3D {
 
 
     /// Returns a new SFNode object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFNode_newInstance( JSContext *cx,
@@ -1373,9 +1375,9 @@ namespace H3D {
     };
 
     /// Returns a new SFColor object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *SFColor_newInstance( JSContext *cx,
@@ -1523,9 +1525,9 @@ namespace H3D {
     //};
 
     ///// Returns a new SFImage object encapsulating a field.
-    ///// \params cx The context in which to create the object.
-    ///// \params field The field to encapsulate.
-    ///// \params internal_field If true, the encapsulated field
+    ///// \param cx The context in which to create the object.
+    ///// \param field The field to encapsulate.
+    ///// \param internal_field If true, the encapsulated field
     ///// will be deleted upon destruction of the JSObject 
     ///// encapsulating it.
     //JSObject *SFImage_newInstance( JSContext *cx, SFImagePrivate *field, bool internal_field, int array_index = -1 );
@@ -1596,9 +1598,9 @@ namespace H3D {
 
     /// Returns a new X3DExecutionContext object encapsulating a 
     /// SAI::ExecutionContext object.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *X3DExecutionContext_newInstance( JSContext *cx,
@@ -1677,9 +1679,9 @@ namespace H3D {
 
     /// Returns a new X3DScene object encapsulating a 
     /// SAI::ExecutionContext object.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
     JSObject *X3DScene_newInstance( JSContext *cx,
@@ -1890,9 +1892,9 @@ namespace H3D {
     struct JS_MField {
 	
       /// Returns a new SFNode object encapsulating a field.
-      /// \params cx The context in which to create the object.
-      /// \params field The field to encapsulate.
-      /// \params internal_field If true, the encapsulated field
+      /// \param cx The context in which to create the object.
+      /// \param field The field to encapsulate.
+      /// \param internal_field If true, the encapsulated field
       /// will be deleted upon destruction of the JSObject 
       /// encapsulating it.
       static JSObject *newInstance( JSContext *cx,
@@ -1985,11 +1987,12 @@ namespace H3D {
     JSPropertySpec JS_MField< MFieldType, ElementType >::properties[1];
     
     /// Returns a new JS_MField object encapsulating a field.
-    /// \params cx The context in which to create the object.
-    /// \params field The field to encapsulate.
-    /// \params internal_field If true, the encapsulated field
+    /// \param cx The context in which to create the object.
+    /// \param field The field to encapsulate.
+    /// \param internal_field If true, the encapsulated field
     /// will be deleted upon destruction of the JSObject 
     /// encapsulating it.
+    /// \param array_index Index into MF type.
     template< class MFieldType, class ElementType >
     JSObject *JS_MField< MFieldType, ElementType >::newInstance( JSContext *cx,
                                                                  //MFieldType *field,

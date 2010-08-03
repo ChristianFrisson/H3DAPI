@@ -32,34 +32,35 @@ if os.path.isdir( examples_dir ):
   print output_dir
 
   examples_doxygen_page = """//////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2009, SenseGraphics AB
 //
-//    This file is part of HAPI.
+//    This file is part of H3DAPI.
 //
-//    HAPI is free software; you can redistribute it and/or modify
+//    H3DAPI is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation; either version 2 of the License, or
 //    (at your option) any later version.
 //
-//    HAPI is distributed in the hope that it will be useful,
+//    H3DAPI is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with HAPI; if not, write to the Free Software
+//    along with H3DAPI; if not, write to the Free Software
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 //    A commercial license is also available. Please contact us at 
 //    www.sensegraphics.com for more information.
 //
 //
-/// \\file examples_doxygen_page
-/// \\brief Extra page listing all examples.
-///
+// \\file examples_doxygen_page
+// \\brief Extra page listing all examples.
+//
 //
 //////////////////////////////////////////////////////////////////////////////
 /// \\page H3DExamples
+/// \\dontinclude examples_doxygen_page
 /// \\section H3DExamplesList List of examples
 """
 

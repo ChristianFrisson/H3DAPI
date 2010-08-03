@@ -54,6 +54,7 @@ namespace H3D{
 
     class H3DAPI_API SAIError: public H3DUtil::Exception::H3DException {
     public:
+      /// SAIERROR error types.
       typedef enum {
         /// This error type appear in the errors definition of a service 
         /// request. A language binding shall define the representation for
@@ -171,6 +172,7 @@ namespace H3D{
       } ErrorType;
 
       /// Constructor
+      /// \param _type The error type, see ErrorType struct.
       /// \param _message optional message associtiated with the exception.
       SAIError( ErrorType _type,
         const string &_message = "" ) : 
