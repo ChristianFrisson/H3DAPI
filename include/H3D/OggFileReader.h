@@ -48,6 +48,7 @@ namespace H3D {
     /// Constructor.
     OggFileReader() {
       should_clear = false;
+      type_name = "OggFileReader";
     }
 
     /// Destructor.

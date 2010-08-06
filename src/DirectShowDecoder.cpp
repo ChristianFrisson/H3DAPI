@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -204,6 +204,7 @@ DirectShowDecoder::DirectShowDecoder( )
                                     looping( false ),
                                     rate( 1 )
 {
+  type_name = "DirectShowDecoder";
   event_handler.reset( new DShowEventHandler );
   event_handler->setOwner( this );
   Scene::time->route( event_handler );

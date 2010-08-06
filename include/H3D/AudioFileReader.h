@@ -50,6 +50,7 @@ namespace H3D {
     /// Constructor.
     AudioFileReader() {
       file = NULL;
+      type_name = "AudioFileReader";
     }
 
     /// Destructor.

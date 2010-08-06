@@ -35,7 +35,7 @@ using namespace H3D;
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase H3DStiffnessSurfaceNode::database( 
                                        "H3DStiffnessSurfaceNode", 
-                                       &(newInstance<H3DStiffnessSurfaceNode>),
+                                       NULL,
                                        typeid( H3DStiffnessSurfaceNode ),
                                        &H3DSurfaceNode::database );
 
