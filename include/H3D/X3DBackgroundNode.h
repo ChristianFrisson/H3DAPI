@@ -237,6 +237,12 @@ namespace H3D {
     /// \dotfile X3DBackgroundNode_groundAngle.dot
     auto_ptr< MFColor >  skyColor;
 
+    /// The transparency field simply specifies the transparency for the
+    /// sky and ground.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile X3DBackgroundNode_transparency.dot
     auto_ptr< SFFloat > transparency;
 
     /// The H3DNodeDatabase for this node.

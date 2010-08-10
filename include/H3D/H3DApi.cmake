@@ -57,6 +57,11 @@
 #define H3D_WIN32
 #endif
 
+#if( defined( H3D_WIN32 ) || defined( H3D_WIN64 ) )
+// set when on 32 or 64 bit Windows
+#define H3D_WINDOWS
+#endif
+
 /// Undef if you do not have xerces-c(http://xerces.apache.org/xerces-c/) 
 /// installed. Required for parsing xml based x3d files.
 #cmakedefine HAVE_XERCES
@@ -177,12 +182,6 @@
 #define _strnicmp strnicmp
 #define __timeb64 timeb
 #define _ftime64 ftime
-#endif
-
-
-#if( defined( H3D_WIN32 ) || defined( H3D_WIN64 ) )
-// set when on 32 or 64 bit Windows
-#define H3D_WINDOWS
 #endif
 
 #define H3DAPI_MAJOR_VERSION ${H3DAPI_MAJOR_VERSION}

@@ -44,18 +44,17 @@ namespace X3DTexture2DNodeInternals {
 }
 
 
-MovieTexture::MovieTexture( 
-                                   Inst< DisplayList > _displayList,
-                                   Inst< SFNode  > _metadata,
-                                   Inst< SFBool  > _repeatS,
-                                   Inst< SFBool  > _repeatT,
-                                   Inst< SFBool  > _scaleToP2,
-                                   Inst< SFImage > _image,
-                                   Inst< SFBool  > _interpolate ) {
+MovieTexture::MovieTexture( Inst< DisplayList > _displayList,
+                            Inst< SFNode  > _metadata,
+                            Inst< SFBool  > _repeatS,
+                            Inst< SFBool  > _repeatT,
+                            Inst< SFBool  > _scaleToP2,
+                            Inst< SFImage > _image,
+                            Inst< SFBool  > _interpolate ) :
+  H3DVideoTextureNode( _displayList, _metadata, _repeatS,
+                       _repeatT, _scaleToP2, _image ) {
   type_name = "MovieTexture";
   database.initFields( this );
-  
-  
 
 //  scaleToPowerOfTwo->setValue( false );
 }

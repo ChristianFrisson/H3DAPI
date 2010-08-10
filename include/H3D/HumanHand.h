@@ -206,12 +206,14 @@ namespace H3D {
     /// An instance of the cyberGlove
     ///
     /// <b>Access type: </b> initializeOnly \n
+    /// \dotfile HumanHand_cyberGlove.dot
     auto_ptr< SFCyberGloveSensor> cyberGlove;
 
     /// Decides whether the CyberGlove is a left or right hand.
     ///
     /// <b>Access type: </b> initializeOnly \n
     /// <b>Valid values: </b> leftHand, rightHand \n
+    /// \dotfile HumanHand_gloveHandedness.dot
     auto_ptr< SFString> gloveHandedness;
 
     /// The default hand geometrys units in the Virtual Hand SDK
@@ -220,6 +222,7 @@ namespace H3D {
     ///
     /// <b>Access type: </b> initializeOnly \n
     /// <b>Default value: </b> 0.01 \n
+    /// \dotfile HumanHand_scale.dot
     auto_ptr< SFFloat > scale;
 
     /// The H3DNodeDatabase for this node.

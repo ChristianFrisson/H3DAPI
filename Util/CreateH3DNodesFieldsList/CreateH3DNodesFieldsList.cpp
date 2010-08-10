@@ -50,16 +50,25 @@ void writeNode( ostream &os, Node *n ) {
   string node_name = n->getTypeName();
   os << "/// <ul>" << endl
      << "///   <li>\\link H3D::" << node_name << " "
-     << node_name << " \\endlink" << endl
-     << "///     <ul>" << endl;
+     << node_name << " \\endlink" << endl;
 
-  for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       i != db->fieldDBEnd(); i++ ) {
-    os << "///       <li>\\link H3D::" << node_name << "::"
-       << (*i) << " " << (*i) << " \\endlink" << "</li>" << endl;
+  if( db->fieldDBSize() > 0 ) {
+    vector< string > ordered_field_names;
+    for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
+         i != db->fieldDBEnd(); i++ ) {
+      ordered_field_names.push_back( i.getFieldDBElement()->getName() );
+    }
+    sort( ordered_field_names.begin(), ordered_field_names.end() );
+    os << "///     <ul>" << endl;
+
+    for( vector< string >::iterator i = ordered_field_names.begin();
+         i != ordered_field_names.end(); i++ ) {
+      os << "///       <li>\\link H3D::" << node_name << "::"
+         << (*i) << " " << (*i) << " \\endlink" << "</li>" << endl;
+    }
+    os << "///     </ul>" << endl;
   }
-  os << "///     </ul>" << endl
-     << "///   </li>" << endl
+  os << "///   </li>" << endl
      << "/// </ul>" << endl;
   delete n;
 }
@@ -106,8 +115,7 @@ int main(int argc, char* argv[]) {
 
   os << "/// \\file " << out_file << endl
      << "/// \\brief Extra page listing all nodes and fields." << endl
-     << "/// \\page NodeFieldList List of nodes and their fields." << endl
-     << "/// \\dontinclude " << out_file << endl;
+     << "/// \\page NodeFieldList List of nodes and their fields." << endl;
 
 
   try {

@@ -130,7 +130,7 @@ namespace H3D {
     /// <b>Default value:</b> "TRIANGLES" \n
     /// <b>Valid values:</b> "POINTS", "LINES", "TRIANGLES", 
     /// "LINES_ADJACENCY", "TRIANGLES_ADJACENCY",
-    /// \dotfile ShaderPart_geometryInputType.dot
+    /// \dotfile ComposedShader_geometryInputType.dot
     auto_ptr< SFString > geometryInputType;
 
     /// The output geometry type of the geometry being rendered
@@ -140,7 +140,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> "TRIANGLE_STRIP" \n
     /// <b>Valid values:</b> "POINTS", "LINE_STRIP", "TRIANGLE_STRIP"
-    /// \dotfile ShaderPart_geometryOutputType.dot
+    /// \dotfile ComposedShader_geometryOutputType.dot
     auto_ptr< SFString > geometryOutputType;
 
     /// The number of vertices the geometry shader generates. 
@@ -149,7 +149,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 64 \n
     ///
-    /// \dotfile ShaderPart_geometryVerticesOut.dot
+    /// \dotfile ComposedShader_geometryVerticesOut.dot
     auto_ptr< SFInt32  > geometryVerticesOut;
 
 

@@ -61,7 +61,7 @@ H3DFrictionalSurfaceNode::H3DFrictionalSurfaceNode(
 }
 
 void H3DFrictionalSurfaceNode::UpdateStaticFriction::
-  onValueChange( const float &v ) {
+  onValueChange( const H3DFloat &v ) {
   H3DFrictionalSurfaceNode *fs = 
     static_cast< H3DFrictionalSurfaceNode * >( getOwner() );
   if( fs->hapi_surface.get() ) {
@@ -71,7 +71,7 @@ void H3DFrictionalSurfaceNode::UpdateStaticFriction::
 }
 
 void H3DFrictionalSurfaceNode::UpdateDynamicFriction::
-  onValueChange( const float &v ) {
+  onValueChange( const H3DFloat &v ) {
   H3DFrictionalSurfaceNode *fs = 
     static_cast< H3DFrictionalSurfaceNode * >( getOwner() );
   if( fs->hapi_surface.get() ) {

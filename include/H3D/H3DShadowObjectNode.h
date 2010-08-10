@@ -52,20 +52,19 @@ namespace H3D {
 
     /// Constructor.
     H3DShadowObjectNode( Inst< SFNode > _metadata = 0,
-			 Inst< SFTransformNode > _transform = 0 );
+                         Inst< SFTransformNode > _transform = 0 );
 
     /// Abstract function for drawing the shadow volume for a given light.
     /// render_caps determines if one should draw end caps to the volume
     /// or if it is ok to leave it open.
     virtual void renderShadow( X3DLightNode *l, 
-          	                   bool render_caps,
+                               bool render_caps,
                                const Matrix4f &local_to_global = Matrix4f() ) = 0;
  
     /// The transform field specifies a transformation of the shadow volume
     /// object.
     ///
     /// <b>Access type:</b> inputOutput \n
-    /// \dotfile H3DShadowObjectNode_transform.dot
     auto_ptr< SFTransformNode > transform;
 
     /// The H3DNodeDatabase for the node

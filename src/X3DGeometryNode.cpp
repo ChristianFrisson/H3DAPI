@@ -143,7 +143,7 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
                                                     unsigned int hd_index,
                                                     H3DSurfaceNode *_surface,
                                                     const Matrix4f &_transform,
-                                                    HLint _nr_vertices ) {
+                                                    int _nr_vertices ) {
   int type = -1;
   bool adaptive_viewport = true;
   bool camera_view = true;

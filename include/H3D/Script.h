@@ -57,10 +57,13 @@ namespace H3D {
     /// Override the addField method from H3DDynamicFieldsObject
     /// to add the field to the script engine.
     virtual bool addField( const string &name,
-			   const Field::AccessType &access,
-			   Field *field );
-    
+                           const Field::AccessType &access,
+                           Field *field );
+
+    /// Field is not supported by H3DAPI yet.
     auto_ptr< SFBool > directOutput;
+
+    /// Field is not supported by H3DAPI yet.
     auto_ptr< SFBool > mustEvaluate;
 
     /// The X3DNodeDatabase for this node.

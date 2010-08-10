@@ -291,7 +291,8 @@ namespace H3D {
       /// \param coord Node with the coordinates.
       /// \param tex_coord Node with the texture coordinates.
       /// \param coord_index The indices in coord for the vertices.
-      /// \param tex_coord_index The indices in tex_coord for the texture coordinates.
+      /// \param tex_coord_index The indices in tex_coord for the texture
+      /// coordinates.
       virtual void generateTangentsPerVertex( 
                                               X3DCoordinateNode *coord,
                                               X3DTextureCoordinateNode *tex_coord,
@@ -308,7 +309,8 @@ namespace H3D {
       /// \param coord Node with the coordinates.
       /// \param tex_coord Node with the texture coordinates.
       /// \param coord_index The indices in coord for the vertices.
-      /// \param tex_coord_index The indices in tex_coord for the texture coordinates.
+      /// \param tex_coord_index The indices in tex_coord for the texture
+      /// coordinates.
       /// \param crease_angle If the angle between the geometric normals of two 
       /// adjacent faces is less than the crease angle, tangents are 
       /// calculated so that the faces are shaded smoothly across the edge;
@@ -340,7 +342,10 @@ namespace H3D {
       /// \param coord Node with the coordinates.
       /// \param tex_coord Node with the texture coordinates.
       /// \param coord_index The indices in coord for the vertices.
-      /// \param tex_coord_index The indices in tex_coord for the texture coordinates.
+      /// \param tex_coord_index The indices in tex_coord for the texture
+      /// coordinates.
+      /// \param normalize_values If true the resulting tangents and binormals
+      /// will be normalized.
       virtual void generateTangentsPerFace( 
                                            X3DCoordinateNode *coord,
                                            X3DTextureCoordinateNode *tex_coord,

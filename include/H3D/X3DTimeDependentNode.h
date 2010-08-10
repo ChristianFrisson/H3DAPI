@@ -51,11 +51,11 @@ namespace H3D {
     public:
 
       /// Activate the time node. Start generating time based events.
-      virtual void activate( H3DDouble time );
+      virtual void activate( H3DTime time );
 
       /// Deactivate the time node. No events will be generated after 
       /// a call to this function.
-      virtual void deactivate( H3DDouble time );
+      virtual void deactivate( H3DTime time );
 
     protected:
       /// This function handles all logic for state changes and 

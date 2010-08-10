@@ -185,8 +185,26 @@ namespace H3D {
     auto_ptr< SFChild > proxy;
 
     // Fields defined to fake this node as a sensor
+    /// The enabled field enables and disables collision detection as well as
+    /// terrain following (not implemented in H3DAPI) when the navigation type
+    /// requires it. If enabled is set to FALSE, the children and all
+    /// descendants of the Collision node shall not be checked for collision
+    /// or terrain, even though they are drawn. This includes any descendent
+    /// Collision nodes that have enabled set to TRUE (i.e., setting enabled to
+    /// FALSE turns collision off for every child node below it).
+    ///
+    /// <b>Access type:</b> inpuOutput \n
+    /// <b>Default value:</b> true \n
     auto_ptr< SFBool >  enabled;
-    auto_ptr<  SFBool >  isActive;
+
+    /// The value of the isActive field indicates the current state of the
+    /// Collision node. An isActive TRUE event is generated when a collision
+    /// occurs. An isActive FALSE event is generated when a collision no longer
+    /// occurs.
+    ///
+    /// <b>Access type:</b> inpuOutput \n
+    /// <b>Default value:</b> false\n
+    auto_ptr<  SFBool > isActive;
     
     static H3DNodeDatabase database;
   };

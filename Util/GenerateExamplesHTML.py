@@ -60,7 +60,6 @@ if os.path.isdir( examples_dir ):
 //
 //////////////////////////////////////////////////////////////////////////////
 /// \\page H3DExamples
-/// \\dontinclude examples_doxygen_page
 /// \\section H3DExamplesList List of examples
 """
 

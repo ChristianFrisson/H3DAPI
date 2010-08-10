@@ -39,9 +39,10 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \class AudioFileReader
   /// \brief AudioFileReader uses the Audio File Library
-  /// ( http://www.68k.org/~michael/audiofile/ ) to read sound data. It 
-  /// supports AIFF/AIFF-C, WAVE, NeXT/Sun .snd/.au, Berkeley/IRCAM/CARL
-  /// Sound File, Audio Visual Research, Amiga IFF/8SVX, and NIST SPHERE. 
+  /// ( http://www.68k.org/~michael/audiofile/ ) to read sound data.
+  ///
+  /// It  supports AIFF/AIFF-C, WAVE, NeXT/Sun .snd/.au, Berkeley/IRCAM/CARL
+  /// Sound File, Audio Visual Research, Amiga IFF/8SVX, and NIST SPHERE.
   /// Supported compression formats are currently G.711 mu-law and A-law and
   /// IMA and MS ADPCM.
   class H3DAPI_API AudioFileReader : public H3DSoundFileNode {
