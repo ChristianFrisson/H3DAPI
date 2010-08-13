@@ -257,7 +257,7 @@ void Sound::ALrender() {
     alSource3f( al_source, AL_POSITION, 
                 sound_pos.x, sound_pos.y, sound_pos.z );
   } else {
-    // spacialize is FALSE, so put the sound in the same position
+    // spatialize is FALSE, so put the sound in the same position
     // as the listener to avoid spatialize effects.
     alSource3f( al_source, AL_POSITION, 
                 listener_pos.x, listener_pos.y, listener_pos.z );

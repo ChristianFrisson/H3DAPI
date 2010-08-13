@@ -715,13 +715,27 @@ IF( MSVC )
   # autogenerate H3DAPI.rc depending on the version
   CONFIGURE_FILE( H3DAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
 
-  ADD_CUSTOM_COMMAND( TARGET H3DAPI 
-                      PRE_BUILD 
-                      COMMAND ${H3DAPI_SOURCE_DIR}/UpdateResourceFile 
-                      ARGS H3DAPI ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${H3DAPI_SOURCE_DIR}/H3DAPI.rc.cmake
-                      ${H3DAPI_MAJOR_VERSION} ${H3DAPI_MINOR_VERSION}
-                      ${H3DAPI_BUILD_VERSION}
-                      ${H3DAPI_SOURCE_DIR}/../src/.svn/entries )
+  # Add option to disable UpdateResourceFile call, ON by default if this is an svn checkout.
+  # OFF if this is not an svn checkout.
+  IF( H3DAPI_SVN_VERSION EQUAL 0 )
+    OPTION( H3DAPI_CallUpdateResourceFile
+            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DAPI is a subversion checkout, OFF if it is not."
+            OFF )
+  ELSE( H3DAPI_SVN_VERSION EQUAL 0 )
+    OPTION( H3DAPI_CallUpdateResourceFile
+            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DAPI is a subversion checkout, OFF if it is not."
+            ON )
+  ENDIF( H3DAPI_SVN_VERSION EQUAL 0 )
+
+  IF( H3DAPI_CallUpdateResourceFile )
+    ADD_CUSTOM_COMMAND( TARGET H3DAPI 
+                        PRE_BUILD 
+                        COMMAND ${H3DAPI_SOURCE_DIR}/UpdateResourceFile 
+                        ARGS H3DAPI ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${H3DAPI_SOURCE_DIR}/H3DAPI.rc.cmake
+                        ${H3DAPI_MAJOR_VERSION} ${H3DAPI_MINOR_VERSION}
+                        ${H3DAPI_BUILD_VERSION}
+                        ${H3DAPI_SOURCE_DIR}/../src/.svn/entries )
+  ENDIF( H3DAPI_CallUpdateResourceFile )
 ENDIF(MSVC)
 
 # set the install directory to the H3D directory on Windows

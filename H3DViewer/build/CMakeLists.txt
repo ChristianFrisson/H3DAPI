@@ -121,15 +121,29 @@ IF( MSVC )
   # autogenerate H3DViewer.rc depending on the version
   CONFIGURE_FILE( H3DViewer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
 
-  ADD_CUSTOM_COMMAND( TARGET H3DViewer 
-                      PRE_BUILD 
-                      COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
-                      ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
-                      ${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
-                      ${H3DViewer_BUILD_VERSION}
-                      ${H3DViewer_SOURCE_DIR}/../src/.svn/entries
-                      "H3DViewer_SOURCE_DIR"
-                      ${H3DViewer_SOURCE_DIR} )
+  # Add option to disable UpdateResourceFile call, ON by default if this is an svn checkout.
+  # OFF if this is not an svn checkout.
+  IF( H3DViewer_SVN_VERSION EQUAL 0 )
+    OPTION( H3DViewer_CallUpdateResourceFile
+            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DViewer is a subversion checkout, OFF if it is not."
+            OFF )
+  ELSE( H3DViewer_SVN_VERSION EQUAL 0 )
+    OPTION( H3DViewer_CallUpdateResourceFile
+            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DViewer is a subversion checkout, OFF if it is not."
+            ON )
+  ENDIF( H3DViewer_SVN_VERSION EQUAL 0 )
+
+  IF( H3DViewer_CallUpdateResourceFile )
+    ADD_CUSTOM_COMMAND( TARGET H3DViewer 
+                        PRE_BUILD 
+                        COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
+                        ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
+                        ${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
+                        ${H3DViewer_BUILD_VERSION}
+                        ${H3DViewer_SOURCE_DIR}/../src/.svn/entries
+                        "H3DViewer_SOURCE_DIR"
+                        ${H3DViewer_SOURCE_DIR} )
+  ENDIF( H3DViewer_CallUpdateResourceFile )
 ENDIF(MSVC)
 
 CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
