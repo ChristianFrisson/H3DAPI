@@ -101,9 +101,9 @@ namespace H3D {
     /// Specify a specific moduleName for the pythonscript. This name should
     /// be unique among all PythonScript nodes in the scene. It should also
     /// differ from previously existing python modules. If this field is empty
-    /// the DEF-name of the PythonScript will be used. An automatically
-    /// generated name will be used if moduleName is empty and the node does
-    /// not have a DEF name.
+    /// an automatically generated name will be used. This field should be used
+    /// if one python script should import the functionality from another python
+    /// script. See the H3DAPI manual for an example.
     ///
     /// <b>Access type:</b> initializeOnly \n
     auto_ptr< SFString > moduleName;
