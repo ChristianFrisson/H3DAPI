@@ -56,6 +56,7 @@ Normal::Normal(
   database.initFields( this );
 
   vector->route( propertyChanged );
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   vector->route( vboFieldsUpToDate );
 }
 

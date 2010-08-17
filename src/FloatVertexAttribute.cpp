@@ -60,6 +60,7 @@ FloatVertexAttribute::FloatVertexAttribute( Inst< SFNode   > _metadata,
 
   value->route(propertyChanged);
   numComponents->route(propertyChanged);
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   value->route( vboFieldsUpToDate );
   numComponents->route( vboFieldsUpToDate );
 

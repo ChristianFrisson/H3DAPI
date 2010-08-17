@@ -89,6 +89,7 @@ Cylinder::Cylinder(
   height->route( bound );
   radius->route( bound );
 
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   height->route( vboFieldsUpToDate );
   radius->route( vboFieldsUpToDate );
 }

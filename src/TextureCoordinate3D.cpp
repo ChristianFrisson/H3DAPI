@@ -55,6 +55,7 @@ TextureCoordinate3D::TextureCoordinate3D(
   type_name = "TextureCoordinate3D";
   database.initFields( this );
   point->route( propertyChanged );
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   point->route( vboFieldsUpToDate );
 }
 

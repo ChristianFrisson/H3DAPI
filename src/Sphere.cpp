@@ -82,6 +82,7 @@ Sphere::Sphere(
   radius->route( displayList );
   solid->route( displayList );
 
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   radius->route( vboFieldsUpToDate );
 }
 

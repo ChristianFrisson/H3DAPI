@@ -106,6 +106,7 @@ IndexedTriangleSet::IndexedTriangleSet(
   
   coord->route( bound );
 
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   index->route( vboFieldsUpToDate );
 }
 

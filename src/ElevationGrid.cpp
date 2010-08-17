@@ -32,6 +32,8 @@
 #include <H3D/MultiTexture.h>
 #include <H3D/MultiTextureCoordinate.h>
 #include <H3D/Normal.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -39,8 +41,7 @@ H3DNodeDatabase ElevationGrid::database(
         "ElevationGrid", 
         &(newInstance< ElevationGrid > ),
         typeid( ElevationGrid ),
-        &X3DGeometryNode::database 
-        );
+        &X3DGeometryNode::database );
 
 namespace ElevationGridInternals {
   FIELDDB_ELEMENT( ElevationGrid, color, INPUT_OUTPUT );
@@ -95,7 +96,9 @@ ElevationGrid::ElevationGrid(
   zSpacing       ( _zSpacing         ),
   height         ( _height           ),
   autoNormal     ( _autoNormal       ),
-  fogCoord       ( _fogCoord    ) {
+  fogCoord       ( _fogCoord    ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "ElevationGrid";
 
@@ -126,6 +129,7 @@ ElevationGrid::ElevationGrid(
   zSpacing->route( displayList );
   height->route( displayList );
   fogCoord->route( displayList );
+  creaseAngle->route( displayList );
 
   xDimension->route( bound );
   zDimension->route( bound );
@@ -143,6 +147,28 @@ ElevationGrid::ElevationGrid(
   ccw->route( autoNormal );
   creaseAngle->route( autoNormal );
 
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
+  color->route( vboFieldsUpToDate );
+  normal->route( vboFieldsUpToDate );
+  texCoord->route( vboFieldsUpToDate );
+  colorPerVertex->route( vboFieldsUpToDate );
+  normalPerVertex->route( vboFieldsUpToDate );
+  xDimension->route( vboFieldsUpToDate );
+  zDimension->route( vboFieldsUpToDate );
+  xSpacing->route( vboFieldsUpToDate );
+  zSpacing->route( vboFieldsUpToDate );
+  height->route( vboFieldsUpToDate );
+  creaseAngle->route( vboFieldsUpToDate );
+
+}
+
+ElevationGrid::~ElevationGrid() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 2, vbo_id );
+    delete [] vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 void ElevationGrid::AutoNormal::update() {
@@ -262,162 +288,283 @@ void ElevationGrid::render() {
       }
     }
 
-    for( int z = 0; z < zdim - 1; z++ ) {
-      for( int x = 0; x < xdim - 1; x++ ) {
-        if( color_node && !color_per_vertex ) {
-          color_node->render( quad_index );
+    bool prefer_vertex_buffer_object = false;
+    if( GLEW_ARB_vertex_buffer_object ) {
+      GraphicsCachingOptions * gco = NULL;
+      getOptionNode( gco );
+      if( !gco ) {
+        GlobalSettings * gs = GlobalSettings::getActive();
+        if( gs ) {
+          gs->getOptionNode( gco );
         }
+      }
+      if( gco ) {
+        prefer_vertex_buffer_object =
+          gco->preferVertexBufferObject->getValue();
+      }
+    }
 
-        // set up normals if the normals are specified per face
-        if( normals ) {
-          if ( !normalPerVertex->getValue() || creaseAngle->getValue() <= 0 ) {
-            normals->render( quad_index );
-          }
+    if( prefer_vertex_buffer_object && ( !color_node || color_per_vertex ) &&
+        normalPerVertex->getValue() &&
+        ( normal->getValue() || creaseAngle->getValue() >= Constants::pi ) ) {
+      // We can use vertex buffer object to create elevation grid. Note that if
+      // something changes the normals vector during this iteration we will
+      // likely have a crash. Maybe I should do something about it.
+      // Use vertex buffer objects to create elevation grid.
+      if( !vboFieldsUpToDate->isUpToDate() ) {
+        vboFieldsUpToDate->upToDate();
+        // Only create and transfer data when it has been modified.
+        unsigned int nr_data_vertices = 3; // 3 floats per vertex.
+        if( !tex_coord_node ) {
+          // texture coordinates needs to be added.
+          // add three floats per vertex;
+          nr_data_vertices += 3;
         }
+        GLsizei data_size = (GLsizei)( xdim * zdim * nr_data_vertices );
+        GLfloat * vertices = new GLfloat[data_size];
+        unsigned int nr_index_data = 6; // 2 triangles, 3 vertices/triangle.
+        GLsizei index_data_size =
+          (GLsizei)( ( xdim -1 ) * ( zdim - 1 ) * nr_index_data );
+        GLuint * indices = new GLuint[index_data_size];
+        int index_index = 0;
+        for( int z = 0; z < zdim; z++ ) {
+          for( int x = 0; x < xdim; x++ ) {
+            int base_index = z * xdim + x;
+            int vertex_index = base_index * nr_data_vertices;
+            vertices[vertex_index] = x * xspace;
+            vertices[vertex_index + 1] = heights[base_index];
+            vertices[vertex_index + 2] = z * zspace;
+            if( !tex_coord_node ) {
+              vertices[vertex_index + 3] = x / (float)(xdim - 1);
+              vertices[vertex_index + 4] = z / (float)(zdim - 1);
+              vertices[vertex_index + 5] = 0;
+            }
 
-        glBegin( GL_QUADS );
-      
-        // vertex 0
-        vertex_index = z * xdim + x;
-        if( color_node && color_per_vertex ) {
-          color_node->render( vertex_index );
-        }
- 
-        if( !tex_coord_gen ) {
-          if( tex_coord_node ) {
-            tex_coord_node->renderForActiveTexture( vertex_index );
-          } else {
-            renderTexCoordForActiveTexture( Vec3f( x / (float)(xdim - 1), 
-                                                   z / (float)(zdim - 1), 
-                                                   0 ) );
-          }
-        }
-            
-        // Set up normals if the normals are specified per vertex.
-        if( normals ) {
-          if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
-            if( normal->getValue() ) {
-              normals->render( vertex_index );
-            } else {
-              // normals have been automatically generated.
-              if( creaseAngle->getValue() < Constants::pi )
-                normals->render( quad_index * 4 );
-              else 
-                normals->render( vertex_index );
+             
+            if( z < zdim - 1 && x < xdim - 1 ) {
+              indices[index_index] = base_index;
+              indices[index_index + 1] = base_index + xdim;
+              indices[index_index + 2] = base_index + 1;
+              indices[index_index + 3] = base_index + 1;
+              indices[index_index + 4] = base_index + xdim;
+              indices[index_index + 5] = base_index + xdim + 1;
+              index_index += 6;
             }
           }
-        } 
-      
-        glVertex3f( x * xspace, heights[vertex_index], z * zspace ); 
-        vertex_index++;
+        }
+        if( !vbo_id ) {
+          vbo_id = new GLuint[2];
+          glGenBuffersARB( 2, vbo_id );
+        }
+        glBindBufferARB( GL_ARRAY_BUFFER_ARB, vbo_id[0] );
+        glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                         data_size * sizeof(GLfloat),
+                         vertices, GL_STATIC_DRAW_ARB );
+        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_id[1] );
+        glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+                             index_data_size * sizeof(GLuint),
+                             indices, GL_STATIC_DRAW_ARB );
+        delete [] vertices;
+        delete [] indices;
+      } else {
+        glBindBufferARB( GL_ARRAY_BUFFER_ARB, vbo_id[0] );
+        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_id[1] );
+      }
 
-        // vertex 1
-        vertex_index = (z+1) * xdim + x;
-        if( color_node && color_per_vertex ) {
-          color_node->render( vertex_index );
-        }
-        if(  fog_coord_node ){
-          fog_coord_node->render(vertex_index);
-        }
-        if( !tex_coord_gen ) {
-          if( tex_coord_node ) {
-            tex_coord_node->renderForActiveTexture( vertex_index );
-          } else {
-            renderTexCoordForActiveTexture( Vec3f( x / (float)(xdim - 1), 
-                                                   (z+1) / (float) (zdim - 1),
-                                                   0 ) );
+      // Enable all states for vertex buffer objects.
+      // Note that the data is interleaved since this supposedly should be
+      // faster on some systems.
+      int nr_data_items = 3;
+      if( !tex_coord_node )
+        nr_data_items += 3;
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glVertexPointer( 3, GL_FLOAT, nr_data_items * sizeof(GLfloat), NULL );
+      if( !tex_coord_node ) {
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer( 3, GL_FLOAT, nr_data_items * sizeof(GLfloat),
+                           (GLvoid*)( 3 * sizeof(GLfloat) ) );
+      } else if( !tex_coord_gen ) {
+        tex_coord_node->renderVertexBufferObjectForActiveTexture();
+      }
+      normals->renderVertexBufferObject();
+      if( color_node )
+        color_node->renderVertexBufferObject();
+
+      // Draw the triangles
+      glDrawRangeElements( GL_TRIANGLES,
+                           0,
+                           (GLsizei)(zdim * xdim - 1),
+                           (GLsizei)( ( xdim-1 ) * ( zdim-1 ) * 6),
+                           GL_UNSIGNED_INT,
+                           NULL );
+
+      if( color_node )
+        color_node->disableVertexBufferObject();
+      normals->disableVertexBufferObject();
+      // Disable state.
+      if( !tex_coord_node ) {
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      } else if( !tex_coord_gen ) {
+        tex_coord_node->disableVertexBufferObjectForActiveTexture();
+      }
+      glDisableClientState(GL_VERTEX_ARRAY);
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+    } else {
+      for( int z = 0; z < zdim - 1; z++ ) {
+        for( int x = 0; x < xdim - 1; x++ ) {
+          if( color_node && !color_per_vertex ) {
+            color_node->render( quad_index );
           }
-        }
 
-        // Set up normals if the normals are specified per vertex.
-        if( normals ) {
-          if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
-            if( normal->getValue() ) {
-              normals->render( vertex_index );
-            } else {
-              // normals have been automatically generated.
-              if( creaseAngle->getValue() < Constants::pi )
-                normals->render( quad_index * 4 + 1 );
-              else 
-                normals->render( vertex_index );
+          // set up normals if the normals are specified per face
+          if( normals ) {
+            if ( !normalPerVertex->getValue() || creaseAngle->getValue() <= 0 ) {
+              normals->render( quad_index );
             }
           }
-        } 
-        glVertex3f( x * xspace, heights[vertex_index], (z+1) * zspace ); 
-        vertex_index++;
 
-        // vertex 2
-        vertex_index = (z+1) * xdim + x + 1;
-        if( color_node && color_per_vertex ) {
-          color_node->render( vertex_index );
-        }
-        if( fog_coord_node){
-          fog_coord_node->render(vertex_index);
-        }
-        if( !tex_coord_gen ) {
-          if( tex_coord_node ) {
-            tex_coord_node->renderForActiveTexture( vertex_index );
-          } else {
-            renderTexCoordForActiveTexture( Vec3f( (x+1) / (float)(xdim - 1), 
-                                                   (z+1) / (float) (zdim - 1), 
-                                                   0 ) );
+          glBegin( GL_QUADS );
+        
+          // vertex 0
+          vertex_index = z * xdim + x;
+          if( color_node && color_per_vertex ) {
+            color_node->render( vertex_index );
           }
-        }
-
-        // Set up normals if the normals are specified per vertex.
-        if( normals ) {
-          if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
-            if( normal->getValue() ) {
-              normals->render( vertex_index );
+   
+          if( !tex_coord_gen ) {
+            if( tex_coord_node ) {
+              tex_coord_node->renderForActiveTexture( vertex_index );
             } else {
-              // normals have been automatically generated.
-              if( creaseAngle->getValue() < Constants::pi )
-                normals->render( quad_index * 4 + 2 );
-              else 
-                normals->render( vertex_index );
+              renderTexCoordForActiveTexture( Vec3f( x / (float)(xdim - 1), 
+                                                     z / (float)(zdim - 1), 
+                                                     0 ) );
             }
           }
-        } 
-        glVertex3f( (x+1) * xspace, heights[vertex_index], (z+1) * zspace ); 
-        vertex_index++;
-
-        // vertex 3
-        vertex_index = z * xdim + x + 1;
-        if( color_node && color_per_vertex ) {
-          color_node->render( vertex_index );
-        }
-        if( fog_coord_node){
-          fog_coord_node->render(vertex_index);
-        }
-        if( !tex_coord_gen ) {
-          if( tex_coord_node ) {
-            tex_coord_node->renderForActiveTexture( vertex_index );
-          } else {
-            renderTexCoordForActiveTexture( Vec3f( (x+1) / (float)(xdim - 1), 
-                                                   z / (float) (zdim - 1), 
-                                                   0 ) );
-          }
-        }
-
-        // Set up normals if the normals are specified per vertex.
-        if( normals ) {
-          if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
-            if( normal->getValue() ) {
-              normals->render( vertex_index );
-            } else {
-              // normals have been automatically generated.
-              if( creaseAngle->getValue() < Constants::pi )
-                normals->render( quad_index * 4 + 3 );
-              else 
+              
+          // Set up normals if the normals are specified per vertex.
+          if( normals ) {
+            if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
+              if( normal->getValue() ) {
                 normals->render( vertex_index );
+              } else {
+                // normals have been automatically generated.
+                if( creaseAngle->getValue() < Constants::pi )
+                  normals->render( quad_index * 4 );
+                else 
+                  normals->render( vertex_index );
+              }
+            }
+          } 
+        
+          glVertex3f( x * xspace, heights[vertex_index], z * zspace ); 
+          vertex_index++;
+
+          // vertex 1
+          vertex_index = (z+1) * xdim + x;
+          if( color_node && color_per_vertex ) {
+            color_node->render( vertex_index );
+          }
+          if(  fog_coord_node ){
+            fog_coord_node->render(vertex_index);
+          }
+          if( !tex_coord_gen ) {
+            if( tex_coord_node ) {
+              tex_coord_node->renderForActiveTexture( vertex_index );
+            } else {
+              renderTexCoordForActiveTexture( Vec3f( x / (float)(xdim - 1), 
+                                                     (z+1) / (float) (zdim - 1),
+                                                     0 ) );
             }
           }
-        } 
-        glVertex3f( (x+1) * xspace, heights[vertex_index], z * zspace ); 
-        vertex_index++;
 
-        glEnd();
-        quad_index++;
+          // Set up normals if the normals are specified per vertex.
+          if( normals ) {
+            if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
+              if( normal->getValue() ) {
+                normals->render( vertex_index );
+              } else {
+                // normals have been automatically generated.
+                if( creaseAngle->getValue() < Constants::pi )
+                  normals->render( quad_index * 4 + 1 );
+                else 
+                  normals->render( vertex_index );
+              }
+            }
+          } 
+          glVertex3f( x * xspace, heights[vertex_index], (z+1) * zspace ); 
+
+          // vertex 2
+          vertex_index = (z+1) * xdim + x + 1;
+          if( color_node && color_per_vertex ) {
+            color_node->render( vertex_index );
+          }
+          if( fog_coord_node){
+            fog_coord_node->render(vertex_index);
+          }
+          if( !tex_coord_gen ) {
+            if( tex_coord_node ) {
+              tex_coord_node->renderForActiveTexture( vertex_index );
+            } else {
+              renderTexCoordForActiveTexture( Vec3f( (x+1) / (float)(xdim - 1), 
+                                                     (z+1) / (float) (zdim - 1), 
+                                                     0 ) );
+            }
+          }
+
+          // Set up normals if the normals are specified per vertex.
+          if( normals ) {
+            if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
+              if( normal->getValue() ) {
+                normals->render( vertex_index );
+              } else {
+                // normals have been automatically generated.
+                if( creaseAngle->getValue() < Constants::pi )
+                  normals->render( quad_index * 4 + 2 );
+                else 
+                  normals->render( vertex_index );
+              }
+            }
+          } 
+          glVertex3f( (x+1) * xspace, heights[vertex_index], (z+1) * zspace ); 
+
+          // vertex 3
+          vertex_index = z * xdim + x + 1;
+          if( color_node && color_per_vertex ) {
+            color_node->render( vertex_index );
+          }
+          if( fog_coord_node){
+            fog_coord_node->render(vertex_index);
+          }
+          if( !tex_coord_gen ) {
+            if( tex_coord_node ) {
+              tex_coord_node->renderForActiveTexture( vertex_index );
+            } else {
+              renderTexCoordForActiveTexture( Vec3f( (x+1) / (float)(xdim - 1), 
+                                                     z / (float) (zdim - 1), 
+                                                     0 ) );
+            }
+          }
+
+          // Set up normals if the normals are specified per vertex.
+          if( normals ) {
+            if ( normalPerVertex->getValue() && creaseAngle->getValue() > 0 ) {
+              if( normal->getValue() ) {
+                normals->render( vertex_index );
+              } else {
+                // normals have been automatically generated.
+                if( creaseAngle->getValue() < Constants::pi )
+                  normals->render( quad_index * 4 + 3 );
+                else 
+                  normals->render( vertex_index );
+              }
+            }
+          } 
+          glVertex3f( (x+1) * xspace, heights[vertex_index], z * zspace ); 
+
+          glEnd();
+          quad_index++;
+        }
       }
     }
 
@@ -837,13 +984,12 @@ void ElevationGrid::SFBound::update() {
   } else {
     max_h = min_h = 0;
   }
-  
-  
+
   Vec3f size( (xdim - 1) * xspace, max_h - min_h, (zdim - 1) * zspace); 
   
   BoxBound *bb = new BoxBound;
   bb->size->setValue( size );
-  bb->center->setValue( size / 2 );
+  bb->center->setValue( Vec3f( 0, min_h, 0 ) + size / 2 );
   value = bb;
 }
 

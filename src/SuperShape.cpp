@@ -32,6 +32,8 @@
 #include "H3D/Coordinate.h"
 #include "H3D/Normal.h"
 #include "H3D/MultiTexture.h"
+#include "H3D/GlobalSettings.h"
+#include "H3D/GraphicsCachingOptions.h"
 
 using namespace H3D;
 
@@ -133,11 +135,34 @@ void SuperShape::render() {
   X3DGeometryNode::render();
   H3DInt32 res = resolution->getValue();
   if( res > 0 ) {
-//    X3DTextureCoordinateNode *tex_coord = 0;
-    // always generate texture coordinate from bounding box
-    //    startTexGen();
-    coord->getValue()->renderArray();
-    normal->getValue()->renderArray();
+
+    bool prefer_vertex_buffer_object = false;
+    if( GLEW_ARB_vertex_buffer_object ) {
+      GraphicsCachingOptions * gco = NULL;
+      getOptionNode( gco );
+      if( !gco ) {
+        GlobalSettings * gs = GlobalSettings::getActive();
+        if( gs ) {
+          gs->getOptionNode( gco );
+        }
+      }
+      if( gco ) {
+        prefer_vertex_buffer_object =
+          gco->preferVertexBufferObject->getValue();
+      }
+    }
+
+    if( prefer_vertex_buffer_object ) {
+      coord->getValue()->renderVertexBufferObject();
+      normal->getValue()->renderVertexBufferObject();
+    } else {
+  //    X3DTextureCoordinateNode *tex_coord = 0;
+      // always generate texture coordinate from bounding box
+      //    startTexGen();
+      coord->getValue()->renderArray();
+      normal->getValue()->renderArray();
+    }
+
     H3DInt32 size = res * ( res + 1 ) * 2;
     // draw each triangle strip from the arrays
     for( int i = 0; i < res; i++ ) {
@@ -146,9 +171,15 @@ void SuperShape::render() {
                     size * i / res, 
                     res * 2 + 2 );
     }
-    coord->getValue()->disableArray();
-    normal->getValue()->disableArray();
-    //    stopTexGen();
+
+    if( prefer_vertex_buffer_object ) {
+      coord->getValue()->disableVertexBufferObject();
+      normal->getValue()->disableVertexBufferObject();
+    } else {
+      coord->getValue()->disableArray();
+      normal->getValue()->disableArray();
+    }
+      //    stopTexGen();
   }
 }
 

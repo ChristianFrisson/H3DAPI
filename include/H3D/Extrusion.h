@@ -34,6 +34,8 @@
 #include <H3D/SFFloat.h>
 #include <H3D/MFRotation.h>
 #include <H3D/MFVec2f.h>
+#include <H3D/DependentNodeFields.h>
+#include <H3D/Normal.h>
 
 namespace H3D {
 
@@ -51,73 +53,15 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile Extrusion.dot 
   class H3DAPI_API Extrusion : public X3DGeometryNode {
-  protected:
-    
-    /// returns true if the two points are coincident
-    template <typename T>
-    inline bool coinc(T a , T b) 
-          { return H3DAbs( ( a - b ).lengthSqr()) < Constants::f_epsilon; }
-    
-    /// calculate the normal to a face given three vertices in the face.
-    inline Vec3f calculateNormal( const vector < Vec3f > &vertex_vector,
-                                  H3DInt32 right,
-                                  H3DInt32 middle,
-                                  H3DInt32 left) {
-      return ( vertex_vector[ right ] - vertex_vector[ middle ] ).crossProduct(
-               vertex_vector[ left ] - vertex_vector[ middle ] ); }
-
-    /// find the surrounding faces to the face defined by i and j.
-    vector< H3DInt32 > findSurroundingFaces( 
-                        H3DInt32 i,
-                        H3DInt32 j,
-                        bool closedSpine,
-                        H3DInt32 nrOfSpinePoints,
-                        bool closedCrossSection,
-                        H3DInt32 nrOfCrossSectionPoints);
-
-    /// Create a vector from the arguments given
-    /// with one normal for each vertex in each face, i.e.
-    /// the number of normals will be the number of facess *4
-    void generateNormalsPerVertex( 
-                      vector < Vec3f > &normalVector,
-                      const vector < Vec3f > &vertex_vector,
-                      const vector < Vec2f > &cross_section,
-                      vector < Vec3f > &yAxis,
-                      bool ccwcheck,
-                      H3DInt32 nrOfCrossSectionPoints,
-                      H3DInt32 nrOfSpinePoints,
-                      bool closedSpine,
-                      H3DFloat crease_angle,
-                      H3DInt32 &ifCapsAdd );
-    
-    /// Create a vector from the arguments given
-    /// with one normal for each vertex. The normal for each
-    /// vertex will be the average of the normal of all faces using
-    /// that vertex.
-    void generateNormalsPerVertex( 
-                      vector < Vec3f > &normalVector,
-                      const vector < Vec3f > &vertex_vector,
-                      const vector < Vec2f > &cross_section,
-                      vector < Vec3f > &yAxis,
-                      bool ccwcheck,
-                      H3DInt32 nrOfCrossSectionPoints,
-                      H3DInt32 nrOfSpinePoints,
-                      bool closedSpine,
-                      H3DInt32 &ifCapsAdd );
-
-    /// Create a vector from the arguments given
-    /// with one normal for each face specified.
-    vector< Vec3f > generateNormalsPerFace(  
-                      const vector < Vec3f > &vertex_vector,
-                      const vector < Vec2f > &cross_section,
-                      vector < Vec3f > &yAxis,
-                      bool ccwcheck,
-                      H3DInt32 nrOfCrossSectionPoints,
-                      H3DInt32 nrOfSpinePoints,
-                      bool closedCrossSection,
-                      H3DInt32 &ifCapsAdd );
-
   public:
+
+    /// The SFNormalNode is dependent on the propertyChanged field of the 
+    /// contained Normal.
+    typedef DependentSFNode< Normal,
+                             FieldRef< X3DGeometricPropertyNode,
+                                       Field,
+                                       &X3DNormalNode::propertyChanged > > 
+    SFNormalNode;
 
     /// SFBound is specialized update itself from the fields of the
     /// Extrusion
@@ -136,7 +80,7 @@ namespace H3D {
     /// routes_in[1] is the orientation field.
     /// routes_in[2] is the scale field.
     /// routes_in[3] is the spine field.
-    class H3DAPI_API VertexVectors: 
+    class H3DAPI_API VertexVector: 
       public TypedField< MFVec3f,
                          Types< MFVec2f, 
                                 MFRotation, 
@@ -145,8 +89,70 @@ namespace H3D {
       virtual void update();
     };
 #ifdef __BORLANDC__
-    friend class VertexVectors;
+    friend class VertexVector;
 #endif
+
+    /// Specialized field for automatically generating normals from
+    /// coordinates.
+    /// The resulting Normal node will contain normals per face if
+    /// creaseAngle <=0. If creaseAngle >= pi, then the normals returned will
+    /// be a normal per vertex in vertexVector and finally the normals returned
+    /// will contain  a normal per vertex in each face if 0 < creaseAngle < pi.
+    ///
+    /// routes_in[0] is the vertexVector field.
+    /// routes_in[1] is the creaseAngle field.
+    class H3DAPI_API AutoNormal: 
+      public TypedField< SFNormalNode,
+                         Types< VertexVector,
+                                SFFloat,
+                                SFBool,
+                                SFBool > > {
+      virtual void update();
+
+      /// Create a new X3DNormalNode from the arguments given
+      /// with one normal for each vertex in each face, i.e.
+      /// the number of normals will be the number of faces *4
+      virtual Normal *generateNormalsPerVertex(
+                      const vector < Vec3f > &vertex_vector,
+                      const vector < Vec2f > &cross_section,
+                      vector < Vec3f > &yAxis,
+                      bool ccw_value,
+                      H3DInt32 nr_of_cross_section_points,
+                      H3DInt32 spine_size,
+                      bool closedSpine,
+                      H3DFloat crease_angle,
+                      bool begin_cap,
+                      bool end_cap );
+    
+      /// Create a new X3DNormalNode from the arguments given
+      /// with one normal for each vertex. The normal for each
+      /// vertex will be the average of the normal of all faces using
+      /// that vertex.
+      virtual Normal *generateNormalsPerVertex(
+                      const vector < Vec3f > &vertex_vector,
+                      const vector < Vec2f > &cross_section,
+                      vector < Vec3f > &yAxis,
+                      bool ccw_value,
+                      H3DInt32 nr_of_cross_section_points,
+                      H3DInt32 spine_size,
+                      bool closedSpine,
+                      bool begin_cap,
+                      bool end_cap );
+
+      /// Create a new X3DNormalNode from the arguments given
+      /// with one normal for each face specified.
+      virtual Normal *generateNormalsPerFace(
+                      const vector < Vec3f > &vertex_vector,
+                      const vector < Vec2f > &cross_section,
+                      vector < Vec3f > &yAxis,
+                      bool ccw_value,
+                      H3DInt32 nr_of_cross_section_points,
+                      H3DInt32 spine_size,
+                      bool closedCrossSection,
+                      bool begin_cap,
+                      bool end_cap );
+    };
+
 
     /// Render the Extrusion with OpenGL.
     virtual void render();
@@ -170,12 +176,11 @@ namespace H3D {
                Inst< SFBool           > _convex           = 0,
                Inst< SFFloat          > _creaseAngle     = 0,
                Inst< MFVec2f          > _crossSection    = 0,
-               Inst< SFBool            > _endCap           = 0,
+               Inst< SFBool           > _endCap           = 0,
                Inst< MFRotation       > _orientation     = 0,
                Inst< MFVec2f          > _scale           = 0,
                Inst< SFBool           > _solid           = 0,
-               Inst< MFVec3f          > _spine           = 0,
-               Inst< VertexVectors    > _vertexVector    = 0 );
+               Inst< MFVec3f          > _spine           = 0 );
 
     /// When the beginCap or endCap fields are specified as TRUE, planar cap
     /// surfaces will be generated regardless of whether the crossSection is
@@ -191,7 +196,7 @@ namespace H3D {
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_beginCap.dot 
-    auto_ptr< SFBool >  beginCap;
+    auto_ptr< SFBool > beginCap;
 
   
     /// The ccw field defines the ordering of the vertex coordinates of 
@@ -211,7 +216,7 @@ namespace H3D {
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_ccw.dot 
-    auto_ptr< SFBool >  ccw;
+    auto_ptr< SFBool > ccw;
     
     /// The convex field indicates whether all polygons in the shape are 
     /// convex (TRUE). A polygon is convex if it is planar, does not intersect
@@ -223,7 +228,7 @@ namespace H3D {
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_convex.dot 
-    auto_ptr< SFBool >  convex;
+    auto_ptr< SFBool > convex;
 
     /// The creaseAngle field affects how default normals are generated. 
     /// If the angle between the geometric normals of two adjacent faces is
@@ -248,7 +253,7 @@ namespace H3D {
     /// <b>Default value:</b> [1 1 1 -1 -1 -1 -1 1 1 1] \n
     /// 
     /// \dotfile Extrusion_crossSection.dot 
-    auto_ptr< MFVec2f >  crossSection;
+    auto_ptr< MFVec2f > crossSection;
 
     /// When the beginCap or endCap fields are specified as TRUE, planar cap
     /// surfaces will be generated regardless of whether the crossSection is
@@ -264,7 +269,7 @@ namespace H3D {
     /// <b>Default value:</b> TRUE \n
     /// 
     /// \dotfile Extrusion_endCap.dot 
-    auto_ptr< SFBool >  endCap;
+    auto_ptr< SFBool > endCap;
 
     /// A list of 3D orientation parameters used to orient the crossSection.
     /// If the number of orientation values is greater than the number
@@ -277,7 +282,7 @@ namespace H3D {
     /// <b>Default value:</b> 0 0 1 0 \n
     /// 
     /// \dotfile Extrusion_orientation.dot 
-    auto_ptr< MFRotation >  orientation;
+    auto_ptr< MFRotation > orientation;
 
     /// A list of 2D scale parameters used to scale the crossSection.
     /// If the number of scale values is greater than the number
@@ -290,7 +295,7 @@ namespace H3D {
     /// <b>Default value:</b> 1 1 \n
     /// 
     /// \dotfile Extrusion_scale.dot 
-    auto_ptr< MFVec2f >  scale;
+    auto_ptr< MFVec2f > scale;
 
     /// The solid field determines whether one or both sides of each polygon
     /// shall be displayed. If solid is FALSE, each polygon shall be visible
@@ -303,7 +308,7 @@ namespace H3D {
     /// <b>Default value:</b> TRUE \n
     ///
     /// \dotfile Extrusion_solid.dot 
-    auto_ptr< SFBool >  solid;
+    auto_ptr< SFBool > solid;
 
     /// A 3D spine piecewise linear curve 
     /// (also described as a series of connected vertices).
@@ -312,14 +317,24 @@ namespace H3D {
     /// <b>Default value:</b> [0 0 0 0 1 0] \n
     /// 
     /// \dotfile Extrusion_spine.dot 
-    auto_ptr< MFVec3f >  spine;
+    auto_ptr< MFVec3f > spine;
 
     /// The vector of vertices constructing the extrusion-shape
     /// Only accessable in C++.
-    auto_ptr< VertexVectors  >  vertexVector;
+    auto_ptr< VertexVector > vertexVector;
+
+    /// Auto-generated normals.
+    /// Only accessable in C++.
+    auto_ptr< AutoNormal > autoNormal;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Texture coordinates for u, v direction of the body.
+    vector< H3DFloat > u_tex_coord;
+    vector< H3DFloat > v_tex_coord;
+    // Texture coordinates for the caps.
+    vector< Vec3f > caps_tex_coord;
   };
 }
 

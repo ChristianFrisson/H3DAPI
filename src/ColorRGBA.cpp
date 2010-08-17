@@ -55,6 +55,7 @@ ColorRGBA::ColorRGBA(
   database.initFields( this );
 
   color->route( propertyChanged );
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   color->route( vboFieldsUpToDate );
 }
 

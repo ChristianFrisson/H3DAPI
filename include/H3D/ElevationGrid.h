@@ -192,7 +192,7 @@ namespace H3D {
 
       /// Create a new X3DNormalNode from the arguments given
       /// with one normal for each vertex in each face, i.e.
-      /// the number of normals will be the number of facess *4
+      /// the number of normals will be the number of faces *4
       virtual X3DNormalNode *generateNormalsPerVertex( 
                                H3DInt32 x_dim,
                                H3DInt32 z_dim,
@@ -301,6 +301,8 @@ namespace H3D {
                    Inst< SFFloat          > _zSpacing        = 0,
                    Inst< MFFloat          > _height          = 0,
                    Inst< SFFogCoordinate  > _fogCoord        = 0 );
+
+    ~ElevationGrid();
 
     /// Contains an X3DColorNode whose colors are applied to the
     /// ElevationGrid. If the color field is NULL, the
@@ -414,7 +416,7 @@ namespace H3D {
     /// \dotfile ElevationGrid_xDimension.dot 
     auto_ptr< SFInt32 > xDimension;
 
-    /// The number of elements in the grid height array in the x direction.
+    /// The number of elements in the grid height array in the z direction.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 \n
@@ -465,6 +467,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

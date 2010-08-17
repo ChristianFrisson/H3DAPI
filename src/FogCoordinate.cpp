@@ -53,6 +53,7 @@ FogCoordinate::FogCoordinate(   Inst< MFFloat  > _depth,
   type_name = "FogCoordinate";
   database.initFields( this );
   depth->route( propertyChanged );
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   depth->route( vboFieldsUpToDate );
 }
 

@@ -54,6 +54,7 @@ CoordinateDouble::CoordinateDouble(
   database.initFields( this );
 
   point->route( propertyChanged );
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   point->route( vboFieldsUpToDate );
 }
 
