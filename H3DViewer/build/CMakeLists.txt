@@ -124,16 +124,16 @@ IF( MSVC )
   # Add option to disable UpdateResourceFile call, ON by default if this is an svn checkout.
   # OFF if this is not an svn checkout.
   IF( H3DViewer_SVN_VERSION EQUAL 0 )
-    OPTION( H3DViewer_CallUpdateResourceFile
+    OPTION( CallUpdateResourceFile
             "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DViewer is a subversion checkout, OFF if it is not."
             OFF )
   ELSE( H3DViewer_SVN_VERSION EQUAL 0 )
-    OPTION( H3DViewer_CallUpdateResourceFile
+    OPTION( CallUpdateResourceFile
             "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DViewer is a subversion checkout, OFF if it is not."
             ON )
   ENDIF( H3DViewer_SVN_VERSION EQUAL 0 )
 
-  IF( H3DViewer_CallUpdateResourceFile )
+  IF( CallUpdateResourceFile )
     ADD_CUSTOM_COMMAND( TARGET H3DViewer 
                         PRE_BUILD 
                         COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
@@ -143,7 +143,7 @@ IF( MSVC )
                         ${H3DViewer_SOURCE_DIR}/../src/.svn/entries
                         "H3DViewer_SOURCE_DIR"
                         ${H3DViewer_SOURCE_DIR} )
-  ENDIF( H3DViewer_CallUpdateResourceFile )
+  ENDIF( CallUpdateResourceFile )
 ENDIF(MSVC)
 
 CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
