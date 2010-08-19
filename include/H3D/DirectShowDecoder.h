@@ -49,6 +49,8 @@
 #undef DEBUG
 #endif
 #include <streams.h>
+#include <atlcomcli.h>
+#include <strsafe.h>
 
 #ifdef RESTORE__DEBUG
 #define _DEBUG
