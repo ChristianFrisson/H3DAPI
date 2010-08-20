@@ -310,6 +310,12 @@ int main(int argc, char* argv[]) {
   stringstream str;
   str << H3DAPI_MAJOR_VERSION << "." << H3DAPI_MINOR_VERSION << "." << H3DAPI_BUILD_VERSION;
 
+ #ifdef H3D_WIN64
+  str << " x64";
+#else
+  str << " x86";
+#endif 
+
   string version_string = str.str();
 
   string command = argv[0];
