@@ -47,10 +47,10 @@ FIND_PATH( DIRECTSHOW_INCLUDE_DIR_DDRAW_H NAMES ddraw.h
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_DDRAW_H)
 
 FIND_LIBRARY( DIRECTSHOW_LIBRARY NAMES strmbase
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
+              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
               DOC "Path to strmbase library." )
 MARK_AS_ADVANCED(DIRECTSHOW_LIBRARY)
 
