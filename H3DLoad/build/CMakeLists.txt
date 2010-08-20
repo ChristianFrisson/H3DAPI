@@ -86,13 +86,15 @@ SET_TARGET_PROPERTIES( H3DLoad PROPERTIES DEBUG_POSTFIX "_d" )
 # set the install directory to the H3D directory on Windows
 IF(WIN32) 
   # Set compile and link properties for projects.
-  IF(MSVC80)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
-    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
-  ELSEIF(MSVC90)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
-    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
-  ENDIF(MSVC80)
+  IF(MSVC70 OR MSVC71)
+    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "/Zc:wchar_t" )
+  ELSEIF(MSVC80)
+    # Remove some warnings about deprecated functions. 
+    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE" )
+  ELSEIF(MSVC90 OR MSVC10)
+    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
+    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /MP" )
+  ENDIF(MSVC70 OR MSVC71)
 
   IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT )
     SET( CMAKE_INSTALL_PREFIX ${H3DLoad_SOURCE_DIR}/../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )

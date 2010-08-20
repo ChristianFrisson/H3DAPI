@@ -162,17 +162,17 @@ SET_TARGET_PROPERTIES( H3DViewer
 
 IF(WIN32)
 
-  SET( H3DViewer_COMPILE_FLAGS "" )
+  SET( H3DViewer_COMPILE_FLAGS "-DWXUSINGDLL" )
   IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     SET( H3DViewer_COMPILE_FLAGS "-DH3DVIEWER_STANDALONE" )
   ENDIF( GENERATE_H3DVIEWER_CPACK_PROJECT )
 
   # Set compile and link properties for projects.
   IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt /Zc:wchar_t" )
   ELSEIF(MSVC80)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
-    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
     
     # This might be useful for visual studio 2005 users that often recompile the api.
     IF( NOT DEFINED USE_VC8_MP_FLAG )
@@ -186,8 +186,8 @@ IF(WIN32)
     # Needed to run in debug mode. Removes warning about conflict between libraries.
     SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
   ELSEIF(MSVC90 OR MSVC10)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
-    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP" )
     # Needed to run in debug mode. Removes warning about conflict between libraries.
     SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
   ENDIF(MSVC70 OR MSVC71)
