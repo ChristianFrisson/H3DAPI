@@ -8,6 +8,12 @@
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 # Look for the header file.
 FIND_PATH(FTGL_INCLUDE_DIR NAMES FTGL/ftgl.h 
                            PATHS $ENV{H3D_EXTERNAL_ROOT}/include
@@ -48,10 +54,10 @@ MARK_AS_ADVANCED(FTGL_INCLUDE_IS_UPPER)
 
 # Look for the library.
 FIND_LIBRARY(FTGL_LIBRARY NAMES ftgl ftgl_dynamic_213rc5 ftgl_dynamic_MTD
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                $ENV{H3D_ROOT}/../External/lib
-                                ../../External/lib
-                                ${module_file_path}/../../../External/lib
+                          PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                $ENV{H3D_ROOT}/../External/${LIB}
+                                ../../External/${LIB}
+                                ${module_file_path}/../../../External/${LIB}
                           DOC "Path to ftgl library." )
 MARK_AS_ADVANCED(FTGL_LIBRARY)
 
@@ -64,18 +70,18 @@ IF( WIN32 AND PREFER_STATIC_LIBRARIES )
   ENDIF( MSVC80 )
   
   FIND_LIBRARY( FTGL_STATIC_LIBRARY NAMES ${FTGL_STATIC_LIBRARY_NAME}
-                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                         $ENV{H3D_ROOT}/../External/lib
-                                         ../../External/lib
-                                         ${module_file_path}/../../../External/lib
+                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                         $ENV{H3D_ROOT}/../External/${LIB}
+                                         ../../External/${LIB}
+                                         ${module_file_path}/../../../External/${LIB}
                                     DOC "Path to ftgl static library." )
   MARK_AS_ADVANCED(FTGL_STATIC_LIBRARY)
   
   FIND_LIBRARY( FTGL_STATIC_DEBUG_LIBRARY NAMES ${FTGL_STATIC_LIBRARY_NAME}_d
-                                                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                                $ENV{H3D_ROOT}/../External/lib
-                                                ../../External/lib
-                                                ${module_file_path}/../../../External/lib
+                                                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                                $ENV{H3D_ROOT}/../External/${LIB}
+                                                ../../External/${LIB}
+                                                ${module_file_path}/../../../External/${LIB}
                                           DOC "Path to ftgl static debug library." )
   MARK_AS_ADVANCED(FTGL_STATIC_DEBUG_LIBRARY)
   

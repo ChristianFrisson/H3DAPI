@@ -26,20 +26,21 @@
 #
 #
 
-IF( NOT WIN32 AND UNIX )
-  SET( TEEM_BZIP2 "NO" CACHE BOOL "If teem is built with bz2 support then this variable should be set to ON." )
-  SET( TEEM_PNG "NO" CACHE BOOL "If teem is built with png support then this variable should be set to ON." )
-  SET( TEEM_ZLIB "NO" CACHE BOOL "If teem is built with zlib support then this variable should be set to ON." )
-ELSE(  NOT WIN32 AND UNIX )
-  SET( TEEM_BZIP2 "YES" CACHE BOOL "If teem is built with bz2 support then this variable should be set to ON." )
-  SET( TEEM_PNG "YES" CACHE BOOL "If teem is built with png support then this variable should be set to ON." )
-  SET( TEEM_ZLIB "YES" CACHE BOOL "If teem is built with zlib support then this variable should be set to ON." )
-ENDIF( NOT WIN32 AND UNIX )
+SET( TEEM_BZIP2 "NO" CACHE BOOL "If teem is built with bz2 support then this variable should be set to ON." )
+SET( TEEM_PNG "NO" CACHE BOOL "If teem is built with png support then this variable should be set to ON." )
+SET( TEEM_ZLIB "NO" CACHE BOOL "If teem is built with zlib support then this variable should be set to ON." )
+
 MARK_AS_ADVANCED( TEEM_BZIP2 )
 MARK_AS_ADVANCED( TEEM_PNG )
 MARK_AS_ADVANCED( TEEM_ZLIB )
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
 
 # Look for the header file.
 FIND_PATH(TEEM_INCLUDE_DIR NAMES teem/nrrd.h
@@ -54,11 +55,11 @@ MARK_AS_ADVANCED(TEEM_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(TEEM_LIBRARY NAMES teem 
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                $ENV{H3D_ROOT}/../External/lib
-                                ../../External/lib
+                          PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                $ENV{H3D_ROOT}/../External/${LIB}/static
+                                ../../External/${LIB}/static
                                 /usr/local/lib
-                                ${module_file_path}/../../../External/lib
+                                ${module_file_path}/../../../External/${LIB}/static
                                 ${module_file_path}/../../teem/lib
                           DOC "Path to teem library." )
 MARK_AS_ADVANCED(TEEM_LIBRARY)
@@ -71,11 +72,11 @@ ENDIF( TEEM_LIBRARY )
 
 IF( TEEM_ZLIB )
   FIND_LIBRARY(TEEM_Z_LIBRARY NAMES z
-                         PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                               $ENV{H3D_ROOT}/../External/lib
-                               ../../External/lib
+                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                               $ENV{H3D_ROOT}/../External/${LIB}/static
+                               ../../External/${LIB}/static
                                /usr/lib
-                               ${module_file_path}/../../../External/lib
+                               ${module_file_path}/../../../External/${LIB}/static
                                ${module_file_path}/../../teem/lib
                          DOC "Path to z library." )
   MARK_AS_ADVANCED(TEEM_Z_LIBRARY)
@@ -86,11 +87,11 @@ ENDIF( TEEM_ZLIB )
 
 IF( TEEM_PNG )
   FIND_LIBRARY(TEEM_PNG_LIBRARY NAMES png
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 $ENV{H3D_ROOT}/../External/lib
-                                  ../../External/lib
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                 $ENV{H3D_ROOT}/../External/${LIB}/static
+                                  ../../External/${LIB}/static
                                   /usr/lib
-                                  ${module_file_path}/../../../External/lib
+                                  ${module_file_path}/../../../External/${LIB}/static
                                   ${module_file_path}/../../teem/lib
                            DOC "Path to png library." )
   MARK_AS_ADVANCED(TEEM_PNG_LIBRARY)
@@ -101,11 +102,11 @@ ENDIF( TEEM_PNG )
 
 IF( TEEM_BZIP2 )
   FIND_LIBRARY(TEEM_BZ2_LIBRARY NAMES bz2
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 $ENV{H3D_ROOT}/../External/lib
-                                 ../../External/lib
+                           PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                 $ENV{H3D_ROOT}/../External/${LIB}/static
+                                 ../../External/${LIB}/static
                                  /usr/lib
-                                 ${module_file_path}/../../../External/lib
+                                 ${module_file_path}/../../../External/${LIB}/static
                                  ${module_file_path}/../../teem/lib
                            DOC "Path to bz2 library." )
   MARK_AS_ADVANCED(TEEM_BZ2_LIBRARY)

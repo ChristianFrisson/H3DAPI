@@ -6,6 +6,12 @@
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 # Look for the header file.
 FIND_PATH( 3DXWARE_INCLUDE_DIR NAMES si.h siapp.h H3D/xdrvlib.h X11/Xlib.h X11/Xutil.h X11/Xos.h X11/Xatom.h X11/keysym.h
            PATHS  /usr/local/include 
@@ -23,20 +29,20 @@ MARK_AS_ADVANCED(3DXWARE_INCLUDE_DIR)
 # Look for the library siapp.
 # TODO: Does this work on UNIX systems? (LINUX) I strongly doubt it. What are the libraries to find on linux?
 FIND_LIBRARY( 3DXWARE_SIAPP_LIBRARY NAMES siapp
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                    $ENV{H3D_ROOT}/../External/${LIB}
+                    ../../External/${LIB}
+                    ${module_file_path}/../../../External/${LIB}
               DOC "Path to siapp library." )
 MARK_AS_ADVANCED(3DXWARE_SIAPP_LIBRARY)
 
 # Look for the library spwmath.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( 3DXWARE_SPWMATH_LIBRARY NAMES spwmath
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                    $ENV{H3D_ROOT}/../External/${LIB}
+                    ../../External/${LIB}
+                    ${module_file_path}/../../../External/${LIB}
               DOC "Path to spwmath library." )
 MARK_AS_ADVANCED(3DXWARE_SPWMATH_LIBRARY)
 

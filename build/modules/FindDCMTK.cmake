@@ -18,7 +18,7 @@ MARK_AS_ADVANCED(DCMTK_DIR)
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
-SET( DCMTK_LIBRARY_POSTFIX "" )
+SET( DCMTK_LIBRARY_POSTFIX "_vc7" )
 
 IF( MSVC80 )
   SET( DCMTK_LIBRARY_POSTFIX "_vc8" )
@@ -27,6 +27,12 @@ ELSEIF( MSVC90)
 ELSEIF( MSVC10)
   SET( DCMTK_LIBRARY_POSTFIX "_vc10" )
 ENDIF( MSVC80 )
+
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
 
 IF( NOT WIN32 )
 SET( DCMTK_HAVE_CONFIG_H "NO" CACHE BOOL "On some systems the compile flag -DHAVE_CONFIG_H needs to be defined because of DCMTK. If DCMTK headers are causing problem turn this flag on." )
@@ -67,10 +73,10 @@ FIND_LIBRARY( DCMTK_ofstd_LIBRARY "ofstd${DCMTK_LIBRARY_POSTFIX}"
                     ${DCMTK_DIR}/ofstd/Release
                     ${DCMTK_DIR}/ofstd/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to ofstd${DCMTK_LIBRARY_POSTFIX} library." )
@@ -96,10 +102,10 @@ FIND_LIBRARY( DCMTK_dcmjpeg_LIBRARY dcmjpeg${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/Release
                     ${DCMTK_DIR}/dcmjpeg/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to dcmjpeg${DCMTK_LIBRARY_POSTFIX} library." )
@@ -113,10 +119,10 @@ FIND_LIBRARY( DCMTK_ijg8_LIBRARY ijg8${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/libijg8/Release
                     ${DCMTK_DIR}/dcmjpeg/libijg8/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to ijg8${DCMTK_LIBRARY_POSTFIX} library." )
@@ -129,10 +135,10 @@ FIND_LIBRARY( DCMTK_ijg12_LIBRARY ijg12${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/libijg12/Release
                     ${DCMTK_DIR}/dcmjpeg/libijg12/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib 
                     /usr/local/dicom/lib
               DOC "Path to ijg12${DCMTK_LIBRARY_POSTFIX} library." )
@@ -145,10 +151,10 @@ FIND_LIBRARY( DCMTK_ijg16_LIBRARY ijg16${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/libijg16/Release
                     ${DCMTK_DIR}/dcmjpeg/libijg16/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib 
                     /usr/local/dicom/lib
               DOC "Path to ijg16${DCMTK_LIBRARY_POSTFIX} library." )
@@ -174,10 +180,10 @@ FIND_LIBRARY( DCMTK_dcmdata_LIBRARY dcmdata${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmdata/Release
                     ${DCMTK_DIR}/dcmdata/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib 
                     /usr/local/dicom/lib
               DOC "Path to dcmdata${DCMTK_LIBRARY_POSTFIX} library." )
@@ -204,10 +210,10 @@ FIND_LIBRARY( DCMTK_dcmimgle_LIBRARY dcmimgle${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmimgle/Release
                     ${DCMTK_DIR}/dcmimgle/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to dcmimgle${DCMTK_LIBRARY_POSTFIX} library." )
@@ -220,10 +226,10 @@ FIND_LIBRARY( DCMTK_dcmimage_LIBRARY dcmimage${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmimage/Release
                     ${DCMTK_DIR}/dcmimage/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to dcmimage${DCMTK_LIBRARY_POSTFIX} library." )
@@ -238,10 +244,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/ofstd/Release
                       ${DCMTK_DIR}/ofstd/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to ofstd${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -254,10 +260,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/Release
                       ${DCMTK_DIR}/dcmjpeg/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to dcmjpeg${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -271,10 +277,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/libijg8/Release
                       ${DCMTK_DIR}/dcmjpeg/libijg8/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to ijg8${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -287,10 +293,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/libijg12/Release
                       ${DCMTK_DIR}/dcmjpeg/libijg12/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to ijg12${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -303,10 +309,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/libijg16/Release
                       ${DCMTK_DIR}/dcmjpeg/libijg16/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib 
                       /usr/local/dicom/lib
                 DOC "Path to ijg16${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -319,10 +325,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmdata/Release
                       ${DCMTK_DIR}/dcmdata/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib 
                       /usr/local/dicom/lib
                 DOC "Path to dcmdata${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -335,10 +341,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmimgle/Release
                       ${DCMTK_DIR}/dcmimgle/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to dcmimgle${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -351,10 +357,10 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmimage/Release
                       ${DCMTK_DIR}/dcmimage/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                      $ENV{H3D_ROOT}/../External/${LIB}/static
+                      ../../External/${LIB}/static
+                      ${module_file_path}/../../../External/${LIB}/static
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to dcmimage${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -366,10 +372,10 @@ ENDIF( MSVC10 )
 #${DCMTK_DIR}/dcmnet/libsrc/Release
 #${DCMTK_DIR}/dcmnet/libsrc/Debug
 #${DCMTK_DIR}/dcmnet/libsrc/
-#$ENV{H3D_EXTERNAL_ROOT}/lib
-#$ENV{H3D_ROOT}/../External/lib
-#../../External/lib
-#${module_file_path}/../../../External/lib
+#$ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+#$ENV{H3D_ROOT}/../External/${LIB}/static
+#../../External/${LIB}/static
+#${module_file_path}/../../../External/${LIB}/static
 #)
 
 

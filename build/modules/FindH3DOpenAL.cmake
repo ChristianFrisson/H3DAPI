@@ -8,6 +8,13 @@
 
 
 FIND_PACKAGE(OpenAL)
+
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 IF(NOT OPENAL_FOUND AND WIN32)
   GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
   # Look for the header file.
@@ -20,10 +27,10 @@ IF(NOT OPENAL_FOUND AND WIN32)
 
   # Look for the library.
   FIND_LIBRARY( OPENAL_LIBRARY NAMES OpenAL32
-                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                      $ENV{H3D_ROOT}/../External/${LIB}
+                      ../../External/${LIB}
+                      ${module_file_path}/../../../External/${LIB}
                 DOC "Path to OpenAL32 library." )
 
   IF(OPENAL_INCLUDE_DIR AND OPENAL_LIBRARY)

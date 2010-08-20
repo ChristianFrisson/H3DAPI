@@ -7,6 +7,12 @@
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 # Look for the header file.
 FIND_PATH(FREEIMAGE_INCLUDE_DIR NAMES FreeImage.h
                                 PATHS $ENV{H3D_EXTERNAL_ROOT}/include
@@ -23,27 +29,29 @@ MARK_AS_ADVANCED(FREEIMAGE_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(FREEIMAGE_LIBRARY NAMES freeimage
-                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                     $ENV{H3D_ROOT}/../External/lib
-                                     ../../External/lib
-                                     ${module_file_path}/../../../External/lib
+                               PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                                     $ENV{H3D_ROOT}/../External/${LIB}
+                                     ../../External/${LIB}
+                                     ${module_file_path}/../../../External/${LIB}
                                DOC "Path to freeimage library." )
 MARK_AS_ADVANCED(FREEIMAGE_LIBRARY)
 
 IF( WIN32 AND PREFER_STATIC_LIBRARIES )
-  SET( FREEIMAGE_STATIC_LIBRARY_NAME FreeImage_static )
+  SET( FREEIMAGE_STATIC_LIBRARY_NAME FreeImage_vc7 )
   
   IF( MSVC80 )
-    SET( FREEIMAGE_STATIC_LIBRARY_NAME FreeImage_static_vc8 )
+    SET( FREEIMAGE_STATIC_LIBRARY_NAME FreeImage_vc8 )
   ELSEIF( MSVC90 )
-    SET( FREEIMAGE_STATIC_LIBRARY_NAME FreeImage_static_vc9 )
+    SET( FREEIMAGE_STATIC_LIBRARY_NAME FreeImage_vc9 )
+  ELSEIF( MSVC10 )
+    SET( FREEIMAGE_STATIC_LIBRARY_NAME FreeImage_vc10 )
   ENDIF( MSVC80 )
   
   FIND_LIBRARY( FREEIMAGE_STATIC_LIBRARY NAMES ${FREEIMAGE_STATIC_LIBRARY_NAME}
-                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                               $ENV{H3D_ROOT}/../External/lib
-                                               ../../External/lib
-                                               ${module_file_path}/../../../External/lib
+                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                               $ENV{H3D_ROOT}/../External/${LIB}/static
+                                               ../../External/${LIB}/static
+                                               ${module_file_path}/../../../External/${LIB}/static
                                          DOC "Path to freeimage static release library (windows only). For this configuration it might be called ${FREEIMAGE_STATIC_LIBRARY_NAME}" )
   MARK_AS_ADVANCED(FREEIMAGE_STATIC_LIBRARY)
   
@@ -52,10 +60,10 @@ IF( WIN32 AND PREFER_STATIC_LIBRARIES )
   ENDIF( FREEIMAGE_STATIC_LIBRARY )
   
   FIND_LIBRARY( FREEIMAGE_STATIC_DEBUG_LIBRARY NAMES ${FREEIMAGE_STATIC_LIBRARY_NAME}_d
-                                               PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                                     $ENV{H3D_ROOT}/../External/lib
-                                                     ../../External/lib
-                                                     ${module_file_path}/../../../External/lib
+                                               PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                                     $ENV{H3D_ROOT}/../External/${LIB}/static
+                                                     ../../External/${LIB}/static
+                                                     ${module_file_path}/../../../External/${LIB}/static
                                                DOC "Path to freeimage static debug library (windows only). For this configuration it might be called ${FREEIMAGE_STATIC_LIBRARY_NAME}_d" )
   MARK_AS_ADVANCED(FREEIMAGE_STATIC_DEBUG_LIBRARY)
     

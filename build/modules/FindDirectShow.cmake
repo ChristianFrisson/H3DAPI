@@ -7,6 +7,12 @@
 INCLUDE( TestIfVCExpress )
 TestIfVCExpress()
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 IF(CMake_HAVE_MFC)
 # Look for the header file.
 SET( DIRECTSHOW_EXTRA_DIR )
@@ -16,6 +22,8 @@ ELSEIF(MSVC80)
   SET( DIRECTSHOW_EXTRA_DIR $ENV{VS80COMNTOOLS}../../VC/PlatformSDK/Include )
 ELSEIF(MSVC90)
   SET( DIRECTSHOW_EXTRA_DIR $ENV{VS90COMNTOOLS}../../VC/PlatformSDK/Include )
+ELSEIF(MSVC10)
+  SET( DIRECTSHOW_EXTRA_DIR $ENV{VS10COMNTOOLS}../../VC/PlatformSDK/Include )
 ENDIF(MSVC70 OR MSVC71)
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
@@ -39,10 +47,10 @@ FIND_PATH( DIRECTSHOW_INCLUDE_DIR_DDRAW_H NAMES ddraw.h
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_DDRAW_H)
 
 FIND_LIBRARY( DIRECTSHOW_LIBRARY NAMES strmbase
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                    $ENV{H3D_ROOT}/../External/lib
-                    ../../External/lib
-                    ${module_file_path}/../../../External/lib
+              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                    $ENV{H3D_ROOT}/../External/${LIB}
+                    ../../External/${LIB}
+                    ${module_file_path}/../../../External/${LIB}
               DOC "Path to strmbase library." )
 MARK_AS_ADVANCED(DIRECTSHOW_LIBRARY)
 

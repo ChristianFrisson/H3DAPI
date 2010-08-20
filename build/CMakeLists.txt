@@ -764,11 +764,12 @@ IF( WIN32 )
     # H3D API is now to big to link incrementally with vc7.
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
+    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /Zc:wchar_t")
   ELSEIF(MSVC80)
     SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc8 )
     SET( TEMP_OUTPUT_POSTFIX _vc8 )
     # remove some warnings about deprecated functions.
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
+    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
     
     # This might be useful for visual studio 2005 users that often recompile the api.
     IF( NOT DEFINED USE_VC8_MP_FLAG )
@@ -799,7 +800,7 @@ IF( WIN32 )
     SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc9 )
     SET( TEMP_OUTPUT_POSTFIX _vc9 )
     # remove some warnings about deprecated functions.
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP" )
     # if we are using 64 bit compiler some object files get too big so we need
     # to add the /bigobj flag
     IF( CMAKE_CL_64 )
@@ -820,7 +821,7 @@ IF( WIN32 )
     SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc10 )
     SET( TEMP_OUTPUT_POSTFIX _vc10 )
     # remove some warnings about deprecated functions.
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
+    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP" )
     # if we are using 64 bit compiler some object files get too big so we need
     # to add the /bigobj flag
     IF( CMAKE_CL_64 )

@@ -7,6 +7,12 @@
 
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 # Look for the header file.
 FIND_PATH( SPIDERMONKEY_INCLUDE_DIR NAMES jsapi.h
            PATHS /usr/local/include
@@ -27,10 +33,10 @@ MARK_AS_ADVANCED(SPIDERMONKEY_INCLUDE_DIR)
 # Does this work on UNIX systems? (LINUX)
 IF(WIN32)
   FIND_LIBRARY( SPIDERMONKEY_LIBRARY NAMES js32
-                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                      $ENV{H3D_ROOT}/../External/${LIB}
+                      ../../External/${LIB}
+                      ${module_file_path}/../../../External/${LIB}
                 DOC "Path to js32 library." )
 ELSE(WIN32)
   FIND_LIBRARY( SPIDERMONKEY_LIBRARY NAMES mozjs

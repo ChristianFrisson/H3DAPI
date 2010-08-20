@@ -12,6 +12,12 @@ ELSE(H3DCURL_FIND_REQUIRED)
   FIND_PACKAGE(CURL)
 ENDIF(H3DCURL_FIND_REQUIRED)
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 IF( WIN32 )
 IF(NOT CURL_FOUND OR PREFER_STATIC_LIBRARIES)
   GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
@@ -25,18 +31,18 @@ IF(NOT CURL_FOUND OR PREFER_STATIC_LIBRARIES)
   
   # Look for the library.
   FIND_LIBRARY( CURL_LIBRARY NAMES libcurl
-                PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                      $ENV{H3D_ROOT}/../External/lib
-                      ../../External/lib
-                      ${module_file_path}/../../../External/lib
+                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+                      $ENV{H3D_ROOT}/../External/${LIB}
+                      ../../External/${LIB}
+                      ${module_file_path}/../../../External/${LIB}
                 DOC "Path to libcurl library." )
 
   IF( PREFER_STATIC_LIBRARIES )
     FIND_LIBRARY( CURL_STATIC_LIBRARY NAMES libcurl_static
-                                            PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                            $ENV{H3D_ROOT}/../External/lib
-                                            ../../External/lib
-                                            ${module_file_path}/../../../External/lib
+                                            PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                            $ENV{H3D_ROOT}/../External/${LIB}/static
+                                            ../../External/${LIB}/static
+                                            ${module_file_path}/../../../External/${LIB}/static
                                       DOC "Path to libcurl static library." )
     MARK_AS_ADVANCED(CURL_STATIC_LIBRARY)
   ENDIF( PREFER_STATIC_LIBRARIES )

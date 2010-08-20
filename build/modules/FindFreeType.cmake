@@ -10,6 +10,12 @@ FIND_PROGRAM(FREETYPE_CONFIG_EXECUTABLE freetype-config
       DOC "Path to freetype_config executable. Used to find freetype, not used on a standard Windows installation of H3DAPI.")
 MARK_AS_ADVANCED( FREETYPE_CONFIG_EXECUTABLE )
 
+IF( CMAKE_CL_64 )
+  SET( LIB "lib64" )
+ELSE( CMAKE_CL_64 )
+  SET( LIB "lib32" )
+ENDIF( CMAKE_CL_64 )
+
 IF(FREETYPE_CONFIG_EXECUTABLE)
 
   # run the freetype-config program to get cflags
@@ -63,11 +69,11 @@ IF( NOT FREETYPE_INCLUDE_DIR )
 ENDIF( NOT FREETYPE_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype2311 freetype235
-                              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                    $ENV{H3D_ROOT}/../External/lib
-                                    ../../External/lib
-                                    ${module_file_path}/../../../External/lib
+FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype2311 freetype2312 freetype235
+                              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                                    ../../External/${LIB}/static
+                                    ${module_file_path}/../../../External/${LIB}/static
                               DOC "Path to freetype library." )
 MARK_AS_ADVANCED(FREETYPE_LIBRARY)
 
