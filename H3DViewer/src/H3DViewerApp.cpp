@@ -169,6 +169,11 @@ bool MyApp::OnInit()
 
     SetVendorName(_T("SenseGraphics AB"));
     wxString tmp_string = H3DVIEWER_APP_NAME;
+#ifdef H3D_WIN64
+    tmp_string += wxT("(x64)");
+#else
+    tmp_string += wxT("(x86)");
+#endif 
 #ifndef H3DVIEWER_STANDALONE
     tmp_string += wxT("(dev)");
 #endif
@@ -176,7 +181,7 @@ bool MyApp::OnInit()
     tmp_string += wxT("(debug)");
 #endif
     SetAppName( tmp_string );
-
+	
     Console.setShowLevel( false );
 
 #ifdef H3DAPI_LIB
@@ -187,7 +192,7 @@ bool MyApp::OnInit()
     char argvd[32][256] = { '\0' };
     static char *(argv[32]);
     for( int idx = 0 ; idx < wxApp::argc ; idx++ ){
-      strncpy(argvd[idx],wxString(wxApp::argv[idx]).mb_str(wxConvUTF8),255);
+	  wxString s = wxString(wxApp::argv[idx]).mb_str(wxConvUTF8);
       argv[idx] = argvd[idx];
     }
     PythonScript::setargv( wxApp::argc, argv );
@@ -199,7 +204,7 @@ bool MyApp::OnInit()
     
     theWxFrame->Show(true);
     
-    if( cmd_line_filename != wxString() ) {
+	if( !cmd_line_filename.IsEmpty() ) {
       theWxFrame->clearData();
       theWxFrame->loadFile(toStr(cmd_line_filename));
     }

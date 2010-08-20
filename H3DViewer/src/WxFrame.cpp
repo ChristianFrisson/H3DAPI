@@ -113,9 +113,7 @@ void onDropFiles( wxCoord x, wxCoord y,
 #endif
 
 /*******************Global Constants*********************/
-static const wxChar *TITLE     = wxT("H3DViewer 2.1");
-static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2009.\n"
-                                    "All Rights Reserved.");
+static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2009.\nAll Rights Reserved.");
 static const wxChar *ABOUT     = wxT("About");
 static const wxChar *FILETYPES = wxT( "x3d or vrml 2.0 files|*.x3d;*.x3dv;*.wrl|All files|*.*"
                                    );
@@ -1364,7 +1362,7 @@ void WxFrame::OnChooseDir(wxCommandEvent & event) {
 
 //About dialog
 void WxFrame::OnAbout(wxCommandEvent & event)
-{ wxString t = TITLE;
+{ wxString t = wxTheApp->GetAppName();
 
   t.append( AUTHOR );
   
@@ -2437,8 +2435,7 @@ void WxFrame::buildNavMenu () {
     FindItemByPosition( navigationMenu->GetMenuItemCount() - 1 )->
       Check( avatar_collision );
   navigationMenu->Append( FRAME_SPEED, wxT("Speed"),
-                 wxT("Adjust navigation speed."
-                     "+ to increase, - to decrease." ));
+                 wxT("Adjust navigation speed. + to increase, - to decrease." ));
 
   navigationMenu->AppendSeparator();
   if( !navigationDevices ) {
