@@ -310,7 +310,7 @@ int main(int argc, char* argv[]) {
   stringstream str;
   str << H3DAPI_MAJOR_VERSION << "." << H3DAPI_MINOR_VERSION << "." << H3DAPI_BUILD_VERSION;
 
- #ifdef H3D_WIN64
+#ifdef H3D_ARCH64
   str << " x64";
 #else
   str << " x86";

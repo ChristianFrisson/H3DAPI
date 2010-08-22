@@ -169,7 +169,7 @@ bool MyApp::OnInit()
 
     SetVendorName(_T("SenseGraphics AB"));
     wxString tmp_string = H3DVIEWER_APP_NAME;
-#ifdef H3D_WIN64
+#ifdef H3D_ARCH64
     tmp_string += wxT("(x64)");
 #else
     tmp_string += wxT("(x86)");
