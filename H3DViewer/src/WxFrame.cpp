@@ -1277,7 +1277,7 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
                              GetCurrentPath(),
                              wxT(""),
                              FILETYPES,
-                             wxOPEN,
+                             wxFD_OPEN,
                              wxDefaultPosition) );
 
   //Open an X3D file

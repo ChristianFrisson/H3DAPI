@@ -87,7 +87,7 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 const wxCmdLineEntryDesc gCmdLineDesc[] = 
   {
-    { wxCMD_LINE_PARAM, NULL, NULL, wxT("File to load"), wxCMD_LINE_VAL_STRING,
+    { wxCMD_LINE_PARAM, NULL, NULL, "File to load", wxCMD_LINE_VAL_STRING,
       wxCMD_LINE_PARAM_OPTIONAL }, 
     { wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, 0} };
 
@@ -192,7 +192,7 @@ bool MyApp::OnInit()
     char argvd[32][256] = { '\0' };
     static char *(argv[32]);
     for( int idx = 0 ; idx < wxApp::argc ; idx++ ){
-	  wxString s = wxString(wxApp::argv[idx]).mb_str(wxConvUTF8);
+      strncpy(argvd[idx],wxString(wxApp::argv[idx]).mb_str(wxConvUTF8),255);
       argv[idx] = argvd[idx];
     }
     PythonScript::setargv( wxApp::argc, argv );

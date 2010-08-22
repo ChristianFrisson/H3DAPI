@@ -439,9 +439,9 @@ void WxWidgetsWindow::MyWxGLCanvas::OnKeyDown(wxKeyEvent& event)
       break;
     case WXK_END: myOwner->onKeyDown( X3DKeyDeviceSensorNode::END, true );
       break;
-    case WXK_PRIOR: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGUP, true );
+    case WXK_PAGEUP: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGUP, true );
       break;
-    case WXK_NEXT: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGDN, true );
+    case WXK_PAGEDOWN: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGDN, true );
       break;
     case WXK_UP: myOwner->onKeyDown( X3DKeyDeviceSensorNode::UP, true ); break;
     case WXK_DOWN: myOwner->onKeyDown( X3DKeyDeviceSensorNode::DOWN, true );
@@ -479,9 +479,9 @@ void WxWidgetsWindow::MyWxGLCanvas::OnKeyUp(wxKeyEvent& event)
       break;
     case WXK_END: myOwner->onKeyUp( X3DKeyDeviceSensorNode::END, true );
       break;
-    case WXK_PRIOR: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGUP, true );
+    case WXK_PAGEUP: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGUP, true );
       break;
-    case WXK_NEXT: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGDN, true );
+    case WXK_PAGEDOWN: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGDN, true );
       break;
     case WXK_UP: myOwner->onKeyUp( X3DKeyDeviceSensorNode::UP, true ); break;
     case WXK_DOWN: myOwner->onKeyUp( X3DKeyDeviceSensorNode::DOWN, true );

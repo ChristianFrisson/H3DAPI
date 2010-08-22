@@ -494,7 +494,7 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveX3D( wxCommandEvent& event ) {
                                                    wxT(""),
                                                    wxT(""),
                                                    wxT("*.*"),
-                                                   wxSAVE,
+                                                   wxFD_SAVE,
                                                    wxDefaultPosition) );
 
     if (file_dialog->ShowModal() == wxID_OK) {
@@ -535,7 +535,7 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveVRML( wxCommandEvent& event ) {
                                                    wxT(""),
                                                    wxT(""),
                                                    wxT("*.*"),
-                                                   wxSAVE,
+                                                   wxFD_SAVE,
                                                    wxDefaultPosition) );
 
     if (file_dialog->ShowModal() == wxID_OK) {
@@ -588,7 +588,7 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveSTL( wxCommandEvent& event ) {
                                                    wxT(""),
                                                    wxT(""),
                                                    wxT("*.*"),
-                                                   wxSAVE,
+                                                   wxFD_SAVE,
                                                    wxDefaultPosition) );
 
     if (file_dialog->ShowModal() == wxID_OK) {
@@ -819,7 +819,7 @@ void H3DViewerTreeViewDialog::OnTreeViewSaveTrianglesX3D( wxCommandEvent& event 
                                                    wxT(""),
                                                    wxT(""),
                                                    wxT("*.*"),
-                                                   wxSAVE,
+                                                   wxFD_SAVE,
                                                    wxDefaultPosition) ;
 
     if (file_dialog->ShowModal() == wxID_OK) {

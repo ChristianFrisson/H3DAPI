@@ -155,7 +155,7 @@ void H3DViewerPluginsDialog::OnAddPluginButton( wxCommandEvent& event ) {
                                                               wxT("*.so"),
 #endif 
 #endif
-                                                              wxOPEN,
+                                                              wxFD_OPEN,
                                                               wxDefaultPosition) );
   if (openFileDialog->ShowModal() == wxID_OK) {
     wxString file = openFileDialog->GetPath();
