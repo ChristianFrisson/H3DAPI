@@ -70,7 +70,14 @@ namespace H3D {
       
       // destructor
       ~PythonAutoRef() throw(){
+        bool was_allowed = PythonScript::mainThreadPythonAllowed();
+        PythonScript::allowMainThreadPython();
+
         if( ap ) Py_DECREF( ap );
+	
+        // restore previous state
+        if( !was_allowed) 
+          PythonScript::disallowMainThreadPython();
       }
 
       // value access
@@ -86,10 +93,14 @@ namespace H3D {
 
       // reset value
       void reset (PyObject* ptr=0) throw(){
+        bool was_allowed = PythonScript::mainThreadPythonAllowed();
+        PythonScript::allowMainThreadPython();
         if (ap != ptr){
           if( ap ) Py_DECREF( ap );
           ap = ptr;
         }
+        if( !was_allowed )
+        PythonScript::disallowMainThreadPython();
       }
     };
 

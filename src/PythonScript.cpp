@@ -94,6 +94,10 @@ H3DNodeDatabase PythonScript::database(
 namespace PythonScriptInternals {
   FIELDDB_ELEMENT( PythonScript, references, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( PythonScript, moduleName, INITIALIZE_ONLY );
+
+  // The saved thread state when disallowMainThreadPython is called.
+  // Will be restored upon allowMainThreadPyton call.
+  PyThreadState *main_python_thread_state = NULL;
 }
 
 void PythonScript::setargv( int _argc, char *_argv[] ) {
@@ -101,6 +105,25 @@ void PythonScript::setargv( int _argc, char *_argv[] ) {
   argv = _argv;
 }
 
+
+void PythonScript::allowMainThreadPython() {
+  using namespace PythonScriptInternals;
+  if( main_python_thread_state ) {
+    PyEval_RestoreThread( main_python_thread_state );
+    main_python_thread_state = NULL;
+  }
+}
+
+bool PythonScript::mainThreadPythonAllowed() {
+  return PythonScriptInternals::main_python_thread_state == NULL;
+}
+
+void PythonScript::disallowMainThreadPython() {
+  using namespace PythonScriptInternals;
+  if( !main_python_thread_state ) {
+    main_python_thread_state = PyEval_SaveThread();
+  }
+}
 
 Field *PythonScript::lookupField( const string &name ) {
   if( module_dict ) {
@@ -141,10 +164,15 @@ PythonScript::PythonScript( Inst< MFString > _url,
     if( argv )
       PySys_SetArgv(argc,argv);
   }
+
+  allowMainThreadPython();
   initialiseParser();
+
+  disallowMainThreadPython();
 }
 
 PythonScript::~PythonScript() {
+  allowMainThreadPython();
   if( module_dict ) {
     // Setting module_dict to null just to be on the safe side. It should not
     // really be needed.
@@ -160,6 +188,7 @@ PythonScript::~PythonScript() {
                  << " from the sys.modules database. " << endl;
     }
   }
+  disallowMainThreadPython();
 }
 
 void PythonScript::initialiseParser() {
@@ -168,6 +197,7 @@ void PythonScript::initialiseParser() {
 }
 
 void PythonScript::loadScript( const string &script ) {
+  allowMainThreadPython();
   PyObject *ref = (PyObject*)PythonInternals::fieldAsPythonObject( references.get(), false );
   PyDict_SetItem( (PyObject *)module_dict, 
                   PyString_FromString( "references" ), 
@@ -230,12 +260,15 @@ void PythonScript::loadScript( const string &script ) {
   else {
     Console(4) << "Could not open \""<< script << endl;
   }
+
+  disallowMainThreadPython();
 }
 
 
 // Traverse the scenegraph. Used in PythonScript to call a function
 // in python once per scene graph loop.
 void PythonScript::traverseSG( TraverseInfo &ti ) {
+  allowMainThreadPython();
   PyObject *func = 
     PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
                           "traverseSG" );
@@ -249,10 +282,11 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
 
     Py_DECREF( args );
   } 
+  disallowMainThreadPython();
 }
 
 void PythonScript::initialize() {
-
+  allowMainThreadPython();
   H3DScriptNode::initialize();
 
   module_name = moduleName->getValue();
@@ -311,6 +345,10 @@ void PythonScript::initialize() {
     }
     Console(4) << "] could be found. " << endl;
   }
+
+  // allow other python threads to run while the H3D main python script
+  // waits for events from fields or run traverseSG function.
+  disallowMainThreadPython();
 }
 
 #endif // HAVE_PYTHON

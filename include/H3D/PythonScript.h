@@ -110,6 +110,38 @@ namespace H3D {
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// Allow python code to run in the main thread. This must be called before
+    /// any calls to python functions from the main thread. 
+    ///
+    /// The reason for this is to be able to start and run other Python 
+    /// threads from within the script. Python handles tread safety by 
+    /// only allowing one python thread to execute at any one time. It
+    /// lets on thread run for a certain number of instructions then switch
+    /// to the next thread for the same number of instructions and so on.
+    /// The problem is that the main python script in H3D most of the time
+    /// does not execute anything. Things only happen on events by fields 
+    /// and in the traverseSG function which causes the other python threads
+    /// to lock up since the main thread never executes the number of 
+    /// instructions required to move on to the next thread. In order to 
+    /// let these other threads run when the main python thread does nothing
+    /// we encapsulate all python code that is executed in main thread 
+    /// within allowMainThreadPython/disallowMainThreadPython calls. 
+    /// After disallowMainThreadPython is called all other python threads 
+    /// can run without waiting for the main thread. However this means that
+    /// we must call allowMainThreadPython before any python code that
+    /// runs in the main thread or the program will crash.
+    static void allowMainThreadPython();
+
+    /// Don't allow python code to run in the main thread, instead letting
+    /// other python threads run without disruptions(see allowMainThreadPython 
+    /// for more info).
+    static void disallowMainThreadPython();
+
+    /// Returns true if python code is allowed to run in main thread at the 
+    /// moment.
+    static bool mainThreadPythonAllowed();
+
   private:
     void * module;
     void * module_dict;

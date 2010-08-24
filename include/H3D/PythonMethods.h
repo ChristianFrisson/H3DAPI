@@ -33,6 +33,8 @@
 #include <H3D/X3DTypes.h>
 #include <H3D/X3DFieldConversion.h>
 #include <H3D/X3DTypeFunctions.h>
+#include <H3D/PythonScript.h>
+
 
 #ifdef HAVE_PYTHON
 #if defined(_MSC_VER)
@@ -183,6 +185,7 @@ namespace H3D {
     }
 
     virtual void update() {
+      PythonScript::allowMainThreadPython();
       if( have_update ) {
         PyObject *python_update = PyObject_GetAttrString(
           static_cast< PyObject * >(python_field), "update" );
@@ -216,6 +219,7 @@ namespace H3D {
       } else {
         F::update();
       }
+      PythonScript::disallowMainThreadPython();
     }
     
     /// Function for checking that a field is of a correct type 
