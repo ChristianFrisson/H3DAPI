@@ -51,7 +51,7 @@
 
 #include <H3DUtil/Console.h>
 
-#include "ConsoleDialog.h"
+#include "WxConsoleDialog.h"
 #include "H3DViewerTreeViewDialog.h"
 #include "H3DViewerPluginsDialog.h"
 #include "H3DViewerConfig.h"
@@ -406,7 +406,7 @@ public:
 
 
 
-  ConsoleDialog * the_console;
+  WxConsoleDialog * the_console;
   H3DViewerTreeViewDialog * tree_view_dialog;
   H3DViewerPluginsDialog * plugins_dialog;
   FrameRateDialog *  frameRates;

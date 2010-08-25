@@ -17,10 +17,10 @@ SET(H3DViewer_BUILD_VERSION "1")
 SET( H3DVIEWER_APP_NAME "H3DViewer ${H3DViewer_MAJOR_VERSION}.${H3DViewer_MINOR_VERSION}.${H3DViewer_BUILD_VERSION}" )
 
 # Source files.
-SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/ConsoleDialog.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/ConsoleDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
+SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerApp.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.h"
                     "${H3DViewer_SOURCE_DIR}/../src/WxFrame.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/WxFrame.h"
                     "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"

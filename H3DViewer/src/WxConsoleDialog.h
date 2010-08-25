@@ -21,15 +21,15 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file ConsoleDialog.h
-/// \brief Header file for ConsoleDialog.
+/// \file WxConsoleDialog.h
+/// \brief Header file for WxConsoleDialog.
 ///
 //
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __CONSOLEDIALOG__
-#define __CONSOLEDIALOG__
+#ifndef __WXCONSOLEDIALOG__
+#define __WXCONSOLEDIALOG__
 
 // ---------------------------------------------------------------------------
 //  Console Dialog Class
@@ -39,11 +39,13 @@
 #include <memory>
 #include <H3DUtil/Threads.h>
 
-class ConsoleDialog: public wxDialog
+/// This class provides a wxDialog with the output from H3DUtil
+/// Console messages.
+class WxConsoleDialog: public wxDialog
 {
 public:
   /// Constructor
-  ConsoleDialog ( wxWindow *parent,
+  WxConsoleDialog ( wxWindow *parent,
           wxWindowID id,
           const wxString &title,
           const wxPoint& pos = wxDefaultPosition,
@@ -52,7 +54,7 @@ public:
           );
 
   /// Destructor.
-  ~ConsoleDialog();
+  ~WxConsoleDialog();
 
   /// wx interface.
   wxTextCtrl *logText;

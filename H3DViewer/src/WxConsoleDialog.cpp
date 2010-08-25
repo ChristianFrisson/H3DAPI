@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file ConsoleDialog.cpp
-/// \brief CPP file for ConsoleDialog.
+/// \file WxConsoleDialog.cpp
+/// \brief CPP file for WxConsoleDialog.
 ///
 //
 //
@@ -32,12 +32,12 @@
 //  Includes
 // ---------------------------------------------------------------------------
 
-#include "ConsoleDialog.h"
+#include "WxConsoleDialog.h"
 #include <H3DUtil/Console.h>
 
 using namespace std;
 
-std::streamsize ConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s, 
+std::streamsize WxConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s, 
 							  std::streamsize n ) {
   // output to wxTextCtrl directly if in main wx thread, otherwise
   // save to temporary wxString.
@@ -52,7 +52,7 @@ std::streamsize ConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s,
   return n;
 }
 
-ConsoleDialog::ConsoleDialog ( wxWindow *parent,
+WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
                  wxWindowID id,
                  const wxString &title,
                  const wxPoint& pos,
@@ -108,7 +108,7 @@ ConsoleDialog::ConsoleDialog ( wxWindow *parent,
   H3DUtil::Console.setOutputStream( *console_stream );
 }
 
-ConsoleDialog::~ConsoleDialog() {
+WxConsoleDialog::~WxConsoleDialog() {
   // The contained buffer is not deleted, set a new buffer and delete
   // buffer to clear up memory.
   streambuf * tmp_buf = console_stream->rdbuf(NULL);
@@ -117,22 +117,22 @@ ConsoleDialog::~ConsoleDialog() {
 }
 
 /*******************Event Table*********************/
-BEGIN_EVENT_TABLE(ConsoleDialog, wxDialog)
-  EVT_BUTTON (wxID_CLOSE, ConsoleDialog::OnConsoleClose)
-  EVT_BUTTON (wxID_CLEAR, ConsoleDialog::OnConsoleClear)
-  EVT_IDLE (ConsoleDialog::OnIdle)
+BEGIN_EVENT_TABLE(WxConsoleDialog, wxDialog)
+  EVT_BUTTON (wxID_CLOSE, WxConsoleDialog::OnConsoleClose)
+  EVT_BUTTON (wxID_CLEAR, WxConsoleDialog::OnConsoleClear)
+  EVT_IDLE (WxConsoleDialog::OnIdle)
 END_EVENT_TABLE()
 
 /*******************Member Functions*********************/
-void ConsoleDialog::OnConsoleClose(wxCommandEvent &event) {
+void WxConsoleDialog::OnConsoleClose(wxCommandEvent &event) {
   Close(TRUE);
 }
 
-void ConsoleDialog::OnConsoleClear(wxCommandEvent &event) {
-  ConsoleDialog::logText->Clear();
+void WxConsoleDialog::OnConsoleClear(wxCommandEvent &event) {
+  WxConsoleDialog::logText->Clear();
 }
 
-void ConsoleDialog::OnIdle(wxIdleEvent &event) {
+void WxConsoleDialog::OnIdle(wxIdleEvent &event) {
   wxString output;
 
   // transfer text output to console from other threads than

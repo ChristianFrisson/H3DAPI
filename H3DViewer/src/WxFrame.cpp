@@ -189,7 +189,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   scene->window->push_back( glwindow );
   
   wxString console_string = wxT("Console");
-  the_console = new ConsoleDialog( this, wxID_ANY, console_string,
+  the_console = new WxConsoleDialog( this, wxID_ANY, console_string,
                                    wxDefaultPosition, wxDefaultSize,
                                    wxDEFAULT_DIALOG_STYLE );
   tree_view_dialog = new H3DViewerTreeViewDialog( this ); 
