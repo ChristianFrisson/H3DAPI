@@ -165,13 +165,17 @@ PythonScript::PythonScript( Inst< MFString > _url,
       PySys_SetArgv(argc,argv);
   }
 
+  bool was_allowed = mainThreadPythonAllowed();
   allowMainThreadPython();
+
   initialiseParser();
 
-  disallowMainThreadPython();
+  if( !was_allowed )
+    disallowMainThreadPython();
 }
 
 PythonScript::~PythonScript() {
+  bool was_allowed = mainThreadPythonAllowed();
   allowMainThreadPython();
   if( module_dict ) {
     // Setting module_dict to null just to be on the safe side. It should not
@@ -188,7 +192,9 @@ PythonScript::~PythonScript() {
                  << " from the sys.modules database. " << endl;
     }
   }
-  disallowMainThreadPython();
+
+  if( !was_allowed )
+    disallowMainThreadPython();
 }
 
 void PythonScript::initialiseParser() {
@@ -197,6 +203,7 @@ void PythonScript::initialiseParser() {
 }
 
 void PythonScript::loadScript( const string &script ) {
+  bool was_allowed = mainThreadPythonAllowed();
   allowMainThreadPython();
   PyObject *ref = (PyObject*)PythonInternals::fieldAsPythonObject( references.get(), false );
   PyDict_SetItem( (PyObject *)module_dict, 
@@ -261,13 +268,15 @@ void PythonScript::loadScript( const string &script ) {
     Console(4) << "Could not open \""<< script << endl;
   }
 
-  disallowMainThreadPython();
+  if( !was_allowed )
+    disallowMainThreadPython();
 }
 
 
 // Traverse the scenegraph. Used in PythonScript to call a function
 // in python once per scene graph loop.
 void PythonScript::traverseSG( TraverseInfo &ti ) {
+  bool was_allowed = mainThreadPythonAllowed();
   allowMainThreadPython();
   PyObject *func = 
     PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
@@ -282,10 +291,12 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
 
     Py_DECREF( args );
   } 
-  disallowMainThreadPython();
+  if( !was_allowed )
+    disallowMainThreadPython();
 }
 
 void PythonScript::initialize() {
+  bool was_allowed = mainThreadPythonAllowed();
   allowMainThreadPython();
   H3DScriptNode::initialize();
 
@@ -348,7 +359,8 @@ void PythonScript::initialize() {
 
   // allow other python threads to run while the H3D main python script
   // waits for events from fields or run traverseSG function.
-  disallowMainThreadPython();
+  if( !was_allowed )
+    disallowMainThreadPython();
 }
 
 #endif // HAVE_PYTHON

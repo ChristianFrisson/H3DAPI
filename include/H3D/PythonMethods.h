@@ -185,6 +185,7 @@ namespace H3D {
     }
 
     virtual void update() {
+      bool was_allowed = PythonScript::mainThreadPythonAllowed();
       PythonScript::allowMainThreadPython();
       if( have_update ) {
         PyObject *python_update = PyObject_GetAttrString(
@@ -219,7 +220,8 @@ namespace H3D {
       } else {
         F::update();
       }
-      PythonScript::disallowMainThreadPython();
+      if( !was_allowed )
+        PythonScript::disallowMainThreadPython();
     }
     
     /// Function for checking that a field is of a correct type 
