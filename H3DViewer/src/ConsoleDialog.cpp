@@ -37,50 +37,20 @@
 
 using namespace std;
 
-// ---------------------------------------------------------------------------
-//  Implementation
-// ---------------------------------------------------------------------------
-
-/*******************Constructor*********************/
-
-class ConsoleStreamBuf: public streambuf {
-public:
-  ConsoleStreamBuf( wxTextCtrl *text ):
-    text_ctrl( text ) {}
-
-  int overflow( int c ) {
-    text_ctrl->AppendText((wxChar)c);
-
-    // return something different from EOF
-    return 0;
+std::streamsize ConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s, 
+							  std::streamsize n ) {
+  // output to wxTextCtrl directly if in main wx thread, otherwise
+  // save to temporary wxString.
+  if( wxIsMainThread() ) {
+    text_ctrl->AppendText( wxString(s) );
+  } else {
+    text_lock.lock();
+    other_threads_text.Append( wxString( s ) );
+    text_lock.unlock();
   }
-
-  wxTextCtrl *text_ctrl;
-};
-
-
-void wxLockGUI( void *data ) {
-  if( !wxIsMainThread() ) {
-    // using the wxMutexGuiEnter function "works", but output is incredibly
-    // slow if called from another thread than the main thread. So we 
-    // make sure every output is done in the main thread instead by
-    // switching the output stream temporarily to a stringstream
-    // and then later output the contents of the stringstream
-    // to the output stream.
-    //wxMutexGuiEnter();
-    ConsoleDialog *dialog =  static_cast< ConsoleDialog * >( data );
-    H3DUtil::Console.setOutputStream( dialog->other_thread_output );
-  }
-} 
-
-void wxUnlockGUI( void *data ) {
-  if( !wxIsMainThread() ) {
-    ConsoleDialog *dialog =  static_cast< ConsoleDialog * >( data );
-    H3DUtil::Console.setOutputStream( *dialog->console_stream );
-    //    wxMutexGuiLeave();
-  }
+  
+  return n;
 }
-
 
 ConsoleDialog::ConsoleDialog ( wxWindow *parent,
                  wxWindowID id,
@@ -133,10 +103,9 @@ ConsoleDialog::ConsoleDialog ( wxWindow *parent,
   topsizer->SetSizeHints( this );   // set size hints to honour minimum size
   
   // redirect the console to logText wxTextCtrl.
-  console_stream.reset( new ostream(new ConsoleStreamBuf( logText) ) );
+  console_stream_buf = new ConsoleStreamBuf( logText );
+  console_stream.reset( new ostream( console_stream_buf ) );
   H3DUtil::Console.setOutputStream( *console_stream );
-  H3DUtil::Console.setLockMutexFunction( wxLockGUI, this );
-  H3DUtil::Console.setUnlockMutexFunction( wxUnlockGUI, this );
 }
 
 ConsoleDialog::~ConsoleDialog() {
@@ -164,9 +133,19 @@ void ConsoleDialog::OnConsoleClear(wxCommandEvent &event) {
 }
 
 void ConsoleDialog::OnIdle(wxIdleEvent &event) {
-  if( other_thread_output.str().size() > 0 ) {
-    H3DUtil::Console.getOutputStream() << other_thread_output.str();
-    H3DUtil::Console.getOutputStream().flush();
-    other_thread_output.str( "" );
+  wxString output;
+
+  // transfer text output to console from other threads than
+  // main thread to the output variable and reset the console.
+  console_stream_buf->text_lock.lock();
+  if( !console_stream_buf->other_threads_text.IsEmpty() ) {
+    output.Alloc( 1000 );
+    output.swap( console_stream_buf->other_threads_text );
+  }
+  console_stream_buf->text_lock.unlock();
+
+  // Send available text to wxTextCtrl.
+  if( !output.IsEmpty() ) {
+    logText->AppendText( output );
   }
 }
