@@ -163,6 +163,7 @@ PythonScript::PythonScript( Inst< MFString > _url,
     Py_Initialize();  
     if( argv )
       PySys_SetArgv(argc,argv);
+    disallowMainThreadPython();
   }
 
   bool was_allowed = mainThreadPythonAllowed();
