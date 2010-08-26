@@ -145,7 +145,7 @@ class Terrain:
           self.heightmap[i][j] = self.waterlevel
 
   # GenerateCoords():
-  # Generates a list of vertices foro an IndexedTriangleSet.
+  # Generates a list of vertices for an IndexedTriangleSet.
   def GenerateCoords( self ):
     points=[]
     stepx = self.sizex/self.size

@@ -30,7 +30,7 @@
       </Shape>
     </Transform>
     
-    <!-- Same coordindates with different coordIndex -->
+    <!-- Same coordinates with different coordIndex -->
     <Transform translation='0.15 0.1 0' >
       <Shape>
         <IndexedLineSet

@@ -1,6 +1,5 @@
-
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -31,6 +30,8 @@
 
 #include <H3D/IndexedTriangleFanSet.h>
 #include <H3D/Normal.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -69,7 +70,9 @@ IndexedTriangleFanSet::IndexedTriangleFanSet(
                            _solid, _attrib, _fogCoord ),
   autoNormal( _autoNormal ),
   set_index( _set_index ),
-  index( _index ) {
+  index( _index ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "IndexedTriangleFanSet";
   database.initFields( this );
@@ -86,6 +89,17 @@ IndexedTriangleFanSet::IndexedTriangleFanSet(
   ccw->route( autoNormal );
 
   coord->route( bound );
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
+  index->route( vboFieldsUpToDate );
+}
+
+IndexedTriangleFanSet::~IndexedTriangleFanSet() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 void IndexedTriangleFanSet::render() {
@@ -163,49 +177,137 @@ void IndexedTriangleFanSet::render() {
     }
 
     if( normalPerVertex->getValue() ) {
-      // if normal per vertex we can use arrays to render the geometry
-      // they all use the same indices.
-      coordinate_node->renderArray();
-      normal_node->renderArray();
-      if( color_node ) color_node->renderArray();
-      if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
-      if( fog_coord_node ) fog_coord_node->renderArray();
-      // Set up shader vertex attributes.
-      for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
-        X3DVertexAttributeNode *attr = 
-          attrib->getValueByIndex( attrib_index );
-        if( attr ) attr->renderArray();
+      // if normal per vertex we can use arrays or vertex buffer objects
+      // to render the geometry, they all use the same indices.
+
+      bool prefer_vertex_buffer_object = false;
+      if( GLEW_ARB_vertex_buffer_object ) {
+        GraphicsCachingOptions * gco = NULL;
+        getOptionNode( gco );
+        if( !gco ) {
+          GlobalSettings * gs = GlobalSettings::getActive();
+          if( gs ) {
+            gs->getOptionNode( gco );
+          }
+        }
+        if( gco ) {
+          prefer_vertex_buffer_object =
+            gco->preferVertexBufferObject->getValue();
+        }
       }
 
-      // the index in indices for the start of the current triangle strip.
-      unsigned int start_pos = 0;
- 
-      // draw each triangle strip from the arrays 
-      for( unsigned int i = 0; i < indices.size(); i++ ) {
-        // increase i to the end of the triangle fan
-        for( ; i < indices.size() && indices[i] != -1; i++ );
+      if( prefer_vertex_buffer_object ) {
 
-        // render the triangle fan
-        glDrawElements( GL_TRIANGLE_FAN, 
-                        i - start_pos, 
-                        GL_UNSIGNED_INT,
-                        &(*(indices.begin())) + start_pos );
-        start_pos = i + 1;
+        coordinate_node->renderVertexBufferObject();
+        normal_node->renderVertexBufferObject();
+        if( color_node ) color_node->renderVertexBufferObject();
+        if( tex_coords_per_vertex )
+          renderTexCoordVertexBufferObject( tex_coord_node );
+        if( fog_coord_node ) fog_coord_node->renderVertexBufferObject();
+        // Set up shader vertex attributes.
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderVertexBufferObject();
+        }
+
+        if( !vboFieldsUpToDate->isUpToDate() ) {
+          // Only transfer data when it has been modified.
+          vboFieldsUpToDate->upToDate();
+          vector< GLuint > tmp_indices;
+          tmp_indices.reserve( indices.size() );
+          nr_index_per_fan.clear();
+          // increase i to the end of the triangle fan
+          for( unsigned int i = 0; i < indices.size(); i++ ) {
+            unsigned int old_i = i;
+            for( ; i < indices.size() && indices[i] != -1; i++ )
+              tmp_indices.push_back( indices[i] );
+            if( i - old_i > 0 ) {
+              nr_index_per_fan.push_back( i - old_i );
+            }
+          }
+          if( !vbo_id ) {
+            vbo_id = new GLuint;
+            glGenBuffersARB( 1, vbo_id );
+          }
+          glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, *vbo_id );
+          glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+                           tmp_indices.size() * sizeof(GLuint),
+                           &(*(tmp_indices.begin()) ), GL_STATIC_DRAW_ARB );
+        } else {
+          glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, *vbo_id );
+        }
+
+        // the index in indices for the start of the current triangle strip.
+        GLsizei start_pos = 0;
+        // draw each triangle strip from the arrays 
+        for( unsigned int i = 0; i < nr_index_per_fan.size(); i++ ) {
+          // render the triangle fan
+          glDrawElements( GL_TRIANGLE_FAN, 
+                          nr_index_per_fan[i],
+                          GL_UNSIGNED_INT,
+                          (GLvoid*)( start_pos * sizeof( GLuint ) ) );
+          start_pos += nr_index_per_fan[i];
+        }
+
+        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+        coordinate_node->disableVertexBufferObject();
+        normal_node->disableVertexBufferObject();
+        if( color_node ) color_node->disableVertexBufferObject();
+        if( tex_coords_per_vertex )
+          disableTexCoordVertexBufferObject( tex_coord_node );
+        if( fog_coord_node ) fog_coord_node->disableVertexBufferObject();
+        // Set up shader vertex attributes.
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableVertexBufferObject();
+        }
+      } else {
+        coordinate_node->renderArray();
+        normal_node->renderArray();
+        if( color_node ) color_node->renderArray();
+        if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
+        if( fog_coord_node ) fog_coord_node->renderArray();
+        // Set up shader vertex attributes.
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderArray();
+        }
+
+        // the index in indices for the start of the current triangle strip.
+        unsigned int start_pos = 0;
+   
+        // draw each triangle strip from the arrays 
+        for( unsigned int i = 0; i < indices.size(); i++ ) {
+          // increase i to the end of the triangle fan
+          for( ; i < indices.size() && indices[i] != -1; i++ );
+
+          // render the triangle fan
+          glDrawElements( GL_TRIANGLE_FAN, 
+                          i - start_pos, 
+                          GL_UNSIGNED_INT,
+                          &(*(indices.begin())) + start_pos );
+          start_pos = i + 1;
+        }
+        
+        coordinate_node->disableArray();
+        normal_node->disableArray();
+        if( color_node ) color_node->disableArray();
+        if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
+        if( fog_coord_node ) fog_coord_node->disableArray();
+        // Set up shader vertex attributes.
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableArray();
+        }
       }
-      
-      coordinate_node->disableArray();
-      normal_node->disableArray();
-      if( color_node ) color_node->disableArray();
-      if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
-      if( fog_coord_node ) fog_coord_node->disableArray();
-      // Set up shader vertex attributes.
-      for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
-        X3DVertexAttributeNode *attr = 
-          attrib->getValueByIndex( attrib_index );
-        if( attr ) attr->disableArray();
-      }      
     } else {
       // the number of triangles rendered so far in the entire 
       // IndexedTriangleFanSet

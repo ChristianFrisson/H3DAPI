@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,8 @@
 
 #include <H3D/LineSet.h>
 #include <H3D/X3DTextureNode.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -60,7 +62,7 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
   color          ( _color       ),
   coord          ( _coord       ),
   vertexCount    ( _vertexCount ),
-  fogCoord       ( _fogCoord    ){
+  fogCoord       ( _fogCoord    ) {
 
   type_name = "LineSet";
   database.initFields( this );
@@ -108,44 +110,95 @@ void LineSet::render() {
     if( GLEW_EXT_fog_coord && fog_coord_node ) {
       glPushAttrib( GL_FOG_BIT );
       glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
-    }    
+    }
 
-    // index of the current vertex being rendered. It will be incremented
-    // for each vertex that is rendered.
-    unsigned int vertex_counter = 0;
-
-    // render all polylines. Each loop will render one polyline.
-    for( vector< int >::const_iterator  i = vertex_count.begin();
-         i != vertex_count.end(); 
-         i++ ) {
-      // start the polyline rendering.
-      glBegin( GL_LINE_STRIP );
-
-      // Check that the vertex count value is > 2
-      if( (*i) < 2 ) {
-        stringstream s;
-        s << "Must be >= 2 (in \"" 
-          << getName() << "\" node) ";
-        throw InvalidVertexCountValue( *i, s.str(), H3D_FULL_LOCATION );
-      }
-
-      unsigned int stop_index = vertex_counter + (*i);
-
-      // render all vertices for this polyline.
-      for( ; vertex_counter < stop_index; vertex_counter++ ) {
-        // Set up colors if colors are specified per vertex.
-        if( color_node ) {
-          color_node->render( vertex_counter );
-        }
-          
-        // Render the vertices.
-        coordinate_node->render( vertex_counter );
-        if( fog_coord_node){
-          fog_coord_node->render(vertex_counter);
+    bool prefer_vertex_buffer_object = false;
+    if( GLEW_ARB_vertex_buffer_object ) {
+      GraphicsCachingOptions * gco = NULL;
+      getOptionNode( gco );
+      if( !gco ) {
+        GlobalSettings * gs = GlobalSettings::getActive();
+        if( gs ) {
+          gs->getOptionNode( gco );
         }
       }
-      // end GL_POLY_LINE
-      glEnd();
+      if( gco ) {
+        prefer_vertex_buffer_object =
+          gco->preferVertexBufferObject->getValue();
+      }
+    }
+
+    if( prefer_vertex_buffer_object ) {
+      if( fog_coord_node )
+        fog_coord_node->renderVertexBufferObject();
+      if( color_node )
+        color_node->renderVertexBufferObject();
+      if( coordinate_node )
+        coordinate_node->renderVertexBufferObject();
+
+      // index of the current vertex whose index is added. It will be
+      // incremented for each vertex whose index is added.
+      unsigned int vertex_counter = 0;
+      // render all polylines. Each loop will render one polyline.
+      for( vector< int >::const_iterator  i = vertex_count.begin();
+           i != vertex_count.end(); i++ ) {
+        // Check that the vertex count value is > 2
+        if( (*i) < 2 ) {
+          stringstream s;
+          s << "Must be >= 2 (in \"" 
+            << getName() << "\" node) ";
+          throw InvalidVertexCountValue( *i, s.str(), H3D_FULL_LOCATION );
+        }
+
+        glDrawArrays( GL_LINE_STRIP, vertex_counter, (*i) );
+        vertex_counter = vertex_counter + (*i);
+      }
+
+      if( fog_coord_node )
+        fog_coord_node->disableVertexBufferObject();
+      if( color_node )
+        color_node->disableVertexBufferObject();
+      if( coordinate_node )
+        coordinate_node->disableVertexBufferObject();
+    } else {
+
+      // index of the current vertex being rendered. It will be incremented
+      // for each vertex that is rendered.
+      unsigned int vertex_counter = 0;
+
+      // render all polylines. Each loop will render one polyline.
+      for( vector< int >::const_iterator  i = vertex_count.begin();
+           i != vertex_count.end(); 
+           i++ ) {
+        // start the polyline rendering.
+        glBegin( GL_LINE_STRIP );
+
+        // Check that the vertex count value is > 2
+        if( (*i) < 2 ) {
+          stringstream s;
+          s << "Must be >= 2 (in \"" 
+            << getName() << "\" node) ";
+          throw InvalidVertexCountValue( *i, s.str(), H3D_FULL_LOCATION );
+        }
+
+        unsigned int stop_index = vertex_counter + (*i);
+
+        // render all vertices for this polyline.
+        for( ; vertex_counter < stop_index; vertex_counter++ ) {
+          // Set up colors if colors are specified per vertex.
+          if( color_node ) {
+            color_node->render( vertex_counter );
+          }
+            
+          // Render the vertices.
+          coordinate_node->render( vertex_counter );
+          if( fog_coord_node){
+            fog_coord_node->render(vertex_counter);
+          }
+        }
+        // end GL_POLY_LINE
+        glEnd();
+      }
     }
   
     // restore previous fog attributes

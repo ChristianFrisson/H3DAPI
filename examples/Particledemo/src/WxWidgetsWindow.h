@@ -29,10 +29,10 @@
 #ifndef __WXWIDGETSWINDOW_H__
 #define __WXWIDGETSWINDOW_H__
 
-#include "wx/wx.h"
+#include <wx/wx.h>
 #include <H3D/H3DWindowNode.h>
-#include "wx/glcanvas.h"
-
+#include <wx/glcanvas.h>
+#include <wx/dnd.h>
 #if !wxUSE_GLCANVAS
     #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
 #endif
@@ -48,17 +48,36 @@ namespace H3D {
   /// \class WxWidgetsWindow
   /// \brief H3DWindowNode implemented using wxWidgets. 
   /// 
+  /// Valid values for the cursorType field depend on the platform and
+  /// are different on Windows, OSX and Linux. Use cursorType->getValidValues()
+  /// to get the ones supported.
   class WxWidgetsWindow : public H3DWindowNode {
   public:
 
     class MyWxGLCanvas: public wxGLCanvas
     {
     public:
+      MyWxGLCanvas(WxWidgetsWindow *_myOwner, 
+                   wxWindow* _parent,
+                   wxGLContext *shared_context,
+                   wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
+                   int* _attribList = 0, long _style=0, 
+                   const wxString& _name = wxT("MyWxGLCanvas"),
+                   const wxPalette& _palette = wxNullPalette );
+
       MyWxGLCanvas(WxWidgetsWindow *_myOwner, wxWindow* _parent,
                    wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
                    int* _attribList = 0, long _style=0, 
                    const wxString& _name = wxT("MyWxGLCanvas"),
                    const wxPalette& _palette = wxNullPalette );
+
+      // Destructor
+      ~MyWxGLCanvas() {
+        // Set new drop target, which deletes the old one. Needed for memory
+        // cleanup since it seems like wxWidgets does not automatically clean
+        // up the drop target at glCanvas deletion.
+        SetDropTarget( NULL );
+      }
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
       void OnEraseBackground(wxEraseEvent& WXUNUSED(event));
@@ -84,15 +103,23 @@ namespace H3D {
 
     /// Constructor.
     WxWidgetsWindow( wxWindow *_theParent = 0,
-      Inst< SFInt32     > _width      = 0,
-                Inst< SFInt32     > _height     = 0,
-                Inst< SFBool      > _fullscreen = 0,
-                Inst< SFBool      > _mirrored   = 0,
-                Inst< RenderMode  > _renderMode = 0, 
-                Inst< SFViewpoint > _viewpoint  = 0 );
+                     Inst< SFInt32     > _width      = 0,
+                     Inst< SFInt32     > _height     = 0,
+                     Inst< SFBool      > _fullscreen = 0,
+                     Inst< SFBool      > _mirrored   = 0,
+                     Inst< RenderMode  > _renderMode = 0, 
+                     Inst< SFViewpoint > _viewpoint  = 0,
+                     Inst< SFInt32     > _posX       = 0,
+                     Inst< SFInt32     > _posY       = 0,
+                     Inst< SFBool      > _manualCursorControl = 0,
+                     Inst< SFString    > _cursorType = 0 );
 
     ///// Destructor.
-    //~WxWidgetsWindow();
+    ~WxWidgetsWindow() {
+      if( !have_parent ) {
+        theWindow->Destroy();
+      }
+    }
 
     /// Calls wxGLCanvas::SwapBuffers
     virtual void swapBuffers(); 
@@ -112,13 +139,74 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    typedef void (*OnDropFileFunc)( wxCoord x, wxCoord y,
+		      const wxArrayString&,
+		      void * );
+
+    /// Set a callback function that will be called when a file is
+    /// dragged and dropped over the window.
+    void onFileDraggedAndDroppedFunction( OnDropFileFunc func, 
+					  void * arg = NULL ) {
+      drag_file_func = func;
+      drag_file_func_arg = arg;
+    }
+
   protected:
+
+    /// Set the cursor to the given cursor type. See cursorType field
+    /// for valid values. Returns 0 on success. -1 if the cursor_type is 
+    /// not supported.
+    virtual int setCursorType( const std::string & cursor_type );
+
+    /// Return the cursor type to use for given modes. This should
+    /// be implemented for each subclass to choose appropriate cursors.
+    /// The standard modes are:
+    /// "DEFAULT" - normal mode
+    /// "ON_SENSOR_OVER" - when mouse pointer is over a pointing device
+    /// sensor.
+    /// "ON_SENSOR_ACTIVE" - when a sensor node is active
+    /// "ON_NAV_LOOKAT" - when lookat mode is chosen
+    string getCursorForMode( const string &mode );
+
+    /// Adds the supported cursor type for the current platform to the
+    /// given vector.
+    void getSupportedCursorsTypes( vector< string > &types );
+
+
+#if wxUSE_DRAG_AND_DROP
+    
+    class DragAndDropFile : public wxFileDropTarget {
+    public:
+      DragAndDropFile(WxWidgetsWindow *_owner) { owner = _owner; }
+      
+      virtual bool OnDropFiles(wxCoord x, wxCoord y,
+			       const wxArrayString& filenames) {
+	if( owner->drag_file_func ) {
+	  owner->drag_file_func( x, y, filenames, owner->drag_file_func_arg );
+	}
+	return true;
+      }
+    protected:
+      WxWidgetsWindow *owner;
+    };
+#endif
+
+    friend class DragAndDropFile;
+    OnDropFileFunc drag_file_func;
+    void *drag_file_func_arg;
+
+    bool use_h3d_settings;
+    bool is_initialized;
+    bool have_parent;
     wxWindow * theWindow;
     MyWxGLCanvas * theWxGLCanvas;
 #ifdef USE_EXPLICIT_GLCONTEXT
     wxGLContext * theWxGLContext;
 #endif
 	bool last_fullscreen;
+
+  private:
+      string viewpoint_file;
   };
 }
 

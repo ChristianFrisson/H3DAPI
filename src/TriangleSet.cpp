@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,8 @@
 
 #include <H3D/TriangleSet.h>
 #include <H3D/Normal.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -144,36 +146,85 @@ void TriangleSet::render() {
         }
       }
     }
-    
+
+    bool prefer_vertex_buffer_object = false;
+    if( GLEW_ARB_vertex_buffer_object ) {
+      GraphicsCachingOptions * gco = NULL;
+      getOptionNode( gco );
+      if( !gco ) {
+        GlobalSettings * gs = GlobalSettings::getActive();
+        if( gs ) {
+          gs->getOptionNode( gco );
+        }
+      }
+      if( gco ) {
+        prefer_vertex_buffer_object =
+          gco->preferVertexBufferObject->getValue();
+      }
+    }
+
     unsigned int nr_triangles = coordinate_node->nrAvailableCoords() / 3;
 
-    // use arrays to render the geometry
-    coordinate_node->renderArray();
-    normal_node->renderArray();
-    if( fog_coord_node) fog_coord_node->renderArray();
-    if( color_node ) color_node->renderArray();
-    if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
-    // Set up shader vertex attributes.
-    for( unsigned int attrib_index = 0;
-         attrib_index < attrib->size(); attrib_index++ ) {
-      X3DVertexAttributeNode *attr = 
-        attrib->getValueByIndex( attrib_index );
-      if( attr ) attr->renderArray();
-    }
-    glDrawArrays( GL_TRIANGLES, 
-                  0,
-                  3*nr_triangles );
-    
-    coordinate_node->disableArray();
-    normal_node->disableArray();
-    if( color_node ) color_node->disableArray();
-    if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
-    if( fog_coord_node) fog_coord_node->disableArray();
-    for( unsigned int attrib_index = 0;
-         attrib_index < attrib->size(); attrib_index++ ) {
-      X3DVertexAttributeNode *attr = 
-        attrib->getValueByIndex( attrib_index );
-      if( attr ) attr->disableArray();
+    if( prefer_vertex_buffer_object ) {
+      // use vertex buffer objects to render the geometry
+      coordinate_node->renderVertexBufferObject();
+      normal_node->renderVertexBufferObject();
+      if( fog_coord_node) fog_coord_node->renderVertexBufferObject();
+      if( color_node ) color_node->renderVertexBufferObject();
+      if( tex_coords_per_vertex )
+        renderTexCoordVertexBufferObject( tex_coord_node );
+      // Set up shader vertex attributes.
+      for( unsigned int attrib_index = 0;
+           attrib_index < attrib->size(); attrib_index++ ) {
+        X3DVertexAttributeNode *attr = 
+          attrib->getValueByIndex( attrib_index );
+        if( attr ) attr->renderVertexBufferObject();
+      }
+      glDrawArrays( GL_TRIANGLES, 
+                    0,
+                    3*nr_triangles );
+      
+      coordinate_node->disableVertexBufferObject();
+      normal_node->disableVertexBufferObject();
+      if( color_node ) color_node->disableVertexBufferObject();
+      if( tex_coords_per_vertex )
+        disableTexCoordVertexBufferObject( tex_coord_node );
+      if( fog_coord_node) fog_coord_node->disableVertexBufferObject();
+      for( unsigned int attrib_index = 0;
+           attrib_index < attrib->size(); attrib_index++ ) {
+        X3DVertexAttributeNode *attr = 
+          attrib->getValueByIndex( attrib_index );
+        if( attr ) attr->disableVertexBufferObject();
+      }
+    } else {
+      // use arrays to render the geometry
+      coordinate_node->renderArray();
+      normal_node->renderArray();
+      if( fog_coord_node) fog_coord_node->renderArray();
+      if( color_node ) color_node->renderArray();
+      if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
+      // Set up shader vertex attributes.
+      for( unsigned int attrib_index = 0;
+           attrib_index < attrib->size(); attrib_index++ ) {
+        X3DVertexAttributeNode *attr = 
+          attrib->getValueByIndex( attrib_index );
+        if( attr ) attr->renderArray();
+      }
+      glDrawArrays( GL_TRIANGLES, 
+                    0,
+                    3*nr_triangles );
+      
+      coordinate_node->disableArray();
+      normal_node->disableArray();
+      if( color_node ) color_node->disableArray();
+      if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
+      if( fog_coord_node) fog_coord_node->disableArray();
+      for( unsigned int attrib_index = 0;
+           attrib_index < attrib->size(); attrib_index++ ) {
+        X3DVertexAttributeNode *attr = 
+          attrib->getValueByIndex( attrib_index );
+        if( attr ) attr->disableArray();
+      }
     }
 
     // restore previous fog attributes

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -48,10 +48,19 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile Polypoint2D.dot
-  
   class H3DAPI_API Polypoint2D : 
     public X3DGeometryNode {
   public:
+
+    /// Display list is extended in order to set color to emissive
+    /// color from material outside of display list, since we have to
+    /// do a glGet to get the value. If we have it inside, the display
+    /// list will not be rebuilt and the color not change.
+    class H3DAPI_API DisplayList: public X3DGeometryNode::DisplayList {
+    public:
+      /// Set the color of the lineset outside display list.
+      virtual void callList( bool build_list = true );
+    };
 
     /// SFBound is specialized update itself from the point field 
     /// of the Polypoint2D node.
@@ -79,7 +88,9 @@ namespace H3D {
                  Inst< MFVec3f     > _contactPoint = 0,
                  Inst< MFVec3f     > _contactNormal = 0,
                  Inst< MFVec2f     > _point = 0 );
-   
+
+    ~Polypoint2D();
+
     /// Renders the Polypoint2D using OpenGL.
     virtual void render();
 
@@ -97,6 +108,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -86,7 +86,9 @@ namespace H3D {
                    Inst< MFVec3f     > _contactNormal = 0,
                    Inst< MFVec2f     > _vertices = 0,
                    Inst< SFBool      > _solid = 0 );
-   
+
+    ~TriangleSet2D();
+
     /// Renders the TriangleSet2D using OpenGL.
     virtual void render();
 
@@ -119,6 +121,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    // Internal field used to know if vertex buffer object can be created.
+    auto_ptr< Field > vboFieldsUpToDate;
+    // The index for the vertex buffer object
+    GLuint *vbo_id;
   };
 }
 

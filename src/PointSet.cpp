@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,8 @@
 
 #include <H3D/PointSet.h>
 #include <H3D/X3DTextureNode.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -99,9 +101,7 @@ void PointSet::render() {
     // disable texturing
     X3DTextureNode *texture = X3DTextureNode::getActiveTexture();
     if( texture ) texture->disableTexturing();
-    
-    // If color field is NULL, we use the emissive Color from the current material
-    // as color.
+
     if( color_node ) {
       // make sure we have enough colors
       if( coordinate_node->nrAvailableCoords() > color_node->nrAvailableColors() ) {
@@ -120,24 +120,58 @@ void PointSet::render() {
       glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
     }
 
-    // render the points
-    glBegin( GL_POINTS );
-    for( unsigned int i = 0; i < coordinate_node->nrAvailableCoords(); i++ ) {
-      // Set up colors if colors are specified per vertex.
-      if( color_node ) {
-        color_node->render( i );
+    bool prefer_vertex_buffer_object = false;
+    if( GLEW_ARB_vertex_buffer_object ) {
+      GraphicsCachingOptions * gco = NULL;
+      getOptionNode( gco );
+      if( !gco ) {
+        GlobalSettings * gs = GlobalSettings::getActive();
+        if( gs ) {
+          gs->getOptionNode( gco );
+        }
       }
-      // Render the vertices.
-      coordinate_node->render( i );
-       if( fog_coord_node) fog_coord_node->render(i);
+      if( gco ) {
+        prefer_vertex_buffer_object =
+          gco->preferVertexBufferObject->getValue();
+      }
     }
-    // end GL_POLY_LINE
-    glEnd();
-    
+
+    if( prefer_vertex_buffer_object ) {
+      if( fog_coord_node )
+        fog_coord_node->renderVertexBufferObject();
+      if( color_node )
+        color_node->renderVertexBufferObject();
+      if( coordinate_node )
+        coordinate_node->renderVertexBufferObject();
+
+      glDrawArrays( GL_POINTS, 0, coordinate_node->nrAvailableCoords() );
+
+      if( fog_coord_node )
+        fog_coord_node->disableVertexBufferObject();
+      if( color_node )
+        color_node->disableVertexBufferObject();
+      if( coordinate_node )
+        coordinate_node->disableVertexBufferObject();
+    } else {
+      // render the points
+      glBegin( GL_POINTS );
+      for( unsigned int i = 0; i < coordinate_node->nrAvailableCoords(); i++ ) {
+        // Set up colors if colors are specified per vertex.
+        if( color_node ) {
+          color_node->render( i );
+        }
+        // Render the vertices.
+        coordinate_node->render( i );
+         if( fog_coord_node) fog_coord_node->render(i);
+      }
+      // end GL_POLY_LINE
+      glEnd();
+    }
+
     // restore previous fog attributes
     if( GLEW_EXT_fog_coord && fog_coord_node ) {
       glPopAttrib();
-    }  
+    }
 
     // reenable lighting if it was enabled before
     if( lighting_enabled )

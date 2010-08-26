@@ -229,7 +229,7 @@ namespace H3D {
     /// \dotfile Sound_maxFront.dot
     auto_ptr< SFFloat >  maxFront;
 
-    /// The minBack field specifies the back value of the outer ellipsoid. 
+    /// The minBack field specifies the back value of the inner ellipsoid. 
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
@@ -237,7 +237,7 @@ namespace H3D {
     /// \dotfile Sound_minBack.dot
     auto_ptr< SFFloat >  minBack;
 
-    /// The minFront field specifies the front value of the outer ellipsoid. 
+    /// The minFront field specifies the front value of the inner ellipsoid. 
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n

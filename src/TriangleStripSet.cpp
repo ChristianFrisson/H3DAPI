@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,8 @@
 
 #include <H3D/TriangleStripSet.h>
 #include <H3D/Normal.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -158,53 +160,122 @@ void TriangleStripSet::render() {
     }
 
     if( normalPerVertex->getValue() ) {
-      // if normal per vertex we can use arrays to render the geometry
-      // they all use the same indices.
-      coordinate_node->renderArray();
-      normal_node->renderArray();
-      if( color_node ) color_node->renderArray();
-      if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
-      if( fog_coord_node) fog_coord_node->renderArray();
-      for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
-        X3DVertexAttributeNode *attr = 
-          attrib->getValueByIndex( attrib_index );
-        if( attr ) attr->renderArray();
+      bool prefer_vertex_buffer_object = false;
+      if( GLEW_ARB_vertex_buffer_object ) {
+        GraphicsCachingOptions * gco = NULL;
+        getOptionNode( gco );
+        if( !gco ) {
+          GlobalSettings * gs = GlobalSettings::getActive();
+          if( gs ) {
+            gs->getOptionNode( gco );
+          }
+        }
+        if( gco ) {
+          prefer_vertex_buffer_object =
+            gco->preferVertexBufferObject->getValue();
+        }
       }
 
-      // the index in indices for the start of the current triangle strip.
-      unsigned int start_pos = 0;
- 
-      // draw each triangle strip from the arrays 
-      for( vector<int>::const_iterator sc = strip_count.begin();
-           sc != strip_count.end();
-           sc++ ) {      
-
-        // check that strip count value >=3
-        if( (*sc) < 3 ) {
-          stringstream s;
-          s << "Must be >=3 in \"" 
-            << getName() << "\" node. ";
-          throw InvalidStripCount( *sc, s.str(), H3D_FULL_LOCATION );
+      if( prefer_vertex_buffer_object ) {
+        // if normal per vertex we can use arrays to render the geometry
+        // they all use the same indices.
+        coordinate_node->renderVertexBufferObject();
+        normal_node->renderVertexBufferObject();
+        if( color_node ) color_node->renderVertexBufferObject();
+        if( tex_coords_per_vertex )
+          renderTexCoordVertexBufferObject( tex_coord_node );
+        if( fog_coord_node) fog_coord_node->renderVertexBufferObject();
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderVertexBufferObject();
         }
 
-        // render the triangle strip
-        glDrawArrays( GL_TRIANGLE_STRIP, 
-                      start_pos, 
-                      *sc );
-        start_pos += *sc;
-      }
-      
-      coordinate_node->disableArray();
-      normal_node->disableArray();
-      if( color_node ) color_node->disableArray();
-      if( tex_coords_per_vertex) disableTexCoordArray( tex_coord_node );
-      if( fog_coord_node) fog_coord_node->disableArray();
-      for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
-        X3DVertexAttributeNode *attr = 
-          attrib->getValueByIndex( attrib_index );
-        if( attr ) attr->disableArray();
+        // the index in indices for the start of the current triangle strip.
+        unsigned int start_pos = 0;
+   
+        // draw each triangle strip from the arrays 
+        for( vector<int>::const_iterator sc = strip_count.begin();
+             sc != strip_count.end();
+             sc++ ) {
+
+          // check that strip count value >=3
+          if( (*sc) < 3 ) {
+            stringstream s;
+            s << "Must be >=3 in \"" 
+              << getName() << "\" node. ";
+            throw InvalidStripCount( *sc, s.str(), H3D_FULL_LOCATION );
+          }
+
+          // render the triangle strip
+          glDrawArrays( GL_TRIANGLE_STRIP, 
+                        start_pos, 
+                        *sc );
+          start_pos += *sc;
+        }
+        
+        coordinate_node->disableVertexBufferObject();
+        normal_node->disableVertexBufferObject();
+        if( color_node ) color_node->disableVertexBufferObject();
+        if( tex_coords_per_vertex)
+          disableTexCoordVertexBufferObject( tex_coord_node );
+        if( fog_coord_node) fog_coord_node->disableVertexBufferObject();
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableVertexBufferObject();
+        }
+      } else {
+        // if normal per vertex we can use arrays to render the geometry
+        // they all use the same indices.
+        coordinate_node->renderArray();
+        normal_node->renderArray();
+        if( color_node ) color_node->renderArray();
+        if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
+        if( fog_coord_node) fog_coord_node->renderArray();
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderArray();
+        }
+
+        // the index in indices for the start of the current triangle strip.
+        unsigned int start_pos = 0;
+   
+        // draw each triangle strip from the arrays 
+        for( vector<int>::const_iterator sc = strip_count.begin();
+             sc != strip_count.end();
+             sc++ ) {      
+
+          // check that strip count value >=3
+          if( (*sc) < 3 ) {
+            stringstream s;
+            s << "Must be >=3 in \"" 
+              << getName() << "\" node. ";
+            throw InvalidStripCount( *sc, s.str(), H3D_FULL_LOCATION );
+          }
+
+          // render the triangle strip
+          glDrawArrays( GL_TRIANGLE_STRIP, 
+                        start_pos, 
+                        *sc );
+          start_pos += *sc;
+        }
+        
+        coordinate_node->disableArray();
+        normal_node->disableArray();
+        if( color_node ) color_node->disableArray();
+        if( tex_coords_per_vertex) disableTexCoordArray( tex_coord_node );
+        if( fog_coord_node) fog_coord_node->disableArray();
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); attrib_index++ ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableArray();
+        }
       }
     } else {
       // the number of triangles rendered so far in the entire 

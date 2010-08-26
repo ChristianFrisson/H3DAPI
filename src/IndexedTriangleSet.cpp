@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -103,7 +103,7 @@ IndexedTriangleSet::IndexedTriangleSet(
   coord->route( autoTangent );
   index->route( autoTangent );
   texCoord->route( autoTangent );
-  
+
   coord->route( bound );
 
   vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
@@ -216,23 +216,23 @@ void IndexedTriangleSet::render() {
       }
     }
 
-    bool prefer_vertex_buffer_object = false;
-    if( GLEW_ARB_vertex_buffer_object ) {
-      GraphicsCachingOptions * gco = NULL;
-      getOptionNode( gco );
-      if( !gco ) {
-        GlobalSettings * gs = GlobalSettings::getActive();
-        if( gs ) {
-          gs->getOptionNode( gco );
-        }
-      }
-      if( gco ) {
-        prefer_vertex_buffer_object =
-          gco->preferVertexBufferObject->getValue();
-      }
-    }
     unsigned int nr_triangles = (unsigned int) indices.size() / 3;
     if( normalPerVertex->getValue() ) {
+      bool prefer_vertex_buffer_object = false;
+      if( GLEW_ARB_vertex_buffer_object ) {
+        GraphicsCachingOptions * gco = NULL;
+        getOptionNode( gco );
+        if( !gco ) {
+          GlobalSettings * gs = GlobalSettings::getActive();
+          if( gs ) {
+            gs->getOptionNode( gco );
+          }
+        }
+        if( gco ) {
+          prefer_vertex_buffer_object =
+            gco->preferVertexBufferObject->getValue();
+        }
+      }
       // if normal per vertex we can use arrays or vertex buffer objects
       // to render the geometry, they all use the same indices.
       if( prefer_vertex_buffer_object ) {

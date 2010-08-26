@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,6 +29,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/Polyline2D.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -53,24 +55,98 @@ Polyline2D::Polyline2D( Inst< SFNode      > _metadata,
                         Inst< MFVec2f     > _lineSegments ):
   X3DGeometryNode( _metadata, _bound, _displayList, _isTouched,
                    _force, _contactPoint, _contactNormal ),
-  lineSegments( _lineSegments ) {
+  lineSegments( _lineSegments ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "Polyline2D";
   database.initFields( this );
 
   lineSegments->route( bound );
   lineSegments->route( displayList );
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
+  lineSegments->route( vboFieldsUpToDate );
+}
+
+Polyline2D::~Polyline2D() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
+}
+
+void Polyline2D::DisplayList::callList( bool build_list ) {
+  Polyline2D *arc = 
+   static_cast< Polyline2D * >( owner );
+
+  float v[4];
+  glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
+  glColor3f( v[0], v[1], v[2] );
+
+  X3DGeometryNode::DisplayList::callList( build_list );
 }
 
 void Polyline2D::render() {
-  // render the points
-  glBegin( GL_LINE_STRIP );
-  for( MFVec2f::const_iterator i = lineSegments->begin(); i!=lineSegments->end(); i++ ) {
-    // Render the vertices.
-    glVertex3f( (*i).x, (*i).y, 0.f );
+  // Save the old state of GL_LIGHTING 
+  GLboolean lighting_enabled;
+  glGetBooleanv( GL_LIGHTING, &lighting_enabled );
+  glDisable( GL_LIGHTING );
+
+  bool prefer_vertex_buffer_object = false;
+  if( GLEW_ARB_vertex_buffer_object ) {
+    GraphicsCachingOptions * gco = NULL;
+    getOptionNode( gco );
+    if( !gco ) {
+      GlobalSettings * gs = GlobalSettings::getActive();
+      if( gs ) {
+        gs->getOptionNode( gco );
+      }
+    }
+    if( gco ) {
+      prefer_vertex_buffer_object = gco->preferVertexBufferObject->getValue();
+    }
   }
-  // end GL_POINTS
-  glEnd();
+
+  if( prefer_vertex_buffer_object ) {
+    // Use vertex buffer objects to create sphere.
+    if( !vboFieldsUpToDate->isUpToDate() ) {
+      vboFieldsUpToDate->upToDate();
+      if( !vbo_id ) {
+        vbo_id = new GLuint;
+        glGenBuffersARB( 1, vbo_id );
+      }
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                       lineSegments->size() * 2 * sizeof(GLfloat),
+                       &(*lineSegments->begin()), GL_STATIC_DRAW_ARB );
+    } else {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id);
+    }
+
+    // Enable all states for vertex buffer objects.
+    // Note that the data is interleaved since this supposedly should be
+    // faster on some systems.
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, NULL );
+    glDrawArrays( GL_LINE_STRIP, 0, lineSegments->size() );
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+  } else {
+    // render the lines
+    glBegin( GL_LINE_STRIP );
+    for( MFVec2f::const_iterator i = lineSegments->begin();
+         i != lineSegments->end(); i++ ) {
+      // Render the vertices.
+      glVertex3f( (*i).x, (*i).y, 0.f );
+    }
+    // end GL_POINTS
+    glEnd();
+  }
+  // reenable lighting if it was enabled before
+  if( lighting_enabled )
+    glEnable( GL_LIGHTING );
 }
 
 

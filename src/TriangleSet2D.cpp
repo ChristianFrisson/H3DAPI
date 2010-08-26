@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,8 @@
 
 #include <H3D/TriangleSet2D.h>
 #include <H3D/MultiTexture.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -57,7 +59,9 @@ TriangleSet2D::TriangleSet2D( Inst< SFNode      > _metadata,
   X3DGeometryNode( _metadata, _bound, _displayList, _isTouched,
                    _force, _contactPoint, _contactNormal ),
   vertices( _vertices ),
-  solid( _solid ) {
+  solid( _solid ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "TriangleSet2D";
   database.initFields( this );
@@ -67,6 +71,18 @@ TriangleSet2D::TriangleSet2D( Inst< SFNode      > _metadata,
   vertices->route( bound );
   vertices->route( displayList );
   solid->route( displayList );
+
+  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
+  vertices->route( vboFieldsUpToDate );
+}
+
+TriangleSet2D::~TriangleSet2D() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 void TriangleSet2D::render() {
@@ -103,14 +119,55 @@ void TriangleSet2D::render() {
     }
   }
 
-  glBegin( GL_TRIANGLES );
-  glNormal3f( 0.f, 0.f, 1.f );
-  for( unsigned int i = 0; i < v.size(); i+=3 ) {
-    glVertex2f( v[i].x, v[i].y );
-    glVertex2f( v[i+1].x, v[i+1].y );
-    glVertex2f( v[i+2].x, v[i+2].y );
+  bool prefer_vertex_buffer_object = false;
+  if( GLEW_ARB_vertex_buffer_object ) {
+    GraphicsCachingOptions * gco = NULL;
+    getOptionNode( gco );
+    if( !gco ) {
+      GlobalSettings * gs = GlobalSettings::getActive();
+      if( gs ) {
+        gs->getOptionNode( gco );
+      }
+    }
+    if( gco ) {
+      prefer_vertex_buffer_object = gco->preferVertexBufferObject->getValue();
+    }
   }
-  glEnd();
+
+  if( prefer_vertex_buffer_object ) {
+    // Use vertex buffer objects to create sphere.
+    if( !vboFieldsUpToDate->isUpToDate() ) {
+      vboFieldsUpToDate->upToDate();
+      if( !vbo_id ) {
+        vbo_id = new GLuint;
+        glGenBuffersARB( 1, vbo_id );
+      }
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
+                       v.size() * 2 * sizeof(GLfloat),
+                       &(*v.begin()), GL_STATIC_DRAW_ARB );
+    } else {
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id);
+    }
+
+    // Enable all states for vertex buffer objects.
+    // Note that the data is interleaved since this supposedly should be
+    // faster on some systems.
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, NULL );
+    glDrawArrays( GL_TRIANGLES, 0, v.size() );
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+  } else {
+    glBegin( GL_TRIANGLES );
+    glNormal3f( 0.f, 0.f, 1.f );
+    for( unsigned int i = 0; i < v.size(); i+=3 ) {
+      glVertex2f( v[i].x, v[i].y );
+      glVertex2f( v[i+1].x, v[i+1].y );
+      glVertex2f( v[i+2].x, v[i+2].y );
+    }
+    glEnd();
+  }
 
   if( bb && mt ) {
     size_t texture_units = mt->texture->size();

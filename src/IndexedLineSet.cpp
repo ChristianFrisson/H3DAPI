@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,8 @@
 
 #include <H3D/IndexedLineSet.h>
 #include <H3D/X3DTextureNode.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsCachingOptions.h>
 
 using namespace H3D;
 
@@ -69,7 +71,9 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
   colorIndex     ( _colorIndex     ),
   colorPerVertex ( _colorPerVertex ),
   coordIndex     ( _coordIndex     ),
-  fogCoord       ( _fogCoord       ){
+  fogCoord       ( _fogCoord       ),
+  vboFieldsUpToDate( new Field ),
+  vbo_id( NULL ) {
 
   type_name = "IndexedLineSet";
   database.initFields( this );
@@ -87,6 +91,16 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
   set_coordIndex->route( coordIndex, id );
 
   coord->route( bound );
+  coordIndex->route( vboFieldsUpToDate );
+}
+
+IndexedLineSet::~IndexedLineSet() {
+  // Delete buffer if it was allocated.
+  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+    glDeleteBuffersARB( 1, vbo_id );
+    delete vbo_id;
+    vbo_id = NULL;
+  }
 }
 
 void IndexedLineSet::DisplayList::callList( bool build_list ) {
@@ -114,8 +128,9 @@ void IndexedLineSet::render() {
 
   if( coordinate_node ) {
 
+    bool color_per_vertex = colorPerVertex->getValue();
     // Check that we have enough color indices if colorPerVertex.
-    if( color_node && colorPerVertex->getValue() &&
+    if( color_node && color_per_vertex &&
         color_index.size() > 0 && color_index.size() < coord_index.size() ) {
       stringstream s;
       s << "Must contain at least as many elements as coordIndex (" 
@@ -140,67 +155,162 @@ void IndexedLineSet::render() {
       glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
     }
 
-    // index of the current polyline being rendered. It will be incremented
-    // for each polyline that is rendered.
-    unsigned int line_count = 0;
+    bool prefer_vertex_buffer_object = false;
+    if( GLEW_ARB_vertex_buffer_object ) {
+      GraphicsCachingOptions * gco = NULL;
+      getOptionNode( gco );
+      if( !gco ) {
+        GlobalSettings * gs = GlobalSettings::getActive();
+        if( gs ) {
+          gs->getOptionNode( gco );
+        }
+      }
+      if( gco ) {
+        prefer_vertex_buffer_object =
+          gco->preferVertexBufferObject->getValue();
+      }
+    }
 
-    // render all polylines. Each loop will render one polyline.
-    for( unsigned int i = 0; i < coord_index.size();
-         i++ ) {
-      // start the polyline rendering.
-      glBegin( GL_LINE_STRIP );
-    
-      // set up colors if the colors are specified per polyline
-      if( color_node && !colorPerVertex->getValue() ) {
-        int ci;
-        if ( color_index.size() == 0 ) {
-          ci = line_count;
-        } else {
-          if( line_count < color_index.size() )
-            ci = color_index[ line_count ];
-          else {
-            stringstream s;
-            s << "Must contain at least as many elements as polylines in \"" 
-              << getName() << "\" node. ";
-            throw InvalidColorIndexSize( (int) color_index.size(), s.str(), H3D_FULL_LOCATION );
+    if( prefer_vertex_buffer_object && ( !color_node ||
+      ( color_per_vertex && color_index.empty() ) ) ) {
+      // Use vertex buffer objects to create IndexedLineSet.
+      // Note that we need to create the index field properly.
+      if( !vboFieldsUpToDate->isUpToDate() ) {
+        vboFieldsUpToDate->upToDate();
+        vector< GLuint > tmp_coord_index;
+        tmp_coord_index.reserve( coord_index.size() );
+        nr_index.clear();
+
+        for( unsigned int i = 0; i < coord_index.size(); i++ ) {
+          // render all vertices for this polyline.
+          GLsizei tmp_i = i;
+          GLsizei lowest;
+          GLsizei highest;
+          for(; i < coord_index.size() && coord_index[i] != -1; i++ ) {
+            H3DInt32 index = coord_index[i];
+            if( i == tmp_i ) {
+              lowest = index;
+              highest = index;
+            } else {
+              if( index < lowest )
+                lowest = index;
+              else if( index > highest )
+                highest = index;
+            }
+
+            tmp_coord_index.push_back( index );
+          }
+          if( i - tmp_i > 0 ) {
+            pair< GLsizei, pair< GLsizei, GLsizei > > tmp_info;
+            tmp_info.first = i - tmp_i;
+            tmp_info.second.first = lowest;
+            tmp_info.second.second = highest;
+            nr_index.push_back( tmp_info );
           }
         }
-        color_node->render( ci );
+
+        if( !vbo_id ) {
+          vbo_id = new GLuint;
+          glGenBuffersARB( 1, vbo_id );
+        }
+        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, *vbo_id );
+        glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB,
+                         tmp_coord_index.size() * sizeof(GLuint),
+                         &(*(tmp_coord_index.begin())), GL_STATIC_DRAW_ARB );
+      } else {
+        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, *vbo_id );
       }
 
-      // render all vertices for this polyline.
-      for(; i < coord_index.size() && coord_index[i] != -1;  i ++ ) {
-        // Set up colors if colors are specified per vertex.
-        if( color_node && colorPerVertex->getValue() ) {
+      if( fog_coord_node )
+        fog_coord_node->renderVertexBufferObject();
+      if( color_node )
+        color_node->renderVertexBufferObject();
+      if( coordinate_node )
+        coordinate_node->renderVertexBufferObject();
+
+      GLsizei offset = 0;
+      for( unsigned int i = 0; i < nr_index.size(); i++ ) {
+        const pair< GLsizei, pair< GLsizei, GLsizei > > &item = nr_index[i];
+        // Draw the triangles
+        glDrawRangeElements( GL_LINE_STRIP,
+                             item.second.first,
+                             item.second.second,
+                             item.first,
+                             GL_UNSIGNED_INT,
+                             (GLvoid*)( offset * sizeof( GLuint ) ) );
+        offset += item.first;
+      }
+
+      if( fog_coord_node )
+        fog_coord_node->disableVertexBufferObject();
+      if( color_node )
+        color_node->disableVertexBufferObject();
+      if( coordinate_node )
+        coordinate_node->disableVertexBufferObject();
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+    } else {
+      // index of the current polyline being rendered. It will be incremented
+      // for each polyline that is rendered.
+      unsigned int line_count = 0;
+
+      // render all polylines. Each loop will render one polyline.
+      for( unsigned int i = 0; i < coord_index.size();
+           i++ ) {
+        // start the polyline rendering.
+        glBegin( GL_LINE_STRIP );
+      
+        // set up colors if the colors are specified per polyline
+        if( color_node && !color_per_vertex ) {
           int ci;
           if ( color_index.size() == 0 ) {
-            ci = coord_index[ i ];
+            ci = line_count;
           } else {
-            ci = color_index[ i ];
+            if( line_count < color_index.size() )
+              ci = color_index[ line_count ];
+            else {
+              stringstream s;
+              s << "Must contain at least as many elements as polylines in \"" 
+                << getName() << "\" node. ";
+              throw InvalidColorIndexSize( (int) color_index.size(), s.str(), H3D_FULL_LOCATION );
+            }
+          }
+          color_node->render( ci );
+        }
+
+        // render all vertices for this polyline.
+        for(; i < coord_index.size() && coord_index[i] != -1;  i ++ ) {
+          // Set up colors if colors are specified per vertex.
+          if( color_node && color_per_vertex ) {
+            int ci;
+            if ( color_index.size() == 0 ) {
+              ci = coord_index[ i ];
+            } else {
+              ci = color_index[ i ];
+            }
+          
+            if( ci == -1 ) {
+              stringstream s;
+              s << "-1 mismatch between coord_index and color_index in \"" 
+                << getName() << "\" node. Must be of equal length and have -1 in "
+                << "the same places. ";
+              throw InvalidColorIndex( ci, s.str(), H3D_FULL_LOCATION );
+            } else {
+              color_node->render( ci );
+            }
           }
         
-          if( ci == -1 ) {
-            stringstream s;
-            s << "-1 mismatch between coord_index and color_index in \"" 
-              << getName() << "\" node. Must be of equal length and have -1 in "
-              << "the same places. ";
-            throw InvalidColorIndex( ci, s.str(), H3D_FULL_LOCATION );
-          } else {
-            color_node->render( ci );
+          // Render the vertices.
+          coordinate_node->render( coord_index[ i ] );
+          if( fog_coord_node ){
+            fog_coord_node->render(coord_index[ i ]);
           }
-        }
-      
-        // Render the vertices.
-        coordinate_node->render( coord_index[ i ] );
-        if( fog_coord_node ){
-          fog_coord_node->render(coord_index[ i ]);
-        }
 
+        }
+        // end GL_LINE_STRIP
+        glEnd();
+
+        line_count++;
       }
-      // end GL_POLY_LINE
-      glEnd();
-
-      line_count++;
     }
 
     // restore previous fog attributes

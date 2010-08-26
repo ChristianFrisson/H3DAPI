@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "WxWidgetsWindow.h"
+
 #ifndef WIN32
 #include <H3D/X3DKeyDeviceSensorNode.h>
 #include <H3D/MouseSensor.h>
@@ -42,19 +43,46 @@ H3DNodeDatabase WxWidgetsWindow::database( "WxWidgetsWindow",
                                       typeid( WxWidgetsWindow ),
                                       &(H3DWindowNode::database) );
 
+
 WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
-                                       Inst< SFInt32     > _width,
-                        Inst< SFInt32     > _height,
-                        Inst< SFBool      > _fullscreen,
-                        Inst< SFBool      > _mirrored,
-                        Inst< RenderMode  > _renderMode, 
-                        Inst< SFViewpoint > _viewpoint ) :
+                                  Inst< SFInt32     > _width,
+                                  Inst< SFInt32     > _height,
+                                  Inst< SFBool      > _fullscreen,
+                                  Inst< SFBool      > _mirrored,
+                                  Inst< RenderMode  > _renderMode, 
+                                  Inst< SFViewpoint > _viewpoint,
+                                  Inst< SFInt32     > _posX,
+                                  Inst< SFInt32     > _posY,
+                                  Inst< SFBool      > _manualCursorControl,
+                                  Inst< SFString    > _cursorType ) :
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
-                 _viewpoint ),
-  theWindow( _theParent ){
+                 _viewpoint, _posX, _posY, _manualCursorControl,
+                 _cursorType ),
+  theWindow( _theParent ),
+  drag_file_func( NULL ),
+  drag_file_func_arg( NULL ),
+  is_initialized( false ),
+  use_h3d_settings( true ),
+  theWxGLCanvas( NULL ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
   
+  have_parent = theWindow != NULL;
+
+  vector< string > valid_values;
+  getSupportedCursorsTypes( valid_values );
+  cursorType->addValidValues( valid_values.begin(), valid_values.end() );
+ 
+  if( !theWindow ) {
+     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"),
+                              wxPoint( posX->getValue(), posY->getValue() ),
+                              wxSize( width->getValue(), height->getValue() ));
+  }
+}
+
+void WxWidgetsWindow::initWindow() {
+  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
+
   int attribList[8];
   attribList[0] = WX_GL_RGBA;
   attribList[1] = WX_GL_DOUBLEBUFFER;
@@ -68,18 +96,31 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   // TODO: stereo mode does not work with mac
   attribList[6] = 0;
 #else
-  //  attribList[6] = WX_GL_STEREO;
+  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
+    attribList[6] = WX_GL_STEREO;
   attribList[7] = 0;
 #endif
- 
-  if( !theWindow ) {
-     theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"),
-                              wxDefaultPosition,
-                              wxSize( width->getValue(), height->getValue() ));
-  }
+  // if we have a previous window, use same rendering context and destroy it.
+  MyWxGLCanvas *old_canvas = theWxGLCanvas;
 
-  theWxGLCanvas = new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
-              wxSize( width->getValue(), height->getValue() ), attribList );
+  if( old_canvas ) {
+    theWxGLCanvas = 
+      new MyWxGLCanvas( this,  theWindow, 
+                        old_canvas->GetContext(), -1, wxDefaultPosition,
+                        wxSize( width->getValue(), height->getValue() ), 
+                        attribList );
+    old_canvas->Destroy();
+  } else {
+    theWxGLCanvas = 
+      new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
+                        wxSize( width->getValue(), height->getValue() ), 
+                        attribList );
+  }
+  
+#if wxUSE_DRAG_AND_DROP
+  theWxGLCanvas->SetDropTarget( new DragAndDropFile( this ) );
+#endif
+
 #ifdef USE_EXPLICIT_GLCONTEXT
   theWxGLContext = new wxGLContext( theWxGLCanvas );
 #endif
@@ -89,15 +130,19 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
     tmp_sizer->Add( theWxGLCanvas, 1, wxEXPAND );
     theWindow->Layout();
   }
-#ifdef WIN32
-  hWnd = (HWND)(theWxGLCanvas->GetHandle());
-  if( hWnd )
-    wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
-                          GWL_WNDPROC, (LONG_PTR) WindowProc);
-#endif
-}
 
-void WxWidgetsWindow::initWindow() {
+
+#ifdef H3D_WINDOWS
+  hWnd = (HWND)(theWxGLCanvas->GetHandle());
+#ifdef H3D_WIN64
+  wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                GWLP_WNDPROC, (LONG_PTR) WindowProc);
+#else
+  wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
+                GWL_WNDPROC, (LONG_PTR) WindowProc);
+#endif
+#endif
+
   last_fullscreen = !fullscreen->getValue();
   theWindow->Show();
   theWxGLCanvas->Show();
@@ -109,6 +154,7 @@ void WxWidgetsWindow::initWindow() {
   glClearColor( 0, 0, 0, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClear( GL_COLOR_BUFFER_BIT );
+  is_initialized = true;
 }
 
 void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
@@ -180,7 +226,44 @@ myOwner( _myOwner )
 {
 }
 
+WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
+                                             wxWindow* _parent,
+                                             wxGLContext *context,
+                                             wxWindowID _id,
+                                             const wxPoint& _pos,
+                                             const wxSize& _size,
+                                             int* _attribList,
+                                             long _style, 
+                                             const wxString& _name,
+                                             const wxPalette& _palette ):
+#ifdef USE_EXPLICIT_GLCONTEXT
+  wxGLCanvas( _parent, context,_id, _attribList, _pos, _size,
+            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
+            _palette ),
+#else
+  wxGLCanvas( _parent, context, _id, _pos, _size,
+            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
+	    _attribList,  _palette ),
+#endif
+myOwner( _myOwner )
+{
+}
+
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
+  if( myOwner->is_initialized ) {
+   
+    // resize the window if the size is different from the current size.
+    int w = myOwner->width->getValue();
+    int h = myOwner->height->getValue();
+    int current_w, current_h;
+    GetSize( &current_w, &current_h );
+    if( w != current_w || h != current_h ) {
+      SetSize( w, h );
+    }
+
+    myOwner->theWindow->Fit();
+                                                           
+  }
   event.RequestMore();
 }
 
@@ -207,6 +290,125 @@ void WxWidgetsWindow::MyWxGLCanvas::OnEraseBackground(
   wxEraseEvent& WXUNUSED(event))
 {
   // Do nothing, to avoid flashing.
+}
+
+int WxWidgetsWindow::setCursorType( const std::string & cursor_type ) {
+  if( cursor_type == "DEFAULT" ) {
+    theWxGLCanvas->SetCursor( wxNullCursor );
+  } else if( cursor_type == "HOURGLASS" ) {
+    theWxGLCanvas->SetCursor( *wxHOURGLASS_CURSOR );
+  } else if( cursor_type == "STANDARD" ) {
+    theWxGLCanvas->SetCursor( *wxSTANDARD_CURSOR );
+  } else if( cursor_type == "CROSS" ) {
+    theWxGLCanvas->SetCursor( *wxCROSS_CURSOR );
+  } else if( cursor_type == "ARROW" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_ARROW ) );
+  } else if( cursor_type == "RIGHT_ARROW" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_RIGHT_ARROW ) );
+  } else if( cursor_type == "BLANK" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_BLANK ) );
+  } else if( cursor_type == "BULLSEYE" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_BULLSEYE ) );
+  } else if( cursor_type == "CHAR" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_CHAR ) );
+  } else if( cursor_type == "CROSS" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_CROSS ) );
+  } else if( cursor_type == "HAND" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_HAND ) );
+  } else if( cursor_type == "IBEAM" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_IBEAM ) );
+  } else if( cursor_type == "LEFT_BUTTON" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_LEFT_BUTTON ) );
+  } else if( cursor_type == "MAGNIFIER" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_MAGNIFIER ) );
+  } else if( cursor_type == "MIDDLE_BUTTON" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_MIDDLE_BUTTON ) );
+  } else if( cursor_type == "NO_ENTRY" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_NO_ENTRY ) );
+  } else if( cursor_type == "PAINT_BRUSH" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_PAINT_BRUSH ) );
+  } else if( cursor_type == "PENCIL" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_PENCIL ) );
+  } else if( cursor_type == "POINT_LEFT" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_POINT_LEFT ) );
+  } else if( cursor_type == "POINT_RIGHT" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_POINT_RIGHT ) );
+  } else if( cursor_type == "QUESTION_ARROW" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_QUESTION_ARROW ) );
+  } else if( cursor_type == "RIGHT_BUTTON" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_RIGHT_BUTTON ) );
+  } else if( cursor_type == "SIZENESW" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_SIZENESW ) );
+  } else if( cursor_type == "SIZENS" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_SIZENS ) );
+  } else if( cursor_type == "SIZENWSE" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_SIZENWSE ) );
+  } else if( cursor_type == "SIZEWE" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_SIZEWE ) );
+  } else if( cursor_type == "SIZING" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_SIZING ) );
+  } else if( cursor_type == "SPRAYCAN" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_SPRAYCAN ) );
+  } else if( cursor_type == "WAIT" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_WAIT ) );
+  } else if( cursor_type == "WATCH" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_WATCH ) );
+  } else if( cursor_type == "ARROWWAIT" ) {
+    theWxGLCanvas->SetCursor( wxCursor( wxCURSOR_ARROWWAIT ) );
+  } else {
+    return -1;
+  }
+  return 0;
+}
+
+void WxWidgetsWindow::getSupportedCursorsTypes( vector< string > &valid_values ) {
+  if( wxHOURGLASS_CURSOR->Ok() ) valid_values.push_back( "HOURGLASS" );
+  if( wxSTANDARD_CURSOR->Ok() ) valid_values.push_back( "STANDARD" );
+  if( wxCROSS_CURSOR->Ok() ) valid_values.push_back( "CROSS" );
+  if( wxCursor( wxCURSOR_WAIT ).Ok() ) valid_values.push_back( "WAIT" );
+  if( wxCursor( wxCURSOR_ARROW ).Ok() ) valid_values.push_back( "ARROW" );
+  if( wxCursor( wxCURSOR_RIGHT_ARROW ).Ok() ) valid_values.push_back( "RIGHT_ARROW" );
+  if( wxCursor( wxCURSOR_BLANK ).Ok() ) valid_values.push_back( "BLANK" );
+  if( wxCursor( wxCURSOR_BULLSEYE ).Ok() ) valid_values.push_back( "BULLSEYE" );
+  if( wxCursor( wxCURSOR_CHAR ).Ok() ) valid_values.push_back( "CHAR" );
+  if( wxCursor( wxCURSOR_CROSS ).Ok() ) valid_values.push_back( "CROSS" );
+  if( wxCursor( wxCURSOR_HAND ).Ok() ) valid_values.push_back( "HAND" );
+  if( wxCursor( wxCURSOR_IBEAM ).Ok() ) valid_values.push_back( "IBEAM" );
+  if( wxCursor( wxCURSOR_LEFT_BUTTON ).Ok() ) valid_values.push_back( "LEFT_BUTTON" );
+  if( wxCursor( wxCURSOR_MAGNIFIER ).Ok() ) valid_values.push_back( "MAGNIFIER" );
+  if( wxCursor( wxCURSOR_MIDDLE_BUTTON ).Ok() ) valid_values.push_back( "MIDDLE_BUTTON" );
+  if( wxCursor( wxCURSOR_NO_ENTRY ).Ok() ) valid_values.push_back( "NO_ENTRY" );
+  if( wxCursor( wxCURSOR_PAINT_BRUSH ).Ok() ) valid_values.push_back( "PAINT_BRUSH" );
+  if( wxCursor( wxCURSOR_PENCIL ).Ok() ) valid_values.push_back( "PENCIL" );
+  if( wxCursor( wxCURSOR_POINT_LEFT ).Ok() ) valid_values.push_back( "POINT_LEFT" );
+  if( wxCursor( wxCURSOR_POINT_RIGHT ).Ok() ) valid_values.push_back( "POINT_RIGHT" );
+  if( wxCursor( wxCURSOR_QUESTION_ARROW ).Ok() ) valid_values.push_back( "QUESTION_ARROW" );
+  if( wxCursor( wxCURSOR_RIGHT_BUTTON ).Ok() ) valid_values.push_back( "RIGHT_BUTTON" );
+  if( wxCursor( wxCURSOR_SIZENESW ).Ok() ) valid_values.push_back( "SIZENESW" );
+  if( wxCursor( wxCURSOR_SIZENS ).Ok() ) valid_values.push_back( "SIZENS" );
+  if( wxCursor( wxCURSOR_SIZENWSE ).Ok() ) valid_values.push_back( "SIZENWSE" );
+  if( wxCursor( wxCURSOR_SIZEWE ).Ok() ) valid_values.push_back( "SIZEWE" );
+  if( wxCursor( wxCURSOR_SIZING ).Ok() ) valid_values.push_back( "SIZING" );
+  if( wxCursor( wxCURSOR_SPRAYCAN ).Ok() ) valid_values.push_back( "SPRAYCAN" );
+  if( wxCursor( wxCURSOR_WAIT ).Ok() ) valid_values.push_back( "WAIT" );
+  if( wxCursor( wxCURSOR_WATCH ).Ok() ) valid_values.push_back( "WATCH" );
+  if( wxCursor( wxCURSOR_ARROWWAIT ).Ok() ) valid_values.push_back( "ARROWWAIT" );
+}
+
+string WxWidgetsWindow::getCursorForMode( const string &mode ) {
+  if( mode == "ON_SENSOR_OVER" ) {
+    return "HAND";
+  } else if( mode == "ON_SENSOR_ACTIVE" ) {
+    return "HAND";
+  } else if( mode == "ON_NAV_LOOKAT" ) {
+    if( cursorType->isValidValue( "CROSS" )  ) {
+      return "CROSS";
+    } else {
+      return "HAND";
+    }
+  } 
+
+  return "DEFAULT";
 }
 
 #ifndef WIN32
@@ -337,4 +539,5 @@ void WxWidgetsWindow::MyWxGLCanvas::onMouseWheelRotation(
   myOwner->onMouseWheelAction(
     event.GetWheelRotation() > 0 ? MouseSensor::FROM : MouseSensor::TOWARDS );
 }
+
 #endif

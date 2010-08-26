@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -131,6 +131,10 @@ namespace H3D {
     /// IndexedTriangleSets. Vertex buffer objects are only used if the
     /// graphics card supports it. Note that useCaching should be set to false
     /// to get the biggest effect from vertex buffer objects.
+    /// NOTE: At the moment, no check is done that
+    /// sizeof( GLfloat ) == sizeof( H3DFloat ), the same is true for
+    /// the pairs GLdouble/H3DDouble and GLuint/H3DInt32. If you use this
+    /// feature, make sure that this is true.
     ///
     /// <b>Default value: </b> false \n
     /// <b>Access type: </b> inputOutput \n
