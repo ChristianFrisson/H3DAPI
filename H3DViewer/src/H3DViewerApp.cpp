@@ -87,7 +87,7 @@ class QuitAPIField: public AutoUpdate< SFString > {
 
 const wxCmdLineEntryDesc gCmdLineDesc[] = 
   {
-    { wxCMD_LINE_PARAM, NULL, NULL, "File to load", wxCMD_LINE_VAL_STRING,
+    { wxCMD_LINE_PARAM, NULL, NULL, wxT("File to load"), wxCMD_LINE_VAL_STRING,
       wxCMD_LINE_PARAM_OPTIONAL }, 
     { wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, 0} };
 

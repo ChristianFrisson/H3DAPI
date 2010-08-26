@@ -42,10 +42,10 @@ std::streamsize WxConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s,
   // output to wxTextCtrl directly if in main wx thread, otherwise
   // save to temporary wxString.
   if( wxIsMainThread() ) {
-    text_ctrl->AppendText( wxString(s) );
+    text_ctrl->AppendText( wxString( s, wxConvUTF8) );
   } else {
     text_lock.lock();
-    other_threads_text.Append( wxString( s ) );
+    other_threads_text.Append( wxString( s, wxConvUTF8 ) );
     text_lock.unlock();
   }
   
