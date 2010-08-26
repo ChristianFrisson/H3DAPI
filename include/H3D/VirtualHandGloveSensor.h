@@ -29,14 +29,14 @@
 #ifndef __VIRTUALHANDGLOVESENSOR_H__
 #define __VIRTUALHANDGLOVESENSOR_H__
 
-/// H3D includes
+// H3D includes
 #include <H3D/X3DSensorNode.h>
 #include <H3D/SFString.h>
 #include <H3D/SFInt32.h>
 #include <H3D/MFDouble.h>
 
 #ifdef HAVE_VIRTUAL_HAND_SDK
-/// Virtual Hand SDK includes
+// Virtual Hand SDK includes
 #include <vhandtk/vhtGlove.h>
 #endif
 

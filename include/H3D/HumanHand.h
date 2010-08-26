@@ -29,13 +29,13 @@
 #ifndef __HUMANHANDH3D_H__
 #define __HUMANHANDH3D_H__
 
-/// H3D includes
+// H3D includes
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/CyberGloveSensor.h>
 #include <H3D/DependentNodeFields.h>
 
 #ifdef HAVE_VIRTUAL_HAND_SDK
-/// Virtual Hand SDK includes
+// Virtual Hand SDK includes
 #include <vhandtk/vhtHumanHand.h>
 #include <vhandtk/vhtOglDrawer.h>
 #endif

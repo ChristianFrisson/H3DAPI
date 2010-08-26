@@ -28,12 +28,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-/// H3D includes
+// H3D includes
 #include <H3D/HumanHand.h>
 #include <H3D/Scene.h>
 
 #ifdef HAVE_VIRTUAL_HAND_SDK
-/// Virtual Hand SDK includes
+// Virtual Hand SDK includes
 #include <vhandtk/vhtIOConn.h>
 #include <vhandtk/vhtBaseException.h>
 #include <vhandtk/vhtTrackerEmulator.h>

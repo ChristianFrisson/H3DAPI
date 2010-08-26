@@ -29,7 +29,7 @@
 #ifndef __CYBERGLOVESENSOR_H__
 #define __CYBERGLOVESENSOR_H__
 
-/// H3D includes
+// H3D includes
 #include <H3D/VirtualHandGloveSensor.h>
 
 namespace H3D {

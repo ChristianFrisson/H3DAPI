@@ -30,12 +30,12 @@
 
 #include <H3D/H3DApi.h>
 
-/// Structure to contain information about a shared library of extra nodes
-/// outside. People who develop external libraries with new nodes can define
-/// a method in their dll 
-/// extern "C" MEDX3D_API LibraryInfo __cdecl getLibraryInfo();
-/// where they return information about their library. 
 namespace H3D {
+  /// Structure to contain information about a shared library of extra nodes
+  /// outside. People who develop external libraries with new nodes can define
+  /// a method in their dll 
+  /// extern "C" MEDX3D_API LibraryInfo __cdecl getLibraryInfo();
+  /// where they return information about their library. 
   struct LibraryInfo {
     static inline LibraryInfo createEmptyInfo() {
       LibraryInfo l;

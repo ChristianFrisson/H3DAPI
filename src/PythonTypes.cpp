@@ -74,7 +74,7 @@ using namespace X3D;
 
 namespace H3D {
   namespace PythonInternals {
-    /// Returns an Vec2d representation of the contents of o.
+    // Returns an Vec2d representation of the contents of o.
     Vec2d PyVec2d2f_AsVec2d( PyObject *o ) {
       if( PyVec2d_Check( o ) ) {
         return PyVec2d_AsVec2d( o );
@@ -86,7 +86,7 @@ namespace H3D {
       }
     }  
 
-    /// Returns an Vec3d representation of the contents of o.
+    // Returns an Vec3d representation of the contents of o.
     Vec3d PyVec3d3f_AsVec3d( PyObject *o ) {
       if( PyVec3d_Check( o ) ) {
         return PyVec3d_AsVec3d( o );
@@ -98,7 +98,7 @@ namespace H3D {
       }
     }  
 
-    /// Returns an Vec4d representation of the contents of o.
+    // Returns an Vec4d representation of the contents of o.
     Vec4d PyVec4d4f_AsVec4d( PyObject *o ) {
       if( PyVec4d_Check( o ) ) {
         return PyVec4d_AsVec4d( o );
@@ -110,7 +110,7 @@ namespace H3D {
       }
     }  
 
-    /// Returns an Matrix3d representation of the contents of o.
+    // Returns an Matrix3d representation of the contents of o.
     Matrix3d PyMatrix3d3f_AsMatrix3d( PyObject *o ) {
       if( PyMatrix3d_Check( o ) ) {
         return PyMatrix3d_AsMatrix3d( o );
@@ -122,7 +122,7 @@ namespace H3D {
       }
     }
 
-    /// Returns an Matrix4d representation of the contents of o.
+    // Returns an Matrix4d representation of the contents of o.
     Matrix4d PyMatrix4d4f_AsMatrix4d( PyObject *o ) {
       if( PyMatrix4d_Check( o ) ) {
         return PyMatrix4d_AsMatrix4d( o );
@@ -201,7 +201,7 @@ namespace H3D {
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an Node * representation of the contents of o.
+  // Returns an Node * representation of the contents of o.
   Node * PyNode_AsNode( PyObject *o ) {
     if( o == Py_None ) {
       return NULL;
@@ -214,7 +214,7 @@ namespace H3D {
     }
   }  
 
-  /// Creates a new PyNode object based on the value of v.
+  // Creates a new PyNode object based on the value of v.
   PyObject *PyNode_FromNode( Node *n ) {
     if( n ) {
       PyObject *o = PyType_GenericAlloc( &PyNode_Type, 1 );
@@ -541,7 +541,7 @@ self, name, field_type, access_type )" );
     return PyFloat_FromDouble( v.dotProduct( arg ) );
   }
 
-  /// Returns an Vec2f representation of the contents of o.
+  // Returns an Vec2f representation of the contents of o.
   Vec2f PyVec2f_AsVec2f( PyObject *o ) {
     if( PyVec2f_Check( o ) ) {
       return *(Vec2f *)(PyVec2f *)(o);
@@ -551,7 +551,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyVec2f object based on the value of v.
+  // Creates a new PyVec2f object based on the value of v.
   PyObject *PyVec2f_FromVec2f( const Vec2f &v) {
     PyObject *o = PyType_GenericAlloc( &PyVec2f_Type, 1 );
     Vec2f *part = (Vec2f *)(PyVec2f *)( o );
@@ -742,7 +742,7 @@ self, name, field_type, access_type )" );
     return PyFloat_FromDouble( v.dotProduct( arg ) );
   }
 
-  /// Returns an Vec2d representation of the contents of o.
+  // Returns an Vec2d representation of the contents of o.
   Vec2d PyVec2d_AsVec2d( PyObject *o ) {
     if( PyVec2d_Check( o ) ) {
       return *(Vec2d *)(PyVec2d *)(o);
@@ -752,7 +752,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyVec2d object based on the value of v.
+  // Creates a new PyVec2d object based on the value of v.
   PyObject *PyVec2d_FromVec2d( const Vec2d &v) {
     PyObject *o = PyType_GenericAlloc( &PyVec2d_Type, 1 );
     Vec2d *part = (Vec2d *)(PyVec2d *)( o );
@@ -919,7 +919,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
 
-  /// Returns an Vec3f representation of the contents of o.
+  // Returns an Vec3f representation of the contents of o.
   Vec3f PyVec3f_AsVec3f( PyObject *o ) {
     if( PyVec3f_Check( o ) ) {
       return *(Vec3f *)(PyVec3f *)(o);
@@ -929,7 +929,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyVec3f object based on the value of v.
+  // Creates a new PyVec3f object based on the value of v.
   PyObject *PyVec3f_FromVec3f( const Vec3f &v) {
     PyObject *o = PyType_GenericAlloc( &PyVec3f_Type, 1 );
     Vec3f *part = (Vec3f *)(PyVec3f *)( o );
@@ -1128,7 +1128,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an Vec3d representation of the contents of o.
+  // Returns an Vec3d representation of the contents of o.
   Vec3d PyVec3d_AsVec3d( PyObject *o ) {
     if( PyVec3d_Check( o ) ) {
       return *(Vec3d *)(PyVec3d *)(o);
@@ -1138,7 +1138,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyVec3d object based on the value of v.
+  // Creates a new PyVec3d object based on the value of v.
   PyObject *PyVec3d_FromVec3d( const Vec3d &v) {
     PyObject *o = PyType_GenericAlloc( &PyVec3d_Type, 1 );
     Vec3d *part = (Vec3d *)(PyVec3d *)( o );
@@ -1330,7 +1330,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
 
-  /// Returns an Vec4f representation of the contents of o.
+  // Returns an Vec4f representation of the contents of o.
   Vec4f PyVec4f_AsVec4f( PyObject *o ) {
     if( PyVec4f_Check( o ) ) {
       return *(Vec4f *)(PyVec4f *)(o);
@@ -1340,7 +1340,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyVec4f object based on the value of v.
+  // Creates a new PyVec4f object based on the value of v.
   PyObject *PyVec4f_FromVec4f( const Vec4f &v) {
     PyObject *o = PyType_GenericAlloc( &PyVec4f_Type, 1 );
     Vec4f *part = (Vec4f *)(PyVec4f *)( o );
@@ -1469,7 +1469,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an Vec4d representation of the contents of o.
+  // Returns an Vec4d representation of the contents of o.
   Vec4d PyVec4d_AsVec4d( PyObject *o ) {
     if( PyVec4d_Check( o ) ) {
       return *(Vec4d *)(PyVec4d *)(o);
@@ -1479,7 +1479,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyVec4d object based on the value of v.
+  // Creates a new PyVec4d object based on the value of v.
   PyObject *PyVec4d_FromVec4d( const Vec4d &v) {
     PyObject *o = PyType_GenericAlloc( &PyVec4d_Type, 1 );
     Vec4d *part = (Vec4d *)(PyVec4d *)( o );
@@ -1615,7 +1615,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an Matrix3f representation of the contents of o.
+  // Returns an Matrix3f representation of the contents of o.
   Matrix3f PyMatrix3f_AsMatrix3f( PyObject *o ) {
     if( PyMatrix3f_Check( o ) ) {
       return *(Matrix3f *)(PyMatrix3f *)(o);
@@ -1681,7 +1681,7 @@ self, name, field_type, access_type )" );
     return Py_None;
   }
 
-  /// Creates a new PyMatrix3f object based on the value of v.
+  // Creates a new PyMatrix3f object based on the value of v.
   PyObject *PyMatrix3f_FromMatrix3f( const Matrix3f &v) {
     PyObject *o = PyType_GenericAlloc( &PyMatrix3f_Type, 1 );
     Matrix3f *part = (Matrix3f *)(PyMatrix3f *)( o );
@@ -1927,7 +1927,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an Matrix4f representation of the contents of o.
+  // Returns an Matrix4f representation of the contents of o.
   Matrix4f PyMatrix4f_AsMatrix4f( PyObject *o ) {
     if( PyMatrix4f_Check( o ) ) {
       return *(Matrix4f *)(PyMatrix4f *)(o);
@@ -1937,7 +1937,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyMatrix4f object based on the value of v.
+  // Creates a new PyMatrix4f object based on the value of v.
   PyObject *PyMatrix4f_FromMatrix4f( const Matrix4f &v) {
     PyObject *o = PyType_GenericAlloc( &PyMatrix4f_Type, 1 );
     Matrix4f *part = (Matrix4f *)(PyMatrix4f *)( o );
@@ -2269,7 +2269,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an Matrix3d representation of the contents of o.
+  // Returns an Matrix3d representation of the contents of o.
   Matrix3d PyMatrix3d_AsMatrix3d( PyObject *o ) {
     if( PyMatrix3d_Check( o ) ) {
       return *(Matrix3d *)(PyMatrix3d *)(o);
@@ -2279,7 +2279,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyMatrix3d object based on the value of v.
+  // Creates a new PyMatrix3d object based on the value of v.
   PyObject *PyMatrix3d_FromMatrix3d( const Matrix3d &v) {
     PyObject *o = PyType_GenericAlloc( &PyMatrix3d_Type, 1 );
     Matrix3d *part = (Matrix3d *)(PyMatrix3d *)( o );
@@ -2581,7 +2581,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an Matrix4d representation of the contents of o.
+  // Returns an Matrix4d representation of the contents of o.
   Matrix4d PyMatrix4d_AsMatrix4d( PyObject *o ) {
     if( PyMatrix4d_Check( o ) ) {
       return *(Matrix4d *)(PyMatrix4d *)(o);
@@ -2591,7 +2591,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyMatrix4d object based on the value of v.
+  // Creates a new PyMatrix4d object based on the value of v.
   PyObject *PyMatrix4d_FromMatrix4d( const Matrix4d &v) {
     PyObject *o = PyType_GenericAlloc( &PyMatrix4d_Type, 1 );
     Matrix4d *part = (Matrix4d *)(PyMatrix4d *)( o );
@@ -2919,7 +2919,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
 
-  /// Returns an Rotation representation of the contents of o.
+  // Returns an Rotation representation of the contents of o.
   Rotation PyRotation_AsRotation( PyObject *o ) {
     if( PyRotation_Check( o ) ) {
       return *(Rotation *)(PyRotation *)(o);
@@ -2929,7 +2929,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyRotation object based on the value of v.
+  // Creates a new PyRotation object based on the value of v.
   PyObject *PyRotation_FromRotation( const Rotation &v) {
     PyObject *o = PyType_GenericAlloc( &PyRotation_Type, 1 );
     Rotation *part = (Rotation *)(PyRotation *)( o );
@@ -3184,7 +3184,7 @@ self, name, field_type, access_type )" );
       PyQuaternion_FromQuaternion >::mul( a, b );
   }
 
-  /// Returns an Quaternion representation of the contents of o.
+  // Returns an Quaternion representation of the contents of o.
   Quaternion PyQuaternion_AsQuaternion( PyObject *o ) {
     if( PyQuaternion_Check( o ) ) {
       return *(Quaternion *)(PyQuaternion *)(o);
@@ -3194,7 +3194,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyQuaternion object based on the value of v.
+  // Creates a new PyQuaternion object based on the value of v.
   PyObject *PyQuaternion_FromQuaternion( const Quaternion &v) {
     PyObject *o = PyType_GenericAlloc( &PyQuaternion_Type, 1 );
     Quaternion *part = (Quaternion *)(PyQuaternion *)( o );
@@ -3423,7 +3423,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an RGB representation of the contents of o.
+  // Returns an RGB representation of the contents of o.
   RGB PyRGB_AsRGB( PyObject *o ) {
     if( PyRGB_Check( o ) ) {
       return *(RGB *)(PyRGB *)(o);
@@ -3433,7 +3433,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyRGB object based on the value of v.
+  // Creates a new PyRGB object based on the value of v.
   PyObject *PyRGB_FromRGB( const RGB &v) {
     PyObject *o = PyType_GenericAlloc( &PyRGB_Type, 1 );
     RGB *part = (RGB *)(PyRGB *)( o );
@@ -3560,7 +3560,7 @@ self, name, field_type, access_type )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
   
-  /// Returns an RGBA representation of the contents of o.
+  // Returns an RGBA representation of the contents of o.
   RGBA PyRGBA_AsRGBA( PyObject *o ) {
     if( PyRGBA_Check( o ) ) {
       return *(RGBA *)(PyRGBA *)(o);
@@ -3570,7 +3570,7 @@ self, name, field_type, access_type )" );
     }
   }  
 
-  /// Creates a new PyRGBA object based on the value of v.
+  // Creates a new PyRGBA object based on the value of v.
   PyObject *PyRGBA_FromRGBA( const RGBA &v) {
     PyObject *o = PyType_GenericAlloc( &PyRGBA_Type, 1 );
     RGBA *part = (RGBA *)(PyRGBA *)( o );

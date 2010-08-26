@@ -272,7 +272,7 @@ namespace H3D {
   /// Creates a new PyNode object based on the value of v.
   PyObject *PyNode_FromNode( Node *v );
 
-  /// Returns an Node representation of the contents of o.
+  /// Returns an Node * representation of the contents of o.
   Node *PyNode_AsNode( PyObject *o );
 
   /// Returns true if its argument is a PyNode.
