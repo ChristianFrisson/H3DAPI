@@ -30,6 +30,13 @@ IF( NOT DEFINED GENERATE_CPACK_PROJECT )
   MARK_AS_ADVANCED(GENERATE_CPACK_PROJECT)
 ENDIF( NOT DEFINED GENERATE_CPACK_PROJECT )
 
+# Add a cache variable GENERATE_UNITY_BUILD to have the choice of selecting
+# a unity build project. Default is NO.
+IF( NOT DEFINED GENERATE_UNITY_BUILD )
+  SET( GENERATE_UNITY_BUILD "NO" CACHE BOOL "Decides if a the generated project files should build through a unity build instead of a normal build. A unity builds packs all .cpp files into a UnityBuild.cpp file and then only include this in the project. This greatly reduces build times." )
+  MARK_AS_ADVANCED(GENERATE_UNITY_BUILD)
+ENDIF( NOT DEFINED GENERATE_UNITY_BUILD )
+
 # Add a cache variable PREFER_STATIC_LIBRARIES to have the choice of generating a project
 # linking against static libraries if they exist. Default is NO since most people will not use this.
 IF( NOT DEFINED PREFER_STATIC_LIBRARIES )
@@ -396,6 +403,24 @@ ${H3DAPI_MAJOR_VERSION}.${H3DAPI_MINOR_VERSION}.${H3DAPI_BUILD_VERSION} )
 # defined in the included file. All header files are added to a variable called
 # H3DAPI_HEADERS.
 INCLUDE( ${H3DAPI_SOURCE_DIR}/H3DAPISourceFiles.txt )
+
+IF( GENERATE_UNITY_BUILD )
+# Generate a unity build, by creating the UnityBuild.cpp and only including the required 
+# source files.
+SET( H3DAPI_SRCS ${H3DAPI_SRCS_UNITYBUILD} )
+SET( UNITYBUILD_INCLUDES "" )
+
+foreach(filename ${NON_UNITYBUILD_FILES})
+  SET( UNITYBUILD_INCLUDES "${UNITYBUILD_INCLUDES}\n #include \"${filename}\"" )
+endforeach(filename)
+
+CONFIGURE_FILE( ${H3DAPI_SOURCE_DIR}/UnityBuild.cmake ${H3DAPI_SOURCE_DIR}/../src/UnityBuild.cpp )
+
+IF( MSVC )
+  SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj")
+ENDIF( MSVC )
+
+ENDIF( GENERATE_UNITY_BUILD )
 
 # Add the H3DAPI.rc resource file if Visual Studio
 IF(MSVC)

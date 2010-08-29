@@ -34,7 +34,6 @@
 #include <HAPI/HapticPrimitiveSet.h>
 
 using namespace H3D;
-using namespace HAPI;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase MagneticGeometryEffect::database( 
@@ -122,7 +121,7 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
               if( dynamic_cast< Sphere * >(the_geometry) ) {
                 Vec3f scale = ti.getAccForwardMatrix().getScalePart();
                 ti.addForceEffect( i,
-                  new HapticShapeConstraint(
+                    new HAPI::HapticShapeConstraint(
                     new HAPI::Collision::Sphere(
                       ti.getAccForwardMatrix() * Vec3f(),
                       dynamic_cast< Sphere * >(the_geometry)
@@ -181,12 +180,12 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                     new HAPI::Collision::Point( points[j].position ) );
                 }
                 /// The HapticPrimitiveSet hold a reference to all primitives.
-                HapticPrimitiveSet *haptic_primitive_set =
-                  new HapticPrimitiveSet( Matrix4d( ti.getAccForwardMatrix() ),
-                                          primitives, NULL );
+                HAPI::HapticPrimitiveSet *haptic_primitive_set =
+                  new HAPI::HapticPrimitiveSet( Matrix4d( ti.getAccForwardMatrix() ),
+                                                primitives, NULL );
                 ti.addForceEffect( i,
-                  new HapticShapeConstraint( haptic_primitive_set,
-                                             springConstant->getValue() ) );
+                  new HAPI::HapticShapeConstraint( haptic_primitive_set,
+                                                   springConstant->getValue() ) );
               }
             }
           }
