@@ -27,8 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __IMAGETEXTURE_H__
-#define __IMAGETEXTURE_H__
+#ifndef __IMPORTLIBRARY_H__
+#define __IMPORTLIBRARY_H__
 
 #include <H3D/X3DChildNode.h>
 #include <H3D/X3DUrlObject.h>

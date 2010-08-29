@@ -27,8 +27,8 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __COMPOSEDCUBEMAPTEXTURE_H__
-#define __COMPOSEDCUBEMAPTEXTURE_H__
+#ifndef __GENERATEDCUBEMAPTEXTURE_H__
+#define __GENERATEDCUBEMAPTEXTURE_H__
 
 #include <H3D/X3DEnvironmentTextureNode.h>
 #include <H3D/X3DViewpointNode.h>
