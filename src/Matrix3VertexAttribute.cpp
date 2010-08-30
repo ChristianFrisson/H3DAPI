@@ -61,7 +61,7 @@ Matrix3VertexAttribute::Matrix3VertexAttribute( Inst< SFNode     > _metadata,
 
 Matrix3VertexAttribute::~Matrix3VertexAttribute() {
   // Delete buffer if it was allocated.
-  if( GLEW_ARB_vertex_buffer_object && vbo_id ) {
+  if( vbo_id ) {
     glDeleteBuffersARB( 1, vbo_id );
     delete vbo_id;
     vbo_id = NULL;
