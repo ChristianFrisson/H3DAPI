@@ -237,6 +237,9 @@ namespace H3D {
         return;
       }
 
+      bool was_allowed = PythonScript::mainThreadPythonAllowed();
+      PythonScript::allowMainThreadPython();
+
       PyObject *python_typeinfo = PyObject_GetAttrString(
         static_cast< PyObject * >(python_field), "__type_info__" );
       PyErr_Clear();
@@ -264,12 +267,16 @@ namespace H3D {
             err << "Bad input, expected " 
                 << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
                 << " got " << f->getTypeName() << " for route" << index;
+            if( !was_allowed )
+              PythonScript::disallowMainThreadPython();
             throw H3D::PythonInvalidFieldType( err.str(), "", 
                                                H3D_FULL_LOCATION );
           }
         } else {
           ostringstream err;
           err << "Too many inputs, expected " << arg_size+1;
+          if( !was_allowed )
+            PythonScript::disallowMainThreadPython();
           throw H3D::PythonInvalidFieldType( err.str(), "", 
                                              H3D_FULL_LOCATION );
         }
@@ -293,10 +300,14 @@ namespace H3D {
           err << "Bad input, expected " 
               << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
               << " got " << f->getTypeName() << " for route" << index;
+          if( !was_allowed )
+            PythonScript::disallowMainThreadPython();
           throw H3D::PythonInvalidFieldType( err.str(), "", 
                                              H3D_FULL_LOCATION );
         }
       }
+      if( !was_allowed )
+        PythonScript::disallowMainThreadPython();
     }
   };
 }
