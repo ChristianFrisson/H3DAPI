@@ -185,7 +185,12 @@ IF(WIN32)
 
     # Needed to run in debug mode. Removes warning about conflict between libraries.
     SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  ELSEIF(MSVC90 OR MSVC10)
+  ELSEIF(MSVC90)
+    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP /Od" )
+    # Needed to run in debug mode. Removes warning about conflict between libraries.
+    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+  ELSEIF(MSVC10)
     # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
     SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP" )
     # Needed to run in debug mode. Removes warning about conflict between libraries.

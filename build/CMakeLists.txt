@@ -814,13 +814,6 @@ IF( WIN32 )
     # H3D API is now to big to link incrementally with vc8.
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG}" )
-    # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
-    IF(OPENHAPTICS_FOUND)
-      SET_SOURCE_FILES_PROPERTIES( "${H3DAPI_SOURCE_DIR}/../src/MagneticSurface.cpp"
-                                   "${H3DAPI_SOURCE_DIR}/../src/OpenHapticsSurface.cpp"
-                                   "${H3DAPI_SOURCE_DIR}/../src/X3DGeometryNode.cpp"
-                                   PROPERTIES COMPILE_FLAGS "/Od" )
-    ENDIF(OPENHAPTICS_FOUND)
   ELSEIF(MSVC90)
     SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc9 )
     SET( TEMP_OUTPUT_POSTFIX _vc9 )
@@ -834,13 +827,6 @@ IF( WIN32 )
     # H3D API is now too big to link incrementally with vc9.
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
-    # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
-    IF(OPENHAPTICS_FOUND)
-      SET_SOURCE_FILES_PROPERTIES( "${H3DAPI_SOURCE_DIR}/../src/MagneticSurface.cpp"
-                                   "${H3DAPI_SOURCE_DIR}/../src/OpenHapticsSurface.cpp"
-                                   "${H3DAPI_SOURCE_DIR}/../src/X3DGeometryNode.cpp"
-                                   PROPERTIES COMPILE_FLAGS "/Od" )
-    ENDIF(OPENHAPTICS_FOUND)
 
   ELSEIF(MSVC10)
     SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc10 )
@@ -855,13 +841,6 @@ IF( WIN32 )
     # H3D API is now to big to link incrementally with vc10.
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
-    # Needed to delayload OpenHapticsRenderer. They must have changed the way symbols are imported between versions of visual studio.
-    IF(OPENHAPTICS_FOUND)
-      SET_SOURCE_FILES_PROPERTIES( "${H3DAPI_SOURCE_DIR}/../src/MagneticSurface.cpp"
-                                   "${H3DAPI_SOURCE_DIR}/../src/OpenHapticsSurface.cpp"
-                                   "${H3DAPI_SOURCE_DIR}/../src/X3DGeometryNode.cpp"
-                                   PROPERTIES COMPILE_FLAGS "/Od" )
-    ENDIF(OPENHAPTICS_FOUND)
   ENDIF(MSVC70 OR MSVC71)
 
   # Set delayload properties of H3D API.
@@ -871,8 +850,6 @@ IF( WIN32 )
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"Haptik.Library.dll\"" )
   ENDIF(HAPTIK_FOUND)
 
-  
-  
   IF(CHAI3D_FOUND)
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\"" )
     SET( H3DAPI_LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
