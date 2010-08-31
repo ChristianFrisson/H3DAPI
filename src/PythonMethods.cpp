@@ -70,12 +70,12 @@ namespace H3D {
       
       // destructor
       ~PythonAutoRef() throw(){
-        // ensure we have the GIL lock to work with multiple python threads.
-        PyGILState_STATE state = PyGILState_Ensure();
-
-        if( ap ) Py_DECREF( ap );
-	
-        PyGILState_Release(state);
+        if( ap ) {
+          // ensure we have the GIL lock to work with multiple python threads.
+          PyGILState_STATE state = PyGILState_Ensure();
+          Py_DECREF( ap );
+	        PyGILState_Release(state);
+        }
       }
 
       // value access
@@ -91,15 +91,15 @@ namespace H3D {
 
       // reset value
       void reset (PyObject* ptr=0) throw(){
-        // ensure we have the GIL lock to work with multiple python threads.
-        PyGILState_STATE state = PyGILState_Ensure();
-
         if (ap != ptr){
-          if( ap ) Py_DECREF( ap );
+          if( ap ) {
+            // ensure we have the GIL lock to work with multiple python threads.
+            PyGILState_STATE state = PyGILState_Ensure();
+            Py_DECREF( ap );
+            PyGILState_Release(state);
+          }
           ap = ptr;
         }
-
-        PyGILState_Release(state);
       }
     };
 
