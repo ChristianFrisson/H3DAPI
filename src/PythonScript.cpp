@@ -98,13 +98,29 @@ namespace PythonScriptInternals {
   // The saved thread state when disallowMainThreadPython is called.
   // Will be restored upon allowMainThreadPyton call.
   PyThreadState *main_python_thread_state = NULL;
+
+  /// The normal PyRun_String method does not allow a filename to
+  /// be passed along for better error messages and trace backs.
+  /// This function does the same as PyRun_String but 
+  /// also takes the filename where the string originated from.
+  inline PyObject *PyRun_StringFilename( const char *str, 
+                                         const char *filename,
+                                         int start, 
+                                         PyObject *globals, 
+                                         PyObject *locals) {
+    PyCodeObject *co = (PyCodeObject *)Py_CompileString(str, filename, start);
+    if (co == NULL)
+      return NULL;
+    PyObject *v = PyEval_EvalCode(co, globals, locals);
+    Py_DECREF(co);
+    return v;
+  }
 }
 
 void PythonScript::setargv( int _argc, char *_argv[] ) {
   argc = _argc;
   argv = _argv;
 }
-
 
 void PythonScript::allowMainThreadPython() {
   using namespace PythonScriptInternals;
@@ -166,18 +182,16 @@ PythonScript::PythonScript( Inst< MFString > _url,
     disallowMainThreadPython();
   }
 
-  bool was_allowed = mainThreadPythonAllowed();
-  allowMainThreadPython();
-
+  // ensure we have the GIL lock to work with multiple python threads.
+  PyGILState_STATE state = PyGILState_Ensure();
   initialiseParser();
-
-  if( !was_allowed )
-    disallowMainThreadPython();
+  PyGILState_Release(state);
 }
 
 PythonScript::~PythonScript() {
-  bool was_allowed = mainThreadPythonAllowed();
-  allowMainThreadPython();
+ // ensure we have the GIL lock to work with multiple python threads.
+  PyGILState_STATE state = PyGILState_Ensure();
+
   if( module_dict ) {
     // Setting module_dict to null just to be on the safe side. It should not
     // really be needed.
@@ -194,8 +208,7 @@ PythonScript::~PythonScript() {
     }
   }
 
-  if( !was_allowed )
-    disallowMainThreadPython();
+  PyGILState_Release(state);
 }
 
 void PythonScript::initialiseParser() {
@@ -204,8 +217,8 @@ void PythonScript::initialiseParser() {
 }
 
 void PythonScript::loadScript( const string &script ) {
-  bool was_allowed = mainThreadPythonAllowed();
-  allowMainThreadPython();
+  // ensure we have the GIL lock to work with multiple python threads.
+  PyGILState_STATE state = PyGILState_Ensure();
   PyObject *ref = (PyObject*)PythonInternals::fieldAsPythonObject( references.get(), false );
   PyDict_SetItem( (PyObject *)module_dict, 
                   PyString_FromString( "references" ), 
@@ -240,9 +253,12 @@ void PythonScript::loadScript( const string &script ) {
     buffer[length ] = '\0';
     
     PyErr_Clear();
-    PyObject *r = PyRun_String( buffer, Py_file_input,
-                                static_cast< PyObject * >(module_dict), 
-                                static_cast< PyObject * >(module_dict) );
+    PyObject *r = 
+      PythonScriptInternals::PyRun_StringFilename( buffer, script.c_str(),
+                                             Py_file_input,
+                                             static_cast< PyObject * >(module_dict), 
+                                             static_cast< PyObject * >(module_dict) );
+
     if ( r == NULL ) {
       Console( 3 ) << "Python error in file \"" << script << "\":" << endl;
       PyErr_Print();
@@ -269,16 +285,16 @@ void PythonScript::loadScript( const string &script ) {
     Console(4) << "Could not open \""<< script << endl;
   }
 
-  if( !was_allowed )
-    disallowMainThreadPython();
+  PyGILState_Release(state);
 }
 
 
 // Traverse the scenegraph. Used in PythonScript to call a function
 // in python once per scene graph loop.
 void PythonScript::traverseSG( TraverseInfo &ti ) {
-  bool was_allowed = mainThreadPythonAllowed();
-  allowMainThreadPython();
+  // ensure we have the GIL lock to work with multiple python threads.
+  PyGILState_STATE state = PyGILState_Ensure();
+
   PyObject *func = 
     PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
                           "traverseSG" );
@@ -292,13 +308,12 @@ void PythonScript::traverseSG( TraverseInfo &ti ) {
 
     Py_DECREF( args );
   } 
-  if( !was_allowed )
-    disallowMainThreadPython();
+
+  PyGILState_Release(state);
 }
 
 void PythonScript::initialize() {
-  bool was_allowed = mainThreadPythonAllowed();
-  allowMainThreadPython();
+
   H3DScriptNode::initialize();
 
   module_name = moduleName->getValue();
@@ -307,6 +322,9 @@ void PythonScript::initialize() {
   // a unique identifier for each PythonScript instance.
   if( module_name == "" )
     module_name = getInstanceName();
+
+  // ensure we have the GIL lock to work with multiple python threads.
+  PyGILState_STATE state = PyGILState_Ensure();
 
   PyObject *temp_sys_module_dict = PyImport_GetModuleDict(); // borrowed ref
   if( PyDict_GetItemString( temp_sys_module_dict,
@@ -358,10 +376,7 @@ void PythonScript::initialize() {
     Console(4) << "] could be found. " << endl;
   }
 
-  // allow other python threads to run while the H3D main python script
-  // waits for events from fields or run traverseSG function.
-  if( !was_allowed )
-    disallowMainThreadPython();
+  PyGILState_Release(state);
 }
 
 #endif // HAVE_PYTHON

@@ -185,8 +185,8 @@ namespace H3D {
     }
 
     virtual void update() {
-      bool was_allowed = PythonScript::mainThreadPythonAllowed();
-      PythonScript::allowMainThreadPython();
+      // ensure we have the GIL lock to work with multiple python threads.
+      PyGILState_STATE state = PyGILState_Ensure();
       if( have_update ) {
         PyObject *python_update = PyObject_GetAttrString(
           static_cast< PyObject * >(python_field), "update" );
@@ -220,8 +220,7 @@ namespace H3D {
       } else {
         F::update();
       }
-      if( !was_allowed )
-        PythonScript::disallowMainThreadPython();
+      PyGILState_Release(state);
     }
     
     /// Function for checking that a field is of a correct type 
@@ -237,8 +236,8 @@ namespace H3D {
         return;
       }
 
-      bool was_allowed = PythonScript::mainThreadPythonAllowed();
-      PythonScript::allowMainThreadPython();
+      // ensure we have the GIL lock to work with multiple python threads.
+      PyGILState_STATE state = PyGILState_Ensure();
 
       PyObject *python_typeinfo = PyObject_GetAttrString(
         static_cast< PyObject * >(python_field), "__type_info__" );
@@ -267,16 +266,14 @@ namespace H3D {
             err << "Bad input, expected " 
                 << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
                 << " got " << f->getTypeName() << " for route" << index;
-            if( !was_allowed )
-              PythonScript::disallowMainThreadPython();
+            PyGILState_Release(state);
             throw H3D::PythonInvalidFieldType( err.str(), "", 
                                                H3D_FULL_LOCATION );
           }
         } else {
           ostringstream err;
           err << "Too many inputs, expected " << arg_size+1;
-          if( !was_allowed )
-            PythonScript::disallowMainThreadPython();
+          PyGILState_Release(state);
           throw H3D::PythonInvalidFieldType( err.str(), "", 
                                              H3D_FULL_LOCATION );
         }
@@ -300,14 +297,11 @@ namespace H3D {
           err << "Bad input, expected " 
               << X3DTypes::typeToString( (X3DTypes::X3DType)type_int )  
               << " got " << f->getTypeName() << " for route" << index;
-          if( !was_allowed )
-            PythonScript::disallowMainThreadPython();
           throw H3D::PythonInvalidFieldType( err.str(), "", 
                                              H3D_FULL_LOCATION );
         }
       }
-      if( !was_allowed )
-        PythonScript::disallowMainThreadPython();
+      PyGILState_Release(state);
     }
   };
 }

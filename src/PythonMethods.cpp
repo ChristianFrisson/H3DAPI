@@ -70,14 +70,12 @@ namespace H3D {
       
       // destructor
       ~PythonAutoRef() throw(){
-        bool was_allowed = PythonScript::mainThreadPythonAllowed();
-        PythonScript::allowMainThreadPython();
+        // ensure we have the GIL lock to work with multiple python threads.
+        PyGILState_STATE state = PyGILState_Ensure();
 
         if( ap ) Py_DECREF( ap );
 	
-        // restore previous state
-        if( !was_allowed) 
-          PythonScript::disallowMainThreadPython();
+        PyGILState_Release(state);
       }
 
       // value access
@@ -93,14 +91,15 @@ namespace H3D {
 
       // reset value
       void reset (PyObject* ptr=0) throw(){
-        bool was_allowed = PythonScript::mainThreadPythonAllowed();
-        PythonScript::allowMainThreadPython();
+        // ensure we have the GIL lock to work with multiple python threads.
+        PyGILState_STATE state = PyGILState_Ensure();
+
         if (ap != ptr){
           if( ap ) Py_DECREF( ap );
           ap = ptr;
         }
-        if( !was_allowed )
-        PythonScript::disallowMainThreadPython();
+
+        PyGILState_Release(state);
       }
     };
 
