@@ -110,7 +110,7 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
   glMultMatrixf( mv );
 
   glTranslatef( pos.x, pos.y, pos.z );
-  glRotatef( rot.angle * 180 / Constants::pi , 
+  glRotatef( (GLfloat)( rot.angle * 180 / Constants::pi ),
              rot.axis.x, rot.axis.y, rot.axis.z );
   
   // render side

@@ -154,7 +154,8 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
   for( unsigned int i = 0; i < noWeights.size(); i++ ) {
     withWeights[ i * sizeOfVertex ] = (GLfloat)noWeights[i].x;
     withWeights[ i * sizeOfVertex + 1 ] = (GLfloat)noWeights[i].y;
-    if ( theWeights.size() == 0 || theWeights.size() < u_dimension * v_dimension ) {
+    if ( theWeights.size() == 0 ||
+         theWeights.size() < (unsigned int)( u_dimension * v_dimension ) ) {
       withWeights[ i * sizeOfVertex + 2 ] = (GLfloat)1.0;
     } else {
       withWeights[ i * sizeOfVertex + 2 ] = (GLfloat)theWeights[i];

@@ -1881,8 +1881,8 @@ JSBool SpiderMonkey::SFVec4d_getProperty(JSContext *cx, JSObject *obj, jsval id,
 JSBool SpiderMonkey::SFVec4d_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval *vp)
 {
   if (JSVAL_IS_INT(id)) {
-    Vec4f v;
-    if ( !getValueInJSObject<SFVec4f>( cx, obj, &v ) )
+    Vec4d v;
+    if ( !getValueInJSObject<SFVec4d>( cx, obj, &v ) )
       return JS_FALSE;
 
     JSBool res = JS_TRUE;
@@ -1890,25 +1890,25 @@ JSBool SpiderMonkey::SFVec4d_setProperty(JSContext *cx, JSObject *obj, jsval id,
     case SFVEC4D_X: {
       jsdouble x;
       res = JS_ValueToNumber( cx, *vp, &x );
-      v.x = (H3DDouble) x;
+      v.x = x;
       break;
     }
     case SFVEC4D_Y: {
       jsdouble y;
       res = JS_ValueToNumber( cx, *vp, &y );
-      v.y = (H3DDouble) y;
+      v.y = y;
       break;
     }
     case SFVEC4D_Z: {
       jsdouble z;
       res = JS_ValueToNumber( cx, *vp, &z );
-      v.z = (H3DDouble) z;
+      v.z = z;
       break;
     }
     case SFVEC4D_W: {
       jsdouble w;
       res = JS_ValueToNumber( cx, *vp, &w );
-      v.w = (H3DDouble) w;
+      v.w = w;
       break;
     }
     }
@@ -1916,7 +1916,7 @@ JSBool SpiderMonkey::SFVec4d_setProperty(JSContext *cx, JSObject *obj, jsval id,
       JS_ReportError(cx, "SFVec4d attribute must be convertable to Number" );
       return JS_FALSE;
     } else {
-      if ( !setValueInJSObject<SFVec4f>( cx, obj, v ) ) return JS_FALSE;
+      if ( !setValueInJSObject<SFVec4d>( cx, obj, v ) ) return JS_FALSE;
       return JS_TRUE;
     }
   } else {
@@ -1927,7 +1927,8 @@ JSBool SpiderMonkey::SFVec4d_setProperty(JSContext *cx, JSObject *obj, jsval id,
     // If it is JSVAL_VOID the attribute does not exist.
     if( *vp == JSVAL_VOID ) {
       JSString *s = JSVAL_TO_STRING( id );
-      JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
+      JS_ReportError( cx, "Field object does not have property \"%s\".",
+                      JS_GetStringBytes( s ) );
       return JS_FALSE;
     } else {
       return JS_TRUE;
@@ -2765,7 +2766,7 @@ JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id,
 
         stringstream ss;
         ss<< img->width() << "" << img->height() << " " << (int)img->pixelType() + 1;
-        for (int i = 0; i < vals.size(); i++) {
+        for( unsigned int i = 0; i < vals.size(); i++ ) {
           ss<< " " << vals[i];
         }
         string s = ss.str();

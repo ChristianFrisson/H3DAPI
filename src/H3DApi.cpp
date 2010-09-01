@@ -27,6 +27,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/H3DApi.h>
+#include <H3D/Sphere.h>
 #include <sstream>
 #ifdef HAVE_XERCES
 #include <xercesc/util/PlatformUtils.hpp>
@@ -88,6 +89,8 @@ void H3D::initializeH3D() {
 
   /// Deinitialize H3D API(only needed if using H3D API as a static library). 
 void H3D::deinitializeH3D() {
+  // Remove vbo for Sphere. Only one is used for all spheres.
+  Sphere::cleanUpVbo();
 #ifdef HAVE_FREEIMAGE
   FreeImage_DeInitialise();
 #endif

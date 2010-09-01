@@ -60,17 +60,15 @@ namespace SphereInternals {
   FIELDDB_ELEMENT( Sphere, solid, INPUT_OUTPUT );
 }
 
+GLuint *Sphere::vbo_id = NULL;
 
-Sphere::Sphere( 
-               Inst<    SFNode >  _metadata,
-               Inst< SFBound >                 _bound,
-               Inst< SFFloat>  _radius,
-               Inst< SFBool >  _solid ) :
+Sphere::Sphere( Inst<    SFNode > _metadata,
+                Inst< SFBound > _bound,
+                Inst< SFFloat> _radius,
+                Inst< SFBool > _solid ) :
   X3DGeometryNode( _metadata, _bound ),
   radius  ( _radius   ),
-  solid   ( _solid    ),
-  vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  solid   ( _solid    ) {
 
   type_name = "Sphere";
   database.initFields( this );
@@ -81,18 +79,6 @@ Sphere::Sphere(
   radius->route( bound );
   radius->route( displayList );
   solid->route( displayList );
-
-  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
-  radius->route( vboFieldsUpToDate );
-}
-
-Sphere::~Sphere() {
-  // Delete buffer if it was allocated.
-  if( vbo_id ) {
-    glDeleteBuffersARB( 2, vbo_id );
-    delete [] vbo_id;
-    vbo_id = NULL;
-  }
 }
 
 H3DShadowObjectNode *Sphere::getShadowObject() {
@@ -127,9 +113,14 @@ void Sphere::render() {
   H3DFloat double_pi = (H3DFloat) Constants::pi * 2;
 
   if( prefer_vertex_buffer_object ) {
+    if( r <= Constants::f_epsilon ) {
+      Console(3) << "Warning: Invalid radius value of Sphere node "
+                 << getName() << endl;
+      return;
+    }
+
     // Use vertex buffer objects to create sphere.
-    if( !vboFieldsUpToDate->isUpToDate() ) {
-      vboFieldsUpToDate->upToDate();
+    if( !vbo_id ) {
       // Only create and transfer data when it has been modified.
       unsigned int nr_data_vertices = 9; // 9  floats/vertex.
       GLsizei data_size = 
@@ -140,6 +131,7 @@ void Sphere::render() {
         (GLsizei)(theta_parts * phi_parts * nr_index_data);
       GLuint * sphere_index_data = new GLuint[index_data_size];
       // Iterate through the parts to create vertices.
+      // Create sphere of radius 1.
       for (unsigned int p = 0; p <= phi_parts; p++ ) {
         for (unsigned int t = 0; t <= theta_parts; t++ ) {
           H3DFloat phi = p * inc_phi;
@@ -157,9 +149,9 @@ void Sphere::render() {
           unsigned int base_data_index =
           (unsigned int)( vert_index * nr_data_vertices );
           // Vertex
-          sphere_data[ base_data_index ] = x * r;
-          sphere_data[ base_data_index + 1 ] = y * r;
-          sphere_data[ base_data_index + 2 ] = z * r;
+          sphere_data[ base_data_index ] = x;
+          sphere_data[ base_data_index + 1 ] = y;
+          sphere_data[ base_data_index + 2 ] = z;
           // Normal
           sphere_data[ base_data_index + 3 ] = x;
           sphere_data[ base_data_index + 4 ] = y;
@@ -197,10 +189,9 @@ void Sphere::render() {
         }
       }
 
-      if( !vbo_id ) {
-        vbo_id = new GLuint[2];
-        glGenBuffersARB( 2, vbo_id );
-      }
+      vbo_id = new GLuint[2];
+      glGenBuffersARB( 2, vbo_id );
+
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, vbo_id[0] );
       glBufferDataARB( GL_ARRAY_BUFFER_ARB,
                        data_size * sizeof(GLfloat),
@@ -227,6 +218,8 @@ void Sphere::render() {
     X3DTextureCoordinateNode::renderVertexBufferObjectForActiveTexture(
       3, GL_FLOAT, 9 * sizeof(GLfloat), (GLvoid*)(6*sizeof(GLfloat)) );
 
+    glPushMatrix();
+    glScalef( r, r, r );
     // Draw the triangles
     glDrawRangeElements( GL_TRIANGLES,
                          0,
@@ -234,6 +227,7 @@ void Sphere::render() {
                        (GLsizei)(theta_parts * phi_parts * 6),
                          GL_UNSIGNED_INT,
                          NULL );
+    glPopMatrix();
 
     // Disable state.
     X3DTextureCoordinateNode::disableVBOForActiveTexture();

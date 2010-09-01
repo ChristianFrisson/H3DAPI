@@ -86,8 +86,9 @@ string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
 
   stringstream ss;
   Image* img = getValue();
-  ss<< img->width() << separator << img->height() << separator << (int)img->pixelType() + 1;
-  for (int index = 0; index < img->width() * img->height(); index++) {
+  ss << img->width() << separator << img->height()
+     << separator << (int)img->pixelType() + 1;
+  for(unsigned int index = 0; index < img->width() * img->height(); index++) {
     int ix = index % img->width();
     int iy = index / img->width();
     RGBA color = img->getPixel( ix, iy );

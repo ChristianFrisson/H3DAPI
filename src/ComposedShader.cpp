@@ -254,7 +254,7 @@ std::string ComposedShader::genKeyFromShader(ComposedShader* shader)
   }
   sort( keys.begin(), keys.end() );
   stringstream ss;
-  for (int i = 0; i < keys.size(); i++ ) ss << keys[i] << "_";
+  for( unsigned int i = 0; i < keys.size(); i++ ) ss << keys[i] << "_";
   return ss.str();
 }
 
