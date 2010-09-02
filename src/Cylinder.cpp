@@ -130,18 +130,18 @@ void Cylinder::render() {
       // Only transfer data when it has been modified.
       vboFieldsUpToDate->upToDate();
       unsigned int nr_data_vertices = 9; // 9 floats/vertex.
-      // 2 * (nr_faces + 1) for side, then nr_faces for each cap
+      // 2 * nr_faces for side, then nr_faces for each cap
       // times nr_data_vertices.
       GLsizei data_size =
-        (GLsizei)( 2 * ( 2 * nr_faces + 1 ) * nr_data_vertices );
+        (GLsizei)( 4 * nr_faces * nr_data_vertices );
       GLfloat * cylinder_data = new GLfloat[data_size];
       unsigned int nr_index_data = 3; // 3 vertices/triangle.
       // 2 * nr_faces for side, then nr_faces - 2 for each cap
       // times nr_index_data.
       GLsizei index_data_size =
-        (GLsizei)( 2 * ( 2 * nr_faces - 2 ) * nr_index_data );
+        (GLsizei)( ( 4 * nr_faces - 4 ) * nr_index_data );
       GLuint * cylinder_index_data = new GLuint[index_data_size];
-      for( int i = 0; i <= nr_faces; i++ ) {
+      for( int i = 0; i < nr_faces; i++ ) {
         float ratio = (float) i / nr_faces;
         float angle = (float)(ratio * (Constants::pi*2));
         
@@ -165,9 +165,11 @@ void Cylinder::render() {
         cylinder_data[ base_data_index + 8 ] = 0;
 
         // Vertex
-        cylinder_data[ base_data_index + 9 ] = -l_radius * sina;
+        cylinder_data[ base_data_index + 9 ] =
+          cylinder_data[ base_data_index ];
         cylinder_data[ base_data_index + 10 ] = -half_height;
-        cylinder_data[ base_data_index + 11 ] = -l_radius * cosa;
+        cylinder_data[ base_data_index + 11 ] =
+          cylinder_data[ base_data_index + 2];
         // Normal
         cylinder_data[ base_data_index + 12 ] = -sina;
         cylinder_data[ base_data_index + 13 ] = 0;
@@ -177,76 +179,86 @@ void Cylinder::render() {
         cylinder_data[ base_data_index + 16 ] = 0;
         cylinder_data[ base_data_index + 17 ] = 0;
 
-        if( i != nr_faces ) {
-          // Create index for side vertex triangles. The triangles constructed
-          // are those to the "right" of the vertices defined above if the
-          // side is unfolded as a flat map.
-          // First triangle.
-          unsigned int base_index = i * 2 * nr_index_data;
-          unsigned int vertex_index = i * 2;
-          cylinder_index_data[ base_index ] = vertex_index;
-          cylinder_index_data[ base_index + 1 ] = vertex_index + 1;
+        // Create index for side vertex triangles. The triangles constructed
+        // are those to the "right" of the vertices defined above if the
+        // side is unfolded as a flat map.
+        // First triangle.
+        unsigned int base_index = i * 2 * nr_index_data;
+        unsigned int vertex_index = i * 2;
+        cylinder_index_data[ base_index ] = vertex_index;
+        cylinder_index_data[ base_index + 1 ] = vertex_index + 1;
+        if( i < nr_faces - 1 )
           cylinder_index_data[ base_index + 2 ] = vertex_index + 2;
+        else
+          cylinder_index_data[ base_index + 2 ] = 0;
 
-          // Second triangle.
-          cylinder_index_data[ base_index + 3 ] = vertex_index + 2;
-          cylinder_index_data[ base_index + 4 ] = vertex_index + 1;
+        // Second triangle.
+        cylinder_index_data[ base_index + 3 ] =
+          cylinder_index_data[ base_index + 2 ];
+        cylinder_index_data[ base_index + 4 ] =
+          cylinder_index_data[ base_index + 1 ];
+        if( i < nr_faces - 1 )
           cylinder_index_data[ base_index + 5 ] = vertex_index + 3;
+        else
+          cylinder_index_data[ base_index + 5 ] = 1;
 
-          // Create top vertex, it differs from side vertices when it
-          // comes to the normal and texture coordinates.
-          base_data_index =
-            (unsigned int)( ( 2 * ( nr_faces + 1 ) + i ) * nr_data_vertices );
+        // Create top vertex, it differs from side vertices when it
+        // comes to the normal and texture coordinates.
+        unsigned int top_base_data_index =
+          (unsigned int)( ( 2 * nr_faces + i ) * nr_data_vertices );
 
-          // Vertex
-          cylinder_data[ base_data_index ] = -l_radius * sina;
-          cylinder_data[ base_data_index + 1 ] = half_height;
-          cylinder_data[ base_data_index + 2 ] = -l_radius * cosa;
-          // Normal
-          cylinder_data[ base_data_index + 3 ] = 0;
-          cylinder_data[ base_data_index + 4 ] = 1;
-          cylinder_data[ base_data_index + 5 ] = 0;
-          // Texture coordinate
-          cylinder_data[ base_data_index + 6 ] = 0.5f - 0.5f * sina;
-          cylinder_data[ base_data_index + 7 ] = 0.5f + 0.5f * cosa;
-          cylinder_data[ base_data_index + 8 ] = 0;
+        // Vertex
+        cylinder_data[ top_base_data_index ] =
+          cylinder_data[ base_data_index ];
+        cylinder_data[ top_base_data_index + 1 ] =
+          cylinder_data[ base_data_index + 1];
+        cylinder_data[ top_base_data_index + 2 ] =
+          cylinder_data[ base_data_index + 2];
+        // Normal
+        cylinder_data[ top_base_data_index + 3 ] = 0;
+        cylinder_data[ top_base_data_index + 4 ] = 1;
+        cylinder_data[ top_base_data_index + 5 ] = 0;
+        // Texture coordinate
+        cylinder_data[ top_base_data_index + 6 ] = 0.5f - 0.5f * sina;
+        cylinder_data[ top_base_data_index + 7 ] = 0.5f + 0.5f * cosa;
+        cylinder_data[ top_base_data_index + 8 ] = 0;
 
-          // Create bottom vertex, it differs from side vertices when it
-          // comes to the normal and texture coordinates.
-          base_data_index = (unsigned int)(
-            ( 2 * ( nr_faces + 1 ) + nr_faces + i ) * nr_data_vertices );
+        // Create bottom vertex, it differs from side vertices when it
+        // comes to the normal and texture coordinates.
+        unsigned int bottom_base_data_index = (unsigned int)(
+          ( 3 * nr_faces + i ) * nr_data_vertices );
+        // Vertex
+        cylinder_data[ bottom_base_data_index ] =
+          cylinder_data[ base_data_index + 9 ];
+        cylinder_data[ bottom_base_data_index + 1 ] =
+          cylinder_data[ base_data_index + 10 ];
+        cylinder_data[ bottom_base_data_index + 2 ] =
+          cylinder_data[ base_data_index + 11 ];
+        // Normal
+        cylinder_data[ bottom_base_data_index + 3 ] = 0;
+        cylinder_data[ bottom_base_data_index + 4 ] = -1;
+        cylinder_data[ bottom_base_data_index + 5 ] = 0;
+        // Texture coordinate
+        cylinder_data[ bottom_base_data_index + 6 ] =
+          cylinder_data[ top_base_data_index + 6 ];
+        cylinder_data[ bottom_base_data_index + 7 ] =
+          cylinder_data[ top_base_data_index + 7 ];
+        cylinder_data[ bottom_base_data_index + 8 ] =
+          cylinder_data[ top_base_data_index + 8 ];
 
-          // Vertex
-          cylinder_data[ base_data_index ] = -l_radius * sina;
-          cylinder_data[ base_data_index + 1 ] = -half_height;
-          cylinder_data[ base_data_index + 2 ] = -l_radius * cosa;
-          // Normal
-          cylinder_data[ base_data_index + 3 ] = 0;
-          cylinder_data[ base_data_index + 4 ] = -1;
-          cylinder_data[ base_data_index + 5 ] = 0;
-          // Texture coordinate
-          cylinder_data[ base_data_index + 6 ] = 0.5f - 0.5f * sina;
-          cylinder_data[ base_data_index + 7 ] = 0.5f + 0.5f * cosa;
-          cylinder_data[ base_data_index + 8 ] = 0;
-
-          if( i > 1 ) {
-            // Create indices for top triangles.
-            base_index =
-              ( 2 * nr_faces - 2 + i ) * nr_index_data;
-            unsigned int base_vertex_index = 2 * ( nr_faces + 1 );
-            cylinder_index_data[ base_index ] = base_vertex_index;
-            cylinder_index_data[ base_index + 1 ] = base_vertex_index + i - 1;
-            cylinder_index_data[ base_index + 2 ] = base_vertex_index + i;
-
-            // Create indices for bottom triangles.
-            base_index =
-              ( 3 * nr_faces - 4 + i ) * nr_index_data;
-            base_vertex_index = 2 * ( nr_faces + 1 ) +
-                                             nr_faces;
-            cylinder_index_data[ base_index ] = base_vertex_index;
-            cylinder_index_data[ base_index + 1 ] = base_vertex_index + i;
-            cylinder_index_data[ base_index + 2 ] = base_vertex_index + i - 1;
-          }
+        if( i > 1 ) {
+          // Create indices for top triangles.
+          base_index = ( 2 * nr_faces + i - 2 ) * nr_index_data;
+          unsigned int base_vertex_index = 2 * nr_faces;
+          cylinder_index_data[ base_index ] = base_vertex_index;
+          cylinder_index_data[ base_index + 1 ] = base_vertex_index + i - 1;
+          cylinder_index_data[ base_index + 2 ] = base_vertex_index + i;
+           // Create indices for bottom triangles.
+          base_index = ( 3 * nr_faces + i - 4 ) * nr_index_data;
+          base_vertex_index = 3 * nr_faces;
+          cylinder_index_data[ base_index ] = base_vertex_index;
+          cylinder_index_data[ base_index + 1 ] = base_vertex_index + i;
+          cylinder_index_data[ base_index + 2 ] = base_vertex_index + i - 1;
         }
       }
 
@@ -281,7 +293,7 @@ void Cylinder::render() {
       3, GL_FLOAT, 9 * sizeof(GLfloat), (GLvoid*)(6*sizeof(GLfloat)) );
 
     unsigned int min_index = 0;
-    unsigned int max_index = nr_faces * 2 + 1;
+    unsigned int max_index = nr_faces * 2 - 1;
     unsigned int nr_side_index = (unsigned int)( nr_faces * 6 );
     unsigned int nr_cap_index = ( nr_faces - 2 ) * 3;
     if( side->getValue() ) {
