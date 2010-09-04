@@ -74,17 +74,6 @@ inline string toStr( const wxString &s ) {
 #endif
 }  
 
-H3D_API_EXCEPTION( QuitAPIException );
-
-class QuitAPIField: public AutoUpdate< SFString > {
-  virtual void update() {
-    string s = static_cast< SFString * >(routes_in[0])->getValue();
-    if( s[0] == 27 ) { 
-      throw QuitAPIException();
-    }
-  }
-};
-
 const wxCmdLineEntryDesc gCmdLineDesc[] = 
   {
     { wxCMD_LINE_PARAM, NULL, NULL, wxT("File to load"), wxCMD_LINE_VAL_STRING,
@@ -147,7 +136,7 @@ bool MyApp::OnExceptionInMainLoop() {
   try {
     throw;
   }
-  catch (const QuitAPIException &) {
+  catch (const Exception::QuitAPI &) {
     return false;
   }
   catch (const Exception::H3DException &e) {

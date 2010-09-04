@@ -80,18 +80,6 @@ inline string toStr( const wxString &s ) {
 
 /*******************Required Class***********************/
 
-H3D_API_EXCEPTION( QuitAPIException );
-
-class QuitAPIField: public AutoUpdate< SFString > {
-  virtual void update() {
-    string s = static_cast< SFString * >(routes_in[0])->getValue();
-    if( s[0] == 27 ) { 
-      throw QuitAPIException();
-    }
-  }
-};
-
-
 #if wxUSE_DRAG_AND_DROP
 
 void onDropFiles( wxCoord x, wxCoord y,
@@ -960,7 +948,11 @@ bool WxFrame::loadFile( const string &filename) {
     }
 
     tree_view_dialog->showEntireSceneAsTree( true );
-  } catch (const Exception::H3DException &e) {
+  } 
+    catch (const Exception::QuitAPI &e) {
+      throw e;
+    }
+    catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
     stringstream s;
     s << e;
