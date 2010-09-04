@@ -69,6 +69,10 @@ namespace H3D {
     /// the H3DNodeDatabase service.
     virtual Field *lookupField( const string &name );
 
+    /// Adds the fields at the top level of the PythonScript
+    /// node and its Python variable name to the given vector.
+    virtual void getTopLevelFields( vector< pair< string, Field * > > &fields );
+
     /// Traverse the scenegraph. Used in PythonScript to call a function
     /// in python once per scene graph loop.
     /// \param ti The TraverseInfo object containing information about the

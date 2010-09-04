@@ -143,6 +143,8 @@ void PythonScript::disallowMainThreadPython() {
 
 Field *PythonScript::lookupField( const string &name ) {
   if( module_dict ) {
+    // ensure we have the GIL lock to work with multiple python threads.
+    PyGILState_STATE state = PyGILState_Ensure();
     PyObject *fname = 
       PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
                             name.c_str() );
@@ -153,12 +155,47 @@ Field *PythonScript::lookupField( const string &name ) {
       if ( fieldptr && PyCObject_Check( fieldptr ) ) {
         Field *f = static_cast< Field* >( PyCObject_AsVoidPtr( fieldptr ) );
         Py_DECREF( fieldptr );
+        PyGILState_Release(state);
         return f;
       }
     } 
+    PyGILState_Release(state);
   }
   return NULL;
 }
+
+
+void PythonScript::getTopLevelFields( vector< pair< string, Field *> > &fields ) {
+  if( module_dict ) {
+    // ensure we have the GIL lock to work with multiple python threads.
+    PyGILState_STATE state = PyGILState_Ensure();
+
+    PyObject *key, *value;
+    Py_ssize_t pos = 0;
+    
+    // add all fields from the dictionary.
+    while (PyDict_Next(static_cast< PyObject * >( module_dict ), &pos, &key, &value)) {
+      // key and value are borrowed references
+
+      // new reference
+      PyObject *fieldptr = PyObject_GetAttrString( value, "__fieldptr__" );
+
+      if ( fieldptr ) {
+        if( PyCObject_Check( fieldptr ) && PyString_Check( key ) ) {
+          Field *f = static_cast< Field* >( PyCObject_AsVoidPtr( fieldptr ) );
+          string name = PyString_AsString( key );
+          fields.push_back( make_pair( name, f ) );
+        }
+        Py_DECREF( fieldptr );
+      }
+    }
+
+    PyGILState_Release(state);
+  }
+}
+
+
+
 
 
 PythonScript::PythonScript( Inst< MFString > _url,
