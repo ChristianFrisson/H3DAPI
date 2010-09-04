@@ -2,6 +2,7 @@
 
 #include <H3D/Group.h>
 #include <H3D/SFString.h>
+#include <H3D/PythonScript.h>
 
 H3DViewerFieldValuesDialog::H3DViewerFieldValuesDialog( wxWindow* parent )
 :
@@ -24,18 +25,31 @@ void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
       FieldValuesGrid->DeleteRows( 0, FieldValuesGrid->GetNumberRows() );
     return;
   }
-
-  if( new_node ) {
-    FieldValuesGrid->SaveEditControlValue();
-  }
-
   SetTitle( wxString(n->getTypeName().c_str(),wxConvUTF8) );
+
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+
 #ifdef DEFAULT_VALUES
   if( new_node ) {
     default_values_node.reset( db->createNode() );
   }
 #endif
+
+  updateGridFromNode( FieldValuesGrid,
+                      n,
+                      default_values_node.get(),
+                      new_node );
+}
+
+void H3DViewerFieldValuesDialog::updateGridFromNode( wxGrid *FieldValuesGrid,
+                                                     Node *n,
+                                                     Node *default_values_node,
+                                                     bool new_node ) {
+  if( new_node ) {
+    FieldValuesGrid->SaveEditControlValue();
+  }
+
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
 
   list< FieldDBElement * > init_only_fields;
   list< FieldDBElement * > input_only_fields;
@@ -79,7 +93,8 @@ void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
   for( list< FieldDBElement * >::iterator i = init_only_fields.begin();
        i != init_only_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    updateRowFromFieldDB( rows, n, *i, new_node );
+    Field *default_field = (*i)->getField( default_values_node );
+    updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
     rows++;
   }
 
@@ -99,7 +114,8 @@ void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
   for( list< FieldDBElement * >::iterator i = input_output_fields.begin();
        i != input_output_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    updateRowFromFieldDB( rows, n, *i, new_node );
+    Field *default_field = (*i)->getField( default_values_node );
+    updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
     rows++;
   }
   
@@ -119,7 +135,8 @@ void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
   for( list< FieldDBElement * >::iterator i = output_only_fields.begin();
        i != output_only_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    updateRowFromFieldDB( rows, n, *i, new_node );
+    Field *default_field = (*i)->getField( default_values_node );
+    updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
     rows++;
   }
 
@@ -139,13 +156,47 @@ void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
   for( list< FieldDBElement * >::iterator i = input_only_fields.begin();
        i != input_only_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    updateRowFromFieldDB( rows, n, *i, new_node );
+    Field *default_field = (*i)->getField( default_values_node );
+    updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
     rows++;
   }
 
+  // if PythonScript node add top-level fields.
+  PythonScript *ps = dynamic_cast< PythonScript * >( n );
+  if( ps ) {
+    vector< pair< string, Field *> > python_fields;
+    ps->getTopLevelFields( python_fields );
+  
+    // python fields.
+    if( python_fields.size() > 0 ) {
+      if( rows >= FieldValuesGrid->GetNumberRows() )
+        FieldValuesGrid->AppendRows(1);
+      FieldValuesGrid->SetCellSize( rows, 0, 1, 2 );
+      FieldValuesGrid->SetCellAlignment( rows, 0, wxALIGN_CENTRE, wxALIGN_CENTRE);
+      FieldValuesGrid->SetCellValue( rows, 0, _T("Python fields"));
+      FieldValuesGrid->SetReadOnly( rows, 0 );
+      FieldValuesGrid->SetCellBackgroundColour( rows, 0, wxColour(159, 222,222) );
+      FieldValuesGrid->SetCellTextColour( rows, 0, wxColour(100, 100,100) );
+      rows++;
+    }
+
+    for( vector< pair< string, Field *> >::iterator i = python_fields.begin();
+         i != python_fields.end(); i++ ) {
+      Field *f = (*i).second;
+      const string &name = (*i).first;
+      if( dynamic_cast< SFNode * >( f ) || 
+          dynamic_cast< MFNode * >( f ) ) continue;
+        
+      updateRowFromField( FieldValuesGrid, rows, f, f, new_node, name );
+      rows++;
+    }
+  }
+   
   if( rows < FieldValuesGrid->GetNumberRows() ) {
     FieldValuesGrid->DeleteRows( rows, FieldValuesGrid->GetNumberRows() - rows );
   }
+
+  
 
 }
 
@@ -178,11 +229,13 @@ void H3DViewerFieldValuesDialog::OnCellEdit( wxGridEvent& event ) {
   }
 }
 
-void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row, 
-                                                        Node *n,
-                                                        FieldDBElement *db,
-                                                        bool new_node ) {
-  Field *f = db->getField( n );
+
+void H3DViewerFieldValuesDialog::updateRowFromField( wxGrid *FieldValuesGrid,
+                                                     int row, 
+                                                     Field *f,
+                                                     Field *default_field,
+                                                     bool new_node,
+                                                     const string &custom_field_name ) {
   if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
     
   } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
@@ -194,19 +247,19 @@ void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row,
     wxGridCellRenderer *renderer = current_renderer;
     string value;
     string default_value;
-    Field *default_field = db->getField( default_values_node.get() );
+    string field_name = custom_field_name;
+    if( field_name.empty() ) field_name = f->getName();
+
     bool allow_cell_update = true;
 
     FieldValuesGrid->SetCellSize( row, 0, 1, 1 );
     FieldValuesGrid->SetCellAlignment(row, 0, wxALIGN_LEFT, wxALIGN_TOP);
     FieldValuesGrid->SetReadOnly( row, 0 );
     FieldValuesGrid->SetCellBackgroundColour( row, 0, *wxWHITE );
-    FieldValuesGrid->SetCellTextColour( row, 0, *wxBLACK );
 
     FieldValuesGrid->SetCellSize( row, 1, 1, 1 );
     FieldValuesGrid->SetCellAlignment(row, 1, wxALIGN_LEFT, wxALIGN_TOP);
     FieldValuesGrid->SetCellBackgroundColour( row, 1, *wxWHITE );
-    FieldValuesGrid->SetCellTextColour( row, 1, *wxBLACK );
     if( f->getAccessType() == Field::INITIALIZE_ONLY ||
         f->getAccessType() == Field::OUTPUT_ONLY ) {
       FieldValuesGrid->SetReadOnly( row, 1, true );
@@ -337,13 +390,14 @@ void H3DViewerFieldValuesDialog::updateRowFromFieldDB( int row,
       FieldValuesGrid->SetCellTextColour( row, 0, *wxRED );
       FieldValuesGrid->SetCellTextColour( row, 1, *wxRED );
     }
+   
     changed_color = FieldValuesGrid->GetCellTextColour( row, 0 ) != current_color;
 #endif
     
     //  set the field name value if it has changed.
-    if( string( FieldValuesGrid->GetCellValue( row, 0 ).mb_str() ) != f->getName() ||
+    if( string( FieldValuesGrid->GetCellValue( row, 0 ).mb_str() ) != field_name ||
         changed_color )
-      FieldValuesGrid->SetCellValue( row, 0, wxString( f->getName().c_str() , wxConvUTF8) );
+      FieldValuesGrid->SetCellValue( row, 0, wxString( field_name.c_str() , wxConvUTF8) );
     
     // set field value if changed and not currently being edited.
     if( allow_cell_update &&
