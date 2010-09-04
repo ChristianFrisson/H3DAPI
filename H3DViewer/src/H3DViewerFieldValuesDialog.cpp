@@ -59,7 +59,9 @@ void H3DViewerFieldValuesDialog::updateGridFromNode( wxGrid *FieldValuesGrid,
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; i++ ) {
     Field *f = i.getField( n ); 
-    if( dynamic_cast< SFNode * >( f ) ||
+   
+    if( !f ||
+        dynamic_cast< SFNode * >( f ) ||
         dynamic_cast< MFNode * >( f ) ) {
       continue;    
     }
@@ -236,6 +238,8 @@ void H3DViewerFieldValuesDialog::updateRowFromField( wxGrid *FieldValuesGrid,
                                                      Field *default_field,
                                                      bool new_node,
                                                      const string &custom_field_name ) {
+  if(!default_field) default_field = f;
+  
   if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
     
   } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
