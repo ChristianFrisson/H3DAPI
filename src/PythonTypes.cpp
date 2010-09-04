@@ -763,6 +763,21 @@ self, name, field_type, access_type )" );
     if( PyTuple_Size( args ) == 0 ) {
       Vec2d *self_v = (Vec2d *)self;
       *self_v = Vec2d();
+    } else if( PyTuple_Size( args ) == 1 ) {
+      PyObject *o = PyTuple_GetItem( args, 0 );
+      if( PyVec2d_Check( o ) ) {
+        Vec2d vd = PyVec2d_AsVec2d( o );
+        self->x = vd.x;
+        self->y = vd.y;
+      } if( PyVec2f_Check( o ) ) {
+        Vec2f vd = PyVec2f_AsVec2f( o );
+        self->x = vd.x;
+        self->y = vd.y;
+      } else {
+        PyErr_SetString(PyExc_TypeError, 
+                        "invalid type given to Vec2d constructor." );
+        return -1;
+      }
     } else {
       static char *kwlist[] = {"x", "y", NULL};
       if (! PyArg_ParseTupleAndKeywords(args, kwds, "dd", kwlist, 
@@ -941,6 +956,23 @@ self, name, field_type, access_type )" );
     if( PyTuple_Size( args ) == 0 ) {
       Vec3f *self_v = (Vec3f *)self;
       *self_v = Vec3f();
+    } else if( PyTuple_Size( args ) == 1 ) {
+      PyObject *o = PyTuple_GetItem( args, 0 );
+      if( PyVec3d_Check( o ) ) {
+        Vec3d vd = PyVec3d_AsVec3d( o );
+        self->x = (H3DFloat)vd.x;
+        self->y = (H3DFloat)vd.y;
+        self->z = (H3DFloat)vd.z;
+      } if( PyVec3f_Check( o ) ) {
+        Vec3f vd = PyVec3f_AsVec3f( o );
+        self->x = vd.x;
+        self->y = vd.y;
+        self->z = vd.z;
+      } else {
+        PyErr_SetString(PyExc_TypeError, 
+                        "invalid type given to Vec3f constructor." );
+        return -1;
+      }
     } else {
       static char *kwlist[] = {"x", "y", "z", NULL};
       if (! PyArg_ParseTupleAndKeywords(args, kwds, "fff", kwlist, 
@@ -1174,6 +1206,23 @@ self, name, field_type, access_type )" );
     if( PyTuple_Size( args ) == 0 ) {
       Vec3d *self_v = (Vec3d *)self;
       *self_v = Vec3d();
+    } else if( PyTuple_Size( args ) == 1 ) {
+      PyObject *o = PyTuple_GetItem( args, 0 );
+      if( PyVec3d_Check( o ) ) {
+        Vec3d vd = PyVec3d_AsVec3d( o );
+        self->x = vd.x;
+        self->y = vd.y;
+        self->z = vd.z;
+      } if( PyVec3f_Check( o ) ) {
+        Vec3f vd = PyVec3f_AsVec3f( o );
+        self->x = vd.x;
+        self->y = vd.y;
+        self->z = vd.z;
+      } else {
+        PyErr_SetString(PyExc_TypeError, 
+                        "invalid type given to Vec3d constructor." );
+        return -1;
+      }
     } else {
       static char *kwlist[] = {"x", "y", "z", NULL};
       if (! PyArg_ParseTupleAndKeywords(args, kwds, "ddd", kwlist, 
@@ -1352,6 +1401,25 @@ self, name, field_type, access_type )" );
     if( PyTuple_Size( args ) == 0 ) {
       Vec4f *self_v = (Vec4f *)self;
       *self_v = Vec4f();
+    } else if( PyTuple_Size( args ) == 1 ) {
+      PyObject *o = PyTuple_GetItem( args, 0 );
+      if( PyVec4d_Check( o ) ) {
+        Vec4d vd = PyVec4d_AsVec4d( o );
+        self->x = (H3DFloat)vd.x;
+        self->y = (H3DFloat)vd.y;
+        self->z = (H3DFloat)vd.z;
+        self->w = (H3DFloat)vd.w;
+      } if( PyVec4f_Check( o ) ) {
+        Vec4f vd = PyVec4f_AsVec4f( o );
+        self->x = vd.x;
+        self->y = vd.y;
+        self->z = vd.z;
+        self->w = vd.w;
+      } else {
+        PyErr_SetString(PyExc_TypeError, 
+                        "invalid type given to Vec4f constructor." );
+        return -1;
+      }
     } else {
       static char *kwlist[] = {"x", "y", "z", "w", NULL};
       if (! PyArg_ParseTupleAndKeywords(args, kwds, "ffff", kwlist, 
@@ -1491,6 +1559,25 @@ self, name, field_type, access_type )" );
     if( PyTuple_Size( args ) == 0 ) {
       Vec4d *self_v = (Vec4d *)self;
       *self_v = Vec4d();
+    } else if( PyTuple_Size( args ) == 1 ) {
+      PyObject *o = PyTuple_GetItem( args, 0 );
+      if( PyVec4d_Check( o ) ) {
+        Vec4d vd = PyVec4d_AsVec4d( o );
+        self->x = vd.x;
+        self->y = vd.y;
+        self->z = vd.z;
+        self->w = vd.w;
+      } if( PyVec4f_Check( o ) ) {
+        Vec4f vd = PyVec4f_AsVec4f( o );
+        self->x = vd.x;
+        self->y = vd.y;
+        self->z = vd.z;
+        self->w = vd.w;
+      } else {
+        PyErr_SetString(PyExc_TypeError, 
+                        "invalid type given to Vec4f constructor." );
+        return -1;
+      }
     } else {
       static char *kwlist[] = {"x", "y", "z", "w", NULL};
       if (! PyArg_ParseTupleAndKeywords(args, kwds, "dddd", kwlist, 

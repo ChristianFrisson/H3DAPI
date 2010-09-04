@@ -740,7 +740,7 @@ namespace H3D {
     /// a python string argument list
     static int init(PyQuaternion *self, PyObject *args, PyObject *kwds);
     
-    /// Multiplies two Matrix3f objects
+    /// Multiplies two PyQuaternion objects
     static PyObject* mul( PyObject *rota, PyObject *rotb );
 
     /// Get the euler angles( yaw, pitch, roll ) representation of 
