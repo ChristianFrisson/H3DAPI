@@ -146,6 +146,11 @@ namespace H3D {
 
     PyObject* throwQuitAPIException( PyObject *self, PyObject *arg );
 
+    PyObject* pythonCreateNode( PyObject *self, PyObject *arg );
+
+    PyObject* pythonGetHapticsDevice( PyObject *self, PyObject *arg );
+
+    PyObject* pythonGetNrHapticsDevices( PyObject *self, PyObject *arg );
   }
 
     

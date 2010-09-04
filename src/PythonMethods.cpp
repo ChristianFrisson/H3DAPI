@@ -576,6 +576,9 @@ if( check_func( value ) ) {                                         \
       { "resolveURLAsFile", pythonResolveURLAsFile, 0 },
       { "resolveURLAsFolder", pythonResolveURLAsFolder, 0 },
       { "throwQuitAPIException", throwQuitAPIException, 0 },
+      { "createNode", pythonCreateNode, 0 },
+      { "getHapticsDevice", pythonGetHapticsDevice, 0 },
+      { "getNrHapticsDevices", pythonGetNrHapticsDevices, 0 },
       { NULL, NULL }      
     };
     
@@ -1874,9 +1877,49 @@ call the base class __init__ function." );
       return Py_None; 
     }
 
-  }
+    PyObject* pythonCreateNode( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyString_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.createNode( node_name ).";
+        err << " node_name should be of string type.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
 
- 
+      char *node_name = PyString_AsString( arg );
+      return PyNode_FromNode( H3DNodeDatabase::createNode( node_name ) );
+    }
+
+    PyObject* pythonGetNrHapticsDevices( PyObject *self, PyObject *arg ) {
+      DeviceInfo *di = DeviceInfo::getActive();
+      size_t nr_devices = 0;
+      if( di ) nr_devices = di->device->size();
+      return PyInt_FromSize_t( nr_devices );
+    }
+
+    PyObject* pythonGetHapticsDevice( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyInt_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.getHapticsDevice( index ).";
+        err << " index should be of int type.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      
+      long index = PyInt_AsLong( arg );
+      
+      DeviceInfo *di = DeviceInfo::getActive();
+      H3DHapticsDevice *hdev = NULL;
+      if( di ) {
+        size_t nr_devices = di->device->size();
+        if( index >=0 && index < nr_devices ) {
+          hdev = di->device->getValueByIndex( index );
+        }
+      }
+      return PyNode_FromNode( hdev );
+    }
+    
+  }
 }
 
 #endif // HAVE_PYTHON
