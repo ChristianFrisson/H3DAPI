@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -178,6 +178,20 @@ namespace H3D {
     /// Sets geometry shader paramters based on fields.
     void setGeometryShaderParameters( GLenum program_handle);
 
+    /// Class used to set up routes from nodes in SFNode and MFNode fields
+    /// to correctly break cache. Since it is impossible to know which fields
+    /// of a node should break cache only nodes inheriting from
+    /// H3DDisplayListObject actually breaks cache.
+    class SetupDynamicRoutes : public AutoUpdate< Field > {
+    protected:
+      virtual void update();
+      // Map from Fields to nodes in the fields, needed in
+      // order to remove nodes properly.
+      map< Field *, NodeVector > fields_to_nodes;
+    };
+
+    /// C++ fields only. Contains instance of SetupDynamicRoutes.
+    auto_ptr< SetupDynamicRoutes > setupDynamicRoutes;
   };
 }
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -76,7 +76,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   geometryInputType( _geometryInputType ),
   geometryOutputType( _geometryOutputType ),
   geometryVerticesOut( _geometryVerticesOut ),
-  program_handle( 0 ) {
+  program_handle( 0 ),
+  setupDynamicRoutes( new SetupDynamicRoutes ) {
   type_name = "ComposedShader";
   database.initFields( this );
 
@@ -97,17 +98,27 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
 
   geometryVerticesOut->setValue( 64 );
 
+  setupDynamicRoutes->setName( "setupDynamicRoutes" );
+  setupDynamicRoutes->setOwner( this );
+
   activate->route( displayList, id );
   parts->route( displayList, id );
+  setupDynamicRoutes->route( displayList );
 }
 
 bool ComposedShader::shader_support_checked = false;
 
 bool ComposedShader::addField( const string &name, 
-                               const Field::AccessType &access, Field *field ) {
-  bool success = X3DProgrammableShaderObject::addField( name, access, field  );	
+                               const Field::AccessType &access, Field *field ){
+  bool success = X3DProgrammableShaderObject::addField( name, access, field  );
   if( success ) {
-    field->route( displayList );
+    SFNode * sf_node_field = dynamic_cast< SFNode * >( field );
+    MFNode * mf_node_field = dynamic_cast< MFNode * >( field );
+    if( sf_node_field || mf_node_field ) {
+      field->route( setupDynamicRoutes, id );
+    } else {
+      field->route( displayList );
+    }
   }
   return success;
 }
@@ -145,7 +156,8 @@ void ComposedShader::render() {
     bool all_parts_valid = true;
     // compile all shader parts
 
-    for( MFShaderPart::const_iterator i = parts->begin(); i != parts->end(); i++ ) {
+    for( MFShaderPart::const_iterator i = parts->begin();
+         i != parts->end(); i++ ) {
       if( static_cast< ShaderPart * >(*i)->compileShader() == 0 ) {
         all_parts_valid = false;
       }
@@ -164,7 +176,8 @@ void ComposedShader::render() {
           // if a handle found, use that!
           program_handle = phandles_map[key];
           phandle_counts[program_handle]++;
-          //std::cout<< getName() << " use program handle " << program_handle << std::endl;
+          //std::cout<< getName() << " use program handle " << program_handle
+          // << std::endl;
           glUseProgramObjectARB( program_handle );
         } else {
           // if not, create one, link to shaderparts
@@ -177,8 +190,10 @@ void ComposedShader::render() {
             std::string key = genKeyFromShader( this );
             phandles_map[key] = h;
             // register shader objects
-            for ( MFShaderPart::const_iterator i = parts->begin(); i != parts->end(); i++ ) {
-              current_shaders.push_back( static_cast< ShaderPart * >(*i)->getShaderHandle() );
+            for ( MFShaderPart::const_iterator i = parts->begin();
+                  i != parts->end(); i++ ) {
+              current_shaders.push_back(
+                static_cast< ShaderPart * >(*i)->getShaderHandle() );
             }
           }
         }
@@ -186,7 +201,8 @@ void ComposedShader::render() {
 
       // if a TRUE event has been sent to the activate field we 
       // relink the program (without looking up)
-      else if ( ( displayList->hasCausedEvent( activate ) && activate->getValue( id ) ))
+      else if( displayList->hasCausedEvent( activate ) &&
+                  activate->getValue( id ) )
       {
         // deallocate old instance if not used anywhere
         if (phandle_counts.find(program_handle) != phandle_counts.end()) {
@@ -199,25 +215,30 @@ void ComposedShader::render() {
             }
             current_shaders.clear();
             // delete object
-            //std::cout<< this->getName() << " remove phandle " << program_handle << std::endl;
+            //std::cout<< this->getName() << " remove phandle "
+            //         << program_handle << std::endl;
             glDeleteObjectARB( program_handle );
             phandle_counts.erase( program_handle );
           }
         } else {
           // if not, this is a floating program handle. delete it anyway
-          //std::cout<< this->getName() << " remove phandle " << program_handle << std::endl;
+          //std::cout<< this->getName() << " remove phandle " << program_handle
+          //         << std::endl;
           glDeleteObjectARB( program_handle );
         }
 
-        // we can't use the old instance (b'coz that forces other shaders to re-link)
+        // we can't use the old instance (because that forces other
+        // shaders to re-link)
 
         GLhandleARB h = createHandle(this);
         if (h != 0) {
           program_handle = h;
           glUseProgramObjectARB( h );
           // register shader objects
-          for ( MFShaderPart::const_iterator i = parts->begin(); i != parts->end(); i++ ) {
-            current_shaders.push_back( static_cast< ShaderPart * >(*i)->getShaderHandle() );
+          for ( MFShaderPart::const_iterator i = parts->begin();
+                i != parts->end(); i++ ) {
+            current_shaders.push_back(
+              static_cast< ShaderPart * >(*i)->getShaderHandle() );
           }
         }
       }
@@ -248,7 +269,8 @@ std::string ComposedShader::genKeyFromShader(ComposedShader* shader)
   // by making a string of all the shaderParts' handles combined.
   vector<GLhandleARB> keys;
   keys.reserve( shader->parts->size() );
-  for( MFShaderPart::const_iterator i = shader->parts->begin(); i != shader->parts->end(); i++ ) {
+  for( MFShaderPart::const_iterator i = shader->parts->begin();
+       i != shader->parts->end(); i++ ) {
     GLhandleARB handle = static_cast< ShaderPart * >(*i)->getShaderHandle();
     keys.push_back( handle );
   }
@@ -268,7 +290,8 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
   GLhandleARB program_handle = glCreateProgramObjectARB();
 
   // add the shaders to program
-  for ( MFShaderPart::const_iterator i = shader->parts->begin(); i != shader->parts->end(); i++ ) {
+  for ( MFShaderPart::const_iterator i = shader->parts->begin();
+        i != shader->parts->end(); i++ ) {
     GLhandleARB handle = static_cast< ShaderPart * >(*i)->getShaderHandle();
     glAttachObjectARB( program_handle, handle );
   }
@@ -279,22 +302,26 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
   // link shader program
   glLinkProgramARB( program_handle );
   GLint link_success;
-  glGetObjectParameterivARB( program_handle, GL_OBJECT_LINK_STATUS_ARB, &link_success );
+  glGetObjectParameterivARB( program_handle, GL_OBJECT_LINK_STATUS_ARB,
+                             &link_success );
   if( link_success == GL_FALSE ) {
     // linking failed, print error message
     GLint nr_characters;
-    glGetObjectParameterivARB( program_handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nr_characters );
+    glGetObjectParameterivARB( program_handle, GL_OBJECT_INFO_LOG_LENGTH_ARB,
+                               &nr_characters );
     GLcharARB *log = new GLcharARB[nr_characters];
     glGetInfoLogARB( program_handle, nr_characters, NULL, log );
     Console(3) << "Warning: Error while linking shader parts in \""
-               << const_cast<ComposedShader&>(*shader).getName() << "\" node. " << endl << log << endl;
+               << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
+               << endl << log << endl;
     glDeleteObjectARB( program_handle );
     delete log;
 
     return 0;
   }
 
-  //std::cout<< const_cast<ComposedShader&>(*shader).getName() << " created program handle " << program_handle << std::endl;
+  //std::cout<< const_cast<ComposedShader&>(*shader).getName()
+  //  << " created program handle " << program_handle << std::endl;
 
 
   return program_handle;
@@ -316,7 +343,8 @@ void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
                              GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
     } else if( input_type == "LINES_ADJACENCY" ) {
       glProgramParameteriEXT(program_handle, 
-                             GL_GEOMETRY_INPUT_TYPE_EXT, GL_LINES_ADJACENCY_EXT );
+                             GL_GEOMETRY_INPUT_TYPE_EXT,
+                             GL_LINES_ADJACENCY_EXT );
     } else if( input_type == "TRIANGLES_ADJACENCY" ) {
       glProgramParameteriEXT(program_handle, 
                              GL_GEOMETRY_INPUT_TYPE_EXT, 
@@ -342,7 +370,8 @@ void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
                              GL_TRIANGLE_STRIP );
     } else {
       Console(4) << "Invalid geometryOutputType \"" << output_type
-                 << "\" in ComposedShader. Using \"TRIANGLE_STRIP\" instead." << endl;
+                 << "\" in ComposedShader. Using \"TRIANGLE_STRIP\" instead."
+                 << endl;
       glProgramParameteriEXT(program_handle, 
                              GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLES);
     } 
@@ -366,3 +395,57 @@ void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
     
   }
 }
+
+void ComposedShader::SetupDynamicRoutes::update() {
+  AutoUpdate< Field >::update();
+  ComposedShader * cs = static_cast< ComposedShader * >( getOwner() );
+  SFNode * sf_node_field = dynamic_cast< SFNode * >( event.ptr );
+  MFNode * mf_node_field = dynamic_cast< MFNode * >( event.ptr );
+
+  map< Field *, NodeVector >::iterator in_map =
+    fields_to_nodes.find( event.ptr );
+
+  // Start by removing the entry in fields_to_nodes map. Since it might be
+  // that the node added is not the same as the previous node, and it might
+  // also be so that the new node does not inherit from H3DDisplayListObject.
+  if( in_map != fields_to_nodes.end() ) {
+    const NodeVector &node_vector = (*in_map).second;
+    for( unsigned int i = 0; i < node_vector.size(); i++ ) {
+      H3DDisplayListObject *hdln =
+        dynamic_cast< H3DDisplayListObject * >( node_vector[i] );
+      if( hdln )
+        hdln->displayList->unroute( cs->displayList );
+    }
+    fields_to_nodes.erase( in_map );
+  }
+
+  if( sf_node_field ) {
+    // Setup route for the node contained in sf_node_field.
+    // Add entry to map to remove later.
+    Node * n = sf_node_field->getValue();
+    H3DDisplayListObject *hdln =
+      dynamic_cast< H3DDisplayListObject * >( n );
+    if( hdln ) {
+      hdln->displayList->route( cs->displayList, cs->id );
+      NodeVector tmp_node_vector;
+      tmp_node_vector.push_back( n );
+      fields_to_nodes[ event.ptr ] = tmp_node_vector;
+    }
+  } else {
+    // Setup routes for all nodes contained in mf_node_field.
+    // Add entry to map to remove later.
+    const NodeVector &node_vector = mf_node_field->getValue();
+    NodeVector tmp_node_vector;
+    for( unsigned int i = 0; i < node_vector.size(); i++ ) {
+      H3DDisplayListObject *hdln =
+        dynamic_cast< H3DDisplayListObject * >( node_vector[i] );
+      if( hdln ) {
+        hdln->displayList->route( cs->displayList, cs->id );
+        tmp_node_vector.push_back( node_vector[i] );
+      }
+    }
+    if( !tmp_node_vector.empty() )
+      fields_to_nodes[ event.ptr ] = tmp_node_vector;
+  }
+}
+
