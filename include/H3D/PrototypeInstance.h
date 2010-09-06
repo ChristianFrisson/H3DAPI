@@ -44,7 +44,8 @@ namespace H3D {
   public:
     /// Constructor.
     PrototypeInstance( Node *_prototyped_node,
-                       Inst< SFNode>  _metadata = 0 ) {
+                       Inst< SFNode>  _metadata = 0 ):
+      X3DPrototypeInstance( _metadata ) {
       type_name = "PrototypeInstance";
       prototyped_node.reset( _prototyped_node );
     }
