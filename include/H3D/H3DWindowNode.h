@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2009, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -449,6 +449,10 @@ namespace H3D {
     H3DInt32 mouse_position[2];
     // Stores the previous mouse position.
     H3DInt32 previous_mouse_position[2];
+    // Stores the current left mouse button state.
+    vector< bool > left_mouse_button;
+    // Stores previous left mouse button state.
+    bool previous_left_mouse_button;
     // Flag needed because of some kind of bug which is only apparent in
     // H3DLoad (maybe glut). See bug report.
     // TODO: This is only a work around, not really an optimal solution. To

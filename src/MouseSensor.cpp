@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/MouseSensor.h>
-#include <H3D/X3DPointingDeviceSensorNode.h>
 
 using namespace H3D;
 
@@ -133,9 +132,6 @@ void MouseSensor::mouseWheelAction( int direction ) {
 }
 
 void MouseSensor::buttonCallback( int button, int state ) {
-  if( button == LEFT_BUTTON ) {
-    X3DPointingDeviceSensorNode::updateButtonDependentFields( state == DOWN );
-  }
   invalid_instance_ptr = false;
   list< MouseSensor * >::iterator end_iterator = instances.end();
   for( list< MouseSensor * >::iterator i = instances.begin();

@@ -177,7 +177,8 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
       }
     } else {
       // No intersection with any geometries are found. Reset the new_value
-      // state and call onIsOver(). Note that onIsOver only sets event if
+      // state and call onIsOver(). Note that onIsOver for most
+      // X3DPointingDeviceSensors only sets event if
       // the pointing device sensor is enabled and active or if it is enabled
       // and no other pointing device sensors are active.
       for( unsigned int i = 0; i < instances.size(); i++ ) {
@@ -219,11 +220,13 @@ void X3DPointingDeviceSensorNode::updateButtonDependentFields( bool primary_butt
   // For each instance call setIsEnabled and setIsActive since they depend on
   // the value of the primary button device. Then set the static variable
   // so that some update fields (SetIsEnabled for example) can use it.
-  for( unsigned int i = 0; i < instances.size(); ++i ) {
-    instances[i]->setIsEnabled( primary_button );
-    instances[i]->setIsActive( primary_button );
+  if( last_primary_button_value != primary_button ) {
+    for( unsigned int i = 0; i < instances.size(); ++i ) {
+      instances[i]->setIsEnabled( primary_button );
+      instances[i]->setIsActive( primary_button );
+    }
+    last_primary_button_value = primary_button;
   }
-  last_primary_button_value = primary_button;
 }
 
 void X3DPointingDeviceSensorNode::setIsActive( bool primary_button ) {
