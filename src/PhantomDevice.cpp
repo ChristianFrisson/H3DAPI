@@ -52,8 +52,9 @@ namespace PhantomDeviceInternals {
   FIELDDB_ELEMENT( PhantomDevice, maxContinuousForce, OUTPUT_ONLY );
   FIELDDB_ELEMENT( PhantomDevice, gimbalAngles, OUTPUT_ONLY );
   FIELDDB_ELEMENT( PhantomDevice, jointAngles, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( PhantomDevice, needsCalibration, OUTPUT_ONLY )
-  FIELDDB_ELEMENT( PhantomDevice, calibrate, INPUT_ONLY )
+  FIELDDB_ELEMENT( PhantomDevice, needsCalibration, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( PhantomDevice, calibrate, INPUT_ONLY );
+  FIELDDB_ELEMENT( PhantomDevice, motorTemperatures, OUTPUT_ONLY );
 }
 
 unsigned int PhantomDevice::nr_initialized_devices = 0;
@@ -104,6 +105,7 @@ PhantomDevice::PhantomDevice(
   gimbalAngles( new SFVec3f ),
   jointAngles( new SFVec3f ),
   needsCalibration( new SFBool ),
+  motorTemperatures( new MFDouble ),
   calibrate( new SFBool ) { 
 
   type_name = "PhantomDevice";  
@@ -118,6 +120,7 @@ PhantomDevice::PhantomDevice(
   maxWorkspaceDimensions->resize( 2, Vec3f(0,0,0), id );
   usableWorkspaceDimensions->resize( 2, Vec3f(0,0,0), id );
   needsCalibration->setValue( false, id );
+  motorTemperatures->setValue( vector< H3DDouble >( 6, 0 ), id );
 
   desiredHapticsRate->setValue( 1000, id );
 }
@@ -162,6 +165,7 @@ H3DHapticsDevice::ErrorCode PhantomDevice::initDevice() {
     needsCalibration->setValue( pd->needsCalibration(), id );
     inputDOF->setValue( pd->getInputDOF(), id );
     outputDOF->setValue( pd->getOutputDOF(), id );
+
     nr_initialized_devices++;
     render_shapes_called = 0;
     started_scheduler = false;
@@ -193,6 +197,7 @@ void PhantomDevice::updateDeviceValues() {
     }
     gimbalAngles->setValue( (Vec3f)pd->getGimbalAngles(), id );
     jointAngles->setValue( (Vec3f) pd->getJointAngles(), id );
+    motorTemperatures->setValue( pd->getMotorTemperatures(), id );
   }
 #endif
 }

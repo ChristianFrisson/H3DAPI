@@ -223,6 +223,15 @@ namespace H3D {
     /// <b>Access type:</b> inputOnly \n   
     auto_ptr< SFBool > calibrate;
 
+    /// Motor temperatures from the device driver temperature model.
+    /// It contains 6 values where the first 3 values are motor for position
+    /// control and the rest are for torque control. The values are normalized
+    /// between 0 and 1 where 0 means cool and 1 the temperature where the driver
+    /// will shut down the motors for a few seconds to allow them to cool a bit.
+    /// 
+    /// <b>Access type: outputOnly</b> 
+    auto_ptr< MFDouble > motorTemperatures;
+
     /// Node database entry
     static H3DNodeDatabase database;
 
