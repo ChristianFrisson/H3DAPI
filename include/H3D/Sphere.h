@@ -151,18 +151,17 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
-    static void cleanUpVbo() {
-      if( vbo_id ) {
-        glDeleteBuffersARB( 2, vbo_id );
-        delete [] vbo_id;
-        vbo_id = NULL;
-      }
-    }
-
   protected:
-    // The index for the vertex buffer object
-    static GLuint *vbo_id;
-
+    // Internal variable used to store id for Sphere vbo.
+    // glDeleteBuffersARB is never called for the allocated buffer. The reason
+    // for this is that it is impossible to know when the OpenGL context is
+    // destroyed and glDeleteBuffersARB should be called before that occurrs.
+    // It is therefore assumed that the memory is cleaned up when the OpenGL
+    // context is removed.
+    static GLuint vbo_id[2];
+    // Internal variable used to indicate if vbo_id contains valid ids.
+    // Can not use -1 because vbo_id is an GLuint.
+    static bool vbo_initialized;
   };
 }
 

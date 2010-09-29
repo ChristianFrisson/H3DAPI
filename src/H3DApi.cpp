@@ -51,7 +51,7 @@
 
 using namespace H3D;
 
-/// Initialize H3D API(only needed if using H3D API as a static library). 
+// Initialize H3D API(only needed if using H3D API as a static library). 
 void H3D::initializeH3D() {
 
 #ifdef HAVE_FREEIMAGE
@@ -87,10 +87,8 @@ void H3D::initializeH3D() {
 #endif
 }
 
-  /// Deinitialize H3D API(only needed if using H3D API as a static library). 
+// Deinitialize H3D API(only needed if using H3D API as a static library). 
 void H3D::deinitializeH3D() {
-  // Remove vbo for Sphere. Only one is used for all spheres.
-  Sphere::cleanUpVbo();
 #ifdef HAVE_FREEIMAGE
   FreeImage_DeInitialise();
 #endif

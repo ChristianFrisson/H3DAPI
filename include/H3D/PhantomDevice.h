@@ -34,6 +34,7 @@
 #include <H3D/SFString.h>
 #include <H3D/SFDouble.h>
 #include <H3D/MFVec3f.h>
+#include <H3D/MFDouble.h>
 
 namespace H3D {
 

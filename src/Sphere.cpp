@@ -60,7 +60,8 @@ namespace SphereInternals {
   FIELDDB_ELEMENT( Sphere, solid, INPUT_OUTPUT );
 }
 
-GLuint *Sphere::vbo_id = NULL;
+GLuint Sphere::vbo_id[2] = { 0, 0 };
+bool Sphere::vbo_initialized = false;
 
 Sphere::Sphere( Inst<    SFNode > _metadata,
                 Inst< SFBound > _bound,
@@ -120,7 +121,8 @@ void Sphere::render() {
     }
 
     // Use vertex buffer objects to create sphere.
-    if( !vbo_id ) {
+    if( !vbo_initialized ) {
+      vbo_initialized = true;
       // Only create and transfer data when it has been modified.
       unsigned int nr_data_vertices = 9; // 9  floats/vertex.
       GLsizei data_size = 
@@ -189,7 +191,6 @@ void Sphere::render() {
         }
       }
 
-      vbo_id = new GLuint[2];
       glGenBuffersARB( 2, vbo_id );
 
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, vbo_id[0] );
