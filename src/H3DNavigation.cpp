@@ -247,21 +247,28 @@ void H3DNavigation::doNavigation(
       Vec2f mouse_pos = Vec2f( move_info.translation_sum.x,
                                move_info.translation_sum.y );
       mouse_pos.y = viewport[3] - mouse_pos.y - 1;
+      // Project to 0, 0.5 and 1.0 and use the values to check if
+      // an infinite clip_far value in a Viewpoint node caused the
+      // unproject to project to the wrong place (behind the near_plane)
+      // if it did then choose a large vector in the other direction.
       gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
         0.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
-      Vec3f near_plane_pos =
-        Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-      // Unproject to position 0.5 and then double the distance. The reason for
-      // this approach instead of using 1.0 as far plane is too handle the case
-      // of an infinite far plane. When the far plane is infinite the
-      // projection matrix is slightly modified to allow for correct shadow
-      // calculation (amongst other things). That projection matrix will give
-      // an incorrect value for far_plane_pos since the actual far plane is not
-      // at 1, but at 1-some_epsilon_value.
+      Vec3f near_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
       gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
         0.5, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
-      Vec3f far_plane_pos = near_plane_pos + 2 * (
-        Vec3f( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz ) - near_plane_pos );
+      Vec3f middle_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+      gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
+        1.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
+      Vec3f far_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+      Vec3f near_middle = middle_plane_pos - near_plane_pos;
+      if( near_middle * ( far_plane_pos - near_plane_pos ) < 0 ) {
+        // Infinite far plane caused problems. Choose a large vector in the
+        // other direction. Note that this is not an optimal solution, the best
+        // solution in this case would be to use a rayIntersect function in
+        // updateX3DPointingDeviceSensors. In this case we choose the point
+        // halfway to infinity, hopefully that should be enough.
+        far_plane_pos = middle_plane_pos;
+      }
 
       Node::LineIntersectResult result( true, true );
       if( topNode->lineIntersect( near_plane_pos,
