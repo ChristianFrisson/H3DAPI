@@ -477,10 +477,14 @@ if( !driver.insideProtoDeclaration() ) {
     {
   if ( !driver.insideProtoDeclaration() &&
        driver.node_stack.back() ) {
-    driver.DEF_map->addNode( (yysemantic_stack_[(3) - (2)]), driver.node_stack.back() );
-    driver.node_stack.back()->setName( (yysemantic_stack_[(3) - (2)]) );
+    Node *new_node = driver.node_stack.back();
+    if( !new_node->isInitialized() && new_node->getManualInitialize() ) 
+      new_node->initialize();   
+
+    driver.DEF_map->addNode( (yysemantic_stack_[(3) - (2)]), new_node );
+    new_node->setName( (yysemantic_stack_[(3) - (2)]) );
   } 
-;}
+  ;}
     break;
 
   case 31:
@@ -627,6 +631,7 @@ if ( !driver.insideProtoDeclaration() ) {
       // all named nodes from the parsed file.
       if( H3DScriptNode *script_node = 
           dynamic_cast< H3DScriptNode * >( new_node ) ) {
+        script_node->setManualInitialize( true );
         script_node->addNamedNodes( driver.DEF_map );
         driver.script_nodes.push_back( script_node );
       } 
