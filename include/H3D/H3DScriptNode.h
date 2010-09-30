@@ -31,6 +31,7 @@
 
 #include <H3D/X3DChildNode.h>
 #include <H3D/X3DUrlObject.h>
+#include <H3D/DEFNodes.h>
 
 namespace H3D {
 
@@ -42,7 +43,9 @@ namespace H3D {
     // Constructor
     H3DScriptNode( Inst< MFString > _url = 0 );
     
-    
+    /// Destructor.
+    ~H3DScriptNode();
+
     // Standard node functions:
     // Script interfacing functions, implemented as pure virtuals, to
     // be implemented for each specifc scripting language
@@ -61,8 +64,34 @@ namespace H3D {
     
     virtual Field* lookupField( const string &name ) = 0;
 
+    /// Add all nodes from the given DEFNodes instance to the scripts
+    /// set of named nodes. If nodes with the same name already exists
+    /// they will be overwritten.
+    void addNamedNodes( X3D::DEFNodes *dn );
+
+    /// Add a named node to the script. If a node with the same name 
+    /// already exists it will be overwritten.
+    void addNamedNode( const string &name, Node *n );
+
+    /// Remove the named node with the provided name. 
+    /// \return 0 on success, -1 if node with that name does not exist.
+    int removeNamedNode( const string &name );
+
+    /// Remove all named nodes.
+    void clearNamedNodes();
+
+    /// Returns the named node with the given name. NULL if no such node
+    /// exists.
+    Node *getNamedNode( const string &name );
+    
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    typedef std::map< string, Node * > NamedNodes;
+    NamedNodes named_nodes;
+
+    // Callback for removing named nodes when the nodes are destructed.  
+    static void removeNamedNodeCB( Node *n, void *data );
   };
 }
 

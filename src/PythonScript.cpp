@@ -377,6 +377,18 @@ void PythonScript::initialize() {
   module_dict = 
     PyModule_GetDict( static_cast< PyObject * >( module ) ); // borrowed ref
 
+  // Add __scriptnode__ to module dictionary which is the node the script resides in. 
+  PyObject *scriptnode = PyNode_FromNode( this );
+  
+  // decrease reference counter so that __scriptnode__ does not reference 
+  // the PythonScript node which would be a reference it itself making it
+  // never destruct.
+  this->unref(); 
+
+  PyDict_SetItem( (PyObject *) module_dict, 
+                  PyString_FromString( "__scriptnode__" ), 
+                  scriptnode);
+  Py_DECREF( scriptnode );
 
   bool script_loaded = false;
   for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {

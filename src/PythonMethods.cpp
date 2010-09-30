@@ -579,6 +579,7 @@ if( check_func( value ) ) {                                         \
       { "createNode", pythonCreateNode, 0 },
       { "getHapticsDevice", pythonGetHapticsDevice, 0 },
       { "getNrHapticsDevices", pythonGetNrHapticsDevices, 0 },
+      { "getNamedNode", pythonGetNamedNode, 0 },
       { NULL, NULL }      
     };
     
@@ -1918,7 +1919,29 @@ call the base class __init__ function." );
       }
       return PyNode_FromNode( hdev );
     }
-    
+
+    PyObject* pythonGetNamedNode( PyObject *self, PyObject *arg ) {
+      if( !arg || !PyString_Check( arg ) ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.getNamedNode( node_name ).";
+        err << " node_name should be of string type.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      char *node_name = PyString_AsString( arg );
+      PyObject *globals = PyEval_GetGlobals(); // borrowed ref
+      Node *n = NULL;
+      if( globals ) {
+        PyObject *py_scriptnode = 
+          PyDict_GetItemString( globals, "__scriptnode__"); // borrowed ref
+        if( py_scriptnode ) {
+          PythonScript *ps = (PythonScript *) PyNode_AsNode( py_scriptnode );
+          n = ps->getNamedNode( node_name );
+        } 
+      }
+      return PyNode_FromNode( n );
+    }
   }
 }
 

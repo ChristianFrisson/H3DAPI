@@ -36,6 +36,7 @@
 #include <H3D/DEFNodes.h>
 #include <H3D/ProtoDeclaration.h>
 #include <H3D/X3D.h>
+#include <H3D/H3DScriptNode.h>
 
 #include <H3DUtil/Exception.h>
 #include <H3DUtil/AutoRef.h>
@@ -131,6 +132,11 @@ namespace H3D {
       virtual void startDocument () { 
         resulting_node.reset( NULL );
       }
+
+      /// Handler for the SAX ContentHandler interface.
+      /// Is called at end of parsing and updates all script nodes
+      /// named nodes.
+      virtual void endDocument();
 
       /// Handler for the SAX ContentHandler interface.
       /// Builds the H3D scene graph.
@@ -341,6 +347,10 @@ namespace H3D {
 
       /// The ProtoDeclarations that have been defined with ProtoDeclare elements.
       PrototypeVector *proto_declarations;
+
+      /// All instances of H3DScriptNode that has been instanced so far during
+      /// parsing.
+      AutoRefVector< H3DScriptNode > script_nodes;
 
       /// The Node that is created during parsing
       AutoRef<Node> resulting_node;

@@ -45,3 +45,30 @@ Field *Node::getField( const string &name ) {
     return NULL;  // Should probably throw an error in this case
 }
 
+/// Add a callback function to be run on destruction of node.
+/// Returns 0 on success.
+int Node::addDestructCallback( void (*func)( Node *, void * ), void *args ) {
+  destruct_callbacks.push_back( make_pair( func, args ) );
+  return 0;
+}
+
+/// Add a callback function to be run on destruction of node.
+/// Returns 0 on success, -1 if the callback does not exist.
+int Node::removeDestructCallback( void (*func)( Node *, void * ), void *args ) {
+  DestructCallbacks::iterator i = 
+    std::find( destruct_callbacks.begin(), destruct_callbacks.end(), 
+               make_pair( func, args ) );
+  if( i == destruct_callbacks.end() ) {
+    return -1;
+  } else {
+    destruct_callbacks.erase( i );
+    return 0;
+  }
+}
+
+Node::~Node() {
+  for( DestructCallbacks::iterator i = destruct_callbacks.begin();
+       i != destruct_callbacks.end(); i++ ) {
+    (*i).first( this, (*i).second );
+  }
+}

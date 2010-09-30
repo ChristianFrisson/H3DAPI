@@ -802,6 +802,15 @@ def getHapticsDevice( index ):
   pass
 
 ## \namespace H3DInterface 
+## \fn def getNamedNode( DEF_name )
+## Returns the node with the given DEF name from the parsed x3d file
+## the PythonScript node that runs the current script was defined in.
+## \param DEF_name The name of the node as specified by DEF keywork.
+## \return The node with the specified name if it exists, None otherwise.
+def getNamedNode( DEF_name ):
+  pass
+
+## \namespace H3DInterface 
 ## \fn def resolveURLAsFile( url )
 ## Resolves a url and returns the path a local file with the file content.
 ## This will include URNResolver lookups if active.

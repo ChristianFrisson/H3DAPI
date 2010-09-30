@@ -151,6 +151,8 @@ namespace H3D {
     PyObject* pythonGetHapticsDevice( PyObject *self, PyObject *arg );
 
     PyObject* pythonGetNrHapticsDevices( PyObject *self, PyObject *arg );
+
+    PyObject* pythonGetNamedNode( PyObject *self, PyObject *arg );
   }
 
     

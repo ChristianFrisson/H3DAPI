@@ -53,7 +53,7 @@ namespace H3D {
     Node();
     
     /// Destructor.
-    virtual ~Node() {};
+    virtual ~Node();
 
     template< class N >
     static Node *newInstance() { return new N; };
@@ -290,6 +290,14 @@ namespace H3D {
     /// return a pointer to the field specified by name within this instance 
     virtual Field *getField( const string &name );
     
+    /// Add a callback function to be run on destruction of node.
+    /// Returns 0 on success.
+    int addDestructCallback( void (*func)( Node *, void * ), void *args );
+
+    /// Add a callback function to be run on destruction of node.
+    /// Returns 0 on success, -1 if the callback does not exist.
+    int removeDestructCallback( void (*func)( Node *, void * ), void *args );
+
     friend class Field;
     template <class Type>
     friend class SField;
@@ -302,6 +310,8 @@ namespace H3D {
     static H3DNodeDatabase database;
     int id;
     static int nr_nodes_created;
+    typedef  vector< pair< void (*)(Node *, void *), void * > > DestructCallbacks;
+    DestructCallbacks destruct_callbacks;
   };
 
 };

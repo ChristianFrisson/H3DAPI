@@ -35,6 +35,7 @@
 #include <H3D/FlexLexer.h>
 #include <H3D/ProtoDeclaration.h>
 #include <H3D/PrototypeVector.h>
+#include <H3D/H3DScriptNode.h>
 
 using namespace std;
 
@@ -142,6 +143,10 @@ public:
 
   DEFNodes *DEF_map;
   DEFNodes *DEF_export;
+
+  /// All instances of H3DScriptNode that has been instanced so far during
+  /// parsing.
+  AutoRefVector< H3DScriptNode > script_nodes;
 
   auto_ptr< DEFNodes > local_DEF_map;
   

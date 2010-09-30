@@ -354,7 +354,18 @@ if ( !driver.insideProtoDeclaration() ) {
         Console(3) << "WARNING: Could not create node \"" << yylval << 
           "\" - name not found in the node database and is not a proto name ( " <<
           driver.getLocationString() << " )." << endl;
-    }
+    } else {
+      // if node is a script node add the current named nodes
+      // from the current DEF_map and store the node in the 
+      // script_nodes vector. When parsing is done the named
+      // nodes will be updated in all scripts to contain
+      // all named nodes from the parsed file.
+      if( H3DScriptNode *script_node = 
+             dynamic_cast< H3DScriptNode * >( new_node ) ) {
+         script_node->addNamedNodes( driver.DEF_map );
+         driver.script_nodes.push_back( script_node );
+      } 
+    }   
   }
   driver.node_stack.push_back( new_node ); 
   }

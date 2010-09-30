@@ -81,6 +81,12 @@ int VrmlDriver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
     } else
       parser.parse ();
   }
+
+  // add named nodes from script to all script nodes.
+  for( size_t i = 0; i < script_nodes.size(); i++ ) {
+    script_nodes[i]->addNamedNodes( DEF_map );
+  }
+
   return 1;
 }
 
