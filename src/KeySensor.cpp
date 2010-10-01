@@ -71,6 +71,12 @@ KeySensor::KeySensor( Inst< SFBool   > _enabled,
 
   type_name = "KeySensor";
   database.initFields( this );
+
+  altKey->setValue( false, id );
+  controlKey->setValue( false, id );
+  shiftKey->setValue( false, id );
+  actionKeyPress->setValue( 0, id );
+  actionKeyRelease->setValue( 0, id );
 }
 
 void KeySensor::keyboardDown( int key, bool special_key ) {
