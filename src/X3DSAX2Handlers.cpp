@@ -1264,6 +1264,17 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
               // since we don't want it to occur until all child nodes
               // have been created and set.
               new_node->setManualInitialize( true );
+
+              // if node is a script node add the current named nodes
+              // from the current DEF_map and store the node in the 
+              // script_nodes vector. When parsing is done the named
+              // nodes will be updated in all scripts to contain
+              // all named nodes from the parsed file.
+              if( H3DScriptNode *script_node = 
+                  dynamic_cast< H3DScriptNode * >( new_node ) ) {
+                script_node->addNamedNodes( DEF_map );
+                script_nodes.push_back( script_node );
+              } 
             }
           } catch (  const H3D::Exception::H3DException &e ) {
             Console(3) << "WARNING: Could not create \"" << localname 
@@ -1521,5 +1532,10 @@ void X3DSAX2Handlers::warning(const SAXParseException& e) {
              << ", char " << e.getColumnNumber() << ")" << endl;
 }
 
+void X3DSAX2Handlers::endDocument() {
+  for( size_t i = 0; i < script_nodes.size(); i++ ) {
+    script_nodes[i]->addNamedNodes( DEF_map );
+  }
+}
 
 #endif
