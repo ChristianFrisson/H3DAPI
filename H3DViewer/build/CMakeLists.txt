@@ -169,10 +169,11 @@ IF(WIN32)
 
   # Set compile and link properties for projects.
   IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt /Zc:wchar_t" )
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} /Zc:wchar_t /Od" )
+    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
   ELSEIF(MSVC80)
     # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
-    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Od" )
     
     # This might be useful for visual studio 2005 users that often recompile the api.
     IF( NOT DEFINED USE_VC8_MP_FLAG )

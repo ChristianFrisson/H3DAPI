@@ -32,7 +32,7 @@ FIND_LIBRARY(GLEW_LIBRARY NAMES GLEW glew32
 MARK_AS_ADVANCED(GLEW_LIBRARY)
 
 IF( WIN32 AND PREFER_STATIC_LIBRARIES )
-  FIND_LIBRARY( GLEW_STATIC_LIBRARY NAMES glew32_static
+  FIND_LIBRARY( GLEW_STATIC_LIBRARY NAMES glew32s
                                          PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
                                          $ENV{H3D_ROOT}/../External/${LIB}/static
                                          ../../External/${LIB}/static

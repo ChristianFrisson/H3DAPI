@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -131,9 +131,6 @@ namespace H3D {
 
     virtual void render();
 
-    virtual H3DNodeDatabase *getDatabase() { return &database; }
-    
-    
     /// The center field specifies a translation offset from the origin
     /// of the local coordinate system that the rotation and scaling should
     /// occur around.

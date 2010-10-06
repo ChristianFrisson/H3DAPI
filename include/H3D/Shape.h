@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -69,9 +69,6 @@ namespace H3D {
            Inst< SFVec3f          > _bboxCenter     = 0,
            Inst< SFVec3f          > _bboxSize       = 0,
            Inst< DisplayList      > _displayList    = 0 );
-
-
-    virtual H3DNodeDatabase *getDatabase() { return &database; }
 
     static H3DNodeDatabase database;
 
