@@ -151,8 +151,13 @@ void GLUTWindow::initWindow() {
     return;
   }
   unsigned int mode = GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL;
+
+  if( useFullscreenAntiAliasing->getValue() ) {
+    mode = mode | GLUT_MULTISAMPLE;
+  }
+
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
-    
+      
   if( stereo_mode == RenderMode::VERTICAL_INTERLACED ||
       stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
       stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
@@ -160,6 +165,7 @@ void GLUTWindow::initWindow() {
   } else  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
     mode |= GLUT_STEREO;
   }
+  
   glutInitDisplayMode( mode );
   glutInitWindowSize( width->getValue(), height->getValue() );
   glutInitWindowPosition( posX->getValue(), posY->getValue() );

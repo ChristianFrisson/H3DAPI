@@ -160,7 +160,8 @@ namespace H3D {
                    Inst< SFInt32     > _posY       = 0,
                    Inst< SFBool      > _manualCursorControl = 0,
                    Inst< SFString    > _cursorType = 0,
-                   Inst< SFNavigationInfo > _navigationInfo = 0 );
+                   Inst< SFNavigationInfo > _navigationInfo = 0,
+                   Inst< SFBool      > _useFullscreenAntiAliasing = 0);
 
     /// Destructor.
     ~H3DWindowNode();
@@ -336,6 +337,14 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> NULL \n
     auto_ptr< SFNavigationInfo > navigationInfo;
+
+    /// If set to true fullscreen anti-aliasing is used for this window. 
+    /// This will smooth the appearance of objects and reduce jaggedness 
+    /// of the rendering.
+    ///
+    /// <b>Access type:</b> initializeOnly \n
+    /// <b>Default value:</b> true \n
+    auto_ptr< SFBool > useFullscreenAntiAliasing;
 
     static set< H3DWindowNode* > windows;
 

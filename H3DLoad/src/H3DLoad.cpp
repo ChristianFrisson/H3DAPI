@@ -325,10 +325,12 @@ int main(int argc, char* argv[]) {
   help_message += "\n";
   help_message += "Options:\n";
   help_message += "\n";
+  help_message += " -a --antialiasing      Use fullscreen anti-aliasing(default)\n";
+  help_message += " -A --no-antialiasing   Don't fullscreen anti-aliasing\n";
   help_message += " -m --mirror            Flip screen upside down\n";
-  help_message += " -M --no-mirror         Surpress flipping screen\n";
+  help_message += " -M --no-mirror         Suppress flipping screen\n";
   help_message += " -f --fullscreen        Open in fullscreen mode\n";
-  help_message += " -F --no-fullscreen     Surpress fullscreen mode\n";
+  help_message += " -F --no-fullscreen     Suppress fullscreen mode\n";
   help_message += "    --screen=<W>x<H>    Set width and height for window\n";
   help_message += "\n";
   help_message += "    --deviceinfo=<file> Use <file> as device info\n";
@@ -488,7 +490,7 @@ int main(int argc, char* argv[]) {
   }
 
   bool use_space_mouse = false;
-
+  bool antialiasing = true;
   // Command line arguments ---
 
   for( int i = 1 ; i < argc ; i++ ){
@@ -511,6 +513,10 @@ int main(int argc, char* argv[]) {
 
       else if( !strcmp(argv[i]+2,"mirror") ){
         mirrored = true; }
+      else if( !strcmp(argv[i]+2,"antialiasing") ){
+        antialiasing = true; }
+      else if( !strcmp(argv[i]+2,"no-antialiasing") ){
+        antialiasing = false; }
 
       else if( !strcmp(argv[i]+2,"no-mirror") ){
         mirrored = false; }
@@ -559,6 +565,14 @@ int main(int argc, char* argv[]) {
 
     case 'M':
       mirrored = false;
+      break;
+
+    case 'a':
+      antialiasing = true;
+      break;
+
+    case 'A':
+      antialiasing = false;
       break;
 
     case 'f':
@@ -641,6 +655,7 @@ int main(int argc, char* argv[]) {
     glwindow->renderMode->setValue( render_mode );
     glwindow->width->setValue(width);
     glwindow->height->setValue(height);
+    glwindow->useFullscreenAntiAliasing->setValue( antialiasing );
     scene->window->push_back( glwindow );
 
     AutoRef< Group > g( new Group );

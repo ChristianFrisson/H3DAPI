@@ -79,6 +79,7 @@ H3DNodeDatabase H3DWindowNode::database( "H3DWindowNode",
 namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, posX, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, posY, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, useFullscreenAntiAliasing, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, width, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, height, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, fullscreen, INPUT_OUTPUT );
@@ -104,7 +105,8 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFInt32     > _posY,
                    Inst< SFBool      > _manualCursorControl,
                    Inst< SFString    > _cursorType,
-                   Inst< SFNavigationInfo > _navigationInfo ) :
+                   Inst< SFNavigationInfo > _navigationInfo,
+                   Inst< SFBool > _useFullscreenAntiAliasing ) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -119,6 +121,7 @@ H3DWindowNode::H3DWindowNode(
   manualCursorControl( _manualCursorControl ),
   cursorType( _cursorType ),
   navigationInfo( _navigationInfo ),
+  useFullscreenAntiAliasing( _useFullscreenAntiAliasing ),
   multi_pass_transparency( false ),
   last_render_child( NULL ),
   window_id( 0 ),
@@ -164,6 +167,7 @@ H3DWindowNode::H3DWindowNode(
   cursorType->addValidValue( "DEFAULT" );
   cursorType->setValue( "DEFAULT" ); 
 
+  useFullscreenAntiAliasing->setValue( true );
   manualCursorControl->setValue( false );
 
 #ifdef WIN32
