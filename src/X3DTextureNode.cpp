@@ -42,39 +42,63 @@ X3DTextureNode *X3DTextureNode::active_texture = NULL;
 GLint X3DTextureNode::glInternalFormat( Image *i ) {
   switch( i->pixelType() ) {
   case Image::LUMINANCE: 
-    switch( i->bitsPerPixel() ) {
-    case 4:  return GL_LUMINANCE4;
-    case 8:  return GL_LUMINANCE8;
-    case 12: return GL_LUMINANCE12;
-    case 16: return GL_LUMINANCE16;
-    default: return GL_LUMINANCE;
+    if( GLEW_ARB_texture_float && 
+        i->pixelComponentType() == Image::RATIONAL ) {
+      if( i->bitsPerPixel() <= 16 ) return GL_LUMINANCE16F_ARB;
+      else return GL_LUMINANCE32F_ARB;
+    } else {
+      switch( i->bitsPerPixel() ) {
+      case 4:  return GL_LUMINANCE4;
+      case 8:  return GL_LUMINANCE8;
+      case 12: return GL_LUMINANCE12;
+      case 16: return GL_LUMINANCE16;
+      default: return GL_LUMINANCE;
+      }
     }
   case Image::LUMINANCE_ALPHA:
-    switch( i->bitsPerPixel() ) {
-    case 8:  return GL_LUMINANCE4_ALPHA4;
-    case 16: return GL_LUMINANCE8_ALPHA8;
-    case 32: return GL_LUMINANCE16_ALPHA16;
-    default: return GL_LUMINANCE_ALPHA;
+    if( GLEW_ARB_texture_float && 
+        i->pixelComponentType() == Image::RATIONAL ) {
+      if( i->bitsPerPixel() <= 32 ) return GL_LUMINANCE_ALPHA16F_ARB;
+      else return GL_LUMINANCE_ALPHA32F_ARB;
+    } else {
+      switch( i->bitsPerPixel() ) {
+      case 8:  return GL_LUMINANCE4_ALPHA4;
+      case 16: return GL_LUMINANCE8_ALPHA8;
+      case 32: return GL_LUMINANCE16_ALPHA16;
+      default: return GL_LUMINANCE_ALPHA;
+      }
     }
   case Image::RGB:
   case Image::BGR:
-    switch( i->bitsPerPixel() ) {
-    case 12: return GL_RGB4;
-    case 15: return GL_RGB5;
-    case 24: return GL_RGB8;
-    case 30: return GL_RGB10;
-    case 36: return GL_RGB12;
-    case 48: return GL_RGB16;
-    default: return GL_RGB;
+    if( GLEW_ARB_texture_float && 
+        i->pixelComponentType() == Image::RATIONAL ) {
+      if( i->bitsPerPixel() <= 48 ) return GL_RGB16F_ARB;
+      else return GL_RGB32F_ARB;
+    } else {
+      switch( i->bitsPerPixel() ) {
+      case 12: return GL_RGB4;
+      case 15: return GL_RGB5;
+      case 24: return GL_RGB8;
+      case 30: return GL_RGB10;
+      case 36: return GL_RGB12;
+      case 48: return GL_RGB16;
+      default: return GL_RGB;
+      }
     }
   case Image::RGBA:
   case Image::BGRA:
-    switch( i->bitsPerPixel() ) {
-    case 16: return GL_RGBA4;
-    case 32: return GL_RGBA8;
-    case 48: return GL_RGBA12;
-    case 64: return GL_RGBA16;
-    default: return GL_RGBA;
+    if( GLEW_ARB_texture_float && 
+        i->pixelComponentType() == Image::RATIONAL ) {
+      if( i->bitsPerPixel() <= 64 ) return GL_RGBA16F_ARB;
+      else return GL_RGBA32F_ARB;
+    } else {
+      switch( i->bitsPerPixel() ) {
+      case 16: return GL_RGBA4;
+      case 32: return GL_RGBA8;
+      case 48: return GL_RGBA12;
+      case 64: return GL_RGBA16;
+      default: return GL_RGBA;
+      }
     }
   default:
     throw UnsupportedPixelType( i->pixelType() );
