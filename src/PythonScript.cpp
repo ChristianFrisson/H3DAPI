@@ -225,11 +225,44 @@ PythonScript::PythonScript( Inst< MFString > _url,
   PyGILState_Release(state);
 }
 
+// Find python modules in dictionary and store them and the python reference counter
+// in module_names.
+void findModulesInDict( void * _dict, list< pair< string, Py_ssize_t > > &module_names ) {
+  PyObject *key, *value;
+  Py_ssize_t pos = 0;
+  while( PyDict_Next( static_cast< PyObject * >( _dict ),
+                      &pos, &key, &value ) ) {
+
+    if( PyString_Check( key ) && PyModule_Check( value ) ) {
+      // The name is a module. add it to imported_module_names.
+      string mod_name = PyString_AsString( key );
+      list< pair< string, Py_ssize_t > >::iterator i = module_names.begin();
+      for( ; i != module_names.end(); i++ )
+        if( (*i).first == mod_name )
+          break;
+      if( i == module_names.end() && value->ob_refcnt > 1 ) {
+        pair< string, Py_ssize_t > data;
+        data.first = mod_name;
+        data.second = value->ob_refcnt;
+        module_names.push_back( data );
+      }
+    }
+  }
+}
+
 PythonScript::~PythonScript() {
  // ensure we have the GIL lock to work with multiple python threads.
   PyGILState_STATE state = PyGILState_Ensure();
 
   if( module_dict ) {
+
+    PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
+    // Find all modules with a reference count above 1. Use the
+    // imported_module_names vector later to remove python modules included
+    // by this PythonScript.
+    list< pair< string, Py_ssize_t > > imported_module_names;
+    findModulesInDict( temp_sys_module_dict, imported_module_names );
+
     // Setting module_dict to null just to be on the safe side. It should not
     // really be needed.
     module_dict = NULL;
@@ -237,11 +270,42 @@ PythonScript::~PythonScript() {
     // Removing the PythonScript module module_name from database.
     // If it is already removed then there are two PythonScripts in the
     // scene using the same module_name ( or DEF ).
-    PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
     if( PyDict_DelItemString( temp_sys_module_dict,
                               (char*)module_name.c_str() ) == -1 ) {
       Console(4) << "Could not remove the python module " << module_name
                  << " from the sys.modules database. " << endl;
+    }
+
+    // Go through imported_module_names. Those modules whose reference count
+    // has decreased to 1 only belonged to this PythonScript and should be
+    // removed from the global module list. Note that this
+    // code will not take care of circular imports. That is, if module A
+    // imports module B while module B imports module A.
+    list< pair< string, Py_ssize_t > >::iterator i = imported_module_names.begin();
+    while( i != imported_module_names.end() ) {
+      PyObject *module_to_check = PyDict_GetItemString( temp_sys_module_dict,
+                                                        (char*)(*i).first.c_str() );
+      if( module_to_check && PyModule_Check( module_to_check ) ) {
+        if( module_to_check->ob_refcnt < (*i).second &&
+            module_to_check->ob_refcnt == 1 ) {
+          // Remove module.
+          PyDict_DelItemString( temp_sys_module_dict,
+                                (*i).first.c_str() );
+          imported_module_names.erase( i );
+          // There might still be modules left, restart the loop since the
+          // removal of this module might have lowered the reference count for
+          // other module.
+          if( imported_module_names.empty() )
+            break;
+          i = imported_module_names.begin();
+        } else
+          i++;
+      } else {
+        // This module does not exist anymore, simply remove it from the list.
+        list< pair< string, Py_ssize_t > >::iterator to_erase = i;
+        i++;
+        imported_module_names.erase( to_erase );
+      }
     }
   }
 

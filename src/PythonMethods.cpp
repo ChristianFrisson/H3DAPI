@@ -64,8 +64,14 @@ namespace H3D {
       typedef PyObject element_type;
 
       // constructor
-      explicit PythonAutoRef (PyObject* ptr = 0) {
+      explicit PythonAutoRef (PyObject* ptr = 0, bool borrowed_ref = false ) {
         ap=ptr;
+        // If the object is a borrowed reference then use Py_INCREF to make
+        // sure that the PythonAutoRef actually contains a reference to the
+        // python object and that Py_DECREF can be called no matter what when
+        // the ap pointer should change.
+        if( ap && borrowed_ref )
+          Py_INCREF( ap );
       }
       
       // destructor
@@ -74,7 +80,7 @@ namespace H3D {
           // ensure we have the GIL lock to work with multiple python threads.
           PyGILState_STATE state = PyGILState_Ensure();
           Py_DECREF( ap );
-	        PyGILState_Release(state);
+          PyGILState_Release(state);
         }
       }
 
@@ -90,8 +96,8 @@ namespace H3D {
       }
 
       // reset value
-      void reset (PyObject* ptr=0) throw(){
-        if (ap != ptr){
+      void reset( PyObject* ptr=0, bool borrowed_ref = false ) throw() {
+        if( ap != ptr ){
           if( ap ) {
             // ensure we have the GIL lock to work with multiple python threads.
             PyGILState_STATE state = PyGILState_Ensure();
@@ -99,6 +105,12 @@ namespace H3D {
             PyGILState_Release(state);
           }
           ap = ptr;
+          // If the object is a borrowed reference then use Py_INCREF to make
+          // sure that the PythonAutoRef actually contains a reference to the
+          // python object and that Py_DECREF can be called no matter what when
+          // the ap pointer should change.
+          if( ap && borrowed_ref )
+            Py_INCREF( ap );
         }
       }
     };
@@ -587,7 +599,7 @@ if( check_func( value ) ) {                                         \
       if( H3D_module.get() )
         return;
 
-      H3D_module.reset( Py_InitModule( "H3D", H3DMethods ) );
+      H3D_module.reset( Py_InitModule( "H3D", H3DMethods ), true );
       H3D_dict = PyModule_GetDict( H3D_module.get() );
 
 
@@ -625,7 +637,7 @@ if( check_func( value ) ) {                                         \
 #else
       if ( !PythonInternals::H3DInterface_module.get() ) {
         PythonInternals::H3DInterface_module.reset( 
-          PyImport_AddModule( "H3DInterface" ) ); 
+          PyImport_AddModule( "H3DInterface" ), true ); 
         PythonInternals::H3DInterface_dict = 
           PyModule_GetDict( PythonInternals::H3DInterface_module.get() );
         // install the buildins in the module
@@ -670,7 +682,7 @@ if( check_func( value ) ) {                                         \
 #ifndef H3DINTERFACE_AS_FILE
       if( !PythonInternals::H3DUtils_module.get() ) {
         PythonInternals::H3DUtils_module.reset( 
-          PyImport_AddModule( "H3DUtils" ) ); 
+          PyImport_AddModule( "H3DUtils" ), true ); 
         PythonInternals::H3DUtils_dict = 
           PyModule_GetDict( PythonInternals::H3DUtils_module.get() );
         // install the buildins in the module
