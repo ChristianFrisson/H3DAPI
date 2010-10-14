@@ -86,6 +86,7 @@ string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
 
   stringstream ss;
   Image* img = getValue();
+  if( img ) {
   ss << img->width() << separator << img->height()
      << separator << (int)img->pixelType() + 1;
   for(unsigned int index = 0; index < img->width() * img->height(); index++) {
@@ -102,6 +103,10 @@ string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
     }
     delete data;
     ss<< separator << intval;
+  } 
+  } else {
+    ss << 0 << separator << 0
+     << separator << 1;
   }
   return ss.str();
 }
