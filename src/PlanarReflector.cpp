@@ -61,7 +61,7 @@ PlanarReflector::PlanarReflector(
                            Inst< SFColor          > _color
 ) :
   X3DChildNode( _metadata ),
-  X3DBoundedObject( _bound ),
+  X3DBoundedObject( _bound, _bboxCenter, _bboxSize ),
   H3DDisplayListObject( _displayList ),
   geometry  ( _geometry   ),
   reflectivity( _reflectivity ),

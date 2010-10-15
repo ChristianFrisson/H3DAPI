@@ -318,7 +318,10 @@ namespace H3D {
 
   protected:
     /// The shadow volume used for this geometry when shadows enabled.
-    AutoRef< Node >shadow_volume;
+    /// \Note If you decide to use this variable in subclasses getShadowObject
+    /// Make sure that you do take care of the circular reference somehow.
+    /// See source code for how it is done in X3DGeometryNode.
+    AutoRef< Node > shadow_volume;
 
     /// Function sent to HAPIHapticsShape created to allow for deletion of
     /// X3DGeometryNode at the correct time. The X3DGeometryNode is not

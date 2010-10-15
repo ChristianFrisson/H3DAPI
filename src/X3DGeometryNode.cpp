@@ -117,6 +117,12 @@ H3DShadowObjectNode *X3DGeometryNode::getShadowObject() {
   if( !shadow_volume.get() ) {
     ShadowGeometry *shadow_geom = new ShadowGeometry;
     shadow_geom->geometry->setValue( this );
+    // Unref called to get rid of circular reference. This will work since
+    // the ShadowGeometry should never be deleted until the shadow_volume
+    // is removed. Which means that if unref is called then ~X3DGeometryNode
+    // will be called when it is time to remove the X3DGeometryNode from the
+    // geometry field of this ShadowGeometry.
+    unref();
     shadow_volume.reset( shadow_geom );
   }
   return static_cast< H3DShadowObjectNode * >( shadow_volume.get() );
@@ -136,6 +142,26 @@ int X3DGeometryNode::getHapticShapeId( unsigned int index ) {
 }
 
 X3DGeometryNode::~X3DGeometryNode() {
+  if( shadow_volume.get() ) {
+    // Take care of the circular reference case.
+    // In order to not accidently call delete for this X3DGeometryNode again
+    // we call ref twice before setting the geometry field of the contained
+    // ShadowGeometry to null. This will make the reference counter 2 before
+    // ShadowGeometry calls unref.
+    manual_initialize = true;
+    // ref_count = 0
+    ref();
+    // ref_count = 1
+    ref();
+    // ref_count = 2
+    // Simply set the geometry field to null since this might not be the
+    // last reference to the ShadowGeometry (although in practice I think it
+    // always is).
+    static_cast< ShadowGeometry * >(shadow_volume.get() )->geometry->
+      setValue( NULL );
+    // ref_count = 1, it is safe to destroy the X3DGeometryNode properly
+    // delete was never called.
+  }
 }
 
 #ifdef HAVE_OPENHAPTICS
