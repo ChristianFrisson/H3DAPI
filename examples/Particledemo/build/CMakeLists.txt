@@ -116,6 +116,11 @@ IF(WIN32)
     SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /MP" )
     # Needed to run in debug mode. Removes warning about conflict between libraries.
     SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+  ELSEIF(MSVC10)
+    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
+    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /MP" )
+    # Needed to run in debug mode. Removes warning about conflict between libraries.
+    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
   ENDIF(MSVC70 OR MSVC71)
 
   # set the install directory to the H3D directory on Windows
