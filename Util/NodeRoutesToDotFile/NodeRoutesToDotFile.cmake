@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -32,6 +32,7 @@
 #include <H3D/Scene.h>
 #include <H3DUtil/Exception.h>
 #include <H3D/Node.h>
+#include <H3D/ImportLibrary.h>
 #include <set>
 #include <queue>
 #include <fstream>
@@ -229,7 +230,7 @@ inline void resetSceneTimeField() {
 
 int main(int argc, char* argv[]) {
 
-  if (argc < 2){
+  if( argc < 2 ){
     cerr << "Usage: " << argv[0] << " <Output dir>" << endl;
     return 1;
   }
@@ -246,6 +247,17 @@ int main(int argc, char* argv[]) {
     auto_ptr<SliderJoint> kurt( new SliderJoint );
   }
 #endif
+
+  vector< string > extra_libraries;
+#ifdef _DEBUG${NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES_CODE}
+#else if NDEBUG${NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES_CODE}
+#endif
+
+  for( unsigned int i = 0; i < extra_libraries.size(); i++ ) {
+    auto_ptr< ImportLibrary > il( new ImportLibrary );
+    il->url->push_back( extra_libraries[i] );
+    il->ref();
+  }
 
   string out_dir = argv[1];
 

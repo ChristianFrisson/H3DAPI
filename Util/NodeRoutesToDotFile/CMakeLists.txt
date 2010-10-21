@@ -7,6 +7,35 @@ ENDIF(WIN32)
 # to the root binary directory of the project as ${NodeRoutesToDotFile_BINARY_DIR}.
 project (NodeRoutesToDotFile)
 
+# Add a cache variable NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES used
+# to give extra release libraries which have a database which
+# dot-files should be generated for.
+IF( NOT DEFINED NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES )
+  SET( NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES "" CACHE STRING "Add paths to extra release libraries that contain additional H3D nodes for which to generate dot-files. Each library path must be enclosed in \" and separated by semi colon(;)" )
+  MARK_AS_ADVANCED(NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES)
+ENDIF( NOT DEFINED NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES )
+
+# Add a cache variable NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES used
+# to give extra debug libraries which have a database which
+# dot-files should be generated for.
+IF( NOT DEFINED NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES )
+  SET( NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES "" CACHE STRING "Add paths to extra debug libraries that contain additional H3D nodes for which to generate dot-files. Each library path must be enclosed in \" and separated by semi colon(;)" )
+  MARK_AS_ADVANCED(NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES)
+ENDIF( NOT DEFINED NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES )
+
+SET( NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES_CODE )
+FOREACH( NodeRoutesToDotFile_EXTRA_LIBRARY ${NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES} )
+  FILE( TO_CMAKE_PATH ${NodeRoutesToDotFile_EXTRA_LIBRARY} NodeRoutesToDotFile_EXTRA_LIBRARY_CMAKE_PATH )
+  SET( NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES_CODE "${NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES_CODE}\n  extra_libraries.push_back( ${NodeRoutesToDotFile_EXTRA_LIBRARY_CMAKE_PATH} );" )
+ENDFOREACH( NodeRoutesToDotFile_EXTRA_LIBRARY ${NodeRoutesToDotFile_EXTRA_RELEASE_LIBRARIES} )
+
+SET( NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES_CODE )
+FOREACH( NodeRoutesToDotFile_EXTRA_LIBRARY ${NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES} )
+  FILE( TO_CMAKE_PATH ${NodeRoutesToDotFile_EXTRA_LIBRARY} NodeRoutesToDotFile_EXTRA_LIBRARY_CMAKE_PATH )
+  SET( NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES_CODE "${NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES_CODE}\n extra_libraries.push_back( ${NodeRoutesToDotFile_EXTRA_LIBRARY_CMAKE_PATH} );" )
+ENDFOREACH( NodeRoutesToDotFile_EXTRA_LIBRARY ${NodeRoutesToDotFile_EXTRA_DEBUG_LIBRARIES} )
+
+
 # Where to find Source files.
 SET( NodeRoutesToDotFile_SRCS "${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cpp" )
 
@@ -71,6 +100,8 @@ IF(RigidBodyPhysics_FOUND)
 ENDIF(RigidBodyPhysics_FOUND)
 SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
 
+CONFIGURE_FILE( ${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cmake ${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cpp )
+
 # Create build filess.
 ADD_EXECUTABLE(NodeRoutesToDotFile  ${NodeRoutesToDotFile_SRCS})
 TARGET_LINK_LIBRARIES( NodeRoutesToDotFile ${requiredLibs} ${optionalLibs} )
@@ -78,11 +109,11 @@ TARGET_LINK_LIBRARIES( NodeRoutesToDotFile ${requiredLibs} ${optionalLibs} )
 # Debug version should have _d postfix.
 SET_TARGET_PROPERTIES( NodeRoutesToDotFile PROPERTIES DEBUG_POSTFIX "_d" )
 
+# Variable used to set compile properties.
+SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "-DH3D_GENERATE_DOTROUTE_FILES" )
+
 # set the install directory to the H3D directory on Windows
 IF(WIN32) 
-  # Variable used to set compile properties.
-  SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "" )
-
   IF( UI_FOUND )
     SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS} -DHAVE_UI" )
   ENDIF( UI_FOUND )
@@ -100,6 +131,6 @@ IF(WIN32)
     SET( NODEROUTESTODOTFILE_COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
   ENDIF(MSVC80)
 
-  SET_TARGET_PROPERTIES( NodeRoutesToDotFile PROPERTIES COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS}" )
-
 ENDIF(WIN32)
+
+SET_TARGET_PROPERTIES( NodeRoutesToDotFile PROPERTIES COMPILE_FLAGS "${NODEROUTESTODOTFILE_COMPILE_FLAGS}" )
