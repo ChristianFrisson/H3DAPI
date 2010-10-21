@@ -315,7 +315,7 @@ namespace H3D {
     }
 
     /// Returns the default xml containerField attribute value.
-    /// For this node it is "appearance".
+    /// For this node it is "device".
     virtual string defaultXMLContainerField() {
       return "device";
     }
