@@ -11,16 +11,15 @@ import re
 from ifs2itslib import ifs2its
 import sys
 
-class Pack:
-  def __init__(self):
-    self.texs = []
-    self.texpoint = Vec2f()
-
 def replacecallback(r):
-  print 'Found. Converting...'
-  IFS = createX3DNodeFromString("<IndexedFaceSet" + r.group(3) + "</IndexedFaceSet>")[0]
+#  try:
+  IFS = createX3DNodeFromString(r.group(0))[0]
+  print 'Found \"', IFS.getName(), '\". Converting...'
   its = ifs2its(IFS)
-  return r'%s%s%s%s%s' % (r.group(1), r.group(2), its, r.group(4), r.group(5))
+  print "Conversion done."
+  return its
+#  except:
+#    return r.group(0)
 
 
 # Arguments check
@@ -33,21 +32,12 @@ print 'Opening file %s' % sys.argv[2]
 s = open(sys.argv[2], 'r').read()
 
 # match face_deformable.IFS and convert
-print 'Looking for face_deformable...'
-reg = re.compile(r'(<Transform DEF="face_deformable")(.*?)<IndexedFaceSet(.*?)</IndexedFaceSet>(.*?)(</Transform>)', re.DOTALL)
+print 'Looking for IndexedFaceSets...'
+reg = re.compile(r'<IndexedFaceSet(.*?)</IndexedFaceSet>', re.DOTALL)
 s = reg.sub(replacecallback, s)
 
-# uncomment if wanting to convert face_static
-# match face_static.IFS and convert
-print 'Looking for face_static'
-reg = re.compile(r'(<Transform DEF="face_static")(.*?)<IndexedFaceSet(.*?)</IndexedFaceSet>(.*?)(</Transform>)', re.DOTALL)
-s = reg.sub(replacecallback, s)
-
-# match face_inner_mouth.IFS and convert
-print 'Looking for face_inner_mouth'
-reg = re.compile(r'(<Transform DEF="face_inner_mouth")(.*?)<IndexedFaceSet(.*?)</IndexedFaceSet>(.*?)(</Transform>)', re.DOTALL)
-s = reg.sub(replacecallback, s)
-
+#print "Result:"
+#print s
 
 print 'Writing to file %s' % sys.argv[3]
 open(sys.argv[3], 'w').write(s)
