@@ -369,6 +369,19 @@ namespace H3D {
               X3DBindableNode::getActive( "X3DViewpointNode" ) );
     }
 
+    /// Calculates the top, bottom, right and left clipping values for the view
+    /// frustum at the near plane. Must be implemented by all subclasses.
+    ///
+    /// \param[in] eye_mode The eye to render for (LEFT_EYE, RIGHT_EYE or MONO).
+    /// \param[in] width Width of window in number of pixels.
+    /// \param[in] height Height of window in number of pixels.
+    /// \param[in] clip_near Distance to near plane from viewpoint in meters.
+    /// \param[out] top The top clipping value.
+    /// \param[out] bottom The bottom clipping value.
+    /// \param[out] right The right clipping value.
+    /// \param[out] left The left clipping value.
+    /// \param[in] stereo_info Stereo rendering parameters, used to specify 
+    /// e.g. interocular distance.
     virtual bool windowFromfieldOfView( H3DFloat width, H3DFloat height,
                                         H3DFloat clip_near,
                                         H3DFloat &top, H3DFloat &bottom,
@@ -435,9 +448,16 @@ namespace H3D {
       return status;
     }
 
-    /// The X3DViewpointNode needs to setup a projection matrix, typically done
-    /// by calling glFrustum but this might not look the same for all types of
-    /// X3DViewpointNodes. clip_far = -1 means far plane at infinity.
+    /// Adds a projection matrix to the current OpenGL matrix based on the
+    /// viewpoint values.
+    /// \param[in] eye_mode The eye to render for (LEFT_EYE, RIGHT_EYE or MONO).
+    /// \param[in] width Width of window in number of pixels.
+    /// \param[in] height Height of window in number of pixels.
+    /// \param[in] clip_near Distance to near plane from viewpoint in meters.
+    /// \param[in] clip_far Distance to near plane from viewpoint in meters. -1
+    /// means infinity.
+    /// \param[in] stereo_info Stereo rendering parameters, used to specify 
+    /// e.g. interocular distance.
     virtual void setupProjection( EyeMode eye_mode,
                                   H3DFloat width, H3DFloat height,
                                   H3DFloat clip_near, H3DFloat clip_far,
@@ -447,6 +467,15 @@ namespace H3D {
 #else
     {}
 #endif
+
+    /// Adds a view matrix to the current OpenGL matrix to transform from
+    /// view coordinates (camera/viewpoint space) to world space. This means
+    /// e.g. setting up position and orientation of the viewpoint.
+    /// \param[in] eye_mode The eye to render for (LEFT_EYE, RIGHT_EYE or MONO).
+    /// \param[in] stereo_info Stereo rendering parameters, used to specify 
+    /// interocular distance
+    virtual void setupViewMatrix( EyeMode eye_mode,
+                                  StereoInfo * stereo_info = 0 ); 
 
     /// True if this viewpoint node exists outside a ViewpointGroup
     inline bool isTopLevel() {
@@ -572,39 +601,16 @@ namespace H3D {
     // Internal function for easier calculations of parameters sent to
     // glFrustum or glOrtho. For usage see function setupProjection in
     // Viewpoint or OrthoViewpoint.
-    inline void getProjectionDimensions( EyeMode eye_mode,
-                                         H3DFloat width,
-                                         H3DFloat height,
-                                         H3DFloat clip_near,
-                                         H3DFloat &top,
-                                         H3DFloat &bottom,
-                                         H3DFloat &right,
-                                         H3DFloat &left,
-                                         StereoInfo * stereo_info = 0 ) {
-      windowFromfieldOfView( width,
-                             height,
-                             clip_near,
-                             top, bottom, right, left );
-      H3DFloat frustum_shift = 0;
-      if( eye_mode == LEFT_EYE || eye_mode == RIGHT_EYE ) {
-        if( !stereo_info )
-          stereo_info = StereoInfo::getActive();
+    void getProjectionDimensions( EyeMode eye_mode,
+                                  H3DFloat width,
+                                  H3DFloat height,
+                                  H3DFloat clip_near,
+                                  H3DFloat &top,
+                                  H3DFloat &bottom,
+                                  H3DFloat &right,
+                                  H3DFloat &left,
+                                  StereoInfo * stereo_info = 0 );
 
-        H3DFloat interocular_distance = (H3DFloat) 0.06;
-        H3DFloat focal_distance = (H3DFloat) 0.6;
-        if( stereo_info ) {
-          interocular_distance = stereo_info->interocularDistance->getValue();
-          focal_distance = stereo_info->focalDistance->getValue();
-        }
-        
-        frustum_shift = ( interocular_distance / 2 )
-          * clip_near / focal_distance;
-        if( eye_mode == RIGHT_EYE )
-          frustum_shift = -frustum_shift;
-      } 
-      left += frustum_shift;
-      right += frustum_shift;
-    }
   };
 }
 

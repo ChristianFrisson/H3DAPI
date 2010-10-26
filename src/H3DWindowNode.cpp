@@ -438,8 +438,8 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
     
   BoxBound *bound =  dynamic_cast< BoxBound * >( total_bound.get() );
   if( bound ) {
-    Vec3f vp_position = vp->totalPosition->getValue();
-    Rotation vp_orientation = vp->totalOrientation->getValue();
+    const Vec3f &vp_position = vp->totalPosition->getValue();
+    const Rotation &vp_orientation = vp->totalOrientation->getValue();
     const Matrix4f &vp_frw_m = vp->accForwardMatrix->getValue();
 
     const Vec3f &bb_center = bound->center->getValue();
@@ -715,16 +715,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   X3DViewpointNode *navigation_vp = vp;
   vp = h3d_navigation->viewpointToUse( vp );
 
-  Vec3f vp_position = vp->totalPosition->getValue();
-  Rotation vp_orientation = vp->totalOrientation->getValue();
+  const Vec3f &vp_position = vp->totalPosition->getValue();
+  const Rotation &vp_orientation = vp->totalOrientation->getValue();
   const Matrix4f &vp_inv_m = vp->accInverseMatrix->getValue();
-  Rotation vp_inv_rot = (Rotation)vp_inv_m.getRotationPart();
-  //const Matrix4f &vp_frw_m = vp->accForwardMatrix->getValue();
-  GLfloat vp_inv_transform[] = { 
-    vp_inv_m[0][0], vp_inv_m[1][0], vp_inv_m[2][0], 0,
-    vp_inv_m[0][1], vp_inv_m[1][1], vp_inv_m[2][1], 0,
-    vp_inv_m[0][2], vp_inv_m[1][2], vp_inv_m[2][2], 0,
-    vp_inv_m[0][3], vp_inv_m[1][3], vp_inv_m[2][3], 1 };
+  const Rotation &vp_inv_rot = (Rotation)vp_inv_m.getRotationPart();
 
   H3DMultiPassRenderObject::setMultiPassTransparencyAll(
     multi_pass_transparency );
@@ -794,16 +788,12 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     clip_far = -1;
   }
 
-  H3DFloat interocular_distance = 0.06f;
   H3DFloat focal_distance = 0.6f;
 
   StereoInfo *stereo_info = StereoInfo::getActive();
   if( stereo_info ) {
-    interocular_distance = stereo_info->interocularDistance->getValue();
     focal_distance = stereo_info->focalDistance->getValue();
   }
-
-  H3DFloat half_interocular_distance = interocular_distance / 2;
 
   bool mirror_in_y = mirrored->getValue();
     
@@ -921,16 +911,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glPopMatrix();
     }
 
-    glTranslatef( half_interocular_distance, 0, 0 );
-    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
-               vp_orientation.axis.x, 
-               vp_orientation.axis.y,
-               vp_orientation.axis.z );
- 
-    glTranslatef( -vp_position.x,
-                  -vp_position.y, 
-                  -vp_position.z );
-    glMultMatrixf( vp_inv_transform );
+    // add viewmatrix to model view matrix.
+    vp->setupViewMatrix( X3DViewpointNode::LEFT_EYE,
+                         stereo_info );
 
     if( ti ) {
       for( TraverseInfo::RefCountedVector::const_iterator i = 
@@ -1027,18 +1010,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glPopMatrix();
     }
 
-
-    glTranslatef( -half_interocular_distance, 0, 0 );
-    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
-               vp_orientation.axis.x, 
-               vp_orientation.axis.y,
-               vp_orientation.axis.z );
-      
-    glTranslatef( -vp_position.x,
-                  -vp_position.y, 
-                  -vp_position.z );
-    glMultMatrixf( vp_inv_transform );
-
+    // add viewmatrix to model view matrix.
+    vp->setupViewMatrix( X3DViewpointNode::RIGHT_EYE,
+                         stereo_info );
+    
     if( ti ) {
       for( TraverseInfo::RefCountedVector::const_iterator i = 
                               ti->x3dlightnode_vector.begin();
@@ -1141,13 +1116,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glPushMatrix();
       glLoadIdentity();
 
-      glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
-                 vp_orientation.axis.x, 
-                 vp_orientation.axis.y,
-                 vp_orientation.axis.z );
-
-      glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
-      glMultMatrixf( vp_inv_transform );
+      // add viewmatrix to model view matrix.
+      vp->setupViewMatrix( X3DViewpointNode::MONO );
 
       glGetDoublev( GL_MODELVIEW_MATRIX, mono_mvmatrix );
       glPopMatrix();
@@ -1173,17 +1143,16 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     glMatrixMode(GL_MODELVIEW);
     glDrawBuffer(GL_BACK);
     glLoadIdentity();
-    
-    glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
-               vp_orientation.axis.x, 
-               vp_orientation.axis.y,
-               vp_orientation.axis.z );
-
+   
     // clear the buffers before rendering
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     if( background ) {
       glPushMatrix();
+      glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
+                 vp_orientation.axis.x, 
+                 vp_orientation.axis.y,
+                 vp_orientation.axis.z );
       glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
                  vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
       glDepthMask( GL_FALSE );
@@ -1196,8 +1165,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if ( !norm ) 
       glEnable( GL_NORMALIZE );
 
-    glTranslatef( -vp_position.x, -vp_position.y, -vp_position.z );
-    glMultMatrixf( vp_inv_transform );
+    // add viewmatrix to model view matrix.
+    vp->setupViewMatrix( X3DViewpointNode::MONO );
 
     if( any_pointing_device_sensors ) {
       // Get matrices used to calculate arguments for

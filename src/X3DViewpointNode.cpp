@@ -339,3 +339,88 @@ bool X3DViewpointNode::detectCollision( const vector< H3DFloat > &avatar_size,
                                          vp_full_pos,
                                          result );
 }
+
+void X3DViewpointNode::getProjectionDimensions( EyeMode eye_mode,
+                                                H3DFloat width,
+                                                H3DFloat height,
+                                                H3DFloat clip_near,
+                                                H3DFloat &top,
+                                                H3DFloat &bottom,
+                                                H3DFloat &right,
+                                                H3DFloat &left,
+                                                StereoInfo * stereo_info ) {
+  windowFromfieldOfView( width,
+                         height,
+                         clip_near,
+                         top, bottom, right, left );
+  H3DFloat frustum_shift = 0;
+  if( eye_mode == LEFT_EYE || eye_mode == RIGHT_EYE ) {
+    if( !stereo_info )
+      stereo_info = StereoInfo::getActive();
+    
+    H3DFloat interocular_distance = (H3DFloat) 0.06;
+    H3DFloat focal_distance = (H3DFloat) 0.6;
+    if( stereo_info ) {
+      interocular_distance = stereo_info->interocularDistance->getValue();
+      focal_distance = stereo_info->focalDistance->getValue();
+    }
+    
+    frustum_shift = ( interocular_distance / 2 )
+      * clip_near / focal_distance;
+    if( eye_mode == RIGHT_EYE )
+      frustum_shift = -frustum_shift;
+  } 
+  left += frustum_shift;
+  right += frustum_shift;
+}
+
+void X3DViewpointNode::setupViewMatrix( EyeMode eye_mode,
+                                        StereoInfo * stereo_info  ) {
+  const Vec3f &vp_position = totalPosition->getValue();
+  const Rotation &vp_orientation = totalOrientation->getValue();
+  const Matrix4f &vp_inv_m = accInverseMatrix->getValue();  
+  // OpenGL version of vp_inv_m
+  GLfloat vp_inv_transform[] = { 
+    vp_inv_m[0][0], vp_inv_m[1][0], vp_inv_m[2][0], 0,
+    vp_inv_m[0][1], vp_inv_m[1][1], vp_inv_m[2][1], 0,
+    vp_inv_m[0][2], vp_inv_m[1][2], vp_inv_m[2][2], 0,
+    vp_inv_m[0][3], vp_inv_m[1][3], vp_inv_m[2][3], 1 };
+
+  if( eye_mode != MONO ) {
+    // if stereo mode, viewpoint varies depending on what eye 
+    //is being rendered for.
+
+    H3DFloat interocular_distance = 0.06f;
+    Rotation head_tilt = Rotation(1,0,0,0 );
+    if( !stereo_info ) stereo_info = StereoInfo::getActive();
+    if( stereo_info ) {
+      interocular_distance = stereo_info->interocularDistance->getValue();
+      head_tilt = stereo_info->headTilt->getValue();
+    }
+
+    H3DFloat half_interocular_distance = interocular_distance / 2;    
+
+    // the vector from the viewpoint center to the left eye.
+    Vec3f left_eye = 
+      head_tilt * Vec3f( -half_interocular_distance, 0, 0 ); 
+
+    // move to the eye position
+    if( eye_mode == LEFT_EYE ) {
+      glTranslatef( -left_eye.x, -left_eye.y, -left_eye.z );
+    } else if( eye_mode == RIGHT_EYE ) {
+      glTranslatef( left_eye.x, left_eye.y, left_eye.z );
+    }
+  }
+
+  // set up view matrix based on X3DViewpointNode field values.
+  glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
+             vp_orientation.axis.x, 
+             vp_orientation.axis.y,
+             vp_orientation.axis.z );
+  
+  glTranslatef( -vp_position.x,
+                -vp_position.y, 
+                -vp_position.z );
+  glMultMatrixf( vp_inv_transform );
+
+}

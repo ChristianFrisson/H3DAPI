@@ -50,12 +50,13 @@ namespace H3D {
   class H3DAPI_API StereoInfo : public X3DBindableNode {
   public:
     /// Constructor.
-    StereoInfo( Inst< SFSetBind > _set_bind            = 0,
-                Inst< SFNode    > _metadata            = 0,
-                Inst< SFTime    > _bindTime            = 0,
-                Inst< SFBool    > _isBound             = 0,
-                Inst< SFFloat   > _interocularDistance = 0,
-                Inst< SFFloat   > _focalDistance       = 0 );
+    StereoInfo( Inst< SFSetBind  > _set_bind            = 0,
+                Inst< SFNode     > _metadata            = 0,
+                Inst< SFTime     > _bindTime            = 0,
+                Inst< SFBool     > _isBound             = 0,
+                Inst< SFFloat    > _interocularDistance = 0,
+                Inst< SFFloat    > _focalDistance       = 0,
+                Inst< SFRotation > _headTilt            = 0 );
     
     /// Convenience function to get the top of the StereoInfo stack.
     static inline StereoInfo *getActive() {
@@ -75,6 +76,15 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.6 \n
     auto_ptr< SFFloat > focalDistance;
+
+    /// The headTilt field specifies how the head is oriented in relation to
+    /// to the current X3DViewpointNode viewing direction. The rotation is
+    /// specified in local coordinate space of the viewpoint with the viewing
+    /// direction being along the negative z axis and up begin positive y.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> Rotation(1,0,0,0) \n
+    auto_ptr< SFRotation > headTilt;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

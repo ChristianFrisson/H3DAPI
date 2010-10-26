@@ -42,23 +42,27 @@ H3DNodeDatabase StereoInfo::database(
 namespace StereoInfoInternals {
   FIELDDB_ELEMENT( StereoInfo, interocularDistance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( StereoInfo, focalDistance, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( StereoInfo, headTilt, INPUT_OUTPUT );
 }
 
-StereoInfo::StereoInfo( Inst< SFSetBind > _set_bind,
-                        Inst< SFNode    > _metadata,
-                        Inst< SFTime    > _bindTime,
-                        Inst< SFBool    > _isBound,
-                        Inst< SFFloat   > _interocularDistance,
-                        Inst< SFFloat   > _focalDistance ):
+StereoInfo::StereoInfo( Inst< SFSetBind  > _set_bind,
+                        Inst< SFNode     > _metadata,
+                        Inst< SFTime     > _bindTime,
+                        Inst< SFBool     > _isBound,
+                        Inst< SFFloat    > _interocularDistance,
+                        Inst< SFFloat    > _focalDistance,
+                        Inst< SFRotation > _headTilt ):
   X3DBindableNode( "StereoInfo", _set_bind, _metadata, _bindTime, _isBound ),
   interocularDistance( _interocularDistance ),
-  focalDistance( _focalDistance  ) {
+  focalDistance( _focalDistance  ),
+  headTilt( _headTilt ) {
   
   type_name = "StereoInfo";
   database.initFields( this );
 
   interocularDistance->setValue( (H3DFloat) 0.06 );
   focalDistance->setValue( (H3DFloat)0.6 );
+  headTilt->setValue( Rotation(1,0,0,0 ) );
 }
 
 
