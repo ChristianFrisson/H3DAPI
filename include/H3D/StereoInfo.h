@@ -31,6 +31,7 @@
 
 #include <H3D/X3DBindableNode.h>
 #include <H3D/SFFloat.h>
+#include <H3D/SFRotation.h>
 
 namespace H3D {
   /// \ingroup H3DNodes

@@ -48,7 +48,7 @@ namespace H3D {
   ///
   /// The plasticity field defines the plasticity. 0 means that the 
   /// deformation is non-plastic (resting points will not be changed) and
-  /// 1 means that it is fully plasting (resting points will be the same
+  /// 1 means that it is fully plastic (resting points will be the same
   /// as deformed points)
   class H3DAPI_API CoordinateDeformer : public H3DCoordinateDeformerNode {
   public:
@@ -92,7 +92,7 @@ namespace H3D {
 
     /// The plasticity field defines the plasticity. 0 means that the 
     /// deformation is non-plastic (resting points will not be changed) and
-    /// 1 means that it is fully plasting (resting points will be the same
+    /// 1 means that it is fully plastic (resting points will be the same
     /// as deformed points)    
     ///
     /// <b> Access type: </b> inputOutput
