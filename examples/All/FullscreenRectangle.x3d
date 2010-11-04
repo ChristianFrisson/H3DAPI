@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2'>
+  <head>
+    <meta name='title' content='FullscreenRectangle.x3d'/>
+    <meta name='description' content='H3DAPI FullscreenRectangle example. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <FullscreenRectangle />
+      <Appearance>
+	<ImageTexture url="images/nautilus.jpg" />
+      </Appearance>
+    </Shape>
+
+<Shape>
+      <Box size="0.1 0.1 0.1" />
+      <Appearance>
+	<ImageTexture url="images/nautilus.jpg" />
+      </Appearance>
+    </Shape>
+  </Scene>
+</X3D>

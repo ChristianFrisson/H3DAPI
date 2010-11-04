@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='FrameBufferTextureGenerator.x3d'/>
+    <meta name='description' content='H3DAPI FrameBufferTextureGenerator example. It shows how to draw a scene to a texture and then display it over the entire window to replicate normal rendering. This is very useful to perform post-render processing such as bloom filter or motion blur using shaders. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />  
+
+    <Group>
+      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D" generateColorTextures="RGBA" >
+	<!-- Scene to render to texture -->
+	<Shape>
+	  <Appearance> <Material diffuseColor="1 0 0" /> </Appearance>
+	    
+	  <Box size="0.2 0.2 0.2" />
+	</Shape>
+      </FrameBufferTextureGenerator>
+
+      <!-- Shape for rendering depth texture on -->
+      <Shape>
+	<Appearance DEF="APP" >
+	  <Material/>
+	  <MultiTexture DEF="MT" />
+	</Appearance>
+	<FullscreenRectangle />
+      </Shape>
+    </Group>
+
+    <ROUTE fromNode="GEN" fromField="colorTextures" toNode="MT" toField="texture" />
+  </Scene>
+</X3D>
