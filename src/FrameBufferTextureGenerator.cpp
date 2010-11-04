@@ -96,6 +96,9 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
 }
 
+#ifdef H3D_WINDOWS
+#undef max
+#endif
 void FrameBufferTextureGenerator::render()     { 
   if( !GLEW_EXT_framebuffer_object ) {
     Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
@@ -123,7 +126,7 @@ void FrameBufferTextureGenerator::render()     {
   glGetIntegerv( GL_VIEWPORT, viewport );
   unsigned int width  = viewport[2];
   unsigned int height = viewport[3];
-  unsigned int depth  = output_texture_type == "2D" ? 1: std::max( (int)children->size(), 1 ); 
+  unsigned int depth  = output_texture_type == "2D" ? 1: std::max( (int)children->size(), 1 );
 
   // ensure that all buffers are always of the frame buffer size
   if( buffers_width != width || buffers_height != height || buffers_depth != depth ) {

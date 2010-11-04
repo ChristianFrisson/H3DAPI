@@ -139,225 +139,226 @@ void H3DNavigation::doNavigation(
 
   if( !linear_interpolate ) {
 
-  Rotation vp_full_orientation = vp->totalOrientation->getValue();
-  H3DTime delta_time = current_time - last_time;
-  last_time = current_time;
+    Rotation vp_full_orientation = vp->totalOrientation->getValue();
+    H3DTime delta_time = current_time - last_time;
+    last_time = current_time;
 
-  if( navigation_type == "EXAMINE" || navigation_type == "ANY" ) {
-    H3DNavigationDevices::MoveInfo move_info;
-    if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
-      if( move_info.zoom ) {
-        Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
-        if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
-          && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
-            vector< H3DFloat > temp_avatar_size( avatar_size );
-            for( unsigned int i = 0; i < temp_avatar_size.size(); i++ ) {
-              temp_avatar_size[i] *= scaling.x;
-            }
-            Vec3f direction = vp->centerOfRotation->getValue() - 
-                              vp->totalPosition->getValue();
-            H3DFloat max_movement = direction.length();
-            if( max_movement < Constants::f_epsilon ) {
-              // Should never come here unless user manually aligns the
-              // position of the viewpoint with the center of rotation.
-              // Just choose a direction to zoom out from.
-              direction = Vec3f( 1, 0, 0 );
-              max_movement = 1;
-            }
-            direction = direction / max_movement;
-            bool move_towards = true;
-            if( move_info.translation_sum * Vec3f( 0, 0, -1 ) < 0 ) {
-              direction = -direction;
-              move_towards = false;
-            }
-            direction = -vp_full_orientation * direction;
-            direction = move_info.translation_sum.length() * direction *
-                        speed *
-                        delta_time * scaling.x;
-            if( move_towards ) {
-              H3DFloat dist_from_center = 1e-5f;
-              max_movement = max_movement > dist_from_center ?
-                             max_movement - dist_from_center : 0;
-              if( direction.length() < max_movement )
-                vp->translate( direction, false, temp_avatar_size, topNode );
-              else {
-                direction.normalize();
-                vp->translate( direction * max_movement,
-                               false, temp_avatar_size, topNode );
+    if( navigation_type == "EXAMINE" || navigation_type == "ANY" ) {
+      H3DNavigationDevices::MoveInfo move_info;
+      if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
+        if( move_info.zoom ) {
+          Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
+          if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
+            && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
+              vector< H3DFloat > temp_avatar_size( avatar_size );
+              for( unsigned int i = 0; i < temp_avatar_size.size(); i++ ) {
+                temp_avatar_size[i] *= scaling.x;
               }
-            } else
-              vp->translate( direction, false, temp_avatar_size, topNode );
-        } else {
+              Vec3f direction = vp->centerOfRotation->getValue() - 
+                                vp->totalPosition->getValue();
+              H3DFloat max_movement = direction.length();
+              if( max_movement < Constants::f_epsilon ) {
+                // Should never come here unless user manually aligns the
+                // position of the viewpoint with the center of rotation.
+                // Just choose a direction to zoom out from.
+                direction = Vec3f( 1, 0, 0 );
+                max_movement = 1;
+              }
+              direction = direction / max_movement;
+              bool move_towards = true;
+              if( move_info.translation_sum * Vec3f( 0, 0, -1 ) < 0 ) {
+                direction = -direction;
+                move_towards = false;
+              }
+              direction = -vp_full_orientation * direction;
+              direction = move_info.translation_sum.length() * direction *
+                          speed *
+                          delta_time * scaling.x;
+              if( move_towards ) {
+                H3DFloat dist_from_center = 1e-5f;
+                max_movement = max_movement > dist_from_center ?
+                               max_movement - dist_from_center : 0;
+                if( direction.length() < max_movement )
+                  vp->translate( direction, false, temp_avatar_size, topNode );
+                else {
+                  direction.normalize();
+                  vp->translate( direction * max_movement,
+                                 false, temp_avatar_size, topNode );
+                }
+              } else
+                vp->translate( direction, false, temp_avatar_size, topNode );
+          } else {
+            Console(3) << "Warning: Non-uniform scaling in the"
+              << " active X3DViewpointNode ( "
+              << vp->getName()
+              << " ) nodes local coordinate system. Speed and avatar size of "
+              << "Avatar is undefined ";
+          }
+        } else if( move_info.use_center_sum ) {
+          vp->translate( move_info.translation_sum,
+                         false, avatar_size, topNode );
+          vp->rotateAround( move_info.rotation_sum, false,
+                            vp->accInverseMatrix->getValue() *
+                            move_info.center_of_rot_sum );
+        }
+        else {
+          vp->rotateAround( move_info.rotation_sum, false,
+                            vp->centerOfRotation->getValue() );
+        }
+      }
+      else if( detect_collision )
+        vp->detectCollision( avatar_size, topNode );
+    } else if( navigation_type == "WALK" || navigation_type == "FLY" ) {
+      Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
+      if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
+          && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
+        vector< H3DFloat > temp_avatar_size( avatar_size );
+        for( unsigned int i = 0; i < temp_avatar_size.size(); i++ ) {
+          temp_avatar_size[i] *= scaling.x;
+        }
+        H3DNavigationDevices::MoveInfo move_info;
+        if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
+          vp->rotateAroundSelf( move_info.rotation_sum );
+          vp->translate( move_info.translation_sum * speed *
+                          delta_time * scaling.x,
+                         detect_collision, temp_avatar_size, topNode );
+        }
+        else if( detect_collision )
+          vp->detectCollision( temp_avatar_size, topNode );
+      } else {
           Console(3) << "Warning: Non-uniform scaling in the"
             << " active X3DViewpointNode ( "
             << vp->getName()
             << " ) nodes local coordinate system. Speed and avatar size of "
             << "Avatar is undefined ";
-        }
-      } else if( move_info.use_center_sum ) {
-        vp->translate( move_info.translation_sum,
-                       false, avatar_size, topNode );
-        vp->rotateAround( move_info.rotation_sum, false,
-                  vp->accInverseMatrix->getValue() * move_info.center_of_rot_sum );
       }
-      else {
-        vp->rotateAround( move_info.rotation_sum, false,
-                          vp->centerOfRotation->getValue() );
-      }
-    }
-    else if( detect_collision )
-      vp->detectCollision( avatar_size, topNode );
-  } else if( navigation_type == "WALK" || navigation_type == "FLY" ) {
-    Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
-    if( H3DAbs( scaling.x - scaling.y ) < Constants::f_epsilon
-        && H3DAbs( scaling.y - scaling.z ) < Constants::f_epsilon ) {
-      vector< H3DFloat > temp_avatar_size( avatar_size );
-      for( unsigned int i = 0; i < temp_avatar_size.size(); i++ ) {
-        temp_avatar_size[i] *= scaling.x;
-      }
+    } else if( navigation_type == "LOOKAT" ) {
       H3DNavigationDevices::MoveInfo move_info;
       if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
-        vp->rotateAroundSelf( move_info.rotation_sum );
-        vp->translate( move_info.translation_sum * speed *
-                        delta_time * scaling.x,
-                       detect_collision, temp_avatar_size, topNode );
-      }
-      else if( detect_collision )
-        vp->detectCollision( temp_avatar_size, topNode );
-    } else {
-        Console(3) << "Warning: Non-uniform scaling in the"
-          << " active X3DViewpointNode ( "
-          << vp->getName()
-          << " ) nodes local coordinate system. Speed and avatar size of "
-          << "Avatar is undefined ";
-    }
-  } else if( navigation_type == "LOOKAT" ) {
-    H3DNavigationDevices::MoveInfo move_info;
-    if( H3DNavigationDevices::getMoveInfo( move_info, this ) ) {
 
-      // TODO: maybe change this to allow for other devices to specify what
-      // to look at ( for example by supply a point and direction ).
-      GLint viewport[4];
-      GLdouble mvmatrix[16], projmatrix[16];
-      GLdouble wx, wy, wz;
-      glGetIntegerv( GL_VIEWPORT, viewport );
-      glGetDoublev( GL_MODELVIEW_MATRIX, mvmatrix );
-      glGetDoublev( GL_PROJECTION_MATRIX, projmatrix );
+        // TODO: maybe change this to allow for other devices to specify what
+        // to look at ( for example by supply a point and direction ).
+        GLint viewport[4];
+        GLdouble mvmatrix[16], projmatrix[16];
+        GLdouble wx, wy, wz;
+        glGetIntegerv( GL_VIEWPORT, viewport );
+        glGetDoublev( GL_MODELVIEW_MATRIX, mvmatrix );
+        glGetDoublev( GL_PROJECTION_MATRIX, projmatrix );
 
-      Vec2f mouse_pos = Vec2f( move_info.translation_sum.x,
-                               move_info.translation_sum.y );
-      mouse_pos.y = viewport[3] - mouse_pos.y - 1;
-      // Project to 0, 0.5 and 1.0 and use the values to check if
-      // an infinite clip_far value in a Viewpoint node caused the
-      // unproject to project to the wrong place (behind the near_plane)
-      // if it did then choose a large vector in the other direction.
-      gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
-        0.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
-      Vec3f near_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-      gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
-        0.5, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
-      Vec3f middle_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-      gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
-        1.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
-      Vec3f far_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-      Vec3f near_middle = middle_plane_pos - near_plane_pos;
-      if( near_middle * ( far_plane_pos - near_plane_pos ) < 0 ) {
-        // Infinite far plane caused problems. Choose a large vector in the
-        // other direction. Note that this is not an optimal solution, the best
-        // solution in this case would be to use a rayIntersect function in
-        // updateX3DPointingDeviceSensors. In this case we choose the point
-        // halfway to infinity, hopefully that should be enough.
-        far_plane_pos = middle_plane_pos;
-      }
+        Vec2f mouse_pos = Vec2f( move_info.translation_sum.x,
+                                 move_info.translation_sum.y );
+        mouse_pos.y = viewport[3] - mouse_pos.y - 1;
+        // Project to 0, 0.5 and 1.0 and use the values to check if
+        // an infinite clip_far value in a Viewpoint node caused the
+        // unproject to project to the wrong place (behind the near_plane)
+        // if it did then choose a large vector in the other direction.
+        gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
+          0.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
+        Vec3f near_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+        gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
+          0.5, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
+        Vec3f middle_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+        gluUnProject( (GLdouble) mouse_pos.x, (GLdouble) mouse_pos.y,
+          1.0, mvmatrix, projmatrix, viewport, &wx, &wy, &wz );
+        Vec3f far_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+        Vec3f near_middle = middle_plane_pos - near_plane_pos;
+        if( near_middle * ( far_plane_pos - near_plane_pos ) < 0 ) {
+          // Infinite far plane caused problems. Choose a large vector in the
+          // other direction. Note that this is not an optimal solution, the
+          // best solution in this case would be to use a rayIntersect function
+          // in updateX3DPointingDeviceSensors. In this case we choose the
+          // point halfway to infinity, hopefully that should be enough.
+          far_plane_pos = middle_plane_pos;
+        }
 
-      Node::LineIntersectResult result( true, true );
-      if( topNode->lineIntersect( near_plane_pos,
-                                  far_plane_pos,
-                                  result ) ) {
-        int closest = 0;
-        result.transformResult();
-        if( result.theNodes.size() > 1 ) {
-          H3DFloat closestDistance = 
-            (H3DFloat)( result.result[closest].point
-                        - near_plane_pos ).lengthSqr();
-          for( unsigned int kl = 1; kl < result.theNodes.size(); kl++ ) {
-            H3DFloat tempClose = 
-              (H3DFloat)( result.result[kl].point -
-                          near_plane_pos).lengthSqr();
-            if( tempClose < closestDistance ) {
-              closestDistance = tempClose;
-              closest = kl;
+        Node::LineIntersectResult result( true, true );
+        if( topNode->lineIntersect( near_plane_pos,
+                                    far_plane_pos,
+                                    result ) ) {
+          int closest = 0;
+          result.transformResult();
+          if( result.theNodes.size() > 1 ) {
+            H3DFloat closestDistance = 
+              (H3DFloat)( result.result[closest].point
+                          - near_plane_pos ).lengthSqr();
+            for( unsigned int kl = 1; kl < result.theNodes.size(); kl++ ) {
+              H3DFloat tempClose = 
+                (H3DFloat)( result.result[kl].point -
+                            near_plane_pos).lengthSqr();
+              if( tempClose < closestDistance ) {
+                closestDistance = tempClose;
+                closest = kl;
+              }
             }
           }
+
+          Vec3f approx_center;
+          H3DFloat viewing_distance;
+          BoxBound *box_bound = 0;
+          H3DBoundedObject * the_bound_object =
+            dynamic_cast< H3DBoundedObject * >
+              (result.theNodes[closest] );
+          if( the_bound_object ) {
+            box_bound = dynamic_cast< BoxBound * >(
+              the_bound_object->bound->getValue() );
+          }
+          const Matrix4f &vp_acc_inv_mtx = vp->accInverseMatrix->getValue();
+          const vector< Matrix4f > transform_matrices =
+            result.getGeometryTransforms();
+
+          if( box_bound ) {
+            approx_center = vp_acc_inv_mtx *
+              ( transform_matrices[closest ] * box_bound->center->getValue() );
+            Vec3f acc_inv_scale = vp_acc_inv_mtx.getScalePart();
+            Vec3f geom_scale = transform_matrices[closest].getScalePart();
+            Vec3f size = H3DMax( H3DMax( acc_inv_scale.x, acc_inv_scale.y ),
+                                 acc_inv_scale.z ) *
+                         ( H3DMax( H3DMax( geom_scale.x, geom_scale.y ),
+                                   geom_scale.z ) *
+                         box_bound->size->getValue() );
+
+            viewing_distance = 2 * size.length();
+          } else {
+            // calculate the center and viewing distance
+            // since we know nothing about the geometry except
+            // the point of intersection this is just a crude guess
+            approx_center = vp_acc_inv_mtx *
+              ( transform_matrices[closest ] * approx_center );
+            viewing_distance = (vp_acc_inv_mtx *( transform_matrices[closest] *
+              (Vec3f)result.result[closest].point ) ).length() * 2.0f;
+          }
+          Vec3f backward = vp_full_orientation * Vec3f( 0, 0, 1 );
+          vp->centerOfRotation->setValue( approx_center );
+
+          string transition = getTransitionType( transition_type );
+          if( transition == "TELEPORT" ) {
+            // Instant movement.
+            vp->moveTo( approx_center + viewing_distance * backward );
+          } else {
+            // For all other types than teleport, use LINEAR movement.
+            linear_interpolate = true;
+            start_orientation = vp->relOrn->getValue();
+            goal_orientation = start_orientation;
+
+            start_position = vp->relPos->getValue();
+            goal_position = ( approx_center + viewing_distance * backward ) -
+                            vp->position->getValue();
+            move_direction = goal_position - start_position;
+            start_time = current_time;
+          }
+
+          // No check is done to make sure that the selected object is not
+          // obscured by other objects or that the new position is in a place
+          // where fly and walk would detect collision.
         }
-
-        Vec3f approx_center;
-        H3DFloat viewing_distance;
-        BoxBound *box_bound = 0;
-        H3DBoundedObject * the_bound_object =
-          dynamic_cast< H3DBoundedObject * >
-            (result.theNodes[closest] );
-        if( the_bound_object ) {
-          box_bound = dynamic_cast< BoxBound * >(
-            the_bound_object->bound->getValue() );
-        }
-        const Matrix4f &vp_acc_inv_mtx = vp->accInverseMatrix->getValue();
-        const vector< Matrix4f > transform_matrices =
-          result.getGeometryTransforms();
-
-        if( box_bound ) {
-          approx_center = vp_acc_inv_mtx *
-            ( transform_matrices[closest ] * box_bound->center->getValue() );
-          Vec3f acc_inv_scale = vp_acc_inv_mtx.getScalePart();
-          Vec3f geom_scale = transform_matrices[closest].getScalePart();
-          Vec3f size = H3DMax( H3DMax( acc_inv_scale.x, acc_inv_scale.y ),
-                               acc_inv_scale.z ) *
-                       ( H3DMax( H3DMax( geom_scale.x, geom_scale.y ),
-                                 geom_scale.z ) *
-                       box_bound->size->getValue() );
-
-          viewing_distance = 2 * size.length();
-        } else {
-          // calculate the center and viewing distance
-          // since we know nothing about the geometry except
-          // the point of intersection this is just a crude guess
-          approx_center = vp_acc_inv_mtx *
-            ( transform_matrices[closest ] * approx_center );
-          viewing_distance = (vp_acc_inv_mtx *( transform_matrices[closest] *
-            (Vec3f)result.result[closest].point ) ).length() * 2.0f;
-        }
-        Vec3f backward = vp_full_orientation * Vec3f( 0, 0, 1 );
-        vp->centerOfRotation->setValue( approx_center );
-
-        string transition = getTransitionType( transition_type );
-        if( transition == "TELEPORT" ) {
-          // Instant movement.
-          vp->moveTo( approx_center + viewing_distance * backward );
-        } else {
-          // For all other types than teleport, use LINEAR movement.
-          linear_interpolate = true;
-          start_orientation = vp->relOrn->getValue();
-          goal_orientation = start_orientation;
-
-          start_position = vp->relPos->getValue();
-          goal_position = ( approx_center + viewing_distance * backward ) -
-                          vp->position->getValue();
-          move_direction = goal_position - start_position;
-          start_time = current_time;
-        }
-
-        // No check is done to make sure that the selected object is not
-        // obscured by other objects or that the new position is in a place
-        // where fly and walk would detect collision.
       }
+      else if( detect_collision )
+        vp->detectCollision( avatar_size, topNode );
     }
-    else if( detect_collision )
-      vp->detectCollision( avatar_size, topNode );
-  }
-  else if( navigation_type == "NONE" ) {
-    if( detect_collision )
-      vp->detectCollision( avatar_size, topNode );
-  }
+    else if( navigation_type == "NONE" ) {
+      if( detect_collision )
+        vp->detectCollision( avatar_size, topNode );
+    }
   }
 
   old_vp_pos = vp_full_pos;
