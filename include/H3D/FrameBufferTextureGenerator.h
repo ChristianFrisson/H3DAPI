@@ -68,6 +68,20 @@ namespace H3D {
   /// or not. If true the depthTexture field will contain a texture containing the 
   /// depth buffer.
   ///
+  /// The outputTextureType field determines the output type of the generated
+  /// textures. Valid values: 
+  /// 
+  /// "2D"       - normal 2D texture(glsl type sampler2D)
+  /// "3D"       - normal 3D texture. 3D depth textures not supported. (glsl type sampler3D)
+  /// "2D_ARRAY" - 2D texture array. Similar to a 3D texture but without interpolation
+  /// between depth layers. Can only be used by shaders and not used directly for texturing.
+  /// glsl type sampler2DArray
+  ///
+  /// The samples field determines how many samples to use for each pixel value in the
+  /// textures. A value of 0 means no multi-sampling, values > 0 means multi-sampling
+  /// with the specified number of sample points. Using multiple sample points reduces
+  /// aliasing artifacts.
+  /// 
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator.x3d">FrameBufferTextureGenerator.x3d</a>
   ///     ( <a href="examples/FrameBufferTextureGenerator.x3d.html">Source</a> )
@@ -98,7 +112,8 @@ namespace H3D {
                                  Inst< SFBool         > _generateDepthTexture  = 0,
 				 Inst< MFGeneratedTextureNode > _colorTextures = 0, 
 				 Inst< SFGeneratedTextureNode > _depthTexture  = 0,
-				 Inst< SFString         > _outputTextureType = 0 );
+				 Inst< SFString         > _outputTextureType = 0,
+				 Inst< SFInt32          > _samples = 0 );
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -142,15 +157,41 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly
     auto_ptr< SFGeneratedTextureNode > depthTexture;
 
-    //"2D", "3D"
-
+    /// The outputTextureType field determines the output type of the generated
+    /// textures. Valid values: 
+    /// 
+    /// "2D"       - normal 2D texture(glsl type sampler2D)
+    /// "3D"       - normal 3D texture. 3D depth textures not supported. (glsl type sampler3D)
+    /// "2D_ARRAY" - 2D texture array. Similar to a 3D texture but without interpolation
+    /// between depth layers. Can only be used by shaders and not used directly for texturing.
+    /// glsl type sampler2DArray
+    ///
+    /// <b>Access type:</b> initializeOnly
+    /// <b>Default value:</b> "2D"
+    /// <b>Valid values:</b> "2D", "3D", "2D_ARRAY"
     auto_ptr< SFString > outputTextureType;
+    
+    /// The samples field determines how many samples to use for each pixel value in the
+    /// textures. A value of 0 means no multi-sampling, values > 0 means multi-sampling
+    /// with the specified number of sample points. Using multiple sample points reduces
+    /// aliasing artifacts.
+    /// 
+    /// <b>Access type:</b> initializeOnly
+    /// <b>Default value:</b> 0
+    auto_ptr< SFInt32 > samples;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   protected:
-    
+
+    /// Converts a string to a OpenGL internal texture format.
+    GLenum stringToInternalFormat( const string &format_string );
+
+    /// Checks the currently bound fbo for completeness and prints a error message
+    /// if something is wrong. True is returned if fbo complete. 
+    bool checkFBOCompleteness();
+
     /// Initialize all output textures and buffers needed for the node.
     void initializeFBO();
 
@@ -168,7 +209,18 @@ namespace H3D {
 
     /// The OpenGL texture ids for all textures generated in the colorTextures field.
     vector<GLuint> color_ids;
+
+    /// The OpenGL multi samples render buffer for depth buffer when using 
+    /// multi sample rendering.
+    GLuint multi_samples_depth_id;
     
+    /// The OpenGL multi samples render buffer for color buffers when 
+    /// using multi sample rendering.
+    vector<GLuint> multi_samples_color_ids;
+    
+    /// The OpenGL fbo used for multi sample rendering.
+    GLuint multi_samples_fbo_id;
+
     /// The current width(in pixels) of output textures and buffers.
     H3DInt32 buffers_width;
 
@@ -196,6 +248,9 @@ namespace H3D {
 
     /// True if the last call to resizeBuffers from render() was true.
     bool last_resize_success;
+
+    /// The number of multisamples currently used for rendering.
+    int nr_samples;
   };
 }
 

@@ -45,19 +45,27 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, generateColorTextures, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, generateDepthTexture, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, outputTextureType, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, samples, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTexture, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextures, OUTPUT_ONLY );
+
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
   if( fbo_initialized ) {
     glDeleteFramebuffersEXT( 1, &fbo_id );
+    glDeleteFramebuffersEXT( 1, &multi_samples_fbo_id );
     
      if( !generateDepthTexture->getValue() ) {
-       glDeleteBuffers(1, &depth_id);      
+       glDeleteRenderbuffersEXT(1, &depth_id);      
+       glDeleteRenderbuffersEXT(1, &multi_samples_depth_id);      
      }
-    
-     glDeleteBuffers(1, &stencil_id);   
+     
+     glDeleteRenderbuffersEXT(1, &stencil_id);   
+
+     for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
+       glDeleteRenderbuffersEXT(1, &multi_samples_color_ids[i] );
+     } 
   }
 }
 
@@ -72,24 +80,28 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
                                                           Inst< SFBool         > _generateDepthTexture,
 							  Inst< MFGeneratedTextureNode > _colorTextures, 
 							  Inst< SFGeneratedTextureNode > _depthTexture,
-							  Inst< SFString         > _outputTextureType  ):
+							  Inst< SFString         > _outputTextureType,
+							  Inst< SFInt32        > _samples ):
   X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
   generateDepthTexture( _generateDepthTexture ),
   colorTextures( _colorTextures ),
   depthTexture( _depthTexture ),
   outputTextureType( _outputTextureType ),
+  samples( _samples ),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
   buffers_depth( -1 ),
-  last_resize_success( true ) {
+  last_resize_success( true ),
+  nr_samples( 0 ) {
 
   type_name = "FrameBufferTextureGenerator";
   database.initFields( this );
 
   generateDepthTexture->setValue( false );
   outputTextureType->setValue( "2D" );
+  samples->setValue( 0 );
   
   // turn off display list since we want to get new values of the width
   // and height each loop to see if they have changed.
@@ -139,8 +151,11 @@ void FrameBufferTextureGenerator::render()     {
     return;
   }
 
-  // set up fbo
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+  if( nr_samples > 0 ) {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
+  } else {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+  }
 
   // set up to render to all color buffers
   if( GLEW_ARB_draw_buffers ) {
@@ -159,6 +174,24 @@ void FrameBufferTextureGenerator::render()     {
     
     // render scene.
     X3DGroupingNode::render();
+
+    // blit multi sample render buffer to output textures if using multi sampling.
+    if( nr_samples > 0 ) {
+      glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
+      glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, fbo_id );
+      
+      // blit multi sample buffers to textures.
+      if( generateDepthTexture->getValue() ) {
+	glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+      }
+      
+      for( unsigned int i = 0; i < color_ids.size(); i++ ) {
+	glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
+	glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
+	glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      }
+    }
+
   } else {
     // 3D texture. Each child in the children fields is rendered into a different
     // slice in the 3D texture.
@@ -166,6 +199,9 @@ void FrameBufferTextureGenerator::render()     {
     const NodeVector &c = children->getValue();
     
     for( unsigned int i = 0; i < c.size(); i++ ) {
+      
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+
       // set the render target to the correct slice for depth texture.
       if( output_texture_type == "2D_ARRAY" && generateDepthTexture->getValue() ) {
 	glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, i );
@@ -177,6 +213,10 @@ void FrameBufferTextureGenerator::render()     {
 				     color_ids[j], 0, i );   
       }
 
+      if( nr_samples > 0 ) {
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
+      } 
+
       // Clear buffers.
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
       
@@ -187,6 +227,23 @@ void FrameBufferTextureGenerator::render()     {
 	  tmp->displayList->callList();
 	else
 	  c[i]->render();
+      }
+
+      // blit multi sample render buffer to output textures if using multi sampling.
+      if( nr_samples > 0 ) {
+	glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
+	glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, fbo_id );
+	
+	// blit multi sample buffers to textures.
+	if( generateDepthTexture->getValue() ) {
+	  glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	}
+	
+	for( unsigned int i = 0; i < color_ids.size(); i++ ) {
+	  glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
+	  glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
+	  glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	}
       }
     }
   }
@@ -202,6 +259,7 @@ void FrameBufferTextureGenerator::render()     {
 void FrameBufferTextureGenerator::initializeFBO() {
   if( !fbo_initialized ) {
      glGenFramebuffersEXT(1, &fbo_id); 
+     glGenFramebuffersEXT(1, &multi_samples_fbo_id); 
 
      bool generate_2d = true;
      const string &output_texture_type = outputTextureType->getValue();
@@ -235,10 +293,11 @@ void FrameBufferTextureGenerator::initializeFBO() {
 	 }
        }
      } else {
-       glGenBuffers(1, &depth_id);      
+       glGenRenderbuffersEXT(1, &depth_id);      
      }
 
-     glGenBuffers(1, &stencil_id);   
+     glGenRenderbuffersEXT(1, &stencil_id);   
+     glGenRenderbuffersEXT(1, &multi_samples_depth_id);
 
      GLint max_draw_buffers, max_color_attachments;
      glGetIntegerv( GL_MAX_DRAW_BUFFERS, &max_draw_buffers );
@@ -283,6 +342,10 @@ void FrameBufferTextureGenerator::initializeFBO() {
 	 colorTextures->push_back( tex, id );
 	 color_ids.push_back( tex->getTextureId() );
        }
+       
+       GLuint ms_id;
+       glGenRenderbuffersEXT( 1, &ms_id );
+       multi_samples_color_ids.push_back( ms_id );
        draw_buffers.get()[i] = GL_COLOR_ATTACHMENT0_EXT+i;
      }
 
@@ -292,17 +355,58 @@ void FrameBufferTextureGenerator::initializeFBO() {
 
 bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height, H3DInt32 depth ) {
 
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
-    
-    string output_texture_type = outputTextureType->getValue();
+  string output_texture_type = outputTextureType->getValue();
+  const vector< string > &color_texture_types = generateColorTextures->getValue();
+     
+  GLenum texture_type = GL_TEXTURE_2D;
+  if( output_texture_type == "3D" ) {
+    texture_type = GL_TEXTURE_3D;
+  } else if( output_texture_type == "2D_ARRAY" ) {
+    texture_type = GL_TEXTURE_2D_ARRAY_EXT;
+  }
 
-    GLenum texture_type = GL_TEXTURE_2D;
-    if( output_texture_type == "3D" ) {
-      texture_type = GL_TEXTURE_3D;
-    } else if( output_texture_type == "2D_ARRAY" ) {
-      texture_type = GL_TEXTURE_2D_ARRAY_EXT;
+  // determine nr sample points.
+  nr_samples = 0;
+  if( !GLEW_EXT_framebuffer_blit || !GLEW_EXT_framebuffer_multisample ) {
+    Console(4) << "Warning: Your graphics card does not support multi-sample draw "
+	       << "buffers(EXT_framebuffer_multisample). Multi-sampling will be off"
+	       << " (in FrameBufferTextureGenerator)." << endl;
+  } else {
+    GLint max_nr_samples;
+    glGetIntegerv( GL_MAX_SAMPLES_EXT, &max_nr_samples );
+    H3DInt32 s = samples->getValue();
+    if( s > max_nr_samples ) {
+      Console(4) << "Warning: Unsupported nr of multi-samples: " << s 
+		 << ". Your graphics draw supports a maximum of " << max_nr_samples 
+		 << " (in FrameBufferTextureGenerator)." << endl;
+      nr_samples = max_nr_samples;
+    } else {
+      nr_samples = s;
     }
+  }
 
+    if( nr_samples >= 0 ) {
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
+
+      // create multi sample render buffers
+      glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_depth_id );
+      glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, GL_DEPTH_COMPONENT24, width, height);
+      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, multi_samples_depth_id);
+
+      for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_color_ids[i] );
+	glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
+					    stringToInternalFormat( color_texture_types[i]) ,
+					    width, height);
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, 
+				     GL_RENDERBUFFER_EXT, multi_samples_color_ids[i]);
+      }
+  
+      if( !checkFBOCompleteness() ) return false;
+
+    } 
+
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
 
     // set up depth buffer
     if( generateDepthTexture->getValue()  ) {
@@ -345,7 +449,6 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     */
 
     // set up color buffers
-     const vector< string > &color_texture_types = generateColorTextures->getValue();
      for( size_t i = 0; i < color_texture_types.size(); i++ ) {
        glBindTexture( texture_type, color_ids[i] );
        // filter needs to be something else than GL_MIPMAP_LINEAR that is default
@@ -355,20 +458,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
        glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
        glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
 
-       GLint internal_format = GL_RGBA;
-
-       if( color_texture_types[i] == "RGBA32F" ) { 
-	 if( GLEW_ARB_texture_float ) {
-	   internal_format = GL_RGBA32F;
-	 } else {
-	   Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
-	 }
-       } else {
-         if( color_texture_types[i] != "RGBA" ) {
-           Console(4) << "Warning: Invalid generateColorTextures value: \"" << color_texture_types[i] 
-                      << "\". Valid values are \"RGBA\" and \"RGBA32F\". Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
-         }
-       }
+       GLint internal_format = stringToInternalFormat( color_texture_types[i] );
 
        if( texture_type == GL_TEXTURE_2D ) {
 	 glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, 
@@ -395,7 +485,16 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
        glReadBuffer( GL_NONE );
      }
 
-     // check for errors
+     if( !checkFBOCompleteness() ) return false;
+     
+     buffers_width = width;
+     buffers_height = height;
+     buffers_depth = depth;
+     return true;
+}
+
+bool FrameBufferTextureGenerator::checkFBOCompleteness() {
+// check for errors
      GLenum fbo_err = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
      if( fbo_err != GL_FRAMEBUFFER_COMPLETE_EXT ) {
        Console(4) << "Warning: Frame Buffer Object error: ";
@@ -425,10 +524,25 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
        Console(4) << " (in FrameBufferTextureGenerator node). " << endl;
        return false;
      }
-     buffers_width = width;
-     buffers_height = height;
-     buffers_depth = depth;
      return true;
 }
 
+GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
 
+  GLint internal_format = GL_RGBA;
+
+  if( s == "RGBA32F" ) { 
+    if( GLEW_ARB_texture_float ) {
+      internal_format = GL_RGBA32F;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else {
+    if( s != "RGBA" ) {
+      Console(4) << "Warning: Invalid generateColorTextures value: \"" << s 
+		 << "\". Valid values are \"RGBA\" and \"RGBA32F\". Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  }
+  
+  return internal_format;
+}
