@@ -141,9 +141,21 @@ namespace H3D {
     virtual void renderPreViewpoint( X3DChildNode *n,
                                      X3DViewpointNode *vp );
 
-    /// The texture to use on the back face of the cube.
+    /// The update field allows the user to request a regeneration of the 
+    /// texture. Setting this field to "ALWAYS" will make the texture be
+    /// rendered every frame. A value of "NONE" will stop rendering so that
+    /// no further updates are performed even if the contained scene graph 
+    /// changes. When the value is set to "NEXT_FRAME_ONLY", it is an 
+    /// instruction to render the texture at the end of this frame, and then
+    /// not to render again. What this means is that the update frame indicator
+    /// is set to this frame, and at the start of the next frame, the update
+    /// value will be automatically set back to "NONE" to indicate that the 
+    /// rendering has taken place already. Since this is a field change value,
+    /// it will automatically generate an output event that may be routed.
     ///
-    /// <b>Access type:</b> inputOutput \n
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> "NONE"
+    /// <b>Valid values:</b> "NONE", "ALWAYS", "NEXT_FRAME_ONLY"
     /// 
     /// \dotfile GeneratedCubeMapTexture_update.dot
     auto_ptr< SFString > update;
@@ -151,6 +163,7 @@ namespace H3D {
     /// The texture to use on the front face of the cube.
     ///
     /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 128 \n
     /// 
     /// \dotfile GeneratedCubeMapTexture_size.dot
     auto_ptr< SFInt32 > size;
