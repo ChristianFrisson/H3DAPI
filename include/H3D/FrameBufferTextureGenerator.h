@@ -38,8 +38,7 @@ namespace H3D {
 
   /// \ingroup H3DNodes
   /// \class FrameBufferTextureGenerator
-  ///
-  /// The FrameBufferTextureGenerator provides a mean to render a sub-scene 
+  /// \brief The FrameBufferTextureGenerator node provides a mean to render a sub-scene 
   /// into a texture instead of the normal frame buffer. 
   /// 
   /// The children field contains the nodes to render into the textures.
@@ -53,8 +52,12 @@ namespace H3D {
   /// and their type. 
   /// For each texture to generate the type of the texture needs to be specified. 
   /// The available types are:
-  /// "RGBA" - normal color texture.
+  /// "RGBA" - normal color texture with alpha channel.
+  /// "RGB" - normal color texture without alpha channel.
   /// "RGBA32F" - floating point number texture with 32 bit float for each component.
+  /// "RGB32F"  - floating point number texture with 32 bit float for each component.
+  /// "RGBA16F" - floating point number texture with 16 bit float for each component.
+  /// "RGB16F"  - floating point number texture with 16 bit float for each component.
   ///
   /// The output textures will be output into the colorTextures field.
   ///
@@ -82,6 +85,18 @@ namespace H3D {
   /// with the specified number of sample points. Using multiple sample points reduces
   /// aliasing artifacts.
   /// 
+  /// The update field allows the user to request a regeneration of the 
+  /// texture. Setting this field to "ALWAYS" will make the texture be
+  /// rendered every frame. A value of "NONE" will stop rendering so that
+  /// no further updates are performed even if the contained scene graph 
+  /// changes. When the value is set to "NEXT_FRAME_ONLY", it is an 
+  /// instruction to render the texture at the end of this frame, and then
+  /// not to render again. What this means is that the update frame indicator
+  /// is set to this frame, and at the start of the next frame, the update
+  /// value will be automatically set back to "NONE" to indicate that the 
+  /// rendering has taken place already. Since this is a field change value,
+  /// it will automatically generate an output event that may be routed.
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator.x3d">FrameBufferTextureGenerator.x3d</a>
   ///     ( <a href="examples/FrameBufferTextureGenerator.x3d.html">Source</a> )
@@ -113,7 +128,8 @@ namespace H3D {
 				 Inst< MFGeneratedTextureNode > _colorTextures = 0, 
 				 Inst< SFGeneratedTextureNode > _depthTexture  = 0,
 				 Inst< SFString         > _outputTextureType = 0,
-				 Inst< SFInt32          > _samples = 0 );
+				 Inst< SFInt32          > _samples = 0,
+				 Inst< SFString         > _update = 0 );
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -124,8 +140,12 @@ namespace H3D {
     /// Defines the color buffer textures to generate and their type. 
     /// For each texture to generate the type of the texture needs to be specified. 
     /// The available types are:
-    /// "RGBA" - normal color texture.
+    /// "RGBA" - normal color texture with alpha channel.
+    /// "RGB" - normal color texture without alpha channel.
     /// "RGBA32F" - floating point number texture with 32 bit float for each component.
+    /// "RGB32F"  - floating point number texture with 32 bit float for each component.
+    /// "RGBA16F" - floating point number texture with 16 bit float for each component.
+    /// "RGB16F"  - floating point number texture with 16 bit float for each component.
     ///
     /// The output textures will be output into the colorTextures field.
     ///
@@ -137,7 +157,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> initializeOnly
     /// <b>Default value:</b> []
-    /// <b>Valid values:</b> "RGBA", "RGBA32F"
+    /// <b>Valid values:</b> "RGBA", "RGB", "RGBA32F", "RGB32F", "RGBA16F", "RGB16F"
     auto_ptr< MFString > generateColorTextures;
 
     /// Determines if a depth texture should be generated or not. If true the depthTexture
@@ -179,6 +199,23 @@ namespace H3D {
     /// <b>Access type:</b> initializeOnly
     /// <b>Default value:</b> 0
     auto_ptr< SFInt32 > samples;
+
+    /// The update field allows the user to request a regeneration of the 
+    /// texture. Setting this field to "ALWAYS" will make the texture be
+    /// rendered every frame. A value of "NONE" will stop rendering so that
+    /// no further updates are performed even if the contained scene graph 
+    /// changes. When the value is set to "NEXT_FRAME_ONLY", it is an 
+    /// instruction to render the texture at the end of this frame, and then
+    /// not to render again. What this means is that the update frame indicator
+    /// is set to this frame, and at the start of the next frame, the update
+    /// value will be automatically set back to "NONE" to indicate that the 
+    /// rendering has taken place already. Since this is a field change value,
+    /// it will automatically generate an output event that may be routed.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> "ALWAYS"
+    /// <b>Valid values:</b> "NONE", "ALWAYS", "NEXT_FRAME_ONLY"
+    auto_ptr< SFString > update;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

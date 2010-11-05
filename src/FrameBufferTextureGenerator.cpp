@@ -46,6 +46,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, generateDepthTexture, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, outputTextureType, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, samples, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, update, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTexture, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextures, OUTPUT_ONLY );
 
@@ -81,7 +82,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
 							  Inst< MFGeneratedTextureNode > _colorTextures, 
 							  Inst< SFGeneratedTextureNode > _depthTexture,
 							  Inst< SFString         > _outputTextureType,
-							  Inst< SFInt32        > _samples ):
+							  Inst< SFInt32        > _samples,
+							  Inst< SFString       > _update ):
   X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
   generateDepthTexture( _generateDepthTexture ),
@@ -89,6 +91,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   depthTexture( _depthTexture ),
   outputTextureType( _outputTextureType ),
   samples( _samples ),
+  update( _update ),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -100,9 +103,17 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   database.initFields( this );
 
   generateDepthTexture->setValue( false );
+  outputTextureType->addValidValue( "2D" );
+  outputTextureType->addValidValue( "3D" );
+  outputTextureType->addValidValue( "2D_ARRAY" );
   outputTextureType->setValue( "2D" );
   samples->setValue( 0 );
   
+  update->addValidValue( "NONE" );
+  update->addValidValue( "NEXT_FRAME_ONLY" );
+  update->addValidValue( "ALWAYS" );
+  update->setValue( "ALWAYS" );
+
   // turn off display list since we want to get new values of the width
   // and height each loop to see if they have changed.
   displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
@@ -126,6 +137,21 @@ void FrameBufferTextureGenerator::render()     {
   /// Check if we need to generate any textures.
   if( generateColorTextures->size() == 0 && (!generateDepthTexture->getValue() || output_texture_type == "3D" )  )
     return;
+  
+  const string &update_string = update->getValue();
+
+  if( update_string == "NEXT_FRAME_ONLY" ) {
+    update->setValue( "NONE" );
+  } else if( update_string == "ALWAYS" ) {
+    // just continue
+  } else if( update_string == "NONE" ) {
+    if( fbo_initialized ) return;
+  } else {
+    Console(3) << "Warning: Invalid value for \"update\" field in \""
+               << getName() << "\" node (\"" << update_string
+               << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
+               << " or \"ALWAYS\". Using \"ALWAYS\" instead." << endl;
+  }
 
   /// Save current state.
   glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
@@ -533,10 +559,30 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
 
   if( s == "RGBA32F" ) { 
     if( GLEW_ARB_texture_float ) {
-      internal_format = GL_RGBA32F;
+      internal_format = GL_RGBA32F_ARB;
     } else {
       Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
     }
+  } else if( s == "RGBA16F" ) { 
+    if( GLEW_ARB_texture_float ) {
+      internal_format = GL_RGBA16F_ARB;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else if( s == "RGB32F" ) { 
+    if( GLEW_ARB_texture_float ) {
+      internal_format = GL_RGB32F_ARB;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else if( s == "RGB16F" ) { 
+    if( GLEW_ARB_texture_float ) {
+      internal_format = GL_RGB16F_ARB;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else if( s == "RGB" ) { 
+    internal_format = GL_RGB;
   } else {
     if( s != "RGBA" ) {
       Console(4) << "Warning: Invalid generateColorTextures value: \"" << s 
