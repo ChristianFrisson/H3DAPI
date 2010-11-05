@@ -326,8 +326,8 @@ void FrameBufferTextureGenerator::initializeFBO() {
      glGenRenderbuffersEXT(1, &multi_samples_depth_id);
 
      GLint max_draw_buffers, max_color_attachments;
-     glGetIntegerv( GL_MAX_DRAW_BUFFERS, &max_draw_buffers );
-     glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments );
+     glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &max_draw_buffers );
+     glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &max_color_attachments );
 
      const vector< string > &color_texture_types = generateColorTextures->getValue();
 
