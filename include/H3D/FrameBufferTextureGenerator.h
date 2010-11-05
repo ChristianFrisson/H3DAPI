@@ -105,7 +105,7 @@ namespace H3D {
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator_texturearray.x3d">FrameBufferTextureGenerator_texturearray.x3d</a>
   ///     ( <a href="examples/FrameBufferTextureGenerator_texturearray.x3d.html">Source</a> )
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator_fullscreen.x3d">FrameBufferTextureGenerator_fullscreen.x3d</a>
-  ///     ( <a href="examples/FrameBufferTextureGenerator_texturearray.x3d.html">Source</a> )
+  ///     ( <a href="examples/FrameBufferTextureGenerator_fullscreen.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile FrameBufferTextureGenerator.dot
