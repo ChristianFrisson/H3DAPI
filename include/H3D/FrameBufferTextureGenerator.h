@@ -114,6 +114,7 @@ namespace H3D {
         
     typedef TypedMFNode< X3DTextureNode > MFGeneratedTextureNode;
     typedef TypedSFNode< X3DTextureNode > SFGeneratedTextureNode;
+    typedef void (*RenderCallbackFunc)( FrameBufferTextureGenerator *, int i, void * );
     
     /// Constructor.
     FrameBufferTextureGenerator( Inst< AddChildren    > _addChildren     = 0,
@@ -136,6 +137,20 @@ namespace H3D {
 
     /// Performes the OpenGL calls needed for generating the textures.
     virtual void render();
+
+    /// Set a callback function that will override the normal rendering of the children
+    /// field into the textures and replace it with any OpenGL calls of your own.
+    /// The callback function is of the form:
+    /// void f( FrameBufferTextureGenerator *g, int i, void *args )
+    /// where g is the FrameBufferTextureGenerator being rendered, i is -1 if 2D 
+    /// textures are rendered and the index of the slice being rendered into if
+    /// 3D textures. When rendering 3d textures the depth of the 3D texture is
+    /// still the size of the children field so make sure to resize it to the appropriate
+    /// size. args is user defined input the function.
+    /// 
+    /// \param func The callback function to use.
+    /// \param args User specific data which is sent to the callback function when called.
+    void setRenderCallback( RenderCallbackFunc func, void *args = NULL ); 
 
     /// Defines the color buffer textures to generate and their type. 
     /// For each texture to generate the type of the texture needs to be specified. 
@@ -288,6 +303,12 @@ namespace H3D {
 
     /// The number of multisamples currently used for rendering.
     int nr_samples;
+
+    /// The render callback function, if any.
+    RenderCallbackFunc render_func;
+
+    /// The specified callback function user data, if any.
+    void *render_func_data;
   };
 }
 

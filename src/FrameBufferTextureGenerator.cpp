@@ -97,7 +97,9 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   buffers_height(-1),
   buffers_depth( -1 ),
   last_resize_success( true ),
-  nr_samples( 0 ) {
+  nr_samples( 0 ),
+  render_func( NULL ),
+  render_func_data( NULL ) {
 
   type_name = "FrameBufferTextureGenerator";
   database.initFields( this );
@@ -194,13 +196,16 @@ void FrameBufferTextureGenerator::render()     {
 
   if( output_texture_type == "2D" ) {
     // 2D textures. Render all nodes in children field into the textures.
-
-    // Clear buffers.
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    
+   
     // render scene.
-    X3DGroupingNode::render();
-
+    if( render_func ) {
+      render_func( this, -1, render_func_data );
+    } else {
+      // Clear buffers.
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      X3DGroupingNode::render();
+    }
+    
     // blit multi sample render buffer to output textures if using multi sampling.
     if( nr_samples > 0 ) {
       glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
@@ -242,17 +247,21 @@ void FrameBufferTextureGenerator::render()     {
       if( nr_samples > 0 ) {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
       } 
-
-      // Clear buffers.
-      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-      
+     
       // render child
-      if( c[i] ) {
-	H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
-	if( tmp )
-	  tmp->displayList->callList();
-	else
-	  c[i]->render();
+      if( render_func ) {
+	render_func( this, i, render_func_data );
+      } else {
+	// Clear buffers.
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+	if( c[i] ) {
+	  H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
+	  if( tmp )
+	    tmp->displayList->callList();
+	  else
+	    c[i]->render();
+	}
       }
 
       // blit multi sample render buffer to output textures if using multi sampling.
