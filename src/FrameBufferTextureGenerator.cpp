@@ -106,6 +106,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
 
   generateDepthTexture->setValue( false );
   outputTextureType->addValidValue( "2D" );
+  outputTextureType->addValidValue( "2D_RECTANGLE" );
   outputTextureType->addValidValue( "3D" );
   outputTextureType->addValidValue( "2D_ARRAY" );
   outputTextureType->setValue( "2D" );
@@ -127,12 +128,24 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
 void FrameBufferTextureGenerator::render()     { 
   if( !GLEW_EXT_framebuffer_object ) {
     Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
-               << "(EXT_frame_buffer_object). FrameBufferTextureGenerator ndoes will "
+               << "(EXT_frame_buffer_object). FrameBufferTextureGenerator nodes will "
                << "not work." << endl;
   }
 
   string output_texture_type = outputTextureType->getValue();
-  if( output_texture_type != "3D" && output_texture_type != "2D_ARRAY" ) {
+  if( output_texture_type == "2D_ARRAY" && !GLEW_EXT_texture_array) {
+    Console(4) << "Warning: Texture arrays not supported by your graphics card "
+               << "(EXT_texture_array). FrameBufferTextureGenerator nodes with \"2D_ARRAY\" will "
+               << "not work." << endl;
+  } else if( output_texture_type == "2D_RECTANGLE" && !GLEW_ARB_texture_rectangle) {
+    Console(4) << "Warning: Texture arrays not supported by your graphics card "
+               << "(ARB_texture_rectangle). FrameBufferTextureGenerator nodes with \"2D_RECTANGLE\" will "
+               << "not work." << endl;
+  }
+
+  if( output_texture_type != "3D" && 
+      output_texture_type != "2D_ARRAY" &&
+      output_texture_type != "2D_RECTANGLE" ) {
     output_texture_type = "2D";
   }
 
@@ -166,7 +179,7 @@ void FrameBufferTextureGenerator::render()     {
   glGetIntegerv( GL_VIEWPORT, viewport );
   unsigned int width  = viewport[2];
   unsigned int height = viewport[3];
-  unsigned int depth  = output_texture_type == "2D" ? 1: std::max( (int)children->size(), 1 );
+  unsigned int depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
 
   // ensure that all buffers are always of the frame buffer size
   if( buffers_width != width || buffers_height != height || buffers_depth != depth ) {
@@ -194,7 +207,7 @@ void FrameBufferTextureGenerator::render()     {
                << " have update to their values";
   }
 
-  if( output_texture_type == "2D" ) {
+  if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
     // 2D textures. Render all nodes in children field into the textures.
    
     // render scene.
@@ -303,9 +316,9 @@ void FrameBufferTextureGenerator::initializeFBO() {
     if( output_texture_type == "3D" || output_texture_type == "2D_ARRAY" ) {
       generate_2d = false;
     } else {
-      if( output_texture_type != "2D" ) {
+      if( output_texture_type != "2D" && output_texture_type != "2D_RECTANGLE" ) {
         Console(4) << "Warning: Invalid outputTextureType value: \"" << output_texture_type 
-                   << "\". Valid values are \"2D\", \"2D_ARRAY\" and \"3D\". Using 2D instead(in FrameBufferTextureGenerator node). " << endl;
+                   << "\". Valid values are \"2D\", \"2D_RECTANGLE\", \"2D_ARRAY\" and \"3D\". Using 2D instead(in FrameBufferTextureGenerator node). " << endl;
       }
     }
 
@@ -315,7 +328,11 @@ void FrameBufferTextureGenerator::initializeFBO() {
       if( generate_2d ) {
         GeneratedTexture *tex = new GeneratedTexture;
         // make sure the texture id is initialized.
-        tex->ensureInitialized( GL_TEXTURE_2D );
+        if( output_texture_type == "2D_RECTANGLE" ) {
+          tex->ensureInitialized( GL_TEXTURE_RECTANGLE_ARB );
+        } else {
+          tex->ensureInitialized( GL_TEXTURE_2D );
+        }
         depthTexture->setValue( tex, id );
         depth_id = tex->getTextureId();
       } else {
@@ -365,7 +382,11 @@ void FrameBufferTextureGenerator::initializeFBO() {
       if( generate_2d ) {
         GeneratedTexture *tex = new GeneratedTexture;
         // make sure the texture id is initialized.
-        tex->ensureInitialized( GL_TEXTURE_2D );
+        if( output_texture_type == "2D_RECTANGLE" ) {
+          tex->ensureInitialized( GL_TEXTURE_RECTANGLE_ARB );
+        } else {
+          tex->ensureInitialized( GL_TEXTURE_2D );
+        }
         colorTextures->push_back( tex, id );
         color_ids.push_back( tex->getTextureId() );
       } else {
@@ -396,7 +417,9 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
   const vector< string > &color_texture_types = generateColorTextures->getValue();
      
   GLenum texture_type = GL_TEXTURE_2D;
-  if( output_texture_type == "3D" ) {
+  if( output_texture_type == "2D_RECTANGLE" ) {
+    texture_type = GL_TEXTURE_RECTANGLE_ARB;
+  } else if( output_texture_type == "3D" ) {
     texture_type = GL_TEXTURE_3D;
   } else if( output_texture_type == "2D_ARRAY" ) {
     texture_type = GL_TEXTURE_2D_ARRAY_EXT;
@@ -457,17 +480,17 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
         
-      if(texture_type == GL_TEXTURE_2D ) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, 
-                     GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                  GL_TEXTURE_2D, depth_id, 0 );
-      } else if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
+      if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
         glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, GL_DEPTH_COMPONENT32F, width, height, depth, 0, 
                      GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
+        
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0 );
-      }
+      } else {
+        glTexImage2D( texture_type, 0, GL_DEPTH_COMPONENT32F, width, height, 0, 
+                      GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+                                  texture_type, depth_id, 0 );
+      } 
     }
   } else {
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_id);
@@ -503,6 +526,12 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       
       glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
                                 GL_TEXTURE_2D, color_ids[i], 0 );        
+    } else if( texture_type == GL_TEXTURE_RECTANGLE_ARB ) {
+      glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, internal_format, width, height, 0, 
+                   GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      
+      glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
+                                GL_TEXTURE_RECTANGLE_ARB, color_ids[i], 0 );        
     } else if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
       glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, internal_format, width, height, depth, 0, 
                    GL_RGBA, GL_UNSIGNED_BYTE, NULL);

@@ -75,6 +75,7 @@ namespace H3D {
   /// textures. Valid values: 
   /// 
   /// "2D"       - normal 2D texture(glsl type sampler2D)
+  /// "2D_RECTANGLE" - 2D rectangle texture(glsl type sampler2DRect)
   /// "3D"       - normal 3D texture. 3D depth textures not supported. (glsl type sampler3D)
   /// "2D_ARRAY" - 2D texture array. Similar to a 3D texture but without interpolation
   /// between depth layers. Can only be used by shaders and not used directly for texturing.
@@ -196,6 +197,7 @@ namespace H3D {
     /// textures. Valid values: 
     /// 
     /// "2D"       - normal 2D texture(glsl type sampler2D)
+    /// "2D_RECTANGLE" - 2D rectangle texture(glsl type sampler2DRect)
     /// "3D"       - normal 3D texture. 3D depth textures not supported. (glsl type sampler3D)
     /// "2D_ARRAY" - 2D texture array. Similar to a 3D texture but without interpolation
     /// between depth layers. Can only be used by shaders and not used directly for texturing.
@@ -203,7 +205,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> initializeOnly
     /// <b>Default value:</b> "2D"
-    /// <b>Valid values:</b> "2D", "3D", "2D_ARRAY"
+    /// <b>Valid values:</b> "2D", "2D_RECTANGLE", "3D", "2D_ARRAY"
     auto_ptr< SFString > outputTextureType;
     
     /// The samples field determines how many samples to use for each pixel value in the
