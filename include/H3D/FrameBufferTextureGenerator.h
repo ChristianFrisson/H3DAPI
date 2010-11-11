@@ -234,6 +234,14 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+    
+    /// The ensureInitialized function makes sure that the output textures
+    /// of the FrameBufferTextureGenerator are initialized and all required
+    /// frame buffer objects. Can only be called when a OpenGL context is 
+    /// active.
+    inline void ensureInitialized() {
+      if( !fbo_initialized ) initializeFBO();
+    }
 
   protected:
 
