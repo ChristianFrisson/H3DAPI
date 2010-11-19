@@ -1259,13 +1259,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
         1.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
       Vec3f far_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
       Vec3f near_middle = middle_plane_pos - near_plane_pos;
-      if( near_middle * ( far_plane_pos - near_plane_pos ) < 0 ) {
+      Vec3f near_far = far_plane_pos - near_plane_pos;
+      if( near_middle * near_far < 0 ) {
         // Infinite far plane caused problems. Choose a large vector in the
         // other direction. Note that this is not an optimal solution, the best
         // solution in this case would be to use a rayIntersect function in
         // updateX3DPointingDeviceSensors. In this case we choose the point
         // halfway to infinity, hopefully that should be enough.
-        far_plane_pos = middle_plane_pos;
+        near_middle.normalizeSafe();
+        far_plane_pos = near_plane_pos + near_far.length() * near_middle;
       }
 
       // Update pointing device sensors in order to have them correctly

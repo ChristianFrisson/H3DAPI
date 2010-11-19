@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -163,6 +163,17 @@ namespace H3D {
           addTransform();
       }
 
+      /// Clears data so the struct can be used in a closestPoint function
+      /// again.
+      virtual void clearData() {
+        theNodes.clear();
+        result.clear();
+        geometry_transforms.clear();
+        while( !current_matrix.empty() )
+          current_matrix.pop();
+        current_matrix.push( Matrix4f() );
+      }
+
     protected:
       /// A vector of matrices from the local
       /// coordinate space to global space for each node that the
@@ -238,6 +249,14 @@ namespace H3D {
       /// in theNodes vector to PointingDeviceResultStruct which contains
       /// info about the X3DPointingDeviceNodes.
       GeomX3DPtdMap geom_ptd_map;
+
+      /// Clears data so the struct can be used in a closestPoint function
+      /// again.
+      virtual void clearData() {
+        NodeIntersectResult::clearData();
+        while( !current_pt_device.empty() )
+          current_pt_device.pop();
+      }
 
     protected:
       /// The top of the stack contains the X3DPointingDeviceNodes that is to
