@@ -45,6 +45,14 @@ namespace H3D {
   /// The value is between -1 and 1 where -1 means drawing at near plane and 1 
   /// at far plane.
   ///
+  /// The screenAligned field determines if the rectangle should always been 
+  /// drawn in relation to the screen(i.e. upperleft corner of rectangle is
+  /// always mapped to upper left corner of the screen) or if it should be affected
+  /// by transforms that flip coordinate axis such as using mirrored mode.
+  /// Usually one sets screenAligned to true if using the FullscreenRectangle
+  /// to show a generated frame buffer from e.g. FrameBufferTextureGenerator
+  /// and false for other content that should be mirrored in mirrored mode.
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/FullscreenRectangle.x3d">FullscreenRectangle.x3d</a>
   ///     ( <a href="examples/FullscreenRectangle.x3d.html">Source</a> )
@@ -57,13 +65,14 @@ namespace H3D {
 
     /// Constructor.
     FullscreenRectangle( Inst< SFNode      > _metadata = 0,
-			 Inst< SFBound     > _bound = 0,
-			 Inst< DisplayList > _displayList = 0,
-			 Inst< MFBool      > _isTouched = 0,
-			 Inst< MFVec3f     > _force = 0,
-			 Inst< MFVec3f     > _contactPoint = 0,
-			 Inst< MFVec3f     > _contactNormal = 0,
-			 Inst< SFFloat     > _zValue = 0 );
+                         Inst< SFBound     > _bound = 0,
+                         Inst< DisplayList > _displayList = 0,
+                         Inst< MFBool      > _isTouched = 0,
+                         Inst< MFVec3f     > _force = 0,
+                         Inst< MFVec3f     > _contactPoint = 0,
+                         Inst< MFVec3f     > _contactNormal = 0,
+                         Inst< SFFloat     > _zValue = 0,
+                         Inst< SFBool      > _screenAligned = 0 );
    
     /// Renders the FullscreenRectangle using OpenGL.
     virtual void render();
@@ -82,8 +91,22 @@ namespace H3D {
     /// <b>Default value:</b> -1
     /// <b>Valid values: </b>[-1 - 1]
     /// 
-    /// \dotfile FullscreenRectangle_size.dot
+    /// \dotfile FullscreenRectangle_zValue.dot
     auto_ptr< SFFloat > zValue;
+
+    /// The screenAligned field determines if the rectangle should always been 
+    /// drawn in relation to the screen(i.e. upperleft corner of rectangle is
+    /// always mapped to upper left corner of the screen) or if it should be affected
+    /// by transforms that flip coordinate axis such as using mirrored mode.
+    /// Usually one sets screenAligned to true if using the FullscreenRectangle
+    /// to show a generated frame buffer from e.g. FrameBufferTextureGenerator
+    /// and false for other content that should be mirrored in mirrored mode.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false
+    /// 
+    /// \dotfile FullscreenRectangle_screenAligned.dot
+    auto_ptr< SFBool > screenAligned;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
