@@ -39,6 +39,7 @@
 #include <H3D/Scene.h>
 #include <H3D/HapticsRenderers.h>
 #include <H3D/ShadowGeometry.h>
+#include <H3D/H3DRenderModeGroupNode.h>
 
 #ifdef HAVE_OPENHAPTICS
 #include <HAPI/HLDepthBufferShape.h>
@@ -274,7 +275,22 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
 
   glCullFace( geom->getCullFace() );
 
+  if( H3DRenderModeGroupNode::current_render_mode_group ) {
+    // save current OpenGL state
+    H3DRenderModeGroupNode::current_render_mode_group->saveCurrentState();
+    // make the changes wanted to the state.
+    H3DRenderModeGroupNode::current_render_mode_group->changeGeometryState();
+    // We do not know what OpenGL states are changed  by the 
+    // H3DRenderModeGroupNode, so we cannot have it cached in a display
+    // list.
+    breakCache();
+  }
+
   BugWorkaroundDisplayList::callList( build_list );
+
+  if( H3DRenderModeGroupNode::current_render_mode_group ) {
+    H3DRenderModeGroupNode::current_render_mode_group->restoreState();
+  }
 
   if( geom->draw_debug_options ) {
     H3DInt32 render_depth = -1;
@@ -384,6 +400,13 @@ void X3DGeometryNode::SFBoundTree::update() {
 void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
   X3DChildNode::traverseSG( ti );
   
+  if( H3DRenderModeGroupNode::current_render_mode_group ) {
+    // We do not know what OpenGL states are changed  by the 
+    // H3DRenderModeGroupNode, so we cannot have it cached in a display
+    // list.
+    displayList->breakCache();
+  }
+
   if( ti.getCurrentSurface() ) {
     bool force_full_oh = false;
     // if we have an OpenHapticsOptions node, then set the OpenHaptics 
@@ -406,6 +429,7 @@ void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
     for( unsigned int i = 0; i < devices.size(); i++ ) {
       
       if( !ti.hapticsEnabled( i ) || 
+          !ti.getCurrentSurface() ||
           !ti.getCurrentSurface()->getSurface(i) ) continue; 
 
       bool tmp_force_full_oh = force_full_oh;
