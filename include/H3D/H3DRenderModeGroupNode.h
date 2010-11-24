@@ -34,6 +34,7 @@
 #include <H3D/DependentNodeFields.h>
 #include <H3D/H3DDisplayListObject.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/X3DGroupingNode.h>
 
 namespace H3D {
 
