@@ -51,6 +51,8 @@ GeneratedTexture::GeneratedTexture(
 
   type_name = "GeneratedTexture";
   database.initFields( this ); 
+   displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
+
 }
 
 void GeneratedTexture::render() {
