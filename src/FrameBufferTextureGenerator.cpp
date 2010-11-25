@@ -130,6 +130,7 @@ void FrameBufferTextureGenerator::render()     {
     Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
                << "(EXT_frame_buffer_object). FrameBufferTextureGenerator nodes will "
                << "not work." << endl;
+    return;
   }
 
   string output_texture_type = outputTextureType->getValue();
@@ -137,10 +138,12 @@ void FrameBufferTextureGenerator::render()     {
     Console(4) << "Warning: Texture arrays not supported by your graphics card "
                << "(EXT_texture_array). FrameBufferTextureGenerator nodes with \"2D_ARRAY\" will "
                << "not work." << endl;
+    return;
   } else if( output_texture_type == "2D_RECTANGLE" && !GLEW_ARB_texture_rectangle) {
-    Console(4) << "Warning: Texture arrays not supported by your graphics card "
+    Console(4) << "Warning: Texture rectangles not supported by your graphics card "
                << "(ARB_texture_rectangle). FrameBufferTextureGenerator nodes with \"2D_RECTANGLE\" will "
                << "not work." << endl;
+    return;
   }
 
   if( output_texture_type != "3D" && 
