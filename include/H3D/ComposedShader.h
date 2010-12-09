@@ -99,6 +99,12 @@ namespace H3D {
     /// Disables the shader program.
     virtual void postRender();
 
+    /// Returns the OpenGL shader program handle used by the 
+    /// ComposedShader.
+    GLhandleARB getProgramHandle() {
+      return program_handle;
+    }
+
     /// The shader parts to use in the ComposedShader 
     ///
     /// <b>Access type:</b> outputOnly \n
