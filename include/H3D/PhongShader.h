@@ -29,13 +29,13 @@
 #ifndef __PHONGSHADER_H__
 #define __PHONGSHADER_H__
 
-#include <H3D/ComposedShader.h>
+#include <H3D/H3DGeneratedFragmentShaderNode.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/SFMatrix4f.h>
 
 namespace H3D {
 
-  /// \ingroup X3DNodes
+  /// \ingroup H3DNodes
   /// \class PhongShader
   /// \brief The PhongShader node defines a shader for using the Phong
   /// illumination model.
@@ -106,8 +106,7 @@ namespace H3D {
   /// space with the normal as z-axis and the texture coordinate axis 
   /// directions as the other two axis. These axis are called tangent
   /// and binormal and have to be provided as a 3 component 
-  /// FloatVertexAttribute for each vertex by the geometry used. See
-  /// Examples/All/PhongShader_tangentSpaceNormals.x3d for an example.
+  /// FloatVertexAttribute for each vertex by the geometry used. 
   ///
   /// It is possible to have different materials for front facing and
   /// back facing polygons. By default back and front use the same color
@@ -116,10 +115,20 @@ namespace H3D {
   /// will be used instead for all back facing polygons. Back Material
   /// values can be set using a TwoSidedMaterial node.
   /// 
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PhongShader.x3d">PhongShader.x3d</a>
+  ///     ( <a href="examples/PhongShader.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/PhongShader_textures.x3d">PhongShader_textures.x3d</a>
+  ///     ( <a href="examples/PhongShader_textures.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/PhongShader_twosided.x3d">PhongShader_twosided.x3d</a>
+  ///     ( <a href="examples/PhongShader_twosided.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/PhongShader_tangentSpaceNormals.x3d">PhongShader_tangentSpaceNormals.x3d</a>
+  ///     ( <a href="examples/PhongShader_tangentSpaceNormals.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile PhongShader.dot
   class PhongShader : 
-    public ComposedShader {
+    public H3DGeneratedFragmentShaderNode {
   public:
   
     /// The SFTexture2DNode field is dependent on the displayList field
@@ -131,53 +140,37 @@ namespace H3D {
                              true >
     SFTexture2DNode;
 
-    /// Field for updating the string for the fragment shader to use.
-    class FragmentShaderString: public TypedField< MFString, Field > {
-    protected:
-      virtual void update();
-    };
-
-    /// Field for updating the string for the vertex shader to use.
-    class VertexShaderString: public TypedField< MFString, Field >  {
-    protected:
-      virtual void update();
-    };
-
     /// Constructor.
     PhongShader( Inst< DisplayList  > _displayList = 0,
-                   Inst< SFNode       > _metadata    = 0,
-                   Inst< SFBool       > _isSelected  = 0,
-                   Inst< SFBool       > _isValid     = 0,
-                   Inst< SFBool       > _activate    = 0,
-                   Inst< SFString     > _language    = 0,
-                   Inst< MFShaderPart > _parts       = 0,
-                   Inst< SFBool       > _suppressUniformWarnings = 0,
-                   Inst< SFTexture2DNode > _ambientMap  = 0,
-                   Inst< SFTexture2DNode > _diffuseMap  = 0,
-                   Inst< SFTexture2DNode > _emissionMap  = 0,
-                   Inst< SFTexture2DNode > _normalMap   = 0,
-                   Inst< SFString        > _normalMapCoordSpace = 0,
-                   Inst< SFMatrix4f      > _normalMapMatrix = 0,
-                   Inst< SFTexture2DNode > _specularMap = 0,
-                   Inst< SFTexture2DNode > _glossMap    = 0,
-                   Inst< SFBool          > _modulateMaps = 0,
-                   Inst< SFTexture2DNode > _backAmbientMap  = 0,
-                   Inst< SFTexture2DNode > _backDiffuseMap  = 0,
-                   Inst< SFTexture2DNode > _backEmissionMap  = 0,
-                   Inst< SFTexture2DNode > _backNormalMap   = 0,
-                   Inst< SFString        > _backNormalMapCoordSpace = 0,
-                   Inst< SFMatrix4f      > _backNormalMapMatrix = 0,
-                   Inst< SFTexture2DNode > _backSpecularMap = 0,
-                   Inst< SFTexture2DNode > _backGlossMap    = 0,
-                   Inst< SFBool          > _backModulateMaps = 0,
-                   Inst< SFBool          > _separateBackColor = 0,
-                   Inst< FragmentShaderString > _fragmentShaderString = 0,
-                   Inst< VertexShaderString > _vertexShaderString = 0 );
+                 Inst< SFNode       > _metadata    = 0,
+                 Inst< SFBool       > _isSelected  = 0,
+                 Inst< SFBool       > _isValid     = 0,
+                 Inst< SFBool       > _activate    = 0,
+                 Inst< SFString     > _language    = 0,
+                 Inst< MFShaderPart > _parts       = 0,
+                 Inst< SFBool       > _suppressUniformWarnings = 0,
+                 Inst< MFString > _fragmentShaderString = 0,
+                 Inst< MFString > _vertexShaderString = 0,
+                 Inst< SFTexture2DNode > _ambientMap  = 0,
+                 Inst< SFTexture2DNode > _diffuseMap  = 0,
+                 Inst< SFTexture2DNode > _emissionMap  = 0,
+                 Inst< SFTexture2DNode > _normalMap   = 0,
+                 Inst< SFString        > _normalMapCoordSpace = 0,
+                 Inst< SFMatrix4f      > _normalMapMatrix = 0,
+                 Inst< SFTexture2DNode > _specularMap = 0,
+                 Inst< SFTexture2DNode > _glossMap    = 0,
+                 Inst< SFBool          > _modulateMaps = 0,
+                 Inst< SFTexture2DNode > _backAmbientMap  = 0,
+                 Inst< SFTexture2DNode > _backDiffuseMap  = 0,
+                 Inst< SFTexture2DNode > _backEmissionMap  = 0,
+                 Inst< SFTexture2DNode > _backNormalMap   = 0,
+                 Inst< SFString        > _backNormalMapCoordSpace = 0,
+                 Inst< SFMatrix4f      > _backNormalMapMatrix = 0,
+                 Inst< SFTexture2DNode > _backSpecularMap = 0,
+                 Inst< SFTexture2DNode > _backGlossMap    = 0,
+                 Inst< SFBool          > _backModulateMaps = 0,
+                 Inst< SFBool          > _separateBackColor = 0 );
     
-    /// The preRender method is extended to add all uniform variables
-    /// before the shader is rendered.
-    virtual void preRender();
-
     /// The traverseSG method is specialized to add the 
     /// shaderRequiresTangents user data to the TraverseInfo
     /// object in order to let supported geometries to render
@@ -459,36 +452,24 @@ namespace H3D {
     /// \dotfile PhongShader_separateBackColor.dot
     auto_ptr< SFBool > separateBackColor;
 
-    /// Contains the generated fragment shader code.
-    ///
-    /// <b>Access type:</b> outputOnly \n
-    /// 
-    /// \dotfile PhongShader_fragmentShaderString.dot
-    auto_ptr< FragmentShaderString > fragmentShaderString;
-
-    /// Contains the generated vertex shader code.
-    ///
-    /// <b>Access type:</b> outputOnly \n
-    /// 
-    /// \dotfile PhongShader_vertexShaderString.dot
-    auto_ptr< VertexShaderString > vertexShaderString;
-
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
-    /// Field used to update the shader code when an event is received.
-    /// Every field that should cause the shaders to be rebuild needs
-    /// to be routed to this field.
-    auto_ptr< Field > rebuildShader;
-
     /// Adds uniform fields to the shader. A ComposedShader uses its
     /// dynamic fields to define uniform variables. Hence we need to
     /// add dynamic fields for each field that we want to be accessable
     /// in the shader.
-    virtual void addUniformFields();
+    virtual string addUniformFields( ComposedShader *shader );
 
-    /// Returns the shader code for the vertex shader.
-    virtual string getVertexShaderString();
+    /// Get a string with GLSL function definitions to be used by
+    /// the generated shader.
+    virtual string getFunctionShaderString();
+
+    /// Get the varying variables used by the shader generator.
+    virtual void getVaryingVariables( vector< VaryingVariable > &variables );
+
+    /// Get the attribues used by the shader generator.
+    virtual void getAttributes( vector< Attribute > &attributes );
 
     /// Returns the shader code for the fragment shader.
     virtual string getFragmentShaderString();

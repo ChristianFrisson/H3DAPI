@@ -37,7 +37,8 @@ using namespace H3D;
 H3DNodeDatabase PhongShader::database( 
                                    "PhongShader", 
                                    &(newInstance<PhongShader>), 
-                                   typeid( PhongShader ) );
+                                   typeid( PhongShader ),
+                                   &H3DGeneratedFragmentShaderNode::database );
 
 namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, normalMap, INPUT_OUTPUT );
@@ -60,9 +61,6 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, backGlossMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backModulateMaps, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, separateBackColor, INPUT_OUTPUT );
-
-  FIELDDB_ELEMENT( PhongShader, vertexShaderString, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( PhongShader, fragmentShaderString, OUTPUT_ONLY );
 }
 
 PhongShader::PhongShader( Inst< DisplayList  > _displayList,
@@ -73,6 +71,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                               Inst< SFString     > _language,
                               Inst< MFShaderPart > _parts,
                               Inst< SFBool       > _suppressUniformWarnings,
+                              Inst< MFString > _fragmentShaderString,
+                              Inst< MFString > _vertexShaderString,
                               Inst< SFTexture2DNode > _ambientMap,
                               Inst< SFTexture2DNode > _diffuseMap,
                               Inst< SFTexture2DNode > _emissionMap,
@@ -91,12 +91,11 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                               Inst< SFTexture2DNode > _backSpecularMap,
                               Inst< SFTexture2DNode > _backGlossMap   ,
                               Inst< SFBool          > _backModulateMaps,
-                              Inst< SFBool          > _separateBackColor,
-                              Inst< FragmentShaderString > _fragmentShaderString,
-                              Inst< VertexShaderString > _vertexShaderString ) :
-  ComposedShader( _displayList, _metadata, _isSelected, 
-                  _isValid, _activate, _language, _parts, 
-                  _suppressUniformWarnings),
+                              Inst< SFBool          > _separateBackColor ) :
+  H3DGeneratedFragmentShaderNode( _displayList, _metadata, _isSelected, 
+                                  _isValid, _activate, _language, _parts, 
+                                  _suppressUniformWarnings, _fragmentShaderString,
+                                  _vertexShaderString ),
 
   ambientMap( _ambientMap ),
   diffuseMap( _diffuseMap ),
@@ -116,16 +115,10 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backSpecularMap( _backSpecularMap ),
   backGlossMap( _backGlossMap ),
   backModulateMaps( _backModulateMaps ),
-  separateBackColor( _separateBackColor ),
-  fragmentShaderString( _fragmentShaderString ),
-  vertexShaderString( _vertexShaderString ),
-  rebuildShader( new Field ) {
+  separateBackColor( _separateBackColor ) {
+
   type_name = "PhongShader";
   database.initFields( this );
-  fragmentShaderString->setOwner( this );
-  vertexShaderString->setOwner( this );
-  fragmentShaderString->setName( "fragmentShaderString" );
-  vertexShaderString->setName( "vertexShaderString" );
 
   normalMapCoordSpace->addValidValue( "OBJECT" );
   normalMapCoordSpace->addValidValue( "TANGENT" );
@@ -178,81 +171,11 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backModulateMaps->route( rebuildShader );
   separateBackColor->route( rebuildShader );
 
-  language->setValue( "GLSL" );
-
-  ShaderPart *vertex_shader = new ShaderPart;
-  vertex_shader->type->setValue( "VERTEX" );
-
-  ShaderPart *fragment_shader = new ShaderPart;
-  fragment_shader->type->setValue( "FRAGMENT" );
-
-  parts->push_back( vertex_shader );
-  parts->push_back( fragment_shader );
-
-  rebuildShader->route( vertexShaderString, id );
-  rebuildShader->route( fragmentShaderString, id );
-
-  vertexShaderString->route( vertex_shader->url );
-  fragmentShaderString->route( fragment_shader->url );
-
   modulateMaps->setValue( false );
   backModulateMaps->setValue( false );
   separateBackColor->setValue( false );
 }
 
-void PhongShader::VertexShaderString::update() {
-  PhongShader *owner = static_cast< PhongShader * >( getOwner() );
-  value.clear();
-  value.push_back( string("glsl:") + owner->getVertexShaderString() );
-}
-
-void PhongShader::FragmentShaderString::update() {
-  PhongShader *owner = static_cast< PhongShader * >( getOwner() );
-  value.clear();
-  value.push_back( string("glsl:") + owner->getFragmentShaderString() );
-}
-
-string PhongShader::getVertexShaderString() {
-
-  
-
-  if( normalMap->getValue() && normalMapCoordSpace->getValue() == "TANGENT" ) {
-    // tangent space normal map requires definition of binormal and tangent
-    // attributes in order to be able to transform into object space.
-    string s = 
-      "attribute vec3 binormal, tangent;\n"
-      "varying vec3 normal, vertex, binormal_axis, tangent_axis;\n"
-      "\n"
-      "void main() {\n"
-      "  normal = gl_NormalMatrix * gl_Normal;\n"
-      "  binormal_axis = gl_NormalMatrix * binormal;\n"
-      "  tangent_axis = gl_NormalMatrix * tangent;\n"
-      "  vec4 clip_vertex =  gl_ModelViewMatrix * gl_Vertex;\n"
-      "  vertex = vec3( clip_vertex );\n"
-      "\n"
-      "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-      "  gl_ClipVertex = clip_vertex;\n"
-      "  gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-      "} \n";
-    return s;
-  } else {
-    string s = 
-      "varying vec3 normal, vertex;\n"
-      "\n"
-      "void main() {\n"
-      "  normal = gl_NormalMatrix * gl_Normal;\n"
-      "  vec4 clip_vertex =  gl_ModelViewMatrix * gl_Vertex;\n"
-      "  vertex = vec3( clip_vertex );\n"
-      "\n"
-      "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-      "  gl_ClipVertex = clip_vertex;\n"
-      "  gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-      "} \n";
-    return s;
-  }
-
-
-}
 
 string fragment_shader_functions = 
 
@@ -384,71 +307,53 @@ string fragment_shader_functions =
   "}\n";
 
 
+/// Get a string with GLSL function definitions to be used by
+/// the generated shader.
+string PhongShader::getFunctionShaderString() {
+  return fragment_shader_functions;
+}
+
+void PhongShader::getAttributes( vector< Attribute > &attributes ) {
+  if( normalMap->getValue() && normalMapCoordSpace->getValue() == "TANGENT" ) {
+    bool have_binormal = false;
+    bool have_tangent = false;
+    for( unsigned int i = 0; i < attributes.size(); i++ ) {
+      if( attributes[i].name == "binormal" ) have_binormal = true;
+      else if( attributes[i].name == "tangent" ) have_tangent = true;
+    }
+    if( !have_binormal )
+      attributes.push_back( Attribute( "binormal", "vec3" ) );
+
+    if( !have_tangent )
+      attributes.push_back( Attribute( "tangent", "vec3" ) );
+  }
+}
+
+/// Get the varying variables used by the shader generator.
+void PhongShader::getVaryingVariables( vector< VaryingVariable > &varyings ) {
+  varyings.push_back( VaryingVariable( uniqueShaderName( "normal" ),
+                                       "vec3",
+                                       uniqueShaderName( "normal" ) + " = gl_NormalMatrix * gl_Normal;" ) );
+  varyings.push_back( VaryingVariable( uniqueShaderName( "vertex" ),
+                                       "vec3",
+                                        uniqueShaderName( "vertex" ) + " = vec3( gl_ClipVertex );" ) );
+
+  if( normalMap->getValue() && normalMapCoordSpace->getValue() == "TANGENT" ) {
+    varyings.push_back( VaryingVariable( uniqueShaderName( "binormal_axis" ),
+                                         "vec3",
+                                         uniqueShaderName( "binormal_axis" ) + " = gl_NormalMatrix * binormal;" ) );
+    varyings.push_back( VaryingVariable( uniqueShaderName( "tangent_axis" ),
+                                         "vec3",
+                                         uniqueShaderName( "tangent_axis" ) + " = gl_NormalMatrix * tangent;" ) );
+  }
+}
+
+
 string PhongShader::getFragmentShaderString() {
   stringstream s;
-
-  s << "varying vec3 normal, vertex; " << endl;
-
-  // add uniform variables for all image maps that we have.
-  if( ambientMap->getValue() ) {
-    s << "uniform sampler2D ambient_map;" << endl;
-  }
-
-  if( diffuseMap->getValue() ) {
-    s << "uniform sampler2D diffuse_map;" << endl;
-  }
-
-  if( emissionMap->getValue() ) {
-    s << "uniform sampler2D emission_map;" << endl;
-  }
-
-  if( normalMap->getValue() ) {
-    if( normalMapCoordSpace->getValue() == "TANGENT" ) {
-      s<< "varying vec3 binormal_axis, tangent_axis; " << endl;
-    }
-    s << "uniform sampler2D normal_map;" << endl;
-    s << "uniform mat4 normal_map_matrix;" << endl;
-  }
-
-  if( specularMap->getValue() ) {
-    s << "uniform sampler2D specular_map;" << endl;
-  }
-
-  if( glossMap->getValue() ) {
-    s << "uniform sampler2D gloss_map;" << endl;
-  }
-
-  if( separateBackColor->getValue() ) {
-    if( backAmbientMap->getValue() ) {
-      s << "uniform sampler2D back_ambient_map;" << endl;
-    }
-    
-    if( backDiffuseMap->getValue() ) {
-      s << "uniform sampler2D back_diffuse_map;" << endl;
-    }
-    
-    if( backEmissionMap->getValue() ) {
-      s << "uniform sampler2D back_emission_map;" << endl;
-    }
-    
-    if( backNormalMap->getValue() ) {
-      s << "uniform sampler2D back_normal_map;" << endl;
-      s << "uniform mat4 back_normal_map_matrix;" << endl;
-    }
-    
-    if( backSpecularMap->getValue() ) {
-      s << "uniform sampler2D back_specular_map;" << endl;
-    }
-    
-    if( backGlossMap->getValue() ) {
-      s << "uniform sampler2D back_gloss_map;" << endl;
-    }
-  }
-
-
-  s << fragment_shader_functions << endl;
-
-  s << "  void main() {" << endl;
+  
+  s << "    vec3 normal = " << uniqueShaderName( "normal" ) << ";" << endl;
+  s << "    vec3 vertex = " << uniqueShaderName( "vertex" ) << ";" << endl;
 
   s << "    vec3 orig_normal = normalize( normal ); \n" << endl;
 
@@ -456,20 +361,21 @@ string PhongShader::getFragmentShaderString() {
   bool back_modulate = backModulateMaps->getValue();
 
   if( diffuseMap->getValue() ) {
+    s << "    sampler2D diffuse_map = " << uniqueShaderName( "diffuse_map" ) << ";" << endl;
+
     if( modulate ) {
       s << "    vec4 diffuse_color = gl_FrontMaterial.diffuse * texture2D( diffuse_map, gl_TexCoord[0].st );" << endl;
     } else {
       s << "    vec4 diffuse_color = texture2D( diffuse_map, gl_TexCoord[0].st );" << endl;
-
       // if the texture contains alpha use the texture alpha, otherwise use the 
       // one from the material diffuse color which is set by the transparency 
       // field in a Material node.
       Image *image = diffuseMap->getValue()->image->getValue();
       if( image && 
-	  image->pixelType() != Image::LUMINANCE_ALPHA &&
-	  image->pixelType() != Image::RGBA &&
-	  image->pixelType() != Image::BGRA) {
-	s << "    diffuse_color.a = gl_FrontMaterial.diffuse.a;" << endl;
+          image->pixelType() != Image::LUMINANCE_ALPHA &&
+          image->pixelType() != Image::RGBA &&
+          image->pixelType() != Image::BGRA) {
+        s << "    diffuse_color.a = gl_FrontMaterial.diffuse.a;" << endl;
       }
     }
   } else {
@@ -477,6 +383,7 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( emissionMap->getValue() ) {
+    s << "    sampler2D emission_map = " << uniqueShaderName( "emission_map" ) << ";" << endl;
     if( modulate ) {
       s << "    vec4 emission_color = gl_FrontMaterial.emission * texture2D( emission_map, gl_TexCoord[0].st );" << endl;
     } else {
@@ -487,6 +394,7 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( ambientMap->getValue() ) {
+    s << "    sampler2D ambient_map = " << uniqueShaderName( "ambient_map" ) << ";" << endl;
     if( modulate ) {
       // in Material ambient color is ambientIntensity * diffuseColor. We modulate with the ambientIntensity
       // value
@@ -507,6 +415,7 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( specularMap->getValue() ) {
+    s << "    sampler2D specular_map = " << uniqueShaderName( "specular_map" ) << ";" << endl;
     if( modulate ) {
       s << "    vec4 specular_color = gl_FrontMaterial.specular * texture2D( specular_map, gl_TexCoord[0].st );" << endl;
     } else {
@@ -517,6 +426,7 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( glossMap->getValue() ) {
+    s << "    sampler2D gloss_map = " << uniqueShaderName( "gloss_map" ) << ";" << endl;
     if( modulate ) {
       s << "    float shininess = gl_FrontMaterial.shininess * texture2D( gloss_map, gl_TexCoord[0].st ).r;" << endl;
     } else {
@@ -527,12 +437,16 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( normalMap->getValue() ) {
+
     string coord_space = normalMapCoordSpace->getValue();
     if( coord_space != "OBJECT" && coord_space != "TANGENT" ) {
       Console(4) << "Invalid normalMapCoordSpace value in PhongShader node: \"" 
-		 << coord_space << "\". Using \"OBJECT\" instead." << endl;
+                 << coord_space << "\". Using \"OBJECT\" instead." << endl;
       coord_space == "OBJECT";
     }
+
+    s << "    sampler2D normal_map = " << uniqueShaderName( "normal_map" ) << ";" << endl;
+    s << "    mat4 normal_map_matrix = " << uniqueShaderName( "normal_map_matrix" ) << ";" << endl;
 
     s << "    vec3 N = texture2D( normal_map, gl_TexCoord[0].st ).xyz;" << endl;
     
@@ -541,7 +455,7 @@ string PhongShader::getFragmentShaderString() {
     
     if( coord_space == "TANGENT" ) {
       // from tangent to global space
-      s << "    mat3 tangent_space_matrix = mat3( tangent_axis, binormal_axis, orig_normal ); " << endl;
+      s << "    mat3 tangent_space_matrix = mat3( " << uniqueShaderName("tangent_axis") <<", " << uniqueShaderName("binormal_axis") << ", orig_normal ); " << endl;
       s << "    N = tangent_space_matrix * N; " << endl;
     } else {
       // from object to global space
@@ -555,26 +469,29 @@ string PhongShader::getFragmentShaderString() {
   // back colors
   if( separateBackColor->getValue() ) {
     if( backDiffuseMap->getValue() ) {
+      s << "    sampler2D back_diffuse_map = " << uniqueShaderName( "back_diffuse_map" ) << ";" << endl;
+    
       if( back_modulate ) {
         s << "    vec4 back_diffuse_color = gl_BackMaterial.diffuse * texture2D( back_diffuse_map, gl_TexCoord[0].st );" << endl;
       } else {
         s << "    vec4 back_diffuse_color = texture2D( back_diffuse_map, gl_TexCoord[0].st );" << endl;
-	// if the texture contains alpha use the texture alpha, otherwise use the 
-	// one from the material diffuse color which is set by the transparency 
-	// field in a Material node.
-	Image *image = backDiffuseMap->getValue()->image->getValue();
-	if( image && 
-	    image->pixelType() != Image::LUMINANCE_ALPHA &&
-	    image->pixelType() != Image::RGBA &&
-	    image->pixelType() != Image::BGRA) {
-	  s << "    diffuse_color.a = gl_BackMaterial.diffuse.a;" << endl;
-	}
+        // if the texture contains alpha use the texture alpha, otherwise use the 
+        // one from the material diffuse color which is set by the transparency 
+        // field in a Material node.
+        Image *image = backDiffuseMap->getValue()->image->getValue();
+        if( image && 
+            image->pixelType() != Image::LUMINANCE_ALPHA &&
+            image->pixelType() != Image::RGBA &&
+            image->pixelType() != Image::BGRA) {
+          s << "    diffuse_color.a = gl_BackMaterial.diffuse.a;" << endl;
+        }
       }
     } else {
       s << "    vec4 back_diffuse_color = gl_BackMaterial.diffuse; " << endl;
     }
     
     if( backEmissionMap->getValue() ) {
+      s << "    sampler2D back_emission_map = " << uniqueShaderName( "back_emission_map" ) << ";" << endl;
       if( back_modulate ) {
         s << "    vec4 back_emission_color = gl_BackMaterial.emission * texture2D( back_emission_map, gl_TexCoord[0].st );" << endl;
       } else {
@@ -585,6 +502,7 @@ string PhongShader::getFragmentShaderString() {
     }
     
     if( backAmbientMap->getValue() ) {
+      s << "    sampler2D back_ambient_map = " << uniqueShaderName( "back_ambient_map" ) << ";" << endl;
       if( back_modulate ) {
         // in Material ambient color is ambientIntensity * diffuseColor. We modulate with the ambientIntensity
         // value
@@ -605,6 +523,7 @@ string PhongShader::getFragmentShaderString() {
     }
     
     if( backSpecularMap->getValue() ) {
+      s << "    sampler2D back_specular_map = " << uniqueShaderName( "back_specular_map" ) << ";" << endl;
       if( back_modulate ) {
         s << "    vec4 back_specular_color = gl_BackMaterial.specular * texture2D( back_specular_map, gl_TexCoord[0].st );" << endl;
       } else {
@@ -615,6 +534,7 @@ string PhongShader::getFragmentShaderString() {
     }
     
     if( backGlossMap->getValue() ) {
+      s << "    sampler2D back_gloss_map = " << uniqueShaderName( "back_gloss_map" ) << ";" << endl;
       if( back_modulate ) {
         s << "    float back_shininess = gl_BackMaterial.shininess * texture2D( back_gloss_map, gl_TexCoord[0].st ).r;" << endl;
       } else {
@@ -625,6 +545,9 @@ string PhongShader::getFragmentShaderString() {
     }
     
     if( backNormalMap->getValue() ) {
+      s << "    sampler2D back_normal_map = " << uniqueShaderName( "back_normal_map" ) << ";" << endl;
+      s << "    sampler2D back_normal_map_matrix = " << uniqueShaderName( "back_normal_map_matrix" ) << ";" << endl;
+
       s << "    vec3 back_N = texture2D( back_normal_map, gl_TexCoord[0].st ).xyz;" << endl;
       
       // texture values [0-1] -> object space normal [-1,1]
@@ -659,66 +582,125 @@ string PhongShader::getFragmentShaderString() {
     "    final_color += emission_color;\n"
     "    final_color.a = diffuse_color.a;\n"
     "  } \n" 
-    "  gl_FragColor = final_color;\n"
-    "}\n";
+    "  generated_color = final_color;\n";
   //Console(4)<< s.str() << endl;
   return s.str();
 }
 
 
-void PhongShader::addUniformFields() {
+string PhongShader::addUniformFields( ComposedShader *shader ) {
   // add dynamic fields for uniform variables 
-
-   
-  SFTexture2DNode *f;
+  stringstream s;
   
   if( ambientMap->getValue() ) {
-    f = new SFTexture2DNode;
-    ambientMap->route( f );
-    this->addField( "ambient_map", Field::INPUT_OUTPUT, f );
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "ambient_map" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( ambientMap ) );
   }
   
   if( diffuseMap->getValue() ) {
-    f = new SFTexture2DNode;
-    diffuseMap->route( f );
-    this->addField( "diffuse_map", Field::INPUT_OUTPUT, f );
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "diffuse_map" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( diffuseMap ) );
   }
 
   if( emissionMap->getValue() ) {
-    f = new SFTexture2DNode;
-    emissionMap->route( f );
-    this->addField( "emission_map", Field::INPUT_OUTPUT, f );
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "emission_map" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( emissionMap ) );
   }
   
   if( specularMap->getValue() ) {
-    f = new SFTexture2DNode;
-    specularMap->route( f );
-    this->addField( "specular_map", Field::INPUT_OUTPUT, f );
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "specular_map" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( specularMap ) );  
   }
 
   if( normalMap->getValue() ) {
-    f = new SFTexture2DNode;
-    normalMap->route( f );
-    this->addField( "normal_map", Field::INPUT_OUTPUT, f );
-    SFMatrix4f *m = new SFMatrix4f;
-    normalMapMatrix->route( m );
-    this->addField( "normal_map_matrix", Field::INPUT_OUTPUT, m );
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "normal_map" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( normalMap ) );  
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "normal_map_matrix" ), 
+                                     "mat4",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( normalMapMatrix ) );  
   }
 
   if( glossMap->getValue() ) {
-    f = new SFTexture2DNode;
-    glossMap->route( f );
-    this->addField( "gloss_map", Field::INPUT_OUTPUT, f );
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "gloss_map" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( glossMap ) );  
   }
-}
 
-void PhongShader::preRender() {
-  if( !fragmentShaderString->isUpToDate() ) {
-    clearFields();
-    addUniformFields();
-    activate->setValue( true );
+  if( separateBackColor->getValue() ) {
+    if( backAmbientMap->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_ambient_map" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backAmbientMap ) );
+    }
+    
+    if( backDiffuseMap->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_diffuse_map" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backDiffuseMap ) );
+    }
+    
+    if( backEmissionMap->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_emission_map" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backEmissionMap ) );
+    }
+  
+    if( backSpecularMap->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_specular_map" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backSpecularMap ) );  
+    }
+
+    if( backNormalMap->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_normal_map" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backNormalMap ) );  
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_normal_map_matrix" ), 
+                                       "mat4",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backNormalMapMatrix ) );  
+    }
+
+    if( backGlossMap->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_gloss_map" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backGlossMap ) );  
+    }
   }
-  ComposedShader::preRender();
+
+  return s.str();
 }
 
 void PhongShader::traverseSG( TraverseInfo &ti ) {
