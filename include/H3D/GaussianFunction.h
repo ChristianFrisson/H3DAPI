@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2010, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -41,7 +41,7 @@ namespace H3D {
     GaussianFunction( Inst< SFNode  > _metadata  = 0,
                       Inst< SFFloat > _center    = 0,
                       Inst< SFFloat > _amplitude = 0,
-                      Inst< SFFloat > _width     = 0 );    
+                      Inst< SFFloat > _width     = 0 );
 
     /// Evaluate the function for the given input.
     virtual H3DDouble evaluate( H3DDouble *input );
@@ -56,7 +56,7 @@ namespace H3D {
     /// be represented as a HAPIFunctionObject.
     virtual HAPI::HAPIFunctionObject *getAsHAPIFunctionObject();
 
-    /// The amplitude of the gaussian.
+    /// The value for the center of the gaussian.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 \n
@@ -72,7 +72,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
-    auto_ptr< SFFloat > width;   
+    auto_ptr< SFFloat > width;
 
     static H3DNodeDatabase database;
   };

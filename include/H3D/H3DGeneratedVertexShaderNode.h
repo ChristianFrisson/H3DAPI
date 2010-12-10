@@ -29,7 +29,7 @@
 #ifndef __H3DGENERATEDVERTEXSHADERNODE_H__
 #define __H3DGENERATEDVERTEXSHADERNODE_H__
 
-#include <H3D/H3DGeneratedVertexShaderNode.h>
+#include <H3D/H3DGeneratedShaderNode.h>
 
 namespace H3D {
 
