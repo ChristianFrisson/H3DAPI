@@ -175,7 +175,7 @@ void ShaderPart::SFShaderString::update() {
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
     Console(4) << " \"" << *i << "\"";
   }
-  Console(4) << "] could be loaded.";
+  Console(4) << "] could be loaded." << endl;
   shader_part->setURLUsed( "" );
   value = "";
   //PROFILE_END();
