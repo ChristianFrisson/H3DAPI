@@ -202,7 +202,6 @@ string ComposedGeneratedShader::getFragmentShaderString() {
   stringstream s;
   const NodeVector &c = fragmentShaders->getValue();
   for( unsigned int i = 0; i < c.size(); i++ ) {
-    s << "   generated_color = vec4(1.0, 1.0, 1.0, 1.0 ); " << endl;
     s << "   { " << endl;
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
