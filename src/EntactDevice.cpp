@@ -29,9 +29,7 @@
 
 
 #include <H3D/EntactDevice.h>
-#ifdef HAVE_ENTACTAPI
 #include <HAPI/EntactHapticsDevice.h>
-#endif
 
 using namespace H3D;
 
@@ -119,6 +117,7 @@ void EntactDevice::updateDeviceValues() {
 
 
 void EntactDevice::Calibrate::onValueChange( const bool &value ) {
+#ifdef HAVE_ENTACTAPI
   if ( value ) {
     EntactDevice *h3d_device = static_cast< EntactDevice * >( getOwner() );
     HAPI::EntactHapticsDevice *hapi_device = static_cast< HAPI::EntactHapticsDevice * >( h3d_device->hapi_device.get() );
@@ -126,4 +125,5 @@ void EntactDevice::Calibrate::onValueChange( const bool &value ) {
       hapi_device->calibrateDevice();
     }
   }
+#endif
 }
