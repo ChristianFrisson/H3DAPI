@@ -54,10 +54,10 @@ namespace H3D {
   /// all other node they have to be set explicitly by the modeller.
   ///
   /// For each light we have
-  /// C = att(d)*(Ma * La + Md*Ld*(L dot N) + Ms*Ls*(R dot V )^Mshininess)
+  /// C = att(d)*(Ma * La + Md*Ld*(L dot N) + Fs*Ms*Ls*(R dot V )^Mshininess)
   /// where Ma, Md, Ms and Mshininess are the ambient, diffuse, specular
   /// and shininess values for a point and La, Ld and Ls are the same
-  /// for the light.
+  /// for the light. 
   /// 
   /// L is the direction from the point to the light.
   /// N is the normal at the point.
@@ -66,6 +66,8 @@ namespace H3D {
   /// att(d) is the attenuation of the light based on the constant, linear,
   /// and quadratic attenuation parameters set for each light based on the 
   /// distance d from the light.
+  /// Fs is the fresnel term and is calculated by
+  ///    Fs = 1-fresnel + fresnel * (1-N dot V)^5
   ///
   /// The final color is the sum of all lights color contributions and 
   /// the emissive color of the material(Me).
@@ -85,6 +87,19 @@ namespace H3D {
   /// If modulateMaps is TRUE the values are modulated with the material 
   /// value, e.g. Md = Material diffuse * diffuseMap value.
   /// 
+  /// The fresnel field specifies if the fresnel effect should be used in the
+  /// lighting model and if so how much. The fresnel effect is the effect
+  /// that surfaces reflect more light if looking at them from an angle than
+  /// straight down along the normal. If set to 0 no fresnel effect is used
+  /// and the surface is fully reflective. If set to 1 only the reflectivity
+  /// of the fresnel effect is used, which means no reflectivity when looking
+  /// down perpendicular to the surace. One can think of the term as controlling
+  /// the minimum reflectivness of the surface. By default it is set to 0 and
+  /// no fresnel effect is used.
+  /// The fresnel value only affects the specular component of the Phong
+  /// lighting calculations since this is the only part that deals with
+  /// reflective properties. 
+  ///
   /// The normal N can also be modified across the surface of a 3d object
   /// using a normalMap texture. The normalMap encodes the normal at each
   /// point of an object in the RGB value of an image. This allows for 
@@ -159,6 +174,7 @@ namespace H3D {
                  Inst< SFMatrix4f      > _normalMapMatrix = 0,
                  Inst< SFTexture2DNode > _specularMap = 0,
                  Inst< SFTexture2DNode > _glossMap    = 0,
+                 Inst< SFFloat         > _fresnel      = 0,
                  Inst< SFBool          > _modulateMaps = 0,
                  Inst< SFTexture2DNode > _backAmbientMap  = 0,
                  Inst< SFTexture2DNode > _backDiffuseMap  = 0,
@@ -168,6 +184,7 @@ namespace H3D {
                  Inst< SFMatrix4f      > _backNormalMapMatrix = 0,
                  Inst< SFTexture2DNode > _backSpecularMap = 0,
                  Inst< SFTexture2DNode > _backGlossMap    = 0,
+                 Inst< SFFloat         > _backFresnel = 0,
                  Inst< SFBool          > _backModulateMaps = 0,
                  Inst< SFBool          > _separateBackColor = 0 );
     
@@ -293,6 +310,25 @@ namespace H3D {
     /// 
     /// \dotfile PhongShader_glossMap.dot
     auto_ptr< SFTexture2DNode > glossMap;
+
+    /// The fresnel field specifies if the fresnel effect should be used in the
+    /// lighting model and if so how much. The fresnel effect is the effect
+    /// that surfaces reflect more light if looking at them from an angle than
+    /// straight down along the normal. If set to 0 no fresnel effect is used
+    /// and the surface is fully reflective. If set to 1 only the reflectivity
+    /// of the fresnel effect is used, which means no reflectivity when looking
+    /// down perpendicular to the surace. One can think of the term as controlling
+    /// the minimum reflectivness of the surface. By default it is set to 0 and
+    /// no fresnel effect is used.
+    /// The fresnel value only affects the specular component of the Phong
+    /// lighting calculations since this is the only part that deals with
+    /// reflective properties. 
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    /// 
+    /// \dotfile PhongShader_fresnel.dot
+    auto_ptr< SFFloat > fresnel;
 
     /// The modulateMaps field determines if the map values should be modulated
     /// with the corresponding Material value or not. See documentation for
@@ -428,6 +464,16 @@ namespace H3D {
     /// 
     /// \dotfile PhongShader_backGlossMap.dot
     auto_ptr< SFTexture2DNode > backGlossMap;
+
+    /// The backFresnel field specifies the fresnel value for back facing
+    /// polygons when separateBackColor is TRUE. Se fresnel field for 
+    /// more info.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    /// 
+    /// \dotfile PhongShader_backFresnel.dot
+    auto_ptr< SFFloat > backFresnel;
 
     /// The modulateMaps field determines if the map values should be modulated
     /// with the corresponding Material value or not. See documentation for

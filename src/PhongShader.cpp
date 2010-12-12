@@ -49,6 +49,7 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, emissionMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, specularMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, glossMap, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, fresnel, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, modulateMaps, INPUT_OUTPUT );
 
   FIELDDB_ELEMENT( PhongShader, backNormalMap, INPUT_OUTPUT );
@@ -59,39 +60,42 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, backEmissionMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backSpecularMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backGlossMap, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, backFresnel, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backModulateMaps, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, separateBackColor, INPUT_OUTPUT );
 }
 
 PhongShader::PhongShader( Inst< DisplayList  > _displayList,
-                              Inst< SFNode       > _metadata,
-                              Inst< SFBool       > _isSelected ,
-                              Inst< SFBool       > _isValid,
-                              Inst< SFBool       > _activate,
-                              Inst< SFString     > _language,
-                              Inst< MFShaderPart > _parts,
-                              Inst< SFBool       > _suppressUniformWarnings,
-                              Inst< MFString > _fragmentShaderString,
-                              Inst< MFString > _vertexShaderString,
-                              Inst< SFTexture2DNode > _ambientMap,
-                              Inst< SFTexture2DNode > _diffuseMap,
-                              Inst< SFTexture2DNode > _emissionMap,
-                              Inst< SFTexture2DNode > _normalMap,
-                              Inst< SFString        > _normalMapCoordSpace,
-                              Inst< SFMatrix4f        > _normalMapMatrix,
-                              Inst< SFTexture2DNode > _specularMap,
-                              Inst< SFTexture2DNode > _glossMap,
-                              Inst< SFBool          > _modulateMaps,
-                              Inst< SFTexture2DNode > _backAmbientMap ,
-                              Inst< SFTexture2DNode > _backDiffuseMap ,
-                              Inst< SFTexture2DNode > _backEmissionMap ,
-                              Inst< SFTexture2DNode > _backNormalMap  ,
-                              Inst< SFString        > _backNormalMapCoordSpace,
-                              Inst< SFMatrix4f      > _backNormalMapMatrix,
-                              Inst< SFTexture2DNode > _backSpecularMap,
-                              Inst< SFTexture2DNode > _backGlossMap   ,
-                              Inst< SFBool          > _backModulateMaps,
-                              Inst< SFBool          > _separateBackColor ) :
+                          Inst< SFNode       > _metadata,
+                          Inst< SFBool       > _isSelected ,
+                          Inst< SFBool       > _isValid,
+                          Inst< SFBool       > _activate,
+                          Inst< SFString     > _language,
+                          Inst< MFShaderPart > _parts,
+                          Inst< SFBool       > _suppressUniformWarnings,
+                          Inst< MFString > _fragmentShaderString,
+                          Inst< MFString > _vertexShaderString,
+                          Inst< SFTexture2DNode > _ambientMap,
+                          Inst< SFTexture2DNode > _diffuseMap,
+                          Inst< SFTexture2DNode > _emissionMap,
+                          Inst< SFTexture2DNode > _normalMap,
+                          Inst< SFString        > _normalMapCoordSpace,
+                          Inst< SFMatrix4f        > _normalMapMatrix,
+                          Inst< SFTexture2DNode > _specularMap,
+                          Inst< SFTexture2DNode > _glossMap,
+                          Inst< SFFloat         > _fresnel,
+                          Inst< SFBool          > _modulateMaps,
+                          Inst< SFTexture2DNode > _backAmbientMap ,
+                          Inst< SFTexture2DNode > _backDiffuseMap ,
+                          Inst< SFTexture2DNode > _backEmissionMap ,
+                          Inst< SFTexture2DNode > _backNormalMap  ,
+                          Inst< SFString        > _backNormalMapCoordSpace,
+                          Inst< SFMatrix4f      > _backNormalMapMatrix,
+                          Inst< SFTexture2DNode > _backSpecularMap,
+                          Inst< SFTexture2DNode > _backGlossMap   ,
+                          Inst< SFFloat         > _backFresnel,
+                          Inst< SFBool          > _backModulateMaps,
+                          Inst< SFBool          > _separateBackColor ) :
   H3DGeneratedFragmentShaderNode( _displayList, _metadata, _isSelected, 
                                   _isValid, _activate, _language, _parts, 
                                   _suppressUniformWarnings, _fragmentShaderString,
@@ -105,6 +109,7 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   normalMapMatrix( _normalMapMatrix ),
   specularMap( _specularMap ),
   glossMap( _glossMap ),
+  fresnel( _fresnel ),
   modulateMaps( _modulateMaps ),
   backAmbientMap( _backAmbientMap ),
   backDiffuseMap( _backDiffuseMap ),
@@ -114,6 +119,7 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backNormalMapMatrix( _backNormalMapMatrix ),
   backSpecularMap( _backSpecularMap ),
   backGlossMap( _backGlossMap ),
+  backFresnel( _backFresnel ),
   backModulateMaps( _backModulateMaps ),
   separateBackColor( _separateBackColor ) {
 
@@ -138,6 +144,7 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   glossMap->route( displayList, id );
   normalMapMatrix->route( displayList, id );
   modulateMaps->route( displayList, id );
+  fresnel->route( displayList, id );
 
   backAmbientMap->route( displayList, id );
   backDiffuseMap->route( displayList, id );
@@ -148,6 +155,7 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backGlossMap->route( displayList, id );
   backNormalMapMatrix->route( displayList, id );
   backModulateMaps->route( displayList, id );
+  backFresnel->route( displayList, id );
   separateBackColor->route( displayList, id );
 
   ambientMap->route( rebuildShader, id );
@@ -158,6 +166,7 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   specularMap->route( rebuildShader, id );
   glossMap->route( rebuildShader, id );
   normalMapMatrix->route( rebuildShader );
+  fresnel->route( rebuildShader, id );
   modulateMaps->route( rebuildShader );
 
   backAmbientMap->route( rebuildShader, id );
@@ -168,12 +177,15 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backSpecularMap->route( rebuildShader, id );
   backGlossMap->route( rebuildShader, id );
   backNormalMapMatrix->route( rebuildShader );
+  backFresnel->route( rebuildShader, id );
   backModulateMaps->route( rebuildShader );
   separateBackColor->route( rebuildShader );
 
   modulateMaps->setValue( false );
   backModulateMaps->setValue( false );
   separateBackColor->setValue( false );
+  fresnel->setValue( 0 );
+  backFresnel->setValue( 0 );
 }
 
 
@@ -360,6 +372,11 @@ string PhongShader::getFragmentShaderString() {
   bool modulate = modulateMaps->getValue();
   bool back_modulate = backModulateMaps->getValue();
 
+  // add fresnel term if fresnel is used
+  if( fresnel->getValue() > 0 || (separateBackColor->getValue()  && backFresnel->getValue() > 0 ) ){
+    s << "    float fresnel = pow(1.0-abs(dot(normalize(-vertex), normal)), 5.0);" << endl;
+  }
+
   if( diffuseMap->getValue() ) {
     s << "    sampler2D diffuse_map = " << uniqueShaderName( "diffuse_map" ) << ";" << endl;
 
@@ -423,6 +440,12 @@ string PhongShader::getFragmentShaderString() {
     }
   } else {
     s << "    vec4 specular_color = gl_FrontMaterial.specular; " << endl;
+  }
+
+  // saturate specular color based on fresnel effect
+  if( fresnel->getValue() > 0 ) {
+    s << "    float f = " << uniqueShaderName( "fresnel" ) << ";" << endl;
+    s << "    specular_color *= 1-f + f * fresnel; " << endl;
   }
 
   if( glossMap->getValue() ) {
@@ -532,6 +555,12 @@ string PhongShader::getFragmentShaderString() {
     } else {
       s << "    vec4 back_specular_color = gl_BackMaterial.specular; " << endl;
     }
+
+    // saturate specular color based on fresnel effect
+    if( backFresnel->getValue() > 0 ) {
+      s << "    float bf = " << uniqueShaderName( "backFresnel" ) << ";" << endl;
+      s << "    back_specular_color *= 1-bf + bf * fresnel; " << endl;
+    }
     
     if( backGlossMap->getValue() ) {
       s << "    sampler2D back_gloss_map = " << uniqueShaderName( "back_gloss_map" ) << ";" << endl;
@@ -569,6 +598,7 @@ string PhongShader::getFragmentShaderString() {
     s << "  vec3 back_N = -N;\n" << endl;
   }
 
+  // TODO: support several lights
   s <<
     "  vec4 final_color = vec4( 0.0, 0.0, 0.0, 1.0 );\n"
     "  vec3 view_dir = normalize(-vertex);\n"
@@ -645,6 +675,14 @@ string PhongShader::addUniformFields( ComposedShader *shader ) {
                                      copyAndRouteField( glossMap ) );  
   }
 
+  if( fresnel->getValue() > 0 ) {
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "fresnel" ), 
+                                     "float",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( fresnel ) );  
+  }
+
   if( separateBackColor->getValue() ) {
     if( backAmbientMap->getValue() ) {
       s << addUniformToFragmentShader( shader,
@@ -698,6 +736,15 @@ string PhongShader::addUniformFields( ComposedShader *shader ) {
                                        H3D::Field::INPUT_OUTPUT,
                                        copyAndRouteField( backGlossMap ) );  
     }
+
+    if( backFresnel->getValue() > 0 ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "backFresnel" ), 
+                                       "float",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backFresnel ) );  
+    }
+
   }
 
   return s.str();
