@@ -67,10 +67,12 @@ string NormalShader::getVertexShaderString() {
 }
 
 string NormalShader::getFragmentShaderString() {
-  return "  generated_color = vec4( normal, 1.0 ); ";
+  return "  generated_color = vec4( normalize(" + uniqueShaderName("normal") + "), 1.0 ); ";
 }
 
 void NormalShader::getVaryingVariables( vector< VaryingVariable > &variables ){
-  VaryingVariable v("normal", "vec3", "normal = gl_NormalMatrix * gl_Normal;");
+  VaryingVariable v(uniqueShaderName("normal"), 
+		    "vec3", 
+		    uniqueShaderName("normal") + " = gl_NormalMatrix * gl_Normal;");
   variables.push_back( v );
 }
