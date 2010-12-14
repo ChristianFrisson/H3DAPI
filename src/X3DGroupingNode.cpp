@@ -177,7 +177,8 @@ bool X3DGroupingNode::lineIntersect(
 
     if( !below_one_plane ) {
       for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-        if( children_nodes[i]->lineIntersect( local_from,
+        if( children_nodes[i] &&
+            children_nodes[i]->lineIntersect( local_from,
                                               local_to,
                                               result ) ) {
             intersect = true;
@@ -196,7 +197,8 @@ void X3DGroupingNode::closestPoint( const Vec3f &p,
                                     NodeIntersectResult &result ) {
   const NodeVector &children_nodes = children->getValue();
   for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-    children_nodes[i]->closestPoint( p, result );
+    if( children_nodes[i] )
+      children_nodes[i]->closestPoint( p, result );
   }
 }
 
@@ -288,7 +290,8 @@ bool X3DGroupingNode::movingSphereIntersect( H3DFloat radius,
     const NodeVector &children_nodes = children->getValue();
     bool hit = false;
     for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
-      if( children_nodes[i]->movingSphereIntersect( radius, from, to, result ))
+      if( children_nodes[i] &&
+          children_nodes[i]->movingSphereIntersect( radius, from, to, result ))
         hit = true;
     }
     return hit;
