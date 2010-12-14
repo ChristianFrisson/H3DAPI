@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='ShaderCombiner.x3d'/>
+    <meta name='description' content='H3DAPI ShaderCombiner example. Shows the result of the different available combiner functions. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <ProtoDeclare name='ShaderCombinerRectangle'>
+      <ProtoInterface>
+	<field accessType='inputOutput' name='position' type='SFVec3f' value='0 0 0'/>
+	<field accessType='inputOutput' name='text' type='MFString' value='"Hello"'/>
+	<field accessType='inputOutput' name='function' type='SFString' value='"SELECT0"'/>
+      </ProtoInterface>
+      <ProtoBody>
+	<Transform>
+	  <IS>
+	    <connect nodeField='translation' protoField='position' />
+	  </IS>
+	  <Transform translation="0 0.06 0" >
+	    <Shape>
+	      <Appearance>
+		<Material diffuseColor='1 1 1' />
+	      </Appearance>
+	      <Text>
+		<IS>
+		  <connect nodeField='string' protoField='text' />
+		</IS>
+		<FontStyle justify='MIDDLE' size='0.02' />
+	      </Text>
+	    </Shape>
+	  </Transform>
+
+	  <Shape>
+	    <Appearance>
+	      <Material diffuseColor='1 0 0' />
+	      <ShaderCombiner value="0.5">
+		<IS>
+		  <connect nodeField='function' protoField='function' />
+		</IS>
+		<NormalShader />
+		<PhongShader >
+		  <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
+		</PhongShader>
+	      </ShaderCombiner>
+	    </Appearance>
+	    <Rectangle2D size="0.1 0.1"/>
+	  </Shape>
+	</Transform>
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <OrthoViewpoint  description="Orthographic view" fieldOfView="-0.25 -0.25 0.25 0.25" position="0 0 0.6" />
+
+    <NavigationInfo type="NONE" />
+
+    <ProtoInstance name='ShaderCombinerRectangle' containerField='children' >
+      <fieldValue name='position' value='-0.22 0.08 0' />
+      <fieldValue name='text' value='SELECT0' />
+      <fieldValue name='function' value="SELECT0" />
+    </ProtoInstance>
+
+    <ProtoInstance name='ShaderCombinerRectangle' containerField='children' >
+      <fieldValue name='position' value='-0.11 0.08 0' />
+      <fieldValue name='text' value='SELECT1' />
+      <fieldValue name='function' value="SELECT1" />
+    </ProtoInstance>
+
+    <ProtoInstance name='ShaderCombinerRectangle' containerField='children' >
+      <fieldValue name='position' value='-0 0.08 0' />
+      <fieldValue name='text' value='ADD' />
+      <fieldValue name='function' value="ADD" />
+    </ProtoInstance>
+
+    <ProtoInstance name='ShaderCombinerRectangle' containerField='children' >
+      <fieldValue name='position' value='0.11 0.08 0' />
+      <fieldValue name='text' value='SUBTRACT' />
+      <fieldValue name='function' value="SUBTRACT" />
+    </ProtoInstance>
+
+    <ProtoInstance name='ShaderCombinerRectangle' containerField='children' >
+      <fieldValue name='position' value='0.22 0.08 0' />
+      <fieldValue name='text' value='MULTIPLY' />
+      <fieldValue name='function' value="MULTIPLY" />
+    </ProtoInstance>
+
+
+    <ProtoInstance name='ShaderCombinerRectangle' containerField='children' >
+      <fieldValue name='position' value='-0.22 -0.08 0' />
+      <fieldValue name='text' value='DIVIDE' />
+      <fieldValue name='function' value="DIVIDE" />
+    </ProtoInstance>
+
+    <ProtoInstance name='ShaderCombinerRectangle' containerField='children' >
+      <fieldValue name='position' value='-0.11 -0.08 0' />
+      <fieldValue name='text' value="BLEND_VALUE" />
+      <fieldValue name='function' value="BLEND_VALUE" />
+    </ProtoInstance>
+  </Scene>
+</X3D>
