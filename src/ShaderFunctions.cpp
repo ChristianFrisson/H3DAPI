@@ -237,25 +237,25 @@ namespace H3D {
     
     float *toFloatArray( const vector< Matrix4f > &values ) {
       unsigned int size = (unsigned int) values.size();
-      float *v = new float[ size * 9 ];
+      float *v = new float[ size * 16 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Matrix4f &m = values[i];
-        v[i*9]   = (H3DFloat) m[0][0];
-        v[i*9+1] = (H3DFloat) m[1][0];
-        v[i*9+2] = (H3DFloat) m[2][0];
-        v[i*9+3] = (H3DFloat) m[3][0];
-        v[i*9+4] = (H3DFloat) m[0][1];
-        v[i*9+5] = (H3DFloat) m[1][1];
-        v[i*9+6] = (H3DFloat) m[2][1];
-        v[i*9+7] = (H3DFloat) m[3][1];
-        v[i*9+8] = (H3DFloat) m[0][2];
-        v[i*9+9] = (H3DFloat) m[1][2];
-        v[i*9+10] = (H3DFloat) m[2][2];
-        v[i*9+11] = (H3DFloat) m[3][2];
-        v[i*9+12] = (H3DFloat) m[0][3];        
-        v[i*9+13] = (H3DFloat) m[1][3];
-        v[i*9+14] = (H3DFloat) m[2][3];
-        v[i*9+15] = (H3DFloat) m[3][3];
+        v[i*16]   = (H3DFloat) m[0][0];
+        v[i*16+1] = (H3DFloat) m[1][0];
+        v[i*16+2] = (H3DFloat) m[2][0];
+        v[i*16+3] = (H3DFloat) m[3][0];
+        v[i*16+4] = (H3DFloat) m[0][1];
+        v[i*16+5] = (H3DFloat) m[1][1];
+        v[i*16+6] = (H3DFloat) m[2][1];
+        v[i*16+7] = (H3DFloat) m[3][1];
+        v[i*16+8] = (H3DFloat) m[0][2];
+        v[i*16+9] = (H3DFloat) m[1][2];
+        v[i*16+10] = (H3DFloat) m[2][2];
+        v[i*16+11] = (H3DFloat) m[3][2];
+        v[i*16+12] = (H3DFloat) m[0][3];        
+        v[i*16+13] = (H3DFloat) m[1][3];
+        v[i*16+14] = (H3DFloat) m[2][3];
+        v[i*16+15] = (H3DFloat) m[3][3];
       }
       return v;
     }
@@ -444,7 +444,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   const string &name = field->getName();
   GLint location = glGetUniformLocationARB( program_handle,
                                             name.c_str() );
-  if( location == -1 ) return false;
+   if( location == -1 ) return false;
       
   // clear the error flag
   glGetError();
