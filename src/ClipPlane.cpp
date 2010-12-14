@@ -103,7 +103,7 @@ void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
     // should be done.
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
     for( unsigned int i = 0; i < devices.size(); i++ ) {
-      unsigned int index =  
+      size_t index =  
 	      i < clip_per_device.size() ? i : clip_per_device.size() - 1;
       if( clip_per_device[ index ] ) {
 	      H3DHapticsDevice *hd = ti.getHapticsDevice( i );

@@ -73,7 +73,7 @@ void FogCoordinate::render( int depth_index ) {
     // according to FogCoordinate spec:
     // If the user does not provide a  sufficient number of depth values, 
     // the last value defined shall be replicated for any further vertices.
-    if( depth_index >= depth->size() && depth->size() > 0 ) {
+    if( depth_index >= (int) depth->size() && depth->size() > 0 ) {
       depth_index = depth->size() - 1;
     }
     

@@ -111,7 +111,7 @@ void Anchor::GeometrySelected::update() {
 
         bool file_exist = true;
         AutoRef< Node > new_world;
-        unsigned int vp_list_size =
+        size_t vp_list_size =
           X3DViewpointNode::getAllViewpoints().size();
         int prev_outputlevel = Console.getOutputLevel();
         Console.setOutputLevel( 100 );

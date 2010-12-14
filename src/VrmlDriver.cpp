@@ -232,7 +232,7 @@ void VrmlDriver::addLine( const char *c ) {
      proto_body += c;
 
    old_line_no=vrml_line_no;
-   old_char_no=vrml_line.length();
+   old_char_no=(int)vrml_line.length();
 
    const char *x=c;
    const char *last_line=c;

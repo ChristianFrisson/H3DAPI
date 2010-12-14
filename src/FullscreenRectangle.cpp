@@ -77,7 +77,7 @@ FullscreenRectangle::FullscreenRectangle( Inst< SFNode      > _metadata,
 
 void FullscreenRectangle::render() {
   H3DFloat z_value = zValue->getValue();
-  H3DFloat epsilon = 1e-6;
+  H3DFloat epsilon = (H3DFloat) 1e-6;
 
   // assure that we do not draw outside the view frustum because of 
   // roundoff errors

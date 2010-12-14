@@ -687,7 +687,7 @@ void Extrusion::AutoNormal::update() {
   bool collinear = true;        // if the spine is collinear
   bool coincident = false;      // if every point on the spine is the same
 
-  int spine_size = spine_vector.size();
+  int spine_size = (int) spine_vector.size();
   vector< int > spine_forward;
   vector< int > spine_backward;
   vector< Vec3f > y_axis;
@@ -821,7 +821,7 @@ void Extrusion::AutoNormal::update() {
                                         extrusion->crossSection->getValue(),
                                         y_axis,
                                         extrusion->ccw->getValue(),
-                                        cross_section.size(),
+                                        (unsigned int) cross_section.size(),
                                         spine_size,
                                         closed_spine,
                                         crease_angle,
@@ -832,7 +832,7 @@ void Extrusion::AutoNormal::update() {
                                         extrusion->crossSection->getValue(),
                                         y_axis,
                                         extrusion->ccw->getValue(),
-                                        cross_section.size(),
+                                        (unsigned int) cross_section.size(),
                                         spine_size,
                                         closed_spine,
                            static_cast< SFBool * >(routes_in[2])->getValue(),
@@ -842,7 +842,7 @@ void Extrusion::AutoNormal::update() {
                                     extrusion->crossSection->getValue(),
                                     y_axis,
                                     extrusion->ccw->getValue(),
-                                    cross_section.size(),
+                                    (unsigned int)cross_section.size(),
                                     spine_size,
                                     ExtrusionInternals::coinc(
                                       cross_section.front(),

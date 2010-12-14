@@ -144,11 +144,9 @@ SAIScene *Browser::createX3DFromString( const string &s ) {
   SAIScene *scene = new SAIScene;
   try {
     scene->root_node.reset( X3D::createX3DFromString( s, 
-						      &scene->named_nodes, 
-						      &scene->exported_nodes, 
-						      &scene->protos ) );
-    
-
+                                                      &scene->named_nodes, 
+                                                      &scene->exported_nodes, 
+                                                      &scene->protos ) );
     return scene;
   } catch( const Exception::H3DException &e ) {
     delete scene;
@@ -170,9 +168,9 @@ SAIScene *Browser::createX3DFromURL( MFString *urls ) {
        i != urls->end(); i++ ) {
     try {
       scene->root_node.reset( X3D::createX3DFromURL( *i, 
-						     &scene->named_nodes, 
-						     &scene->exported_nodes, 
-						     &scene->protos ) );
+                                                     &scene->named_nodes, 
+                                                     &scene->exported_nodes, 
+                                                     &scene->protos ) );
       
       return scene;
     } catch( Exception::H3DException &e ) {
@@ -182,13 +180,13 @@ SAIScene *Browser::createX3DFromURL( MFString *urls ) {
       // file itself so we throw an exception reflecting this.
       bool is_tmp_file = false;
       string resolved_url = ResourceResolver::resolveURLAsFile( *i, 
-								&is_tmp_file );
+                                                                &is_tmp_file );
       if( is_tmp_file ) 
-	ResourceResolver::releaseTmpFileName( resolved_url );
+        ResourceResolver::releaseTmpFileName( resolved_url );
       
       if( resolved_url != "" ) {
-	delete scene;
-	throw SAIError( SAIError::SAI_INVALID_URL, e.message );
+        delete scene;
+        throw SAIError( SAIError::SAI_INVALID_URL, e.message );
       }
     }
   }

@@ -50,7 +50,7 @@ MultiDeviceSurface::MultiDeviceSurface( Inst< MFSurfaceNode > _surface ) :
 }
 
 HAPI::HAPISurfaceObject *MultiDeviceSurface::getSurface( unsigned int device_index ) {
-  size_t size = surface->size();
+  unsigned int size = (unsigned int) surface->size();
 
   // no surfaces
   if( size == 0 ) return NULL;

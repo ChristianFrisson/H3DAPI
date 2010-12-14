@@ -30,6 +30,7 @@
 
 #include <stdlib.h>
 #include <H3D/ProfileSAX2Handlers.h>
+#include <H3DUtil/Console.h>
 
 #ifdef HAVE_XERCES
 #include <iostream>

@@ -32,6 +32,8 @@
 
 #ifdef HAVE_XERCES
 
+#include <H3DUtil/Console.h>
+
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -299,7 +301,7 @@ bool ProfilesAndComponents::setProfileInternal( string profile,
                i++ ) {
             int place;
             if( findComponent( components_used, (*i).first, place ) ) {
-              stringstream stm;
+              /*stringstream stm;
               stm << (*i).second;
               if( components_used[ place ].used_level < (*i).second ) {
                 err_msg = "Profile " + profile + " for version " + _version +
@@ -307,7 +309,7 @@ bool ProfilesAndComponents::setProfileInternal( string profile,
                   + (*i).first + " with level " + stm.str() +
              " which is higher than in the the original profile definition.\n";
               return false;
-              }              
+              } */             
             }
             else {
               err_msg = "Profile " + profile + 

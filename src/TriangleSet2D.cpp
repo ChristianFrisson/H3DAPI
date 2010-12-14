@@ -155,7 +155,7 @@ void TriangleSet2D::render() {
     // faster on some systems.
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, NULL );
-    glDrawArrays( GL_TRIANGLES, 0, v.size() );
+    glDrawArrays( GL_TRIANGLES, 0, (GLsizei) v.size() );
     glDisableClientState(GL_VERTEX_ARRAY);
     glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
   } else {

@@ -1777,7 +1777,7 @@ self, name, field_type, access_type )" );
   }
   
   int PyMatrix3f::init(PyMatrix3f *self, PyObject *args, PyObject *kwds)  {
-    int args_size =  PyTuple_Size( args );
+    Py_ssize_t args_size =  PyTuple_Size( args );
     if( args_size == 0 ) {
       // no arguments, identify matrix
       self->setToIdentity( (PyObject *) self, args );
@@ -2033,7 +2033,7 @@ self, name, field_type, access_type )" );
   }
   
   int PyMatrix4f::init(PyMatrix4f *self, PyObject *args, PyObject *kwds)  {
-    int args_size =  PyTuple_Size( args );
+    Py_ssize_t args_size =  PyTuple_Size( args );
     if( args_size == 0 ) {
       // no arguments, identify matrix
       self->setToIdentity( (PyObject *) self, args );
@@ -2375,7 +2375,7 @@ self, name, field_type, access_type )" );
   }
   
   int PyMatrix3d::init(PyMatrix3d *self, PyObject *args, PyObject *kwds)  {
-    int args_size =  PyTuple_Size( args );
+    Py_ssize_t args_size =  PyTuple_Size( args );
     if( args_size == 0 ) {
       // no arguments, identify matrix
       self->setToIdentity( (PyObject *) self, args );
@@ -2687,7 +2687,7 @@ self, name, field_type, access_type )" );
   }
   
   int PyMatrix4d::init(PyMatrix4d *self, PyObject *args, PyObject *kwds)  {
-    int args_size =  PyTuple_Size( args );
+    Py_ssize_t args_size =  PyTuple_Size( args );
     if( args_size == 0 ) {
       // no arguments, identify matrix
       self->setToIdentity( (PyObject *) self, args );
@@ -3047,7 +3047,7 @@ self, name, field_type, access_type )" );
   }
 
   int PyRotation::init(PyRotation *self, PyObject *args, PyObject *kwds)  {
-    int args_size =  PyTuple_Size( args );
+    Py_ssize_t args_size =  PyTuple_Size( args );
     Rotation *self_r = (Rotation *)self;
     if( args_size == 0 ) {
       *self_r = Rotation();
@@ -3109,7 +3109,7 @@ self, name, field_type, access_type )" );
     // success
     return 0;
   }
-
+  
   PyObject* PyRotation::mul( PyObject *a, PyObject *b ) {
     if( PyRotation_Check( a ) ) {
       Rotation ma = PyRotation_AsRotation( a );
@@ -3290,7 +3290,7 @@ self, name, field_type, access_type )" );
   }
 
   int PyQuaternion::init(PyQuaternion *self, PyObject *args, PyObject *kwds)  {
-    int args_size =  PyTuple_Size( args );
+    Py_ssize_t args_size =  PyTuple_Size( args );
     if( args_size == 0 ) {
       Quaternion *self_q = (Quaternion *)self;
       *self_q = Quaternion();
