@@ -339,7 +339,7 @@ string ShaderCombiner::applyModifier( const string &variable_name,
   } else if( modifier == "MULTIPLY_ALPHA" ) {
     return variable_name + ".rgb  = " + variable_name + ".rgb *" + variable_name + ".a;";
   } else if( modifier == "MULTIPLY_ONE_MINUS_ALPHA" ) {
-    return variable_name + ".rgb  = " + variable_name + ".rgb *(1-" + variable_name + ".a);";
+    return variable_name + ".rgb  = " + variable_name + ".rgb *(1.0-" + variable_name + ".a);";
   } 
 
   if( modifier != "NONE" ) {
@@ -389,7 +389,7 @@ string ShaderCombiner::combineFunction( const string &v0,
   } else if( function == "DIVIDE" ) {
     return v0 + " / " + v1;
   } else if( function == "BLEND_VALUE" ) {
-    return value + " * " + v0 + " + (1-" + value + ")*" + v1;
+    return value + " * " + v0 + " + (1.0-" + value + ")*" + v1;
   } 
 
   Console(4) << "Invalid function: \"" << function << "\" in ShaderCombiner. Using \"SELECT1\" instead. " << endl;

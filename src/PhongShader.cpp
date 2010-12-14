@@ -378,12 +378,12 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( diffuseMap->getValue() ) {
-    s << "    sampler2D diffuse_map = " << uniqueShaderName( "diffuse_map" ) << ";" << endl;
-
     if( modulate ) {
-      s << "    vec4 diffuse_color = gl_FrontMaterial.diffuse * texture2D( diffuse_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 diffuse_color = gl_FrontMaterial.diffuse * texture2D( "
+        << uniqueShaderName( "diffuse_map" ) 
+        << ", gl_TexCoord[0].st );" << endl;
     } else {
-      s << "    vec4 diffuse_color = texture2D( diffuse_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 diffuse_color = texture2D( " << uniqueShaderName( "diffuse_map" ) << ", gl_TexCoord[0].st );" << endl;
       // if the texture contains alpha use the texture alpha, otherwise use the 
       // one from the material diffuse color which is set by the transparency 
       // field in a Material node.
@@ -400,18 +400,17 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( emissionMap->getValue() ) {
-    s << "    sampler2D emission_map = " << uniqueShaderName( "emission_map" ) << ";" << endl;
     if( modulate ) {
-      s << "    vec4 emission_color = gl_FrontMaterial.emission * texture2D( emission_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 emission_color = gl_FrontMaterial.emission * texture2D( "
+        << uniqueShaderName( "emission_map" ) << ", gl_TexCoord[0].st );" << endl;
     } else {
-      s << "    vec4 emission_color = texture2D( emission_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 emission_color = texture2D( " << uniqueShaderName( "emission_map" ) << ", gl_TexCoord[0].st );" << endl;
     }
   } else {
     s << "    vec4 emission_color = gl_FrontMaterial.emission; " << endl;
   }
 
   if( ambientMap->getValue() ) {
-    s << "    sampler2D ambient_map = " << uniqueShaderName( "ambient_map" ) << ";" << endl;
     if( modulate ) {
       // in Material ambient color is ambientIntensity * diffuseColor. We modulate with the ambientIntensity
       // value
@@ -423,20 +422,19 @@ string PhongShader::getFragmentShaderString() {
       s << "    } else if( gl_FrontMaterial.diffuse.b != 0.0 ) { " << endl;
       s << "       intensity = gl_FrontMaterial.ambient.b / gl_FrontMaterial.diffuse.b;" << endl;
       s << "    } " << endl;
-      s << "    vec4 ambient_color = intensity * texture2D( ambient_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 ambient_color = intensity * texture2D( " << uniqueShaderName( "ambient_map" ) << ", gl_TexCoord[0].st );" << endl;
     } else {
-      s << "    vec4 ambient_color = texture2D( ambient_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 ambient_color = texture2D( " << uniqueShaderName( "ambient_map" ) << ", gl_TexCoord[0].st );" << endl;
     }
   } else {
     s << "    vec4 ambient_color = gl_FrontMaterial.ambient; " << endl;
   }
 
   if( specularMap->getValue() ) {
-    s << "    sampler2D specular_map = " << uniqueShaderName( "specular_map" ) << ";" << endl;
     if( modulate ) {
-      s << "    vec4 specular_color = gl_FrontMaterial.specular * texture2D( specular_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 specular_color = gl_FrontMaterial.specular * texture2D( " << uniqueShaderName( "specular_map" ) << ", gl_TexCoord[0].st );" << endl;
     } else {
-      s << "    vec4 specular_color = texture2D( specular_map, gl_TexCoord[0].st );" << endl;
+      s << "    vec4 specular_color = texture2D( " << uniqueShaderName( "specular_map" ) << ", gl_TexCoord[0].st );" << endl;
     }
   } else {
     s << "    vec4 specular_color = gl_FrontMaterial.specular; " << endl;
@@ -449,11 +447,10 @@ string PhongShader::getFragmentShaderString() {
   }
 
   if( glossMap->getValue() ) {
-    s << "    sampler2D gloss_map = " << uniqueShaderName( "gloss_map" ) << ";" << endl;
     if( modulate ) {
-      s << "    float shininess = gl_FrontMaterial.shininess * texture2D( gloss_map, gl_TexCoord[0].st ).r;" << endl;
+      s << "    float shininess = gl_FrontMaterial.shininess * texture2D( " << uniqueShaderName( "gloss_map" ) << ", gl_TexCoord[0].st ).r;" << endl;
     } else {
-      s << "    float shininess = texture2D( gloss_map, gl_TexCoord[0].st ).r;" << endl;
+      s << "    float shininess = texture2D( " << uniqueShaderName( "gloss_map" ) << ", gl_TexCoord[0].st ).r;" << endl;
     }
   } else {
     s << "    float shininess = gl_FrontMaterial.shininess;" << endl;
@@ -468,10 +465,9 @@ string PhongShader::getFragmentShaderString() {
       coord_space == "OBJECT";
     }
 
-    s << "    sampler2D normal_map = " << uniqueShaderName( "normal_map" ) << ";" << endl;
     s << "    mat4 normal_map_matrix = " << uniqueShaderName( "normal_map_matrix" ) << ";" << endl;
 
-    s << "    vec3 N = texture2D( normal_map, gl_TexCoord[0].st ).xyz;" << endl;
+    s << "    vec3 N = texture2D( " << uniqueShaderName( "normal_map" ) << ", gl_TexCoord[0].st ).xyz;" << endl;
     
     // texture values [0-1] -> object space normal [-1,1]
     s << "    N = vec3( normal_map_matrix * vec4( N, 1.0 ) );" << endl;
@@ -492,12 +488,10 @@ string PhongShader::getFragmentShaderString() {
   // back colors
   if( separateBackColor->getValue() ) {
     if( backDiffuseMap->getValue() ) {
-      s << "    sampler2D back_diffuse_map = " << uniqueShaderName( "back_diffuse_map" ) << ";" << endl;
-    
       if( back_modulate ) {
-        s << "    vec4 back_diffuse_color = gl_BackMaterial.diffuse * texture2D( back_diffuse_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_diffuse_color = gl_BackMaterial.diffuse * texture2D( " << uniqueShaderName( "back_diffuse_map" ) << ", gl_TexCoord[0].st );" << endl;
       } else {
-        s << "    vec4 back_diffuse_color = texture2D( back_diffuse_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_diffuse_color = texture2D( " << uniqueShaderName( "back_diffuse_map" ) << ", gl_TexCoord[0].st );" << endl;
         // if the texture contains alpha use the texture alpha, otherwise use the 
         // one from the material diffuse color which is set by the transparency 
         // field in a Material node.
@@ -514,18 +508,16 @@ string PhongShader::getFragmentShaderString() {
     }
     
     if( backEmissionMap->getValue() ) {
-      s << "    sampler2D back_emission_map = " << uniqueShaderName( "back_emission_map" ) << ";" << endl;
       if( back_modulate ) {
-        s << "    vec4 back_emission_color = gl_BackMaterial.emission * texture2D( back_emission_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_emission_color = gl_BackMaterial.emission * texture2D( " << uniqueShaderName( "back_emission_map" ) << ", gl_TexCoord[0].st );" << endl;
       } else {
-        s << "    vec4 back_emission_color = texture2D( back_emission_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_emission_color = texture2D( " << uniqueShaderName( "back_emission_map" ) << ", gl_TexCoord[0].st );" << endl;
       }
     } else {
       s << "    vec4 back_emission_color = gl_BackMaterial.emission; " << endl;
     }
     
     if( backAmbientMap->getValue() ) {
-      s << "    sampler2D back_ambient_map = " << uniqueShaderName( "back_ambient_map" ) << ";" << endl;
       if( back_modulate ) {
         // in Material ambient color is ambientIntensity * diffuseColor. We modulate with the ambientIntensity
         // value
@@ -537,20 +529,19 @@ string PhongShader::getFragmentShaderString() {
         s << "    } else if( gl_BackMaterial.diffuse.b != 0.0 ) { " << endl;
         s << "       back_intensity = gl_BackMaterial.ambient.b / gl_BackMaterial.diffuse.b;" << endl;
         s << "    } " << endl;
-        s << "    vec4 back_ambient_color = back_intensity * texture2D( back_ambient_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_ambient_color = back_intensity * texture2D( " << uniqueShaderName( "back_ambient_map" ) << ", gl_TexCoord[0].st );" << endl;
       } else {
-        s << "    vec4 back_ambient_color = texture2D( back_ambient_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_ambient_color = texture2D( " << uniqueShaderName( "back_ambient_map" ) << ", gl_TexCoord[0].st );" << endl;
       }
     } else {
       s << "    vec4 back_ambient_color = gl_BackMaterial.ambient; " << endl;
     }
     
     if( backSpecularMap->getValue() ) {
-      s << "    sampler2D back_specular_map = " << uniqueShaderName( "back_specular_map" ) << ";" << endl;
       if( back_modulate ) {
-        s << "    vec4 back_specular_color = gl_BackMaterial.specular * texture2D( back_specular_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_specular_color = gl_BackMaterial.specular * texture2D( " << uniqueShaderName( "back_specular_map" ) << ", gl_TexCoord[0].st );" << endl;
       } else {
-        s << "    vec4 back_specular_color = texture2D( back_specular_map, gl_TexCoord[0].st );" << endl;
+        s << "    vec4 back_specular_color = texture2D( " << uniqueShaderName( "back_specular_map" ) << ", gl_TexCoord[0].st );" << endl;
       }
     } else {
       s << "    vec4 back_specular_color = gl_BackMaterial.specular; " << endl;
@@ -563,21 +554,19 @@ string PhongShader::getFragmentShaderString() {
     }
     
     if( backGlossMap->getValue() ) {
-      s << "    sampler2D back_gloss_map = " << uniqueShaderName( "back_gloss_map" ) << ";" << endl;
       if( back_modulate ) {
-        s << "    float back_shininess = gl_BackMaterial.shininess * texture2D( back_gloss_map, gl_TexCoord[0].st ).r;" << endl;
+        s << "    float back_shininess = gl_BackMaterial.shininess * texture2D( " << uniqueShaderName( "back_gloss_map" ) << ", gl_TexCoord[0].st ).r;" << endl;
       } else {
-        s << "    float back_shininess = texture2D( back_gloss_map, gl_TexCoord[0].st ).r;" << endl;
+        s << "    float back_shininess = texture2D( " << uniqueShaderName( "back_gloss_map" ) << ", gl_TexCoord[0].st ).r;" << endl;
       }
     } else {
       s << "    float back_shininess = gl_BackMaterial.shininess;" << endl;
     }
     
     if( backNormalMap->getValue() ) {
-      s << "    sampler2D back_normal_map = " << uniqueShaderName( "back_normal_map" ) << ";" << endl;
-      s << "    sampler2D back_normal_map_matrix = " << uniqueShaderName( "back_normal_map_matrix" ) << ";" << endl;
+      s << "    mat4 back_normal_map_matrix = " << uniqueShaderName( "back_normal_map_matrix" ) << ";" << endl;
 
-      s << "    vec3 back_N = texture2D( back_normal_map, gl_TexCoord[0].st ).xyz;" << endl;
+      s << "    vec3 back_N = texture2D( " << uniqueShaderName( "back_normal_map" ) << ", gl_TexCoord[0].st ).xyz;" << endl;
       
       // texture values [0-1] -> object space normal [-1,1]
       s << "    back_N = vec3( back_normal_map_matrix * vec4( back_N, 1.0 ) );" << endl;
