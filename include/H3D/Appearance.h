@@ -193,11 +193,14 @@ namespace H3D {
     /// This function checks the transparency field to determine if the
     /// material requires that the geometry is rendered with transparency
     virtual bool isTransparent() {
+      if( !shaders->empty() ) return true; 
+
       X3DMaterialNode *m = material->getValue();
       if ( m )
         return m->isTransparent();
       else
         return false;
+      
     }
 
     /// This function return true if the appearance has decided that
