@@ -40,22 +40,22 @@
 namespace H3D {
   namespace Shaders {
 #ifdef HAVE_CG
-    CGprofile cgProfileFromString( const string &profile, 
-                                   const string &type );
+    CGprofile H3DAPI_API cgProfileFromString( const string &profile, 
+                                              const string &type );
 
     /// Set the value of a uniform variable in the given CG shader.
     /// The name of the uniform variable is the same as the name of the field. 
-    bool setCGUniformVariableValue( CGprogram program_handle,
-                                    Field *field );
+    bool H3DAPI_API setCGUniformVariableValue( CGprogram program_handle,
+                                               Field *field );
 #endif
     /// Set the value of a uniform variable in the given GLSL shader.
     /// The name of the uniform variable is the same as the name of the field. 
-    bool setGLSLUniformVariableValue( GLhandleARB program_handle,
-                                      Field *field );
+    bool H3DAPI_API setGLSLUniformVariableValue( GLhandleARB program_handle,
+                                                 Field *field );
 
-    void renderTextures( H3DDynamicFieldsObject * );
-    void postRenderTextures( H3DDynamicFieldsObject * );
-    void preRenderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API renderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API postRenderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API preRenderTextures( H3DDynamicFieldsObject * );
 
   }
 }
