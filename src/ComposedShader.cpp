@@ -129,9 +129,15 @@ void ComposedShader::preRender() {
     Shaders::preRenderTextures( this );
     X3DShaderNode::preRender();
   }
+
+  glPushAttrib( GL_COLOR_BUFFER_BIT );
+  glEnable( GL_BLEND );
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ComposedShader::postRender() {
+  glPopAttrib();
+
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( 0 );
     Shaders::postRenderTextures( this );
