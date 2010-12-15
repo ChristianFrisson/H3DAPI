@@ -33,7 +33,6 @@ def SField2MField( sfield, mfield ):
   class SField2MFieldClass( TypedField( mfield, sfield ) ):
     def update( self, event ):
       v = event.getValue()
-      print v
       return [v]
   return SField2MFieldClass()
 

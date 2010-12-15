@@ -279,7 +279,6 @@ def SField2MField( sfield, mfield ):\n\
   class SField2MFieldClass( TypedField( mfield, sfield ) ):\n\
     def update( self, event ):\n\
       v = event.getValue()\n\
-      print v\n\
       return [v]\n\
   return SField2MFieldClass()\n\
 \n\
