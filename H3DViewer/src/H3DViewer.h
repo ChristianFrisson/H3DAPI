@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Apr 16 2008)
+// C++ code generated with wxFormBuilder (version Sep  8 2010)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -20,9 +20,8 @@
 #include <wx/treectrl.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
-#include <wx/grid.h>
-#include <wx/splitter.h>
 #include <wx/button.h>
+#include <wx/splitter.h>
 #include <wx/frame.h>
 #include <wx/stattext.h>
 #include <wx/listbox.h>
@@ -44,62 +43,41 @@ class TreeViewDialog : public wxFrame
 		wxMenuBar* m_menubar1;
 		wxMenu* RightClickMenu;
 		wxMenu* RightClickMenuGeometry;
-		wxSplitterWindow* m_splitter1;
-		wxPanel* m_panel1;
-		wxPanel* m_panel2;
+		wxSplitterWindow* SplitterWindow;
+		wxPanel* TreeViewPanel;
+		wxPanel* FieldValueViewPanel;
+		wxButton* m_button4;
 		wxButton* btnClose;
 		
 		// Virtual event handlers, overide them in your derived class
-		virtual void OnClose( wxCloseEvent& event ){ event.Skip(); }
-		virtual void OnIdle( wxIdleEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewCollapseAll( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewExpandAll( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewCollapseChildren( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewDeleteNode( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewAddChildNode( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewNodeWatch( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewSaveX3D( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewSaveVRML( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnTreeRightClick( wxTreeEvent& event ){ event.Skip(); }
-		virtual void OnNodeSelected( wxTreeEvent& event ){ event.Skip(); }
-		virtual void OnCellEdit( wxGridEvent& event ){ event.Skip(); }
-		virtual void btnCloseClick( wxCommandEvent& event ){ event.Skip(); }
+		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnIdle( wxIdleEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewCollapseAll( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewExpandAll( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewCollapseChildren( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewDeleteNode( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewAddChildNode( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewNodeWatch( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewSaveX3D( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewSaveVRML( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeRightClick( wxTreeEvent& event ) { event.Skip(); }
+		virtual void OnNodeSelected( wxTreeEvent& event ) { event.Skip(); }
+		virtual void btnCloseClick( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		wxTreeCtrl* TreeViewTree;
-		wxGrid* FieldValuesGrid;
+		
 		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Scene tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 594,496 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		~TreeViewDialog();
-		void m_splitter1OnIdle( wxIdleEvent& )
+		
+		void SplitterWindowOnIdle( wxIdleEvent& )
 		{
-		m_splitter1->SetSashPosition( 283 );
-		m_splitter1->Disconnect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::m_splitter1OnIdle ), NULL, this );
+			SplitterWindow->SetSashPosition( 283 );
+			SplitterWindow->Disconnect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::SplitterWindowOnIdle ), NULL, this );
 		}
-		
-	
-};
-
-///////////////////////////////////////////////////////////////////////////////
-/// Class FieldValuesDialog
-///////////////////////////////////////////////////////////////////////////////
-class FieldValuesDialog : public wxFrame 
-{
-	private:
-	
-	protected:
-		
-		// Virtual event handlers, overide them in your derived class
-		virtual void OnIdle( wxIdleEvent& event ){ event.Skip(); }
-		virtual void OnCellEdit( wxGridEvent& event ){ event.Skip(); }
-		
-	
-	public:
-		wxGrid* FieldValuesGrid;
-		FieldValuesDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 236,335 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
-		~FieldValuesDialog();
 	
 };
 
@@ -121,16 +99,17 @@ class PluginsDialog : public wxDialog
 		wxRichTextCtrl* PluginInfoText;
 		
 		// Virtual event handlers, overide them in your derived class
-		virtual void OnKeyDown( wxKeyEvent& event ){ event.Skip(); }
-		virtual void OnInstalledPluginSelected( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnAddPluginButton( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnRemovePluginButton( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnDisablePluginCheckbox( wxCommandEvent& event ){ event.Skip(); }
-		virtual void OnURLEvent( wxTextUrlEvent& event ){ event.Skip(); }
+		virtual void OnKeyDown( wxKeyEvent& event ) { event.Skip(); }
+		virtual void OnInstalledPluginSelected( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAddPluginButton( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRemovePluginButton( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnDisablePluginCheckbox( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnURLEvent( wxTextUrlEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		wxCheckBox* DisablePluginsCheckBox;
+		
 		PluginsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Plugins"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,326 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
 		~PluginsDialog();
 	

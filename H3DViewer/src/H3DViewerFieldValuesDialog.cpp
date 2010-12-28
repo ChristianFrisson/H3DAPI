@@ -4,28 +4,70 @@
 #include <H3D/SFString.h>
 #include <H3D/PythonScript.h>
 
-H3DViewerFieldValuesDialog::H3DViewerFieldValuesDialog( wxWindow* parent )
-:
-  FieldValuesDialog( parent ),
+H3DViewerFieldValuesPanel::H3DViewerFieldValuesPanel( wxWindow* parent,
+						      wxWindowID id, 
+						      const wxPoint& pos, 
+						      const wxSize& size, 
+						      long style ) : 
+  wxPanel( parent, id, pos, size, style ),
   displayed_node( NULL )
 {
+  wxBoxSizer* bSizer2;
+  bSizer2 = new wxBoxSizer( wxVERTICAL );
+  
+  FieldValuesGrid = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+  
+  // Grid
+  FieldValuesGrid->CreateGrid( 2, 2 );
+  FieldValuesGrid->EnableEditing( true );
+  FieldValuesGrid->EnableGridLines( true );
+  FieldValuesGrid->EnableDragGridSize( false );
+  FieldValuesGrid->SetMargins( 0, 0 );
+  
+  // Columns
+  FieldValuesGrid->SetColSize( 0, 95 );
+  FieldValuesGrid->SetColSize( 1, 102 );
+  FieldValuesGrid->EnableDragColMove( false );
+  FieldValuesGrid->EnableDragColSize( true );
+  FieldValuesGrid->SetColLabelSize( 15 );
+  FieldValuesGrid->SetColLabelValue( 0, wxT("Field") );
+  FieldValuesGrid->SetColLabelValue( 1, wxT("Value") );
+  FieldValuesGrid->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+  
+  // Rows
+  FieldValuesGrid->EnableDragRowSize( true );
+  FieldValuesGrid->SetRowLabelSize( 0 );
+  FieldValuesGrid->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+  
+  // Label Appearance
+  
+  // Cell Defaults
+  FieldValuesGrid->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+  bSizer2->Add( FieldValuesGrid, 1, wxALL|wxEXPAND, 5 );
+  
+  this->SetSizer( bSizer2 );
+  this->Layout();
+  
+  // Connect Events
+  FieldValuesGrid->Connect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( H3DViewerFieldValuesPanel::OnCellEdit ), NULL, this );
+}
 
+H3DViewerFieldValuesPanel::~H3DViewerFieldValuesPanel() {
+  FieldValuesGrid->Disconnect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( H3DViewerFieldValuesPanel::OnCellEdit ), NULL, this );
 }
 
 
-void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
-    bool new_node = n != displayed_node.get();
+void H3DViewerFieldValuesPanel::displayFieldsFromNode( Node *n ) {
+  bool new_node = n != displayed_node.get();
   displayed_node.reset( n );
   if( !n ) {
 #ifdef DEFAULT_VALUES
     default_values_node.reset( NULL );
 #endif
-    SetTitle(wxT(""));
     if( FieldValuesGrid->GetNumberRows() > 0 )
       FieldValuesGrid->DeleteRows( 0, FieldValuesGrid->GetNumberRows() );
     return;
   }
-  SetTitle( wxString(n->getTypeName().c_str(),wxConvUTF8) );
 
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
 
@@ -41,7 +83,7 @@ void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
                       new_node );
 }
 
-void H3DViewerFieldValuesDialog::updateGridFromNode( wxGrid *FieldValuesGrid,
+void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
                                                      Node *n,
                                                      Node *default_values_node,
                                                      bool new_node ) {
@@ -202,15 +244,21 @@ void H3DViewerFieldValuesDialog::updateGridFromNode( wxGrid *FieldValuesGrid,
 
 }
 
-void H3DViewerFieldValuesDialog::OnIdle( wxIdleEvent& event ) {
-  TimeStamp now;
-  if( now - last_fields_update > 0.1 ) {
-    displayFieldsFromNode( displayed_node.get() );
-    last_fields_update = now;
+void H3DViewerFieldValuesPanel::OnIdle( wxIdleEvent& event ) {
+  try {
+    if( IsShown() ) {
+      TimeStamp now;
+      if( now - last_fields_update > 0.1 ) {
+	displayFieldsFromNode( displayed_node.get() );
+	last_fields_update = now;
+      }
+    }
+  } catch( ... ) {
+    // ignore any errors
   }
 }
 
-void H3DViewerFieldValuesDialog::OnCellEdit( wxGridEvent& event ) {
+void H3DViewerFieldValuesPanel::OnCellEdit( wxGridEvent& event ) {
   if( displayed_node.get() ) {
     int col = event.GetCol();
     int row = event.GetRow();
@@ -232,7 +280,7 @@ void H3DViewerFieldValuesDialog::OnCellEdit( wxGridEvent& event ) {
 }
 
 
-void H3DViewerFieldValuesDialog::updateRowFromField( wxGrid *FieldValuesGrid,
+void H3DViewerFieldValuesPanel::updateRowFromField( wxGrid *FieldValuesGrid,
                                                      int row, 
                                                      Field *f,
                                                      Field *default_field,
@@ -413,3 +461,42 @@ void H3DViewerFieldValuesDialog::updateRowFromField( wxGrid *FieldValuesGrid,
 }
 
 
+
+
+H3DViewerFieldValuesDialog::H3DViewerFieldValuesDialog( wxWindow* parent, 
+							wxWindowID id, 
+							const wxString& title, 
+							const wxPoint& pos, 
+							const wxSize& size, 
+							long style ) : 
+  wxFrame( parent, id, title, pos, size, style ) {
+
+  this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+  
+  wxBoxSizer* bSizer2;
+  bSizer2 = new wxBoxSizer( wxVERTICAL );
+  
+  field_values_panel = new H3DViewerFieldValuesPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
+	
+  bSizer2->Add( field_values_panel, 1, wxALL|wxEXPAND, 5 );
+  this->SetSizer( bSizer2 );
+  this->Layout();
+  
+  // Connect Events
+  this->Connect( wxEVT_IDLE, wxIdleEventHandler( H3DViewerFieldValuesPanel::OnIdle ), NULL, field_values_panel );
+}
+
+H3DViewerFieldValuesDialog::~H3DViewerFieldValuesDialog()
+{
+  // Disconnect Events
+  this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( H3DViewerFieldValuesPanel::OnIdle ), NULL, field_values_panel );
+}
+
+void H3DViewerFieldValuesDialog::displayFieldsFromNode( Node *n ) {
+  if( !n ) {
+    SetTitle(wxT(""));
+  } else {
+    SetTitle( wxString(n->getTypeName().c_str(),wxConvUTF8) );
+  }
+  field_values_panel->displayFieldsFromNode( n );
+}

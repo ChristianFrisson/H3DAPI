@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Apr 16 2008)
+// C++ code generated with wxFormBuilder (version Sep  8 2010)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -30,7 +30,8 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewCollapseChildren = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Collapse children") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenu->Append( TreeViewCollapseChildren );
 	
-	RightClickMenu->AppendSeparator();
+	wxMenuItem* m_separator1;
+	m_separator1 = RightClickMenu->AppendSeparator();
 	
 	wxMenuItem* TreeViewDeleteNode;
 	TreeViewDeleteNode = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Delete node") ) , wxEmptyString, wxITEM_NORMAL );
@@ -40,7 +41,8 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewAddChildNode = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Add/replace child node..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenu->Append( TreeViewAddChildNode );
 	
-	RightClickMenu->AppendSeparator();
+	wxMenuItem* m_separator2;
+	m_separator2 = RightClickMenu->AppendSeparator();
 	
 	wxMenuItem* TreeViewNodeWatch;
 	TreeViewNodeWatch = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Add node field watch") ) , wxEmptyString, wxITEM_NORMAL );
@@ -58,7 +60,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewSaveTrianglesX3D = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Save all triangles as IndexedTriangleSet..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenu->Append( TreeViewSaveTrianglesX3D );
 	
-	m_menubar1->Append( RightClickMenu, wxT("Action") );
+	m_menubar1->Append( RightClickMenu, wxT("Action") ); 
 	
 	RightClickMenuGeometry = new wxMenu();
 	wxMenuItem* TreeViewCollapseAll1;
@@ -73,7 +75,8 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewCollapseChildren1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Collapse children") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuGeometry->Append( TreeViewCollapseChildren1 );
 	
-	RightClickMenuGeometry->AppendSeparator();
+	wxMenuItem* m_separator3;
+	m_separator3 = RightClickMenuGeometry->AppendSeparator();
 	
 	wxMenuItem* TreeViewDeleteNode1;
 	TreeViewDeleteNode1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Delete node") ) , wxEmptyString, wxITEM_NORMAL );
@@ -83,7 +86,8 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewAddChildNode1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Add/replace child node..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuGeometry->Append( TreeViewAddChildNode1 );
 	
-	RightClickMenuGeometry->AppendSeparator();
+	wxMenuItem* m_separator4;
+	m_separator4 = RightClickMenuGeometry->AppendSeparator();
 	
 	wxMenuItem* TreeViewNodeWatch1;
 	TreeViewNodeWatch1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Add node field watch") ) , wxEmptyString, wxITEM_NORMAL );
@@ -101,7 +105,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewSaveSTL = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Save geometry triangles as STL..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuGeometry->Append( TreeViewSaveSTL );
 	
-	m_menubar1->Append( RightClickMenuGeometry, wxT("Action") );
+	m_menubar1->Append( RightClickMenuGeometry, wxT("Action") ); 
 	
 	this->SetMenuBar( m_menubar1 );
 	
@@ -111,60 +115,34 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* bSizer14;
 	bSizer14 = new wxBoxSizer( wxVERTICAL );
 	
-	m_splitter1 = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxSize( -1,500 ), wxSP_3D );
-	m_splitter1->SetSashGravity( 1 );
-	m_splitter1->Connect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::m_splitter1OnIdle ), NULL, this );
-	m_splitter1->SetMinSize( wxSize( -1,500 ) );
+	SplitterWindow = new wxSplitterWindow( this, wxID_ANY, wxDefaultPosition, wxSize( -1,500 ), wxSP_3D );
+	SplitterWindow->SetSashGravity( 1 );
+	SplitterWindow->Connect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::SplitterWindowOnIdle ), NULL, this );
 	
-	m_panel1 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	SplitterWindow->SetMinSize( wxSize( -1,500 ) );
+	
+	TreeViewPanel = new wxPanel( SplitterWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer3;
 	bSizer3 = new wxBoxSizer( wxVERTICAL );
 	
-	TreeViewTree = new wxTreeCtrl( m_panel1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
+	TreeViewTree = new wxTreeCtrl( TreeViewPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
 	bSizer3->Add( TreeViewTree, 1, wxALL|wxEXPAND, 5 );
 	
-	m_panel1->SetSizer( bSizer3 );
-	m_panel1->Layout();
-	bSizer3->Fit( m_panel1 );
-	m_panel2 = new wxPanel( m_splitter1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxBoxSizer* bSizer4;
-	bSizer4 = new wxBoxSizer( wxVERTICAL );
+	TreeViewPanel->SetSizer( bSizer3 );
+	TreeViewPanel->Layout();
+	bSizer3->Fit( TreeViewPanel );
+	FieldValueViewPanel = new wxPanel( SplitterWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer8;
+	bSizer8 = new wxBoxSizer( wxVERTICAL );
 	
-	FieldValuesGrid = new wxGrid( m_panel2, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	m_button4 = new wxButton( FieldValueViewPanel, wxID_ANY, wxT("MyButton"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer8->Add( m_button4, 0, wxALL, 5 );
 	
-	// Grid
-	FieldValuesGrid->CreateGrid( 2, 2 );
-	FieldValuesGrid->EnableEditing( true );
-	FieldValuesGrid->EnableGridLines( true );
-	FieldValuesGrid->EnableDragGridSize( false );
-	FieldValuesGrid->SetMargins( 0, 0 );
-	
-	// Columns
-	FieldValuesGrid->SetColSize( 0, 114 );
-	FieldValuesGrid->SetColSize( 1, 165 );
-	FieldValuesGrid->EnableDragColMove( false );
-	FieldValuesGrid->EnableDragColSize( true );
-	FieldValuesGrid->SetColLabelSize( 15 );
-	FieldValuesGrid->SetColLabelValue( 0, wxT("Field") );
-	FieldValuesGrid->SetColLabelValue( 1, wxT("Value") );
-	FieldValuesGrid->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-	
-	// Rows
-	FieldValuesGrid->EnableDragRowSize( true );
-	FieldValuesGrid->SetRowLabelSize( 0 );
-	FieldValuesGrid->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-	
-	// Label Appearance
-	
-	// Cell Defaults
-	FieldValuesGrid->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	bSizer4->Add( FieldValuesGrid, 1, wxALL|wxEXPAND, 5 );
-	
-	m_panel2->SetSizer( bSizer4 );
-	m_panel2->Layout();
-	bSizer4->Fit( m_panel2 );
-	m_splitter1->SplitVertically( m_panel1, m_panel2, 283 );
-	bSizer14->Add( m_splitter1, 1, wxEXPAND, 5 );
+	FieldValueViewPanel->SetSizer( bSizer8 );
+	FieldValueViewPanel->Layout();
+	bSizer8->Fit( FieldValueViewPanel );
+	SplitterWindow->SplitVertically( TreeViewPanel, FieldValueViewPanel, 283 );
+	bSizer14->Add( SplitterWindow, 1, wxEXPAND, 5 );
 	
 	btnClose = new wxButton( this, wxID_CANCEL, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer14->Add( btnClose, 0, wxALIGN_RIGHT|wxALL, 5 );
@@ -197,7 +175,6 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	this->Connect( TreeViewSaveSTL->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveSTL ) );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
-	FieldValuesGrid->Connect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( TreeViewDialog::OnCellEdit ), NULL, this );
 	btnClose->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
 }
 
@@ -226,60 +203,8 @@ TreeViewDialog::~TreeViewDialog()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( TreeViewDialog::OnTreeViewSaveSTL ) );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
-	FieldValuesGrid->Disconnect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( TreeViewDialog::OnCellEdit ), NULL, this );
 	btnClose->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
-}
-
-FieldValuesDialog::FieldValuesDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 	
-	wxBoxSizer* bSizer2;
-	bSizer2 = new wxBoxSizer( wxVERTICAL );
-	
-	FieldValuesGrid = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-	
-	// Grid
-	FieldValuesGrid->CreateGrid( 2, 2 );
-	FieldValuesGrid->EnableEditing( true );
-	FieldValuesGrid->EnableGridLines( true );
-	FieldValuesGrid->EnableDragGridSize( false );
-	FieldValuesGrid->SetMargins( 0, 0 );
-	
-	// Columns
-	FieldValuesGrid->SetColSize( 0, 95 );
-	FieldValuesGrid->SetColSize( 1, 102 );
-	FieldValuesGrid->EnableDragColMove( false );
-	FieldValuesGrid->EnableDragColSize( true );
-	FieldValuesGrid->SetColLabelSize( 15 );
-	FieldValuesGrid->SetColLabelValue( 0, wxT("Field") );
-	FieldValuesGrid->SetColLabelValue( 1, wxT("Value") );
-	FieldValuesGrid->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-	
-	// Rows
-	FieldValuesGrid->EnableDragRowSize( true );
-	FieldValuesGrid->SetRowLabelSize( 0 );
-	FieldValuesGrid->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
-	
-	// Label Appearance
-	
-	// Cell Defaults
-	FieldValuesGrid->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	bSizer2->Add( FieldValuesGrid, 1, wxALL|wxEXPAND, 5 );
-	
-	this->SetSizer( bSizer2 );
-	this->Layout();
-	
-	// Connect Events
-	this->Connect( wxEVT_IDLE, wxIdleEventHandler( FieldValuesDialog::OnIdle ) );
-	FieldValuesGrid->Connect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( FieldValuesDialog::OnCellEdit ), NULL, this );
-}
-
-FieldValuesDialog::~FieldValuesDialog()
-{
-	// Disconnect Events
-	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( FieldValuesDialog::OnIdle ) );
-	FieldValuesGrid->Disconnect( wxEVT_GRID_CELL_CHANGE, wxGridEventHandler( FieldValuesDialog::OnCellEdit ), NULL, this );
 }
 
 PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -314,7 +239,6 @@ PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& t
 	PluginsSizer->Add( 0, 15, 0, wxEXPAND, 15 );
 	
 	DisablePluginsCheckBox = new wxCheckBox( this, wxID_ANY, wxT("Disable plugins"), wxDefaultPosition, wxDefaultSize, 0 );
-	
 	PluginsSizer->Add( DisablePluginsCheckBox, 0, wxALL, 5 );
 	
 	bSizer5->Add( PluginsSizer, 1, wxEXPAND, 5 );
@@ -350,4 +274,5 @@ PluginsDialog::~PluginsDialog()
 	RemovePluginButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( PluginsDialog::OnRemovePluginButton ), NULL, this );
 	DisablePluginsCheckBox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( PluginsDialog::OnDisablePluginCheckbox ), NULL, this );
 	PluginInfoText->Disconnect( wxEVT_COMMAND_TEXT_URL, wxTextUrlEventHandler( PluginsDialog::OnURLEvent ), NULL, this );
+	
 }

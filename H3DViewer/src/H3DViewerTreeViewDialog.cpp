@@ -1,5 +1,4 @@
 #include "H3DViewerTreeViewDialog.h"
-#include "H3DViewerFieldValuesDialog.h"
 #include <fstream>
 #include <wx/wx.h>
 #include <H3D/Scene.h>
@@ -14,8 +13,7 @@
 H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
 :
   TreeViewDialog( parent ),
-  shown_last_loop( false ),
-  displayed_node( NULL )
+  shown_last_loop( false )
 {
   TreeViewTree->AddRoot( wxT("World") );
   // add the bindable nodes in the tree view
@@ -23,6 +21,17 @@ H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
                                                wxT("Active bindable nodes") );
   TreeViewTree->Expand( TreeViewTree->GetRootItem() );
   SetMenuBar( NULL );
+
+#ifdef USE_PROPGRID
+  field_values_panel = new H3DViewerFieldValuesPanelPropGrid( SplitterWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL  );
+#else
+  field_values_panel = new H3DViewerFieldValuesPanel( SplitterWindow, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL  );
+#endif
+  displayFieldsFromNode( NULL );
+  if( SplitterWindow->IsSplit() )
+    SplitterWindow->Unsplit();
+  SplitterWindow->SplitVertically( TreeViewPanel, field_values_panel, 283 );
+  this->Layout();
 }
 
 H3DViewerTreeViewDialog::~H3DViewerTreeViewDialog() {
@@ -204,35 +213,8 @@ void H3DViewerTreeViewDialog::deleteTree( const wxTreeItemId &id ) {
 }
 
 void H3DViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
-  bool new_node = n != displayed_node.get();
-  displayed_node.reset( n );
-  if( !n ) {
-#ifdef DEFAULT_VALUES
-    default_values_node.reset( NULL );
-#endif
-    if( FieldValuesGrid->GetNumberRows() > 0 )
-      FieldValuesGrid->DeleteRows( 0, FieldValuesGrid->GetNumberRows() );
-    return;
-  }
-
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
-
-#ifdef DEFAULT_VALUES
-  if( new_node ) {
-    default_values_node.reset( db->createNode() );
-    Scene * default_scene =
-      dynamic_cast< Scene * >( default_values_node.get() );
-    if( default_scene ) {
-      default_scene->setActive( false );
-    }
-  }
-#endif
-
- H3DViewerFieldValuesDialog::updateGridFromNode( FieldValuesGrid,
-                                                 n,
-                                                 default_values_node.get(),
-                                                 new_node );
-}
+  field_values_panel->displayFieldsFromNode( n );
+ }
  
 void H3DViewerTreeViewDialog::clearTreeView() {
   list< pair< Node *, string> > l;
@@ -245,12 +227,14 @@ void H3DViewerTreeViewDialog::clearTreeView() {
 void H3DViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
   try {
   if( IsShown() ) {
-    TimeStamp now;
-    if( now - last_fields_update > 0.1 ) {
+    
+    if( selected_node.get() != field_values_panel->getDisplayedNode() ) {
       displayFieldsFromNode( selected_node.get() );
-      last_fields_update = now;
     }
 
+    field_values_panel->OnIdle( event );
+
+    TimeStamp now;
     if( now - last_tree_update > 1 ) {
       showEntireSceneAsTree( !shown_last_loop );
       last_tree_update = now;
@@ -264,27 +248,6 @@ void H3DViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
   shown_last_loop = IsShown();
   } catch( ... ) {
     // ignore any errors
-  }
-}
-
-void H3DViewerTreeViewDialog::OnCellEdit( wxGridEvent& event ) {
-  if( displayed_node.get() ) {
-    int col = event.GetCol();
-    int row = event.GetRow();
-    string s( FieldValuesGrid->GetCellValue( row, col ).mb_str() );
-    if( col == 1 ) {
-      string field_name( FieldValuesGrid->GetCellValue( row, 0 ).mb_str());
-      Field *f = displayed_node->getField( field_name );
-      if( SFBool *sfbool = dynamic_cast< SFBool * >( f ) ) {
-         sfbool->setValue( s == "1" );
-      } else if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
-        try {
-          pf->setValueFromString( s );
-        } catch(...) {
-
-        }
-      }
-    }
   }
 }
 
@@ -362,7 +325,11 @@ void H3DViewerTreeViewDialog::OnTreeViewNodeWatch( wxCommandEvent& event ) {
                   wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
   } else {
+#ifdef USE_PROPGRID
+    H3DViewerFieldValuesDialogPropGrid *fv = new H3DViewerFieldValuesDialogPropGrid( this );
+#else
     H3DViewerFieldValuesDialog *fv = new H3DViewerFieldValuesDialog( this );
+#endif
     fv->displayFieldsFromNode( (*ni).second.get() );
     fv->Show();
   }
