@@ -366,6 +366,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   wxIcon tmpIcon( wxT( "IDI_ICON1" ), wxBITMAP_TYPE_ICO_RESOURCE );
   SetIcon( tmpIcon );
 #endif
+  Layout();
 }
 
 void WxFrame::ChangeNavType::update() {
@@ -1310,7 +1311,7 @@ void WxFrame::OnMRUFile(wxCommandEvent & event)
     SetStatusText(wxT("File loaded"), 0);
     SetStatusText(wxString(lastOpenedFilepath.c_str(),wxConvUTF8), 1);
     // remove and add back, to make the file jump on top
-    recentFiles->RemoveFileFromHistory( event.GetId() );
+    recentFiles->RemoveFileFromHistory( event.GetId() - wxID_FILE1 );
     recentFiles->AddFileToHistory ( wx_filename );
 
   }
@@ -2490,6 +2491,7 @@ FrameRateDialog::FrameRateDialog(wxWindow* win ) :
   SetSizer( topsizer );      // use the sizer for layout
 
   topsizer->SetSizeHints( this );   // set size hints to honour minimum size
+  Layout();
 }
 
 void FrameRateDialog::OnKeyDown(wxKeyEvent& event) {
@@ -2636,7 +2638,6 @@ void WxFrame::DestroyViewpointsSubMenu( wxMenu * menu ) {
     } else {
       // if is a viewpoint, disconnect events
       if ( !(*i)->IsSeparator() && id != FRAME_RESET_VIEWPOINT ) {
-        viewpointMenu->Destroy( id );
         Disconnect(id, wxEVT_COMMAND_MENU_SELECTED,
                   wxCommandEventHandler(WxFrame::ChangeViewpoint));
       }

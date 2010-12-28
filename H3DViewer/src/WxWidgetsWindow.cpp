@@ -129,13 +129,6 @@ void WxWidgetsWindow::initWindow() {
   theWxGLContext = new wxGLContext( theWxGLCanvas );
 #endif
 
-  wxSizer *tmp_sizer = theWindow->GetSizer();
-  if( tmp_sizer ) {
-    tmp_sizer->Add( theWxGLCanvas, 1, wxEXPAND );
-    theWindow->Layout();
-  }
-
-
 #ifdef H3D_WINDOWS
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
 #ifdef H3D_WIN64
@@ -148,8 +141,11 @@ void WxWidgetsWindow::initWindow() {
 #endif
 
   last_fullscreen = !fullscreen->getValue();
+  theWindow->Layout();
   theWindow->Show();
   theWxGLCanvas->Show();
+  theWindow->Raise();
+
 #ifdef USE_EXPLICIT_GLCONTEXT
   theWxGLCanvas->SetCurrent( *theWxGLContext );
 #else
