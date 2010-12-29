@@ -10,6 +10,71 @@
 
 using namespace H3D;
 
+H3DLongStringProperty::H3DLongStringProperty( bool _read_only,
+					      const wxString& label,
+					      const wxString& name,
+					      const wxString& value ) : 
+  wxLongStringProperty( label, name, value ),
+  read_only( _read_only ) {
+  ChangeFlag( wxPG_PROP_NOEDITOR, read_only );
+}
+
+bool H3DLongStringProperty::OnButtonClick( wxPropertyGrid* propGrid, wxString& value ) {
+  // the following code is a copy of the wxLongStringProperty::OnButtonClick
+  // code with the only difference being that the dialog text is not editable 
+  // and there is no cancel button when read_only is true.
+
+  wxPGProperty * prop = this;
+  // launch editor dialog
+  wxDialog* dlg = new wxDialog(propGrid,-1,prop->GetLabel(),wxDefaultPosition,wxDefaultSize,
+			       wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxCLIP_CHILDREN);
+
+  dlg->SetFont(propGrid->GetFont()); // To allow entering chars of the same set as the propGrid
+  
+  // Multi-line text editor dialog.
+#if !wxPG_SMALL_SCREEN
+  const int spacing = 8;
+#else
+  const int spacing = 4;
+#endif
+  wxBoxSizer* topsizer = new wxBoxSizer( wxVERTICAL );
+  wxBoxSizer* rowsizer = new wxBoxSizer( wxHORIZONTAL );
+  wxTextCtrl* ed = new wxTextCtrl(dlg,11,value,
+				  wxDefaultPosition,wxDefaultSize,wxTE_MULTILINE|(read_only?wxTE_READONLY:0) );
+  
+  rowsizer->Add( ed, 1, wxEXPAND|wxALL, spacing );
+  topsizer->Add( rowsizer, 1, wxEXPAND, 0 );
+  
+  wxStdDialogButtonSizer* buttonSizer = new wxStdDialogButtonSizer();
+  buttonSizer->AddButton(new wxButton(dlg, wxID_OK));
+  if( !read_only )
+    buttonSizer->AddButton(new wxButton(dlg, wxID_CANCEL));
+  buttonSizer->Realize();
+  topsizer->Add( buttonSizer, 0,
+		 wxALIGN_RIGHT|wxALIGN_CENTRE_VERTICAL|wxBOTTOM|wxRIGHT,
+		 spacing );
+  
+  dlg->SetSizer( topsizer );
+  topsizer->SetSizeHints( dlg );
+  
+#if !wxPG_SMALL_SCREEN
+  dlg->SetSize(400,300);
+  
+  dlg->Move( propGrid->GetGoodEditorDialogPosition(prop,dlg->GetSize()) );
+#endif
+  
+  int res = dlg->ShowModal();
+  
+  if ( res == wxID_OK )
+    {
+      value = ed->GetValue();
+      dlg->Destroy();
+      return true;
+    }
+  dlg->Destroy();
+  return false;
+}
+
 H3DViewerFieldValuesDialogPropGrid::H3DViewerFieldValuesDialogPropGrid( 
              wxWindow* parent, 
 	     wxWindowID id, 
@@ -24,7 +89,7 @@ H3DViewerFieldValuesDialogPropGrid::H3DViewerFieldValuesDialogPropGrid(
   wxBoxSizer* bSizer2;
   bSizer2 = new wxBoxSizer( wxVERTICAL );
   
-  prop_grid_panel = new H3DViewerFieldValuesPanelPropGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,  wxPG_BOLD_MODIFIED );
+  prop_grid_panel = new H3DViewerFieldValuesPanelPropGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 	
   bSizer2->Add( prop_grid_panel, 1, wxALL|wxEXPAND, 5 );
   this->SetSizer( bSizer2 );
@@ -62,7 +127,7 @@ H3DViewerFieldValuesPanelPropGrid::H3DViewerFieldValuesPanelPropGrid( wxWindow* 
   wxBoxSizer* bSizer2;
   bSizer2 = new wxBoxSizer( wxVERTICAL );
   
-  FieldValuesGrid = new wxPropertyGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,  wxPG_SPLITTER_AUTO_CENTER | wxPG_BOLD_MODIFIED );
+  FieldValuesGrid = new wxPropertyGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,  wxPG_SPLITTER_AUTO_CENTER  );
   
   bSizer2->Add( FieldValuesGrid, 1, wxALL|wxEXPAND, 5 );
   this->SetSizer( bSizer2 );
@@ -100,7 +165,7 @@ void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromNode( Node *n ) {
 
   if( new_node ) {
     property_update_fields.clear();
-    populateGridFromNode( FieldValuesGrid, n, property_update_fields );
+    populateGridFromNode( FieldValuesGrid, n, default_values_node.get(), property_update_fields );
   }
 }
 
@@ -129,16 +194,34 @@ void H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged( wxPropertyGridEvent& 
 
     X3DTypes::X3DType x3d_type = f->getX3DType();
     
-    if( x3d_type == X3DTypes::SFBOOL ) {    
+    if( x3d_type == X3DTypes::SFFLOAT ) {
+      double b = value.GetDouble();
+      static_cast< SFFloat * >( f )->setValue( (H3DFloat) b );
+    } else if ( x3d_type == X3DTypes::SFDOUBLE ) {
+      double b = value.GetDouble();
+      static_cast< SFDouble * >( f )->setValue( b );
+    } else if ( x3d_type == X3DTypes::SFTIME ) {
+      double b = value.GetDouble();
+      static_cast< SFTime * >( f )->setValue( b );
+   } else if ( x3d_type == X3DTypes::SFCOLOR ) {
+      wxColour wc = wxAny(value).As<wxColour>();
+      static_cast< SFColor * >( f )->setValue( RGB( wc.Red()/255.0, wc.Green()/255.0, wc.Blue()/255.0 ) );
+    } else if( x3d_type == X3DTypes::SFBOOL ) {    
       bool b = value.GetBool();
       static_cast< SFBool * >( f )->setValue( b );
+    } if( x3d_type == X3DTypes::SFSTRING && 
+	  dynamic_cast< wxEnumProperty * >( property ) ) {    
+      
+      string s (property->ValueToString( value ).mb_str() );
+      static_cast< SFString * >( f )->setValue( s );
     } else {
       if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
-        string s( value.GetString().mb_str() );
+        string s( property->ValueToString( value ).mb_str() );
         try {
           pf->setValueFromString( s );
         } catch(...) {
-          
+	  // touch field in order for editor value to be reset
+          pf->touch();
         }
       }
     }
@@ -148,6 +231,7 @@ void H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged( wxPropertyGridEvent& 
 
 void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *FieldValuesGrid,
                                                                Node *n,
+                                                               Node *default_values_node,
                                                                AutoPtrVector< Field > &property_update_fields ) {
 
   FieldValuesGrid->Clear();
@@ -190,11 +274,8 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   for( list< FieldDBElement * >::iterator i = init_only_fields.begin();
        i != init_only_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    wxPGProperty *p = getPropertyFromField( f );
-    PropertyUpdater *updater = new PropertyUpdater(p);
-    f->route( updater );
-    property_update_fields.push_back( updater );
-    if(p) FieldValuesGrid->Append( p );
+    Field *default_f = (*i)->getField( default_values_node );
+    setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
   }
 
   // input output fields
@@ -205,11 +286,8 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   for( list< FieldDBElement * >::iterator i = input_output_fields.begin();
        i != input_output_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    wxPGProperty *p = getPropertyFromField( f );
-    PropertyUpdater *updater = new PropertyUpdater( p );
-    f->route( updater );
-    property_update_fields.push_back( updater );
-    if( p ) FieldValuesGrid->Append( p );
+    Field *default_f = (*i)->getField( default_values_node );
+    setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
   }
 
   
@@ -221,11 +299,8 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   for( list< FieldDBElement * >::iterator i = output_only_fields.begin();
        i != output_only_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    wxPGProperty *p = getPropertyFromField( f );
-    PropertyUpdater *updater = new PropertyUpdater(p);
-    f->route( updater );
-    property_update_fields.push_back( updater );
-    if( p ) FieldValuesGrid->Append( p );
+    Field *default_f = (*i)->getField( default_values_node );
+    setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
   }
   
   // input only fields.
@@ -236,11 +311,8 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   for( list< FieldDBElement * >::iterator i = input_only_fields.begin();
        i != input_only_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    wxPGProperty *p = getPropertyFromField( f );
-    PropertyUpdater *updater = new PropertyUpdater(p);
-    f->route( updater );
-    property_update_fields.push_back( updater );
-    if( p ) FieldValuesGrid->Append( p );
+    Field *default_f = (*i)->getField( default_values_node );
+    setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
   }
   
   // if PythonScript node add top-level fields.
@@ -298,11 +370,56 @@ void H3DViewerFieldValuesPanelPropGrid::PropertyUpdater::update() {
       property->SetValueFromString( wxString( s.c_str(), wxConvUTF8 ) );
     }
   }
+
+  // Set all properties that are different from default value to be red.
+  if( isDefaultValue( f ) ) {
+    property->SetTextColour( *wxBLACK );
+  } else {
+    property->SetTextColour( *wxRED );
+  }
+
 }
+
+bool H3DViewerFieldValuesPanelPropGrid::PropertyUpdater::isDefaultValue( Field *f ) {
+  // if non-existing default values we treat the value as a default value.
+  if( default_value.get() == NULL || default_value_size == 0 ) {
+    return true;
+  }
+
+  unsigned char *value = NULL;
+  unsigned int value_size = 0;
+
+ if( SFieldClass *sfield = dynamic_cast< SFieldClass * >( f ) ) {
+   if( SFString *sfstring = dynamic_cast< SFString * > ( f ) ) {
+     // the getValueAsVoidPtr function does not work well with
+     // SFString fields so do a special case for that type.
+     return sfstring->getValue() == default_value.get();
+   } else {
+     unsigned int data_size = sfield->valueTypeSize();
+     value = new unsigned char[ data_size ];
+     value_size = sfield->getValueAsVoidPtr( value, data_size );
+   }
+ } else if( MFieldClass *mfield = dynamic_cast< MFieldClass * >( f ) ) {
+    unsigned int data_size = mfield->valueTypeSize() * mfield->size();
+    unsigned int nr_elements;
+    value = new unsigned char[ data_size ];
+    value_size = mfield->getValueAsVoidPtr( value, nr_elements, data_size );
+  } 
+
+  if( value_size != default_value_size ) return false;
+
+  for( unsigned int i = 0; i < value_size; i++ ) {
+    if( value[i] != default_value.get()[i] ) return false;
+  }
+  
+  return true;
+} 
+
 
 wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
                                                                         const string &custom_field_name ) {
   
+  wxPGProperty *property = NULL;
   
   X3DTypes::X3DType x3d_type = f->getX3DType();
   if( x3d_type == X3DTypes::SFNODE ) {
@@ -334,28 +451,86 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
           choices.Add( wxString( (*i).c_str(), wxConvUTF8 ), index++ );
         }
         
-        wxEnumProperty *p = new wxEnumProperty( field_name.c_str(), wxPG_LABEL, choices );
-        return p;
+        property = new wxEnumProperty( field_name.c_str(), wxPG_LABEL, choices );
       } else {
-        return new wxLongStringProperty( field_name.c_str(), wxPG_LABEL );
+        property = new H3DLongStringProperty( false, field_name.c_str(), wxPG_LABEL );
       }
     } else if( x3d_type == X3DTypes::MFSTRING ) {
-      return new wxArrayStringProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxArrayStringProperty(field_name.c_str(), wxPG_LABEL);
     } else if( x3d_type == X3DTypes::SFBOOL ) {
-      return new wxBoolProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxBoolProperty(field_name.c_str(), wxPG_LABEL);
     } else if( x3d_type == X3DTypes::SFINT32  ) {
-      return new wxIntProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxIntProperty(field_name.c_str(), wxPG_LABEL);
+      if( f->getAccessType() == Field::INPUT_OUTPUT ||
+	  f->getAccessType() == Field::INPUT_ONLY ) {
+	property->SetEditor( "SpinCtrl" );
+      }
     } else if( x3d_type == X3DTypes::SFFLOAT || x3d_type == X3DTypes::SFDOUBLE || x3d_type == X3DTypes::SFTIME  ) {
       //wxPG_FLOAT_PRECISION
-      return new wxFloatProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxFloatProperty(field_name.c_str(), wxPG_LABEL);
     } else if( x3d_type == X3DTypes::SFCOLOR ) {
-      return new wxColourProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxColourProperty(field_name.c_str(), wxPG_LABEL);
     } else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
-      return new wxLongStringProperty( field_name.c_str(), wxPG_LABEL );
+      property = new H3DLongStringProperty( false, field_name.c_str(), wxPG_LABEL );
     }
   }
 
-  return NULL;
+  if( property &&
+      (f->getAccessType() == Field::INITIALIZE_ONLY ||
+       f->getAccessType() == Field::OUTPUT_ONLY ) ) {
+    if( H3DLongStringProperty *lp = dynamic_cast< H3DLongStringProperty * >( property ) ) {
+      lp->setReadOnlyDialog( true );
+    } else {
+      property->ChangeFlag( wxPG_PROP_READONLY, true );
+    }
+  }
+
+  return property;
+}
+
+void H3DViewerFieldValuesPanelPropGrid::setupProperty( wxPropertyGrid *FieldValuesGrid,
+						       Field *f,
+						       Field *default_f,
+						       H3DUtil::AutoPtrVector< H3D::Field > &property_update_fields ) {
+
+  void *default_value = NULL;
+  unsigned int default_value_size = 0;
+  
+  if( MFieldClass *mfield = dynamic_cast< MFieldClass * >( default_f ) ) {
+    // TODO: MFString does not work with getValueAsVoidPtr. Do special case or fix getValueAsVoidPtr.
+    if( !dynamic_cast< MFString * >( default_f ) ) {
+      unsigned int data_size = mfield->valueTypeSize() * mfield->size();
+      unsigned int nr_elements;
+      default_value = new unsigned char[ data_size ];
+      default_value_size = mfield->getValueAsVoidPtr( default_value, nr_elements, data_size );
+    }
+  } else  if( SFieldClass *sfield = dynamic_cast< SFieldClass * >( default_f ) ) {
+    if( SFString *sfstring = dynamic_cast< SFString * > ( f ) ) {
+      // the getValueAsVoidPtr function does not work well with
+      // SFString fields so do a special case for that type.
+      const string &s = sfstring->getValue();
+      default_value_size = s.size()+ 1;
+      default_value = new char[ default_value_size ];
+      strcpy( (char *) default_value, s.c_str() );
+    } else {
+      unsigned int data_size = sfield->valueTypeSize();
+      default_value = new unsigned char[ data_size ];
+      default_value_size = sfield->getValueAsVoidPtr( default_value, data_size );
+    }
+  }
+  
+  wxPGProperty *p = getPropertyFromField( f );
+
+  PropertyUpdater *updater = new PropertyUpdater(p, default_value, default_value_size );
+  f->route( updater );
+
+  property_update_fields.push_back( updater );
+
+  if(p) {
+    FieldValuesGrid->Append( p );
+    FieldValuesGrid->GetEditorTextCtrl();
+    FieldValuesGrid->GetEditorControl();
+  }
 }
 
 #endif // HAVE_WXPROPGRID
