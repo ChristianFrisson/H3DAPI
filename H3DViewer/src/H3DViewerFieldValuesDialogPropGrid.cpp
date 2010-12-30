@@ -168,21 +168,13 @@ void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromNode( Node *n ) {
 
 
 void H3DViewerFieldValuesPanelPropGrid::OnIdle( wxIdleEvent& event ) {
-  TimeStamp now;
   if( now - last_fields_update > 0.25 ) {
-    TimeStamp t1;
     displayFieldsFromNode( displayed_node.get() );
     last_fields_update = now;
-    TimeStamp t2;
     for( unsigned int i = 0; i < property_update_fields.size(); i++ ) {
       property_update_fields[i]->upToDate();
     }
-    TimeStamp t3;
-    Console(4) << t2 - t1 << " " << t3-t2 << endl;
-    
   }
-  TimeStamp after;
-  //Console(4) << after - now << endl;
 }
 
 void H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged( wxPropertyGridEvent& event ) {
