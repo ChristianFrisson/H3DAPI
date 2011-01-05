@@ -129,11 +129,19 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   normalMapCoordSpace->addValidValue( "OBJECT" );
   normalMapCoordSpace->addValidValue( "TANGENT" );
   normalMapCoordSpace->setValue( "OBJECT" );
-  
   normalMapMatrix->setValue( Matrix4f( 2, 0, 0, -1,
                                        0, 2, 0, -1,
                                        0, 0, 2, -1,
                                        0, 0, 0, 1 ) );
+
+  backNormalMapCoordSpace->addValidValue( "OBJECT" );
+  backNormalMapCoordSpace->addValidValue( "TANGENT" );
+  backNormalMapCoordSpace->setValue( "OBJECT" );
+
+  backNormalMapMatrix->setValue( Matrix4f( 2, 0, 0, -1,
+                                           0, 2, 0, -1,
+                                           0, 0, 2, -1,
+                                           0, 0, 0, 1 ) );
 
   ambientMap->route( displayList, id );
   diffuseMap->route( displayList, id );
@@ -744,12 +752,14 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
 
   static bool requires_tangents;
 
-  ti.setUserData( "shaderRequiresTangents", &requires_tangents );
-
   requires_tangents = 
     (normalMap->getValue() && normalMapCoordSpace->getValue() == "TANGENT" ) || 
     (backNormalMap->getValue() && backNormalMapCoordSpace->getValue() == "TANGENT" );
-  
+
+   if( requires_tangents ) {
+     ti.setUserData( "shaderRequiresTangents", &requires_tangents );
+   }
+
   // the shaderRequiresTangents entry is set to false in 
   // X3DShapeNode::traverseSG in order for it to only be active for one
   // geometry.
