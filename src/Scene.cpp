@@ -229,6 +229,9 @@ void Scene::idle() {
     last_traverseinfo = ti;
   }
 
+  // call the callback functions added during callback.
+  last_traverseinfo->callPostTraverseCallbacks();
+
   // add the head light to shadow casting nodes if it is active.
   if( !shadow_caster->object->empty() ) {
     bool head_light = true;
@@ -252,7 +255,6 @@ void Scene::idle() {
       shadow_caster->light->push_back( light );
     }
   }
-
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
        w != window->end(); w++ ) {
@@ -261,7 +263,6 @@ void Scene::idle() {
                        last_traverseinfo->getMultiPassTransparency() );
     window->render( static_cast< X3DChildNode * >( sceneRoot->getValue() ) );
   }
-
   // update the eventSink
   eventSink->upToDate();
 
