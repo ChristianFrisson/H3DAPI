@@ -138,6 +138,8 @@ void H3DGeneratedShaderNode::buildShader() {
     sv << "attribute " << attributes[i].type << " " << attributes[i].name << ";" << endl; 
   }
 
+  sv << uniform_string << endl;
+
   sv << function_string << endl;
 
   sv << 

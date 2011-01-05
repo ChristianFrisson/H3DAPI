@@ -99,6 +99,25 @@ string ComposedGeneratedShader::addUniformFields( ComposedShader *shader  ) {
   return s.str();
 }
 
+/// Traverse the scene-graph.
+void ComposedGeneratedShader::traverseSG( TraverseInfo &ti ) {
+ // vertex shader
+  const NodeVector &v = vertexShaders->getValue();
+  for( unsigned int i = 0; i < v.size(); i++ ) {
+    if( v[i] ) {
+      v[i]->traverseSG( ti );
+    }
+  }
+
+  // fragment shader
+  const NodeVector &c = fragmentShaders->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    if( c[i] ) {
+
+    }
+  }
+}
+
 string ComposedGeneratedShader::getFunctionShaderString() {
   stringstream s;
 

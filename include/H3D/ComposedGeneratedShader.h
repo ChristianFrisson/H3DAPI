@@ -89,6 +89,8 @@ namespace H3D {
                              Inst< MFGeneratedFragmentShaderNode > _fragmentShaders = 0,
                              Inst< MFGeneratedVertexShaderNode   > _vertexShaders = 0 );
     
+    /// Traverse the scene-graph.
+    virtual void traverseSG( TraverseInfo &ti );
  
     /// The fragmentShaders field specifies a number of H3DGeneratedFragmentShaderNode
     /// instances that build up the fragment shader. Multiple
@@ -108,7 +110,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
-    /// \dotfile ComposedGeneratedShader_fragmentShaders.dot
+    /// \dotfile ComposedGeneratedShader_vertexShaders.dot
     auto_ptr< MFGeneratedVertexShaderNode > vertexShaders;
 
     /// The H3DNodeDatabase for this node.

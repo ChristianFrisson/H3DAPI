@@ -157,6 +157,15 @@ string MultiRenderTargetShader::getFragmentShaderString() {
   return s.str();
 }
 
+/// Traverse the scene-graph.
+void MultiRenderTargetShader::traverseSG( TraverseInfo &ti ) {
+  const NodeVector &c = shaders->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    if( c[i] ) {
+      c[i]->traverseSG( ti );
+    }
+  }
+}
 
 
 

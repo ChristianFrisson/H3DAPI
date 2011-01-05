@@ -455,6 +455,16 @@ string ShaderCombiner::getFragmentShaderString() {
 }
 
 
+/// Traverse the scene-graph.
+void ShaderCombiner::traverseSG( TraverseInfo &ti ) {
+  const NodeVector &c = shaders->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    if( c[i] ) {
+      c[i]->traverseSG( ti );
+    }
+  }
+}
+
 
 
 

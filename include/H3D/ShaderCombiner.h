@@ -158,6 +158,9 @@ namespace H3D {
 		    Inst< SFFloat      > _alphaArg0Value = 0,
 		    Inst< SFFloat      > _alphaArg1Value = 0 );
     
+
+    /// Traverse the scene-graph.
+    virtual void traverseSG( TraverseInfo &ti );
  
     /// The shaders field specifies a number of H3DGeneratedFragmentShaderNode
     /// instances that are to be combined.

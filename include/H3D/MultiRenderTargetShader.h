@@ -77,6 +77,9 @@ namespace H3D {
                              Inst< MFString > _vertexShaderString = 0,
                              Inst< MFGeneratedFragmentShaderNode > _shaders = 0);
 
+    /// Traverse the scene-graph.
+    virtual void traverseSG( TraverseInfo &ti );
+
     /// The shaders field specify the shaders to use for each render target. The
     /// first shader maps to render target 0, which is the same as the first color
     /// buffer in a FrameBufferTextureGenerator and so on.    
