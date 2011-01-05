@@ -477,6 +477,12 @@ namespace H3D {
     virtual void setupViewMatrix( EyeMode eye_mode,
                                   StereoInfo * stereo_info = 0 ); 
 
+
+    /// Gets the viewMatrix for this viewpoint, i.e. the transformation
+    /// matrix from world coordinates to view coordinates.
+    virtual Matrix4f getViewMatrix( EyeMode eye_mode,
+                                    StereoInfo * stereo_info = 0 );
+
     /// True if this viewpoint node exists outside a ViewpointGroup
     inline bool isTopLevel() {
       return is_top_level;

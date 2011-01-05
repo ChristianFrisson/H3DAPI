@@ -424,3 +424,20 @@ void X3DViewpointNode::setupViewMatrix( EyeMode eye_mode,
   glMultMatrixf( vp_inv_transform );
 
 }
+
+
+Matrix4f X3DViewpointNode::getViewMatrix( EyeMode eye_mode,
+                                          StereoInfo * stereo_info ) {
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  glLoadIdentity();
+  setupViewMatrix( eye_mode, stereo_info );
+  GLfloat mv[16];
+  glGetFloatv( GL_MODELVIEW_MATRIX, mv );
+  H3D::Matrix4f m( mv[0], mv[4], mv[8], mv[12],
+                   mv[1], mv[5], mv[9], mv[13],
+                   mv[2], mv[6], mv[10], mv[14],
+                   mv[3], mv[7], mv[11], mv[15] );
+  glPopMatrix();
+  return m;
+}
