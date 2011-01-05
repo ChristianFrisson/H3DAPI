@@ -37,7 +37,7 @@ using namespace H3D;
 
 void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
   shape->ref();
-  for( size_t i = 0; i < haptic_shapes.size(); i++ ) {
+  for( unsigned int i = 0; i < haptic_shapes.size(); i++ ) {
     if( hapticsEnabled(i) ) {
       if( shape->getShapeId() == -1 ) {
         X3DGeometryNode *geometry = 
@@ -54,7 +54,7 @@ void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
 
 void TraverseInfo::addForceEffectToAll( HAPI::HAPIForceEffect *effect ) {
   effect->ref();
-  for( size_t i = 0; i < haptic_effects.size(); i++ ) {
+  for( unsigned int i = 0; i < haptic_effects.size(); i++ ) {
     if( hapticsEnabled(i) ) {
       haptic_effects[i].push_back( effect );
     }
@@ -105,3 +105,9 @@ void TraverseInfo::addHapticShape( int device_index,
   }
 }
 
+void TraverseInfo::callPostTraverseCallbacks() {
+  for( CallbackList::iterator i = post_traverse_callbacks.begin();
+       i != post_traverse_callbacks.end(); i++ ) {
+    (*i).first( *this, (*i).second );
+  }
+}

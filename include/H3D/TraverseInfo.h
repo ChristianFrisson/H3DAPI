@@ -424,7 +424,19 @@ namespace H3D {
         return -1;
       }
     }
+
+    /// Callback function type.
+    typedef void (*CallbackFunc)(TraverseInfo &ti, void *data); 
+
+    /// Adds a callback function that will be called after the entire scene 
+    /// has been traversed 
+    inline void addPostTraverseCallback( CallbackFunc func, void *data ) {
+      post_traverse_callbacks.push_back( make_pair( func, data ) );
+    }
       
+    /// Call all functions added by the addPostTraverseCallback function.
+    void callPostTraverseCallbacks();
+
     /// Used to get all the X3DLightNodes that are global.
     typedef AutoRefVector< RefCountedClass > RefCountedVector;
     RefCountedVector x3dlightnode_vector;
@@ -440,6 +452,10 @@ namespace H3D {
     };
     stack< TransformInfo > transform_stack;
     
+    typedef std::list< std::pair< CallbackFunc, void * > > CallbackList;
+    // A list of the callback functions to run after scene traversal.
+    CallbackList post_traverse_callbacks;
+
     unsigned int current_layer;
     H3DSurfaceNode *current_surface;
     vector< H3DHapticsDevice * > haptics_devices;
