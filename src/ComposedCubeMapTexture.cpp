@@ -82,6 +82,7 @@ void ComposedCubeMapTexture::render() {
                << "by your graphics card. ComposedCubeMapTexture node cannot "
                << "be used." << endl; 
   } else {
+    glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
     if( !cube_map_id ) {
       glGenTextures( 1, &cube_map_id );
     }
