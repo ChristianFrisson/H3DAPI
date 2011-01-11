@@ -37,7 +37,7 @@ H3DNodeDatabase ShaderCombiner::database(
                                    "ShaderCombiner", 
                                    &newInstance< ShaderCombiner >,
                                    typeid( ShaderCombiner ),
-                                   &H3DGeneratedShaderNode::database );
+                                   &H3DGeneratedFragmentShaderNode::database );
 
 namespace ShaderCombinerInternals {
   FIELDDB_ELEMENT( ShaderCombiner, shaders, INPUT_OUTPUT );
@@ -79,10 +79,10 @@ ShaderCombiner::ShaderCombiner( Inst< DisplayList  > _displayList,
 				Inst< SFFloat      > _alphaValue,
 				Inst< SFFloat      > _alphaArg0Value,
 				Inst< SFFloat      > _alphaArg1Value ) :
-  H3DGeneratedShaderNode( _displayList, _metadata, _isSelected, 
-                          _isValid, _activate, _language, _parts, 
-                          _suppressUniformWarnings, _fragmentShaderString, 
-                          _vertexShaderString ),
+  H3DGeneratedFragmentShaderNode( _displayList, _metadata, _isSelected, 
+				  _isValid, _activate, _language, _parts, 
+				  _suppressUniformWarnings, _fragmentShaderString, 
+				  _vertexShaderString ),
   shaders( _shaders ),
   function( _function ),
   arg0Modifier( _arg0Modifier ),
@@ -403,8 +403,11 @@ string ShaderCombiner::getFragmentShaderString() {
 
   if( c.empty() ) return "";
 
-  s << "    vec4 v0 = vec4(0.0, 0.0, 0.0, 0.0); " << endl;
-  s << "    vec4 v1 = vec4(0.0, 0.0, 0.0, 0.0); " << endl;
+  string v0_string = uniqueShaderName( "v0" );
+  string v1_string = uniqueShaderName( "v1" );
+
+  s << "    vec4 " << v0_string << " = vec4(0.0, 0.0, 0.0, 0.0); " << endl;
+  s << "    vec4 " << v1_string << " = vec4(0.0, 0.0, 0.0, 0.0); " << endl;
 
   H3DGeneratedFragmentShaderNode *fs = 
     static_cast< H3DGeneratedFragmentShaderNode * >( c[0] );
@@ -420,36 +423,36 @@ string ShaderCombiner::getFragmentShaderString() {
   if( fs ) {
     s << "   { " << endl;
     s << fs->getFragmentShaderString() << endl;
-    s << "     v0 = generated_color; " << endl;   
+    s << "     " << v0_string << " = generated_color; " << endl;   
     s << "  } " << endl;
   }
 
   if( c.size() == 1 ) {
-    s << applyModifier( "v0", m0, uniqueShaderName( "arg0Value" ) ) << endl;   
-    s << applyAlphaModifier( "v0", am0, uniqueShaderName( "alphaArg0Value" ) ) << endl;   
+    s << applyModifier( v0_string, m0, uniqueShaderName( "arg0Value" ) ) << endl;   
+    s << applyAlphaModifier( v0_string, am0, uniqueShaderName( "alphaArg0Value" ) ) << endl;   
   }
 
   for( unsigned int i = 1; i < c.size(); i++ ) {
     s << "   { " << endl;
     if( c[i] ) {
 
-      s << applyModifier( "v0", m0, uniqueShaderName( "arg0Value" ) ) << endl;   
-      s << applyAlphaModifier( "v0", am0, uniqueShaderName( "alphaArg0Value" ) ) << endl;   
+      s << applyModifier( v0_string, m0, uniqueShaderName( "arg0Value" ) ) << endl;   
+      s << applyAlphaModifier( v0_string, am0, uniqueShaderName( "alphaArg0Value" ) ) << endl;   
 
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
       s << fs->getFragmentShaderString();
-      s << "     v1 = generated_color; " << endl;   
-      s << "     " << applyModifier( "v1", m1, uniqueShaderName( "arg1Value" ) ) << endl;
-      s << "     " << applyAlphaModifier( "v1", am1, uniqueShaderName( "alphaArg1Value" ) ) << endl;
-      s << "     v0.rgb = " << combineFunction( "v0.rgb", "v1.rgb", f, uniqueShaderName("value" ) ) << ";" << endl; 
-      s << "     v0.a = " << combineFunction( "v0.a", "v1.a", af, uniqueShaderName("alphaValue" ) ) << ";" << endl; 
+      s << "     " << v1_string << " = generated_color; " << endl;   
+      s << "     " << applyModifier( v1_string, m1, uniqueShaderName( "arg1Value" ) ) << endl;
+      s << "     " << applyAlphaModifier( v1_string, am1, uniqueShaderName( "alphaArg1Value" ) ) << endl;
+      s << "     " << v0_string << ".rgb = " << combineFunction( v0_string + ".rgb", v1_string + ".rgb", f, uniqueShaderName("value" ) ) << ";" << endl; 
+      s << "     " << v0_string << ".a = " << combineFunction( v0_string + ".a", v1_string + ".a", af, uniqueShaderName("alphaValue" ) ) << ";" << endl; 
 
     }
     s << "  } " << endl;
   }
 
-  s << "   generated_color = v0; " << endl;
+  s << "   generated_color = " << v0_string << "; " << endl;
 
   return s.str();
 }

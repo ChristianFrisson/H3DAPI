@@ -122,7 +122,7 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile ShaderCombiner.dot
   class H3DAPI_API ShaderCombiner : 
-    public H3DGeneratedShaderNode {
+    public H3DGeneratedFragmentShaderNode {
   public:
   
     typedef DependentMFNode< H3DGeneratedFragmentShaderNode, 
