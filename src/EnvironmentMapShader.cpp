@@ -43,6 +43,7 @@ H3DNodeDatabase EnvironmentMapShader::database(
 namespace EnvironmentMapShaderInternals {
   FIELDDB_ELEMENT( EnvironmentMapShader, environmentMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( EnvironmentMapShader, fresnel, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( EnvironmentMapShader, type, INPUT_OUTPUT );
 }
 
 EnvironmentMapShader::EnvironmentMapShader( Inst< DisplayList  > _displayList,
@@ -56,23 +57,30 @@ EnvironmentMapShader::EnvironmentMapShader( Inst< DisplayList  > _displayList,
                                             Inst< MFString > _fragmentShaderString,
                                             Inst< MFString > _vertexShaderString,
                                             Inst< SFEnvironmentTextureNode > _environmentMap,
-                                            Inst< SFFloat      > _fresnel ) :
+                                            Inst< SFFloat      > _fresnel,
+                                            Inst <SFString     > _type ) :
   H3DGeneratedFragmentShaderNode( _displayList, _metadata, _isSelected, 
                                   _isValid, _activate, _language, _parts, 
                                   _suppressUniformWarnings, _fragmentShaderString,
                                   _vertexShaderString ),
 
   environmentMap( _environmentMap ),
-  fresnel( _fresnel ) {
+  fresnel( _fresnel ),
+  type( _type ) {
   type_name = "EnvironmentMapShader";
   database.initFields( this );
 
   fresnel->setValue( 0 );
+  type->addValidValue( "GLOBAL_SPACE" );
+  type->addValidValue( "VIEW_SPACE" );
+  type->setValue( "GLOBAL_SPACE" );
 
   environmentMap->route( displayList, id );
   fresnel->route( displayList, id );
+  type->route( displayList, id );
 
   fresnel->route( rebuildShader, id );
+  type->route( rebuildShader, id );
 }
 
 /// Get the varying variables used by the shader generator.
@@ -102,9 +110,19 @@ string EnvironmentMapShader::getFragmentShaderString() {
     s << "    vec3 eye_pos_local = " << uniqueShaderName( "eye_pos_local" ) << ";" << endl;
     s << "    vec3 vertex_local = " << uniqueShaderName( "vertex_local" ) << ";" << endl;
     s << "    vec3 eye_vec_local = normalize(vertex_local-eye_pos_local); " << endl;    
+    s << "    vec3 reflection_vector_local = reflect( eye_vec_local, normal_local); " << endl;
 
+    const string &t = type->getValue();
+    if( t == "VIEW_SPACE" ) {
+      s << "    vec3 tex_coord = gl_NormalMatrix * reflection_vector_local; " << endl;
+    } else {
+      if( t != "GLOBAL_SPACE" ) {
+        Console(4) << "Invalid type: \"" << t << "\" in EnvironmentMapShader. Using \"GLOBAL_SPACE\" instead. " << endl;
+      }
+      s << "    vec3 tex_coord = reflection_vector_local; " << endl;
+    }
     s << "    vec4 env_color = textureCube( " << uniqueShaderName( "environment_map" ) 
-      << ", reflect( eye_vec_local, normal_local)  ); " << endl;
+      << ", tex_coord  ); " << endl;
 
     H3DFloat r = fresnel->getValue();
     if( r > (H3DFloat) 0.0 ) {
