@@ -145,6 +145,45 @@ namespace H3D {
   ///   compression.  
   /// - "NICEST"  Select the compression mode that produces the nicest effect.
   ///
+  /// The textureCompareMode field specifies what texture compare
+  /// function to use. Texture compare is used to compare the 
+  /// R texture coordinates to the texture value and return 
+  /// 1 if the test succeeds and textureCompareFailValue on fail.
+  /// The output of a texture lookup with this enabled will 
+  /// there for only return 1 or textureCompareFailValue depending
+  /// on the test. The original texture value is only used for the
+  /// test. The normal usage of this is when using shadow mapping
+  /// to determine if a fragment is in shadow or not.
+  /// 
+  /// The valid values are:
+  /// <table>
+  /// <tr><td>"NONE"</td><td>No texture compare is done. Texture works as 
+  /// normal.</td></tr>
+  /// <tr><td>"GEQUAL"</td><td>Output texture value is 1 if R texture 
+  /// coordinate >= original texture value, textureCompareFailValue otherwise.</td> 
+  /// <tr><td>"LEQUAL"</td><td>Output texture value is 1 if R texture 
+  /// coordinate <= original texture value, textureCompareFailValue otherwise.</td> 
+  /// </table>
+  ///
+  /// The textureCompareFailValue contains the value to use as texture
+  /// output when the test in textureCompareMode fails.
+  ///
+  /// The textureType specifies what texture target type
+  /// should be used for the texture. This can affect how texture
+  /// values are interpolated and how texture coordinates are 
+  /// used to look up into the texture.
+  /// 
+  /// The valid values are:
+  /// <table>
+  /// <tr><td>"NORMAL"</td><td>GL_TEXTURE_2D for 2d textures and GL_TEXTURE_3D for 3d 
+  /// textures.</td></tr>
+  /// <tr><td>"2D_RECTANGLE"</td><td>GL_TEXTURE_RECTANGLE. Only valid for 2D textures. 
+  /// Make the texture lookup in pixel space instead of as normal with normalized
+  /// coordinates. E.g. tex coord (4,5) will look up the pixel with that index directly</td> </tr>
+  /// <tr><td>"2D_ARRAY"</td><td>GL_TEXTURE_2D_ARRAY. Only valid for 3D textures and together with shaders. 
+  /// Texture is a stack of 2D images where the R component specifies the
+  /// index of the 2D image to use. </td> </tr>
+  /// </table>
   ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/TextureProperties.x3d">TextureProperties.x3d</a>
@@ -170,13 +209,21 @@ namespace H3D {
                        Inst< SFFloat > _texturePriority        = 0,
                        Inst< SFBool  > _generateMipMaps      = 0,
                        Inst< SFVec4f > _textureTransferScale = 0,
-                       Inst< SFVec4f > _textureTransferBias  = 0 );
+                       Inst< SFVec4f > _textureTransferBias  = 0,
+                       Inst< SFString > _textureCompareMode = 0,
+                       Inst< SFFloat  > _textureCompareFailValue = 0,
+                       Inst< SFString > _textureType        = 0 );
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "textureProperties".
     virtual string defaultXMLContainerField() {
       return "textureProperties";
     }
+
+    /// Render all OpenGL texture properties that are set by glTexParamter
+    /// calls for the given texture_target.
+    virtual void renderTextureProperties( GLenum texture_target );
+
 
     /// The anisotropicDegree field describes the minimum degree of anisotropy
     /// to account for in texture filtering. A value of 1 implies no
@@ -320,8 +367,67 @@ namespace H3D {
     /// TextureProperties generates an event
     auto_ptr< Field > propertyChanged;
 
+    /// The textureCompareMode field specifies what texture compare
+    /// function to use. Texture compare is used to compare the 
+    /// R texture coordinates to the texture value and return 
+    /// 1 if the test succeeds and textureCompareFailValue on fail.
+    /// The output of a texture lookup with this enabled will 
+    /// there for only return 1 or textureCompareFailValue depending
+    /// on the test. The original texture value is only used for the
+    /// test. The normal usage of this is when using shadow mapping
+    /// to determine if a fragment is in shadow or not.
+    /// 
+    /// The valid values are:
+    /// <table>
+    /// <tr><td>"NONE"</td><td>No texture compare is done. Texture works as 
+    /// normal.</td></tr>
+    /// <tr><td>"GEQUAL"</td><td>Output texture value is 1 if R texture 
+    /// coordinate >= original texture value, textureCompareFailValue otherwise.</td> 
+    /// <tr><td>"LEQUAL"</td><td>Output texture value is 1 if R texture 
+    /// coordinate <= original texture value, textureCompareFailValue otherwise.</td> 
+    /// </table>
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Valid values:</b> "NONE", "GEQUAL", "LEQUAL" \n
+    /// <b>Default value:</b> "NONE" \n
+    ///
+    /// \dotfile TextureProperties_textureCompareMode.dot   
+    auto_ptr< SFString > textureCompareMode;
+
+    /// The textureCompareFailValue contains the value to use as texture
+    /// output when the test in textureCompareMode fails.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    ///
+    /// \dotfile TextureProperties_textureCompareMode.dot  
+    auto_ptr< SFFloat > textureCompareFailValue;
 
 
+    /// The textureType specifies what texture target type
+    /// should be used for the texture. This can affect how texture
+    /// values are interpolated and how texture coordinates are 
+    /// used to look up into the texture.
+    /// 
+    /// The valid values are:
+    /// <table>
+    /// <tr><td>"NORMAL"</td><td>GL_TEXTURE_2D for 2d textures and GL_TEXTURE_3D for 3d 
+    /// textures.</td></tr>
+    /// <tr><td>"2D_RECTANGLE"</td><td>GL_TEXTURE_RECTANGLE. Only valid for 2D textures. 
+    /// Make the texture lookup in pixel space instead of as normal with normalized
+    /// coordinates. E.g. tex coord (4,5) will look up the pixel with that index directly</td> </tr>
+    /// <tr><td>"2D_ARRAY"</td><td>GL_TEXTURE_2D_ARRAY. Only valid for 3D textures and together with shaders. 
+    /// Texture is a stack of 2D images where the R component specifies the
+    /// index of the 2D image to use. </td> </tr>
+    /// </table>
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Valid values:</b> "NORMAL", "2D_RECTANGLE"(if 2d texture), "2D_ARRAY"(if 3d texture) \n
+    /// <b>Default value:</b> "NORMAL" \n
+    ///
+    /// \dotfile TextureProperties_textureType.dot     
+    auto_ptr< SFString > textureType;
+    
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };

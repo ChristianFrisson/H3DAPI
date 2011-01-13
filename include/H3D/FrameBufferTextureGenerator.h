@@ -33,6 +33,7 @@
 #include <H3D/X3DGroupingNode.h>
 #include <H3D/MFString.h>
 #include <H3D/GeneratedTexture.h>
+#include <H3D/X3DViewpointNode.h>
 
 namespace H3D {
 
@@ -71,6 +72,16 @@ namespace H3D {
   /// or not. If true the depthTexture field will contain a texture containing the 
   /// depth buffer.
   ///
+  /// The depthBufferType field determines the precision and type of the depth 
+  /// buffer.
+  /// 
+  /// "DEPTH"  - default depth buffer type for the graphics card.
+  /// "DEPTH16" - 16 bit depth buffer.
+  /// "DEPTH24" - 24 bit depth buffer.
+  /// "DEPTH32" - 32 bit depth buffer.
+  /// "DEPTH32F" - 32 bit floating point depth buffer.
+  ///
+  ///
   /// The outputTextureType field determines the output type of the generated
   /// textures. Valid values: 
   /// 
@@ -98,6 +109,23 @@ namespace H3D {
   /// rendering has taken place already. Since this is a field change value,
   /// it will automatically generate an output event that may be routed.
   ///
+  /// The viewpoint field can be used to define a separatue X3DViewpointNode
+  /// to use when rendering the scene. If NULL, the current active viewpoint is used.
+  ///
+  /// The width and height field is the size of the output textures in pixels. 
+  /// If set to -1 the current default frame buffer width or height is used.
+  ///
+  /// The colorTextureProperties contain the TextureProperties to apply to 
+  /// each generated color texture. They are applied to
+  /// the textures in the same order as colorTextures in sequence. If there are more
+  /// colorTextures than colorTextureProperties the last colorTextureProperty is used
+  /// for all remaining textures. If no TextureProperties are assigned the
+  /// default texture values are used.
+  ///
+  /// The depthTextureProperties contains TextureProperties to apply to the 
+  /// generated depth texture. If no TextureProperties are assigned the
+  /// default texture values are used.
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator.x3d">FrameBufferTextureGenerator.x3d</a>
   ///     ( <a href="examples/FrameBufferTextureGenerator.x3d.html">Source</a> )
@@ -112,7 +140,10 @@ namespace H3D {
   /// \dotfile FrameBufferTextureGenerator.dot
   class H3DAPI_API FrameBufferTextureGenerator : public X3DGroupingNode {
   public:
-        
+
+    typedef TypedSFNode< TextureProperties > SFTexturePropertiesNode;
+    typedef TypedMFNode< TextureProperties > MFTexturePropertiesNode;
+    typedef TypedSFNode< X3DViewpointNode > SFViewpointNode;
     typedef TypedMFNode< X3DTextureNode > MFGeneratedTextureNode;
     typedef TypedSFNode< X3DTextureNode > SFGeneratedTextureNode;
     typedef void (*RenderCallbackFunc)( FrameBufferTextureGenerator *, int i, void * );
@@ -127,11 +158,17 @@ namespace H3D {
                                  Inst< SFVec3f        > _bboxSize        = 0, 
                                  Inst< MFString       > _generateColorTextures = 0,
                                  Inst< SFBool         > _generateDepthTexture  = 0,
-				 Inst< MFGeneratedTextureNode > _colorTextures = 0, 
-				 Inst< SFGeneratedTextureNode > _depthTexture  = 0,
-				 Inst< SFString         > _outputTextureType = 0,
-				 Inst< SFInt32          > _samples = 0,
-				 Inst< SFString         > _update = 0 );
+                                 Inst< MFTexturePropertiesNode > _colorTextureProperties = 0,
+                                 Inst< SFTexturePropertiesNode > _depthTextureProperties = 0,
+                                 Inst< MFGeneratedTextureNode > _colorTextures = 0, 
+                                 Inst< SFGeneratedTextureNode > _depthTexture  = 0,
+                                 Inst< SFString         > _depthBufferType = 0,
+                                 Inst< SFString         > _outputTextureType = 0,
+                                 Inst< SFInt32          > _samples   = 0,
+                                 Inst< SFString         > _update    = 0,
+                                 Inst< SFViewpointNode  > _viewpoint = 0,
+                                 Inst< SFInt32          > _width     = 0,
+                                 Inst< SFInt32          > _height    = 0 );
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -183,6 +220,20 @@ namespace H3D {
     /// <b>Default value:</b> false
     auto_ptr< SFBool > generateDepthTexture;
 
+    /// The TextureProperties to apply to each generated color texture. They are applied to
+    /// the textures in the same order as colorTextures in sequence. If there are more
+    /// colorTextures than colorTextureProperties the last colorTextureProperty is used
+    /// for all remaining textures.
+    ///
+    /// <b>Access type:</b> inputOutput
+    auto_ptr< MFTexturePropertiesNode > colorTextureProperties;
+
+    /// The TextureProperties to apply to the generated depth texture.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> NULL
+    auto_ptr< SFTexturePropertiesNode > depthTextureProperties;
+
     /// The texture nodes generated from color buffers specified in generateColorTextures.
     ///
     /// <b>Access type:</b> outputOnly
@@ -192,6 +243,20 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< SFGeneratedTextureNode > depthTexture;
+    
+    /// The depthBufferType field determines the precision and type of the depth 
+    /// buffer.
+    /// 
+    /// "DEPTH"  - default depth buffer type for the graphics card.
+    /// "DEPTH16" - 16 bit depth buffer.
+    /// "DEPTH24" - 24 bit depth buffer.
+    /// "DEPTH32" - 32 bit depth buffer.
+    /// "DEPTH32F" - 32 bit floating point depth buffer.
+    ///
+    /// <b>Access type:</b> initializeOnly
+    /// <b>Default value:</b> "DEPTH"
+    /// <b>Valid values:</b> "DEPTH", "DEPTH16", "DEPTH24", "DEPTH32", "DEPTH32F"
+    auto_ptr< SFString > depthBufferType;
 
     /// The outputTextureType field determines the output type of the generated
     /// textures. Valid values: 
@@ -234,6 +299,27 @@ namespace H3D {
     /// <b>Valid values:</b> "NONE", "ALWAYS", "NEXT_FRAME_ONLY"
     auto_ptr< SFString > update;
 
+    /// The X3DViewpointNode to use when rendering the scene. If NULL,
+    /// the current active viewpoint is used.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> NULL
+    auto_ptr< SFViewpointNode > viewpoint;
+
+    /// The width of the output textures in pixels. If set to -1 the
+    /// current default frame buffer width is used.
+    ///
+    /// <b>Access type:</b> initializeOnly
+    /// <b>Default value:</b> inputOutput
+    auto_ptr< SFInt32 > width;
+
+    /// The height of the output textures in pixels. If set to -1 the
+    /// current default frame buffer height is used.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> -1
+    auto_ptr< SFInt32 > height;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
     
@@ -249,6 +335,9 @@ namespace H3D {
 
     /// Converts a string to a OpenGL internal texture format.
     GLenum stringToInternalFormat( const string &format_string );
+
+    /// Converts a string to a OpenGL internal depth texture format.
+    GLenum stringToInternalDepthFormat( const string &s );
 
     /// Checks the currently bound fbo for completeness and prints a error message
     /// if something is wrong. True is returned if fbo complete. 

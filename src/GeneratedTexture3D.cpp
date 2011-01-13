@@ -61,6 +61,7 @@ void GeneratedTexture3D::render() {
 
   ensureInitialized();
   glBindTexture(  texture_target, texture_id );
+  renderTextureProperties();
   enableTexturing();
 }
 

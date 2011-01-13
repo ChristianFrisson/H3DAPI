@@ -44,12 +44,17 @@ H3DNodeDatabase FrameBufferTextureGenerator::database(
 namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, generateColorTextures, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, generateDepthTexture, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthBufferType, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, outputTextureType, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, samples, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, update, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTexture, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextures, OUTPUT_ONLY );
-
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, viewpoint, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, width, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTextureProperties, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextureProperties, INITIALIZE_ONLY );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
@@ -79,19 +84,31 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
                                                           Inst< SFVec3f        > _bboxSize,
                                                           Inst< MFString       > _generateColorTextures,
                                                           Inst< SFBool         > _generateDepthTexture,
+                                                          Inst< MFTexturePropertiesNode > _colorTextureProperties,
+                                                          Inst< SFTexturePropertiesNode > _depthTextureProperties,
                                                           Inst< MFGeneratedTextureNode > _colorTextures, 
                                                           Inst< SFGeneratedTextureNode > _depthTexture,
+                                                          Inst< SFString         > _depthBufferType,
                                                           Inst< SFString         > _outputTextureType,
                                                           Inst< SFInt32        > _samples,
-                                                          Inst< SFString       > _update ):
+                                                          Inst< SFString       > _update,
+                                                          Inst< SFViewpointNode > _viewpoint,
+                                                          Inst< SFInt32         > _width,
+                                                          Inst< SFInt32         > _height ):
   X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
   generateDepthTexture( _generateDepthTexture ),
+  colorTextureProperties( _colorTextureProperties ),
+  depthTextureProperties( _depthTextureProperties ),
   colorTextures( _colorTextures ),
   depthTexture( _depthTexture ),
+  depthBufferType( _depthBufferType ),
   outputTextureType( _outputTextureType ),
   samples( _samples ),
   update( _update ),
+  viewpoint( _viewpoint ),
+  width( _width ),
+  height( _height ),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -111,6 +128,15 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   outputTextureType->addValidValue( "2D_ARRAY" );
   outputTextureType->setValue( "2D" );
   samples->setValue( 0 );
+  width->setValue( -1 );
+  height->setValue( -1 );
+
+  depthBufferType->addValidValue( "DEPTH" );
+  depthBufferType->addValidValue( "DEPTH16" );
+  depthBufferType->addValidValue( "DEPTH24" );
+  depthBufferType->addValidValue( "DEPTH32" );
+  depthBufferType->addValidValue( "DEPTH32F" );
+  depthBufferType->setValue( "DEPTH" );
   
   update->addValidValue( "NONE" );
   update->addValidValue( "NEXT_FRAME_ONLY" );
@@ -172,21 +198,29 @@ void FrameBufferTextureGenerator::render()     {
   }
 
   /// Save current state.
-  glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
+  glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT );
 
   /// Make sure all textures and buffers are initialized.
   if( !fbo_initialized ) initializeFBO();
   
   // get the width and height of the buffer in pixels.
-  GLint viewport[4];
-  glGetIntegerv( GL_VIEWPORT, viewport );
-  unsigned int width  = viewport[2];
-  unsigned int height = viewport[3];
-  unsigned int depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
+  unsigned int current_width  = width->getValue();
+  unsigned int current_height = height->getValue();
+
+  if( current_height == -1 || current_width == -1 ) {
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+    if( current_width == -1 )  current_width  = viewport[2];
+    if( current_height == -1 ) current_height = viewport[3];
+  } 
+
+  glViewport( 0 , 0, current_width, current_height );
+
+  unsigned int current_depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
 
   // ensure that all buffers are always of the frame buffer size
-  if( buffers_width != width || buffers_height != height || buffers_depth != depth ) {
-    last_resize_success = resizeBuffers( width, height, depth );
+  if( buffers_width != current_width || buffers_height != current_height || buffers_depth != current_depth ) {
+    last_resize_success = resizeBuffers( current_width, current_height, current_depth );
   }
   
   // Don't do anything if buffer resize had an error.
@@ -210,6 +244,24 @@ void FrameBufferTextureGenerator::render()     {
                << " have update to their values";
   }
 
+  // if a viewpoint has been specified use that instead of what has already 
+  // been set up
+  X3DViewpointNode *vp = viewpoint->getValue();
+  if( vp ) {
+    glMatrixMode( GL_MODELVIEW );
+    glPushMatrix();
+    glLoadIdentity();
+    vp->setupViewMatrix( X3DViewpointNode::MONO );
+    glMatrixMode( GL_PROJECTION );
+    glPushMatrix();
+    glLoadIdentity();
+    vp->setupProjection( X3DViewpointNode::MONO,
+                         current_width,
+                         current_height,
+                         0.01, -1 ); // TODO: calculate near and far plane
+  }
+
+
   if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
     // 2D textures. Render all nodes in children field into the textures.
    
@@ -229,13 +281,13 @@ void FrameBufferTextureGenerator::render()     {
       
       // blit multi sample buffers to textures.
       if( generateDepthTexture->getValue() ) {
-        glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
       }
       
       for( unsigned int i = 0; i < color_ids.size(); i++ ) {
         glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
         glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-        glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
       }
     }
 
@@ -289,18 +341,25 @@ void FrameBufferTextureGenerator::render()     {
         
         // blit multi sample buffers to textures.
         if( generateDepthTexture->getValue() ) {
-          glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         }
         
         for( unsigned int i = 0; i < color_ids.size(); i++ ) {
           glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
           glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-          glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
         }
       }
     }
   }
-  
+
+  if( vp ) {
+    glMatrixMode( GL_PROJECTION );
+    glPopMatrix();
+    glMatrixMode( GL_MODELVIEW );
+    glPopMatrix();
+  }
+
   // reset fbo
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
@@ -336,6 +395,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
         } else {
           tex->ensureInitialized( GL_TEXTURE_2D );
         }
+        depthTextureProperties->route( tex->textureProperties );
         depthTexture->setValue( tex, id );
         depth_id = tex->getTextureId();
       } else {
@@ -343,6 +403,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
           GeneratedTexture3D *tex = new GeneratedTexture3D;
           // make sure the texture id is initialized.
           tex->ensureInitialized( GL_TEXTURE_2D_ARRAY_EXT );
+          depthTextureProperties->route( tex->textureProperties );
           depthTexture->setValue( tex, id );
           depth_id = tex->getTextureId();
         } else if( output_texture_type == "3D" ) {
@@ -380,8 +441,14 @@ void FrameBufferTextureGenerator::initializeFBO() {
       draw_buffers.reset( (GLenum *)malloc( color_texture_types.size() * sizeof( GLenum ) ) ); 
     }
 
+    TextureProperties *tp = NULL;
+
     // initialize color textures.
     for( size_t i = 0; i < nr_color_textures; i++ ) {
+      if( i < colorTextureProperties->size() ) {
+        tp = colorTextureProperties->getValueByIndex( i );
+      }
+
       if( generate_2d ) {
         GeneratedTexture *tex = new GeneratedTexture;
         // make sure the texture id is initialized.
@@ -390,6 +457,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
         } else {
           tex->ensureInitialized( GL_TEXTURE_2D );
         }
+        tex->textureProperties->setValue( tp );
         colorTextures->push_back( tex, id );
         color_ids.push_back( tex->getTextureId() );
       } else {
@@ -400,6 +468,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
         } else {
           tex->ensureInitialized( GL_TEXTURE_3D );
         }
+        tex->textureProperties->setValue( tp );
         colorTextures->push_back( tex, id );
         color_ids.push_back( tex->getTextureId() );
       }
@@ -448,12 +517,14 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     }
   }
 
+  GLenum depth_internal_format = stringToInternalDepthFormat( depthBufferType->getValue() );
+
   if( nr_samples > 0 ) {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
 
     // create multi sample render buffers
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_depth_id );
-    glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, GL_DEPTH_COMPONENT32F, width, height);
+    glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, depth_internal_format, width, height);
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, multi_samples_depth_id);
 
     for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
@@ -484,12 +555,12 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
         
       if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
-        glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, GL_DEPTH_COMPONENT32F, width, height, depth, 0, 
+        glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, depth_internal_format, width, height, depth, 0, 
                      GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0 );
       } else {
-        glTexImage2D( texture_type, 0, GL_DEPTH_COMPONENT32F, width, height, 0, 
+        glTexImage2D( texture_type, 0, depth_internal_format, width, height, 0, 
                       GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                   texture_type, depth_id, 0 );
@@ -497,7 +568,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     }
   } else {
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_id);
-    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT32F,
+    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, depth_internal_format,
                              width, height); 
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                  GL_RENDERBUFFER_EXT, depth_id);
@@ -629,12 +700,51 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
   } else {
     if( s != "RGBA" ) {
       Console(4) << "Warning: Invalid generateColorTextures value: \"" << s 
-                 << "\". Valid values are \"RGBA\" and \"RGBA32F\". Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+                 << "\". Using \"RGBA\" instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
   
   return internal_format;
 }
+
+GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s ) {
+
+  GLint internal_format = GL_DEPTH_COMPONENT;
+
+  if( s == "DEPTH16" ) { 
+    if( GLEW_ARB_depth_texture ) {
+      internal_format = GL_DEPTH_COMPONENT16_ARB;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support dpeth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else if( s == "DEPTH24" ) { 
+    if( GLEW_ARB_depth_texture ) {
+      internal_format = GL_DEPTH_COMPONENT24_ARB;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support dpeth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else if( s == "DEPTH32" ) { 
+    if( GLEW_ARB_depth_texture ) {
+      internal_format = GL_DEPTH_COMPONENT32_ARB;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support dpeth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else if( s == "DEPTH32F" ) { 
+    if( GLEW_ARB_depth_buffer_float ) {
+      internal_format = GL_DEPTH_COMPONENT32F;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support floating point depth textures (ARB_depth_buffer_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  } else {
+    if( s != "DEPTH" ) {
+      Console(4) << "Warning: Invalid depthBufferType value: \"" << s 
+                 << "\". Using \"DEPTH\" instead(in FrameBufferTextureGenerator node). " << endl;
+    }
+  }
+  
+  return internal_format;
+}
+
 
 void FrameBufferTextureGenerator::setRenderCallback( RenderCallbackFunc func, 
                                                      void *args ) {

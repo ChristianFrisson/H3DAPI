@@ -62,7 +62,8 @@ X3DTexture2DNode::X3DTexture2DNode(
   scaleToPowerOfTwo( _scaleToP2 ),
   textureProperties( _textureProp ),
   texture_id( 0 ),
-  texture_unit( GL_TEXTURE0_ARB ) {
+  texture_unit( GL_TEXTURE0_ARB ),
+  texture_target( 0 ) {
 
   type_name = "X3DTexture2DNode";
 
@@ -258,23 +259,26 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
 void X3DTexture2DNode::render()     {
   glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
 
+  GLenum target = getTextureTarget();
+
   Image * i = static_cast< Image * >(image->getValue());
-  if( displayList->hasCausedEvent( image ) ) {
+  if( displayList->hasCausedEvent( image ) || texture_target != target ) {
     
-    if( !image->imageChanged() || texture_id == 0 ) {
+    if( !image->imageChanged() || texture_id == 0 || texture_target != target ) {
       // the image has changed so remove the old texture and install 
       // the new
       glDeleteTextures( 1, &texture_id );
       texture_id = 0;
+      texture_target = target;
       if( i ) {
         texture_id = renderImage( i, 
-                                  GL_TEXTURE_2D, 
+                                  texture_target, 
                                   scaleToPowerOfTwo->getValue() );
        
       }
     } else {
-      glBindTexture(  GL_TEXTURE_2D, texture_id );
-      renderSubImage( i, GL_TEXTURE_2D, 
+      glBindTexture(  texture_target, texture_id );
+      renderSubImage( i, texture_target, 
                       image->xOffset(), image->yOffset(),
                       image->changedWidth(), 
                       image->changedHeight() );
@@ -283,11 +287,10 @@ void X3DTexture2DNode::render()     {
   } else {
     if ( texture_id ) {
       // same texture as last loop, so we just bind it.
-      glBindTexture(  GL_TEXTURE_2D, texture_id );
+      glBindTexture(  texture_target, texture_id );
       enableTexturing();
     }     
   }
-
 
   if( i ) {
     renderTextureProperties();
@@ -297,220 +300,22 @@ void X3DTexture2DNode::render()     {
 void X3DTexture2DNode::renderTextureProperties() {
   TextureProperties *texture_properties = textureProperties->getValue();
   if( texture_properties ) {
-    // anisotropicDegree
-    H3DFloat anisotropic = texture_properties->anisotropicDegree->getValue();
-    if( anisotropic < 1 ) {
-      Console(3) << "Warning: Invalid anisotropicDegree \"" << anisotropic 
-                 << "\". Must be greater that 1.0 (in " << getName()
-                 << ")" << endl;
-        
-    } else {
-      if( GLEW_EXT_texture_filter_anisotropic ) {
-        glTexParameterf(GL_TEXTURE_2D, 
-                        GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic );
-      }
-    }
-    // border color
-    const RGBA &border_color = texture_properties->borderColor->getValue();
-    GLfloat c[4];
-    c[0] = border_color.r;
-    c[1] = border_color.g;
-    c[2] = border_color.b;
-    c[3] = border_color.a;
-    glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, c );
-
-    // boundary modes
-
-    // S
-    const string &s_mode = texture_properties->boundaryModeS->getValue();
-    if( s_mode == "CLAMP" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-    } else if( s_mode == "CLAMP_TO_EDGE" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    } else if( s_mode == "CLAMP_TO_BOUNDARY" ) {
-      if( GLEW_ARB_texture_border_clamp ) {
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 
-                         GL_CLAMP_TO_BORDER );
-      } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
-                   << "supported by your graphics card (in " << getName()
-                   << ")" << endl;
-      }
-    } else if( s_mode == "MIRRORED_REPEAT" ) {
-      if( GLEW_ARB_texture_mirrored_repeat ) {
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, 
-                         GL_MIRRORED_REPEAT_ARB );
-      } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
-                   << "supported by your graphics card (in " << getName()
-                   << ")" << endl;
-      }
-    } else if( s_mode == "REPEAT" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    } else {
-      Console(3) << "Warning: Invalid boundary mode \"" << s_mode 
-                 << "\" in TextureProperties "
-                 << " node for texture node(" << getName() << ")." << endl; 
-    }
-
-    // T
-    const string &t_mode = texture_properties->boundaryModeT->getValue();
-    if( t_mode == "CLAMP" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    } else if( t_mode == "CLAMP_TO_EDGE" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    } else if( t_mode == "CLAMP_TO_BOUNDARY" ) {
-      if( GLEW_ARB_texture_border_clamp ) {
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 
-                         GL_CLAMP_TO_BORDER );
-      } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
-                   << "supported by your graphics card (in " << getName()
-                   << ")" << endl;
-      }
-    } else if( t_mode == "MIRRORED_REPEAT" ) {
-      if( GLEW_ARB_texture_mirrored_repeat ) {
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 
-                         GL_MIRRORED_REPEAT_ARB );
-      } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
-                   << "supported by your graphics card (in " << getName()
-                   << ")" << endl;
-      }
-    } else if( t_mode == "REPEAT" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    } else {
-      Console(3) << "Warning: Invalid boundary mode \"" << t_mode 
-                 << "\" in TextureProperties "
-                 << " node for texture node(" << getName() << ")." << endl; 
-    }
-
-
-    // R
-    const string &r_mode = texture_properties->boundaryModeR->getValue();
-    if( r_mode == "CLAMP" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP );
-    } else if( r_mode == "CLAMP_TO_EDGE" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
-    } else if( r_mode == "CLAMP_TO_BOUNDARY" ) {
-      if( GLEW_ARB_texture_border_clamp ) {
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, 
-                         GL_CLAMP_TO_BORDER );
-      } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
-                   << "supported by your graphics card (in " << getName()
-                   << ")" << endl;
-      }
-    } else if( r_mode == "MIRRORED_REPEAT" ) {
-      if( GLEW_ARB_texture_mirrored_repeat ) {
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, 
-                         GL_MIRRORED_REPEAT_ARB );
-      } else {
-        Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
-                   << "supported by your graphics card (in " << getName()
-                   << ")" << endl;
-      }
-    } else if( r_mode == "REPEAT" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT );
-    } else {
-      Console(3) << "Warning: Invalid boundary mode \"" << r_mode 
-                 << "\" in TextureProperties "
-                 << " node for texture node(" << getName() << ")." << endl; 
-    }
-
-    // magnification filter
-    const string &mag_filter = 
-      texture_properties->magnificationFilter->getValue();
-
-    if( mag_filter == "NEAREST_PIXEL" ||
-        mag_filter == "FASTEST" )
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    else if( mag_filter == "AVG_PIXEL" ||
-             mag_filter == "DEFAULT" ||
-             mag_filter == "NICEST" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    } else  {
-      Console(3) << "Warning: Invalid magnification filter \"" << mag_filter 
-                 << "\" in TextureProperties "
-                 << " node for texture node(" << getName() << ")." << endl; 
-    }
-
-    // minification filter
-    const string &min_filter = 
-      texture_properties->minificationFilter->getValue();
-
-    if( min_filter == "NEAREST_PIXEL" ||
-        min_filter == "FASTEST" )
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    else if( min_filter == "AVG_PIXEL" ||
-             min_filter == "DEFAULT" ||
-             min_filter == "NICEST" ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    } else if( min_filter == "AVG_PIXEL_AVG_MIPMAP") {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-                       GL_LINEAR_MIPMAP_LINEAR );
-    } else if( min_filter == "AVG_PIXEL_NEAREST_MIPMAP") {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-                       GL_LINEAR_MIPMAP_NEAREST );
-    } else if( min_filter == "NEAREST_PIXEL_AVG_MIPMAP") {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-                       GL_NEAREST_MIPMAP_LINEAR );
-    } else if( min_filter == "NEAREST_PIXEL_NEAREST_MIPMAP") {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-                       GL_NEAREST_MIPMAP_NEAREST );
-    } else {
-      Console(3) << "Warning: Invalid minification filter \"" << min_filter 
-                 << "\" in TextureProperties "
-                 << " node for texture node(" << getName() << ")." << endl; 
-    }
-
-    // priority
-    H3DFloat priority = texture_properties->texturePriority->getValue();
-    if( priority < 0 || priority > 1 ) {
-      Console(3) << "Warning: Invalid texturePriority \"" << anisotropic 
-                 << "\". Must be in range [0, 1] (in " << getName()
-                 << ")" << endl;
-        
-    } else {
-      glTexParameterf(GL_TEXTURE_2D, 
-                      GL_TEXTURE_PRIORITY, priority );
-    }
-
-    if( GLEW_ARB_texture_compression ) {
-      // compression
-      const string &compression = 
-        texture_properties->textureCompression->getValue();
-
-      if( compression == "DEFAULT" ) {
-        glHint( GL_TEXTURE_COMPRESSION_HINT_ARB, GL_DONT_CARE );
-      } else if( compression == "FASTEST" ||
-                 compression == "HIGH" ||
-                 compression == "MEDIUM" ) {
-        glHint( GL_TEXTURE_COMPRESSION_HINT_ARB, GL_FASTEST );
-      } else if( compression == "NICEST" ||
-                 compression == "LOW"  ) {
-        glHint( GL_TEXTURE_COMPRESSION_HINT_ARB, GL_NICEST );
-      } else {
-        Console(3) << "Warning: Invalid textureCompression mode \"" 
-                   << compression  << "\" in TextureProperties "
-                   << " node for texture node(" << getName() << ")." << endl; 
-      }
-    }
+    texture_properties->renderTextureProperties( texture_target );
   } else {
     // set up texture parameters 
     if ( repeatS->getValue() )
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+      glTexParameteri( texture_target, GL_TEXTURE_WRAP_S, GL_REPEAT );
     else
-      glTexParameteri( GL_TEXTURE_2D, 
+      glTexParameteri( texture_target, 
                        GL_TEXTURE_WRAP_S, 
                        GL_CLAMP_TO_EDGE );
     if ( repeatT->getValue() )
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+      glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, GL_REPEAT );
     else
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, 
+      glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, 
                        GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   }
 }
 
@@ -550,7 +355,7 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
     glPixelTransferf( GL_ALPHA_BIAS, bias.w );
   }
 
-  glTexSubImage2D( GL_TEXTURE_2D, 0, 
+  glTexSubImage2D( texture_target, 0, 
                    x_offset, y_offset, 
                    width, height, 
                    glPixelFormat( image ),
@@ -563,3 +368,42 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
 }
 
 
+void X3DTexture2DNode::enableTexturing() {
+  glEnable( texture_target );
+  Image * i = static_cast< Image * >(image->getValue());
+  if( i && 
+      ( i->pixelType() == Image::LUMINANCE_ALPHA || 
+	i->pixelType() == Image::RGBA ||
+	i->pixelType() == Image::BGRA ) ) {
+    glEnable( GL_BLEND );
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+}
+
+void X3DTexture2DNode::disableTexturing() {
+  glDisable( texture_target );
+  Image * i = static_cast< Image * >(image->getValue());
+  if( i && 
+      ( i->pixelType() == Image::LUMINANCE_ALPHA || 
+	i->pixelType() == Image::RGBA ||
+	i->pixelType() == Image::BGRA ) ) {
+    glDisable( GL_BLEND );
+  }
+}
+
+
+GLenum X3DTexture2DNode::getTextureTarget() {
+  TextureProperties *texture_properties = textureProperties->getValue();
+  if( texture_properties ) {
+    const string &target_type = texture_properties->textureType->getValue();
+    if( target_type == "RECTANGLE" ) return GL_TEXTURE_RECTANGLE_ARB;
+    else if( target_type == "2DARRAY" ) {
+      Console(3) << "Warning: Invalid textureType \"2DARRAY\" in TextureProperties for "
+		 << "X3DTexture2DNode. \"2DARRAY\" can only be used for 3D textures" << endl;
+    } else {
+      Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
+		 << "X3DTexture2DNode. " << endl;
+    }
+  }
+  return GL_TEXTURE_2D;
+}

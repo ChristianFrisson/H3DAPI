@@ -51,7 +51,7 @@ namespace H3D {
         
     /// Constructor.
     GeneratedTexture3D( Inst< DisplayList > _displayList = 0,
-		      Inst< SFNode>  _metadata = 0 );
+                      Inst< SFNode>  _metadata = 0 );
         
     /// Destructor.
     virtual ~GeneratedTexture3D() {}
@@ -76,9 +76,6 @@ namespace H3D {
   protected:
     /// True of the texture_id parameter has been initialized.
     bool texture_id_initialized;
-
-    /// The OpenGL texture target type for this texture.
-    GLenum texture_target;
   };
 }
 

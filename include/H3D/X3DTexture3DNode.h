@@ -82,31 +82,12 @@ namespace H3D {
     /// Virtual function for making all OpenGL calls that are needed to
     /// enable texturing for the texture.
     ///
-    inline virtual void enableTexturing() {
-      glEnable( GL_TEXTURE_3D );
-      Image * i = static_cast< Image * >(image->getValue());
-      if( i && 
-          ( i->pixelType() == Image::LUMINANCE_ALPHA || 
-            i->pixelType() == Image::RGBA || 
-            i->pixelType() == Image::BGRA ) ) {
-        glEnable( GL_BLEND );
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      }
-    }
+    virtual void enableTexturing();
       
     /// Virtual function for making all OpenGL calls that are needed to
     /// disable texturing for the texture.
     ///
-    inline virtual void disableTexturing() {
-      glDisable( GL_TEXTURE_3D );
-      Image * i = static_cast< Image * >(image->getValue());
-      if( i && 
-          ( i->pixelType() == Image::LUMINANCE_ALPHA || 
-            i->pixelType() == Image::RGBA || 
-            i->pixelType() == Image::BGRA ) ) {
-        glDisable( GL_BLEND );
-      }
-    }
+    virtual void disableTexturing();
 
     /// Get the OpenGL texture id that is used for this texture.
     inline GLuint getTextureId() {
@@ -117,6 +98,9 @@ namespace H3D {
     inline GLuint getTextureUnit() {
       return texture_unit;
     }
+
+    /// Get the OpenGL texture target that is used for this texture.
+    inline GLenum getTextureTarget();
 
     /// Sometimes the texture represents a volume in space, e.g. when
     /// it contains volume data to be rendered. This function returns
@@ -205,6 +189,8 @@ namespace H3D {
     GLuint texture_id;
     /// The OpenGL texture unit that is used to render this texture.
     GLint texture_unit;
+    /// The OpenGL texture target that is used to render this texture.
+    GLenum texture_target; 
   };
 }
 
