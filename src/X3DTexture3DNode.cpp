@@ -386,7 +386,7 @@ GLenum X3DTexture3DNode::getTextureTarget() {
     else if( target_type == "2D_RECTANGLE" ) {
       Console(3) << "Warning: Invalid textureType \"2D_RECTANGLE\" in TextureProperties for "
 		 << "X3DTexture2DNode. \"2D_RECTANGLE\" can only be used for 2D textures" << endl;
-    } else {
+    } else if( target_type != "NORMAL" ) {
       Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
 		 << "X3DTexture3DNode. " << endl;
     }

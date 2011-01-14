@@ -400,7 +400,7 @@ GLenum X3DTexture2DNode::getTextureTarget() {
     else if( target_type == "2DARRAY" ) {
       Console(3) << "Warning: Invalid textureType \"2DARRAY\" in TextureProperties for "
 		 << "X3DTexture2DNode. \"2DARRAY\" can only be used for 3D textures" << endl;
-    } else {
+    } else if( target_type != "NORMAL" ) {
       Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
 		 << "X3DTexture2DNode. " << endl;
     }
