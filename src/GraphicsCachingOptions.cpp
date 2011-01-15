@@ -45,6 +45,7 @@ namespace GraphicsCachingOptionsInternals {
   FIELDDB_ELEMENT( GraphicsCachingOptions, frustumCullingMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsCachingOptions, useDefaultShadows, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsCachingOptions, defaultShadowDarkness, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsCachingOptions, defaultShadowDepthOffset, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsCachingOptions, preferVertexBufferObject, INPUT_OUTPUT );
 }
 
@@ -56,6 +57,7 @@ GraphicsCachingOptions::GraphicsCachingOptions(
                            Inst< SFString > _frustumCullingMode,
                            Inst< SFBool  > _useDefaultShadows,
                            Inst< SFFloat > _defaultShadowDarkness,
+                           Inst< SFFloat > _defaultShadowDepthOffset,
                            Inst< SFBool > _preferVertexBufferObject ) :
   H3DOptionNode( _metadata ),
   useCaching( _useCaching ),
@@ -64,6 +66,7 @@ GraphicsCachingOptions::GraphicsCachingOptions(
   frustumCullingMode( _frustumCullingMode ),
   useDefaultShadows( _useDefaultShadows ),
   defaultShadowDarkness( _defaultShadowDarkness ),
+  defaultShadowDepthOffset( _defaultShadowDepthOffset ),
   preferVertexBufferObject( _preferVertexBufferObject ) {
   
   type_name = "GraphicsCachingOptions";
@@ -78,6 +81,7 @@ GraphicsCachingOptions::GraphicsCachingOptions(
   frustumCullingMode->setValue( "NO_CULLING" );
   useDefaultShadows->setValue( true );
   defaultShadowDarkness->setValue( 0.4f );
+  defaultShadowDepthOffset->setValue( 6 );
   preferVertexBufferObject->setValue( false );
 }
 

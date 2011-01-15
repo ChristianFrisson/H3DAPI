@@ -66,6 +66,15 @@ namespace H3D {
   /// the precision of the depth buffer, with all the problems
   /// that comes with that.
   ///
+  ///  The shadowDepthOffset field controls the z offset of drawn 
+  /// shadow volumes. The z offset will be r * defaultShadowDepthOffset
+  /// where r is the smallest value that is guaranteed to produce a 
+  /// resolvable z offset for a given implementation. If this value is
+  /// set to too small there will be z-fighting between shadow and object
+  /// that casts the shadow(flickering). If this happens increase this value.
+  /// The value needed depends on the precision of the depth buffer.
+  ///
+  ///
   /// The ShadowCaster node is affected by the transform hierarchy
   /// that it is in and all objects and lighs are specified in 
   /// local coordinates.
@@ -84,6 +93,7 @@ namespace H3D {
                   Inst< MFShadowObjectNode > _object = 0,
                   Inst< MFLightNode        > _light = 0,
                   Inst< SFFloat            > _shadowDarkness = 0,
+                  Inst< SFFloat            > _shadowDepthOffset = 0,
                   Inst< DisplayList        > _displayList = 0,
                   Inst< SFString           > _algorithm = 0 );
 
@@ -111,6 +121,18 @@ namespace H3D {
     /// <b>Default value:</b> 0.4 \n
     /// \dotfile ShadowCaster_shadowDarkness.dot
     auto_ptr< SFFloat > shadowDarkness;
+
+    /// The shadowDepthOffset field controls the z offset of drawn 
+    /// shadow volumes. The z offset will be r * defaultShadowDepthOffset
+    /// where r is the smallest value that is guaranteed to produce a 
+    /// resolvable z offset for a given implementation. If this value is
+    /// set to too small there will be z-fighting between shadow and object
+    /// that casts the shadow(flickering). If this happens increase this value.
+    /// The value needed depends on the precision of the depth buffer.
+    ///
+    /// <b>Default value: </b> 6 \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFFloat > shadowDepthOffset;
 
     /// The algorithm field defines what shadow volume algorithm to use.
     /// Possible values are "ZPASS" and "ZFAIL". 

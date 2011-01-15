@@ -680,6 +680,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
       if( shadow_caster ) {
         shadow_caster->shadowDarkness->setValue( graphics_options->defaultShadowDarkness->getValue()  );
+        shadow_caster->shadowDepthOffset->setValue( graphics_options->defaultShadowDepthOffset->getValue()  );
       }
     }
   }

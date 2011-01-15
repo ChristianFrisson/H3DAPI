@@ -43,6 +43,7 @@ namespace ShadowCasterInternals {
   FIELDDB_ELEMENT( ShadowCaster, object, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ShadowCaster, light, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ShadowCaster, shadowDarkness, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ShadowCaster, shadowDepthOffset, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ShadowCaster, algorithm, INPUT_OUTPUT );
 }
 
@@ -51,6 +52,7 @@ ShadowCaster::ShadowCaster(
                            Inst< MFShadowObjectNode > _object,
                            Inst< MFLightNode        > _light,
                            Inst< SFFloat            > _shadowDarkness,
+                           Inst< SFFloat            > _shadowDepthOffset,
                            Inst< DisplayList        > _displayList,
                            Inst< SFString           > _algorithm ) :
   X3DChildNode( _metadata ),
@@ -58,6 +60,7 @@ ShadowCaster::ShadowCaster(
   object( _object ),
   light( _light ),
   shadowDarkness( _shadowDarkness ),
+  shadowDepthOffset( _shadowDepthOffset ),
   algorithm( _algorithm ) {
   type_name = "ShadowCaster";
   database.initFields( this );
@@ -68,6 +71,7 @@ ShadowCaster::ShadowCaster(
   algorithm->addValidValue( "ZFAIL" );
   algorithm->setValue( "ZPASS" );
   shadowDarkness->setValue( 0.4f );
+  shadowDepthOffset->setValue( 6 );
   displayList->setCacheMode( DisplayList::OFF );
 }
 
@@ -109,9 +113,32 @@ void ShadowCaster::render() {
       glCullFace(GL_FRONT);
     }
 
+    // The shadow geometry does not use the exact same rendering function
+    // as the original geometry, since it needs to render triangles facing the
+    // light differently from the ones facing away from the light.
+    // In order to do this the boundTree triangles of the geometry are used.
+    // These triangles have been collected with a HAPI::FeedbackBufferCollector
+    // using OpenGL. Somewhere in this process, possibly in the transformation
+    // from window coordinates to world coordinates(model view matrix seems ok),
+    // the original coordinate used in rendering differs from the coordinate
+    // in the boundTree by some epsilon value due to floating point inaccuracies.
+    // This means that when drawing caps for ZFAIL algorithm, we can get a case
+    // of z-fighting between the original geometry and the shadow geometry,
+    // making the geometry flicker.
+    // 
+    // In order to avoid this we glPolygonOffset to offset the shadow geometry
+    // depth value. The values chosen depends on the scene but according to
+    // Mark_Kilgard in the presentation "Shadow mapping with todays OpenGL hardware"
+    // the values -1, 4 work well most of the time for shadow mapping. We 
+    // noticed however that using the scale part introduces artifacts in the
+    // shadow volumes(look like the gaps between edges) so instead we
+    // do not use the scale and have a default offset of 6 to compensate.
+    glPolygonOffset( 0, shadowDepthOffset->getValue() );
+    glEnable( GL_POLYGON_OFFSET_FILL );
+
     // First Pass. Increase Stencil Value In The Shadow 
     for( MFShadowObjectNode::const_iterator o = object->begin(); 
-	 o != object->end(); o++ ) {
+         o != object->end(); o++ ) {
 
       static_cast< H3DShadowObjectNode * >(*o)->renderShadow( static_cast< X3DLightNode * >(*l), alg == "ZFAIL" );
     }
@@ -126,7 +153,7 @@ void ShadowCaster::render() {
     }
     
     for( MFShadowObjectNode::const_iterator o = object->begin(); 
-	 o != object->end(); o++ ) {
+         o != object->end(); o++ ) {
       static_cast< H3DShadowObjectNode * >(*o)->renderShadow( static_cast< X3DLightNode * >(*l), alg == "ZFAIL" );
     }
 

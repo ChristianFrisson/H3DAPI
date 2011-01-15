@@ -54,6 +54,7 @@ namespace H3D {
                             Inst< SFString > _frustumCullingMode = 0,
                             Inst< SFBool  > _useDefaultShadows = 0,
                             Inst< SFFloat > _defaultShadowDarkness = 0,
+                            Inst< SFFloat > _defaultShadowDepthOffset = 0,
                             Inst< SFBool > _preferVertexBufferObject = 0 );
     
     bool cacheNode( Node *n ) {
@@ -123,6 +124,18 @@ namespace H3D {
     /// <b>Default value: </b> 0.4 \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFFloat > defaultShadowDarkness;
+
+    /// The defaultShadowDepthOffset field controls the z offset of drawn 
+    /// shadow volumes. The z offset will be r * defaultShadowDepthOffset
+    /// where r is the smallest value that is guaranteed to produce a 
+    /// resolvable z offset for a given implementation. If this value is
+    /// set to too small there will be z-fighting between shadow and object
+    /// that casts the shadow(flickering). If this happens increase this value.
+    /// The value needed depends on the precision of the depth buffer.
+    ///
+    /// <b>Default value: </b> 6 \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFFloat > defaultShadowDepthOffset;
 
     /// Controls rendering of certain geometries, such as IndexedTriangleSet.
     /// If true then the affected geometries are rendered using vertex buffer
