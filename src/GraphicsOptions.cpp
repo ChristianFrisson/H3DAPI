@@ -21,35 +21,36 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file GraphicsCachingOptions.cpp
-/// \brief CPP file for GraphicsCachingOptions.
+/// \file GraphicsOptions.cpp
+/// \brief CPP file for GraphicsOptions.
 ///
 //
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsOptions.h>
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-H3DNodeDatabase GraphicsCachingOptions::database( "GraphicsCachingOptions", 
-                                      &(newInstance<GraphicsCachingOptions>),
-                                      typeid( GraphicsCachingOptions ),
-                                      &H3DOptionNode::database );
+H3DNodeDatabase GraphicsOptions::database( "GraphicsOptions", 
+					   "GraphicsCachingOptions", 
+					   &(newInstance<GraphicsOptions>),
+					   typeid( GraphicsOptions ),
+					   &H3DOptionNode::database );
 
-namespace GraphicsCachingOptionsInternals {
-  FIELDDB_ELEMENT( GraphicsCachingOptions, useCaching, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, cachingDelay, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, cacheOnlyGeometries, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, frustumCullingMode, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, useDefaultShadows, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, defaultShadowDarkness, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, defaultShadowDepthOffset, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( GraphicsCachingOptions, preferVertexBufferObject, INPUT_OUTPUT );
+namespace GraphicsOptionsInternals {
+  FIELDDB_ELEMENT( GraphicsOptions, useCaching, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, cachingDelay, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, cacheOnlyGeometries, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, frustumCullingMode, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, useDefaultShadows, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, defaultShadowDarkness, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, defaultShadowDepthOffset, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, preferVertexBufferObject, INPUT_OUTPUT );
 }
 
-GraphicsCachingOptions::GraphicsCachingOptions( 
+GraphicsOptions::GraphicsOptions( 
                            Inst< SFNode>  _metadata,
                            Inst< SFBool  > _useCaching,
                            Inst< SFInt32 > _cachingDelay,
@@ -69,7 +70,7 @@ GraphicsCachingOptions::GraphicsCachingOptions(
   defaultShadowDepthOffset( _defaultShadowDepthOffset ),
   preferVertexBufferObject( _preferVertexBufferObject ) {
   
-  type_name = "GraphicsCachingOptions";
+  type_name = "GraphicsOptions";
   database.initFields( this );
 
   useCaching->setValue( true );

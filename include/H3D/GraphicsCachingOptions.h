@@ -29,133 +29,16 @@
 #ifndef __GRAPHICSCACHINGOPTIONS_H__
 #define __GRAPHICSCACHINGOPTIONS_H__
 
-#include <H3D/H3DOptionNode.h>
-#include <H3D/SFBool.h>
-#include <H3D/SFInt32.h>
-#include <H3D/X3DGeometryNode.h>
+#include <H3D/GraphicsOptions.h>
 
 namespace H3D {
 
   /// \ingroup H3DNodes
   /// \class GraphicsCachingOptions
-  /// \brief Specifies parameters to use for graphical rendering of nodes.
-  ///
-  /// <b>Examples:</b>
-  ///   - <a href="../../../H3DAPI/examples/All/GraphicsCachingOptions.x3d">GraphicsCachingOptions.x3d</a>
-  ///     ( <a href="examples/GraphicsCachingOptions.x3d.html">Source</a> )
-  class H3DAPI_API GraphicsCachingOptions : public H3DOptionNode {
-  public:
-    
-    /// Constructor.
-    GraphicsCachingOptions( Inst< SFNode  > _metadata = 0,
-                            Inst< SFBool  > _useCaching = 0,
-                            Inst< SFInt32 > _cachingDelay  = 0,
-                            Inst< SFBool  > _cacheOnlyGeometryNodes = 0,
-                            Inst< SFString > _frustumCullingMode = 0,
-                            Inst< SFBool  > _useDefaultShadows = 0,
-                            Inst< SFFloat > _defaultShadowDarkness = 0,
-                            Inst< SFFloat > _defaultShadowDepthOffset = 0,
-                            Inst< SFBool > _preferVertexBufferObject = 0 );
-    
-    bool cacheNode( Node *n ) {
-      if( !useCaching->getValue() ) return false;
-      if( !cacheOnlyGeometries->getValue() ) return true;
+  /// \deprecated Use GraphicsOptions instead.
 
-      // only X3DGeometryNodes are cached
-      return dynamic_cast< X3DGeometryNode * >( n ) != NULL;
-      
-    }
+  typedef GraphicsOptions GraphicsCachingOptions;
 
-    /// The useCaching field specifies if display lists should be used to cache
-    /// OpenGL calls in order to speed up rendering of non-changing parts.
-    ///
-    /// <b>Default value: </b> true \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFBool > useCaching;
-
-    /// Specifies the number of frames the fields of a node that affect the 
-    /// graphical rendering must be unchanged in order for a display list 
-    /// cache to be built. E.g. a value of 3 means that a display list will be 
-    /// build after rendering the node successfully 3 frames in a row without
-    /// changes to any fields that affect the rendering.
-    ///
-    /// <b>Default value: </b> 3 \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFInt32 > cachingDelay;
-
-
-    /// If the cacheOnlyGeometries field is true only nodes that inherit
-    /// from X3DGeometryNode will be cached. 
-    ///
-    /// <b>Default value: </b> false \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFBool > cacheOnlyGeometries;
-
-    /// Determines if view frustum culling should be made and if so at what
-    /// level. View frustum culling will use the bounding box of a node
-    /// and check it against the 6 planes of the view frustum to determine
-    /// if it should be rendered or not. Everything that is outside the view
-    /// frustum can be skipped.
-    ///
-    /// Valid values are:
-    /// - "NO_CULLING" - no view frustum culling is done.
-    /// - "GEOMETRY" - culling is done at the geometry level, i.e. only
-    /// X3DGeometryNodes will perform culling
-    /// - "ALL" - culling will be done on all nodes with a bounding box
-    /// in the scene graph.
-    ///
-    /// <b>Default value: </b> "NO_CULLING" \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFString > frustumCullingMode;
-
-    /// Controls if shadows created by using the shadow field in Appearance
-    /// nodes should be on or not. This option will only have effect if
-    /// part of a GlobalSettings node.
-    ///
-    /// <b>Default value: </b> true \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFBool > useDefaultShadows;
-
-    /// Controls the shadow darkness of the default ShadowCaster that is 
-    /// is used by shadows created by using the shadow field in Appearance
-    /// nodes. This option will only have effect if part of a GlobalSettings
-    /// node.
-    ///
-    /// <b>Default value: </b> 0.4 \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFFloat > defaultShadowDarkness;
-
-    /// The defaultShadowDepthOffset field controls the z offset of drawn 
-    /// shadow volumes. The z offset will be r * defaultShadowDepthOffset
-    /// where r is the smallest value that is guaranteed to produce a 
-    /// resolvable z offset for a given implementation. If this value is
-    /// set to too small there will be z-fighting between shadow and object
-    /// that casts the shadow(flickering). If this happens increase this value.
-    /// The value needed depends on the precision of the depth buffer.
-    ///
-    /// <b>Default value: </b> 6 \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFFloat > defaultShadowDepthOffset;
-
-    /// Controls rendering of certain geometries, such as IndexedTriangleSet.
-    /// If true then the affected geometries are rendered using vertex buffer
-    /// object otherwise they are rendered as vertex arrays. This can be used
-    /// to increase performance for certain geometries, such as large
-    /// IndexedTriangleSets. Vertex buffer objects are only used if the
-    /// graphics card supports it. Note that useCaching should be set to false
-    /// to get the biggest effect from vertex buffer objects.
-    /// NOTE: At the moment, no check is done that
-    /// sizeof( GLfloat ) == sizeof( H3DFloat ), the same is true for
-    /// the pairs GLdouble/H3DDouble and GLuint/H3DInt32. If you use this
-    /// feature, make sure that this is true.
-    ///
-    /// <b>Default value: </b> false \n
-    /// <b>Access type: </b> inputOutput \n
-    auto_ptr< SFBool > preferVertexBufferObject;
-
-    /// The H3DNodeDatabase for this node.
-    static H3DNodeDatabase database;
-  };
 }
 
 #endif
