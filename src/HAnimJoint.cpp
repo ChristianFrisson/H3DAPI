@@ -77,20 +77,20 @@ HAnimJoint::HAnimJoint(
                      Inst< Matrix > _matrix,
                      Inst< SFMatrix4f > _accumulatedForward,
                      Inst< SFMatrix4f > _accumulatedInverse,
-		     Inst< MFDisplacer > _displacers,
-		     Inst< SFRotation  > _limitOrientation,
-		     Inst< MFFloat     > _llimit,
-		     Inst< MFFloat     > _ulimit,
-		     Inst< SFString    > _name,
-		     Inst< MFInt32     > _skinCoordIndex,
-		     Inst< MFFloat     > _skinCoordWeight,
-		     Inst< MFFloat     > _stiffness ) :
+                     Inst< MFDisplacer > _displacers,
+                     Inst< SFRotation  > _limitOrientation,
+                     Inst< MFFloat     > _llimit,
+                     Inst< MFFloat     > _ulimit,
+                     Inst< SFString    > _name,
+                     Inst< MFInt32     > _skinCoordIndex,
+                     Inst< MFFloat     > _skinCoordWeight,
+                     Inst< MFFloat     > _stiffness ) :
   Transform( _addChildren, _removeChildren, 
-	     _center, _children, _metadata, 
-	     _rotation, _scale, _scaleOrientation, _translation,
-	     _bound, _bboxCenter, _bboxSize, 
-	     _transformedBound, _matrix,
-	     _accumulatedForward, _accumulatedInverse ),
+             _center, _children, _metadata, 
+             _rotation, _scale, _scaleOrientation, _translation,
+             _bound, _bboxCenter, _bboxSize, 
+             _transformedBound, _matrix,
+             _accumulatedForward, _accumulatedInverse ),
   displacers       ( _displacers ),
   limitOrientation ( _limitOrientation ),
   llimit           ( _llimit            ),
@@ -160,9 +160,9 @@ void HAnimJoint::renderSkeleton( RenderType type ) {
     for( unsigned int i = 0; i < c.size(); i++ ) {
       HAnimJoint *joint = dynamic_cast< HAnimJoint* >( c[i]);
       if( joint ) {
-	Vec3f joint_center = matrix->getValue() * joint->center->getValue();
-	glVertex3f( ctr.x, ctr.y, ctr.z );
-	glVertex3f( joint_center.x, joint_center.y, joint_center.z );
+        Vec3f joint_center = matrix->getValue() * joint->center->getValue();
+        glVertex3f( ctr.x, ctr.y, ctr.z );
+        glVertex3f( joint_center.x, joint_center.y, joint_center.z );
       } 
     }    
     glEnd();

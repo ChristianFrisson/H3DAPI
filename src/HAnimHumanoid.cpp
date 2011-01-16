@@ -175,6 +175,11 @@ void HAnimHumanoid::render()     {
   } else {
     // render skinned version
     root_transform->displayList->callList();
+    const NodeVector &skel = skeleton->getValue();
+    for( unsigned int i = 0; i < skel.size(); i++ ) {
+      HAnimJoint *joint = dynamic_cast< HAnimJoint* >( skel[i]);
+      if( joint ) joint->displayList->callList();
+    }
   }
 
 };
