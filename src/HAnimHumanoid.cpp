@@ -175,25 +175,56 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
   const NodeVector &jts = joints->getValue();
   vector< Vec3f > modified_points = points_single;
   vector< Vec3f > modified_normals = normals_single;
-
-
+  
   unsigned int p_size = points_single.size();
   unsigned int n_size = normals_single.size();
-
+  unsigned int max_size = H3DMax( p_size, n_size );
+  vector< bool  > point_written( max_size, false ); 
   
   const Matrix4f &global_to_humanoid = ti.getAccInverseMatrix();
   for( unsigned int i = 0; i < jts.size(); i++ ) {
     HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
     if( joint ) {
       const vector<int> &indices = joint->skinCoordIndex->getValue();
+      const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
       const Matrix4f &joint_to_global = joint->accumulatedForward->getValue();
       Matrix4f joint_to_humanoid = global_to_humanoid * joint_to_global;
+      Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
+
       for( unsigned int j = 0; j < indices.size(); j++ ) {
 	unsigned int index = indices[j];
-	if( index < p_size )
-	  modified_points[index] = joint_to_humanoid * points_single[index];
-	if( index < n_size ) 
-	  modified_normals[index] = joint_to_humanoid.getRotationPart() * normals_single[index];
+
+	// point calculation
+	if( index < p_size ) {
+	  
+	  Vec3f weighted_point = joint_to_humanoid * points_single[index];
+	  if( j < weights.size() )
+	    weighted_point *= weights[j];
+
+	  if( point_written[index] ) {
+	    modified_points[index] += weighted_point;
+	  } else {
+	    modified_points[index] = weighted_point;
+	  }
+	}
+
+	// normal calculation
+	if( index < n_size ) {
+	  Vec3f weighted_normal = joint_to_humanoid_rot * normals_single[index];
+	  if( j < weights.size() )
+	    weighted_normal *= weights[j];
+
+	  if( point_written[index] ) {
+	    modified_normals[index] += weighted_normal;
+	  } else {
+	    modified_normals[index] = weighted_normal;
+	  } 
+	}
+
+	
+	if( index < max_size ) {
+	  point_written[index] = true;
+	}
       }
     }
   }
