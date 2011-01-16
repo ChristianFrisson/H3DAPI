@@ -134,6 +134,10 @@ namespace H3D {
 
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti );
+    
+    /// Multiply the currently active OpenGL matrix with the matrix
+    /// of this node.
+    void multiplyGLMatrix();
 
     /// Detect intersection between a line segment and this Node.
     /// Transforms the line into correct coordinate system and also transforms

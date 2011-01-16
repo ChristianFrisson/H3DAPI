@@ -65,6 +65,7 @@ namespace HAnimHumanoidInternals {
   FIELDDB_ELEMENT( HAnimHumanoid, scale, INPUT_OUTPUT );
   FIELDDB_ELEMENT( HAnimHumanoid, scaleOrientation, INPUT_OUTPUT );
   FIELDDB_ELEMENT( HAnimHumanoid, translation, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( HAnimHumanoid, renderMode, INPUT_OUTPUT );
 }
 
 HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
@@ -86,7 +87,8 @@ HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
 			       Inst< SFRotation     > _rotation    ,
 			       Inst< SFVec3f        > _scale       ,
 			       Inst< SFRotation     > _scaleOrientation,
-			       Inst< SFVec3f        > _translation  ) :
+			       Inst< SFVec3f        > _translation,
+			       Inst< SFString       > _renderMode ) :
   X3DChildNode( _metadata ),
   X3DBoundedObject( _bound, _bboxCenter, _bboxSize ),
   info( _info ),
@@ -105,6 +107,7 @@ HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
   scale( _scale ),
   scaleOrientation( _scaleOrientation ),
   translation( _translation ),
+  renderMode( _renderMode ),
   use_union_bound( false ),
   root_transform( NULL ) {
 
@@ -121,6 +124,12 @@ HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
   scale->setValue( Vec3f( 1, 1, 1 ) );
   scaleOrientation->setValue( Rotation( 0, 0, 1, 0 ) );
   translation->setValue( Vec3f( 0, 0, 0 ) );
+  renderMode->addValidValue( "SKIN" );
+  renderMode->addValidValue( "JOINTS" );
+  renderMode->addValidValue( "SKELETON" );
+  renderMode->setValue( "SKIN" );
+
+  renderMode->route( displayList );
  }
 
 void HAnimHumanoid::initialize() {
@@ -145,9 +154,29 @@ void HAnimHumanoid::initialize() {
 }
 
 void HAnimHumanoid::render()     { 
-
   X3DChildNode::render();
-  root_transform->displayList->callList();
+
+  const string &render_type = renderMode->getValue();
+
+  
+
+  if( render_type == "JOINTS" || render_type == "SKELETON" ) {
+    HAnimJoint::RenderType type = 
+      render_type == "JOINTS" ? HAnimJoint::JOINTS : HAnimJoint::SKELETON;
+    glMatrixMode( GL_MODELVIEW );
+    glPushMatrix();
+    root_transform->multiplyGLMatrix();
+    const NodeVector &skel = skeleton->getValue();
+    for( unsigned int i = 0; i < skel.size(); i++ ) {
+      HAnimJoint *joint = dynamic_cast< HAnimJoint* >( skel[i]);
+      if( joint ) joint->renderSkeleton( type );
+    }
+    glPopMatrix();
+  } else {
+    // render skinned version
+    root_transform->displayList->callList();
+  }
+
 };
 
 void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {

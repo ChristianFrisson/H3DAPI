@@ -30,6 +30,15 @@
 
 #include <H3D/HAnimJoint.h>
 
+#ifdef MACOSX
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+#ifdef FREEGLUT
+#include <GL/freeglut.h>
+#endif
+
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
@@ -120,4 +129,44 @@ void HAnimJoint::traverseSG( TraverseInfo &ti ) {
 
 }
 
+
+void HAnimJoint::renderSkeleton( RenderType type ) {
+  // render sphere at joint center
+  glPushMatrix();
+  const Vec3f &ctr = center->getValue();
+  glTranslatef( ctr.x, ctr.y,ctr.z );
+  glutSolidSphere( 0.01, 20, 20 );    
+  glPopMatrix();
+
+  // render children
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  multiplyGLMatrix();
+ 
+  const NodeVector &c = children->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    HAnimJoint *joint = dynamic_cast< HAnimJoint* >( c[i]);
+    if( joint ) joint->renderSkeleton( type );
+  }    
+  glPopMatrix();
+
+  // render lines if in skeleton mode
+  if( type == HAnimJoint::SKELETON ) {
+    glPushAttrib( GL_LIGHTING_BIT );
+    glDisable( GL_LIGHTING );
+    glColor3f( 1, 1, 1 );
+    
+    glBegin( GL_LINES );
+    for( unsigned int i = 0; i < c.size(); i++ ) {
+      HAnimJoint *joint = dynamic_cast< HAnimJoint* >( c[i]);
+      if( joint ) {
+	Vec3f joint_center = matrix->getValue() * joint->center->getValue();
+	glVertex3f( ctr.x, ctr.y, ctr.z );
+	glVertex3f( joint_center.x, joint_center.y, joint_center.z );
+      } 
+    }    
+    glEnd();
+    glPopAttrib();
+  } 
+}
 

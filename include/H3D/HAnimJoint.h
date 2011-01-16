@@ -136,6 +136,17 @@ namespace H3D {
     //virtual void render();
     virtual void traverseSG( TraverseInfo &ti );
 
+    typedef enum {
+      /// Render the joints only as spheres
+      JOINTS, 
+      /// Render the joints as spheres and connect them with lines in the
+      /// hierarchy they have.
+      SKELETON
+    } RenderType;
+
+    /// Render the joints and skeleton with OpenGL with the specified type.
+    void renderSkeleton( RenderType type );
+
     /// The displacers field contains a list of HAnimDisplacer objects that are
     /// used to morph the deformable mesh using the morph targets defined
     /// in the Displacer objects.

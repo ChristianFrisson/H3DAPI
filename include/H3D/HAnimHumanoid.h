@@ -97,7 +97,8 @@ namespace H3D {
 		   Inst< SFRotation     > _rotation       = 0,
 		   Inst< SFVec3f        > _scale          = 0,
 		   Inst< SFRotation     > _scaleOrientation = 0,
-		   Inst< SFVec3f        > _translation    = 0
+		   Inst< SFVec3f        > _translation    = 0,
+		   Inst< SFString       > _renderMode     = 0
 		   );
 
     /// Initializes the root_transform. 
@@ -342,6 +343,20 @@ namespace H3D {
     /// 
     /// \dotfile HAnimHumanoid_translation.dot
     auto_ptr< SFVec3f > translation;
+
+    /// The renderMode field defines how the humanoid should be rendered.
+    ///
+    /// - "SKIN" - the skin in the skin field is renderes
+    /// - "JOINTS" - a sphere is rendered for each joint
+    /// - "SKELETON" - a sphere is rendered for each joint and a line is
+    /// drawn between the connected joints.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "SKIN", "JOINTS", "SKELETON" \n
+    /// <b>Default value:</b> "SKIN" \n
+    /// 
+    /// \dotfile HAnimHumanoid_renderMode.dot
+    auto_ptr< SFString > renderMode;
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

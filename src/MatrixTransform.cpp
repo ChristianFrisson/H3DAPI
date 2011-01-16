@@ -83,6 +83,17 @@ MatrixTransform::MatrixTransform(
   bound->route( transformedBound, id );
 }
 
+void MatrixTransform::multiplyGLMatrix() {
+  const Matrix4f &m = matrix->getValue();
+  GLfloat mv[] = { 
+    m[0][0], m[1][0], m[2][0], 0,
+    m[0][1], m[1][1], m[2][1], 0,
+    m[0][2], m[1][2], m[2][2], 0,
+    m[0][3], m[1][3], m[2][3], 1 };
+  
+  glMultMatrixf( mv );
+}
+
 void MatrixTransform::render() { 
   GLboolean norm= glIsEnabled( GL_NORMALIZE );
   if ( !norm ) 
