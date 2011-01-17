@@ -30,14 +30,8 @@
 
 #include <H3D/HAnimJoint.h>
 
-#ifdef MACOSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
-#ifdef FREEGLUT
-#include <GL/freeglut.h>
-#endif
+
+#include <H3D/X3D.h>
 
 using namespace H3D;
 
@@ -130,12 +124,20 @@ void HAnimJoint::traverseSG( TraverseInfo &ti ) {
 }
 
 
+
 void HAnimJoint::renderSkeleton( RenderType type ) {
+  static AutoRef<Node> joint_shape(NULL);
+  
+  if( !joint_shape.get() ) {
+    joint_shape.reset( X3D::createX3DNodeFromString( "<Shape><Appearance><Material/></Appearance><Sphere radius=\"0.01\" /></Shape>" ).get());
+  }
+
+
   // render sphere at joint center
   glPushMatrix();
   const Vec3f &ctr = center->getValue();
   glTranslatef( ctr.x, ctr.y,ctr.z );
-  glutSolidSphere( 0.01, 20, 20 );    
+  joint_shape->render();
   glPopMatrix();
 
   // render children
