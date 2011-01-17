@@ -73,7 +73,12 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
                                              H3D::Node *n,
                                              string container_field,
                                              bool expand ) {
+
   if( !n ) return;
+
+  if( n->getProtoInstanceParent() ) {
+    n = n->getProtoInstanceParent();
+  }
 
   // the name in the tree is NodeType(DEFed name)
   string tree_string = n->getTypeName();
@@ -146,7 +151,11 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
     // check if this node still exists in the new node structure
     list< pair< H3D::Node *, string > >::iterator ni;
     for( ni = nodes.begin(); ni != nodes.end(); ni++ ) {
-      if( (*ni).first == id_node ) break;
+      Node *node = (*ni).first;
+      if( node->getProtoInstanceParent() ) {
+	node = node->getProtoInstanceParent(); 
+      }
+      if( node == id_node ) break;
     }
 
     if( ni != nodes.end() ) {
@@ -214,7 +223,7 @@ void H3DViewerTreeViewDialog::deleteTree( const wxTreeItemId &id ) {
 
 void H3DViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
   field_values_panel->displayFieldsFromNode( n );
- }
+}
  
 void H3DViewerTreeViewDialog::clearTreeView() {
   list< pair< Node *, string> > l;

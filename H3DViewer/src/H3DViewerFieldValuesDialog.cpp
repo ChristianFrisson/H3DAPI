@@ -72,7 +72,7 @@ void H3DViewerFieldValuesPanel::displayFieldsFromNode( Node *n ) {
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
 
 #ifdef DEFAULT_VALUES
-  if( new_node ) {
+  if( new_node && !n->getProtoInstanceParent() ) {
     default_values_node.reset( db->createNode() );
   }
 #endif

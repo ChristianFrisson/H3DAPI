@@ -160,7 +160,10 @@ void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromNode( Node *n ) {
 
   if( new_node ) {
     H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
-    AutoRef< Node > default_values_node( db->createNode() );
+    AutoRef< Node > default_values_node;
+    if( !n->getProtoInstanceParent() ) {
+      default_values_node.reset(  db->createNode() );
+    }
     property_update_fields.clear();
     populateGridFromNode( FieldValuesGrid, n, default_values_node.get(), property_update_fields );
   }
