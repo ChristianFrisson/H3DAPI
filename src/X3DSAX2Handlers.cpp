@@ -768,6 +768,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
         node_stack.push( NodeElement( NULL ) );
       } else {
         stringstream s;
+
         s << "<" << localname << " ";
         for( unsigned int i = 0; i < attrs.getLength(); i++ ) {
           // make sure that MFString are correct. All attribute values
@@ -783,8 +784,9 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
           s << attrs.getQName( i ) << "=" << quote << v << quote << " ";
         }
         s << ">" << endl;
-        proto_declaration->setProtoBody( proto_declaration->getProtoBody() + 
-                                         s.str() );
+
+        proto_body += s.str();
+        proto_body_count++;
       } 
   
     }
@@ -824,8 +826,17 @@ void X3DSAX2Handlers::protoEndElement( const XMLCh* const uri,
     if( defining_proto_body ) { 
       stringstream s;
       s << "</" << localname << ">" << endl;
-      proto_declaration->setProtoBody( proto_declaration->getProtoBody() + 
-                                       s.str() );
+      proto_body += s.str();
+
+      proto_body_count--;
+      if( proto_body_count == 0 ) {
+        if( proto_declaration->getProtoBody().empty() ) {
+          proto_declaration->setProtoBody( proto_body );
+        } else {
+          proto_declaration->addProtoBodyExtra( proto_body );
+        }
+        proto_body = "";
+      }
     } else if( defining_proto_interface || defining_extern_proto ) { 
       FieldValue *fv = dynamic_cast< FieldValue * >( top.get() );
       if( fv ) {
@@ -934,6 +945,7 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
 
       ProtoDeclaration *pd = NULL;
       string proto_body;
+      vector< string > proto_body_extra;
 
       if( proto_name == "" ) {
         // get the first prototype declaration from the url that was read.
@@ -953,9 +965,12 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
       
       if( pd ) {
         proto_body = pd->getProtoBody();
+        proto_body_extra = pd->getProtoBodyExtra();
       }
       
-      proto_declaration = new ProtoDeclaration( toString( name ), proto_body );
+      proto_declaration = new ProtoDeclaration( toString( name ), 
+                                                proto_body,
+                                                proto_body_extra );
       
       defining_extern_proto = true;
     }
@@ -1233,10 +1248,10 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         if( localname_string == "ProtoInstance" ) {
           // if a ProtoInstance create a new instance of the prototype.
           new_node = handleProtoInstanceElement( attrs );
-		  // remove the initialization that occurs on first reference
+                  // remove the initialization that occurs on first reference
           // since we don't want it to occur until all child nodes
           // have been created and set.
-		  if( new_node ) new_node->setManualInitialize( true );
+                  if( new_node ) new_node->setManualInitialize( true );
           proto_instance = true;
         } else if( use_name ) {
           // if we have a USE attribute, lookup the matching node and use that.
@@ -1388,7 +1403,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             }
           } else if( parent ) {
             FieldValue *fv = static_cast< FieldValue * >(parent);
- 	
+        
             if( fv && fv->fv_parent && 
                 fv->fv_parent->getTypeName() == "PrototypeInstance" ) {
               if( fv->field &&  

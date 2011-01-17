@@ -31,6 +31,7 @@
 
 #include <H3D/X3DNode.h>
 #include <H3D/H3DDynamicFieldsObject.h>
+#include <H3D/H3DBoundedObject.h>
 
 // forward declaration for Bison VRML parser.
 namespace yy {
@@ -59,8 +60,9 @@ namespace H3D {
   /// scene graph that allows for an appearance node system. 
   ///
   class H3DAPI_API X3DPrototypeInstance: 
-    public X3DNode,
-    public H3DDynamicFieldsObject {
+  public X3DNode,
+  public H3DDynamicFieldsObject, 
+  public H3DBoundedObject {
   public:
 
     /// Constructor.
@@ -73,13 +75,16 @@ namespace H3D {
     virtual void traverseSG( TraverseInfo &ti );
     
     /// Set the node that is the internal scenegraph of the prototype.
-    virtual void setPrototypedNode( Node *n ) {
-      prototyped_node.reset( n );
-    }
+    virtual void setPrototypedNode( Node *n );
     
     /// Get the node that is the internal scenegraph of the prototype.
     virtual Node *getPrototypedNode() {
       return prototyped_node.get();
+    }
+
+    /// Set the node that is the internal scenegraph of the prototype.
+    virtual void addPrototypedNodeExtra( Node *n ) {
+      prototyped_node_extras.push_back( n );
     }
 
     /// Returns the default xml containerField attribute value.
@@ -145,6 +150,7 @@ namespace H3D {
   protected:
 
     AutoRef< Node > prototyped_node;
+    AutoRefVector< Node > prototyped_node_extras;
   };
 }
 

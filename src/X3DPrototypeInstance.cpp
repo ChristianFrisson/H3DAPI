@@ -43,8 +43,12 @@ H3DNodeDatabase X3DPrototypeInstance::database(
 X3DPrototypeInstance::X3DPrototypeInstance( Inst< SFNode>  _metadata ):
   X3DNode( _metadata ),
   H3DDynamicFieldsObject( &database ),
+  H3DBoundedObject(),
   prototyped_node( NULL ) {
   type_name = "X3DPrototypeInstance";
+
+  bound->setOwner( this );
+  bound->setValue( new EmptyBound );
 }
 
 void X3DPrototypeInstance::render() {
@@ -88,4 +92,27 @@ bool X3DPrototypeInstance::connectField( const string &proto_field_name,
   return true;
 }
 
+void X3DPrototypeInstance::setPrototypedNode( Node *n ) {
+  if( n ) 
+    n->setProtoInstanceParent( this );
+  
+  // remove old bound route
+  if( prototyped_node.get() ) {
+    H3DBoundedObject *b = 
+      dynamic_cast< H3DBoundedObject * >( prototyped_node.get() );
+    if( b ) {
+      b->bound->unroute( bound );
+    }
+  }
+
+  // set up new bound route
+  if( n ) {
+    H3DBoundedObject *b = dynamic_cast< H3DBoundedObject * >( n );
+    if( b ) {
+      b->bound->route( bound );
+    }
+  }
+
+  prototyped_node.reset( n );
+}
 

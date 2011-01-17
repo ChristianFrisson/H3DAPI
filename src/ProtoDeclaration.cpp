@@ -43,8 +43,8 @@
 using namespace H3D;
 
 X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() { 
+  PrototypeInstance *proto = new PrototypeInstance( NULL );
   try {
-    PrototypeInstance *proto = new PrototypeInstance( NULL );
 
     for( list< FieldDeclaration >::iterator i = field_declarations.begin();
          i != field_declarations.end(); i++ ) {
@@ -107,43 +107,60 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
     }
 
     if( body == "" ) return NULL;
+    X3D::DEFNodes dn;
 
-    if ( X3D::isVRML( body ) ) {
-      AutoRef< Node > n;
-      stringstream s;
-      s << body;
-      VrmlDriver driver;
-      driver.proto_instance = proto;
-      if (driver.parse( &s, "<proto>", NULL, NULL, NULL )) {
-        Group *c = driver.getRoot();
-        if ( c && !c->children->empty() )
-          n.reset( c->children->front() );
-      } else {
-        Console(3) << "WARNING: Could not parse VRML from string" << endl;
+    // parse and set the main prodo body node. 
+    AutoRef<Node> n = createProtoInstanceNode( proto, &dn, body );
+    proto->setPrototypedNode( n.get() );
+
+    // parse and set any extra nodes from the proto body
+    for( unsigned int i = 0; i < body_extra.size(); i++ ) {
+      if( !body_extra[i].empty() ) {
+        AutoRef<Node> n = createProtoInstanceNode( proto, &dn, body_extra[i] );
+        proto->addPrototypedNodeExtra( n.get() );
       }
-
-      proto->setPrototypedNode( n.get() );
-      return proto;
-    } else {
-#ifdef HAVE_XERCES
-      auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
-      X3D::X3DSAX2Handlers handler;
-      handler.proto_instance = proto;
-      stringstream s;
-      s << body;
-      parser->setContentHandler(&handler);
-      parser->setErrorHandler(&handler); 
-      parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
-      AutoRef< Node > n = handler.getResultingNode();
-      proto->setPrototypedNode( n.get() );
-      return proto;
-#else
-      return NULL;
-#endif
     }
+
+    return proto;
+    
   } catch( const Exception::H3DException &e ) {
+    delete proto;
     Console(3) << "Could not create X3DPrototypeInstance of " << name << endl;
     Console(3) << e << endl;
     return NULL;
+  }
+}
+
+AutoRef< Node > ProtoDeclaration::createProtoInstanceNode( PrototypeInstance *proto,
+                                                           X3D::DEFNodes *dn,
+                                                           const string &body ) {
+  if ( X3D::isVRML( body ) ) {
+    AutoRef< Node > n;
+    stringstream s;
+    s << body;
+    VrmlDriver driver;
+    driver.proto_instance = proto;
+    if (driver.parse( &s, "<proto>", dn, NULL, NULL )) {
+      Group *c = driver.getRoot();
+      if ( c && !c->children->empty() )
+        n.reset( c->children->front() );
+    } else {
+      Console(3) << "WARNING: Could not parse VRML from string" << endl;
+    }
+    return n;
+  } else {
+#ifdef HAVE_XERCES
+    auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
+    X3D::X3DSAX2Handlers handler(dn);
+    handler.proto_instance = proto;
+    stringstream s;
+    s << body;
+    parser->setContentHandler(&handler);
+    parser->setErrorHandler(&handler); 
+    parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
+    return handler.getResultingNode();
+#else
+    return NULL;
+#endif
   }
 }

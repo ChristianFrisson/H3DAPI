@@ -47,7 +47,8 @@ namespace H3D {
                        Inst< SFNode>  _metadata = 0 ):
       X3DPrototypeInstance( _metadata ) {
       type_name = "PrototypeInstance";
-      prototyped_node.reset( _prototyped_node );
+     
+      setPrototypedNode( _prototyped_node );
     }
 
     /// The H3DNodeDatabase for this node.

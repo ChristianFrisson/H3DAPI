@@ -32,6 +32,7 @@
 
 #include <H3D/X3DPrototypeInstance.h>
 #include <H3D/PrototypeInstance.h>
+#include <H3D/DEFNodes.h>
 #include <list>
 
 namespace H3D {
@@ -73,9 +74,11 @@ namespace H3D {
     /// \param _name The name of the prototype.
     /// \param _body String with the internal scenegraph of the prototype.
     ProtoDeclaration( const string &_name,
-                      const string &_body = "" ) :
+                      const string &_body = "",
+		      const vector<string > &_body_extra = vector<string>() ) :
       name( _name ),
-      body( _body ){}
+      body( _body ),
+      body_extra( _body_extra ) {}
 
     /// Get the string with the internal scenegraph of the prototype.
     const string &getProtoBody() {
@@ -85,6 +88,17 @@ namespace H3D {
     /// Set the string with the internal scenegraph of the prototype.
     void setProtoBody( const string &_body ) {
       body = _body;
+    }
+
+    /// Add one part of proto body that is not the main proto
+    /// body(i.e. not the first )
+    void addProtoBodyExtra( const string &_body ) {
+      body_extra.push_back( _body );
+    }
+    
+    /// Get the proto body extras.
+    const vector<string> & getProtoBodyExtra( ) {
+      return body_extra;
     }
 
     /// Get the name of the prototype.
@@ -121,8 +135,17 @@ namespace H3D {
     X3DPrototypeInstance *newProtoInstance();
   protected:
     string name;
+    // The main body string, i.e. the first node in the proto body.
     string body;
+
+    // The extra body string, i.e. all nodes on the same level 
+    // as the main body but defined after it.
+    vector< string > body_extra; 
     std::list< FieldDeclaration > field_declarations;
+
+    AutoRef< Node > createProtoInstanceNode( PrototypeInstance *proto,
+					     X3D::DEFNodes *dn,
+					     const string &body_string );
   };
 
 }
