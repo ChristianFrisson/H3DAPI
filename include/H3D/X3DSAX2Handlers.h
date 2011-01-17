@@ -80,6 +80,7 @@ namespace H3D {
                        PrototypeVector *_proto_declarations = NULL ): 
         proto_instance( NULL ),
         proto_declaration( NULL ),
+        proto_body_count( 0 ),
         defining_proto_body( false ),
         defining_proto_interface( false ),
         defining_proto_connections( false ),
@@ -308,6 +309,12 @@ namespace H3D {
       /// The string_body string is used when defining ProtoBody. All elements will then
       /// just be translated to a string to be used by the ProtoDeclaration.
       string proto_body;
+
+      /// Counter used know when a proto body part has finished. Will
+      /// be incremented on each start of element end decremented on 
+      /// end. This means each time it reaches 0 a body element is 
+      /// finished.
+      unsigned int proto_body_count;
 
       /// true if we are inside a ProtoBody element.
       bool defining_proto_body;
