@@ -111,7 +111,7 @@ componentStatements:     componentStatement |
                          componentStatement componentStatements |
                          empty ;
 
-componentStatement:      COMPONENT componentNameId ':' componentSupportLevel ;
+componentStatement:      COMPONENT VRMLID; //TODO: this is a hack. The real value is componentNameId ':' componentSupportLevel ;
 
 componentNameId:         VRMLID ;
 
@@ -180,11 +180,11 @@ metaStatements:          metaStatement |
                          metaStatement metaStatements |
                          empty ;
 
-metaStatement:           META metakey metavalue ;
+metaStatement:           META STRING ; //TODO: this is a hack. The real value is: metakey metavalue ;
 
-metakey:                 STRING ;
+//metakey:                 STRING ;
 
-metavalue:               STRING ;
+//metavalue:               STRING ;
 
 statements:              statement |
                          statement statements |
