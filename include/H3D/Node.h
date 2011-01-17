@@ -38,6 +38,7 @@
 using namespace std;
 
 namespace H3D {
+  class X3DPrototypeInstance;
 
   /// \defgroup Nodes Scene-graph nodes.
   ///
@@ -58,6 +59,19 @@ namespace H3D {
     template< class N >
     static Node *newInstance() { return new N; };
 
+    /// If this node is the root node in the proto body of
+    /// a X3DPrototypeInstance then this will return that
+    /// node. IF not it returns NULL.
+    inline X3DPrototypeInstance *getProtoInstanceParent() {
+      return proto_parent;
+    }
+
+    /// Set the X3DPrototypeInstance this node is the the root node
+    /// if applicaple.
+    inline void setProtoInstanceParent( X3DPrototypeInstance *p) {
+      proto_parent = p;
+    }
+    
     /// the render() function is used for the depth-first rendering traversal 
     /// of the scene-graph. 
     virtual void render()     { };
@@ -331,6 +345,7 @@ namespace H3D {
     static int nr_nodes_created;
     typedef  vector< pair< void (*)(Node *, void *), void * > > DestructCallbacks;
     DestructCallbacks destruct_callbacks;
+    X3DPrototypeInstance *proto_parent;
   };
 
 };

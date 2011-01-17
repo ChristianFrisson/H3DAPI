@@ -35,7 +35,8 @@ int Node::nr_nodes_created = 0;
 
 Node::Node() : 
   RefCountedClass( ),
-  id( nr_nodes_created++ ) {}
+  id( nr_nodes_created++ ),
+  proto_parent( NULL ) {}
 
 Field *Node::getField( const string &name ) {
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *this ) );
