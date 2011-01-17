@@ -151,6 +151,8 @@ void HAnimHumanoid::initialize() {
   // now the root_transform will be initialized with the bboxCenter and
   // bboxSize from this node.
   root_transform.reset( t );
+
+  root_transform->bound->route( bound );
 }
 
 void HAnimHumanoid::render()     { 
