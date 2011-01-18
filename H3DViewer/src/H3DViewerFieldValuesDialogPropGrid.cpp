@@ -160,12 +160,14 @@ void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromNode( Node *n ) {
 
   if( new_node ) {
     H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
-    AutoRef< Node > default_values_node;
+    // cannot use AutoRef because we do not want the node to become initialized.
+    Node *default_values_node = NULL;
     if( !n->getProtoInstanceParent() ) {
-      default_values_node.reset(  db->createNode() );
+      default_values_node = db->createNode();
     }
     property_update_fields.clear();
-    populateGridFromNode( FieldValuesGrid, n, default_values_node.get(), property_update_fields );
+    populateGridFromNode( FieldValuesGrid, n, default_values_node, property_update_fields );
+    if( default_values_node ) delete default_values_node;
   }
 }
 
@@ -588,7 +590,7 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
     if( H3DLongStringProperty *lp = dynamic_cast< H3DLongStringProperty * >( property ) ) {
       lp->setReadOnlyDialog( true );
     } else {
-      property->ChangeFlag( wxPG_PROP_READONLY, true );
+      //      property->ChangeFlag( wxPG_PROP_READONLY, true );
     }
   }
 
