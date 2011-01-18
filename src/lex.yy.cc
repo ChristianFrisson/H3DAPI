@@ -4030,7 +4030,7 @@ static yyconst flex_int32_t yy_rule_linenum[30] =
 /* %if-c-only */
 /* %endif */
 /* %if-c++-only */
-#include <unistd.h>
+//#include <unistd.h>
 /* %endif */
 #endif
 
