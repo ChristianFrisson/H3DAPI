@@ -35,6 +35,7 @@
 #include <H3D/X3DShapeNode.h>
 #include <H3D/ClipPlane.h>
 #include <H3D/Coordinate.h>
+#include <H3D/CoordinateDouble.h>
 #include <H3D/Normal.h>
 #include <H3D/HAnimDisplacer.h>
 
@@ -133,6 +134,90 @@ HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
   renderMode->route( displayList );
  }
 
+
+template< class VectorType >
+void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
+                                       const vector< Vec3f > &orig_normals,
+                                       VectorType &modified_points,
+                                       vector< Vec3f > &modified_normals ) {
+
+  unsigned int p_size = orig_points.size();
+  unsigned int n_size = orig_normals.size();
+  unsigned int max_size = H3DMax( p_size, n_size );
+  vector< bool  > point_written( max_size, false ); 
+
+  const NodeVector &jts = joints->getValue();
+ 
+  // do joint movements
+  for( unsigned int i = 0; i < jts.size(); i++ ) {
+    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
+    if( joint ) {
+      const vector<int> &indices = joint->skinCoordIndex->getValue();
+      const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
+      const Matrix4f &joint_to_global = joint->accumulatedForward->getValue();
+      Matrix4f joint_to_humanoid = joint->accumulatedJointMatrix->getValue();
+      Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
+
+      for( unsigned int j = 0; j < indices.size(); j++ ) {
+        unsigned int index = indices[j];
+
+        // point calculation
+        if( index < p_size ) {
+          
+          typename VectorType::value_type weighted_point = 
+            joint_to_humanoid * orig_points[index];
+          if( j < weights.size() )
+            weighted_point *= weights[j];
+
+          if( point_written[index] ) {
+            modified_points[index] += weighted_point;
+          } else {
+            modified_points[index] = weighted_point;
+          }
+        }
+
+        // normal calculation
+        if( index < n_size ) {
+          Vec3f weighted_normal = joint_to_humanoid_rot * orig_normals[index];
+          if( j < weights.size() )
+            weighted_normal *= weights[j];
+
+          if( point_written[index] ) {
+            modified_normals[index] += weighted_normal;
+          } else {
+            modified_normals[index] = weighted_normal;
+          } 
+        }
+
+        
+        if( index < max_size ) {
+          point_written[index] = true;
+        }
+
+        
+      }
+    }
+  }
+
+  // do displacer movements
+  for( unsigned int i = 0; i < jts.size(); i++ ) {
+    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
+    if( joint ) {
+      const NodeVector &disp = joint->displacers->getValue();  
+      if( disp.size() > 0 ) {
+        for( unsigned int i = 0; i < disp.size(); i++ ) {
+          HAnimDisplacer *displacer = 
+            static_cast< HAnimDisplacer* >( disp[i]);
+          if( displacer ) {
+            displacer->displaceCoordinates(modified_points, 
+                                           Matrix4f() );// TODO                                      joint->accumulatedJointMatrix() );
+          }
+        }
+      }
+    }
+  }
+}
+
 void HAnimHumanoid::initialize() {
   Transform * t = new Transform;
 
@@ -189,15 +274,40 @@ void HAnimHumanoid::render()     {
 
 void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
 
-  // TODO:
-  Coordinate *coord = dynamic_cast< Coordinate * >( skinCoord->getValue() );
-  if( coord && points_single.empty() ) {
-    points_single = coord->point->getValue();
+  X3DCoordinateNode *coord = skinCoord->getValue();
+
+  // if skinCoord contains a coordinate node that has not been used before
+  // save its points as base coordinates.
+  if( coord != current_coordinate.get() ) {
+    current_coordinate.reset( coord );
+    if( coord ) {
+      if( Coordinate *c = dynamic_cast< Coordinate * >( coord ) ) {
+        points_double.clear();
+        points_single = c->point->getValue();
+      } else if( CoordinateDouble *c = dynamic_cast< CoordinateDouble * >( coord ) ) {
+        points_single.clear();
+        points_double = c->point->getValue();
+      } else {
+        Console(4) << "Unsupported X3DCoordinateNode: \"" 
+                   << coord->getTypeName() << "\" in HAnimHumanoid." << endl;
+        points_single.clear();
+        points_double.clear();
+      }
+    }
   }
 
-  Normal *normal = dynamic_cast< Normal * >( skinNormal->getValue() );
-  if( normal && normals_single.empty() ) {
-    normals_single = normal->vector->getValue();
+  X3DNormalNode *base_normal = skinNormal->getValue();
+  Normal *normal = dynamic_cast< Normal * >( base_normal  );
+
+  if( base_normal != current_normal.get() ) {
+    current_normal.reset( base_normal );
+    if( normal ) {
+      normals_single = normal->vector->getValue();
+    } else {
+      Console(4) << "Unsupported X3DNormalNode: \"" 
+                   << normal->getTypeName() << "\" in HAnimHumanoid." << endl;
+      normals_single.clear();
+    }
   }
   
   X3DChildNode::traverseSG( ti );
@@ -212,91 +322,22 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
     if( n ) n->traverseSG( ti );
   }
 
-  vector< Vec3f > modified_points = points_single;
-  vector< Vec3f > modified_normals = normals_single;
-  
-  unsigned int p_size = points_single.size();
-  unsigned int n_size = normals_single.size();
-  unsigned int max_size = H3DMax( p_size, n_size );
-  vector< bool  > point_written( max_size, false ); 
- 
-  const Matrix4f &global_to_humanoid = ti.getAccInverseMatrix();
-
-  // do joint movements
-  for( unsigned int i = 0; i < jts.size(); i++ ) {
-    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
-    if( joint ) {
-      const vector<int> &indices = joint->skinCoordIndex->getValue();
-      const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
-      const Matrix4f &joint_to_global = joint->accumulatedForward->getValue();
-      Matrix4f joint_to_humanoid = global_to_humanoid * joint_to_global;
-      Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
-
-      for( unsigned int j = 0; j < indices.size(); j++ ) {
-        unsigned int index = indices[j];
-
-        // point calculation
-        if( index < p_size ) {
-          
-          Vec3f weighted_point = joint_to_humanoid * points_single[index];
-          if( j < weights.size() )
-            weighted_point *= weights[j];
-
-          if( point_written[index] ) {
-            modified_points[index] += weighted_point;
-          } else {
-            modified_points[index] = weighted_point;
-          }
-        }
-
-        // normal calculation
-        if( index < n_size ) {
-          Vec3f weighted_normal = joint_to_humanoid_rot * normals_single[index];
-          if( j < weights.size() )
-            weighted_normal *= weights[j];
-
-          if( point_written[index] ) {
-            modified_normals[index] += weighted_normal;
-          } else {
-            modified_normals[index] = weighted_normal;
-          } 
-        }
-
-        
-        if( index < max_size ) {
-          point_written[index] = true;
-        }
-
-        
-      }
+  if( CoordinateDouble *c = dynamic_cast< CoordinateDouble * >( coord ) ) {
+    vector< Vec3d > modified_points = points_double;
+    vector< Vec3f > modified_normals = normals_single;
+    updateCoordinates( points_double, normals_single, 
+                       modified_points, modified_normals );
+    if(c) c->point->swap( modified_points );
+    if( normal ) normal->vector->swap( modified_normals );
+  } else {
+    vector< Vec3f > modified_points = points_single;
+    vector< Vec3f > modified_normals = normals_single;
+    updateCoordinates( points_single, normals_single,
+                       modified_points, modified_normals );
+    if( Coordinate *c = dynamic_cast< Coordinate * >( coord )) { 
+      c->point->swap( modified_points );
     }
-  }
-
-  // do displacer movements
-  for( unsigned int i = 0; i < jts.size(); i++ ) {
-    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
-    if( joint ) {
-      const NodeVector &disp = joint->displacers->getValue();  
-      if( disp.size() > 0 ) {
-        for( unsigned int i = 0; i < disp.size(); i++ ) {
-          HAnimDisplacer *displacer = 
-            static_cast< HAnimDisplacer* >( disp[i]);
-          if( displacer ) {
-            displacer->displaceCoordinates(modified_points, 
-                                           Matrix4f() );// TODO                                      joint->accumulatedJointMatrix() );
-          }
-        }
-      }
-    }
-  }
-
-
-  if(coord) {
-    coord->point->swap( modified_points );
-  }
-  
-  if( normal ) {
-    normal->vector->swap( modified_normals );
+    if( normal ) normal->vector->swap( modified_normals );
   }
 }
 

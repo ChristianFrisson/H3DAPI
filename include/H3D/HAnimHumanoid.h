@@ -82,24 +82,24 @@ namespace H3D {
                    Inst< SFBound        > _bound          = 0,
                    Inst< SFVec3f        > _bboxCenter     = 0,
                    Inst< SFVec3f        > _bboxSize       = 0,
-		   Inst< MFString       > _info           = 0,
-		   Inst< SFString       > _name           = 0,
-		   Inst< SFString       > _version        = 0,
-		   Inst< MFChild        > _skin           = 0,
-		   Inst< MFJoint        > _joints         = 0,
-		   Inst< MFSegment      > _segments       = 0,
-		   Inst< MFSite         > _sites          = 0,
-		   Inst< MFSkeletonNode > _skeleton       = 0,
-		   Inst< MFSite         > _viewpoints     = 0,
-		   Inst< SFCoordinateNode > _skinCoord    = 0,
-		   Inst< SFNormalNode     > _skinNormal   = 0,
-		   Inst< SFVec3f        > _center         = 0,
-		   Inst< SFRotation     > _rotation       = 0,
-		   Inst< SFVec3f        > _scale          = 0,
-		   Inst< SFRotation     > _scaleOrientation = 0,
-		   Inst< SFVec3f        > _translation    = 0,
-		   Inst< SFString       > _renderMode     = 0
-		   );
+                   Inst< MFString       > _info           = 0,
+                   Inst< SFString       > _name           = 0,
+                   Inst< SFString       > _version        = 0,
+                   Inst< MFChild        > _skin           = 0,
+                   Inst< MFJoint        > _joints         = 0,
+                   Inst< MFSegment      > _segments       = 0,
+                   Inst< MFSite         > _sites          = 0,
+                   Inst< MFSkeletonNode > _skeleton       = 0,
+                   Inst< MFSite         > _viewpoints     = 0,
+                   Inst< SFCoordinateNode > _skinCoord    = 0,
+                   Inst< SFNormalNode     > _skinNormal   = 0,
+                   Inst< SFVec3f        > _center         = 0,
+                   Inst< SFRotation     > _rotation       = 0,
+                   Inst< SFVec3f        > _scale          = 0,
+                   Inst< SFRotation     > _scaleOrientation = 0,
+                   Inst< SFVec3f        > _translation    = 0,
+                   Inst< SFString       > _renderMode     = 0
+                   );
 
     /// Initializes the root_transform. 
     virtual void initialize();
@@ -362,15 +362,48 @@ namespace H3D {
     static H3DNodeDatabase database;
 
     protected:
+    
+      /// Template function to apply the joint movements and displacements
+      /// to original skin coordinates and notmals. Since the points can
+      /// be both floats or doubles a template is used.
+      /// \params orig_points The original points before any deformation.
+      /// \params orig_normals The original normals before any deformation.
+      /// \params modified_points At input a copy of orig_points, at function
+      /// return it will contain the points with the deformations applied.
+      /// \params modified_normals  At input a copy of orig_normals, at function
+      /// return it will contain the normals with the deformations applied.
+      template< class VectorType >
+      void updateCoordinates( const VectorType &orig_points,
+                              const vector< Vec3f > &orig_normals,
+                              VectorType &modified_points,
+                              vector< Vec3f > &modified_normals );
 
       /// Transform node that will contain the skin nodes and which values
       /// will be controlled by the transformation fields in the HAnimHumanoid. 
       AutoRef< Transform > root_transform;
 
+      /// vector for storing the original points before joint and displacer
+      /// modification if the original coord data is double precision.
       vector< Vec3d > points_double;
+
+      /// vector for storing the original points before joint and displacer
+      /// modification if the original coord data is single precision.
       vector< Vec3f > points_single;
+
+      /// vector for storing the original normals before joint and displacer
+      /// modification if the original normal data is single precision.
       vector< Vec3f > normals_single;
+
+      /// The coordinate node that was used as base coordinate in last
+      /// traverseSG
+      AutoRef< X3DCoordinateNode > current_coordinate;
+
+      /// The normal node that was used as base normals in last
+      /// traverseSG
+      AutoRef< X3DNormalNode > current_normal;
   };
 }
+
+
 
 #endif
