@@ -52,6 +52,15 @@ namespace H3D {
                     Inst< SFString > _name = 0,
                     Inst< SFFloat > _weight = 0 );
 
+    /// Displaces the coordinates in points according to the HAnimDisplacer
+    /// fields.
+    /// \params points The points to displace.
+    /// \params displace_transform Transformation matrix to apply to the
+    /// displacements before adding them to points.
+    template< class VectorType >
+    inline void displaceCoordinates( VectorType &points,
+                                     const Matrix4f &displace_transform  );
+
     ///
     /// <b>Access type:</b> inputOutput \n
     ///
@@ -82,6 +91,23 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };
+
+  template< class VectorClass >
+  void HAnimDisplacer::displaceCoordinates( VectorClass &points,
+                                            const Matrix4f &displace_transform) {
+    const vector< Vec3f > &displace = displacements->getValue();
+    const vector< int > &indices = coordIndex->getValue();
+    H3DFloat w = weight->getValue();
+    
+    for( size_t i = 0; i < indices.size(); i++ ) {
+      int index = indices[i];
+      Vec4f point_displacement = displace_transform * Vec4f( displace[i].x, displace[i].y, displace[i].z, 0 ) ;
+      points[index] = w * (Vec3f(point_displacement.x,
+                                 point_displacement.y,
+                                 point_displacement.z ) ) + points[index];
+    }
+  }
+
 }
 
 #endif

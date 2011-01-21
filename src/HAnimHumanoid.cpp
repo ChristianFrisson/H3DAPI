@@ -36,6 +36,7 @@
 #include <H3D/ClipPlane.h>
 #include <H3D/Coordinate.h>
 #include <H3D/Normal.h>
+#include <H3D/HAnimDisplacer.h>
 
 using namespace H3D;
 
@@ -69,26 +70,26 @@ namespace HAnimHumanoidInternals {
 }
 
 HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
-			       Inst< SFBound        > _bound       ,
-			       Inst< SFVec3f        > _bboxCenter  ,
-			       Inst< SFVec3f        > _bboxSize    ,
-			       Inst< MFString       > _info        ,
-			       Inst< SFString       > _name        ,
-			       Inst< SFString       > _version     ,
-			       Inst< MFChild        > _skin        ,
-			       Inst< MFJoint        > _joints      ,
-			       Inst< MFSegment      > _segments    ,
-			       Inst< MFSite         > _sites       ,
-			       Inst< MFSkeletonNode > _skeleton    ,
-			       Inst< MFSite         > _viewpoints  ,
-			       Inst< SFCoordinateNode > _skinCoord ,
-			       Inst< SFNormalNode     > _skinNormal,
-			       Inst< SFVec3f        > _center      ,
-			       Inst< SFRotation     > _rotation    ,
-			       Inst< SFVec3f        > _scale       ,
-			       Inst< SFRotation     > _scaleOrientation,
-			       Inst< SFVec3f        > _translation,
-			       Inst< SFString       > _renderMode ) :
+                               Inst< SFBound        > _bound       ,
+                               Inst< SFVec3f        > _bboxCenter  ,
+                               Inst< SFVec3f        > _bboxSize    ,
+                               Inst< MFString       > _info        ,
+                               Inst< SFString       > _name        ,
+                               Inst< SFString       > _version     ,
+                               Inst< MFChild        > _skin        ,
+                               Inst< MFJoint        > _joints      ,
+                               Inst< MFSegment      > _segments    ,
+                               Inst< MFSite         > _sites       ,
+                               Inst< MFSkeletonNode > _skeleton    ,
+                               Inst< MFSite         > _viewpoints  ,
+                               Inst< SFCoordinateNode > _skinCoord ,
+                               Inst< SFNormalNode     > _skinNormal,
+                               Inst< SFVec3f        > _center      ,
+                               Inst< SFRotation     > _rotation    ,
+                               Inst< SFVec3f        > _scale       ,
+                               Inst< SFRotation     > _scaleOrientation,
+                               Inst< SFVec3f        > _translation,
+                               Inst< SFString       > _renderMode ) :
   X3DChildNode( _metadata ),
   X3DBoundedObject( _bound, _bboxCenter, _bboxSize ),
   info( _info ),
@@ -203,12 +204,14 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
   root_transform->traverseSG( ti );
 
   const NodeVector &skel = skeleton->getValue();
+  const NodeVector &jts = joints->getValue();
+
+  // traverse skeleton 
   for( unsigned int i = 0; i < skel.size(); i++ ) {
-    HAnimJoint *joint = dynamic_cast< HAnimJoint* >( skel[i]);
-    if( joint ) joint->traverseSG( ti );
+    Node *n = skel[i];
+    if( n ) n->traverseSG( ti );
   }
 
-  const NodeVector &jts = joints->getValue();
   vector< Vec3f > modified_points = points_single;
   vector< Vec3f > modified_normals = normals_single;
   
@@ -216,8 +219,10 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
   unsigned int n_size = normals_single.size();
   unsigned int max_size = H3DMax( p_size, n_size );
   vector< bool  > point_written( max_size, false ); 
-  
+ 
   const Matrix4f &global_to_humanoid = ti.getAccInverseMatrix();
+
+  // do joint movements
   for( unsigned int i = 0; i < jts.size(); i++ ) {
     HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
     if( joint ) {
@@ -228,42 +233,63 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
       Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
 
       for( unsigned int j = 0; j < indices.size(); j++ ) {
-	unsigned int index = indices[j];
+        unsigned int index = indices[j];
 
-	// point calculation
-	if( index < p_size ) {
-	  
-	  Vec3f weighted_point = joint_to_humanoid * points_single[index];
-	  if( j < weights.size() )
-	    weighted_point *= weights[j];
+        // point calculation
+        if( index < p_size ) {
+          
+          Vec3f weighted_point = joint_to_humanoid * points_single[index];
+          if( j < weights.size() )
+            weighted_point *= weights[j];
 
-	  if( point_written[index] ) {
-	    modified_points[index] += weighted_point;
-	  } else {
-	    modified_points[index] = weighted_point;
-	  }
-	}
+          if( point_written[index] ) {
+            modified_points[index] += weighted_point;
+          } else {
+            modified_points[index] = weighted_point;
+          }
+        }
 
-	// normal calculation
-	if( index < n_size ) {
-	  Vec3f weighted_normal = joint_to_humanoid_rot * normals_single[index];
-	  if( j < weights.size() )
-	    weighted_normal *= weights[j];
+        // normal calculation
+        if( index < n_size ) {
+          Vec3f weighted_normal = joint_to_humanoid_rot * normals_single[index];
+          if( j < weights.size() )
+            weighted_normal *= weights[j];
 
-	  if( point_written[index] ) {
-	    modified_normals[index] += weighted_normal;
-	  } else {
-	    modified_normals[index] = weighted_normal;
-	  } 
-	}
+          if( point_written[index] ) {
+            modified_normals[index] += weighted_normal;
+          } else {
+            modified_normals[index] = weighted_normal;
+          } 
+        }
 
-	
-	if( index < max_size ) {
-	  point_written[index] = true;
-	}
+        
+        if( index < max_size ) {
+          point_written[index] = true;
+        }
+
+        
       }
     }
   }
+
+  // do displacer movements
+  for( unsigned int i = 0; i < jts.size(); i++ ) {
+    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
+    if( joint ) {
+      const NodeVector &disp = joint->displacers->getValue();  
+      if( disp.size() > 0 ) {
+        for( unsigned int i = 0; i < disp.size(); i++ ) {
+          HAnimDisplacer *displacer = 
+            static_cast< HAnimDisplacer* >( disp[i]);
+          if( displacer ) {
+            displacer->displaceCoordinates(modified_points, 
+                                           Matrix4f() );// TODO                                      joint->accumulatedJointMatrix() );
+          }
+        }
+      }
+    }
+  }
+
 
   if(coord) {
     coord->point->swap( modified_points );
@@ -282,18 +308,18 @@ bool HAnimHumanoid::lineIntersect(
 }
 
 void HAnimHumanoid::closestPoint( const Vec3f &p,
-				  NodeIntersectResult &result ) {
+                                  NodeIntersectResult &result ) {
   root_transform->closestPoint( p, result );
 }
 
 bool HAnimHumanoid::movingSphereIntersect( H3DFloat radius,
-					   const Vec3f &from, 
-					   const Vec3f &to,
-					   NodeIntersectResult &result ) {
+                                           const Vec3f &from, 
+                                           const Vec3f &to,
+                                           NodeIntersectResult &result ) {
   return root_transform->movingSphereIntersect( radius,
-						from,
-						to, 
-						result );
+                                                from,
+                                                to, 
+                                                result );
 }
 
 
