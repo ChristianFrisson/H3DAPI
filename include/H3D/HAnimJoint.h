@@ -96,7 +96,7 @@ namespace H3D {
   /// 
   /// The displacers field contains a list of HAnimDisplacer objects that are
   /// used to morph the deformable mesh using the morph targets defined
-  /// in the Displacer objects. 
+  /// in the HAnimDisplacer objects. 
   ///
   /// \par Internal routes:
   /// \dotfile HAnimJoint.dot

@@ -208,7 +208,7 @@ namespace H3D {
     
     /// The joints field contains a list of references, one for each 
     /// HAnimJoint object defined within the skeleton field hierarchy of
-    /// the Humanoid object. The order in which the joints are listed is
+    /// the HAnimHumanoid object. The order in which the joints are listed is
     /// irrelevant since the names of the joints are stored in the HAnimJoint
     /// objects themselves.
     ///
