@@ -51,6 +51,7 @@ namespace HAnimJointInternals {
   FIELDDB_ELEMENT( HAnimJoint, skinCoordIndex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( HAnimJoint, skinCoordWeight, INPUT_OUTPUT );
   FIELDDB_ELEMENT( HAnimJoint, stiffness, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( HAnimJoint, accumulatedJointMatrix, OUTPUT_ONLY );
 }
 
 
@@ -92,7 +93,8 @@ HAnimJoint::HAnimJoint(
   name             ( _name      ),
   skinCoordIndex   ( _skinCoordIndex ),
   skinCoordWeight  ( _skinCoordWeight ),
-  stiffness        ( _stiffness ) {
+  stiffness        ( _stiffness ),
+  accumulatedJointMatrix( new SFMatrix4f ) {
 
   type_name = "HAnimJoint";
   database.initFields( this );
@@ -107,6 +109,29 @@ HAnimJoint::HAnimJoint(
 //}
 
 void HAnimJoint::traverseSG( TraverseInfo &ti ) {
+
+  // the joint matrix for this node.
+  Matrix4f joint_matrix = matrix->getValue();
+
+  // the acc joint matrix from parent nodes.
+  Matrix4f *current_acc_joint_matrix = NULL;
+
+  Matrix4f acc_joint_matrix;
+
+  // calculate accumulated joint matrix and set value.
+  bool is_toplevel_joint = 
+    ti.getUserData( "AccumulatedJointMatrix", (void **)&(current_acc_joint_matrix)) != 0;
+
+  if( !is_toplevel_joint ) {
+    acc_joint_matrix = (*current_acc_joint_matrix) * joint_matrix;
+  }
+
+  ti.setUserData( "AccumulatedJointMatrix", &acc_joint_matrix );
+
+  if( accumulatedJointMatrix->getValue() != acc_joint_matrix ) {
+    accumulatedJointMatrix->setValue( acc_joint_matrix, id );
+  }
+     
   ti.pushMatrices( matrix->getValue(),
                    matrix->getValue().inverse() );
 
@@ -120,7 +145,12 @@ void HAnimJoint::traverseSG( TraverseInfo &ti ) {
   }
   ti.popMatrices();
   
-
+  // reset TraverseInfo data to what it was before the traversal if this node.
+  if( is_toplevel_joint ) {
+    ti.deleteUserData( "AccumulatedJointMatrix" );
+  } else {
+    ti.setUserData( "AccumulatedJointMatrix", current_acc_joint_matrix );
+  }
 }
 
 

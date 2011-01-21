@@ -96,7 +96,7 @@ namespace H3D {
   /// 
   /// The displacers field contains a list of HAnimDisplacer objects that are
   /// used to morph the deformable mesh using the morph targets defined
-  /// in the HAnimDisplacer objects. 
+  /// in the Displacer objects. 
   ///
   /// \par Internal routes:
   /// \dotfile HAnimJoint.dot
@@ -236,8 +236,21 @@ namespace H3D {
     /// \dotfile HAnimJoint_stiffness.dot 
     auto_ptr< MFFloat     >  stiffness;
 
+    /// The accumulated joint transform from the local coordinate system of 
+    /// the joint to HAnimHumanoid local coordinate system
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> [1 0 0 0 
+    ///                        0 1 0 0
+    ///                        0 0 1 0
+    ///                        0 0 0 1 ] \n
+    /// 
+    /// \dotfile HAnimJoint_accumulatedJointMatrix.dot 
+    auto_ptr< SFMatrix4f  >  accumulatedJointMatrix;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+    
   };
 }
 
