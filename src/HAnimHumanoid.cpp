@@ -210,7 +210,7 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
             static_cast< HAnimDisplacer* >( disp[i]);
           if( displacer ) {
             displacer->displaceCoordinates(modified_points, 
-                                           Matrix4f() );// TODO                                      joint->accumulatedJointMatrix() );
+                                           joint->accumulatedJointMatrix->getValue() );
           }
         }
       }
@@ -327,7 +327,7 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
     vector< Vec3f > modified_normals = normals_single;
     updateCoordinates( points_double, normals_single, 
                        modified_points, modified_normals );
-    if(c) c->point->swap( modified_points );
+    c->point->swap( modified_points );
     if( normal ) normal->vector->swap( modified_normals );
   } else {
     vector< Vec3f > modified_points = points_single;

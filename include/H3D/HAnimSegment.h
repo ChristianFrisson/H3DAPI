@@ -30,6 +30,8 @@
 #define __HANIMSEGMENT_H__
 
 #include <H3D/X3DGroupingNode.h>
+#include <H3D/X3DCoordinateNode.h>
+#include <H3D/HAnimDisplacer.h>
 #include <H3D/MFFloat.h>
 #include <H3D/MFInt32.h>
 
@@ -52,28 +54,27 @@ namespace H3D {
   class H3DAPI_API HAnimSegment : public X3DGroupingNode {
   public:
     
-    // TODO
-    typedef MFNode MFDisplacer;
-    typedef SFNode SFCoordinateNode;
+    typedef TypedMFNode< HAnimDisplacer > MFDisplacer;
+    typedef TypedSFNode<X3DCoordinateNode > SFCoordinateNode;
 
     /// Constructor.
     HAnimSegment( Inst< AddChildren >        _addChildren        = 0,
-		  Inst< RemoveChildren >     _removeChildren     = 0,
-		  Inst< MFChild    >         _children           = 0,
-		  Inst< SFNode     >         _metadata           = 0,
-		  Inst< SFBound    >         _bound              = 0,
-		  Inst< SFVec3f    >         _bboxCenter         = 0,
-		  Inst< SFVec3f    >         _bboxSize           = 0,
-		  Inst< SFVec3f    >         _centerOfMass       = 0,
-		  Inst< SFCoordinateNode >   _coord              = 0,
-		  Inst< MFDisplacer >        _displacers         = 0,
-		  Inst< SFFloat     >        _mass               = 0,
-		  Inst< MFFloat     >        _momentsOfInertia   = 0,
-		  Inst< SFString    >        _name               = 0
-		  );
+                  Inst< RemoveChildren >     _removeChildren     = 0,
+                  Inst< MFChild    >         _children           = 0,
+                  Inst< SFNode     >         _metadata           = 0,
+                  Inst< SFBound    >         _bound              = 0,
+                  Inst< SFVec3f    >         _bboxCenter         = 0,
+                  Inst< SFVec3f    >         _bboxSize           = 0,
+                  Inst< SFVec3f    >         _centerOfMass       = 0,
+                  Inst< SFCoordinateNode >   _coord              = 0,
+                  Inst< MFDisplacer >        _displacers         = 0,
+                  Inst< SFFloat     >        _mass               = 0,
+                  Inst< MFFloat     >        _momentsOfInertia   = 0,
+                  Inst< SFString    >        _name               = 0
+                  );
 
     //virtual void render();
-    //virtual void traverseSG( TraverseInfo &ti );
+    virtual void traverseSG( TraverseInfo &ti );
 
     auto_ptr< SFVec3f    > centerOfMass;
     auto_ptr< SFCoordinateNode > coord;
@@ -102,6 +103,26 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    /// vector for storing the original points before joint and displacer
+    /// modification if the original coord data is double precision.
+    vector< Vec3d > points_double;
+    
+    /// vector for storing the original points before joint and displacer
+    /// modification if the original coord data is single precision.
+    vector< Vec3f > points_single;
+    
+    /// The coordinate node that was used as base coordinate in last
+    /// traverseSG
+    AutoRef< X3DCoordinateNode > current_coordinate;
+
+    /// Template function to apply the displacements 
+    /// to segment coordinates. Since the points can
+    /// be both floats or doubles a template is used.
+    /// \params points The original points before any deformation. The 
+    /// displacemet will be added.
+    template< class VectorType >
+    inline void updateCoordinates( VectorType &points );
   };
 }
 

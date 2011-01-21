@@ -140,8 +140,8 @@ void HAnimJoint::traverseSG( TraverseInfo &ti ) {
   accumulatedInverse->setValue( ti.getAccInverseMatrix(), id );
   const NodeVector &c = children->getValue();
   for( unsigned int i = 0; i < c.size(); i++ ) {
-    HAnimJoint *joint = dynamic_cast< HAnimJoint* >( c[i]);
-    if( joint ) joint->traverseSG( ti );
+    Node *n = c[i];
+    if( n ) n->traverseSG( ti );
   }
   ti.popMatrices();
   

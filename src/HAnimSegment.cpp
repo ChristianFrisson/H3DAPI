@@ -29,6 +29,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/HAnimSegment.h>
+#include <H3D/Coordinate.h>
+#include <H3D/CoordinateDouble.h>
 
 #ifdef MACOSX
 #include <GLUT/glut.h>
@@ -66,12 +68,12 @@ HAnimSegment::HAnimSegment(
                      Inst< SFBound    > _bound,
                      Inst< SFVec3f    > _bboxCenter,
                      Inst< SFVec3f    > _bboxSize,
-		     Inst< SFVec3f    > _centerOfMass,
-		     Inst< SFCoordinateNode > _coord,
-		     Inst< MFDisplacer > _displacers,
-		     Inst< SFFloat     > _mass,
-		     Inst< MFFloat     > _momentsOfInertia,
-		     Inst< SFString    > _name ):
+                     Inst< SFVec3f    > _centerOfMass,
+                     Inst< SFCoordinateNode > _coord,
+                     Inst< MFDisplacer > _displacers,
+                     Inst< SFFloat     > _mass,
+                     Inst< MFFloat     > _momentsOfInertia,
+                     Inst< SFString    > _name ):
   X3DGroupingNode( _addChildren, _removeChildren,
                    _children, _metadata, 
                    _bound, _bboxCenter, _bboxSize ),
@@ -90,9 +92,60 @@ HAnimSegment::HAnimSegment(
   momentsOfInertia->resize( 9, 0 );
 }
 
+ template< class VectorType >
+ void HAnimSegment::updateCoordinates( VectorType &points ) {
+   const NodeVector &disp = displacers->getValue();  
+   if( disp.size() > 0 ) {
+     for( unsigned int i = 0; i < disp.size(); i++ ) {
+       HAnimDisplacer *displacer = 
+         static_cast< HAnimDisplacer* >( disp[i]);
+       if( displacer ) {
+         displacer->displaceCoordinates( points, 
+                                         Matrix4f() );
+       }
+     }
+   }
+ }
+
 //void HAnimSegment::render() {
 //}
 
-//void HAnimSegment::traverseSG( TraverseInfo &ti ) {
-//}
+void HAnimSegment::traverseSG( TraverseInfo &ti ) {
+
+  X3DCoordinateNode *coord_node = coord->getValue();
+
+  // if coord contains a coordinate node that has not been used before
+  // save its points as base coordinates.
+  if( coord_node != current_coordinate.get() ) {
+    current_coordinate.reset( coord_node );
+    if( coord_node ) {
+      if( Coordinate *c = dynamic_cast< Coordinate * >( coord_node ) ) {
+        points_double.clear();
+        points_single = c->point->getValue();
+      } else if( CoordinateDouble *c = dynamic_cast< CoordinateDouble * >( coord_node ) ) {
+        points_single.clear();
+        points_double = c->point->getValue();
+      } else {
+        Console(4) << "Unsupported X3DCoordinateNode: \"" 
+                   << coord_node->getTypeName() << "\" in HAnimHumanoid." << endl;
+        points_single.clear();
+        points_double.clear();
+      }
+    }
+  }
+
+  if( CoordinateDouble *c = dynamic_cast< CoordinateDouble * >( coord_node ) ) {
+    vector< Vec3d > modified_points = points_double;
+    updateCoordinates( modified_points );
+    c->point->swap( modified_points );
+  } else {
+    vector< Vec3f > modified_points = points_single;
+    updateCoordinates( modified_points );
+    if( Coordinate *c = dynamic_cast< Coordinate * >( coord_node )) { 
+      c->point->swap( modified_points );
+    }
+  }
+
+  X3DGroupingNode::traverseSG( ti );
+}
 
