@@ -39,6 +39,7 @@
 #include <H3D/SFRotation.h>
 #include <H3D/MFString.h>
 #include <H3D/HAnimJoint.h>
+#include <H3D/HAnimSite.h>
 
 namespace H3D {
 
@@ -55,10 +56,18 @@ namespace H3D {
 
     //TODO
 
-    typedef MFNode MFJoint;
+    class MFJoint : public MFNode {
+      virtual void onAdd( Node * );
+      virtual void onRemove( Node * );
+    };
+
     typedef MFNode MFSegment;
     typedef MFNode MFSite;
-    typedef MFNode MFSkeletonNode;
+
+    class MFSkeletonNode: public MFNode {
+      virtual void onAdd( Node * );
+    };
+
     typedef MFNode MFChild;
       
     /// The SFCoordinateNode is dependent on the propertyChanged field of the 
@@ -401,9 +410,12 @@ namespace H3D {
       /// The normal node that was used as base normals in last
       /// traverseSG
       AutoRef< X3DNormalNode > current_normal;
+
+      /// Field used to know if any values have changed so that the
+      /// coordinates have to be updated. All joints accumulatedJointMatrx
+      /// and displacers fields are routed here.
+      auto_ptr< Field > joint_matrix_changed;
   };
 }
-
-
 
 #endif

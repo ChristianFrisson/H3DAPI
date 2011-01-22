@@ -111,7 +111,8 @@ HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
   translation( _translation ),
   renderMode( _renderMode ),
   use_union_bound( false ),
-  root_transform( NULL ) {
+  root_transform( NULL ),
+  joint_matrix_changed( new Field ) {
 
   type_name = "HAnimHumanoid";
   database.initFields( this );
@@ -322,22 +323,26 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
     if( n ) n->traverseSG( ti );
   }
 
-  if( CoordinateDouble *c = dynamic_cast< CoordinateDouble * >( coord ) ) {
-    vector< Vec3d > modified_points = points_double;
-    vector< Vec3f > modified_normals = normals_single;
-    updateCoordinates( points_double, normals_single, 
-                       modified_points, modified_normals );
-    c->point->swap( modified_points );
-    if( normal ) normal->vector->swap( modified_normals );
-  } else {
-    vector< Vec3f > modified_points = points_single;
-    vector< Vec3f > modified_normals = normals_single;
-    updateCoordinates( points_single, normals_single,
-                       modified_points, modified_normals );
-    if( Coordinate *c = dynamic_cast< Coordinate * >( coord )) { 
+  if( !joint_matrix_changed->isUpToDate() ) {
+    joint_matrix_changed->upToDate();
+
+    if( CoordinateDouble *c = dynamic_cast< CoordinateDouble * >( coord ) ) {
+      vector< Vec3d > modified_points = points_double;
+      vector< Vec3f > modified_normals = normals_single;
+      updateCoordinates( points_double, normals_single, 
+                         modified_points, modified_normals );
       c->point->swap( modified_points );
+      if( normal ) normal->vector->swap( modified_normals );
+    } else {
+      vector< Vec3f > modified_points = points_single;
+      vector< Vec3f > modified_normals = normals_single;
+      updateCoordinates( points_single, normals_single,
+                         modified_points, modified_normals );
+      if( Coordinate *c = dynamic_cast< Coordinate * >( coord )) { 
+        c->point->swap( modified_points );
+      }
+      if( normal ) normal->vector->swap( modified_normals );
     }
-    if( normal ) normal->vector->swap( modified_normals );
   }
 }
 
@@ -364,3 +369,46 @@ bool HAnimHumanoid::movingSphereIntersect( H3DFloat radius,
 }
 
 
+void HAnimHumanoid::MFSkeletonNode::onAdd( Node *n ) {
+  HAnimHumanoid *humanoid = static_cast< HAnimHumanoid * >( getOwner() );
+  if( n ) {
+    if( HAnimJoint *joint = dynamic_cast< HAnimJoint *>( n ) ) {
+      
+    } else if( dynamic_cast< HAnimSite * >( n ) ) {
+      
+    } else {
+      Console(4) << "Invalid Node type: \"" << n->getTypeName() 
+                 << "\" in HAnimHumanoid.skeleton field. Must be HAnimJoint or HAnimSite" << endl;
+      return;
+    }
+  }
+  MFNode::onAdd( n );
+}
+
+
+void HAnimHumanoid::MFJoint::onAdd( Node *n ) {
+  HAnimHumanoid *humanoid = static_cast< HAnimHumanoid * >( getOwner() );
+  if( n ) {
+    if( HAnimJoint *joint = dynamic_cast< HAnimJoint *>( n ) ) {
+      joint->accumulatedJointMatrix->route( humanoid->joint_matrix_changed );
+      joint->displacers->route( humanoid->joint_matrix_changed );
+    } else if( dynamic_cast< HAnimSite * >( n ) ) {
+      
+    } else {
+      Console(4) << "Invalid Node type: \"" << n->getTypeName() 
+                 << "\" in HAnimHumanoid.skeleton field. Must be HAnimJoint or HAnimSite" << endl;
+      return;
+    }
+  }
+  MFNode::onAdd( n );
+}
+
+void HAnimHumanoid::MFJoint::onRemove( Node *n ) {
+  MFNode::onRemove( n );
+  HAnimHumanoid *humanoid = static_cast< HAnimHumanoid * >( getOwner() );
+  HAnimJoint *joint = dynamic_cast< HAnimJoint *>( n ) ; 
+  if( joint ) {
+    joint->accumulatedJointMatrix->unroute( humanoid->joint_matrix_changed );
+    joint->displacers->unroute( humanoid->joint_matrix_changed );
+  } 
+}

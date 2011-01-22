@@ -29,6 +29,7 @@
 #ifndef __HANIMJOINT_H__
 #define __HANIMJOINT_H__
 
+#include <H3D/HAnimDisplacer.h>
 #include <H3D/Transform.h>
 #include <H3D/MFFloat.h>
 #include <H3D/MFInt32.h>
@@ -102,9 +103,14 @@ namespace H3D {
   /// \dotfile HAnimJoint.dot
   class H3DAPI_API HAnimJoint : public Transform {
   public:
-    
-    // TODO
-    typedef MFNode MFDisplacer;
+
+    /// The MFDisplacer is dependent on the propertyChanged field of the 
+    /// contained HAnimDisplacer.
+    typedef  DependentMFNode< HAnimDisplacer,
+                              FieldRef< X3DGeometricPropertyNode,
+                                        Field,
+                                        &HAnimDisplacer::propertyChanged > >  
+    MFDisplacer;
 
     /// Constructor.
     HAnimJoint( Inst< AddChildren >        _addChildren        = 0,
