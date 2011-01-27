@@ -44,6 +44,8 @@
 # include <algorithm>
 
 
+#undef max
+
 /* Line 38 of location.cc  */
 #line 1 "[Bison:b4_percent_define_default]"
 
