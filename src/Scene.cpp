@@ -125,6 +125,31 @@ void Scene::idle() {
   last_time = t;
   time->setValue( t, id );
 
+   DefaultAppearance *def_app = NULL;
+  
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) {
+    default_settings->getOptionNode( def_app );
+  }
+
+  if( def_app ) {
+    Appearance *app = def_app->defaultAppearance->getValue();
+    if( app ) {
+      //app->displayList->callList();
+      if( app->material->getValue() ) {
+        X3DShapeNode::disable_lighting_if_no_app = false;
+      }
+      
+      RenderProperties *rp = app->renderProperties->getValue();
+      if( rp ) {
+        X3DAppearanceNode::setDefaultUsingMultiPassTransparency( 
+          rp->multiPassTransparency->getValue() );
+      } else {
+        X3DAppearanceNode::setDefaultUsingMultiPassTransparency( true );
+	}
+   }
+  }
+
   H3DMultiPassRenderObject::resetCounters();
   shadow_caster->object->clear();
   shadow_caster->light->clear();
@@ -259,8 +284,12 @@ void Scene::idle() {
   for( MFWindow::const_iterator w = window->begin(); 
        w != window->end(); w++ ) {
     H3DWindowNode *window = static_cast< H3DWindowNode * >(*w);
+    bool used_mpt = window->getMultiPassTransparency();
     window->setMultiPassTransparency( 
                        last_traverseinfo->getMultiPassTransparency() );
+    if( used_mpt != window->getMultiPassTransparency() ) {
+      H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
+    }
     window->render( static_cast< X3DChildNode * >( sceneRoot->getValue() ) );
   }
   // update the eventSink

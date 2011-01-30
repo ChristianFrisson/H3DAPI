@@ -239,6 +239,11 @@ namespace H3D {
       vector< X3DPointingDeviceSensorNode * > pt_dev_sensors;
       map< X3DPointingDeviceSensorNode *, H3DInt32 > pt_dev_sens_index;
 
+      /// Will be set in traverseSG to indicate if any of the children
+      /// enables multi-pass transparency. We use this flag to avoid 
+      /// traversing into children without transparent objects when
+      /// multi-pass rendered transparent objects are to be rendered.
+      bool children_multi_pass_transparency;
   };
 }
 

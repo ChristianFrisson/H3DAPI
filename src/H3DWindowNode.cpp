@@ -33,7 +33,6 @@
 #include <H3D/Bound.h>
 #include <H3D/H3DBoundedObject.h>
 #include <H3D/GlobalSettings.h>
-#include <H3D/DefaultAppearance.h>
 #include <H3D/X3DShapeNode.h>
 #include <H3D/DeviceInfo.h>
 #include <H3D/H3DDisplayListObject.h>
@@ -93,6 +92,7 @@ namespace H3DWindowNodeInternals {
 
 bool H3DWindowNode::GLEW_init = false;
 set< H3DWindowNode* > H3DWindowNode::windows;
+bool H3DWindowNode::multi_pass_transparency = false;
 
 H3DWindowNode::H3DWindowNode(
                    Inst< SFInt32     > _width,
@@ -122,7 +122,6 @@ H3DWindowNode::H3DWindowNode(
   cursorType( _cursorType ),
   navigationInfo( _navigationInfo ),
   useFullscreenAntiAliasing( _useFullscreenAntiAliasing ),
-  multi_pass_transparency( false ),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -627,31 +626,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   
   X3DShapeNode::disable_lighting_if_no_app = true;
 
-  DefaultAppearance *def_app = NULL;
   GraphicsCachingOptions *graphics_options = NULL;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) {
-    default_settings->getOptionNode( def_app );
     default_settings->getOptionNode( graphics_options );
-  }
-
-  
-  if( def_app ) {
-    Appearance *app = def_app->defaultAppearance->getValue();
-    if( app ) {
-      app->displayList->callList();
-      if( app->material->getValue() ) {
-        X3DShapeNode::disable_lighting_if_no_app = false;
-      }
-
-      RenderProperties *rp = app->renderProperties->getValue();
-      if( rp ) {
-        X3DAppearanceNode::setDefaultUsingMultiPassTransparency( 
-          rp->multiPassTransparency->getValue() );
-      } else {
-        X3DAppearanceNode::setDefaultUsingMultiPassTransparency( true );
-      }
-    }
   }
 
   // enable headlight

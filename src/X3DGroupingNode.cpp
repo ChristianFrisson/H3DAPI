@@ -77,6 +77,15 @@ X3DGroupingNode::X3DGroupingNode( Inst< AddChildren    > _addChildren,
 }
 
 void X3DGroupingNode::render()     { 
+  // skip rendering if none of the chiGenldren are transparent(in multi-pass
+  // transparency mode) and the render pass is a pass to render transparent
+  // objects.
+  if( X3DShapeNode::geometry_render_mode != X3DShapeNode::SOLID && 
+      X3DShapeNode::geometry_render_mode != X3DShapeNode::ALL && 
+      !children_multi_pass_transparency ) {
+    return;
+  }
+
   X3DChildNode::render();
   
   for( MFNode::const_iterator i = children->begin();
@@ -111,6 +120,12 @@ void X3DGroupingNode::render()     {
 };
 
 void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
+  // save previous state of multi-pass transparency and reset
+  // to false in order to be able to identify if any of the children
+  // nodes sets it.
+  bool previous_multi_pass  = ti.getMultiPassTransparency();
+  ti.setMultiPassTransparency( false );
+
   for( MFNode::const_iterator i = children->begin();
        i != children->end(); i++ ) {
     H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
@@ -134,6 +149,9 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
       l->disableHapticsState( ti );
     }
   }
+
+  children_multi_pass_transparency = ti.getMultiPassTransparency();
+  ti.setMultiPassTransparency( previous_multi_pass || children_multi_pass_transparency ); 
 }
 
 bool X3DGroupingNode::lineIntersect(

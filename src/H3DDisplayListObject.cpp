@@ -35,6 +35,7 @@
 #include <H3D/GraphicsCachingOptions.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/MatrixTransform.h>
+#include <H3D/H3DWindowNode.h>
 
 using namespace H3D;
 
@@ -408,11 +409,20 @@ bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
 }
 
 bool H3DDisplayListObject::DisplayList::usingCaching() {
+  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
+  // if multi_pass_transparency is in use caching cannot be used
+  // for anything else than geometries since the scene will be 
+  // rendered thrice with different properties set and if e.g. a solid
+  // object is cached it might me rendered for each of these passes
+  // when it should only be rendered for one.
+  if( H3DWindowNode::getMultiPassTransparency() && !geom) {
+    return false;
+  }
   if( cache_mode == ON ) return true;
   if( cache_mode == OFF ) return false;
 
   GraphicsCachingOptions *options = NULL;
-  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
+ 
   if( geom ) {
     geom->getOptionNode( options );
   }

@@ -348,6 +348,10 @@ namespace H3D {
 
     static set< H3DWindowNode* > windows;
 
+    inline static bool getMultiPassTransparency() {
+      return multi_pass_transparency;
+    }
+
     /// This function shares the rendering context between this H3DWindowNode
     /// and the one given as an argument. This means that the two windows
     /// after the call can share display lists and textures. When several
@@ -407,7 +411,7 @@ namespace H3D {
     /// side of transparent objects and once for the front face of 
     /// transparent objects. This is in order to avoid artifacts for 
     /// transparent objects when rendered in the wrong order. 
-    inline void setMultiPassTransparency( bool b ) {
+    inline static void setMultiPassTransparency( bool b ) {
       multi_pass_transparency = b;
     }
 
@@ -435,7 +439,7 @@ namespace H3D {
 
     friend class Scene; 
 
-    bool multi_pass_transparency;
+    static bool multi_pass_transparency;
     X3DChildNode *last_render_child;
     static bool GLEW_init;
     int window_id;
