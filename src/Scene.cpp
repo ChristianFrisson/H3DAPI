@@ -51,6 +51,7 @@
 #include <H3D/H3DMultiPassRenderObject.h>
 #include <H3D/Anchor.h>
 #include <H3D/DirectionalLight.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 
