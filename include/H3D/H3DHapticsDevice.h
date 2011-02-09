@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -278,7 +278,7 @@ namespace H3D {
                       Inst< PosCalibration  > _positionCalibration    = 0,
                       Inst< OrnCalibration  > _orientationCalibration = 0,
                       Inst< SFVec3f         > _proxyPosition          = 0,
-                      Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
+                      Inst< WeightedProxy   > _weightedProxyPosition  = 0,
                       Inst< SFFloat         > _proxyWeighting         = 0,
                       Inst< SFBool          > _mainButton             = 0,
                       Inst< SFBool          > _secondaryButton        = 0,
@@ -598,6 +598,7 @@ namespace H3D {
     /// positions and does not generate any forces.
     ///
     /// <b>Access type:</b> inputOnly \n
+    /// <b>Default value:</b> false \n
     /// 
     /// \dotfile H3DHapticsDevice_enabled.dot
     auto_ptr< SetEnabled > set_enabled;

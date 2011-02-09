@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2010, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -384,8 +384,8 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
 }
 
 void X3D::writeNodeAsX3D( ostream& os, 
-			  Node *node, 
-			  const string &container_field ) {
+        Node *node, 
+        const string &container_field ) {
   std::set< Node *> visited_nodes;
   writeNodeAsX3DHelp( os, node, container_field, "", 
                       visited_nodes, 0 );
@@ -455,25 +455,58 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
 
   vector< pair< string, SFNode * > > sf_nodes;
   vector< pair< string, MFNode * > > mf_nodes;
+  vector< pair< string, SFNode * > > dyn_sf_nodes;
+  vector< pair< string, MFNode * > > dyn_mf_nodes;
+  vector< pair< string, ParsableField * > > dyn_parse_fields;
 
   //only set fields if it is not a node that is USEd
-  if( !use_node ) {   
+  if( !use_node ) {
+    H3DDynamicFieldsObject * dyn_f_obj =
+      dynamic_cast< H3DDynamicFieldsObject * >(node);
     AutoRef< Node > default_value_node( H3DNodeDatabase::createNode( node_name ) );
     for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
          i != db->fieldDBEnd(); i++ ) {
       Field *f = node->getField( *i );
+      // In the case of dynamic fields a field in the field database might not
+      // exist for this node, in that case just check next.
+      if( !f )
+        continue;
       Field::AccessType access_type = f->getAccessType();
-      if( access_type != Field::INPUT_ONLY &&
-          access_type != Field::OUTPUT_ONLY ) {
+      // check if field is a dynamic field.
+      bool dynamic_field = false;
+      H3DDynamicFieldsObject::field_iterator j;
+      if( dyn_f_obj ) {
+        for( j = dyn_f_obj->firstField();
+             j != dyn_f_obj->endField(); j++ )
+          if( (*j) == f ) {
+            dynamic_field = true;
+            break;
+          }
+      }
+
+      if( dynamic_field ) {
+        // Dynamic fields are added to other vectors.
         if( MFNode *mf_node = dynamic_cast< MFNode * >( f ) ) {
-          if( mf_node->size() > 0 ) mf_nodes.push_back( make_pair( *i, mf_node ) );
+          dyn_mf_nodes.push_back( make_pair( (*j)->getName(), mf_node ) );
         } else if( SFNode *sf_node = dynamic_cast< SFNode * >( f ) ) {
-          if( sf_node->getValue() ) sf_nodes.push_back( make_pair( *i, sf_node ) );
+          dyn_sf_nodes.push_back( make_pair( (*j)->getName(), sf_node ) );
+        } else if( ParsableField *p_field = 
+                   dynamic_cast< ParsableField * >( f ) ) {
+          dyn_parse_fields.push_back( make_pair( (*j)->getName(), p_field ) );
+        }
+      } else if( access_type != Field::INPUT_ONLY &&
+                 access_type != Field::OUTPUT_ONLY ) {
+        if( MFNode *mf_node = dynamic_cast< MFNode * >( f ) ) {
+          if( mf_node->size() > 0 )
+            mf_nodes.push_back( make_pair( *i, mf_node ) );
+        } else if( SFNode *sf_node = dynamic_cast< SFNode * >( f ) ) {
+          if( sf_node->getValue() )
+            sf_nodes.push_back( make_pair( *i, sf_node ) );
         } else if( ParsableField *p_field = 
                    dynamic_cast< ParsableField * >( f ) ){
           // only add value if it is different from the default value.
-          ParsableField *default_field = 
-             dynamic_cast< ParsableField * >(default_value_node->getField( *i ));
+          ParsableField *default_field = dynamic_cast< ParsableField * >(
+               default_value_node->getField( *i ) );
           string v = p_field->getValueAsString();
           if( default_field->getValueAsString() != v ) {
             if( output_type == X3D_OUTPUT ) {
@@ -502,16 +535,60 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
   }
 
   
-  if( sf_nodes.empty() && mf_nodes.empty() ) {
+  if( sf_nodes.empty() && mf_nodes.empty() &&
+      dyn_sf_nodes.empty() && dyn_mf_nodes.empty() &&
+      dyn_parse_fields.empty() ) {
     if( output_type == X3D_OUTPUT ) {
       // if no nodes as children, end tag on same line
       os << " />" << endl;
     } else if( output_type == VRML_OUTPUT ) {
       os << prefix << "}" << endl;
-	}
+    }
   } else {
     if( output_type == X3D_OUTPUT ) {
       os << ">" << endl;
+    }
+
+    // Handle dynamic parsable fields
+    for( unsigned int i = 0; i < dyn_parse_fields.size(); i++ ) {
+      if( output_type == X3D_OUTPUT ) {
+        Field::AccessType access_type =
+          dyn_parse_fields[i].second->getAccessType();
+        os << "<field name=\"" << dyn_parse_fields[i].first << "\" type=\""
+           << dyn_parse_fields[i].second->getTypeName()
+           << "\" value=\"" << dyn_parse_fields[i].second->getValueAsString()
+           << "\" accessType=\"";
+        if( access_type == Field::INPUT_OUTPUT )
+          os << "inputOutput";
+        else if( access_type == Field::INPUT_ONLY )
+          os << "inputOnly";
+        else if( access_type == Field::OUTPUT_ONLY )
+          os << "ouputOnly";
+        else if( access_type == Field::INITIALIZE_ONLY )
+          os << "initializeOnly";
+        os << "\"/>" << endl;
+      } else if( output_type == VRML_OUTPUT ) {
+        string v = dyn_parse_fields[i].second->getValueAsString();
+
+        // VRML versions of true and false are upper case.
+        if( dynamic_cast< MFBool * >( dyn_parse_fields[i].second ) ||
+            dynamic_cast< SFBool * >( dyn_parse_fields[i].second ) ){
+          for (size_t j=0; j<v.length(); ++j) {
+            v[j]=toupper(v[j]);
+          }
+        }
+
+        os << new_prefix << "field "
+                         << dyn_parse_fields[i].second->getTypeName();
+
+        if( dynamic_cast< MFieldClass * >( dyn_parse_fields[i].second ) ) {
+          os << " [" << v << "]" << endl;
+        } else if( dynamic_cast< SFString *>( dyn_parse_fields[i].second ) ) {
+          os << " \"" << v << "\"" << endl;
+        } else {
+          os << " " << v << endl;
+        }
+      }
     }
 
     // process child nodes
@@ -521,11 +598,11 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
       }
 
       X3D::writeNodeAsX3DHelp( os, 
-			       sf_nodes[i].second->getValue(), 
-			       sf_nodes[i].first,
-			       new_prefix,
-			       visited_nodes,
-				   output_type);
+             sf_nodes[i].second->getValue(), 
+             sf_nodes[i].first,
+             new_prefix,
+             visited_nodes,
+           output_type);
     }
 
     for( unsigned int i = 0; i < mf_nodes.size(); i++ ) {
@@ -536,14 +613,89 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
       for( MFNode::const_iterator n = mf_nodes[i].second->begin();
            n != mf_nodes[i].second->end(); n++ ) {
         X3D::writeNodeAsX3DHelp( os, 
-				 *n, 
-				 mf_nodes[i].first, 
-				 new_prefix + "  ", 
-				 visited_nodes,
-				 output_type );  
+         *n, 
+         mf_nodes[i].first, 
+         new_prefix + "  ", 
+         visited_nodes,
+         output_type );  
       }
 
-	  if( output_type == VRML_OUTPUT ) {
+      if( output_type == VRML_OUTPUT ) {
+          os << new_prefix << "]" << endl;
+      } 
+    }
+
+    // Handle dynamic sf node fields, might not work when exporting
+    // to wrl because I do not know the syntax when not using the
+    // USE attribute, or if it is even possible.
+    for( unsigned int i = 0; i < dyn_sf_nodes.size(); i++ ) {
+      if( output_type == X3D_OUTPUT ) {
+        Field::AccessType access_type =
+          dyn_sf_nodes[i].second->getAccessType();
+        os << "<field name=\"" << dyn_sf_nodes[i].first << "\" type=\""
+           << dyn_sf_nodes[i].second->getTypeName() << "\" accessType=\"";
+        if( access_type == Field::INPUT_OUTPUT )
+          os << "inputOutput";
+        else if( access_type == Field::INPUT_ONLY )
+          os << "inputOnly";
+        else if( access_type == Field::OUTPUT_ONLY )
+          os << "ouputOnly";
+        else if( access_type == Field::INITIALIZE_ONLY )
+          os << "initializeOnly";
+        os << "\" >" << endl;
+      } else if( output_type == VRML_OUTPUT ) {
+        os << new_prefix << "exposedField "
+           << dyn_sf_nodes[i].second->getTypeName();
+      }
+
+      X3D::writeNodeAsX3DHelp( os, 
+             dyn_sf_nodes[i].second->getValue(), 
+             "",
+             new_prefix,
+             visited_nodes,
+           output_type );
+
+      if( output_type == X3D_OUTPUT ) {
+        os << "</field>" << endl;
+      }
+    }
+
+    // Handle dynamic mf node fields, might not work when exporting
+    // to wrl because I do not know the syntax when not using the
+    // USE attribute, or if it is even possible.
+    for( unsigned int i = 0; i < dyn_mf_nodes.size(); i++ ) {
+      if( output_type == X3D_OUTPUT ) {
+        Field::AccessType access_type =
+          dyn_mf_nodes[i].second->getAccessType();
+        os << "<field name=\"" << dyn_mf_nodes[i].first
+           << "\" type=\"MFNode\" accessType=\"";
+        if( access_type == Field::INPUT_OUTPUT )
+          os << "inputOutput";
+        else if( access_type == Field::INPUT_ONLY )
+          os << "inputOnly";
+        else if( access_type == Field::OUTPUT_ONLY )
+          os << "ouputOnly";
+        else if( access_type == Field::INITIALIZE_ONLY )
+          os << "initializeOnly";
+        os << "\"/>" << endl;
+      } else if( output_type == VRML_OUTPUT ) {
+         os << new_prefix << "exposedField "
+           << dyn_sf_nodes[i].second->getTypeName() << "[";
+      }
+
+      for( MFNode::const_iterator n = dyn_mf_nodes[i].second->begin();
+           n != dyn_mf_nodes[i].second->end(); n++ ) {
+        X3D::writeNodeAsX3DHelp( os, 
+         *n, 
+         "", 
+         new_prefix + "  ",
+         visited_nodes,
+         output_type );
+      }
+
+      if( output_type == X3D_OUTPUT )
+        os << "</field>" << endl;
+      else if( output_type == VRML_OUTPUT ) {
           os << new_prefix << "]" << endl;
       } 
     }

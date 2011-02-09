@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -210,11 +210,10 @@ namespace H3D {
       return n;
     }
     
-    /// This function will be called when values of SFNode
+    /// This function will be called when values of RefCountMField
     /// changes. As soon as a Node is added onAdd will
     /// be called on the added value. 
     /// \param n The added value.
-    ///
     virtual void onAdd( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
       Console(1) << "RefCountMField::onAdd( " << getFullName() << " = " << this 
@@ -222,11 +221,10 @@ namespace H3D {
 #endif
     }
     
-    /// This function will be called when values of SFNode
+    /// This function will be called when values of RefCountMField
     /// changes. As soon as a Node is removed onRemove will
     /// be called on the removed value. 
     /// \param n The removed value.
-    ///
     virtual void onRemove( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
       Console(1) << "RefCountMField::onRemove( " << getFullName() << " = " 

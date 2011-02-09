@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2010, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -150,6 +150,11 @@ H3DHapticsDevice::H3DHapticsDevice(
   hapticsLoopTime->setValue( 0, id );
   inputDOF->setValue( 3, id );
   outputDOF->setValue( 3, id );
+  // Even though this is an input only field a default value
+  // should be set to false since onValueChanged is used which is
+  // called if value changes state, so set_enable must have the same
+  // value as enabled.
+  set_enabled->setValue( false, id );
 
   positionCalibration->route( trackerPosition, id );
   devicePosition->route( trackerPosition, id );

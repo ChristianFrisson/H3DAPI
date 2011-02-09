@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -124,13 +124,6 @@ namespace H3D {
       return nav_type;
     }
 
-    /// needs to be public so field in sub-classes can set directly.
-    Vec3f move_dir;
-    Rotation rel_rot;
-    Vec3f center_of_rot;
-    bool use_center;
-    bool zoom;
-
     /// Get the center or rotation.
     virtual Vec3f getCenterOfRot(){
       return center_of_rot;
@@ -145,6 +138,18 @@ namespace H3D {
     static DeviceMap all_devices;
     // Navigation type.
     string nav_type;
+
+    // move_dir is the distance to move for WALK, FLY and EXAMINE mode while it
+    // is the direction to move when zooming in EXAMINE mode.
+    Vec3f move_dir;
+    // The relative rotation for navigation.
+    Rotation rel_rot;
+    // The center of rotation, only used if use_center is true.
+    Vec3f center_of_rot;
+    // If true center_of_rot is used.
+    bool use_center;
+    // If true we are in zoom mode.
+    bool zoom;
   };
 
 
