@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -71,7 +71,9 @@ X3DShapeNode::X3DShapeNode(
   geometry  ( _geometry   ),
   hapticGeometry( _hapticGeometry ),
   shadowVolume( new SFShadowObjectNode ),
-  use_geometry_bound( false ) {
+  use_geometry_bound( false ),
+  prev_travinfoadr( NULL ),
+  traverse_multipass_transparency( false ) {
 
   geometry->owner = this;
 
@@ -143,6 +145,10 @@ void X3DShapeNode::render() {
 };
 
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
+  if( prev_travinfoadr != &ti ) {
+    prev_travinfoadr = &ti;
+    traverse_multipass_transparency = false;
+  }
   X3DAppearanceNode *a = appearance->getValue();
   X3DGeometryNode *g = geometry->getValue();
   Node *hg = hapticGeometry->getValue();;
@@ -165,7 +171,10 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
 
   if ( a ) {
     a->traverseSG( ti );
-    if( ti.graphicsEnabled() && a->isTransparent() && a->usingMultiPassTransparency() ) {
+    traverse_multipass_transparency = traverse_multipass_transparency ||
+        ( ti.graphicsEnabled() && a->isTransparent() &&
+          a->usingMultiPassTransparency() );
+    if( traverse_multipass_transparency ) {
       ti.setMultiPassTransparency( true );
       displayList->breakCache();
     }

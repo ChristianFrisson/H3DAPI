@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -282,6 +282,14 @@ namespace H3D {
     /// to false in e.g. H3DWindowNode if a default Material node has 
     /// been specified in a DefaultAppearance option node.
     static bool disable_lighting_if_no_app;
+  protected:
+
+    // Adress of traverseInfo 
+    // only interested in adress, what it points to will be invalid.
+    // It is needed to correctly set children_multi_pass_transparency.
+    // If a X3DGroupingNode is DEFed
+    TraverseInfo *prev_travinfoadr;
+    bool traverse_multipass_transparency;
   };
 }
 

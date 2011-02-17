@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -77,7 +77,7 @@ X3DGroupingNode::X3DGroupingNode( Inst< AddChildren    > _addChildren,
 }
 
 void X3DGroupingNode::render()     { 
-  // skip rendering if none of the chiGenldren are transparent(in multi-pass
+  // skip rendering if none of the children are transparent(in multi-pass
   // transparency mode) and the render pass is a pass to render transparent
   // objects.
   if( X3DShapeNode::geometry_render_mode != X3DShapeNode::SOLID && 
