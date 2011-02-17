@@ -286,9 +286,15 @@ namespace H3D {
 
     // Adress of traverseInfo 
     // only interested in adress, what it points to will be invalid.
-    // It is needed to correctly set children_multi_pass_transparency.
-    // If a X3DGroupingNode is DEFed
+    // It is needed to correctly set traverse_multipass_transparency
+    // if a X3DShapeNode is used in several places in the scene graph.
     TraverseInfo *prev_travinfoadr;
+    // If the node is in several places in the scene graph it might
+    // use different values for setting multipass transparency in
+    // traverseSG. The last one is the one that will be used. This
+    // stores values during a traverseSG pass and "or" it with
+    // new values. If any of the pass returns true then multipass
+    // transparency should be used.
     bool traverse_multipass_transparency;
   };
 }
