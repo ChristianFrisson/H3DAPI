@@ -342,8 +342,8 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   for( list< FieldDBElement * >::iterator i = input_only_fields.begin();
        i != input_only_fields.end(); i++ ) {
     Field *f = (*i)->getField( n ); 
-    Field *default_f = (*i)->getField( default_values_node );
-    setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
+    // input only fields do not have a default value
+    setupProperty( FieldValuesGrid, f, NULL, property_update_fields );
   }
   
   // if PythonScript node add top-level fields.
@@ -361,10 +361,12 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
       if( dynamic_cast< SFNode * >( f ) || 
           dynamic_cast< MFNode * >( f ) ) continue;
       wxPGProperty *p = getPropertyFromField( f, name );
-      PropertyUpdater *updater = new PropertyUpdater( p );
-      f->route( updater );
-      property_update_fields.push_back( updater );
-      if( p ) FieldValuesGrid->Append( p );
+      if( p ) {
+        PropertyUpdater *updater = new PropertyUpdater( p );
+        f->route( updater );
+        property_update_fields.push_back( updater );
+        FieldValuesGrid->Append( p );
+      }
     }
   }
 }
@@ -605,6 +607,7 @@ void H3DViewerFieldValuesPanelPropGrid::setupProperty( wxPropertyGrid *FieldValu
   void *default_value = NULL;
   unsigned int default_value_size = 0;
   
+
   if( MFieldClass *mfield = dynamic_cast< MFieldClass * >( default_f ) ) {
     // TODO: MFString does not work with getValueAsVoidPtr. Do special case or fix getValueAsVoidPtr.
     if( !dynamic_cast< MFString * >( default_f ) ) {
@@ -630,10 +633,12 @@ void H3DViewerFieldValuesPanelPropGrid::setupProperty( wxPropertyGrid *FieldValu
   
   wxPGProperty *p = getPropertyFromField( f );
 
-  PropertyUpdater *updater = new PropertyUpdater(p, default_value, default_value_size );
-  f->route( updater );
+  if( f->getAccessType() != Field::INPUT_ONLY ) {
+    PropertyUpdater *updater = new PropertyUpdater(p, default_value, default_value_size );
+    f->route( updater );
 
-  property_update_fields.push_back( updater );
+    property_update_fields.push_back( updater );
+  }
 
   if(p) {
     FieldValuesGrid->Append( p );
