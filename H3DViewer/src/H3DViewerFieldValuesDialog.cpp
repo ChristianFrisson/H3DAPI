@@ -205,6 +205,7 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
     rows++;
   }
 
+#ifdef HAVE_PYTHONSCRIPT
   // if PythonScript node add top-level fields.
   PythonScript *ps = dynamic_cast< PythonScript * >( n );
   if( ps ) {
@@ -235,7 +236,7 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
       rows++;
     }
   }
-   
+#endif
   if( rows < FieldValuesGrid->GetNumberRows() ) {
     FieldValuesGrid->DeleteRows( rows, FieldValuesGrid->GetNumberRows() - rows );
   }
