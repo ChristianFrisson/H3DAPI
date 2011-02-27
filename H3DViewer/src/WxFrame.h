@@ -239,6 +239,10 @@ public:
       delete recentFiles;
   }
 
+  /// Takes a navigation type such as "EXAMINE", "WALK" and returns
+  /// the string to use in the navigation mode menu item.
+  string navTypeToNavMenuString( const string &nav_type );
+
   //Pointer to WxWidgetsWindow
   WxWidgetsWindow *glwindow;
 
@@ -409,6 +413,7 @@ public:
   WxConsoleDialog * the_console;
   H3DViewerTreeViewDialog * tree_view_dialog;
   H3DViewerPluginsDialog * plugins_dialog;
+  MenuContainer *menu_container;
   FrameRateDialog *  frameRates;
   SettingsDialog * settings;
   SpeedDialog *speed_slider;

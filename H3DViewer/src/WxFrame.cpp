@@ -2305,6 +2305,15 @@ void WxFrame::LoadSettings( bool from_config ) {
           SetValue( wxString(proxy_text.str().c_str(),wxConvUTF8) );
 }
 
+string WxFrame::navTypeToNavMenuString( const string &nav_type ) {
+  if( nav_type == "EXAMINE" ) return "EXAMINE\tAlt-e";
+  if( nav_type == "FLY" ) return "FLY\tAlt-f";
+  if( nav_type == "WALK" ) return "WALK\tAlt-w";
+  if( nav_type == "LOOKAT" ) return "LOOKAT\tAlt-l";
+  if( nav_type == "NONE" ) return "NONE\tAlt-n";
+  return nav_type;
+}
+
 //Build Navigation Menu
 void WxFrame::buildNavMenu () {
   //Get active navigation info object
@@ -2322,7 +2331,7 @@ void WxFrame::buildNavMenu () {
       vector<string>::iterator navList = navTypes.begin();
       bool hasAny = false;
       for (vector<string>::iterator navList = navTypes.begin(); 
-           navList != navTypes.end(); navList++) {
+           navList != navTypes.end(); navList++) { 
         if (validateNavType(*navList) && (*navList != "NONE")) {
           if (allowedTypes.empty()) {
             if ((*navList != "ANY")) {
@@ -2382,7 +2391,7 @@ void WxFrame::buildNavMenu () {
       for (vector<string>::iterator menuList = allowedTypes.begin(); 
            menuList != allowedTypes.end(); menuList++) {
         string typeName = (*menuList);
-        navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString(typeName.c_str(),wxConvUTF8),
+        navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString(navTypeToNavMenuString(typeName).c_str(),wxConvUTF8),
                                         wxT("Select a navigation mode"));
         Connect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(WxFrame::ChangeNavigation));
@@ -2403,16 +2412,16 @@ void WxFrame::buildNavMenu () {
   else {
     mynav = 0;
     vector<string> allTypes;
-    allTypes.push_back("EXAMINE\te");
-    allTypes.push_back("FLY\tf");
-    allTypes.push_back("WALK\tw");
-    allTypes.push_back("LOOKAT\tl");
-    allTypes.push_back("NONE\tn");
+    allTypes.push_back("EXAMINE");
+    allTypes.push_back("FLY");
+    allTypes.push_back("WALK");
+    allTypes.push_back("LOOKAT");
+    allTypes.push_back("NONE");
     navTypeCount = 5;
     int j = 0;
     for (vector<string>::iterator allList = allTypes.begin();
          allList != allTypes.end(); allList++) {
-      navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString((*allList).c_str(),wxConvUTF8),
+      navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString(navTypeToNavMenuString( (*allList) ).c_str(),wxConvUTF8),
                                       wxT("Select a navigation mode"));
       Connect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED, 
               wxCommandEventHandler(WxFrame::ChangeNavigation));
