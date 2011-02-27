@@ -250,7 +250,8 @@ myOwner( _myOwner )
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
-  if( myOwner->is_initialized ) {
+
+  if( myOwner && myOwner->is_initialized ) {
     static_cast< WxFrame * >(myOwner->theWindow)->updateFrameRates();
    
     // resize the window if the size is different from the current size.
