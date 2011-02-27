@@ -56,36 +56,6 @@ public:
 
   /// Callback for when user right clicked on a tree node.
   virtual void OnTreeRightClick( wxTreeEvent& event );
-
-  /// Callback for collapse all menu choice.
-  virtual void OnTreeViewCollapseAll( wxCommandEvent& event );
-
-  /// Callback for expand all menu choice.
-  virtual void OnTreeViewExpandAll( wxCommandEvent& event );
-
-  /// Callback for collapse children menu choice.
-  virtual void OnTreeViewCollapseChildren( wxCommandEvent& event );
-
-  /// Callback for node watch menu choice.
-  virtual void OnTreeViewNodeWatch( wxCommandEvent& event );
-
-  /// Callback for node save x3d menu choice.
-  virtual void OnTreeViewSaveX3D( wxCommandEvent& event );
-
-  /// Callback for node save VRML menu choice.
-  virtual void OnTreeViewSaveVRML( wxCommandEvent& event );
-
-  /// Callback for node save stl menu choice.
-  virtual void OnTreeViewSaveSTL( wxCommandEvent& event );
-
-  /// Callback for triangle save menu choice.
-	virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event );
-
-  /// Callback for delete node menu choice.
-	virtual void OnTreeViewDeleteNode( wxCommandEvent& event );
-
-  /// Callback for add child menu choice.
-  virtual void OnTreeViewAddChildNode( wxCommandEvent& event );
 	
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );
@@ -102,7 +72,6 @@ public:
   // to any node in the dialog.
   void clearTreeView();
 
-protected:
   // Expand the item and all children below it.
   void expandTree( const wxTreeItemId &id ); 
 
@@ -154,7 +123,7 @@ protected:
 #else
   H3DViewerFieldValuesPanel *field_values_panel;
 #endif
-
+  
+  MenuContainer *menu_container;
 };
-
 #endif // __H3DViewerTreeViewDialog__
