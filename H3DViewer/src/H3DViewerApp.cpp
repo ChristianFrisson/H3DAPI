@@ -76,7 +76,13 @@ inline string toStr( const wxString &s ) {
 
 const wxCmdLineEntryDesc gCmdLineDesc[] = 
   {
-    { wxCMD_LINE_PARAM, NULL, NULL, wxT("File to load"), wxCMD_LINE_VAL_STRING,
+    { wxCMD_LINE_PARAM, NULL, NULL, 
+#if( defined( wxUSE_UNICODE ) && wxMAJOR_VERSION == 2 && wxMINOR_VERSION <= 8 )
+      wxT("File to load"), 
+#else 
+      "File to load", 
+#endif
+wxCMD_LINE_VAL_STRING,
       wxCMD_LINE_PARAM_OPTIONAL }, 
     { wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, 0} };
 
