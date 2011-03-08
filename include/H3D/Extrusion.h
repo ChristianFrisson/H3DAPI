@@ -275,8 +275,20 @@ namespace H3D {
     /// If the number of orientation values is greater than the number
     /// of spine points, the excess values are ignored. If it contains one 
     /// value, it is applied at all spine points. The results are undefined if
-    /// the number of orientation values is greater than one but less 
-    /// than the number of spine points. 
+    /// the number of orientation values is greater than one but less
+    /// than the number of spine points.
+    /// The final orientation of each cross-section is computed by first
+    /// orienting it relative to the spine segments on either side of point at
+    /// which the cross-section is placed. This is known as the spine-aligned
+    /// cross-section plane (SCP), and is designed to provide a smooth
+    /// transition from one spine segment to the next. The SCP
+    /// is then rotated by the corresponding orientation value. This rotation is
+    /// performed relative to the SCP. For example, to impart twist in the
+    /// cross-section, a rotation about the Y-axis (0 1 0) would be used. Other
+    /// orientations are valid and rotate the cross-section out of the SCP.
+    /// The unmodified SCP for point is has its y-axis in the direction of
+    /// the spine point i-1 to i+1. The x and z axis are perpendicular to
+    /// this direction.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 0 1 0 \n

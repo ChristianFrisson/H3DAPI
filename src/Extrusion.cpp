@@ -245,7 +245,7 @@ void Extrusion::VertexVector::update() {
     vector< Vec3f > z_axis;
     vector< int > spine_forward;
     vector< int > spine_backward;
-    vector< Matrix3f > orn_matrices;
+    vector< Rotation > spine_orientations;
 
     bool closed_spine = false;
     bool collinear = true;        // if the spine is collinear
@@ -487,20 +487,24 @@ void Extrusion::VertexVector::update() {
     }
 
     for( int i = 0; i < nr_of_orn_values; i++ )
-      orn_matrices.push_back( 
-      static_cast< Matrix3f >( orn_vector[i] ) );
+      spine_orientations.push_back( orn_vector[i] );
 
     // calculate vertices.
     for( int i = 0; i < spine_size; i++ ) {
+      // Scp is the spine-aligned cross section plane, the orientation field should be
+      // applied in the local coordinate system for that plane.
+      Matrix3f scp_to_global( x_axis[i].x, y_axis[i].x, z_axis[i].x,
+                             x_axis[i].y, y_axis[i].y, z_axis[i].y,
+                             x_axis[i].z, y_axis[i].z, z_axis[i].z );
+      x_axis[i] = scp_to_global * ( spine_orientations[ i % nr_of_orn_values ] * Vec3f( 1, 0, 0 ) );
+      z_axis[i] = scp_to_global * ( spine_orientations[ i % nr_of_orn_values ] * Vec3f( 0, 0, 1 ) );
       for( int j = 0; j < nr_of_cross_section_points; j++ ) {
         Vec3f point0_x = scale_vector[ i % nr_of_scale_values ].x
           * cross_section[j].x * x_axis[i];
         Vec3f point0_z = scale_vector[ i % nr_of_scale_values ].y
           * cross_section[j].y * z_axis[i];
         Vec3f point0 = spine_vector[i] + 
-          orn_matrices[ i % nr_of_orn_values ]
-        * ( point0_x + point0_z );
-
+        ( point0_x + point0_z );
         value.push_back( point0 );
       }
     }
