@@ -29,6 +29,7 @@
 
 
 #include <H3D/QuanserDevice.h>
+#include <HAPI/QuanserHapticsDevice.h>
 
 using namespace H3D;
 
@@ -37,6 +38,7 @@ H3DNodeDatabase QuanserDevice::database( "QuanserDevice",
                                           typeid( QuanserDevice ),
                                           &H3DHapticsDevice::database ); 
 namespace QuanserDeviceInternals {
+  FIELDDB_ELEMENT( QuanserDevice, uri, INITIALIZE_ONLY );
 }
 
 /// Constructor.
@@ -59,14 +61,16 @@ QuanserDevice::QuanserDevice(
                Inst< SFInt32         > _outputDOF,
                Inst< SFInt32         > _hapticsRate,
                Inst< SFInt32         > _desiredHapticsRate,
-               Inst< SFNode          > _stylus ) :
+               Inst< SFNode          > _stylus,
+	       Inst< SFString        > _uri ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
-              _trackerOrientation, _positionCalibration, 
-              _orientationCalibration, _proxyPosition,
-              _weightedProxyPosition, _proxyWeighting, _mainButton,
+		    _trackerOrientation, _positionCalibration, 
+		    _orientationCalibration, _proxyPosition,
+		    _weightedProxyPosition, _proxyWeighting, _mainButton,
                     _secondaryButton, _buttons,
-              _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
-              _desiredHapticsRate, _stylus ) { 
+		    _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
+		    _desiredHapticsRate, _stylus ),
+  uri( _uri ) { 
 
   type_name = "QuanserDevice";  
   database.initFields( this );
@@ -75,8 +79,8 @@ QuanserDevice::QuanserDevice(
 
 void QuanserDevice::initialize() {
   H3DHapticsDevice::initialize();
-#ifdef HAVE_QUANSERAPI
-  hapi_device.reset( new HAPI::QuanserDevice() );
+#ifdef HAVE_QUARC
+  hapi_device.reset( new HAPI::QuanserHapticsDevice( uri->getValue() ) );
 #else
   Console(4) << "Cannot use QuanserDevice. HAPI compiled without"
 	     << " Quanser support. Recompile HAPI with "
