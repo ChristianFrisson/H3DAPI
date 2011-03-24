@@ -345,7 +345,8 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
     // input only fields do not have a default value
     setupProperty( FieldValuesGrid, f, NULL, property_update_fields );
   }
-  
+
+#ifdef HAVE_PYTHON
   // if PythonScript node add top-level fields.
   PythonScript *ps = dynamic_cast< PythonScript * >( n );
   if( ps ) {
@@ -369,6 +370,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
       }
     }
   }
+#endif
 }
 
 void H3DViewerFieldValuesPanelPropGrid::PropertyUpdater::update() {
