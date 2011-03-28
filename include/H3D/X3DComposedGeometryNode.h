@@ -127,12 +127,12 @@ namespace H3D {
 
     /// The MFVertexAttributeNode is dependent on the propertyChanged
     /// field of the contained X3DVertexAttributeNode.
-    typedef DependentMFNode< 
+    class H3DAPI_API MFVertexAttributeNode : public DependentMFNode< 
                 X3DVertexAttributeNode,
                 FieldRef< X3DGeometricPropertyNode,
                           Field,
-                          &X3DVertexAttributeNode::propertyChanged > > 
-    MFVertexAttributeNode;    
+                          &X3DVertexAttributeNode::propertyChanged > > {
+    };
 
     
    /// The SFFogCoordinate is dependent on the propertyChanged
