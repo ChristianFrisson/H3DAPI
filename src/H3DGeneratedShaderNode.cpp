@@ -37,7 +37,8 @@ using namespace H3D;
 H3DNodeDatabase H3DGeneratedShaderNode::database( 
                                    "H3DGeneratedShaderNode", 
                                    NULL,
-                                   typeid( H3DGeneratedShaderNode ) );
+                                   typeid( H3DGeneratedShaderNode ),
+                                   &ComposedShader::database );
 
 namespace H3DGeneratedShaderNodeInternals {
   FIELDDB_ELEMENT( H3DGeneratedShaderNode, vertexShaderString, OUTPUT_ONLY );

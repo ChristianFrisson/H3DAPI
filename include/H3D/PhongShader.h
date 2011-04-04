@@ -142,7 +142,7 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile PhongShader.dot
-  class PhongShader : 
+  class H3DAPI_API PhongShader : 
     public H3DGeneratedFragmentShaderNode {
   public:
   
