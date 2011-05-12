@@ -87,22 +87,33 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 void WxWidgetsWindow::initWindow() {
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
 
-  int attribList[8];
-  attribList[0] = WX_GL_RGBA;
-  attribList[1] = WX_GL_DOUBLEBUFFER;
-  attribList[2] = WX_GL_DEPTH_SIZE;
-  attribList[3] = 24;
-  attribList[4] = WX_GL_STENCIL_SIZE;
-  attribList[5] = 8;
+  int attribList[20];
+  unsigned int i = 0;
+  attribList[i++] = WX_GL_RGBA;
+  attribList[i++] = WX_GL_DOUBLEBUFFER;
+  attribList[i++] = WX_GL_DEPTH_SIZE;
+  attribList[i++] = 24;
+  attribList[i++] = WX_GL_STENCIL_SIZE;
+  attribList[i++] = 8;
+
+  // fullscreen anti-aliasing only supported on wxWidgets 2.9 or later
+#if( wxMAJOR_VERSION > 2 || wxMINOR_VERSION >= 9 ) 
+  if( useFullscreenAntiAliasing->getValue() ) {
+    attribList[i++] = WX_GL_SAMPLE_BUFFERS;
+    attribList[i++] = 1;
+    attribList[i++] = WX_GL_SAMPLES;
+    attribList[i++] = 4;
+  }
+#endif
 
   // TODO: FIX stereo mode
 #ifdef MACOSX
   // TODO: stereo mode does not work with mac
-  attribList[6] = 0;
+  attribList[i++] = 0;
 #else
   if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
-    attribList[6] = WX_GL_STEREO;
-  attribList[7] = 0;
+    attribList[i++] = WX_GL_STEREO;
+  attribList[i++] = 0;
 #endif
   // if we have a previous window, use same rendering context and destroy it.
   MyWxGLCanvas *old_canvas = theWxGLCanvas;
