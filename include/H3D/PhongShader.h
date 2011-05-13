@@ -79,6 +79,14 @@ namespace H3D {
   /// Ma is controlled by ambientMap, Md by diffuseMap, Me by emissionMap
   /// Ms by specularMap and Mshininess by glossMap. 
   /// 
+  /// The specularColorRamp and diffuseColorRamp can be used to control
+  /// the color gradient across a material. It contains a 1D texture
+  /// that defines the color ramp and the value of normal dot view_dir
+  /// is used for the lookup. This looked up color is then multiplied 
+  /// with the diffuse or specular color respectively to generate the 
+  /// final diffuse or specular color. This allows for different colors
+  /// depending on the view angle to the surface.
+  ///
   /// If modulateMaps is FALSE the color from the map is used directly
   /// in all texture maps except for Mshininess which is a floating point
   /// value. In this case for a 1 or 2 component image, we use the intensity
@@ -174,6 +182,8 @@ namespace H3D {
                  Inst< SFMatrix4f      > _normalMapMatrix = 0,
                  Inst< SFTexture2DNode > _specularMap = 0,
                  Inst< SFTexture2DNode > _glossMap    = 0,
+                 Inst< SFTexture2DNode > _specularColorRamp = 0,
+                 Inst< SFTexture2DNode > _diffuseColorRamp = 0,
                  Inst< SFFloat         > _fresnel      = 0,
                  Inst< SFBool          > _modulateMaps = 0,
                  Inst< SFTexture2DNode > _backAmbientMap  = 0,
@@ -184,6 +194,8 @@ namespace H3D {
                  Inst< SFMatrix4f      > _backNormalMapMatrix = 0,
                  Inst< SFTexture2DNode > _backSpecularMap = 0,
                  Inst< SFTexture2DNode > _backGlossMap    = 0,
+                 Inst< SFTexture2DNode > _backSpecularColorRamp = 0,
+                 Inst< SFTexture2DNode > _backDiffuseColorRamp = 0,
                  Inst< SFFloat         > _backFresnel = 0,
                  Inst< SFBool          > _backModulateMaps = 0,
                  Inst< SFBool          > _separateBackColor = 0 );
@@ -310,6 +322,35 @@ namespace H3D {
     /// 
     /// \dotfile PhongShader_glossMap.dot
     auto_ptr< SFTexture2DNode > glossMap;
+
+    /// The diffuseColorRamp can be used to control
+    /// the diffuse color gradient across a material. It contains a 1D texture
+    /// that defines the color ramp and the value of normal dot view_dir
+    /// is used for the lookup. This looked up color is then multiplied 
+    /// with the diffuse to generate the final diffuse color used in the lighting
+    /// equations. This allows for different colors depending on the view angle
+    /// to the surface.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> NULL \n
+    /// 
+    /// \dotfile PhongShader_diffuseColorRamp.dot
+    auto_ptr< SFTexture2DNode > diffuseColorRamp;
+
+    /// The specularColorRamp can be used to control
+    /// the specular color gradient across a material. It contains a 1D texture
+    /// that defines the color ramp and the value of normal dot view_dir
+    /// is used for the lookup. This looked up color is then multiplied 
+    /// with the specular to generate the final specular color used in the lighting
+    /// equations. This allows for different colors depending on the view angle
+    /// to the surface.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> NULL \n
+    /// 
+    /// \dotfile PhongShader_specularColorRamp.dot
+    auto_ptr< SFTexture2DNode > specularColorRamp;
+
 
     /// The fresnel field specifies if the fresnel effect should be used in the
     /// lighting model and if so how much. The fresnel effect is the effect
@@ -464,6 +505,36 @@ namespace H3D {
     /// 
     /// \dotfile PhongShader_backGlossMap.dot
     auto_ptr< SFTexture2DNode > backGlossMap;
+
+    /// The diffuseColorRamp can be used to control the diffuse color 
+    /// gradient across a material for back facing polygons. It contains
+    /// a 1D texture
+    /// that defines the color ramp and the value of normal dot view_dir
+    /// is used for the lookup. This looked up color is then multiplied 
+    /// with the diffuse to generate the final diffuse color used in the lighting
+    /// equations. This allows for different colors depending on the view angle
+    /// to the surface.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> NULL \n
+    /// 
+    /// \dotfile PhongShader_backDiffuseColorRamp.dot
+    auto_ptr< SFTexture2DNode > backDiffuseColorRamp;
+
+    /// The specularColorRamp can be used to control
+    /// the specular color gradient across a material for back facing polygons.
+    /// It contains a 1D texture
+    /// that defines the color ramp and the value of normal dot view_dir
+    /// is used for the lookup. This looked up color is then multiplied 
+    /// with the specular to generate the final specular color used in the lighting
+    /// equations. This allows for different colors depending on the view angle
+    /// to the surface.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> NULL \n
+    /// 
+    /// \dotfile PhongShader_backSpecularColorRamp.dot
+    auto_ptr< SFTexture2DNode > backSpecularColorRamp;
 
     /// The backFresnel field specifies the fresnel value for back facing
     /// polygons when separateBackColor is TRUE. Se fresnel field for 

@@ -49,6 +49,8 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, emissionMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, specularMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, glossMap, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, specularColorRamp, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, diffuseColorRamp, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, fresnel, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, modulateMaps, INPUT_OUTPUT );
 
@@ -60,6 +62,8 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, backEmissionMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backSpecularMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backGlossMap, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, backSpecularColorRamp, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, backDiffuseColorRamp, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backFresnel, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backModulateMaps, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, separateBackColor, INPUT_OUTPUT );
@@ -83,6 +87,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                           Inst< SFMatrix4f        > _normalMapMatrix,
                           Inst< SFTexture2DNode > _specularMap,
                           Inst< SFTexture2DNode > _glossMap,
+                          Inst< SFTexture2DNode > _specularColorRamp,
+                          Inst< SFTexture2DNode > _diffuseColorRamp,
                           Inst< SFFloat         > _fresnel,
                           Inst< SFBool          > _modulateMaps,
                           Inst< SFTexture2DNode > _backAmbientMap ,
@@ -93,6 +99,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                           Inst< SFMatrix4f      > _backNormalMapMatrix,
                           Inst< SFTexture2DNode > _backSpecularMap,
                           Inst< SFTexture2DNode > _backGlossMap   ,
+                          Inst< SFTexture2DNode > _backSpecularColorRamp,
+                          Inst< SFTexture2DNode > _backDiffuseColorRamp,
                           Inst< SFFloat         > _backFresnel,
                           Inst< SFBool          > _backModulateMaps,
                           Inst< SFBool          > _separateBackColor ) :
@@ -109,6 +117,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   normalMapMatrix( _normalMapMatrix ),
   specularMap( _specularMap ),
   glossMap( _glossMap ),
+  diffuseColorRamp( _diffuseColorRamp ),
+  specularColorRamp( _specularColorRamp ),
   fresnel( _fresnel ),
   modulateMaps( _modulateMaps ),
   backAmbientMap( _backAmbientMap ),
@@ -119,6 +129,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backNormalMapMatrix( _backNormalMapMatrix ),
   backSpecularMap( _backSpecularMap ),
   backGlossMap( _backGlossMap ),
+  backDiffuseColorRamp( _backDiffuseColorRamp ),
+  backSpecularColorRamp( _backSpecularColorRamp ),
   backFresnel( _backFresnel ),
   backModulateMaps( _backModulateMaps ),
   separateBackColor( _separateBackColor ) {
@@ -150,6 +162,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   normalMapCoordSpace->route( displayList, id );
   specularMap->route( displayList, id );
   glossMap->route( displayList, id );
+  specularColorRamp->route( displayList, id );
+  diffuseColorRamp->route( displayList, id );
   normalMapMatrix->route( displayList, id );
   modulateMaps->route( displayList, id );
   fresnel->route( displayList, id );
@@ -161,6 +175,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backNormalMapCoordSpace->route( displayList, id );
   backSpecularMap->route( displayList, id );
   backGlossMap->route( displayList, id );
+  backSpecularColorRamp->route( displayList, id );
+  backDiffuseColorRamp->route( displayList, id );
   backNormalMapMatrix->route( displayList, id );
   backModulateMaps->route( displayList, id );
   backFresnel->route( displayList, id );
@@ -173,6 +189,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   normalMapCoordSpace->route( rebuildShader, id );
   specularMap->route( rebuildShader, id );
   glossMap->route( rebuildShader, id );
+  diffuseColorRamp->route( rebuildShader, id );
+  specularColorRamp->route( rebuildShader, id );
   normalMapMatrix->route( rebuildShader );
   fresnel->route( rebuildShader, id );
   modulateMaps->route( rebuildShader );
@@ -184,6 +202,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backNormalMapCoordSpace->route( rebuildShader, id );
   backSpecularMap->route( rebuildShader, id );
   backGlossMap->route( rebuildShader, id );
+  backDiffuseColorRamp->route( rebuildShader, id );
+  backSpecularColorRamp->route( rebuildShader, id );
   backNormalMapMatrix->route( rebuildShader );
   backFresnel->route( rebuildShader, id );
   backModulateMaps->route( rebuildShader );
@@ -375,7 +395,8 @@ string PhongShader::getFragmentShaderString() {
   s << "    vec3 normal = " << uniqueShaderName( "normal" ) << ";" << endl;
   s << "    vec3 vertex = " << uniqueShaderName( "vertex" ) << ";" << endl;
 
-  s << "    vec3 orig_normal = normalize( normal ); \n" << endl;
+  s << "    vec3 orig_normal = normalize( normal ); " << endl;
+  s << "    vec3 view_dir = normalize(-vertex);" << endl;
 
   bool modulate = modulateMaps->getValue();
   bool back_modulate = backModulateMaps->getValue();
@@ -493,6 +514,22 @@ string PhongShader::getFragmentShaderString() {
     s << "    vec3 N = orig_normal;\n" << endl;
   }
 
+  // color ramps
+  if( specularColorRamp->getValue() || diffuseColorRamp->getValue() ) {
+    // the lookup 
+    s << "    float ramp_coord = dot( N, view_dir ); " << endl;
+  }
+
+  if( specularColorRamp->getValue() ) {
+    s << "    vec4 specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
+    s << "    specular_color = specular_color * specular_color_ramp; " << endl;
+  }
+
+  if( diffuseColorRamp->getValue() ) {
+    s << "    vec4 diffuse_color_ramp = texture2D( " << uniqueShaderName( "diffuse_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) ) ;" << endl;
+    s << "    diffuse_color = diffuse_color * diffuse_color_ramp; " << endl;
+  }
+
   // back colors
   if( separateBackColor->getValue() ) {
     if( backDiffuseMap->getValue() ) {
@@ -585,6 +622,22 @@ string PhongShader::getFragmentShaderString() {
     } else {
       s << "  vec3 back_N = -orig_normal;\n" << endl;
     }
+
+    if( backSpecularColorRamp->getValue() || backDiffuseColorRamp->getValue() ) {
+      // the lookup 
+      s << "    float back_ramp_coord = dot( back_N, view_dir ); " << endl;
+    }
+
+    if( backSpecularColorRamp->getValue() ) {
+      s << "    vec4 back_specular_color_ramp = texture2D( " << uniqueShaderName( "back_specular_color_ramp" ) << ", vec2( back_ramp_coord, 0.5 ) );" << endl;
+      s << "    back_specular_color = back_specular_color * back_specular_color_ramp; " << endl;
+    }
+
+    if( backDiffuseColorRamp->getValue() ) {
+      s << "    vec4 back_diffuse_color_ramp = texture2D( " << uniqueShaderName( "back_diffuse_color_ramp" ) << ", vec2( back_ramp_coord, 0.5 ) );" << endl;
+      s << "    back_diffuse_color = back_diffuse_color * back_diffuse_color_ramp; " << endl;
+    }
+
   } else {
     // separateBackColor is false, just use the front colors as back colors.
     s << "  vec4 back_ambient_color = ambient_color;\n" << endl;
@@ -598,7 +651,6 @@ string PhongShader::getFragmentShaderString() {
   // TODO: support several lights
   s <<
     "  vec4 final_color = vec4( 0.0, 0.0, 0.0, 1.0 );\n"
-    "  vec3 view_dir = normalize(-vertex);\n"
     "  bool is_back_face = (dot(orig_normal, view_dir) < 0.0);\n"
     "  if( is_back_face ) { \n"
     "    final_color += lightPhong( 0, back_N, vertex, back_shininess, back_ambient_color, back_diffuse_color, back_specular_color );\n"
@@ -672,6 +724,23 @@ string PhongShader::addUniformFields( ComposedShader *shader ) {
                                      copyAndRouteField( glossMap ) );  
   }
 
+  if( specularColorRamp->getValue() ) {
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "specular_color_ramp" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( specularColorRamp ) );  
+  }
+
+  if( diffuseColorRamp->getValue() ) {
+    s << addUniformToFragmentShader( shader,
+                                     uniqueShaderName( "diffuse_color_ramp" ), 
+                                     "sampler2D",
+                                     H3D::Field::INPUT_OUTPUT,
+                                     copyAndRouteField( diffuseColorRamp ) );  
+  }
+
+
   if( fresnel->getValue() > 0 ) {
     s << addUniformToFragmentShader( shader,
                                      uniqueShaderName( "fresnel" ), 
@@ -732,6 +801,22 @@ string PhongShader::addUniformFields( ComposedShader *shader ) {
                                        "sampler2D",
                                        H3D::Field::INPUT_OUTPUT,
                                        copyAndRouteField( backGlossMap ) );  
+    }
+
+    if( backSpecularColorRamp->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_specular_color_ramp" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backSpecularColorRamp ) );  
+    }
+
+    if( backDiffuseColorRamp->getValue() ) {
+      s << addUniformToFragmentShader( shader,
+                                       uniqueShaderName( "back_diffuse_color_ramp" ), 
+                                       "sampler2D",
+                                       H3D::Field::INPUT_OUTPUT,
+                                       copyAndRouteField( backDiffuseColorRamp ) );  
     }
 
     if( backFresnel->getValue() > 0 ) {
