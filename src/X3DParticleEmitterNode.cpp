@@ -88,10 +88,11 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
   glPushAttrib( GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
 
   glEnable( GL_BLEND ); 
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) ;
   glEnable( GL_ALPHA_TEST );
   glAlphaFunc( GL_NOTEQUAL, 0 );
   //glDisable( GL_DEPTH_TEST );
-  RGBA color;
+  RGBA color(1,1,1,1);
   bool have_color_value = false;
 
   int tex_coord_index = -1;
@@ -139,7 +140,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       
     }
   }
-  glColor3f( 1, 1, 1 );        
+  glColor4f( color.r, color.g, color.b );        
 
   if( type == POINT ) {
     // Save the old state of GL_LIGHTING 
@@ -157,7 +158,6 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       material->render(); 
     } else if( have_color_value ) {
       glEnable( GL_COLOR_MATERIAL );
-      glColor4f( color.r, color.g, color.b, color.a ); 
     }
     
     glEnable( GL_BLEND );
@@ -181,7 +181,6 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       material->render(); 
     } else if( have_color_value ) {
       glEnable( GL_COLOR_MATERIAL );
-      glColor4f( color.r, color.g, color.b, color.a ); 
     }
     
     Vec3f line_dir = velocity;
@@ -250,7 +249,6 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       material->render(); 
     } else if( have_color_value ) {
       glEnable( GL_COLOR_MATERIAL );
-      glColor4f( color.r, color.g, color.b, color.a ); 
     }
     glBegin( GL_QUADS );
     if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4, tex_coord_ramp );
@@ -315,8 +313,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
     if( material ) {  
       material->render(); 
     } else if( have_color_value ) {
-      glEnable( GL_COLOR_MATERIAL );
-      glColor4f( color.r, color.g, color.b, color.a ); 
+      glEnable( GL_COLOR_MATERIAL );     
     }
     glBegin( GL_QUADS );
     renderTexCoord( Vec3f( 1, 1, 0 ) );
@@ -338,7 +335,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       glPopMatrix();
     }
   }
-  glEnable( GL_DEPTH_TEST );
+  //glEnable( GL_DEPTH_TEST );
   glPopAttrib();
 }
 
