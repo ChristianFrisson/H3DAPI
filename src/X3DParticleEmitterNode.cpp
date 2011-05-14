@@ -140,7 +140,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       
     }
   }
-  glColor4f( color.r, color.g, color.b );        
+  glColor4f( color.r, color.g, color.b, color.a );        
 
   if( type == POINT ) {
     // Save the old state of GL_LIGHTING 
