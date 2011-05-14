@@ -106,7 +106,7 @@ PhantomDevice::PhantomDevice(
   jointAngles( new SFVec3f ),
   needsCalibration( new SFBool ),
   motorTemperatures( new MFDouble ),
-  calibrate( new SFBool ) { 
+  calibrate( new Calibrate ) { 
 
   type_name = "PhantomDevice";  
   database.initFields( this );
@@ -216,3 +216,14 @@ void PhantomDevice::renderShapes( const HapticShapeVector &shapes,
 #endif
 }
 
+void PhantomDevice::Calibrate::onValueChange( const bool &value ) {
+#ifdef HAVE_OPENHAPTICS
+  if ( value ) {
+    PhantomDevice *h3d_device = static_cast< PhantomDevice * >( getOwner() );
+    HAPI::PhantomHapticsDevice *hapi_device = static_cast< HAPI::PhantomHapticsDevice * >( h3d_device->hapi_device.get() );
+    if( hapi_device ) {
+      hapi_device->calibrateDevice();
+    }
+  }
+#endif
+}

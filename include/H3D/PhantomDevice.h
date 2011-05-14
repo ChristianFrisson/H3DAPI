@@ -63,6 +63,12 @@ namespace H3D {
   class H3DAPI_API PhantomDevice: public H3DHapticsDevice {
   public:
 
+    /// Field class that calibrates the device when a true event is received
+    /// or the field is set to true.
+    class H3DAPI_API Calibrate: public AutoUpdate< OnValueChangeSField< SFBool > > {
+      virtual void onValueChange( const bool &value );
+    };
+
     /// Constructor.
     PhantomDevice( 
             Inst< SFVec3f            > _devicePosition         = 0,
@@ -222,7 +228,7 @@ namespace H3D {
     /// device type.
     /// 
     /// <b>Access type:</b> inputOnly \n   
-    auto_ptr< SFBool > calibrate;
+    auto_ptr< Calibrate > calibrate;
 
     /// Motor temperatures from the device driver temperature model.
     /// It contains 6 values where the first 3 values are motor for position
