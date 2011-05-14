@@ -44,6 +44,7 @@ namespace H3D {
   class H3DSurfaceNode;
   class H3DHapticsDevice;
   class X3DGeometryNode;
+  class X3DLightNode;
 
   typedef AutoRefVector< HAPI::HAPIHapticShape > HapticShapeVector;
   typedef AutoRefVector< HAPI::HAPIForceEffect > HapticEffectVector;
@@ -437,11 +438,24 @@ namespace H3D {
     /// Call all functions added by the addPostTraverseCallback function.
     void callPostTraverseCallbacks();
 
+
     /// Used to get all the X3DLightNodes that are global.
     typedef AutoRefVector< RefCountedClass > RefCountedVector;
-    RefCountedVector x3dlightnode_vector;
+
+    /// Add a light that is active to the TraverseInfo object.
+    /// Should only be done by the light nodes themselves.
+    void addActiveLightNode( X3DLightNode *light );
+
+    /// Remove a light that is active to the TraverseInfo object.
+    /// Should only be done by the light nodes themselves.
+    void removeActiveLightNode( X3DLightNode *light );
+    
+    /// Returns the active lights.
+    const RefCountedVector &getActiveLightNodes();
 
   protected:
+    RefCountedVector x3dlightnode_vector;
+
     class TransformInfo {
     public:
       TransformInfo( const Matrix4f &_acc_frw,

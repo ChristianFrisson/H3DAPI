@@ -134,7 +134,6 @@ void X3DLightNode::traverseSG( TraverseInfo &ti ) {
   }
 
   if( global->getValue() && on->getValue() ) {    
-    ti.x3dlightnode_vector.push_back( this );
     global_light_transforms.push_back( ti.getAccForwardMatrix() );
     traverse_sg_counter++;
     act_global = true;
@@ -154,4 +153,20 @@ GLuint X3DLightNode::getLightIndex( string name_for_error ) {
                  << ")" << endl;
   
   return (GLuint)global_light_index;
+}
+
+/// Add light to TraverseInfo.
+void X3DLightNode::enableHapticsState( TraverseInfo &ti ) {
+  // only add lights that are on.
+  if( on->getValue() )
+    ti.addActiveLightNode( this );
+}
+
+/// Remove light from TraverseInfo
+void X3DLightNode::disableHapticsState( TraverseInfo &ti ) {
+  // only remove non-global lights, globals are still active.
+  // not checking for on since it might have changed from enableHapticsState
+  // and then we want to remove it anyway.
+  if( !global->getValue() )
+    ti.removeActiveLightNode( this );
 }

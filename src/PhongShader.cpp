@@ -133,7 +133,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backSpecularColorRamp( _backSpecularColorRamp ),
   backFresnel( _backFresnel ),
   backModulateMaps( _backModulateMaps ),
-  separateBackColor( _separateBackColor ) {
+  separateBackColor( _separateBackColor ),
+  current_nr_lightsources( 0 ) {
 
   type_name = "PhongShader";
   database.initFields( this );
@@ -648,17 +649,21 @@ string PhongShader::getFragmentShaderString() {
     s << "  vec3 back_N = -N;\n" << endl;
   }
 
-  // TODO: support several lights
+
   s <<
     "  vec4 final_color = vec4( 0.0, 0.0, 0.0, 1.0 );\n"
     "  bool is_back_face = (dot(orig_normal, view_dir) < 0.0);\n"
     "  if( is_back_face ) { \n"
-    "    final_color += lightPhong( 0, back_N, vertex, back_shininess, back_ambient_color, back_diffuse_color, back_specular_color );\n"
+    "    for( int i = 0; i < " << current_nr_lightsources << "; i++ ) { \n"
+    "      final_color += lightPhong( i, back_N, vertex, back_shininess, back_ambient_color, back_diffuse_color, back_specular_color );\n"
+    "    } \n"
     "    final_color += back_emission_color;\n"
     "    final_color.a = back_diffuse_color.a;\n"
     "  } else { \n"
-    "    final_color += lightPhong( 0, N, vertex, shininess, ambient_color, diffuse_color, specular_color );\n"
-    "    final_color += emission_color;\n"
+    "   for( int i = 0; i < " << current_nr_lightsources << "; i++ ) { \n"
+    "     final_color += lightPhong( i, N, vertex, shininess, ambient_color, diffuse_color, specular_color );\n"
+    "   } \n"
+    "   final_color += emission_color;\n"
     "    final_color.a = diffuse_color.a;\n"
     "  } \n" 
     "  generated_color = final_color;\n";
@@ -848,5 +853,17 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
   // the shaderRequiresTangents entry is set to false in 
   // X3DShapeNode::traverseSG in order for it to only be active for one
   // geometry.
+
+   NavigationInfo *ni = NavigationInfo::getActive();
+   bool headlight = !ni || ni->headlight->getValue();
+   unsigned int nr_active_lights = 0;
+   if( headlight ) nr_active_lights++;
+   nr_active_lights += ti.getActiveLightNodes().size();
+
+   if( nr_active_lights != current_nr_lightsources ) {
+     // nr of lights have changed, touch a field to rebuild shader
+     ambientMap->touch();
+     current_nr_lightsources = nr_active_lights;
+   }
 
 }

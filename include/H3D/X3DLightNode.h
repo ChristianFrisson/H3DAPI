@@ -85,6 +85,12 @@ namespace H3D {
     /// Turn the light off.
     virtual void disableGraphicsState();
 
+    /// Add light to TraverseInfo.
+    virtual void enableHapticsState( TraverseInfo &ti );
+
+    /// Remove light from TraverseInfo
+    virtual void disableHapticsState( TraverseInfo &ti );
+
     /// Traverse the scenegraph. Stores pointer to X3DLightNode and
     /// transformation matrices for those that are global.
     /// \param ti The TraverseInfo object containing information about the

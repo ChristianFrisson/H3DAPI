@@ -113,7 +113,7 @@ void ComposedGeneratedShader::traverseSG( TraverseInfo &ti ) {
   const NodeVector &c = fragmentShaders->getValue();
   for( unsigned int i = 0; i < c.size(); i++ ) {
     if( c[i] ) {
-
+      c[i]->traverseSG( ti );
     }
   }
 }

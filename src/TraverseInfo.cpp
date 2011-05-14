@@ -111,3 +111,14 @@ void TraverseInfo::callPostTraverseCallbacks() {
     (*i).first( *this, (*i).second );
   }
 }
+
+void TraverseInfo::addActiveLightNode( X3DLightNode *light ) {
+  x3dlightnode_vector.push_back( light );
+} 
+void TraverseInfo::removeActiveLightNode( X3DLightNode *light ) {
+  x3dlightnode_vector.erase( light );
+}
+
+const TraverseInfo::RefCountedVector &TraverseInfo::getActiveLightNodes() {
+  return x3dlightnode_vector;
+}

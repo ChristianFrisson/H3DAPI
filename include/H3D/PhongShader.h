@@ -572,6 +572,9 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+    /// The number of light sources the shader currently handles.
+    unsigned int current_nr_lightsources;
+
     /// Adds uniform fields to the shader. A ComposedShader uses its
     /// dynamic fields to define uniform variables. Hence we need to
     /// add dynamic fields for each field that we want to be accessable
