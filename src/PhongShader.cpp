@@ -856,14 +856,14 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
 
    NavigationInfo *ni = NavigationInfo::getActive();
    bool headlight = !ni || ni->headlight->getValue();
-   unsigned int nr_active_lights = 0;
+   size_t nr_active_lights = 0;
    if( headlight ) nr_active_lights++;
    nr_active_lights += ti.getActiveLightNodes().size();
 
    if( nr_active_lights != current_nr_lightsources ) {
      // nr of lights have changed, touch a field to rebuild shader
      ambientMap->touch();
-     current_nr_lightsources = nr_active_lights;
+     current_nr_lightsources = (unsigned int) nr_active_lights;
    }
 
 }

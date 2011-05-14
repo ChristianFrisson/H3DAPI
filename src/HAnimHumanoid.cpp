@@ -142,8 +142,8 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
                                        VectorType &modified_points,
                                        vector< Vec3f > &modified_normals ) {
 
-  unsigned int p_size = orig_points.size();
-  unsigned int n_size = orig_normals.size();
+  unsigned int p_size = (unsigned int) orig_points.size();
+  unsigned int n_size = (unsigned int) orig_normals.size();
   unsigned int max_size = H3DMax( p_size, n_size );
   vector< bool  > point_written( max_size, false ); 
 

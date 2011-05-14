@@ -256,9 +256,9 @@ void FrameBufferTextureGenerator::render()     {
     glPushMatrix();
     glLoadIdentity();
     vp->setupProjection( X3DViewpointNode::MONO,
-                         current_width,
-                         current_height,
-                         0.01, -1 ); // TODO: calculate near and far plane
+                         (H3DFloat) current_width,
+                         (H3DFloat) current_height,
+                         (H3DFloat) 0.01, (H3DFloat) -1 ); // TODO: calculate near and far plane
   }
 
 
