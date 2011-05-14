@@ -45,14 +45,16 @@ namespace H3D {
   public:
     /// Constructor
     ForceField( Inst< SFVec3f > _force = 0,
-                Inst< SFNode  > _metadata = 0 );
+                Inst< SFNode  > _metadata = 0,
+                Inst <SFVec3f > _torque = 0 );
 
     /// Adds a HapticForceField effect to the TraverseInfo.
     virtual void traverseSG( TraverseInfo &ti ) {
       if( !ti.hapticsDisabledForAll() ) {
-        ti.addForceEffectToAll( new HAPI::HapticForceField( 
-                                 ti.getAccForwardMatrix().getRotationPart() *
-                                               force->getValue() ) );
+        Matrix3f rotation =  ti.getAccForwardMatrix().getRotationPart();
+        ti.addForceEffectToAll( 
+           new HAPI::HapticForceField( rotation * force->getValue(),
+                                       rotation * torque->getValue() ) );
       }
     }
 
@@ -61,6 +63,12 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> Vec3f( 0, 0, 0 ) \n
     auto_ptr< SFVec3f > force;
+
+    /// The torque to render.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> Vec3f( 0, 0, 0 ) \n
+    auto_ptr< SFVec3f > torque;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

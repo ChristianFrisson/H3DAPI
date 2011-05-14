@@ -38,15 +38,19 @@ H3DNodeDatabase ForceField::database( "ForceField",
 
 namespace ForceFieldInternals {
   FIELDDB_ELEMENT( ForceField, force, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ForceField, torque, INPUT_OUTPUT );
 }
 
 /// Constructor
 ForceField::ForceField( Inst< SFVec3f > _force,
-                        Inst< SFNode>  _metadata ) :
+                        Inst< SFNode>  _metadata,
+                        Inst< SFVec3f > _torque ) :
   H3DForceEffect( _metadata ),
-  force( _force ) {
+  force( _force ),
+  torque( _torque ) {
   
   type_name = "ForceField";
   database.initFields( this );
   force->setValue( Vec3f( 0,0,0 ) );
+  torque->setValue( Vec3f( 0,0,0 ) );
 }
