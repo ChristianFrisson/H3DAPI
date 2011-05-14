@@ -493,3 +493,16 @@ void H3DHapticsDevice::updateDeviceValues() {
   //proxyPosition->setValue( (Vec3f)proxy_position, id );
 }
 
+void H3DHapticsDevice::renderStylus() {
+  Node *stylus_node = stylus->getValue();
+  if( stylus_node && initialized->getValue() ) {
+    const Vec3f &pos = weightedProxyPosition->getValue();
+    const Rotation &rot = trackerOrientation->getValue();
+    glPushMatrix();
+    glTranslatef( pos.x, pos.y, pos.z );
+    glRotatef( (GLfloat)(rot.angle * 180 / Constants::pi), 
+               rot.axis.x, rot.axis.y, rot.axis.z );
+    stylus_node->render();
+    glPopMatrix();
+  }
+}

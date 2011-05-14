@@ -374,6 +374,9 @@ namespace H3D {
     virtual void renderShapes( const HapticShapeVector &shapes, 
                                unsigned int layer = 0 );
 
+    /// Render the stylus of the device wint OpenGL.
+    virtual void renderStylus();
+
     /// Perform haptic rendering for the given HAPIForceEffect instances. 
     /// HAPIForceEffect objects that are to be be rendered haptically must
     /// be rendered with this function each scenegraph loop.

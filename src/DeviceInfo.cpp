@@ -71,17 +71,7 @@ void DeviceInfo::renderStyli() {
   for( MFDevice::const_iterator i = device->begin();
        i != device->end(); i++ ) {
     H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
-    Node *stylus = hd->stylus->getValue();
-    if( stylus && hd->initialized->getValue() ) {
-      const Vec3f &pos = hd->weightedProxyPosition->getValue();
-      const Rotation &rot = hd->trackerOrientation->getValue();
-      glPushMatrix();
-      glTranslatef( pos.x, pos.y, pos.z );
-      glRotatef( (GLfloat)(rot.angle * 180 / Constants::pi), 
-                 rot.axis.x, rot.axis.y, rot.axis.z );
-      stylus->render();
-      glPopMatrix();
-    }
+    if( hd ) hd->renderStylus();
   }
 }
 
