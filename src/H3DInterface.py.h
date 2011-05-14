@@ -306,7 +306,14 @@ class TimerCallback( AutoUpdate( SFTime ) ):\n\
   # time with the given arguments.\n\
   def addCallback( self, time, func, args ):\n\
     self.callbacks.append( (time, func, args ) )\n\
-\n";
+\n\
+  ## Remove a callback function before it has executed. \n\
+  ## \\param cb The handle of the callback to remove. \n\
+  def removeCallback( self, cb ): \n\
+    try: \n\
+      self.callbacks.remove( cb ) \n\
+    except: \n\
+      pass\n";
 
   }
 }

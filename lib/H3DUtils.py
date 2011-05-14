@@ -36,14 +36,31 @@ def SField2MField( sfield, mfield ):
       return [v]
   return SField2MFieldClass()
 
-# The TimerCallback field is a field in which you can set callback functions
-# to be called at a later time that you specify.
+## The TimerCallback field is a field in which you can set callback functions
+## to be called at a later time that you specify.
+## <b>Example usage:</b>
+##
+## <pre>
+## def test( v ):
+##   print v
+##
+## tc = TimerCallback()
+## tc.addCallback( time.getValue()+3, test, ("Hello world!",) )
+## </pre>
+## This will call the function test 3 seconds from it is run. 
 class TimerCallback( AutoUpdate( SFTime ) ):
+  ## Constructor.
   def __init__( self ):
     AutoUpdate( SFTime ).__init__( self )
+    ## The list of callbacks currently in use.
     self.callbacks = []
+
+    # Set up a route from H3DInterface.time in order for the update
+    # function to run once per scene graph loop.
     time.route( self )
 
+  ## Specialized update function to call callback functions when the time
+  ## is right.
   def update( self, event ):
     t = event.getValue()
     cbs_to_remove = []
@@ -56,7 +73,21 @@ class TimerCallback( AutoUpdate( SFTime ) ):
 
     return event.getValue()
 
-  # add a callback function. The function will be called at the specified
-  # time with the given arguments.
+  ## Add a callback function. The function will be called at the specified
+  ## time with the given arguments and then removed.
+  ## \param time The time to run the function.
+  ## \param func The function to call.
+  ## \param args Tuple with the arguments to call.
+  ## \return Handle to callback function.
   def addCallback( self, time, func, args ):
-    self.callbacks.append( (time, func, args ) )
+    cb = (time, func, args )
+    self.callbacks.append( cb )
+    return cb
+
+  ## Remove a callback function before it has executed.
+  ## \param cb The handle of the callback to remove.
+  def removeCallback( self, cb ):
+    try:
+      self.callbacks.remove( cb )
+    except:
+      pass
