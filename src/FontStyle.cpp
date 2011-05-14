@@ -443,10 +443,9 @@ void FontStyle::buildFonts() {
     italic = true;
     bold = true;
   } else {
-    stringstream s;
-    s << " in " << style->getFullName() 
-      << ". Valid values are \"PLAIN\", \"BOLD\", \"ITALIC\" and \"BOLDITALIC\"";
-    throw InvalidFontStyleStyle( font_style, s.str(), H3D_FULL_LOCATION );  
+    Console(4) << "Invalid FontStyle style: \"" << font_style 
+	             << "\" in " << style->getFullName() 
+	             << ". Valid values are \"PLAIN\", \"BOLD\", \"ITALIC\" and \"BOLDITALIC\"";
   }
 
   // try all the font family names specified to find a font.
