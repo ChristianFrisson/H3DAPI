@@ -75,7 +75,7 @@ namespace H3D {
     /// \param _body String with the internal scenegraph of the prototype.
     ProtoDeclaration( const string &_name,
                       const string &_body = "",
-		      const vector<string > &_body_extra = vector<string>() ) :
+                      const vector<string > &_body_extra = vector<string>() ) :
       name( _name ),
       body( _body ),
       body_extra( _body_extra ) {}
@@ -143,9 +143,13 @@ namespace H3D {
     vector< string > body_extra; 
     std::list< FieldDeclaration > field_declarations;
 
-    AutoRef< Node > createProtoInstanceNode( PrototypeInstance *proto,
-					     X3D::DEFNodes *dn,
-					     const string &body_string );
+    AutoRef< Node > createProtoInstanceNodeX3D( PrototypeInstance *proto,
+                                                X3D::DEFNodes *dn,
+                                                const string &body_string );
+
+    AutoRef< Node > createProtoInstanceNodeVRML( PrototypeInstance *proto,
+                                                 X3D::DEFNodes *dn,
+                                                 const string &body_string );
   };
 
 }
