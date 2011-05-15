@@ -30,6 +30,7 @@
 
 #include <H3D/PhongShader.h>
 #include <H3D/ShaderPart.h>
+#include <H3D/NavigationInfo.h>
 
 using namespace H3D;
 

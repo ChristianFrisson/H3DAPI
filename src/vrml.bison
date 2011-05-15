@@ -46,6 +46,7 @@
 #include <H3D/H3DExports.h>
 #include <H3D/X3D.h>
 #include <H3D/X3DTypeFunctions.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 using namespace X3D;

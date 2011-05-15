@@ -29,7 +29,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/Image3DTexture.h>
-#include "H3D/ResourceResolver.h"
+#include <H3D/ResourceResolver.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 
@@ -148,7 +149,7 @@ void Image3DTexture::SFImage::update() {
   MFImageLoader *image_loaders = static_cast< MFImageLoader * >( routes_in[1] );
   MFString *urls = static_cast< MFString * >( routes_in[0] );
 
-  bool load_in_thread = ImageTexture::load_images_in_separate_thread;
+  bool load_in_thread = X3DTextureNode::load_images_in_separate_thread;
   GlobalSettings *gs = GlobalSettings::getActive();
   if( gs ) load_in_thread = gs->loadTexturesInThread->getValue();
 
