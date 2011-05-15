@@ -29,8 +29,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/GlobalSettings.h>
+#include <H3D/X3DTextureNode.h>
 
 using namespace H3D;
+
+bool GlobalSettings::default_x3d_route_sends_event = true;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase GlobalSettings::database( "GlobalSettings", 
@@ -40,6 +43,8 @@ H3DNodeDatabase GlobalSettings::database( "GlobalSettings",
 
 namespace GlobalSettingsInternals {
   FIELDDB_ELEMENT( GlobalSettings, options, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GlobalSettings, x3dROUTESendsEvent, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GlobalSettings, loadTexturesInThread, INPUT_OUTPUT );
 }
 
 
@@ -48,11 +53,18 @@ GlobalSettings::GlobalSettings(
                        Inst< SFNode    >  _metadata,
                        Inst<  SFTime    >  _bindTime,
                        Inst<  SFBool    >  _isBound,
-                       Inst< MFOptionNode >  _options ):
+                       Inst< MFOptionNode >  _options,
+                       Inst< SFBool     > _x3dROUTESendsEvent,
+                       Inst< SFBool     > _loadTexturesInThread ):
   X3DBindableNode( "GlobalSettings", _set_bind, _metadata, 
                    _bindTime, _isBound ),
-  options        ( _options ) {
+  options        ( _options ),
+  x3dROUTESendsEvent( _x3dROUTESendsEvent ),
+  loadTexturesInThread( _loadTexturesInThread ) {
 
   type_name = "GlobalSettings";
   database.initFields( this );
+
+  x3dROUTESendsEvent->setValue( GlobalSettings::default_x3d_route_sends_event );
+  loadTexturesInThread->setValue( X3DTextureNode::load_images_in_separate_thread );
 }

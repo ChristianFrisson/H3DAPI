@@ -691,8 +691,13 @@ if ( !driver.insideProtoDeclaration() ) {
       Node *to = driver.DEF_map->getNode( (yysemantic_stack_[(8) - (6)]) );
       if ( to ) {
         Field *tof = to->getField( (yysemantic_stack_[(8) - (8)]) );
-        if ( tof )
-          frf->route( tof );
+        if ( tof ) {
+           bool event = GlobalSettings::default_x3d_route_sends_event;
+           GlobalSettings *gs = GlobalSettings::getActive();
+           if( gs ) event = gs->x3dROUTESendsEvent->getValue();
+           if( event ) frf->route( tof );
+           else frf->routeNoEvent( tof );
+	}
         else {
           Console(3) << "WARNING: Route error. Could not find field named \"" 
                      <<  (yysemantic_stack_[(8) - (8)])

@@ -307,9 +307,13 @@ if ( !driver.insideProtoDeclaration() ) {
       Node *to = driver.DEF_map->getNode( $6 );
       if ( to ) {
         Field *tof = to->getField( $8 );
-        if ( tof )
-          frf->route( tof );
-        else {
+        if ( tof ){
+           bool event = GlobalSettings::default_x3d_route_sends_event;
+           GlobalSettings *gs = GlobalSettings::getActive();
+           if( gs ) event = gs->x3dROUTESendsEvent->getValue();
+           if( event ) frf->route( tof );
+           else frf->routeNoEvent( tof );
+	} else {
           Console(3) << "WARNING: Route error. Could not find field named \"" 
                      <<  $8
                      << "\" in \"" << $6 << "\" Node " 

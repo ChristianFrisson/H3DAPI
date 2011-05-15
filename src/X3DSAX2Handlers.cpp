@@ -36,6 +36,7 @@
 #include <H3D/H3DNodeDatabase.h>
 #include <H3D/MFNode.h>
 #include <H3D/Group.h>
+#include <H3D/GlobalSettings.h>
 #include <H3D/H3DDynamicFieldsObject.h>
 #include <H3D/X3DTypeFunctions.h>
 #include <H3D/Inline.h>
@@ -1183,9 +1184,14 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
       } else if( localname_string == "connect"  ) {
         handleConnectElement( attrs, parent );
       } else if( localname_string == "ROUTE" ) {
-        handleRouteElement( attrs, false );
+        bool event = GlobalSettings::default_x3d_route_sends_event;
+        GlobalSettings *gs = GlobalSettings::getActive();
+        if( gs ) event = gs->x3dROUTESendsEvent->getValue();
+        handleRouteElement( attrs, !event );
       } else if( localname_string == "ROUTE_NO_EVENT" ) {
         handleRouteElement( attrs, true );
+      } else if( localname_string == "ROUTE_WITH_EVENT" ) {
+        handleRouteElement( attrs, false );
       } else if( localname_string == "IMPORT" ) {
         handleImportElement( attrs );
       } else if( localname_string == "EXPORT" ) {

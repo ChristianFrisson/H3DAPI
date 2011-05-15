@@ -42,6 +42,20 @@ namespace H3D {
   /// GlobalSettings is a X3DBindableNode that specifies default settings
   /// for use in H3D API, such as caching options, haptic rendering options etc
   ///
+  /// According to the X3D specification the ROUTE statement in an X3D
+  /// file is not supposed to send an event. H3D has always done this 
+  /// by default up until 2.2 though. The x3dROUTESendsEvent lets you control if an event
+  /// should be sent or not. 
+  ///
+  /// The loadTexturesInThread controls if the downloading/reading of texture image data from file 
+  /// should be done in a separate thread or in the main thread. The 
+  /// result for doing it in separate thread is that the main program 
+  /// can start up faster and the textures will be applied later when they
+  /// are loaded versus having to wait for all textures to be read before
+  /// program starts.
+  ///
+  /// The options field contains H3DOptionNode instances for various options.
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/GlobalSettings.x3d">GlobalSettings.x3d</a>
   ///     ( <a href="examples/GlobalSettings.x3d.html">Source</a> )
@@ -55,7 +69,9 @@ namespace H3D {
                     Inst< SFNode    >  _metadata        = 0,
                     Inst< SFTime    >  _bindTime        = 0,
                     Inst< SFBool    >  _isBound         = 0,
-                    Inst< MFOptionNode >  _options         = 0 );
+                    Inst< MFOptionNode >  _options         = 0,
+                    Inst< SFBool    >  _x3dROUTESendsEvent = 0,
+                    Inst< SFBool    >  _loadTexturesInThread = 0 );
     
     /// Destructor.
     ~GlobalSettings() {
@@ -90,8 +106,34 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< MFOptionNode > options;
 
+    /// According to the X3D specification the ROUTE statement in an X3D
+    /// file is not supposed to send an event. H3D has always done this 
+    /// by default up until 2.2 though. This field lets you control if an event
+    /// should be sent or not. The default value is the value of 
+    /// GlobalSettings::default_x3d_route_sends_event.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> GlobalSettings::default_x3d_route_sends_event 
+    /// (in H3DLoad and H3DViewer this is false) \n
+    auto_ptr< SFBool > x3dROUTESendsEvent;
+
+    /// Controls if the downloading/reading of texture image data from file 
+    /// should be done in a separate thread or in the main thread. The 
+    /// result for doing it in separate thread is that the main program 
+    /// can start up faster and the textures will be applied later when they
+    /// are loaded versus having to wait for all textures to be read before
+    /// program starts.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> X3DTextureNode::load_images_in_separate_thread 
+    /// (in H3DLoad and H3DViewer this is true) \n
+    auto_ptr< SFBool > loadTexturesInThread;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// The default value for the x3dROUTESendsEvent field.
+    static bool default_x3d_route_sends_event;
   };
 }
 

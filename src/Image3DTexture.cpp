@@ -148,7 +148,11 @@ void Image3DTexture::SFImage::update() {
   MFImageLoader *image_loaders = static_cast< MFImageLoader * >( routes_in[1] );
   MFString *urls = static_cast< MFString * >( routes_in[0] );
 
-  if( Image3DTexture::load_images_in_separate_thread ) {
+  bool load_in_thread = ImageTexture::load_images_in_separate_thread;
+  GlobalSettings *gs = GlobalSettings::getActive();
+  if( gs ) load_in_thread = gs->loadTexturesInThread->getValue();
+
+  if( load_in_thread ) {
     value = NULL;
     // delete the old thread
     texture->load_thread.reset( NULL );
