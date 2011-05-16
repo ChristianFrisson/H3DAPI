@@ -144,7 +144,7 @@ namespace H3D {
       /// event from this field an sendEvent () call is made on the main
       /// field.
       ///
-      class EventField: public AutoUpdate< Field > {
+      class H3DAPI_API EventField: public AutoUpdate< Field > {
       public:
         /// Constructor.
         /// \param f The containing DependentSFNode.
