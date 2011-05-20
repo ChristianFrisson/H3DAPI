@@ -51,7 +51,9 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, specularMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, glossMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, specularColorRamp, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, specularColorRampMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, diffuseColorRamp, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, diffuseColorRampMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, fresnel, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, modulateMaps, INPUT_OUTPUT );
 
@@ -64,7 +66,9 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, backSpecularMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backGlossMap, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backSpecularColorRamp, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, backSpecularColorRampMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backDiffuseColorRamp, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PhongShader, backDiffuseColorRampMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backFresnel, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backModulateMaps, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, separateBackColor, INPUT_OUTPUT );
@@ -89,7 +93,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                           Inst< SFTexture2DNode > _specularMap,
                           Inst< SFTexture2DNode > _glossMap,
                           Inst< SFTexture2DNode > _specularColorRamp,
+                          Inst< SFString        > _specularColorRampMode,
                           Inst< SFTexture2DNode > _diffuseColorRamp,
+                          Inst< SFString        > _diffuseColorRampMode,
                           Inst< SFFloat         > _fresnel,
                           Inst< SFBool          > _modulateMaps,
                           Inst< SFTexture2DNode > _backAmbientMap ,
@@ -101,7 +107,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                           Inst< SFTexture2DNode > _backSpecularMap,
                           Inst< SFTexture2DNode > _backGlossMap   ,
                           Inst< SFTexture2DNode > _backSpecularColorRamp,
+                          Inst< SFString        > _backSpecularColorRampMode,
                           Inst< SFTexture2DNode > _backDiffuseColorRamp,
+                          Inst< SFString        > _backDiffuseColorRampMode,
                           Inst< SFFloat         > _backFresnel,
                           Inst< SFBool          > _backModulateMaps,
                           Inst< SFBool          > _separateBackColor ) :
@@ -119,7 +127,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   specularMap( _specularMap ),
   glossMap( _glossMap ),
   diffuseColorRamp( _diffuseColorRamp ),
+  diffuseColorRampMode( _diffuseColorRampMode ),
   specularColorRamp( _specularColorRamp ),
+  specularColorRampMode( _specularColorRampMode ),
   fresnel( _fresnel ),
   modulateMaps( _modulateMaps ),
   backAmbientMap( _backAmbientMap ),
@@ -131,7 +141,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backSpecularMap( _backSpecularMap ),
   backGlossMap( _backGlossMap ),
   backDiffuseColorRamp( _backDiffuseColorRamp ),
+  backDiffuseColorRampMode( _backDiffuseColorRampMode ),
   backSpecularColorRamp( _backSpecularColorRamp ),
+  backSpecularColorRampMode( _backSpecularColorRampMode ),
   backFresnel( _backFresnel ),
   backModulateMaps( _backModulateMaps ),
   separateBackColor( _separateBackColor ),
@@ -147,6 +159,20 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                                        0, 2, 0, -1,
                                        0, 0, 2, -1,
                                        0, 0, 0, 1 ) );
+  specularColorRampMode->addValidValue( "LIGHT" );
+  specularColorRampMode->addValidValue( "CAMERA" );
+  specularColorRampMode->setValue( "LIGHT" );
+  diffuseColorRampMode->addValidValue( "LIGHT" );
+  diffuseColorRampMode->addValidValue( "CAMERA" );
+  diffuseColorRampMode->setValue( "LIGHT" );
+
+  backSpecularColorRampMode->addValidValue( "LIGHT" );
+  backSpecularColorRampMode->addValidValue( "CAMERA" );
+  backSpecularColorRampMode->setValue( "LIGHT" );
+  backDiffuseColorRampMode->addValidValue( "LIGHT" );
+  backDiffuseColorRampMode->addValidValue( "CAMERA" );
+  backDiffuseColorRampMode->setValue( "LIGHT" );
+
 
   backNormalMapCoordSpace->addValidValue( "OBJECT" );
   backNormalMapCoordSpace->addValidValue( "TANGENT" );
@@ -165,7 +191,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   specularMap->route( displayList, id );
   glossMap->route( displayList, id );
   specularColorRamp->route( displayList, id );
+  specularColorRampMode->route( displayList, id );
   diffuseColorRamp->route( displayList, id );
+  diffuseColorRampMode->route( displayList, id );
   normalMapMatrix->route( displayList, id );
   modulateMaps->route( displayList, id );
   fresnel->route( displayList, id );
@@ -178,7 +206,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backSpecularMap->route( displayList, id );
   backGlossMap->route( displayList, id );
   backSpecularColorRamp->route( displayList, id );
+  backSpecularColorRampMode->route( displayList, id );
   backDiffuseColorRamp->route( displayList, id );
+  backDiffuseColorRampMode->route( displayList, id );
   backNormalMapMatrix->route( displayList, id );
   backModulateMaps->route( displayList, id );
   backFresnel->route( displayList, id );
@@ -192,7 +222,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   specularMap->route( rebuildShader, id );
   glossMap->route( rebuildShader, id );
   diffuseColorRamp->route( rebuildShader, id );
+  diffuseColorRampMode->route( rebuildShader, id );
   specularColorRamp->route( rebuildShader, id );
+  specularColorRampMode->route( rebuildShader, id );
   normalMapMatrix->route( rebuildShader );
   fresnel->route( rebuildShader, id );
   modulateMaps->route( rebuildShader );
@@ -205,7 +237,9 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backSpecularMap->route( rebuildShader, id );
   backGlossMap->route( rebuildShader, id );
   backDiffuseColorRamp->route( rebuildShader, id );
+  backDiffuseColorRampMode->route( rebuildShader, id );
   backSpecularColorRamp->route( rebuildShader, id );
+  backSpecularColorRampMode->route( rebuildShader, id );
   backNormalMapMatrix->route( rebuildShader );
   backFresnel->route( rebuildShader, id );
   backModulateMaps->route( rebuildShader );
@@ -287,6 +321,17 @@ string fragment_shader_functions =
 "  return ambient + specular + diffuse;\n"
 "}\n"
 "\n"
+"// Returns the normalized direction from the specified vertex towards the light \n"
+"// with the given index. \n"
+"vec3 getLightDir( in int light_index, in vec3 vertex ) {\n" 
+"  if (gl_LightSource[light_index].position.w == 0.0) {\n"
+"    return normalize(gl_LightSource[light_index].position.xyz);\n"
+"  } else { \n"  
+"    vec3 D = gl_LightSource[light_index].position.xyz - vertex;\n"
+"    vec3 L = normalize(D);\n"
+"    return L; \n"
+"  } \n"
+"} \n"
 "\n"
 "// Returns the color generated by one spot light using the Phong lighting model.\n"
 "// i is the index of the light\n"
@@ -515,23 +560,29 @@ string PhongShader::getFragmentShaderString() {
   } else {
     s << "    vec3 N = orig_normal;\n" << endl;
   }
+  
+  bool use_camera_specular_color_ramp = 
+    specularColorRamp->getValue() && specularColorRampMode->getValue() == "CAMERA"; 
+  
+  bool use_camera_diffuse_color_ramp = 
+    diffuseColorRamp->getValue() && diffuseColorRampMode->getValue() == "CAMERA"; 
 
   // color ramps
-  if( specularColorRamp->getValue() || diffuseColorRamp->getValue() ) {
+  if( use_camera_specular_color_ramp || use_camera_diffuse_color_ramp ) {
     // the lookup 
     s << "    float ramp_coord = dot( N, view_dir ); " << endl;
   }
 
-  if( specularColorRamp->getValue() ) {
+  if( use_camera_specular_color_ramp ) {
     s << "    vec4 specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
     s << "    specular_color = specular_color * specular_color_ramp; " << endl;
   }
 
-  if( diffuseColorRamp->getValue() ) {
+  if( use_camera_diffuse_color_ramp ) {
     s << "    vec4 diffuse_color_ramp = texture2D( " << uniqueShaderName( "diffuse_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) ) ;" << endl;
     s << "    diffuse_color = diffuse_color * diffuse_color_ramp; " << endl;
   }
-
+  
   // back colors
   if( separateBackColor->getValue() ) {
     if( backDiffuseMap->getValue() ) {
@@ -625,17 +676,23 @@ string PhongShader::getFragmentShaderString() {
       s << "  vec3 back_N = -orig_normal;\n" << endl;
     }
 
-    if( backSpecularColorRamp->getValue() || backDiffuseColorRamp->getValue() ) {
+    bool use_camera_back_specular_color_ramp = 
+      backSpecularColorRamp->getValue() && backSpecularColorRampMode->getValue() == "CAMERA"; 
+  
+    bool use_camera_back_diffuse_color_ramp = 
+      backDiffuseColorRamp->getValue() && backDiffuseColorRampMode->getValue() == "CAMERA"; 
+    
+    if( use_camera_back_specular_color_ramp || use_camera_back_diffuse_color_ramp ) {
       // the lookup 
       s << "    float back_ramp_coord = dot( back_N, view_dir ); " << endl;
     }
 
-    if( backSpecularColorRamp->getValue() ) {
+    if( use_camera_back_specular_color_ramp ) {
       s << "    vec4 back_specular_color_ramp = texture2D( " << uniqueShaderName( "back_specular_color_ramp" ) << ", vec2( back_ramp_coord, 0.5 ) );" << endl;
       s << "    back_specular_color = back_specular_color * back_specular_color_ramp; " << endl;
     }
 
-    if( backDiffuseColorRamp->getValue() ) {
+    if( use_camera_back_diffuse_color_ramp ) {
       s << "    vec4 back_diffuse_color_ramp = texture2D( " << uniqueShaderName( "back_diffuse_color_ramp" ) << ", vec2( back_ramp_coord, 0.5 ) );" << endl;
       s << "    back_diffuse_color = back_diffuse_color * back_diffuse_color_ramp; " << endl;
     }
@@ -655,14 +712,63 @@ string PhongShader::getFragmentShaderString() {
     "  vec4 final_color = vec4( 0.0, 0.0, 0.0, 1.0 );\n"
     "  bool is_back_face = (dot(orig_normal, view_dir) < 0.0);\n"
     "  if( is_back_face ) { \n"
-    "    for( int i = 0; i < " << current_nr_lightsources << "; i++ ) { \n"
-    "      final_color += lightPhong( i, back_N, vertex, back_shininess, back_ambient_color, back_diffuse_color, back_specular_color );\n"
+    "    for( int i = 0; i < " << current_nr_lightsources << "; i++ ) { \n";
+ 
+  if( (separateBackColor->getValue() && backSpecularColorRamp->getValue() && backSpecularColorRampMode->getValue() == "LIGHT" ) ||
+      (!separateBackColor->getValue() && specularColorRamp->getValue() && specularColorRampMode->getValue() == "LIGHT") ) {
+    s << "      vec3 H = gl_LightSource[i].halfVector.xyz;" << endl;
+    s << "      float ramp_coord_specular = pow(max(dot(back_N,H), 0.0), back_shininess);" << endl;
+    if( separateBackColor->getValue() ) {
+      s << "      vec4 back_specular_color_ramp = texture2D( " << uniqueShaderName( "back_specular_color_ramp" ) << ", vec2( ramp_coord_specular, 0.5 ) );" << endl;
+    } else {
+      s << "      vec4 back_specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord_specular, 0.5 ) );" << endl;
+    }
+    s << "      vec4 back_specular_color_i = back_specular_color * back_specular_color_ramp;" << endl;
+  } else {
+    s << "      vec4 back_specular_color_i = back_specular_color;" << endl;
+  }
+  
+  if( (separateBackColor->getValue() && backDiffuseColorRamp->getValue() && backDiffuseColorRampMode->getValue() == "LIGHT" )||
+      (separateBackColor->getValue() && backDiffuseColorRamp->getValue() && backDiffuseColorRampMode->getValue() == "LIGHT" )) {
+    s << "      vec3 light_dir = getLightDir( i, vertex );" << endl;
+    s << "      float ramp_coord_diffuse = dot(back_N, light_dir);" << endl;
+    if( separateBackColor->getValue() ) {
+      s << "      vec4 back_diffuse_color_ramp = texture2D( " << uniqueShaderName( "back_diffuse_color_ramp" ) << ", vec2( ramp_coord_diffuse, 0.5 ) );" << endl;
+    } else {
+      s << "      vec4 back_diffuse_color_ramp = texture2D( " << uniqueShaderName( "diffuse_color_ramp" ) << ", vec2( ramp_coord_diffuse, 0.5 ) );" << endl;
+    }
+    s << "      vec4 back_diffuse_color_i = bavck_diffuse_color * back_diffuse_color_ramp;" << endl;
+  } else {
+    s << "      vec4 back_diffuse_color_i = back_diffuse_color;" << endl;
+  }
+
+  s <<
+    "      final_color += lightPhong( i, back_N, vertex, back_shininess, back_ambient_color, back_diffuse_color_i, back_specular_color_i );\n"
     "    } \n"
     "    final_color += back_emission_color;\n"
     "    final_color.a = back_diffuse_color.a;\n"
     "  } else { \n"
-    "   for( int i = 0; i < " << current_nr_lightsources << "; i++ ) { \n"
-    "     final_color += lightPhong( i, N, vertex, shininess, ambient_color, diffuse_color, specular_color );\n"
+    "   for( int i = 0; i < " << current_nr_lightsources << "; i++ ) { \n";
+  if( specularColorRamp->getValue() && specularColorRampMode->getValue() == "LIGHT" ) {
+    s << "      vec3 H = gl_LightSource[i].halfVector.xyz;" << endl;
+    s << "      float ramp_coord = pow(max(dot(N,H), 0.0), shininess);" << endl;
+    s << "      vec4 specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
+    s << "      vec4 specular_color_i = specular_color * specular_color_ramp;" << endl;
+  } else {
+    s << "      vec4 specular_color_i = specular_color;" << endl;
+  }
+
+  if( diffuseColorRamp->getValue() && diffuseColorRampMode->getValue() == "LIGHT") {
+    s << "      vec3 light_dir = getLightDir( i, vertex );" << endl;
+    s << "      float ramp_coord = dot(N, light_dir);" << endl;
+    s << "      vec4 diffuse_color_ramp = texture2D( " << uniqueShaderName( "diffuse_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
+    s << "      vec4 diffuse_color_i = diffuse_color * diffuse_color_ramp;" << endl;
+  } else {
+    s << "      vec4 diffuse_color_i = diffuse_color;" << endl;
+  }
+
+  s << 
+    "     final_color += lightPhong( i, N, vertex, shininess, ambient_color, diffuse_color_i, specular_color_i );\n"
     "   } \n"
     "   final_color += emission_color;\n"
     "    final_color.a = diffuse_color.a;\n"
