@@ -116,6 +116,30 @@ namespace H3D {
     };
 
     /// \internal
+    /// This Field class is used to propagate all events from the 
+    /// fields we are dependent on to the main field. We route all
+    /// the dependent fields to an instance of this field and on any
+    /// event from this field an sendEvent () call is made on the main
+    /// field.
+    ///
+    class H3DAPI_API EventField: public AutoUpdate< Field > {
+    public:
+      /// Constructor.
+      /// \param f The containing DependentSFNode.
+      EventField( Field *f ):
+        field( f ) {
+        name = "EventField";
+      }
+
+      /// Send an event on the containing field.
+      virtual void update() {
+        field->touch();
+      }
+      /// The DependentSFNode containing this instance of the class.
+      Field *field;
+    };
+
+    /// \internal
     /// Common base template class for DependentSFNode and
     /// DependentMFNode. We override the onAdd and onRemove
     /// to maintain the routes from the dependent fields in the Node
@@ -136,31 +160,7 @@ namespace H3D {
       //                BaseFieldType( _value ) {
       //                event_field.reset( new EventField( this ) );
       //                }
-            
     protected:
-      /// This Field class is used to propagate all events from the 
-      /// fields we are dependent on to the main field. We route all
-      /// the dependent fields to an instance of this field and on any
-      /// event from this field an sendEvent () call is made on the main
-      /// field.
-      ///
-      class H3DAPI_API EventField: public AutoUpdate< Field > {
-      public:
-        /// Constructor.
-        /// \param f The containing DependentSFNode.
-        EventField( Field *f ):
-          field( f ) {
-          name = "EventField";
-        }
-
-        /// Send an event on the containing field.
-        virtual void update() {
-          field->touch();
-        }
-        /// The DependentSFNode containing this instance of the class.
-        Field *field;
-      };
-            
       /// The instance of EventField used to propagate the events
       /// from the fields we are dependent on to the main field.
       auto_ptr< EventField > event_field;
