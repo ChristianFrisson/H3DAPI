@@ -641,8 +641,16 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
-    /// The number of light sources the shader currently handles.
+
+    /// The X3DLightNode instances that this shader is built for.
+    TraverseInfo::RefCountedVector current_light_nodes;
+
+    /// The number of light sources the shader currently handles(including headlight)
     unsigned int current_nr_lightsources;
+
+    /// Returns a unique name to use in this shader for a field of a light node.
+    string uniqueLightFieldName( const string &field_name,
+                                 X3DLightNode *light);
 
     /// Adds uniform fields to the shader. A ComposedShader uses its
     /// dynamic fields to define uniform variables. Hence we need to
@@ -662,6 +670,26 @@ namespace H3D {
 
     /// Returns the shader code for the fragment shader.
     virtual string getFragmentShaderString();
+
+    /// Returns a string with glsl code that adds the color contribution
+    /// of a light node to the variable "final_color".
+    /// \param light The light node for which to calculate the contributtion. 
+    /// If NULL, headlight is used.
+    /// \param index The OpenGL light index for the light.
+    /// \param normal The glsl variable name in the shader for the normal.
+    /// \param vertex The glsl variable name in the shader for the vertex.
+    /// \param shininess The glsl variable name in the shader for the shininess.
+    /// \param ambient_color The glsl variable name in the shader for the ambient_color.
+    /// \param diffuse_color The glsl variable name in the shader for the diffuse_color.
+    /// \param specular_color The glsl variable name in the shader for the specular_color.
+    virtual string getLightContribution( X3DLightNode *light,
+                                         unsigned int index, 
+                                         string normal, 
+                                         string vertex, 
+                                         string shininess, 
+                                         string ambient_color,
+                                         string diffuse_color,
+                                         string specular_color );
 
   };
 }
