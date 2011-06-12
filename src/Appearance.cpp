@@ -38,7 +38,7 @@
 #include <H3D/X3DShapeNode.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
-
+#include <H3D/NavigationInfo.h>
 #include <H3DUtil/Console.h>
 
 using namespace H3D;
