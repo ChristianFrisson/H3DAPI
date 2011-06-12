@@ -113,13 +113,30 @@ void TraverseInfo::callPostTraverseCallbacks() {
   }
 }
 
-void TraverseInfo::addActiveLightNode( X3DLightNode *light ) {
-  x3dlightnode_vector.push_back( light );
+void TraverseInfo::addActiveLightNode( X3DLightNode *light, const Matrix4f &transform ) {
+  LightInfo info( light, transform );
+  x3dlightnode_vector.push_back( info );
 } 
-void TraverseInfo::removeActiveLightNode( X3DLightNode *light ) {
-  x3dlightnode_vector.erase( light );
+void TraverseInfo::removeActiveLightNode( X3DLightNode *light, const Matrix4f &transform ) {
+  for( LightVector::iterator i = x3dlightnode_vector.begin();
+       i != x3dlightnode_vector.end(); i++ ) {
+    if( (*i).getLight() == light && (*i).getLightTransform() == transform ) {
+      x3dlightnode_vector.erase( i );    
+      break;
+    }
+  }
+
 }
 
-const TraverseInfo::RefCountedVector &TraverseInfo::getActiveLightNodes() {
+const TraverseInfo::LightVector &TraverseInfo::getActiveLightNodes() {
   return x3dlightnode_vector;
+}
+
+TraverseInfo::LightInfo::LightInfo( X3DLightNode *_light, const Matrix4f &_transform ): 
+  light( _light ), transform( _transform ) {
+
+}
+
+X3DLightNode *TraverseInfo::LightInfo::getLight() const { 
+  return static_cast< X3DLightNode *>( light.get() ); 
 }

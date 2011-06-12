@@ -147,11 +147,7 @@ GLuint X3DLightNode::getLightIndex( string name_for_error ) {
     glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
   }
   global_light_index++;
-  if( global_light_index + 1 > max_lights )
-      Console(4) << "Warning: Maximum number of lightsources (" << max_lights
-                 << ") exceeded. Light will be ignored (" << name_for_error
-                 << ")" << endl;
-  
+    
   return (GLuint)global_light_index;
 }
 
@@ -159,7 +155,7 @@ GLuint X3DLightNode::getLightIndex( string name_for_error ) {
 void X3DLightNode::enableHapticsState( TraverseInfo &ti ) {
   // only add lights that are on.
   if( on->getValue() )
-    ti.addActiveLightNode( this );
+    ti.addActiveLightNode( this, ti.getAccForwardMatrix() );
 }
 
 /// Remove light from TraverseInfo
@@ -168,5 +164,5 @@ void X3DLightNode::disableHapticsState( TraverseInfo &ti ) {
   // not checking for on since it might have changed from enableHapticsState
   // and then we want to remove it anyway.
   if( !global->getValue() )
-    ti.removeActiveLightNode( this );
+    ti.removeActiveLightNode( this, ti.getAccForwardMatrix() );
 }

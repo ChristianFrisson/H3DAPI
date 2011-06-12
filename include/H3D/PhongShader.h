@@ -643,7 +643,15 @@ namespace H3D {
   protected:
 
     /// The X3DLightNode instances that this shader is built for.
-    TraverseInfo::RefCountedVector current_light_nodes;
+    /// The ligts are ordered in the same order as the gl light 
+    /// index they use.
+    TraverseInfo::LightVector current_light_nodes;
+
+    /// The transform matrices for all lights with index > maximum
+    /// number lightsources supported by OpenGL fixed functionallity.
+    /// Index 0 in this vector matches index max_gl_lights in 
+    /// current light nodes.
+    AutoPtrVector< SFMatrix4f > current_light_node_transforms;
 
     /// The number of light sources the shader currently handles(including headlight)
     unsigned int current_nr_lightsources;
@@ -657,6 +665,17 @@ namespace H3D {
     /// add dynamic fields for each field that we want to be accessable
     /// in the shader.
     virtual string addUniformFields( ComposedShader *shader );
+
+    /// Adds uniform fields needed for a light to the shader. 
+    /// \param shader The shader to add the uniform to.
+    /// \param light The light for which to a uniforms.
+    /// \param gl_index The OpenGL light index used for the light.
+    /// If the index is larger than the number of supported light
+    /// sources in the OpenGL implementation all fields of the light
+    /// are added in order to support more lights than that.
+    virtual string addUniformFieldsForLight( ComposedShader *shader,
+                                             X3DLightNode *light,
+                                             int gl_index);
 
     /// Get a string with GLSL function definitions to be used by
     /// the generated shader.
@@ -691,6 +710,13 @@ namespace H3D {
                                          string diffuse_color,
                                          string specular_color );
 
+    /// Returns a string with glsl code that sets adds and initialized
+    /// a variable of type gl_LightParameters and name light to the 
+    /// values of the light source.
+    /// 
+    /// \param index The OpenGL light index for the light.
+    virtual string setupLight( X3DLightNode *light,
+                               unsigned int gl_index );
   };
 }
 

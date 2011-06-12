@@ -309,4 +309,17 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
   }
   RenderProperties *rp = renderProperties->getValue();
   if ( rp ) rp->traverseSG( ti );
+
+  // print warning if too many light sources and fixed pipeline rendering
+  GLint max_lights = 1;
+  glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+
+  NavigationInfo *ni = NavigationInfo::getActive();
+  unsigned int nr_lights = ti.getActiveLightNodes().size();
+  if( !ni || ni->headlight->getValue() ) {
+    nr_lights++;
+  }
+  if( shaders->size() == 0 && nr_lights > max_lights )
+      Console(4) << "Warning: Maximum number of lightsources (" << max_lights
+                 << ") exceeded. Some lights will be ignored." << endl;
 }

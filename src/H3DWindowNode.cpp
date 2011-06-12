@@ -56,6 +56,7 @@
 #include <H3DUtil/Exception.h>
 #include <H3DUtil/AutoPtrVector.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/X3DLightNode.h>
 
 #include <GL/glew.h>
 
@@ -895,11 +896,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                          stereo_info );
 
     if( ti ) {
-      for( TraverseInfo::RefCountedVector::const_iterator i = 
+      for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
            i++ ) {
-        static_cast< X3DLightNode * >(*i)->enableGraphicsState();
+        (*i).getLight()->enableGraphicsState();
       }
     }
 
@@ -915,11 +916,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if( shadow_caster ) shadow_caster->render();
 
     if( ti ) {
-      for( TraverseInfo::RefCountedVector::const_iterator i = 
+      for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
            i++ ) {
-        static_cast< X3DLightNode * >(*i)->disableGraphicsState();
+        (*i).getLight()->disableGraphicsState();
       }
     }
 
@@ -994,11 +995,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                          stereo_info );
     
     if( ti ) {
-      for( TraverseInfo::RefCountedVector::const_iterator i = 
+      for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
            i++ ) {
-        static_cast< X3DLightNode * >(*i)->enableGraphicsState();
+        (*i).getLight()->enableGraphicsState();
       }
     }
 
@@ -1014,11 +1015,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if( shadow_caster ) shadow_caster->render();
 
     if( ti ) {
-      for( TraverseInfo::RefCountedVector::const_iterator i = 
+      for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
            i++ ) {
-        static_cast< X3DLightNode * >(*i)->disableGraphicsState();
+        (*i).getLight()->disableGraphicsState();
       }
     }
 
@@ -1155,11 +1156,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
 
     if( ti ) {
-      for( TraverseInfo::RefCountedVector::const_iterator i = 
+      for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
            i++ ) {
-        static_cast< X3DLightNode * >(*i)->enableGraphicsState();
+        (*i).getLight()->enableGraphicsState();
       }
     }
 
@@ -1172,11 +1173,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if( shadow_caster ) shadow_caster->render();
 
     if( ti ) {
-      for( TraverseInfo::RefCountedVector::const_iterator i = 
+      for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
            i++ ) {
-        static_cast< X3DLightNode * >(*i)->disableGraphicsState();
+        (*i).getLight()->disableGraphicsState();
       }
     }
 

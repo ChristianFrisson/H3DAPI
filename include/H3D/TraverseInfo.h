@@ -438,23 +438,38 @@ namespace H3D {
     /// Call all functions added by the addPostTraverseCallback function.
     void callPostTraverseCallbacks();
 
+    /// Class grouping X3DLightNode and its transformation matrix.
+    class LightInfo {
+    public:
+      /// Constructor.
+      LightInfo( X3DLightNode *, const Matrix4f &transform );
+      /// Get the light node.
+      X3DLightNode *getLight() const;
+      /// Get the transformation matrix for the light.
+      inline const Matrix4f &getLightTransform() const { return transform; }
+    protected:
+      AutoRef< Node > light;
+      Matrix4f transform;
+    };
 
     /// Used to get all the X3DLightNodes that are global.
-    typedef AutoRefVector< RefCountedClass > RefCountedVector;
+    typedef vector< LightInfo > LightVector;
 
     /// Add a light that is active to the TraverseInfo object.
+    /// The transform matrix is the transformation from the light's
+    /// local space to world space.
     /// Should only be done by the light nodes themselves.
-    void addActiveLightNode( X3DLightNode *light );
+    void addActiveLightNode( X3DLightNode *light, const Matrix4f &transform );
 
     /// Remove a light that is active to the TraverseInfo object.
     /// Should only be done by the light nodes themselves.
-    void removeActiveLightNode( X3DLightNode *light );
+    void removeActiveLightNode( X3DLightNode *light, const Matrix4f &transform );
     
     /// Returns the active lights.
-    const RefCountedVector &getActiveLightNodes();
+    const LightVector &getActiveLightNodes();
 
   protected:
-    RefCountedVector x3dlightnode_vector;
+    LightVector x3dlightnode_vector;
 
     class TransformInfo {
     public:
