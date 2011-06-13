@@ -146,8 +146,7 @@ void ProximitySensor::traverseSG( TraverseInfo &ti ) {
       }
       else
       {
-        position_changed->setValue( Vec3f( vp_pos_wrt_pr - 
-                        center->getValue() ), id );
+        position_changed->setValue( Vec3f( vp_pos_wrt_pr ), id );
         orientation_changed->setValue( vp_orn_wrt_pr , id  );
 
         NavigationInfo *ni = NavigationInfo::getActive();
@@ -163,8 +162,7 @@ void ProximitySensor::traverseSG( TraverseInfo &ti ) {
                 containLookat = true;
           }
           if( containLookat )
-            centerOfRotation_changed->setValue(Vec3f( vp_cor_wrt_pr
-                        - center->getValue() ), id );
+            centerOfRotation_changed->setValue(Vec3f( vp_cor_wrt_pr ), id );
         }
       
       }
