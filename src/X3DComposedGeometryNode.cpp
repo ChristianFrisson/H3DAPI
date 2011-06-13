@@ -142,7 +142,7 @@ Matrix4f X3DComposedGeometryNode::getDefaultTexGenMatrix() {
     const Vec3f &center = box_bound->center->getValue();
     const Vec3f &size = box_bound->size->getValue();
 
-    Matrix4f m;
+    Matrix4f m(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
     H3DFloat *sparams = m[0];
     H3DFloat *tparams = m[1];
     H3DFloat *rparams = m[2];
@@ -181,9 +181,9 @@ Matrix4f X3DComposedGeometryNode::getDefaultTexGenMatrix() {
 	smallest_side = 0;
       } else if( size.x >= size.z ) {
 	// size.y > size.x >=size.z
-	largest_side  = 0; 
-	middle_side   = 2;
-	smallest_side = 1;
+	largest_side  = 1; 
+	middle_side   = 0;
+	smallest_side = 2;
       } else {
 	// size.y > size.z > size.x
 	largest_side  = 1; 
