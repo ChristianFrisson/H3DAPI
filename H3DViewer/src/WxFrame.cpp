@@ -151,6 +151,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   avatar_collision( true ),
   loaded_first_file( false ),
   change_nav_type( new ChangeNavType ),
+  handle_action_key( new HandleActionKey ),
   itemIdViewpointMap(),
   current_viewpoint_id(0)
 {
@@ -361,7 +362,9 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   rendererMenu->Enable(FRAME_RENDERMODE, false);
 
   change_nav_type->setOwnerWindows( glwindow, this );
+  handle_action_key->setOwnerWindows( glwindow, this );
   ks->keyPress->route( change_nav_type );
+  ks->actionKeyPress->route( handle_action_key );
 #ifdef WIN32
   wxIcon tmpIcon( wxT( "IDI_ICON1" ), wxBITMAP_TYPE_ICO_RESOURCE );
   SetIcon( tmpIcon );
@@ -392,6 +395,57 @@ void WxFrame::ChangeNavType::update() {
       frame->speed_slider->setSpeed(
         glwindow->default_speed - speed_increment, true, true );
     }
+  }
+}
+
+void WxFrame::HandleActionKey::update() {
+  int key = static_cast< SFInt32 * >(routes_in[0])->getValue();
+   switch( key ) {
+     case KeySensor::HOME:  {
+       // Goes to the initial viewpoint
+       wxCommandEvent fake_event;
+       fake_event.SetId( frame->itemIdViewpointMap.begin()->first );
+       frame->ChangeViewpoint( fake_event );
+       break;
+     }
+     case KeySensor::END: {
+       //Goes to the final viewpoint 
+       wxCommandEvent fake_event;
+       map< int, X3DViewpointNode * >::iterator last_item = frame->itemIdViewpointMap.end();
+       last_item--;
+       fake_event.SetId( last_item->first );
+       frame->ChangeViewpoint( fake_event );
+       break;
+     }
+     case KeySensor::PGDN: {
+       // Goes to the next viewpoint, if the active viewpoint is the
+       // last one the next viewpoint is set to the first viewpoint
+       wxCommandEvent fake_event;
+       int new_int = frame->current_viewpoint_id + 1;
+       map< int, X3DViewpointNode * >::iterator last_item = frame->itemIdViewpointMap.end();
+       last_item--;
+       if( new_int > last_item->first ) {
+         new_int = frame->itemIdViewpointMap.begin()->first;
+       }
+       fake_event.SetId( new_int );
+       frame->ChangeViewpoint( fake_event );
+       break;
+     }
+     case KeySensor::PGUP: {
+       // Goes to the previous viewpoint, if the active viewpoint is the
+       // first one the previous viewpoint is set to the last viewpoint
+       wxCommandEvent fake_event;
+       int new_int = frame->current_viewpoint_id - 1;
+       if( new_int < frame->itemIdViewpointMap.begin()->first ) {
+         map< int, X3DViewpointNode * >::iterator last_item = frame->itemIdViewpointMap.end();
+         last_item--;
+         new_int = last_item->first;
+       }
+       fake_event.SetId( new_int );
+       frame->ChangeViewpoint( fake_event );
+       break;
+     }
+     default: {}
   }
 }
 

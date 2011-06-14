@@ -48,6 +48,7 @@
 #include <H3D/ResourceResolver.h>
 #include <H3D/NavigationInfo.h>
 #include <H3D/X3D.h>
+#include <H3D/PeriodicUpdate.h>
 
 #include <H3DUtil/Console.h>
 
@@ -445,6 +446,24 @@ public:
   auto_ptr< ChangeNavType > change_nav_type;
   map< int, X3DViewpointNode * > itemIdViewpointMap;
   int current_viewpoint_id;
+
+  class HandleActionKey : public PeriodicUpdate< SFInt32 > { 
+  public:
+    HandleActionKey() : glwindow( NULL ), frame( NULL ) {}
+
+    inline void setOwnerWindows( WxWidgetsWindow * owner_window,
+                                 WxFrame *_frame ) {
+      glwindow = owner_window;
+      frame = _frame;
+    }
+
+  protected:
+    virtual void update();
+
+    WxWidgetsWindow *glwindow;
+    WxFrame * frame;
+  };
+  auto_ptr< HandleActionKey > handle_action_key;
 
 protected:
   DECLARE_EVENT_TABLE()
