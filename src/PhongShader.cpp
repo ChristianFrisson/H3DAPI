@@ -1060,11 +1060,13 @@ string PhongShader::addUniformFields( ComposedShader *shader ) {
 
   NavigationInfo *ni = NavigationInfo::getActive();
   int index_offset = 0;
-  if( !ni || ni->headlight->getValue() ) {
+
+  // add headlight if enabled
+  bool have_headlight = current_nr_lightsources > current_light_nodes.size();
+  if( have_headlight ) {
     index_offset++;
   }
     
-
   // add light uniforms
   for( unsigned int i = 0; i < current_light_nodes.size(); i++ ) {
     s << addUniformFieldsForLight( shader, current_light_nodes[i].getLight(), i+index_offset );
@@ -1102,10 +1104,10 @@ string PhongShader::addUniformFieldsForLight( ComposedShader *shader,
                                      copyAndRouteField( point_light->radius ) );  
   }
   
-  GLint max_lights = 1;
-  //    glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+  GLint max_lights;
+  glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+
   if( (int) gl_index >= max_lights ) {   
-    
     stringstream t_name;
     t_name << uniqueLightFieldName( "transform", light ) << gl_index;
     s << addUniformToFragmentShader( shader,
@@ -1250,7 +1252,7 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
    current_light_nodes = ordered_light_nodes;
 
    GLint max_lights = 1;
-  //glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+   glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
 
    // make sure we have the right number of transforms, i.e. one for
    // each light more than maximum number of supported light sources
@@ -1282,8 +1284,8 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
 string PhongShader::setupLight( X3DLightNode *light,
                                 unsigned int index ) {
   stringstream s;
-  GLint max_lights = 1;
-  //glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+  GLint max_lights;
+  glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
 
   SpotLight *spot_light = dynamic_cast< SpotLight * >( light );
   DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );
