@@ -64,6 +64,8 @@ PointNormalClipPlane::PointNormalClipPlane( Inst< SFNode  > _metadata,
 
   point->route( plane, id );
   normal->route( plane, id );
+
+  plane->setAccessType( Field::OUTPUT_ONLY );
 }
 
 void PointNormalClipPlane::PlaneEq::update() {
