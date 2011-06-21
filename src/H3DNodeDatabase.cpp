@@ -274,7 +274,8 @@ void H3DNodeDatabase::clearDynamicFields() {
     i++;
     if( fdb ) {
       fields.erase( to_erase );
-    } 
+      delete fdb;
+    }
   }
 }
 
