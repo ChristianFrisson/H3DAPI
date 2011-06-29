@@ -144,8 +144,11 @@ void MatrixTransform::traverseSG( TraverseInfo &ti ) {
                    matrix->getValue().inverse() );
 
   // set accumulated forward and inverse matrices
-  accumulatedForward->setValue( ti.getAccForwardMatrix(), id );
-  accumulatedInverse->setValue( ti.getAccInverseMatrix(), id );
+  if( accumulatedForward->getValue() != ti.getAccForwardMatrix() )
+    accumulatedForward->setValue( ti.getAccForwardMatrix(), id );
+
+  if( accumulatedInverse->getValue() != ti.getAccInverseMatrix() )
+    accumulatedInverse->setValue( ti.getAccInverseMatrix(), id );
   X3DGroupingNode::traverseSG( ti );
   ti.popMatrices();
 }
