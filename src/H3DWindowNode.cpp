@@ -402,6 +402,8 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
             tbb->matrix->setValue( m );
             bounds.push_back( tbb );
             bounds_to_remove.push_back( tbb );
+          } else if( dynamic_cast< EmptyBound * >( b ) ) {
+            //empty bound. ignore
           } else {
             success = false;
           }
@@ -423,6 +425,8 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
     BoxBound *bb = dynamic_cast< BoxBound * >( b );
     if( bb ) {
       bounds.push_back( bb );
+    } else if( dynamic_cast< EmptyBound * >( b ) ) {
+      //empty bound. ignore
     } else {
       success = false;
     }
@@ -788,7 +792,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   GLdouble mono_projmatrix[16], mono_mvmatrix[16];
   bool any_pointing_device_sensors =
     X3DPointingDeviceSensorNode::instancesExists();
-
 
   if( renderMode->isStereoMode() ) {
     // make sure the focal plane is between the near and far 
