@@ -93,7 +93,7 @@ namespace H3D {
 
     /// Remove all dynamic fields that have been previously added.
     inline void clearFields() {
-      database->clearDynamicFields();
+      database->clearDynamicFields(inherited_node);
       dynamic_fields.clear();
     }
 
@@ -108,6 +108,13 @@ namespace H3D {
     // Holds a pointer to the node instance to which dynamic fields
     // belong to. Note that this pointer should only be used for pointer
     // comparasion and never for access to any node members.
+    // The reason for using this pointer instead of this is because
+    // H3DDynamicFieldsObject is used with multiple inheritance and
+    // H3DDynamicFieldsObject is not a node class. This could result
+    // in a destructor sequence for a node deleting the node base
+    // class before the H3DDynamicFieldsObject base class which would
+    // result in an invalid value for dynamic_cast< Node * >(this) 
+    // and the database is then not cleaned up properly.
     Node * inherited_node;
   };
 }
