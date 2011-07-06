@@ -56,7 +56,7 @@ public:
 
   /// Callback for when user right clicked on a tree node.
   virtual void OnTreeRightClick( wxTreeEvent& event );
-	
+        
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );
 
@@ -88,7 +88,7 @@ public:
   // Add a view of the node as a child to the tree. expand determines
   // if the tree should be expanded from the start or node.
   void addNodeToTree( wxTreeItemId tree_id, 
-	                    H3D::Node *n, 
+                      H3D::Node *n, 
                       string container_field,
                       bool expand = true );
 
@@ -117,6 +117,9 @@ public:
   // since we have to divide it into two parts, selecting and displaying
   // in order to work around a crash that happens in a choice editor.
   AutoRef< Node > selected_node;
+
+  /// Returns the number of triangles in X3DGeometryNode. -1 of unknown.
+  int getNrTriangles( X3DGeometryNode *geom );
 
 #ifdef USE_PROPGRID
   H3DViewerFieldValuesPanelPropGrid *field_values_panel;

@@ -8,6 +8,7 @@
 #include <H3D/Coordinate.h>
 #include <H3D/MatrixTransform.h>
 #include <H3D/X3DShapeNode.h>
+#include <H3D/IndexedFaceSet.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
 
@@ -53,6 +54,31 @@ void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
   }
 }
 
+int H3DViewerTreeViewDialog::getNrTriangles( X3DGeometryNode *geom ) {
+  IndexedFaceSet *ifs = static_cast< IndexedFaceSet * >( geom );
+  if( ifs ) {
+    // IndexedFaceSet nrTriangles function is an upper bound so
+    // try to calculate a more exact number here.
+    const vector< int > &index = ifs->coordIndex->getValue();
+    
+    unsigned int i = 0;
+    unsigned int nr_triangles = 0;
+    
+    while( i < index.size() ) {
+      unsigned int nr_face_vertices = 0;
+      while( index[i++] != -1 ) {
+        nr_face_vertices++;
+      }
+      
+      if( nr_face_vertices >= 3 ) {
+        nr_triangles += nr_face_vertices - 2;
+      }
+    }
+    return nr_triangles;
+  }
+  return geom->nrTriangles();
+}
+
 void H3DViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
   // show the scene in the tree view.
   list< pair< H3D::Node *, string > > l;
@@ -86,6 +112,19 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
   string tree_string = n->getTypeName();
   if( n->hasName() ) {
     tree_string = tree_string + " (" + n->getName() + ")";
+  }
+
+  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( n );
+  if( geom ) {
+
+    int nr_triangles = getNrTriangles( geom );
+    if( nr_triangles == -1 ) {
+      tree_string = tree_string + " (Approx nr triangles: Unknown )";
+    } else {
+      char nr_triangles_str[255];
+      sprintf(nr_triangles_str, " (Approx nr triangles: %d )", getNrTriangles(geom) );
+      tree_string = tree_string + nr_triangles_str;
+    }
   }
 
   if( container_field != n->defaultXMLContainerField() ) {
@@ -155,7 +194,7 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
     for( ni = nodes.begin(); ni != nodes.end(); ni++ ) {
       Node *node = (*ni).first;
       if( node->getProtoInstanceParent() ) {
-	node = node->getProtoInstanceParent(); 
+        node = node->getProtoInstanceParent(); 
       }
       if( node == id_node ) break;
     }
