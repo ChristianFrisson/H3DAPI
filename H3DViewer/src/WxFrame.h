@@ -255,7 +255,7 @@ public:
              *navigationMenu, *advancedMenu, *helpMenu;
   wxMenuItem *navigationDevices;
   //Submenu items
-  wxMenu     *hapticsRenderer, *renderMode;
+  wxMenu     *hapticsRenderer, *renderMode, *stereoRenderMode;
   //File History Menu
   wxFileHistory *recentFiles;
 
@@ -279,6 +279,7 @@ public:
   void RestoreWindow( wxCommandEvent & event );
   void MirrorScene( wxCommandEvent & event );
   void RenderMode( wxCommandEvent & event );
+  void StereoRenderMode( wxCommandEvent & event );
   void ShowConsole( wxCommandEvent & event );
   void ShowTreeView( wxCommandEvent & event );
   void ShowPluginsDialog( wxCommandEvent & event );
@@ -495,6 +496,11 @@ enum
   FRAME_GODOBJECT,
   FRAME_RUSPINI,
   FRAME_RENDERMODE,
+  FRAME_RENDERMODE_DEFAULT,
+  FRAME_RENDERMODE_FILLED,
+  FRAME_RENDERMODE_WIREFRAME,
+  FRAME_RENDERMODE_POINTS,
+  FRAME_STEREORENDERMODE,
   FRAME_MONO,
   FRAME_QUADBUFFERED,
   FRAME_HORZSPLIT,

@@ -207,6 +207,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   //Submenus
   hapticsRenderer = (wxMenu *) NULL;
   renderMode = (wxMenu *) NULL;
+  stereoRenderMode = (wxMenu *) NULL;
 
   global_settings.reset( new GlobalSettings );
   global_settings->options->push_back( new CollisionOptions );
@@ -273,38 +274,53 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 
   //renderMode
   renderMode = new wxMenu;
-  renderMode->AppendRadioItem(FRAME_MONO, wxT("No Stereo"),
-                              wxT("Disable stereo display"));
-  renderMode->AppendRadioItem(FRAME_QUADBUFFERED, wxT("Quad Buffered Stereo"),
-                              wxT("Quad Buffered Stereo"));
-  renderMode->AppendRadioItem(FRAME_HORZSPLIT, wxT("Horizontal Split"),
-                              wxT("Horizontal Split"));
-  renderMode->AppendRadioItem(FRAME_HORZSPLITKEEPASPECT,
-                              wxT("Horizontal Split Keep Aspect"),
-                       wxT("Horizontal Split with aspect ratio kept the same."));
-  renderMode->AppendRadioItem(FRAME_VERTSPLIT, wxT("Vertical Split"),
-                              wxT("Vertical Split"));
-  renderMode->AppendRadioItem(FRAME_VERTSPLITKEEPASPECT,
-                              wxT("Vertical Split Keep Aspect"),
-                       wxT("Vertical Split with aspect ratio kept the same."));
-  renderMode->AppendRadioItem(FRAME_HORZINTERLACED,
-                              wxT("Horizontal Interlaced"),
-                              wxT("Horizontal Interlaced"));
-  renderMode->AppendRadioItem(FRAME_VERTINTERLACED,
-                              wxT("Vertical Interlaced"),
-                              wxT("Vertical Interlaced"));
-  renderMode->AppendRadioItem(FRAME_CHECKERINTERLACED,
-                              wxT("Checker Interlaced"),
-                              wxT("Checker Interlaced"));
-  renderMode->AppendRadioItem(FRAME_SHARPDISPLAY, wxT("Sharp Display"),
-                              wxT("Optimized for Sharp display systems"));
-  renderMode->AppendRadioItem(FRAME_REDBLUE, wxT("Red-Blue Stereo"),
-                              wxT("Red-Blue Stereo mode"));
-  renderMode->AppendRadioItem(FRAME_REDGREEN, wxT("Red-Green Stereo"),
-                              wxT("Red-Green Stereo mode"));
-  renderMode->AppendRadioItem(FRAME_REDCYAN, wxT("Red-Cyan Stereo"),
-                              wxT("Red-Cyan Stereo mode"));
+  renderMode->AppendRadioItem(FRAME_RENDERMODE_DEFAULT,
+                              wxT("Default"),
+                              wxT("Use settings from X3D scene."));
+  renderMode->AppendRadioItem(FRAME_RENDERMODE_FILLED, 
+                              wxT("Force filled"),
+                              wxT("Draw all geometries filled"));
+  renderMode->AppendRadioItem(FRAME_RENDERMODE_WIREFRAME, 
+                              wxT("Force wireframe"),
+                              wxT("Draw all geometries as wireframe."));
+  renderMode->AppendRadioItem(FRAME_RENDERMODE_POINTS,
+                              wxT("Force points"),
+                              wxT("Draw the vertices of all geometries as points."));
 
+  //stereoRenderMode
+  stereoRenderMode = new wxMenu;
+  stereoRenderMode->AppendRadioItem(FRAME_MONO, wxT("No Stereo"),
+                                    wxT("Disable stereo display"));
+  stereoRenderMode->AppendRadioItem(FRAME_QUADBUFFERED, wxT("Quad Buffered Stereo"),
+                                    wxT("Quad Buffered Stereo"));
+  stereoRenderMode->AppendRadioItem(FRAME_HORZSPLIT, wxT("Horizontal Split"),
+                                    wxT("Horizontal Split"));
+  stereoRenderMode->AppendRadioItem(FRAME_HORZSPLITKEEPASPECT,
+                                    wxT("Horizontal Split Keep Aspect"),
+                                    wxT("Horizontal Split with aspect ratio kept the same."));
+  stereoRenderMode->AppendRadioItem(FRAME_VERTSPLIT, wxT("Vertical Split"),
+                                    wxT("Vertical Split"));
+  stereoRenderMode->AppendRadioItem(FRAME_VERTSPLITKEEPASPECT,
+                                    wxT("Vertical Split Keep Aspect"),
+                                    wxT("Vertical Split with aspect ratio kept the same."));
+  stereoRenderMode->AppendRadioItem(FRAME_HORZINTERLACED,
+                                    wxT("Horizontal Interlaced"),
+                                    wxT("Horizontal Interlaced"));
+  stereoRenderMode->AppendRadioItem(FRAME_VERTINTERLACED,
+                                    wxT("Vertical Interlaced"),
+                                    wxT("Vertical Interlaced"));
+  stereoRenderMode->AppendRadioItem(FRAME_CHECKERINTERLACED,
+                                    wxT("Checker Interlaced"),
+                                    wxT("Checker Interlaced"));
+  stereoRenderMode->AppendRadioItem(FRAME_SHARPDISPLAY, wxT("Sharp Display"),
+                                    wxT("Optimized for Sharp display systems"));
+  stereoRenderMode->AppendRadioItem(FRAME_REDBLUE, wxT("Red-Blue Stereo"),
+                                    wxT("Red-Blue Stereo mode"));
+  stereoRenderMode->AppendRadioItem(FRAME_REDGREEN, wxT("Red-Green Stereo"),
+                                    wxT("Red-Green Stereo mode"));
+  stereoRenderMode->AppendRadioItem(FRAME_REDCYAN, wxT("Red-Cyan Stereo"),
+                                    wxT("Red-Cyan Stereo mode"));
+  
   //Renderer Menu
   rendererMenu = new wxMenu;
   rendererMenu->AppendCheckItem(FRAME_FULLSCREEN, wxT("Fullscreen Mode\tF11"),
@@ -312,10 +328,17 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   rendererMenu->AppendCheckItem(FRAME_MIRROR, wxT("Mirror in Y"),
                                 wxT("Mirror Scene in Y"));
   rendererMenu->AppendSeparator();
-  rendererMenu->Append(FRAME_CHOOSERENDERER, wxT("Choose Haptics Renderer"),
+  rendererMenu->Append(FRAME_CHOOSERENDERER, 
+                       wxT("Choose Haptics Renderer"),
                        hapticsRenderer, wxT("Select a haptics renderer"));
-  rendererMenu->Append(FRAME_RENDERMODE, wxT("Select Render Mode"), renderMode,
-                       wxT("Graphical Renderer Options"));
+
+  rendererMenu->Append(FRAME_RENDERMODE, 
+                       wxT("Select render mode"), renderMode,
+                       wxT("Select the render mode"));
+
+  rendererMenu->Append(FRAME_STEREORENDERMODE, 
+                       wxT("Select stereo mode"), stereoRenderMode,
+                       wxT("Select the stereo rendering mode"));
   rendererMenu->AppendSeparator();
   rendererMenu->Append(FRAME_SETTINGS, wxT("Settings..."),
                        wxT("Scenegraph rendering options"));
@@ -360,6 +383,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   //Certain options in rendererMenu
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
   rendererMenu->Enable(FRAME_RENDERMODE, false);
+  rendererMenu->Enable(FRAME_STEREORENDERMODE, false);
 
   change_nav_type->setOwnerWindows( glwindow, this );
   handle_action_key->setOwnerWindows( glwindow, this );
@@ -462,7 +486,9 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_SETTINGS, WxFrame::OnSettings)
   EVT_MENU (FRAME_RESTORE, WxFrame::RestoreWindow)
   EVT_MENU (FRAME_MIRROR, WxFrame::MirrorScene)
-  EVT_MENU_RANGE (FRAME_MONO, FRAME_REDCYAN, WxFrame::RenderMode)
+  EVT_MENU_RANGE (FRAME_MONO, FRAME_REDCYAN, WxFrame::StereoRenderMode)
+  EVT_MENU_RANGE (FRAME_RENDERMODE_DEFAULT, 
+                  FRAME_RENDERMODE_POINTS, WxFrame::RenderMode )
   EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
   EVT_MENU (FRAME_TREEVIEW, WxFrame::ShowTreeView)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
@@ -827,6 +853,7 @@ bool WxFrame::loadFile( const string &filename) {
 
     //Enable graphical rendering options in rendererMenu
     rendererMenu->Enable(FRAME_RENDERMODE, true);
+    rendererMenu->Enable(FRAME_STEREORENDERMODE, true);
     rendererMenu->Enable(FRAME_CHOOSERENDERER, true);
 
     /****************************Device Info****************************/
@@ -975,31 +1002,31 @@ bool WxFrame::loadFile( const string &filename) {
       this->glwindow->mirrored->setValue( mirrored );
       this->glwindow->renderMode->setValue( render_mode );
       if( render_mode == "MONO" )
-        renderMode->Check( FRAME_MONO, true );
+        stereoRenderMode->Check( FRAME_MONO, true );
       else if( render_mode == "QUAD_BUFFERED_STEREO" )
-        renderMode->Check( FRAME_QUADBUFFERED, true );
+        stereoRenderMode->Check( FRAME_QUADBUFFERED, true );
       else if( render_mode == "HORIZONTAL_SPLIT" )
-        renderMode->Check( FRAME_HORZSPLIT, true );
+        stereoRenderMode->Check( FRAME_HORZSPLIT, true );
       else if( render_mode == "HORIZONTAL_SPLIT_KEEP_RATIO" )
-        renderMode->Check( FRAME_HORZSPLITKEEPASPECT, true );
+        stereoRenderMode->Check( FRAME_HORZSPLITKEEPASPECT, true );
       else if( render_mode == "VERTICAL_SPLIT" )
-        renderMode->Check( FRAME_VERTSPLIT, true );
+        stereoRenderMode->Check( FRAME_VERTSPLIT, true );
       else if( render_mode == "VERTICAL_SPLIT_KEEP_RATIO" )
-        renderMode->Check( FRAME_VERTSPLITKEEPASPECT, true );
+        stereoRenderMode->Check( FRAME_VERTSPLITKEEPASPECT, true );
       else if( render_mode == "HORIZONTAL_INTERLACED" )
-        renderMode->Check( FRAME_HORZINTERLACED, true );
+        stereoRenderMode->Check( FRAME_HORZINTERLACED, true );
       else if( render_mode == "VERTICAL_INTERLACED" )
-        renderMode->Check( FRAME_VERTINTERLACED, true );
+        stereoRenderMode->Check( FRAME_VERTINTERLACED, true );
       else if( render_mode == "CHECKER_INTERLACED" )
-        renderMode->Check( FRAME_CHECKERINTERLACED, true );
+        stereoRenderMode->Check( FRAME_CHECKERINTERLACED, true );
       else if( render_mode == "VERTICAL_INTERLACED_GREEN_SHIFT" )
-        renderMode->Check( FRAME_SHARPDISPLAY, true );
+        stereoRenderMode->Check( FRAME_SHARPDISPLAY, true );
       else if( render_mode == "RED_BLUE_STEREO" )
-        renderMode->Check( FRAME_REDBLUE, true );
+        stereoRenderMode->Check( FRAME_REDBLUE, true );
       else if( render_mode == "RED_GREEN_STEREO" )
-        renderMode->Check( FRAME_REDGREEN, true );
+        stereoRenderMode->Check( FRAME_REDGREEN, true );
       else if( render_mode == "RED_CYAN_STEREO" )
-        renderMode->Check( FRAME_REDCYAN, true );
+        stereoRenderMode->Check( FRAME_REDCYAN, true );
     }
 
     tree_view_dialog->showEntireSceneAsTree( true );
@@ -1393,6 +1420,7 @@ void WxFrame::OnCloseFile(wxCommandEvent & event) {
   //Disable items in rendererMenu again
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
   rendererMenu->Enable(FRAME_RENDERMODE, false);
+  rendererMenu->Enable(FRAME_STEREORENDERMODE, false);
 }
 
 void WxFrame::OnChooseDir(wxCommandEvent & event) {
@@ -1471,7 +1499,7 @@ void WxFrame::MirrorScene(wxCommandEvent & event)
 }
 
 //Render Mode
-void WxFrame::RenderMode(wxCommandEvent & event)
+void WxFrame::StereoRenderMode(wxCommandEvent & event)
 {
   std::string renderMode;
   switch ( event.GetId() ) {
@@ -1520,6 +1548,24 @@ void WxFrame::RenderMode(wxCommandEvent & event)
   // modes if the file was loaded with mono render mode.
   H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
 }
+
+
+//Render Mode
+void WxFrame::RenderMode(wxCommandEvent & event)
+{
+  GlobalSettings *settings = GlobalSettings::getActive();
+  if( settings ) {
+    if( event.GetId() == FRAME_RENDERMODE_DEFAULT ) 
+      settings->renderMode->setValue( "DEFAULT" );
+    else if( event.GetId() == FRAME_RENDERMODE_FILLED ) 
+      settings->renderMode->setValue( "FILLED" );
+    else if( event.GetId() == FRAME_RENDERMODE_WIREFRAME ) 
+      settings->renderMode->setValue( "WIREFRAME" );
+    else if( event.GetId() == FRAME_RENDERMODE_POINTS ) 
+      settings->renderMode->setValue( "POINTS" );
+  }
+}
+
 
 void WxFrame::ChangeNavigationDevice( wxCommandEvent & event ) {
 
