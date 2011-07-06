@@ -55,7 +55,7 @@ void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
 }
 
 int H3DViewerTreeViewDialog::getNrTriangles( X3DGeometryNode *geom ) {
-  IndexedFaceSet *ifs = static_cast< IndexedFaceSet * >( geom );
+  IndexedFaceSet *ifs = dynamic_cast< IndexedFaceSet * >( geom );
   if( ifs ) {
     // IndexedFaceSet nrTriangles function is an upper bound so
     // try to calculate a more exact number here.
