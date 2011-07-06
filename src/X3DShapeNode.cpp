@@ -73,7 +73,8 @@ X3DShapeNode::X3DShapeNode(
   shadowVolume( new SFShadowObjectNode ),
   use_geometry_bound( false ),
   prev_travinfoadr( NULL ),
-  traverse_multipass_transparency( false ) {
+  traverse_multipass_transparency( false ),
+  last_global_settings( NULL ) {
 
   geometry->owner = this;
 
@@ -95,6 +96,7 @@ void X3DShapeNode::render() {
   
   GLboolean lighting_on;
 
+  // appearance render
   if ( a ) {
     a->preRender();
     a->displayList->callList();
@@ -104,6 +106,27 @@ void X3DShapeNode::render() {
       glDisable( GL_LIGHTING );
     }
   }
+
+  // force render mode to value determined in GlobalSettings
+  // if such a value is specified.
+  GlobalSettings *settings = GlobalSettings::getActive();
+  if( settings ) {
+    const string &render_mode = settings->renderMode->getValue();
+
+    if( render_mode != "DEFAULT" ) {
+      glPushAttrib( GL_POLYGON_BIT );
+
+      if( render_mode == "SOLID" ) {
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+      } else if( render_mode == "WIREFRAME" ) {
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+      } else if( render_mode == "POINTS" ) {
+        glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
+      }
+    }
+  }
+
+  // Geometry render
   if ( g ) {
     if( geometry_render_mode == ALL ) {
       g->displayList->callList();
@@ -139,6 +162,15 @@ void X3DShapeNode::render() {
       } 
     }
   }
+
+  // restore polygon bit
+  if( settings ) {
+    const string &render_mode = settings->renderMode->getValue();
+    if( render_mode != "DEFAULT" ) {
+      glPopAttrib();
+    }
+  }
+
   if( a ) a->postRender();
   else if(  X3DShapeNode::disable_lighting_if_no_app && lighting_on )
     glEnable( GL_LIGHTING );
@@ -149,6 +181,22 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
     prev_travinfoadr = &ti;
     traverse_multipass_transparency = false;
   }
+
+  // set up route from the renderMode field in current GlobalSettings
+  /// node since a change in the value should break the cache and 
+  /// generate a new display list.
+  GlobalSettings *settings = GlobalSettings::getActive();
+  if( settings != last_global_settings.get() ) {
+    if( last_global_settings.get() ) {
+      static_cast< GlobalSettings * >(last_global_settings.get())->renderMode->unroute( displayList );
+    } 
+    
+    if( settings ) {
+      settings->renderMode->route( displayList );
+    }
+    last_global_settings.reset( settings );
+  }
+
   X3DAppearanceNode *a = appearance->getValue();
   X3DGeometryNode *g = geometry->getValue();
   Node *hg = hapticGeometry->getValue();;
@@ -198,7 +246,7 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   // PhongShader).
   bool * shader_requires_tangents = NULL;
   if( !ti.getUserData( "shaderRequiresTangents", 
-		       (void **)&shader_requires_tangents) ) {
+                       (void **)&shader_requires_tangents) ) {
     shader_requires_tangents = false;
   }
 }

@@ -296,6 +296,10 @@ namespace H3D {
     // new values. If any of the pass returns true then multipass
     // transparency should be used.
     bool traverse_multipass_transparency;
+
+    // The GlobalSettings node that was in used in last call to 
+    // traverseSG
+    AutoRef<Node> last_global_settings;
   };
 }
 

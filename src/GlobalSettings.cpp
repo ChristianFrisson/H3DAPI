@@ -45,6 +45,8 @@ namespace GlobalSettingsInternals {
   FIELDDB_ELEMENT( GlobalSettings, options, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GlobalSettings, x3dROUTESendsEvent, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GlobalSettings, loadTexturesInThread, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GlobalSettings, renderMode, INPUT_OUTPUT );
+
 }
 
 
@@ -55,16 +57,26 @@ GlobalSettings::GlobalSettings(
                        Inst<  SFBool    >  _isBound,
                        Inst< MFOptionNode >  _options,
                        Inst< SFBool     > _x3dROUTESendsEvent,
-                       Inst< SFBool     > _loadTexturesInThread ):
+                       Inst< SFBool     > _loadTexturesInThread,
+                       Inst< SFString   > _renderMode ):
   X3DBindableNode( "GlobalSettings", _set_bind, _metadata, 
                    _bindTime, _isBound ),
   options        ( _options ),
   x3dROUTESendsEvent( _x3dROUTESendsEvent ),
-  loadTexturesInThread( _loadTexturesInThread ) {
+  loadTexturesInThread( _loadTexturesInThread ),
+  renderMode( _renderMode )  {
 
   type_name = "GlobalSettings";
   database.initFields( this );
 
   x3dROUTESendsEvent->setValue( GlobalSettings::default_x3d_route_sends_event );
   loadTexturesInThread->setValue( X3DTextureNode::load_images_in_separate_thread );
+
+  renderMode->addValidValue( "DEFAULT" );
+  renderMode->addValidValue( "FILLED" );
+  renderMode->addValidValue( "WIREFRAME" );
+  renderMode->addValidValue( "POINTS" );
+
+  renderMode->setValue( "DEFAULT" );
+ 
 }

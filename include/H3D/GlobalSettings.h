@@ -54,6 +54,20 @@ namespace H3D {
   /// are loaded versus having to wait for all textures to be read before
   /// program starts.
   ///
+  /// Controls the render mode of all geometries in the scene. The possible 
+  /// values are:
+  /// <table>
+  /// <tr><td>"DEFAULT"</td><td>Render as X3D scene nodes say.</td></tr> 
+  /// <tr><td>"FILLED"</td><td>Draw filled polygons always.</td></tr> 
+  /// <tr><td>"WIREFRAME"</td><td>Draw wireframe polygons always.</td></tr> 
+  /// <tr><td>"POINTS"</td><td>Draw points at vertices for polygons always.</td></tr> 
+  /// </table>
+  /// 
+  /// For a way to set fill mode per object see the X3D node FillProperties.
+  ///
+  /// <b>Access type: </b> inputOutput \n
+  /// <b>Default value: </b> "DEFAULT"
+  ///
   /// The options field contains H3DOptionNode instances for various options.
   ///
   /// <b>Examples:</b>
@@ -71,7 +85,8 @@ namespace H3D {
                     Inst< SFBool    >  _isBound         = 0,
                     Inst< MFOptionNode >  _options         = 0,
                     Inst< SFBool    >  _x3dROUTESendsEvent = 0,
-                    Inst< SFBool    >  _loadTexturesInThread = 0 );
+                    Inst< SFBool    >  _loadTexturesInThread = 0,
+                    Inst< SFString  >  _renderMode      = 0 );
     
     /// Destructor.
     ~GlobalSettings() {
@@ -128,6 +143,21 @@ namespace H3D {
     /// <b>Default value: </b> X3DTextureNode::load_images_in_separate_thread 
     /// (in H3DLoad and H3DViewer this is true) \n
     auto_ptr< SFBool > loadTexturesInThread;
+
+    /// Controls the render mode of all geometries in the scene. The possible 
+    /// values are:
+    /// <table>
+    /// <tr><td>"DEFAULT"</td><td>Render as X3D scene nodes say.</td></tr> 
+    /// <tr><td>"FILLED"</td><td>Draw filled polygons always.</td></tr> 
+    /// <tr><td>"WIREFRAME"</td><td>Draw wireframe polygons always.</td></tr> 
+    /// <tr><td>"POINTS"</td><td>Draw points at vertices for polygons always.</td></tr> 
+    /// </table>
+    /// 
+    /// For a way to set fill mode per object see the X3D node FillProperties.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> "DEFAULT"
+    auto_ptr< SFString > renderMode;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
