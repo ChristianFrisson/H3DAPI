@@ -756,6 +756,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   if( nav_info ) {
     if( nav_info->visibilityLimit->getValue() > 0 )
       clip_far = nav_info->visibilityLimit->getValue();
+    if( nav_info->nearVisibilityLimit->getValue() > 0 )
+      clip_near = nav_info->nearVisibilityLimit->getValue();
   }
 
   if( background ) {

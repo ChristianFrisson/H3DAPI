@@ -256,7 +256,8 @@ namespace H3D {
                     Inst< MFString  > _type             = 0,
                     Inst< SFFloat   > _visibilityLimit  = 0,
                     Inst< SFBool    > _transitionComplete = 0,
-                    Inst< SFBool    > _headlightShadows = 0 );
+                    Inst< SFBool    > _headlightShadows = 0,
+                    Inst< SFFloat   > _nearVisibilityLimit  = 0 );
 
     /// Convenience function to get the top of the NavigationInfo stack.
     static inline NavigationInfo *getActive() {
@@ -321,12 +322,25 @@ namespace H3D {
     
     /// Geometry beyond the visibilityLimit may not be rendered. A value
     /// of 0.0 indicates an infinite visibility limit. The visibilityLimit
-    /// field is restricted to be greater than or equal to zero.
+    /// field is restricted to be greater than or equal to zero. This
+    /// basically specifies the far clipping plane.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.0 \n
-    /// <b>Default value:</b> [0.0,inf) \n
+    /// <b>Valid values:</b> [0.0,inf) \n
     auto_ptr< SFFloat > visibilityLimit;
+
+    /// Geometry closer than the nearVisibilityLimit may not be rendered. 
+    /// This basically specifies the near clipping plane.
+    /// A value of 0.0 indicates that the near clipping plane will be 
+    /// automatically calculated from the geometry in the scene.
+    /// nearVisibilityLimit must always be less than visibilityLimit
+    /// (with exception from the special case of 0.0).
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    /// <b>Default value:</b> 0, [0.0,inf) \n
+    auto_ptr< SFFloat > nearVisibilityLimit;
 
     /// When a transition completes, a transitionComplete event is
     /// signaled.
