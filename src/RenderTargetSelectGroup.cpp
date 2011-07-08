@@ -102,7 +102,7 @@ void RenderTargetSelectGroup::render() {
     // construct current draw buffers array
 
     // reset all draw buffers to NONE.
-    for( size_t i = 0; i < max_nr_draw_buffers; i++ ) {
+    for( size_t i = 0; i < (size_t)max_nr_draw_buffers; i++ ) {
       draw_buffers.get()[i] = GL_NONE;
     }
 

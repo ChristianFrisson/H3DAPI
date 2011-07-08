@@ -51,7 +51,7 @@ namespace H3D {
         
     /// Constructor.
     GeneratedTexture3D( Inst< DisplayList > _displayList = 0,
-                      Inst< SFNode>  _metadata = 0 );
+                        Inst< SFNode>  _metadata = 0 );
         
     /// Destructor.
     virtual ~GeneratedTexture3D() {}
