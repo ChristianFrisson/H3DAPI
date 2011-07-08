@@ -30,7 +30,7 @@
 #ifndef __X3DENVIRONMENTTEXTURENODE_H__
 #define __X3DENVIRONMENTTEXTURENODE_H__
 
-#include <H3D/X3DTextureNode.h>
+#include <H3D/H3DSingleTextureNode.h>
 
 namespace H3D {
 
@@ -54,23 +54,28 @@ namespace H3D {
   /// Cubic environment maps define a single texture as consisting of six 
   /// separate images, one for each side of a cube. This component defines
   /// the six sides as front, back, left, right, top and bottom.
-  class H3DAPI_API X3DEnvironmentTextureNode : public X3DTextureNode {
+  class H3DAPI_API X3DEnvironmentTextureNode : public H3DSingleTextureNode {
   public:
     /// Constructor.
     X3DEnvironmentTextureNode( Inst< DisplayList > _displayList = 0,
                                Inst< SFNode>  _metadata = 0 ) :
-      X3DTextureNode( _displayList, _metadata ),
+      H3DSingleTextureNode( _displayList, _metadata ),
       cube_map_id( 0 ),
       texture_unit( GL_TEXTURE0_ARB ) {}
 
     /// Get the OpenGL texture id that is used for this texture.
-    inline GLuint getTextureId() {
+    virtual GLuint getTextureId() {
       return cube_map_id;
     }
 
     /// Get the OpenGL texture unit that is used for this texture.
-    inline GLuint getTextureUnit() {
+    virtual GLuint getTextureUnit() {
       return texture_unit;
+    }
+
+    /// Get the OpenGL texture target that is used for this texture.
+    virtual GLenum getTextureTarget() {
+      return GL_TEXTURE_CUBE_MAP_ARB;
     }
 
   protected:

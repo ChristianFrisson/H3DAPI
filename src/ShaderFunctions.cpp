@@ -593,13 +593,8 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   } else if( SFNode *f = dynamic_cast< SFNode * >( field ) ) {
     Node *n = f->getValue(); 
     if( n == NULL ) return true;
-    if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
-      glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
-    } else if( X3DTexture3DNode *t = 
-               dynamic_cast< X3DTexture3DNode *>( n ) ) {
-      glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
-    } else if( X3DEnvironmentTextureNode *t = 
-                dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
+    if( H3DSingleTextureNode *t = 
+        dynamic_cast< H3DSingleTextureNode *>( n ) ) {
       glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
     } else {
       return false;
@@ -611,13 +606,8 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     for( unsigned int i = 0; i < size; i++ ) {
       Node *n = f->getValueByIndex( i ); 
       if( n == NULL ) continue;
-      if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
-        v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
-      } else if( X3DTexture3DNode *t = 
-                 dynamic_cast< X3DTexture3DNode *>( n ) ) {
-        v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
-      } else if( X3DEnvironmentTextureNode *t = 
-                dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
+      if( H3DSingleTextureNode *t = 
+                 dynamic_cast< H3DSingleTextureNode *>( n ) ) {
         v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
       } else {
         delete[] v;
@@ -832,14 +822,8 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
     delete[] v;
   } else if( SFNode *f = dynamic_cast< SFNode * >( field ) ) {
     Node *n = f->getValue(); 
-    if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
+    if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) {
       cgGLSetTextureParameter( param, t->getTextureId());
-    } else if( X3DTexture3DNode *t = 
-               dynamic_cast< X3DTexture3DNode *>( n ) ) {
-      cgGLSetTextureParameter( param, t->getTextureId() );
-    } else if( X3DEnvironmentTextureNode *t = 
-                dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
-      cgGLSetTextureParameter( param, t->getTextureId() );
     } else {
       return false;
     }
@@ -865,37 +849,17 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
        f != dfo->endField(); f++ ) {
     if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
       Node *n = sfnode->getValue(); 
-      if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->preRender();
-        nr_textures++;
-      } else if( X3DTexture3DNode *t = 
-                 dynamic_cast< X3DTexture3DNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->preRender();
-        nr_textures++;
-      } else if( X3DEnvironmentTextureNode *t = 
-                 dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
+      if( H3DSingleTextureNode *t = 
+          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
         glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
         t->preRender();
         nr_textures++;
       } 
-
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
       for( unsigned int i = 0; i < mfnode->size(); i++ ) {
         Node *n = mfnode->getValueByIndex( i ); 
-        if( X3DTexture2DNode *t = 
-            dynamic_cast< X3DTexture2DNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->preRender();
-          nr_textures++;
-        } else if( X3DTexture3DNode *t = 
-                   dynamic_cast< X3DTexture3DNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->preRender();
-          nr_textures++;
-        } else if( X3DEnvironmentTextureNode *t = 
-                   dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
+        if( H3DSingleTextureNode *t = 
+                   dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
           t->preRender();
           nr_textures++;
@@ -911,17 +875,8 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
        f != dfo->endField(); f++ ) {
     if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
       Node *n = sfnode->getValue(); 
-      if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->postRender();
-        nr_textures++;
-      } else if( X3DTexture3DNode *t = 
-                 dynamic_cast< X3DTexture3DNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->postRender();
-        nr_textures++;
-      } else if( X3DEnvironmentTextureNode *t = 
-                 dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
+      if( H3DSingleTextureNode *t = 
+          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
         glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
         t->postRender();
         nr_textures++;
@@ -929,22 +884,13 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
       for( unsigned int i = 0; i < mfnode->size(); i++ ) {
         Node *n = mfnode->getValueByIndex( i ); 
-        if( X3DTexture2DNode *t = 
-            dynamic_cast< X3DTexture2DNode *>( n ) ) {
+
+        if( H3DSingleTextureNode *t = 
+            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
           t->postRender();
           nr_textures++;
-        } else if( X3DTexture3DNode *t = 
-                   dynamic_cast< X3DTexture3DNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->postRender();
-          nr_textures++;
-        } else if( X3DEnvironmentTextureNode *t = 
-                 dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->postRender();
-          nr_textures++;
-      } 
+        } 
       }
     }
   }
@@ -956,17 +902,9 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
        f != dfo->endField(); f++ ) {
     if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
       Node *n = sfnode->getValue(); 
-      if( X3DTexture2DNode *t = dynamic_cast< X3DTexture2DNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->displayList->callList();
-        nr_textures++;
-      } else if( X3DTexture3DNode *t = 
-                 dynamic_cast< X3DTexture3DNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->displayList->callList();
-        nr_textures++;
-      } else if( X3DEnvironmentTextureNode *t = 
-                 dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
+
+      if( H3DSingleTextureNode *t = 
+                 dynamic_cast< H3DSingleTextureNode *>( n ) ) {
         glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
         t->displayList->callList();
         nr_textures++;
@@ -974,18 +912,8 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
       for( unsigned int i = 0; i < mfnode->size(); i++ ) {
         Node *n = mfnode->getValueByIndex( i ); 
-        if( X3DTexture2DNode *t = 
-            dynamic_cast< X3DTexture2DNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->displayList->callList();
-          nr_textures++;
-        } else if( X3DTexture3DNode *t = 
-                   dynamic_cast< X3DTexture3DNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->displayList->callList();
-          nr_textures++;
-        } else if( X3DEnvironmentTextureNode *t = 
-                   dynamic_cast< X3DEnvironmentTextureNode *>( n ) ) {
+        if( H3DSingleTextureNode *t = 
+            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
           t->displayList->callList();
           nr_textures++;

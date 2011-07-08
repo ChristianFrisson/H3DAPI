@@ -29,7 +29,7 @@
 #ifndef __X3DTEXTURE3DNODE_H__
 #define __X3DTEXTURE3DNODE_H__
 
-#include <H3D/X3DTextureNode.h>
+#include <H3D/H3DSingleTextureNode.h>
 #include <H3D/H3DImageObject.h>
 #include <H3D/TextureProperties.h>
 #include <H3D/DependentNodeFields.h>
@@ -42,7 +42,7 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile X3DTexture3DNode.dot  
   class H3DAPI_API X3DTexture3DNode : 
-    public X3DTextureNode,
+    public H3DSingleTextureNode,
     public H3DImageObject {
   public:
        
@@ -90,17 +90,17 @@ namespace H3D {
     virtual void disableTexturing();
 
     /// Get the OpenGL texture id that is used for this texture.
-    inline GLuint getTextureId() {
+    virtual GLuint getTextureId() {
       return texture_id;
     }
 
     /// Get the OpenGL texture unit that is used for this texture.
-    inline GLuint getTextureUnit() {
+    virtual GLuint getTextureUnit() {
       return texture_unit;
     }
 
     /// Get the OpenGL texture target that is used for this texture.
-    inline GLenum getTextureTarget();
+    virtual GLenum getTextureTarget();
 
     /// Sometimes the texture represents a volume in space, e.g. when
     /// it contains volume data to be rendered. This function returns

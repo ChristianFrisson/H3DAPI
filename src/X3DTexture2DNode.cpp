@@ -55,7 +55,7 @@ X3DTexture2DNode::X3DTexture2DNode(
                                    Inst< SFBool  > _scaleToP2,
                                    Inst< SFImage > _image,
                                    Inst< SFTextureProperties > _textureProp ) :
-  X3DTextureNode( _displayList, _metadata ),
+  H3DSingleTextureNode( _displayList, _metadata ),
   H3DImageObject( _image ),
   repeatS ( _repeatS  ),
   repeatT ( _repeatT  ),

@@ -144,8 +144,8 @@ namespace H3D {
     typedef TypedSFNode< TextureProperties > SFTexturePropertiesNode;
     typedef TypedMFNode< TextureProperties > MFTexturePropertiesNode;
     typedef TypedSFNode< X3DViewpointNode > SFViewpointNode;
-    typedef TypedMFNode< X3DTextureNode > MFGeneratedTextureNode;
-    typedef TypedSFNode< X3DTextureNode > SFGeneratedTextureNode;
+    typedef TypedMFNode< H3DSingleTextureNode > MFGeneratedTextureNode;
+    typedef TypedSFNode< H3DSingleTextureNode > SFGeneratedTextureNode;
     typedef void (*RenderCallbackFunc)( FrameBufferTextureGenerator *, int i, void * );
     
     /// Constructor.

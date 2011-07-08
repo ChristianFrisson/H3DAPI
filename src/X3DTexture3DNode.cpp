@@ -36,7 +36,7 @@ H3DNodeDatabase X3DTexture3DNode::database(
         "X3DTexture3DNode", 
         NULL,
         typeid( X3DTexture3DNode ),
-        &X3DTextureNode::database 
+        &H3DSingleTextureNode::database 
         );
 
 namespace X3DTexture3DNodeInternals {
@@ -56,7 +56,7 @@ X3DTexture3DNode::X3DTexture3DNode(
                                    Inst< SFBool  > _scaleToP2,
                                    Inst< SFImage > _image,
                                    Inst< SFTextureProperties > _textureProp ) :
-  X3DTextureNode( _displayList, _metadata ),
+  H3DSingleTextureNode( _displayList, _metadata ),
   H3DImageObject( _image ),
   repeatS ( _repeatS  ),
   repeatT ( _repeatT  ),
@@ -107,7 +107,7 @@ GLint X3DTexture3DNode::glInternalFormat( Image *i ) {
       return GL_RGBA;
     }
   } else {
-    return X3DTextureNode::glInternalFormat( i );
+    return H3DSingleTextureNode::glInternalFormat( i );
   }
 }
 

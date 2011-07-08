@@ -29,7 +29,7 @@
 #ifndef __X3DTEXTURE2DNODE_H__
 #define __X3DTEXTURE2DNODE_H__
 
-#include <H3D/X3DTextureNode.h>
+#include <H3D/H3DSingleTextureNode.h>
 #include <H3D/H3DImageObject.h>
 #include <H3D/TextureProperties.h>
 #include <H3D/DependentNodeFields.h>
@@ -42,7 +42,7 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile X3DTexture2DNode.dot  
   class H3DAPI_API X3DTexture2DNode : 
-    public X3DTextureNode,
+    public H3DSingleTextureNode,
     public H3DImageObject {
   public:
     /// A SFNode encapsulating an Image class
@@ -86,12 +86,12 @@ namespace H3D {
     virtual void renderTextureProperties();
 
     /// Get the OpenGL texture id that is used for this texture.
-    inline GLuint getTextureId() {
+     virtual GLuint getTextureId() {
       return texture_id;
     }
 
     /// Get the OpenGL texture unit that is used for this texture.
-    inline GLuint getTextureUnit() {
+    virtual GLuint getTextureUnit() {
       return texture_unit;
     }
 
