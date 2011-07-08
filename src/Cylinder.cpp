@@ -41,7 +41,6 @@ H3DNodeDatabase Cylinder::database( "Cylinder",
                                     &X3DGeometryNode::database );
 
 namespace CylinderInternals {
-  FIELDDB_ELEMENT( Cylinder, bound, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Cylinder, bottom, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Cylinder, height, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Cylinder, radius, INPUT_OUTPUT );
