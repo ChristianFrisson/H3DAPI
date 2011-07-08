@@ -327,13 +327,13 @@ string ShaderCombiner::applyModifier( const string &variable_name,
   if( modifier == "COMPLEMENT" ) {
     return variable_name + ".rgb = 1.0 - " + variable_name + ".rgb;";
   } else if( modifier == "MULTIPLY" ) {
-    return variable_name + ".rgb  *= " + value + ".rgb;";
+    return variable_name + ".rgb  *= " + value + ";";
   } else if( modifier == "DIVIDE" ) {
-    return variable_name + ".rgb  /= " + value + ".rgb;";
+    return variable_name + ".rgb  /= " + value + ";";
   } else if( modifier == "ADD" ) {
-    return variable_name + ".rgb  += " + value + ".rgb;";
+    return variable_name + ".rgb  += " + value + ";";
   } else if( modifier == "SUBTRACT" ) {
-    return variable_name + ".rgb  -= " + value + ".rgb;";
+    return variable_name + ".rgb  -= " + value + ";";
   } else if( modifier == "NEGATE" ) {
     return variable_name + ".rgb  = -" + variable_name + ".rgb;";
   } else if( modifier == "MULTIPLY_ALPHA" ) {
