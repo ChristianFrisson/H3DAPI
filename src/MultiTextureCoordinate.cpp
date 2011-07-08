@@ -94,7 +94,8 @@ void MultiTextureCoordinate::render( int index ) {
 }
 
 unsigned int MultiTextureCoordinate::nrAvailableTexCoords() {
-  unsigned int available_coords = 0;
+  unsigned int available_coords = -1; 
+  bool first_value = true;
 
   for( MFTextureCoordinateNode::const_iterator i = texCoord->begin();
        i != texCoord->end();
@@ -103,9 +104,13 @@ unsigned int MultiTextureCoordinate::nrAvailableTexCoords() {
     
     if( tc->supportsExplicitTexCoords() ) { 
       unsigned int nr_coords = tc->nrAvailableTexCoords();
-      if( i == texCoord->begin() ) available_coords = nr_coords;
-      else available_coords = 
-             H3DMin( available_coords, nr_coords );
+      if( first_value ) {
+        available_coords = nr_coords;
+        first_value = false;
+      } else {
+        available_coords = 
+          H3DMin( available_coords, nr_coords );
+      }
     }
   }
   return available_coords;
