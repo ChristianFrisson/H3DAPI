@@ -31,6 +31,7 @@
 
 #include <H3D/X3DAppearanceChildNode.h>
 #include <H3D/SFString.h>
+#include <H3D/X3DMaterialNode.h>
 
 namespace H3D {
   /// \ingroup AbstractNodes

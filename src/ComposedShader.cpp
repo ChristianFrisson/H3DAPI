@@ -128,8 +128,8 @@ bool ComposedShader::isTransparent( X3DMaterialNode *material ) {
 		 << " Must be one of \"AS_MATERIAL\", \"TRANSPARENT\" or \"OPAQUE\"." << endl;
     }
     if( material ) return material->isTransparent();
-    else return false;
-  } 
+  }
+  return false;
 }
 
 bool ComposedShader::addField( const string &name, 
@@ -217,7 +217,6 @@ void ComposedShader::render() {
             program_handle = h;
             glUseProgramObjectARB( h );
             phandle_counts[h] = 1;
-            std::string key = genKeyFromShader( this );
             phandles_map[key] = h;
             // register shader objects
             for ( MFShaderPart::const_iterator i = parts->begin();
