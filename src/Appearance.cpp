@@ -323,3 +323,22 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
       Console(4) << "Warning: Maximum number of lightsources (" << max_lights
                  << ") exceeded. Some lights will be ignored." << endl;
 }
+
+
+bool Appearance::isTransparent() {
+  // if we have shaders, the shaders 
+  if( !shaders->empty() ) {
+    for( MFShaderNode::const_iterator i = shaders.begin(); i != shaders.end(); i++ ) {
+      X3DShaderNode *shader = static_cast< X3DShaderNode * >( *i );
+      if( shader->isTransparent() ) return true;
+    }
+    return false; 
+  }
+  
+  X3DMaterialNode *m = material->getValue();
+  if ( m )
+    return m->isTransparent();
+  else
+    return false;
+  
+}

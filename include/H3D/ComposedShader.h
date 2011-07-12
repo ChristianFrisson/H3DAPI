@@ -82,7 +82,8 @@ namespace H3D {
                     Inst< SFBool       > _suppressUniformWarnings = 0,
                     Inst< SFString     > _geometryInputType = 0,
                     Inst< SFString     > _geometryOutputType = 0,
-                    Inst< SFInt32      > _geometryVerticesOut = 0  );
+                    Inst< SFInt32      > _geometryVerticesOut = 0,
+                    Inst< SFString     > _transparencyDetectMode = 0 );
 
     /// The addField method is specialized to add a route from the field
     /// added to the displayList field.
@@ -98,6 +99,12 @@ namespace H3D {
 
     /// Disables the shader program.
     virtual void postRender();
+
+    /// Returns a hint if the X3DShaderNode produces an alpha channel
+    /// that is < 1, i.e. it is semi-transparent, or not. This
+    /// is used to determine render order of transparent vs opaque
+    /// objects.
+    virtual bool isTransparent( X3DMaterialNode *material );
 
     /// Returns the OpenGL shader program handle used by the 
     /// ComposedShader.
@@ -158,6 +165,28 @@ namespace H3D {
     /// \dotfile ComposedShader_geometryVerticesOut.dot
     auto_ptr< SFInt32  > geometryVerticesOut;
 
+
+    /// Determines how the render system will determine if the 
+    /// shader used generates any fragment that has an alpha channel
+    /// that is < 1, i.e. it is semi-transparent, or not. This
+    /// is used to determine render order of transparent vs opaque
+    /// objects.
+    ///
+    /// Valid values are:
+    /// <table>
+    /// <tr><td>"AS_MATERIAL"</td><td>If the Material node in the same
+    /// Appearance node produces a transparent object we consider the 
+    /// ComposedShader to be transparent.</td></tr>
+    /// <tr><td>"TRANSPARENT"</td><td>The shader is considered transparent.</td></tr>
+    /// <tr><td>"OPAQUE"</td><td>The shader is considered opaque.</td></tr>
+    /// </table>
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Valid values:</b> "AS_MATERIAL", "TRANSPARENT", "OPAQUE" \n
+    /// <b>Default value:</b> "AS_MATERIAL" \n
+    ///
+    /// \dotfile ComposedShader_transparencyDetectMode.dot
+    auto_ptr< SFString  > transparencyDetectMode;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

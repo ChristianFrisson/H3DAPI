@@ -55,6 +55,7 @@ namespace ComposedShaderInternals {
   FIELDDB_ELEMENT( ComposedShader, geometryInputType, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, geometryOutputType, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, geometryVerticesOut, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ComposedShader, transparencyDetectMode, INPUT_OUTPUT );
 }
 
 ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
@@ -67,7 +68,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFBool       > _suppressUniformWarnings,
                                 Inst< SFString     > _geometryInputType,
                                 Inst< SFString     > _geometryOutputType,
-                                Inst< SFInt32      > _geometryVerticesOut) :
+                                Inst< SFInt32      > _geometryVerticesOut,
+                                Inst< SFString     > _transparencyDetectMode ) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
                  _isValid, _activate, _language),
   X3DProgrammableShaderObject( &database ),
@@ -76,6 +78,7 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   geometryInputType( _geometryInputType ),
   geometryOutputType( _geometryOutputType ),
   geometryVerticesOut( _geometryVerticesOut ),
+  transparencyDetectMode( _transparencyDetectMode ),
   program_handle( 0 ),
   setupDynamicRoutes( new SetupDynamicRoutes ) {
   type_name = "ComposedShader";
@@ -98,6 +101,11 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
 
   geometryVerticesOut->setValue( 64 );
 
+  transparencyDetectMode->addValidValue( "AS_MATERIAL" );
+  transparencyDetectMode->addValidValue( "TRANSPARENT" );
+  transparencyDetectMode->addValidValue( "OPAQUE" );
+  transparencyDetectMode->setValue( "AS_MATERIAL" );
+
   setupDynamicRoutes->setName( "setupDynamicRoutes" );
   setupDynamicRoutes->setOwner( this );
 
@@ -107,6 +115,20 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
 }
 
 bool ComposedShader::shader_support_checked = false;
+
+bool ComposedShader::isTransparent( X3DMaterialNode *material ) {
+  const string &mode = transparencyDetectMode->getValue();
+  if( mode == "TRANSPARENT" ) {
+    return true;
+  } else if( mode == "OPAQUE" ) {
+    return false;
+  } else if( mode == "AS_MATERIAL") {
+    Console(4) << "Warning: Invalid transparencyDetectMode \"" << mode << "\" in ComposedShader."
+               << " Must be one of \"AS_MATERIAL\", \"TRANSPARENT\" or \"OPAQUE\"." << endl;
+    if( material ) return material->isTransparent();
+    else return false;
+  } 
+}
 
 bool ComposedShader::addField( const string &name, 
                                const Field::AccessType &access, Field *field ){

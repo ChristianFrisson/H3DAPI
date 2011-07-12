@@ -85,6 +85,14 @@ namespace H3D {
       return "shaders";
     }
 
+    /// Returns a hint if the X3DShaderNode produces an alpha channel
+    /// that is < 1, i.e. it is semi-transparent, or not. This
+    /// is used to determine render order of transparent vs opaque
+    /// objects.
+    virtual bool isTransparent( X3DMaterialNode *material ) {
+      return false;
+    }
+
     /// Gets the currently active shader, i.e. the shader that is currently 
     /// used in OpenGL. NULL us returned if no X3DShaderNode is used. 
     static X3DShaderNode *getActiveShader() { return active_shader; }
