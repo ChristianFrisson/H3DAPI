@@ -122,9 +122,11 @@ bool ComposedShader::isTransparent( X3DMaterialNode *material ) {
     return true;
   } else if( mode == "OPAQUE" ) {
     return false;
-  } else if( mode == "AS_MATERIAL") {
-    Console(4) << "Warning: Invalid transparencyDetectMode \"" << mode << "\" in ComposedShader."
-               << " Must be one of \"AS_MATERIAL\", \"TRANSPARENT\" or \"OPAQUE\"." << endl;
+  } else {
+    if( mode != "AS_MATERIAL") {
+      Console(4) << "Warning: Invalid transparencyDetectMode \"" << mode << "\" in ComposedShader."
+		 << " Must be one of \"AS_MATERIAL\", \"TRANSPARENT\" or \"OPAQUE\"." << endl;
+    }
     if( material ) return material->isTransparent();
     else return false;
   } 
