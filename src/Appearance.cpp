@@ -319,7 +319,7 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
   if( !ni || ni->headlight->getValue() ) {
     nr_lights++;
   }
-  if( shaders->size() == 0 && nr_lights > max_lights )
+  if( shaders->size() == 0 && (GLint)nr_lights > max_lights )
       Console(4) << "Warning: Maximum number of lightsources (" << max_lights
                  << ") exceeded. Some lights will be ignored." << endl;
 }
@@ -327,15 +327,15 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
 
 bool Appearance::isTransparent() {
   // if we have shaders, the shaders 
+  X3DMaterialNode *m = material->getValue();
   if( !shaders->empty() ) {
-    for( MFShaderNode::const_iterator i = shaders.begin(); i != shaders.end(); i++ ) {
+    for( MFShaderNode::const_iterator i = shaders->begin(); i != shaders->end(); i++ ) {
       X3DShaderNode *shader = static_cast< X3DShaderNode * >( *i );
-      if( shader->isTransparent() ) return true;
+      if( shader->isTransparent(m) ) return true;
     }
     return false; 
   }
-  
-  X3DMaterialNode *m = material->getValue();
+
   if ( m )
     return m->isTransparent();
   else
