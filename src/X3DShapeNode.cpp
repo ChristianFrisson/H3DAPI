@@ -32,6 +32,7 @@
 #include <H3D/X3DTextureNode.h>
 #include <H3D/ShadowCaster.h>
 #include <H3D/ShadowTransform.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 
@@ -94,15 +95,18 @@ void X3DShapeNode::render() {
   X3DAppearanceNode *a = appearance->getValue();
   X3DGeometryNode *g = geometry->getValue();
   
-  GLboolean lighting_on;
-
   // appearance render
   if ( a ) {
     a->preRender();
     a->displayList->callList();
   } else {
     if( X3DShapeNode::disable_lighting_if_no_app ) {
-      glGetBooleanv( GL_LIGHTING, &lighting_on );
+      glPushAttrib( GL_LIGHTING_BIT );
+      // setting emissive material to white in order for point
+      // and light geometries to use white as color when no Material 
+      // node.
+      GLfloat material[] = { 1, 1, 1, 1 };
+      glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, material );
       glDisable( GL_LIGHTING );
     }
   }
@@ -172,8 +176,8 @@ void X3DShapeNode::render() {
   }
 
   if( a ) a->postRender();
-  else if(  X3DShapeNode::disable_lighting_if_no_app && lighting_on )
-    glEnable( GL_LIGHTING );
+  else if(  X3DShapeNode::disable_lighting_if_no_app  )
+    glPopAttrib();
 };
 
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {

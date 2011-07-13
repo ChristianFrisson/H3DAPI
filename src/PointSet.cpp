@@ -74,6 +74,8 @@ void PointSet::DisplayList::callList( bool build_list ) {
   PointSet *point_set = 
    static_cast< PointSet * >( owner );
 
+  glPushAttrib( GL_CURRENT_BIT );
+
   // If color field is NULL, we use the emissive Color from the current material
   // as color.
   if( !point_set->color->getValue() ) {
@@ -83,6 +85,8 @@ void PointSet::DisplayList::callList( bool build_list ) {
   }
 
   X3DGeometryNode::DisplayList::callList( build_list );
+
+  glPopAttrib();
 }   
 
 

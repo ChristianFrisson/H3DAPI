@@ -79,11 +79,15 @@ void Arc2D::DisplayList::callList( bool build_list ) {
   Arc2D *arc = 
    static_cast< Arc2D * >( owner );
 
+  glPushAttrib( GL_CURRENT_BIT );
+
   float v[4];
   glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
   glColor3f( v[0], v[1], v[2] );
 
   X3DGeometryNode::DisplayList::callList( build_list );
+
+  glPopAttrib();
 }
 
 void Arc2D::render() {

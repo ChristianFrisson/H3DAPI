@@ -107,6 +107,7 @@ void IndexedLineSet::DisplayList::callList( bool build_list ) {
   IndexedLineSet *line_set = 
    static_cast< IndexedLineSet * >( owner );
 
+  glPushAttrib( GL_CURRENT_BIT );
   // If color field is NULL, we use the emissive Color from the current material
   // as color.
   if( !line_set->color->getValue() ) {
@@ -114,6 +115,7 @@ void IndexedLineSet::DisplayList::callList( bool build_list ) {
     glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
     glColor3f( v[0], v[1], v[2] );
   }
+  glPopAttrib();
 
   X3DGeometryNode::DisplayList::callList( build_list );
 }
