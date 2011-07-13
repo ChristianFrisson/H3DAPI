@@ -537,7 +537,7 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
 
     // make sure the clip planes are in front of the camera. Depth
     // buffer precision is affected by the values of clip_far and clip_near.
-    // The greater the radion clip_far/clip_near the less the precision will
+    // The greater the ratio clip_far/clip_near the less the precision will
     // be. So we do not want to set clip_near too close to 0. Therefore
     // we make sure that the ratio is at most 1000.
     if( clip_far <= 0 ) clip_far = 2*Constants::f_epsilon;

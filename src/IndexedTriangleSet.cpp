@@ -653,17 +653,6 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
       binormals[i+2] = b.z;
     }
 
-    cerr << "Tangents: " ;
-    for( unsigned int i = 0; i < tangents.size(); i++ ) {
-      cerr << tangents[i] << " ";
-    }
-    cerr << endl;
-    cerr << "Binormal: ";
-    for( unsigned int i = 0; i < binormals.size(); i++ ) {
-      cerr << binormals[i] << " ";
-    }
-    cerr << endl;
-
     tangent_node->value->setValue( tangents );
     binormal_node->value->setValue( binormals );
   }
@@ -730,17 +719,7 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerFace(
       tangents.push_back( tangent.z );
 
     }
-    /*
-    cerr << "Tangents: " ;
-    for( unsigned int i = 0; i < tangents.size(); i++ ) {
-      cerr << tangents[i] << " ";
-    }
-    cerr << endl;
-    cerr << "Binormal: ";
-    for( unsigned int i = 0; i < binormals.size(); i++ ) {
-      cerr << binormals[i] << " ";
-    }
-    cerr << endl;*/
+
     tangent_node->value->setValue( tangents );
     binormal_node->value->setValue( binormals );
   }

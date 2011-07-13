@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2008, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of MedX3D.
 //
@@ -37,7 +37,7 @@
 #ifdef HAVE_DCMTK
 
 namespace H3D {
-  /// \ingroup MedX3DNodes
+  /// \ingroup H3DNodes
   /// \class DicomImageLoader
   /// DicomImageLoader uses the DCMTK library to load a DICOM image file.
   ///

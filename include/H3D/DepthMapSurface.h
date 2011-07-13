@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2008, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -107,7 +107,7 @@ namespace H3D {
     /// \dotfile DepthMapSurface_depthMap.dot
     auto_ptr< SFTexture2DNode > depthMap;
 
-    /// The maximum difference between totally black and totally white in
+    /// The maximum difference in meter between totally black and totally white in
     /// the image.
     ///
     /// <b>Access type:</b> inputOutput
