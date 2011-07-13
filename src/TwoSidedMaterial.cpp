@@ -154,7 +154,7 @@ void TwoSidedMaterial::render()  {
   glMaterialfv( front_material_face, GL_SPECULAR, material );
 
   // Shininess
-  glMaterialf( front_material_face, GL_SHININESS, shininess->getValue()*128 );
+  glMaterialf( front_material_face, GL_SHININESS, H3DMin( shininess->getValue()*128, 128.0f ) );
   
   // set the emmisive color.
   RGB e = emissiveColor->getValue();
@@ -188,7 +188,7 @@ void TwoSidedMaterial::render()  {
 
     // Shininess
     glMaterialf( GL_BACK, GL_SHININESS, 
-                 backShininess->getValue()*128 );
+                 H3DMax( backShininess->getValue()*128, 128.0f ) );
   
     // set the emmisive color.
     e = backEmissiveColor->getValue();

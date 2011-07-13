@@ -114,7 +114,7 @@ void Material::render()  {
   glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, material );
 
   // Shininess
-  glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, shininess->getValue()*128 );
+  glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, H3DMin( shininess->getValue()*128, 128.0f ) );
   
   // set the emmisive color.
   RGB e = emissiveColor->getValue();
