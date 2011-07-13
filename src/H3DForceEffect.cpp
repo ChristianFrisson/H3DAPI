@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2011, SenseGraphics AB
+//    Copyright 2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -21,40 +21,29 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file H3DForceEffect.h
-/// \brief Header file for H3DForceEffect
+/// \file H3DForceEffect.cpp
+/// \brief Cpp file for H3DForceEffect.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __H3DFORCEEFFECT_H__
-#define __H3DFORCEEFFECT_H__
 
-#include <H3D/X3DChildNode.h>
-#include <H3D/MFInt32.h>
+#include <H3D/H3DForceEffect.h>
 
-namespace H3D {
+using namespace H3D;
 
-  /// \ingroup Abstract nodes 
-  /// \brief The base class for scenegraph force effects. 
-  class H3DAPI_API H3DForceEffect: public X3DChildNode {
-  public:
-    /// Constructor
-    H3DForceEffect( Inst< SFNode> _metadata = 0,
-                    Inst< MFInt32 > _deviceIndex = 0 );
+H3DNodeDatabase H3DForceEffect::database( "H3DForceEffect", 
+                                           NULL,
+                                           typeid( H3DForceEffect ),
+                                           &X3DChildNode::database );
 
-    /// A list of indices that tells which haptics devices to render
-    /// the force on. If empty then the force will be rendered on all
-    /// devices. Indices with values equal to or above the total number
-    /// of haptics devices in the scene will be ignored. Values below
-    /// 0 will be ignored.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> empty \n
-    auto_ptr< MFInt32 > deviceIndex;
-
-    /// The H3DNodeDatabase for this node.
-    static H3DNodeDatabase database;
-  };
+namespace H3DForceEffectInternals {
+  FIELDDB_ELEMENT( H3DForceEffect, deviceIndex, INPUT_OUTPUT );
 }
 
-#endif
+H3DForceEffect::H3DForceEffect( Inst< SFNode> _metadata,
+                                Inst< MFInt32 > _deviceIndex ) :
+  X3DChildNode( _metadata ),
+  deviceIndex( _deviceIndex ) {
+  type_name = "H3DForceEffect";
+  database.initFields( this );
+}

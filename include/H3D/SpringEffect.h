@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -35,6 +35,7 @@
 #include <H3D/SFBool.h>
 #include <H3D/SFFloat.h>
 #include <H3D/SFInt32.h>
+#include <H3D/MFVec3f.h>
 
 namespace H3D {
   /// \ingroup H3DNodes 
@@ -60,12 +61,12 @@ namespace H3D {
   public:
     /// Constructor
     SpringEffect( Inst< SFVec3f     > _position = 0,
-                  Inst< SFVec3f     > _force = 0,
+                  Inst< MFVec3f     > _force = 0,
                   Inst< SFFloat     > _springConstant = 0,
                   Inst< SFFloat     > _startDistance = 0,
                   Inst< SFFloat     > _escapeDistance = 0,
                   Inst< SFBool      > _active = 0, 
-                  Inst< SFInt32     > _deviceIndex = 0,
+                  Inst< MFInt32     > _deviceIndex = 0,
                   Inst< SFNode      >  _metadata = 0,
                   Inst< SFFloat     > _damping = 0 );
 
@@ -87,7 +88,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
-    auto_ptr< SFVec3f > force;
+    auto_ptr< MFVec3f > force;
     
     /// The spring constant of the spring. 
     /// force = (position - device_position) * springConstant - 
@@ -115,14 +116,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly \n
     /// <b>Default value:</b> FALSE \n
-    auto_ptr< SFBool  > active;  
-    
-    /// The index of the haptics device that the effect is supposed to
-    /// be rendered on.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> 0 \n
-    auto_ptr< SFInt32 > deviceIndex;  
+    auto_ptr< SFBool > active;
 
     /// The damping constant to use in the force calculation.
     /// 
@@ -135,9 +129,14 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-    
+
     /// Internal haptic spring instance
-    AutoRef< HAPI::HapticSpring > haptic_spring;
+    AutoRefVector< HAPI::HapticSpring > haptic_spring;
+
+  protected:
+    virtual HAPI::HapticSpring * createHAPISpring() {
+      return new HAPI::HapticSpring();
+    }
   };
 }
 

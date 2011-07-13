@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -42,26 +42,21 @@ H3DNodeDatabase ViscosityEffect::database(
 namespace ViscosityEffectInternals {
   FIELDDB_ELEMENT( ViscosityEffect, radius, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ViscosityEffect, viscosity, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( ViscosityEffect, force, OUTPUT_ONLY );
   FIELDDB_ELEMENT( ViscosityEffect, enabled, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( ViscosityEffect, deviceIndex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ViscosityEffect, dampingFactor, INPUT_OUTPUT );
 }
 
 /// Constructor
 ViscosityEffect::ViscosityEffect( Inst< SFFloat > _radius,
                                   Inst< SFFloat > _viscosity,
-                                  Inst< SFVec3f > _force,
                                   Inst< SFBool  > _enabled, 
-                                  Inst< SFInt32 > _deviceIndex,
+                                  Inst< MFInt32 > _deviceIndex,
                                   Inst< SFNode  >  _metadata,
                                   Inst< SFFloat > _dampingFactor ) :
-  H3DForceEffect( _metadata ),
+  H3DForceEffect( _metadata, _deviceIndex ),
   radius( _radius ),
   viscosity( _viscosity ),
-  force( _force ),
   enabled( _enabled ),
-  deviceIndex( _deviceIndex ),
   dampingFactor( _dampingFactor ) {
   
   type_name = "ViscosityEffect";
@@ -70,9 +65,7 @@ ViscosityEffect::ViscosityEffect( Inst< SFFloat > _radius,
   
   radius->setValue( 0.0025f );
   viscosity->setValue( 0.015f );
-  force->setValue( Vec3f( 0,0,0 ), id );
   enabled->setValue( true );
-  deviceIndex->setValue( 0 );
   dampingFactor->setValue( 0.6f );
 }
 
@@ -85,13 +78,27 @@ void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
     viscous_counter++;
   } else {
     if( enabled->getValue() ) {
-      int device_index = deviceIndex->getValue();
-      if( ti.hapticsEnabled( device_index )  ) {      
-        ti.addForceEffect( device_index,
-                           new HAPI::HapticViscosity(
+      const vector< H3DInt32 > &device_index = deviceIndex->getValue();
+      if( device_index.empty() ) {
+        for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
+          if( ti.hapticsEnabled( i ) ) {
+            ti.addForceEffect( i,
+                               new HAPI::HapticViscosity(
                                                      viscosity->getValue(),
                                                      radius->getValue(),
                                                      dampingFactor->getValue() ) );
+          }
+        }
+      } else {
+        for( unsigned int i = 0; i < device_index.size(); i++ ) {
+          if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
+            ti.addForceEffect( device_index[i],
+                               new HAPI::HapticViscosity(
+                                                     viscosity->getValue(),
+                                                     radius->getValue(),
+                                                     dampingFactor->getValue() ) );
+          }
+        }
       }
     }
   }

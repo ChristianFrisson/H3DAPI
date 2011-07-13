@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -62,7 +62,8 @@ namespace H3D {
                      Inst< SFFloat > _escapeDistance = 0,
                      Inst< SFBool  > _active = 0,
                      Inst< SFFloat > _springConstant = 0,
-                     Inst< SFGeometry > _geometry = 0);
+                     Inst< SFGeometry > _geometry = 0,
+                     Inst< MFInt32 > _deviceIndex = 0 );
 
     /// Adds a forceeffect.
     virtual void traverseSG( TraverseInfo &ti );
@@ -107,6 +108,8 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    vector< bool > force_active;
   };
 }
 

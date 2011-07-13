@@ -49,31 +49,27 @@ namespace RotationalSpringEffectInternals {
 
 /// Constructor
 RotationalSpringEffect::RotationalSpringEffect( Inst< SFVec3f     > _desiredAxis,
-                            Inst< SFVec3f     > _torque,
+                            Inst< MFVec3f     > _torque,
                             Inst< SFFloat     > _springConstant,
                             Inst< SFBool      > _enabled,
-                            Inst< SFInt32     > _deviceIndex,
+                            Inst< MFInt32     > _deviceIndex,
                             Inst< SFNode      >  _metadata,
                             Inst< SFFloat     > _damping ) :
-  H3DForceEffect( _metadata ),
+  H3DForceEffect( _metadata, _deviceIndex ),
   desiredAxis( _desiredAxis ),
   torque( _torque ),
   springConstant( _springConstant ),
   enabled( _enabled ),
-  deviceIndex( _deviceIndex ),
   damping( _damping ),
-  haptic_rotational_spring( new HAPI::HapticRotationalSpring() ),
   last_enabled( true ) {
-  
+
   type_name = "RotationalSpringEffect";
 
   database.initFields( this );
 
   desiredAxis->setValue( Vec3f( 0,0,1 ) );
-  torque->setValue( Vec3f( 0,0,0 ) );
   springConstant->setValue( 100 );
   enabled->setValue( true );
-  deviceIndex->setValue( 0 );
   damping->setValue( 0 );
 }
 
@@ -88,20 +84,34 @@ void RotationalSpringEffect::traverseSG( TraverseInfo &ti ) {
     rot_spring_counter++;
   } else {
     if( tmp_enabled && !ti.getHapticsDevices().empty() ) {
-      int device_index = deviceIndex->getValue();
-      if( ti.hapticsEnabled( device_index ) ) { 
-        H3DHapticsDevice *hd = ti.getHapticsDevice( device_index );
-        haptic_rotational_spring->setDesiredAxis(
-          ti.getAccForwardMatrix().getScaleRotationPart() *
-          desiredAxis->getValue() );
-        haptic_rotational_spring->setSpringConstant( springConstant->getValue() );
-        haptic_rotational_spring->setDamping( damping->getValue() );
-        ti.addForceEffect( device_index, haptic_rotational_spring.get() );
-        Vec3f f = (Vec3f) haptic_rotational_spring->getLatestTorque();
-        torque->setValue( f );
+      vector< H3DInt32 > device_index = deviceIndex->getValue();
+      if( device_index.empty() ) {
+        for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ )
+          device_index.push_back( i );
+      }
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        int index = device_index[i];
+        if( index >= 0 && ti.hapticsEnabled( index ) ) { 
+          H3DHapticsDevice *hd = ti.getHapticsDevice( index );
+          if( index >= (int)haptic_rotational_spring.size() )
+            haptic_rotational_spring.resize( index + 1, NULL );
+          if( index >= (int)torque->size() )
+            torque->resize( index + 1, Vec3f( 0, 0, 0 ), id );
+          if( !haptic_rotational_spring[index] )
+            haptic_rotational_spring.set( index, new HAPI::HapticRotationalSpring() );
+          haptic_rotational_spring[index]->setDesiredAxis(
+            ti.getAccForwardMatrix().getScaleRotationPart() *
+            desiredAxis->getValue() );
+          haptic_rotational_spring[index]->setSpringConstant( springConstant->getValue() );
+          haptic_rotational_spring[index]->setDamping( damping->getValue() );
+          ti.addForceEffect( index, haptic_rotational_spring[index] );
+          Vec3f f = (Vec3f) haptic_rotational_spring[index]->getLatestTorque();
+          torque->setValue( index, f, id );
+        }
       }
     } else if( last_enabled != tmp_enabled ) {
-      torque->setValue( Vec3f( 0, 0, 0 ) );
+      for( unsigned int i = 0; i < torque->size(); i++ )
+        torque->setValue( i, Vec3f( 0, 0, 0 ), id );
     }
   }
   last_enabled = tmp_enabled;

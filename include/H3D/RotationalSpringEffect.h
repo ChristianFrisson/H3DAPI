@@ -61,10 +61,10 @@ namespace H3D {
   public:
     /// Constructor
     RotationalSpringEffect( Inst< SFVec3f     > _defaultAxis = 0,
-                  Inst< SFVec3f     > _torque = 0,
+                  Inst< MFVec3f     > _torque = 0,
                   Inst< SFFloat     > _springConstant = 0,
-                  Inst< SFBool      > _enable = 0, 
-                  Inst< SFInt32     > _deviceIndex = 0,
+                  Inst< SFBool      > _enabled = 0, 
+                  Inst< MFInt32     > _deviceIndex = 0,
                   Inst< SFNode      >  _metadata = 0,
                   Inst< SFFloat     > _damping = 0 );
 
@@ -86,7 +86,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly \n
     /// <b>Default value:</b> Vec3f( 0, 0, 0 ) \n
-    auto_ptr< SFVec3f > torque;
+    auto_ptr< MFVec3f > torque;
     
     /// The spring constant of the spring. 
     /// torque = -rotation_diff_euler_angles * spring_constant -
@@ -105,13 +105,6 @@ namespace H3D {
     /// <b>Default value:</b> TRUE \n
     auto_ptr< SFBool > enabled;
 
-    /// The index of the haptics device that the effect is supposed to
-    /// be rendered on.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> 0 \n
-    auto_ptr< SFInt32 > deviceIndex;
-
     /// The damping constant to use in the torque calculation.
     ///
     /// torque = -rotation_diff_euler_angles * spring_constant -
@@ -127,7 +120,7 @@ namespace H3D {
     static H3DNodeDatabase database;
     
     /// Internal haptic spring instance
-    AutoRef< HAPI::HapticRotationalSpring > haptic_rotational_spring;
+    AutoRefVector< HAPI::HapticRotationalSpring > haptic_rotational_spring;
   protected:
     bool last_enabled;
   };

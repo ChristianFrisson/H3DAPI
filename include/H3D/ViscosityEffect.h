@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -48,9 +48,8 @@ namespace H3D {
     /// Constructor
     ViscosityEffect( Inst< SFFloat > _radius      = 0,
                      Inst< SFFloat > _viscosity   = 0,
-                     Inst< SFVec3f > _force       = 0,
                      Inst< SFBool  > _enabled     = 0,
-                     Inst< SFInt32 > _deviceIndex = 0,
+                     Inst< MFInt32 > _deviceIndex = 0,
                      Inst< SFNode  >  _metadata   = 0,
                      Inst< SFFloat > _dampingFactor = 0 );
 
@@ -69,25 +68,12 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.01 \n
     auto_ptr< SFFloat > viscosity;
-    
-    /// The force applied by the spring to the haptics device since the last
-    /// scenegraph update.
-    ///
-    /// <b>Access type:</b> outputOnly \n
-    auto_ptr< SFVec3f > force;
 
     /// Enables or disables the force calculations.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> TRUE \n
     auto_ptr< SFBool > enabled;
-    
-    /// The index of the haptics device that the effect is supposed to
-    /// be rendered on.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> 0 \n
-    auto_ptr< SFInt32 > deviceIndex;
 
     ///  dampingFactor
     ///

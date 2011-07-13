@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -60,11 +60,11 @@ namespace H3D {
     typedef TypedSFNode< H3DFunctionNode > SFFunctionNode;
 
     /// Constructor
-    PositionFunctionEffect( Inst< SFFunctionNode > _xFunction     = 0,
-                            Inst< SFFunctionNode > _yFunction     = 0,
-                            Inst< SFFunctionNode > _zFunction     = 0,
-                            Inst< MFInt32        > _deviceIndices = 0,
-                            Inst< SFNode         > _metadata      = 0 );
+    PositionFunctionEffect( Inst< SFFunctionNode > _xFunction   = 0,
+                            Inst< SFFunctionNode > _yFunction   = 0,
+                            Inst< SFFunctionNode > _zFunction   = 0,
+                            Inst< MFInt32        > _deviceIndex = 0,
+                            Inst< SFNode         > _metadata    = 0 );
 
     /// Adds the force effect.
     virtual void traverseSG( TraverseInfo &ti );
@@ -89,15 +89,6 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFFunctionNode > zFunction;
-
-    /// Contains indexes that tells which haptics devices to render
-    /// the force on. If empty then the force will be rendered on all
-    /// devices. Indices with values equal to or above the total number
-    /// of haptics devices in the scene will be ignored.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> empty \n
-    auto_ptr< MFInt32 > deviceIndices;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

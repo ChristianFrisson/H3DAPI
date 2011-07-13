@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2009, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -38,42 +38,94 @@ H3DNodeDatabase DeviceLog::database( "DeviceLog",
                                      &H3DForceEffect::database );
 
 namespace DeviceLogInternal {
-  FIELDDB_ELEMENT( DeviceLog, url, INITIALIZE_ONLY );
-  FIELDDB_ELEMENT( DeviceLog, frequency, INITIALIZE_ONLY );
-  FIELDDB_ELEMENT( DeviceLog, deviceIndex, INITIALIZE_ONLY );
-  FIELDDB_ELEMENT( DeviceLog, logBinary, INITIALIZE_ONLY );
-  FIELDDB_ELEMENT( DeviceLog, logData, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( DeviceLog, url, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DeviceLog, frequency, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DeviceLog, logBinary, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DeviceLog, logData, INPUT_OUTPUT );
 }
 
 DeviceLog::DeviceLog( Inst< SFNode> _metadata,
                       Inst< MFString     > _url,
                       Inst< SFInt32     > _frequency,
-                      Inst< SFInt32  > _deviceIndex,
+                      Inst< MFInt32  > _deviceIndex,
                       Inst< SFBool   > _logBinary,
                       Inst< MFString > _logData ):
-  H3DForceEffect( _metadata ),
+  H3DForceEffect( _metadata, _deviceIndex ),
   X3DUrlObject(_url),
   frequency(_frequency),
-  deviceIndex( _deviceIndex ),
   logBinary( _logBinary ),
-  logData( _logData ) {
+  logData( _logData ),
+  updateLogForceEffect( new Field ) {
   type_name = "DeviceLog";
 
   database.initFields( this );
 
   frequency->setValue( 100 );
   url->setValueFromString( "log.txt" );
-  deviceIndex->setValue( 0 );
   logBinary->setValue( false );
   logData->setValueFromString( "ALL" );
+
+  url->route( updateLogForceEffect );
+  frequency->route( updateLogForceEffect );
+  deviceIndex->route( updateLogForceEffect );
+  logBinary->route( updateLogForceEffect );
+  logData->route( updateLogForceEffect );
 }
 
-void DeviceLog::initialize() {
+void DeviceLog::traverseSG( TraverseInfo &ti ) {
+  const vector< H3DInt32 > &device_index = deviceIndex->getValue();
+  if( !updateLogForceEffect->isUpToDate() ) {
+    updateLogForceEffect->upToDate();
+    if( device_index.empty() ) {
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
+        createLogForceEffect( i );
+      }
+    } else {
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        createLogForceEffect( device_index[i] );
+      }
+    }
+  }
+  // Add the instance of HAPI::DeviceLog to be rendered on the selected
+  // haptics device.
+  if( !ti.getHapticsDevices().empty() ) {
+    if( device_index.empty() ) {
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
+        if( ti.hapticsEnabled( i ) ) {
+          ti.addForceEffect( i, log_force_effect[device_index[i]] );
+        }
+      }
+    } else {
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] )
+            && log_force_effect[device_index[i]] ) {
+          ti.addForceEffect( device_index[i], log_force_effect[device_index[i]] );
+        }
+      }
+    }
+  }
+}
+
+void DeviceLog::createLogForceEffect( int index ) {
+  if( index < 0 ) {
+    Console(3) << "Warning: Invalid index " << index
+               << " in deviceIndex field in node "
+               << getName() << ". Index is ignored." << endl;
+    return;
+  }
+  if( index >= (int)log_force_effect.size() )
+    log_force_effect.resize( index + 1, NULL );
   const vector< string > &urls = url->getValue();
   if( urls.empty() ) {
-    Console(3) << "No file given " << endl;
+    Console(3) << "Warning: The url field in node "
+               << getName() << " is empty. No logging can be done." << endl;
+  } else if( index >= (int)urls.size() ) {
+    Console(3) << "Warning: There is no url in the url field in node "
+               << getName() << " for the given index " << index
+               << " Each device needs a corresponding url in the url field."
+               << endl;
   } else {
-    string url_used = urls[0];
+    string url_used = urls[index];
     // Go through the entries in the logData field and put it in a
     // LogTypeVector which will be used in the constructor of HAPI::DeviceLog.
     HAPI::DeviceLog::LogTypeVector log_types;
@@ -116,22 +168,10 @@ void DeviceLog::initialize() {
       }
     }
     // Create an instance of the HAPI::DeviceLog class.
-    log_force_effect.reset( new HAPI::DeviceLog( url_used,
-                                                 log_types,
-                                                 frequency->getValue(),
-                                                 logBinary->getValue() ) );
-  }
-}
-
-void DeviceLog::traverseSG( TraverseInfo &ti ) {
-  // Add the instance of HAPI::DeviceLog to be rendered on the selected
-  // haptics device.
-  if( !ti.getHapticsDevices().empty()) {
-    H3DInt32 device_index = deviceIndex->getValue();
-    if( ti.hapticsEnabled( device_index ) && 
-	device_index >= 0 && 
-	(unsigned int)device_index < ti.getHapticsDevices().size() )
-      ti.addForceEffect( device_index, log_force_effect.get() );
+    log_force_effect.set( index, new HAPI::DeviceLog( url_used,
+                                                      log_types,
+                                                      frequency->getValue(),
+                                                      logBinary->getValue() ));
   }
 }
 

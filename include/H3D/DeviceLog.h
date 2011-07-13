@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2009, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -40,9 +40,14 @@ namespace H3D {
 
   /// \ingroup H3DNodes 
   /// \class DeviceLog
-  /// \brief DeviceLog records haptic device position and orientation to a
+  /// \brief DeviceLog records haptic device data to a
   /// binary data file. It is essentially a ForceEffect that always calculates
-  /// a zero force and logs position data.
+  /// a zero force and logs data for the haptics device.
+  ///
+  /// Warning. If any of the fields of this node changes ( with the exception
+  /// of metadata ) a new log will be created and possibly old data in the
+  /// file(s) pointed to in the url field will be overwritten. 
+  ///
   /// For information on how to read the log created by this node see comments
   /// for the logBinary field.
   ///
@@ -52,11 +57,12 @@ namespace H3D {
   class H3DAPI_API DeviceLog: public H3DForceEffect,
                               public X3DUrlObject {
   public:
+
     /// Constructor
     DeviceLog( Inst< SFNode   >  _metadata   = 0,
                Inst< MFString > _url         = 0,
                Inst< SFInt32  > _frequency   = 0,
-               Inst< SFInt32  > _deviceIndex = 0,
+               Inst< MFInt32  > _deviceIndex = 0,
                Inst< SFBool   > _logBinary   = 0,
                Inst< MFString > _logData     = 0 );
 
@@ -65,20 +71,11 @@ namespace H3D {
     /// traversal.
     virtual void traverseSG( TraverseInfo &ti );
 
-    /// Creates an instance of HAPI::DeviceLog.
-    virtual void initialize();
-
     /// The log frequency.
     ///
     /// <b>Access type:</b> initializeOnly \n
     /// <b>Default value:</b> 100 \n
     auto_ptr< SFInt32 > frequency;
-
-    /// The index of the haptics device to log.
-    ///
-    /// <b>Access type:</b> initializeOnly \n
-    /// <b>Default value:</b> 0 \n
-    auto_ptr< SFInt32 > deviceIndex;
 
     /// If true the logging will be done to a binary file. If false
     /// The logging will be done to a ASCII-text file.
@@ -145,7 +142,13 @@ namespace H3D {
 
   protected:
     /// Internal haptic force effect instance
-    AutoRef< HAPI::DeviceLog > log_force_effect;
+    AutoRefVector< HAPI::DeviceLog > log_force_effect;
+
+    /// Internal function used to create a log force effect for the
+    /// haptics device of the given index.
+    void createLogForceEffect( int index );
+
+    auto_ptr< Field > updateLogForceEffect;
   };
 
 };

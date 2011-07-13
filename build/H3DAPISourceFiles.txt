@@ -107,6 +107,7 @@ SET( NON_UNITYBUILD_FILES
                  "H3DDisplayListObject.cpp"
                  "H3DExports.cpp"
                  "H3DFakeHapticsDevice.cpp"
+                 "H3DForceEffect.cpp"
                  "H3DFrictionalSurfaceNode.cpp"
                  "H3DFunctionNode.cpp"
                  "H3DGeneratedFragmentShaderNode.cpp"

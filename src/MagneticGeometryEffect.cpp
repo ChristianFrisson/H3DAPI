@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -60,8 +60,9 @@ MagneticGeometryEffect::MagneticGeometryEffect(
                      Inst< SFFloat > _escapeDistance,
                      Inst< SFBool  > _active,
                      Inst< SFFloat > _springConstant,
-                     Inst< SFGeometry > _geometry ) :
-  H3DForceEffect( _metadata ),
+                     Inst< SFGeometry > _geometry,
+                     Inst< MFInt32 > _deviceIndex ) :
+  H3DForceEffect( _metadata, _deviceIndex ),
   enabled( _enabled ),
   startDistance( _startDistance ),
   escapeDistance( _escapeDistance ),
@@ -91,36 +92,44 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
   } else {
     if( enabled->getValue() ) {
       const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
-      for( unsigned int i = 0; i < devices.size(); i++ ) {
-        if( ti.hapticsEnabled( i ) ) {
-          H3DHapticsDevice *hd = devices[i];
+      vector< H3DInt32 > device_index = deviceIndex->getValue();
+      if( device_index.empty() ) {
+        for( unsigned int i = 0; i < devices.size(); i++ )
+          device_index.push_back( i );
+      }
+      bool any_active = false;
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        int index = device_index[i];
+        if( index >= 0 && ti.hapticsEnabled( index ) ) {
+          H3DHapticsDevice *hd = devices[index];
           const Vec3f &pos = ti.getAccInverseMatrix() *
             hd->trackerPosition->getValue();
           X3DGeometryNode * the_geometry = geometry->getValue();
-	  
+
           if( the_geometry ) {
             NodeIntersectResult result;
             the_geometry->closestPoint( pos, result );
             result.transformResult();
             H3DFloat distance = (H3DFloat)( 
               (result.result.front().point - pos).length() );
-            bool add_force_effect = false;
-            if( active->getValue() ) {
+
+            if( index >= (int)force_active.size() )
+              force_active.resize( index + 1, false );
+            if( force_active[ index ] ) {
               if( distance >= escapeDistance->getValue() ) {
-                active->setValue( false, id );
+                force_active[ index ] = false;
               } else {
-                add_force_effect = true;
+                force_active[ index ] = true;
               }
-            }
-            else {
+            } else {
               if( distance <= startDistance->getValue() )
-                add_force_effect = true;
+                force_active[ index ] = true;
             }
 
-            if( add_force_effect ) {
+            if( force_active[ index ] ) {
               if( dynamic_cast< Sphere * >(the_geometry) ) {
                 Vec3f scale = ti.getAccForwardMatrix().getScalePart();
-                ti.addForceEffect( i,
+                ti.addForceEffect( index,
                     new HAPI::HapticShapeConstraint(
                     new HAPI::Collision::Sphere(
                       ti.getAccForwardMatrix() * Vec3f(),
@@ -183,13 +192,19 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                 HAPI::HapticPrimitiveSet *haptic_primitive_set =
                   new HAPI::HapticPrimitiveSet( Matrix4d( ti.getAccForwardMatrix() ),
                                                 primitives, NULL );
-                ti.addForceEffect( i,
+                ti.addForceEffect( index,
                   new HAPI::HapticShapeConstraint( haptic_primitive_set,
                                                    springConstant->getValue() ) );
               }
             }
           }
         }
+      }
+
+      if( any_active ) {
+        active->setValue( true, id );
+      } else if( active->getValue( id ) ) {
+        active->setValue( false, id );
       }
     }
   }

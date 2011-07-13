@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -26,7 +26,7 @@
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <H3D/SpringEffect.h> 
+#include <H3D/SpringEffect.h>
 #include <H3D/H3DHapticsDevice.h>
 
 using namespace H3D;
@@ -45,42 +45,37 @@ namespace SpringEffectInternals {
   FIELDDB_ELEMENT( SpringEffect, startDistance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SpringEffect, escapeDistance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SpringEffect, active, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( SpringEffect, deviceIndex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SpringEffect, damping, INPUT_OUTPUT );
 }
 
 /// Constructor
 SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
-                            Inst< SFVec3f     > _force,
+                            Inst< MFVec3f     > _force,
                             Inst< SFFloat     > _springConstant,
                             Inst< SFFloat     > _startDistance,
                             Inst< SFFloat     > _escapeDistance,
                             Inst< SFBool      > _active, 
-                            Inst< SFInt32     > _deviceIndex,
+                            Inst< MFInt32     > _deviceIndex,
                             Inst< SFNode      >  _metadata,
                             Inst< SFFloat     > _damping ) :
-  H3DForceEffect( _metadata ),
+  H3DForceEffect( _metadata, _deviceIndex ),
   position( _position ),
   force( _force ),
   springConstant( _springConstant ),
   startDistance( _startDistance ),
   escapeDistance( _escapeDistance ),
   active( _active ),
-  deviceIndex( _deviceIndex ),
-  damping( _damping ),
-  haptic_spring( new HAPI::HapticSpring() ) {
+  damping( _damping ) {
   
   type_name = "SpringEffect";
 
   database.initFields( this );
   
   position->setValue( Vec3f( 0,0,0 ) );
-  force->setValue( Vec3f( 0,0,0 ) );
   springConstant->setValue( 100 );
   startDistance->setValue( 0.01f );
   escapeDistance->setValue( 0.01f );
   active->setValue( false, id );
-  deviceIndex->setValue( 0 );
   damping->setValue( 0 );
   
 }
@@ -95,36 +90,55 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
     counter++;
   } else {
     if( !ti.getHapticsDevices().empty()) {
-      int device_index = deviceIndex->getValue();
-      if( ti.hapticsEnabled( device_index ) ) { 
-        H3DHapticsDevice *hd = ti.getHapticsDevice( device_index );
-        // the tracker position in local coordinates.
-        const Vec3f &pos = 
-          ti.getAccInverseMatrix() * 
-          hd->trackerPosition->getValue();
-        const Vec3f &spring_pos = position->getValue();
-        H3DFloat distance = ( pos - spring_pos ).length();
-        if( active->getValue() ) {
-          if( distance >= escapeDistance->getValue() ) {
-            active->setValue( false, id );
-            force->setValue( Vec3f( 0, 0, 0 ) );
+      vector< H3DInt32 > device_index = deviceIndex->getValue();
+      if( device_index.empty() ) {
+        for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ )
+          device_index.push_back( i );
+      }
+      bool any_active = false;
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        int index = device_index[i];
+        if( index >= 0 && ti.hapticsEnabled( index ) ) {
+          H3DHapticsDevice *hd = ti.getHapticsDevice( index );
+          // the tracker position in local coordinates.
+          const Vec3f &pos = 
+            ti.getAccInverseMatrix() * 
+            hd->trackerPosition->getValue();
+          const Vec3f &spring_pos = position->getValue();
+          H3DFloat distance = ( pos - spring_pos ).length();
+          if( index >= (int)haptic_spring.size() )
+            haptic_spring.resize( index + 1, NULL );
+          if( index >= (int)force->size() )
+            force->resize( index + 1, Vec3f( 0, 0, 0 ), id );
+          if( haptic_spring[index] ) {
+            if( distance >= escapeDistance->getValue() ) {
+              haptic_spring.set( index, NULL );
+              force->setValue( index, Vec3f( 0, 0, 0 ), id );
+            } else {
+              haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
+              haptic_spring[index]->setSpringConstant( springConstant->getValue() );
+              haptic_spring[index]->setDamping( damping->getValue() );
+              ti.addForceEffect( index, haptic_spring[index] );
+              any_active = true;
+              force->setValue( index, (Vec3f) haptic_spring[index]->getLatestForce(), id );
+            }
           } else {
-            haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
-            haptic_spring->setSpringConstant( springConstant->getValue() );
-            haptic_spring->setDamping( damping->getValue() );
-            ti.addForceEffect( device_index, haptic_spring.get() );
-            Vec3f f = (Vec3f) haptic_spring->getLatestForce();
-            force->setValue( f );
-          }
-        } else {
-          if( distance <= startDistance->getValue() ) {
-            active->setValue( true, id );
-            haptic_spring->setPosition( ti.getAccForwardMatrix() * spring_pos );
-            haptic_spring->setSpringConstant( springConstant->getValue() );
-            haptic_spring->setDamping( damping->getValue() );
-            ti.addForceEffect( device_index, haptic_spring.get() );
+            if( distance <= startDistance->getValue() ) {
+              if( !haptic_spring[index] )
+                haptic_spring.set( index, createHAPISpring() );
+              haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
+              haptic_spring[index]->setSpringConstant( springConstant->getValue() );
+              haptic_spring[index]->setDamping( damping->getValue() );
+              ti.addForceEffect( index, haptic_spring[index] );
+              any_active = true;
+            }
           }
         }
+      }
+      if( any_active ) {
+        active->setValue( true, id );
+      } else if( active->getValue( id ) ) {
+        active->setValue( false, id );
       }
     }
   }

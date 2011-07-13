@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -44,13 +44,37 @@ namespace ForceFieldInternals {
 /// Constructor
 ForceField::ForceField( Inst< SFVec3f > _force,
                         Inst< SFNode>  _metadata,
-                        Inst< SFVec3f > _torque ) :
-  H3DForceEffect( _metadata ),
+                        Inst< SFVec3f > _torque,
+                        Inst< MFInt32 > _deviceIndex ) :
+  H3DForceEffect( _metadata, _deviceIndex ),
   force( _force ),
   torque( _torque ) {
-  
+
   type_name = "ForceField";
   database.initFields( this );
   force->setValue( Vec3f( 0,0,0 ) );
   torque->setValue( Vec3f( 0,0,0 ) );
 }
+
+void ForceField::traverseSG( TraverseInfo &ti ) {
+  const vector< H3DInt32 > &device_index = deviceIndex->getValue();
+  if( !ti.hapticsDisabledForAll() ) {
+    Matrix3f rotation = ti.getAccForwardMatrix().getRotationPart();
+    if( device_index.empty() ) {
+      ti.addForceEffectToAll(
+        new HAPI::HapticForceField( rotation * force->getValue(),
+                                    rotation * torque->getValue() ) );
+    } else {
+      Vec3f tmp_force( rotation * force->getValue() );
+      Vec3f tmp_torque( rotation * torque->getValue() );
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
+          ti.addForceEffect( device_index[i],
+                             new HAPI::HapticForceField( tmp_force,
+                                                         tmp_torque ) );
+        }
+      }
+    }
+  }
+}
+

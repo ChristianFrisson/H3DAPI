@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -43,7 +43,8 @@ namespace PositionFunctionEffectInternals {
   FIELDDB_ELEMENT( PositionFunctionEffect, xFunction, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PositionFunctionEffect, yFunction, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PositionFunctionEffect, zFunction, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( PositionFunctionEffect, deviceIndices, INPUT_OUTPUT );
+  FIELDDB_ELEMENT_EX( PositionFunctionEffect, deviceIndex, INPUT_OUTPUT,
+                      deviceIndices );
 }
 
 /// Constructor
@@ -51,13 +52,12 @@ PositionFunctionEffect::PositionFunctionEffect(
                           Inst< SFFunctionNode > _xFunction,
                           Inst< SFFunctionNode > _yFunction,
                           Inst< SFFunctionNode > _zFunction,
-                          Inst< MFInt32        > _deviceIndices,
+                          Inst< MFInt32        > _deviceIndex,
                           Inst< SFNode         > _metadata ) :
-  H3DForceEffect( _metadata ),
+  H3DForceEffect( _metadata, _deviceIndex ),
   xFunction( _xFunction ),
   yFunction( _yFunction ),
-  zFunction( _zFunction ),
-  deviceIndices( _deviceIndices ) {
+  zFunction( _zFunction ) {
   
   type_name = "PositionFunctionEffect";
 
@@ -73,11 +73,11 @@ void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
   if( x_function && x_function->nrInputValues() == 3 &&
       y_function && y_function->nrInputValues() == 3 &&
       z_function && z_function->nrInputValues() == 3 ) {
-    H3DInt32 nr_of_devices = (H3DInt32)ti.getHapticsDevices().size();
-    if( deviceIndices->empty() ) {
+    
+    if( deviceIndex->empty() ) {
       // Render the force on all devices.
-      for( int i = 0; i < nr_of_devices; i++ ) {
-        if( ti.hapticsEnabled( i ) ) {      
+      for( int i = 0; i < (H3DInt32)ti.getHapticsDevices().size(); i++ ) {
+        if( ti.hapticsEnabled( i ) ) {
           HAPI::HAPIFunctionObject * x_hapi_func =
             x_function->getAsHAPIFunctionObject();
           HAPI::HAPIFunctionObject * y_hapi_func =
@@ -94,23 +94,21 @@ void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
       }
     } else {
       // Only render the force on the devices specified by the indices
-      // in the deviceIndices field.
-      const vector< H3DInt32 > &device_indices = deviceIndices->getValue();
-      for( unsigned int i = 0; i < device_indices.size(); i++ ) {
-      if( ti.hapticsEnabled( i ) ) {      
-        if( device_indices[i] < nr_of_devices ) {
-           HAPI::HAPIFunctionObject * x_hapi_func =
-              x_function->getAsHAPIFunctionObject();
-            HAPI::HAPIFunctionObject * y_hapi_func =
-              y_function->getAsHAPIFunctionObject();
-            HAPI::HAPIFunctionObject * z_hapi_func =
-              z_function->getAsHAPIFunctionObject();
-            if( x_hapi_func && y_hapi_func && z_hapi_func ) {
-              ti.addForceEffect( device_indices[i],
-                new HAPI::HapticPositionFunctionEffect( x_hapi_func,
-                                                        y_hapi_func,
-                                                        z_hapi_func ) );
-            }
+      // in the deviceIndex field.
+      const vector< H3DInt32 > &device_index = deviceIndex->getValue();
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
+          HAPI::HAPIFunctionObject * x_hapi_func =
+            x_function->getAsHAPIFunctionObject();
+          HAPI::HAPIFunctionObject * y_hapi_func =
+            y_function->getAsHAPIFunctionObject();
+          HAPI::HAPIFunctionObject * z_hapi_func =
+            z_function->getAsHAPIFunctionObject();
+          if( x_hapi_func && y_hapi_func && z_hapi_func ) {
+            ti.addForceEffect( device_index[i],
+              new HAPI::HapticPositionFunctionEffect( x_hapi_func,
+                                                      y_hapi_func,
+                                                      z_hapi_func ) );
           }
         }
       }

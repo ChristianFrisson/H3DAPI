@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -46,17 +46,11 @@ namespace H3D {
     /// Constructor
     ForceField( Inst< SFVec3f > _force = 0,
                 Inst< SFNode  > _metadata = 0,
-                Inst <SFVec3f > _torque = 0 );
+                Inst <SFVec3f > _torque = 0,
+                Inst< MFInt32 > _deviceIndex = 0 );
 
     /// Adds a HapticForceField effect to the TraverseInfo.
-    virtual void traverseSG( TraverseInfo &ti ) {
-      if( !ti.hapticsDisabledForAll() ) {
-        Matrix3f rotation =  ti.getAccForwardMatrix().getRotationPart();
-        ti.addForceEffectToAll( 
-           new HAPI::HapticForceField( rotation * force->getValue(),
-                                       rotation * torque->getValue() ) );
-      }
-    }
+    virtual void traverseSG( TraverseInfo &ti );
 
     /// The force to render.
     ///
