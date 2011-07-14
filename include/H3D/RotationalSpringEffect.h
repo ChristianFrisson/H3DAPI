@@ -32,6 +32,7 @@
 #include <H3D/H3DForceEffect.h> 
 #include <HAPI/HapticRotationalSpring.h>
 #include <H3D/SFVec3f.h>
+#include <H3D/MFVec3f.h>
 #include <H3D/SFBool.h>
 #include <H3D/SFFloat.h>
 #include <H3D/SFInt32.h>
@@ -60,13 +61,13 @@ namespace H3D {
   class H3DAPI_API RotationalSpringEffect: public H3DForceEffect {
   public:
     /// Constructor
-    RotationalSpringEffect( Inst< SFVec3f     > _defaultAxis = 0,
-                  Inst< MFVec3f     > _torque = 0,
-                  Inst< SFFloat     > _springConstant = 0,
-                  Inst< SFBool      > _enabled = 0, 
-                  Inst< MFInt32     > _deviceIndex = 0,
-                  Inst< SFNode      >  _metadata = 0,
-                  Inst< SFFloat     > _damping = 0 );
+    RotationalSpringEffect( Inst< SFVec3f     > _defaultAxis    = 0,
+                            Inst< MFVec3f     > _torque         = 0,
+                            Inst< SFFloat     > _springConstant = 0,
+                            Inst< SFBool      > _enabled        = 0,
+                            Inst< MFInt32     > _deviceIndex    = 0,
+                            Inst< SFNode      >  _metadata      = 0,
+                            Inst< SFFloat     > _damping        = 0 );
 
     /// Adds the effect if within startDistance and removes it when 
     /// going outside escapeDistance.
