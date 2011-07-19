@@ -690,6 +690,58 @@ namespace H3D {
     /// Returns the shader code for the fragment shader.
     virtual string getFragmentShaderString();
 
+    /// Returns a glsl string that sets the variable diffuse_color 
+    /// to the diffuse component to use in the shading model and 
+    /// back_diffuse_color to the diffuse component for back facing faces.
+    virtual string getBaseDiffuseColor( const string &diffuse_color, 
+                                        const string &back_diffuse_color );
+
+    /// Returns a glsl string that sets the variable emission_color 
+    /// to the emission component to use in the shading model and 
+    /// back_emission_color to the emission component for back facing faces.
+    virtual string getBaseEmissionColor( const string &emission_color, 
+                                         const string &back_emission_color );
+
+    /// Returns a glsl string that sets the variable ambient_color 
+    /// to the ambient component to use in the shading model and 
+    /// back_ambient_color to the ambient component for back facing faces.
+    virtual string getBaseAmbientColor( const string &ambient_color, 
+                                        const string &back_ambient_color );
+
+    /// Returns a glsl string that sets the variable specular_color 
+    /// to the specular component to use in the shading model and 
+    /// back_specular_color to the specular component for back facing faces.
+    virtual string getBaseSpecularColor( const string &specular_color, 
+                                         const string &back_specular_color );
+    
+    /// Returns a glsl string that sets the variable shininess 
+    /// to the shininess component to use in the shading model and 
+    /// back_shininess to the shininess component for back facing faces.
+    virtual string getBaseShininess( const string &shininess, 
+                                     const string &back_shininess );
+
+    /// Returns a glsl string that sets the variable normal 
+    /// to the normal to use in the shading model and 
+    /// back_normal to the normal for back facing faces.
+    virtual string getBaseNormal( const string &normal, 
+                                  const string &back_normal );
+
+    /// Returns a glsl string that sets all the given variables to 
+    /// its appropriate values. Default implementation is to call the 
+    /// getBaseSpecularColor, getBaseDiffuseColor etc.
+    virtual string getBaseColors( const string &emission_color,
+                                  const string &shininess, 
+                                  const string &ambient_color,
+                                  const string &diffuse_color,
+                                  const string &specular_color,
+                                  const string &normal,
+                                  const string &back_emission_color,
+                                  const string &back_shininess, 
+                                  const string &back_ambient_color,
+                                  const string &back_diffuse_color,
+                                  const string &back_specular_color,
+                                  const string &back_normal );
+
     /// Returns a string with glsl code that adds the color contribution
     /// of a light node to the variable "final_color".
     /// \param light The light node for which to calculate the contributtion. 
