@@ -703,7 +703,7 @@ string PhongShader::getFragmentShaderString() {
     "    final_color.a = diffuse_color.a;\n"
     "  } \n" 
     "  generated_color = final_color;\n";
-  Console(4)<< s.str() << endl;
+  //Console(4)<< s.str() << endl;
   return s.str();
 }
 
