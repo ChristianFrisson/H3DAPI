@@ -115,9 +115,8 @@ void IndexedLineSet::DisplayList::callList( bool build_list ) {
     glGetMaterialfv( GL_FRONT, GL_EMISSION, v );
     glColor3f( v[0], v[1], v[2] );
   }
-  glPopAttrib();
-
   X3DGeometryNode::DisplayList::callList( build_list );
+  glPopAttrib();
 }
 
 void IndexedLineSet::render() {

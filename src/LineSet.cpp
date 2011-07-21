@@ -78,6 +78,7 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
 void LineSet::DisplayList::callList( bool build_list ) {
   LineSet *line_set = 
    static_cast< LineSet * >( owner );
+  glPushAttrib( GL_CURRENT_BIT );
 
   // If color field is NULL, we use the emissive Color from the current material
   // as color.
@@ -88,6 +89,7 @@ void LineSet::DisplayList::callList( bool build_list ) {
   }
 
   X3DGeometryNode::DisplayList::callList( build_list );
+  glPopAttrib();
 }
 
 void LineSet::render() {
