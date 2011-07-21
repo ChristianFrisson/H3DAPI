@@ -66,7 +66,7 @@ int H3DViewerTreeViewDialog::getNrTriangles( X3DGeometryNode *geom ) {
     
     while( i < index.size() ) {
       unsigned int nr_face_vertices = 0;
-      while( index[i++] != -1 ) {
+      while( i < index.size() && index[i++] != -1 ) {
         nr_face_vertices++;
       }
       
