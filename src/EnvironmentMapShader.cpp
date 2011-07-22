@@ -91,12 +91,12 @@ void EnvironmentMapShader::getVaryingVariables( vector< VaryingVariable > &varyi
                                          uniqueShaderName( "normal_local" ) + " = gl_Normal;" ) );
     varyings.push_back( VaryingVariable( uniqueShaderName( "vertex_local" ),
                                          "vec3",
-                                         uniqueShaderName( "vertex_local" ) + " = gl_Vertex;" ) );
+                                         uniqueShaderName( "vertex_local" ) + " = gl_Vertex.xyz;" ) );
     varyings.push_back( VaryingVariable( uniqueShaderName( "eye_pos_local" ),
                                          "vec3",
                                          "vec4 camera_local = gl_ModelViewMatrixInverse * vec4( 0.0, 0.0, 0.0, 1.0); \n"
                                          "camera_local.xyz /= camera_local.w; \n" + 
-                                         uniqueShaderName( "eye_pos_local" ) + " = camera_local;\n" ) );
+                                         uniqueShaderName( "eye_pos_local" ) + " = camera_local.xyz;\n" ) );
   }
 }
 
