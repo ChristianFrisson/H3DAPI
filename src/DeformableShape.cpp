@@ -76,6 +76,9 @@ DeformableShape::DeformableShape(
 }
 
 void DeformableShape::traverseSG( TraverseInfo &ti ) {
+  bool do_deformation = last_ti != &ti;
+  last_ti = &ti;
+
   X3DShapeNode::traverseSG( ti );
   X3DComposedGeometryNode *graphics_geom = dynamic_cast< X3DComposedGeometryNode * >( geometry->getValue() );
   if( !graphics_geom ) {
@@ -88,7 +91,7 @@ void DeformableShape::traverseSG( TraverseInfo &ti ) {
   X3DGeometryNode *haptics_geom = hapticGeometry->getValue();
   if( !haptics_geom ) haptics_geom = graphics_geom;
 
-  if( haptics_geom ) {
+  if( do_deformation && haptics_geom ) {
     Coordinate *coord_node = 
       dynamic_cast< Coordinate * >( graphics_geom->coord->getValue() );
 
