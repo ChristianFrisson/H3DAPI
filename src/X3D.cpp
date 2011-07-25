@@ -394,6 +394,10 @@ void X3D::writeNodeAsX3D( ostream& os,
 void X3D::writeNodeAsVRML( ostream& os, 
                            Node *node ) {
   std::set< Node *> visited_nodes;
+  // write header
+  os << "#VRML V2.0 utf8" << endl;
+
+  // write node
   writeNodeAsX3DHelp( os, node, "", "", 
                       visited_nodes, 1 );
 }
@@ -542,7 +546,9 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
       // if no nodes as children, end tag on same line
       os << " />" << endl;
     } else if( output_type == VRML_OUTPUT ) {
-      os << prefix << "}" << endl;
+      if( !use_node ) {
+        os << prefix << "}" << endl;
+      }
     }
   } else {
     if( output_type == X3D_OUTPUT ) {
@@ -704,7 +710,8 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
       // end tag
       os << prefix << "</" << node_name << ">" << endl;
     } else if( output_type == VRML_OUTPUT ) {
-      os << prefix << "}" << endl;
+      if( !use_node )
+         os << prefix << "}" << endl;
     }
   }
 }
