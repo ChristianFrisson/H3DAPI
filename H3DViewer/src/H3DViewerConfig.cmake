@@ -46,4 +46,9 @@
 /// a part of H3DAPI release.
 #define H3DVIEWER_APP_NAME wxT("${H3DVIEWER_APP_NAME}")
 
+/// This will be defined if wxWidgets propgrid library is available. propgrid
+/// is part of wxWidgets 2.9 and will give nicer tree view and program
+/// settings option
+#cmakedefine HAVE_WXPROPGRID
+
 #endif

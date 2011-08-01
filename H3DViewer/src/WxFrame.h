@@ -284,6 +284,7 @@ public:
   void ShowTreeView( wxCommandEvent & event );
   void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
+  void ShowProgramSettings( wxCommandEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
   void ResetViewpoint( wxCommandEvent & event );
   void ChangeNavigation( wxCommandEvent & event );
@@ -414,6 +415,9 @@ public:
 
   WxConsoleDialog * the_console;
   H3DViewerTreeViewDialog * tree_view_dialog;
+#ifdef HAVE_WXPROPGRID
+  H3DViewerFieldValuesDialogPropGrid * program_settings_dialog;
+#endif
   H3DViewerPluginsDialog * plugins_dialog;
   MenuContainer *menu_container;
   FrameRateDialog *  frameRates;
@@ -486,6 +490,7 @@ enum
   FRAME_TREEVIEW,
   FRAME_PLUGINS,
   FRAME_FRAMERATE,
+  FRAME_PROGRAMSETTINGS,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,
   FRAME_NAVIGATION = 6500,

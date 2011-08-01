@@ -91,6 +91,9 @@ ENDIF(HAPI_FOUND)
 
 # WxWidgets.
 SET(WXWINDOWS_USE_GL 1)
+SET(wxWidgets_USE_LIBS base core gl adv richtext html)	
+
+# find wx libraries except propgrid
 IF(WIN32)
   FIND_PACKAGE(wxWidgetsWin)
   IF(wxWidgets_FOUND)
@@ -101,13 +104,40 @@ ENDIF(WIN32)
 
 IF(wxWidgets_FOUND)
 ELSE(wxWidgets_FOUND)
-  SET(wxWidgets_USE_LIBS base core gl adv richtext html)
   FIND_PACKAGE(wxWidgets REQUIRED)
   IF(wxWidgets_FOUND)
     INCLUDE(${wxWidgets_USE_FILE})
     SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
   ENDIF(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
+
+# find wx library propgrid
+SET(wxWidgets_USE_LIBS propgrid)	
+SET( wxWidgets_FIND_QUIETLY 1 )
+
+IF(WIN32)
+  FIND_PACKAGE(wxWidgetsWin)
+  IF(wxWidgets_FOUND)
+    INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+  ENDIF(wxWidgets_FOUND)
+ENDIF(WIN32)
+
+IF(wxWidgets_FOUND)
+ELSE(wxWidgets_FOUND)
+  FIND_PACKAGE(wxWidgets)
+  IF(wxWidgets_FOUND)
+    INCLUDE(${wxWidgets_USE_FILE})
+    SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+  ENDIF(wxWidgets_FOUND)
+ENDIF(wxWidgets_FOUND)
+
+SET( HAVE_WXPROPGRID ${wxWidgets_FOUND} )
+
+IF( NOT( ${HAVE_WXPROPGRID} ) )
+MESSAGE( STATUS "wxWidgets propgrid not found. Needed for better tree view and program setting choice in H3DViewer. Part of wxWidgets 2.9." )
+ENDIF( NOT( ${HAVE_WXPROPGRID} ) )
+
 
 # Create build files.
 IF( GENERATE_H3DVIEWER_CPACK_PROJECT )

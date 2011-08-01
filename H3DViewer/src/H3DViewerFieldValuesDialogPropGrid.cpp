@@ -13,6 +13,7 @@
 #include <H3D/SFRotation.h>
 #include <H3D/SFColor.h>
 #include <H3D/PythonScript.h>
+#include <H3D/Scene.h>
 
 using namespace H3D;
 
@@ -87,8 +88,10 @@ H3DViewerFieldValuesDialogPropGrid::H3DViewerFieldValuesDialogPropGrid(
              const wxString& title, 
              const wxPoint& pos, 
              const wxSize& size, 
-             long style ) : 
-  wxFrame( parent, id, title, pos, size, style ) {
+             long style,
+             bool _destroy_on_close ) : 
+  wxFrame( parent, id, title, pos, size, style ),
+  destroy_on_close( _destroy_on_close ) {
 
   this->SetSizeHints( wxDefaultSize, wxDefaultSize );
   
@@ -103,12 +106,21 @@ H3DViewerFieldValuesDialogPropGrid::H3DViewerFieldValuesDialogPropGrid(
         
   // Connect Events
   this->Connect( wxEVT_IDLE, wxIdleEventHandler( H3DViewerFieldValuesPanelPropGrid::OnIdle ), NULL, prop_grid_panel );
+  this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( H3DViewerFieldValuesDialogPropGrid::OnClose ) );
 }
 
 H3DViewerFieldValuesDialogPropGrid::~H3DViewerFieldValuesDialogPropGrid()
 {
   // Disconnect Events
   this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( H3DViewerFieldValuesPanelPropGrid::OnIdle ), NULL, prop_grid_panel );
+}
+
+void H3DViewerFieldValuesDialogPropGrid::OnClose( wxCloseEvent& event ) {
+  if( destroy_on_close ) {
+    Destroy();
+  } else {
+    Hide();
+  }
 }
 
 void H3DViewerFieldValuesDialogPropGrid::displayFieldsFromNode( Node *n ) {
@@ -120,13 +132,19 @@ void H3DViewerFieldValuesDialogPropGrid::displayFieldsFromNode( Node *n ) {
   prop_grid_panel->displayFieldsFromNode( n );
 }
 
+void H3DViewerFieldValuesDialogPropGrid::displayFieldsFromProgramSettings() {
+  SetTitle( wxT( "Program settings" ) );
+  prop_grid_panel->displayFieldsFromProgramSettings();
+}
+
 H3DViewerFieldValuesPanelPropGrid::H3DViewerFieldValuesPanelPropGrid( wxWindow* parent, 
                                       wxWindowID id, 
                                       const wxPoint& pos, 
                                       const wxSize& size, 
                                       long style ) : 
   wxPanel( parent, id, pos, size, style ),
-  displayed_node( NULL ) {
+  displayed_node( NULL ),
+  mode( 0 ) {
 
   this->SetSizeHints( wxDefaultSize, wxDefaultSize );
   
@@ -141,15 +159,30 @@ H3DViewerFieldValuesPanelPropGrid::H3DViewerFieldValuesPanelPropGrid( wxWindow* 
   
   // Connect Events
   FieldValuesGrid->Connect( wxEVT_PG_CHANGED, wxPropertyGridEventHandler( H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged ), NULL, this );
+
+  Scene::addProgramSettingsCallback( settingsCallback, this );
 }
 
 H3DViewerFieldValuesPanelPropGrid::~H3DViewerFieldValuesPanelPropGrid()
 {
+  Scene::clearProgramSettingsCallbacks();
+
   // Disconnect Events
   FieldValuesGrid->Disconnect( wxEVT_PG_CHANGED, wxPropertyGridEventHandler( H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged ), NULL, this );
+  
+}
+
+void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromProgramSettings() {
+  //  if( mode != 1 ) {
+    property_update_fields.clear();
+    
+    populateGridFromProgramSettings( FieldValuesGrid, property_update_fields );
+    mode = 1;
+    //  }
 }
 
 void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromNode( Node *n ) {
+  mode = 0;
   bool new_node = n != displayed_node.get();
   displayed_node.reset( n );
   if( !n ) {
@@ -175,7 +208,7 @@ void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromNode( Node *n ) {
 void H3DViewerFieldValuesPanelPropGrid::OnIdle( wxIdleEvent& event ) {
   TimeStamp now;
   if( now - last_fields_update > 0.25 ) {
-    displayFieldsFromNode( displayed_node.get() );
+    if( mode == 0 ) displayFieldsFromNode( displayed_node.get() );
     last_fields_update = now;
     for( unsigned int i = 0; i < property_update_fields.size(); i++ ) {
       property_update_fields[i]->upToDate();
@@ -184,81 +217,91 @@ void H3DViewerFieldValuesPanelPropGrid::OnIdle( wxIdleEvent& event ) {
 }
 
 void H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged( wxPropertyGridEvent& event ) {
-  if( displayed_node.get() ) {
-    wxString name = event.GetPropertyName();
-    wxPGProperty *property = event.GetProperty();
-    
-    Field *f = displayed_node->getField( string(name.mb_str()) );
+  Field *f = NULL;
+  string name( event.GetPropertyName().mb_str() );
+  wxPGProperty *property = event.GetProperty();
 
-    wxVariant value = property->GetValue();
+  if( mode == 0 && displayed_node.get() ) {
+    f = displayed_node->getField( name );
+  } else if( mode == 1 ) {
+    for( Scene::SettingsIterator i = Scene::programSettingsBegin();
+         i != Scene::programSettingsEnd(); i++ ) {
+      Scene::ProgramSetting &setting = *i;
+      if( setting.name == name ) {
+        f = setting.field;    
+        break;
+      }
+    }
+  }
 
-    X3DTypes::X3DType x3d_type = f->getX3DType();
-    
-    if( x3d_type == X3DTypes::SFFLOAT ) {
-      double b = value.GetDouble();
-      static_cast< SFFloat * >( f )->setValue( (H3DFloat) b );
-    } else if ( x3d_type == X3DTypes::SFDOUBLE ) {
-      double b = value.GetDouble();
-      static_cast< SFDouble * >( f )->setValue( b );
-    } else if ( x3d_type == X3DTypes::SFTIME ) {
-      double b = value.GetDouble();
-      static_cast< SFTime * >( f )->setValue( b );
-    } else if ( x3d_type == X3DTypes::SFCOLOR ) {
-      wxColour wc = wxAny(value).As<wxColour>();
-      static_cast< SFColor * >( f )->setValue( RGB( wc.Red()/255.0, wc.Green()/255.0, wc.Blue()/255.0 ) );
+  if( f ) {
+  wxVariant value = property->GetValue();
+  X3DTypes::X3DType x3d_type = f->getX3DType();
+  
+  if( x3d_type == X3DTypes::SFFLOAT ) {
+    double b = value.GetDouble();
+    static_cast< SFFloat * >( f )->setValue( (H3DFloat) b );
+  } else if ( x3d_type == X3DTypes::SFDOUBLE ) {
+    double b = value.GetDouble();
+    static_cast< SFDouble * >( f )->setValue( b );
+  } else if ( x3d_type == X3DTypes::SFTIME ) {
+    double b = value.GetDouble();
+    static_cast< SFTime * >( f )->setValue( b );
+  } else if ( x3d_type == X3DTypes::SFCOLOR ) {
+    wxColour wc = wxAny(value).As<wxColour>();
+    static_cast< SFColor * >( f )->setValue( RGB( wc.Red()/255.0, wc.Green()/255.0, wc.Blue()/255.0 ) );
     } 
 #ifdef USE_VECTOR_PROPERTIES
-    else if ( x3d_type == X3DTypes::SFVEC2F ) {
-      H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-      Vec2f v( wc.getValue(0), wc.getValue(1) );
-      static_cast< SFVec2f * >( f )->setValue( v );
-    } else if ( x3d_type == X3DTypes::SFVEC2D ) {
-      H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-      Vec2f v( wc.getValue(0), wc.getValue(1) );
-      static_cast< SFVec2d * >( f )->setValue( v );
-    } else if ( x3d_type == X3DTypes::SFVEC3F ) {
-      H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-      Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
-      static_cast< SFVec3f * >( f )->setValue( v );
-    } else if ( x3d_type == X3DTypes::SFVEC3D ) {
-      H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-      Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
-      static_cast< SFVec3d * >( f )->setValue( v );
-    } else if ( x3d_type == X3DTypes::SFVEC4F ) {
-      H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-      Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
-      static_cast< SFVec4f * >( f )->setValue( v );
-    } else if ( x3d_type == X3DTypes::SFVEC4D ) {
-      H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-      Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
-      static_cast< SFVec4d * >( f )->setValue( v );
-    } else if ( x3d_type == X3DTypes::SFROTATION ) {
-      H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-      Rotation v( Vec3f( wc.getValue(0), wc.getValue(1), wc.getValue(2)), wc.getValue(3) );
-      static_cast< SFRotation * >( f )->setValue( v );
-    } 
+  else if ( x3d_type == X3DTypes::SFVEC2F ) {
+    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+    Vec2f v( wc.getValue(0), wc.getValue(1) );
+    static_cast< SFVec2f * >( f )->setValue( v );
+  } else if ( x3d_type == X3DTypes::SFVEC2D ) {
+    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+    Vec2f v( wc.getValue(0), wc.getValue(1) );
+    static_cast< SFVec2d * >( f )->setValue( v );
+  } else if ( x3d_type == X3DTypes::SFVEC3F ) {
+    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+    Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
+    static_cast< SFVec3f * >( f )->setValue( v );
+  } else if ( x3d_type == X3DTypes::SFVEC3D ) {
+    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+    Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
+    static_cast< SFVec3d * >( f )->setValue( v );
+  } else if ( x3d_type == X3DTypes::SFVEC4F ) {
+    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+    Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
+    static_cast< SFVec4f * >( f )->setValue( v );
+  } else if ( x3d_type == X3DTypes::SFVEC4D ) {
+    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+    Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
+    static_cast< SFVec4d * >( f )->setValue( v );
+  } else if ( x3d_type == X3DTypes::SFROTATION ) {
+    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+    Rotation v( Vec3f( wc.getValue(0), wc.getValue(1), wc.getValue(2)), wc.getValue(3) );
+    static_cast< SFRotation * >( f )->setValue( v );
+  } 
 #endif //USE_VECTOR_PROPERTIES
-    else if( x3d_type == X3DTypes::SFBOOL ) {    
-      bool b = value.GetBool();
-      static_cast< SFBool * >( f )->setValue( b );
-    } else if( x3d_type == X3DTypes::SFSTRING && 
-               dynamic_cast< wxEnumProperty * >( property ) ) {    
-      string s (property->ValueToString( value ).mb_str() );
-      static_cast< SFString * >( f )->setValue( s );
-    } else {
-      if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
-        string s( property->ValueToString( value ).mb_str() );
-        try {
-          pf->setValueFromString( s );
-        } catch(...) {
-          // touch field in order for editor value to be reset
-          pf->touch();
-        }
+  else if( x3d_type == X3DTypes::SFBOOL ) {    
+    bool b = value.GetBool();
+    static_cast< SFBool * >( f )->setValue( b );
+  } else if( x3d_type == X3DTypes::SFSTRING && 
+             dynamic_cast< wxEnumProperty * >( property ) ) {    
+    string s (property->ValueToString( value ).mb_str() );
+    static_cast< SFString * >( f )->setValue( s );
+  } else {
+    if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
+      string s( property->ValueToString( value ).mb_str() );
+      try {
+        pf->setValueFromString( s );
+      } catch(...) {
+        // touch field in order for editor value to be reset
+        pf->touch();
       }
     }
   }
 }
-  
+}
 
 void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *FieldValuesGrid,
                                                                Node *n,
@@ -604,7 +647,8 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
 void H3DViewerFieldValuesPanelPropGrid::setupProperty( wxPropertyGrid *FieldValuesGrid,
                                                        Field *f,
                                                        Field *default_f,
-                                                       H3DUtil::AutoPtrVector< H3D::Field > &property_update_fields ) {
+                                                       H3DUtil::AutoPtrVector< H3D::Field > &property_update_fields,
+                                                       const string &property_name ) {
 
   void *default_value = NULL;
   unsigned int default_value_size = 0;
@@ -633,16 +677,17 @@ void H3DViewerFieldValuesPanelPropGrid::setupProperty( wxPropertyGrid *FieldValu
     }
   }
   
-  wxPGProperty *p = getPropertyFromField( f );
-
-  if( f->getAccessType() != Field::INPUT_ONLY ) {
-    PropertyUpdater *updater = new PropertyUpdater(p, default_value, default_value_size );
-    f->route( updater );
-
-    property_update_fields.push_back( updater );
-  }
+  wxPGProperty *p = getPropertyFromField( f, property_name );
 
   if(p) {
+    if( f->getAccessType() != Field::INPUT_ONLY ) {
+      PropertyUpdater *updater = new PropertyUpdater(p, default_value, default_value_size );
+      f->route( updater );
+      
+      property_update_fields.push_back( updater );
+    }
+
+
     FieldValuesGrid->Append( p );
     FieldValuesGrid->GetEditorTextCtrl();
     FieldValuesGrid->GetEditorControl();
@@ -708,6 +753,54 @@ wxVariant wxVectorProperty::ChildChanged( wxVariant& thisValue,
 }
 
 
+void H3DViewerFieldValuesPanelPropGrid::populateGridFromProgramSettings( wxPropertyGrid *FieldValuesGrid,
+                                                                         AutoPtrVector< Field > &property_update_fields ) {
 
+  FieldValuesGrid->Clear();
+
+  FieldValuesGrid->Append( new wxPropertyCategory(wxT("Main settings"),wxPG_LABEL) );  
+
+  typedef  map< string, vector< Scene::ProgramSetting > > SectionsMap;
+  SectionsMap sections;
+
+  // Add the main settings and collect other settings in sections map.
+  for( Scene::SettingsIterator i = Scene::programSettingsBegin();
+       i != Scene::programSettingsEnd(); i++ ) {
+    const Scene::ProgramSetting &setting = *i;
+    if( setting.section == "Main settings" ) {
+      setupProperty( FieldValuesGrid, setting.field, 
+                     NULL, property_update_fields, setting.name );  
+    } else {
+      sections[setting.section].push_back( setting );
+    }
+  }
+
+  // Add all other sections
+  for( SectionsMap::iterator i = sections.begin();
+       i != sections.end(); i++ ) {
+    FieldValuesGrid->Append( new wxPropertyCategory(wxString((*i).first.c_str(),wxConvUTF8 ),wxPG_LABEL) ); 
+    for( vector< Scene::ProgramSetting >::iterator j = (*i).second.begin();
+         j != (*i).second.end(); j++ ) {
+
+      Scene::ProgramSetting &setting = *j;
+      setupProperty( FieldValuesGrid, setting.field, 
+                     NULL, property_update_fields, setting.name );
+    }
+  }
+}
+
+void H3DViewerFieldValuesPanelPropGrid::settingsCallback( Scene::ProgramSettingsEvent event,
+                                                          const Scene::ProgramSetting &setting,
+                                                          void *data ) {
+  H3DViewerFieldValuesPanelPropGrid *panel = 
+    static_cast< H3DViewerFieldValuesPanelPropGrid * >( data );
+  if( panel->mode == 1 )
+    panel->displayFieldsFromProgramSettings();
+ /* if( event == Scene::ADD_SETTING ) {
+    Console(4) << "Added:" << setting.name << endl; 
+  } else {
+    Console(4) << "Removed: " << setting.name << endl; 
+  }*/
+}
 
 #endif // HAVE_WXPROPGRID

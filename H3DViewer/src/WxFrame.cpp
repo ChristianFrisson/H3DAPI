@@ -182,6 +182,11 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                                    wxDefaultPosition, wxDefaultSize,
                                    wxDEFAULT_DIALOG_STYLE );
   tree_view_dialog = new H3DViewerTreeViewDialog( this ); 
+#ifdef HAVE_WXPROPGRID
+  program_settings_dialog = new H3DViewerFieldValuesDialogPropGrid( this ); 
+  program_settings_dialog->displayFieldsFromProgramSettings();
+  program_settings_dialog->destroy_on_close = false;
+#endif
   plugins_dialog = new H3DViewerPluginsDialog( this ); 
   frameRates = new FrameRateDialog( this );
 
@@ -355,9 +360,12 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                        wxT("Show the message console"));
   advancedMenu->Append(FRAME_TREEVIEW, wxT("Show Tree View\tF9"),
                        wxT("Show the scene as a tree, making it possible to inspect and change values at runtime."));
-  advancedMenu->Append(FRAME_FRAMERATE, wxT("Show Framerates\tF8"),
+   advancedMenu->Append(FRAME_FRAMERATE, wxT("Show Framerates\tF8"),
                        wxT("Show the frame rates of graphics and haptics loop"));
-   
+#ifdef HAVE_WXPROPGRID
+   advancedMenu->Append(FRAME_PROGRAMSETTINGS, wxT("Show Program Settings\tF7"),
+                        wxT("Show the program settings for the current scene."));  
+#endif
   //Help Menu
   helpMenu = new wxMenu;
   //helpMenu->Append(FRAME_HELP, wxT("Help"));
@@ -493,6 +501,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_TREEVIEW, WxFrame::ShowTreeView)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
+  EVT_MENU (FRAME_PROGRAMSETTINGS, WxFrame::ShowProgramSettings)
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
   EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
@@ -1673,6 +1682,16 @@ void WxFrame::ShowTreeView(wxCommandEvent & event)
   if (!tree_view_dialog->Show()) {
     tree_view_dialog->SetFocus();
   }
+}
+
+//Show console event
+void WxFrame::ShowProgramSettings(wxCommandEvent & event)
+{
+#ifdef HAVE_WXPROPGRID
+  if (!program_settings_dialog->Show()) {
+    program_settings_dialog->SetFocus();
+  }
+#endif
 }
 
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)
