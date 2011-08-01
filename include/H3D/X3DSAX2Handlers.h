@@ -210,10 +210,14 @@ namespace H3D {
       /// that it lies within.
       void handleConnectElement( const Attributes &attrs, Node *parent );
 
-      /// This function will be called if a ROUTE or ROUTE_NO_EVENT element
+      /// This function will be called if a ROUTE, ROUTE_NO_EVENT or ROUTE_WITH_EVENT element
       /// has been found.
       void handleRouteElement( const Attributes &attrs, 
                                bool route_no_event = false );
+
+      /// This function will be called if a PROGRAM_SETTING element
+      /// has been found.
+      void handleProgramSettingElement( const Attributes &attrs );
 
       /// This function will be called if a "field" element has been found
       /// that is not part of a ProtoInterface element. If successful it returns

@@ -37,6 +37,8 @@
 // HAPI includes
 #include <H3DUtil/Threads.h>
 
+#include <vector>
+
 namespace H3D {
 
   /// \ingroup X3DNodes
@@ -62,13 +64,13 @@ namespace H3D {
 
       /// Get the name of the browser used to view the scene. 
       inline const string &getBrowserName() {
-	return browser_name;
+        return browser_name;
       }
 
       /// Set the name of the browser used to view the scene, e.g.
       /// "H3DLoad" or "H3DViewer"
       inline void setBrowserName( const string& name) {
-	browser_name = name;
+        browser_name = name;
       }
 
     protected:
@@ -179,11 +181,102 @@ namespace H3D {
     /// Callback function type.
     typedef CallbackCode (*CallbackFunc)(void *data); 
 
+    /// Add a callback function to be called after scene traversal and
+    /// rendering.
     static void addCallback( CallbackFunc func, void *data ) {
       callback_lock.lock();
       callbacks.push_back( make_pair( func, data ) );
       callback_lock.unlock();
     }
+
+
+    struct ProgramSetting {
+      /// Constructor.
+    ProgramSetting( Field *_field,
+                    const string &_name = "",
+                    const string &_section = ""):
+        field( _field ),
+        name( _name ),
+        section( _section ) {}
+        
+
+      Field *field;
+      string name;
+      string section;
+
+    };
+
+    typedef std::list< ProgramSetting > ProgramSettings;
+
+    /// Add a program setting value. A program setting value is a global
+    /// Field value assiciated with a name. These settings can be used in
+    /// GUIs in e.g. H3DViewer to allow a user to change the values. Settings
+    /// can be dynamically added and removed during the execution of a program.
+    ///
+    /// \param field The field to assiciate the name with. A field
+    /// will be automatically removed from the settings if destructed
+    /// somewhere else.   
+    /// \param name The name of the parameter. If "" the name of the
+    /// field will be used.
+    /// \param section The type if paramter it is, e.g. graphics.
+    static void addProgramSetting( Field *field,
+                                   const string &name = "",
+                                   const string &section = "Main settings");
+
+    /// Remove a program setting value. 
+    ///
+    /// \param setting The name of the parameter. If "" the name of the
+    /// field will be used.
+    /// \param section The type if paramter it is, e.g. graphics.
+    /// \return true if successful, false otherwise.
+    static bool removeProgramSetting( const string &name,
+                                      const string &section = "Main settings" );
+
+    /// Remove all program settings referring to a field. 
+    ///
+    /// \param  The name field which settings to remove.
+    /// \return true if successfully removed, false otherwise.
+    static bool removeProgramSetting( Field *field );
+
+    /// Get a program setting value. 
+    ///
+    /// \param name The name of the parameter.
+    /// \param section The type if paramter it is, e.g. graphics.
+    /// \return The field that matches the name if it exists, NULL otherwise.
+    static Field *getProgramSetting( const string &name,
+                                     const string &section = "Main settings" );
+
+    typedef ProgramSettings::iterator SettingsIterator;
+
+    /// Get an iterator to the first element of the program settings. Adding
+    /// or removing a new program setting will make this iterator invalid.
+    static SettingsIterator programSettingsBegin();
+
+    /// Get an iterator to the end of the program settings. 
+    static SettingsIterator programSettingsEnd();
+
+    typedef enum {
+      ADD_SETTING,
+      REMOVE_SETTING
+    } ProgramSettingsEvent;
+ 
+    /// Callback function type.
+    typedef void (*ProgramSettingsCallbackFunc)( ProgramSettingsEvent event,
+                                                 const ProgramSetting &settings, 
+                                                 void *data); 
+
+    typedef std::pair< ProgramSettingsCallbackFunc, void * > ProgramSettingsCallbackId;
+
+    /// Add a callback function to be called each time a new program settings value
+    /// is added, removed or changed.
+    static ProgramSettingsCallbackId addProgramSettingsCallback( ProgramSettingsCallbackFunc func, 
+                                                          void *data );
+
+    /// Remove a program settings callback function
+    static bool removeProgramSettingsCallback( ProgramSettingsCallbackId id );
+
+    /// Remove all program setting callback functions
+    static void clearProgramSettingsCallbacks();
 
     
   protected:
@@ -191,9 +284,13 @@ namespace H3D {
 
     static H3DUtil::MutexLock callback_lock;
 
+    static ProgramSettings program_settings;
+
     typedef std::list< std::pair< CallbackFunc, void * > > CallbackList;
+    typedef std::list< std::pair< ProgramSettingsCallbackFunc, void * > > ProgramSettingsCallbackList;
     // A list of the callback functions to run.
     static CallbackList callbacks;
+    static ProgramSettingsCallbackList program_settings_callbacks;
     
     /// The EventSink class makes all fields up-to-date what are routed 
     /// to it, with the exception of PeriodicUpdateFields. These are

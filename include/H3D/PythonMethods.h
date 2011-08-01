@@ -153,6 +153,18 @@ namespace H3D {
     PyObject* pythonGetNrHapticsDevices( PyObject *self, PyObject *arg );
 
     PyObject* pythonGetNamedNode( PyObject *self, PyObject *arg );
+
+    /// addProgramSettings( field, setting_name = "", section = "" )
+    PyObject* pythonAddProgramSetting( PyObject *self, PyObject *arg );
+/*
+    PyObject* pythonRemoveProgramSetting( PyObject *self, PyObject *arg );
+
+    PyObject* pythonClearProgramSettings( PyObject *self, PyObject *arg );
+
+    PyObject* pythonGetProgramSetting( PyObject *self, PyObject *arg );
+
+    PyObject* pythonGetProgramSettings( PyObject *self, PyObject *arg );
+*/
   }
 
     

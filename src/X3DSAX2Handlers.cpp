@@ -42,6 +42,7 @@
 #include <H3D/Inline.h>
 #include <H3D/H3DExports.h>
 #include <H3D/ProfilesAndComponents.h>
+#include <H3D/Scene.h>
 #ifdef HAVE_PYTHON
 #include <H3D/PythonScript.h>
 #endif
@@ -464,6 +465,73 @@ void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs,
     }
   }
   // push NULL on the node stack to skip elements within ROUTE element.
+  node_stack.push( NodeElement( NULL ) );
+}
+
+
+void X3DSAX2Handlers::handleProgramSettingElement( const Attributes &attrs ) {
+  XMLSize_t nr_attrs = attrs.getLength();
+  
+
+  const XMLCh *node_name  = NULL;
+  const XMLCh *field_name = NULL;
+  const XMLCh *setting_name  = L"";
+  const XMLCh *setting_section  = L"Main settings";  
+
+  // get all the program specific attributes
+  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+    string name = toString( attrs.getQName( i ) );
+    if( !node_name && name == "node" ) {
+      node_name = attrs.getValue( i );
+    } else if( !field_name && name == "field" ) {
+      field_name = attrs.getValue( i );
+    } else if( name == "name" ) {
+      setting_name = attrs.getValue( i );
+    } else if( name == "section" ) {
+      setting_section = attrs.getValue( i );
+    } else {
+      Console(3) << "WARNING: Unknown attribute \"" << name  
+           << "\" in PROGRAM_SETTING element " << getLocationString() << endl;
+    }
+  }
+            
+  // All route attributes were not found, so whrow exception
+  if( !node_name ) {
+    string message = "Invalid PROGRAM_SETTING specification. Missing \"node\" attribute";
+    throw X3D::XMLParseError( message, "", 
+                              toString( locator->getSystemId() ),
+                              (int)locator->getLineNumber()  );
+  } else if ( !field_name ) {
+    string message = "Invalid PROGRAM_SETTING specification. Missing \"field\" attribute";
+    throw X3D::XMLParseError( message, "", 
+                              toString( locator->getSystemId() ),
+                              (int)locator->getLineNumber() );
+  } else {
+    // Lookup the nodes and fields and set up the route.
+    Node *node = DEF_map->getNode( toString( node_name ) );
+    if( node ) {
+      Field *field = 
+        node->getField( toString( field_name ).c_str() );
+      if( field ) {
+        Scene::addProgramSetting( field, 
+                                  toString( setting_name ),
+                                  toString( setting_section )  ); 
+                                  
+      } else {
+        Console(3) << "WARNING: Program setting error. Could not find field named \"" 
+             << field_name
+             << "\" in \"" << node_name << "\" Node " 
+             << getLocationString() << endl;
+      }
+    } else {
+      Console(3) << "WARNING: program setting error. Could not find Node named \"" 
+           << node_name
+           << "\" specified in \"node\" attribute " 
+           << getLocationString() << endl;
+    }
+  }
+
+  // push NULL on the node stack to skip elements within PROGRAM_SETTING element.
   node_stack.push( NodeElement( NULL ) );
 }
 
@@ -1183,6 +1251,8 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         }
       } else if( localname_string == "connect"  ) {
         handleConnectElement( attrs, parent );
+      } else if( localname_string == "PROGRAM_SETTING" ) {
+        handleProgramSettingElement( attrs );
       } else if( localname_string == "ROUTE" ) {
         bool event = GlobalSettings::default_x3d_route_sends_event;
         GlobalSettings *gs = GlobalSettings::getActive();

@@ -42,7 +42,8 @@ Field::Field( ) :
   event( 0, 0 ),
   owner( NULL ),
   access_type( INPUT_OUTPUT ),
-  access_check_on( true ) {
+  access_check_on( true ),
+  is_program_setting( false ) {
 #ifdef DEBUG
   Console(1) << "Field(" << getFullName() << ")::Field()" << endl;
 #endif
@@ -51,6 +52,9 @@ Field::Field( ) :
 }
 
 Field::~Field() {
+  if( is_program_setting )
+    Scene::removeProgramSetting( this );
+
 #ifdef DEBUG
   Console(1) << "Field(" << getFullName() << ")::~Field()" << endl;
 #endif
@@ -63,6 +67,8 @@ Field::~Field() {
   while( routes_in.begin() != routes_in.end() ) {
     (*routes_in.begin())->unroute( this );
   }
+
+  
 }
 
 //  Route management:

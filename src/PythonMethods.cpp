@@ -592,6 +592,7 @@ if( check_func( value ) ) {                                         \
       { "getHapticsDevice", pythonGetHapticsDevice, 0 },
       { "getNrHapticsDevices", pythonGetNrHapticsDevices, 0 },
       { "getNamedNode", pythonGetNamedNode, 0 },
+      { "addProgramSetting", pythonAddProgramSetting, 0 },
       { NULL, NULL }      
     };
     
@@ -1954,6 +1955,66 @@ call the base class __init__ function." );
       }
       return PyNode_FromNode( n );
     }
+
+   PyObject *pythonAddProgramSetting( PyObject *self, PyObject *args ) {
+     // args are (field, setting_name = "", section_name = "" )
+     unsigned int nr_args = 1;     
+     Field *field = NULL;
+     PyObject *py_field = args;
+
+     if( PyTuple_Check( args ) ) {
+       nr_args =  PyTuple_Size( args );
+       py_field = PyTuple_GetItem( args, 0 ); // borrowed ref ?
+       if( PyTuple_Size( args ) > 3 || PyTuple_Size( args ) < 1  ) {
+	 PyErr_SetString( PyExc_ValueError, 
+			  "Invalid argument(s) to function addProgramSettings( field, setting_name, section_name )" );
+	 return NULL;
+       } 
+     }
+     
+     PyObject *py_field_ptr = 
+       PyObject_GetAttrString( py_field, "__fieldptr__" ); //ref
+
+     if( !py_field_ptr ) {
+       Py_DECREF( py_field_ptr );
+       PyErr_SetString( PyExc_ValueError, 
+			"Invalid argument 0 to function addProgramSettings. Expecting Field type" );
+        return NULL;
+     }
+      
+     field = static_cast< Field * >( PyCObject_AsVoidPtr( py_field_ptr ) );
+     Py_DECREF( py_field_ptr );
+
+     string setting_name = "";
+     if( nr_args > 1 ) {
+       PyObject *py_setting_name = PyTuple_GetItem( args, 1 ); // borrowed ref?
+       if( !py_setting_name || !PyString_Check( py_setting_name ) ) {
+        ostringstream err;
+        err << "Invalid argument 1 to function H3D.addProgramSettings. Should be string.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+       }
+       setting_name = PyString_AsString( py_setting_name );
+     }
+
+     string section_name = "Main settings";
+     if( nr_args > 2 ) {
+       PyObject *py_section_name = PyTuple_GetItem( args, 2 ); // borrowed ref?
+       if( !py_section_name || !PyString_Check( py_section_name ) ) {
+        ostringstream err;
+        err << "Invalid argument 1 to function H3D.addProgramSettings. Should be string.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+       }
+       section_name = PyString_AsString( py_section_name );
+     }
+
+     // TODEO
+     Scene::addProgramSetting( field, setting_name, section_name );
+
+     Py_INCREF(Py_None);
+     return Py_None; 
+   }
   }
 }
 

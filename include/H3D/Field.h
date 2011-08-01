@@ -308,6 +308,22 @@ namespace H3D {
     /// If true, access type checks will be done when getting/setting
     /// values and setting up routes. If false, everything will be allowed.
     bool access_check_on;
+
+    friend class Scene;
+
+    /// Returns true if this field is part of program settings fields
+   /// in scene.
+    bool isProgramSetting() {
+      return is_program_setting;
+    }
+
+    /// Set it this field is used by program settings fields in scene
+    /// or not.
+    void markProgramSetting( bool used_as_setting ) {
+      is_program_setting = used_as_setting;
+    }
+
+    bool is_program_setting;
   };
 
   /// This is a field which value can be set by a string from the X3D 

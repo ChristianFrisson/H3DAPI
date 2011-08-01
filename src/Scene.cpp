@@ -63,6 +63,8 @@ using namespace H3D;
 
 H3DUtil::MutexLock Scene::callback_lock;
 Scene::CallbackList Scene::callbacks;
+Scene::ProgramSettingsCallbackList Scene::program_settings_callbacks;
+Scene::ProgramSettings Scene::program_settings;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase Scene::database( 
@@ -147,7 +149,7 @@ void Scene::idle() {
           rp->multiPassTransparency->getValue() );
       } else {
         X3DAppearanceNode::setDefaultUsingMultiPassTransparency( true );
-	}
+        }
    }
   }
 
@@ -389,4 +391,98 @@ void Scene::loadSceneRoot( const string &url ) {
 
 void Scene::setSceneRoot( SAI::SAIScene *scene ) {
   SAI_browser.replaceWorld( scene );
+}
+
+
+void Scene::addProgramSetting( Field *field,
+                               const string &name,
+                               const string &section ) {
+  string setting_name = name == "" ? field->getName() : name;
+  program_settings.push_back( ProgramSetting( field, setting_name, section ) );
+  field->markProgramSetting( true );
+  for( ProgramSettingsCallbackList::iterator i = program_settings_callbacks.begin();
+       i != program_settings_callbacks.end(); i++ ) {
+    (*i).first( ADD_SETTING, program_settings.back(), (*i).second );
+  }
+}
+
+bool Scene::removeProgramSetting( const string &name,
+                                  const string &section ) {
+  Field *f = getProgramSetting( name, section );
+  return Scene::removeProgramSetting( f );
+}
+
+
+Field *Scene::getProgramSetting( const string &name,
+                                 const string &section ) {
+  Field *f = NULL;
+  for( Scene::SettingsIterator i = program_settings.begin();
+         i != program_settings.end(); i++ ) {
+    const Scene::ProgramSetting &setting = *i;
+    if( setting.name == name &&
+        setting.section== section ) {
+      f = setting.field;
+      break;
+    }
+  }
+  return f;
+}
+
+
+Scene::SettingsIterator Scene::programSettingsBegin() {
+  return program_settings.begin();
+}
+
+/// Get an iterator to the end of the program settings. 
+Scene::SettingsIterator Scene::programSettingsEnd() {
+  return program_settings.end();
+}
+
+Scene::ProgramSettingsCallbackId Scene::addProgramSettingsCallback( ProgramSettingsCallbackFunc func, 
+                                                             void *data ) {
+  program_settings_callbacks.push_back( make_pair( func, data ) );
+  return program_settings_callbacks.back();
+}
+
+bool Scene::removeProgramSettingsCallback( Scene::ProgramSettingsCallbackId id ) {
+  ProgramSettingsCallbackList::iterator i = 
+    std::find( 
+               program_settings_callbacks.begin(), 
+               program_settings_callbacks.end(), id );
+  if( i != program_settings_callbacks.end() ) {
+    program_settings_callbacks.erase( i );
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void Scene::clearProgramSettingsCallbacks() {
+  program_settings_callbacks.clear();
+}
+
+/// Remove all program settings referring to a field. 
+///
+
+bool Scene::removeProgramSetting( Field *field ) {
+  bool removed = false;
+  for( Scene::SettingsIterator i = program_settings.begin();
+         i != program_settings.end(); i++ ) {
+    Scene::ProgramSetting setting = *i;
+    if( setting.field == field ) {
+      program_settings.erase( i );
+      field->markProgramSetting( false );
+      removed = true;
+      // call callbacks
+      for( ProgramSettingsCallbackList::iterator i = program_settings_callbacks.begin();
+           i != program_settings_callbacks.end(); i++ ) {
+        (*i).first( REMOVE_SETTING, setting, (*i).second );
+      }
+      
+      // remove any more existants of field
+      Scene::removeProgramSetting( field );
+      break;
+    }
+  }
+  return removed;
 }
