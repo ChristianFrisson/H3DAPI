@@ -34,7 +34,6 @@
 #include <H3D/X3DCoordinateNode.h>
 #include <H3D/X3DColorNode.h>
 #include <H3D/CoordBoundField.h>
-#include <H3D/IndexedLineSet.h>
 #include <H3D/MFInt32.h>
 #include <H3D/FogCoordinate.h>
 

@@ -28,6 +28,7 @@
 
 #include <H3D/Field.h>
 #include <H3D/Node.h>
+#include <H3D/Scene.h>
 #include <algorithm>
 
 #ifdef DEBUG

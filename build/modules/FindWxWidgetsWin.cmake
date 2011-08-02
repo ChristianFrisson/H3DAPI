@@ -26,7 +26,7 @@ MARK_AS_ADVANCED(wxWidgets_INCLUDE_DIR)
 IF(wxWidgets_USE_LIBS)
   SET(wxlibs ${wxWidgets_USE_LIBS})
 ELSE(wxWidgets_USE_LIBS)
-  SET( wxlibs core adv aui html media xrc dbgrid gl qa richtext )
+  SET( wxlibs core adv aui html media xrc gl qa richtext )
 ENDIF(wxWidgets_USE_LIBS)
 
 
