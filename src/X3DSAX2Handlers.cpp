@@ -475,8 +475,8 @@ void X3DSAX2Handlers::handleProgramSettingElement( const Attributes &attrs ) {
 
   const XMLCh *node_name  = NULL;
   const XMLCh *field_name = NULL;
-  const XMLCh *setting_name  = L"";
-  const XMLCh *setting_section  = L"Main settings";  
+  const XMLCh *setting_name  = (XMLCh *)(L"");
+  const XMLCh *setting_section  = (XMLCh *)(L"Main settings");  
 
   // get all the program specific attributes
   for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
