@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -35,6 +35,7 @@
 #include <H3D/SFString.h>
 #include <H3D/SFBool.h>
 #include <H3D/FieldTemplates.h>
+#include <H3D/MFNode.h>
 
 // HAPI includes
 #include <HAPI/RuspiniRenderer.h>
@@ -92,9 +93,6 @@ namespace H3D {
       defaultHapticCameraView->setValue( true );
     }
 
-    /// Returns a new instance of HAPI::OpenHapticsRenderer
-    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
-
     /// The default shape type to use if it has not been specified with
     /// the OpenHapticsOptions node. 
     /// 
@@ -119,6 +117,9 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    /// Returns a new instance of HAPI::OpenHapticsRenderer
+    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
   };
 
   /// \ingroup H3DNodes
@@ -134,14 +135,14 @@ namespace H3D {
       type_name = "GodObjectRenderer";
       database.initFields( this );
     }
-    
+
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database;
+  protected:
     /// Returns a new instance of HAPI::GodObjectRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
       return new HAPI::GodObjectRenderer;
     }
-
-    /// The H3DNodeDatabase for this node.
-    static H3DNodeDatabase database;
   };
 
   /// \ingroup H3DNodes
@@ -159,11 +160,6 @@ namespace H3D {
     /// Constructor.
     RuspiniRenderer( Inst< ProxyRadius > _proxyRadius    = 0);
 
-    /// Returns a new instance of HAPI::RuspiniRenderer
-    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
-      return new HAPI::RuspiniRenderer( proxyRadius->getValue() );
-    }
-
     /// The radius of the proxy in metres.
     /// 
     /// <b>Access type:</b> inputOutput \n
@@ -172,6 +168,11 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    /// Returns a new instance of HAPI::RuspiniRenderer
+    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
+      return new HAPI::RuspiniRenderer( proxyRadius->getValue() );
+    }
   };
 
 #ifdef HAVE_CHAI3D
@@ -187,13 +188,60 @@ namespace H3D {
       database.initFields( this );
     }
 
+  protected:
     /// Returns a new instance of HAPI::Chai3DRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
+  };
+#endif
+
+  /// \ingroup H3DNodes
+  /// \brief Haptics renderer which may contain other haptics renderer nodes.
+  /// One for each haptics layer in the scene should be specified.
+  ///
+  /// The hapticsRenderer field contains a HapticsRendererNode for each layer.
+  /// it is possible to mix and match renderers of different types. If no
+  /// renderer is given for a specific layer then a GodObjectRenderer is
+  /// used.
+  ///
+  /// To add a shape for a specific layer see HapticLayeredGroup.
+  class H3DAPI_API LayeredRenderer: public H3DHapticsRendererNode {
+  public:
+
+    /// MFHapticsRendererNode extends TypedMFNode< H3DHapticsRendererNode >
+    /// in order to change the haptics renderer for the used HAPIHapticsDevice
+    /// when changing H3DHapticsRendererNode.
+    class H3DAPI_API MFHapticsRendererNode: 
+      public TypedMFNode< H3DHapticsRendererNode > {
+    protected:
+      
+      virtual void onAdd( Node *n );
+
+      virtual void onRemove( Node *n );
+    };
+
+    /// Constructor.
+    LayeredRenderer( Inst< MFHapticsRendererNode > _hapticsRenderer = 0 );
+
+    /// Get the haptics renderer to use for a certain layer.
+    virtual HAPI::HAPIHapticsRenderer *
+    getHapticsRenderer( unsigned int layer );
+
+    /// The hapticsRenderer field contains a HapticsRendererNode for each
+    /// layer. it is possible to mix and match renderers of different types.
+    /// If no renderer is given for a specific layer then a GodObjectRenderer 
+    /// is used.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    auto_ptr< MFHapticsRendererNode > hapticsRenderer;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    /// Returns a new instance of HAPI::RuspiniRenderer
+    virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
+      return new HAPI::GodObjectRenderer;
+    }
   };
-#endif
 }
 
 #endif

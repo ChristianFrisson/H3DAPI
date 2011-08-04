@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2011, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -58,6 +58,17 @@ namespace H3D {
         renderers[layer] = getNewHapticsRenderer();
       
       return renderers[layer];
+    }
+
+    /// This function should only be called if the HAPI::HAPIHapticsRenderer
+    /// obtained for the given layer is removed from the HAPIDevice ( and
+    /// therefore destroyed ).
+    /// The reason for having this function is to not accidently leave
+    /// a pointer to the destroyed instance in this node in case the node
+    /// will be used again or elsewhere.
+    virtual void hapticsRendererRemoved( unsigned int layer ) {
+      if( layer < renderers.size() )
+        renderers[layer] = NULL;
     }
 
 
