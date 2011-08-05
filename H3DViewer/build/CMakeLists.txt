@@ -114,6 +114,7 @@ ENDIF(wxWidgets_FOUND)
 # find wx library propgrid
 SET(wxWidgets_USE_LIBS propgrid)	
 SET( wxWidgets_FIND_QUIETLY 1 )
+SET(wxWidgets_FOUND 0)
 
 IF(WIN32)
   FIND_PACKAGE(wxWidgetsWin)
@@ -132,11 +133,12 @@ ELSE(wxWidgets_FOUND)
   ENDIF(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
 
-SET( HAVE_WXPROPGRID ${wxWidgets_FOUND} )
 
-IF( NOT( ${HAVE_WXPROPGRID} ) )
-MESSAGE( STATUS "wxWidgets propgrid not found. Needed for better tree view and program setting choice in H3DViewer. Part of wxWidgets 2.9." )
-ENDIF( NOT( ${HAVE_WXPROPGRID} ) )
+IF(wxWidgets_FOUND)
+  SET( HAVE_WXPROPGRID 1 )
+ELSE(wxWidgets_FOUND )
+  MESSAGE( STATUS "wxWidgets propgrid not found. Needed for better tree view and program setting choice in H3DViewer. Part of wxWidgets 2.9." )
+ENDIF(wxWidgets_FOUND )
 
 
 # Create build files.
