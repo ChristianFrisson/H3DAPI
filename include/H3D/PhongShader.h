@@ -210,7 +210,8 @@ namespace H3D {
                  Inst< SFString        > _backDiffuseColorRampMode = 0,
                  Inst< SFFloat         > _backFresnel = 0,
                  Inst< SFBool          > _backModulateMaps = 0,
-                 Inst< SFBool          > _separateBackColor = 0 );
+                 Inst< SFBool          > _separateBackColor = 0,
+                 Inst< SFString        > _model = 0 );
     
     /// The traverseSG method is specialized to add the 
     /// shaderRequiresTangents user data to the TraverseInfo
@@ -637,6 +638,19 @@ namespace H3D {
     /// 
     /// \dotfile PhongShader_separateBackColor.dot
     auto_ptr< SFBool > separateBackColor;
+
+    /// The shading model to use. Available values:
+    /// "BLINN-PHONG" - modified Phong model using half-vector instead of reflection vector.
+    /// "BLINN-PHONG-EYEATINF" - same as "BLINN-PHONG" with the difference that the eye is assumed
+    /// to be at infinity. 
+    /// "PHONG" - normal phong shading using reflection vector.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "BLINN-PHONG" \n
+    /// <b>Valid values:</b> "PHONG" \n
+    /// 
+    /// \dotfile PhongShader_model.dot
+    auto_ptr< SFString > model;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

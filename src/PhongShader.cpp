@@ -76,6 +76,8 @@ namespace PhongShaderInternals {
   FIELDDB_ELEMENT( PhongShader, backFresnel, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, backModulateMaps, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PhongShader, separateBackColor, INPUT_OUTPUT );
+
+  FIELDDB_ELEMENT( PhongShader, model, INPUT_OUTPUT );
 }
 
 PhongShader::PhongShader( Inst< DisplayList  > _displayList,
@@ -116,7 +118,8 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
                           Inst< SFString        > _backDiffuseColorRampMode,
                           Inst< SFFloat         > _backFresnel,
                           Inst< SFBool          > _backModulateMaps,
-                          Inst< SFBool          > _separateBackColor ) :
+                          Inst< SFBool          > _separateBackColor,
+                          Inst< SFString        > _model  ) :
   H3DGeneratedFragmentShaderNode( _displayList, _metadata, _isSelected, 
                                   _isValid, _activate, _language, _parts, 
                                   _suppressUniformWarnings, _fragmentShaderString,
@@ -151,10 +154,16 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backFresnel( _backFresnel ),
   backModulateMaps( _backModulateMaps ),
   separateBackColor( _separateBackColor ),
-  current_nr_lightsources( 0 ) {
+  current_nr_lightsources( 0 ),
+  model( _model ) {
 
   type_name = "PhongShader";
   database.initFields( this );
+
+  model->addValidValue( "BLINN-PHONG" );
+  model->addValidValue( "PHONG" );
+  model->addValidValue( "BLINN-PHONG-EYEATINF" );
+  model->setValue( "BLINN-PHONG" );
 
   normalMapCoordSpace->addValidValue( "OBJECT" );
   normalMapCoordSpace->addValidValue( "TANGENT" );
@@ -217,6 +226,7 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   backModulateMaps->route( displayList, id );
   backFresnel->route( displayList, id );
   separateBackColor->route( displayList, id );
+  model->route( displayList, id );
 
   ambientMap->route( rebuildShader, id );
   diffuseMap->route( rebuildShader, id );
@@ -229,9 +239,10 @@ PhongShader::PhongShader( Inst< DisplayList  > _displayList,
   diffuseColorRampMode->route( rebuildShader, id );
   specularColorRamp->route( rebuildShader, id );
   specularColorRampMode->route( rebuildShader, id );
-  normalMapMatrix->route( rebuildShader );
+  normalMapMatrix->route( rebuildShader, id );
   fresnel->route( rebuildShader, id );
-  modulateMaps->route( rebuildShader );
+  modulateMaps->route( rebuildShader, id );
+  model->route( rebuildShader, id );
 
   backAmbientMap->route( rebuildShader, id );
   backDiffuseMap->route( rebuildShader, id );
@@ -269,6 +280,7 @@ string fragment_shader_functions =
 "// i is the index of the light\n"
 "vec4 directionalLightPhong(in gl_LightSourceParameters light, \n"
 "                           in vec3 normal, \n"
+"                           in vec3 vertex, \n"
 "                           in float material_shininess,\n"
 "                           in vec4 material_ambient, \n"
 "                           in vec4 material_diffuse, \n"
@@ -284,8 +296,7 @@ string fragment_shader_functions =
 "  float nDotL = dot(normal, light_dir);\n"
 "   \n"
 "  if (nDotL > 0.0) {   \n"
-"    vec3 H = light.halfVector.xyz;\n"
-"    float pf = pow(max(dot(normal,H), 0.0), material_shininess);\n"
+"    float pf = getSpecularMultiplier( light, light_dir, normal, vertex, material_shininess ); \n"
 "    diffuse  += material_diffuse * light.diffuse  * nDotL;\n"
 "    specular += material_specular * light.specular * pf;\n"
 "  }\n"
@@ -314,9 +325,7 @@ string fragment_shader_functions =
 "  float nDotL = dot(normal,L);\n"
 "  \n"
 "  if (nDotL > 0.0) {   \n"
-"    vec3 E = normalize(-vertex);\n"
-"    vec3 R = reflect(-L, normal);\n"
-"    float pf = pow(max(dot(R,E), 0.0), material_shininess);\n"
+"    float pf =  getSpecularMultiplier( light, L, normal, vertex, material_shininess ); \n"
 "    diffuse  += material_diffuse * light.diffuse  * attenuation * nDotL;\n"
 "    specular += material_specular * light.specular * attenuation * pf;\n"
 "  }\n"
@@ -346,9 +355,7 @@ string fragment_shader_functions =
 "  float nDotL = dot(normal,L);\n"
 "  \n"
 "  if (nDotL > 0.0) {   \n"
-"    vec3 E = normalize(-vertex);\n"
-"    vec3 R = reflect(-L, normal);\n"
-"    float pf = pow(max(dot(R,E), 0.0), material_shininess);\n"
+"    float pf = getSpecularMultiplier( light, L, normal, vertex, material_shininess ); \n"
 "    diffuse  += material_diffuse * light.diffuse  * attenuation * nDotL;\n"
 "    specular += material_specular * light.specular * attenuation * pf;\n"
 "  }\n"
@@ -383,11 +390,7 @@ string fragment_shader_functions =
 "    \n"
 "    if (spotEffect > light.spotCosCutoff) {\n"
 "      attenuation *=  pow(spotEffect, light.spotExponent);\n"
-"      \n"
-"      vec3 E = normalize(-vertex);\n"
-"      vec3 R = reflect(-L, normal);\n"
-"      \n"
-"      float pf = pow(max(dot(R,E), 0.0), material_shininess);\n"
+"      float pf = getSpecularMultiplier( light, L, normal, vertex, material_shininess ); \n" 
 "      \n"
 "      diffuse  += material_diffuse * light.diffuse  * attenuation * nDotL;\n"
 "      specular += material_specular * light.specular * attenuation * pf;\n"
@@ -436,11 +439,7 @@ string fragment_shader_functions =
 "    \n" 
 "    if (multiplier > 0.0 ) {\n"
 "      attenuation *= multiplier;\n"
-"      \n"
-"      vec3 E = normalize(-vertex);\n"
-"      vec3 R = reflect(-L, normal);\n"
-"      \n"
-"      float pf = pow(max(dot(R,E), 0.0), material_shininess);\n"
+"      float pf = getSpecularMultiplier( light, L, normal, vertex, material_shininess ); \n" 
 "      \n"
 "      diffuse  += material_diffuse * light.diffuse  * attenuation * nDotL;\n"
 "      specular += material_specular * light.specular * attenuation * pf;\n"
@@ -463,7 +462,7 @@ string fragment_shader_functions =
 "                in vec4 diffuse, \n"
 "                in vec4 specular) {\n"
 "  if (light.position.w == 0.0)\n"
-"    return directionalLightPhong(light, normal, shininess, ambient, diffuse, specular);\n"
+"    return directionalLightPhong(light, normal, vertex, shininess, ambient, diffuse, specular);\n"
 "  else if (light.spotCutoff == 180.0)\n"
 "    return pointLightPhong(light, normal, vertex, shininess, ambient, diffuse, specular);\n"
 "  else\n"
@@ -474,7 +473,35 @@ string fragment_shader_functions =
 /// Get a string with GLSL function definitions to be used by
 /// the generated shader.
 string PhongShader::getFunctionShaderString() {
-  return fragment_shader_functions;
+  stringstream s;
+
+  const string &shader_model = model->getValue();
+  
+  s << "float getSpecularMultiplier( gl_LightSourceParameters light, vec3 light_dir, vec3 normal, vec3 vertex, float shininess ) { " << endl;
+  if( shader_model == "PHONG" ) {
+    s << "   vec3 eye_dir = normalize( -vertex );" << endl;
+    s << "   vec3 R = reflect(-light_dir, normal);" << endl; 
+    s << "   float pf = pow(max(dot(R,eye_dir), 0.0), shininess);" << endl;
+    s << "   return pf; " << endl;
+  } else {
+    if( shader_model != "BLINN-PHONG" && shader_model != "BLINN-PHONG-EYEATINF" ) {
+      Console(4) << "Warning: Unsupported value \" " << shader_model << "\" for model field in PhongShader. Must be \"BLINN-PHONG\", \"BLINN-PHONG-EYEATINF\" or \"PHONG\". " << endl; 
+    }
+    
+    if( shader_model == "BLINN-PHONG-EYEATINF" ) {
+      s << "   vec3 eye_dir = vec3( 0, 0, 1 ); " << endl;
+    } else {
+      s << "   vec3 eye_dir = normalize( -vertex );" << endl;
+    }
+    /*if( shader_model == "GLSL_HALFVECTOR" ) {
+      s << "  vec3 H = normalize(light.halfVector.xyz);" << endl;
+      } else {*/
+    s << "   vec3 H = normalize( eye_dir + light_dir ); " << endl; 
+    s << "  return pow(max(dot(normal,H), 0.0), shininess); " << endl;
+  }
+  s << "}  " << endl;
+  s << fragment_shader_functions;
+  return s.str();
 }
 
 void PhongShader::getAttributes( vector< Attribute > &attributes ) {
@@ -618,29 +645,37 @@ string PhongShader::getFragmentShaderString() {
     s << "      { " << endl;
     // create the variable "light" with all light parameters.
     s << setupLight( light_node, i ) << endl;
-    if( (separateBackColor->getValue() && backSpecularColorRamp->getValue() && backSpecularColorRampMode->getValue() == "LIGHT" ) ||
-        (!separateBackColor->getValue() && specularColorRamp->getValue() && specularColorRampMode->getValue() == "LIGHT") ) {
-      s << "      vec3 H = light.halfVector.xyz;" << endl;
-      s << "      float ramp_coord_specular = pow(max(dot(back_N,H), 0.0), back_shininess);" << endl;
+    bool use_back_specular_color_ramp = 
+      (separateBackColor->getValue() && backSpecularColorRamp->getValue() && backSpecularColorRampMode->getValue() == "LIGHT" ) ||
+      (!separateBackColor->getValue() && specularColorRamp->getValue() && specularColorRampMode->getValue() == "LIGHT");
+
+    bool use_back_diffuse_color_ramp = 
+      (separateBackColor->getValue() && backDiffuseColorRamp->getValue() && backDiffuseColorRampMode->getValue() == "LIGHT" )||
+      (!separateBackColor->getValue() && diffuseColorRamp->getValue() && diffuseColorRampMode->getValue() == "LIGHT" );
+
+    if( use_back_specular_color_ramp || use_back_diffuse_color_ramp ) {
+      if( dynamic_cast< DirectionalLight * >( light_node ) ) {
+        s << "      vec3 light_dir = -normalize(light.position.xyz);" << endl;
+      } else {
+        s << "    vec3 D = light.position.xyz - vertex; " << endl;
+        s << "    vec3 light_dir = normalize(D);" << endl;
+      }
+    }
+
+    if( use_back_specular_color_ramp ) {
+      s << "      float ramp_coord_specular = getSpecularMultiplier( light, light_dir, back_N, vertex, back_shininess ); " << endl;
       if( separateBackColor->getValue() ) {
         s << "      vec4 back_specular_color_ramp = texture2D( " << uniqueShaderName( "back_specular_color_ramp" ) << ", vec2( ramp_coord_specular, 0.5 ) );" << endl;
       } else {
         s << "      vec4 back_specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord_specular, 0.5 ) );" << endl;
-      }
+      } 
       s << "      vec4 back_specular_color_i = back_specular_color * back_specular_color_ramp;" << endl;
     } else {
       s << "      vec4 back_specular_color_i = back_specular_color;" << endl;
     }
   
-    if( (separateBackColor->getValue() && backDiffuseColorRamp->getValue() && backDiffuseColorRampMode->getValue() == "LIGHT" )||
-        (!separateBackColor->getValue() && diffuseColorRamp->getValue() && diffuseColorRampMode->getValue() == "LIGHT" )) {
-      if( dynamic_cast< DirectionalLight * >( light_node ) ) {
-        s << "      vec3 light_dir = normalize(light.position.xyz);" << endl;
-      } else {
-        s << "    vec3 D = light.position.xyz - vertex; " << endl;
-        s << "    vec3 light_dir = normalize(D);" << endl;
-      }
-
+    if( use_back_diffuse_color_ramp ) {
+    
       s << "      float ramp_coord_diffuse = dot(back_N, light_dir);" << endl;
       if( separateBackColor->getValue() ) {
         s << "      vec4 back_diffuse_color_ramp = texture2D( " << uniqueShaderName( "back_diffuse_color_ramp" ) << ", vec2( ramp_coord_diffuse, 0.5 ) );" << endl;
@@ -672,22 +707,28 @@ string PhongShader::getFragmentShaderString() {
     s << "      { " << endl;
     // create the variable "light" with all light parameters.
     s << setupLight( light_node, i ) << endl;
-    if( specularColorRamp->getValue() && specularColorRampMode->getValue() == "LIGHT" ) {
-      s << "      vec3 H = light.halfVector.xyz;" << endl;
-      s << "      float ramp_coord = pow(max(dot(N,H), 0.0), shininess);" << endl;
-      s << "      vec4 specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
-      s << "      vec4 specular_color_i = specular_color * specular_color_ramp;" << endl;
-    } else {
-      s << "      vec4 specular_color_i = specular_color;" << endl;
-    }
 
-    if( diffuseColorRamp->getValue() && diffuseColorRampMode->getValue() == "LIGHT") {
+    bool use_specular_color_ramp = specularColorRamp->getValue() && specularColorRampMode->getValue() == "LIGHT";
+    bool use_diffuse_color_ramp = diffuseColorRamp->getValue() && diffuseColorRampMode->getValue() == "LIGHT";
+
+    if( use_diffuse_color_ramp || use_specular_color_ramp ) {
       if( dynamic_cast< DirectionalLight * >( light_node ) ) {
         s << "      vec3 light_dir = normalize(light.position.xyz);" << endl;
       } else {
         s << "    vec3 D = light.position.xyz - vertex; " << endl;
         s << "    vec3 light_dir = normalize(D);" << endl;
       }
+    }
+
+    if( use_specular_color_ramp ) {
+      s << "      float ramp_coord = getSpecularMultiplier( light, light_dir, N, vertex, shininess ); " << endl; 
+      s << "      vec4 specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
+      s << "      vec4 specular_color_i = specular_color * specular_color_ramp;" << endl;
+    } else {
+      s << "      vec4 specular_color_i = specular_color;" << endl;
+    }
+
+    if( use_diffuse_color_ramp ) {
       s << "      float ramp_coord = dot(N, light_dir);" << endl;
       s << "      vec4 diffuse_color_ramp = texture2D( " << uniqueShaderName( "diffuse_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
       s << "      vec4 diffuse_color_i = diffuse_color * diffuse_color_ramp;" << endl;
@@ -1166,7 +1207,7 @@ string PhongShader::getLightContribution( X3DLightNode *light,
   // directional light
   if( !light || dir_light) {
     // if light is NULL then it is the headlight
-    s << "      final_color += directionalLightPhong( light, " << normal << ", "  << shininess << ", " <<  ambient_color << ", " << diffuse_color << ", " << specular_color << ");" << endl;
+    s << "      final_color += directionalLightPhong( light, " << normal << ", "  << vertex << ", "<< shininess << ", " <<  ambient_color << ", " << diffuse_color << ", " << specular_color << ");" << endl;
   } else {
     // point light
     if( point_light ) {
