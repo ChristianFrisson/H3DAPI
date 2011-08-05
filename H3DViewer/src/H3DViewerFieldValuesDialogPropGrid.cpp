@@ -217,22 +217,9 @@ void H3DViewerFieldValuesPanelPropGrid::OnIdle( wxIdleEvent& event ) {
 }
 
 void H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged( wxPropertyGridEvent& event ) {
-  Field *f = NULL;
   string name( event.GetPropertyName().mb_str() );
   wxPGProperty *property = event.GetProperty();
-
-  if( mode == 0 && displayed_node.get() ) {
-    f = displayed_node->getField( name );
-  } else if( mode == 1 ) {
-    for( Scene::SettingsIterator i = Scene::programSettingsBegin();
-         i != Scene::programSettingsEnd(); i++ ) {
-      Scene::ProgramSetting &setting = *i;
-      if( setting.name == name ) {
-        f = setting.field;    
-        break;
-      }
-    }
-  }
+  Field *f = (Field *)property->GetClientData();
 
   if( f ) {
   wxVariant value = property->GetValue();
@@ -680,6 +667,7 @@ void H3DViewerFieldValuesPanelPropGrid::setupProperty( wxPropertyGrid *FieldValu
   wxPGProperty *p = getPropertyFromField( f, property_name );
 
   if(p) {
+    p->SetClientData( f );
     if( f->getAccessType() != Field::INPUT_ONLY ) {
       PropertyUpdater *updater = new PropertyUpdater(p, default_value, default_value_size );
       f->route( updater );
