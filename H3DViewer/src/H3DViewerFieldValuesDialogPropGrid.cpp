@@ -554,6 +554,13 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
     string field_name = custom_field_name;
     if( field_name.empty() ) field_name = f->getName();
 
+    // we need a unique name for each property or Linux and OSX
+    // versions of wxWidgets will get into an assert. Using a
+    // combination of field name and pointer.
+    stringstream wxprop_name_s;
+    wxprop_name_s << field_name << f;
+    string wxprop_name = wxprop_name_s.str();
+
     bool allow_cell_update = true;
 
    
@@ -573,23 +580,23 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
           choices.Add( wxString( (*i).c_str(), wxConvUTF8 ), index++ );
         }
         
-        property = new wxEnumProperty( field_name.c_str(), wxPG_LABEL, choices );
+        property = new wxEnumProperty( field_name.c_str(), wxprop_name.c_str(), choices );
       } else {
-        property = new H3DLongStringProperty( false, field_name.c_str(), wxPG_LABEL );
+        property = new H3DLongStringProperty( false, field_name.c_str(), wxprop_name.c_str() );
       }
     } else if( x3d_type == X3DTypes::MFSTRING ) {
-      property = new wxArrayStringProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxArrayStringProperty(field_name.c_str(), wxprop_name.c_str());
     } else if( x3d_type == X3DTypes::SFBOOL ) {
-      property = new wxBoolProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxBoolProperty(field_name.c_str(), wxprop_name.c_str());
     } else if( x3d_type == X3DTypes::SFINT32  ) {
-      property = new wxIntProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxIntProperty(field_name.c_str(), wxprop_name.c_str());
       if( f->getAccessType() == Field::INPUT_OUTPUT ||
           f->getAccessType() == Field::INPUT_ONLY ) {
         property->SetEditor( "SpinCtrl" );
       }
     } else if( x3d_type == X3DTypes::SFFLOAT || x3d_type == X3DTypes::SFDOUBLE || x3d_type == X3DTypes::SFTIME  ) {
       //wxPG_FLOAT_PRECISION
-      property = new wxFloatProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxFloatProperty(field_name.c_str(), wxprop_name.c_str());
       if( f->getAccessType() == Field::INPUT_OUTPUT ||
           f->getAccessType() == Field::INPUT_ONLY ) {
         property->SetEditor( "SpinCtrl" );
@@ -599,22 +606,22 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
 #ifdef USE_VECTOR_PROPERTIES
     else if( x3d_type == X3DTypes::SFVEC2F || x3d_type == X3DTypes::SFVEC2D) {
       wxString labels[] = {wxT("x"), wxT("y")};
-      property = new wxVectorProperty(field_name.c_str(), wxPG_LABEL, wxArrayString( 2, labels ), H3DwxVector(2), !is_readonly_field );
+      property = new wxVectorProperty(field_name.c_str(), wxprop_name.c_str(), wxArrayString( 2, labels ), H3DwxVector(2), !is_readonly_field );
     } else if( x3d_type == X3DTypes::SFVEC3F || x3d_type == X3DTypes::SFVEC3D) {
       wxString labels[] = {wxT("x"), wxT("y"), wxT( "z" )};
-      property = new wxVectorProperty(field_name.c_str(), wxPG_LABEL, wxArrayString( 3, labels ), H3DwxVector(3), !is_readonly_field );
+      property = new wxVectorProperty(field_name.c_str(), wxprop_name.c_str(), wxArrayString( 3, labels ), H3DwxVector(3), !is_readonly_field );
     } else if( x3d_type == X3DTypes::SFVEC4F || x3d_type == X3DTypes::SFVEC4D) {
       wxString labels[] = {wxT("x"), wxT("y"), wxT( "z" ), wxT( "w" ) };
-      property = new wxVectorProperty(field_name.c_str(), wxPG_LABEL, wxArrayString( 4, labels ), H3DwxVector(4), !is_readonly_field  );
+      property = new wxVectorProperty(field_name.c_str(), wxprop_name.c_str(), wxArrayString( 4, labels ), H3DwxVector(4), !is_readonly_field  );
     } else if( x3d_type == X3DTypes::SFROTATION /*|| x3d_type == X3DTypes::SFROTATIOND*/ ) {
       wxString labels[] = {wxT("axis.x"), wxT("axis.y"), wxT( "axis.z" ), wxT("angle") };
-      property = new wxVectorProperty(field_name.c_str(), wxPG_LABEL, wxArrayString( 4, labels ), H3DwxVector(4), !is_readonly_field  );
+      property = new wxVectorProperty(field_name.c_str(), wxprop_name.c_str(), wxArrayString( 4, labels ), H3DwxVector(4), !is_readonly_field  );
     } 
 #endif //USE_VECTOR_PROPERTIES
     else if( x3d_type == X3DTypes::SFCOLOR ) {
-      property = new wxColourProperty(field_name.c_str(), wxPG_LABEL);
+      property = new wxColourProperty(field_name.c_str(), wxprop_name.c_str());
     } else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
-      property = new H3DLongStringProperty( false, field_name.c_str(), wxPG_LABEL );
+      property = new H3DLongStringProperty( false, field_name.c_str(), wxprop_name.c_str() );
     }
   }
 
