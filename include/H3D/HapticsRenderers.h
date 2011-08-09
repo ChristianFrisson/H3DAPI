@@ -188,6 +188,9 @@ namespace H3D {
       database.initFields( this );
     }
 
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database;
+
   protected:
     /// Returns a new instance of HAPI::Chai3DRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer();
