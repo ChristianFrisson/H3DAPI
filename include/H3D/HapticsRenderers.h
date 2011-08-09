@@ -204,6 +204,9 @@ namespace H3D {
   /// used.
   ///
   /// To add a shape for a specific layer see HapticLayeredGroup.
+  /// \todo Test that onAdd and onRemove works fine when a layeredrenderer
+  /// is the active renderer to use (and not just switched for another
+  /// renderer ) and hapticsRenderer field is changed.
   class H3DAPI_API LayeredRenderer: public H3DHapticsRendererNode {
   public:
 
@@ -226,6 +229,19 @@ namespace H3D {
     virtual HAPI::HAPIHapticsRenderer *
     getHapticsRenderer( unsigned int layer );
 
+    /// This function should only be called if the HAPI::HAPIHapticsRenderer
+    /// obtained for the given layer is removed from the HAPIDevice ( and
+    /// therefore destroyed ).
+    /// The reason for having this function is to not accidently leave
+    /// a pointer to the destroyed instance in this node in case the node
+    /// will be used again or elsewhere.
+    virtual void hapticsRendererRemoved( unsigned int layer ) {
+      hapticsRendererRemovedInternal( layer );
+      if( layer < hapticsRenderer->size() )
+        hapticsRenderer->getValueByIndex( layer )->
+          hapticsRendererRemoved( 0 );
+    }
+
     /// The hapticsRenderer field contains a HapticsRendererNode for each
     /// layer. it is possible to mix and match renderers of different types.
     /// If no renderer is given for a specific layer then a GodObjectRenderer 
@@ -240,6 +256,17 @@ namespace H3D {
     /// Returns a new instance of HAPI::RuspiniRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
       return new HAPI::GodObjectRenderer;
+    }
+
+    void hapticsRendererRemovedInternal( unsigned int layer, bool erase = false ) {
+      if( erase ) {
+        if( layer < renderers.size() ) {
+          vector< HAPI::HAPIHapticsRenderer * >::iterator i = renderers.begin();
+          i += layer;
+          renderers.erase( i );
+        }
+      } else
+        H3DHapticsRendererNode::hapticsRendererRemoved( layer );
     }
   };
 }

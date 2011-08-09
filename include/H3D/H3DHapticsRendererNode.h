@@ -67,8 +67,9 @@ namespace H3D {
     /// a pointer to the destroyed instance in this node in case the node
     /// will be used again or elsewhere.
     virtual void hapticsRendererRemoved( unsigned int layer ) {
-      if( layer < renderers.size() )
+      if( layer < renderers.size() ) {
         renderers[layer] = NULL;
+      }
     }
 
 

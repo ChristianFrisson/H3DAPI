@@ -216,10 +216,28 @@ HAPI::HAPIHapticsRenderer * LayeredRenderer::getHapticsRenderer(
   return renderers[layer];
 }
 
+struct LayeredRendererCallbackSafeData {
+public:
+  LayeredRendererCallbackSafeData( int _index,
+    HAPI::HAPIHapticsDevice * _hapi_device,
+    HAPI::HAPIHapticsRenderer * _current_renderer ) :
+    index( _index ),
+    current_renderer( _current_renderer ),
+    hapi_device( _hapi_device )
+  {
+  }
+
+  int index;
+  HAPI::HAPIHapticsDevice * hapi_device;
+  HAPI::HAPIHapticsRenderer * current_renderer;
+};
+
 PeriodicThread::CallbackCode setHapticsRendererSafe( void *data ) {
-  pair< HAPI::HAPIHapticsDevice *, unsigned int > * d =
-    static_cast< pair< HAPI::HAPIHapticsDevice *, unsigned int > * >(data);
-  d->first->setHapticsRenderer( NULL, d->second );
+  LayeredRendererCallbackSafeData * d =
+    static_cast< LayeredRendererCallbackSafeData * >(data);
+  if( d->hapi_device->getHapticsRenderer( d->index ) ==
+      d->current_renderer )
+    d->hapi_device->setHapticsRenderer( NULL, d->index );
   return PeriodicThread::CALLBACK_DONE;
 }
 
@@ -227,7 +245,10 @@ void LayeredRenderer::MFHapticsRendererNode::onAdd( Node *n ) {
   TypedMFNode< H3DHapticsRendererNode >::onAdd( n );
   LayeredRenderer *layered_renderer =
     static_cast< LayeredRenderer * >( getOwner() );
-  layered_renderer->hapticsRendererRemoved( value.size() );
+  HAPI::HAPIHapticsRenderer *current_hapi_renderer =
+    value.size() < layered_renderer->renderers.size() ?
+      layered_renderer->renderers[value.size()] : NULL;
+  layered_renderer->hapticsRendererRemovedInternal( value.size() );
   DeviceInfo * di = DeviceInfo::getActive();
   if( di ) {
     const NodeVector &devices = di->device->getValue();
@@ -245,8 +266,7 @@ void LayeredRenderer::MFHapticsRendererNode::onAdd( Node *n ) {
             // be so that a user specifies less renderers than there are layers and
             // there might be a default GodObjectRenderer for the layer for which
             // this added node should be used.
-            pair< HAPI::HAPIHapticsDevice *, unsigned int >
-              data( hapi_device, value.size() );
+            LayeredRendererCallbackSafeData data( value.size(), hapi_device, current_hapi_renderer );
             ht->synchronousCallback ( &setHapticsRendererSafe, &data );
           }
         }
@@ -274,14 +294,16 @@ void LayeredRenderer::MFHapticsRendererNode::onRemove( Node *n ) {
   }
   for( unsigned int i = 0; i < size(); i++ ) {
     if( value[i] == n ) {
-      layered_renderer->hapticsRendererRemoved( i );
+      layered_renderer->hapticsRendererRemovedInternal( i, true );
+      HAPI::HAPIHapticsRenderer *current_hapi_renderer =
+        i < layered_renderer->renderers.size() ?
+          layered_renderer->renderers[i] : NULL;
       static_cast< H3DHapticsRendererNode *>(n)->hapticsRendererRemoved(0);
       for( unsigned int j = 0; j < renderer_in_these_devices.size(); j++ ) {
         if( HAPI::HAPIHapticsDevice* hapi_device =
             renderer_in_these_devices[j]->getHAPIDevice() ) {
           if ( PeriodicThreadBase* ht= hapi_device->getThread() ) {
-            pair< HAPI::HAPIHapticsDevice *, unsigned int >
-              data( hapi_device, i );
+            LayeredRendererCallbackSafeData data( i, hapi_device, current_hapi_renderer );
             ht->synchronousCallback ( &setHapticsRendererSafe, &data );
           }
         }
