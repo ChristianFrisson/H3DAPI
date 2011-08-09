@@ -251,7 +251,7 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   bool * shader_requires_tangents = NULL;
   if( !ti.getUserData( "shaderRequiresTangents", 
                        (void **)&shader_requires_tangents) ) {
-    shader_requires_tangents = false;
+    *shader_requires_tangents = false;
   }
 }
 

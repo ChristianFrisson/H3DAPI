@@ -617,7 +617,8 @@ void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
   bool * shader_requires_tangents = NULL;
   if( !render_tangents && 
       !ti.getUserData( "shaderRequiresTangents", 
-                       (void **)&shader_requires_tangents) ) {
+                       (void **)&shader_requires_tangents) &&
+      *shader_requires_tangents ) {
     render_tangents = true;
     displayList->breakCache();
   }
