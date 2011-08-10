@@ -454,6 +454,7 @@ void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
 }
 
 void IndexedTriangleSet::AutoNormal::update() {
+ // Console(4) << "Calculating normals" << endl;
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
   X3DCoordinateNode *coord = 
@@ -481,14 +482,54 @@ void IndexedTriangleSet::AutoTangent::update() {
     static_cast< X3DTextureCoordinateNode * >( static_cast< SFTextureCoordinateNode * >
                                                ( routes_in[3] )->getValue() );
 
-  if( value.empty() ) {
-    value.push_back( new FloatVertexAttribute );
-    value.push_back( new FloatVertexAttribute );
+  IndexedTriangleSet *its = static_cast< IndexedTriangleSet * >( getOwner() );
+
+  bool have_tangents_in_attrib = false; 
+  bool have_binormals_in_attrib = false; 
+  
+  for( unsigned int i = 0; i < its->attrib->size(); i++ ) {
+    X3DVertexAttributeNode *attr = its->attrib->getValueByIndex( i );
+    if( attr ) {
+      const string &name = attr->name->getValue();
+      if( name == "tangent" ) have_tangents_in_attrib = true; 
+      if( name == "binormal" ) have_binormals_in_attrib = true; 
+    }
   }
 
-  FloatVertexAttribute *tangent = static_cast< FloatVertexAttribute * >(value[0]);
-  FloatVertexAttribute *binormal = static_cast< FloatVertexAttribute * >(value[1]);
-  
+  if( have_tangents_in_attrib && have_tangents_in_attrib ) {
+    value.clear();
+    return;
+  }
+
+  FloatVertexAttribute *tangent = NULL;
+  FloatVertexAttribute *binormal = NULL;
+
+  unsigned int nr_attribs_used = 0;
+
+  if( !have_tangents_in_attrib ) {
+    if( value.size() > 0 ) {
+      tangent = static_cast< FloatVertexAttribute * >(value[0]);
+    } else {
+      tangent = new FloatVertexAttribute;
+      value.push_back( tangent );
+    }
+    nr_attribs_used++;
+    //Console(4) << "Calculating tangents" << endl;
+  }
+
+  if( !have_binormals_in_attrib ) {
+    unsigned int i = nr_attribs_used;
+    
+    if( value.size() > i ) {
+      binormal = static_cast< FloatVertexAttribute * >(value[i]);
+    } else {
+      binormal = new FloatVertexAttribute;
+      value.push_back( binormal );
+    }
+    
+    //Console(4) << "Calculating binormal" << endl;
+  }
+
   if( normals_per_vertex ) 
     generateTangentsPerVertex( coord, tex_coord, index, tangent, binormal );
   else
@@ -587,12 +628,17 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
                                                            const vector< int > &index,
                                                            FloatVertexAttribute *tangent_node,
                                                            FloatVertexAttribute *binormal_node) {
-  tangent_node->name->setValue( "tangent" );
-  tangent_node->numComponents->setValue( 3 );
-  tangent_node->value->clear();
-  binormal_node->name->setValue( "binormal" );
-  binormal_node->numComponents->setValue( 3 );
-  binormal_node->value->clear();
+  if( tangent_node ) {
+    tangent_node->name->setValue( "tangent" );
+    tangent_node->numComponents->setValue( 3 );
+    tangent_node->value->clear();
+  }
+
+  if( binormal_node ) {
+    binormal_node->name->setValue( "binormal" );
+    binormal_node->numComponents->setValue( 3 );
+    binormal_node->value->clear();
+  }
 
   if( coord ) {
     // the tangent and binormal for a vertex is the average of the tangent
@@ -618,6 +664,7 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
         calculateTangent( a, b, c,
                           ta, tb, tc,
                           tangent, binormal );
+
       }
 
       tangents[index[ j     ]*3   ] += tangent.x;
@@ -639,7 +686,8 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
       binormals[index[ j + 2 ]*3   ] += binormal.x;
       binormals[index[ j + 2 ]*3+1 ] += binormal.y;
       binormals[index[ j + 2 ]*3+2 ] += binormal.z;
-    }
+ 
+     }
     
     for( unsigned int i = 0; i < tangents.size(); i+=3 ) {
       Vec3f t( tangents[i], tangents[i+1], tangents[i+2] );
@@ -654,8 +702,26 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
       binormals[i+2] = b.z;
     }
 
-    tangent_node->value->setValue( tangents );
-    binormal_node->value->setValue( binormals );
+    /*
+    cerr << "Tangents: " ;
+    for( unsigned int i = 0; i < tangents.size(); i++ ) {
+      cerr << tangents[i] << " ";
+    }
+    cerr << endl;
+    cerr << "Binormal: ";
+    for( unsigned int i = 0; i < binormals.size(); i++ ) {
+      cerr << binormals[i] << " ";
+    }
+    cerr << endl;
+    */
+
+    if( tangent_node ) {
+      tangent_node->value->setValue( tangents );
+    }
+
+    if( binormal_node ) {
+      binormal_node->value->setValue( binormals );
+    }
   }
 }
 
@@ -666,12 +732,17 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerFace(
                                                               FloatVertexAttribute *tangent_node,
                                                               FloatVertexAttribute *binormal_node ) {
 
-  tangent_node->name->setValue( "tangent" );
-  tangent_node->numComponents->setValue( 3 );
-  tangent_node->value->clear();
-  binormal_node->name->setValue( "binormal" );
-  binormal_node->numComponents->setValue( 3 );
-  binormal_node->value->clear();
+  if( tangent_node ) {
+    tangent_node->name->setValue( "tangent" );
+    tangent_node->numComponents->setValue( 3 );
+    tangent_node->value->clear();
+  }
+  
+  if( binormal_node ) {
+    binormal_node->name->setValue( "binormal" );
+    binormal_node->numComponents->setValue( 3 );
+    binormal_node->value->clear();
+  }
 
   if( coord ) {
     vector< float > tangents;
@@ -721,8 +792,14 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerFace(
 
     }
 
-    tangent_node->value->setValue( tangents );
-    binormal_node->value->setValue( binormals );
+
+    if( tangent_node ) {
+      tangent_node->value->setValue( tangents );
+    }
+
+    if( binormal_node ) {
+      binormal_node->value->setValue( binormals );
+    }
   }
 }
 
