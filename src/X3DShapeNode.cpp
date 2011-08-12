@@ -231,6 +231,14 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
       displayList->breakCache();
     }
   }
+
+  bool * shader_requires_tangents = NULL;
+  bool requires_tangents = false;
+
+  if( !ti.getUserData( "shaderRequiresTangents", (void **)&shader_requires_tangents) ) {
+    requires_tangents  = *shader_requires_tangents;
+  }
+
   if( hg ) {
     // temporarily disable all haptics for the normal geometry
     // and only allow it to be enabled for the haptic geometry. 
@@ -238,7 +246,13 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
     ti.disableHaptics();
     if ( g ) g->traverseSG( ti );
     ti.setHapticsEnabled( prev_enabled );
+
+    // we temporarily disable tangents so they are not calculated 
+    // unnecessarily by haptic geometry (when using OpenGL to find
+    // haptic triangles). 
+    *shader_requires_tangents = false;
     hg->traverseSG( ti );
+    *shader_requires_tangents = requires_tangents;
   } else {
     if ( g ) g->traverseSG( ti );
   }
@@ -248,9 +262,7 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
 
   // reset shaderRequiresTangents to false if available(set in
   // PhongShader).
-  bool * shader_requires_tangents = NULL;
-  if( !ti.getUserData( "shaderRequiresTangents", 
-                       (void **)&shader_requires_tangents) ) {
+  if( shader_requires_tangents ) {
     *shader_requires_tangents = false;
   }
 }
