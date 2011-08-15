@@ -1161,8 +1161,8 @@ string PhongShader::setupLight( X3DLightNode *light,
       s << "      light.position = light_transform * vec4( -" << uniqueLightFieldName( "direction", light ) <<  ", 0.0 ); " << endl;
       s << "      light.spotCutoff = 180.0; " << endl;
       s << "      light.spotCosCutoff = -1.0; " << endl;
-      s << "      vec3 light_dir = normalize(light.position.xyz);" << endl;
-      s << "      light.halfVector = vec4( normalize( light_dir + vec3( 0.0, 0.0, 1.0 ) ), 0.0 ); " << endl;
+      s << "      vec3 light_direction = normalize(light.position.xyz);" << endl;
+      s << "      light.halfVector = vec4( normalize( light_direction + vec3( 0.0, 0.0, 1.0 ) ), 0.0 ); " << endl;
     } else if( point_light || spot_light ) {
       s << "      light.position = light_transform * vec4( " << uniqueLightFieldName( "location", light ) <<  ", 1.0 ); " << endl;
       s << "      vec3 attenuation = " << uniqueLightFieldName( "attenuation", light ) << "; " << endl;
