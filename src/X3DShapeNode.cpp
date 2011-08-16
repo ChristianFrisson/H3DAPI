@@ -249,10 +249,12 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
 
     // we temporarily disable tangents so they are not calculated 
     // unnecessarily by haptic geometry (when using OpenGL to find
-    // haptic triangles). 
-    *shader_requires_tangents = false;
+    // haptic triangles).
+    if( shader_requires_tangents )
+      *shader_requires_tangents = false;
     hg->traverseSG( ti );
-    *shader_requires_tangents = requires_tangents;
+    if( shader_requires_tangents )
+      *shader_requires_tangents = requires_tangents;
   } else {
     if ( g ) g->traverseSG( ti );
   }
