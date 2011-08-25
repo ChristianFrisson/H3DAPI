@@ -296,7 +296,7 @@ namespace H3D {
                       Inst< MFVec3f         > _proxyPositions         = 0,
                       Inst< SFBool          > _followViewpoint        = 0,
                       Inst< SFVec3f         > _deviceVelocity         = 0,
-                      Inst< TrackerVelocity > _trackerVelocity         = 0);
+                      Inst< TrackerVelocity > _trackerVelocity         = 0 );
 
     /// Destuctor.
     virtual ~H3DHapticsDevice() {
@@ -641,6 +641,26 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_trackerVelocity.dot
     auto_ptr< TrackerVelocity >  trackerVelocity;
+
+    /// The maximum force(in N) we want the device to render. Any forces larger
+    /// than the specified value will be clamped the the forceLimit
+    /// length. A negative value means no limit.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> -1 \n
+    /// 
+    /// \dotfile H3DHapticsDevice_forceLimit.dot    
+    auto_ptr< SFFloat > forceLimit;
+
+    /// The maximum torque(in Nm) we want the device to render. Any torques larger
+    /// than the specified value will be clamped the the torqueLimit
+    /// length. A negative value means no limit.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> -1 \n
+    /// 
+    /// \dotfile H3DHapticsDevice_torqueLimit.dot  
+    auto_ptr< SFFloat > torqueLimit;
     
     /// Node database entry
     static H3DNodeDatabase database;

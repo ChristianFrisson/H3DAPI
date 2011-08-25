@@ -73,6 +73,8 @@ namespace H3DHapticsDeviceInternals {
   FIELDDB_ELEMENT( H3DHapticsDevice, deviceVelocity, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, trackerVelocity, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, hapticsLoopTime, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DHapticsDevice, forceLimit, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DHapticsDevice, torqueLimit, INPUT_OUTPUT );
 }
 
 
@@ -101,7 +103,7 @@ H3DHapticsDevice::H3DHapticsDevice(
                Inst< MFVec3f         > _proxyPositions,
                Inst< SFBool          > _followViewpoint,
                Inst< SFVec3f         > _deviceVelocity,
-               Inst< TrackerVelocity > _trackerVelocity):
+               Inst< TrackerVelocity > _trackerVelocity ):
   devicePosition( _devicePosition ),
   deviceOrientation( _deviceOrientation ),
   trackerPosition( _trackerPosition ),
@@ -132,6 +134,8 @@ H3DHapticsDevice::H3DHapticsDevice(
   followViewpoint( _followViewpoint ),
   deviceVelocity( _deviceVelocity ),
   trackerVelocity( _trackerVelocity ),
+  forceLimit( new SFFloat ),
+  torqueLimit( new SFFloat ),
   error_msg_printed( false ) {
 
   type_name = "H3DHapticsDevice";  
@@ -150,6 +154,9 @@ H3DHapticsDevice::H3DHapticsDevice(
   hapticsLoopTime->setValue( 0, id );
   inputDOF->setValue( 3, id );
   outputDOF->setValue( 3, id );
+  forceLimit->setValue( -1, id );
+  torqueLimit->setValue( -1, id );
+
   // Even though this is an input only field a default value
   // should be set to false since onValueChanged is used which is
   // called if value changes state, so set_enable must have the same
@@ -278,6 +285,9 @@ void H3DHapticsDevice::updateDeviceValues() {
   last_update_values = now;
 
   if( hapi_device.get() ) {
+    hapi_device->setForceLimit( forceLimit->getValue() );
+    hapi_device->setTorqueLimit( torqueLimit->getValue() );
+
     X3DViewpointNode *vp = X3DViewpointNode::getActive();
     vp = H3DNavigation::viewpointToUse( vp, 0 );
     if( followViewpoint->getValue() && vp ) {
