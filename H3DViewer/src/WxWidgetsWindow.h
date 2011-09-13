@@ -205,6 +205,8 @@ namespace H3D {
 #endif
 	bool last_fullscreen;
 
+  bool fullscreen_initialized;
+
   private:
       string viewpoint_file;
   };

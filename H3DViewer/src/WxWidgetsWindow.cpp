@@ -67,7 +67,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   drag_file_func_arg( NULL ),
   is_initialized( false ),
   use_h3d_settings( true ),
-  theWxGLCanvas( NULL ) {
+  theWxGLCanvas( NULL ),
+  fullscreen_initialized ( false ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
   
@@ -169,7 +170,7 @@ void WxWidgetsWindow::initWindow() {
 }
 
 void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
-  if( last_fullscreen != fullscreen ) {
+  if ( last_fullscreen != fullscreen || !fullscreen_initialized ) {
     wxTopLevelWindow * tlw = dynamic_cast< wxTopLevelWindow * >(theWindow);
 #ifndef MACOSX
     //TODO: fullscreen does not work well on macosx
@@ -177,6 +178,7 @@ void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
       tlw->ShowFullScreen(fullscreen);
 #endif
     last_fullscreen = fullscreen;
+    fullscreen_initialized= true;
   }
 }
 
