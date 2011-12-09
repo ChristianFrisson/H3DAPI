@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/X3DTexture3DNode.h>
+#include <H3DUtil/Image.h>
 
 using namespace H3D;
 
@@ -86,6 +87,37 @@ X3DTexture3DNode::X3DTexture3DNode(
   textureProperties->route( displayList );
 }
 
+string X3DTexture3DNode::SFImage::getValueAsString( const string& separator) {
+  // Slow but convenient. is only used for JS engine
+
+  stringstream ss;
+  Image* img = getValue();
+  if( img ) {
+    ss << img->width() << separator << img->height() << separator << img->depth()
+       << separator << (int)img->pixelType() + 1;
+    for(unsigned int ix = 0; ix < img->width(); ix++) {
+      for(unsigned int iy = 0; iy < img->height(); iy++) {
+        for(unsigned int iz = 0; iz < img->depth(); iz++) {
+          RGBA color = img->getPixel( ix, iy, iz );
+          unsigned char bytes_per_pixel = img->pixelType() + 1;
+          unsigned char* data = new unsigned char[ bytes_per_pixel ];
+          img->RGBAToImageValue(color, (void*) data);
+          int intval = 0;
+          for (int i = 0; i < bytes_per_pixel; i++) {
+            intval = intval << 8;
+            intval = intval | data[i];
+          }
+          delete data;
+          ss<< separator << intval;
+        }
+      }
+    }
+  } else {
+    ss << 0 << separator << 0
+     << separator << 1;
+  }
+  return ss.str();
+}
 
 GLint X3DTexture3DNode::glInternalFormat( Image *i ) {
   TextureProperties *texture_properties = textureProperties->getValue();

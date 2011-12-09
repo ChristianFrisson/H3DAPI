@@ -45,7 +45,18 @@ namespace H3D {
     public H3DSingleTextureNode,
     public H3DImageObject {
   public:
-       
+    /// A SFNode encapsulating an Image class
+    class H3DAPI_API SFImage: public H3DImageObject::SFImage {
+    public:
+      virtual void setValueFromString( const string &s ) {
+        setValue( X3D::X3DStringTo2DImage( s ) );
+      }
+
+      virtual string getValueAsString(const string& separator = " ");
+
+      virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFIMAGE; }
+     };
+        
     /// The SFTextureProperties is dependent on the propertyChanged field of
     /// the contained TextureProperties.
     typedef  DependentSFNode< FieldRef<TextureProperties,
