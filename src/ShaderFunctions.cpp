@@ -868,8 +868,8 @@ GLbitfield H3D::Shaders::getAffectedGLAttribs( H3DDynamicFieldsObject *dfo ) {
 
 void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
   GLint nr_textures_supported;
-  glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
-
+  glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
+  X3DTextureNode *active_texture = X3DTextureNode::getActiveTexture();
   unsigned int nr_textures = 0; 
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
        f != dfo->endField(); f++ ) {
@@ -892,16 +892,20 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
         } 
       }
     }
+
     if( nr_textures > nr_textures_supported ) {
-      Console(4) << nr_textures_supported << " " << nr_textures << endl;
+      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
   }
+
+  glActiveTextureARB(GL_TEXTURE0_ARB );
+  X3DTextureNode::setActiveTexture( active_texture );
 }
 
 void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
   GLint nr_textures_supported;
-  glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
+  glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
 
   unsigned int nr_textures = 0; 
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
@@ -926,17 +930,18 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
         } 
       }
     }
+ 
     if( nr_textures > nr_textures_supported ) {
-      Console(4) << nr_textures_supported << " " << nr_textures << endl;
+      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
   }
+  glActiveTextureARB(GL_TEXTURE0_ARB );
 }
 
 void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
   GLint nr_textures_supported;
-  glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
-
+  glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
   unsigned int nr_textures = 0; 
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
        f != dfo->endField(); f++ ) {
@@ -960,9 +965,11 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
         } 
       }
     }
+
     if( nr_textures > nr_textures_supported ) {
-      Console(4) << nr_textures_supported << " " << nr_textures << endl;
+      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
   }
+  glActiveTextureARB(GL_TEXTURE0_ARB );
 }
