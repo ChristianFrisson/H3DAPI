@@ -115,10 +115,12 @@ void TransformInfo::render() {
 
     if( glModelViewMatrix->getValue() != model_view ) {
       glModelViewMatrix->setValue( model_view, id );
+      glModelViewMatrixInverse->setValue( model_view.inverse(), id );
     }
 
     if( glProjectionMatrix->getValue() != projection ) {
       glProjectionMatrix->setValue( projection, id );
+      glProjectionMatrixInverse->setValue( projection.inverse(), id );
     }
   } else {
     displayList->setCacheMode( DisplayList::ON );
