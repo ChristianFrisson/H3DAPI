@@ -51,6 +51,7 @@
 #include <H3D/CollisionOptions.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsHardwareInfo.h>
 
 #include <H3DUtil/TimeStamp.h>
 #include <H3DUtil/Exception.h>
@@ -247,6 +248,8 @@ void H3DWindowNode::initialize() {
       shareRenderingContext( *i );
   }
   
+  GraphicsHardwareInfo::initializeInfo();
+
   // configure OpenGL context for rendering.
   glEnable( GL_DEPTH_TEST );
   glDepthFunc( GL_LESS );
