@@ -7,9 +7,13 @@
 #include <H3D/IndexedTriangleSet.h>
 #include <H3D/Coordinate.h>
 #include <H3D/MatrixTransform.h>
+#include <H3D/X3DTexture2DNode.h>
+#include <H3D/X3DTexture3DNode.h>
 #include <H3D/X3DShapeNode.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
+
+#include <H3DUtil/LoadImageFunctions.h>
 
 /// Callback for collapse all menu choice.
 void H3DViewerPopupMenus::OnTreeViewCollapseAll( wxCommandEvent& event ) {
@@ -69,12 +73,12 @@ void H3DViewerPopupMenus::OnTreeViewSaveX3D( wxCommandEvent& event ) {
                   wxOK | wxICON_EXCLAMATION);
   } else {
     auto_ptr< wxFileDialog > file_dialog ( new wxFileDialog ( this,
-                                                   wxT("File to save as.."),
-                                                   wxT(""),
-                                                   wxT(""),
-                                                   wxT("*.*"),
-                                                   wxFD_SAVE,
-                                                   wxDefaultPosition) );
+                                                              wxT("File to save as.."),
+                                                              wxT(""),
+                                                              wxT(""),
+                                                              wxT("*.*"),
+                                                              wxFD_SAVE,
+                                                              wxDefaultPosition) );
     
     if (file_dialog->ShowModal() == wxID_OK) {
       std::string filename(file_dialog->GetPath().mb_str());
@@ -110,12 +114,12 @@ void H3DViewerPopupMenus::OnTreeViewSaveVRML( wxCommandEvent& event ) {
                   wxOK | wxICON_EXCLAMATION);
   } else {
     auto_ptr< wxFileDialog > file_dialog ( new wxFileDialog ( this,
-                                                   wxT("File to save as.."),
-                                                   wxT(""),
-                                                   wxT(""),
-                                                   wxT("*.*"),
-                                                   wxFD_SAVE,
-                                                   wxDefaultPosition) );
+                                                              wxT("File to save as.."),
+                                                              wxT(""),
+                                                              wxT(""),
+                                                              wxT("*.*"),
+                                                              wxFD_SAVE,
+                                                              wxDefaultPosition) );
 
     if (file_dialog->ShowModal() == wxID_OK) {
       std::string filename(file_dialog->GetPath().mb_str());
@@ -163,12 +167,12 @@ void H3DViewerPopupMenus::OnTreeViewSaveSTL( wxCommandEvent& event ) {
     }
 
     auto_ptr< wxFileDialog > file_dialog( new wxFileDialog ( this,
-                                                   wxT("File to save as.."),
-                                                   wxT(""),
-                                                   wxT(""),
-                                                   wxT("*.*"),
-                                                   wxFD_SAVE,
-                                                   wxDefaultPosition) );
+                                                             wxT("File to save as.."),
+                                                             wxT(""),
+                                                             wxT(""),
+                                                             wxT("*.*"),
+                                                             wxFD_SAVE,
+                                                             wxDefaultPosition) );
 
     if (file_dialog->ShowModal() == wxID_OK) {
       std::string filename(file_dialog->GetPath().mb_str());
@@ -298,9 +302,9 @@ void H3DViewerPopupMenus::OnTreeViewDeleteNode( wxCommandEvent& event ) {
       if( sfnode->getValue() == selected_node ) {
         if( sfnode->getAccessType() == Field::OUTPUT_ONLY ||
             sfnode->getAccessType() == Field::INITIALIZE_ONLY ) {
-           wxMessageBox( wxT("Deletion of node in INITIALIZE_ONLY or OUTPUT_ONLY field not allowed."),
-                         wxT("Error"),
-                         wxOK | wxICON_EXCLAMATION);
+          wxMessageBox( wxT("Deletion of node in INITIALIZE_ONLY or OUTPUT_ONLY field not allowed."),
+                        wxT("Error"),
+                        wxOK | wxICON_EXCLAMATION);
         } else {
           sfnode->setValue( NULL );
         }
@@ -343,21 +347,21 @@ void H3DViewerPopupMenus::OnTreeViewAddChildNode( wxCommandEvent& event ) {
     Field *f = i.getField( selected_node ); 
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
       if( sfnode->getAccessType() == Field::INPUT_ONLY ||
-            sfnode->getAccessType() == Field::INPUT_OUTPUT ) {
-          node_fields.push_back( wxString(sfnode->getName().c_str(),wxConvUTF8) );
+          sfnode->getAccessType() == Field::INPUT_OUTPUT ) {
+        node_fields.push_back( wxString(sfnode->getName().c_str(),wxConvUTF8) );
       } 
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
       if( mfnode->getAccessType() == Field::INPUT_ONLY ||
           mfnode->getAccessType() == Field::INPUT_OUTPUT ) {
-         node_fields.push_back( wxString(mfnode->getName().c_str(), wxConvUTF8) );
+        node_fields.push_back( wxString(mfnode->getName().c_str(), wxConvUTF8) );
       }
     }
   }
   
   if( node_fields.empty() ) {
-     wxMessageBox( wxT("Selected node does not have a SFNode or MFNode field."),
-                   wxT("Error"),
-                   wxOK | wxICON_EXCLAMATION);
+    wxMessageBox( wxT("Selected node does not have a SFNode or MFNode field."),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
     return;
   }
 
@@ -383,39 +387,87 @@ void H3DViewerPopupMenus::OnTreeViewAddChildNode( wxCommandEvent& event ) {
   }
 
   wxTextEntryDialog *node_name_dialog = 
-            new wxTextEntryDialog(this, 
-                                  wxT("Enter the name of the node type you want to use" ),
-                                  wxT("Add/replace node" ) );
+    new wxTextEntryDialog(this, 
+                          wxT("Enter the name of the node type you want to use" ),
+                          wxT("Add/replace node" ) );
   if (node_name_dialog->ShowModal() == wxID_OK) {
-     Node *new_node = H3DNodeDatabase::createNode( std::string(node_name_dialog->GetValue().mb_str()) );
-     if( !new_node ) {
-       wxMessageBox( wxT("No such node type exists: " + node_name_dialog->GetValue()),
-                     wxT("Error"),
-                     wxOK | wxICON_EXCLAMATION);
-     } else {
-       Field *f = selected_node->getField( field_to_change );
-       SFNode *sfnode = dynamic_cast< SFNode * >( f );
-       MFNode *mfnode = dynamic_cast< MFNode * >( f );
+    Node *new_node = H3DNodeDatabase::createNode( std::string(node_name_dialog->GetValue().mb_str()) );
+    if( !new_node ) {
+      wxMessageBox( wxT("No such node type exists: " + node_name_dialog->GetValue()),
+                    wxT("Error"),
+                    wxOK | wxICON_EXCLAMATION);
+    } else {
+      Field *f = selected_node->getField( field_to_change );
+      SFNode *sfnode = dynamic_cast< SFNode * >( f );
+      MFNode *mfnode = dynamic_cast< MFNode * >( f );
        
-       if( sfnode ) {
-         AutoRef< Node > old_node( sfnode->getValue() );
-         try { 
-           sfnode->setValue( new_node );
-         } catch (...) {
-           sfnode->setValue( old_node.get() );
-           wxMessageBox( wxT("Invalid node type for field"),
-                         wxT("Error"),
-                         wxOK | wxICON_EXCLAMATION);
-         }
-       } else if( mfnode ) {
-         try { 
-           mfnode->push_back( new_node );
-         } catch (...) {
-            wxMessageBox( wxT("Invalid node type for field"),
-                          wxT("Error"),
-                          wxOK | wxICON_EXCLAMATION);
-         }
-       }
-     }
+      if( sfnode ) {
+        AutoRef< Node > old_node( sfnode->getValue() );
+        try { 
+          sfnode->setValue( new_node );
+        } catch (...) {
+          sfnode->setValue( old_node.get() );
+          wxMessageBox( wxT("Invalid node type for field"),
+                        wxT("Error"),
+                        wxOK | wxICON_EXCLAMATION);
+        }
+      } else if( mfnode ) {
+        try { 
+          mfnode->push_back( new_node );
+        } catch (...) {
+          wxMessageBox( wxT("Invalid node type for field"),
+                        wxT("Error"),
+                        wxOK | wxICON_EXCLAMATION);
+        }
+      }
+    }
   } 
+}
+
+
+/// Callback for node save VRML menu choice.
+void H3DViewerPopupMenus::OnTreeViewSaveNrrd( wxCommandEvent& event ) {
+  wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
+  
+  H3DViewerTreeViewDialog::TreeIdMap::iterator ni = treeview_dialog->node_map.find( id.m_pItem );
+  if( ni == treeview_dialog->node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } else {
+    auto_ptr< wxFileDialog > file_dialog ( new wxFileDialog ( this,
+                                                              wxT("File to save as.."),
+                                                              wxT(""),
+                                                              wxT(""),
+                                                              wxT("*.nrrd"),
+                                                              wxFD_SAVE,
+                                                              wxDefaultPosition) );
+
+    if (file_dialog->ShowModal() == wxID_OK) {
+      try {
+        Node *n = (*ni).second.get();
+        Image *image = NULL;
+        if( X3DTexture2DNode * tex = 
+            dynamic_cast< X3DTexture2DNode * >( n ) ) {
+          image = tex->image->getValue();
+        } else if( X3DTexture3DNode * tex = 
+                   dynamic_cast< X3DTexture3DNode * >( n ) ) {
+          image = tex->image->getValue();
+        }
+ 
+        if( H3DUtil::saveImageAsNrrdFile( string(file_dialog->GetPath().mb_str()),
+                                          image ) != 0 ) {
+          stringstream s;
+          s << "Error saving nrrd file";
+          wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                        wxOK | wxICON_EXCLAMATION);
+        }
+      } catch (const Exception::H3DException &e) {
+        stringstream s;
+        s << e;
+        wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+    }
+  }
 }

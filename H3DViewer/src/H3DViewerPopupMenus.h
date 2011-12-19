@@ -19,7 +19,7 @@ public:
                        long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL ):
     MenuContainer( parent,id, title, pos, size, style ),
     treeview_dialog( _treeview_dialog ) {}
-	
+        
   /// Callback for collapse all menu choice.
   virtual void OnTreeViewCollapseAll( wxCommandEvent& event );
 
@@ -34,6 +34,9 @@ public:
 
   /// Callback for node save x3d menu choice.
   virtual void OnTreeViewSaveX3D( wxCommandEvent& event );
+
+  /// Callback for node save nrrd menu choice.
+  virtual void OnTreeViewSaveNrrd( wxCommandEvent& event );
 
   /// Callback for node save VRML menu choice.
   virtual void OnTreeViewSaveVRML( wxCommandEvent& event );

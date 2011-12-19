@@ -184,6 +184,43 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	m_menubar2->Append( RightClickMenu, wxT("Action") ); 
 	
+	RightClickMenuTexture = new wxMenu();
+	wxMenuItem* TreeViewCollapseAll11;
+	TreeViewCollapseAll11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Collapse all") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewCollapseAll11 );
+	
+	wxMenuItem* TreeViewExpandAll11;
+	TreeViewExpandAll11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Expand all") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewExpandAll11 );
+	
+	wxMenuItem* TreeViewCollapseChildren11;
+	TreeViewCollapseChildren11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Collapse children") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewCollapseChildren11 );
+	
+	wxMenuItem* m_separator31;
+	m_separator31 = RightClickMenuTexture->AppendSeparator();
+	
+	wxMenuItem* TreeViewDeleteNode11;
+	TreeViewDeleteNode11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Delete node") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewDeleteNode11 );
+	
+	wxMenuItem* TreeViewAddChildNode11;
+	TreeViewAddChildNode11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Add/replace child node..") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewAddChildNode11 );
+	
+	wxMenuItem* m_separator41;
+	m_separator41 = RightClickMenuTexture->AppendSeparator();
+	
+	wxMenuItem* TreeViewNodeWatch11;
+	TreeViewNodeWatch11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Add node field watch") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewNodeWatch11 );
+	
+	wxMenuItem* TreeViewSaveNrrd;
+	TreeViewSaveNrrd = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Save texture image in NRRD format..") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewSaveNrrd );
+	
+	m_menubar2->Append( RightClickMenuTexture, wxT("Action") ); 
+	
 	RightClickMenuGeometry = new wxMenu();
 	wxMenuItem* TreeViewCollapseAll1;
 	TreeViewCollapseAll1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Collapse all") ) , wxEmptyString, wxITEM_NORMAL );
@@ -244,6 +281,13 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	this->Connect( TreeViewSaveX3D->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveX3D ) );
 	this->Connect( TreeViewSaveVRML->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveVRML ) );
 	this->Connect( TreeViewSaveTrianglesX3D->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveTrianglesX3D ) );
+	this->Connect( TreeViewCollapseAll11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
+	this->Connect( TreeViewExpandAll11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
+	this->Connect( TreeViewCollapseChildren11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );
+	this->Connect( TreeViewDeleteNode11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewDeleteNode ) );
+	this->Connect( TreeViewAddChildNode11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewAddChildNode ) );
+	this->Connect( TreeViewNodeWatch11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewNodeWatch ) );
+	this->Connect( TreeViewSaveNrrd->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveNrrd ) );
 	this->Connect( TreeViewCollapseAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Connect( TreeViewExpandAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Connect( TreeViewCollapseChildren1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );
@@ -267,6 +311,13 @@ MenuContainer::~MenuContainer()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveX3D ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveVRML ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveTrianglesX3D ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewDeleteNode ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewAddChildNode ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewNodeWatch ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveNrrd ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );

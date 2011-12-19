@@ -120,11 +120,13 @@ class MenuContainer : public wxFrame
 		virtual void OnTreeViewSaveX3D( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveVRML( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewSaveNrrd( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:
 		wxMenu* RightClickMenu;
+		wxMenu* RightClickMenuTexture;
 		wxMenu* RightClickMenuGeometry;
 		
 		MenuContainer( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
