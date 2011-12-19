@@ -56,6 +56,7 @@ namespace H3D {
     void H3DAPI_API renderTextures( H3DDynamicFieldsObject * );
     void H3DAPI_API postRenderTextures( H3DDynamicFieldsObject * );
     void H3DAPI_API preRenderTextures( H3DDynamicFieldsObject * );
+    GLbitfield H3DAPI_API getAffectedGLAttribs( H3DDynamicFieldsObject * );
 
   }
 }

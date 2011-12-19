@@ -97,6 +97,7 @@ void X3DShapeNode::render() {
   
   // appearance render
   if ( a ) {
+    glPushAttrib( a->getAffectedGLAttribs() );
     a->preRender();
     a->displayList->callList();
   } else {
@@ -175,9 +176,12 @@ void X3DShapeNode::render() {
     }
   }
 
-  if( a ) a->postRender();
-  else if(  X3DShapeNode::disable_lighting_if_no_app  )
+  if( a ) {
+    a->postRender();
     glPopAttrib();
+  } else if(  X3DShapeNode::disable_lighting_if_no_app  ) {
+    glPopAttrib();
+  }
 };
 
 void X3DShapeNode::traverseSG( TraverseInfo &ti ) {

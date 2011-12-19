@@ -83,21 +83,13 @@ namespace H3D {
     /// Set up the material properties in OpenGL.
     virtual void render();
 
-    /// This function will be called by the X3DShapeNode before any rendering 
-    /// of geometry and before the call to the render function. So this is the
-    /// place to save the states that are going to be changed in render() in
-    /// order to restore it in postRender().
-    virtual void preRender() {
-      glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LIGHTING_BIT );
+    /// Returns a bitmask of the OpenGL attrib bits that will be affected
+    /// by this node. The value can be used in glPushAttrib in order
+    /// to save the current state.
+    virtual GLbitfield getAffectedGLAttribs() {  
+      return GL_COLOR_BUFFER_BIT | GL_LIGHTING_BIT;
     }
 
-    /// This function will be called by the X3DShapeNode after the geometry
-    /// has been rendered to restore the states to what it was before 
-    /// the call to preRender().
-    virtual void postRender() {
-      glPopAttrib();
-    }
-    
     /// This function checks the transparency field to determine if the
     /// material requires that the geometry is rendered with transparency
     virtual bool isTransparent() {

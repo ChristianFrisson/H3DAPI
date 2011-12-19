@@ -843,7 +843,33 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
 
 #endif // HAVE_CG
 
+GLbitfield H3D::Shaders::getAffectedGLAttribs( H3DDynamicFieldsObject *dfo ) {
+  GLbitfield res = 0;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
+       f != dfo->endField(); f++ ) {
+    if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
+      Node *n = sfnode->getValue(); 
+      if( H3DSingleTextureNode *t = 
+          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+        res = res | t->getAffectedGLAttribs();
+      } 
+    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
+      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+        Node *n = mfnode->getValueByIndex( i ); 
+        if( H3DSingleTextureNode *t = 
+                   dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+          res = res | t->getAffectedGLAttribs();
+        } 
+      }
+    }
+  }
+  return res;
+}
+
 void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
+  GLint nr_textures_supported;
+  glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
+
   unsigned int nr_textures = 0; 
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
        f != dfo->endField(); f++ ) {
@@ -866,10 +892,17 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
         } 
       }
     }
+    if( nr_textures > nr_textures_supported ) {
+      Console(4) << nr_textures_supported << " " << nr_textures << endl;
+      break;
+    }
   }
 }
 
 void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
+  GLint nr_textures_supported;
+  glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
+
   unsigned int nr_textures = 0; 
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
        f != dfo->endField(); f++ ) {
@@ -893,10 +926,17 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
         } 
       }
     }
+    if( nr_textures > nr_textures_supported ) {
+      Console(4) << nr_textures_supported << " " << nr_textures << endl;
+      break;
+    }
   }
 }
 
 void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
+  GLint nr_textures_supported;
+  glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
+
   unsigned int nr_textures = 0; 
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
        f != dfo->endField(); f++ ) {
@@ -919,6 +959,10 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
           nr_textures++;
         } 
       }
+    }
+    if( nr_textures > nr_textures_supported ) {
+      Console(4) << nr_textures_supported << " " << nr_textures << endl;
+      break;
     }
   }
 }

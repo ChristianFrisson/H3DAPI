@@ -100,6 +100,11 @@ namespace H3D {
     /// Disables the shader program.
     virtual void postRender();
 
+    /// Returns a bitmask of the OpenGL attrib bits that will be affected
+    /// by this node. The value can be used in glPushAttrib in order
+    /// to save the current state.
+    virtual GLbitfield getAffectedGLAttribs();
+
     /// Returns a hint if the X3DShaderNode produces an alpha channel
     /// that is < 1, i.e. it is semi-transparent, or not. This
     /// is used to determine render order of transparent vs opaque

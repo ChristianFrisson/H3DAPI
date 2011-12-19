@@ -78,11 +78,8 @@ namespace H3D {
     }
 
     /// This function will be called by the X3DShapeNode before any rendering 
-    /// of geometry and before the call to the render function. So this is the
-    /// place to save the states that are going to be changed in render() in
-    /// order to restore it in postRender().
+    /// of geometry and before the call to the render function.
     virtual void preRender() {
-      glPushAttrib( GL_TEXTURE_BIT | GL_LIGHTING_BIT );
       setActiveTexture( this );
     }
 
@@ -90,8 +87,14 @@ namespace H3D {
     /// has been rendered to restore the states to what it was before 
     /// the call to preRender().
     virtual void postRender() {
-      glPopAttrib();
       setActiveTexture( NULL );
+    }
+
+    /// Returns a bitmask of the OpenGL attrib bits that will be affected
+    /// by this node. The value can be used in glPushAttrib in order
+    /// to save the current state.
+    virtual GLbitfield getAffectedGLAttribs() { 
+      return GL_TEXTURE_BIT | GL_LIGHTING_BIT;
     }
 
     /// Sometimes the texture represents a volume in space, e.g. when

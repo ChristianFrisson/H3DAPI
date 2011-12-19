@@ -133,6 +133,7 @@ void Background::render() {
     glMultMatrixf( mv );
     glColor4f( 1, 1, 1, 1 );
     if( frontUrl->size() > 0 ) {
+      glPushAttrib( frontTexture->getAffectedGLAttribs() );
       frontTexture->preRender();
       frontTexture->displayList->callList();
       glBegin( GL_QUADS );
@@ -147,9 +148,11 @@ void Background::render() {
       glVertex3f( s, -s, -s );      
       glEnd();
       frontTexture->postRender();
+      glPopAttrib();
     }
   
     if( backUrl->size() > 0 ) {
+      glPushAttrib( backTexture->getAffectedGLAttribs() );
       backTexture->preRender();
       backTexture->displayList->callList();
       glBegin( GL_QUADS );
@@ -164,9 +167,11 @@ void Background::render() {
       glVertex3f( s, s, s );
       glEnd();
       backTexture->postRender();
+      glPopAttrib();
     }
 
     if( leftUrl->size() > 0 ) {
+      glPushAttrib( leftTexture->getAffectedGLAttribs() );
       leftTexture->preRender();
       leftTexture->displayList->callList();
       glBegin( GL_QUADS );
@@ -181,9 +186,11 @@ void Background::render() {
       glVertex3f( -s, s, -s );
       glEnd();
       leftTexture->postRender();
+      glPopAttrib();
     }
 
     if( rightUrl->size() > 0 ) {
+      glPushAttrib( rightTexture->getAffectedGLAttribs() );
       rightTexture->preRender();
       rightTexture->displayList->callList();
       glBegin( GL_QUADS );
@@ -198,9 +205,11 @@ void Background::render() {
       glVertex3f( s, s, s );
       glEnd();
       rightTexture->postRender();
+      glPopAttrib();
     }
 
     if( topUrl->size() > 0 ) {
+      glPushAttrib( topTexture->getAffectedGLAttribs() );
       topTexture->preRender();
       topTexture->displayList->callList();
       glBegin( GL_QUADS );
@@ -215,9 +224,11 @@ void Background::render() {
       glVertex3f( s, s, s );
       glEnd();
       topTexture->postRender();
+      glPopAttrib();
     }
 
     if( bottomUrl->size() > 0 ) {
+      glPushAttrib( bottomTexture->getAffectedGLAttribs() );
       bottomTexture->preRender();
       bottomTexture->displayList->callList();
       glBegin( GL_QUADS );
@@ -232,6 +243,7 @@ void Background::render() {
       glVertex3f( -s, -s, s );
       glEnd();
       bottomTexture->postRender();
+      glPopAttrib();
     }
 
 

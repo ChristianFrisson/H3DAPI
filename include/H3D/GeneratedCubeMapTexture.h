@@ -101,20 +101,17 @@ namespace H3D {
     virtual void preRender() {
       X3DEnvironmentTextureNode::preRender();
       if( generating_textures ) {
-        glPushAttrib( GL_COLOR_BUFFER_BIT );
         glEnable( GL_ALPHA_TEST );
         glAlphaFunc( GL_NEVER, 0 );
       }
     }
 
-    /// postRender enables rendering again if it was disabled by preRender.
-    virtual void postRender() {
-      X3DEnvironmentTextureNode::postRender();
-      if( generating_textures ) {
-        glPopAttrib();
-      }
+    virtual GLbitfield getAffectedGLAttribs() {
+      return 
+         X3DEnvironmentTextureNode::getAffectedGLAttribs() | 
+         GL_COLOR_BUFFER_BIT;
     }
-    
+
     /// Initialize OpenGL textures by allocation memory and setting up
     /// texture parameters.
     virtual void initializeTextures();

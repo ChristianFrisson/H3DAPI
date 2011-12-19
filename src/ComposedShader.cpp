@@ -147,6 +147,15 @@ bool ComposedShader::addField( const string &name,
   return success;
 }
 
+GLbitfield ComposedShader::getAffectedGLAttribs() {
+  GLbitfield res = X3DShaderNode::getAffectedGLAttribs();
+  if( GLEW_ARB_shader_objects ) {
+    res = res | Shaders::getAffectedGLAttribs( this );
+  }
+  res = res | GL_COLOR_BUFFER_BIT;
+  return res;
+}
+
 void ComposedShader::preRender() {
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( program_handle );
@@ -154,14 +163,11 @@ void ComposedShader::preRender() {
     X3DShaderNode::preRender();
   }
 
-  glPushAttrib( GL_COLOR_BUFFER_BIT );
   glEnable( GL_BLEND );
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ComposedShader::postRender() {
-  glPopAttrib();
-
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( 0 );
     Shaders::postRenderTextures( this );

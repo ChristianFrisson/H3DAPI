@@ -200,6 +200,44 @@ void Appearance::render()     {
 
 };
 
+GLbitfield Appearance::getAffectedGLAttribs() {
+  GLbitfield res = X3DAppearanceNode::getAffectedGLAttribs();     
+  
+  X3DMaterialNode *m = material->getValue();
+  if ( m ) res = res | m->getAffectedGLAttribs();
+  else {
+    if( X3DShapeNode::disable_lighting_if_no_app ) {
+      res = res | GL_LIGHTING_BIT;
+    }
+  }
+  
+  X3DTextureNode *t = texture->getValue();
+  if ( t ) res = res | t->getAffectedGLAttribs();
+  
+  LineProperties *lp = lineProperties->getValue();
+  if ( lp ) res = res | lp->getAffectedGLAttribs();
+  
+  FillProperties *fp = fillProperties->getValue();
+  if ( fp ) res = res | fp->getAffectedGLAttribs();
+  
+  X3DTextureTransformNode *tt = textureTransform->getValue();
+  if ( tt ) res = res | tt->getAffectedGLAttribs();
+  
+  for( MFShaderNode::const_iterator i = shaders->begin();
+       i != shaders->end();
+       i++ ) {
+    X3DShaderNode *s = static_cast< X3DShaderNode * >( *i );
+    if ( s ) {
+      if( s->isSupported() ) {
+        res = res | s->getAffectedGLAttribs();
+        break;
+      } 
+    }
+  }
+  RenderProperties *rp = renderProperties->getValue();
+  if ( rp ) res = res | rp->getAffectedGLAttribs();
+  return res;
+}
 
 /// This function will be called by the X3DShapeNode before any rendering 
 /// of geometry in order to set up all OpenGL states that are needed to 
@@ -211,7 +249,6 @@ void Appearance::preRender() {
   if ( m ) m->preRender();
   else {
     if( X3DShapeNode::disable_lighting_if_no_app ) {
-      glPushAttrib( GL_LIGHTING_BIT );
       glDisable( GL_LIGHTING );
     }
   }
@@ -280,7 +317,6 @@ void Appearance::postRender() {
 
   X3DMaterialNode *m = material->getValue();
   if ( m ) m->postRender();
-  else if( X3DShapeNode::disable_lighting_if_no_app ) glPopAttrib();
 
   X3DAppearanceNode::postRender();     
 }

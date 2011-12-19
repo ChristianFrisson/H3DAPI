@@ -132,6 +132,7 @@ void ParticleSystem::render() {
   X3DGeometryNode *g = geometry->getValue();
 
   if ( a ) {
+    glPushAttrib( a->getAffectedGLAttribs() );
     a->preRender();
     a->displayList->callList();
   } 
@@ -212,7 +213,10 @@ void ParticleSystem::render() {
       } 
     }
   }
-  if( a ) a->postRender();
+  if( a ) {
+    a->postRender();
+    glPopAttrib();
+  }
 }
 
 void ParticleSystem::initialize() {
