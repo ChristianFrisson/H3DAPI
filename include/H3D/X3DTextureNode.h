@@ -106,6 +106,13 @@ namespace H3D {
     /// bound in OpenGL. NULL us returned if no X3DTextureNode is bound. 
     static X3DTextureNode *getActiveTexture() { return active_texture; }
 
+    /// Set the active texture. The active texture is the texture that is
+    /// currently in bound in OpenGL, so as soon a call to glBindTexture is
+    /// made this function should be called also a pointer to the texture
+    /// being bound.
+    ///
+    static void setActiveTexture( X3DTextureNode *t ) { active_texture = t; }
+
     /// Installs the image as a OpenGL texture. Uses the glTexImage function
     /// for the glTexImage call, so it has to be defined for subclasses
     /// that use this function. 
@@ -174,12 +181,7 @@ namespace H3D {
                                       unsigned int depth,
                                       unsigned int bits_per_pixel );
 
-    /// Set the active texture. The active texture is the texture that is
-    /// currently in bound in OpenGL, so as soon a call to glBindTexture is
-    /// made this function should be called also a pointer to the texture
-    /// being bound.
-    ///
-    static void setActiveTexture( X3DTextureNode *t ) { active_texture = t; }
+
   
   private:
     static X3DTextureNode *active_texture;
