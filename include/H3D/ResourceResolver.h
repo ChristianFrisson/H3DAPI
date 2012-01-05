@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -74,17 +74,17 @@ namespace H3D {
 
     /// Set the URNResolver to use when resolving resource.
     static void setURNResolver( URNResolver *resolver ) {
-      urn_resolver.reset( resolver );
+      urn_resolver().reset( resolver );
     } 
 
     /// Get the current URNResolver.
     static URNResolver* getURNResolver() {
-      return urn_resolver.get();
+      return urn_resolver().get();
     } 
 
     /// Add a ResourceResolver that can be used when resolving resources. 
     static void addResolver( ResourceResolver *resolver ) {
-      resolvers.push_back( resolver );
+      resolvers().push_back( resolver );
     }
 
     /// Set the current base URL. The base URL will be used as the base
@@ -125,11 +125,21 @@ namespace H3D {
     static bool releaseTmpFileName( const string &file );
 
   protected:
+    
     static string resolveURLAs( const string &urn,
                                 bool *is_tmp_file,
                                 bool folder );
-    static auto_ptr< URNResolver > urn_resolver;
-    static H3DUtil::AutoPtrVector< ResourceResolver > resolvers;
+    
+    static auto_ptr< URNResolver > & urn_resolver() {
+      static auto_ptr< URNResolver > urn_resolver(NULL);
+      return urn_resolver;
+    }
+    
+    static H3DUtil::AutoPtrVector< ResourceResolver > & resolvers() {
+      static H3DUtil::AutoPtrVector< ResourceResolver > resolvers;
+      return resolvers;
+    }
+    
     static string baseURL;
     static TmpFileNameList tmp_files;
   };

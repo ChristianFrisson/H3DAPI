@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -42,9 +42,6 @@
 using namespace H3D;
 using namespace H3DUtil;
 
-auto_ptr< URNResolver > ResourceResolver::urn_resolver( NULL );
-AutoPtrVector< ResourceResolver > ResourceResolver::resolvers; 
-
 string ResourceResolver::baseURL( "" );
 ResourceResolver::TmpFileNameList ResourceResolver::tmp_files;
 
@@ -53,8 +50,8 @@ string ResourceResolver::resolveURLAs( const string &urn,
                                        bool folder ) {
   if( urn == "" ) return "";
   string filename = urn;
-  if( urn_resolver.get() ) {
-    filename = urn_resolver->resolveURN( urn );
+  if( urn_resolver().get() ) {
+    filename = urn_resolver()->resolveURN( urn );
   }
   
   // first try as relative path
@@ -72,8 +69,8 @@ string ResourceResolver::resolveURLAs( const string &urn,
     }
     
     // otherwise try the resolvers.
-    for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
-	 i != resolvers.end(); i++ ) {
+    for( AutoPtrVector< ResourceResolver >::iterator i = resolvers().begin();
+         i != resolvers().end(); i++ ) {
       string resolved_name = (*i)->resolveURLAsTmpFile( full_url );
       if( resolved_name != "" ) {
         if( is_tmp_file ) *is_tmp_file = true;
@@ -95,8 +92,8 @@ string ResourceResolver::resolveURLAs( const string &urn,
   }
   
   // otherwise try the resolvers.
-  for( AutoPtrVector< ResourceResolver >::iterator i = resolvers.begin();
-       i != resolvers.end(); i++ ) {
+  for( AutoPtrVector< ResourceResolver >::iterator i = resolvers().begin();
+       i != resolvers().end(); i++ ) {
     string resolved_name = (*i)->resolveURLAsTmpFile( filename );
     if( resolved_name != "" ) {
       if( is_tmp_file ) *is_tmp_file = true;
