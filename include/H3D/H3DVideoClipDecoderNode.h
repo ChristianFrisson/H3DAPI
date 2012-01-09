@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -41,14 +41,13 @@ namespace H3D {
   /// \brief H3DVideoClipDecoderNode is a virtual base class for classes
   /// decoding video clips making new frames available to render.
   class H3DAPI_API H3DVideoClipDecoderNode : public Node {
-  protected:
+  public:
     typedef enum {
       PLAYING = 0,
       STOPPED = 1,
       PAUSED = 2 
     } PlayStatus;
 
-  public:
     typedef H3DVideoClipDecoderNode*( *CreateNodeFunc)(); 
 
     /// Function ptr type for  
