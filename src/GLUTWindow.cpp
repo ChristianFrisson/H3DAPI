@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -55,6 +55,10 @@ H3DNodeDatabase GLUTWindow::database( "GLUTWindow",
                                       typeid( GLUTWindow ),
                                       &(H3DWindowNode::database) );
 
+namespace GLUTWindowInternals {
+  FIELDDB_ELEMENT( GLUTWindow, gameMode, INITIALIZE_ONLY );
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Internal functions for GLUT window handling
@@ -93,9 +97,11 @@ GLUTWindow::GLUTWindow( Inst< SFInt32     > _width,
                         Inst< SFInt32     > _posX,
                         Inst< SFInt32     > _posY,
                         Inst< SFBool      > _manualCursorControl,
-                        Inst< SFString    > _cursorType ) :
+                        Inst< SFString    > _cursorType,
+                        Inst< SFString    > _gameMode ) :
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
-                 _viewpoint, _posX, _posY, _manualCursorControl, _cursorType ) {
+                 _viewpoint, _posX, _posY, _manualCursorControl, _cursorType ),
+  gameMode( _gameMode ) {
   
   type_name = "GLUTWindow";
   database.initFields( this );
@@ -167,10 +173,22 @@ void GLUTWindow::initWindow() {
   }
   
   glutInitDisplayMode( mode );
-  glutInitWindowSize( width->getValue(), height->getValue() );
-  glutInitWindowPosition( posX->getValue(), posY->getValue() );
-  window_id = glutCreateWindow( "H3D" );
-  glutSetWindow( window_id );
+  if( gameMode->getValue() == "" ){
+    glutInitWindowSize( width->getValue(), height->getValue() );
+    glutInitWindowPosition( posX->getValue(), posY->getValue() );
+    window_id = glutCreateWindow( "H3D" );
+    glutSetWindow( window_id );
+  } else {
+    glutGameModeString(gameMode->getValue().c_str());
+    if( ! glutGameModeGet(GLUT_GAME_MODE_POSSIBLE) ) {
+      Console(4) << "The selected GLUT gamemode ("
+                 << gameMode->getValue()
+                 << ") is not available\n"
+                 << std::endl;
+    }
+    glutEnterGameMode();
+    window_id = glutGetWindow();
+  }
   // set up GLUT callback functions
   glutDisplayFunc ( GLUTWindowInternals::displayFunc  );
   glutReshapeFunc ( GLUTWindowInternals::reshapeFunc  );
@@ -222,8 +240,9 @@ GLUTWindow *GLUTWindow::getGLUTWindow( int glut_id ) {
 }
 
 void GLUTWindow::setFullscreen( bool fullscreen ) {
-  if( fullscreen ) 
-    glutFullScreen();
+  if( fullscreen && gameMode->getValue() == "" ){
+    glutFullScreen(); 
+  }
 }
 
 void GLUTWindow::swapBuffers() {

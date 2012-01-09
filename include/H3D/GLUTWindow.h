@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -57,7 +57,8 @@ namespace H3D {
                 Inst< SFInt32       > _posX       = 0,
                 Inst< SFInt32       > _posY       = 0,
                 Inst< SFBool        > _manualCursorControl = 0,
-                Inst< SFString      > _cursorType = 0  );
+                Inst< SFString      > _cursorType = 0, 
+                Inst< SFString      > _gameMode   = 0 );
 
     /// Destructor.
     ~GLUTWindow();
@@ -122,6 +123,14 @@ namespace H3D {
     /// Initialize GLUT. 
     static void initGLUT();
 
+    /// Support for GLUT GameMode which is basically a string used to optimize
+    /// the glut window for gaming. Some features are disabled for such things.
+    /// For more information about GLUT GameMode see for example
+    /// http://freeglut.sourceforge.net/docs/api.php#GameMode
+    ///
+    /// <b>Access type:</b> initializeOnly \n
+    auto_ptr< SFString >  gameMode;
+    
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 

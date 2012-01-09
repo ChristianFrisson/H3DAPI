@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -460,7 +460,10 @@ int main(int argc, char* argv[]) {
   string render_mode = GET4( "H3D_RENDERMODE",
     "graphical", "rendermode",
     (string)"MONO" );
-
+  
+  string gamemode = GET4( "H3D_GAMEMODE",
+                          "graphical", "gamemode", (string)"" );
+  
   int width = GET_INT("graphical", "width", 640 );
   int height = GET_INT("graphical", "height", 480 );
 
@@ -549,6 +552,10 @@ int main(int argc, char* argv[]) {
       else if( !strncmp(argv[i]+2,"rendermode=",
         strlen("rendermode=")) ){
           render_mode = strstr(argv[i],"=")+1; }
+
+      else if( !strncmp(argv[i]+2,"gamemode=",
+        strlen("gamemode=")) ){
+          gamemode = strstr(argv[i],"=")+1; }
 
       else if( !strcmp(argv[i]+2,"spacemouse") ){
         use_space_mouse = true; }
@@ -653,6 +660,7 @@ int main(int argc, char* argv[]) {
     glwindow->fullscreen->setValue( fullscreen );
     glwindow->mirrored->setValue( mirrored );
     glwindow->renderMode->setValue( render_mode );
+    glwindow->gameMode->setValue( gamemode );
     glwindow->width->setValue(width);
     glwindow->height->setValue(height);
     glwindow->useFullscreenAntiAliasing->setValue( antialiasing );
