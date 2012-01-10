@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2010, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -42,6 +42,7 @@ H3DNodeDatabase CoordinateDeformer::database(
 namespace CoordinateDeformerInternals {
   FIELDDB_ELEMENT( CoordinateDeformer, distanceToDepth, INPUT_OUTPUT );
   FIELDDB_ELEMENT( CoordinateDeformer, plasticity, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( CoordinateDeformer, deviceAlgorithm, INPUT_OUTPUT );
 }
 
 
@@ -74,25 +75,35 @@ void CoordinateDeformer::deformPoints( const vector< bool  > &is_touched,
   } else if( f && touched ) {
     unsigned int nr_devices = (unsigned int) penetration_points.size();
     if( nr_devices > 0 ) {
+      bool sum_offsets = deviceAlgorithm->getValue() == "AVG";
+      unsigned int count = 1;
+      if( sum_offsets ) {
+        // Calculate is_touched if device algorithm is to average
+        // since it is the same for all resting_points.
+        for( unsigned int i = 0; i < nr_devices; i++ )
+          if( is_touched[i] ) count++;
+      }
       for( unsigned int i = 0; i < resting_points.size(); i++ ) {
         Vec3f offset = Vec3f( 0, 0, 0 );
-        if( is_touched[0] ) {
-          H3DFloat distance = ( resting_points[i] - touch_points[0] ).length();
-          offset = ( penetration_points[0] - touch_points[0] ) *
-                   f->evaluate( distance );
-        }
-        H3DFloat max_depth_sqr = offset * offset;
-
-        for( unsigned int j = 1; j < nr_devices; j++ ) {
+        H3DFloat max_depth_sqr = 0;
+        for( unsigned int j = 0; j < nr_devices; j++ ) {
           if( is_touched[j] ) {
-            H3DFloat d = ( resting_points[i] - touch_points[j] ).length();
+            H3DFloat distance = ( resting_points[i] - touch_points[j] ).length();
             Vec3f o = ( penetration_points[j] - touch_points[j] ) *
-                      f->evaluate( d );
-            if( o*o > max_depth_sqr ) {
-              offset = o;
+                        f->evaluate( distance );
+            if( sum_offsets )
+              offset += o;
+            else {
+              H3DFloat tmp_o = o * o;
+              if( tmp_o > max_depth_sqr ) {
+                max_depth_sqr = tmp_o;
+                offset = o;
+              }
             }
+            
           }
         }
+        offset /= count;
 
         if( plasticity_value != 0 ) {
           new_resting_points.push_back( resting_points[i] + 

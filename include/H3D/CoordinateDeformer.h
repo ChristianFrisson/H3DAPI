@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -57,15 +57,20 @@ namespace H3D {
 
     /// Constructor.       
     CoordinateDeformer( Inst< SFFunctionNode > _distanceToDepth  = 0,
-                        Inst< SFFloat        > _plasticity       = 0 ):
+                        Inst< SFFloat        > _plasticity       = 0,
+                        Inst< SFString       > _deviceAlgorithm  = 0 ):
       distanceToDepth( _distanceToDepth ),
       plasticity( _plasticity ),
+      deviceAlgorithm( _deviceAlgorithm ),
       touched_last_time( false ) {
 
       type_name = "CoordinateDeformer";
       database.initFields( this );
 
       plasticity->setValue( 0 );
+      deviceAlgorithm->addValidValue( "MAX" );
+      deviceAlgorithm->addValidValue( "AVG" );
+      deviceAlgorithm->setValue( "MAX" );
     }
 
     /// The deformation of the points will be calculated depending on
@@ -98,6 +103,17 @@ namespace H3D {
     /// <b> Access type: </b> inputOutput
     /// <b> Default value: </b> 0.0
     auto_ptr< SFFloat > plasticity;
+
+    /// The deviceAlgorithm field contains a string that controls how the
+    /// deformation is calculated for a coordinate when several devices are in
+    /// use. The allowed values are:
+    /// "MAX" - The biggest deformation of a coordinate is chosen.
+    /// "AVG" - An average of the deformation from each device for a coordinate
+    /// is calculated.
+    ///
+    /// <b> Access type: </b> inputOutput
+    /// <b> Default value: </b> "MAX"
+    auto_ptr< SFString > deviceAlgorithm;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
