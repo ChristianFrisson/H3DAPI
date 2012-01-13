@@ -171,6 +171,9 @@ void TwoSidedMaterial::render()  {
   glMaterialfv( front_material_face, GL_DIFFUSE, material );
 
   if( separateBackColor->getValue() ) {
+    H3DFloat t = backTransparency->getValue();
+    material[3] = 1 - t;    
+
     // Ambient
     intensity = backAmbientIntensity->getValue(); 
     RGB d = backDiffuseColor->getValue();
