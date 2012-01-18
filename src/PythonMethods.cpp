@@ -528,13 +528,13 @@ if( check_func( value ) ) {                                         \
     // Convert a Field::AccessType constant to a string name
     std::string accessTypeToString ( Field::AccessType accessType ) {
       switch ( accessType ) {
-        case Field::AccessType::INITIALIZE_ONLY:
+        case Field::INITIALIZE_ONLY:
           return "INITIALIZE_ONLY";
-        case Field::AccessType::OUTPUT_ONLY:
+        case Field::OUTPUT_ONLY:
           return "OUTPUT_ONLY";
-        case Field::AccessType::INPUT_ONLY:
+        case Field::INPUT_ONLY:
           return "INPUT_ONLY";
-        case Field::AccessType::INPUT_OUTPUT:
+        case Field::INPUT_OUTPUT:
           return "INPUT_OUTPUT";
       }
       return "";
@@ -542,7 +542,7 @@ if( check_func( value ) ) {                                         \
     
     // Insert all the Field::AccessType constants in the given Python dictionary.
     void insertFieldAccessTypes( PyObject *dict ) {
-      for( int i = 0; i <= Field::AccessType::INPUT_OUTPUT; i++ ) {
+      for( int i = 0; i <= Field::INPUT_OUTPUT; i++ ) {
         // insert each type from the enumerated list into Python
         string str = accessTypeToString( (Field::AccessType)i );
         PyDict_SetItem( dict, 
