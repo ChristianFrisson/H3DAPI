@@ -83,6 +83,9 @@ class Field:\n\
   def getRoutesOut( self ):\n\
     return getRoutesOut( self )\n\
 \n\
+  def getAccessType( self ):\n\
+    return getFieldAccessType( self )\n\
+\n\
   def __cmp__( self, o ):\n\
     return getCPtr(self) - getCPtr(o)\n\
 \n\

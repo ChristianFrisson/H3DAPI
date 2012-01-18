@@ -49,6 +49,9 @@ class Field:
   def getRoutesOut( self ):
     return getRoutesOut( self )
 
+  def getAccessType( self ):
+    return getFieldAccessType( self )
+
   def __cmp__( self, o ):
     return getCPtr(self) - getCPtr(o)
 

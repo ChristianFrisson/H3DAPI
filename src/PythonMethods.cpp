@@ -524,6 +524,32 @@ if( check_func( value ) ) {                                         \
       }
       
     }
+    
+    // Convert a Field::AccessType constant to a string name
+    std::string accessTypeToString ( Field::AccessType accessType ) {
+      switch ( accessType ) {
+        case Field::AccessType::INITIALIZE_ONLY:
+          return "INITIALIZE_ONLY";
+        case Field::AccessType::OUTPUT_ONLY:
+          return "OUTPUT_ONLY";
+        case Field::AccessType::INPUT_ONLY:
+          return "INPUT_ONLY";
+        case Field::AccessType::INPUT_OUTPUT:
+          return "INPUT_OUTPUT";
+      }
+      return "";
+    }
+    
+    // Insert all the Field::AccessType constants in the given Python dictionary.
+    void insertFieldAccessTypes( PyObject *dict ) {
+      for( int i = 0; i <= Field::AccessType::INPUT_OUTPUT; i++ ) {
+        // insert each type from the enumerated list into Python
+        string str = accessTypeToString( (Field::AccessType)i );
+        PyDict_SetItem( dict, 
+                        PyString_FromString( str.c_str() ), 
+                        PyInt_FromLong( i ) );
+      } 
+    }
 
     // returns a PyTuple containing python versions of the
     // given node and DEFNodes.
@@ -552,6 +578,7 @@ if( check_func( value ) ) {                                         \
       { "createField", pythonCreateField, 0 },
       { "setFieldValue", pythonSetFieldValue, 0 },
       { "getFieldValue", pythonGetFieldValue, 0 },
+      { "getFieldAccessType", pythonGetFieldAccessType, 0 },
       { "routeField", pythonRouteField, 0 },
       { "routeFieldNoEvent", pythonRouteFieldNoEvent, 0 },
       { "unrouteField", pythonUnrouteField, 0 },
@@ -623,6 +650,7 @@ if( check_func( value ) ) {                                         \
 
 
       PythonInternals::insertFieldTypes( H3D_dict );
+      PythonInternals::insertFieldAccessTypes( H3D_dict );
 
 #ifdef H3DINTERFACE_AS_FILE
       PythonInternals::H3DInterface_module.reset( 
@@ -966,9 +994,40 @@ call the base class __init__ function." );
                        "Error: Field NULL pointer" );
       return 0;  
     }
-
+    
     /////////////////////////////////////////////////////////////////////////
 
+    PyObject *pythonGetFieldAccessType( PyObject *self, PyObject *arg ) {
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument(s) to function H3D.getFieldAccessType( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      
+      Py_DECREF( py_field_ptr );
+
+      if( field_ptr ) { 
+        return PyInt_FromLong( field_ptr->getAccessType() );
+      }
+      PyErr_SetString( PyExc_ValueError, 
+                       "Error: Field NULL pointer" );
+      return 0;  
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    
     // help function for pythonRouteField and pythonRouteFieldNoEvent.
     PyObject *pythonUnrouteField( PyObject *self, 
                                   PyObject *args  ) {

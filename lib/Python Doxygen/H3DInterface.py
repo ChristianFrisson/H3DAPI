@@ -61,6 +61,13 @@ class Field:
   def getRoutesOut( self ):
     return getRoutesOut( self )
 
+  ## Returns a int constant describing the field's access type.
+  ##
+  ## Possible return values: INITIALIZE_ONLY, OUTPUT_INPUT, INPUT_ONLY, INPUT_OUTPUT.
+  ##
+  def getAccessType( self ):
+    return getFieldAccessType( self )
+    
   ## Comparison operator. Two fields are equal if it encapsulates the same
   ## underlying C++-field.
   def __cmp__( self, o ):
