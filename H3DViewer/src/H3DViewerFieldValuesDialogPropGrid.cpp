@@ -222,72 +222,82 @@ void H3DViewerFieldValuesPanelPropGrid::OnPropertyChanged( wxPropertyGridEvent& 
   Field *f = (Field *)property->GetClientData();
 
   if( f ) {
-  wxVariant value = property->GetValue();
-  X3DTypes::X3DType x3d_type = f->getX3DType();
+
+    try {
+
+      wxVariant value = property->GetValue();
+      X3DTypes::X3DType x3d_type = f->getX3DType();
   
-  if( x3d_type == X3DTypes::SFFLOAT ) {
-    double b = value.GetDouble();
-    static_cast< SFFloat * >( f )->setValue( (H3DFloat) b );
-  } else if ( x3d_type == X3DTypes::SFDOUBLE ) {
-    double b = value.GetDouble();
-    static_cast< SFDouble * >( f )->setValue( b );
-  } else if ( x3d_type == X3DTypes::SFTIME ) {
-    double b = value.GetDouble();
-    static_cast< SFTime * >( f )->setValue( b );
-  } else if ( x3d_type == X3DTypes::SFCOLOR ) {
-    wxColour wc = wxAny(value).As<wxColour>();
-    static_cast< SFColor * >( f )->setValue( RGB( wc.Red()/255.0, wc.Green()/255.0, wc.Blue()/255.0 ) );
-    } 
-#ifdef USE_VECTOR_PROPERTIES
-  else if ( x3d_type == X3DTypes::SFVEC2F ) {
-    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-    Vec2f v( wc.getValue(0), wc.getValue(1) );
-    static_cast< SFVec2f * >( f )->setValue( v );
-  } else if ( x3d_type == X3DTypes::SFVEC2D ) {
-    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-    Vec2f v( wc.getValue(0), wc.getValue(1) );
-    static_cast< SFVec2d * >( f )->setValue( v );
-  } else if ( x3d_type == X3DTypes::SFVEC3F ) {
-    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-    Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
-    static_cast< SFVec3f * >( f )->setValue( v );
-  } else if ( x3d_type == X3DTypes::SFVEC3D ) {
-    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-    Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
-    static_cast< SFVec3d * >( f )->setValue( v );
-  } else if ( x3d_type == X3DTypes::SFVEC4F ) {
-    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-    Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
-    static_cast< SFVec4f * >( f )->setValue( v );
-  } else if ( x3d_type == X3DTypes::SFVEC4D ) {
-    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-    Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
-    static_cast< SFVec4d * >( f )->setValue( v );
-  } else if ( x3d_type == X3DTypes::SFROTATION ) {
-    H3DwxVector wc = wxAny(value).As<H3DwxVector>();
-    Rotation v( Vec3f( wc.getValue(0), wc.getValue(1), wc.getValue(2)), wc.getValue(3) );
-    static_cast< SFRotation * >( f )->setValue( v );
-  } 
-#endif //USE_VECTOR_PROPERTIES
-  else if( x3d_type == X3DTypes::SFBOOL ) {    
-    bool b = value.GetBool();
-    static_cast< SFBool * >( f )->setValue( b );
-  } else if( x3d_type == X3DTypes::SFSTRING && 
-             dynamic_cast< wxEnumProperty * >( property ) ) {    
-    string s (property->ValueToString( value ).mb_str() );
-    static_cast< SFString * >( f )->setValue( s );
-  } else {
-    if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
-      string s( property->ValueToString( value ).mb_str() );
-      try {
-        pf->setValueFromString( s );
-      } catch(...) {
-        // touch field in order for editor value to be reset
-        pf->touch();
+      if( x3d_type == X3DTypes::SFFLOAT ) {
+        double b = value.GetDouble();
+        static_cast< SFFloat * >( f )->setValue( (H3DFloat) b );
+      } else if ( x3d_type == X3DTypes::SFDOUBLE ) {
+        double b = value.GetDouble();
+        static_cast< SFDouble * >( f )->setValue( b );
+      } else if ( x3d_type == X3DTypes::SFTIME ) {
+        double b = value.GetDouble();
+        static_cast< SFTime * >( f )->setValue( b );
+      } else if ( x3d_type == X3DTypes::SFCOLOR ) {
+        wxColour wc = wxAny(value).As<wxColour>();
+        static_cast< SFColor * >( f )->setValue( RGB( wc.Red()/255.0, wc.Green()/255.0, wc.Blue()/255.0 ) );
+        } 
+  #ifdef USE_VECTOR_PROPERTIES
+      else if ( x3d_type == X3DTypes::SFVEC2F ) {
+        H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+        Vec2f v( wc.getValue(0), wc.getValue(1) );
+        static_cast< SFVec2f * >( f )->setValue( v );
+      } else if ( x3d_type == X3DTypes::SFVEC2D ) {
+        H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+        Vec2f v( wc.getValue(0), wc.getValue(1) );
+        static_cast< SFVec2d * >( f )->setValue( v );
+      } else if ( x3d_type == X3DTypes::SFVEC3F ) {
+        H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+        Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
+        static_cast< SFVec3f * >( f )->setValue( v );
+      } else if ( x3d_type == X3DTypes::SFVEC3D ) {
+        H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+        Vec3f v( wc.getValue(0), wc.getValue(1), wc.getValue(2) );
+        static_cast< SFVec3d * >( f )->setValue( v );
+      } else if ( x3d_type == X3DTypes::SFVEC4F ) {
+        H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+        Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
+        static_cast< SFVec4f * >( f )->setValue( v );
+      } else if ( x3d_type == X3DTypes::SFVEC4D ) {
+        H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+        Vec4f v( wc.getValue(0), wc.getValue(1), wc.getValue(2), wc.getValue(3) );
+        static_cast< SFVec4d * >( f )->setValue( v );
+      } else if ( x3d_type == X3DTypes::SFROTATION ) {
+        H3DwxVector wc = wxAny(value).As<H3DwxVector>();
+        Rotation v( Vec3f( wc.getValue(0), wc.getValue(1), wc.getValue(2)), wc.getValue(3) );
+        static_cast< SFRotation * >( f )->setValue( v );
+      } 
+  #endif //USE_VECTOR_PROPERTIES
+      else if( x3d_type == X3DTypes::SFBOOL ) {    
+        bool b = value.GetBool();
+        static_cast< SFBool * >( f )->setValue( b );
+      } else if( x3d_type == X3DTypes::SFSTRING && 
+                 dynamic_cast< wxEnumProperty * >( property ) ) {    
+        string s (property->ValueToString( value ).mb_str() );
+        static_cast< SFString * >( f )->setValue( s );
+      } else {
+        if( ParsableField *pf = dynamic_cast< ParsableField * >( f ) ) {
+          string s( property->ValueToString( value ).mb_str() );
+          try {
+            pf->setValueFromString( s );
+          } catch(...) {
+            // touch field in order for editor value to be reset
+            pf->touch();
+          }
+        }
       }
+
+    } catch ( const Field::FieldAccessError& e ) {
+      stringstream s;
+      s << e;
+      wxMessageBox( wxString(s.str().c_str(),wxConvLibc),
+                    wxT("Error"), wxOK | wxICON_EXCLAMATION);
     }
   }
-}
 }
 
 void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *FieldValuesGrid,
@@ -630,9 +640,10 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
        f->getAccessType() == Field::OUTPUT_ONLY ) ) {
     if( H3DLongStringProperty *lp = dynamic_cast< H3DLongStringProperty * >( property ) ) {
       lp->setReadOnlyDialog( true );
-    } else {
-      //      property->ChangeFlag( wxPG_PROP_READONLY, true );
     }
+
+    // Make sure it is not possible to set read only field values
+    property->Enable ( false );
   }
 
   return property;
@@ -726,12 +737,12 @@ wxVectorProperty::~wxVectorProperty() { }
 
 void wxVectorProperty::RefreshChildren()
 {
-    if ( !GetChildCount() ) return;
-    const H3DwxVector& vector = H3DwxVectorRefFromVariant(m_value);
-    for( unsigned int i = 0; i < vector.nrValues(); i++ ) {
-      Item(i)->SetValue( vector.getValue( i ) );
-    }
- }
+  if ( !GetChildCount() ) return;
+  const H3DwxVector& vector = H3DwxVectorRefFromVariant(m_value);
+  for( unsigned int i = 0; i < vector.nrValues(); i++ ) {
+    Item(i)->SetValue( vector.getValue( i ) );
+  }
+}
 
 wxVariant wxVectorProperty::ChildChanged( wxVariant& thisValue,
                                           int childIndex,
