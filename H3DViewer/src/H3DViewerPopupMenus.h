@@ -18,7 +18,16 @@ public:
                        const wxSize& size = wxSize( 500,300 ), 
                        long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL ):
     MenuContainer( parent,id, title, pos, size, style ),
-    treeview_dialog( _treeview_dialog ) {}
+    treeview_dialog( _treeview_dialog ) {
+#ifndef HAVE_TEEM
+  // If we dont have TEEM, disable that menu item
+  /// \todo This is untested because RightClickMenuTexture is not used anywhere at the moment.
+  int item= RightClickMenuTexture->FindItem ( wxT("Save texture image in NRRD format..") );
+  if ( item != wxNOT_FOUND ) {
+    RightClickMenu->Enable ( item, false );
+  }
+#endif
+  }
         
   /// Callback for collapse all menu choice.
   virtual void OnTreeViewCollapseAll( wxCommandEvent& event );

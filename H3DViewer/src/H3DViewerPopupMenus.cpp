@@ -424,9 +424,9 @@ void H3DViewerPopupMenus::OnTreeViewAddChildNode( wxCommandEvent& event ) {
   } 
 }
 
-
 /// Callback for node save VRML menu choice.
 void H3DViewerPopupMenus::OnTreeViewSaveNrrd( wxCommandEvent& event ) {
+#ifdef HAVE_TEEM
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   
   H3DViewerTreeViewDialog::TreeIdMap::iterator ni = treeview_dialog->node_map.find( id.m_pItem );
@@ -470,4 +470,5 @@ void H3DViewerPopupMenus::OnTreeViewSaveNrrd( wxCommandEvent& event ) {
       }
     }
   }
+#endif
 }
