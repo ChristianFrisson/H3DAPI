@@ -141,6 +141,19 @@ void PythonScript::disallowMainThreadPython() {
   }
 }
 
+PyObject *PythonScript::getPythonAttribute( const string &name ) {
+  if( module_dict ) {
+    // ensure we have the GIL lock to work with multiple python threads.
+    PyGILState_STATE state = PyGILState_Ensure();
+    PyObject *fname = 
+      PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
+                            name.c_str() );
+    PyGILState_Release(state);
+    return fname;
+  }
+  return NULL;
+}
+
 Field *PythonScript::lookupField( const string &name ) {
   if( module_dict ) {
     // ensure we have the GIL lock to work with multiple python threads.

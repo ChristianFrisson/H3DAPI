@@ -320,6 +320,13 @@ namespace H3D {
     /// Get the field of a node. arg is the name of the field. 
     static PyObject* getField( PyObject *myself, char* arg );
 
+    /// If myself encapsulates a node that is not a PythonScript
+    /// node it works just as getField. If a PythonScript node
+    /// it will first check the name against the global attributes
+    /// of the script/module in the PythonScript node and return
+    /// that if it exists. If it does not it will also work as getField.
+    static PyObject* getAttr( PyObject *myself, char* arg );
+
     /// Get the list of fields available in this Node.
     static PyObject* getFieldList( PyObject *myself );
 
@@ -363,7 +370,7 @@ namespace H3D {
   /// \class PyVec2f
   /// \brief Python C Type wrapper around Vec2f
   struct PyVec2f : 
-	public PyVecTypeWrapper< Vec2f, 
+        public PyVecTypeWrapper< Vec2f, 
     &PyVec2f_Type,
     PyVec2f_Name,
     PyVec2f_Check,
@@ -429,7 +436,7 @@ namespace H3D {
   // In the PyVec2d operators a PyVec2f can be used instead of a PyVec2d so we 
   // used the specially defined PyVec2d2f operators for this type.
   struct PyVec2d : 
-	public PyVecTypeWrapper< Vec2d, 
+        public PyVecTypeWrapper< Vec2d, 
     &PyVec2d_Type,
     PyVec2d_Name,
     PythonInternals::PyVec2d2f_Check,

@@ -36,6 +36,11 @@
 
 #ifdef HAVE_PYTHON
 
+#ifndef PyObject_HEAD
+struct _object;
+typedef _object PyObject;
+#endif
+
 namespace H3D {
   
   /// \ingroup X3DNodes 
@@ -68,6 +73,12 @@ namespace H3D {
     /// specified string field name, used when creating nodes via
     /// the H3DNodeDatabase service.
     virtual Field *lookupField( const string &name );
+
+    /// Returns the python object with the specified name from the
+    /// python module used by the PythonScript node. NULL if no
+    /// object with the specified name is found. The return value is a new
+    /// reference to the python object.
+    virtual PyObject *getPythonAttribute( const string &name ); 
 
     /// Adds the fields at the top level of the PythonScript
     /// node and its Python variable name to the given vector.

@@ -167,7 +167,7 @@ namespace H3D {
     0,                         /*tp_itemsize*/
     (destructor)PyNode::dealloc, /*tp_dealloc*/
     0,                         /*tp_print*/
-    (getattrfunc)PyNode::getField,                         /*tp_getattr*/
+    (getattrfunc)PyNode::getAttr,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
     (cmpfunc)PyNode::compare,  /*tp_compare*/
     (reprfunc) PyNode::repr,                         /*tp_repr*/
@@ -368,13 +368,31 @@ self, name, field_type, access_type )" );
     return Py_None;
   }
 
+  PyObject* PyNode::getAttr( PyObject *myself, char* arg ) {
+    PyNode *n = (PyNode*)myself;
+    if (n->ptr) {
+
+      // if PythonScript node, try to get the name as a 
+      PythonScript *ps = dynamic_cast< PythonScript * >( n->ptr );
+      if( ps ) {
+        PyObject *attr = ps->getPythonAttribute( arg );
+        if( attr ) {
+          Py_INCREF( attr );
+          return attr;
+        }
+      } 
+    }
+
+    return PyNode::getField( myself, arg );
+  }
+
   PyObject* PyNode::getField( PyObject *myself, char* arg ) {
-    ostringstream s;
     PyNode *n = (PyNode*)myself;
     if (n->ptr) {
       Field *f = n->ptr->getField( arg );
       if ( f ) 
         return ( PyObject * ) PythonInternals::fieldAsPythonObject( f, false );
+      
     }
     // if arg was not a field, then default to Py_FindMethod:
     return Py_FindMethod(PyNode_methods, (PyObject *)myself, arg);
