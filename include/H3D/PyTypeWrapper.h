@@ -169,6 +169,7 @@ namespace H3D {
         Type c = ValueFunc( veca ) + ValueFunc( vecb );
         return NewFunc( c );
       }
+      Py_INCREF( Py_NotImplemented );
       return Py_NotImplemented;
     }
     
@@ -178,6 +179,7 @@ namespace H3D {
         Type c = ValueFunc( veca ) - ValueFunc( vecb );
         return NewFunc( c );
       }
+      Py_INCREF( Py_NotImplemented );
       return Py_NotImplemented;
     }
     /// Performs multiplication between a instance of the 
@@ -213,6 +215,7 @@ namespace H3D {
           return NewFunc( c );
         } 
       }
+      Py_INCREF( Py_NotImplemented );
       return Py_NotImplemented;
     }
 
@@ -234,6 +237,7 @@ namespace H3D {
           return NewFunc( c );
         }
       }
+      Py_INCREF( Py_NotImplemented );
       return Py_NotImplemented;
     }
 
@@ -243,6 +247,7 @@ namespace H3D {
         Type c = -ValueFunc( vec );
         return NewFunc( c );
       }
+      Py_INCREF( Py_NotImplemented );
       return Py_NotImplemented;
     }
 

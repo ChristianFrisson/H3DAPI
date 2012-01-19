@@ -1007,10 +1007,11 @@ self, name, field_type, access_type )" );
   }
 
   PyObject* PyVec3f::mod( PyObject *veca, PyObject *vecb ) {
-     if( PyVec3f_Check( veca ) && PyVec3f_Check( vecb ) ){
+    if( PyVec3f_Check( veca ) && PyVec3f_Check( vecb ) ){
       Vec3f c = PyVec3f_AsVec3f( veca ) % PyVec3f_AsVec3f( vecb );
       return PyVec3f_FromVec3f( c );
     }
+    Py_INCREF( Py_NotImplemented );
     return Py_NotImplemented;
   }
 
@@ -1233,10 +1234,11 @@ self, name, field_type, access_type )" );
   }
   
   PyObject* PyVec3d::mod( PyObject *veca, PyObject *vecb ) {
-     if( PyVec3d_Check( veca ) && PyVec3d_Check( vecb ) ){
+    if( PyVec3d_Check( veca ) && PyVec3d_Check( vecb ) ){
       Vec3d c = PyVec3d_AsVec3d( veca ) % PyVec3d_AsVec3d( vecb );
       return PyVec3d_FromVec3d( c );
     }
+    Py_INCREF( Py_NotImplemented );
     return Py_NotImplemented;
   }
 
