@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -1132,7 +1132,7 @@ namespace H3D {
   
   extern H3DAPI_API PyTypeObject PyRGBA_Type;
 
-  /// Returns which is the name the PyVec3f is to be installed
+  /// Returns which is the name the PyRGBA is to be installed
   /// as in Python.
   inline string PyRGBA_Name() { return "RGBA"; }   
 
@@ -1142,7 +1142,7 @@ namespace H3D {
   /// Returns an RGBA representation of the contents of o.
   RGBA PyRGBA_AsRGBA( PyObject *o );
 
-  /// Returns true if its argument is a PyVec3f.
+  /// Returns true if its argument is a PyRGBA.
   inline bool PyRGBA_Check( PyObject *o) {
     return PyObject_TypeCheck(o,&PyRGBA_Type);
   }

@@ -112,10 +112,7 @@ class QuitAPIField: public AutoUpdate< SFString > {
 static const wxChar *TITLE     = _T("Particle Systems - Demo ");
 static const wxChar *AUTHOR    = _T("\nRamkumar Shankar\n\nCopyright 2007.  All Rights Reserved.");
 static const wxChar *ABOUT     = _T("About");
-static const wxChar *FILETYPES = _T( "x3d files|*.x3d|"
-                                    "vrml files|*.wrl|"
-                                     "All files|*.*"
-                                   );
+static const wxChar *FILETYPES = wxT( "x3d or vrml 2.0 files|*.x3d;*.x3dv;*.wrl|All files|*.*");
 
 /*******************Constructor*********************/
 WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
@@ -525,7 +522,7 @@ void WxFrame::OnOpenFile(wxCommandEvent & event)
                              GetCurrentPath(),
                              wxT(""),
                              FILETYPES,
-                             wxOPEN,
+                             wxFD_OPEN,
                              wxDefaultPosition) );
 
   //Open an X3D file

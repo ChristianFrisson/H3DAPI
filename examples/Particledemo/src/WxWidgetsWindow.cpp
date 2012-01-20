@@ -29,6 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "WxWidgetsWindow.h"
+#include "WxFrame.h"
+#include "Envini.h"
+#include <H3D/Viewpoint.h>
 
 #ifndef WIN32
 #include <H3D/X3DKeyDeviceSensorNode.h>
@@ -63,7 +66,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   drag_file_func_arg( NULL ),
   is_initialized( false ),
   use_h3d_settings( true ),
-  theWxGLCanvas( NULL ) {
+  theWxGLCanvas( NULL ),
+  fullscreen_initialized ( false ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
   
@@ -83,22 +87,33 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 void WxWidgetsWindow::initWindow() {
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
 
-  int attribList[8];
-  attribList[0] = WX_GL_RGBA;
-  attribList[1] = WX_GL_DOUBLEBUFFER;
-  attribList[2] = WX_GL_DEPTH_SIZE;
-  attribList[3] = 24;
-  attribList[4] = WX_GL_STENCIL_SIZE;
-  attribList[5] = 8;
+  int attribList[20];
+  unsigned int i = 0;
+  attribList[i++] = WX_GL_RGBA;
+  attribList[i++] = WX_GL_DOUBLEBUFFER;
+  attribList[i++] = WX_GL_DEPTH_SIZE;
+  attribList[i++] = 24;
+  attribList[i++] = WX_GL_STENCIL_SIZE;
+  attribList[i++] = 8;
+
+  // fullscreen anti-aliasing only supported on wxWidgets 2.9 or later
+#if( wxMAJOR_VERSION > 2 || wxMINOR_VERSION >= 9 ) 
+  if( useFullscreenAntiAliasing->getValue() ) {
+    attribList[i++] = WX_GL_SAMPLE_BUFFERS;
+    attribList[i++] = 1;
+    attribList[i++] = WX_GL_SAMPLES;
+    attribList[i++] = 4;
+  }
+#endif
 
   // TODO: FIX stereo mode
 #ifdef MACOSX
   // TODO: stereo mode does not work with mac
-  attribList[6] = 0;
+  attribList[i++] = 0;
 #else
   if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
-    attribList[6] = WX_GL_STEREO;
-  attribList[7] = 0;
+    attribList[i++] = WX_GL_STEREO;
+  attribList[i++] = 0;
 #endif
   // if we have a previous window, use same rendering context and destroy it.
   MyWxGLCanvas *old_canvas = theWxGLCanvas;
@@ -125,13 +140,6 @@ void WxWidgetsWindow::initWindow() {
   theWxGLContext = new wxGLContext( theWxGLCanvas );
 #endif
 
-  wxSizer *tmp_sizer = theWindow->GetSizer();
-  if( tmp_sizer ) {
-    tmp_sizer->Add( theWxGLCanvas, 1, wxEXPAND );
-    theWindow->Layout();
-  }
-
-
 #ifdef H3D_WINDOWS
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
 #ifdef H3D_WIN64
@@ -144,8 +152,11 @@ void WxWidgetsWindow::initWindow() {
 #endif
 
   last_fullscreen = !fullscreen->getValue();
+  theWindow->Layout();
   theWindow->Show();
   theWxGLCanvas->Show();
+  theWindow->Raise();
+
 #ifdef USE_EXPLICIT_GLCONTEXT
   theWxGLCanvas->SetCurrent( *theWxGLContext );
 #else
@@ -158,7 +169,7 @@ void WxWidgetsWindow::initWindow() {
 }
 
 void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
-  if( last_fullscreen != fullscreen ) {
+  if ( last_fullscreen != fullscreen || !fullscreen_initialized ) {
     wxTopLevelWindow * tlw = dynamic_cast< wxTopLevelWindow * >(theWindow);
 #ifndef MACOSX
     //TODO: fullscreen does not work well on macosx
@@ -166,6 +177,7 @@ void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
       tlw->ShowFullScreen(fullscreen);
 #endif
     last_fullscreen = fullscreen;
+    fullscreen_initialized= true;
   }
 }
 
@@ -250,8 +262,8 @@ myOwner( _myOwner )
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
-  if( myOwner->is_initialized ) {
-   
+
+  if( myOwner && myOwner->is_initialized ) {
     // resize the window if the size is different from the current size.
     int w = myOwner->width->getValue();
     int h = myOwner->height->getValue();
@@ -434,9 +446,9 @@ void WxWidgetsWindow::MyWxGLCanvas::OnKeyDown(wxKeyEvent& event)
       break;
     case WXK_END: myOwner->onKeyDown( X3DKeyDeviceSensorNode::END, true );
       break;
-    case WXK_PRIOR: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGUP, true );
+    case WXK_PAGEUP: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGUP, true );
       break;
-    case WXK_NEXT: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGDN, true );
+    case WXK_PAGEDOWN: myOwner->onKeyDown( X3DKeyDeviceSensorNode::PGDN, true );
       break;
     case WXK_UP: myOwner->onKeyDown( X3DKeyDeviceSensorNode::UP, true ); break;
     case WXK_DOWN: myOwner->onKeyDown( X3DKeyDeviceSensorNode::DOWN, true );
@@ -474,9 +486,9 @@ void WxWidgetsWindow::MyWxGLCanvas::OnKeyUp(wxKeyEvent& event)
       break;
     case WXK_END: myOwner->onKeyUp( X3DKeyDeviceSensorNode::END, true );
       break;
-    case WXK_PRIOR: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGUP, true );
+    case WXK_PAGEUP: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGUP, true );
       break;
-    case WXK_NEXT: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGDN, true );
+    case WXK_PAGEDOWN: myOwner->onKeyUp( X3DKeyDeviceSensorNode::PGDN, true );
       break;
     case WXK_UP: myOwner->onKeyUp( X3DKeyDeviceSensorNode::UP, true ); break;
     case WXK_DOWN: myOwner->onKeyUp( X3DKeyDeviceSensorNode::DOWN, true );

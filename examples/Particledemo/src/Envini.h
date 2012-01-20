@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2007, SenseGraphics AB
+//    Copyright 2006-2007, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -21,17 +21,14 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file Envini.h
+/// \file envini.h
 /// \brief Header file for environment variables for ParticleDemo.
 ///
 //
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// H3D includes
 #include <H3D/INIFile.h>
-
-// std includes
 #include <fstream>
 
 using namespace std;
@@ -51,7 +48,7 @@ using namespace H3D;
     PATH + ini_file.get( GROUP, VAR ) :                 \
     DEFAULT ) )
 
-string GET_ENV_INI_DEFAULT_FILE( INIFile &ini_file,
+inline string GET_ENV_INI_DEFAULT_FILE( INIFile &ini_file,
                             const string &ENV,
                             const string &DISPLAY_PATH,
                             const string &COMMON_PATH,
@@ -62,15 +59,17 @@ string GET_ENV_INI_DEFAULT_FILE( INIFile &ini_file,
   
   if( ini_file.hasOption(GROUP,VAR) ) { 
     string option = ini_file.get( GROUP, VAR );
-    
-    ifstream inp( (DISPLAY_PATH + option).c_str() );
+    string full_path = string(DISPLAY_PATH) + option;
+    ifstream inp( full_path.c_str() );
     inp.close();
-    if(!inp.fail()) return DISPLAY_PATH + option;
-
+    string r = full_path;
+    if(!inp.fail()) return full_path;
     inp.clear();
-    inp.open( (COMMON_PATH + option).c_str() );
+
+	full_path = (COMMON_PATH + option);
+    inp.open( full_path.c_str() );
     inp.close();
-    if(!inp.fail()) return COMMON_PATH + option;
+    if(!inp.fail()) return full_path;
   }
   return "";
 }
@@ -84,16 +83,3 @@ string GET_ENV_INI_DEFAULT_FILE( INIFile &ini_file,
 ( ini_file.hasOption(GROUP,VAR) ?     \
   ini_file.getBoolean( GROUP, VAR ) : \
   DEFAULT )
-
-
-//  AutoRef needs to be declared global
-/*AutoRef< Scene > scene( new Scene );
-AutoRef< KeySensor > ks( new KeySensor );
-AutoRef< MouseSensor > ms( new MouseSensor );
-#ifndef MACOSX
-  AutoRef< SpaceWareSensor > ss;
-#endif
-AutoRef< Transform > t( new Transform );
-AutoRef< Node > device_info;
-AutoRef< Node > viewpoint;
-AutoRef< Group > g( new Group );*/
