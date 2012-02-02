@@ -33,6 +33,7 @@
 #include <H3D/H3DFunctionNode.h>
 #include <H3D/SFFloat.h>
 #include <H3D/MFBool.h>
+#include <H3D/SFString.h>
 
 namespace H3D {
 
