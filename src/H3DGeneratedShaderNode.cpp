@@ -76,6 +76,7 @@ H3DGeneratedShaderNode::H3DGeneratedShaderNode(
   ostr << hex << sid;
   shader_id = ostr.str();
 
+  suppressUniformWarnings->setValue( true );
   language->setValue( "GLSL" );
 
   ShaderPart *vertex_shader = new ShaderPart;
