@@ -372,7 +372,6 @@ namespace H3D {
     /// Calculates the top, bottom, right and left clipping values for the view
     /// frustum at the near plane. Must be implemented by all subclasses.
     ///
-    /// \param[in] eye_mode The eye to render for (LEFT_EYE, RIGHT_EYE or MONO).
     /// \param[in] width Width of window in number of pixels.
     /// \param[in] height Height of window in number of pixels.
     /// \param[in] clip_near Distance to near plane from viewpoint in meters.
@@ -380,8 +379,6 @@ namespace H3D {
     /// \param[out] bottom The bottom clipping value.
     /// \param[out] right The right clipping value.
     /// \param[out] left The left clipping value.
-    /// \param[in] stereo_info Stereo rendering parameters, used to specify 
-    /// e.g. interocular distance.
     virtual bool windowFromfieldOfView( H3DFloat width, H3DFloat height,
                                         H3DFloat clip_near,
                                         H3DFloat &top, H3DFloat &bottom,

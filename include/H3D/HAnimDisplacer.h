@@ -54,8 +54,8 @@ namespace H3D {
 
     /// Displaces the coordinates in points according to the HAnimDisplacer
     /// fields.
-    /// \params points The points to displace.
-    /// \params displace_transform Transformation matrix to apply to the
+    /// \param points The points to displace.
+    /// \param displace_transform Transformation matrix to apply to the
     /// displacements before adding them to points.
     template< class VectorType >
     inline void displaceCoordinates( VectorType &points,

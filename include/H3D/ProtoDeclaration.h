@@ -73,6 +73,8 @@ namespace H3D {
     /// Constructor.
     /// \param _name The name of the prototype.
     /// \param _body String with the internal scenegraph of the prototype.
+		/// \param _body_extra Contains extra proto bodies that are not part of the
+		/// main proto body.
     ProtoDeclaration( const string &_name,
                       const string &_body = "",
                       const vector<string > &_body_extra = vector<string>() ) :

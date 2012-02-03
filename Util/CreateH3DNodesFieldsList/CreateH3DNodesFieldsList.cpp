@@ -39,6 +39,19 @@
 using namespace std;
 using namespace H3D;
 
+// The nodes and field names in this list are ignored when generating the list of nodes and fields.
+vector< pair< string, string > > deprecated_names_list;
+
+// The nodes and field names in this list are for those where the name of the field is not the name of the variable containing the field.
+// for example Text::stringF which contains the field string.
+vector< pair< string, pair< string, string > > > field_name_not_variable_name;
+
+
+struct less_than_field_name {
+  bool operator()(const pair< string, string > &s1, const pair< string, string > &s2 ) const {
+        return s1.first < s2.first;
+      }	
+};
 
 void writeNode( ostream &os, Node *n ) {
   if( !n ) {
@@ -53,18 +66,35 @@ void writeNode( ostream &os, Node *n ) {
      << node_name << " \\endlink" << endl;
 
   if( db->fieldDBSize() > 0 ) {
-    vector< string > ordered_field_names;
+    vector< pair< string, string > > ordered_field_names;
     for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
          i != db->fieldDBEnd(); i++ ) {
-      ordered_field_names.push_back( i.getFieldDBElement()->getName() );
+			string tmp_field_name = i.getFieldDBElement()->getName();
+			bool valid_name = true;
+			for( unsigned int j = 0; j < deprecated_names_list.size(); j++ )
+			  if( deprecated_names_list[j].first == node_name &&
+				    deprecated_names_list[j].second == tmp_field_name )
+						valid_name = false;
+			if( valid_name ) {
+			  bool field_name_is_variable_name = true;
+				for( unsigned int j = 0; j < field_name_not_variable_name.size(); j++ )
+				  if( field_name_not_variable_name[j].first == node_name &&
+					    field_name_not_variable_name[j].second.first == tmp_field_name ) {
+						ordered_field_names.push_back( pair< string, string >( tmp_field_name, field_name_not_variable_name[j].second.second ) );
+						field_name_is_variable_name = false;
+						break;
+					}
+				if( field_name_is_variable_name )
+          ordered_field_names.push_back( pair< string, string >( tmp_field_name, i.getFieldDBElement()->getField(n)->getName() ) );
+			}
     }
     sort( ordered_field_names.begin(), ordered_field_names.end() );
     os << "///     <ul>" << endl;
 
-    for( vector< string >::iterator i = ordered_field_names.begin();
+    for( vector< pair< string, string > >::iterator i = ordered_field_names.begin();
          i != ordered_field_names.end(); i++ ) {
       os << "///       <li>\\link H3D::" << node_name << "::"
-         << (*i) << " " << (*i) << " \\endlink" << "</li>" << endl;
+         << (*i).second << " " << (*i).first << " \\endlink" << "</li>" << endl;
     }
     os << "///     </ul>" << endl;
   }
@@ -106,6 +136,10 @@ int main(int argc, char* argv[]) {
     auto_ptr<SliderJoint> kurt( new SliderJoint );
   }
 #endif
+
+	deprecated_names_list.push_back( pair< string, string >( "ImportLibrary", "library" ) );
+
+	field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "Text", pair< string, string >( "string", "stringF" ) ) );
 
   string out_file = argv[1];
 

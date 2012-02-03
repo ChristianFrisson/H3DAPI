@@ -76,7 +76,22 @@ namespace H3D {
     //virtual void render();
     virtual void traverseSG( TraverseInfo &ti );
 
+		/// The X3D specification does not describe this field at all.
+		/// The H3D team have no idea what it is supposed to do and as such it
+		/// is ignored.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 0 0 \n
+    /// \dotfile HAnimSegment_centerOfMass.dot
     auto_ptr< SFVec3f    > centerOfMass;
+
+		/// Contains the coordinate node for the segment. The HAnimDisplacer
+		/// nodes in the displacer field will morph the coordinates contained
+		/// in the point field of the coordinate node.
+		///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 0 0 \n
+    /// \dotfile HAnimSegment_coord.dot
     auto_ptr< SFCoordinateNode > coord;
 
     /// The displacers field contains a list of HAnimDisplacer objects that are
@@ -89,7 +104,22 @@ namespace H3D {
     /// \dotfile HAnimSegment_displacers.dot  
     auto_ptr< MFDisplacer >  displacers;
 
+		/// The X3D specification does not describe this field at all.
+		/// The H3D team have no idea what it is supposed to do and as such it
+		/// is ignored.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    /// \dotfile HAnimSegment_mass.dot
     auto_ptr< SFFloat > mass;
+
+    /// The X3D specification does not describe this field at all.
+		/// The H3D team have no idea what it is supposed to do and as such it
+		/// is ignored.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 0 0 0 0 0 0 0 0 \n
+    /// \dotfile HAnimSegment_momentsOfInertia.dot
     auto_ptr< MFFloat > momentsOfInertia;
 
     /// The name field contains a name  that is used for 
@@ -119,7 +149,7 @@ namespace H3D {
     /// Template function to apply the displacements 
     /// to segment coordinates. Since the points can
     /// be both floats or doubles a template is used.
-    /// \params points The original points before any deformation. The 
+    /// \param points The original points before any deformation. The 
     /// displacemet will be added.
     template< class VectorType >
     inline void updateCoordinates( VectorType &points );

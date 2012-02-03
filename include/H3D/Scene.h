@@ -225,7 +225,7 @@ namespace H3D {
 
     /// Remove a program setting value. 
     ///
-    /// \param setting The name of the parameter. If "" the name of the
+    /// \param name The name of the parameter. If "" the name of the
     /// field will be used.
     /// \param section The type if paramter it is, e.g. graphics.
     /// \return true if successful, false otherwise.
@@ -234,7 +234,7 @@ namespace H3D {
 
     /// Remove all program settings referring to a field. 
     ///
-    /// \param  The name field which settings to remove.
+    /// \param  field The field which settings to remove.
     /// \return true if successfully removed, false otherwise.
     static bool removeProgramSetting( Field *field );
 

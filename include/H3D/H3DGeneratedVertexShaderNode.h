@@ -40,9 +40,6 @@ namespace H3D {
   /// fragment shader. Sub-classes should only specify the getVertexShaderString
   /// function which should change the default settings of gl_Position, 
   /// gl_TexCoord[0] or other vertex shader builtin variable. 
-  /// 
-  /// \par Internal routes:
-  /// \dotfile H3DGeneratedVertexShaderNode.dot
   class H3DAPI_API H3DGeneratedVertexShaderNode : 
     public H3DGeneratedShaderNode {
   public:

@@ -40,9 +40,6 @@ namespace H3D {
   /// In order to implement the fragment shader the node might have to specify 
   /// new varying variables in the vertex shader as well as fragment shader so
   /// sub-classes can use any of the shader generation virtual functions.
-  ///
-  /// \par Internal routes:
-  /// \dotfile H3DGeneratedFragmentShaderNode.dot
   class H3DAPI_API H3DGeneratedFragmentShaderNode : 
     public H3DGeneratedShaderNode {
   public:

@@ -318,7 +318,7 @@ namespace H3D {
 
   protected:
     /// The shadow volume used for this geometry when shadows enabled.
-    /// \Note If you decide to use this variable in subclasses getShadowObject
+    /// \note If you decide to use this variable in subclasses getShadowObject
     /// Make sure that you do take care of the circular reference somehow.
     /// See source code for how it is done in X3DGeometryNode.
     AutoRef< Node > shadow_volume;

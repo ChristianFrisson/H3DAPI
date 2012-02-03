@@ -34,6 +34,7 @@
 namespace H3D {
   /// \ingroup Nodes 
   /// \class MovieTexture
+	/// \brief MovieTexture is a class that is not implemented in H3DAPI yet.
   class H3DAPI_API MovieTexture : public H3DVideoTextureNode {
   public:
     

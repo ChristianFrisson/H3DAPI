@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -160,7 +160,7 @@ GraphicsHardwareInfo::GraphicsHardwareInfo( Inst< SFNode      > _metadata,
   type_name = "GraphicsHardwareInfo";
   database.initFields( this );
 
-
+	initialized->setValue( false, id );
 }
 
 bool GraphicsHardwareInfo::initializeInfo() {

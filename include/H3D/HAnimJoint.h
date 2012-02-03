@@ -142,6 +142,7 @@ namespace H3D {
     //virtual void render();
     virtual void traverseSG( TraverseInfo &ti );
 
+		/// Settings for how to render joints.
     typedef enum {
       /// Render the joints only as spheres
       JOINTS, 

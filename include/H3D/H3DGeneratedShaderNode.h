@@ -273,7 +273,7 @@ namespace H3D {
     /// \param glsl_type The glsl type of the field(int, mat3, sampler2D etc).
     /// \param access The access type of the field.
     /// \param field The field to add to the shader.
-    /// \param array_type If != -1 it assumes that the uniform is an
+    /// \param array_size If != -1 it assumes that the uniform is an
     /// array with this size, if not it just a normal variable.
     /// \return A glsl string defining the uniform variable just added to the
     /// shader.

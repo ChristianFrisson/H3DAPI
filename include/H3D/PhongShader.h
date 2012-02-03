@@ -780,7 +780,8 @@ namespace H3D {
     /// a variable of type gl_LightParameters and name light to the 
     /// values of the light source.
     /// 
-    /// \param index The OpenGL light index for the light.
+		/// \param light The light to generate glsl code for.
+    /// \param gl_index The OpenGL light index for the light.
     virtual string setupLight( X3DLightNode *light,
                                unsigned int gl_index );
   };

@@ -45,9 +45,6 @@ namespace H3D {
   /// of all X3DGeometryNode instances in the children field. This will 
   /// override the settings in Appearance nodes such as shaders, texturing,
   /// culling etc.
-  ///
-  /// \par Internal routes:
-  /// \dotfile H3DRenderModeGroupNode.dot
   class H3DAPI_API H3DRenderModeGroupNode : 
   public X3DGroupingNode {
   public:

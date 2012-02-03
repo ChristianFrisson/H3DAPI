@@ -51,6 +51,7 @@ namespace ElevationGridInternals {
   FIELDDB_ELEMENT( ElevationGrid, colorPerVertex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, normalPerVertex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, solid, INPUT_OUTPUT );
+	FIELDDB_ELEMENT( ElevationGrid, attrib, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, creaseAngle, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, xDimension, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, zDimension, INPUT_OUTPUT );

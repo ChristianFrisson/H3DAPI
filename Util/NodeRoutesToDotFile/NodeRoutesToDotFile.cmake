@@ -209,6 +209,7 @@ void writeNode( string out_dir, Node *n ) {
 #include <H3D/X3DGroupingNode.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/Scene.h>
+#include <H3D/H3DGeneratedShaderNode.h>
 
 #ifdef HAVE_UI
 #include <H3D/UI/Frame.h>
@@ -290,6 +291,8 @@ int main(int argc, char* argv[]) {
   writeNode( out_dir, new X3DLightNode );
   resetSceneTimeField();
   writeNode( out_dir, new X3DGroupingNode );
+  resetSceneTimeField();
+	writeNode( out_dir, new H3DGeneratedShaderNode );
   resetSceneTimeField();
 #ifdef HAVE_UI
   writeNode( out_dir, new H3DWidgetNode );

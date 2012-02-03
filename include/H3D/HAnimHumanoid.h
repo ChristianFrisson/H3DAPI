@@ -375,11 +375,11 @@ namespace H3D {
       /// Template function to apply the joint movements and displacements
       /// to original skin coordinates and notmals. Since the points can
       /// be both floats or doubles a template is used.
-      /// \params orig_points The original points before any deformation.
-      /// \params orig_normals The original normals before any deformation.
-      /// \params modified_points At input a copy of orig_points, at function
+      /// \param orig_points The original points before any deformation.
+      /// \param orig_normals The original normals before any deformation.
+      /// \param modified_points At input a copy of orig_points, at function
       /// return it will contain the points with the deformations applied.
-      /// \params modified_normals  At input a copy of orig_normals, at function
+      /// \param modified_normals  At input a copy of orig_normals, at function
       /// return it will contain the normals with the deformations applied.
       template< class VectorType >
       void updateCoordinates( const VectorType &orig_points,

@@ -41,9 +41,6 @@ namespace H3D {
   ///
   /// More specifically the texture can be defined by a single OpenGL 
   /// texture id.
-  ///
-  /// \par Internal routes:
-  /// \dotfile H3DSingleTextureNode.dot  
   class H3DAPI_API H3DSingleTextureNode : 
     public X3DTextureNode {
   public:
