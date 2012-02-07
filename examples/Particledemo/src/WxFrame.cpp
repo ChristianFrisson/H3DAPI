@@ -402,7 +402,7 @@ bool WxFrame::loadFile( const string &filename) {
     }
 
     DeviceInfo::DeviceInfoList DEVlist = DeviceInfo::getAllDeviceInfos();
-    int devcount = DEVlist.size();
+    int devcount = int( DEVlist.size() );
     Console (3) << devcount << endl;
 
     Console(3) << "Loading " << filename << endl;

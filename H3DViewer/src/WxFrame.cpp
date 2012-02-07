@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2007, SenseGraphics AB
+//    Copyright 2006-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -826,7 +826,7 @@ bool WxFrame::loadFile( const string &filename) {
         }
       }
     }
-    unsigned int device_info_size = DeviceInfo::getAllDeviceInfos().size();
+    unsigned int device_info_size = (unsigned int)(DeviceInfo::getAllDeviceInfos().size());
 
     Console(3) << "Loading " << filename << endl;
     scene->loadSceneRoot( filename );
@@ -2505,7 +2505,7 @@ void WxFrame::buildNavMenu () {
           }
         }
       }
-      navTypeCount = allowedTypes.size();
+      navTypeCount = int(allowedTypes.size());
       int j = 0;
       for (vector<string>::iterator menuList = allowedTypes.begin(); 
            menuList != allowedTypes.end(); menuList++) {

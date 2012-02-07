@@ -534,12 +534,19 @@ bool H3DViewerFieldValuesPanelPropGrid::PropertyUpdater::isDefaultValue( Field *
     value_size = mfield->getValueAsVoidPtr( value, nr_elements, data_size );
   } 
 
-  if( value_size != default_value_size ) return false;
+  if( value_size != default_value_size ) {
+		delete [] value;
+		return false;
+	}
 
   for( unsigned int i = 0; i < value_size; i++ ) {
-    if( value[i] != default_value.get()[i] ) return false;
+    if( value[i] != default_value.get()[i] ) {
+			delete [] value;
+			return false;
+		}
   }
   
+	delete [] value;
   return true;
 } 
 

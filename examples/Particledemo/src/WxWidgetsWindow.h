@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2007, SenseGraphics AB
+//    Copyright 2006-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -37,11 +37,6 @@
     #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild the library"
 #endif
 
-// Define this if you want the gl context be created explicitly. This does
-// not work under OSX v2.8 wxWidgets and does not really add anything unless
-// you want to share rendering contexts. So by default we do not use it.
-//#define USE_EXPLICIT_GLCONTEXT
-
 namespace H3D {
 
   /// \ingroup Nodes
@@ -57,14 +52,6 @@ namespace H3D {
     class MyWxGLCanvas: public wxGLCanvas
     {
     public:
-      MyWxGLCanvas(WxWidgetsWindow *_myOwner, 
-                   wxWindow* _parent,
-                   wxGLContext *shared_context,
-                   wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
-                   int* _attribList = 0, long _style=0, 
-                   const wxString& _name = wxT("MyWxGLCanvas"),
-                   const wxPalette& _palette = wxNullPalette );
-
       MyWxGLCanvas(WxWidgetsWindow *_myOwner, wxWindow* _parent,
                    wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
                    int* _attribList = 0, long _style=0, 
@@ -119,6 +106,8 @@ namespace H3D {
       if( !have_parent ) {
         theWindow->Destroy();
       }
+			// Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
+			delete theWxGLContext;
     }
 
     /// Calls wxGLCanvas::SwapBuffers
@@ -200,9 +189,7 @@ namespace H3D {
     bool have_parent;
     wxWindow * theWindow;
     MyWxGLCanvas * theWxGLCanvas;
-#ifdef USE_EXPLICIT_GLCONTEXT
     wxGLContext * theWxGLContext;
-#endif
 	bool last_fullscreen;
 
   bool fullscreen_initialized;

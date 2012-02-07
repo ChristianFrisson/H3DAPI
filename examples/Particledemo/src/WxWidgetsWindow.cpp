@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2007, SenseGraphics AB
+//    Copyright 2006-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -117,28 +117,20 @@ void WxWidgetsWindow::initWindow() {
 #endif
   // if we have a previous window, use same rendering context and destroy it.
   MyWxGLCanvas *old_canvas = theWxGLCanvas;
-
-  if( old_canvas ) {
-    theWxGLCanvas = 
-      new MyWxGLCanvas( this,  theWindow, 
-                        old_canvas->GetContext(), -1, wxDefaultPosition,
-                        wxSize( width->getValue(), height->getValue() ), 
-                        attribList );
-    old_canvas->Destroy();
-  } else {
-    theWxGLCanvas = 
+	theWxGLCanvas = 
       new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
                         wxSize( width->getValue(), height->getValue() ), 
                         attribList );
+
+  if( old_canvas ) {
+    old_canvas->Destroy();
   }
   
 #if wxUSE_DRAG_AND_DROP
   theWxGLCanvas->SetDropTarget( new DragAndDropFile( this ) );
 #endif
 
-#ifdef USE_EXPLICIT_GLCONTEXT
   theWxGLContext = new wxGLContext( theWxGLCanvas );
-#endif
 
 #ifdef H3D_WINDOWS
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
@@ -157,11 +149,9 @@ void WxWidgetsWindow::initWindow() {
   theWxGLCanvas->Show();
   theWindow->Raise();
 
-#ifdef USE_EXPLICIT_GLCONTEXT
-  theWxGLCanvas->SetCurrent( *theWxGLContext );
-#else
-  theWxGLCanvas->SetCurrent();
-#endif
+	if( theWxGLCanvas->IsShownOnScreen() ) {
+		theWxGLCanvas->SetCurrent( *theWxGLContext );
+	}
   glClearColor( 0, 0, 0, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClear( GL_COLOR_BUFFER_BIT );
@@ -186,11 +176,9 @@ void WxWidgetsWindow::swapBuffers() {
 }
 
 void WxWidgetsWindow::makeWindowActive() {
-#ifdef USE_EXPLICIT_GLCONTEXT
-  theWxGLCanvas->SetCurrent( *theWxGLContext );
-#else
-  theWxGLCanvas->SetCurrent();
-#endif
+	if( theWxGLCanvas->IsShownOnScreen() ) {
+		theWxGLCanvas->SetCurrent( *theWxGLContext );
+	}
 }
 
 BEGIN_EVENT_TABLE(WxWidgetsWindow::MyWxGLCanvas, wxGLCanvas)
@@ -225,38 +213,9 @@ WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
                                                   long _style, 
                                                   const wxString& _name,
                                                   const wxPalette& _palette ):
-#ifdef USE_EXPLICIT_GLCONTEXT
 wxGLCanvas( _parent, _id, _attribList, _pos, _size,
             _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
-            _palette ),
-#else
-wxGLCanvas( _parent, _id, _pos, _size,
-            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
-	    _attribList,  _palette ),
-#endif
-myOwner( _myOwner )
-{
-}
-
-WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
-                                             wxWindow* _parent,
-                                             wxGLContext *context,
-                                             wxWindowID _id,
-                                             const wxPoint& _pos,
-                                             const wxSize& _size,
-                                             int* _attribList,
-                                             long _style, 
-                                             const wxString& _name,
-                                             const wxPalette& _palette ):
-#ifdef USE_EXPLICIT_GLCONTEXT
-  wxGLCanvas( _parent, context,_id, _attribList, _pos, _size,
-            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
-            _palette ),
-#else
-  wxGLCanvas( _parent, context, _id, _pos, _size,
-            _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
-	    _attribList,  _palette ),
-#endif
+						_palette ),
 myOwner( _myOwner )
 {
 }
@@ -280,16 +239,13 @@ void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnSize( wxSizeEvent& event ) {
+#if wxOSX_USE_CARBON
   wxGLCanvas::OnSize(event);
+#endif
   // set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
   int w, h;
   GetClientSize(&w, &h);
-#ifdef USE_EXPLICIT_GLCONTEXT
   myOwner->reshape( w, h );
-#else
-  if ( GetContext() )
-    myOwner->reshape( w, h );
-#endif
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnPaint( wxPaintEvent& WXUNUSED(event))
