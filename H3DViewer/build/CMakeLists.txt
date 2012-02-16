@@ -91,7 +91,49 @@ ENDIF(HAPI_FOUND)
 
 # WxWidgets.
 SET(WXWINDOWS_USE_GL 1)
-SET(wxWidgets_USE_LIBS base core gl adv richtext html)	
+# find wx library propgrid
+# The propgrid code does not work properly on Ubuntu 11.10 with the installed CMake and wx (2.8).
+# It returns true even though propgrid does not exist, it probably ignores USE_LIBS that does not exist.
+# Since there is no wxWidgets_VERSION variable or something like that there is code to check the end of
+# include path. I have no idea if this would work on all other UNIX systems as well. NOTE, report
+# this to CMAKE unless it is reported already.
+SET(wxWidgets_USE_LIBS propgrid)	
+SET( wxWidgets_FIND_QUIETLY 1 )
+SET(wxWidgets_FOUND 0)
+IF(WIN32)
+  FIND_PACKAGE(wxWidgetsWin)
+  IF(wxWidgets_FOUND)
+    INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+  ENDIF(wxWidgets_FOUND)
+ENDIF(WIN32)
+
+IF(wxWidgets_FOUND)
+ELSE(wxWidgets_FOUND)
+  FIND_PACKAGE(wxWidgets)
+ENDIF(wxWidgets_FOUND)
+
+IF(wxWidgets_FOUND)
+  IF( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
+    SET( wxWIDGETS_VERSION29_TMP FALSE )
+    FOREACH( TMP_INCLUDE_DIR ${wxWidgets_INCLUDE_DIRS} )
+      IF( ${TMP_INCLUDE_DIR} MATCHES "wx\\-2\\.9$" )
+        SET( wxWIDGETS_VERSION29_TMP TRUE )
+      ENDIF( ${TMP_INCLUDE_DIR} MATCHES "wx\\-2\\.9$" )
+    ENDFOREACH( TMP_INCLUDE_DIR ${wxWidgets_INCLUDE_DIRS} )
+    IF( NOT wxWIDGETS_VERSION29_TMP )
+      SET(wxWidgets_FOUND 0)
+    ENDIF( NOT wxWIDGETS_VERSION29_TMP )
+  ENDIF( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
+ENDIF(wxWidgets_FOUND )
+
+IF(wxWidgets_FOUND)
+  SET( HAVE_WXPROPGRID 1 )
+  SET(wxWidgets_USE_LIBS base core gl adv richtext html propgrid)	
+ELSE(wxWidgets_FOUND )
+  MESSAGE( STATUS "wxWidgets propgrid not found. Needed for better tree view and program setting choice in H3DViewer. Part of wxWidgets 2.9." )
+  SET(wxWidgets_USE_LIBS base core gl adv richtext html)
+ENDIF(wxWidgets_FOUND )
 
 # find wx libraries except propgrid
 IF(WIN32)
@@ -110,35 +152,6 @@ ELSE(wxWidgets_FOUND)
     SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
   ENDIF(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
-
-# find wx library propgrid
-SET(wxWidgets_USE_LIBS propgrid)	
-SET( wxWidgets_FIND_QUIETLY 1 )
-SET(wxWidgets_FOUND 0)
-
-IF(WIN32)
-  FIND_PACKAGE(wxWidgetsWin)
-  IF(wxWidgets_FOUND)
-    INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
-    SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
-  ENDIF(wxWidgets_FOUND)
-ENDIF(WIN32)
-
-IF(wxWidgets_FOUND)
-ELSE(wxWidgets_FOUND)
-  FIND_PACKAGE(wxWidgets)
-  IF(wxWidgets_FOUND)
-    INCLUDE(${wxWidgets_USE_FILE})
-    SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
-  ENDIF(wxWidgets_FOUND)
-ENDIF(wxWidgets_FOUND)
-
-
-IF(wxWidgets_FOUND)
-  SET( HAVE_WXPROPGRID 1 )
-ELSE(wxWidgets_FOUND )
-  MESSAGE( STATUS "wxWidgets propgrid not found. Needed for better tree view and program setting choice in H3DViewer. Part of wxWidgets 2.9." )
-ENDIF(wxWidgets_FOUND )
 
 
 # Create build files.
