@@ -156,12 +156,15 @@ void IndexedTriangleSet::render() {
     if( tex_coords_per_vertex &&
       coordinate_node->nrAvailableCoords() > 
       tex_coord_node->nrAvailableTexCoords() ) {
+      // check if texture coordinate generator
+      if( tex_coord_node->nrAvailableTexCoords() != -1 ) {
         stringstream s;
         s << "Must contain at least as many elements as coord (" 
           << coordinate_node->nrAvailableCoords() << ") in \"" 
           << getName() << "\" node. ";
         throw NotEnoughTextureCoordinates( tex_coord_node->nrAvailableTexCoords(),
           s.str(), H3D_FULL_LOCATION );
+      }
     }
 
     // if we have a color node we use the color from that instead
