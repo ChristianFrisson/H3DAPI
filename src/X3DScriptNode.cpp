@@ -81,7 +81,7 @@ void X3DScriptNode::SFScriptString::update() {
         is.seekg (0, ios::beg);
         
       // allocate memory:
-        buffer = new char [length + 1];
+        buffer = new char [(unsigned int)length + 1];
         // read data as a block:
         is.read (buffer,length);
         length = is.gcount();
@@ -99,7 +99,7 @@ void X3DScriptNode::SFScriptString::update() {
   }
   Console(4) << "None of the urls [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-    //  Console(4) << " \"" << *i << "\"";
+    Console(4) << " \"" << *i << "\"";
   }
   Console(4) << "] could be loaded in Script node.";
   script_node->setURLUsed( "" );
