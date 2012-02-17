@@ -50,6 +50,13 @@ namespace H3D {
   /// minimum < maximum. The value of fieldOfView represents the minimum
   /// viewing extent in any direction axis perpendicular to the view.
   ///
+  /// The retainAspectRatio field determines if the view should retain
+  /// the same aspect ratio as the current window or if the values
+  /// in fieldOfView should be used directly. If true the view frustum
+  /// can be extended in one direction in order to have the same aspect
+  /// ratio as the window it is being rendered into. If false, the
+  /// values in fieldOfView will always be used as is.
+  ///
   /// A browser with a rectangular viewing projection has the following
   /// relationship:
   ///
@@ -74,7 +81,8 @@ namespace H3D {
               Inst< SFTime    >  _bindTime         = 0,
               Inst< SFBool    >  _isBound          = 0,
               Inst< SFMatrix4f > _accForwardMatrix = 0,
-              Inst< SFMatrix4f > _accInverseMatrix = 0 );
+              Inst< SFMatrix4f > _accInverseMatrix = 0,
+              Inst< SFBool    > _retainAspectRatio = 0 );
 
 
     // calculate the horizontal and vertical field of view components
@@ -100,6 +108,17 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> -1, -1, 1, 1 \n
     auto_ptr< MFFloat    > fieldOfView;
+
+    /// The retainAspectRatio field determines if the view should retain
+    /// the same aspect ratio as the current window or if the values
+    /// in fieldOfView should be used directly. If true the view frustim
+    /// can be extended in one direction in order to have the same aspect
+    /// ratio as the window it is being rendered into. If false, the
+    /// values in fieldOfView will always be used as is.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    auto_ptr< SFBool > retainAspectRatio;
     
     static H3DNodeDatabase database;
   };

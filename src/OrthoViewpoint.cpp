@@ -49,6 +49,7 @@ H3DNodeDatabase OrthoViewpoint::database(
 
 namespace OrthoViewpointInternals {
   FIELDDB_ELEMENT( OrthoViewpoint, fieldOfView, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( OrthoViewpoint, retainAspectRatio, INPUT_OUTPUT );
 }
 
 
@@ -66,12 +67,14 @@ OrthoViewpoint::OrthoViewpoint(
                      Inst< SFTime     > _bindTime,
                      Inst< SFBool     > _isBound,
                      Inst< SFMatrix4f > _accForwardMatrix,
-                     Inst< SFMatrix4f > _accInverseMatrix ) :
+                     Inst< SFMatrix4f > _accInverseMatrix,
+                     Inst< SFBool    > _retainAspectRatio  ) :
   X3DViewpointNode( _set_bind, _centerOfRotation, _description, _jump,
                     _metadata, _orientation, _position,
                     _retainUserOffsets, _bindTime, _isBound,
                     _accForwardMatrix, _accInverseMatrix ),
-  fieldOfView     ( _fieldOfView      ) {
+  fieldOfView     ( _fieldOfView      ),
+  retainAspectRatio( _retainAspectRatio ) {
   
   type_name = "OrthoViewpoint";
   database.initFields( this );
@@ -80,6 +83,8 @@ OrthoViewpoint::OrthoViewpoint(
   fieldOfView->push_back( -1 );
   fieldOfView->push_back( 1 );
   fieldOfView->push_back( 1 );
+
+  retainAspectRatio->setValue( true );
 }
 
 bool OrthoViewpoint::windowFromfieldOfView( H3DFloat width, H3DFloat height,
@@ -104,7 +109,8 @@ bool OrthoViewpoint::windowFromfieldOfView( H3DFloat width, H3DFloat height,
     dy > Constants::f_epsilon ) {
 
     H3DFloat view_point_aspect_ratio = dx / dy;
-    if( H3DAbs( view_point_aspect_ratio - aspect_ratio ) <=
+    if( !retainAspectRatio->getValue() || 
+        H3DAbs( view_point_aspect_ratio - aspect_ratio ) <=
         Constants::f_epsilon ) {
       top = field_of_view[3];
       bottom = field_of_view[1];
