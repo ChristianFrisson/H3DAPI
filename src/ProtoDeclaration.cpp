@@ -173,6 +173,6 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeX3D( PrototypeInstance 
   parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
   return handler.getResultingNode();
 #else
-  return NULL;
+  return AutoRef< Node >();
 #endif
 }
