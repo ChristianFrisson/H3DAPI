@@ -1621,7 +1621,7 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
     // _WIN32_WINNT or _WIN32_WINDOWS are defined before including windows.h
     case 0x020A: {
       short upOrDown = HIWORD( wParam );
-      onMouseMotionAction( upOrDown > 0 ? 
+      onMouseWheelAction( upOrDown > 0 ? 
                                   MouseSensor::FROM : MouseSensor::TOWARDS );
       break;
     }
