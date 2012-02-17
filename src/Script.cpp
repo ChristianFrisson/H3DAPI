@@ -102,6 +102,15 @@ bool Script::addField( const string &name,
                        const Field::AccessType &access,
                        Field *field ) {
   bool b = H3DDynamicFieldsObject::addField( name, access, field );
+
+  /// TODO: do proper access check in SpiderMonkeyTypes.cpp. For now
+  /// disable so that. outputOnly fields would not work otherwise
+  /// They should be settable from within the script but not from 
+  /// outside.
+  if( b ) {
+    field->setAccessCheck( false );
+  }
+
 #ifdef HAVE_SPIDERMONKEY
   if( sai.isInitialized() ) {
     sai.addField( field );
