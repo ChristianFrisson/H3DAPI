@@ -1265,6 +1265,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                                         near_plane_pos,
                                         far_plane_pos );
     }
+
     for( unsigned int i = 0; i < left_mouse_button.size(); i++ ) {
       bool tmp_button = left_mouse_button[i];
       if( previous_left_mouse_button != tmp_button ) {
@@ -1402,8 +1403,10 @@ void H3DWindowNode::onKeyUp( int key, bool special ) {
 
 void H3DWindowNode::onMouseButtonAction( int button, int state ) {
   MouseSensor::buttonCallback( button, state );
-  if( button == MouseSensor::LEFT_BUTTON )
+  if( button == MouseSensor::LEFT_BUTTON ) {
+    left_mouse_button.push_back( state == MouseSensor::DOWN );
     h3d_navigation->leftButtonUpdate( state == MouseSensor::DOWN );
+  }
 }
 
 void H3DWindowNode::onMouseMotionAction( int x, int y ) {
@@ -1571,55 +1574,46 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
 
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK: {
-      MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
-                                   MouseSensor::DOWN );
-      left_mouse_button.push_back( true );
-      h3d_navigation->leftButtonUpdate( true );
+      onMouseButtonAction( MouseSensor::LEFT_BUTTON,
+                           MouseSensor::DOWN );
       break;
     }
 
     case WM_LBUTTONUP: {
-      MouseSensor::buttonCallback( MouseSensor::LEFT_BUTTON,
-                                   MouseSensor::UP );
-      left_mouse_button.push_back( false );
-      h3d_navigation->leftButtonUpdate( false );
+      onMouseButtonAction( MouseSensor::LEFT_BUTTON,
+                           MouseSensor::UP );
       break;
     }
 
     case WM_MBUTTONDOWN:
     case WM_MBUTTONDBLCLK: {
-      MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
-                                   MouseSensor::DOWN );
+      onMouseButtonAction( MouseSensor::MIDDLE_BUTTON,
+                           MouseSensor::DOWN );
       break;
     }
 
     case WM_MBUTTONUP: {
-      MouseSensor::buttonCallback( MouseSensor::MIDDLE_BUTTON,
-                                   MouseSensor::UP );
+      onMouseButtonAction( MouseSensor::MIDDLE_BUTTON,
+                           MouseSensor::UP );
       break;
     }
 
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK: {
-      MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
-                                   MouseSensor::DOWN );
+      onMouseButtonAction( MouseSensor::RIGHT_BUTTON,
+                           MouseSensor::DOWN );
       break;
     }
 
     case WM_RBUTTONUP: {
-      MouseSensor::buttonCallback( MouseSensor::RIGHT_BUTTON,
-                                   MouseSensor::UP );
+      onMouseButtonAction( MouseSensor::RIGHT_BUTTON,
+                           MouseSensor::UP );
       break;
     }
 
     case WM_MOUSEMOVE: {
       // Set mouse_position variable and call MouseSensor function.
-      mouse_position[0] = LOWORD(lParam);
-      mouse_position[1] = HIWORD(lParam);
-      MouseSensor::motionCallback( mouse_position[0],
-                                   mouse_position[1] );
-      h3d_navigation->motionUpdate( mouse_position[0],
-                                    mouse_position[1] );
+      onMouseMotionAction( LOWORD(lParam), HIWORD(lParam) );
       break;
     }
 
@@ -1627,9 +1621,8 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
     // _WIN32_WINNT or _WIN32_WINDOWS are defined before including windows.h
     case 0x020A: {
       short upOrDown = HIWORD( wParam );
-      MouseSensor::wheelCallback( upOrDown > 0 ? 
-                          MouseSensor::FROM : MouseSensor::TOWARDS );
-      h3d_navigation->scrollWheelUpdate( upOrDown > 0 );
+      onMouseMotionAction( upOrDown > 0 ? 
+                                  MouseSensor::FROM : MouseSensor::TOWARDS );
       break;
     }
   }
