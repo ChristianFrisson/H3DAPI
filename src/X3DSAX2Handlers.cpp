@@ -1132,6 +1132,32 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
   }
 }
 
+void X3DSAX2Handlers::startCDATA() {
+  inside_cdata = true;
+  cdata = "";
+}
+ 
+
+void X3DSAX2Handlers::endCDATA() {
+  inside_cdata = false;
+  NodeElement &node_element = node_stack.top();
+  node_element.setCDATA( cdata );
+}
+
+//void X3DSAX2Handlers::comment( const XMLCh *const chars, 
+//                             const XMLSize_t length ) {
+  
+   ///  if( length > 0 )
+  //Console(4) << "Comment: " << toString( chars ) << endl;
+//}
+
+void X3DSAX2Handlers::characters(const XMLCh *const chars, 
+                                 const XMLSize_t length  ) {
+  if( inside_cdata && length > 0 ) {
+    cdata = cdata + toString( chars );
+  }
+}  
+
 // X3DSAX2Handlers: Implementation of the SAX DocumentHandler interface
 void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                                    const XMLCh* const localname, 
@@ -1503,6 +1529,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
 void X3DSAX2Handlers::endElement (const XMLCh *const uri,
                                   const XMLCh *const localname, 
                                   const XMLCh *const qname) {
+
   if( proto_declaration ) {
     protoEndElement( uri, localname, qname );
     return;
@@ -1544,6 +1571,13 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
 
   // we have a node type
   if( new_node ) {
+    if( new_node_element.haveCDATA() ) {
+      if( X3DUrlObject *url_object = 
+          dynamic_cast< X3DUrlObject * >( new_node ) ) {
+        url_object->url->push_back( new_node_element.getCDATA() );
+      }
+    }
+
     // intialize the node if it is not already initialized
     if( !new_node->isInitialized() && new_node->getManualInitialize() ) 
       new_node->initialize();

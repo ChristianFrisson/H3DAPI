@@ -94,7 +94,9 @@ namespace H3D {
         locator( NULL ),
         profile_set( false ),
         meta_set( false ),
-        inside_head(false){
+        inside_head(false),
+        inside_cdata( false ) {
+        
         if( !DEF_map ) {
           DEF_map = new DEFNodes();
         }
@@ -151,7 +153,24 @@ namespace H3D {
                         const XMLCh* const localname, 
                         const XMLCh* const qname, 
                         const Attributes& attrs);
-        
+      
+      /// Handler for the SAX LexicalHandler interface.
+      //void comment( const XMLCh *const chars, 
+      //const XMLSize_t length );
+
+      /// Handler for the SAX LexicalHandler interface.
+      /// Called on start of CDATA.
+      void startCDATA();
+
+      /// Handler for the SAX LexicalHandler interface.
+      /// Called on start of CDATA.
+      void endCDATA();
+  
+      /// Handler for the SAX DocumentHandler interface.
+      /// Receive notification of character data inside an element.
+      void characters( const XMLCh *const chars, 
+                       const XMLSize_t length );
+
       /// Handler for the SAX ContentHandler interface.
       /// Builds the H3D scene graph.
       /// \param uri the URI of the associated namespace for this element
@@ -258,6 +277,7 @@ namespace H3D {
         NodeElement( const NodeElement& ne ) {
           node = ne.node;
           container_field = ne.container_field;
+          cdata = ne.cdata;
           if( node ) node->ref();
         }
 
@@ -285,6 +305,21 @@ namespace H3D {
           container_field = s;
         }
             
+        /// Set CDATA associated with the node.
+        void setCDATA( const string &s ) {
+          cdata = s;
+        }
+
+        /// Returns true if there is any CDATA associated with the node.
+        bool haveCDATA() {
+          return !cdata.empty();
+        }
+
+        /// Get the CDATA associated with the node.
+        const string &getCDATA() {
+          return cdata;
+        }
+
         /// Get the container field value. 
         const string &getContainerField() { 
           return container_field;
@@ -292,7 +327,7 @@ namespace H3D {
       private:
         string container_field;
         Node *node;
-            
+        string cdata;
       };
 
       /// Returns a string with the current location as given
@@ -378,7 +413,15 @@ namespace H3D {
       /// Set after a META is set
       bool meta_set;
       bool inside_head;
-        
+
+      /// Set to true while parser is parsing characters inside
+      /// a CDATA construct.
+      bool inside_cdata;
+
+      /// The characters collected inside a CDATA construct. Set
+      /// in the characters function when inside_cdata is true.
+      /// Reset in endCDATA fucntion.
+      string cdata;
     };
 
     H3DAPI_API SAX2XMLReader* getNewXMLParser();

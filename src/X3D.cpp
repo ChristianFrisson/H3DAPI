@@ -104,6 +104,7 @@ Group* X3D::createX3DFromURL( const string &url,
   X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
+  parser->setLexicalHandler( &handler );
 #endif
 
   if( resolved_url == "" ) {
@@ -222,6 +223,7 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
     s << str;
     parser->setContentHandler(&handler);
     parser->setErrorHandler(&handler); 
+    parser->setLexicalHandler( &handler );
     parser->parse( IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
     return handler.getResultingNode();
 #else
@@ -274,6 +276,7 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
+  parser->setLexicalHandler( &handler );
 #endif
 
   if( resolved_url == "" ) {
@@ -367,7 +370,8 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
   auto_ptr< SAX2XMLReader > parser( getNewXMLParser() );
   X3DSAX2Handlers handler( dn, exported_nodes, prototypes );
   parser->setContentHandler(&handler);
-  parser->setErrorHandler(&handler); 
+  parser->setErrorHandler(&handler);
+  parser->setLexicalHandler( &handler ); 
   XMLCh *system_id_ch = new XMLCh[ system_id.size() + 1 ];
   for( unsigned int i = 0; i < system_id.size(); i++ ) {
     system_id_ch[i] = system_id[i];
