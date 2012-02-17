@@ -37,7 +37,7 @@ using namespace H3D;
 X3DUrlObject::X3DUrlObject( 
                            Inst< MFString>  _url ):
   url( _url ),
-  url_used( "" ),
+  url_used( "" ), 
   url_base( ResourceResolver::getBaseURL() ) {
   
 }
@@ -47,11 +47,14 @@ string X3DUrlObject::resolveURLAsFile( const string &url,
                                        bool *is_tmp_file ) {
   for( list< string >::const_iterator i = supported_inline_prefixes.begin();
        i != supported_inline_prefixes.end(); i++ ) {
-    if( url.compare( 0, (*i).size(), *i ) == 0 ) {
+    size_t start = 0;
+    size_t url_size = url.size();
+    while( start < url_size && isspace(url[start]) ) start++;
+    if( url.compare( start, (*i).size(), *i ) == 0 ) {
       string tmp_file = ResourceResolver::getTmpFileName();
       if( tmp_file != "" ) {
         ofstream os( tmp_file.c_str() );
-        os << url.substr((*i).size(), url.size()-1);
+        os << url.substr(start+(*i).size(), url.size()-1);
         os.close();
         if( is_tmp_file ) *is_tmp_file = true;
         return tmp_file;
