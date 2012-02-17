@@ -198,6 +198,7 @@ void Image3DTexture::render() {
     throw e;
     }
   } else {
+    texture_target = getTextureTarget();
     disableTexturing();
   }
 }

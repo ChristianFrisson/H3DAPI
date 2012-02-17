@@ -210,6 +210,7 @@ void ImageTexture::render() {
       throw e;
     }
   } else {
+    texture_target = getTextureTarget();
     disableTexturing();
   }
 }
