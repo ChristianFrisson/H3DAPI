@@ -61,11 +61,26 @@ void X3DPrototypeInstance::render() {
       prototyped_node.get()->render();
     }
   }
+
+  for( unsigned int i = 0; i < prototyped_node_extras.size(); i++ ) {
+    H3DDisplayListObject *dlo = 
+      dynamic_cast< H3DDisplayListObject * >( prototyped_node_extras[i] );
+    if( dlo ) {
+      dlo->displayList->callList();
+    } else {
+      prototyped_node_extras[i]->render();
+    }
+  }
 }
  
 void X3DPrototypeInstance::traverseSG( TraverseInfo &ti ) {
   if( prototyped_node.get() )
     prototyped_node.get()->traverseSG( ti );
+
+  for( unsigned int i = 0; i < prototyped_node_extras.size(); i++ ) {
+    prototyped_node_extras[i]->traverseSG( ti );
+  }
+  
 }
 
 bool X3DPrototypeInstance::connectField( const string &proto_field_name,
