@@ -199,6 +199,11 @@ string SpiderMonkeySAI::loadScript( const string &script, const string &filename
 
     str = JS_ValueToString(cx, rval); 
     return JS_GetStringBytes(str);
+  } else {
+    // Make sure top-level error is reported appropriately.
+    if( JS_IsExceptionPending( cx ) ) {
+      JS_ReportPendingException( cx );
+    }
   }
   return "";
 }

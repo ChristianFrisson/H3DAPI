@@ -74,9 +74,7 @@ Scene::CallbackCode Script::initEngineCallback( void *data ) {
 #ifdef HAVE_SPIDERMONKEY
   string s = script->scriptString->getValue();
   script->sai.initializeScriptEngine( script );
-  if( script->sai.loadScript( s, script->getURLUsed() ) == "" ) {
-    Console(4) << "Could not load script: " << script->getURLUsed() << endl;
-  }
+  script->sai.loadScript( s, script->getURLUsed() );
 #endif
   return Scene::CALLBACK_DONE;
 }
