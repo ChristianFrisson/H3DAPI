@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2'>
+  <head>
+    <meta name='title' content='TestAll.x3d'/>
+    <meta name='description' content='"This file should be used for a full test suite."
+                                      "It will output information to console as well as a file named h3d_testsuite_yyyymmdd_tttt.txt."
+                                      "Files in H3DAPI\examples\TestSuite will be loaded by this file."
+                                      "Those files must contain a viewpoint named VP"'/>
+    <meta name='editors' content='SenseGraphics AB'/>
+  </head>
+  <Scene>
+
+    <NavigationInfo type='"ANY"' transitionType='TELEPORT'/>
+    <GlobalSettings>
+      <GraphicsOptions />
+      <CollisionOptions />
+      <DebugOptions />
+      <DefaultAppearance />
+      <GeometryBoundTreeOptions />
+      <HapticsOptions />
+      <OpenHapticsOptions />
+    </GlobalSettings>
+    <Group DEF='CONTENT' />
+    
+    <PythonScript DEF="PS" url="TestAll.py">
+      <Group USE="CONTENT" containerField="references" />
+    </PythonScript>
+  </Scene>
+</X3D>

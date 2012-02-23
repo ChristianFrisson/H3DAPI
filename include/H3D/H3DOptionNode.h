@@ -45,7 +45,7 @@ namespace H3D {
     H3DOptionNode( Inst< SFNode>  _metadata = 0 );
 
     /// Returns the default xml containerField attribute value.
-    /// For this node it is "children".
+    /// For this node it is "options".
     virtual string defaultXMLContainerField() {
       return "options";
     }
