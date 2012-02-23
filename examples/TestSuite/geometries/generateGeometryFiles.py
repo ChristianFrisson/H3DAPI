@@ -1,14 +1,20 @@
 import time
 import random
 import math
+import os
 
 # Files generated when this variable is true might not load on your system.
 generate_super_big_files = False
 
+# Class that can be used to generate geometry files.
 class GenerateGeometryFiles:
-  def __init__( self, sub_dir ):
+  # Constructor
+  # \param sub_dir Path to a subdirectory in which files should be stored.
+  # \param regenerate_if_exists If true files are regenerated even if they exists.
+  def __init__( self, sub_dir, regenerate_if_exists = True ):
     global generate_super_big_files
     self.sub_dir = sub_dir
+    self.regenerate_if_exists = regenerate_if_exists
     if self.sub_dir != "" and ( not self.sub_dir.endswith( "/" ) ) and ( not self.sub_dir.endswith( "\\" ) ):
       self.sub_dir = self.sub_dir + "/"
     begin_time = time.time()
@@ -41,10 +47,9 @@ class GenerateGeometryFiles:
 
     print "All files successfully generated in " + str( time.time() - begin_time ) + " seconds."
 
-  # This python function creates an rectangular IndexedTriangleSet with
-  # columns X rows coordinates.
+  # Generate xml syntax for IndexedTriangleSet and write to file.
   # Nr of triangles will be 2 * (columns - 1) * (rows - 1)
-  def generateITSString( self, file_handle, x_size, y_size, data ):
+  def generateITSSyntax( self, file_handle, x_size, y_size, data ):
     columns, rows, line_prefix = data
 
     step_c = x_size / (columns-1)
@@ -92,7 +97,9 @@ class GenerateGeometryFiles:
    
     file_handle.write( "\" />\n" + line_prefix + "</IndexedTriangleSet>\n" )
 
-  def generateShapeString( self, file_handle, line_prefix, nr_shapes, x_size, y_size, geometry_function, geometry_args ):
+  # Generate xml syntax for a shape containing a geometry that is defined by the geometry_function.
+  # \return A z value of a viewpoint with position (0,0,z) calculated such that all shapes are visible.
+  def generateShapeSyntax( self, file_handle, line_prefix, nr_shapes, x_size, y_size, geometry_function, geometry_args ):
     padding_x = x_size / 100.0
     padding_y = y_size / 100.0
     columns = int( math.sqrt( nr_shapes ) )
@@ -129,7 +136,8 @@ class GenerateGeometryFiles:
     else:
       return vp_z_value_y
 
-  def generateX3DString( self, file_handle, meta_title, meta_description, meta_author, content_function, content_args  ):
+  # Generate xml syntax for an X3D scene.
+  def generateX3DSyntax( self, file_handle, meta_title, meta_description, meta_author, content_function, content_args  ):
     file_handle.write( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + \
                        "<X3D profile='Full' version='3.2'>\n" + \
                        "  <head>\n" + \
@@ -147,6 +155,7 @@ class GenerateGeometryFiles:
                        "  </Scene>\n" + \
                        "</X3D>\n" )
 
+  # Generate indexedtriangleset files.
   def generateITSFile( self, columns, rows, x_size, y_size, nr_its ):
     before_time = time.time()
     nr_triangles = 2 * (columns-1) * (rows-1)
@@ -157,8 +166,9 @@ class GenerateGeometryFiles:
       filename = "IndexedTriangleSet" + str( nr_triangles ) + "Triangles.x3d"
       meta_description = "A file containing an IndexedTriangleSet with " + str( nr_triangles ) +" triangles."
     filename = self.sub_dir + filename
-    print "Generating file " + filename
-    file_handle = open( filename, 'w' )
-    self.generateX3DString( file_handle, filename, meta_description, "SenseGraphics AB, 2012", self.generateShapeString, [nr_its, x_size, y_size, self.generateITSString, columns, rows] )
-    file_handle.close()
-    print "Done, took " + str( time.time() - before_time ) + "s\n"
+    if self.regenerate_if_exists or not os.path.isfile( filename ):
+      print "Generating file " + filename
+      file_handle = open( filename, 'w' )
+      self.generateX3DSyntax( file_handle, filename, meta_description, "SenseGraphics AB, 2012", self.generateShapeSyntax, [nr_its, x_size, y_size, self.generateITSSyntax, columns, rows] )
+      file_handle.close()
+      print "Done, took " + str( time.time() - before_time ) + "s\n"

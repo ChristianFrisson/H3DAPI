@@ -18,17 +18,20 @@ from H3DInterface import *
 sys.path.append( "geometries" )
 import generateGeometryFiles
 
+# Generate geometry test files. They can be quite big.
+generateGeometryFiles.GenerateGeometryFiles( "geometries", False )
 
-generateGeometryFiles.GenerateGeometryFiles( "geometries" )
-
+# Settings for where to output the statistics.
 print_to_file = True
 print_to_console = True
 
+# Generate output_file name.
 now = datetime.datetime.now()
-#output_file_name = "h3d_testsuite_%d%02d%02d_%02d%02d%02d.txt" % (now.year, now.month, now.day, now.hour, now.minute, now.second )
-output_file_name = "h3d_testsuite.txt"
+output_file_name = "h3d_testsuite_%d%02d%02d_%02d%02d%02d.txt" % (now.year, now.month, now.day, now.hour, now.minute, now.second )
+#output_file_name = "h3d_testsuite.txt"
 output_file = None
 
+# How long each file should be loaded.
 test_file_duration = 10
 
 # Each entry in the list consists of [nodename, fieldname, value0, value1.... valueN]
@@ -36,23 +39,28 @@ test_file_duration = 10
 #fields_to_edit = [["GraphicsOptions", "preferVertexBufferObject", True, False ], [ "GraphicsOptions", "useCaching", True, False], ["GeometryBoundTreeOptions", "maxTrianglesInLeaf", 1, 10, 100 ] ]
 fields_to_edit = [["GraphicsOptions", "preferVertexBufferObject", True, False ], [ "GraphicsOptions", "useCaching", True, False] ]
 
+# Prints the string to file and/or console.
 def printResult( string ):
   if print_to_file:
     output_file.write( string )
   if print_to_console:
     print string
 
+# Get group from x3d file.
 content_group, = references.getValue()  
 
+# Find this directory.
 test_suite_directory = ""
 if os.getenv("H3D_ROOT") != None:
   test_suite_directory = os.environ["H3D_ROOT"] + "\examples\TestSuite"
 
+# Open file and output some information about system that the test is run on.
 output_file = open( output_file_name, 'w' )
 printResult( "Platform: " + str( platform.platform() ) + "\n" )
 printResult( "Processor: " + str( platform.processor() ) + "\n" )
 # Might have to add commands here to use some program to get information about graphics card.
 
+# Create a list of files that should be checked.
 files_to_check = []
 if os.path.isdir( test_suite_directory ):
   for root, dirs, files in os.walk(test_suite_directory):
@@ -67,7 +75,11 @@ if os.path.isdir( test_suite_directory ):
 else:
   print "The directory " + test_suite_directory + " does not exist. Check that H3D_ROOT is set correctly."
 
+# Field class that takes care of checking each file.
 class CheckFile( AutoUpdate( SFTime ) ):
+  # Constructor
+  # \param files_to_check A list of [path, filename] entries for each file.
+  # \param test_file_duration The time that each file should be loaded.
   def __init__( self, files_to_check, test_file_duration ):
     AutoUpdate( SFTime ).__init__(self)
     self.files_to_check = files_to_check
@@ -83,7 +95,8 @@ class CheckFile( AutoUpdate( SFTime ) ):
     global content_group, fields_to_edit
     if self.start_time == None:
       if len( self.files_to_check ) > 0:
-        # load file
+        # There are files to check, start by updating the index list of which options
+        # should be changed.
         if self.options_fields_index == None:
           if len( fields_to_edit ) > 0:
             self.options_fields_index = [2] * len( fields_to_edit )
@@ -99,7 +112,8 @@ class CheckFile( AutoUpdate( SFTime ) ):
           self.options_fields_index[0] = 2
           self.files_to_check.pop(0)
           self.file_test_nr = 0
-          
+        
+        # If file was not removed because last check was already done then load file.
         if len( self.files_to_check ) > 0:
           file_url = os.path.join( self.files_to_check[0][0], self.files_to_check[0][1] )
           if self.file_test_nr == 0:
@@ -112,22 +126,27 @@ class CheckFile( AutoUpdate( SFTime ) ):
           dn["VP"].set_bind.setValue( True )
           self.graphics_frame_rate = []
           self.haptics_frame_rate = []
+          # Measure time here, since file is now loaded.
           self.start_time = python_time.time()
         else:
+          # Testing done.
           printResult( "Testing done" )
           output_file.close()
     elif python_time.time() - self.start_time > self.test_file_duration:
+      # File should be closed, store last sample and write to file. Then
+      # remove file.
       self.storeDataSample()
       self.writeData()
-      # unload file
       #dn["VP"].set_bind.setValue( False )
       content_group.children.clear()
       self.start_time = None
     else:
+      # File is loaded, store data for later.
       self.storeDataSample()
       
     return event.getValue()
   
+  # Stores data in internal variables.
   def storeDataSample( self ):
     scene = getCurrentScenes()[0]
     self.graphics_frame_rate.append( scene.frameRate.getValue() )
@@ -138,12 +157,14 @@ class CheckFile( AutoUpdate( SFTime ) ):
           self.haptics_frame_rate.append( [] )
         self.haptics_frame_rate[i].append( device.hapticsRate.getValue() )
   
+  # Returns a string with frame rate data.
   def calcualteFrameRateData( self, frame_rate_list ):
     return "    Min: " + str( frame_rate_list[0] ) + "\n" \
            "    Max: " + str( frame_rate_list[len( frame_rate_list ) - 1] ) + "\n" \
            "    Avg: " + str( math.fsum( frame_rate_list ) / len( frame_rate_list ) ) + "\n" \
            "    Mean: " + str( frame_rate_list[len( frame_rate_list ) / 2] ) + "\n"
   
+  # Write data to file and/or console.
   def writeData( self ):
     self.graphics_frame_rate.sort()
     data_string = "  Graphics frame rate: \n" + self.calcualteFrameRateData( self.graphics_frame_rate )
@@ -154,6 +175,7 @@ class CheckFile( AutoUpdate( SFTime ) ):
         data_string = data_string + "  Device " + str( i ) + ":\n" + self.calcualteFrameRateData( l )
     printResult( data_string + "\n" )
 
+  # Update fields in options node and print that information to file and/or console.
   def updateOptions( self ):
     global fields_to_edit
     global_settings = getActiveGlobalSettings()
@@ -173,4 +195,5 @@ class CheckFile( AutoUpdate( SFTime ) ):
         print "WARNING: Option " + fields_to_edit[i][0] + " with field " + fields_to_edit[i][1] + " not found in GlobalSettings, check the fields_to_edit variable in TestAll.py"
     printResult( data_string )
 
+# Create an instance of the class. Will start collecting data.
 checkFile = CheckFile( files_to_check, test_file_duration )
