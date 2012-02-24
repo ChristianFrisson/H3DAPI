@@ -1,7 +1,10 @@
 # This python file outputs information to console as well to a file named
 # h3d_testsuite_yyyymmdd_hhmmss.txt'
 #"Files in H3DAPI\examples\TestSuite will be loaded by this file.
-#Those files must contain a viewpoint named VP
+# Those files must contain a viewpoint named VP
+# Any node in those files whose name ends with TOUCH will be assumed to be named
+# _fieldnameTOUCH where fieldname is the name of the field in the node that should be
+# touched once per scenegraph node.
 
 #Idea from Neil. Make program generate good settings file, or make a program that does.
 
@@ -19,7 +22,7 @@ sys.path.append( "geometries" )
 import generateGeometryFiles
 
 # Generate geometry test files. They can be quite big.
-generateGeometryFiles.GenerateGeometryFiles( "geometries", False )
+generateGeometryFiles.GenerateGeometryFiles( "geometries", True )
 
 # Settings for where to output the statistics.
 print_to_file = True
@@ -27,15 +30,15 @@ print_to_console = True
 
 # Generate output_file name.
 now = datetime.datetime.now()
-output_file_name = "h3d_testsuite_%d%02d%02d_%02d%02d%02d.txt" % (now.year, now.month, now.day, now.hour, now.minute, now.second )
-#output_file_name = "h3d_testsuite.txt"
+#output_file_name = "h3d_testsuite_%d%02d%02d_%02d%02d%02d.txt" % (now.year, now.month, now.day, now.hour, now.minute, now.second )
+output_file_name = "h3d_testsuite.txt"
 output_file = None
 
 # How long each file should be loaded.
 test_file_duration = 10
 
 # Each entry in the list consists of [nodename, fieldname, value0, value1.... valueN]
-# Each permutation of values for fields in the list will be tested.
+# All permutation of values for fields in the list will be tested.
 #fields_to_edit = [["GraphicsOptions", "preferVertexBufferObject", True, False ], [ "GraphicsOptions", "useCaching", True, False], ["GeometryBoundTreeOptions", "maxTrianglesInLeaf", 1, 10, 100 ] ]
 fields_to_edit = [["GraphicsOptions", "preferVertexBufferObject", True, False ], [ "GraphicsOptions", "useCaching", True, False] ]
 
@@ -75,6 +78,23 @@ if os.path.isdir( test_suite_directory ):
 else:
   print "The directory " + test_suite_directory + " does not exist. Check that H3D_ROOT is set correctly."
 
+class TouchFields( AutoUpdate( SFTime ) ):
+  def __init__( self ):
+    AutoUpdate( SFTime ).__init__(self)
+    self.fields_to_touch = []
+    time.routeNoEvent( self )
+
+  def update( self, event ):
+    for f in self.fields_to_touch:
+      f.touch()
+    return event.getValue()
+  
+  def addFieldToTouch( self, f ):
+    self.fields_to_touch.append( f )
+
+  def clearFieldToTouch( self ):
+    self.fields_to_touch = []
+
 # Field class that takes care of checking each file.
 class CheckFile( AutoUpdate( SFTime ) ):
   # Constructor
@@ -90,6 +110,7 @@ class CheckFile( AutoUpdate( SFTime ) ):
     self.haptics_frame_rates = []
     self.options_fields_index = None
     self.file_test_nr = 0
+    self.touchField = TouchFields()
   
   def update( self, event ):
     global content_group, fields_to_edit
@@ -126,6 +147,14 @@ class CheckFile( AutoUpdate( SFTime ) ):
           dn["VP"].set_bind.setValue( True )
           self.graphics_frame_rate = []
           self.haptics_frame_rate = []
+          # Find fields which should be touched each frame.
+          for n in dn:
+            if n.endswith( "TOUCH" ):
+              pos = n.rfind( "_" )
+              if pos != -1:
+                f = dn[n].getField( n[ pos+1:len(n)-5 ] )
+                if f:
+                  self.touchField.addFieldToTouch( f )
           # Measure time here, since file is now loaded.
           self.start_time = python_time.time()
         else:
@@ -137,6 +166,7 @@ class CheckFile( AutoUpdate( SFTime ) ):
       # remove file.
       self.storeDataSample()
       self.writeData()
+      self.touchField.clearFieldToTouch()
       #dn["VP"].set_bind.setValue( False )
       content_group.children.clear()
       self.start_time = None
