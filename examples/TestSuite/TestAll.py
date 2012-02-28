@@ -17,9 +17,15 @@ import time as python_time
 import platform
 import sys
 
+# Find this directory.
+test_suite_directory = ""
+if os.getenv("H3D_ROOT") != None:
+  test_suite_directory = os.environ["H3D_ROOT"] + "\examples\TestSuite"
+
 # h3d includes
 from H3DInterface import *
-sys.path.append( "geometries" )
+geometries_directory = test_suite_directory + "/geometries"
+sys.path.append( geometries_directory )
 import generateGeometryFiles
 
 # Settings for where to output the statistics.
@@ -136,11 +142,6 @@ xsl_template_string = """<?xml version="1.0" encoding="ISO-8859-1"?>
 # Get group from x3d file.
 content_group, = references.getValue()  
 
-# Find this directory.
-test_suite_directory = ""
-if os.getenv("H3D_ROOT") != None:
-  test_suite_directory = os.environ["H3D_ROOT"] + "\examples\TestSuite"
-
 def printToConsole( to_print ):
   if print_to_console:
     print to_print
@@ -165,7 +166,7 @@ else:
   print "The directory " + test_suite_directory + " does not exist. Check that H3D_ROOT is set correctly."
 
 # Generate geometry test files. They can be quite big.
-generateGeometryFiles.GenerateGeometryFiles( "geometries", False )
+generateGeometryFiles.GenerateGeometryFiles( geometries_directory, False )
 
 # Field class that call Field.touch() on all fields given to this
 # class in the constructor.
