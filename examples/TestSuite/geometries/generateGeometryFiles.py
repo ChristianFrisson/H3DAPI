@@ -200,6 +200,7 @@ class GenerateGeometryFiles:
                                                   rows = 501 ) )
 
     print "All files successfully generated in " + str( time.time() - begin_time ) + " seconds."
+    print ""
 
   # Generate xml syntax for IndexedTriangleSet and write to file.
   # Nr of triangles will be 2 * (columns - 1) * (rows - 1)
