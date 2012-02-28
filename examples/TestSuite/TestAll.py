@@ -267,6 +267,8 @@ class CheckFile( AutoUpdate( SFTime ) ):
     # The time that each file should be loaded.
     self.test_file_duration = test_file_duration
     time.routeNoEvent( self )
+    self.graphics_frame_rate = []
+    self.haptics_frame_rate = []
     # Contains a list of index into the global variable fields_to_edit. Used to know
     # the state of each options field.
     self.options_fields_index = None
