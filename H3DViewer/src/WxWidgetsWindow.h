@@ -107,7 +107,8 @@ namespace H3D {
         theWindow->Destroy();
       }
 			// Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
-			delete theWxGLContext;
+			if( theWxGLContext )
+				delete theWxGLContext;
     }
 
     /// Calls wxGLCanvas::SwapBuffers

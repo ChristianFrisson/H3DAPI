@@ -68,7 +68,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   is_initialized( false ),
   use_h3d_settings( true ),
   theWxGLCanvas( NULL ),
-  fullscreen_initialized ( false ) {
+  fullscreen_initialized ( false ),
+	theWxGLContext( NULL ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
   
