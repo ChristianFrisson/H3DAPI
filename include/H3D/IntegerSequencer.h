@@ -40,6 +40,10 @@ namespace H3D {
   /// \brief The IntegerSequencer node generates sequential discrete SFInt32 
   /// events in response to each set_fraction, next, or previous event.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Switch.x3d">Switch.x3d</a>
+  ///     ( <a href="examples/Switch.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile IntegerSequencer.dot 
   class H3DAPI_API IntegerSequencer : public X3DSequencerNode {

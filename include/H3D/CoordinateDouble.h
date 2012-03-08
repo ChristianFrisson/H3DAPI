@@ -42,6 +42,10 @@ namespace H3D {
   /// field of vertex-based geometry nodes. Unlike the Coordinate node it allows 
   /// the definition of 3D coordinates in double precision floating point values.
   ///
+	/// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TriangleSet.x3d">TriangleSet.x3d</a>
+  ///     ( <a href="examples/TriangleSet.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Coordinate.dot
   class H3DAPI_API CoordinateDouble : public X3DCoordinateNode {

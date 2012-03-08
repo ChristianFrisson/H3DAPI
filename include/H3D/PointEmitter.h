@@ -44,6 +44,10 @@ namespace H3D {
   /// The direction field specifies a direction along which the particles are
   /// to be emitted. If the vector is zero length (a value of (0,0,0), 
   /// particles are emitted in random directions from this point in space.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PointEmitter.x3d">PointEmitter.x3d</a>
+  ///     ( <a href="examples/PointEmitter.x3d.html">Source</a> )
   class H3DAPI_API PointEmitter : public X3DParticleEmitterNode {
   public:
     

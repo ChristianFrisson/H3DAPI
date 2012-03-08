@@ -59,6 +59,10 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ProgramShader.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ProgramShader.x3d">ProgramShader.x3d</a>
+  ///     ( <a href="examples/ProgramShader.x3d.html">Source</a> )
   class H3DAPI_API ProgramShader : 
     public X3DShaderNode {
   public:

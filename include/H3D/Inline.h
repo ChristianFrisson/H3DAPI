@@ -94,6 +94,10 @@ namespace H3D {
   /// the bboxCenter and bboxSize fields. This is a hint to the browser and
   /// could be used for optimization purposes such as culling. 
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Switch.x3d">Switch.x3d</a>
+  ///     ( <a href="examples/Switch.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Inline.dot
   class H3DAPI_API Inline : 

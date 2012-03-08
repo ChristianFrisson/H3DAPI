@@ -49,6 +49,10 @@ namespace H3D {
   ///
   /// The surface field specifies the geometry to be used as the emitting
   /// surface.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/SurfaceEmitter.x3d">SurfaceEmitter.x3d</a>
+  ///     ( <a href="examples/SurfaceEmitter.x3d.html">Source</a> )
   class H3DAPI_API SurfaceEmitter : public X3DParticleEmitterNode {
   public:
     

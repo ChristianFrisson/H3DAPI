@@ -51,6 +51,10 @@ namespace H3D {
 	/// The 2D coordinates used by the node shall be interpreted to lie in 
 	/// the (u, v) coordinate space defined by the NURBS surface.
 	/// 
+	/// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/NurbsTrimmedSurface.x3d">NurbsTrimmedSurface.x3d</a>
+  ///     ( <a href="examples/NurbsTrimmedSurface.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile Contour2D.dot
 

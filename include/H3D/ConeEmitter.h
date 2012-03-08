@@ -42,6 +42,10 @@ namespace H3D {
   /// field emanating in a direction randomly distributed within the cone 
   /// specified by the angle and direction fields at the speed specified by
   /// the speed field.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ConeEmitter.x3d">ConeEmitter.x3d</a>
+  ///     ( <a href="examples/ConeEmitter.x3d.html">Source</a> )
   class H3DAPI_API ConeEmitter : public X3DParticleEmitterNode {
   public:
     

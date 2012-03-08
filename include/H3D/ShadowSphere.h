@@ -43,6 +43,10 @@ namespace H3D {
   /// The radius field is the radius of the sphere and the position field
   /// is the position of the field.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ShadowCaster.x3d">ShadowCaster.x3d</a>
+  ///     ( <a href="examples/ShadowCaster.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ShadowSphere.dot
   class H3DAPI_API ShadowSphere : public H3DShadowObjectNode {

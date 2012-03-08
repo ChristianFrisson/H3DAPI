@@ -40,6 +40,10 @@ namespace H3D {
   /// available particles from a specific point in space at the initial time.
   /// Particles are emitted from the single point specified by the position
   /// field in all directions at the speed specified by the speed field.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ExplosionEmitter.x3d">ExplosionEmitter.x3d</a>
+  ///     ( <a href="examples/ExplosionEmitter.x3d.html">Source</a> )
   class H3DAPI_API ExplosionEmitter : public X3DParticleEmitterNode {
   public:
     

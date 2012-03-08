@@ -133,6 +133,10 @@ namespace H3D {
   /// f(s,t) = s + t     "s+t"         "s,t"
   /// f(a) = cos(a)      "cos(a)"      "a"
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/TimeFunctionEffect.x3d">TimeFunctionEffect.x3d</a>
+  ///     ( <a href="examples/TimeFunctionEffect.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile GeneralFunction.dot
   class H3DAPI_API GeneralFunction : public H3DFunctionNode {

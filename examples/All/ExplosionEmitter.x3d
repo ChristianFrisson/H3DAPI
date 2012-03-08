@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='SurfaceEmitter.x3d'/>
+    <meta name='description' content='X3D ExplosionEmitter node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Transform translation='0.1 -0.1 0'>
+      <ParticleSystem 
+          createParticles='true' enabled='true' particleLifetime='100'
+          lifetimeVariation='0.5' maxParticles='100' particleSize='0.002 0.002'
+          geometryType='SPRITE' colorKey='0'>
+        <Color containerField='colorRamp' color='1 0 1' />
+        <ExplosionEmitter 
+            speed='0.05' mass='0.0002' variation='0.5'
+            surfaceArea='0.02' position='' />
+      </ParticleSystem>
+    </Transform>
+  </Scene>
+</X3D>

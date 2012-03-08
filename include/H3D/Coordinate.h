@@ -42,6 +42,9 @@ namespace H3D {
   /// \brief This node defines a set of 3D coordinates to be used in the coord
   /// field of vertex-based geometry nodes. 
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/IndexedFaceSet.x3d">IndexedFaceSet.x3d</a>
+  ///     ( <a href="examples/IndexedFaceSet.x3d.html">Source</a> )
   /// \par Internal routes:
   /// \dotfile Coordinate.dot
   class H3DAPI_API Coordinate : public X3DCoordinateNode {

@@ -39,7 +39,10 @@ namespace H3D {
   /// DeviceInfo is a X3DBindableNode that contains the devices that
   /// are used with the API. It contains e.g. all H3DHapticsDevice nodes
   /// that are used for haptic rendering, Mouse and Magellan devices.
-  /// 
+  ///
+	/// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PhantomDevice.x3d">PhantomDevice.x3d</a>
+  ///     ( <a href="examples/PhantomDevice.x3d.html">Source</a> )
   class H3DAPI_API DeviceInfo : public X3DBindableNode {
   public:
     typedef TypedMFNode< H3DHapticsDevice > MFDevice;

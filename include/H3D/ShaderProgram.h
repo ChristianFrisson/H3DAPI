@@ -55,6 +55,10 @@ namespace H3D {
   /// type text/plain and interpreted according to the containing node's 
   /// language definition.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ProgramShader.x3d">ProgramShader.x3d</a>
+  ///     ( <a href="examples/ProgramShader.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ShaderProgram.dot
   class H3DAPI_API ShaderProgram : 

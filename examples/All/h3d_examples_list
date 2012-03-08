@@ -13,7 +13,7 @@ Appearance                        FillProperties, LineProperties, Material,
                                   ImageTexture
 Arc2D                             Arc2D
 ArcClose2D                        ArcClose2D
-AudioClip                         Sound
+AudioClip                         AudioClip
 Background                        Background, Background1
 Billboard                         Billboard
 BooleanFilter                     BooleanFilter
@@ -26,14 +26,14 @@ Circle2D                          Circle2D
 ClipPlane                         ClipPlane
 Collision                         Collision
 CollisionOptions                  CollisionOptions
-Color                             IndexedFaceSet, 
+Color                             IndexedFaceSet 
 ColorInterpolator                 ColorInterpolator
 ColorRGBA                         ColorRGBA
 Composed3DTexture                 ComposedTexture3D.x3d
 ComposedCubeMapTexture            /demos CubeMap.x3d
-ComposedShader                    /demos glsl_earthshader.x3d
+ComposedShader                    ComposedShader 
 Cone                              Cone
-ConeEmitter                       ParticleSystem
+ConeEmitter                       ConeEmitter
 Contour2D                         NurbsTrimmedSurface
 ContourPolyline2D                 NurbsTrimmedSurface
 Coordinate                        IndexedFaceSet, IndexedTriangleSet
@@ -54,7 +54,7 @@ DirectionalLight                  DirectionalLight
 Disk2D                            Disk2D
 DynamicTransform                  DynamicTransform
 ElevationGrid                     ElevationGrid, ElevationGrid1
-ExplosionEmitter                  ParticleSystem
+ExplosionEmitter                  ExplosionEmitter
 Extrusion                         Extrusion
 FakeHapticsDevice                 FakeHapticsDevice
 FalconDevice                      FalconDevice
@@ -137,7 +137,7 @@ Pixel3DTexture                    PixelTexture3D
 PixelTexture                      PixelTexture
 PlanarReflector                   PlanarReflector
 PlaneSensor                       PlaneSensor
-PointEmitter                      ParticleSystem
+PointEmitter                      PointEmitter
 PointLight                        PointLight, PointLight1
 PointNormalClipPlane              PointNormalClipPlane
 PointSet                          PointSet
@@ -158,6 +158,8 @@ RenderProperties                  RenderProperties, RenderProperties1, RenderPro
 ScalarInterpolator                ScalarInterpolator
 ShaderPart                        /demos glsl_earthshader.x3d
 ShaderProgram                     /demos cg_earthshader.x3d
+ShadowCaster                      ShadowCaster
+ShadowSphere                      ShadowSphere
 Shape                             Box, Cone, Sphere
 SimballDevice                     SimballDevice
 SimpleMovieTexture                SimpleMovieTexture
@@ -176,7 +178,7 @@ SpringEffect                      SpringEffect
 StereoInfo                        StereoInfo
 StringSensor                      StringSensor
 SuperShape                        SuperShape
-SurfaceEmitter                    ParticleSystem
+SurfaceEmitter                    SurfaceEmitter
 Switch                            Switch
 TexGenGeometry                    TexGenGeometry
 Text                              Text, Text1

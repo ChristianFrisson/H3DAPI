@@ -127,6 +127,10 @@ namespace H3D {
   /// A TimeSensor read from a X3D file shall generate isActive TRUE, time 
   /// and fraction_changed events if the sensor is enabled and all conditions
   /// for a TimeSensor to be active are met.
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/Switch.x3d">Switch.x3d</a>
+  ///     ( <a href="examples/Switch.x3d.html">Source</a> )
+  ///
   class H3DAPI_API TimeSensor : public X3DTimeDependentNode {
   public:
 

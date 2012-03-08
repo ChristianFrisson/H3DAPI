@@ -83,6 +83,10 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile AudioClip.dot
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/AudioClip.x3d">AudioClip.x3d</a>
+  ///     ( <a href="examples/AudioClip.x3d.html">Source</a> )
   class H3DAPI_API AudioClip : 
     public X3DSoundSourceNode,
     public X3DUrlObject {

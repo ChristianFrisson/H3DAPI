@@ -55,6 +55,11 @@ namespace H3D {
   /// The activate field forces the shader to activate the contained 
   /// objects. 
   ///
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ComposedShader.x3d">ComposedShader.x3d</a>
+  ///     ( <a href="examples/ComposedShader.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile ComposedShader.dot
   class H3DAPI_API ComposedShader : 
