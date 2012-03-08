@@ -79,6 +79,11 @@ namespace H3D {
   /// that it is in and all objects and lighs are specified in 
   /// local coordinates.
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ShadowCaster.x3d">ShadowCaster.x3d</a>
+  ///     ( <a href="examples/ShadowCaster.x3d.html">Source</a> )
+  ///
+  ///
   /// \par Internal routes:
   /// \dotfile ShadowCaster.dot
   class H3DAPI_API ShadowCaster : public X3DChildNode,
