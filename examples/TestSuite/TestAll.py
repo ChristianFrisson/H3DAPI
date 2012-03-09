@@ -150,6 +150,9 @@ printToConsole( "Platform: " + str( platform.platform() ) + "\n" )
 printToConsole( "Processor: " + str( platform.processor() ) + "\n" )
 # Might have to add commands here to use some program to get information about graphics card.
 
+# Generate geometry test files. They can be quite big.
+generateGeometryFiles.GenerateGeometryFiles( geometries_directory, False )
+
 # Create a list of files that should be checked.
 files_to_check = []
 if os.path.isdir( test_suite_directory ):
@@ -164,9 +167,6 @@ if os.path.isdir( test_suite_directory ):
         files_to_check.append( [root, tempFile] )
 else:
   print "The directory " + test_suite_directory + " does not exist. Check that H3D_ROOT is set correctly."
-
-# Generate geometry test files. They can be quite big.
-generateGeometryFiles.GenerateGeometryFiles( geometries_directory, False )
 
 # Field class that call Field.touch() on all fields given to this
 # class in the constructor.
