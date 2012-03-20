@@ -642,15 +642,17 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
     }
   }
 
-  if( property &&
-      (f->getAccessType() == Field::INITIALIZE_ONLY ||
-       f->getAccessType() == Field::OUTPUT_ONLY ) ) {
-    if( H3DLongStringProperty *lp = dynamic_cast< H3DLongStringProperty * >( property ) ) {
-      lp->setReadOnlyDialog( true );
+  if( property ) {
+    property->SetClientData( f );
+    if(f->getAccessType() == Field::INITIALIZE_ONLY ||
+       f->getAccessType() == Field::OUTPUT_ONLY ) {
+      if( H3DLongStringProperty *lp = dynamic_cast< H3DLongStringProperty * >( property ) ) {
+        lp->setReadOnlyDialog( true );
+      }
+      
+      // Make sure it is not possible to set read only field values
+      property->Enable ( false );
     }
-
-    // Make sure it is not possible to set read only field values
-    property->Enable ( false );
   }
 
   return property;
@@ -692,7 +694,6 @@ void H3DViewerFieldValuesPanelPropGrid::setupProperty( wxPropertyGrid *FieldValu
   wxPGProperty *p = getPropertyFromField( f, property_name );
 
   if(p) {
-    p->SetClientData( f );
     if( f->getAccessType() != Field::INPUT_ONLY ) {
       PropertyUpdater *updater = new PropertyUpdater(p, default_value, default_value_size );
       f->route( updater );
