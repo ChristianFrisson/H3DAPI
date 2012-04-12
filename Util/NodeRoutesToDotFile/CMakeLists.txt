@@ -51,29 +51,61 @@ SET(requiredLibs)
 # Where to find modules, used when finding packages.
 SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
 
-#H3DAPI
-FIND_PACKAGE(H3DAPI REQUIRED)
-
-IF(H3DAPI_FOUND)
-  INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
-ENDIF(H3DAPI_FOUND)
-
-#H3DUtil
-FIND_PACKAGE(H3DUtil REQUIRED)
-
-IF(H3DUTIL_FOUND)
+IF( H3D_USE_DEPENDECIES_ONLY )
+  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDECIES_ONLY to true.
+  IF(PTHREAD_FOUND)
+    INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
+  ENDIF(PTHREAD_FOUND)
+  INCLUDE_DIRECTORIES( ${EXTERNAL_INCLUDE_DIR} ) 
   INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
-ENDIF(H3DUTIL_FOUND)
-
-#HAPI
-FIND_PACKAGE(HAPI REQUIRED)
-
-IF(HAPI_FOUND)
   INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
-ENDIF(HAPI_FOUND)
+  INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
+  INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} )
+  INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} )
+  
+  SET( requiredLibs ${requiredLibs} H3DUtil HAPI H3DAPI UI RigidBodyPhysics )
+ELSE( H3D_USE_DEPENDECIES_ONLY )
+  #H3DAPI
+  FIND_PACKAGE(H3DAPI REQUIRED)
+
+  IF(H3DAPI_FOUND)
+    INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
+  ENDIF(H3DAPI_FOUND)
+
+  #H3DUtil
+  FIND_PACKAGE(H3DUtil REQUIRED)
+
+  IF(H3DUTIL_FOUND)
+    INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
+  ENDIF(H3DUTIL_FOUND)
+
+  #HAPI
+  FIND_PACKAGE(HAPI REQUIRED)
+
+  IF(HAPI_FOUND)
+    INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
+  ENDIF(HAPI_FOUND)
+
+  #UI
+  SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}")
+  FIND_PACKAGE(UI)
+
+  IF(UI_FOUND)
+    INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} ) 
+    SET(optionalLibs ${optionalLibs} ${UI_LIBRARIES} )
+  ENDIF(UI_FOUND)
+
+  #RigidBodyPhysics
+  FIND_PACKAGE(RigidBodyPhysics)
+
+  IF(RigidBodyPhysics_FOUND)
+    INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} ) 
+    SET(optionalLibs ${optionalLibs} ${RigidBodyPhysics_LIBRARIES} )
+  ENDIF(RigidBodyPhysics_FOUND)
+ENDIF( H3D_USE_DEPENDECIES_ONLY )
 
 # Optional extra library. Used for sound in H3D API.
 FIND_PACKAGE(H3DOpenAL)
@@ -82,22 +114,6 @@ IF(OPENAL_FOUND)
   SET(optionalLibs ${optionalLibs} ${OPENAL_LIBRARIES} )
 ENDIF(OPENAL_FOUND)
 
-#UI
-SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}")
-FIND_PACKAGE(UI)
-
-IF(UI_FOUND)
-  INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${UI_LIBRARIES} )
-ENDIF(UI_FOUND)
-
-#RigidBodyPhysics
-FIND_PACKAGE(RigidBodyPhysics)
-
-IF(RigidBodyPhysics_FOUND)
-  INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} ) 
-  SET(optionalLibs ${optionalLibs} ${RigidBodyPhysics_LIBRARIES} )
-ENDIF(RigidBodyPhysics_FOUND)
 SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
 
 CONFIGURE_FILE( ${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cmake ${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cpp )
