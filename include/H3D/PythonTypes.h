@@ -256,7 +256,19 @@
 namespace H3D {
 
   class PyNodePtr {
+  public:
+    PyNodePtr() : refCountNode ( true ) {}
+
+    /// If true, then the PyNode should keep a reference count
+    /// for the Node ptr. Usually this is the desired behaviour, except
+    /// for a PythonScript node, which would never be deleted if this were
+    /// the case.
+    inline void setRefCountNode ( bool _refCountNode ) {
+      refCountNode= _refCountNode;
+    }
+
   protected:
+    bool refCountNode;
     Node *ptr;
   };
 
@@ -270,7 +282,13 @@ namespace H3D {
   inline string PyNode_Name() { return "Node"; }   
 
   /// Creates a new PyNode object based on the value of v.
-  PyObject *PyNode_FromNode( Node *v );
+  ///
+  /// \param v The Node object to create the PyNode object from
+  /// \param _refCountNode If true, then the PyNode should keep a reference count
+  ///                      for the Node ptr. Usually this is the desired behaviour, except
+  ///                      for a PythonScript node, which would never be deleted if this were
+  ///                      the case.
+  PyObject *PyNode_FromNode( Node *v, bool _refCountNode= true );
 
   /// Returns an Node * representation of the contents of o.
   Node *PyNode_AsNode( PyObject *o );
@@ -286,9 +304,9 @@ namespace H3D {
 
     /// Set the value of the encapsulated Node *.
     inline void setNodePtr( Node *_ptr ) {
-      if( ptr ) ptr->unref();
+      if( refCountNode && ptr ) ptr->unref();
       ptr = _ptr;
-      if( ptr ) ptr->ref();
+      if( refCountNode && ptr ) ptr->ref();
     }
 
     /// Get the value of the encapsulated Node *.

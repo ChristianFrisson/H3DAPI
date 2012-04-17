@@ -455,12 +455,9 @@ void PythonScript::initialize() {
     PyModule_GetDict( static_cast< PyObject * >( module ) ); // borrowed ref
 
   // Add __scriptnode__ to module dictionary which is the node the script resides in. 
-  PyObject *scriptnode = PyNode_FromNode( this );
-  
-  // decrease reference counter so that __scriptnode__ does not reference 
-  // the PythonScript node which would be a reference it itself making it
-  // never destruct.
-  this->unref(); 
+  // Do not let the PyNode hold a reference count for the PythonScript node, otherwise
+  // it could never be deleted.
+  PyObject *scriptnode = PyNode_FromNode( this, false );
 
   PyDict_SetItem( (PyObject *) module_dict, 
                   PyString_FromString( "__scriptnode__" ), 

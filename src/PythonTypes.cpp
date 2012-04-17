@@ -215,10 +215,12 @@ namespace H3D {
   }  
 
   // Creates a new PyNode object based on the value of v.
-  PyObject *PyNode_FromNode( Node *n ) {
+  PyObject *PyNode_FromNode( Node *n, bool _refCountNode ) {
     if( n ) {
       PyObject *o = PyType_GenericAlloc( &PyNode_Type, 1 );
       PyNode *p = (PyNode *)( o );
+      // Should the PyNode hold a reference count for the Node?
+      p->setRefCountNode ( _refCountNode );
       p->setNodePtr( n );
       return o;
     } else {
@@ -313,7 +315,7 @@ self, name, field_type, access_type )" );
   }
 
   void PyNode::dealloc( PyNode *self ) {
-    if( self->ptr ) self->ptr->unref();
+    if( self->refCountNode && self->ptr ) self->ptr->unref();
     self->ob_type->tp_free( (PyObject*)self );
   };
   
