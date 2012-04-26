@@ -78,6 +78,28 @@ inline string toStr( const wxString &s ) {
 #endif
 }
 
+stringstream insertLineBreak(stringstream &t, int charCount){
+  stringstream s;  
+  char *line = new char[charCount];
+  int length;
+  int counter = 0;
+  string l;
+
+  t.seekg (0, ios::end);
+  length = t.tellg();
+  t.seekg (0, ios::beg);
+
+  while (!t.eof() && counter<length)
+  {
+    t.getline(line,charCount);
+    t.clear();
+    t.seekg(1,ios_base::cur);
+    l = string(line);
+    s << l << "\n";
+    counter += charCount;
+  }
+  return s;
+}
 /*******************Required Class***********************/
 
 #if wxUSE_DRAG_AND_DROP
@@ -1047,6 +1069,7 @@ bool WxFrame::loadFile( const string &filename) {
     viewpoint.reset( new Viewpoint );
     stringstream s;
     s << e;
+    s = insertLineBreak(s,100);
     wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
 #ifdef WIN32
