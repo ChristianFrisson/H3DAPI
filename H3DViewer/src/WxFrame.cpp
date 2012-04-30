@@ -78,27 +78,25 @@ inline string toStr( const wxString &s ) {
 #endif
 }
 
-stringstream insertLineBreak(stringstream &t, int charCount){
-  stringstream s;  
+void insertLineBreak(stringstream &inputstream, stringstream &outputstream, int charCount){
   char *line = new char[charCount];
   int length;
   int counter = 0;
   string l;
 
-  t.seekg (0, ios::end);
-  length = t.tellg();
-  t.seekg (0, ios::beg);
+  inputstream.seekg (0, ios::end);
+  length = inputstream.tellg();
+  inputstream.seekg (0, ios::beg);
 
-  while (!t.eof() && counter<length)
+  while (!inputstream.eof() && counter<length)
   {
-    t.getline(line,charCount);
-    t.clear();
-    t.seekg(1,ios_base::cur);
+    inputstream.getline(line,charCount);
+    inputstream.clear();
+    inputstream.seekg(0,ios_base::cur);
     l = string(line);
-    s << l << "\n";
+    outputstream << l << endl;
     counter += charCount;
   }
-  return s;
 }
 /*******************Required Class***********************/
 
@@ -1067,10 +1065,10 @@ bool WxFrame::loadFile( const string &filename) {
     }
     catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
-    stringstream s;
-    s << e;
-    s = insertLineBreak(s,100);
-    wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+    stringstream org,reformated;
+    org << e;
+    insertLineBreak(org,reformated,100);
+    wxMessageBox( wxString(reformated.str().c_str(),wxConvUTF8), wxT("Error"),
                   wxOK | wxICON_EXCLAMATION);
 #ifdef WIN32
     SetErrorMode( old_error_mode );
