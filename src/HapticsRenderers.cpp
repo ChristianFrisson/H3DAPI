@@ -81,6 +81,7 @@ HAPI::HAPIHapticsRenderer *Chai3DRenderer::getNewHapticsRenderer() {
 
 namespace HapticsRendererInternals {
   FIELDDB_ELEMENT( RuspiniRenderer, proxyRadius, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RuspiniRenderer, alwaysFollowSurface, INPUT_OUTPUT );
 
   FIELDDB_ELEMENT( OpenHapticsRenderer, defaultShapeType, INPUT_OUTPUT );
   FIELDDB_ELEMENT( OpenHapticsRenderer, defaultAdaptiveViewport, INPUT_OUTPUT );
@@ -89,13 +90,16 @@ namespace HapticsRendererInternals {
   FIELDDB_ELEMENT( LayeredRenderer, hapticsRenderer, INPUT_OUTPUT );
 }
 
-RuspiniRenderer::RuspiniRenderer( Inst< ProxyRadius > _proxyRadius ) :
-  proxyRadius( _proxyRadius ) {
+RuspiniRenderer::RuspiniRenderer( Inst< ProxyRadius > _proxyRadius,
+                                  Inst< AlwaysFollowSurface > _alwaysFollowSurface ) :
+  proxyRadius( _proxyRadius ),
+  alwaysFollowSurface ( _alwaysFollowSurface ) {
   
   type_name = "RuspiniRenderer";
   database.initFields( this );
   
   proxyRadius->setValue( (H3DFloat) 0.0025 );
+  alwaysFollowSurface->setValue ( false );
 }
 
 void RuspiniRenderer::ProxyRadius::onValueChange( const H3DFloat &v ) {
@@ -105,6 +109,16 @@ void RuspiniRenderer::ProxyRadius::onValueChange( const H3DFloat &v ) {
     HAPI::RuspiniRenderer *r = 
       static_cast< HAPI::RuspiniRenderer * >(ruspini_node->getHapticsRenderer( i ) );
     r->setProxyRadius( v );
+  }
+}
+
+void RuspiniRenderer::AlwaysFollowSurface::onValueChange( const bool &b ) {
+  RuspiniRenderer *ruspini_node = 
+    static_cast< RuspiniRenderer * >( getOwner() );
+  for( unsigned int i = 0; i < ruspini_node->renderers.size(); i++ ) {
+    HAPI::RuspiniRenderer *r = 
+      static_cast< HAPI::RuspiniRenderer * >(ruspini_node->getHapticsRenderer( i ) );
+    r->setAlwaysFollowSurface( b );
   }
 }
 

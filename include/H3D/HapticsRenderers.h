@@ -157,8 +157,13 @@ namespace H3D {
       virtual void onValueChange( const H3DFloat &v );
     };
 
+    class H3DAPI_API AlwaysFollowSurface: public OnValueChangeSField< SFBool > {
+      virtual void onValueChange( const bool &b );
+    };
+
     /// Constructor.
-    RuspiniRenderer( Inst< ProxyRadius > _proxyRadius    = 0);
+    RuspiniRenderer( Inst< ProxyRadius > _proxyRadius                 = 0,
+                     Inst< AlwaysFollowSurface > _alwaysFollowSurface = 0 );
 
     /// The radius of the proxy in metres.
     /// 
@@ -166,12 +171,37 @@ namespace H3D {
     /// <b>Default value:</b> 0.0025 \n
     auto_ptr< SFFloat > proxyRadius;
 
+    /// Always move the proxy when the object that it is in contact with moves.
+    ///
+    /// Usually the proxy is only moved with the object if the object is 
+    /// moving towards the proxy.
+    ///
+    /// Enabling this option stops the proxy from slipping on the surface when 
+    /// the surface is moving tangentially. This helps when you want to drag
+    /// an object using the surface friction between the surface and the 
+    /// proxy.
+    ///
+    /// However, enabling this option has the side-effect that the proxy
+    /// may fall through a surface where objects intersect.
+    ///
+    /// \note If enabled, dynamic objects should be consistently dynamic or
+    ///       static. E.g., If the object's transform is updated by a slower
+    ///       thread than the graphics thread, then the object may flicker
+    ///       between static and dynamic states preventing correct behaviour.
+    ///       This can happen using the RigidBodyPhysics component.
+    ///       In such cases set the HapticsOptions dynamicMode field to 
+    ///       "ALWAYS" to work around this.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    auto_ptr< SFBool > alwaysFollowSurface;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
     /// Returns a new instance of HAPI::RuspiniRenderer
     virtual HAPI::HAPIHapticsRenderer *getNewHapticsRenderer() {
-      return new HAPI::RuspiniRenderer( proxyRadius->getValue() );
+      return new HAPI::RuspiniRenderer( proxyRadius->getValue(), alwaysFollowSurface->getValue() );
     }
   };
 
