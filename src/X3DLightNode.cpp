@@ -46,7 +46,29 @@ namespace X3DLightNodeInternals {
   FIELDDB_ELEMENT( X3DLightNode, on, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DLightNode, global, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DLightNode, shadows, INPUT_OUTPUT );
+
+  inline void fillGLArray( const RGBA &c, GLfloat *gl_c ) {
+    gl_c[0] = c.r;
+    gl_c[1] = c.g;
+    gl_c[2] = c.b;
+    gl_c[3] = c.a;
+  } 
+
+  inline void fillGLArray( const Vec4f &v, GLfloat *gl_v ) {
+    gl_v[0] = v.x;
+    gl_v[1] = v.y;
+    gl_v[2] = v.z;
+    gl_v[3] = v.w;
+  }
+
+    inline void fillGLArray( const Vec3f &v, GLfloat *gl_v ) {
+    gl_v[0] = v.x;
+    gl_v[1] = v.y;
+    gl_v[2] = v.z;
+  }
 }
+
+using X3DLightNodeInternals::fillGLArray;
 
 GLint X3DLightNode::global_light_index = -1;
 GLint X3DLightNode::max_lights = -1;
@@ -88,26 +110,55 @@ X3DLightNode::X3DLightNode(
 }
 
 void X3DLightNode::enableGraphicsState() {
-      light_index = getLightIndex( getName() );
-      had_light_index.push_back( true );
+  if ( ( act_global && graphics_state_counter < traverse_sg_counter ) ||
+       ( !global->getValue() && on->getValue() ) ) {
 
-      if( light_index + 1 <= (GLuint)max_lights ) {
-        glPushAttrib( GL_LIGHTING_BIT );
-        glEnable( GL_LIGHT0 +light_index );
+    light_index = getLightIndex( getName() );
+    had_light_index.push_back( true );
 
-        RGB col = color->getValue();
-        H3DFloat ai = ambientIntensity->getValue();
-        H3DFloat i = intensity->getValue();
+    if( light_index < (GLuint)max_lights ) {
+      GLLightInfo gl_light = getGLLightInfo();
+      glPushAttrib( GL_LIGHTING_BIT );
+      glEnable( GL_LIGHT0 +light_index );
+      
+      GLfloat col_d[4], col_a[4], col_s[4];
+      fillGLArray( gl_light.diffuse, col_d );
+      fillGLArray( gl_light.ambient, col_a );
+      fillGLArray( gl_light.specular, col_s );
 
-        GLfloat cola[] = { col.r *i, col.g*i, col.b*i, 1 };
-        glLightfv( GL_LIGHT0+light_index, GL_DIFFUSE, cola );
-        glLightfv( GL_LIGHT0+light_index, GL_SPECULAR, cola );
+      glLightfv( GL_LIGHT0+light_index, GL_DIFFUSE, col_d );
+      glLightfv( GL_LIGHT0+light_index, GL_SPECULAR, col_s );
+      glLightfv( GL_LIGHT0+light_index, GL_AMBIENT, col_a );
+      
+      GLfloat pos[4];
+      fillGLArray( gl_light.position, pos );
+      glLightfv( GL_LIGHT0+light_index, GL_POSITION, pos );      
 
-        cola[0] = col.r * ai;
-        cola[1] = col.g * ai;
-        cola[2] = col.b * ai;
-        glLightfv( GL_LIGHT0+light_index, GL_AMBIENT, cola );
+      if( !gl_light.isDirectionalLight() ) {
+        glLightf(GL_LIGHT0+light_index, GL_CONSTANT_ATTENUATION, gl_light.constantAttenuation );
+        glLightf(GL_LIGHT0+light_index, GL_LINEAR_ATTENUATION, gl_light.linearAttenuation );
+        glLightf(GL_LIGHT0+light_index, GL_QUADRATIC_ATTENUATION, gl_light.quadraticAttenuation );
+      } 
+
+      if( gl_light.isSpotLight() ) {
+        GLfloat dir_v[3];
+        fillGLArray( gl_light.spotDirection, dir_v );
+        glLightfv( GL_LIGHT0+light_index, GL_SPOT_DIRECTION, dir_v );
+  glLightf( GL_LIGHT0+light_index, GL_SPOT_CUTOFF, gl_light.spotCutoff );
+        glLightf( GL_LIGHT0+light_index, GL_SPOT_EXPONENT, gl_light.spotExponent );
       }
+      // RGB col = color->getValue();
+      // H3DFloat ai = ambientIntensity->getValue();
+      // H3DFloat i = intensity->getValue();
+      // cola[0] = col.r * ai;
+      // cola[1] = col.g * ai;
+      // cola[2] = col.b * ai;
+      // glLightfv( GL_LIGHT0+light_index, GL_AMBIENT, cola );
+    }
+  }  else {
+    had_light_index.push_back( false );
+  }
+  graphics_state_counter++;
 };
 
 void X3DLightNode::disableGraphicsState() {

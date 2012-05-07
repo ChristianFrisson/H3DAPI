@@ -108,8 +108,8 @@ namespace H3D {
                Inst< SFVec3f>  _location         = 0,
                Inst< SFFloat>  _radius           = 0 );
 
-    /// Turn on the light and set up spotlight parameters for the light.
-    virtual void enableGraphicsState();
+    /// Return the OpenGL parameters for this light.
+    GLLightInfo getGLLightInfo();
 
     /// The attenuation field defines how the SpotLight node's 
     /// illumination falls off with distance from the light.

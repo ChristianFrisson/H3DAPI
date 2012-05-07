@@ -80,8 +80,8 @@ namespace H3D {
                 Inst< SFBool >  _global           = 0,
                 Inst< SFFloat>  _radius           = 0 );
 
-    /// Turn the light on.
-    virtual void enableGraphicsState();
+    /// Return the OpenGL parameters for this light.
+    virtual GLLightInfo getGLLightInfo();
 
     /// Traversal function. Adding light to shadow caster.
     virtual void traverseSG( TraverseInfo &ti );

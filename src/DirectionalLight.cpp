@@ -67,23 +67,29 @@ DirectionalLight::DirectionalLight(
   on->route( displayList );
 }
 
-void DirectionalLight::enableGraphicsState() {
-  if ( ( act_global && graphics_state_counter < traverse_sg_counter ) ||
-       ( !global->getValue() && on->getValue() ) ) {
-    X3DLightNode::enableGraphicsState();
-    if( light_index + 1 <= (GLuint) max_lights ) {
-      Vec3f p = direction->getValue();
-      if( act_global ) {
-        p = global_light_transforms[ graphics_state_counter ]
-        .getScaleRotationPart() * p;
-      }
-      p = -1.0 * p;
-      GLfloat dir[] = { p.x, p.y, p.z, 0 };
-      glLightfv( GL_LIGHT0+light_index, GL_POSITION, dir );
-    }
-  } else
-    had_light_index.push_back( false );
-  graphics_state_counter++;
+X3DLightNode::GLLightInfo DirectionalLight::getGLLightInfo() {
+  GLLightInfo light;
+
+  Vec3f p = direction->getValue();
+  if( act_global ) {
+    p = global_light_transforms[ graphics_state_counter ].getScaleRotationPart() * p;
+  }
+  p = -1.0 * p;
+  
+  light.position = Vec4f( p.x, p.y, p.z, 0 );
+
+  RGB col = color->getValue();
+  H3DFloat ai = ambientIntensity->getValue();
+  H3DFloat i = intensity->getValue();
+  
+  RGB ambient = col * ai;
+  RGB diffuse = col * i;
+  
+  light.diffuse = RGBA( diffuse, 1 );
+  light.specular = RGBA( diffuse, 1 );
+  light.ambient = RGBA( ambient, 1 );
+
+  return light;
 }
 
 void DirectionalLight::traverseSG( TraverseInfo &ti ) {

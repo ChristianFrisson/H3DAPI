@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2'>
+  <head>
+    <meta name='title' content='GeneralSpotLight.x3d'/>
+    <meta name='description' content='GeneralSpotLight example. Shows a light with a different specular color than diffuse color. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0.3 0.5' orientation='1 0 0 -0.75' />
+    <NavigationInfo headlight="false" />
+
+    <GeneralSpotLight DEF='L'
+      ambientIntensity='0' attenuation='1 0 0' beamWidth='0.78'
+      color='1 0 0' cutOffAngle='0.78' direction='0 -1 0' 
+      intensity='1' on='true' location='0 0.1 0' 
+      specularColor="0 1 0" ambientColor="0 0 1" />
+
+    <Transform translation='0 -0.5 0'>
+      <Shape>
+        <Sphere radius='0.5' />
+        <Appearance>
+          <Material 
+	      diffuseColor="1 1 1"
+	      ambientColor="1 1 1"
+	      specularColor="1 1 1"
+	      shininess='0.8'/>
+        </Appearance>
+      </Shape>
+    </Transform>
+
+    <Transform DEF='T' translation='-0.04 0.1 0'>
+      <Shape>
+        <Sphere radius='0.01' />
+        <Appearance>
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    
+    <ROUTE
+        fromNode='L' fromField='location'
+        toNode='T' toField='translation' />
+  </Scene>
+</X3D>

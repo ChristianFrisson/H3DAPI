@@ -76,28 +76,34 @@ PointLight::PointLight(
   radius->route( displayList );
 }
 
-void PointLight::enableGraphicsState() {
-  if ( ( act_global && graphics_state_counter < traverse_sg_counter ) ||
-       ( !global->getValue() && on->getValue() ) ) {
-    X3DLightNode::enableGraphicsState();
-    if( light_index + 1 <= (GLuint)max_lights ) {
 
-      Vec3f p = location->getValue();
-      if( act_global ) {
-        p = global_light_transforms[ graphics_state_counter ] * p;
-      }
-      GLfloat pos_v[] = { p.x, p.y, p.z, 1 };
-      glLightfv( GL_LIGHT0+light_index, GL_POSITION, pos_v );
+X3DLightNode::GLLightInfo PointLight::getGLLightInfo() {
+  GLLightInfo light;
 
-      // set attenuation values
-      Vec3f att = attenuation->getValue();
-      glLightf(GL_LIGHT0+light_index, GL_CONSTANT_ATTENUATION, att.x );
-      glLightf(GL_LIGHT0+light_index, GL_LINEAR_ATTENUATION, att.y );
-      glLightf(GL_LIGHT0+light_index, GL_QUADRATIC_ATTENUATION, att.z );
-    }
-  } else
-    had_light_index.push_back( false );
-  graphics_state_counter++;
+  Vec3f p = location->getValue();
+  if( act_global ) {
+    p = global_light_transforms[ graphics_state_counter ] * p;
+  }
+  light.position = Vec4f( p, 1 );
+
+  // set attenuation values
+  Vec3f att = attenuation->getValue();
+  light.constantAttenuation = att.x;
+  light.linearAttenuation = att.y;
+  light.quadraticAttenuation = att.z;
+
+  RGB col = color->getValue();
+  H3DFloat ai = ambientIntensity->getValue();
+  H3DFloat i = intensity->getValue();
+  
+  RGB ambient = col * ai;
+  RGB diffuse = col * i;
+  
+  light.diffuse = RGBA( diffuse, 1 );
+  light.specular = RGBA( diffuse, 1 );
+  light.ambient = RGBA( ambient, 1 );
+
+  return light;
 }
 
 void PointLight::traverseSG( TraverseInfo &ti ) {

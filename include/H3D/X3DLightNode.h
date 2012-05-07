@@ -69,7 +69,57 @@ namespace H3D {
     public H3DDisplayListObject,
     public H3DRenderStateObject {
   public:
-     
+
+    /// A structure representing a the OpenGL representation of the 
+    /// specified light source.
+    struct GLLightInfo {
+      GLLightInfo (
+                   RGBA _ambient    = RGBA(0.0f,0.0f,0.0f, 1.0f), 
+                   RGBA _diffuse    = RGBA(0.0f,0.0f,0.0f,1.0f), 
+                   RGBA _specular   = RGBA(0.0f,0.0f,0.0f,1.0f), 
+        Vec4f _position = Vec4f(0.0f,0.0f,0.0f,0.0f),
+        Vec3f _spotDirection= Vec3f(),
+        H3DFloat _spotExponent= 0,
+        H3DFloat _spotCutoff= 180.0f,
+        H3DFloat _constantAttenuation= 0.0f,
+        H3DFloat _linearAttenuation= 0.0f, 
+        H3DFloat _quadraticAttenuation= 0.0f ) : 
+          ambient ( _ambient ), 
+          diffuse ( _diffuse ), 
+          specular ( _specular ),
+          position ( _position ),
+          spotDirection ( _spotDirection ),
+            spotExponent( _spotExponent ),
+          spotCutoff ( _spotCutoff ),
+          constantAttenuation ( _constantAttenuation ),
+          linearAttenuation ( _linearAttenuation ), 
+          quadraticAttenuation ( _quadraticAttenuation ) {}
+
+      RGBA ambient;   
+      RGBA diffuse;   
+      RGBA specular;  
+      Vec4f position;
+      Vec3f spotDirection;
+      H3DFloat spotExponent;
+      H3DFloat spotCutoff;          // (range: [0.0,90.0], 180.0) 
+      H3DFloat linearAttenuation; 
+      H3DFloat constantAttenuation; 
+      H3DFloat quadraticAttenuation;    
+      
+      bool isDirectionalLight() {
+        return position.w == 0;
+      }
+
+      bool isPointLight() {
+        return !isDirectionalLight() && spotCutoff == 180;
+      }
+
+      bool isSpotLight() {
+        return !isDirectionalLight() && !isPointLight();
+      }
+
+    };
+
     /// Constructor.
     X3DLightNode( Inst< SFNode >  _metadata         = 0,
                   Inst< SFFloat>  _ambientIntensity = 0,
@@ -84,6 +134,8 @@ namespace H3D {
 
     /// Turn the light off.
     virtual void disableGraphicsState();
+
+    virtual GLLightInfo getGLLightInfo() = 0;
 
     /// Add light to TraverseInfo.
     virtual void enableHapticsState( TraverseInfo &ti );
