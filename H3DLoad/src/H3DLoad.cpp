@@ -460,6 +460,19 @@ int main(int argc, char* argv[]) {
   string render_mode = GET4( "H3D_RENDERMODE",
     "graphical", "rendermode",
     (string)"MONO" );
+
+  bool manualCursorControl = GET_BOOL("graphical", "manualCursorControl", false);
+  if( char *buffer = getenv("H3D_MANUALCURSORCONTROL") ) {
+    if (strcmp( buffer, "TRUE" ) == 0 ){
+      manualCursorControl = true; }
+    else if (strcmp( buffer, "FALSE" ) == 0 ){
+      manualCursorControl = false; }
+    else
+      Console(4) << "Invalid value \"" << buffer 
+      << "\" on environment "
+      << "variable H3D_MANUALCURSORCONTROL. Must be TRUE or FALSE. "
+      << endl;
+  }
   
   string gamemode = GET4( "H3D_GAMEMODE",
                           "graphical", "gamemode", (string)"" );
@@ -523,6 +536,9 @@ int main(int argc, char* argv[]) {
 
       else if( !strcmp(argv[i]+2,"no-mirror") ){
         mirrored = false; }
+
+      else if( !strcmp(argv[i]+2,"manualcursorcontrol") ){
+        manualCursorControl = true; }
 
       else if( !strcmp(argv[i]+2,"fullscreen") ){
         fullscreen = true; }
@@ -660,6 +676,7 @@ int main(int argc, char* argv[]) {
     glwindow->fullscreen->setValue( fullscreen );
     glwindow->mirrored->setValue( mirrored );
     glwindow->renderMode->setValue( render_mode );
+    glwindow->manualCursorControl->setValue( manualCursorControl );
     glwindow->gameMode->setValue( gamemode );
     glwindow->width->setValue(width);
     glwindow->height->setValue(height);

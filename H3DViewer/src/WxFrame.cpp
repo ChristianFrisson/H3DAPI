@@ -779,7 +779,20 @@ bool WxFrame::loadFile( const string &filename) {
   render_mode = GET4( "H3D_RENDERMODE",
                              "graphical", "rendermode",
                              (string)"MONO" );
-  
+
+  manualCursorControl = GET_BOOL("graphical", "manualCursorControl", false);
+  if( char *buffer = getenv("H3D_MANUALCURSORCONTROL") ) {
+    if (strcmp( buffer, "TRUE" ) == 0 ){
+      manualCursorControl = true; }
+    else if (strcmp( buffer, "FALSE" ) == 0 ){
+      manualCursorControl = false; }
+    else
+      Console(4) << "Invalid value \"" << buffer 
+      << "\" on environment "
+      << "variable H3D_MANUALCURSORCONTROL. Must be TRUE or FALSE. "
+      << endl;
+  }
+
   bool fullscreen    = GET_BOOL("graphical", "fullscreen", false);
   if( char *buffer = getenv("H3D_FULLSCREEN") ) {
     if (strcmp( buffer, "TRUE" ) == 0 ){
@@ -1029,6 +1042,7 @@ bool WxFrame::loadFile( const string &filename) {
       loaded_first_file = true;
       this->glwindow->fullscreen->setValue( fullscreen );
       this->glwindow->mirrored->setValue( mirrored );
+      this->glwindow->manualCursorControl->setValue( manualCursorControl );
       this->glwindow->renderMode->setValue( render_mode );
       if( render_mode == "MONO" )
         stereoRenderMode->Check( FRAME_MONO, true );

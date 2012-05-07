@@ -395,6 +395,7 @@ private:
   string stylus_file;
   string viewpoint_file;
   string render_mode;
+  bool manualCursorControl;
 
   // Autoref Variables
   AutoRef< Scene > scene;
