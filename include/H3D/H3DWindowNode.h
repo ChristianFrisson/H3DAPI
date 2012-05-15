@@ -32,6 +32,7 @@
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/MFNode.h>
 #include <H3D/SFInt32.h>
+#include <H3D/SFVec2f.h>
 #include <H3D/DefaultAppearance.h>
 #include <H3D/NavigationInfo.h>
 
@@ -161,7 +162,8 @@ namespace H3D {
                    Inst< SFBool      > _manualCursorControl = 0,
                    Inst< SFString    > _cursorType = 0,
                    Inst< SFNavigationInfo > _navigationInfo = 0,
-                   Inst< SFBool      > _useFullscreenAntiAliasing = 0);
+                   Inst< SFBool      > _useFullscreenAntiAliasing = 0,
+                   Inst< SFVec2f     > _clipDistances = 0 );
 
     /// Destructor.
     ~H3DWindowNode();
@@ -337,6 +339,13 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> NULL \n
     auto_ptr< SFNavigationInfo > navigationInfo;
+
+    /// The distance (in meters) used for the far and near clip
+    /// plane. Far plane is x, near plane is y. A value
+    /// of -1 for far plane means that far plane is at infinity. 
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFVec2f > clipDistances;
 
     /// If set to true fullscreen anti-aliasing is used for this window. 
     /// This will smooth the appearance of objects and reduce jaggedness 

@@ -90,6 +90,7 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, manualCursorControl, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, cursorType, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, navigationInfo, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, clipDistances, OUTPUT_ONLY );
 }
 
 bool H3DWindowNode::GLEW_init = false;
@@ -108,7 +109,8 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFBool      > _manualCursorControl,
                    Inst< SFString    > _cursorType,
                    Inst< SFNavigationInfo > _navigationInfo,
-                   Inst< SFBool > _useFullscreenAntiAliasing ) :
+                   Inst< SFBool > _useFullscreenAntiAliasing,
+                   Inst< SFVec2f > _clipDistances ) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -124,6 +126,7 @@ H3DWindowNode::H3DWindowNode(
   cursorType( _cursorType ),
   navigationInfo( _navigationInfo ),
   useFullscreenAntiAliasing( _useFullscreenAntiAliasing ),
+  clipDistances( _clipDistances ),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -149,6 +152,7 @@ H3DWindowNode::H3DWindowNode(
   height->setValue( 600 );
   fullscreen->setValue( false );
   mirrored->setValue( false );
+  clipDistances->setValue( Vec2f( 0.01, 10 ), id );
 
   renderMode->addValidValue( "MONO" );
   renderMode->addValidValue( "QUAD_BUFFERED_STEREO" );
@@ -777,6 +781,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     clip_far = -1;
   }
 
+
   H3DFloat focal_distance = 0.6f;
 
   StereoInfo *stereo_info = StereoInfo::getActive();
@@ -797,7 +802,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   GLdouble mono_projmatrix[16], mono_mvmatrix[16];
   bool any_pointing_device_sensors =
     X3DPointingDeviceSensorNode::instancesExists();
-
+  //    Console(4) << clip_near << " " << clip_far << endl;
   if( renderMode->isStereoMode() ) {
     // make sure the focal plane is between the near and far 
     // clipping planes.
@@ -807,6 +812,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if( focal_distance >= clip_far && clip_far != -1 ) {
       clip_far = focal_distance + 0.01f;
     }
+
+    clipDistances->setValue( Vec2f(clip_near, clip_far), id );
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -1112,6 +1119,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
   } else {
     // MONO
+    clipDistances->setValue( Vec2f(clip_near, clip_far), id );
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
