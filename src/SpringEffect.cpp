@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2011, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -80,66 +80,57 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
   
 }
 
-// TODO: remove counter when Sensable fixes the bug with invalid positions
-// at startup. HLAPI reports the wrong position for the first couple of loops
-// which can cause the spring to be added even though it should not.
-int counter = 0;
-
 void SpringEffect::traverseSG( TraverseInfo &ti ) {
-  if( counter < 5 ) {
-    counter++;
-  } else {
-    if( !ti.getHapticsDevices().empty()) {
-      vector< H3DInt32 > device_index = deviceIndex->getValue();
-      if( device_index.empty() ) {
-        for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ )
-          device_index.push_back( i );
-      }
-      bool any_active = false;
-      for( unsigned int i = 0; i < device_index.size(); i++ ) {
-        int index = device_index[i];
-        if( index >= 0 && ti.hapticsEnabled( index ) ) {
-          H3DHapticsDevice *hd = ti.getHapticsDevice( index );
-          // the tracker position in local coordinates.
-          const Vec3f &pos = 
-            ti.getAccInverseMatrix() * 
-            hd->trackerPosition->getValue();
-          const Vec3f &spring_pos = position->getValue();
-          H3DFloat distance = ( pos - spring_pos ).length();
-          if( index >= (int)haptic_spring.size() )
-            haptic_spring.resize( index + 1, NULL );
-          if( index >= (int)force->size() )
-            force->resize( index + 1, Vec3f( 0, 0, 0 ), id );
-          if( haptic_spring[index] ) {
-            if( distance >= escapeDistance->getValue() ) {
-              haptic_spring.set( index, NULL );
-              force->setValue( index, Vec3f( 0, 0, 0 ), id );
-            } else {
-              haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
-              haptic_spring[index]->setSpringConstant( springConstant->getValue() );
-              haptic_spring[index]->setDamping( damping->getValue() );
-              ti.addForceEffect( index, haptic_spring[index] );
-              any_active = true;
-              force->setValue( index, (Vec3f) haptic_spring[index]->getLatestForce(), id );
-            }
+  if( !ti.getHapticsDevices().empty()) {
+    vector< H3DInt32 > device_index = deviceIndex->getValue();
+    if( device_index.empty() ) {
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ )
+        device_index.push_back( i );
+    }
+    bool any_active = false;
+    for( unsigned int i = 0; i < device_index.size(); i++ ) {
+      int index = device_index[i];
+      if( index >= 0 && ti.hapticsEnabled( index ) ) {
+        H3DHapticsDevice *hd = ti.getHapticsDevice( index );
+        // the tracker position in local coordinates.
+        const Vec3f &pos = 
+          ti.getAccInverseMatrix() * 
+          hd->trackerPosition->getValue();
+        const Vec3f &spring_pos = position->getValue();
+        H3DFloat distance = ( pos - spring_pos ).length();
+        if( index >= (int)haptic_spring.size() )
+          haptic_spring.resize( index + 1, NULL );
+        if( index >= (int)force->size() )
+          force->resize( index + 1, Vec3f( 0, 0, 0 ), id );
+        if( haptic_spring[index] ) {
+          if( distance >= escapeDistance->getValue() ) {
+            haptic_spring.set( index, NULL );
+            force->setValue( index, Vec3f( 0, 0, 0 ), id );
           } else {
-            if( distance <= startDistance->getValue() ) {
-              if( !haptic_spring[index] )
-                haptic_spring.set( index, createHAPISpring() );
-              haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
-              haptic_spring[index]->setSpringConstant( springConstant->getValue() );
-              haptic_spring[index]->setDamping( damping->getValue() );
-              ti.addForceEffect( index, haptic_spring[index] );
-              any_active = true;
-            }
+            haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
+            haptic_spring[index]->setSpringConstant( springConstant->getValue() );
+            haptic_spring[index]->setDamping( damping->getValue() );
+            ti.addForceEffect( index, haptic_spring[index] );
+            any_active = true;
+            force->setValue( index, (Vec3f) haptic_spring[index]->getLatestForce(), id );
+          }
+        } else {
+          if( distance <= startDistance->getValue() ) {
+            if( !haptic_spring[index] )
+              haptic_spring.set( index, createHAPISpring() );
+            haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
+            haptic_spring[index]->setSpringConstant( springConstant->getValue() );
+            haptic_spring[index]->setDamping( damping->getValue() );
+            ti.addForceEffect( index, haptic_spring[index] );
+            any_active = true;
           }
         }
       }
-      if( any_active ) {
-        active->setValue( true, id );
-      } else if( active->getValue( id ) ) {
-        active->setValue( false, id );
-      }
+    }
+    if( any_active ) {
+      active->setValue( true, id );
+    } else if( active->getValue( id ) ) {
+      active->setValue( false, id );
     }
   }
 }

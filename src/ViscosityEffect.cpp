@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2011, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -69,35 +69,27 @@ ViscosityEffect::ViscosityEffect( Inst< SFFloat > _radius,
   dampingFactor->setValue( 0.6f );
 }
 
-// TODO: remove counter when Sensable fixes the bug with invalid positions
-// at startup. HLAPI reports the wrong position for the first couple of loops
-// which can cause the spring to be added even though it should not.
-int viscous_counter = 0;
 void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
-  if( viscous_counter < 5 ) {
-    viscous_counter++;
-  } else {
-    if( enabled->getValue() ) {
-      const vector< H3DInt32 > &device_index = deviceIndex->getValue();
-      if( device_index.empty() ) {
-        for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
-          if( ti.hapticsEnabled( i ) ) {
-            ti.addForceEffect( i,
-                               new HAPI::HapticViscosity(
-                                                     viscosity->getValue(),
-                                                     radius->getValue(),
-                                                     dampingFactor->getValue() ) );
-          }
+  if( enabled->getValue() ) {
+    const vector< H3DInt32 > &device_index = deviceIndex->getValue();
+    if( device_index.empty() ) {
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
+        if( ti.hapticsEnabled( i ) ) {
+          ti.addForceEffect( i,
+                             new HAPI::HapticViscosity(
+                                                   viscosity->getValue(),
+                                                   radius->getValue(),
+                                                   dampingFactor->getValue() ) );
         }
-      } else {
-        for( unsigned int i = 0; i < device_index.size(); i++ ) {
-          if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
-            ti.addForceEffect( device_index[i],
-                               new HAPI::HapticViscosity(
-                                                     viscosity->getValue(),
-                                                     radius->getValue(),
-                                                     dampingFactor->getValue() ) );
-          }
+      }
+    } else {
+      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+        if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
+          ti.addForceEffect( device_index[i],
+                             new HAPI::HapticViscosity(
+                                                   viscosity->getValue(),
+                                                   radius->getValue(),
+                                                   dampingFactor->getValue() ) );
         }
       }
     }

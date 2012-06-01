@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2011, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -352,6 +352,12 @@ namespace H3D {
       }
     }
 
+		/// This function is called for all devices in a DeviceInfo node for which the
+		/// initDevice has been called. It is not called until all initDevice calls
+		/// have been completed for all devices in the DeviceInfo. This function can
+		/// be used for functionality that require all devices to be initialized.
+		virtual void postInit() {}
+
     /// This function is used to transfer device values, such as position, 
     /// button status etc from the realtime loop to the fields of H3DHapticsDevice,
     /// and possible vice versa.
@@ -560,8 +566,11 @@ namespace H3D {
     auto_ptr< SFInt32 >   desiredHapticsRate;
 
     /// The time spent in the last haptics loop(in seconds)
+		/// A value of -1 means that no haptics loop has been completed
+		/// yet.
     ///
     /// <b>Access type:</b> outputOnly \n
+		/// <b>Default value:</b> -1 \n
     /// 
     /// \dotfile H3DHapticsDevice_hapticsLoopTime.dot
     auto_ptr< SFTime > hapticsLoopTime;
@@ -694,6 +703,9 @@ namespace H3D {
     HAPI::HAPIHapticsRenderer::Contacts last_contacts;
 
     bool error_msg_printed;
+
+		// Used to set the haptics renderer for a layer.
+		void setHapticsRenderer( unsigned int layer );
 
   };
 }

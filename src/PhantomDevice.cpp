@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -202,20 +202,6 @@ void PhantomDevice::updateDeviceValues() {
 #endif
 }
 
-void PhantomDevice::renderShapes( const HapticShapeVector &shapes,
-                                 unsigned int layer ) {
-  H3DHapticsDevice::renderShapes( shapes, layer );
-#ifdef HAVE_OPENHAPTICS
-  if( hapi_device.get() && !started_scheduler ) {
-    render_shapes_called++;
-    if( nr_initialized_devices == render_shapes_called ) {
-      HAPI::PhantomHapticsDevice::startScheduler();
-      started_scheduler = true;
-    }
-  }
-#endif
-}
-
 void PhantomDevice::Calibrate::onValueChange( const bool &value ) {
 #ifdef HAVE_OPENHAPTICS
   if ( value ) {
@@ -223,6 +209,19 @@ void PhantomDevice::Calibrate::onValueChange( const bool &value ) {
     HAPI::PhantomHapticsDevice *hapi_device = static_cast< HAPI::PhantomHapticsDevice * >( h3d_device->hapi_device.get() );
     if( hapi_device ) {
       hapi_device->calibrateDevice();
+    }
+  }
+#endif
+}
+
+void PhantomDevice::postInit() {
+#ifdef HAVE_OPENHAPTICS
+	//setHapticsRenderer( 0 );
+  if( hapi_device.get() && !started_scheduler ) {
+    render_shapes_called++;
+    if( nr_initialized_devices == render_shapes_called ) {
+      HAPI::PhantomHapticsDevice::startScheduler();
+      started_scheduler = true;
     }
   }
 #endif

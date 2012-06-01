@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -67,21 +67,7 @@ namespace H3D {
     /// \param _haptics_devices The HapticDevice instances that are available
     /// to render HapticShapes on.
     /// 
-    TraverseInfo( const vector< H3DHapticsDevice * > &_haptics_devices ) :
-      current_layer( 0 ),
-      current_surface( NULL ),
-      haptics_devices( _haptics_devices ),
-      haptic_shapes( _haptics_devices.size() ),
-      haptic_effects( _haptics_devices.size() ),
-      graphics_enabled( true ),
-      multi_pass_transparency( false ) {
-
-      initializeLayers( 1 );
-      haptics_enabled.resize( haptics_devices.size(), true );
-
-      // put two unit matrices on the transform stack.
-      transform_stack.push( TransformInfo( Matrix4f(), Matrix4f () ) );
-    }
+    TraverseInfo( const vector< H3DHapticsDevice * > &_haptics_devices );
 
     /// Returns the number of haptics layers that are available and initialized.
     /// If you need more you will have to use the initializeLayers() function

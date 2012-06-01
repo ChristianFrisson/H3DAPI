@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -110,16 +110,12 @@ namespace H3D {
     /// with name deviceName
     virtual void initialize();
 
-    /// Perform haptic rendering for the given HapticShape instances. 
-    /// HapticShape objects that are to be be rendered haptically must be 
-    /// rendered with this function each scenegraph loop. 
-    /// Used in PhantomDevice to determine when to start the scheduler
-    /// for OpenHaptics in order to avoid random crashes when creating
-    /// hlContext.
-    /// \param shapes The haptic shapes to render.
-    /// \param layer The haptic layer to render them in.
-    virtual void renderShapes( const HapticShapeVector &shapes, 
-                               unsigned int layer = 0 );
+		/// This function is called for all devices in a DeviceInfo node for which the
+		/// initDevice has been called. It is not called until all initDevice calls
+		/// have been completed for all devices in the DeviceInfo. This function can
+		/// be used for functionality that require all devices to be initialized.
+		/// For this node it is used to start the OpenHaptics scheduler.
+		virtual void postInit();
 
     /// The name of the device, as specified in Phantom Configuration
     /// utility. If set to "", the default device will be used. 

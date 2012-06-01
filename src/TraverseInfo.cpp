@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -35,6 +35,25 @@
 #include <H3D/X3DLightNode.h>
 
 using namespace H3D;
+
+TraverseInfo::TraverseInfo( const vector< H3DHapticsDevice * > &_haptics_devices ) :
+	current_layer( 0 ),
+	current_surface( NULL ),
+	haptics_devices( _haptics_devices ),
+	haptic_shapes( _haptics_devices.size() ),
+	haptic_effects( _haptics_devices.size() ),
+	graphics_enabled( true ),
+	multi_pass_transparency( false ) {
+
+		initializeLayers( 1 );
+		haptics_enabled.reserve( haptics_devices.size() ); 
+		for( unsigned int i = 0; i < haptics_devices.size(); i++ ) {
+			haptics_enabled.push_back( !(haptics_devices[i]->hapticsLoopTime->getValue() < 0) );
+		}
+
+		// put two unit matrices on the transform stack.
+		transform_stack.push( TransformInfo( Matrix4f(), Matrix4f () ) );
+	}
 
 void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
   shape->ref();

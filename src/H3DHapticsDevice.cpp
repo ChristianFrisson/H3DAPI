@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2011, SenseGraphics AB
+//    Copyright 2004-2012, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -151,7 +151,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   secondaryButton->setValue( false, id );
   hapticsRate->setValue( 0, id );
   desiredHapticsRate->setValue( 1024, id );
-  hapticsLoopTime->setValue( 0, id );
+  hapticsLoopTime->setValue( -1, id );
   inputDOF->setValue( 3, id );
   outputDOF->setValue( 3, id );
   forceLimit->setValue( -1, id );
@@ -262,17 +262,7 @@ void H3DHapticsDevice::renderShapes(
                          unsigned int layer ) {
   if( hapi_device.get() ) {
 
-    HAPI::HAPIHapticsRenderer *hapi_renderer = 
-      hapi_device->getHapticsRenderer( layer );
-
-    if( !hapi_renderer ) {
-      H3DHapticsRendererNode *h3d_renderer = hapticsRenderer->getValue();
-      if( h3d_renderer ) {
-        hapi_device->setHapticsRenderer( 
-                                  h3d_renderer->getHapticsRenderer( layer ),
-                                  layer );
-      }
-    }
+    setHapticsRenderer( layer );
 
     hapi_device->setShapes( shapes, layer );
   }
@@ -515,4 +505,21 @@ void H3DHapticsDevice::renderStylus() {
     stylus_node->render();
     glPopMatrix();
   }
+}
+
+void H3DHapticsDevice::setHapticsRenderer( unsigned int layer ) {
+	if( hapi_device.get() ) {
+		HAPI::HAPIHapticsRenderer *hapi_renderer = 
+				hapi_device->getHapticsRenderer( layer );
+
+		if( !hapi_renderer ) {
+			H3DHapticsRendererNode *h3d_renderer = hapticsRenderer->getValue();
+			if( h3d_renderer &&
+					hapi_device->getHapticsRenderer( layer ) != h3d_renderer->getHapticsRenderer( layer ) ) {
+				hapi_device->setHapticsRenderer( 
+																	h3d_renderer->getHapticsRenderer( layer ),
+																	layer );
+			}
+		}
+	}
 }
