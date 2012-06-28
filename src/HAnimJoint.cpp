@@ -125,6 +125,8 @@ void HAnimJoint::traverseSG( TraverseInfo &ti ) {
   if( !is_toplevel_joint ) {
     acc_joint_matrix = (*current_acc_joint_matrix) * joint_matrix;
   }
+  else
+    acc_joint_matrix = joint_matrix;
 
   ti.setUserData( "AccumulatedJointMatrix", &acc_joint_matrix );
 
