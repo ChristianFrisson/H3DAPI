@@ -140,3 +140,8 @@ bool ResourceResolver::releaseTmpFileName( const string &file ) {
   }
   return false;
 }
+
+auto_ptr< URNResolver > & ResourceResolver::urn_resolver() {
+  static auto_ptr< URNResolver > urn_resolver( NULL );
+  return urn_resolver;
+}

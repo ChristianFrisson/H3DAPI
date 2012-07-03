@@ -130,10 +130,7 @@ namespace H3D {
                                 bool *is_tmp_file,
                                 bool folder );
     
-    static auto_ptr< URNResolver > & urn_resolver() {
-      static auto_ptr< URNResolver > urn_resolver(NULL);
-      return urn_resolver;
-    }
+    static auto_ptr< URNResolver > & urn_resolver();
     
     static H3DUtil::AutoPtrVector< ResourceResolver > & resolvers() {
       static H3DUtil::AutoPtrVector< ResourceResolver > resolvers;

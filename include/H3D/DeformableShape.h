@@ -72,7 +72,7 @@ namespace H3D {
     /// The SFGeometryNode is extended to only accept X3DComposedGeometryNode
     /// nodes.
     class SFGeometryNode: public X3DShapeNode::SFGeometryNode {
-
+      public:
       /// Destructor. Sets the value to NULL in order to get the correct
       /// onAdd and onRemove functions to be called and initialize the
       /// different coord fields in the DeformableShape node when changing
@@ -81,6 +81,7 @@ namespace H3D {
         value = NULL;
       }
 
+      protected:
       virtual void onAdd( Node *n ) {
         X3DComposedGeometryNode *cg = 
           dynamic_cast< X3DComposedGeometryNode * >( n );
