@@ -67,6 +67,8 @@ ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
   type->addValidValue( "VERTEX" );
   type->addValidValue( "FRAGMENT" );
   type->addValidValue( "GEOMETRY" );
+  type->addValidValue( "TESS_CONTROL" );
+  type->addValidValue( "TESS_EVALUATION" );
   type->setValue( "VERTEX", id );
   url->route( shaderString );
 }
@@ -96,11 +98,24 @@ GLhandleARB ShaderPart::compileShader() {
         return 0;
       }
       shader_handle = glCreateShaderObjectARB( GL_GEOMETRY_SHADER_EXT );
+    }  else if( shader_type == "TESS_CONTROL" ) {
+      if( !GLEW_ARB_tessellation_shader ) {
+        Console(4) << "Warning: Tesselation shaders not supported by your graphics card. ShaderPart with type \"TESS_CONTROL\" will be ignored." << endl;
+        return 0;
+      }
+      shader_handle = glCreateShaderObjectARB( GL_TESS_CONTROL_SHADER );
+    }  else if( shader_type == "TESS_EVALUATION" ) {
+      if( !GLEW_ARB_tessellation_shader ) {
+        Console(4) << "Warning: Tesselation shaders not supported by your graphics card. ShaderPart with type \"TESS_EVALUATION\" will be ignored." << endl;
+        return 0;
+      }
+      shader_handle = glCreateShaderObjectARB( GL_TESS_EVALUATION_SHADER );
     } else {
       shader_handle = 0;
       Console(3) << "Warning: Unsupported shader type \"" << shader_type
-                 << "\" in ShaderPart node. Must be either \"FRAGMENT\"" 
-                 << " or \"VERTEX\"." << endl;
+                 << "\" in ShaderPart node. Must be either \"FRAGMENT\"," 
+                 << "\"VERTEX\", \"GEOMETRY\", \"TESS_CONTROL\" "
+                 << " or \"TESS_EVALUATION." << endl;
       return shader_handle;
     }
     

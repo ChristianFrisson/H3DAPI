@@ -271,6 +271,14 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
   if( shader_requires_tangents ) {
     *shader_requires_tangents = false;
   }
+
+  // Reset shaderRequiresPatches to false if available
+  // Could be set when traversing the shader if a tessellation shader
+  // is present
+  bool* shader_requires_patches= NULL;
+  if( ti.getUserData( "shaderRequiresPatches", (void **)&shader_requires_patches)==0 ) {
+    *shader_requires_patches= false;
+  }
 }
 
 void X3DShapeNode::DisplayList::callList( bool build_list ) {

@@ -290,6 +290,13 @@ namespace H3D {
     /// is supposed to render tangent vertex attributes.
     bool render_tangents;
 
+    /// This will be set to true in traverseSG if the render function
+    /// is supposed to render GL_PATCHES instead of GL_TRIANGLES.
+    ///
+    /// If multiple uses of the IndexedTriangleSet then whether patches
+    /// are rendered or not is decided by the last usage to be traversed.
+    bool render_patches;
+
     // Internal field used to know if vertex buffer object can be created.
     auto_ptr< Field > vboFieldsUpToDate;
     // The index for the vertex buffer object

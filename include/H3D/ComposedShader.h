@@ -96,6 +96,12 @@ namespace H3D {
                            const Field::AccessType &access,
                            Field *field );
     
+    /// Traverse the node
+    ///
+    /// Determines if GL_PATCHES should be rendered by geometry, if
+    /// a tessellation shader is present
+    virtual void traverseSG ( TraverseInfo& ti );
+
     /// Sets up the shader program and sets uniform variable values.
     virtual void render();
 
@@ -201,7 +207,11 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
-    static bool shader_support_checked;  
+    static bool shader_support_checked;
+
+    /// True if a warning has already been output about
+    /// missing tessellation shader support
+    static bool tessellation_support_checked;
 
     /// The handle to the program object used for the shader in OpenGL.
     GLhandleARB program_handle;

@@ -88,7 +88,8 @@ namespace H3D {
 
     /// The type field indicates whether this object shall be compiled
     /// as a vertex shader, fragment shader, or other future-defined shader 
-    /// type. Valid values are "VERTEX", "FRAGMENT" or "GEOMETRY".
+    /// type. Valid values are "VERTEX", "FRAGMENT","GEOMETRY" "TESS_CONTROL"
+    /// or "TESS_EVALUATION".
     /// 
     /// <b>Access type:</b> initializeOnly \n
     /// \dotfile ShaderPart_type.dot

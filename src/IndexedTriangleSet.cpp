@@ -80,6 +80,7 @@ IndexedTriangleSet::IndexedTriangleSet(
   index( _index ),
   autoTangent( new AutoTangent ),
   render_tangents( false ),
+  render_patches( false ),
   vboFieldsUpToDate( new Field ),
   vbo_id( NULL ) {
   
@@ -280,12 +281,22 @@ void IndexedTriangleSet::render() {
 
         // Draw the triangles, the last parameter is NULL since vertex buffer
         // objects are used.
-        glDrawRangeElements( GL_TRIANGLES,
-                             0,
-                             coordinate_node->nrAvailableCoords() - 1,
-                             3*nr_triangles,
-                             GL_UNSIGNED_INT,
-                             NULL );
+        if ( !render_patches || !GLEW_ARB_tessellation_shader ) {
+          glDrawRangeElements( GL_TRIANGLES,
+                               0,
+                               coordinate_node->nrAvailableCoords() - 1,
+                               3*nr_triangles,
+                               GL_UNSIGNED_INT,
+                               NULL );
+        } else {
+          glPatchParameteri(GL_PATCH_VERTICES, 3);
+          glDrawRangeElements( GL_PATCHES,
+                               0,
+                               coordinate_node->nrAvailableCoords() - 1,
+                               3*nr_triangles,
+                               GL_UNSIGNED_INT,
+                               NULL );
+        }
 
         // Disable all vertex buffer objects.
         glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
@@ -333,12 +344,23 @@ void IndexedTriangleSet::render() {
             if( attr ) attr->renderArray();
         }
 
-        glDrawRangeElements( GL_TRIANGLES,
-                             0,
-                             coordinate_node->nrAvailableCoords() - 1,
-                             3*nr_triangles, 
-                             GL_UNSIGNED_INT,
-                             &(*(indices.begin()) ) );
+        if ( !render_patches || !GLEW_ARB_tessellation_shader ) {
+          glDrawRangeElements( GL_TRIANGLES,
+                               0,
+                               coordinate_node->nrAvailableCoords() - 1,
+                               3*nr_triangles, 
+                               GL_UNSIGNED_INT,
+                               &(*(indices.begin()) ) );
+        } else {
+          glPatchParameteri(GL_PATCH_VERTICES, 3);
+          glDrawRangeElements( GL_PATCHES,
+                               0,
+                               coordinate_node->nrAvailableCoords() - 1,
+                               3*nr_triangles, 
+                               GL_UNSIGNED_INT,
+                               &(*(indices.begin()) ) );
+        }
+
         coordinate_node->disableArray();
         normal_node->disableArray();
         if( color_node ) color_node->disableArray();
@@ -363,7 +385,15 @@ void IndexedTriangleSet::render() {
     } else {
       // we cannot use arrays to render when normal_per_vertex is false
       // since the indexing into the normals are different from the rest.
-      glBegin( GL_TRIANGLES );
+
+      // Render either as triangles or patches
+      if ( !render_patches || !GLEW_ARB_tessellation_shader ) {
+        glBegin( GL_TRIANGLES );
+      } else {
+        glPatchParameteri(GL_PATCH_VERTICES, 3);
+        glBegin( GL_PATCHES );
+      }
+
       for( unsigned int i = 0; i < nr_triangles; i++ ) {
         normal_node->render( i );
         if( render_tangents ) {
@@ -453,6 +483,23 @@ void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
       *shader_requires_tangents ) {  
     render_tangents = true;
     displayList->breakCache();
+  }
+
+  // If multiple uses of the IndexedTriangleSet then whether patches
+  // are rendered or not is decided by the last usage to be traversed
+  bool * shader_requires_patches = NULL;
+  bool render_patches_new= ti.getUserData( "shaderRequiresPatches", 
+                                           (void **)&shader_requires_patches)==0 && *shader_requires_patches;
+  if ( render_patches_new != render_patches ) {
+    render_patches= render_patches_new;
+    if ( !GLEW_ARB_tessellation_shader ) {
+      if ( render_patches_new ) {
+        Console(4) << "WARNING: Tessellation shaders are not supported by your graphics hardware! "
+          "IndexedTriangleSet " << getName() << " will not be rendered as GL_PATCHES." << endl;
+      }
+    } else {
+      displayList->breakCache();
+    }
   }
 }
 

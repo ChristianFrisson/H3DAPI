@@ -39,6 +39,8 @@
 using namespace H3D;
 using namespace std;
 
+bool ComposedShader::tessellation_support_checked= false;
+
 map<string, GLhandleARB> ComposedShader::phandles_map;
 map<GLhandleARB, int> ComposedShader::phandle_counts;
 
@@ -175,6 +177,35 @@ void ComposedShader::postRender() {
   }
 }
 
+void ComposedShader::traverseSG ( TraverseInfo& ti ) {
+  X3DShaderNode::traverseSG ( ti );
+
+  // Will be set to true if tessellation shader is present
+  static bool require_patches; 
+
+  // Look for tessellation shader
+  require_patches = false;
+  for( MFShaderPart::const_iterator i = parts->begin();
+        i != parts->end(); i++ ) {
+    ShaderPart* shader_part= static_cast< ShaderPart * >(*i);
+    if ( shader_part->type->getValue() == "TESS_CONTROL" || shader_part->type->getValue() == "TESS_EVALUATION" ) {
+      require_patches= true;
+      break;
+    }
+  }
+
+  // Let the geometry know  if it should render patches
+  if( require_patches ) {
+    if ( GLEW_ARB_tessellation_shader ) {
+      ti.setUserData( "shaderRequiresPatches", &require_patches );
+    } else if ( !tessellation_support_checked ) {
+      Console(4) << "Your graphic card driver does not support tessellation shaders."
+                 << " The ComposedShader node " << getName() << " will not be rendered correctly!" << endl;
+      tessellation_support_checked = true;
+    }
+  }
+}
+
 // The ComposedShader is modified to use 1 instance of different program_handlers
 // that share the same set of shader parts. However, a new program_handle object 
 // will be created when the Shader is re-activated (regardsless)
@@ -190,8 +221,8 @@ void ComposedShader::render() {
     if( isValid->getValue() ) isValid->setValue( false, id );
   } else {
     bool all_parts_valid = true;
+    
     // compile all shader parts
-
     for( MFShaderPart::const_iterator i = parts->begin();
          i != parts->end(); i++ ) {
       if( static_cast< ShaderPart * >(*i)->compileShader() == 0 ) {
@@ -388,7 +419,7 @@ void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
       Console(4) << "Invalid geometryInputType \"" << input_type
                  << "\" in ComposedShader. Using \"TRIANGLES\" instead." << endl;
       glProgramParameteriEXT(program_handle, 
-                             GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
+                             GL_GEOMETRY_INPUT_TYPE_EXT, 4/*GL_TRIANGLES*/);
     }
 
     // Setting output type.
@@ -408,7 +439,7 @@ void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
                  << "\" in ComposedShader. Using \"TRIANGLE_STRIP\" instead."
                  << endl;
       glProgramParameteriEXT(program_handle, 
-                             GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLES);
+                             GL_GEOMETRY_OUTPUT_TYPE_EXT, 4/*GL_TRIANGLES*/);
     } 
 
     int max_output_vertices;
