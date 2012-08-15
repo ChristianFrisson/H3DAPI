@@ -1,3 +1,6 @@
+#version 150 compatibility
+#extension GL_ARB_separate_shader_objects : enable
+
 attribute vec2 CD_MTFACE_att0;
 varying vec2 var0;
 attribute vec4 CD_TANGENT_att1;

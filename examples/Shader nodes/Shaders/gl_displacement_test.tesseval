@@ -1,4 +1,6 @@
-#version 420 core
+#version 150 compatibility
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_tessellation_shader : enable
 
 // Phong tess patch data
 struct PhongPatch
@@ -92,6 +94,6 @@ void main()
   //displacedPos = finalPos;
   
 	gl_Position   = gl_ModelViewProjectionMatrix * vec4(displacedPos,1.0);
-  oPosition = gl_ModelViewMatrix * vec4(displacedPos,1.0);
+  oPosition = vec3(gl_ModelViewMatrix * vec4(displacedPos,1.0));
 }
 

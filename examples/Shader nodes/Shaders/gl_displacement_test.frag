@@ -1,6 +1,8 @@
+#version 150 compatibility
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_tessellation_shader : enable
+
 /* These are needed for high quality bump mapping */
-#version 130
-#extension GL_ARB_texture_query_lod: enable
 #define BUMP_BICUBIC_
 
 float exp_blender(float f)
