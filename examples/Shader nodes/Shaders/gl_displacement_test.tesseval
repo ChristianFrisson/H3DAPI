@@ -1,0 +1,97 @@
+#version 420 core
+
+// Phong tess patch data
+struct PhongPatch
+{
+	float termIJ;
+	float termJK;
+	float termIK;
+};
+
+
+uniform float uTessLevels;
+uniform float uTessAlpha;
+uniform float uDisplacement;
+uniform sampler2D displacementMap;
+
+layout(triangles, fractional_odd_spacing, ccw) in;
+
+layout(location=0) in vec3 iNormal[];
+layout(location=3) in vec2 iTexCoord[];
+layout(location=6) in vec4 iTangent[];
+layout(location=9) in PhongPatch iPhongPatch[];
+
+layout(location=0) out vec3 oPosition;
+layout(location=1) out vec3 oNormal;
+layout(location=2) out vec2 oTexCoord;
+layout(location=3) out vec4 oTangent;
+
+#define Pi  gl_in[0].gl_Position.xyz
+#define Pj  gl_in[1].gl_Position.xyz
+#define Pk  gl_in[2].gl_Position.xyz
+#define tc1 gl_TessCoord
+
+void main()
+{
+	// precompute squared tesscoords
+	vec3 tc2 = tc1*tc1;
+  vec3 oNormalLocal;
+
+	// compute texcoord and normal
+	oTexCoord = gl_TessCoord[0]*iTexCoord[0]
+	          + gl_TessCoord[1]*iTexCoord[1]
+	          + gl_TessCoord[2]*iTexCoord[2];
+	oNormal   = gl_TessCoord[0]*iNormal[0]
+	          + gl_TessCoord[1]*iNormal[1]
+	          + gl_TessCoord[2]*iNormal[2];
+  oNormalLocal = normalize( oNormal );
+  oNormal   = normalize(gl_NormalMatrix * oNormal);
+  oTangent  = gl_TessCoord[0]*iTangent[0]
+	          + gl_TessCoord[1]*iTangent[1]
+	          + gl_TessCoord[2]*iTangent[2];
+  oTangent.xyz = normalize(gl_ModelViewMatrix * vec4(oTangent.xyz,0.0)).xyz;
+
+	// interpolated position
+	vec3 barPos = gl_TessCoord[0]*Pi
+	            + gl_TessCoord[1]*Pj
+	            + gl_TessCoord[2]*Pk;
+
+	// build terms
+	vec3 termIJ = vec3(iPhongPatch[0].termIJ,
+	                   iPhongPatch[1].termIJ,
+	                   iPhongPatch[2].termIJ);
+	vec3 termJK = vec3(iPhongPatch[0].termJK,
+	                   iPhongPatch[1].termJK,
+	                   iPhongPatch[2].termJK);
+	vec3 termIK = vec3(iPhongPatch[0].termIK,
+	                   iPhongPatch[1].termIK,
+	                   iPhongPatch[2].termIK);
+
+	// phong tesselated pos
+	vec3 phongPos   = tc2[0]*Pi
+	                + tc2[1]*Pj
+	                + tc2[2]*Pk
+	                + tc1[0]*tc1[1]*termIJ
+	                + tc1[1]*tc1[2]*termJK
+	                + tc1[2]*tc1[0]*termIK;
+                  
+
+
+	// final position
+	vec3 finalPos = (1.0-uTessAlpha)*barPos + uTessAlpha*phongPos;
+  
+  vec3 displacedPos;
+	vec4 dv;
+	float df;           
+	//dv = texture2D( displacementMap, oTexCoord.st );
+	dv = texture( displacementMap, oTexCoord.st );
+	
+	df = 0.30*dv.x + 0.59*dv.y + 0.11*dv.z;
+	
+	displacedPos = vec3(oNormalLocal * df * uDisplacement) + finalPos;
+  //displacedPos = finalPos;
+  
+	gl_Position   = gl_ModelViewProjectionMatrix * vec4(displacedPos,1.0);
+  oPosition = gl_ModelViewMatrix * vec4(displacedPos,1.0);
+}
+
