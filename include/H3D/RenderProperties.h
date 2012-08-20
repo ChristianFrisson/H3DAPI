@@ -32,6 +32,7 @@
 #include <H3D/X3DAppearanceChildNode.h>
 #include <H3D/SFColor.h>
 #include <H3D/SFInt32.h>
+#include <H3D/SFColorRGBA.h>
 
 namespace H3D {
 
@@ -86,7 +87,16 @@ namespace H3D {
                       Inst< SFBool      > _colorBufferRedWriteEnabled = 0,
                       Inst< SFBool      > _colorBufferGreenWriteEnabled = 0,
                       Inst< SFBool      > _colorBufferBlueWriteEnabled = 0,
-                      Inst< SFBool      > _colorBufferAlphaWriteEnabled = 0
+                      Inst< SFBool      > _colorBufferAlphaWriteEnabled = 0,
+                      Inst< SFString    > _alphaFunc = 0,
+                      Inst< SFFloat     > _alphaFuncValue = 0,
+                      Inst< SFString    > _blendFuncSrcFactorRGB = 0,
+                      Inst< SFString    > _blendFuncSrcFactorAlpha = 0,
+                      Inst< SFString    > _blendFuncDstFactorRGB = 0,
+                      Inst< SFString    > _blendFuncDstFactorAlpha = 0,
+                      Inst< SFString    > _blendEquationRGB = 0,
+                      Inst< SFString    > _blendEquationAlpha = 0,
+                      Inst< SFColorRGBA > _blendColor = 0
                       );
 
 
@@ -187,8 +197,23 @@ namespace H3D {
     /// \dotfile RenderProperties_colorBufferAlphaWriteEnabled.dot 
     auto_ptr< SFBool >  colorBufferAlphaWriteEnabled;
 
+    auto_ptr< SFString > alphaFunc;
+    auto_ptr< SFFloat  > alphaFuncValue;
+    auto_ptr< SFString > blendFuncSrcFactorRGB;
+    auto_ptr< SFString > blendFuncDstFactorRGB;
+    auto_ptr< SFString > blendFuncSrcFactorAlpha;
+    auto_ptr< SFString > blendFuncDstFactorAlpha;
+    auto_ptr< SFString > blendEquationRGB;
+    auto_ptr< SFString > blendEquationAlpha;
+    auto_ptr< SFColorRGBA > blendColor;
+    
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  protected:
+    int getSFactor( const string &sfactor_string, GLenum &sfactor );
+    int getDFactor( const string &dfactor_string, GLenum &dfactor );
+    int getBlendEquation( const string &equation_string, GLenum &equation );
+    int getAlphaFunc( const string &alpha_func_string, GLenum &alpha_func );
   };
 }
 
