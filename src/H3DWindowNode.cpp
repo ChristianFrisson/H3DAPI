@@ -167,6 +167,8 @@ H3DWindowNode::H3DWindowNode(
   renderMode->addValidValue("RED_GREEN_STEREO" );
   renderMode->addValidValue( "RED_CYAN_STEREO" );
   renderMode->addValidValue( "VERTICAL_INTERLACED_GREEN_SHIFT" );
+  renderMode->addValidValue( "HDMI_FRAME_PACKED_720P" );
+  renderMode->addValidValue( "HDMI_FRAME_PACKED_1080P" );
   renderMode->setValue( "MONO" );  
 
   cursorType->addValidValue( "DEFAULT" );
@@ -825,15 +827,28 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glFrontFace( GL_CCW );
     }
 
-    H3DFloat projection_width =
-      stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ? 
-      (H3DFloat) width->getValue()/2.0f :
-      (H3DFloat) width->getValue();
-    H3DFloat projection_height =  
-      stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ?
-      (H3DFloat) height->getValue()/2.0f :
-      (H3DFloat) height->getValue();
+    H3DFloat projection_width;
 
+    if( stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
+      projection_width = (H3DFloat) width->getValue()/2.0f;
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
+      projection_width = 1280;
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
+      projection_width = 1920;
+    } else {
+      projection_width = (H3DFloat) width->getValue();
+    }
+
+    H3DFloat projection_height;
+    if( stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
+      projection_height = (H3DFloat) height->getValue()/2.0f;
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
+      projection_height = 720;
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
+      projection_height = 1080;
+    } else {
+      projection_height = (H3DFloat) height->getValue();
+    }
     // LEFT EYE
     // The stereo rendering is made using the parallel axis asymmetric frustum 
     // perspective projection method, which means that the viewpoint for each 
@@ -879,9 +894,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glStencilFunc(GL_EQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
     } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
-         stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
+	       stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, height->getValue() / 2, 
                   width->getValue(), height->getValue() / 2 );
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
+      glViewport( 0, 750, 1280, 720 );
+    } else  if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
+      glViewport( 0, 1125, 1920, 1080 );
     } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
                stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, 0, width->getValue() / 2, height->getValue() );
@@ -982,6 +1001,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, 0, 
                   width->getValue(), height->getValue() / 2 );
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
+      glViewport( 0, 0, 1280, 720 );
+    } else  if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
+      glViewport( 0, 0, 1920, 1080 );
     } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
                stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
       glViewport( width->getValue() / 2, 0, 
@@ -1083,6 +1106,24 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
       glPopAttrib();
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
+      // set 30 lines to black as per hdmi standard 
+      glScissor( 0, 719, 1280, 30 );
+      glEnable( GL_SCISSOR_TEST );
+      glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      glClearColor( 0.0, 0.0, 0.0, 1.0 );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      glPopAttrib();
+      glDisable( GL_SCISSOR_TEST );
+    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
+      // set 45 lines to black as per hdmi standard 
+      glScissor( 0, 1079, 1920, 45 );
+      glEnable( GL_SCISSOR_TEST );
+      glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      glClearColor( 0.0, 0.0, 0.0, 1.0 );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      glPopAttrib();
+      glDisable( GL_SCISSOR_TEST );
     }
     swapBuffers();
 
@@ -1372,6 +1413,10 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return RED_CYAN_STEREO;
   else if( value == "VERTICAL_INTERLACED_GREEN_SHIFT" )
     return VERTICAL_INTERLACED_GREEN_SHIFT;  
+  else if( value == "HDMI_FRAME_PACKED_720P" )
+    return HDMI_FRAME_PACKED_720P;
+  else if( value == "HDMI_FRAME_PACKED_1080P" )
+    return HDMI_FRAME_PACKED_1080P;
   else {
     stringstream s;
     s << "Must be one of "
@@ -1385,6 +1430,8 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
       << "VERTICAL_SPLIT_KEEP_RATIO, "
       << "HORIZONTAL_SPLIT, "
       << "HORIZONTAL_SPLIT_KEEP_RATIO, "
+      << "HDMI_FRAME_PACKED_720P, "
+      << "HDMI_FRAME_PACKED_1080P, "
       << "RED_CYAN_STEREO, RED_GREEN_STEREO or RED_BLUE_STEREO. ";
     throw InvalidRenderMode( value, 
                              s.str(),

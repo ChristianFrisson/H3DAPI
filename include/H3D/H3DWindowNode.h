@@ -111,7 +111,15 @@ namespace H3D {
         /// The aspect ratio is preserved in this mode, so that it can be used
         /// when e.g. extending the desktop in order for rendering each
         /// the left eye for one projector and the right for another.  
-        HORIZONTAL_SPLIT_KEEP_RATIO 
+        HORIZONTAL_SPLIT_KEEP_RATIO,
+
+	/// HDMI 1.4 frame packed format. Basically horizontal split with
+	/// 30 lines of black between each image.
+	HDMI_FRAME_PACKED_720P,
+
+	/// HDMI 1.4 frame packed format. Basically horizontal split with
+	/// 45 lines of black between each image.
+	HDMI_FRAME_PACKED_1080P
 
       } Mode;
 

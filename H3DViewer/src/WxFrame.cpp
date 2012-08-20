@@ -345,6 +345,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                                     wxT("Red-Green Stereo mode"));
   stereoRenderMode->AppendRadioItem(FRAME_REDCYAN, wxT("Red-Cyan Stereo"),
                                     wxT("Red-Cyan Stereo mode"));
+  stereoRenderMode->AppendRadioItem(FRAME_HDMI720P, wxT("HDMI Frame packed 720p"),
+                                    wxT("HDMI Frame packed 720p"));
+  stereoRenderMode->AppendRadioItem(FRAME_HDMI1080P, wxT("HDMI Frame packed 1080p"),
+                                    wxT("HDMI Frame packed 1080p"));
   
   //Renderer Menu
   rendererMenu = new wxMenu;
@@ -514,7 +518,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_SETTINGS, WxFrame::OnSettings)
   EVT_MENU (FRAME_RESTORE, WxFrame::RestoreWindow)
   EVT_MENU (FRAME_MIRROR, WxFrame::MirrorScene)
-  EVT_MENU_RANGE (FRAME_MONO, FRAME_REDCYAN, WxFrame::StereoRenderMode)
+  EVT_MENU_RANGE (FRAME_MONO, FRAME_HDMI1080P, WxFrame::StereoRenderMode)
   EVT_MENU_RANGE (FRAME_RENDERMODE_DEFAULT, 
                   FRAME_RENDERMODE_POINTS, WxFrame::RenderMode )
   EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
@@ -1070,6 +1074,11 @@ bool WxFrame::loadFile( const string &filename) {
         stereoRenderMode->Check( FRAME_REDGREEN, true );
       else if( render_mode == "RED_CYAN_STEREO" )
         stereoRenderMode->Check( FRAME_REDCYAN, true );
+      else if( render_mode == "HDMI_FRAME_PACKED_720P" )
+        stereoRenderMode->Check( FRAME_HDMI720P, true );
+      else if( render_mode == "HDMI_FRAME_PACKED_1080P" )
+        stereoRenderMode->Check( FRAME_HDMI1080P, true );
+
     }
 
     tree_view_dialog->showEntireSceneAsTree( true );
@@ -1585,6 +1594,12 @@ void WxFrame::StereoRenderMode(wxCommandEvent & event)
       break;
     case FRAME_REDCYAN:
       renderMode = "RED_CYAN_STEREO";
+      break;
+    case FRAME_HDMI720P:
+      renderMode = "HDMI_FRAME_PACKED_720P";
+      break;
+    case FRAME_HDMI1080P:
+      renderMode = "HDMI_FRAME_PACKED_1080P";
       break;
   }
   glwindow->renderMode->setValue( renderMode.c_str() );
