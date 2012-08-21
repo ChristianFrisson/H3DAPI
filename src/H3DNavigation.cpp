@@ -172,8 +172,7 @@ void H3DNavigation::doNavigation(
               }
               direction = -vp_full_orientation * direction;
               direction = move_info.translation_sum.length() * direction *
-                          speed *
-                          delta_time * scaling.x;
+                          speed * scaling.x;
               if( move_towards ) {
                 H3DFloat dist_from_center = 1e-5f;
                 max_movement = max_movement > dist_from_center ?
