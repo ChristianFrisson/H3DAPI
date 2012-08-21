@@ -177,7 +177,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 {
   lastOpenedFilepath = "";
   wxAcceleratorEntry entries[1];
-  entries[0].Set(wxACCEL_NORMAL, (int) WXK_F11, FRAME_RESTORE);
+  entries[0].Set(wxACCEL_NORMAL, (int) WXK_F11, FRAME_TOGGLE_FULLSCREEN);
   wxAcceleratorTable accel(1, entries);
   SetAcceleratorTable(accel);
 
@@ -516,7 +516,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_CHOOSEDIR, WxFrame::OnChooseDir)
   EVT_MENU (FRAME_FULLSCREEN, WxFrame::OnFullscreen)
   EVT_MENU (FRAME_SETTINGS, WxFrame::OnSettings)
-  EVT_MENU (FRAME_RESTORE, WxFrame::RestoreWindow)
+  EVT_MENU (FRAME_TOGGLE_FULLSCREEN, WxFrame::ToggleFullscreen)
   EVT_MENU (FRAME_MIRROR, WxFrame::MirrorScene)
   EVT_MENU_RANGE (FRAME_MONO, FRAME_HDMI1080P, WxFrame::StereoRenderMode)
   EVT_MENU_RANGE (FRAME_RENDERMODE_DEFAULT, 
@@ -1520,23 +1520,33 @@ void WxFrame::OnIdle(wxIdleEvent &event) {
 //Fullscreen mode
 void WxFrame::OnFullscreen (wxCommandEvent & event)
 {
-  WxFrame::ShowFullScreen(true, wxFULLSCREEN_NOMENUBAR | 
-                             wxFULLSCREEN_NOTOOLBAR | wxFULLSCREEN_NOBORDER | 
-                             wxFULLSCREEN_NOCAPTION );
-  glwindow->fullscreen->setValue( true );
-  rendererMenu->Check(FRAME_FULLSCREEN, true);
-  SetStatusText(wxT("Press F11 to exit fullscreen mode"), 0);
-  SetStatusText(wxT("Viewing in Fullscreen"), 1);
+  SetFullscreen( true );
+}
+
+void WxFrame::SetFullscreen( bool fullscreen ) {
+  if( glwindow->fullscreen->getValue() != fullscreen ) {
+    if( fullscreen ) {
+      WxFrame::ShowFullScreen(true, wxFULLSCREEN_NOMENUBAR | 
+			      wxFULLSCREEN_NOTOOLBAR | wxFULLSCREEN_NOBORDER | 
+			      wxFULLSCREEN_NOCAPTION | wxFULLSCREEN_NOSTATUSBAR);
+      glwindow->fullscreen->setValue( true );
+      rendererMenu->Check(FRAME_FULLSCREEN, true);
+      SetStatusText(wxT("Press F11 to exit fullscreen mode"), 0);
+      SetStatusText(wxT("Viewing in Fullscreen"), 1);
+    } else {
+      WxFrame::ShowFullScreen(false, wxFULLSCREEN_ALL);
+      glwindow->fullscreen->setValue( false );
+      rendererMenu->Check(FRAME_FULLSCREEN, false);
+      SetStatusText(currentFilename, 0);
+      SetStatusText(currentPath, 1);
+    }
+  }
 }
 
 //Restore from fullscreen
-void WxFrame::RestoreWindow(wxCommandEvent & event)
+void WxFrame::ToggleFullscreen(wxCommandEvent & event)
 {
-  WxFrame::ShowFullScreen(false, wxFULLSCREEN_ALL);
-  glwindow->fullscreen->setValue( false );
-  rendererMenu->Check(FRAME_FULLSCREEN, false);
-  SetStatusText(currentFilename, 0);
-  SetStatusText(currentPath, 1);
+  SetFullscreen( !glwindow->fullscreen->getValue() );
 }
 
 void WxFrame::MirrorScene(wxCommandEvent & event)

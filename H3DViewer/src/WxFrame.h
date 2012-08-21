@@ -276,7 +276,7 @@ public:
   void OnAbout( wxCommandEvent & event );
   void OnHelp( wxCommandEvent & event );
   void OnFullscreen( wxCommandEvent & event );
-  void RestoreWindow( wxCommandEvent & event );
+  void ToggleFullscreen( wxCommandEvent & event );
   void MirrorScene( wxCommandEvent & event );
   void RenderMode( wxCommandEvent & event );
   void StereoRenderMode( wxCommandEvent & event );
@@ -317,6 +317,7 @@ public:
   void LoadSettings( bool from_config );
   void LoadPlugins();
   void buildNavMenu();
+  void SetFullscreen( bool fullscreen );
   void BuildViewpointsMenu( list< Node * > vp_list );
   void BuildViewpointsSubMenu( list< Node* > vp_list, wxMenu * menu, int &count, int &unnamed_vp, int &unnamed_vg );
   void DestroyViewpointsMenu();
@@ -485,7 +486,7 @@ enum
   FRAME_CLOSE,
   FRAME_CHOOSEDIR,
   FRAME_FULLSCREEN,
-  FRAME_RESTORE,
+  FRAME_TOGGLE_FULLSCREEN,
   FRAME_MIRROR,
   FRAME_CONSOLE,
   FRAME_TREEVIEW,
