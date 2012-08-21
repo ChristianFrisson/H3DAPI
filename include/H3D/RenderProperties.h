@@ -130,8 +130,12 @@ namespace H3D {
     /// \dotfile RenderProperties_depthTestEnabled.dot 
     auto_ptr< SFBool >  depthTestEnabled;
 
-    /// The smoothShading field specifies if smooth shading should be used.
-    /// If false, flat shading is used.
+    /// The smoothShading field specifies if smooth shading of colors
+		/// should be used. If true then
+		/// colors are interpolated between vertices of a face. If false then
+		/// each face has a uniform color chosen from one of its vertices.
+		/// For more information see OpenGL reference for the
+		/// command glShadeModel.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> true \n
