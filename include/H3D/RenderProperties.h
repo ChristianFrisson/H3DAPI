@@ -33,6 +33,8 @@
 #include <H3D/SFColor.h>
 #include <H3D/SFInt32.h>
 #include <H3D/SFColorRGBA.h>
+#include <H3D/SFString.h>
+#include <H3D/SFFloat.h>
 
 namespace H3D {
 
