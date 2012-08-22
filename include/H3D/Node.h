@@ -272,6 +272,11 @@ namespace H3D {
           current_pt_device.pop();
       }
 
+			/// Check if there aer any pointing device sensors added.
+			bool hasCurrentPointingDevice() {
+				return !current_pt_device.empty();
+			}
+
     protected:
       /// The top of the stack contains the X3DPointingDeviceNodes that is to
       /// be considered.

@@ -748,6 +748,12 @@ bool X3DGeometryNode::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
+	if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
+		// If this function is called because we are detecting pointing device
+		// sensors but there is no current one then there is no use in doing
+		// line intersect on the actual triangles.
+		return false;
+	}
   Bound * the_bound = bound->getValue();
   if( !the_bound || the_bound->lineSegmentIntersect( from, to ) ) {
     IntersectionInfo temp_result;

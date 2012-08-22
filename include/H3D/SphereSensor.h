@@ -172,7 +172,7 @@ namespace H3D {
     // sensor is active. It will not change while sensor is active.
     Matrix4f active_global_to_local_matrix;
     /// If true a new radius will be defined.
-    bool new_radius;
+    bool new_radius, prev_new_radius;
   };
 }
 

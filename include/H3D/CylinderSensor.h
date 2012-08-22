@@ -334,7 +334,7 @@ namespace H3D {
     Matrix4f geometry_global_to_local_original;
 
     // If true a new Cylinder will be defined.
-    bool new_cylinder, use_caps;
+    bool new_cylinder, use_caps, prev_new_cylinder;
   };
 }
 

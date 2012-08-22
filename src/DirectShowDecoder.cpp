@@ -191,6 +191,10 @@ void DirectShowDecoder::cleanupDShow(void)
     if (!(!g_pMS)) g_pMS.Release();
     if (!(!g_pGB)) g_pGB.Release();
     if (!(!g_pRenderer)) g_pRenderer.Release();
+		if( data ) {
+			delete[] data;
+			data = NULL;
+		}
     duration = 0;
 }
 
@@ -377,10 +381,15 @@ bool DirectShowDecoder::supportsFileType( const string &url ) {
 /// Get the current position in the clip (in seconds from start position)
 H3DTime DirectShowDecoder::getPosition() {
   LONGLONG pos;
-  if( g_pMS )
-    return g_pMS->GetCurrentPosition(&pos);
-  else 
-    return 0;
+  if( g_pMS ) {
+		// Set time format to be expressed in nano seconds, then get it and
+		// convert to seconds.
+		if( SUCCEEDED( g_pMS->SetTimeFormat( &TIME_FORMAT_MEDIA_TIME ) ) &&
+				SUCCEEDED( g_pMS->GetCurrentPosition(&pos) ) ) {
+			return H3DTime(pos / 10000000.0);
+		}
+  }
+  return 0;
 }
 
 /// Set the current position in the clip(in seconds from start position)

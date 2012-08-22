@@ -409,6 +409,12 @@ bool Sphere::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
+	if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
+		// If this function is called because we are detecting pointing device
+		// sensors but there is no current one then there is no use in doing
+		// line intersect on the actual triangles.
+		return false;
+	}
 
   IntersectionInfo temp_result;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),

@@ -272,7 +272,7 @@ void H3DNavigation::doNavigation(
           far_plane_pos = near_plane_pos + near_far.length() * near_middle;
         }
 
-        Node::LineIntersectResult result( true, true );
+        Node::LineIntersectResult result( true, false );
         if( topNode->lineIntersect( near_plane_pos,
                                     far_plane_pos,
                                     result ) ) {
