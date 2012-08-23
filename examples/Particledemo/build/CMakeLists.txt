@@ -37,8 +37,8 @@ SET(requiredLibs)
 # Where to find cmake modules used to find packages.
 SET(CMAKE_MODULE_PATH "${ParticleDemo_SOURCE_DIR}/../../../build/modules/")
 
-IF( H3D_USE_DEPENDECIES_ONLY )
-  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDECIES_ONLY to true.
+IF( H3D_USE_DEPENDENCIES_ONLY )
+  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
   IF(PTHREAD_FOUND)
     INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
   ENDIF(PTHREAD_FOUND)
@@ -48,7 +48,7 @@ IF( H3D_USE_DEPENDECIES_ONLY )
   INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
   
   SET( requiredLibs ${requiredLibs} H3DUtil HAPI H3DAPI )
-ELSE( H3D_USE_DEPENDECIES_ONLY )
+ELSE( H3D_USE_DEPENDENCIES_ONLY )
   #H3DUtil
   FIND_PACKAGE(H3DUtil REQUIRED)
 
@@ -72,7 +72,7 @@ ELSE( H3D_USE_DEPENDECIES_ONLY )
     INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
   ENDIF(H3DAPI_FOUND)
-ENDIF( H3D_USE_DEPENDECIES_ONLY )
+ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
 # WxWidgets.
 SET(WXWINDOWS_USE_GL 1)

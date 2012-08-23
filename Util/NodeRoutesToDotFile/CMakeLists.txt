@@ -51,8 +51,8 @@ SET(requiredLibs)
 # Where to find modules, used when finding packages.
 SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
 
-IF( H3D_USE_DEPENDECIES_ONLY )
-  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDECIES_ONLY to true.
+IF( H3D_USE_DEPENDENCIES_ONLY )
+  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
   IF(PTHREAD_FOUND)
     INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
   ENDIF(PTHREAD_FOUND)
@@ -64,7 +64,7 @@ IF( H3D_USE_DEPENDECIES_ONLY )
   INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} )
   
   SET( requiredLibs ${requiredLibs} H3DUtil HAPI H3DAPI UI RigidBodyPhysics )
-ELSE( H3D_USE_DEPENDECIES_ONLY )
+ELSE( H3D_USE_DEPENDENCIES_ONLY )
   #H3DAPI
   FIND_PACKAGE(H3DAPI REQUIRED)
 
@@ -105,7 +105,7 @@ ELSE( H3D_USE_DEPENDECIES_ONLY )
     INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} ) 
     SET(optionalLibs ${optionalLibs} ${RigidBodyPhysics_LIBRARIES} )
   ENDIF(RigidBodyPhysics_FOUND)
-ENDIF( H3D_USE_DEPENDECIES_ONLY )
+ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
 # Optional extra library. Used for sound in H3D API.
 FIND_PACKAGE(H3DOpenAL)
