@@ -83,7 +83,7 @@ namespace H3D {
   /// \param BaseField The Field base class to inherit from.
   /// 
   template< class Type, 
-            class VectorClass = vector< Type >, 
+            class VectorClass = std::vector< Type >, 
             class BaseField  = ParsableMField > 
   class MFieldBase: public TypedField< BaseField,
                                        void,
@@ -270,7 +270,7 @@ namespace H3D {
       if( len != sizeof( value_type ) * nr_elements )
       return -1;
       
-      vector< Type > new_data( nr_elements );
+      std::vector< Type > new_data( nr_elements );
       for( unsigned int i = 0; i < nr_elements; i++ ) {
         new_data[i] = static_cast< value_type * >( data )[i];
       }
@@ -337,15 +337,15 @@ namespace H3D {
   ///     
   template< class Type >
   class MField: public MFieldBase< Type, 
-                                   vector< Type >, 
+                                   std::vector< Type >, 
                                    ParsableMField > {
     typedef MFieldBase< Type, 
-                        vector< Type >, 
+                        std::vector< Type >, 
                         ParsableMField > BaseMField;
      
   public:
     /// iterator used to iterate through a vector.
-    typedef typename vector< Type >::iterator iterator;
+    typedef typename std::vector< Type >::iterator iterator;
 
     /// Thrown if the index given to getValueByIndex() is outside the 
     /// boundaries.
@@ -359,13 +359,13 @@ namespace H3D {
       BaseMField( sz ) {}
         
     /// Get the value of the MField.
-    inline virtual const vector< Type > &getValue( int id = 0 );
+    inline virtual const std::vector< Type > &getValue( int id = 0 );
 
     /// Get the value of an element of the MField.
     /// \param i The index of the element.
     /// \param id Id of the node calling this function. Used to check 
     /// access type.
-    inline virtual typename vector<Type>::const_reference
+    inline virtual typename std::vector<Type>::const_reference
     getValueByIndex( typename BaseMField::size_type i, int id = 0 ) {
 #ifdef DEBUG
       Console(1) << "MField(" << this->name << ")::getValue()" << endl;
@@ -389,7 +389,7 @@ namespace H3D {
     /// \param v The new value.
     /// \param id Id of the node calling this function. Used to check 
     /// access type.
-    inline virtual void setValue( const vector< Type > &v, int id = 0  );
+    inline virtual void setValue( const std::vector< Type > &v, int id = 0  );
 
     /// Change the value of one element in the MField.
     /// \param i The index of the value to set.
@@ -416,8 +416,8 @@ namespace H3D {
     /// we try to parse the values according to the X3D/XML 
     /// specification.
     inline virtual void setValueFromString( const string &s ) {
-      vector< Type > v;
-      X3D::X3DStringToVector< vector< Type > >( s, v ); 
+      std::vector< Type > v;
+      X3D::X3DStringToVector< std::vector< Type > >( s, v ); 
       setValue( v );
     }
 
@@ -430,7 +430,7 @@ namespace H3D {
     /// multiple values the separator string is used between the values.
     inline virtual string getValueAsString( const string& separator = " " ) {
       stringstream s;
-      const vector< Type > &v = getValue();
+      const std::vector< Type > &v = getValue();
       
       if( v.size() == 0 )
         return "";
@@ -507,14 +507,14 @@ namespace H3D {
     /// we try to parse the values according to the X3D/XML 
     /// specification.
     virtual size_t getSize( ) {
-      const vector< Type > &v = getValue();
+      const std::vector< Type > &v = getValue();
       return v.size();
     }
 
     /// Get the value of an element of the field as a string.
     inline virtual string getElementAsString( size_t element ) {
       stringstream s;
-      const vector< Type > &v = getValue();
+      const std::vector< Type > &v = getValue();
       
       if( element >= v.size() )
         throw InvalidIndex( element, "getElementAsString", H3D_FULL_LOCATION );
