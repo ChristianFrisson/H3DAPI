@@ -142,7 +142,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   blendFuncSrcFactorRGB->addValidValue( "ONE_MINUS_CONSTANT_ALPHA" );
   blendFuncSrcFactorRGB->addValidValue( "SRC_ALPHA_SATURATE" );
 
-  blendFuncSrcFactorRGB->setValue( "ONE" );
+  blendFuncSrcFactorRGB->setValue( "SRC_ALPHA" );
 
   blendFuncSrcFactorAlpha->addValidValue( "ZERO" );
   blendFuncSrcFactorAlpha->addValidValue( "ONE" );
@@ -160,7 +160,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   blendFuncSrcFactorAlpha->addValidValue( "ONE_MINUS_CONSTANT_ALPHA" );
   blendFuncSrcFactorAlpha->addValidValue( "SRC_ALPHA_SATURATE" );
 
-  blendFuncSrcFactorAlpha->setValue( "ONE" );
+  blendFuncSrcFactorAlpha->setValue( "SRC_ALPHA" );
 
   blendFuncDstFactorRGB->addValidValue( "ZERO" );
   blendFuncDstFactorRGB->addValidValue( "ONE" );
@@ -177,7 +177,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   blendFuncDstFactorRGB->addValidValue( "CONSTANT_ALPHA" );
   blendFuncDstFactorRGB->addValidValue( "ONE_MINUS_CONSTANT_ALPHA" );
 
-  blendFuncDstFactorRGB->setValue( "ZERO" );
+  blendFuncDstFactorRGB->setValue( "ONE_MINUS_SRC_ALPHA" );
 
   blendFuncDstFactorAlpha->addValidValue( "ZERO" );
   blendFuncDstFactorAlpha->addValidValue( "ONE" );
@@ -194,7 +194,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   blendFuncDstFactorAlpha->addValidValue( "CONSTANT_ALPHA" );
   blendFuncDstFactorAlpha->addValidValue( "ONE_MINUS_CONSTANT_ALPHA" );
 
-  blendFuncDstFactorAlpha->setValue( "ZERO" );
+  blendFuncDstFactorAlpha->setValue( "ONE_MINUS_SRC_ALPHA" );
 
   blendEquationRGB->addValidValue( "ADD" );
   blendEquationRGB->addValidValue( "SUBTRACT" );
