@@ -731,32 +731,28 @@ ADD_LIBRARY(H3DAPI SHARED ${H3DAPI_SRCS} ${H3DAPI_HEADERS})
 
 # make sure that the H3DAPI.rc contains the correct svn-version
 IF( MSVC )
-  EXECUTE_PROCESS( COMMAND ${H3DAPI_SOURCE_DIR}/FindSVNVersion ${H3DAPI_SOURCE_DIR}/../src/.svn/entries 
-                   OUTPUT_VARIABLE H3DAPI_SVN_VERSION )
-  # autogenerate H3DAPI.rc depending on the version
-  CONFIGURE_FILE( H3DAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
+  SET( H3DAPI_SVN_VERSION "0" )
+    # Find SubWCRev.exe
+    FIND_FILE( SubWCRev
+               NAMES "SubWCRev.exe"
+               DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
 
-  # Add option to disable UpdateResourceFile call, ON by default if this is an svn checkout.
-  # OFF if this is not an svn checkout.
-  IF( H3DAPI_SVN_VERSION EQUAL 0 )
-    OPTION( CallUpdateResourceFile
-            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DAPI is a subversion checkout, OFF if it is not."
-            OFF )
-  ELSE( H3DAPI_SVN_VERSION EQUAL 0 )
-    OPTION( CallUpdateResourceFile
-            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DAPI is a subversion checkout, OFF if it is not."
-            ON )
-  ENDIF( H3DAPI_SVN_VERSION EQUAL 0 )
+    IF( SubWCRev )
+      SET( H3DAPI_SVN_VERSION "$WCREV$" )
+    ENDIF( SubWCRev )
 
-  IF( CallUpdateResourceFile )
-    ADD_CUSTOM_COMMAND( TARGET H3DAPI 
-                        PRE_BUILD 
-                        COMMAND ${H3DAPI_SOURCE_DIR}/UpdateResourceFile 
-                        ARGS H3DAPI ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${H3DAPI_SOURCE_DIR}/H3DAPI.rc.cmake
-                        ${H3DAPI_MAJOR_VERSION} ${H3DAPI_MINOR_VERSION}
-                        ${H3DAPI_BUILD_VERSION}
-                        ${H3DAPI_SOURCE_DIR}/../src/.svn/entries )
-  ENDIF( CallUpdateResourceFile )
+    # autogenerate H3DAPI.rc depending on the version
+    CONFIGURE_FILE( H3DAPI.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
+
+    IF( SubWCRev )
+      # Update SVN revision in file.
+      EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
+      
+      ADD_CUSTOM_COMMAND( TARGET H3DAPI 
+                          PRE_BUILD 
+                          COMMAND ${SubWCRev} 
+                          ARGS ${H3DAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
+    ENDIF( SubWCRev )
 ENDIF(MSVC)
 
 # set the install directory to the H3D directory on Windows

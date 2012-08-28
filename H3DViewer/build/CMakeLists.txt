@@ -177,34 +177,29 @@ ENDIF ( GENERATE_H3DVIEWER_CPACK_PROJECT )
 
 # make sure that the H3DViewer.rc contains the correct svn-version
 IF( MSVC )
-  EXECUTE_PROCESS( COMMAND ${H3DViewer_SOURCE_DIR}/../../build/FindSVNVersion ${H3DViewer_SOURCE_DIR}/../src/.svn/entries 
-                   OUTPUT_VARIABLE H3DViewer_SVN_VERSION )
-  # autogenerate H3DViewer.rc depending on the version
-  CONFIGURE_FILE( H3DViewer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
 
-  # Add option to disable UpdateResourceFile call, ON by default if this is an svn checkout.
-  # OFF if this is not an svn checkout.
-  IF( H3DViewer_SVN_VERSION EQUAL 0 )
-    OPTION( CallUpdateResourceFile
-            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DViewer is a subversion checkout, OFF if it is not."
-            OFF )
-  ELSE( H3DViewer_SVN_VERSION EQUAL 0 )
-    OPTION( CallUpdateResourceFile
-            "If ON then a pre build command is added to call UpdateResourceFile. This is ON if H3DViewer is a subversion checkout, OFF if it is not."
-            ON )
-  ENDIF( H3DViewer_SVN_VERSION EQUAL 0 )
+	SET( H3DViewer_SVN_VERSION "0" )
+	# Find SubWCRev.exe
+	FIND_FILE( SubWCRev
+						 NAMES "SubWCRev.exe"
+						 DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
 
-  IF( CallUpdateResourceFile )
-    ADD_CUSTOM_COMMAND( TARGET H3DViewer 
-                        PRE_BUILD 
-                        COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
-                        ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
-                        ${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
-                        ${H3DViewer_BUILD_VERSION}
-                        ${H3DViewer_SOURCE_DIR}/../src/.svn/entries
-                        "H3DViewer_SOURCE_DIR"
-                        ${H3DViewer_SOURCE_DIR} )
-  ENDIF( CallUpdateResourceFile )
+	IF( SubWCRev )
+		SET( H3DViewer_SVN_VERSION "$WCREV$" )
+	ENDIF( SubWCRev )
+
+	# autogenerate H3DViewer.rc depending on the version
+	CONFIGURE_FILE( H3DViewer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
+
+	IF( SubWCRev )
+		# Update SVN revision in file.
+		EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
+		
+		ADD_CUSTOM_COMMAND( TARGET H3DViewer 
+												PRE_BUILD 
+												COMMAND ${SubWCRev} 
+												ARGS ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
+	ENDIF( SubWCRev )	
 ENDIF(MSVC)
 
 CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
