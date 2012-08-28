@@ -77,7 +77,7 @@ BEGIN
             VALUE "FileVersion", "${H3DViewer_MAJOR_VERSION}, ${H3DViewer_MINOR_VERSION}, ${H3DViewer_BUILD_VERSION}, ${H3DViewer_SVN_VERSION}"
             VALUE "InternalName", "H3DViewer"
             VALUE "LegalCopyright", "Copyright (C) 2009"
-            VALUE "OriginalFilename", "H3DViewer.exe"
+            VALUE "OriginalFilename", "${H3DViewer_Output_Name}"
             VALUE "ProductName", "H3DViewer Application"
             VALUE "ProductVersion", "${H3DViewer_MAJOR_VERSION}, ${H3DViewer_MINOR_VERSION}, ${H3DViewer_BUILD_VERSION}, ${H3DViewer_SVN_VERSION}"
         END

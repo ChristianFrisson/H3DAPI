@@ -191,6 +191,17 @@ IF( MSVC )
 	# autogenerate H3DViewer.rc depending on the version
 	CONFIGURE_FILE( H3DViewer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
 
+	ADD_CUSTOM_COMMAND( TARGET H3DViewer
+											PRE_BUILD
+											COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
+											ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
+											${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
+											${H3DViewer_BUILD_VERSION} "${H3DViewer_SVN_VERSION}"
+											"H3DViewer_SOURCE_DIR"
+											${H3DViewer_SOURCE_DIR}
+											"H3DViewer_Output_Name"
+											"$(TargetFileName)" )
+
 	IF( SubWCRev )
 		# Update SVN revision in file.
 		EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )

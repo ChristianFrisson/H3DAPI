@@ -55,7 +55,7 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
 #ifdef _WIN32
-LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
+LANGUAGE LANG_ENGLISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -88,7 +88,7 @@ BEGIN
             VALUE "InternalName", "H3DAPI"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "LegalTrademarks", "www.h3d.org; www.sensegraphics.com"
-            VALUE "OriginalFilename", "H3DAPI.dll"
+            VALUE "OriginalFilename", "${H3DAPI_Output_Name}"
             VALUE "ProductName", " H3DAPI Dynamic Link Library"
             VALUE "ProductVersion", " ${H3DAPI_MAJOR_VERSION}, ${H3DAPI_MINOR_VERSION}, ${H3DAPI_BUILD_VERSION}, ${H3DAPI_SVN_VERSION}"
         END
