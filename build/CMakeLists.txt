@@ -10,6 +10,9 @@ ENDIF(WIN32)
 
 PROJECT (H3DAPI)
 
+# Set these variables so subdirectories ( added by ADD_SUBDIRECTORY ) can figure out where include files are.
+SET( H3DAPI_INCLUDE_DIR "${H3DAPI_SOURCE_DIR}/../include" )
+
 # Make include files in paths like /usr/local/include have preference before
 # files in OSX frameworks. 
 SET(CMAKE_FIND_FRAMEWORK "LAST")
@@ -19,9 +22,6 @@ SET( H3DAPI_COMPILE_FLAGS "-DH3DAPI_EXPORTS" )
 SET( H3DAPI_LINK_FLAGS "" )
 SET( H3DAPI_LINK_FLAGS_RELEASE "" )
 SET( H3DAPI_LINK_FLAGS_DEBUG "" )
-
-# Include H3D header dir.
-INCLUDE_DIRECTORIES( ../include )
 
 # Add a cache variable GENERATE_CPACK_PROJECT to have the choice of generating a project
 # for packaging H3DAPI. Default is NO since most people will not use this.
@@ -75,14 +75,16 @@ IF( WIN32 )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../../HAPI/build
                   ${BINARY_DIR_FOR_HAPI} )
 
-  GET_DIRECTORY_PROPERTY( HAPI_INCLUDES DIRECTORY ${H3DAPI_SOURCE_DIR}/../../HAPI/build INCLUDE_DIRECTORIES )
-  INCLUDE_DIRECTORIES( ${HAPI_INCLUDES} )
+  GET_DIRECTORY_PROPERTY( HAPI_INCLUDE_DIR DIRECTORY ${H3DAPI_SOURCE_DIR}/../../HAPI/build INCLUDE_DIRECTORIES )
 
   # Check if HAPTIK was found.
   IF(HAPTIK_INCLUDE_DIR AND HAPTIK_LIBRARY)
     SET( HAPTIK_FOUND 1 )
   ENDIF(HAPTIK_INCLUDE_DIR AND HAPTIK_LIBRARY)
 ENDIF( WIN32 )
+
+# Include H3D header dir.
+INCLUDE_DIRECTORIES( ../include )
 
 # Version of H3D API.
 SET( H3DAPI_MAJOR_VERSION 2 )
@@ -429,8 +431,12 @@ SET(optionalLibs)
 # Add all required libraries to this variable
 SET(requiredLibs)
 
-# Add projects to link against. The projects where created when adding subdirectory in the beginning of this file.
-IF(NOT WIN32)
+IF( TARGET H3DUtil )
+  # Target was created by ADD_SUBDIRECTORY command. There might not be anything in
+  # H3DUTIL_INCLUDE_DIR but HAPI_INCLUDE_DIR covers that in this case.
+  INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
+  SET( requiredLibs ${requiredLibs} H3DUtil )
+ELSE( TARGET H3DUtil )
   #H3DUtil
   FIND_PACKAGE(H3DUtil REQUIRED)
 
@@ -438,7 +444,13 @@ IF(NOT WIN32)
     INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${H3DUTIL_LIBRARIES} )
   ENDIF(H3DUTIL_FOUND)
+ENDIF( TARGET H3DUtil )
 
+IF( TARGET HAPI )
+  # Target was created by ADD_SUBDIRECTORY command.
+  INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
+  SET( requiredLibs ${requiredLibs} HAPI )
+ELSE( TARGET HAPI )
   #HAPI
   FIND_PACKAGE(HAPI REQUIRED)
 
@@ -446,29 +458,21 @@ IF(NOT WIN32)
     INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${HAPI_LIBRARIES} )
   ENDIF(HAPI_FOUND)
-ELSEIF( MSVC70 OR MSVC71 OR ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7)
-  # On other versions than vc7 visual studio dependency setting is enough to 
-  # link correctly( except from cmake v2.8 and forward)
-  SET(requiredLibs ${requiredLibs} H3DUtil HAPI)
+ENDIF( TARGET HAPI )
 
-  IF( TARGET Chai3DRenderer)
-    SET(requiredLibs ${requiredLibs} Chai3DRenderer)
-  ENDIF( TARGET Chai3DRenderer)
-
-  IF( TARGET OpenHapticsRenderer)
-    SET(requiredLibs ${requiredLibs} OpenHapticsRenderer)
-  ENDIF( TARGET OpenHapticsRenderer)
-ELSEIF( MSVC80 )
-  IF( TARGET Chai3DRenderer)
+IF( TARGET Chai3DRenderer)
+  SET(requiredLibs ${requiredLibs} Chai3DRenderer)
+  IF( MSVC80)
     SET(requiredLibs ${requiredLibs} atls.lib)
-  ENDIF( TARGET Chai3DRenderer)
-ENDIF(NOT WIN32)
-
+  ENDIF( MSVC80)
+ENDIF( TARGET Chai3DRenderer)
+  
+IF( TARGET OpenHapticsRenderer)
+  SET(requiredLibs ${requiredLibs} OpenHapticsRenderer)
+ENDIF( TARGET OpenHapticsRenderer)
 
 # Extra libs to link against.
 IF(WIN32)
-  INCLUDE_DIRECTORIES( ${H3DAPI_SOURCE_DIR}/../../H3DUtil/include
-                       ${H3DAPI_SOURCE_DIR}/../../HAPI/include )
   # TODO: Only for MSVC?
   SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
 ENDIF(WIN32)
@@ -894,22 +898,6 @@ IF( NOT WIN32 )
            DESTINATION include/H3D )
 ENDIF( NOT WIN32 )
 
-IF( WIN32 )
-  # H3DAPI is dependent on H3DUtil and HAPI
-  ADD_DEPENDENCIES( H3DAPI H3DUtil )
-  ADD_DEPENDENCIES( H3DAPI HAPI )
-
-  #Only add dependencies if OpenHaptics exists.
-  IF( TARGET OpenHapticsRenderer)
-    ADD_DEPENDENCIES( H3DAPI OpenHapticsRenderer )
-  ENDIF( TARGET OpenHapticsRenderer)
-
-  #Only add dependencies if Chai3d exists.
-  IF( TARGET Chai3DRenderer)
-    ADD_DEPENDENCIES( H3DAPI Chai3DRenderer )
-  ENDIF( TARGET Chai3DRenderer)
-ENDIF( WIN32 )
-
 IF( NOT DEFINED H3DAPI_LOADER_PROJECTS )
   SET( H3DAPI_LOADER_PROJECTS_DEFAULT "NO" )
   IF( H3D_USE_DEPENDENCIES_ONLY )
@@ -923,16 +911,10 @@ IF( H3DAPI_LOADER_PROJECTS )
   STRING( REPLACE H3DAPI H3DAPI/H3DLoad H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DLoad/build
                     ${H3DAPI_LOADER_BINARY_DIR} )
-  IF( TARGET H3DLoad )
-    ADD_DEPENDENCIES( H3DLoad H3DAPI )
-  ENDIF( TARGET H3DLoad )
 
   STRING( REPLACE H3DAPI H3DAPI/H3DViewer H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
                     ${H3DAPI_LOADER_BINARY_DIR} )
-  IF( TARGET H3DViewer )
-    ADD_DEPENDENCIES( H3DViewer H3DAPI )
-  ENDIF( TARGET H3DViewer )
 ENDIF( H3DAPI_LOADER_PROJECTS )
 
 IF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
@@ -944,26 +926,14 @@ IF( H3DAPI_EXAMPLE_PROJECTS )
   STRING( REPLACE H3DAPI H3DAPI/examples/manualExamples/C++ H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++
                     ${H3DAPI_EXAMPLES_BINARY_DIR} )
-  IF( TARGET Sphere_X3D )
-    ADD_DEPENDENCIES( Sphere_X3D H3DAPI )
-  ENDIF( TARGET Sphere_X3D )
-  IF( TARGET Spheres_X3D )
-    ADD_DEPENDENCIES( Spheres_X3D H3DAPI )
-  ENDIF( TARGET Spheres_X3D )
 
   STRING( REPLACE H3DAPI H3DAPI/examples/Particledemo H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
                     ${H3DAPI_EXAMPLES_BINARY_DIR} )
-  IF( TARGET ParticleDemo )
-    ADD_DEPENDENCIES( ParticleDemo H3DAPI )
-  ENDIF( TARGET ParticleDemo )
 
   STRING( REPLACE H3DAPI H3DAPI/examples/ThreadExample H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/ThreadExample
                     ${H3DAPI_EXAMPLES_BINARY_DIR} )
 
-  IF( TARGET ThreadExample )
-    ADD_DEPENDENCIES( ThreadExample H3DAPI )
-  ENDIF( TARGET ThreadExample )
 ENDIF( H3DAPI_EXAMPLE_PROJECTS )
 
