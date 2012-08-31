@@ -38,7 +38,7 @@ using namespace std;
 int main(int argc, char* argv[]) {
   if (argc < 8){
     cerr << "Usage: " << argv[0] << " <project name> <rc file> <rc.cmake file> "
-         << "<major version> <minor version> <build version> <entries file> "
+         << "<major version> <minor version> <build version> <svn version> "
          << "[var_name1] [value1]" << endl
          << "Where:" << endl
          << "project name  - The name of the project" << endl

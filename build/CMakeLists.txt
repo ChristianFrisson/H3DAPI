@@ -72,6 +72,7 @@ IF( WIN32 )
   IF( SPECIAL_BINARY_DIR )
     SET( BINARY_DIR_FOR_HAPI ${H3DAPI_SOURCE_DIR}/../../HAPI/build )
   ENDIF( SPECIAL_BINARY_DIR )
+	MESSAGE( STATUS "Including HAPI" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../../HAPI/build
                   ${BINARY_DIR_FOR_HAPI} )
 
@@ -463,7 +464,7 @@ ENDIF( TARGET HAPI )
 IF( TARGET Chai3DRenderer)
   SET(requiredLibs ${requiredLibs} Chai3DRenderer)
   IF( MSVC80)
-    SET(requiredLibs ${requiredLibs} atls.lib)
+    SET(requiredLibs ${requiredLibs} optimized atls.lib debug atlsd.lib)
   ENDIF( MSVC80)
 ENDIF( TARGET Chai3DRenderer)
   
@@ -909,10 +910,12 @@ ENDIF( NOT DEFINED H3DAPI_LOADER_PROJECTS )
 IF( H3DAPI_LOADER_PROJECTS )
   # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
   STRING( REPLACE H3DAPI H3DAPI/H3DLoad H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+	MESSAGE( STATUS "Including H3DLoad" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DLoad/build
                     ${H3DAPI_LOADER_BINARY_DIR} )
 
   STRING( REPLACE H3DAPI H3DAPI/H3DViewer H3DAPI_LOADER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+	MESSAGE( STATUS "Including H3DViewer" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
                     ${H3DAPI_LOADER_BINARY_DIR} )
 ENDIF( H3DAPI_LOADER_PROJECTS )
@@ -924,14 +927,17 @@ ENDIF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
 IF( H3DAPI_EXAMPLE_PROJECTS )
   # This is done to avoid placing everything directly in "build" catalogue if some other catalogue is chosen.
   STRING( REPLACE H3DAPI H3DAPI/examples/manualExamples/C++ H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+	MESSAGE( STATUS "Including H3DAPI manual Examples" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++
                     ${H3DAPI_EXAMPLES_BINARY_DIR} )
 
   STRING( REPLACE H3DAPI H3DAPI/examples/Particledemo H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+	MESSAGE( STATUS "Including ParticleDemo" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
                     ${H3DAPI_EXAMPLES_BINARY_DIR} )
 
   STRING( REPLACE H3DAPI H3DAPI/examples/ThreadExample H3DAPI_EXAMPLES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+	MESSAGE( STATUS "Including H3DAPI ThreadExample" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/ThreadExample
                     ${H3DAPI_EXAMPLES_BINARY_DIR} )
 

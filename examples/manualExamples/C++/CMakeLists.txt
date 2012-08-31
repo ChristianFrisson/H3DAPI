@@ -70,16 +70,20 @@ IF( H3D_USE_DEPENDENCIES_ONLY )
   SET( requiredLibs ${requiredLibs} )
 ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
-# Glut.
-FIND_PACKAGE(GLUT REQUIRED)
-
-IF( NOT GLUT_FOUND AND WIN32 )
-  FIND_PACKAGE(GLUTWin REQUIRED)
-ENDIF( NOT GLUT_FOUND AND WIN32 )
+# Optional extra library. Makes is possible to used GLUT windows handling with H3D API.
+IF(WIN32)
+  FIND_PACKAGE(GLUTWin)
+ELSE(WIN32)
+  FIND_PACKAGE(GLUT)
+ENDIF(WIN32)
 
 IF(GLUT_FOUND)
   INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
   IF( WIN32 )
+    # This is used in order for the compiler to find freeglut.lib.
+    # If freeglut.lib is in any other place than glut32 on your system
+    # either this CMakeLists.txt or FindGLUTWin needs to be changed
+    # to allow for choice of extra library directory.
     STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
   ELSE( WIN32 )
     SET(requiredLibs ${requiredLibs} ${GLUT_LIBRARIES} )
