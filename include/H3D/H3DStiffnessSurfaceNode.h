@@ -70,20 +70,16 @@ namespace H3D {
                              Inst< UpdateDamping   > _damping     = 0,
                              Inst< SFBool          > _useRelativeValues = 0 );
 
-    /// The stiffness of the surface. Should be a value between 0 and 1
-    /// where 1 is the maximum stiffness the haptics device can handle.
+    /// The stiffness of the surface.
     ///
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> 0.5 \n
-    /// <b>Value range: </b> [0-1]
     auto_ptr< UpdateStiffness > stiffness;
 
-    /// The velocity based damping of the surface. Should be a value between
-    /// 0 and 1 where 1 is the maximum damping the haptics device can handle.
+    /// The velocity based damping of the surface.
     ///
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> 0 \n
-    /// <b>Value range: </b> [0-1]
     auto_ptr< UpdateDamping > damping;
 
     /// If false then values (such as stiffness) is in absolute values with
