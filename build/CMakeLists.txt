@@ -10,6 +10,12 @@ ENDIF(WIN32)
 
 PROJECT (H3DAPI)
 
+# set the install directory to the H3D directory on Windows
+IF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${H3DAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Set these variables so subdirectories ( added by ADD_SUBDIRECTORY ) can figure out where include files are.
 SET( H3DAPI_INCLUDE_DIR "${H3DAPI_SOURCE_DIR}/../include" )
 
@@ -768,11 +774,6 @@ IF( MSVC )
                         ARGS ${H3DAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
   ENDIF( SubWCRev )
 ENDIF(MSVC)
-
-# set the install directory to the H3D directory on Windows
-IF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-  SET( CMAKE_INSTALL_PREFIX ${H3DAPI_SOURCE_DIR}/../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-ENDIF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
 
 # add the libraries needed for linking
 TARGET_LINK_LIBRARIES( H3DAPI ${requiredLibs} ${optionalLibs} )

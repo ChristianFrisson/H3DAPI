@@ -6,6 +6,12 @@ ENDIF(WIN32)
 # to the root binary directory of the project as ${ThreadExample_BINARY_DIR}.
 project(ThreadExample)
 
+# set the install directory to the H3D directory on Windows
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${ThreadExample_SOURCE_DIR}/../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Optional libraries to link against are added to this variable.
 SET(optionalLibs)
 
@@ -80,11 +86,6 @@ IF(WIN32)
     # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
     SET_TARGET_PROPERTIES( ThreadExample PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
   ENDIF(MSVC80)
-
-  # set the install directory to the H3D directory on Windows
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${ThreadExample_SOURCE_DIR}/../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
 ENDIF(WIN32)
 
 # Install to these directories.

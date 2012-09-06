@@ -7,6 +7,11 @@ ENDIF(WIN32)
 # to the root binary directory of the project as ${H3DLoad_BINARY_DIR}.
 project (H3DLoad)
 
+IF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+  SET( CMAKE_INSTALL_PREFIX ${H3DLoad_SOURCE_DIR}/../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+  SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+ENDIF( WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Where to find Source files.
 SET( H3DLoad_SRCS "${H3DLoad_SOURCE_DIR}/../src/H3DLoad.cpp" )
 
@@ -122,10 +127,6 @@ IF(WIN32)
     # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
     SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /MP" )
   ENDIF(MSVC70 OR MSVC71)
-
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${H3DLoad_SOURCE_DIR}/../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
 ENDIF(WIN32)
 
 # Install to this destination.

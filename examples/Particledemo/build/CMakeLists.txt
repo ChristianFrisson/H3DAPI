@@ -13,6 +13,12 @@ ENDIF( COMMAND cmake_policy )
 # to the root binary directory of the project as ${ParticleDemo_BINARY_DIR}.
 project (ParticleDemo)
 
+# set the install directory to the H3D directory on Windows
+  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+    SET( CMAKE_INSTALL_PREFIX ${ParticleDemo_SOURCE_DIR}/../../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
+    SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
+  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
+
 # Source files.
 SET( ParticleDemo_SRCS
        "${ParticleDemo_SOURCE_DIR}/../src/ConsoleDialog.cpp"
@@ -145,11 +151,6 @@ IF(WIN32)
     # Needed to run in debug mode. Removes warning about conflict between libraries.
     SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
   ENDIF(MSVC70 OR MSVC71)
-
-  # set the install directory to the H3D directory on Windows
-  IF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
-    SET( CMAKE_INSTALL_PREFIX ${ParticleDemo_SOURCE_DIR}/../../../.. CACHE PATH "Install path prefix, prepended onto install directories." FORCE )
-  ENDIF( CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_USE_DEPENDENCIES_ONLY)
 ENDIF(WIN32)
 
 INSTALL( TARGETS ParticleDemo
