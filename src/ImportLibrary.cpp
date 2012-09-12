@@ -96,9 +96,17 @@ void ImportLibrary::initialize() {
     if( filename == "" ) filename = urn_name;
     handle =  DynamicLibrary::load( filename );
 
-    if( !handle )
-      Console(4) << "WARNING: Could not load dynamic library \"" 
-                 << *i << "\" specified in " << getName() 
-                 << " (" << DynamicLibrary::getLastError() << ")." << endl;
+    if( handle ) return;
   }
+
+  // no library found
+  Console(4) << "WARNING: Could not load any of the dynamic libraries ";
+  for( MFString::const_iterator i = url->begin();
+       i != url->end();
+       i++ ) {
+    Console(4) << "\"" << *i << "\" ";
+  }
+
+  Console(4) << "specified in " << getName() 
+	     << " (" << DynamicLibrary::getLastError() << ")." << endl;
 }
