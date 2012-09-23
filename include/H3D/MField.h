@@ -423,7 +423,7 @@ namespace H3D {
 
     /// Add a new element to an MField from a string value.
     inline virtual void addElementFromString( const string &s ) {
-      push_back(  X3D::X3DStringToValue< Type >( s )  );
+      this->push_back(  X3D::X3DStringToValue< Type >( s )  );
     }
 
     /// Get the value of the field as a string. If the field contains
