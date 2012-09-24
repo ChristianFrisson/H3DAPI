@@ -159,6 +159,9 @@ ELSE(wxWidgets_FOUND )
   SET(wxWidgets_USE_LIBS base core gl adv richtext html)
 ENDIF(wxWidgets_FOUND )
 
+# reset the wxWidgets_FOUND variable before running FIND_PACKAGE again.
+SET( wxWidgets_FOUND 0 )
+
 # find wx libraries except propgrid
 IF(WIN32)
   FIND_PACKAGE(wxWidgetsWin)
