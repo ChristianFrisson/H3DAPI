@@ -85,13 +85,27 @@ parent( _parent ) {
 }
 
 H3DNodeDatabase::~H3DNodeDatabase(void){
-  // Needed to make sure memory is released.
-  if(initialized = true){
-    delete database;
-    database = 0;
-  }
+  
   for(FieldDBType::const_iterator i = fields.begin(); i !=fields.end(); i++){
     delete (*i).second;
+  }
+
+  if(initialized) {
+    // remove entry from global database
+    for( H3DNodeDatabaseType::iterator i = database->begin();
+	 i != database->end(); i++ ) {
+      if( (*i).second == this ) {
+	database->erase( i );
+	break;
+      }
+    }
+
+    // remove static database if last entry.
+    if( database->empty() ){
+      delete database;
+      database = 0;
+      initialized = false;
+    }
   }
 }
 
