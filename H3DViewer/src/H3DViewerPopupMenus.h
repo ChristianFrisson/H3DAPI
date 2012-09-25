@@ -24,7 +24,7 @@ public:
   /// \todo This is untested because RightClickMenuTexture is not used anywhere at the moment.
   int item= RightClickMenuTexture->FindItem ( wxT("Save texture image in NRRD format..") );
   if ( item != wxNOT_FOUND ) {
-    RightClickMenu->Enable ( item, false );
+    RightClickMenuTexture->Enable ( item, false );
   }
 #endif
   }
