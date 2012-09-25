@@ -1463,7 +1463,7 @@ string PhongShader::getBaseNormal( const string &normal,
     if( coord_space != "OBJECT" && coord_space != "TANGENT" ) {
       Console(4) << "Invalid normalMapCoordSpace value in PhongShader node: \"" 
                  << coord_space << "\". Using \"OBJECT\" instead." << endl;
-      coord_space == "OBJECT";
+      coord_space = "OBJECT";
     }
 
     s << "    mat4 normal_map_matrix = " << uniqueShaderName( "normal_map_matrix" ) << ";" << endl;

@@ -46,20 +46,21 @@
 #include <FTGL/FTGLOutlineFont.h>
 #include <FTGL/FTGLExtrdFont.h>
 
-#if defined(__APPLE__) && defined(__MACH__)
-#include <freetype/ftmac.h>
-#else
-#include <freetype/freetype.h>
-#endif
-#ifdef LINUX
-#include <fontconfig/fontconfig.h>
-#include <string.h>
-#endif
-#endif
+
+#ifdef HAVE_FONTCONFIG
+  #include <freetype/freetype.h>
+  #include <fontconfig/fontconfig.h>
+  #include <string.h>
+#else //HAVE_FONTCONFIG
+  #if defined(__APPLE__) && defined(__MACH__)
+    #include <freetype/ftmac.h>
+  #else
+    #include <freetype/freetype.h>
+  #endif
+#endif //else HAVE_FONTCONFIG
 
 using namespace H3D;
 
-#if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 namespace FontStyleInternals {
   // Internal map where the destructor deletes allocated
   // FTFonts. Note, this code will not work if FTGL is delayloaded
@@ -97,7 +98,7 @@ LONG GetNameValue(HKEY key, LPCTSTR subkey, LPCTSTR valuename, LPTSTR retdata)
     {
       lstrcpy(retdata, (const char *)data);
     }
-
+    
     RegCloseKey(hkey);
   }
 
@@ -184,7 +185,7 @@ BOOL GetFontFile(LPCTSTR lpszFontName,
 
 #endif
 
-#ifdef LINUX
+#ifdef HAVE_FONTCONFIG
 string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
   // the fn_canditate variable will be set if we have found a font
   // of the given family but with an unrecognised style. It will be
@@ -266,25 +267,11 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
   if( bold ) {
     full_font_name = full_font_name + " Bold";
   }
-  
+
   if( italic ) {
     full_font_name = full_font_name + " Italic";
   }
-
-#if defined(__APPLE__) && defined(__MACH__)
-    char path[1024];
-    FT_Long face_index;
-    FT_Error r = FT_GetFilePath_From_Mac_ATS_Name( full_font_name.c_str(),
-                                                   (UInt8 * )path,
-                                                   1024,
-                                                   &face_index );
-    if ( r != FT_Err_Ok ) {
-      return NULL;
-    }
-    
-    full_font_path = path;
-
-#endif
+ 
 #ifdef WIN32
     string font_display_name, font_file_name;
     if( !GetFontFile( full_font_name.c_str(), font_display_name, font_file_name ) ) {
@@ -293,11 +280,31 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
     
     string path = string( getenv( "windir" ) ) + "\\fonts\\";
     full_font_path = path + font_file_name;
-#endif
-#ifdef LINUX
+#else
+  #ifdef HAVE_FONTCONFIG
     full_font_path = FC_GetFontByName( font_name.c_str(), bold, italic );
     if( full_font_path == "" ) return NULL;
-#endif
+  #else
+ 
+    #if defined(__APPLE__) && defined(__MACH__)
+      // the following code only works if freetype has been compiled with the --with-old-mac-fonts defined in configure.
+      char path[1024];
+      FT_Long face_index;
+      FT_Error r = FT_GetFilePath_From_Mac_ATS_Name( full_font_name.c_str(),
+						     (UInt8 * )path,
+						     1024,
+						     &face_index );
+      if ( r != FT_Err_Ok ) {
+	return NULL;
+      }
+    
+      full_font_path = path;
+    #else
+      // no implementation to lookup fonts based on names was found
+      return NULL;
+    #endif
+   #endif // else HAVE_FONTCONFIG
+#endif //
     FTFont *font = NULL;
   // search font cache first:
     string font_to_search = render_type + full_font_path;

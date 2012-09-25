@@ -17,7 +17,10 @@ ENDIF( CMAKE_CL_64 )
 FIND_PATH( SPIDERMONKEY_INCLUDE_DIR NAMES jsapi.h
            PATHS /usr/local/include
                  /usr/local/include/mozjs
+                 /usr/local/include/js
+                 /opt/local/include/js
                  /usr/include/mozjs
+                 /usr/include/js
                  $ENV{H3D_EXTERNAL_ROOT}/include  
                  $ENV{H3D_EXTERNAL_ROOT}/include/js  
                  $ENV{H3D_ROOT}/../External/include  
@@ -39,7 +42,7 @@ IF(WIN32)
                       ${module_file_path}/../../../External/${LIB}
                 DOC "Path to js32 library." )
 ELSE(WIN32)
-  FIND_LIBRARY( SPIDERMONKEY_LIBRARY NAMES mozjs
+  FIND_LIBRARY( SPIDERMONKEY_LIBRARY NAMES mozjs js
                                      DOC "Path to mozjs library." )
 ENDIF(WIN32)
 MARK_AS_ADVANCED(SPIDERMONKEY_LIBRARY)

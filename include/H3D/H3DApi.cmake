@@ -105,6 +105,9 @@
 /// installed. Text nodes will then not be supported.
 #cmakedefine HAVE_FREETYPE
 
+/// Undef if you do not have FontConfig. 
+#cmakedefine HAVE_FONTCONFIG
+
 #ifdef WIN32
 /// Undef if you do not have 3dxware(www.3dconnexion.com) installed.
 /// SpaceWareSensor node will then not be supported.

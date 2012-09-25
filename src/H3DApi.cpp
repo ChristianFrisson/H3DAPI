@@ -34,7 +34,7 @@
 #endif
 
 #include <H3DUtil/Exception.h>
-#ifdef LINUX
+#ifdef HAVE_FONTCONFIG
 #include <fontconfig/fontconfig.h>
 #endif
 
@@ -57,7 +57,7 @@ void H3D::initializeH3D() {
 #ifdef HAVE_FREEIMAGE
     FreeImage_Initialise();
 #endif
-#ifdef LINUX
+#ifdef HAVE_FONTCONFIG
     FcInit();
 #endif 
 #ifdef HAVE_XERCES
@@ -70,7 +70,7 @@ void H3D::initializeH3D() {
   if( buffer ) {
     urn_config_file = buffer;
     ResourceResolver::setURNResolver( new URNResolver( urn_config_file ) );
-  } else if( buffer = getenv( "H3D_ROOT" ) ) {
+  } else if( (buffer = getenv( "H3D_ROOT" )) ) {
     urn_config_file = buffer;
     urn_config_file += "/index.urn";
     ifstream os( urn_config_file.c_str() );

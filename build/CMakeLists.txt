@@ -656,7 +656,7 @@ IF(WIN32)
   ENDIF(DIRECTSHOW_FOUND)
 ENDIF(WIN32)
 
-IF(NOT WIN32 AND NOT APPLE)
+IF(NOT WIN32)
   # Linux specific libraries
 
   FIND_PACKAGE(FontConfig)
@@ -666,14 +666,16 @@ IF(NOT WIN32 AND NOT APPLE)
     SET(optionalLibs ${optionalLibs} ${FONTCONFIG_LIBRARIES} )
   ENDIF(FONTCONFIG_FOUND)
 
-  # Optional extra library. Used to render movies as textures.
-  FIND_PACKAGE(FFmpeg)
-  IF(FFMPEG_FOUND)
-    SET(HAVE_FFMPEG 1)
-    INCLUDE_DIRECTORIES( ${FFMPEG_INCLUDE_DIRS} )  
-    LIST( APPEND optionalLibs ${FFMPEG_LIBRARIES} )
-  ENDIF(FFMPEG_FOUND)  
-ENDIF(NOT WIN32 AND NOT APPLE)
+  IF(NOT APPLE)
+    # Optional extra library. Used to render movies as textures.
+    FIND_PACKAGE(FFmpeg)
+    IF(FFMPEG_FOUND)
+      SET(HAVE_FFMPEG 1)
+      INCLUDE_DIRECTORIES( ${FFMPEG_INCLUDE_DIRS} )  
+      LIST( APPEND optionalLibs ${FFMPEG_LIBRARIES} )
+    ENDIF(FFMPEG_FOUND)  
+  ENDIF(NOT APPLE)
+ENDIF(NOT WIN32)
 
 FIND_PACKAGE(DCMTK)
 IF(DCMTK_FOUND)

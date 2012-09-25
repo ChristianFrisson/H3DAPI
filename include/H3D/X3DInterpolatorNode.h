@@ -143,7 +143,10 @@ namespace H3D {
         w = 1;
         return (int)keys.size() - 2;
       }
-      for( size_t i = keys.size()-1; i >= 0; i--) {
+
+      // we know here that f is larger than keys[0] so we know that we will
+      // go into the if-statement at some point.
+      for( size_t i = keys.size()-1; true; i--) {
         if ( f > keys[i] ) {
           w = (f-keys[i])/(keys[i+1]-keys[i]);
           if( w < 0 ) w = 0;

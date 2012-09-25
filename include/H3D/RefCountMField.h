@@ -91,7 +91,8 @@ namespace H3D {
                                               int id = 0 ) {
       this->checkAccessTypeGet( id );
       this->upToDate();
-      if( i < 0 || i >= this->value.size() ) {
+      // i < 0 is never true..
+      if( /* i < 0 || */i >= this->value.size() ) {
         stringstream s;
         s << "Trying to access value outside the bounds of field "
           << this->getFullName() << ". Field has size " << this->value.size()

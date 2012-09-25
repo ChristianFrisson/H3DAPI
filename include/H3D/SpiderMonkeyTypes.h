@@ -94,15 +94,7 @@
 #ifdef H3D_WINDOWS
 #define XP_WIN
 #else  // H3D_WINDOWS
-#ifdef H3D_OSX
-#define XP_WIN
-#define X86_LINUX
-#define PIC
-#define HAVE_VA_COPY
-#define VA_COPY va_copy
-#else  // H3D_OSX
 #define XP_UNIX
-#endif // H3D_OSX
 #endif // H3D_WINDOWS else
 
 #include <jsapi.h>

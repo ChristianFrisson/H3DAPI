@@ -284,7 +284,7 @@ struct lt {
   bool operator()(const pair<Vec3d, Vec3d>& _Left,
                   const pair<Vec3d, Vec3d >& _Right ) const {
     return (_Left.first < _Right.first ||
-            !(_Right.first < _Left.first) && _Left.second < _Right.second);
+            (!(_Right.first < _Left.first) && _Left.second < _Right.second));
   }
 };
 

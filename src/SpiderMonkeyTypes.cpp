@@ -58,8 +58,9 @@ void changePixelImageDimension(PixelImage* img, unsigned int nw, unsigned int nh
   if (nh == -1) nh = oh;
   unsigned char* dataOld = (unsigned char*) img->getImageData();
   unsigned char bytes_per_pixel = img->bitsPerPixel() / 8;
-  unsigned char* dataNew = new unsigned char[(nw * nh * bytes_per_pixel)];
-  memset(dataNew, 0, sizeof(dataNew));
+  unsigned char bytes_in_image = nw * nh * bytes_per_pixel;
+  unsigned char* dataNew = new unsigned char[bytes_in_image];
+  memset(dataNew, 0, bytes_in_image );
   for (int x = 0; x < std::min<int>( nw, ow); x++) {
     for (int y = 0; y < std::min<int>(nh, ow); y++) {
       memcpy( (void*)(dataNew + (y*nw+x)*bytes_per_pixel),
@@ -78,6 +79,15 @@ void changePixelImageComponent(PixelImage* img, int comp) {
   img->setbitsPerPixel(comp * 8);
   unsigned char* data = new unsigned char[img->width() * img->height() * comp ];
   img->setImageData(data, false);
+}
+
+template< class FieldType >
+void setValueNoAccessCheck( FieldType *field, 
+			    const typename FieldType::value_type &v ) {
+  bool access = field->isAccessCheckOn();
+  field->setAccessCheck( false );
+  field->setValue( v);
+  field->setAccessCheck( access );
 }
 
 /// return the actual value wrapped inside a JS object
@@ -130,15 +140,6 @@ const typename FieldType::vector_return_type &MField_getValueNoAccessCheck( Fiel
   const typename FieldType::vector_return_type &b = field->getValue();
   field->setAccessCheck( access );
   return b;
-}
-
-template< class FieldType >
-void setValueNoAccessCheck( FieldType *field, 
-			    const typename FieldType::value_type &v ) {
-  bool access = field->isAccessCheckOn();
-  field->setAccessCheck( false );
-  field->setValue( v);
-  field->setAccessCheck( access );
 }
 
 template< class FieldType >
@@ -3462,6 +3463,10 @@ jsval SpiderMonkey::jsvalFromField( JSContext *cx, Field *field, bool make_copy,
   }
   case X3DTypes::MFMATRIX4D: { 
   }
+  case X3DTypes::MFIMAGE: {
+  }
+  case X3DTypes::UNKNOWN_X3D_TYPE: {
+  }
   } 
   return JSVAL_VOID;
 }
@@ -3706,7 +3711,10 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval 
   }
   case X3DTypes::MFMATRIX4D: { 
   }
+  case X3DTypes::MFIMAGE: {
   }
+  case X3DTypes::UNKNOWN_X3D_TYPE: {
+  }  }
 
   JS_ReportError(cx, "Field has invalid/unsupported X3DType." );
   return JS_FALSE;
