@@ -137,7 +137,7 @@ void X3DShapeNode::render() {
       g->displayList->callList();
     } else if( geometry_render_mode == SOLID ) {
       // only render non-transparent objects
-      if( !a || !a->isTransparent() ) {
+      if( !a || !a->isTransparent() || !a->usingMultiPassTransparency() ) {
         g->displayList->callList();
       }
     }
