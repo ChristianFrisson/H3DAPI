@@ -34,7 +34,7 @@ SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialogPropGrid.cpp"	
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialogPropGrid.cpp"  
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialogPropGrid.h"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.h"
@@ -121,7 +121,7 @@ SET(WXWINDOWS_USE_GL 1)
 # Since there is no wxWidgets_VERSION variable or something like that there is code to check the end of
 # include path. I have no idea if this would work on all other UNIX systems as well. NOTE, report
 # this to CMAKE unless it is reported already.
-SET(wxWidgets_USE_LIBS propgrid)	
+SET(wxWidgets_USE_LIBS propgrid)  
 SET( wxWidgets_FIND_QUIETLY 1 )
 SET(wxWidgets_FOUND 0)
 IF(WIN32)
@@ -153,7 +153,7 @@ ENDIF(wxWidgets_FOUND )
 
 IF(wxWidgets_FOUND)
   SET( HAVE_WXPROPGRID 1 )
-  SET(wxWidgets_USE_LIBS base core gl adv richtext html propgrid)	
+  SET(wxWidgets_USE_LIBS base core gl adv richtext html propgrid)  
 ELSE(wxWidgets_FOUND )
   MESSAGE( STATUS "wxWidgets propgrid not found. Needed for better tree view and program setting choice in H3DViewer. Part of wxWidgets 2.9." )
   SET(wxWidgets_USE_LIBS base core gl adv richtext html)
@@ -192,39 +192,39 @@ ENDIF ( GENERATE_H3DVIEWER_CPACK_PROJECT )
 # make sure that the H3DViewer.rc contains the correct svn-version
 IF( MSVC )
 
-	SET( H3DViewer_SVN_VERSION "0" )
-	# Find SubWCRev.exe
-	FIND_FILE( SubWCRev
-						 NAMES "SubWCRev.exe"
-						 DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
+  SET( H3DViewer_SVN_VERSION "0" )
+  # Find SubWCRev.exe
+  FIND_FILE( SubWCRev
+             NAMES "SubWCRev.exe"
+             DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
 
-	IF( SubWCRev )
-		SET( H3DViewer_SVN_VERSION "$WCREV$" )
-	ENDIF( SubWCRev )
+  IF( SubWCRev )
+    SET( H3DViewer_SVN_VERSION "$WCREV$" )
+  ENDIF( SubWCRev )
 
-	# autogenerate H3DViewer.rc depending on the version
-	CONFIGURE_FILE( H3DViewer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
+  # autogenerate H3DViewer.rc depending on the version
+  CONFIGURE_FILE( H3DViewer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
 
-	ADD_CUSTOM_COMMAND( TARGET H3DViewer
-											PRE_BUILD
-											COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
-											ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
-											${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
-											${H3DViewer_BUILD_VERSION} "${H3DViewer_SVN_VERSION}"
-											"H3DViewer_SOURCE_DIR"
-											${H3DViewer_SOURCE_DIR}
-											"H3DViewer_Output_Name"
-											"$(TargetFileName)" )
+  ADD_CUSTOM_COMMAND( TARGET H3DViewer
+                      PRE_BUILD
+                      COMMAND ${H3DViewer_SOURCE_DIR}/../../build/UpdateResourceFile 
+                      ARGS H3DViewer ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${H3DViewer_SOURCE_DIR}/H3DViewer.rc.cmake
+                      ${H3DViewer_MAJOR_VERSION} ${H3DViewer_MINOR_VERSION}
+                      ${H3DViewer_BUILD_VERSION} "${H3DViewer_SVN_VERSION}"
+                      "H3DViewer_SOURCE_DIR"
+                      ${H3DViewer_SOURCE_DIR}
+                      "H3DViewer_Output_Name"
+                      "$(TargetFileName)" )
 
-	IF( SubWCRev )
-		# Update SVN revision in file.
-		EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
-		
-		ADD_CUSTOM_COMMAND( TARGET H3DViewer 
-												PRE_BUILD 
-												COMMAND ${SubWCRev} 
-												ARGS ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
-	ENDIF( SubWCRev )	
+  IF( SubWCRev )
+    # Update SVN revision in file.
+    EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
+    
+    ADD_CUSTOM_COMMAND( TARGET H3DViewer 
+                        PRE_BUILD 
+                        COMMAND ${SubWCRev} 
+                        ARGS ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
+  ENDIF( SubWCRev )  
 ENDIF(MSVC)
 
 CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
@@ -290,11 +290,13 @@ IF( APPLE )
  INSTALL( TARGETS H3DViewer
           LIBRARY DESTINATION lib
           RUNTIME DESTINATION bin
-          BUNDLE DESTINATION "/Applications" )
+          BUNDLE DESTINATION "/Applications"
+          COMPONENT H3DAPI_cpack_runtime )
 ELSE( APPLE )
   INSTALL( TARGETS H3DViewer
            LIBRARY DESTINATION lib
-           RUNTIME DESTINATION bin )
+           RUNTIME DESTINATION bin
+           COMPONENT H3DAPI_cpack_runtime )
 ENDIF( APPLE )
 
 # Add a cache variable GENERATE_H3DVIEWER_CPACK_PROJECT to have the choice of generating a project

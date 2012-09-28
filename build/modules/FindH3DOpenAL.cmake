@@ -5,7 +5,9 @@
 #  OPENAL_INCLUDE_DIR -  where to find al.h, etc.
 #  OPENAL_LIBRARIES    - List of libraries when using OpenAL.
 #  OPENAL_FOUND        - True if OpenAL found.
-
+IF( WIN32 )
+  SET(OpenAL_FIND_QUIETLY 1)
+ENDIF( WIN32 )
 
 FIND_PACKAGE(OpenAL)
 

@@ -18,19 +18,20 @@
   Var ADD_TO_PATH_ALL_USERS
   Var ADD_TO_PATH_CURRENT_USER
 
+  Var IS_DEFAULT_INSTALLDIR
 ;--------------------------------
 ;Include Modern UI
 
   !include "MUI.nsh"
 
   ;Default installation folder
-  InstallDir "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"  
+  InstallDir "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
 ;--------------------------------
 ;General
 
   ;Name and file
-  Name "@CPACK_PACKAGE_START_MENU_NAME@"
+  Name "@CPACK_NSIS_PACKAGE_NAME@"
   OutFile "@CPACK_TOPLEVEL_DIRECTORY@/@CPACK_OUTPUT_FILE_NAME@"
 
   ;Set compression
@@ -41,154 +42,117 @@
 ; CPACK_ADD_H3DLOAD_DEMOS_LINKS - If set to "ON" extra start menu links to demos will be added.
 ; CPACK_ADD_H3DDOC_LINKS - If set to "ON" extra start menu links to documentation will be added.
 ; CPACK_ADD_H3DSETTINGS_LINKS - If set to "ON" extra start menu links to the SettingsGUI.exe will be added.
+; CPACK_EXTERNAL_BIN - Contains the name of the binary folder in External.
+@CPACK_NSIS_DEFINES@
 
-;--------------------------------
-; determine admin versus local install
-; Is install for "AllUsers" or "JustMe"?
-; Default to "JustMe" - set to "AllUsers" if admin or on Win9x
-; This function is used for the very first "custom page" of the installer.
-; This custom page does not show up visibly, but it executes prior to the
-; first visible page and sets up $INSTDIR properly...
-; Choose different default installation folder based on SV_ALLUSERS...
-; "Program Files" for AllUsers, "My Documents" for JustMe...
+  !include Sections.nsh
 
-Function .onInit
+;--- Component support macros: ---
+; The code for the add/remove functionality is from:
+;   http://nsis.sourceforge.net/Add/Remove_Functionality
+; It has been modified slightly and extended to provide
+; inter-component dependencies.
+Var AR_SecFlags
+Var AR_RegFlags
+@CPACK_NSIS_SECTION_SELECTED_VARS@
+
+; Loads the "selected" flag for the section named SecName into the
+; variable VarName.
+!macro LoadSectionSelectedIntoVar SecName VarName
+ SectionGetFlags ${${SecName}} $${VarName}
+ IntOp $${VarName} $${VarName} & ${SF_SELECTED}  ;Turn off all other bits
+!macroend
+
+; Loads the value of a variable... can we get around this?
+!macro LoadVar VarName
+  IntOp $R0 0 + $${VarName}
+!macroend
+
+; Sets the value of a variable
+!macro StoreVar VarName IntValue
+  IntOp $${VarName} 0 + ${IntValue}
+!macroend
+
+!macro InitSection SecName
+  ;  This macro reads component installed flag from the registry and
+  ;changes checked state of the section on the components page.
+  ;Input: section index constant name specified in Section command.
+   
   ClearErrors
-  StrCpy $SV_ALLUSERS "JustMe"
-  StrCpy $INSTDIR "$DOCUMENTS\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+  ;Reading component status from registry
+  ReadRegDWORD $AR_RegFlags HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@\Components\${SecName}" "Installed"
+  IfErrors "default_${SecName}"
+    ;Status will stay default if registry value not found
+    ;(component was never installed)
+  IntOp $AR_RegFlags $AR_RegFlags & ${SF_SELECTED} ;Turn off all other bits
+  SectionGetFlags ${${SecName}} $AR_SecFlags  ;Reading default section flags
+  IntOp $AR_SecFlags $AR_SecFlags & 0xFFFE  ;Turn lowest (enabled) bit off
+  IntOp $AR_SecFlags $AR_RegFlags | $AR_SecFlags      ;Change lowest bit
 
-  ClearErrors
-  UserInfo::GetName
-  IfErrors noLM
-  Pop $0
-  UserInfo::GetAccountType
-  Pop $1
-  StrCmp $1 "Admin" 0 +3
-    SetShellVarContext all
-    ;MessageBox MB_OK 'User "$0" is in the Admin group'
-    StrCpy $SV_ALLUSERS "AllUsers"
-    Goto done
-  StrCmp $1 "Power" 0 +3
-    SetShellVarContext all
-    ;MessageBox MB_OK 'User "$0" is in the Power Users group'
-    StrCpy $SV_ALLUSERS "AllUsers"
-    Goto done
-    
-  noLM:
-    StrCpy $SV_ALLUSERS "AllUsers"
-    ;Get installation folder from registry if available
-
-  done:
-  StrCmp $SV_ALLUSERS "AllUsers" 0 +2
-    StrCpy $INSTDIR "C:\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
-
-  StrCpy $R4 "@CPACK_PACKAGE_VERSION_MAJOR@"
-  StrCpy $R5 "@CPACK_PACKAGE_VERSION_MINOR@"
-  StrCpy $R6 "@CPACK_PACKAGE_VERSION_PATCH@"
+  ; Note whether this component was installed before
+  !insertmacro StoreVar ${SecName}_was_installed $AR_RegFlags
+  IntOp $R0 $AR_RegFlags & $AR_RegFlags
   
-  trypreviousversion:
+  ;Writing modified flags
+  SectionSetFlags ${${SecName}} $AR_SecFlags
   
-  ReadRegStr $R0 SHCTX \
-  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
-  ""
-  IfErrors 0 alreadyinstalled
-    IntCmp $R6 0 +3 +3 0
-	  IntOp $R6 $R6 - 1
-	  Goto trypreviousversion
-    
-	IntCmp $R5 0 +4 +4 0
-	  IntOp $R5 $R5 - 1
-	  StrCpy $R6 "9"
-	  Goto trypreviousversion
-	
-	IntCmp $R4 2 +5 +5 0
-	  IntOp $R4 $R4 - 1
-	  StrCpy $R5 "9"
-	  StrCpy $R6 "9"
-	  Goto trypreviousversion
+ "default_${SecName}:"
+ !insertmacro LoadSectionSelectedIntoVar ${SecName} ${SecName}_selected
+!macroend
+ 
+!macro FinishSection SecName
+  ;  This macro reads section flag set by user and removes the section
+  ;if it is not selected.
+  ;Then it writes component installed flag to registry
+  ;Input: section index constant name specified in Section command.
+ 
+  SectionGetFlags ${${SecName}} $AR_SecFlags  ;Reading section flags
+  ;Checking lowest bit:
+  IntOp $AR_SecFlags $AR_SecFlags & ${SF_SELECTED}
+  IntCmp $AR_SecFlags 1 "leave_${SecName}"
+    ;Section is not selected:
+    ;Calling Section uninstall macro and writing zero installed flag
+    !insertmacro "Remove_${${SecName}}"
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@\Components\${SecName}" \
+  "Installed" 0
+    Goto "exit_${SecName}"
+ 
+ "leave_${SecName}:"
+    ;Section is selected:
+    WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@\Components\${SecName}" \
+  "Installed" 1
+ 
+ "exit_${SecName}:"
+!macroend
+ 
+!macro RemoveSection SecName
+  ;  This macro is used to call section's Remove_... macro
+  ;from the uninstaller.
+  ;Input: section index constant name specified in Section command.
+ 
+  !insertmacro "Remove_${${SecName}}"
+!macroend
 
-  IfFileExists $INSTDIR 0 checkH3DROOT
-    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
-    "It seems like another version of H3DAPI is already installed in the default \
-    location. If you install this version of H3DAPI make sure that you do not \
-    install into the same folder as any previous versions of H3DAPI. \
-    Note that you might also get conlicting paths in the PATH environment variable \
-    $\n$\nClick `OK` to continue installing or `Cancel` to cancel this installation." \
-    IDOK alreadyinstalledchecked
-    Abort
-
-  alreadyinstalled:
-  StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6"
-  StrCmp "@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" "H3DAPI 2.0.0" 0 +2
-    StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\H3D"
+; Determine whether the selection of SecName changed
+!macro MaybeSelectionChanged SecName
+  !insertmacro LoadVar ${SecName}_selected
+  SectionGetFlags ${${SecName}} $R1
+  IntOp $R1 $R1 & ${SF_SELECTED} ;Turn off all other bits
   
-  ReadRegStr $R1 SHCTX \
-   "$R7" \
-   "UninstallString"
+  ; See if the status has changed:
+  IntCmp $R0 $R1 "${SecName}_unchanged"
+  !insertmacro LoadSectionSelectedIntoVar ${SecName} ${SecName}_selected
   
-  StrLen $R8 $INSTDIR
+  IntCmp $R1 ${SF_SELECTED} "${SecName}_was_selected"
+  !insertmacro "Deselect_required_by_${SecName}"
+  goto "${SecName}_unchanged"
   
-  StrCpy $R9 $R7 $R8
+  "${SecName}_was_selected:"
+  !insertmacro "Select_${SecName}_depends"
   
-  StrCpy $8 "in the default location"
-  StrCpy $9 " (recommended)"
-  StrCmp $R9 $INSTDIR 0 +3
-    StrCpy $8 "somewhere on the system"
-    StrCpy $9 ""
-
-  MessageBox MB_YESNOCANCEL|MB_ICONQUESTION \
-  "Version $R4.$R5.$R6 of H3DAPI is already installed $8, \
-  do you wish to \
-  uninstall the previous installation$9? \
-  $\n$\nClick `Yes` to uninstall previous installation. `NO´ to continue \
-  installation without any changes or `Cancel` to cancel this installation." \
-  IDYES uninstallprevious IDNO alreadyinstalledchecked
-  Abort
-
-  uninstallprevious:
-  StrCmp $R1 "" alreadyinstalledchecked
-
-  ReadRegStr $R2 SHCTX \
-  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
-  ""
-
-  StrCpy $R3 $INSTDIR
-  StrCpy $INSTDIR $R2
-  ExecWait '$R1 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
-  IfErrors no_remove_uninstaller uninstallsucceeded
-
-  no_remove_uninstaller:
-  MessageBox MB_OK|MB_ICONINFORMATION "Uninstall not completed, setup will exit."
-  Abort
-
-  checkH3DROOT:
-  ReadEnvStr $R0 H3D_ROOT
-  IfErrors alreadyinstalledchecked 0
-    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
-    "It seems like another version of H3DAPI is already installed. \
-    If you install this version of H3DAPI the \
-    H3D specific environment variables will be changed to point to the new \
-    installation. If you install this version make sure that you do not install \
-    into the same folder as any previous versions of H3DAPI. \
-    Note that you might also get conlicting paths in the PATH environment variable \
-    $\n$\nClick `OK` to continue installing or `Cancel` to cancel this installation." \
-    IDOK alreadyinstalledchecked
-    Abort
-
-  uninstallsucceeded:
-    ; Wait a bit for system to release files and folders.
-    Sleep 1000
-    Delete $R1
-    RMDir $INSTDIR
-    StrCpy $INSTDIR $R3
-
-  alreadyinstalledchecked:
-
-  StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 noOptionsPage
-    !insertmacro MUI_INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
-
-  noOptionsPage:
-FunctionEnd
+  "${SecName}_unchanged:"
+!macroend
+;--- End of Add/Remove macros ---
 
 ;--------------------------------
 ;Interface Settings
@@ -202,7 +166,7 @@ FunctionEnd
 !verbose 3
 !include "WinMessages.NSH"
 !verbose 4
- 
+
 ;----------------------------------------
 ; based upon a script of "Written by KiCHiK 2003-01-18 05:57:02"
 ;----------------------------------------
@@ -254,6 +218,17 @@ Function AddToPath
   # don't add if the path doesn't exist
   IfFileExists "$0\*.*" "" AddToPath_done
  
+  ReadEnvStr $1 PATH
+  ; if the path is too long for a NSIS variable NSIS will return a 0 
+  ; length string.  If we find that, then warn and skip any path
+  ; modification as it will trash the existing path.
+  StrLen $2 $1
+  IntCmp $2 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
+    CheckPathLength_ShowPathWarning:
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! PATH too long installer unable to modify PATH!"
+    Goto AddToPath_done
+  CheckPathLength_Done:
+
   ; Check if nt and read from registry if it is nt, otherwise use path.
   ; The reason for this is that when uninstalling a previous installation
   ; the path environment variable might be modified.
@@ -306,20 +281,24 @@ Function AddToPath
     Goto AddToPath_done
  
   AddToPath_NT:
-    StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-      ReadRegStr $1 ${NT_all_env} "PATH"
-      Goto +2
+    StrCmp $ADD_TO_PATH_ALL_USERS "1" ReadAllKey
       ReadRegStr $1 ${NT_current_env} "PATH"
+      Goto DoTrim
+    ReadAllKey:
+      ReadRegStr $1 ${NT_all_env} "PATH"
+    DoTrim:
     StrCmp $1 "" AddToPath_NTdoIt
       Push $1
       Call Trim
       Pop $1
       StrCpy $0 "$1;$0"
     AddToPath_NTdoIt:
-      StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-        WriteRegExpandStr ${NT_all_env} "PATH" $0
-        Goto +2
+      StrCmp $ADD_TO_PATH_ALL_USERS "1" WriteAllKey
         WriteRegExpandStr ${NT_current_env} "PATH" $0
+        Goto DoSend
+      WriteAllKey:
+        WriteRegExpandStr ${NT_all_env} "PATH" $0
+      DoSend:
       SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
  
   AddToPath_done:
@@ -328,7 +307,7 @@ Function AddToPath
     Pop $1
     Pop $0
 FunctionEnd
- 
+
  
 ; RemoveFromPath - Remove a given dir from the path
 ;     Input: head of the stack
@@ -381,10 +360,12 @@ Function un.RemoveFromPath
       Goto unRemoveFromPath_done
  
   unRemoveFromPath_NT:
-    StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-      ReadRegStr $1 ${NT_all_env} "PATH"
-      Goto +2
+    StrCmp $ADD_TO_PATH_ALL_USERS "1" unReadAllKey
       ReadRegStr $1 ${NT_current_env} "PATH"
+      Goto unDoTrim
+    unReadAllKey:
+      ReadRegStr $1 ${NT_all_env} "PATH"
+    unDoTrim:
     StrCpy $5 $1 1 -1 # copy last char
     StrCmp $5 ";" +2 # if last char != ;
       StrCpy $1 "$1;" # append ;
@@ -406,10 +387,12 @@ Function un.RemoveFromPath
       StrCmp $5 ";" 0 +2 # if last char == ;
         StrCpy $3 $3 -1 # remove last char
  
-      StrCmp $ADD_TO_PATH_ALL_USERS "1" 0 +3
-        WriteRegExpandStr ${NT_all_env} "PATH" $3
-        Goto +2
+      StrCmp $ADD_TO_PATH_ALL_USERS "1" unWriteAllKey
         WriteRegExpandStr ${NT_current_env} "PATH" $3
+        Goto unDoSend
+      unWriteAllKey:
+        WriteRegExpandStr ${NT_all_env} "PATH" $3
+      unDoSend:
       SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
  
   unRemoveFromPath_done:
@@ -528,7 +511,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Uninstall sutff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- 
+
 ###########################################
 #            Utility Functions            #
 ###########################################
@@ -613,21 +596,21 @@ FunctionEnd
 !insertmacro StrStr "un."
 
 Function Trim ; Added by Pelaca
-	Exch $R1
-	Push $R2
+  Exch $R1
+  Push $R2
 Loop:
-	StrCpy $R2 "$R1" 1 -1
-	StrCmp "$R2" " " RTrim
-	StrCmp "$R2" "$\n" RTrim
-	StrCmp "$R2" "$\r" RTrim
-	StrCmp "$R2" ";" RTrim
-	GoTo Done
-RTrim:	
-	StrCpy $R1 "$R1" -1
-	Goto Loop
+  StrCpy $R2 "$R1" 1 -1
+  StrCmp "$R2" " " RTrim
+  StrCmp "$R2" "$\n" RTrim
+  StrCmp "$R2" "$\r" RTrim
+  StrCmp "$R2" ";" RTrim
+  GoTo Done
+RTrim:  
+  StrCpy $R1 "$R1" -1
+  Goto Loop
 Done:
-	Pop $R2
-	Exch $R1
+  Pop $R2
+  Exch $R1
 FunctionEnd
 
 Function ConditionalAddToRegisty
@@ -641,15 +624,47 @@ Function ConditionalAddToRegisty
   ConditionalAddToRegisty_EmptyString:
 FunctionEnd
 
-;------------------------
+;--------------------------------
+
+!ifdef CPACK_USES_DOWNLOAD
+Function DownloadFile
+    IfFileExists $INSTDIR\* +2
+    CreateDirectory $INSTDIR
+    Pop $0
+
+    ; Skip if already downloaded
+    IfFileExists $INSTDIR\$0 0 +2
+    Return
+
+    StrCpy $1 "@CPACK_DOWNLOAD_SITE@"
+
+  try_again:
+    NSISdl::download "$1/$0" "$INSTDIR\$0"
+    
+    Pop $1
+    StrCmp $1 "success" success
+    StrCmp $1 "Cancelled" cancel
+    MessageBox MB_OK "Download failed: $1"
+  cancel:
+    Return
+  success:
+FunctionEnd
+!endif
+
+;--------------------------------
+; Installation types
+@CPACK_NSIS_INSTALLATION_TYPES@
+
+;--------------------------------
+; Component sections
+@CPACK_NSIS_COMPONENT_SECTIONS@
 
 ;--------------------------------
 ; Define some macro setting for the gui
-
-  !define CPACK_PACKAGE_ICON@CPACK_PACKAGE_ICON@
-  !ifndef CPACK_PACKAGE_ICON
-  !define MUI_HEADERIMAGE_BITMAP "@CPACK_PACKAGE_ICON@"
-  !endif
+@CPACK_NSIS_INSTALLER_MUI_ICON_CODE@
+@CPACK_NSIS_INSTALLER_ICON_CODE@
+@CPACK_NSIS_INSTALLER_MUI_COMPONENTS_DESC@
+@CPACK_NSIS_INSTALLER_MUI_FINISHPAGE_RUN_CODE@
 
 ;--------------------------------
 ;Pages
@@ -665,16 +680,69 @@ FunctionEnd
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
 
+  @CPACK_NSIS_PAGE_COMPONENTS@
+
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
 
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
-  
+
 ;--------------------------------
 ;Languages
- 
-  !insertmacro MUI_LANGUAGE "English"
+
+  !insertmacro MUI_LANGUAGE "English" ;first language is the default language
+  !insertmacro MUI_LANGUAGE "Albanian"
+  !insertmacro MUI_LANGUAGE "Arabic"
+  !insertmacro MUI_LANGUAGE "Basque"
+  !insertmacro MUI_LANGUAGE "Belarusian"
+  !insertmacro MUI_LANGUAGE "Bosnian"
+  !insertmacro MUI_LANGUAGE "Breton"
+  !insertmacro MUI_LANGUAGE "Bulgarian"
+  !insertmacro MUI_LANGUAGE "Croatian"
+  !insertmacro MUI_LANGUAGE "Czech"
+  !insertmacro MUI_LANGUAGE "Danish"
+  !insertmacro MUI_LANGUAGE "Dutch"
+  !insertmacro MUI_LANGUAGE "Estonian"
+  !insertmacro MUI_LANGUAGE "Farsi"
+  !insertmacro MUI_LANGUAGE "Finnish"
+  !insertmacro MUI_LANGUAGE "French"
+  !insertmacro MUI_LANGUAGE "German"
+  !insertmacro MUI_LANGUAGE "Greek"
+  !insertmacro MUI_LANGUAGE "Hebrew"
+  !insertmacro MUI_LANGUAGE "Hungarian"
+  !insertmacro MUI_LANGUAGE "Icelandic"
+  !insertmacro MUI_LANGUAGE "Indonesian"
+  !insertmacro MUI_LANGUAGE "Irish"
+  !insertmacro MUI_LANGUAGE "Italian"
+  !insertmacro MUI_LANGUAGE "Japanese"
+  !insertmacro MUI_LANGUAGE "Korean"
+  !insertmacro MUI_LANGUAGE "Kurdish"
+  !insertmacro MUI_LANGUAGE "Latvian"
+  !insertmacro MUI_LANGUAGE "Lithuanian"
+  !insertmacro MUI_LANGUAGE "Luxembourgish"
+  !insertmacro MUI_LANGUAGE "Macedonian"
+  !insertmacro MUI_LANGUAGE "Malay"
+  !insertmacro MUI_LANGUAGE "Mongolian"
+  !insertmacro MUI_LANGUAGE "Norwegian"
+  !insertmacro MUI_LANGUAGE "Polish"
+  !insertmacro MUI_LANGUAGE "Portuguese"
+  !insertmacro MUI_LANGUAGE "PortugueseBR"
+  !insertmacro MUI_LANGUAGE "Romanian"
+  !insertmacro MUI_LANGUAGE "Russian"
+  !insertmacro MUI_LANGUAGE "Serbian"
+  !insertmacro MUI_LANGUAGE "SerbianLatin"
+  !insertmacro MUI_LANGUAGE "SimpChinese"
+  !insertmacro MUI_LANGUAGE "Slovak"
+  !insertmacro MUI_LANGUAGE "Slovenian"
+  !insertmacro MUI_LANGUAGE "Spanish"
+  !insertmacro MUI_LANGUAGE "Swedish"
+  !insertmacro MUI_LANGUAGE "Thai"
+  !insertmacro MUI_LANGUAGE "TradChinese"
+  !insertmacro MUI_LANGUAGE "Turkish"
+  !insertmacro MUI_LANGUAGE "Ukrainian"
+  !insertmacro MUI_LANGUAGE "Welsh"
+
 
 ;--------------------------------
 ;Reserve Files
@@ -686,24 +754,16 @@ FunctionEnd
   ReserveFile "NSIS.InstallOptions.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 
-
 ;--------------------------------
 ;Installer Sections
 
-Section "Add to path"
-  ;Read a value from an InstallOptions INI file
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 2" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 3" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 4" "State"
-SectionEnd
-
-Section "Installer Section" InstSection
-
+Section "-Core installation"
   ;Use the entire tree produced by the INSTALL target.  Keep the
   ;list of directories here in sync with the RMDir commands below.
   SetOutPath "$INSTDIR"
-  File /r "${INST_DIR}\*.*"
-
+  @CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS@
+  @CPACK_NSIS_FULL_INSTALL@
+  
   ;Store installation folder
   WriteRegStr SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "" $INSTDIR
   
@@ -721,7 +781,21 @@ Section "Installer Section" InstSection
   Push "UninstallString"
   Push "$INSTDIR\Uninstall.exe"
   Call ConditionalAddToRegisty
-
+  Push "NoRepair"
+  Push "1"
+  Call ConditionalAddToRegisty
+  
+  !ifdef CPACK_NSIS_ADD_REMOVE
+  ;Create add/remove functionality
+  Push "ModifyPath"
+  Push "$INSTDIR\AddRemove.exe"
+  Call ConditionalAddToRegisty
+  !else
+  Push "NoModify"
+  Push "1"
+  Call ConditionalAddToRegisty
+  !endif
+  
   ; Optional registration
   Push "DisplayIcon"
   Push "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@"
@@ -737,10 +811,11 @@ Section "Installer Section" InstSection
   Call ConditionalAddToRegisty
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-    
+  
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 @CPACK_NSIS_CREATE_ICONS@
+@CPACK_NSIS_CREATE_ICONS_EXTRA@
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 AddedH3DLoadDemosDone
     ;Create Demos folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Demos"
@@ -791,6 +866,11 @@ Section "Installer Section" InstSection
 
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
+  ;Read a value from an InstallOptions INI file
+  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
+
   ; Write special uninstall registry entries
   Push "StartMenu"
   Push "$STARTMENU_FOLDER"
@@ -805,9 +885,10 @@ Section "Installer Section" InstSection
   Push "$ADD_TO_PATH_CURRENT_USER"
   Call ConditionalAddToRegisty
 
+  !insertmacro MUI_STARTMENU_WRITE_END
+
 @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
 
-  !insertmacro MUI_STARTMENU_WRITE_END
   
   Push H3D_ROOT
   Push $INSTDIR\H3DAPI
@@ -816,23 +897,24 @@ Section "Installer Section" InstSection
   Push H3D_EXTERNAL_ROOT
   Push $INSTDIR\External
   Call WriteEnvStr
-  
-  DetailPrint "Add $INSTDIR\bin to PATH"
-  StrCmp $DO_NOT_ADD_TO_PATH "1" +3 0
-    Push $INSTDIR\bin
-    Call AddToPath
-  
-  DetailPrint "Add $INSTDIR\External\bin to PATH"
-  StrCmp $DO_NOT_ADD_TO_PATH "1" +3 0
-    Push $INSTDIR\External\bin
-    Call AddToPath
 
+SectionEnd
+
+Section "-Add to path"
+   DetailPrint "Add $INSTDIR\bin to PATH"
+  Push $INSTDIR\bin
+  StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 doNotAddToPath
+  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0
+    Call AddToPath
+    Push $INSTDIR\External\@CPACK_EXTERNAL_BIN@
+    Call AddToPath
+  doNotAddToPath:
 SectionEnd
 
 ;--------------------------------
 ; Create custom pages
 Function InstallOptionsPage
-  !insertmacro MUI_HEADER_TEXT "Install Options" "Chose options for installing @CPACK_PACKAGE_INSTALL_DIRECTORY@"
+  !insertmacro MUI_HEADER_TEXT "Install Options" "Choose options for installing @CPACK_NSIS_PACKAGE_NAME@"
   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "NSIS.InstallOptions.ini"
 
 FunctionEnd
@@ -862,6 +944,42 @@ Function un.onInit
   done:
 FunctionEnd
 
+;--- Add/Remove callback functions: ---
+!macro SectionList MacroName
+  ;This macro used to perform operation on multiple sections.
+  ;List all of your components in following manner here.
+@CPACK_NSIS_COMPONENT_SECTION_LIST@
+!macroend
+ 
+Section -FinishComponents
+  ;Removes unselected components and writes component status to registry
+  !insertmacro SectionList "FinishSection"
+  
+!ifdef CPACK_NSIS_ADD_REMOVE  
+  ; Get the name of the installer executable
+  System::Call 'kernel32::GetModuleFileNameA(i 0, t .R0, i 1024) i r1'
+  StrCpy $R3 $R0
+  
+  ; Strip off the last 13 characters, to see if we have AddRemove.exe
+  StrLen $R1 $R0
+  IntOp $R1 $R0 - 13
+  StrCpy $R2 $R0 13 $R1
+  StrCmp $R2 "AddRemove.exe" addremove_installed
+  
+  ; We're not running AddRemove.exe, so install it
+  CopyFiles $R3 $INSTDIR\AddRemove.exe
+  
+  addremove_installed:
+!endif
+SectionEnd
+;--- End of Add/Remove callback functions ---
+
+;--------------------------------
+; Component dependencies
+Function .onSelChange
+  !insertmacro SectionList MaybeSelectionChanged
+FunctionEnd
+
 ;--------------------------------
 ;Uninstaller Section
 
@@ -884,6 +1002,11 @@ Section "Uninstall"
 @CPACK_NSIS_DELETE_FILES@
 @CPACK_NSIS_DELETE_DIRECTORIES@
 
+!ifdef CPACK_NSIS_ADD_REMOVE  
+  ;Remove the add/remove program
+  Delete "$INSTDIR\AddRemove.exe"
+!endif
+
   ;Remove the uninstaller itself.
   Delete "$INSTDIR\Uninstall.exe"
   DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
@@ -894,10 +1017,14 @@ Section "Uninstall"
   ; Remove the registry entries.
   DeleteRegKey SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
+  ; Removes all optional components
+  !insertmacro SectionList "RemoveSection"
+  
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
     
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS@
+@CPACK_NSIS_DELETE_ICONS_EXTRA@
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos1Done
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
@@ -962,7 +1089,7 @@ Section "Uninstall"
   ; try to fix it.
   StrCpy $MUI_TEMP "$START_MENU"
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
-@CPACK_NSIS_DELETE_ICONS@
+@CPACK_NSIS_DELETE_ICONS_EXTRA@
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos2Done
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
@@ -1036,14 +1163,197 @@ Section "Uninstall"
   
   Push H3D_EXTERNAL_ROOT
   Call un.DeleteEnvStr
-  
-  StrCmp $DO_NOT_ADD_TO_PATH "1" +3 0
-    Push $INSTDIR\bin
-    Call un.RemoveFromPath
 
-  StrCmp $DO_NOT_ADD_TO_PATH "1" +3 0
-    Push $INSTDIR\External\bin
+
+  Push $INSTDIR\bin
+  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotRemoveFromPath 0
     Call un.RemoveFromPath
+    Push $INSTDIR\External\@CPACK_EXTERNAL_BIN@
+    Call un.RemoveFromPath
+  doNotRemoveFromPath:
+  DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 SectionEnd
 
+;--------------------------------
+; determine admin versus local install
+; Is install for "AllUsers" or "JustMe"?
+; Default to "JustMe" - set to "AllUsers" if admin or on Win9x
+; This function is used for the very first "custom page" of the installer.
+; This custom page does not show up visibly, but it executes prior to the
+; first visible page and sets up $INSTDIR properly...
+; Choose different default installation folder based on SV_ALLUSERS...
+; "Program Files" for AllUsers, "My Documents" for JustMe...
 
+Function .onInit
+  StrCmp "@CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL@" "ON" 0 inst
+
+  ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "UninstallString"
+  StrCmp $0 "" inst
+
+  MessageBox MB_YESNOCANCEL|MB_ICONEXCLAMATION \
+  "@CPACK_NSIS_PACKAGE_NAME@ is already installed. $\n$\nDo you want to uninstall the old version before installing the new one?" \
+  IDYES uninst IDNO inst
+  Abort
+
+;Run the uninstaller
+uninst:
+  ClearErrors
+  ExecWait '$0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+
+  IfErrors uninst_failed inst
+uninst_failed:
+  MessageBox MB_OK|MB_ICONSTOP "Uninstall failed."
+  Abort
+
+
+inst:
+  ; Reads components status for registry
+  !insertmacro SectionList "InitSection"
+
+  ; check to see if /D has been used to change 
+  ; the install directory by comparing it to the 
+  ; install directory that is expected to be the
+  ; default
+  StrCpy $IS_DEFAULT_INSTALLDIR 0
+  StrCmp "$INSTDIR" "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@" 0 +2
+    StrCpy $IS_DEFAULT_INSTALLDIR 1
+  
+  StrCpy $SV_ALLUSERS "JustMe"
+  ; if default install dir then change the default
+  ; if it is installed for JustMe
+  StrCmp "$IS_DEFAULT_INSTALLDIR" "1" 0 +2
+    StrCpy $INSTDIR "$DOCUMENTS\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+
+  ClearErrors
+  UserInfo::GetName
+  IfErrors noLM
+  Pop $0
+  UserInfo::GetAccountType
+  Pop $1
+  StrCmp $1 "Admin" 0 +4
+    SetShellVarContext all
+    ;MessageBox MB_OK 'User "$0" is in the Admin group'
+    StrCpy $SV_ALLUSERS "AllUsers"
+    Goto done
+  StrCmp $1 "Power" 0 +4
+    SetShellVarContext all
+    ;MessageBox MB_OK 'User "$0" is in the Power Users group'
+    StrCpy $SV_ALLUSERS "AllUsers"
+    Goto done
+    
+  noLM:
+    StrCpy $SV_ALLUSERS "AllUsers"
+    ;Get installation folder from registry if available
+
+  done:
+  StrCmp $SV_ALLUSERS "AllUsers" 0 +3
+    StrCmp "$IS_DEFAULT_INSTALLDIR" "1" 0 +2
+      StrCpy $INSTDIR "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+
+  StrCpy $R4 "@CPACK_PACKAGE_VERSION_MAJOR@"
+  StrCpy $R5 "@CPACK_PACKAGE_VERSION_MINOR@"
+  StrCpy $R6 "@CPACK_PACKAGE_VERSION_PATCH@"
+  
+  trypreviousversion:
+  
+  ReadRegStr $R0 SHCTX \
+  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
+  ""
+  IfErrors 0 alreadyinstalled
+    IntCmp $R6 0 +3 +3 0
+    IntOp $R6 $R6 - 1
+    Goto trypreviousversion
+    
+  IntCmp $R5 0 +4 +4 0
+    IntOp $R5 $R5 - 1
+    StrCpy $R6 "9"
+    Goto trypreviousversion
+  
+  IntCmp $R4 2 +5 +5 0
+    IntOp $R4 $R4 - 1
+    StrCpy $R5 "9"
+    StrCpy $R6 "9"
+    Goto trypreviousversion
+
+  IfFileExists $INSTDIR 0 checkH3DROOT
+    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+    "It seems like another version of H3DAPI is already installed in the default \
+    location. If you install this version of H3DAPI make sure that you do not \
+    install into the same folder as any previous versions of H3DAPI. \
+    Note that you might also get conlicting paths in the PATH environment variable \
+    $\n$\nClick `OK` to continue installing or `Cancel` to cancel this installation." \
+    IDOK alreadyinstalledchecked
+    Abort
+
+  alreadyinstalled:
+  StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6"
+  StrCmp "@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" "H3DAPI 2.0.0" 0 +2
+    StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\H3D"
+  
+  ReadRegStr $R1 SHCTX \
+   "$R7" \
+   "UninstallString"
+  
+  StrLen $R8 $INSTDIR
+  
+  StrCpy $R9 $R7 $R8
+  
+  StrCpy $8 "in the default location"
+  StrCpy $9 " (recommended)"
+  StrCmp $R9 $INSTDIR 0 +3
+    StrCpy $8 "somewhere on the system"
+    StrCpy $9 ""
+
+  MessageBox MB_YESNOCANCEL|MB_ICONQUESTION \
+  "Version $R4.$R5.$R6 of H3DAPI is already installed $8, \
+  do you wish to \
+  uninstall the previous installation$9? \
+  $\n$\nClick `Yes` to uninstall previous installation. `NO´ to continue \
+  installation without any changes or `Cancel` to cancel this installation." \
+  IDYES uninstallprevious IDNO alreadyinstalledchecked
+  Abort
+
+  uninstallprevious:
+  StrCmp $R1 "" alreadyinstalledchecked
+
+  ReadRegStr $R2 SHCTX \
+  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
+  ""
+
+  StrCpy $R3 $INSTDIR
+  StrCpy $INSTDIR $R2
+  ExecWait '$R1 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+  IfErrors no_remove_uninstaller uninstallsucceeded
+
+  no_remove_uninstaller:
+  MessageBox MB_OK|MB_ICONINFORMATION "Uninstall not completed, setup will exit."
+  Abort
+
+  checkH3DROOT:
+  ReadEnvStr $R0 H3D_ROOT
+  IfErrors alreadyinstalledchecked 0
+    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+    "It seems like another version of H3DAPI is already installed. \
+    If you install this version of H3DAPI the \
+    H3D specific environment variables will be changed to point to the new \
+    installation. If you install this version make sure that you do not install \
+    into the same folder as any previous versions of H3DAPI. \
+    Note that you might also get conlicting paths in the PATH environment variable \
+    $\n$\nClick `OK` to continue installing or `Cancel` to cancel this installation." \
+    IDOK alreadyinstalledchecked
+    Abort
+
+  uninstallsucceeded:
+    ; Wait a bit for system to release files and folders.
+    Sleep 1000
+    Delete $R1
+    RMDir $INSTDIR
+    StrCpy $INSTDIR $R3
+
+  alreadyinstalledchecked:
+
+  StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 noOptionsPage
+    !insertmacro MUI_INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
+
+  noOptionsPage:
+FunctionEnd

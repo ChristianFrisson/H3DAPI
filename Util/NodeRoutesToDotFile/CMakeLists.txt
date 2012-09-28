@@ -107,14 +107,14 @@ ELSE( H3D_USE_DEPENDENCIES_ONLY )
   ENDIF(RigidBodyPhysics_FOUND)
 ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
+SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
+
 # Optional extra library. Used for sound in H3D API.
 FIND_PACKAGE(H3DOpenAL)
 IF(OPENAL_FOUND)
   INCLUDE_DIRECTORIES( ${OPENAL_INCLUDE_DIR} )
   SET(optionalLibs ${optionalLibs} ${OPENAL_LIBRARIES} )
 ENDIF(OPENAL_FOUND)
-
-SET(CMAKE_MODULE_PATH "${NodeRoutesToDotFile_SOURCE_DIR}/../../build/modules/")
 
 CONFIGURE_FILE( ${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cmake ${NodeRoutesToDotFile_SOURCE_DIR}/NodeRoutesToDotFile.cpp )
 

@@ -155,4 +155,5 @@ ENDIF(WIN32)
 
 INSTALL( TARGETS ParticleDemo
          LIBRARY DESTINATION lib
-         RUNTIME DESTINATION bin )
+         RUNTIME DESTINATION bin
+         COMPONENT H3DAPI_cpack_examples_runtime )

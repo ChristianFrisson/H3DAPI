@@ -6,6 +6,9 @@
 #  CURL_LIBRARIES    - List of libraries when using curl.
 #  CURL_FOUND        - True if curlfound.
 
+IF( WIN32 )
+  SET(CURL_FIND_QUIETLY 1)
+ENDIF( WIN32 )
 IF(H3DCURL_FIND_REQUIRED)
   FIND_PACKAGE(CURL REQUIRED)
 ELSE(H3DCURL_FIND_REQUIRED)
@@ -38,7 +41,7 @@ IF(NOT CURL_FOUND OR PREFER_STATIC_LIBRARIES)
                 DOC "Path to libcurl library." )
 
   IF( PREFER_STATIC_LIBRARIES )
-    FIND_LIBRARY( CURL_STATIC_LIBRARY NAMES libcurl_static
+    FIND_LIBRARY( CURL_STATIC_LIBRARY NAMES libcurl
                                             PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
                                             $ENV{H3D_ROOT}/../External/${LIB}/static
                                             ../../External/${LIB}/static

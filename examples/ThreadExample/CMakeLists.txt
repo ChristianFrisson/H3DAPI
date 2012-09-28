@@ -91,5 +91,6 @@ ENDIF(WIN32)
 # Install to these directories.
 INSTALL( TARGETS ThreadExample
          LIBRARY DESTINATION lib
-         RUNTIME DESTINATION bin )
+         RUNTIME DESTINATION bin
+         COMPONENT H3DAPI_cpack_examples_runtime )
 

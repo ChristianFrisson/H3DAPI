@@ -1108,7 +1108,7 @@ bool WxFrame::loadFile( const string &filename) {
   CollisionOptions * co = 0;
   global_settings->getOptionNode( co );
   wxMenuItem * col_item = navigationMenu->
-    FindItemByPosition( navigationMenu->GetMenuItemCount() - 3 );
+    FindItemByPosition( navigationMenu->GetMenuItemCount() - 4 );
 
   if( co ) {
     avatar_collision = co->avatarCollision->getValue();
