@@ -390,6 +390,13 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
    advancedMenu->Append(FRAME_PROGRAMSETTINGS, wxT("Show Program Settings\tF7"),
                         wxT("Show the program settings for the current scene."));  
 #endif
+	advancedMenu->AppendSeparator();
+	advancedMenu->AppendCheckItem( FRAME_KEEPVIEWPOINTONLOAD, wxT("New viewpoint on load file"),
+																 wxT("Show the program settings for the current scene.") );
+	h3dConfig->SetPath(wxT("/Settings"));
+  bool new_viewpoint_on_load = true;
+  h3dConfig->Read(wxT("new_viewpoint_on_load"), &new_viewpoint_on_load);
+	advancedMenu->Check( FRAME_KEEPVIEWPOINTONLOAD, new_viewpoint_on_load );
   //Help Menu
   helpMenu = new wxMenu;
   //helpMenu->Append(FRAME_HELP, wxT("Help"));
@@ -526,6 +533,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
   EVT_MENU (FRAME_PROGRAMSETTINGS, WxFrame::ShowProgramSettings)
+	EVT_MENU (FRAME_KEEPVIEWPOINTONLOAD, WxFrame::OnKeepViewpointOnLoadCheck )
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
   EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
@@ -1354,6 +1362,16 @@ bool WxFrame::loadFile( const string &filename) {
 //Clear data when closing file
 void WxFrame::clearData () {
   scene->setSceneRoot( NULL );
+	h3dConfig->SetPath(wxT("/Settings"));
+  bool new_viewpoint_on_load = true;
+  h3dConfig->Read(wxT("new_viewpoint_on_load"), &new_viewpoint_on_load);
+	if( new_viewpoint_on_load ) {
+		X3DViewpointNode::ViewpointList viewpoint_list = X3DViewpointNode::getAllViewpoints();
+		for( X3DViewpointNode::ViewpointList::iterator i = viewpoint_list.begin();
+				 i != viewpoint_list.end(); i++ ) {
+			(*i)->set_bind->setValue( false );
+		}
+	}
   viewpoint.reset( new Viewpoint );
 
   DestroyViewpointsMenu();
@@ -1744,7 +1762,7 @@ void WxFrame::ShowTreeView(wxCommandEvent & event)
   }
 }
 
-//Show console event
+//Show program settings window
 void WxFrame::ShowProgramSettings(wxCommandEvent & event)
 {
 #ifdef HAVE_WXPROPGRID
@@ -1752,6 +1770,14 @@ void WxFrame::ShowProgramSettings(wxCommandEvent & event)
     program_settings_dialog->SetFocus();
   }
 #endif
+}
+
+// Save option
+void WxFrame::OnKeepViewpointOnLoadCheck(wxCommandEvent & event)
+{
+	h3dConfig = wxConfigBase::Get();
+  h3dConfig->SetPath(wxT("/Settings"));
+  h3dConfig->Write(wxT("new_viewpoint_on_load"), event.IsChecked());
 }
 
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)

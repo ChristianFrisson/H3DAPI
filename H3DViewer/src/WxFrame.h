@@ -285,6 +285,7 @@ public:
   void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
   void ShowProgramSettings( wxCommandEvent & event );
+	void OnKeepViewpointOnLoadCheck( wxCommandEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
   void ResetViewpoint( wxCommandEvent & event );
   void ChangeNavigation( wxCommandEvent & event );
@@ -493,6 +494,7 @@ enum
   FRAME_PLUGINS,
   FRAME_FRAMERATE,
   FRAME_PROGRAMSETTINGS,
+	FRAME_KEEPVIEWPOINTONLOAD,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,
   FRAME_NAVIGATION = 6500,
