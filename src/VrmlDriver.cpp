@@ -177,6 +177,9 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
   Node *node_value = NULL;
   if ( !nullnode ) {
     node_value = node_stack.back();
+		if( !node_value->isInitialized() && node_value->getManualInitialize() ) {
+      node_value->initialize();
+		}
     node_stack.pop_back();
   }
   if ( node_stack.size() == 0 || field_stack.size() == 0 ) {
