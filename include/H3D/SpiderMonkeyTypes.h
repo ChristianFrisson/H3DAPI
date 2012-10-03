@@ -1805,7 +1805,7 @@ namespace H3D {
       JS_EnumerateStub, // enumerate
       JS_ResolveStub,   // resolve
       JS_ConvertStub,   // convert
-      JS_FinalizeStub,  // finalize
+      PrivatePointer_finalize<BrowserPrivate>,  // finalize
       JSCLASS_NO_OPTIONAL_MEMBERS
     };
 

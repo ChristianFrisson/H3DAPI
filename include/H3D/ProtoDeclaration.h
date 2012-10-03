@@ -36,6 +36,9 @@
 #include <list>
 
 namespace H3D {
+	namespace X3D {
+		class PrototypeVector;
+	}
 
   /// The ProtoDeclaration class containse information about a PROTO node from
   /// the X3D standard. It contains everything that is needed to now about the prototype
@@ -133,8 +136,11 @@ namespace H3D {
       return NULL;
     }
     
-    /// Create a new X3DPrototypeInstance instance using the ProtoDeclaration. 
-    X3DPrototypeInstance *newProtoInstance();
+    /// Create a new X3DPrototypeInstance instance using the ProtoDeclaration.
+		/// \param proto_type_vector contains ProtoDeclarations that this proto instance
+		/// can use if desired. The vector will not be changed, and ProtoDeclarations with
+		/// the same name as the current ProtoDeclaration will be ignored.
+    X3DPrototypeInstance *newProtoInstance( X3D::PrototypeVector * proto_type_vector = 0 );
   protected:
     string name;
     // The main body string, i.e. the first node in the proto body.
@@ -147,7 +153,8 @@ namespace H3D {
 
     AutoRef< Node > createProtoInstanceNodeX3D( PrototypeInstance *proto,
                                                 X3D::DEFNodes *dn,
-                                                const string &body_string );
+                                                const string &body_string,
+																								X3D::PrototypeVector * extra_proto_type_vector );
 
     AutoRef< Node > createProtoInstanceNodeVRML( PrototypeInstance *proto,
                                                  X3D::DEFNodes *dn,

@@ -932,7 +932,7 @@ X3DPrototypeInstance* X3DSAX2Handlers::handleProtoInstanceElement( const Attribu
     string s_name = toString( name );
     ProtoDeclaration *proto = 
       proto_declarations->getProtoDeclaration( s_name );
-    if( proto ) return proto->newProtoInstance();
+    if( proto ) return proto->newProtoInstance( proto_declarations );
     else {
       Console(3) << "Warning: Could not find PROTO declaration for \"" << s_name  
            << "\" instance (" << toString( locator->getSystemId() )
@@ -1245,12 +1245,26 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
     if( pi ) {
       // parent is X3DPrototypeInstance that was created with a ProtoInstance element.
       // Only fieldValue elements are allowed.
-      if( localname_string !=  "fieldValue" ) {
-        Console(3) << "WARNING: Only fieldValue elements allowed in ProtoInstance element "
-             << getLocationString() << endl;
+      if( localname_string == "fieldValue" ) {
+				handleFieldValueElement( attrs, parent );
+			} else if( localname_string == "IS" ) {
+				// ProtoInstance can be used inside another ProtoDeclare, there seem to be nothing
+				// in the X3D specification that stops this, since this is the case then IS
+				// statements are also allowed in some cases.
+				if( !proto_instance ) {
+          Console(3) << "WARNING: IS elements only allowed inside ProtoBody elements"
+										 << getLocationString() << endl;
+          node_stack.push( NodeElement( NULL ) );
+        } else {
+          defining_proto_connections = true;
+        }
+			} else if( localname_string == "connect" ) {
+        handleConnectElement( attrs, parent );
+			} else {
+        Console(3) << "WARNING: Only fieldValue ( and in some cases IS ) elements "
+									 << "allowed in ProtoInstance element "
+									 << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
-      } else {
-        handleFieldValueElement( attrs, parent );
       }
     } else {
       if( localname_string == "fieldValue" ) {

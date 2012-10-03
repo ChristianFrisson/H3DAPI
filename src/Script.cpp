@@ -62,6 +62,14 @@ mustEvaluate( _mustEvaluate ) {
 Script::~Script() {
 #ifdef HAVE_SPIDERMONKEY
   if( sai.isInitialized() ) {
+		// When engine is uninitialized a contained SFNode field will
+		// call ref and then unref twice on this Script node instance.
+		// In order to not get memory leaks or other problems we simply call
+		// ref here twice which means that delete is not called again on
+		// this script node. see node in SpiderMonkeySAI::initializeScriptEngine
+		manual_initialize = true;
+		ref();
+		ref();
     sai.uninitializeScriptEngine( );
   }
 #endif

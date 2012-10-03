@@ -114,11 +114,6 @@ void Sphere::render() {
   H3DFloat double_pi = (H3DFloat) Constants::pi * 2;
 
   if( prefer_vertex_buffer_object ) {
-    if( r <= Constants::f_epsilon ) {
-      Console(3) << "Warning: Invalid radius value of Sphere node "
-                 << getName() << endl;
-      return;
-    }
 
     // Use vertex buffer objects to create sphere.
     if( !vbo_initialized ) {

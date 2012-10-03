@@ -97,6 +97,7 @@ void insertLineBreak(stringstream &inputstream, stringstream &outputstream, int 
     outputstream << l << endl;
     counter += charCount;
   }
+	delete []line;
 }
 /*******************Required Class***********************/
 

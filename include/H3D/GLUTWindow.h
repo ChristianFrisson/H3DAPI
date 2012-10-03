@@ -44,6 +44,8 @@ namespace H3D {
   /// "RIGHT_SIDE", "TOP_LEFT_CORNER", "TOP_RIGHT_CORNER",
   /// "BOTTOM_RIGHT_CORNER", "BOTTOM_LEFT_CORNER",
   /// "FULL_CROSSHAIR", "NONE", "DEFAULT"
+	///
+	/// For example usage of this class see the H3DLoad application.
   class H3DAPI_API GLUTWindow : public H3DWindowNode {
   public:
 

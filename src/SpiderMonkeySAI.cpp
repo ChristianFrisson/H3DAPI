@@ -57,7 +57,7 @@ SpiderMonkeySAI::SpiderMonkeySAI():
 static JSClass global_class = {
   "global", JSCLASS_GLOBAL_FLAGS | JSCLASS_HAS_PRIVATE,
     JS_PropertyStub, JS_PropertyStub, SFNode_getProperty, SFNode_setProperty,
-    JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub,
+    JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, PrivatePointer_finalize<FieldObjectPrivate>,  // finalize,
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 
@@ -99,13 +99,14 @@ bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
   // in order for it to look up fields at global scope.
   SFNode *f = new SFNode;
   f->setValue(script_node );
-  // TODO: fix this. The script node will get a reference by being
-  // put into the SFNode. We do not want this since the Script
-  // constructor will then never be run, and the script engine
-  // never uninitialized. Fixing this by unref on the node and 
-  // not deleting the SFNode. Will cause a minor memory leak.
+  // The script node will get a reference by being
+  // put into the SFNode. We remove this reference in order to make sure
+	// that the Script nodes destructor is called. The scrip nodes destructor then
+	// use a trick in order to delete this SFNode instance without accidently calling
+	// the Script nodes own destructor again.
   script_node->unref();
-  JS_SetPrivate( cx, global, (void *) new FieldObjectPrivate( f, false ) );
+
+	JS_SetPrivate( cx, global, (void *) new FieldObjectPrivate( f, true ) );
 
   /* Populate the global object with the standard globals,
      like Object and Array. */

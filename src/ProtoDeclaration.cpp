@@ -29,6 +29,7 @@
 
 
 #include <H3D/ProtoDeclaration.h>
+#include <H3D/PrototypeVector.h>
 #include <H3D/X3D.h>
 #include <H3D/X3DTypeFunctions.h>
 #include <H3D/X3DFieldConversion.h>
@@ -42,8 +43,21 @@
 
 using namespace H3D;
 
-X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() { 
+X3DPrototypeInstance *ProtoDeclaration::newProtoInstance( X3D::PrototypeVector * proto_type_vector ) { 
   PrototypeInstance *proto = new PrototypeInstance( NULL );
+	// We want to transfer the knowledge about protos downwards in hierarchy
+	// but not up, therefore
+	// a copy of proto_type_vector is created and used instead.
+	X3D::PrototypeVector extra_proto_type_vector;
+	for( unsigned int i = 0; i < proto_type_vector->size(); i++ ) {
+		if( name != proto_type_vector->at(i)->name ) {
+			ProtoDeclaration *tmp_declare = new ProtoDeclaration( *(proto_type_vector->at(i)) );
+			extra_proto_type_vector.push_back( tmp_declare );
+			if( !extra_proto_type_vector.getFirstProtoDeclaration() ) {
+        extra_proto_type_vector.setFirstProtoDeclaration( tmp_declare );
+      }
+		}
+	}
   try {
 
     for( list< FieldDeclaration >::iterator i = field_declarations.begin();
@@ -115,14 +129,15 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
       proto->setPrototypedNode( n.get() );
     } else {
       // parse and set the main prodo body node. 
-      AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body );
+      AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body, &extra_proto_type_vector );
       proto->setPrototypedNode( n.get() );
       
       // parse and set any extra nodes from the proto body
       for( unsigned int i = 0; i < body_extra.size(); i++ ) {
         if( !body_extra[i].empty() ) {
-          AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i] );
-          proto->addPrototypedNodeExtra( n.get() );
+          AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i], &extra_proto_type_vector );
+					if( n.get() )
+						proto->addPrototypedNodeExtra( n.get() );
         }
       }
     }
@@ -150,7 +165,8 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance
     if ( c && !c->children->empty() ) {
       n.reset( c->children->front() );
       for( unsigned int i = 1; i < c->children->size(); i++ ) {
-        proto->addPrototypedNodeExtra( c->children->getValueByIndex(i) );
+				if( c->children->getValueByIndex( i ) )
+					proto->addPrototypedNodeExtra( c->children->getValueByIndex(i) );
       }
     }
   } else {
@@ -161,10 +177,11 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance
 
 AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeX3D( PrototypeInstance *proto,
                                                               X3D::DEFNodes *dn,
-                                                              const string &body ) {
+                                                              const string &body,
+																															X3D::PrototypeVector * extra_proto_type_vector ) {
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
-  X3D::X3DSAX2Handlers handler(dn);
+  X3D::X3DSAX2Handlers handler(dn, NULL, extra_proto_type_vector );
   handler.proto_instance = proto;
   stringstream s;
   s << body;
