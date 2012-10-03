@@ -76,10 +76,9 @@ if os.path.isdir( headers_dir ):
           new_string1 = """  ///   - <a href="../../../H3DAPI/examples/All/"""
 
           if code.find( new_string1 ) == -1:
-            print "This is the file without any example: " + file_name_no_end
+            print "This is a file with no example: " + file_name_no_end
             count += 1
         elif name_count > 1:
           # name count should not exceed 1
           print "name_count is above 1, there should not be two files with the same name in the H3DAPI/examples/All directory"
-print "This is the total number of files: "
-print count
+print "This is the total number of files: ", count
