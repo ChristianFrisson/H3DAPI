@@ -21,6 +21,12 @@ IF( GENERATE_CPACK_PROJECT )
       MARK_AS_ADVANCED(H3DAPI_CPACK_EXTERNAL_ROOT)
     ENDIF( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
   ENDIF( WIN32 )
+  IF( TARGET OpenHapticsRenderer )
+    SET( OPENHAPTICS_FOUND TRUE )
+  ENDIF( TARGET OpenHapticsRenderer )
+  IF( TARGET Chai3DRenderer )
+    SET( CHAI3D_FOUND TRUE )
+  ENDIF( TARGET Chai3DRenderer )
   include( ${H3DAPI_SOURCE_DIR}/../../HAPI/build/HAPICPack.cmake )
 
   # Set information properties about the project to install.
