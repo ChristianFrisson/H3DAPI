@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='BrowserPrintPrototype.x3d'/>
+    <meta name='description' content='Testing script inside a prototype. Console output should be "Initialize called"'/>
+    <meta name='author' content='SenseGraphics AB, 2012'/>
+  </head>
+  <Scene>
+    <ProtoDeclare name='BrowserPrint'>
+      <ProtoInterface>
+      </ProtoInterface>
+      <ProtoBody>
+        <Script directOutput='true'>
+          <![CDATA[ecmascript:
+function initialize(){
+  Browser.println('Initialize called');
+}
+]]>
+        </Script>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoInstance name='BrowserPrint'>
+    </ProtoInstance>
+  </Scene>
+</X3D>

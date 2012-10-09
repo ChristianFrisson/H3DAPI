@@ -52,6 +52,7 @@
 #include <H3D/Anchor.h>
 #include <H3D/DirectionalLight.h>
 #include <H3D/GlobalSettings.h>
+#include <H3D/SAIFunctions.h>
 
 using namespace H3D;
 
@@ -349,6 +350,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
 
 Scene::~Scene() {
   scenes.erase( this );
+	setSceneRoot( NULL );
 
   if( last_traverseinfo )
     delete last_traverseinfo;
@@ -390,6 +392,7 @@ void Scene::loadSceneRoot( const string &url ) {
 }
 
 void Scene::setSceneRoot( SAI::SAIScene *scene ) {
+	SAI::ExecutionContext::cleanUp();
   SAI_browser.replaceWorld( scene );
 }
 

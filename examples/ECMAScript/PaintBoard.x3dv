@@ -55,7 +55,6 @@ DEF JS Script {
       h = parseInt(y * tex_heigh);
       id = h * tex_width + w;
       PT.image.array[3+id] = 0x00ff00;
-      PT.image.array[3+id+5] = 0x00ff00;
     }
 
     function TS_isActive(val) {

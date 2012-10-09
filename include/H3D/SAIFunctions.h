@@ -199,6 +199,29 @@ namespace H3D{
 
     
     struct H3DAPI_API ExecutionContext: public H3DUtil::RefCountedClass {
+			ExecutionContext( bool _clean_up = false ) :
+				clean_up( _clean_up ) {
+				instances.push_back( this );
+			}
+
+			virtual ~ExecutionContext() {
+				instances.remove( this );
+			}
+
+			static list< ExecutionContext * > instances;
+
+			static void cleanUp() {
+				for( list< ExecutionContext * >::iterator i = instances.begin();
+						 i != instances.end(); i++ ) {
+					if( (*i)->clean_up ) {
+						(*i)->root_node.reset( NULL );
+						(*i)->named_nodes.clear();
+						(*i)->exported_nodes.clear();
+						(*i)->protos.clear();
+						(*i)->world_url = "";
+					}
+				}
+			}
       
       //const string &getSpecificationVersion();
       //const string &getEncoding();
@@ -233,6 +256,7 @@ namespace H3D{
       X3D::DEFNodes exported_nodes;
       X3D::PrototypeVector protos;
       string world_url;
+			bool clean_up;
     };
 
     struct H3DAPI_API SAIScene: public ExecutionContext {

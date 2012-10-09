@@ -1632,7 +1632,7 @@ namespace H3D {
     };
 
     static JSFunctionSpec X3DExecutionContext_functions[] = {
-      {"createNode", X3DExecutionContext_createNode, 0, 0, 0 },
+      {"createNode", X3DExecutionContext_createNode, 1, 0, 0 },
       {0}
     };
     
@@ -1710,7 +1710,7 @@ namespace H3D {
     };
 
     static JSFunctionSpec X3DScene_functions[] = {
-      {"createNode", X3DExecutionContext_createNode, 0, 0, 0 },
+      {"createNode", X3DExecutionContext_createNode, 1, 0, 0 },
       {0}
     };
     
@@ -1883,7 +1883,7 @@ namespace H3D {
     template< class MFieldType, class ElementType > 
     struct JS_MField {
 	
-      /// Returns a new SFNode object encapsulating a field.
+      /// Returns a new JSObject object encapsulating a field.
       /// \param cx The context in which to create the object.
       /// \param field The field to encapsulate.
       /// \param internal_field If true, the encapsulated field

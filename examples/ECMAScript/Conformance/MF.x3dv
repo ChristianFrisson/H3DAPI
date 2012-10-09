@@ -9,7 +9,6 @@ Group {
 }
 
 DEF SC Script {
-    field SFNode mat USE MAT
     url ["ecmascript:
       function pr(msg) {
         Browser.println(msg);

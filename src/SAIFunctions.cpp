@@ -38,6 +38,8 @@
 using namespace H3D;
 using namespace SAI;
 
+list< ExecutionContext * > ExecutionContext::instances;
+
 Browser::Browser( Scene *s ) :
   name( "Unnamed H3D browser" ),
   version( "Unknown" ),
@@ -91,7 +93,6 @@ ExecutionContext *Browser::getExecutionContext() {
     Node *n = (*Scene::scenes.begin())->sceneRoot->getValue();
     X3DGroupingNode *root = 
       dynamic_cast< X3DGroupingNode * >((*Scene::scenes.begin())->sceneRoot->getValue());
-    cerr << "getRootNodes: " << (n ? n->getTypeName():"NULL") << endl;
     if( root ) {
       ExecutionContext *ec = new ExecutionContext;
       ec->root_node.reset( root );

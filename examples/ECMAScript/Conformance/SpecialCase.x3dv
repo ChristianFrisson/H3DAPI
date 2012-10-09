@@ -60,7 +60,7 @@ DEF SC Script {
           re(mf);
 
           pr('testing print single element: mf[0]');
-          ex('5 2 2');
+          ex('5 2 3');
           re(mf[0]);
 
           Browser.println('SFColor Test Unit ended.');

@@ -12,9 +12,9 @@ DEF SC Script {
             v = Browser.currentScene.createNode('Shapefff');
           } catch(err) {
             Browser.print( err );
-            Browser.print( 'hello' );
+            Browser.print( 'error printed' );
           }
-          Browser.print('hello');
+          Browser.print('finishing');
         }
     "]
 }

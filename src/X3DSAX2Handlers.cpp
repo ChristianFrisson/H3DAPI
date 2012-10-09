@@ -1135,13 +1135,23 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
 void X3DSAX2Handlers::startCDATA() {
   inside_cdata = true;
   cdata = "";
+	if( proto_declaration && !defining_proto_body ) {
+		Console(3) << "Warning: CDATA elements not allowed inside ProtoInterface."
+							 << getLocationString() << endl;
+	}
 }
  
 
 void X3DSAX2Handlers::endCDATA() {
   inside_cdata = false;
-  NodeElement &node_element = node_stack.top();
-  node_element.setCDATA( cdata );
+	if( proto_declaration ) {
+		if( defining_proto_body ) {
+			proto_body += "<![CDATA[" + cdata + "]]>";
+		}
+	} else {
+		NodeElement &node_element = node_stack.top();
+		node_element.setCDATA( cdata );
+	}
 }
 
 //void X3DSAX2Handlers::comment( const XMLCh *const chars, 

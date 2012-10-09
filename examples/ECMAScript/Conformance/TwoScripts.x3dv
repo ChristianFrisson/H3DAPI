@@ -1,0 +1,39 @@
+#X3D V3.0 utf8
+# (c) SenseGraphics 2010
+# Testing if two scripts can be used in one scene. Currently only using the initialize function to test.
+# Output to Console should be:
+# First script initialize function. Script is DEFed.
+# Second script initialize function.
+
+PROFILE Immersive
+
+Viewpoint {}
+
+Group {
+  children [
+
+DEF SC Script {
+    url ["ecmascript:
+    
+        function initialize() {
+        
+          Browser.println('First script initialize function. Script is DEFed.');
+          
+        }
+
+    "]
+}
+
+Script {
+    url ["ecmascript:
+    
+        function initialize() {
+        
+          Browser.println('Second script initialize function.');
+        }
+          
+    "]
+}
+
+]
+}

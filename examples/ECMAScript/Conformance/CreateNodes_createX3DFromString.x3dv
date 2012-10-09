@@ -2,6 +2,7 @@
 # (c) SenseGraphics 2010
 
 PROFILE Immersive
+Viewpoint {}
 
 DEF SC Script {
     url ["ecmascript:

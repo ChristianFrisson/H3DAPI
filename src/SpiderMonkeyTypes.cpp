@@ -62,7 +62,7 @@ void changePixelImageDimension(PixelImage* img, unsigned int nw, unsigned int nh
   unsigned char* dataNew = new unsigned char[bytes_in_image];
   memset(dataNew, 0, bytes_in_image );
   for (int x = 0; x < std::min<int>( nw, ow); x++) {
-    for (int y = 0; y < std::min<int>(nh, ow); y++) {
+    for (int y = 0; y < std::min<int>(nh, oh); y++) {
       memcpy( (void*)(dataNew + (y*nw+x)*bytes_per_pixel),
               (dataOld + (y * ow + x)*bytes_per_pixel), bytes_per_pixel);
     }
@@ -86,7 +86,7 @@ void setValueNoAccessCheck( FieldType *field,
 			    const typename FieldType::value_type &v ) {
   bool access = field->isAccessCheckOn();
   field->setAccessCheck( false );
-  field->setValue( v);
+  field->setValue(v);
   field->setAccessCheck( access );
 }
 
@@ -125,7 +125,7 @@ JSBool setValueInJSObject(JSContext* cx, JSObject* obj, typename FieldType::valu
 }
 
 template< class FieldType >
-const typename FieldType::value_type &getValueNoAccessCheck( FieldType *field ) {
+const typename FieldType::value_type getValueNoAccessCheck( FieldType *field ) {
   bool access = field->isAccessCheckOn();
   field->setAccessCheck( false );
   const typename FieldType::value_type &b = field->getValue();
@@ -189,6 +189,7 @@ JSBool SpiderMonkey::FieldObject_toString2(JSContext *cx, JSObject *obj, uintN a
 
     FieldType* f = new FieldType( v );
     string s = f->getValueAsString();
+		delete f;
     *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char *)s.c_str(), s.length() ) );
     return JS_TRUE;
   }
@@ -317,8 +318,19 @@ JSBool SpiderMonkey::JS_MField< MFieldType, ElementType >::setProperty(JSContext
       if (index == 0) changePixelImageDimension(img, intval, -1);
       else if (index == 1) changePixelImageDimension(img, -1, intval);
       else if (index == 2) changePixelImageComponent(img, intval );
-      else {
+      else if( index < 0 ) {
+				stringstream s;
+				s << "Index out of SFImage.array bounds. Index value is" << index;
+				JS_ReportError(cx, s.str().c_str() );
+				return JS_FALSE;
+			} else {
         index = index - 3;
+				if( index >= (int)(img->width() * img->height()) ) {
+					stringstream s;
+				s << "Index out of SFImage.array bounds. Index value is" << index + 3;
+				JS_ReportError(cx, s.str().c_str() );
+				return JS_FALSE;
+				}
         int ix = index % img->width();
         int iy = index / img->width();
         unsigned char bytes_per_pixel = img->pixelType() + 1;
@@ -428,6 +440,7 @@ JSBool SpiderMonkey::SFVec2f_add(JSContext *cx, JSObject *obj, uintN argc, jsval
   // calculate the result
   SFVec2f* rp = new SFVec2f();
   if ( !helper_calculate2_TTT<SFVec2f>( cx, obj, &argv[0], rp, O_ADD )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
@@ -442,12 +455,13 @@ JSBool SpiderMonkey::SFVec2f_subtract(JSContext *cx, JSObject *obj, uintN argc, 
     return JS_FALSE;
   }
   // calculate the result
-  SFVec2f* r_sfv3f = new SFVec2f();
-  if ( !helper_calculate2_TTT<SFVec2f>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+  SFVec2f* rp = new SFVec2f();
+  if ( !helper_calculate2_TTT<SFVec2f>( cx, obj, &argv[0], rp, O_SUBTRACT )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
-  *rval = OBJECT_TO_JSVAL( SFVec2f_newInstance( cx, r_sfv3f, true ) );
+  *rval = OBJECT_TO_JSVAL( SFVec2f_newInstance( cx, rp, true ) );
   return JS_TRUE;
 }
 
@@ -460,6 +474,7 @@ JSBool SpiderMonkey::SFVec2f_divide(JSContext *cx, JSObject *obj, uintN argc, js
 
   SFVec2f* rp = new SFVec2f();
   if ( !helper_calculate2_TNT<SFVec2f, H3DFloat>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -505,6 +520,7 @@ JSBool SpiderMonkey::SFVec2f_multiple(JSContext *cx, JSObject *obj, uintN argc, 
 
   SFVec2f* rp = new SFVec2f();
   if ( !helper_calculate2_TNT<SFVec2f, H3DFloat>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -677,6 +693,7 @@ JSBool SpiderMonkey::SFVec2d_add(JSContext *cx, JSObject *obj, uintN argc, jsval
   // calculate the result
   SFVec2d* rp = new SFVec2d();
   if ( !helper_calculate2_TTT<SFVec2d>( cx, obj, &argv[0], rp, O_ADD )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
@@ -691,12 +708,13 @@ JSBool SpiderMonkey::SFVec2d_subtract(JSContext *cx, JSObject *obj, uintN argc, 
     return JS_FALSE;
   }
   // calculate the result
-  SFVec2d* r_sfv3f = new SFVec2d();
-  if ( !helper_calculate2_TTT<SFVec2d>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+  SFVec2d* rp = new SFVec2d();
+  if ( !helper_calculate2_TTT<SFVec2d>( cx, obj, &argv[0], rp, O_SUBTRACT )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
-  *rval = OBJECT_TO_JSVAL( SFVec2d_newInstance( cx, r_sfv3f, true ) );
+  *rval = OBJECT_TO_JSVAL( SFVec2d_newInstance( cx, rp, true ) );
   return JS_TRUE;
 }
 
@@ -710,6 +728,7 @@ JSBool SpiderMonkey::SFVec2d_divide(JSContext *cx, JSObject *obj, uintN argc, js
 
   SFVec2d* rp = new SFVec2d();
   if ( !helper_calculate2_TNT<SFVec2d, H3DDouble>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -755,6 +774,7 @@ JSBool SpiderMonkey::SFVec2d_multiple(JSContext *cx, JSObject *obj, uintN argc, 
 
   SFVec2d* rp = new SFVec2d();
   if ( !helper_calculate2_TNT<SFVec2d, H3DDouble>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -933,6 +953,7 @@ JSBool SpiderMonkey::SFVec3f_add(JSContext *cx, JSObject *obj, uintN argc, jsval
   // calculate the result
   SFVec3f* rp = new SFVec3f();
   if ( !helper_calculate2_TTT<SFVec3f>( cx, obj, &argv[0], rp, O_ADD )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
@@ -947,12 +968,13 @@ JSBool SpiderMonkey::SFVec3f_subtract(JSContext *cx, JSObject *obj, uintN argc, 
     return JS_FALSE;
   }
   // calculate the result
-  SFVec3f* r_sfv3f = new SFVec3f();
-  if ( !helper_calculate2_TTT<SFVec3f>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+  SFVec3f* rp = new SFVec3f();
+  if ( !helper_calculate2_TTT<SFVec3f>( cx, obj, &argv[0], rp, O_SUBTRACT )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
-  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, r_sfv3f, true ) );
+  *rval = OBJECT_TO_JSVAL( SFVec3f_newInstance( cx, rp, true ) );
   return JS_TRUE;
 }
 
@@ -981,6 +1003,7 @@ JSBool SpiderMonkey::SFVec3f_divide(JSContext *cx, JSObject *obj, uintN argc, js
 
   SFVec3f* rp = new SFVec3f();
   if ( !helper_calculate2_TNT<SFVec3f, H3DFloat>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -1026,6 +1049,7 @@ JSBool SpiderMonkey::SFVec3f_multiple(JSContext *cx, JSObject *obj, uintN argc, 
 
   SFVec3f* rp = new SFVec3f();
   if ( !helper_calculate2_TNT<SFVec3f, H3DFloat>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -1215,6 +1239,7 @@ JSBool SpiderMonkey::SFVec3d_add(JSContext *cx, JSObject *obj, uintN argc, jsval
   // calculate the result
   SFVec3d* rp = new SFVec3d();
   if ( !helper_calculate2_TTT<SFVec3d>( cx, obj, &argv[0], rp, O_ADD )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
@@ -1229,12 +1254,13 @@ JSBool SpiderMonkey::SFVec3d_subtract(JSContext *cx, JSObject *obj, uintN argc, 
     return JS_FALSE;
   }
   // calculate the result
-  SFVec3d* r_sfv3f = new SFVec3d();
-  if ( !helper_calculate2_TTT<SFVec3d>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+  SFVec3d* rp = new SFVec3d();
+  if ( !helper_calculate2_TTT<SFVec3d>( cx, obj, &argv[0], rp, O_SUBTRACT )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
-  *rval = OBJECT_TO_JSVAL( SFVec3d_newInstance( cx, r_sfv3f, true ) );
+  *rval = OBJECT_TO_JSVAL( SFVec3d_newInstance( cx, rp, true ) );
   return JS_TRUE;
 }
 
@@ -1263,6 +1289,7 @@ JSBool SpiderMonkey::SFVec3d_divide(JSContext *cx, JSObject *obj, uintN argc, js
 
   SFVec3d* rp = new SFVec3d();
   if ( !helper_calculate2_TNT<SFVec3d, H3DDouble>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -1308,6 +1335,7 @@ JSBool SpiderMonkey::SFVec3d_multiple(JSContext *cx, JSObject *obj, uintN argc, 
 
   SFVec3d* rp = new SFVec3d();
   if ( !helper_calculate2_TNT<SFVec3d, H3DDouble>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -1505,6 +1533,7 @@ JSBool SpiderMonkey::SFVec4f_add(JSContext *cx, JSObject *obj, uintN argc, jsval
   // calculate the result
   SFVec4f* rp = new SFVec4f();
   if ( !helper_calculate2_TTT<SFVec4f>( cx, obj, &argv[0], rp, O_ADD )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
@@ -1519,12 +1548,13 @@ JSBool SpiderMonkey::SFVec4f_subtract(JSContext *cx, JSObject *obj, uintN argc, 
     return JS_FALSE;
   }
   // calculate the result
-  SFVec4f* r_sfv3f = new SFVec4f();
-  if ( !helper_calculate2_TTT<SFVec4f>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+  SFVec4f* rp = new SFVec4f();
+  if ( !helper_calculate2_TTT<SFVec4f>( cx, obj, &argv[0], rp, O_SUBTRACT )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
-  *rval = OBJECT_TO_JSVAL( SFVec4f_newInstance( cx, r_sfv3f, true ) );
+  *rval = OBJECT_TO_JSVAL( SFVec4f_newInstance( cx, rp, true ) );
   return JS_TRUE;
 }
 
@@ -1537,6 +1567,7 @@ JSBool SpiderMonkey::SFVec4f_divide(JSContext *cx, JSObject *obj, uintN argc, js
 
   SFVec4f* rp = new SFVec4f();
   if ( !helper_calculate2_TNT<SFVec4f, H3DFloat>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -1568,6 +1599,7 @@ JSBool SpiderMonkey::SFVec4f_multiple(JSContext *cx, JSObject *obj, uintN argc, 
 
   SFVec4f* rp = new SFVec4f();
   if ( !helper_calculate2_TNT<SFVec4f, H3DFloat>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -1752,6 +1784,7 @@ JSBool SpiderMonkey::SFVec4d_add(JSContext *cx, JSObject *obj, uintN argc, jsval
   // calculate the result
   SFVec4d* rp = new SFVec4d();
   if ( !helper_calculate2_TTT<SFVec4d>( cx, obj, &argv[0], rp, O_ADD )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
@@ -1766,12 +1799,13 @@ JSBool SpiderMonkey::SFVec4d_subtract(JSContext *cx, JSObject *obj, uintN argc, 
     return JS_FALSE;
   }
   // calculate the result
-  SFVec4d* r_sfv3f = new SFVec4d();
-  if ( !helper_calculate2_TTT<SFVec4d>( cx, obj, &argv[0], r_sfv3f, O_SUBTRACT )) {
+  SFVec4d* rp = new SFVec4d();
+  if ( !helper_calculate2_TTT<SFVec4d>( cx, obj, &argv[0], rp, O_SUBTRACT )) {
+    delete rp;
     return JS_FALSE;
   }
   // now convert to jsval and return it
-  *rval = OBJECT_TO_JSVAL( SFVec4d_newInstance( cx, r_sfv3f, true ) );
+  *rval = OBJECT_TO_JSVAL( SFVec4d_newInstance( cx, rp, true ) );
   return JS_TRUE;
 }
 
@@ -1784,6 +1818,7 @@ JSBool SpiderMonkey::SFVec4d_divide(JSContext *cx, JSObject *obj, uintN argc, js
 
   SFVec4d* rp = new SFVec4d();
   if ( !helper_calculate2_TNT<SFVec4d, H3DDouble>( cx, obj, &argv[0], rp, O_DIVIDE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -1815,6 +1850,7 @@ JSBool SpiderMonkey::SFVec4d_multiple(JSContext *cx, JSObject *obj, uintN argc, 
 
   SFVec4d* rp = new SFVec4d();
   if ( !helper_calculate2_TNT<SFVec4d, H3DDouble>( cx, obj, &argv[0], rp, O_MULTIPLE )) {
+    delete rp;
     return JS_FALSE;
   }
 
@@ -2299,9 +2335,6 @@ JSBool SpiderMonkey::SFNode_setProperty(JSContext *cx, JSObject *obj, jsval id, 
   if( JSVAL_IS_STRING( id ) ) {
     JSString *s = JSVAL_TO_STRING( id );
     string field_name = JS_GetStringBytes( s );
-    if (field_name == "image") {
-      std::cout<<"woo";
-    }
 
     //std::cout << "Set Property SFNode: " << field_name << " " << obj << endl;
     SFNode* node_field = static_cast<SFNode *>(private_data->getPointer());
@@ -2414,7 +2447,6 @@ JSBool SpiderMonkey::SFNode_toX3DString(JSContext *cx, JSObject *obj,
 }
 
 JSBool SpiderMonkey::SFNode_toVRMLString(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval) {
-   cerr << "SFNode_toVRMLString" << endl;
    return JS_TRUE;
 }
 
@@ -3201,7 +3233,8 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, JSObject *obj, jsval id,
 	  // TODO: sometime should return scene instead of 
 	  // execution context
 	  SAI::ExecutionContext *c = browser->getExecutionContext();
-	  *vp = OBJECT_TO_JSVAL(X3DExecutionContext_newInstance( cx, c, false ));
+		c->clean_up = true;
+	  *vp = OBJECT_TO_JSVAL(X3DExecutionContext_newInstance( cx, c, true ));
 	  break;
 	}
         }
@@ -3622,7 +3655,11 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval 
 	Node *n = getValueNoAccessCheck( static_cast< SFNode * >( value_field ) );
 	setValueNoAccessCheck( f, n ); 
 	return JS_TRUE;
-      } 
+      } else if( value_field->getX3DType() == X3DTypes::MFNODE && private_data->getArrayIndex() != -1 ) {
+				Node *n = MField_getValueNoAccessCheck( static_cast< MFNode * >( value_field ) )[private_data->getArrayIndex()];
+				setValueNoAccessCheck( f, n ); 
+				return JS_TRUE;
+			}
     }
 
     stringstream s;
@@ -3721,7 +3758,7 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval 
 }
 
 
-JSBool SpiderMonkey::haveFunction( JSContext *cx, JSObject *obj, const char * name ) { 			
+JSBool SpiderMonkey::haveFunction( JSContext *cx, JSObject *obj, const char * name ) {
   jsval res;
   // get the property
   JSBool has_property = JS_GetProperty( cx, obj, name, &res );
@@ -4247,6 +4284,7 @@ JSBool SpiderMonkey::X3DMatrix4_setTransform(JSContext *cx, JSObject *obj, uintN
   sftranslation->route(transform_matrix);
    
   sfobj->setValue(transform_matrix->getValue());
+  delete transform_matrix;
 
   if (argc < 5) delete sfcenter;
   if (argc < 4) delete sfso;

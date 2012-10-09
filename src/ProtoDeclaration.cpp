@@ -187,6 +187,7 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeX3D( PrototypeInstance 
   s << body;
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
+	parser->setLexicalHandler( &handler );
   parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
   return handler.getResultingNode();
 #else

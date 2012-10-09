@@ -27,7 +27,7 @@ DEF SC Script {
         function isOver(val) {
             if (val == true) {
                 diffuseColor_changed = new SFColor(1,0,0.5);
-                Browser.println("Over.");
+                Browser.println('Over.');
             } else {
                 diffuseColor_changed = new SFColor(0,0,1);
             }

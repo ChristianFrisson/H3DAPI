@@ -4,7 +4,8 @@
 PROFILE Immersive
 
 # This example shows the function of the dispose function which will
-# manually 
+# manually
+# Markus note, it seems like this conformance test is not complete, dispose does not exist, should it? What does x3d spec say.
 
 DEF SC Script {
     url ["ecmascript:
