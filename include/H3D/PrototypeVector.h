@@ -35,11 +35,12 @@ using namespace std;
 namespace H3D {
   namespace X3D {
 
-    class PrototypeVector: public AutoPtrVector< ProtoDeclaration > {
+    class PrototypeVector: public AutoRefVector< ProtoDeclaration > {
     public:
       PrototypeVector(): first_proto( NULL ) {}
+
       ProtoDeclaration *getProtoDeclaration( const string & name ) {
-        for( PrototypeVector::iterator i = begin(); i != end(); i++ ) {
+        for( PrototypeVector::const_iterator i = begin(); i != end(); i++ ) {
           if( (*i)->getName() == name )
             return *i;
         }

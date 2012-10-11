@@ -50,7 +50,7 @@ namespace H3D {
   ///     ( <a href="examples/Prototype.x3d.html">Source</a> )
   ///   - <a href="../../../H3DAPI/examples/All/Surfaces.x3d">Surfaces.x3d</a>
   ///     ( <a href="examples/Surfaces.x3d.html">Source</a> )
-  class H3DAPI_API ProtoDeclaration {
+  class H3DAPI_API ProtoDeclaration : public RefCountedClass {
   public:
     /// Class that contains information about a field that is part of the prototype
     /// declaration.
@@ -63,7 +63,8 @@ namespace H3D {
         name( _name ),
         type( _type ),
         access_type( _access_type ),
-        value( _value ) {
+        value( _value ),
+				external( false ) {
 
       }
 
@@ -71,6 +72,7 @@ namespace H3D {
       X3DTypes::X3DType type;
       Field::AccessType access_type;
       string value;
+			bool external;
     };
 
     /// Constructor.
@@ -78,12 +80,15 @@ namespace H3D {
     /// \param _body String with the internal scenegraph of the prototype.
 		/// \param _body_extra Contains extra proto bodies that are not part of the
 		/// main proto body.
+		/// \param _existing_protos Contains all the ProtoDeclarations that exists when this
+		/// ProtoDeclaration is created.
     ProtoDeclaration( const string &_name,
                       const string &_body = "",
-                      const vector<string > &_body_extra = vector<string>() ) :
-      name( _name ),
-      body( _body ),
-      body_extra( _body_extra ) {}
+                      const vector<string > &_body_extra = vector<string>(),
+											X3D::PrototypeVector *_existing_protos = NULL );
+
+		// destructor
+		virtual ~ProtoDeclaration();
 
     /// Get the string with the internal scenegraph of the prototype.
     const string &getProtoBody() {
@@ -117,11 +122,42 @@ namespace H3D {
     }
 
     /// Add a field to the prototype.
-    void addFieldDeclaration( const string &name,
-                              const X3DTypes::X3DType &type,
-                              const Field::AccessType &access_type,
-                              const string &value = ""  ) {
+		/// \param name The name of the field.
+		/// \param type The type of the field.
+		/// \param access_type The access_type of the field.
+		/// \param value The value of the field.
+		/// \returns An empty string if adding the field succeeded otherwise the
+		/// string is an error message.
+    string addFieldDeclaration( const string &name,
+																const X3DTypes::X3DType &type,
+																const Field::AccessType &access_type,
+																const string &value = ""  ) {
+			FieldDeclaration *field_declaration = getFieldDeclaration( name );
+			if( field_declaration ) {
+				if( field_declaration->external ) {
+					string error_message = "";
+					if( field_declaration->type != type )
+						error_message =
+							"WARNING: Value for \"type\" attribute of \"field\" element with name"
+							+ name + " does not match the value in found ExternProto. Attribute is ignored.";
+					if( error_message == "" &&
+							field_declaration->access_type != access_type )
+						error_message =
+							"WARNING: Value for \"access_type\" attribute of \"field\" element with name"
+							+ name + " does not match the value in found ExternProto. Attribute is ignored.";
+					if( value != "" )
+						field_declaration->value = "";
+					// No need to add field declaration. Just indicate that it is no
+					// longer defined in external proto.
+					field_declaration->external = false;
+					return error_message;
+				} else {
+					return "\"field\" element with name " + name
+								 + " already exists. The field will not be added.";
+				}
+			}
       field_declarations.push_back( FieldDeclaration( name, type, access_type, value ) );
+			return "";
     }
 
     /// Get the field declaration of the given name.
@@ -135,12 +171,20 @@ namespace H3D {
       }
       return NULL;
     }
+
+		/// Call this to set the external property for all contained field
+		/// declarations. The external property should be set if this proto
+		/// was created in an ExternalProto and the property is used to know
+		/// how default values should be set.
+		void setFieldDeclarationsExternal( bool is_external ) {
+			for( list< FieldDeclaration >::iterator i = field_declarations.begin();
+           i != field_declarations.end(); i++ ) {
+        (*i).external = is_external;
+      }
+		}
     
     /// Create a new X3DPrototypeInstance instance using the ProtoDeclaration.
-		/// \param proto_type_vector contains ProtoDeclarations that this proto instance
-		/// can use if desired. The vector will not be changed, and ProtoDeclarations with
-		/// the same name as the current ProtoDeclaration will be ignored.
-    X3DPrototypeInstance *newProtoInstance( X3D::PrototypeVector * proto_type_vector = 0 );
+    X3DPrototypeInstance *newProtoInstance();
   protected:
     string name;
     // The main body string, i.e. the first node in the proto body.
@@ -151,10 +195,13 @@ namespace H3D {
     vector< string > body_extra; 
     std::list< FieldDeclaration > field_declarations;
 
+		// Contains ProtoDeclarations that existed when this protodeclaration was
+		// created.
+		X3D::PrototypeVector *existing_protos;
+
     AutoRef< Node > createProtoInstanceNodeX3D( PrototypeInstance *proto,
                                                 X3D::DEFNodes *dn,
-                                                const string &body_string,
-																								X3D::PrototypeVector * extra_proto_type_vector );
+                                                const string &body_string );
 
     AutoRef< Node > createProtoInstanceNodeVRML( PrototypeInstance *proto,
                                                  X3D::DEFNodes *dn,

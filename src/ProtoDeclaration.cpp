@@ -43,21 +43,37 @@
 
 using namespace H3D;
 
-X3DPrototypeInstance *ProtoDeclaration::newProtoInstance( X3D::PrototypeVector * proto_type_vector ) { 
-  PrototypeInstance *proto = new PrototypeInstance( NULL );
-	// We want to transfer the knowledge about protos downwards in hierarchy
-	// but not up, therefore
-	// a copy of proto_type_vector is created and used instead.
-	X3D::PrototypeVector extra_proto_type_vector;
-	for( unsigned int i = 0; i < proto_type_vector->size(); i++ ) {
-		if( name != proto_type_vector->at(i)->name ) {
-			ProtoDeclaration *tmp_declare = new ProtoDeclaration( *(proto_type_vector->at(i)) );
-			extra_proto_type_vector.push_back( tmp_declare );
-			if( !extra_proto_type_vector.getFirstProtoDeclaration() ) {
-        extra_proto_type_vector.setFirstProtoDeclaration( tmp_declare );
-      }
+ProtoDeclaration::ProtoDeclaration( const string &_name,
+																		const string &_body,
+																		const vector<string > &_body_extra,
+																		PrototypeVector *_existing_protos ) :
+      name( _name ),
+			existing_protos( NULL ),
+      body( _body ),
+      body_extra( _body_extra ) {
+	if( _existing_protos ) {
+		existing_protos = new PrototypeVector;
+		for( PrototypeVector::const_iterator i = _existing_protos->begin();
+				 i != _existing_protos->end(); i++ ) {
+			if( (*i)->name != name )
+				existing_protos->push_back( *i );
+		}
+		if( _existing_protos->getFirstProtoDeclaration() &&
+				_existing_protos->getFirstProtoDeclaration()->name != name ) {
+			existing_protos->setFirstProtoDeclaration( _existing_protos->getFirstProtoDeclaration() );
 		}
 	}
+}
+
+ProtoDeclaration::~ProtoDeclaration() {
+	if( existing_protos ) {
+		delete existing_protos;
+		existing_protos = NULL;
+	}
+}
+
+X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() { 
+  PrototypeInstance *proto = new PrototypeInstance( NULL );
   try {
 
     for( list< FieldDeclaration >::iterator i = field_declarations.begin();
@@ -129,13 +145,13 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance( X3D::PrototypeVector *
       proto->setPrototypedNode( n.get() );
     } else {
       // parse and set the main prodo body node. 
-      AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body, &extra_proto_type_vector );
+      AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body );
       proto->setPrototypedNode( n.get() );
       
       // parse and set any extra nodes from the proto body
       for( unsigned int i = 0; i < body_extra.size(); i++ ) {
         if( !body_extra[i].empty() ) {
-          AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i], &extra_proto_type_vector );
+          AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i] );
 					if( n.get() )
 						proto->addPrototypedNodeExtra( n.get() );
         }
@@ -177,11 +193,10 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance
 
 AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeX3D( PrototypeInstance *proto,
                                                               X3D::DEFNodes *dn,
-                                                              const string &body,
-																															X3D::PrototypeVector * extra_proto_type_vector ) {
+                                                              const string &body ) {
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
-  X3D::X3DSAX2Handlers handler(dn, NULL, extra_proto_type_vector );
+  X3D::X3DSAX2Handlers handler(dn, NULL, existing_protos );
   handler.proto_instance = proto;
   stringstream s;
   s << body;

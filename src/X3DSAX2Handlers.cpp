@@ -154,7 +154,7 @@ string X3DSAX2Handlers::getLocationString() {
 }
 
 void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs ) {
-  if( proto_declaration ) {
+  if( proto_declaration.get() ) {
     XMLSize_t nr_attrs = attrs.getLength();
     const XMLCh *field_name  = NULL;
     const XMLCh *field_type = NULL;
@@ -229,10 +229,14 @@ void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs 
           x3d_type != X3DTypes::MFNODE ) {
         v = toString( field_value );
       }
-      proto_declaration->addFieldDeclaration( toString( field_name ),
-                                              x3d_type,
-                                              access_type,
-                                              v );
+      string error_message = proto_declaration->addFieldDeclaration(
+															toString( field_name ),
+                              x3d_type,
+                              access_type,
+                              v );
+			if( error_message != "" ) {
+				Console(3) << error_message << " " << getLocationString() << endl;
+			}
     }
     FieldValue *fv = new FieldValue( toString( field_name ), NULL );
     node_stack.push( NodeElement( fv ) ); 
@@ -767,7 +771,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
   string localname_string = toString( localname );
 
   if( localname_string == "ProtoDeclare" ) {
-    if( proto_declaration ) {
+    if( proto_declaration.get() ) {
       Console(3) << "Warning: ProtoDeclare element not allowed inside other ProtoDeclare element"
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
@@ -778,13 +782,14 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       } else {
-        proto_declaration = new ProtoDeclaration( toString( name ) );
+        proto_declaration.reset( new ProtoDeclaration( toString( name ), "",
+																 vector< string >(), proto_declarations ) );
       }
     }
   } else  if( localname_string == "ExternProtoDeclare" ) {
     handleExternProtoDeclareElement( attrs );
   } else if( localname_string == "ProtoInterface" ) {
-    if( !proto_declaration || defining_proto_interface || 
+    if( !proto_declaration.get() || defining_proto_interface || 
         defining_proto_body || defining_extern_proto ) {
       Console(3) << "Warning: ProtoInterface element can only be a child element of ProtoDeclare element "
            << getLocationString() << endl;
@@ -793,7 +798,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
       defining_proto_interface = true;
     }
   } else if( localname_string == "ProtoBody" ) {
-    if( !proto_declaration || defining_proto_interface || 
+    if( !proto_declaration.get() || defining_proto_interface || 
         defining_proto_body || defining_extern_proto ||
         proto_declaration->getProtoBody() != "" ) {
       Console(3) << "Warning: ProtoBody element can only be a child element of ProtoDeclare element "
@@ -802,7 +807,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
     } else {
       defining_proto_body = true;
     }
-  } else if( proto_declaration && !defining_proto_interface && 
+  } else if( proto_declaration.get() && !defining_proto_interface && 
              !defining_proto_body && !defining_extern_proto ) {
     // Element in ProtoDeclare proto declare that is not ProtoInterface 
     // or ProtoBody.
@@ -874,17 +879,17 @@ void X3DSAX2Handlers::protoEndElement( const XMLCh* const uri,
   string localname_string = toString( localname );
 
   if( localname_string == "ProtoDeclare" ) {
-    if( proto_declaration ) {
-      proto_declarations->push_back( proto_declaration );
+    if( proto_declaration.get() ) {
+      proto_declarations->push_back( proto_declaration.get() );
       if( !proto_declarations->getFirstProtoDeclaration() ) {
-        proto_declarations->setFirstProtoDeclaration( proto_declaration );
+        proto_declarations->setFirstProtoDeclaration( proto_declaration.get() );
       }
-      proto_declaration = NULL;
+      proto_declaration.reset( NULL );
     }
   } else if( localname_string == "ExternProtoDeclare" ) {
-    if( proto_declaration ) {
-      proto_declarations->push_back( proto_declaration );
-      proto_declaration = NULL;
+    if( proto_declaration.get() ) {
+      proto_declarations->push_back( proto_declaration.get() );
+      proto_declaration.reset( NULL );
     }
     defining_extern_proto = false;
   } else if( localname_string == "ProtoInterface" ) {
@@ -932,7 +937,7 @@ X3DPrototypeInstance* X3DSAX2Handlers::handleProtoInstanceElement( const Attribu
     string s_name = toString( name );
     ProtoDeclaration *proto = 
       proto_declarations->getProtoDeclaration( s_name );
-    if( proto ) return proto->newProtoInstance( proto_declarations );
+    if( proto ) return proto->newProtoInstance();
     else {
       Console(3) << "Warning: Could not find PROTO declaration for \"" << s_name  
            << "\" instance (" << toString( locator->getSystemId() )
@@ -951,7 +956,7 @@ X3DPrototypeInstance* X3DSAX2Handlers::handleProtoInstanceElement( const Attribu
 }
 
 void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs ) {
-  if( proto_declaration ) {
+  if( proto_declaration.get() ) {
     Console(3) << "Warning: ExternProtoDeclare element not allowed inside other ProtoDeclare element"
          << getLocationString() << endl;
     node_stack.push( NodeElement( NULL ) );
@@ -1013,9 +1018,6 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
       }
 
       ProtoDeclaration *pd = NULL;
-      string proto_body;
-      vector< string > proto_body_extra;
-
       if( proto_name == "" ) {
         // get the first prototype declaration from the url that was read.
         pd = proto_vector.getFirstProtoDeclaration();
@@ -1032,15 +1034,12 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
         }
       }
       
-      if( pd ) {
-        proto_body = pd->getProtoBody();
-        proto_body_extra = pd->getProtoBodyExtra();
-      }
-      
-      proto_declaration = new ProtoDeclaration( toString( name ), 
-                                                proto_body,
-                                                proto_body_extra );
-      
+			if( pd ) {
+				proto_declaration.reset( pd );
+				proto_declaration->setName( toString( name ) );
+				proto_declaration->setFieldDeclarationsExternal( true );
+			} else
+				new ProtoDeclaration( toString( name ) );
       defining_extern_proto = true;
     }
   }
@@ -1135,7 +1134,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
 void X3DSAX2Handlers::startCDATA() {
   inside_cdata = true;
   cdata = "";
-	if( proto_declaration && !defining_proto_body ) {
+	if( proto_declaration.get() && !defining_proto_body ) {
 		Console(3) << "Warning: CDATA elements not allowed inside ProtoInterface."
 							 << getLocationString() << endl;
 	}
@@ -1144,7 +1143,7 @@ void X3DSAX2Handlers::startCDATA() {
 
 void X3DSAX2Handlers::endCDATA() {
   inside_cdata = false;
-	if( proto_declaration ) {
+	if( proto_declaration.get() ) {
 		if( defining_proto_body ) {
 			proto_body += "<![CDATA[" + cdata + "]]>";
 		}
@@ -1175,7 +1174,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                                    const Attributes& attrs) {
   // we are inside a ProtoDeclare element, so use protoStartElement 
   // instead of the normal  element handling.
-  if( proto_declaration ) {
+  if( proto_declaration.get() ) {
     protoStartElement( uri, localname, qname, attrs );
     return;
   }
@@ -1554,7 +1553,7 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
                                   const XMLCh *const localname, 
                                   const XMLCh *const qname) {
 
-  if( proto_declaration ) {
+  if( proto_declaration.get() ) {
     protoEndElement( uri, localname, qname );
     return;
   }

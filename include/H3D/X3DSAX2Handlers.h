@@ -343,7 +343,7 @@ namespace H3D {
       /// protoStartElement and protoEndElement to define a prototype.
       /// On end of ProtoDeclare it will be added to proto_declarations and
       /// proto_declaration will be set to NULL again;
-      ProtoDeclaration *proto_declaration;
+      AutoRef< ProtoDeclaration > proto_declaration;
 
       /// The string_body string is used when defining ProtoBody. All elements will then
       /// just be translated to a string to be used by the ProtoDeclaration.

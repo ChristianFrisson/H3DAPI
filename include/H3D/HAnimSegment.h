@@ -47,7 +47,11 @@ namespace H3D {
   /// 
   /// The displacers field contains a list of HAnimDisplacer objects that are
   /// used to morph the deformable mesh using the morph targets defined
-  /// in the Displacer objects. 
+  /// in the Displacer objects.
+	///
+	/// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/BoxMan.x3d">BoxMan.x3d</a>
+  ///     ( <a href="examples/BoxMan.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile HAnimSegment.dot

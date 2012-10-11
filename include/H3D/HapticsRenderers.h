@@ -44,7 +44,10 @@
 namespace H3D {
 
   /// \ingroup H3DNodes
-  /// \brief Haptics renderer using OpenHaptics to render objects
+  /// \brief Haptics renderer using OpenHaptics to render objects.
+	///
+	/// For example usage use H3DViewer to change between haptics renderers.
+	/// The menu choice is "Rendering"->"Choose Haptics Renderer".
   class H3DAPI_API OpenHapticsRenderer: public H3DHapticsRendererNode {
   public:
     /// ShapeType specializes SFString to set the appropriate default
@@ -126,6 +129,9 @@ namespace H3D {
   /// \brief Haptics renderer using the god object algorithm to render
   /// objects.
   /// Uses the HAPI::GodObjectRenderer class.
+	///
+	/// For example usage use H3DViewer to change between haptics renderers.
+	/// The menu choice is "Rendering"->"Choose Haptics Renderer".
   class H3DAPI_API GodObjectRenderer: public H3DHapticsRendererNode {
   public:
 
@@ -149,6 +155,9 @@ namespace H3D {
   /// \brief Haptics renderer using a variant of the Ruspini algorithm
   /// allowing you to specify a radius on the proxy.
   /// Uses the HAPI::RuspiniRenderer class.
+	///
+	/// For example usage use H3DViewer to change between haptics renderers.
+	/// The menu choice is "Rendering"->"Choose Haptics Renderer".
   class H3DAPI_API RuspiniRenderer: public H3DHapticsRendererNode {
   public:
     /// ProxyRadius specializes SFFloat to set the proxy radius
@@ -209,6 +218,9 @@ namespace H3D {
   /// \ingroup H3DNodes
   /// \brief Haptics renderer using Chai3D(www.chai3d.org)
   /// Uses the HAPI::Chai3DRenderer class.
+	///
+	/// For example usage use H3DViewer to change between haptics renderers.
+	/// The menu choice is "Rendering"->"Choose Haptics Renderer".
   class H3DAPI_API Chai3DRenderer: public H3DHapticsRendererNode {
   public:
 
