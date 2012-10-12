@@ -740,8 +740,10 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
       
       if( node_field->getAccessType() != Field::INPUT_OUTPUT &&
           node_field->getAccessType() != proto_field->getAccessType() ) {
-        Console(3) << "WARNING: accessType of \"nodeField\" and \"protoField\" does not match"
-             << getLocationString() << endl;
+        Console(3) << "WARNING: accessType of \"nodeField\"("
+									 << node_field->getName() << ") and \"protoField\"("
+									 << proto_field->getName() << ") does not match"
+									 << getLocationString() << endl;
         return;
       }
       
@@ -750,7 +752,20 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
              << getLocationString() << endl;
         return;
       }
-      
+
+			const Field::FieldSet &routes_out = node_field->getRoutesOut();
+			for( Field::FieldSet::const_iterator i = routes_out.begin();
+					 i != routes_out.end(); i++ ) {
+				if( (*i)->getOwner() == proto_instance ) {
+					Console(3) << "WARNING: \"nodeField\"("
+										 << node_field->getName()
+										 << ") is already associated with a field in the "
+										 << "ProtoInterface."
+										 << getLocationString() << endl;
+					return;
+				}
+			}
+  
       proto_instance->connectField( toString( proto_field_name ), node_field );
     }
   }

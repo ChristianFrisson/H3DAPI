@@ -97,10 +97,19 @@ bool X3DPrototypeInstance::connectField( const string &proto_field_name,
     node_field->route( proto_field, this->id );
   } else if ( access_type == Field::INPUT_OUTPUT ) {
     node_field->routeNoEvent( proto_field, this->id );
-  }
+  } else if( access_type == Field::INITIALIZE_ONLY ) {
+		bool access_check_node_field = node_field->isAccessCheckOn();
+		node_field->setAccessCheck( false );
+		bool access_check_proto_field = proto_field->isAccessCheckOn();
+		proto_field->setAccessCheck( false );
+		node_field->route( proto_field, this->id );
+		node_field->setAccessCheck( access_check_node_field );
+		proto_field->setAccessCheck( access_check_proto_field );
+	}
   
   // and the other way around proto_field -> node_field
-  if( access_type != Field::OUTPUT_ONLY ) {
+  if( access_type != Field::OUTPUT_ONLY &&
+			access_type != Field::INITIALIZE_ONLY ) {
     proto_field->route( node_field, this->id );
   }
 

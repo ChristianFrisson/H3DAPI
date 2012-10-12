@@ -60,6 +60,13 @@ namespace H3D {
     virtual void renderShadow( X3DLightNode *l, 
                                bool render_caps,
                                const Matrix4f &local_to_global = Matrix4f() ) = 0;
+
+		/// Returns the default xml containerField attribute value.
+    /// For this node it is "children".
+    ///
+    virtual string defaultXMLContainerField() {
+      return "object";
+    }
  
     /// The transform field specifies a transformation of the shadow volume
     /// object.
