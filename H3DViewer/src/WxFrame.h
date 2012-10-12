@@ -286,6 +286,7 @@ public:
   void ShowFrameRate( wxCommandEvent & event );
   void ShowProgramSettings( wxCommandEvent & event );
 	void OnKeepViewpointOnLoadCheck( wxCommandEvent & event );
+	void OnRouteSendsEventsCheck( wxCommandEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
   void ResetViewpoint( wxCommandEvent & event );
   void ChangeNavigation( wxCommandEvent & event );
@@ -495,6 +496,7 @@ enum
   FRAME_FRAMERATE,
   FRAME_PROGRAMSETTINGS,
 	FRAME_KEEPVIEWPOINTONLOAD,
+	FRAME_ROUTESENDSEVENTS,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,
   FRAME_NAVIGATION = 6500,

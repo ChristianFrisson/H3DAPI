@@ -393,11 +393,17 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 #endif
 	advancedMenu->AppendSeparator();
 	advancedMenu->AppendCheckItem( FRAME_KEEPVIEWPOINTONLOAD, wxT("New viewpoint on load file"),
-																 wxT("Show the program settings for the current scene.") );
+																 wxT("If checked new viewpoints are loaded when a new file is loaded, otherwise old viewpoint is kept.") );
+	advancedMenu->AppendCheckItem( FRAME_ROUTESENDSEVENTS, wxT("Route sends events"),
+																 wxT("If checked routes sends events when set up, i.e. not as in X3D spec.") );
 	h3dConfig->SetPath(wxT("/Settings"));
   bool new_viewpoint_on_load = true;
   h3dConfig->Read(wxT("new_viewpoint_on_load"), &new_viewpoint_on_load);
 	advancedMenu->Check( FRAME_KEEPVIEWPOINTONLOAD, new_viewpoint_on_load );
+	bool route_sends_events = true;
+  h3dConfig->Read(wxT("route_sends_events"), &route_sends_events);
+	advancedMenu->Check( FRAME_ROUTESENDSEVENTS, route_sends_events );
+	global_settings->x3dROUTESendsEvent->setValue( route_sends_events );
   //Help Menu
   helpMenu = new wxMenu;
   //helpMenu->Append(FRAME_HELP, wxT("Help"));
@@ -535,6 +541,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
   EVT_MENU (FRAME_PROGRAMSETTINGS, WxFrame::ShowProgramSettings)
 	EVT_MENU (FRAME_KEEPVIEWPOINTONLOAD, WxFrame::OnKeepViewpointOnLoadCheck )
+	EVT_MENU (FRAME_ROUTESENDSEVENTS, WxFrame::OnRouteSendsEventsCheck )
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
   EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
@@ -1111,7 +1118,11 @@ bool WxFrame::loadFile( const string &filename) {
   global_settings.reset( GlobalSettings::getActive() );
   if( !global_settings.get() ) {
     global_settings.reset( new GlobalSettings );
-  }
+		// Set x3dROUTESendsEvent
+		global_settings->x3dROUTESendsEvent->setValue( advancedMenu->IsChecked( FRAME_ROUTESENDSEVENTS ) );
+  } else {
+		advancedMenu->Check( FRAME_ROUTESENDSEVENTS, global_settings->x3dROUTESendsEvent->getValue() );
+	}
 
   // Set CollisionOptions or update page.
   CollisionOptions * co = 0;
@@ -1395,9 +1406,9 @@ void WxFrame::clearData () {
     }
   }
 
+	global_settings->set_bind->setValue( false );
   global_settings.reset( 0 );
   stereo_info.reset( 0 );
-
 }
 
 
@@ -1779,6 +1790,14 @@ void WxFrame::OnKeepViewpointOnLoadCheck(wxCommandEvent & event)
 	h3dConfig = wxConfigBase::Get();
   h3dConfig->SetPath(wxT("/Settings"));
   h3dConfig->Write(wxT("new_viewpoint_on_load"), event.IsChecked());
+}
+
+void WxFrame::OnRouteSendsEventsCheck(wxCommandEvent & event)
+{
+	h3dConfig = wxConfigBase::Get();
+  h3dConfig->SetPath(wxT("/Settings"));
+  h3dConfig->Write(wxT("route_sends_events"), event.IsChecked());
+	global_settings->x3dROUTESendsEvent->setValue( event.IsChecked() );
 }
 
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)
