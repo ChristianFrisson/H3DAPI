@@ -77,6 +77,11 @@ GlobalSettings                    GlobalSettings
 GraphicsCachingOptions            GraphicsCachingOptions
 GravityPhysicsModel               GravityPhysicsModel
 Group                             Group
+HAnimDisplacer                    BoxMan
+HAnimHumanoid                     BoxMan
+HAnimJoint                        BoxMan
+HAnimSegment                      BoxMan
+HAnimSite                         BoxMan
 HapticLayeredGroup                HapticLayeredGroup
 HapticMasterDevice                HapticMasterDevice
 HapticsOptions                    HapticsOptions
@@ -130,7 +135,7 @@ OpenHapticsOptions                OpenHapticsOptions
 OpenHapticsSurface                OpenHapticsSurface
 OrientationInterpolator           OrientationInterpolator
 OrthoViewpoint                    OrthoViewpoint
-PackagedShader
+PackagedShader                    PackagedShader
 ParticleSystem                    ParticleSystem
 PhantomDevice                     PhantomDevice
 Pixel3DTexture                    PixelTexture3D
@@ -159,7 +164,9 @@ ScalarInterpolator                ScalarInterpolator
 ShaderPart                        /demos glsl_earthshader.x3d
 ShaderProgram                     /demos cg_earthshader.x3d
 ShadowCaster                      ShadowCaster
-ShadowSphere                      ShadowSphere
+ShadowGeometry                    ShadowCaster
+ShadowSphere                      ShadowCaster
+ShadowTransform                   ShadowCaster
 Shape                             Box, Cone, Sphere
 SimballDevice                     SimballDevice
 SimpleMovieTexture                SimpleMovieTexture

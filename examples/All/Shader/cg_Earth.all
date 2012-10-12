@@ -1,11 +1,14 @@
 uniform sampler2D EarthDay;
 uniform sampler2D EarthNight;
 uniform sampler2D EarthCloudGloss;
-uniform float3 LightPosition;
-
+uniform float3 lightPosition;
+uniform float3 viewpointPosition;
+uniform float4x4 viewpointOrn;
+uniform float4x4 viewpointOrnInv;
+                
 void frag_main ( in float3 tex_coord: TEXCOORD0,
-            in float3 c: COLOR,
-            out float3 color: COLOR0 )
+                 in float3 c: COLOR,
+                 out float3 color: COLOR0  )
 {
    float Specular = c.x;
    float Diffuse = c.y;
@@ -27,16 +30,16 @@ void frag_main ( in float3 tex_coord: TEXCOORD0,
 
 
 void vert_main( in float4 pos: POSITION,
-             in float3 normal: NORMAL,
-             in float3 tex_coord: TEXCOORD0,
-             out float4 pos_out: POSITION,
-             out float3 color: COLOR,
-             out float3 tex_coord_out: TEXCOORD0  )
+                in float3 normal: NORMAL,
+                in float3 tex_coord: TEXCOORD0,
+                out float4 pos_out: POSITION,
+                out float3 color: COLOR,
+                out float3 tex_coord_out: TEXCOORD0  )
 {
-    float3 ecPosition = float3 ( mul( glstate.matrix.modelview[0], pos
+    float3 ecPosition = float3 ( mul( mul( viewpointOrn, glstate.matrix.modelview[0] ), pos
              ) );
-    float3 light_pos = LightPosition - float3( 0, 0, 0.6 );
-    float4x4 normal_matrix =  transpose( glstate.matrix.inverse.modelview[0] );
+    float3 light_pos = lightPosition - viewpointPosition;
+    float4x4 normal_matrix = transpose( mul( viewpointOrnInv, glstate.matrix.inverse.modelview[0]) );
     float3 tnorm = float3( normalize( mul( normal_matrix, float4(
              normal, 0 ) ) ) );
     float3 lightVec   = normalize(light_pos - ecPosition);

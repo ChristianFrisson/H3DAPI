@@ -42,6 +42,10 @@ namespace H3D {
   /// \class ShadowTransform
   /// The ShadowTransform transforms another H3DShadowObjectNode with
   /// the values from the transform field.
+	///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ShadowCaster.x3d">ShadowCaster.x3d</a>
+  ///     ( <a href="examples/ShadowCaster.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile ShadowTransform.dot  

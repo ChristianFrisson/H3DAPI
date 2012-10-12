@@ -52,7 +52,7 @@ namespace H3D {
   /// for MIME type text/plain and interpreted according to the type field.
   ///
   /// <b>Examples:</b>
-  ///   - <a href="../../../H3DAPI/examples/All/Box.x3d">ComposedShader.x3d</a>
+  ///   - <a href="../../../H3DAPI/examples/All/ComposedShader.x3d">ComposedShader.x3d</a>
   ///     ( <a href="examples/ComposedShader.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
