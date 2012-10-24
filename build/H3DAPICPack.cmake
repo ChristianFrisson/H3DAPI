@@ -13,11 +13,7 @@ IF( GENERATE_CPACK_PROJECT )
     # Add a cache variable which indicates where the Externals directory used for packaging
     # HAPI is located. If not set then FIND modules will be used instead.
     IF( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
-      IF( $ENV{H3D_EXTERNAL_ROOT} STREQUAL "" )
-        SET( H3DAPI_CPACK_EXTERNAL_ROOT "" CACHE PATH "Set to the External directory used with H3DAPI, needed to pack properly. If not set FIND_modules will be used instead." )
-      ELSE( $ENV{H3D_EXTERNAL_ROOT} STREQUAL "" )
-        SET( H3DAPI_CPACK_EXTERNAL_ROOT "$ENV{H3D_EXTERNAL_ROOT}" CACHE PATH "Set to the External directory used with H3DAPI, needed to pack properly. If not set FIND_modules will be used instead." )
-      ENDIF( $ENV{H3D_EXTERNAL_ROOT} STREQUAL "" )
+      SET( H3DAPI_CPACK_EXTERNAL_ROOT "$ENV{H3D_EXTERNAL_ROOT}" CACHE PATH "Set to the External directory used with H3DAPI, needed to pack properly. If not set FIND_modules will be used instead." )
       MARK_AS_ADVANCED(H3DAPI_CPACK_EXTERNAL_ROOT)
     ENDIF( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
   ENDIF( WIN32 )
@@ -28,6 +24,7 @@ IF( GENERATE_CPACK_PROJECT )
     SET( CHAI3D_FOUND TRUE )
   ENDIF( TARGET Chai3DRenderer )
   include( ${H3DAPI_SOURCE_DIR}/../../HAPI/build/HAPICPack.cmake )
+
 
   # Set information properties about the project to install.
   set( CPACK_ALL_INSTALL_TYPES Full Developer )
@@ -49,35 +46,35 @@ IF( GENERATE_CPACK_PROJECT )
   
   # File patterns to ignore, common for all operating systems.
   SET( H3DAPI_CPACK_IGNORE_PATTERNS /\\\\.svn/
-                                    \\\\.obj$
-                                    \\\\.ncb$
-                                    \\\\.log$
-                                    \\\\.suo$
-                                    \\\\.dir/
-                                    \\\\.user$
-                                    \\\\.cv$
-                                    "/Debug(.)*/"
-                                    "/debug(.)*/"
-                                    /Release
-                                    /release
-                                    /linux
-                                    /build/win32/
-                                    "/((C\\\\+\\\\+|ThreadExample)|(build|examples))/vc(7|(8|9))"
-                                    /osx
-                                    /H3DAPI/Util/
-                                    /berk/berk\\\\.wrl$
-                                    /berk/berk_orig\\\\.x3d$
-                                    /fish/Kumanomi\\\\.wrl$
-                                    /fish/Kumanomi_orig\\\\.x3d$
-                                    /humvee/humvee\\\\.WRL$
-                                    /humvee/humvee_orig\\\\.x3d$
-                                    /manikin/manikin\\\\.wrl$
-                                    /manikin/manikin_orig\\\\.x3d$
-                                    /moondial/moondial_orig\\\\.x3d$
-                                    /moondial/themoondial\\\\.wrl$
-                                    /plane/bobcat2\\\\.x3d$
-                                    /plane/bobcat_nh\\\\.x3d$
-                                    /plane/bobcat_orig\\\\.x3d$ )
+									\\\\.obj$
+									\\\\.ncb$
+									\\\\.log$
+									\\\\.suo$
+									\\\\.dir/
+									\\\\.user$
+									\\\\.cv$
+									"/Debug(.)*/"
+									"/debug(.)*/"
+									/Release
+									/release
+									/linux
+									/build/win32/
+									"/((C\\\\+\\\\+|ThreadExample)|(build|examples))/vc(7|(8|9))"
+									/osx
+									/H3DAPI/Util/
+									/berk/berk\\\\.wrl$
+									/berk/berk_orig\\\\.x3d$
+									/fish/Kumanomi\\\\.wrl$
+									/fish/Kumanomi_orig\\\\.x3d$
+									/humvee/humvee\\\\.WRL$
+									/humvee/humvee_orig\\\\.x3d$
+									/manikin/manikin\\\\.wrl$
+									/manikin/manikin_orig\\\\.x3d$
+									/moondial/moondial_orig\\\\.x3d$
+									/moondial/themoondial\\\\.wrl$
+									/plane/bobcat2\\\\.x3d$
+									/plane/bobcat_nh\\\\.x3d$
+									/plane/bobcat_orig\\\\.x3d$ )
 
   SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DAPI_MAJOR_VERSION})
   SET(CPACK_PACKAGE_VERSION_MINOR ${H3DAPI_MINOR_VERSION})
@@ -85,9 +82,9 @@ IF( GENERATE_CPACK_PROJECT )
   
   # TODO: fix different for windows and unix if needed.
   IF(WIN32 AND NOT UNIX)
-    SET(CPACK_NSIS_INSTALL_ROOT "C:" )
-    SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON" )
-    SET( CPACK_PACKAGE_START_MENU_NAME "H3DAPI 2.1" )
+	SET(CPACK_NSIS_INSTALL_ROOT "C:" )
+	SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON" )
+	SET( CPACK_PACKAGE_START_MENU_NAME "H3DAPI 2.1" )
     
     # External binary directory to add to path.
     SET( CPACK_EXTERNAL_BIN "bin32" )
@@ -150,18 +147,18 @@ IF( GENERATE_CPACK_PROJECT )
     ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     
     IF( EXISTS ${H3DAPI_CPACK_EXTERNAL_ROOT} )
-      SET( EXTERNAL_INCLUDES ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/xercesc
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/curl
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/Cg
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/AL
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/vorbis
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/ogg
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/libaudiofile
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/freetype
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/3dconnexion
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/FTGL
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/DirectShow
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/js )
+      SET( EXTERNAL_INCLUDES ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/xercesc/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/curl/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/Cg/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/AL/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/vorbis/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/ogg/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/libaudiofile/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/freetype/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/3dconnexion/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/FTGL/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/DirectShow/
+                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/js/ )
       SET( EXTERNAL_INCLUDE_INSTALL_PATHS External/include/xercesc
                                           External/include/curl
                                           External/include/Cg
@@ -475,7 +472,7 @@ IF( GENERATE_CPACK_PROJECT )
   
   # Install header files
   INSTALL( FILES ${H3DAPI_HEADERS}
-           DESTINATION H3DAPI/include/H3DAPI
+           DESTINATION H3DAPI/include/H3D
            COMPONENT H3DAPI_cpack_headers )
   
   # Install src files.
@@ -632,9 +629,16 @@ IF( GENERATE_CPACK_PROJECT )
                       ARGS -DBUILD_TYPE=$(Configuration) -DCOMPONENT=H3DAPI_cpack_examples_runtime -P cmake_install.cmake )
   ADD_DEPENDENCIES( INSTALL_RUNTIME_AND_LIBRARIES_ONLY H3DAPI ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} )
 
-  INCLUDE(CPack)
-  INCLUDE(UseDebian)
-  IF(DEBIAN_FOUND)
-    ADD_DEBIAN_TARGETS(H3DAPI)
-  ENDIF(DEBIAN_FOUND)
+  IF( WIN32 )
+    #SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
+    #                                ${HAPI_CPACK_INSTALLED_DIRECTORIES} )
+  ENDIF(WIN32)
+
+  IF( NOT H3D_USE_DEPENDENCIES_ONLY)
+	INCLUDE(CPack)
+    INCLUDE(UseDebian)
+    IF(DEBIAN_FOUND)
+      ADD_DEBIAN_TARGETS(H3DAPI)
+    ENDIF(DEBIAN_FOUND)
+  ENDIF( NOT H3D_USE_DEPENDENCIES_ONLY)
 ENDIF( GENERATE_CPACK_PROJECT )
