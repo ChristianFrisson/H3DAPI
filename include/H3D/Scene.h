@@ -278,6 +278,12 @@ namespace H3D {
     /// Remove all program setting callback functions
     static void clearProgramSettingsCallbacks();
 
+    /// Find a child node for a given group node with a certain nodeType and optional name
+    H3D::Node* findChildNode(H3D::Group *group, const std::string &nodeType, const std::string &nodeName="");
+
+    /// Top down search for a node with a certain nodeType and optional name starting from node passed as argument
+    H3D::Node* findNodeType(H3D::Node *node, const std::string &nodeType, const std::string &nodeName="");
+
     
   protected:
     SAI::Browser SAI_browser;

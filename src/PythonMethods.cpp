@@ -1950,17 +1950,67 @@ call the base class __init__ function." );
       return Py_None; 
     }
 
-    PyObject* pythonCreateNode( PyObject *self, PyObject *arg ) {
-      if( !arg || !PyString_Check( arg ) ) {
-        ostringstream err;
-        err << "Invalid argument(s) to function H3D.createNode( node_name ).";
-        err << " node_name should be of string type.";
-        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
-        return 0;
+    PyObject* pythonCreateNode( PyObject *self, PyObject *args ) {
+      //if( !arg || !PyString_Check( arg ) ) {
+      //  ostringstream err;
+      //  err << "Invalid argument(s) to function H3D.createNode( node_name ).";
+      //  err << " node_name should be of string type.";
+      //  PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+      //  return 0;
+      //}
+
+      //char *node_name = PyString_AsString( arg );
+      //H3D::Node *node =  H3DNodeDatabase::createNode( node_name );
+      //return PyNode_FromNode( H3DNodeDatabase::createNode( node_name ) );
+
+      unsigned int nr_args = 1;     
+
+      if( PyTuple_Check( args ) ) {
+        nr_args =  PyTuple_Size( args );
+        if( nr_args > 2 || nr_args < 1  ) {
+          PyErr_SetString( PyExc_ValueError, 
+            "Invalid argument(s) to function CreateNode( node_type, name )" );
+          return NULL;
+        } 
       }
 
-      char *node_name = PyString_AsString( arg );
-      return PyNode_FromNode( H3DNodeDatabase::createNode( node_name ) );
+      string node_name = "";
+      if( nr_args > 1 ) {
+        PyObject *py_name = PyTuple_GetItem( args, 0 ); // borrowed ref?
+        if( !py_name || !PyString_Check( py_name ) ) {
+          ostringstream err;
+          err << "Invalid argument 0 to function H3D.CreateNode. Should be string with node type.";
+          PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+          return 0;
+        }
+        node_name = PyString_AsString( py_name );
+      } else {
+        if( !args || !PyString_Check( args ) ) {
+          ostringstream err;
+          err << "Invalid argument(s) to function H3D.createNode( node_name ).";
+          err << " node_name should be of string type.";
+          PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+          return 0;
+        }
+        node_name = PyString_AsString( args );
+      }
+      H3D::Node *node =  H3DNodeDatabase::createNode( node_name );
+
+      string name = "";
+      if( nr_args > 1 ) {
+        PyObject *py_name2 = PyTuple_GetItem( args, 1 ); // borrowed ref?
+        if( !py_name2 || !PyString_Check( py_name2 ) ) {
+          ostringstream err;
+          err << "Invalid argument 1 to function H3D.CreateNode. Should be string.";
+          PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+          return 0;
+        }
+        name = PyString_AsString( py_name2 );
+      }
+
+      if (name!="")
+        node->setName(name);
+      return PyNode_FromNode( node );
     }
 
     PyObject* pythonGetNrHapticsDevices( PyObject *self, PyObject *arg ) {
@@ -2024,7 +2074,7 @@ call the base class __init__ function." );
      if( PyTuple_Check( args ) ) {
        nr_args =  PyTuple_Size( args );
        py_field = PyTuple_GetItem( args, 0 ); // borrowed ref ?
-       if( PyTuple_Size( args ) > 3 || PyTuple_Size( args ) < 1  ) {
+       if( nr_args > 3 || nr_args < 1  ) {
 	 PyErr_SetString( PyExc_ValueError, 
 			  "Invalid argument(s) to function addProgramSettings( field, setting_name, section_name )" );
 	 return NULL;

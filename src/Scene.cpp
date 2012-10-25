@@ -53,6 +53,7 @@
 #include <H3D/DirectionalLight.h>
 #include <H3D/GlobalSettings.h>
 #include <H3D/SAIFunctions.h>
+#include <H3D/Shape.h>
 
 using namespace H3D;
 
@@ -488,4 +489,118 @@ bool Scene::removeProgramSetting( Field *field ) {
     }
   }
   return removed;
+}
+
+H3D::Node* Scene::findChildNode(H3D::Group *group, const std::string &nodeType, const std::string &nodeName){
+  if(group)
+  {
+    const NodeVector &c = group->children->getValue();
+    for( unsigned int i = 0; i < c.size(); i++ ) {
+      Node* n = c[i];
+      if( n ){
+        if (n->getTypeName() == nodeType)
+        {
+          if ( nodeName == "" )
+            return n;
+          else if (nodeName == n->getName())
+            return n;
+        }
+      }
+    }
+    for( unsigned int i = 0; i < c.size(); i++ ) {
+      if( c[i]){
+        H3D::Group *childgroup = dynamic_cast<H3D::Group*>(c[i]);
+        if (childgroup){	
+          H3D::Node *node = findChildNode(childgroup, nodeType, nodeName);
+          if (node)
+            return node;
+        }
+      }
+    }
+    return NULL;
+  }
+  else
+    return NULL;
+}
+
+H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, const std::string &nodeName){
+  if (node)
+  {
+    H3D::X3DGroupingNode* group = dynamic_cast<H3D::X3DGroupingNode*>(node);
+    if (group)
+    {
+      const NodeVector &c = group->children->getValue();
+      for( unsigned int i = 0; i < c.size(); i++ ) {
+        Node* n = c[i];
+        if( n ){
+          if (n->getTypeName() == nodeType)
+          {
+            if ( nodeName == "" )
+              return n;
+            else if (nodeName == n->getName())
+              return n;
+          }
+        }
+      }
+      for( unsigned int i = 0; i < c.size(); i++ ) {
+        if( c[i]){
+          H3D::Node *node = findNodeType(c[i], nodeType, nodeName);
+          if (node)
+            return node;
+        }
+      }
+      return NULL;
+    }
+    H3D::Shape* shape = dynamic_cast<H3D::Shape*>(node);
+    if (shape)
+    {
+      H3D::X3DGeometryNode* geom = shape->geometry->getValue();
+      if (geom){
+        if (geom->getTypeName() == nodeType)
+        {
+          if ( nodeName == "" )
+            return geom;
+          else if (nodeName == geom->getName())
+            return geom;
+        }
+      }
+      H3D::X3DAppearanceNode *appearance = shape->appearance->getValue();
+      if (appearance){
+        if (appearance->getTypeName() == nodeType)
+        {
+          if ( nodeName == "" )
+            return appearance;
+          else if (nodeName == appearance->getName())
+            return appearance;
+        }
+        else
+        {
+          H3D::Node *node = findNodeType(appearance, nodeType, nodeName);
+          if (node)
+            return node;			
+        }
+      }
+      return NULL;
+    }
+    H3D::Appearance* appearance = dynamic_cast<H3D::Appearance*>(node);
+    if (appearance)
+    {
+      H3D::X3DMaterialNode *material = appearance->material->getValue();
+      if (material){
+        if (material->getTypeName() == nodeType)
+        {
+          if ( nodeName == "" )
+            return material;
+          else if (nodeName == material->getName())
+            return material;
+        }
+        else
+          return NULL;
+      }
+      return NULL;
+    }
+    return NULL;
+  }
+  else
+    return NULL;
 }
