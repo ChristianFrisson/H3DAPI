@@ -210,7 +210,7 @@ IF(GLEW_FOUND)
   SET(requiredLibs ${requiredLibs} ${GLEW_LIBRARIES} )
 ENDIF(GLEW_FOUND)
 
-# Optional extra library. Makes is possible to used GLUT windows handling with H3D API.
+# Optional extra library. Makes is possible to use GLUT windows handling with H3D API.
 IF(WIN32)
   FIND_PACKAGE(GLUTWin)
 ELSE(WIN32)

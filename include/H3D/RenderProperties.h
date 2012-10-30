@@ -52,19 +52,19 @@ namespace H3D {
   /// If false, flat shading is used.
   ///
   /// The depthBufferWriteEnabled field specifies if depth values should be written
-  /// to the depth buffer of not during rendering.
+  /// to the depth buffer or not during rendering.
   /// 
   /// The colorBufferRedWriteEnabled field specifies if red color values should be written
-  /// to the color buffer of not during rendering.
+  /// to the color buffer or not during rendering.
   ///
   /// The colorBufferGreenWriteEnabled field specifies if green color values should be written
-  /// to the color buffer of not during rendering.
+  /// to the color buffer or not during rendering.
   ///
   /// The colorBufferBlueWriteEnabled field specifies if blue color values should be written
-  /// to the color buffer of not during rendering.
+  /// to the color buffer or not during rendering.
   /// 
   /// The colorBufferAlphaWriteEnabled field specifies if alpha values should be written
-  /// to the color buffer of not during rendering.
+  /// to the color buffer or not during rendering.
   ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/RenderProperties.x3d">RenderProperties.x3d</a>
@@ -121,7 +121,7 @@ namespace H3D {
 
     /// The depthTestEnabled field specifies if depth test should be enabled
     /// or not. If depth test is disabled geometries will be drawn over the 
-    /// current values in the frame buffer regardless of if it is in front of 
+    /// current values in the frame buffer regardless of if they are in front of 
     /// or behind the previous objects drawn.
     ///
     /// <b>Access type:</b> inputOutput \n
