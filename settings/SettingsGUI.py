@@ -1,4 +1,4 @@
-#!/usr/local/bin/pythonw2.4
+#!/usr/bin/env python
 
 import os
 import wx
@@ -6,11 +6,18 @@ import ConfigParser
 import string
 import sys
 
-h3dload_ini_path = "h3dload.ini"
+settings_path = "."
+H3D_ROOT = os.getenv( "H3D_ROOT" )
+if H3D_ROOT and os.path.exists(H3D_ROOT):
+  settings_path = H3D_ROOT + "/settings/"
+
+h3dload_ini_path = settings_path + "/h3dload.ini"
 if sys.platform == "win32":
-  HOME = os.getenv( "HOMEPATH" )
-  tmp_h3dload_ini_path = "%s/h3dload.ini"%HOME
-  if HOME and os.path.exists(tmp_h3dload_ini_path):
+  HOMEDRIVE = os.getenv("HOMEDRIVE")
+  HOMEPATH = os.getenv( "HOMEPATH" )
+  tmp_h3dload_ini_path = "%s%s\\h3dload.ini"%(HOMEDRIVE,HOMEPATH)
+  print tmp_h3dload_ini_path
+  if HOMEDRIVE and HOMEPATH and os.path.exists(tmp_h3dload_ini_path):
     h3dload_ini_path = tmp_h3dload_ini_path
 else:
   HOME = os.getenv( "HOME" )
@@ -44,7 +51,7 @@ class MainFrame(wx.Frame):
 class TestDialog(wx.Dialog):
   def getCommonDevices( self ):
     try:
-      root, dirs, files  = os.walk("common/device").next()
+      root, dirs, files  = os.walk(settings_path + "/common/device").next()
       return files
     except:
       return []
@@ -52,7 +59,7 @@ class TestDialog(wx.Dialog):
 
   def isCommonStylus( self, stylus ):
     try:
-      root, dirs, files  = os.walk("common/stylus").next()
+      root, dirs, files  = os.walk(settings_path + "/common/stylus").next()
       for f in files:
         if( stylus == f ): 
           return 1
@@ -62,7 +69,7 @@ class TestDialog(wx.Dialog):
 
   def isCommonDevice( self, device ):
     try:
-      root, dirs, files  = os.walk("common/device").next()
+      root, dirs, files  = os.walk(settings_path + "/common/device").next()
       for f in files:
         if( device == f ): 
           return 1
@@ -72,7 +79,7 @@ class TestDialog(wx.Dialog):
 
   def getCommonStylus( self ):
     try:
-      root, dirs, files  = os.walk("common/stylus").next()
+      root, dirs, files  = os.walk(settings_path + "/common/stylus").next()
 
       if( cp.has_option( "haptics device", "stylus" ) ):
         stylus = cp.get( "haptics device", "stylus" ) 
@@ -85,7 +92,7 @@ class TestDialog(wx.Dialog):
 
   def isCommonViewpoint( self, viewpoint ):
     try:
-      root, dirs, files  = os.walk("common/viewpoint").next()
+      root, dirs, files  = os.walk(settings_path + "/common/viewpoint").next()
       for f in files:
         if( viewpoint == f ): 
           return 1
@@ -95,7 +102,7 @@ class TestDialog(wx.Dialog):
 
   def isDisplayViewpoint( self, display, viewpoint ):
     try:
-      root, dirs, files  = os.walk('display/' + display + "/viewpoint").next()
+      root, dirs, files  = os.walk(settings_path + "/display/" + display + "/viewpoint").next()
       for f in files:
         if( viewpoint == f ): 
           return 1
@@ -105,21 +112,21 @@ class TestDialog(wx.Dialog):
 
   def getCommonViewpoint( self ):
     try:
-      root, dirs, files  = os.walk("common/viewpoint").next()
+      root, dirs, files  = os.walk(settings_path + "/common/viewpoint").next()
       return files + ["Browse..." ] 
     except:
       return ["Browse..." ] 
 
   def getViewpointForDisplay( self, display ):
     try:
-      root, dirs, files  = os.walk('display/' + display + "/viewpoint").next()
+      root, dirs, files  = os.walk(settings_path + "/display/" + display + "/viewpoint").next()
       return files + self.browse_viewpoints + self.getCommonViewpoint()
     except:
       return self.browse_viewpoints + self.getCommonViewpoint()
 
   def getDevicesForDisplay( self, display ):
     try:
-      root, dirs, files  = os.walk('display/' + display + "/device").next()
+      root, dirs, files  = os.walk(settings_path + "/display/" + display + "/device").next()
       return ["None"] + self.getCommonDevices() + files
     except:
       return []
@@ -213,12 +220,22 @@ class TestDialog(wx.Dialog):
     cp.set( "haptics device", "stylus", self.stylus_choice.GetValue() )
 
     cp.set( "display", "type", self.display_choice.GetValue() )
+    
+    global h3dload_ini_path
+    if not os.access(h3dload_ini_path, os.W_OK):
+      if sys.platform == "win32":
+        HOMEDRIVE = os.getenv("HOMEDRIVE")
+        HOMEPATH = os.getenv( "HOMEPATH" )
+        h3dload_ini_path = "%s%s\\h3dload.ini"%(HOMEDRIVE, HOMEPATH)
+      else:
+        HOME = os.getenv( "HOME" )
+        h3dload_ini_path = "%s/.h3dload.ini"%HOME
 
     f = open( h3dload_ini_path, "w" )
     cp.write( f )
     f.close()
 
-    f = open( "current/deviceinfo.x3d", "w" )
+    f = open( settings_path + "/current/deviceinfo.x3d", "w" )
     display = self.display_choice.GetValue()
     device = self.device_choice.GetValue()
     if( device != "None" ):
@@ -231,7 +248,7 @@ class TestDialog(wx.Dialog):
       f.write("<Group />" )
     f.close()
 
-    f = open( "current/stylus.x3d", "w" )
+    f = open( settings_path + "/current/stylus.x3d", "w" )
     stylus = self.stylus_choice.GetValue()
     if( self.isCommonStylus(  stylus ) ):
       url = "../common/stylus/" + stylus
@@ -240,7 +257,7 @@ class TestDialog(wx.Dialog):
     f.write( "<Inline DEF=\"DEFAULT_STYLUS\" url=\"" + url + "\" />" )
     f.close()
 
-    f = open( "current/viewpoint.x3d", "w" )
+    f = open( settings_path + "/current/viewpoint.x3d", "w" )
     vp = self.viewpoint_choice.GetValue()
     if( self.isCommonViewpoint( vp ) ):
       url = "../common/viewpoint/" + vp
@@ -257,7 +274,7 @@ class TestDialog(wx.Dialog):
 
   def getAvailableDisplays( self ):
     try:
-      root, dirs, files  = os.walk('display').next()
+      root, dirs, files  = os.walk(settings_path + "/display").next()
       return dirs
     except:
       return []
