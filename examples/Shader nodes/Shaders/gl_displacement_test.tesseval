@@ -87,8 +87,9 @@ void main()
 	float df;           
 	//dv = texture2D( displacementMap, oTexCoord.st );
 	dv = texture( displacementMap, oTexCoord.st );
-	
-	df = 0.30*dv.x + 0.59*dv.y + 0.11*dv.z;
+	// The displacement map in this case is gray scale, no need
+	// to use more than one channel.
+	df = dv.x;
 	
 	displacedPos = vec3(oNormalLocal * df * uDisplacement) + finalPos;
   //displacedPos = finalPos;
