@@ -16,7 +16,6 @@ if sys.platform == "win32":
   HOMEDRIVE = os.getenv("HOMEDRIVE")
   HOMEPATH = os.getenv( "HOMEPATH" )
   tmp_h3dload_ini_path = "%s%s\\h3dload.ini"%(HOMEDRIVE,HOMEPATH)
-  print tmp_h3dload_ini_path
   if HOMEDRIVE and HOMEPATH and os.path.exists(tmp_h3dload_ini_path):
     h3dload_ini_path = tmp_h3dload_ini_path
 else:
