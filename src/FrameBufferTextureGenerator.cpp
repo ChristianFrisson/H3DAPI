@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/FrameBufferTextureGenerator.h>
-
 #include <H3D/GeneratedTexture3D.h>
 
 using namespace H3D;
@@ -152,6 +151,14 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
 #undef max
 #endif
 void FrameBufferTextureGenerator::render()     { 
+
+  // Only render the texture once regardless of multi pass
+  // rendering state.
+  if ( X3DShapeNode::geometry_render_mode != X3DShapeNode::ALL &&
+       X3DShapeNode::geometry_render_mode != X3DShapeNode::SOLID ) {
+    return;
+  }
+
   if( !GLEW_EXT_framebuffer_object ) {
     Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
                << "(EXT_frame_buffer_object). FrameBufferTextureGenerator nodes will "
@@ -261,7 +268,6 @@ void FrameBufferTextureGenerator::render()     {
                          (H3DFloat) 0.01, (H3DFloat) -1 ); // TODO: calculate near and far plane
   }
 
-
   if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
     // 2D textures. Render all nodes in children field into the textures.
    
@@ -271,7 +277,24 @@ void FrameBufferTextureGenerator::render()     {
     } else {
       // Clear buffers.
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-      X3DGroupingNode::render();
+      X3DShapeNode::GeometryRenderMode  m= X3DShapeNode::geometry_render_mode;
+
+      if( children_multi_pass_transparency ) {
+        X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID;
+        X3DGroupingNode::render();
+    
+        X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+        X3DGroupingNode::render();
+    
+        X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+        X3DGroupingNode::render();
+        X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+      } else {
+        X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+        X3DGroupingNode::render();
+      }
+      
+      X3DShapeNode::geometry_render_mode= m;
     }
     
     // blit multi sample render buffer to output textures if using multi sampling.
