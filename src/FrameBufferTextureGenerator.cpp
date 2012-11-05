@@ -30,6 +30,7 @@
 
 #include <H3D/FrameBufferTextureGenerator.h>
 #include <H3D/GeneratedTexture3D.h>
+#include <H3D/X3DShapeNode.h>
 
 using namespace H3D;
 
