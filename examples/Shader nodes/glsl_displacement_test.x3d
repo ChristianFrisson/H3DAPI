@@ -71,10 +71,10 @@
                   </ImageTexture>
                 </field>
 
-                <ShaderPart type="FRAGMENT"        url="shaders/gl_displacement_test.frag" />
-                <ShaderPart type="VERTEX"          url="shaders/gl_displacement_test.vert" />
-                <ShaderPart type="TESS_CONTROL"    url="shaders/gl_displacement_test.tessctrl" />
-                <ShaderPart type="TESS_EVALUATION" url="shaders/gl_displacement_test.tesseval" />
+                <ShaderPart type="FRAGMENT"        url="Shaders/gl_displacement_test.frag" />
+                <ShaderPart type="VERTEX"          url="Shaders/gl_displacement_test.vert" />
+                <ShaderPart type="TESS_CONTROL"    url="Shaders/gl_displacement_test.tessctrl" />
+                <ShaderPart type="TESS_EVALUATION" url="Shaders/gl_displacement_test.tesseval" />
               </ComposedShader>
             </Appearance>
             <IndexedTriangleSet DEF="ITS_Plane" solid="true"
