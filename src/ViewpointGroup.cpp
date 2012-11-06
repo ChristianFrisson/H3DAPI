@@ -76,7 +76,6 @@ ViewpointGroup::ViewpointGroup(
   description->setValue( "" );
   displayed->setValue( true );
   center->setValue( Vec3f( 0, 0, 0 ) );
-  children->setValue( NULL );
   retainUserOffsets->setValue( false );
   size->setValue( Vec3f( 0, 0, 0 ) );
 
