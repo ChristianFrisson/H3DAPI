@@ -180,6 +180,13 @@ ELSE(wxWidgets_FOUND)
   ENDIF(wxWidgets_FOUND)
 ENDIF(wxWidgets_FOUND)
 
+FIND_PACKAGE( DirectX )
+IF( DirectX_FOUND )
+  SET( HAVE_DX9 1 )
+  INCLUDE_DIRECTORIES( ${DirectX_INCLUDE_DIR} )
+  SET( requiredLibs ${requiredLibs} ${DirectX_LIBRARIES} )
+ENDIF( DirectX_FOUND )
+
 # Create build files.
 IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
   # if generating CPACK project using BUNDLE we should not create the bundle here instead

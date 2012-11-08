@@ -116,7 +116,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   last_resize_success( true ),
   nr_samples( 0 ),
   render_func( NULL ),
-  render_func_data( NULL ) {
+  render_func_data( NULL ),
+  always_use_existing_viewport( false ) {
 
   type_name = "FrameBufferTextureGenerator";
   database.initFields( this );
@@ -212,8 +213,8 @@ void FrameBufferTextureGenerator::render()     {
   if( !fbo_initialized ) initializeFBO();
   
   // get the width and height of the buffer in pixels.
-  unsigned int current_width  = width->getValue();
-  unsigned int current_height = height->getValue();
+  int current_width  = width->getValue();
+  int current_height = height->getValue();
 
   if( current_height == -1 || current_width == -1 ) {
     GLint viewport[4];
@@ -222,7 +223,11 @@ void FrameBufferTextureGenerator::render()     {
     if( current_height == -1 ) current_height = viewport[3];
   } 
 
-  glViewport( 0 , 0, current_width, current_height );
+
+  if( !always_use_existing_viewport ) {
+    // Set viewport to span entire frame buffer 
+    glViewport( 0 , 0, current_width, current_height );
+  }
 
   unsigned int current_depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
 

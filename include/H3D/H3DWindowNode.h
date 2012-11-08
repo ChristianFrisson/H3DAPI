@@ -35,6 +35,7 @@
 #include <H3D/SFVec2f.h>
 #include <H3D/DefaultAppearance.h>
 #include <H3D/NavigationInfo.h>
+#include <H3D/FrameBufferTextureGenerator.h>
 
 namespace H3D {
   class H3DNavigation;
@@ -113,13 +114,19 @@ namespace H3D {
         /// the left eye for one projector and the right for another.  
         HORIZONTAL_SPLIT_KEEP_RATIO,
 
-	/// HDMI 1.4 frame packed format. Basically horizontal split with
-	/// 30 lines of black between each image.
-	HDMI_FRAME_PACKED_720P,
+        /// HDMI 1.4 frame packed format. Basically horizontal split with
+        /// 30 lines of black between each image.
+        HDMI_FRAME_PACKED_720P,
 
-	/// HDMI 1.4 frame packed format. Basically horizontal split with
-	/// 45 lines of black between each image.
-	HDMI_FRAME_PACKED_1080P
+        /// HDMI 1.4 frame packed format. Basically horizontal split with
+        /// 45 lines of black between each image.
+        HDMI_FRAME_PACKED_1080P,
+
+	/// NVidia 3DVision format when not using quad-buffered stereo. Will
+	/// copy OpenGL buffer and display with DirectX. Executable must be
+	/// named to one of the NVidia sanctioned 3D programs in order to work,
+	/// e.g. googleearth.exe.
+        NVIDIA_3DVISION
 
       } Mode;
 
@@ -196,6 +203,8 @@ namespace H3D {
 
     /// Initialize the window node. 
     virtual void initialize();
+
+    static void fboCallback( FrameBufferTextureGenerator *g, int i, void *args );
 
     /// This function renders the X3DChildNode given into the 
     /// window of the H3DWindowNode.
@@ -437,6 +446,10 @@ namespace H3D {
     // needs to be rendered.
     void renderChild( X3DChildNode *c );
 
+    /// Help function for renderChild.
+    void renderChild( X3DChildNode *child_to_render,
+                      bool render_fbo_only );
+
     /// Set the cursor to the given cursor type. See cursorType field
     /// for valid values. Returns 0 on success. -1 if the cursor_type is 
     /// not supported.
@@ -455,6 +468,8 @@ namespace H3D {
     virtual string getCursorForMode( const string &) { return "DEFAULT"; }
 
     friend class Scene; 
+
+    AutoRef< FrameBufferTextureGenerator > generator;
 
     static bool multi_pass_transparency;
     X3DChildNode *last_render_child;

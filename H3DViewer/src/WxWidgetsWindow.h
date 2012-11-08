@@ -30,7 +30,9 @@
 #define __WXWIDGETSWINDOW_H__
 
 #include <wx/wx.h>
+
 #include <H3D/H3DWindowNode.h>
+#include "H3DViewerConfig.h"
 #include <wx/glcanvas.h>
 #include <wx/dnd.h>
 #if !wxUSE_GLCANVAS
@@ -52,6 +54,7 @@ namespace H3D {
     class MyWxGLCanvas: public wxGLCanvas
     {
     public:
+
       MyWxGLCanvas(WxWidgetsWindow *_myOwner, wxWindow* _parent,
                    wxWindowID _id, const wxPoint& _pos, const wxSize& _size,
                    int* _attribList = 0, long _style=0, 
@@ -125,7 +128,7 @@ namespace H3D {
 
     /// Make this the current window.
     virtual void makeWindowActive();
-    
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
@@ -189,11 +192,48 @@ namespace H3D {
     bool is_initialized;
     bool have_parent;
     wxWindow * theWindow;
+    wxSizer *sizer;
     MyWxGLCanvas * theWxGLCanvas;
     wxGLContext * theWxGLContext;
 	bool last_fullscreen;
 
   bool fullscreen_initialized;
+
+ 
+
+#ifdef HAVE_DX9
+  vector< unsigned char > gl_frame_buffer;
+  vector< unsigned char > gl_d3d_frame_buffer;
+
+  class D3D9Canvas : public wxWindow {
+  public:
+    D3D9Canvas( WxWidgetsWindow *owner,
+		wxWindow *parent, wxWindowID id = wxID_ANY,
+	       const wxPoint& pos = wxDefaultPosition,
+	       const wxSize& size = wxDefaultSize, long style = 0,
+	       const wxString& name = wxT("TestGLCanvas"));
+    
+    ~D3D9Canvas();
+    void updateGLFrameBufferSize( int w, int h );
+  protected:
+    void OnPaint(wxPaintEvent& event);
+    void OnSize(wxSizeEvent& event);
+    void OnEraseBackground(wxEraseEvent& event);
+    void OnIdle( wxIdleEvent& event );
+    
+  private:
+    void InitD3D();
+    void Render();
+    bool m_init;
+    bool resized;
+    WxWidgetsWindow *owner;
+    DECLARE_EVENT_TABLE()
+  };
+
+
+  D3D9Canvas *d3d_canvas;
+
+#endif
 
   private:
       string viewpoint_file;

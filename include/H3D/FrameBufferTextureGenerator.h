@@ -331,6 +331,30 @@ namespace H3D {
       if( !fbo_initialized ) initializeFBO();
     }
 
+    /// Returns true if the fbo used by the node has been initialized, 
+    inline bool isFBOInitialized() {
+      return fbo_initialized;
+    }
+
+    /// Returns the OpenGL fbo id used by the FrameBufferTextureGenerator.
+    /// Only valid if isFBOInitialized is true/
+    inline GLuint getFBOId() {
+      return fbo_id;
+    }
+
+    /// If set to true the currently set up viewport when the render() function 
+    /// is called will be used for the rendering. If false, the viewport will be
+    /// set to fill the entire frame buffer.
+    inline void setAlwaysUseExistingViewport( bool use ) {
+      always_use_existing_viewport = use;
+    }
+
+    /// Returns the current value of alwaysUseExistingViewpoint. See 
+    /// setAlwaysUseExistingViewport for details.
+    inline bool alwaysUseExistingViewpoint() {
+      return always_use_existing_viewport;
+    }
+
   protected:
 
     /// Converts a string to a OpenGL internal texture format.
@@ -408,6 +432,11 @@ namespace H3D {
 
     /// The specified callback function user data, if any.
     void *render_func_data;
+
+    /// If set to true the currently set up viewport when the render() function 
+    /// is called will be used for the rendering. If false, the viewport will be
+    /// set to fill the entire frame buffer.
+    bool always_use_existing_viewport;
   };
 }
 

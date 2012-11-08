@@ -69,21 +69,30 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   use_h3d_settings( true ),
   theWxGLCanvas( NULL ),
   fullscreen_initialized ( false ),
-	theWxGLContext( NULL ) {
+        theWxGLContext( NULL ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
-  
-  have_parent = theWindow != NULL;
+ 
+#ifdef HAVE_DX9
+  gl_d3d_frame_buffer.resize(1);
+  gl_frame_buffer.resize(1);
+  d3d_canvas = NULL;
+#endif
 
+  have_parent = theWindow != NULL;
   vector< string > valid_values;
   getSupportedCursorsTypes( valid_values );
   cursorType->addValidValues( valid_values.begin(), valid_values.end() );
+
+
  
   if( !theWindow ) {
      theWindow = new wxFrame( NULL, wxID_ANY, wxT("WxFrame"),
                               wxPoint( posX->getValue(), posY->getValue() ),
                               wxSize( width->getValue(), height->getValue() ));
   }
+  sizer = new wxBoxSizer( wxHORIZONTAL );
+  theWindow->SetSizer( sizer );
 }
 
 void WxWidgetsWindow::initWindow() {
@@ -134,13 +143,44 @@ void WxWidgetsWindow::initWindow() {
   if( old_canvas ) {
     old_canvas->Destroy();
   }
-
+  
 #if wxUSE_DRAG_AND_DROP
   theWxGLCanvas->SetDropTarget( new DragAndDropFile( this ) );
 #endif
 
+
+
+
+  last_fullscreen = !fullscreen->getValue();
+
+  
+
+  sizer->Clear( true );
+#ifdef HAVE_DX9
+  if( stereo_mode == RenderMode::NVIDIA_3DVISION ) {
+    d3d_canvas = new D3D9Canvas( this, theWindow, 
+                                             wxID_ANY, 
+                                             wxDefaultPosition,
+                                             wxSize( width->getValue(), height->getValue() ) );
+ 
+    sizer->Add( d3d_canvas, 1, wxALL|wxEXPAND, 0 );
+  }
+#endif
+
+  sizer->Add( theWxGLCanvas, 1, wxALL|wxEXPAND, 0 );
+    
 #ifdef H3D_WINDOWS
-  hWnd = (HWND)(theWxGLCanvas->GetHandle());
+
+#ifdef HAVE_DX9
+  if( stereo_mode == RenderMode::NVIDIA_3DVISION ) {
+    hWnd = (HWND)(d3d_canvas->GetHWND());
+  } else {
+    hWnd = (HWND)(theWxGLCanvas->GetHandle());
+  }
+#else
+   hWnd = (HWND)(theWxGLCanvas->GetHandle());
+#endif // HAVE_DX9
+
 #ifdef H3D_WIN64
   wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
                 GWLP_WNDPROC, (LONG_PTR) WindowProc);
@@ -149,16 +189,17 @@ void WxWidgetsWindow::initWindow() {
                 GWL_WNDPROC, (LONG_PTR) WindowProc);
 #endif
 #endif
-
-  last_fullscreen = !fullscreen->getValue();
-  theWindow->Layout();
+    //  theWindow->Layout();
   theWindow->Show();
   theWxGLCanvas->Show();
   theWindow->Raise();
-
-	if( theWxGLCanvas->IsShownOnScreen() ) {
-		theWxGLCanvas->SetCurrent( *theWxGLContext );
-	}
+  theWindow->Layout();
+  if( theWxGLCanvas->IsShownOnScreen() ) {
+    theWxGLCanvas->SetCurrent( *theWxGLContext );
+  }
+  if( stereo_mode == RenderMode::NVIDIA_3DVISION )
+    theWxGLCanvas->Hide();
+  
   glClearColor( 0, 0, 0, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClear( GL_COLOR_BUFFER_BIT );
@@ -178,14 +219,54 @@ void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
   }
 }
 
+//#include<FreeImage.h>
+
 void WxWidgetsWindow::swapBuffers() {
-   theWxGLCanvas->SwapBuffers();
+
+  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
+
+#ifdef HAVE_DX9
+  if( stereo_mode == RenderMode::NVIDIA_3DVISION ) {
+    int current_w = generator->width->getValue();
+    int current_h = generator->height->getValue();
+       
+    if( generator->isFBOInitialized() ) {
+      glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, generator->getFBOId() );
+    }
+    glReadPixels( 0, 0, current_w, current_h, GL_BGRA, GL_UNSIGNED_BYTE, &gl_frame_buffer[0]  );
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
+    
+    int row_length = 4 * current_w;
+    for( unsigned int i = 0; i < current_h; i++ ) {
+      memcpy( &gl_d3d_frame_buffer[0] + (current_h - i -1 )*row_length,
+              &gl_frame_buffer[0] + i *row_length, 
+              row_length );
+    }
+
+    /*   
+         // Debug code to save the content of gl_frame_buffer to file to see the 
+         // values.
+    static TimeStamp last;
+    if( TimeStamp() - last > 2 ) {
+      last = TimeStamp();
+      stringstream s;
+      s << "c:\\fb0.bmp";
+      FIBITMAP *bitmap = FreeImage_Allocate( current_w, current_h, 32 );
+      BYTE *data = FreeImage_GetBits( bitmap );
+      memcpy( data, &gl_frame_buffer[0], current_w*current_h*4 );
+      FreeImage_Save( FIF_BMP, bitmap, s.str().c_str() );
+      FreeImage_Unload( bitmap );
+      }*/
+  }
+#endif
+
+  theWxGLCanvas->SwapBuffers();
 }
 
 void WxWidgetsWindow::makeWindowActive() {
-	if( theWxGLCanvas->IsShownOnScreen() ) {
-		theWxGLCanvas->SetCurrent( *theWxGLContext );
-	}
+  if( theWxGLCanvas->IsShownOnScreen() ) {
+    theWxGLCanvas->SetCurrent( *theWxGLContext );
+  }
 }
 
 BEGIN_EVENT_TABLE(WxWidgetsWindow::MyWxGLCanvas, wxGLCanvas)
@@ -222,14 +303,15 @@ WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
                                                   const wxPalette& _palette ):
 wxGLCanvas( _parent, _id, _attribList, _pos, _size,
             _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
-						_palette ),
+                                                _palette ),
 myOwner( _myOwner )
 {
 }
 
+
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
 
-  if( myOwner && myOwner->is_initialized ) {
+if( myOwner && myOwner->is_initialized ) {
     if( WxFrame * owner_is_frame = dynamic_cast< WxFrame * >(myOwner->theWindow) )
       owner_is_frame->updateFrameRates();
    
@@ -240,9 +322,8 @@ void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
     GetSize( &current_w, &current_h );
     if( w != current_w || h != current_h ) {
       SetSize( w, h );
+      myOwner->theWindow->SetClientSize( GetSize() );
     }
-
-    myOwner->theWindow->Fit();
                                                            
   }
   event.RequestMore();
@@ -255,7 +336,10 @@ void WxWidgetsWindow::MyWxGLCanvas::OnSize( wxSizeEvent& event ) {
   // set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
   int w, h;
   GetClientSize(&w, &h);
-  myOwner->reshape( w, h );
+  RenderMode::Mode stereo_mode = myOwner->renderMode->getRenderMode();
+  if( stereo_mode != RenderMode::NVIDIA_3DVISION ) {
+    myOwner->reshape( w, h );
+  }
 }
 
 void WxWidgetsWindow::MyWxGLCanvas::OnPaint( wxPaintEvent& WXUNUSED(event))
@@ -518,4 +602,281 @@ void WxWidgetsWindow::MyWxGLCanvas::onMouseWheelRotation(
     event.GetWheelRotation() > 0 ? MouseSensor::FROM : MouseSensor::TOWARDS );
 }
 
+
 #endif
+
+#ifdef HAVE_DX9
+#include <d3d9.h>
+#include <d3dx9.h>
+D3DPRESENT_PARAMETERS d3dpp;
+IDirect3DSurface9* src_surface = NULL;
+IDirect3DSurface9* back_surface = NULL;
+//-----------------------------------------------------------------------------
+// GLOBALS
+//-----------------------------------------------------------------------------
+HWND                    g_hWnd          = NULL;
+LPDIRECT3D9             g_pD3D          = NULL;
+LPDIRECT3DDEVICE9       g_pd3dDevice    = NULL;
+
+// ---------------------------------------------------------------------------
+// D3D9Canvas
+// ---------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(WxWidgetsWindow::D3D9Canvas, wxWindow)
+    EVT_SIZE(WxWidgetsWindow::D3D9Canvas::OnSize)
+    EVT_PAINT(WxWidgetsWindow::D3D9Canvas::OnPaint)
+    EVT_ERASE_BACKGROUND(WxWidgetsWindow::D3D9Canvas::OnEraseBackground)
+    EVT_IDLE(WxWidgetsWindow::D3D9Canvas::OnIdle)
+END_EVENT_TABLE()
+
+WxWidgetsWindow::D3D9Canvas::D3D9Canvas(WxWidgetsWindow *_owner,
+                                        wxWindow *parent, wxWindowID id,
+    const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+: wxWindow(parent, id, pos, size, style|wxFULL_REPAINT_ON_RESIZE, name),
+  owner( _owner )
+{
+    m_init = false;
+   g_hWnd = (HWND)GetHWND();
+}
+
+WxWidgetsWindow::D3D9Canvas::~D3D9Canvas()
+{
+  if(src_surface){
+    src_surface->Release();
+    src_surface = NULL;
+  }
+  
+  if( back_surface ) {
+    back_surface->Release();
+    back_surface = NULL;
+  }
+
+  if( g_pd3dDevice != NULL ) {
+    g_pd3dDevice->Release();
+    g_pd3dDevice = NULL;
+  }
+
+  if( g_pD3D != NULL ) {
+    g_pD3D->Release();
+    g_pD3D = NULL;
+  }
+}
+
+void WxWidgetsWindow::D3D9Canvas::OnIdle(wxIdleEvent &event) {
+  event.RequestMore(true);
+  // resize the window if the size is different from the current size.
+  int w = owner->width->getValue();
+  int h = owner->height->getValue();
+  int current_w, current_h;
+  GetSize( &current_w, &current_h );
+  if( w != current_w || h != current_h ) {
+    SetSize( w, h );
+    owner->theWindow->SetClientSize( GetSize() );
+  }
+  
+  Render();
+}
+
+void WxWidgetsWindow::D3D9Canvas::OnPaint( wxPaintEvent& WXUNUSED(event) ) {
+
+  wxPaintDC dc(this);
+  
+  // Initialize D3D
+  if (!m_init) {
+    InitD3D();
+    m_init= true;
+  }
+}
+
+// Stereo Blitdefines
+#define NVSTEREO_IMAGE_SIGNATURE 0x4433564e //NV3D
+typedef struct _Nv_Stereo_Image_Header {
+  unsigned int dwSignature;
+  unsigned int dwWidth;
+  unsigned int dwHeight;
+  unsigned int dwBPP;
+  unsigned int dwFlags;
+} NVSTEREOIMAGEHEADER, *LPNVSTEREOIMAGEHEADER;
+
+// ORedflags in the dwFlagsfielsof the _Nv_Stereo_Image_Headerstructure above
+#define SIH_SWAP_EYES 0x00000001
+#define SIH_SCALE_TO_FIT 0x00000002
+
+void WxWidgetsWindow::D3D9Canvas::updateGLFrameBufferSize( int w, int h ) {
+  if(src_surface)
+    src_surface->Release();
+  
+  if( w * h > 0 ) {
+
+    // generator buffer needs to be twice the size of the frame buffer
+    // to fit two stereo images for NVidia 3DVision stereo
+    owner->generator->width->setValue( w * 2 );
+    owner->generator->height->setValue( h );
+
+    /// size in bytes of generator frame buffer (RGBA)
+    unsigned int frame_buffer_size = 2 * w * h * 4;
+    if( owner->gl_frame_buffer.size() < frame_buffer_size ) {
+      owner->gl_frame_buffer.resize( frame_buffer_size );
+    }
+    
+    if( owner->gl_d3d_frame_buffer.size() < frame_buffer_size ) {
+      owner->gl_d3d_frame_buffer.resize( frame_buffer_size );
+    } 
+    
+    /// create DirectX offscreen surface to render 3DVision frame to. A 
+    /// 3DVision frame is a vertical split stereo image pair with left 
+    /// and right eye next to each other as well as one extra row 
+    /// with a stereo header.
+    if( g_pd3dDevice->CreateOffscreenPlainSurface(w * 2, h + 1, 
+                                                  D3DFMT_A8R8G8B8, 
+                                                  D3DPOOL_DEFAULT, 
+                                                  &src_surface, 
+                                                  NULL) != D3D_OK ) {
+      Console(4) << "Warning: Could not create DirectX offscreen "
+                 << "surface for NVidia 3DVision rendering." << endl;
+    } else {
+      // Add NVidia stereo header in last row of offscreen surface.
+
+      // Lock the stereo image
+      D3DLOCKED_RECT lr;
+      src_surface->LockRect(&lr,NULL,0);
+      // write stereo signature in the last raw of the stereo image
+      LPNVSTEREOIMAGEHEADER pSIH=
+        (LPNVSTEREOIMAGEHEADER)(((unsigned char *) lr.pBits) + (lr.Pitch* h));
+      // Update the signature header values
+      pSIH->dwSignature= NVSTEREO_IMAGE_SIGNATURE;
+      pSIH->dwBPP= 32;
+      pSIH->dwFlags= SIH_SWAP_EYES; // Srcimage has left on left and right on right
+      pSIH->dwWidth= w*2;
+      pSIH->dwHeight= h;
+      // Unlock surface
+      src_surface->UnlockRect();
+    }
+  }
+}
+
+void WxWidgetsWindow::D3D9Canvas::OnSize(wxSizeEvent& event)
+{
+  // Initialize D3D
+  if (!m_init) {
+    InitD3D();
+    m_init= true;
+  }
+
+  // get the size of the canvas.
+  int w, h;
+  GetClientSize(&w, &h);
+  
+  // we need to reset the d3d device. In order to do that we are required
+  // to first delete all surfaces that have been created previously and 
+  // then recreate them with the new reset d3d device.
+  d3dpp.BackBufferHeight = h; 
+  d3dpp.BackBufferWidth = w;
+  d3dpp.BackBufferFormat =  D3DFMT_UNKNOWN;
+  
+  // release surfaces
+  if(src_surface){
+    src_surface->Release();
+    src_surface = NULL;
+  }
+  
+  if( back_surface ) {
+    back_surface->Release();
+    back_surface = NULL;
+  }
+  
+  // reset device
+  HRESULT hr = g_pd3dDevice->Reset( &d3dpp );
+  if(  hr != D3D_OK ) {
+    Console(4) << "DirectX device reset failed: ";
+    if( hr == D3DERR_DEVICELOST ) 
+      Console(4) << "Device lost" << endl;
+    else if( hr == D3DERR_DEVICEREMOVED ) 
+      Console(4) << "Device removed" << endl;
+    else if( hr == D3DERR_DRIVERINTERNALERROR )
+      Console(4) << "Driver internal error" << endl;
+    else if( hr == D3DERR_OUTOFVIDEOMEMORY )
+      Console(4) << "Out of mem" << endl;
+    else
+      Console(4) << "Unknown error"<< endl;
+  } 
+
+  // restore d3d surfaces with the new size
+  g_pd3dDevice->GetBackBuffer(0,0,D3DBACKBUFFER_TYPE_MONO,&back_surface );
+  
+  owner->reshape( w, h );
+  updateGLFrameBufferSize( w, h );
+}
+
+void WxWidgetsWindow::D3D9Canvas::OnEraseBackground(wxEraseEvent& WXUNUSED(event)) {
+    // Do nothing, to avoid flashing on MSW
+}
+
+void WxWidgetsWindow::D3D9Canvas::InitD3D() {
+  g_pD3D = Direct3DCreate9( D3D_SDK_VERSION );
+
+  D3DDISPLAYMODE d3ddm;
+  g_pD3D->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &d3ddm );
+  
+  //D3DPRESENT_PARAMETERS d3dpp;
+  ZeroMemory( &d3dpp, sizeof(d3dpp) );
+  
+  d3dpp.Windowed               = TRUE;
+  d3dpp.SwapEffect             = D3DSWAPEFFECT_DISCARD;
+  d3dpp.BackBufferFormat       = d3ddm.Format;
+  d3dpp.EnableAutoDepthStencil = TRUE;
+  d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
+  d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;
+  d3dpp.hDeviceWindow = g_hWnd;
+    
+  g_pD3D->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, g_hWnd,
+                        D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
+                        &d3dpp, &g_pd3dDevice );
+
+  g_pd3dDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
+  g_pd3dDevice->SetRenderState( D3DRS_ZENABLE, TRUE );
+}
+
+
+
+void WxWidgetsWindow::D3D9Canvas::Render() {
+  // 
+  int w, h;
+  GetClientSize(&w, &h); 
+ 
+  bool render = src_surface != NULL;
+  
+  if( render ) {
+    
+    // DEBUG: Save src_surface to bitmap file/
+    //D3DXSaveSurfaceToFile( L"c:\\test.bmp", D3DXIFF_BMP, src_surface, NULL, NULL ); 
+    
+    // copy the data aquired from OpenGL frame buffer to DirectX src_surface.
+    RECT dstRect= { 0, 0, w*2, h};   
+    if(D3DXLoadSurfaceFromMemory(src_surface, 
+                                 NULL, 
+                                 &dstRect,
+                                 &owner->gl_d3d_frame_buffer[0],
+                                 D3DFMT_A8R8G8B8,
+                                 4*owner->generator->width->getValue(),
+                                 NULL,
+                                 &dstRect,
+                                 D3DX_DEFAULT,
+                                 0)!=D3D_OK ) {
+      Console(4) <<"Warning: Error loading OpenGL data to DirectX offscreen surface" << endl;
+    }
+    
+    // Debug: save surface to bitmap file
+    //D3DXSaveSurfaceToFile( L"c:\\test.bmp", D3DXIFF_BMP, src_surface, NULL, NULL ); 
+  }
+  
+  // Stretch the offscreen surface to the back buffer.
+  g_pd3dDevice->BeginScene();
+  if(render) 
+    g_pd3dDevice->StretchRect(src_surface, NULL, back_surface, NULL, D3DTEXF_NONE);
+  g_pd3dDevice->EndScene();
+  g_pd3dDevice->Present( NULL, NULL, NULL, NULL );
+  back_surface->Release();
+}
+
+#endif // HAVE_DX9

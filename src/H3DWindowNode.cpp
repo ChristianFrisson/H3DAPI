@@ -142,6 +142,12 @@ H3DWindowNode::H3DWindowNode(
   type_name = "H3DWindowNode";
   database.initFields( this );
 
+  FrameBufferTextureGenerator *gen = new FrameBufferTextureGenerator;
+  gen->generateColorTextures->push_back( "RGBA" );
+  gen->samples->setValue( 4 );
+  gen->setAlwaysUseExistingViewport( true );
+  generator.reset( gen );
+
 #ifdef WIN32
   windowInstance = GetModuleHandle( NULL );
 #endif
@@ -169,6 +175,7 @@ H3DWindowNode::H3DWindowNode(
   renderMode->addValidValue( "VERTICAL_INTERLACED_GREEN_SHIFT" );
   renderMode->addValidValue( "HDMI_FRAME_PACKED_720P" );
   renderMode->addValidValue( "HDMI_FRAME_PACKED_1080P" );
+  renderMode->addValidValue( "NVIDIA_3DVISION" );
   renderMode->setValue( "MONO" );  
 
   cursorType->addValidValue( "DEFAULT" );
@@ -338,7 +345,8 @@ void renderHapticTriangles() {
   ti->setCurrentLayer( current_layer );
 }
 
-void H3DWindowNode::renderChild( X3DChildNode *c ) {
+void H3DWindowNode::renderChild( X3DChildNode *c,
+                                 bool render_to_fbo ) {
   H3DDisplayListObject *dlo = 
     dynamic_cast< H3DDisplayListObject * >( c );
 
@@ -572,6 +580,7 @@ void H3DWindowNode::initWindowWithContext() {
                         if( !(pfd.dwFlags & PFD_STEREO) || !quad_stereo_supported ) { */
     GLboolean quad_stereo_supported;
     glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+   
     if( !quad_stereo_supported ) {
       Console(4) << "Warning: Stereo pixel format not supported by your "
                  << "graphics card(or it is not enabled). Quad buffered "
@@ -579,6 +588,42 @@ void H3DWindowNode::initWindowWithContext() {
                  << "Using \"MONO\" instead. " <<endl;
       renderMode->setValue( "MONO", id );
     } 
+  }
+}
+
+struct CallbackData {
+  H3DWindowNode *window;
+  X3DChildNode *renderChild;
+};
+
+void H3DWindowNode::fboCallback( FrameBufferTextureGenerator *g, int i, void *args ) {
+  CallbackData *data = static_cast< CallbackData * >( args );
+
+  // clear buffer every second call to renderChild (one call per eye in stereo).
+  // we only want to clear it 
+  static int count = 0;
+  if( count % 2 == 0 ) 
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  count++;
+
+  // render the node to the fbo.
+  data->window->renderChild( data->renderChild, true );
+}
+
+void H3DWindowNode::renderChild( X3DChildNode *child_to_render ) {
+  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
+  if( stereo_mode == RenderMode::NVIDIA_3DVISION ) {
+    // NVIDIA_3DVISION rendermode will render the data to an fbo.
+    // It is then up to the sub-class to read this data and display
+    // it properly for stereo.
+    CallbackData data;
+    data.window = this;
+    data.renderChild = child_to_render;
+    generator->setRenderCallback( fboCallback, &data );
+    generator->render();
+  } else {
+    // normal render mode, just render.
+    renderChild( child_to_render, false );
   }
 }
 
@@ -591,7 +636,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   if( stereo_mode != last_render_mode ) {
     if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ||
-        last_render_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+        last_render_mode == RenderMode::QUAD_BUFFERED_STEREO ||
+        stereo_mode == RenderMode::NVIDIA_3DVISION ||
+        last_render_mode == RenderMode::NVIDIA_3DVISION ) {
       // reinitialize the window to support/remove quad buffered stereo
       initWindowWithContext();
     }
@@ -616,6 +663,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glDrawBuffer( GL_BACK_RIGHT );
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     } 
+
     swapBuffers();
     return;
   }
@@ -894,7 +942,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glStencilFunc(GL_EQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
     } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
-	       stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
+               stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, height->getValue() / 2, 
                   width->getValue(), height->getValue() / 2 );
     } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
@@ -1009,6 +1057,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
                stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
       glViewport( width->getValue() / 2, 0, 
                   width->getValue() / 2, height->getValue() );
+    } else if( stereo_mode == RenderMode::NVIDIA_3DVISION  ) {
+      glViewport( width->getValue(), 0, 
+                  width->getValue(), height->getValue() );
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -1125,6 +1176,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glPopAttrib();
       glDisable( GL_SCISSOR_TEST );
     }
+
     swapBuffers();
 
     if( any_pointing_device_sensors ) {
@@ -1240,6 +1292,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     if ( !norm ) 
       glDisable( GL_NORMALIZE );
+
     swapBuffers();
   }
   glPopAttrib();
@@ -1417,6 +1470,8 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return HDMI_FRAME_PACKED_720P;
   else if( value == "HDMI_FRAME_PACKED_1080P" )
     return HDMI_FRAME_PACKED_1080P;
+  else if( value == "NVIDIA_3DVISION" )
+    return NVIDIA_3DVISION;
   else {
     stringstream s;
     s << "Must be one of "
@@ -1430,6 +1485,7 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
       << "VERTICAL_SPLIT_KEEP_RATIO, "
       << "HORIZONTAL_SPLIT, "
       << "HORIZONTAL_SPLIT_KEEP_RATIO, "
+      << "NVIDIA_3DVISION, "
       << "HDMI_FRAME_PACKED_720P, "
       << "HDMI_FRAME_PACKED_1080P, "
       << "RED_CYAN_STEREO, RED_GREEN_STEREO or RED_BLUE_STEREO. ";

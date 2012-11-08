@@ -350,7 +350,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                                     wxT("HDMI Frame packed 720p"));
   stereoRenderMode->AppendRadioItem(FRAME_HDMI1080P, wxT("HDMI Frame packed 1080p"),
                                     wxT("HDMI Frame packed 1080p"));
-  
+#ifdef HAVE_DX9
+  stereoRenderMode->AppendRadioItem(FRAME_NVIDIA_3DVISION, wxT("3DVision from NVidia"),
+                                    wxT("3DVision from NVidia. Requires executable name change."));
+#endif  
   //Renderer Menu
   rendererMenu = new wxMenu;
   rendererMenu->AppendCheckItem(FRAME_FULLSCREEN, wxT("Fullscreen Mode\tF11"),
@@ -1094,7 +1097,10 @@ bool WxFrame::loadFile( const string &filename) {
         stereoRenderMode->Check( FRAME_HDMI720P, true );
       else if( render_mode == "HDMI_FRAME_PACKED_1080P" )
         stereoRenderMode->Check( FRAME_HDMI1080P, true );
-
+#ifdef HAVE_DX9
+      else if( render_mode == "NVIDIA_3DVISION" )
+        stereoRenderMode->Check( FRAME_NVIDIA_3DVISION, true );
+#endif
     }
 
     tree_view_dialog->showEntireSceneAsTree( true );
@@ -1640,6 +1646,9 @@ void WxFrame::StereoRenderMode(wxCommandEvent & event)
       break;
     case FRAME_HDMI1080P:
       renderMode = "HDMI_FRAME_PACKED_1080P";
+      break;
+    case FRAME_NVIDIA_3DVISION:
+      renderMode = "NVIDIA_3DVISION";
       break;
   }
   glwindow->renderMode->setValue( renderMode.c_str() );
