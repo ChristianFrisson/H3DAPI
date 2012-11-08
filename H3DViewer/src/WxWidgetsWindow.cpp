@@ -113,26 +113,31 @@ void WxWidgetsWindow::initWindow() {
   // TODO: stereo mode does not work with mac
   attribList[i++] = 0;
 #else
-  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
-    attribList[i++] = WX_GL_STEREO;
+  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+    GLboolean quad_stereo_supported;
+    glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+    if( quad_stereo_supported ){
+      attribList[i++] = WX_GL_STEREO;
+    }
+  }
   attribList[i++] = 0;
 #endif
   // if we have a previous window, use same rendering context and destroy it.
   MyWxGLCanvas *old_canvas = theWxGLCanvas;
-	theWxGLCanvas = 
+  theWxGLCanvas = 
       new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
                         wxSize( width->getValue(), height->getValue() ), 
                         attribList );
+  if( !theWxGLContext )
+    theWxGLContext = new wxGLContext( theWxGLCanvas );
 
   if( old_canvas ) {
     old_canvas->Destroy();
   }
-  
+
 #if wxUSE_DRAG_AND_DROP
   theWxGLCanvas->SetDropTarget( new DragAndDropFile( this ) );
 #endif
-
-  theWxGLContext = new wxGLContext( theWxGLCanvas );
 
 #ifdef H3D_WINDOWS
   hWnd = (HWND)(theWxGLCanvas->GetHandle());
