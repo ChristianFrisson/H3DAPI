@@ -746,7 +746,7 @@ void WxWidgetsWindow::D3D9Canvas::updateGLFrameBufferSize( int w, int h ) {
       // Update the signature header values
       pSIH->dwSignature= NVSTEREO_IMAGE_SIGNATURE;
       pSIH->dwBPP= 32;
-      pSIH->dwFlags= SIH_SWAP_EYES; // Srcimage has left on left and right on right
+      pSIH->dwFlags= 0;//SIH_SWAP_EYES; // Srcimage has left on left and right on right
       pSIH->dwWidth= w*2;
       pSIH->dwHeight= h;
       // Unlock surface
