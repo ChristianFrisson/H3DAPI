@@ -443,50 +443,53 @@ namespace H3D {
     }
 
     /// Inserts x before pos.
-    inline iterator insert( iterator pos,
+    inline typename MField<Type>::const_iterator insert( typename MField<Type>::const_iterator pos,
                      const Type &x, 
                      int id = 0 ) {
       this->checkAccessTypeSet( id );
       this->upToDate();
-      iterator i = this->value.insert( pos, x );
+      iterator i = this->value.insert( this->iteratorFromConst ( pos ), x );
       this->startEvent();
       return i;
     }
         
    /// Inserts the range [first, last) before pos.
    template <class InputIterator>
-   void insert(iterator pos,
+   void insert(typename MField<Type>::const_iterator pos,
                InputIterator first, 
                InputIterator last,
                int id = 0 ) {
      this->checkAccessTypeSet( id );
      this->upToDate();
-     this->value.insert( pos, first, last );
+     this->value.insert( this->iteratorFromConst ( pos ), first, last );
      this->startEvent();
    } 
             
     /// Inserts n copies of x before pos.
-    inline void insert(iterator pos, 
+    inline void insert(typename MField<Type>::const_iterator pos, 
                        typename BaseMField::size_type n, const Type &x, int id = 0 ) {
       this->checkAccessTypeSet( id );
       this->upToDate();
-      this->value.insert( pos, n, x );
+      this->value.insert( this->iteratorFromConst ( pos ), n, x );
       this->startEvent();
     }
     
     /// Erases the element at position pos.
-    inline virtual void erase( iterator pos, int id = 0 ) { 
+    inline virtual void erase( typename MField<Type>::const_iterator pos, int id = 0 ) { 
       this->checkAccessTypeSet( id );
       this->upToDate();
-      this->value.erase( pos );
+      this->value.erase( this->iteratorFromConst ( pos ) );
       this->startEvent();
     }
         
     /// Erases the range [first, last)
-    inline virtual void erase( iterator first, iterator last, int id = 0 ) {
+    inline virtual void erase( typename MField<Type>::const_iterator first, 
+                               typename MField<Type>::const_iterator last, int id = 0 ) {
       this->checkAccessTypeSet( id );
       this->upToDate();
-      this->value.erase( first, last );
+      this->value.erase( 
+        this->iteratorFromConst ( first ), 
+        this->iteratorFromConst ( last ) );
       this->startEvent();
     }
     
@@ -528,6 +531,11 @@ namespace H3D {
   protected:
     /// Make the field up to date given that an event has occured.
     inline virtual void update();
+
+    /// Helper function to get an iterator from a const_iterator
+    inline iterator iteratorFromConst ( typename MField<Type>::const_iterator pos ) {
+      return this->value.begin()+(pos-this->value.begin());
+    }
   };
 
   template< class Type  >
@@ -546,7 +554,7 @@ namespace H3D {
   }
 
   template< class Type  >
-  void MField< Type >::setValue( const vector< Type > &v, int id ) {
+  void MField< Type >::setValue( const std::vector< Type > &v, int id ) {
 #ifdef DEBUG
     Console(1) << "MField< " << typeid( Type ).name() 
          << " >(" << this->name << ")::setValue()" << endl;
@@ -562,7 +570,7 @@ namespace H3D {
   }
 
   template< class Type >
-  const vector< Type > &MField<Type >::getValue( int id ) {
+  const std::vector< Type > &MField<Type >::getValue( int id ) {
 #ifdef DEBUG
     Console(1) << "MField< " << typeid( Type ).name() 
          << " >(" << this->name << ")::getValue()" << endl;
