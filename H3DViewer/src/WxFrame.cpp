@@ -845,6 +845,7 @@ bool WxFrame::loadFile( const string &filename) {
 
   // Loading X3D file and setting up VR environment ---
   
+	DeviceInfo *di_before = DeviceInfo::getActive();
   try {
     X3D::DEFNodes dn;
 
@@ -1110,6 +1111,11 @@ bool WxFrame::loadFile( const string &filename) {
     }
     catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
+		if( !di_before ) {
+			DeviceInfo *di = DeviceInfo::getActive();
+			if( di )
+				di->set_bind->setValue( false );
+		}
     stringstream org,reformated;
     org << e;
     insertLineBreak(org,reformated,100);
@@ -1411,10 +1417,11 @@ void WxFrame::clearData () {
       navigationMenu->Remove( temp_menu_item->GetId() );
     }
   }
-
-	global_settings->set_bind->setValue( false );
-  global_settings.reset( 0 );
-  stereo_info.reset( 0 );
+	if( global_settings.get() ) {
+		global_settings->set_bind->setValue( false );
+	}
+  global_settings.reset( NULL );
+  stereo_info.reset( NULL );
 }
 
 
