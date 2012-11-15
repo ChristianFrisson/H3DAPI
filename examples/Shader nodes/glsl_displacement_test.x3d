@@ -52,9 +52,9 @@
                 <field name="unf68" type="SFVec3f" accessType="inputOutput" value="1.000000 1.000000 1.000000" />
                 <!--- Lamp DynColor 'Lamp' -->
 
-                <field name="uTessLevel" type="SFFloat" accessType="inputOutput" value="1.0" />
+                <field name="uTessLevel" type="SFFloat" accessType="inputOutput" value="10.0" />
                 <field name="uTessAlpha" type="SFFloat" accessType="inputOutput" value="1.0" />
-                <field name="uDisplacement" type="SFFloat" accessType="inputOutput" value="0.05" />
+                <field name="uDisplacement" type="SFFloat" accessType="inputOutput" value="0.4" />
                 <field name="displacementMap" type="SFNode" accessType="inputOutput">
                   <ImageTexture DEF="DISPLACEMENTMAP" url="../textures/displacementtest_heightmap.png">
                     <TextureProperties DEF="TP"
