@@ -208,7 +208,6 @@ IF( GENERATE_CPACK_PROJECT )
                              ${H3DAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/libcurl.dll
                              ${H3DAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/cg.dll
                              ${H3DAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/cgGL.dll
-                             ${H3DAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/OpenAL32.dll
                              ${H3DAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/libvorbisfile.dll
                              ${H3DAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/libvorbis.dll
                              ${H3DAPI_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/libogg.dll
@@ -281,7 +280,7 @@ IF( GENERATE_CPACK_PROJECT )
       # a user wants to build H3D or against it.
       STRING( REGEX REPLACE "(/${EXTERNAL_BIN_PATH}/)" "/${EXTERNAL_BIN_REPLACE_PATH}/" other_binary ${binary} )
       IF( EXISTS ${other_binary} )
-        INSTALL( FILES ${binary}
+        INSTALL( FILES ${other_binary}
                  DESTINATION External/${EXTERNAL_BIN_REPLACE_PATH}
                  COMPONENT H3DAPI_cpack_external_source )
       ENDIF( EXISTS ${other_binary} )
@@ -471,9 +470,14 @@ IF( GENERATE_CPACK_PROJECT )
   ENDIF(WIN32 AND NOT UNIX)
   
   # Install header files
-  INSTALL( FILES ${H3DAPI_HEADERS}
+  INSTALL( FILES ${H3DAPI_HEADERS} ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.cmake
            DESTINATION H3DAPI/include/H3D
            COMPONENT H3DAPI_cpack_headers )
+
+  # H3DApi.cmake that goes to headers is not needed unless sources is required.
+  INSTALL( FILES ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.cmake
+			DESTINATION H3DAPI/include/H3D
+			COMPONENT H3DAPI_cpack_sources )
   
   # Install src files.
   INSTALL( FILES ${H3DAPI_SRCS}
@@ -537,6 +541,16 @@ IF( GENERATE_CPACK_PROJECT )
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
 
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../examples
+           DESTINATION H3DAPI
+           COMPONENT H3DAPI_cpack_sources
+           REGEX "(/.svn)|(/CVS)" EXCLUDE )
+
+  INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../H3DLoad
+           DESTINATION H3DAPI
+           COMPONENT H3DAPI_cpack_sources
+           REGEX "(/.svn)|(/CVS)" EXCLUDE )
+
+  INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../H3DViewer
            DESTINATION H3DAPI
            COMPONENT H3DAPI_cpack_sources
            REGEX "(/.svn)|(/CVS)" EXCLUDE )

@@ -163,14 +163,25 @@ GraphicsHardwareInfo::GraphicsHardwareInfo( Inst< SFNode      > _metadata,
 	initialized->setValue( false, id );
 }
 
+string glGetStlString( GLenum name ) {
+	string return_string = "";
+	const GLubyte * v = glGetString( name );
+	if( v == 0 ) {
+		glGetError();
+		// The error is not important. It is GL_INVALID_ENUM.
+		// We just want to clear the error stack.
+	} else
+		return_string = (const char *)v;
+	return return_string;
+}
+
 bool GraphicsHardwareInfo::initializeInfo() {
   
-  info.vendor = (const char *) glGetString( GL_VENDOR );
-  info.renderer = (const char *) glGetString( GL_RENDERER );
-  info.version = (const char *) glGetString( GL_VERSION );
-  info.shading_language_version = (const char *) glGetString( GL_SHADING_LANGUAGE_VERSION );
-  info.extensions = (const char *) glGetString( GL_EXTENSIONS );
-  info_initialized = true;
+  info.vendor = glGetStlString( GL_VENDOR );
+  info.renderer = glGetStlString( GL_RENDERER );
+  info.version = glGetStlString( GL_VERSION );
+  info.shading_language_version = glGetStlString( GL_SHADING_LANGUAGE_VERSION );
+  info.extensions = glGetStlString( GL_EXTENSIONS );
 
   GLint v;
   glGetIntegerv( GL_MAX_3D_TEXTURE_SIZE, &v );
