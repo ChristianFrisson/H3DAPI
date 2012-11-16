@@ -51,7 +51,7 @@ ProgramShader::ProgramShader( Inst< DisplayList     > _displayList,
                               Inst< SFString        > _language,
                               Inst< MFShaderProgram > _programs ) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
-                 _isValid, _activate),
+                 _isValid, _activate, _language ),
   programs( _programs ) {
   type_name = "ProgramShader";
   database.initFields( this );
