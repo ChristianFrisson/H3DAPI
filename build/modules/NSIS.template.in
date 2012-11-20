@@ -33,6 +33,15 @@
   ;Name and file
   Name "@CPACK_NSIS_PACKAGE_NAME@"
   OutFile "@CPACK_TOPLEVEL_DIRECTORY@/@CPACK_OUTPUT_FILE_NAME@"
+  
+  VIProductVersion                 "2.2.0.0"
+  VIAddVersionKey ProductName      "H3D"
+  VIAddVersionKey Comments         "H3DAPI"
+  VIAddVersionKey CompanyName      "SenseGraphics AB" ;this appear as "copyright" under Properties->Details
+  VIAddVersionKey LegalCopyright   "SenseGraphics AB"
+  VIAddVersionKey FileDescription  "H3DAPI. A cross platform, haptics device independent, X3D based API for 3D graphics and haptics."
+  VIAddVersionKey ProductVersion   2.2
+  VIAddVersionKey LegalTrademarks  "Pte Ltd"
 
   ;Set compression
   SetCompressor @CPACK_NSIS_COMPRESSOR@
