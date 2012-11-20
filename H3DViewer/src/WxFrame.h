@@ -130,6 +130,11 @@ public:
   wxCheckBox *display_list_checkbox;
   wxCheckBox *only_geoms_checkbox;
   wxSpinCtrl *caching_delay_spin;
+  wxChoice *culling_choice;
+  wxCheckBox *default_shadows_checkbox;
+  wxTextCtrl *shadow_darkness_text;
+  wxTextCtrl *shadow_depth_offset_text;
+  wxCheckBox *vertex_buffer_object_checkbox;
 
   // HapticsOptions
   wxChoice *face_choice;
@@ -175,6 +180,11 @@ protected:
     ID_USE_DISPLAY_LISTS,
     ID_CACHE_ONLY_GEOMS,
     ID_CACHING_DELAY,
+	ID_CULLING,
+	ID_DEFAULT_SHADOWS,
+	ID_VERTEX_BUFFER_OBJECT,
+	ID_SHADOW_DARKNESS,
+	ID_SHADOW_DEPTH_OFFSET,
     ID_PROXY_RADIUS,
     ID_BOUND_TYPE,
     ID_MAX_DISTANCE,
@@ -347,6 +357,11 @@ private:
     bool use_caching;
     bool cache_only_geometries;
     int caching_delay;
+    string frustum_culling_mode;
+    bool use_default_shadows;
+    float default_shadow_darkness;
+    float default_shadow_depth_offset;
+    bool prefer_vertex_buffer_object;
 
     // HapticsOptions
     string touchable_face;
