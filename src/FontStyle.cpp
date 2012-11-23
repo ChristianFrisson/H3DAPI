@@ -33,6 +33,8 @@
 #include <AGL/agl.h>
 #endif
 
+using namespace H3D;
+
 #if defined( HAVE_FREETYPE ) && defined( HAVE_FTGL )
 
 #ifdef FTGL_INCLUDE_IS_UPPER
@@ -58,8 +60,6 @@
     #include <freetype/freetype.h>
   #endif
 #endif //else HAVE_FONTCONFIG
-
-using namespace H3D;
 
 namespace FontStyleInternals {
   // Internal map where the destructor deletes allocated
