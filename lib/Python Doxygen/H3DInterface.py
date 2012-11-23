@@ -132,6 +132,11 @@ class MField( Field ):
   ## \param v The element to remove.
   def erase( self, v ):
     eraseElementFromMField( self, v ) 
+    
+  ## Returns the size of the MField. 
+  ## \return The number of elements in the MField.
+  def size( self ):
+    return MFieldSize( self )
 
 
 # Install all built-in Field types:

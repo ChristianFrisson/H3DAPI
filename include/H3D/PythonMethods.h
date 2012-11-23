@@ -140,6 +140,8 @@ namespace H3D {
 
     PyObject* pythonMFieldPopBack( PyObject *self, PyObject *arg );
 
+    PyObject* pythonMFieldSize( PyObject *self, PyObject *arg );
+
     PyObject* pythonTouchField( PyObject *self, PyObject *arg );
 
     PyObject* pythonResolveURLAsFile( PyObject *self, PyObject *arg );

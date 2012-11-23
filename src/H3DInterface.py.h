@@ -126,6 +126,9 @@ class MField( Field ):\n\
   def erase( self, v ):\n\
     eraseElementFromMField( self, v ) \n\
 \n\
+  def size( self ):\n\
+    return MFieldSize( self ) \n\
+\n\
 \n\
 # Install all built-in Field types:\n\
 sfield_types = [ \n\

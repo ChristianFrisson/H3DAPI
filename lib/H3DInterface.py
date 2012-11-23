@@ -91,6 +91,9 @@ class MField( Field ):
 
   def erase( self, v ):
     eraseElementFromMField( self, v ) 
+    
+  def size( self ):
+    return MFieldSize( self )
 
 
 # Install all built-in Field types:
