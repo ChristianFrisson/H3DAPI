@@ -2416,8 +2416,8 @@ void WxFrame::LoadSettings( bool from_config ) {
     int caching_delay;
     string frustum_culling_mode;
     bool use_default_shadows;
-    float default_shadow_darkness;
-    float default_shadow_depth_offset;
+    double default_shadow_darkness;
+    double default_shadow_depth_offset;
     bool prefer_vertex_buffer_object;
     if( from_config ) {
       if (h3dConfig->Exists(wxT("/Settings/GraphicsCaching"))) {
