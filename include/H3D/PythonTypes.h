@@ -288,10 +288,10 @@ namespace H3D {
   ///                      for the Node ptr. Usually this is the desired behaviour, except
   ///                      for a PythonScript node, which would never be deleted if this were
   ///                      the case.
-  PyObject *PyNode_FromNode( Node *v, bool _refCountNode= true );
+  PyObject H3DAPI_API *PyNode_FromNode( Node *v, bool _refCountNode= true );
 
   /// Returns an Node * representation of the contents of o.
-  Node *PyNode_AsNode( PyObject *o );
+  Node H3DAPI_API *PyNode_AsNode( PyObject *o );
 
   /// Returns true if its argument is a PyNode.
   inline bool PyNode_Check( PyObject *o) {
@@ -378,7 +378,7 @@ namespace H3D {
   PyObject *PyVec2f_FromVec2f( const Vec2f &v);
 
   /// Returns an Vec2f representation of the contents of o.
-  Vec2f PyVec2f_AsVec2f( PyObject *o );
+  Vec2f H3DAPI_API PyVec2f_AsVec2f( PyObject *o );
 
   /// Returns true if its argument is a PyVec2f.
   inline bool PyVec2f_Check( PyObject *o) {
@@ -430,7 +430,7 @@ namespace H3D {
   PyObject *PyVec2d_FromVec2d( const Vec2d &v);
 
   /// Returns an Vec2d representation of the contents of o.
-  Vec2d PyVec2d_AsVec2d( PyObject *o );
+  Vec2d H3DAPI_API PyVec2d_AsVec2d( PyObject *o );
 
   /// Returns true if its argument is a PyVec2d.
   inline bool PyVec2d_Check( PyObject *o) {
@@ -496,7 +496,7 @@ namespace H3D {
   PyObject *PyVec3f_FromVec3f( const Vec3f &v);
 
   /// Returns an Vec3f representation of the contents of o.
-  Vec3f PyVec3f_AsVec3f( PyObject *o );
+  Vec3f H3DAPI_API PyVec3f_AsVec3f( PyObject *o );
 
   /// Returns true if its argument is a PyVec3f.
   inline bool PyVec3f_Check( PyObject *o) {
@@ -555,7 +555,7 @@ namespace H3D {
   PyObject *PyVec3d_FromVec3d( const Vec3d &v);
 
   /// Returns an Vec3d representation of the contents of o.
-  Vec3d PyVec3d_AsVec3d( PyObject *o );
+  Vec3d H3DAPI_API PyVec3d_AsVec3d( PyObject *o );
 
   /// Returns true if its argument is a PyVec3f.
   inline bool PyVec3d_Check( PyObject *o) {
@@ -618,7 +618,7 @@ namespace H3D {
   PyObject *PyVec4f_FromVec4f( const Vec4f &v);
 
   /// Returns an Vec4f representation of the contents of o.
-  Vec4f PyVec4f_AsVec4f( PyObject *o );
+  Vec4f H3DAPI_API PyVec4f_AsVec4f( PyObject *o );
 
   /// Returns true if its argument is a PyVec3f.
   inline bool PyVec4f_Check( PyObject *o) {
@@ -654,7 +654,7 @@ namespace H3D {
   PyObject *PyVec4d_FromVec4d( const Vec4d &v);
 
   /// Returns an Vec4d representation of the contents of o.
-  Vec4d PyVec4d_AsVec4d( PyObject *o );
+  Vec4d H3DAPI_API PyVec4d_AsVec4d( PyObject *o );
 
   /// Returns true if its argument is a PyVec3f.
   inline bool PyVec4d_Check( PyObject *o) {
@@ -700,7 +700,7 @@ namespace H3D {
   PyObject *PyRotation_FromRotation( const Rotation &v);
 
   /// Returns an Rotation representation of the contents of o.
-  Rotation PyRotation_AsRotation( PyObject *o );
+  Rotation H3DAPI_API PyRotation_AsRotation( PyObject *o );
 
   /// Returns true if its argument is a PyVec3f.
   inline bool PyRotation_Check( PyObject *o) {
@@ -745,7 +745,7 @@ namespace H3D {
   PyObject *PyQuaternion_FromQuaternion( const Quaternion &v);
 
   /// Returns an Quaternion representation of the contents of o.
-  Quaternion PyQuaternion_AsQuaternion( PyObject *o );
+  Quaternion H3DAPI_API PyQuaternion_AsQuaternion( PyObject *o );
 
   /// Returns true if its argument is a PyVec3f.
   inline bool PyQuaternion_Check( PyObject *o) {
@@ -806,7 +806,7 @@ namespace H3D {
   PyObject *PyMatrix3f_FromMatrix3f( const Matrix3f &v);
 
   /// Returns an Matrix3f representation of the contents of o.
-  Matrix3f PyMatrix3f_AsMatrix3f( PyObject *o );
+  Matrix3f H3DAPI_API PyMatrix3f_AsMatrix3f( PyObject *o );
 
   /// Returns true if its argument is a PyMatrix3f.
   inline bool PyMatrix3f_Check( PyObject *o) {
@@ -871,7 +871,7 @@ namespace H3D {
   PyObject *PyMatrix4f_FromMatrix4f( const Matrix4f &v);
 
   /// Returns an Matrix4f representation of the contents of o.
-  Matrix4f PyMatrix4f_AsMatrix4f( PyObject *o );
+  Matrix4f H3DAPI_API PyMatrix4f_AsMatrix4f( PyObject *o );
 
   /// Returns true if its argument is a PyMatrix4f.
   inline bool PyMatrix4f_Check( PyObject *o) {
@@ -953,7 +953,7 @@ namespace H3D {
   PyObject *PyMatrix3d_FromMatrix3d( const Matrix3d &v);
 
   /// Returns an Matrix3d representation of the contents of o.
-  Matrix3d PyMatrix3d_AsMatrix3d( PyObject *o );
+  Matrix3d H3DAPI_API PyMatrix3d_AsMatrix3d( PyObject *o );
 
   /// Returns true if its argument is a PyMatrix3d.
   inline bool PyMatrix3d_Check( PyObject *o) {
@@ -1030,7 +1030,7 @@ namespace H3D {
   PyObject *PyMatrix4d_FromMatrix4d( const Matrix4d &v);
 
   /// Returns an Matrix4d representation of the contents of o.
-  Matrix4d PyMatrix4d_AsMatrix4d( PyObject *o );
+  Matrix4d H3DAPI_API PyMatrix4d_AsMatrix4d( PyObject *o );
 
   /// Returns true if its argument is a PyMatrix4d.
   inline bool PyMatrix4d_Check( PyObject *o) {
@@ -1123,7 +1123,7 @@ namespace H3D {
   PyObject *PyRGB_FromRGB( const RGB &v);
 
   /// Returns an RGB representation of the contents of o.
-  RGB PyRGB_AsRGB( PyObject *o );
+  RGB H3DAPI_API PyRGB_AsRGB( PyObject *o );
 
   /// Returns true if its argument is a PyVec3f.
   inline bool PyRGB_Check( PyObject *o) {
@@ -1158,7 +1158,7 @@ namespace H3D {
   PyObject *PyRGBA_FromRGBA( const RGBA &v);
 
   /// Returns an RGBA representation of the contents of o.
-  RGBA PyRGBA_AsRGBA( PyObject *o );
+  RGBA H3DAPI_API PyRGBA_AsRGBA( PyObject *o );
 
   /// Returns true if its argument is a PyRGBA.
   inline bool PyRGBA_Check( PyObject *o) {
