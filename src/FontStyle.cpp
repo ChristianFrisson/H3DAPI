@@ -69,11 +69,19 @@ namespace FontStyleInternals {
   public:
     // This will not work if FTGL is delayloaded.
     ~FontStyleMap() {
+// The reason for only cleaning up in Windows is that cleaning up on non-windows might
+// cause segmentation fault. I have not fully understood why but since this is
+// only a memory leak on exit issue we will disable it on non-windows for now.
+// The segmentation fault occurrs in freetype function FT_Done_Face. Perhaps it
+// has to do with shared library initialization/deinitialization order and static
+// variables.
+#ifdef WIN32
       while( !empty() ) {
         iterator i = begin();
         delete (*i).second;
         erase( i );
       }
+#endif
     }
   };
   static FontStyleMap font_db;
