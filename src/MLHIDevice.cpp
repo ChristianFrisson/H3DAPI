@@ -90,6 +90,8 @@ void MLHIDevice::initialize() {
     Console(4) << "Cannot use MLHIDevice. HAPI compiled without"
              << " MLHIAPI support. Recompile HAPI with "
              << "HAVE_MLHIAPI defined"
-             << " in order to use it." << endl;
+             << " in order to use it."
+						 << " Note that the support for MLHI device is completely untested. "
+						 << "BE CAREFUL IF YOU USE IT." << endl;
   #endif
 }
