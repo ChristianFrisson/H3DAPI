@@ -32,10 +32,10 @@ IF( H3D_USE_DEPENDENCIES_ONLY )
   INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
   INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
   INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} )
-  INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} )
+  INCLUDE_DIRECTORIES( ${H3DPhysics_INCLUDE_DIR} )
   INCLUDE_DIRECTORIES( ${MedX3D_INCLUDE_DIR} )
   
-  SET( requiredLibs ${requiredLibs} H3DUtil HAPI H3DAPI UI RigidBodyPhysics MedX3D)
+  SET( requiredLibs ${requiredLibs} H3DUtil HAPI H3DAPI UI H3DPhysics MedX3D)
 ELSE( H3D_USE_DEPENDENCIES_ONLY )
   #H3DAPI
   FIND_PACKAGE(H3DAPI REQUIRED)
@@ -76,18 +76,18 @@ IF( INCLUDE_UI )
   ENDIF(UI_FOUND)
 ENDIF( INCLUDE_UI )
 
-#RigidBodyPhysics
-OPTION( INCLUDE_RigidBodyPhysics
-        "Add RigidBodyPhysics nodes to list"
+#H3DPhysics
+OPTION( INCLUDE_H3DPhysics
+        "Add H3DPhysics nodes to list"
         OFF )
-IF( INCLUDE_RigidBodyPhysics )
-  FIND_PACKAGE(RigidBodyPhysics)
+IF( INCLUDE_H3DPhysics )
+  FIND_PACKAGE(H3DPhysics)
 
-  IF(RigidBodyPhysics_FOUND)
-    INCLUDE_DIRECTORIES( ${RigidBodyPhysics_INCLUDE_DIR} ) 
-    SET(optionalLibs ${optionalLibs} ${RigidBodyPhysics_LIBRARIES} )
-  ENDIF(RigidBodyPhysics_FOUND)
-ENDIF( INCLUDE_RigidBodyPhysics )
+  IF(H3DPhysics_FOUND)
+    INCLUDE_DIRECTORIES( ${H3DPhysics_INCLUDE_DIR} ) 
+    SET(optionalLibs ${optionalLibs} ${H3DPhysics_LIBRARIES} )
+  ENDIF(H3DPhysics_FOUND)
+ENDIF( INCLUDE_H3DPhysics )
 
 #MedX3D
 OPTION( INCLUDE_MedX3D
@@ -128,9 +128,9 @@ IF(WIN32)
     SET( CreateH3DNodesFieldsList_COMPILE_FLAGS "${CreateH3DNodesFieldsList_COMPILE_FLAGS} -DHAVE_UI" )
   ENDIF( UI_FOUND )
 
-  IF( RigidBodyPhysics_FOUND )
-    SET( CreateH3DNodesFieldsList_COMPILE_FLAGS "${CreateH3DNodesFieldsList_COMPILE_FLAGS} -DHAVE_RigidBodyPhysics" )
-  ENDIF( RigidBodyPhysics_FOUND )
+  IF( H3DPhysics_FOUND )
+    SET( CreateH3DNodesFieldsList_COMPILE_FLAGS "${CreateH3DNodesFieldsList_COMPILE_FLAGS} -DHAVE_H3DPhysics" )
+  ENDIF( H3DPhysics_FOUND )
 
   IF( MedX3D_FOUND )
     SET( CreateH3DNodesFieldsList_COMPILE_FLAGS "${CreateH3DNodesFieldsList_COMPILE_FLAGS} -DHAVE_MedX3D" )
