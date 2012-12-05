@@ -16,14 +16,15 @@ IF( GENERATE_CPACK_PROJECT )
       SET( H3DAPI_CPACK_EXTERNAL_ROOT "$ENV{H3D_EXTERNAL_ROOT}" CACHE PATH "Set to the External directory used with H3DAPI, needed to pack properly. If not set FIND_modules will be used instead." )
       MARK_AS_ADVANCED(H3DAPI_CPACK_EXTERNAL_ROOT)
     ENDIF( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
+
+    IF( TARGET OpenHapticsRenderer )
+      SET( OPENHAPTICS_FOUND TRUE )
+    ENDIF( TARGET OpenHapticsRenderer )
+    IF( TARGET Chai3DRenderer )
+      SET( CHAI3D_FOUND TRUE )
+    ENDIF( TARGET Chai3DRenderer )
+    include( ${H3DAPI_SOURCE_DIR}/../../HAPI/build/HAPICPack.cmake )
   ENDIF( WIN32 )
-  IF( TARGET OpenHapticsRenderer )
-    SET( OPENHAPTICS_FOUND TRUE )
-  ENDIF( TARGET OpenHapticsRenderer )
-  IF( TARGET Chai3DRenderer )
-    SET( CHAI3D_FOUND TRUE )
-  ENDIF( TARGET Chai3DRenderer )
-  include( ${H3DAPI_SOURCE_DIR}/../../HAPI/build/HAPICPack.cmake )
 
 
   # Set information properties about the project to install.
