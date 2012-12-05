@@ -667,11 +667,6 @@ IF( GENERATE_CPACK_PROJECT )
     MESSAGE (STATUS "H3D_cmake_runtime_path is not set, please set it to continue")
   ENDIF( H3D_cmake_runtime_path )
 
-  IF( WIN32 )
-    #SET(CPACK_INSTALLED_DIRECTORIES ${CPACK_INSTALLED_DIRECTORIES}
-    #                                ${HAPI_CPACK_INSTALLED_DIRECTORIES} )
-  ENDIF(WIN32)
-
   IF( NOT H3D_USE_DEPENDENCIES_ONLY)
 	INCLUDE(CPack)
     INCLUDE(UseDebian)
