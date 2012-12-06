@@ -30,7 +30,7 @@
 #define __ENTACTDEVICE_H__
 
 #include <H3D/H3DHapticsDevice.h>
-#include <H3D/MFString.h>
+#include <H3D/SFString.h>
 
 namespace H3D {
 
@@ -77,7 +77,8 @@ namespace H3D {
             Inst< SFBool             > _followViewpoint        = 0,
             Inst< SFInt32            > _serialNumber           = 0,
             Inst< SFBool             > _needsCalibration       = 0,
-            Inst< Calibrate          > _calibrate              = 0 );
+            Inst< Calibrate          > _calibrate              = 0,
+						Inst< SFString           > _ipAddress              = 0 );
 
     /// Creates a EntactHapticsDevice in the hapi_device
     /// member with the specified serial number.
@@ -107,6 +108,14 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOnly \n   
     auto_ptr< Calibrate > calibrate;
+
+		/// The ip address of the device to use. If specified only the
+    /// device with the specified ip address can be initialized
+    /// by the node. This field is used if serialNumber is -1;
+    /// 
+    /// <b>Default value:</b> "" \n 
+    /// <b>Access type:</b> initializeOnly \n 
+    auto_ptr< SFString  > ipAddress;
 
     
     /// Node database entry

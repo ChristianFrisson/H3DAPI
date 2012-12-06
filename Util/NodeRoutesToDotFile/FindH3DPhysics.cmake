@@ -30,12 +30,14 @@ ENDIF(MSVC70 OR MSVC71)
 FIND_LIBRARY( H3DPhysics_LIBRARY NAMES ${H3DPhysics_NAME}
               PATHS $ENV{H3D_ROOT}/../H3DPhysics/lib
                     ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/lib )
+                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/lib
+                    $ENV{H3D_ROOT}/../lib )
 
 FIND_LIBRARY( H3DPhysics_DEBUG_LIBRARY NAMES ${H3DPhysics_NAME}_d
               PATHS $ENV{H3D_ROOT}/../H3DPhysics/lib
                     ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/lib )
+                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/lib
+                    $ENV{H3D_ROOT}/../lib )
 MARK_AS_ADVANCED(H3DPhysics_LIBRARY)
 MARK_AS_ADVANCED(H3DPhysics_DEBUG_LIBRARY)
 
