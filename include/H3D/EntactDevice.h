@@ -38,6 +38,11 @@ namespace H3D {
   /// \class EntactDevice
   /// \brief A EntactDevice is a node for handling communication
   /// with a haptics device from Entact.
+	///
+	/// Note that all EntactDevice nodes in the scene have to use the same
+	/// way to connect to the device. Either serial number for all, or static
+	/// IP addresses for all. Getting a connection when using static ip address
+	/// seems to be more reliable so it the recommended approach.
   ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/EntactDevice.x3d">EntactDevice.x3d</a>
@@ -91,7 +96,8 @@ namespace H3D {
     /// The serial number of the device to use. If specified only the
     /// device with the specified serial number can be initialized
     /// by the node. If -1 any Entact device that is connected to 
-    /// the computer can be used.
+    /// the computer can be used. Note that all devices in scene must use
+		/// the same connection approach.
     /// 
     /// <b>Default value:</b> -1 \n 
     /// <b>Access type:</b> initializeOnly \n 
@@ -111,7 +117,9 @@ namespace H3D {
 
 		/// The ip address of the device to use. If specified only the
     /// device with the specified ip address can be initialized
-    /// by the node. This field is used if serialNumber is -1;
+    /// by the node. This field is used if serialNumber is -1.
+		/// Note that all devices in scene must use
+		/// the same connection approach.
     /// 
     /// <b>Default value:</b> "" \n 
     /// <b>Access type:</b> initializeOnly \n 
