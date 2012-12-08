@@ -39,6 +39,13 @@
 #ifdef HAVE_FFMPEG
 
 extern "C" {
+#define __STDC_CONSTANT_MACROS
+
+#ifdef _STDINT_H
+
+#undef _STDINT_H
+
+#endif
 #include <avcodec.h>
 #include <avformat.h>
 #include <swscale.h>
