@@ -36,6 +36,10 @@
 
 //#define FFMPEG_DEBUG
 
+#ifndef CODEC_TYPE_VIDEO
+#define CODEC_TYPE_VIDEO AVMEDIA_TYPE_VIDEO
+#endif
+
 using namespace H3D;
 
 // Define this if you want to render only the video component with no audio
@@ -156,6 +160,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
   dump_format(pFormatCtx, 0, url.c_str(), 0);
 #endif
 
+
   // Find the first video stream
   videoStream=-1;
   audioStream=-1;
@@ -273,34 +278,36 @@ void FFmpegDecoder::getNewFrame( unsigned char *buffer ) {
   if (av_read_frame(pFormatCtx, &packet)>=0) {
     // Is this a packet from the video stream?
     if(packet.stream_index==videoStream) {
-  	// Decode video frame
-      avcodec_decode_video(pCodecCtx, pFrame, &frameFinished,
-                         packet.data, packet.size);
-    
+        // Decode video frame
+      //#if LIBAVFORMAT_BUILD > 4628 
+      //avcodec_decode_video(pCodecCtx, pFrame, &frameFinished,
+      //packet.data, packet.size);
+
+      avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
       // Did we get a video frame?
       if(frameFinished) {
-				// Convert the image from its native format to RGB
-				sws_scale(imgConvertCtx,
-									pFrame->data, pFrame->linesize,
-									0, pCodecCtx->height, 
-									pFrameRGB->data, pFrameRGB->linesize);
-
-  	  
-          // Render the image to the texture 
-	  if (pCodecCtx->height > 0 && pCodecCtx->width > 0) {
-	    for(int y=pCodecCtx->height-1; y>-1; y--) {
-  	      memcpy( buffer, pFrameRGB->data[0]+(y*pFrameRGB->linesize[0]), pCodecCtx->width*3 );
-	      buffer+=pCodecCtx->width*3;
-	    }
-	    current_frame++;
-	  }
-
-	  //have_new_frame = false;
-
+        // Convert the image from its native format to RGB
+        sws_scale(imgConvertCtx,
+                  pFrame->data, pFrame->linesize,
+                  0, pCodecCtx->height, 
+                  pFrameRGB->data, pFrameRGB->linesize);
+        
+          
+        // Render the image to the texture 
+        if (pCodecCtx->height > 0 && pCodecCtx->width > 0) {
+          for(int y=pCodecCtx->height-1; y>-1; y--) {
+            memcpy( buffer, pFrameRGB->data[0]+(y*pFrameRGB->linesize[0]), pCodecCtx->width*3 );
+            buffer+=pCodecCtx->width*3;
+          }
+          current_frame++;
+        }
+        
+        //have_new_frame = false;
+        
 #ifdef FFMPEG_DEBUG 
-  	  //Console(4) << "Pos=" << getPosition() << endl;
+        //Console(4) << "Pos=" << getPosition() << endl;
 #endif
-
+        
       }
     }
   }  
