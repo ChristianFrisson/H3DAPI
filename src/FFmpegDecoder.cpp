@@ -36,7 +36,7 @@
 
 //#define FFMPEG_DEBUG
 
-#ifndef CODEC_TYPE_VIDEO
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
 #define CODEC_TYPE_VIDEO AVMEDIA_TYPE_VIDEO
 #endif
 
@@ -279,11 +279,12 @@ void FFmpegDecoder::getNewFrame( unsigned char *buffer ) {
     // Is this a packet from the video stream?
     if(packet.stream_index==videoStream) {
         // Decode video frame
-      //#if LIBAVFORMAT_BUILD > 4628 
-      //avcodec_decode_video(pCodecCtx, pFrame, &frameFinished,
-      //packet.data, packet.size);
-
+#if LIBAVCODEC_VERSION_MAJOR < 53
+      avcodec_decode_video(pCodecCtx, pFrame, &frameFinished,
+			   packet.data, packet.size);
+#else
       avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+#endif
       // Did we get a video frame?
       if(frameFinished) {
         // Convert the image from its native format to RGB
