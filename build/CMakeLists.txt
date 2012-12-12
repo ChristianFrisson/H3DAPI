@@ -285,6 +285,12 @@ ENDIF(NOT PYTHON_FOUND)
 IF(PYTHON_FOUND)
   SET(HAVE_PYTHON 1)
   INCLUDE_DIRECTORIES( ${PYTHON_INCLUDE_PATH} ) 
+IF(LINUX)
+  # pyconfig.h is put in different directory from Ubuntu 13.04 (raring) 
+  # and CMake FindPythonLibs module is not updated for this yet. 
+  # Adding it explicitly here in the mean time.
+  INCLUDE_DIRECTORIES( /usr/include/${CMAKE_LIBRARY_ARCHITECTURE}/python2.7 ) 
+ENDIF(LINUX)
   SET(optionalLibs ${optionalLibs} ${PYTHON_LIBRARIES} )
 ENDIF(PYTHON_FOUND)
 
