@@ -146,6 +146,10 @@ namespace H3D {
     AutoRef< X3DViewpointNode > old_vp;
     // List of H3DNavigation instances, needed by the static functions.
     static list< H3DNavigation * > h3d_navigations;
+
+    // Returns true if the scaling factors are uniform, i.e. the same.
+    bool isUniformScaling( const Vec3f &scale );
+
   };
 
 }
