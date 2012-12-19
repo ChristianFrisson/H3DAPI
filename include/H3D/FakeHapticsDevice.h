@@ -73,9 +73,16 @@ namespace H3D {
            Inst< SFBool          > _followViewpoint        = 0,
            Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
            Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
-           Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0 
+           Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0,
+           Inst< SFString           > _deviceName             = 0 
            );
 
+    /// The name of the device, as specified in the xml file. 
+    ///
+    /// <b>Access type:</b> initializeOnly \n
+    /// <b>Default value:</b> "" \n
+    auto_ptr< SFString > deviceName;
+	
     /// Node database entry
     static H3DNodeDatabase database;
   };
