@@ -336,9 +336,11 @@ void WxWidgetsWindow::MyWxGLCanvas::OnSize( wxSizeEvent& event ) {
   // set GL viewport (not called by wxGLCanvas::OnSize on all platforms...)
   int w, h;
   GetClientSize(&w, &h);
-  RenderMode::Mode stereo_mode = myOwner->renderMode->getRenderMode();
-  if( stereo_mode != RenderMode::NVIDIA_3DVISION ) {
-    myOwner->reshape( w, h );
+  if( myOwner ) {
+    RenderMode::Mode stereo_mode = myOwner->renderMode->getRenderMode();
+    if( stereo_mode != RenderMode::NVIDIA_3DVISION ) {
+      myOwner->reshape( w, h );
+    }
   }
 }
 

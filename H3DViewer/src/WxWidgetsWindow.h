@@ -87,6 +87,7 @@ namespace H3D {
 #endif
 
     protected:
+      friend class WxWidgetsWindow;
       WxWidgetsWindow * myOwner;
       DECLARE_EVENT_TABLE()
     };
@@ -106,12 +107,16 @@ namespace H3D {
 
     ///// Destructor.
     ~WxWidgetsWindow() {
+      theWxGLCanvas->myOwner = NULL;
+
       if( !have_parent ) {
         theWindow->Destroy();
       }
-			// Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
-			if( theWxGLContext )
-				delete theWxGLContext;
+      
+      // Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
+      if( theWxGLContext ) {
+        delete theWxGLContext;
+      }
     }
 
     /// Calls wxGLCanvas::SwapBuffers
@@ -133,13 +138,13 @@ namespace H3D {
     static H3DNodeDatabase database;
 
     typedef void (*OnDropFileFunc)( wxCoord x, wxCoord y,
-		      const wxArrayString&,
-		      void * );
+                                    const wxArrayString&,
+                                    void * );
 
     /// Set a callback function that will be called when a file is
     /// dragged and dropped over the window.
     void onFileDraggedAndDroppedFunction( OnDropFileFunc func, 
-					  void * arg = NULL ) {
+                                          void * arg = NULL ) {
       drag_file_func = func;
       drag_file_func_arg = arg;
     }
@@ -173,11 +178,11 @@ namespace H3D {
       DragAndDropFile(WxWidgetsWindow *_owner) { owner = _owner; }
       
       virtual bool OnDropFiles(wxCoord x, wxCoord y,
-			       const wxArrayString& filenames) {
-	if( owner->drag_file_func ) {
-	  owner->drag_file_func( x, y, filenames, owner->drag_file_func_arg );
-	}
-	return true;
+                               const wxArrayString& filenames) {
+        if( owner->drag_file_func ) {
+          owner->drag_file_func( x, y, filenames, owner->drag_file_func_arg );
+        }
+        return true;
       }
     protected:
       WxWidgetsWindow *owner;
@@ -195,7 +200,7 @@ namespace H3D {
     wxSizer *sizer;
     MyWxGLCanvas * theWxGLCanvas;
     wxGLContext * theWxGLContext;
-	bool last_fullscreen;
+    bool last_fullscreen;
 
   bool fullscreen_initialized;
 
@@ -208,10 +213,10 @@ namespace H3D {
   class D3D9Canvas : public wxWindow {
   public:
     D3D9Canvas( WxWidgetsWindow *owner,
-		wxWindow *parent, wxWindowID id = wxID_ANY,
-	       const wxPoint& pos = wxDefaultPosition,
-	       const wxSize& size = wxDefaultSize, long style = 0,
-	       const wxString& name = wxT("TestGLCanvas"));
+                wxWindow *parent, wxWindowID id = wxID_ANY,
+                const wxPoint& pos = wxDefaultPosition,
+                const wxSize& size = wxDefaultSize, long style = 0,
+                const wxString& name = wxT("TestGLCanvas"));
     
     ~D3D9Canvas();
     void updateGLFrameBufferSize( int w, int h );
