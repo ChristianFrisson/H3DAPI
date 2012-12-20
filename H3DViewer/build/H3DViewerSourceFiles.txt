@@ -1,0 +1,23 @@
+SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/H3DViewerApp.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxFrame.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialogPropGrid.cpp"  
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPluginsDialog.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPopupMenus.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.cpp")
+
+SET ( H3DViewer_HEADERS "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/WxFrame.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialogPropGrid.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPluginsDialog.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPopupMenus.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.h" )

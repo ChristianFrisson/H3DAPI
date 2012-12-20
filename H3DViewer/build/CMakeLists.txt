@@ -269,7 +269,7 @@ IF(WIN32)
 
   SET( H3DViewer_COMPILE_FLAGS "-DWXUSINGDLL" )
   IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
-    SET( H3DViewer_COMPILE_FLAGS "-DH3DVIEWER_STANDALONE" )
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -DH3DVIEWER_STANDALONE" )
   ENDIF( GENERATE_H3DVIEWER_CPACK_PROJECT )
 
   # Set compile and link properties for projects.
@@ -319,8 +319,7 @@ IF( APPLE )
 ELSE( APPLE )
   INSTALL( TARGETS H3DViewer
            LIBRARY DESTINATION lib
-           RUNTIME DESTINATION bin
-           COMPONENT H3DAPI_cpack_runtime )
+           RUNTIME DESTINATION bin COMPONENT H3DViewer_cpack_runtime )
 ENDIF( APPLE )
 
 # Add a cache variable GENERATE_H3DVIEWER_CPACK_PROJECT to have the choice of generating a project
@@ -330,140 +329,6 @@ IF( NOT DEFINED GENERATE_H3DVIEWER_CPACK_PROJECT )
   MARK_AS_ADVANCED(GENERATE_H3DVIEWER_CPACK_PROJECT)
 ENDIF( NOT DEFINED GENERATE_H3DVIEWER_CPACK_PROJECT )
 
-IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
-
-  # Set information properties about the project to install.
-  SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "H3DViewer. An X3D viewer with extensions for haptics." )
-  SET(CPACK_PACKAGE_VENDOR "SenseGraphics AB")
-  SET(CPACK_PACKAGE_CONTACT "support@sensegraphics.com" )
-  SET(CPACK_RESOURCE_FILE_LICENSE "${H3DViewer_SOURCE_DIR}/../../LICENSE")
-  SET(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_CURRENT_BINARY_DIR};H3DViewer;ALL;/")
-  SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DViewer_MAJOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_MINOR ${H3DViewer_MINOR_VERSION})
-  SET(CPACK_PACKAGE_VERSION_PATCH ${H3DViewer_BUILD_VERSION})
-  SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}" )
-
-
-  IF( APPLE )
-    IF( NOT DEFINED H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
-      SET( H3DVIEWER_CPACK_INCLUDE_LIBRARIES "NO" CACHE BOOL "Decides if all dependent shared libraries should be included in the bundle or not." )
-      MARK_AS_ADVANCED(H3DVIEWER_CPACK_INCLUDE_LIBRARIES)
-    ENDIF( NOT DEFINED H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
-
-    SET( CPACK_BUNDLE_NAME "H3DViewer" ) #- provides the bundle name (displayed in the finder underneath the bundle icon). 
-    SET( CPACK_BUNDLE_ICON "${H3DViewer_SOURCE_DIR}/H3DViewer.icns" ) # - provides the bundle icon (displayed in the /Applications folder, on the dock, etc). 
-    SET( CPACK_BUNDLE_PLIST "${H3DViewer_SOURCE_DIR}/info.plist" ) # - path to a file that will become the bundle plist. 
-    SET( CPACK_BUNDLE_STARTUP_COMMAND "${H3DViewer_SOURCE_DIR}/start.sh" ) #- path to a file that will be executed when the user opens the bundle. Could be a shell-script or a binary.
-
-    IF( H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
-      #Include all shared libraries in bundle
-      INCLUDE("${H3DViewer_SOURCE_DIR}/OSXCPackLibraries.txt" )
-
-      INSTALL( FILES ${OSX_DEPENDENT_LIBRARIES}
-               DESTINATION lib )
-
-      INSTALL( FILES ${OSX_PLUGIN_LIBRARIES}
-               DESTINATION Plugins )
-    ENDIF( H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
-  ELSEIF( WIN32 )
-
-    SET( H3DVIEWER_PLUGIN_DIRECTORY CACHE PATH "Set this to the directory containing all plugins that should be distributed with H3DViewer" )
-
-    SET( H3D_VIEWER_CPACK_IGNORE_FILES "" )
-    IF(MSVC70 OR MSVC71)
-      SET( H3D_VIEWER_CPACK_IGNORE_FILES _vc8\\\\.dll$
-                                         _vc9\\\\.dll$ )
-    ELSEIF(MSVC80)
-      SET( H3D_VIEWER_CPACK_IGNORE_FILES _vc7\\\\.dll$
-                                         _vc9\\\\.dll$ )
-    ELSEIF(MSVC90)
-      SET( H3D_VIEWER_CPACK_IGNORE_FILES _vc7\\\\.dll$
-                                         _vc8\\\\.dll$ )
-    ENDIF(MSVC70 OR MSVC71)
-
-    # File patterns to ignore.
-    SET(CPACK_IGNORE_FILES ${H3D_VIEWER_CPACK_IGNORE_FILES}
-                           /\\\\.svn/
-                           \\\\.obj$
-                           \\\\.ncb$
-                           \\\\.log$
-                           \\\\.suo$
-                           \\\\.dir/
-                           \\\\.user$
-                           \\\\.cv$
-                           /pthreadGC2\\\\.dll$
-                           /pthreadGCE2\\\\.dll$
-                           /pthreadVSE2\\\\.dll$
-                           "/HapticAPI2\\\\.(lib)*(dll)*(h)*$"
-                           /xerces-c_2_7\\\\.dll$
-                           /xerces-c_2_7D\\\\.dll$
-                           "/DentalSimAPI\\\\.(lib)*(dll)*(h)*$"
-                           "/ogg_d\\\\.dll$"
-                           "_d\\\\.(lib)*(dll)*(exe)*$"
-                           "H3DLoad\\\\.exe$" )
-
-    SET( H3DVIEWER_INSTALLED_DIRECTORIES "${H3DViewer_SOURCE_DIR}/../../../bin;bin"
-                                         "${H3DViewer_SOURCE_DIR}/../../../External/bin;bin"
-                                         "${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles;." )
-
-    IF( H3DVIEWER_PLUGIN_DIRECTORY )
-      SET( H3DVIEWER_INSTALLED_DIRECTORIES ${H3DVIEWER_INSTALLED_DIRECTORIES}
-                                           "${H3DVIEWER_PLUGIN_DIRECTORY};Plugins" )
-    ENDIF( H3DVIEWER_PLUGIN_DIRECTORY )
-    
-    # Add a cache variable vc_redist_folder which should be set to a folder containing all needed
-    # visual studio redistributables.
-    IF( NOT DEFINED vc_redist_folder )
-      SET( vc_redist_folder CACHE PATH "Set this to a folder containing all the needed visual studio redistributable dlls." )
-      MARK_AS_ADVANCED(vc_redist_folder)
-    ENDIF( NOT DEFINED vc_redist_folder )
-
-    IF( vc_redist_folder )
-      SET( H3DVIEWER_INSTALLED_DIRECTORIES ${H3DVIEWER_INSTALLED_DIRECTORIES}
-                                           "${vc_redist_folder};bin" )
-    ENDIF( vc_redist_folder )
-
-    # Directories to install, and how they should be named. Non-existing folders will be ignored when packing.
-    SET(CPACK_INSTALLED_DIRECTORIES ${H3DVIEWER_INSTALLED_DIRECTORIES} )
-
-    # Start menu shortcut.
-    SET( CPACK_PACKAGE_EXECUTABLES ${CPACK_PACKAGE_EXECUTABLES}
-                                   "H3DViewer;H3DViewer" )
-
-    SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
-
-    # Install python if not already installed
-    SET( PythonInstallMSI "" CACHE FILEPATH "Needs to be set to add python installation to the package." )
-    MARK_AS_ADVANCED(PythonInstallMSI)
-    IF( PythonInstallMSI )
-      STRING( REGEX MATCH 2\\.[456789] CPACK_PYTHON_VERSION ${PythonInstallMSI} )
-      GET_FILENAME_COMPONENT( PYTHON_FILE_NAME ${PythonInstallMSI} NAME )
-      STRING( REPLACE "/" "\\\\" TEMP_PythonInstallMSI ${PythonInstallMSI} )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Code to install Python\\n  ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n"
-                                             " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 +5\\n"
-                                             " Extract python installer\\n  File \\\"${TEMP_PythonInstallMSI}\\\"\\n"
-                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'  $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete python installer\\n  Delete \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"\\n\\n" )
-    ENDIF( PythonInstallMSI )
-    
-    # Install OpenAL.
-    SET( OpenAlInstallExe "" CACHE FILEPATH "Needs to be set to add openal installation to the package." )
-    MARK_AS_ADVANCED(OpenAlInstallExe)
-    IF( OpenAlInstallExe )
-      GET_FILENAME_COMPONENT( OpenAL_FILE_NAME ${OpenAlInstallExe} NAME )
-      STRING( REPLACE "/" "\\\\" TEMP_OpenAlInstallExe ${OpenAlInstallExe} )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Code to install OPENAL\\n  File \\\"${TEMP_OpenAlInstallExe}\\\"\\n"
-                                             " Execute install file\\n  ExecWait \\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete install file\\n  Delete \\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\"\\n" )
-    ENDIF( OpenAlInstallExe )
-
-    SET( CPACK_NSIS_MODIFY_PATH "OFF" )
-  ENDIF( APPLE )
-
-  INCLUDE(CPack)
-
-ENDIF( GENERATE_H3DVIEWER_CPACK_PROJECT )
+IF( NOT H3DAPI_SOURCE_DIR )
+  include( ${H3DViewer_SOURCE_DIR}/H3DViewerCPack.cmake )
+ENDIF( NOT H3DAPI_SOURCE_DIR )
