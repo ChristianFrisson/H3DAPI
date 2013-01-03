@@ -49,11 +49,16 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
       #Include all shared libraries in bundle
       INCLUDE("${H3DViewer_SOURCE_DIR}/OSXCPackLibraries.txt" )
 
-      INSTALL( FILES ${OSX_DEPENDENT_LIBRARIES}
-               DESTINATION lib )
+# Used previously to install all the dependent libraries listed. This
+# is now done automatially with the osx_bundle.py script instead.
+#      INSTALL( FILES ${OSX_DEPENDENT_LIBRARIES}
+#               DESTINATION lib )
 
       INSTALL( FILES ${OSX_PLUGIN_LIBRARIES}
                DESTINATION Plugins )
+
+      INSTALL( CODE "EXECUTE_PROCESS( COMMAND \"python\" ${H3DViewer_SOURCE_DIR}/osx_bundle.py   
+                                      WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX})" )
     ENDIF( H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
   ENDIF( APPLE )
   

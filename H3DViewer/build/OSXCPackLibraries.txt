@@ -2,24 +2,23 @@ FILE(GLOB H3DAPI_FILES "/usr/local/lib/libH3DAPI.*.dylib")
 FILE(GLOB HAPI_FILES "/usr/local/lib/libHAPI.*.dylib")
 FILE(GLOB H3DUTIL_FILES "/usr/local/lib/libH3DUtil.*.dylib")
 FILE(GLOB GLEW_FILES "/opt/local/lib/libGLEW.*.dylib")
-FILE(GLOB AUDIOFILE_FILES "/opt/local/lib/libaudiofile.*.dylib"
-FILE(GLOB FONTCONFIG_FILES "/opt/local/lib/libfontconfig.*.dylib"))
+FILE(GLOB AUDIOFILE_FILES "/opt/local/lib/libaudiofile.*.dylib")
+FILE(GLOB FONTCONFIG_FILES "/opt/local/lib/libfontconfig.*.dylib" "/opt/local/lib/libiconv.*.dylib")
 FILE(GLOB FREEIMAGE_FILES "/opt/local/lib/libfreeimage*dylib*")
-FILE(GLOB FREETYPE_FILES "/opt/local/lib/libfreetype.*.dylib")
+FILE(GLOB FREETYPE_FILES "/opt/local/lib/libfreetype.*.dylib" "/opt/local/lib/libz.*.dylib" "/opt/local/lib/libbz2.*.dylib" "/opt/local/lib/libexpat.*.dylib")
 FILE(GLOB FTGL_FILES "/opt/local/lib/libftgl.*.dylib")
 #FILE(GLOB NIFALCON_FILES "/usr/local/lib/libnifalcon*.dylib")
 #libusb required for nifalcon
 FILE(GLOB LIBUSB_FILES  /usr/local/lib/libusb*.dylib )
 FILE(GLOB OGG_FILES "/opt/local/lib/libogg.*.dylib")
-FILE(GLOB SPIDERMONKEY_FILES "/opt/local/lib/libjs.dylib")
+FILE(GLOB SPIDERMONKEY_FILES "/opt/local/lib/libjs.dylib" "/opt/local/lib/nspr/*.dylib" )
 FILE(GLOB TEEM_FILES "/opt/local/lib/libteem.*.dylib")
 FILE(GLOB VORBIS_FILES "/opt/local/lib/libvorbis.*.dylib")
 FILE(GLOB VORBISFILE_FILES "/opt/local/lib/libvorbisfile.*.dylib")
-FILE(GLOB WXWIDGETS_FILES "/opt/local/lib/libwx*.*.dylib")
+FILE(GLOB WXWIDGETS_FILES "/opt/local/lib/libwx*.*.dylib" "/opt/local/lib/libpng15.*.dylib" "/opt/local/lib/libjpeg.*.dylib" "/opt/local/lib/libtiff.*.dylib" "/opt/local/lib/libSDL-*.dylib" "/opt/local/lib/libX*.*.dylib" "/opt/local/lib/libxml2.*.dylib" "/opt/local/lib/liblzma.*.dylib" )
 FILE(GLOB XERCES_FILES "/opt/local/lib/libxerces-c.*.dylib")
 FILE(GLOB ODE_FILES "/opt/local/lib/libode.*.dylib")
 FILE(GLOB BULLET_FILES "/opt/local/lib/libbullet*.*.dylib" "/opt/local/lib/libLinearMath.*.dylib")
-
 
 SET( OSX_DEPENDENT_LIBRARIES ${H3DAPI_FILES}
      			     ${HAPI_FILES}
@@ -27,6 +26,7 @@ SET( OSX_DEPENDENT_LIBRARIES ${H3DAPI_FILES}
 			     ${GLEW_FILES}
 			     ${AUDIOFILE_FILES}
 			     ${BULLET_FILES}
+			     ${FONTCONFIG_FILES}
 			     ${FREEIMAGE_FILES}
 			     ${FREETYPE_FILES}
 			     ${FTGL_FILES}
