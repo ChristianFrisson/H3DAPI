@@ -245,7 +245,7 @@ bool H3DViewerPluginsDialog::addPlugin( const wxString &path, bool force_overwri
   }
 
   h3dConfig->SetPath( wxT("/Plugins/") + name );
-  h3dConfig->Write( wxT(""), name );
+  //  h3dConfig->Write( wxT(""), name );
   h3dConfig->Write( wxT("Plugin"), name );
   h3dConfig->Write( wxT("Version"), version );
   h3dConfig->Write( wxT("Developer"), developer );
