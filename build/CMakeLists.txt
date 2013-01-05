@@ -479,6 +479,13 @@ SET_TARGET_PROPERTIES( H3DAPI PROPERTIES DEBUG_POSTFIX "_d" )
 # set the version of the library
 SET_TARGET_PROPERTIES( H3DAPI PROPERTIES VERSION ${H3DAPI_FULL_VERSION} )
 
+IF(APPLE)
+  SET_TARGET_PROPERTIES (H3DAPI
+                         PROPERTIES
+#                        BUILD_WITH_INSTALL_RPATH 1
+                         INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+ENDIF(APPLE)
+
 IF( WIN32 )
   # Temporary variables used later to set LINK_FLAGS.
   SET( TEMP_OUTPUT_POSTFIX "" )
