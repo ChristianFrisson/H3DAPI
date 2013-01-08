@@ -92,7 +92,7 @@ void DeviceLog::traverseSG( TraverseInfo &ti ) {
     if( device_index.empty() ) {
       for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
         if( ti.hapticsEnabled( i ) ) {
-          ti.addForceEffect( i, log_force_effect[device_index[i]] );
+          ti.addForceEffect( i, log_force_effect[i] );
         }
       }
     } else {
@@ -159,11 +159,11 @@ void DeviceLog::createLogForceEffect( int index ) {
         log_types.push_back( HAPI::DeviceLog::FORCE );
       } else if( (*i) == "TORQUE" ) {
         log_types.push_back( HAPI::DeviceLog::TORQUE );
-      } else if( (*i) == "RAW_POSITION" ) {
+      } else if( (*i) == "DEVICE_POSITION" ) {
         log_types.push_back( HAPI::DeviceLog::RAW_POSITION );
-      } else if( (*i) == "RAW_ORIENTATION" ) {
+      } else if( (*i) == "DEVICE_ORIENTATION" ) {
         log_types.push_back( HAPI::DeviceLog::RAW_ORIENTATION );
-      } else if( (*i) == "RAW_VELOCITY" ) {
+      } else if( (*i) == "DEVICE_VELOCITY" ) {
         log_types.push_back( HAPI::DeviceLog::RAW_VELOCITY );
       }
     }

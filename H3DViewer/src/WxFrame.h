@@ -297,6 +297,7 @@ public:
   void ShowProgramSettings( wxCommandEvent & event );
 	void OnKeepViewpointOnLoadCheck( wxCommandEvent & event );
 	void OnRouteSendsEventsCheck( wxCommandEvent & event );
+	void OnLoadTexturesInThreadCheck( wxCommandEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
   void ResetViewpoint( wxCommandEvent & event );
   void ChangeNavigation( wxCommandEvent & event );
@@ -512,6 +513,7 @@ enum
   FRAME_PROGRAMSETTINGS,
 	FRAME_KEEPVIEWPOINTONLOAD,
 	FRAME_ROUTESENDSEVENTS,
+	FRAME_LOADTEXTURESINTHREAD,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,
   FRAME_NAVIGATION = 6500,

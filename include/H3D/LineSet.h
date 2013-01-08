@@ -143,6 +143,7 @@ namespace H3D {
     ///
     /// \dotfile LineSet_color.dot 
     auto_ptr< SFColorNode  >  color;
+
     /// The coord field specifies the 3D vertices of the line set and contains
     /// a X3DCoordinateNode.
     ///

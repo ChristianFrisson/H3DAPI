@@ -406,6 +406,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 																 wxT("If checked new viewpoints are loaded when a new file is loaded, otherwise old viewpoint is kept.") );
 	advancedMenu->AppendCheckItem( FRAME_ROUTESENDSEVENTS, wxT("Route sends events"),
 																 wxT("If checked routes sends events when set up, i.e. not as in X3D spec.") );
+	advancedMenu->AppendCheckItem( FRAME_LOADTEXTURESINTHREAD, wxT("Load textures in thread"),
+																 wxT("If checked textures are loaded in a separate thread.") );
 	h3dConfig->SetPath(wxT("/Settings"));
   bool new_viewpoint_on_load = true;
   h3dConfig->Read(wxT("new_viewpoint_on_load"), &new_viewpoint_on_load);
@@ -414,6 +416,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   h3dConfig->Read(wxT("route_sends_events"), &route_sends_events);
 	advancedMenu->Check( FRAME_ROUTESENDSEVENTS, route_sends_events );
 	global_settings->x3dROUTESendsEvent->setValue( route_sends_events );
+	bool load_textures_in_thread = true;
+  h3dConfig->Read(wxT("load_textures_in_thread"), &load_textures_in_thread);
+	advancedMenu->Check( FRAME_LOADTEXTURESINTHREAD, load_textures_in_thread );
+	global_settings->loadTexturesInThread->setValue( load_textures_in_thread );
   //Help Menu
   helpMenu = new wxMenu;
   //helpMenu->Append(FRAME_HELP, wxT("Help"));
@@ -552,6 +558,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_PROGRAMSETTINGS, WxFrame::ShowProgramSettings)
 	EVT_MENU (FRAME_KEEPVIEWPOINTONLOAD, WxFrame::OnKeepViewpointOnLoadCheck )
 	EVT_MENU (FRAME_ROUTESENDSEVENTS, WxFrame::OnRouteSendsEventsCheck )
+	EVT_MENU (FRAME_LOADTEXTURESINTHREAD, WxFrame::OnLoadTexturesInThreadCheck )
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
   EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
@@ -1157,8 +1164,11 @@ bool WxFrame::loadFile( const string &filename) {
     global_settings.reset( new GlobalSettings );
 		// Set x3dROUTESendsEvent
 		global_settings->x3dROUTESendsEvent->setValue( advancedMenu->IsChecked( FRAME_ROUTESENDSEVENTS ) );
+		// Set loadTexturesInThread
+		global_settings->loadTexturesInThread->setValue( advancedMenu->IsChecked( FRAME_LOADTEXTURESINTHREAD ) );
   } else {
 		advancedMenu->Check( FRAME_ROUTESENDSEVENTS, global_settings->x3dROUTESendsEvent->getValue() );
+		advancedMenu->Check( FRAME_LOADTEXTURESINTHREAD, global_settings->loadTexturesInThread->getValue() );
 	}
 
   // Set CollisionOptions or update page.
@@ -1882,6 +1892,14 @@ void WxFrame::OnRouteSendsEventsCheck(wxCommandEvent & event)
   h3dConfig->SetPath(wxT("/Settings"));
   h3dConfig->Write(wxT("route_sends_events"), event.IsChecked());
 	global_settings->x3dROUTESendsEvent->setValue( event.IsChecked() );
+}
+
+void WxFrame::OnLoadTexturesInThreadCheck(wxCommandEvent & event)
+{
+	h3dConfig = wxConfigBase::Get();
+  h3dConfig->SetPath(wxT("/Settings"));
+  h3dConfig->Write(wxT("load_textures_in_thread"), event.IsChecked());
+	global_settings->loadTexturesInThread->setValue( event.IsChecked() );
 }
 
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)

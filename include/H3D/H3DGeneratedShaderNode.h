@@ -165,7 +165,7 @@ namespace H3D {
     /// Field used to update the shader code when an event is received.
     /// Every field that should cause the shaders to be rebuild needs
     /// to be routed to this field.
-    auto_ptr< Field > rebuildShader;
+    auto_ptr< RebuildShader > rebuildShader;
 
     /// Adds uniform fields to the shader. A ComposedShader uses its
     /// dynamic fields to define uniform variables. Hence we need to
