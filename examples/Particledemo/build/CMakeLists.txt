@@ -136,39 +136,34 @@ TARGET_LINK_LIBRARIES( ParticleDemo ${requiredLibs} ${optionalLibs} )
 # Set postfix for debug version of H3DViewer.
 SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES DEBUG_POSTFIX "_d" )
 
-IF(WIN32)
-
+IF(MSVC)
   # Set compile and link properties for projects.
-  IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL /Zc:wchar_t /Od" )
-  ELSEIF(MSVC80)
-    SET( ParticleDemo_COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /Od" )
-    
-    # This might be useful for visual studio 2005 users that often recompile the api.
-    IF( NOT DEFINED USE_VC8_MP_FLAG )
-      SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
-    ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
-    
-    IF( USE_VC8_MP_FLAG )
-      SET( ParticleDemo_COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS} /MP" )
-    ENDIF( USE_VC8_MP_FLAG )
-    # Remove some warnings about deprecated functions.
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS}" )
-    # Needed to run in debug mode. Removes warning about conflict between libraries.
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  ELSEIF(MSVC90)
-    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /MP" )
-    # Needed to run in debug mode. Removes warning about conflict between libraries.
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  ELSEIF(MSVC10)
-    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "-DWXUSINGDLL -D_CRT_SECURE_NO_DEPRECATE /MP" )
-    # Needed to run in debug mode. Removes warning about conflict between libraries.
-    SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  ENDIF(MSVC70 OR MSVC71)
-ENDIF(WIN32)
+  SET( ParticleDemo_COMPILE_FLAGS "-DWXUSINGDLL" )
+  
+  # Treat wchar_t as built in type for all visual studio versions.
+  # This is default for every version above 7 ( so far ) but we still set it for all.
+  SET( ParticleDemo_COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS} /Zc:wchar_t")
+  
+  IF( ${MSVC_VERSION} GREATER 1399 )
+    # Remove compiler warnings about deprecation for visual studio versions 8 and above.
+    SET( ParticleDemo_COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+  ENDIF( ${MSVC_VERSION} GREATER 1399 )
+  
+  IF( ${MSVC_VERSION} GREATER 1499 )
+    # Build using several threads for visual studio versions 9 and above.
+    SET( ParticleDemo_COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS} /MP" )
+  ENDIF( ${MSVC_VERSION} GREATER 1499 )
+  
+  IF( ${MSVC_VERSION} LESS 1500 )
+    # Turn off optimization for visual studio versions 8 and below.
+    # Old setting which I (Markus) have no idea why it was added.
+    SET( ParticleDemo_COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS} /Od" )
+  ENDIF( ${MSVC_VERSION} LESS 1500 )
+
+  SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES COMPILE_FLAGS "${ParticleDemo_COMPILE_FLAGS}" )
+  # Remove link warning in debug build.
+  SET_TARGET_PROPERTIES( ParticleDemo PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
+ENDIF(MSVC)
 
 INSTALL( TARGETS ParticleDemo
          LIBRARY DESTINATION lib

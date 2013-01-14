@@ -126,15 +126,25 @@ SET_TARGET_PROPERTIES( Spheres_X3D PROPERTIES DEBUG_POSTFIX "_d" )
 
 # set the install directory to the H3D directory on Windows
 IF(WIN32) 
-  IF(MSVC80)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
-    SET_TARGET_PROPERTIES( Sphere_X3D PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
-    SET_TARGET_PROPERTIES( Spheres_X3D PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
-  ELSEIF(MSVC90)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
-    SET_TARGET_PROPERTIES( Sphere_X3D PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
-    SET_TARGET_PROPERTIES( Spheres_X3D PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
-  ENDIF(MSVC80)
+  # Set compile and link properties for projects.
+  SET( ManualExamples_COMPILE_FLAGS "" )
+  
+  # Treat wchar_t as built in type for all visual studio versions.
+  # This is default for every version above 7 ( so far ) but we still set it for all.
+  SET( ManualExamples_COMPILE_FLAGS "${ManualExamples_COMPILE_FLAGS} /Zc:wchar_t")
+  
+  IF( ${MSVC_VERSION} GREATER 1399 )
+    # Remove compiler warnings about deprecation for visual studio versions 8 and above.
+    SET( ManualExamples_COMPILE_FLAGS "${ManualExamples_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+  ENDIF( ${MSVC_VERSION} GREATER 1399 )
+  
+  IF( ${MSVC_VERSION} GREATER 1499 )
+    # Build using several threads for visual studio versions 9 and above.
+    SET( ManualExamples_COMPILE_FLAGS "${ManualExamples_COMPILE_FLAGS} /MP" )
+  ENDIF( ${MSVC_VERSION} GREATER 1499 )
+  
+  SET_TARGET_PROPERTIES( Sphere_X3D PROPERTIES COMPILE_FLAGS "${ManualExamples_COMPILE_FLAGS}" )
+  SET_TARGET_PROPERTIES( Spheres_X3D PROPERTIES COMPILE_FLAGS "${ManualExamples_COMPILE_FLAGS}" )
 ENDIF(WIN32)
 
 # Install to these directories.

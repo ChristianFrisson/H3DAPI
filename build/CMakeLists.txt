@@ -491,67 +491,53 @@ IF( WIN32 )
   # Temporary variables used later to set LINK_FLAGS.
   SET( TEMP_OUTPUT_POSTFIX "" )
 
-  # change the name depending on compiler to be able to tell them apart
-  # since they are not compatible with each other. 
-  IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc7 )
-    SET( TEMP_OUTPUT_POSTFIX _vc7 )
-    # H3D API is now to big to link incrementally with vc7.
-    SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
-    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
+	# if we are using 64 bit compiler some object files get too big so we need
+  # to add the /bigobj flag
+  IF( CMAKE_CL_64 )
+    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
+  ENDIF( CMAKE_CL_64 )
+  
+  IF( MSVC )
+    SET( H3D_MSVC_VERSION 6 )
+    SET( TEMP_MSVC_VERSION 1299 )
+    WHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
+      MATH( EXPR H3D_MSVC_VERSION "${H3D_MSVC_VERSION} + 1" )
+      MATH( EXPR TEMP_MSVC_VERSION "${TEMP_MSVC_VERSION} + 100" )
+    ENDWHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
+
+    # change the name depending on compiler to be able to tell them apart
+    # since they are not compatible with each other. 
+    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME ${PROJECT_NAME}_vc${H3D_MSVC_VERSION} )
+
+    # Treat wchar_t as built in type for all visual studio versions.
+    # This is default for every version above 7 ( so far ) but we still set it for all.
     SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /Zc:wchar_t")
-  ELSEIF(MSVC80)
-    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc8 )
-    SET( TEMP_OUTPUT_POSTFIX _vc8 )
-    # remove some warnings about deprecated functions.
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
-    
-    # This might be useful for visual studio 2005 users that often recompile the api.
-    IF( NOT DEFINED USE_VC8_MP_FLAG )
-      SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
-    ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
-    
-    IF( USE_VC8_MP_FLAG )
+
+    IF( MSVC80 )
+      # This might be useful for visual studio 2005 users that often recompile the api.
+      IF( NOT DEFINED USE_VC8_MP_FLAG )
+        SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
+      ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
+
+      IF( USE_VC8_MP_FLAG )
+        SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /MP" )
+      ENDIF( USE_VC8_MP_FLAG )
+    ENDIF( MSVC80 )
+
+    IF( ${MSVC_VERSION} GREATER 1399 )
+      # Remove compiler warnings about deprecation for visual studio versions 8 and above.
+      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+    ENDIF( ${MSVC_VERSION} GREATER 1399 )
+
+    IF( ${MSVC_VERSION} GREATER 1499 )
+      # Build using several threads for visual studio versions 9 and above.
       SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /MP" )
-    ENDIF( USE_VC8_MP_FLAG )
+    ENDIF( ${MSVC_VERSION} GREATER 1499 )
     
-    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
-    # if we are using 64 bit compiler some object files get too big so we need
-    # to add the /bigobj flag
-    IF( CMAKE_CL_64 )
-      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
-    ENDIF( CMAKE_CL_64 )
     # H3D API is now to big to link incrementally with vc8.
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
-    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG}" )
-  ELSEIF(MSVC90)
-    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc9 )
-    SET( TEMP_OUTPUT_POSTFIX _vc9 )
-    # remove some warnings about deprecated functions.
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP" )
-    # if we are using 64 bit compiler some object files get too big so we need
-    # to add the /bigobj flag
-    IF( CMAKE_CL_64 )
-      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
-    ENDIF( CMAKE_CL_64 )
-    # H3D API is now too big to link incrementally with vc9.
-    SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
-
-  ELSEIF(MSVC10)
-    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME H3DAPI_vc10 )
-    SET( TEMP_OUTPUT_POSTFIX _vc10 )
-    # remove some warnings about deprecated functions.
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP" )
-    # if we are using 64 bit compiler some object files get too big so we need
-    # to add the /bigobj flag
-    IF( CMAKE_CL_64 )
-      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
-    ENDIF( CMAKE_CL_64 )
-    # H3D API is now to big to link incrementally with vc10.
-    SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
-    SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
-  ENDIF(MSVC70 OR MSVC71)
+  ENDIF( MSVC )
 
   # Set delayload properties of H3D API.
   SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"cgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\" /DELAYLOAD:\"VirtualHandDevice.dll\" /DELAYLOAD:\"VirtualHandCore.dll\"")
@@ -615,12 +601,36 @@ IF( H3DAPI_LOADER_PROJECTS )
   MESSAGE( STATUS "Including H3DLoad" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DLoad/build
                     ${CMAKE_CURRENT_BINARY_DIR}/H3DLoad )
+	SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} H3DLoad )
 
+	IF( H3D_USE_DEPENDENCIES_ONLY )
+		IF(WIN32)
+			FIND_PACKAGE(wxWidgetsWin)
+			IF(wxWidgets_FOUND)
+				INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
+				SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+			ENDIF(wxWidgets_FOUND)
+		ENDIF(WIN32)
 
-  MESSAGE( STATUS "Including H3DViewer" )
-  ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
-                    ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer )
-  SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} H3DLoad H3DViewer )
+		IF(wxWidgets_FOUND)
+		ELSE(wxWidgets_FOUND)
+			SET(wxWidgets_USE_LIBS base core)
+			FIND_PACKAGE(wxWidgets)
+			IF(wxWidgets_FOUND)
+				INCLUDE(${wxWidgets_USE_FILE})
+				SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+			ENDIF(wxWidgets_FOUND)
+		ENDIF(wxWidgets_FOUND)
+	ENDIF( H3D_USE_DEPENDENCIES_ONLY )
+
+	IF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+		MESSAGE( STATUS "Including H3DViewer" )
+		ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
+											${CMAKE_CURRENT_BINARY_DIR}/H3DViewer )
+		SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} H3DViewer )
+	ELSE( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+		MESSAGE( WARNING "wxWidgets was not found. H3DViewer will not be generated." )
+	ENDIF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
 ENDIF( H3DAPI_LOADER_PROJECTS )
 
 IF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
@@ -631,17 +641,22 @@ IF( H3DAPI_EXAMPLE_PROJECTS )
   MESSAGE( STATUS "Including H3DAPI manual Examples" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++
                     ${CMAKE_CURRENT_BINARY_DIR}/examples/manualExamples )
-
+	
 	IF( EXISTS ${H3DAPI_SOURCE_DIR}/../examples/Particledemo )
-	  MESSAGE( STATUS "Including ParticleDemo" )
-  	ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
-  	                  ${CMAKE_CURRENT_BINARY_DIR}/examples/Particledemo )
+		IF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+			MESSAGE( STATUS "Including ParticleDemo" )
+  		ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
+  											${CMAKE_CURRENT_BINARY_DIR}/examples/Particledemo )
+			SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} ParticleDemo )
+		ELSE( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+			MESSAGE( WARNING "wxWidgets was not found. ParticleDemo will not be generated." )
+		ENDIF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
 	ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../examples/Particledemo )
 
   MESSAGE( STATUS "Including H3DAPI ThreadExample" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/ThreadExample
                     ${CMAKE_CURRENT_BINARY_DIR}/examples/ThreadExample )
-  SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} ParticleDemo ThreadExample Sphere_X3D Spheres_X3D )
+  SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} ThreadExample Sphere_X3D Spheres_X3D )
 ENDIF( H3DAPI_EXAMPLE_PROJECTS )
 
 SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} PARENT_SCOPE )

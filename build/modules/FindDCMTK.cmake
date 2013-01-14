@@ -19,15 +19,13 @@ MARK_AS_ADVANCED(DCMTK_DIR)
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 IF( MSVC )
-SET( DCMTK_LIBRARY_POSTFIX "_vc7" )
-
-IF( MSVC80 )
-  SET( DCMTK_LIBRARY_POSTFIX "_vc8" )
-ELSEIF( MSVC90)
-  SET( DCMTK_LIBRARY_POSTFIX "_vc9" )
-ELSEIF( MSVC10)
-  SET( DCMTK_LIBRARY_POSTFIX "_vc10" )
-ENDIF( MSVC80 )
+  SET( H3D_MSVC_VERSION 6 )
+  SET( TEMP_MSVC_VERSION 1299 )
+  WHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
+    MATH( EXPR H3D_MSVC_VERSION "${H3D_MSVC_VERSION} + 1" )
+    MATH( EXPR TEMP_MSVC_VERSION "${TEMP_MSVC_VERSION} + 100" )
+  ENDWHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
+  SET( DCMTK_LIBRARY_POSTFIX "_vc${H3D_MSVC_VERSION}" )
 ENDIF( MSVC )
 
 IF( CMAKE_CL_64 )
@@ -83,6 +81,35 @@ FIND_LIBRARY( DCMTK_ofstd_LIBRARY "ofstd${DCMTK_LIBRARY_POSTFIX}"
                     /usr/local/dicom/lib
               DOC "Path to ofstd${DCMTK_LIBRARY_POSTFIX} library." )
 MARK_AS_ADVANCED(DCMTK_ofstd_LIBRARY)
+
+FIND_PATH( DCMTK_oflog_INCLUDE_DIR NAMES dcmtk/oflog/oflog.h
+           PATHS ${DCMTK_DIR}/oflog/include 
+                 ${DCMTK_DIR}/include/oflog
+                 ${DCMTK_DIR}/include
+                 $ENV{H3D_EXTERNAL_ROOT}/include
+                 $ENV{H3D_ROOT}/../External/include
+                 ../../External/include
+                 ${module_file_path}/../../../External/include
+                 ${module_file_path}/../../dcmtk/include
+                 /usr/local/dicom/include
+           DOC "Path in which the file dcmtk/oflog/oflog.h is located." )
+MARK_AS_ADVANCED(DCMTK_oflog_INCLUDE_DIR)
+
+FIND_LIBRARY( DCMTK_oflog_LIBRARY "oflog${DCMTK_LIBRARY_POSTFIX}"
+              PATHS ${DCMTK_DIR}/oflog/libsrc
+                    ${DCMTK_DIR}/oflog/libsrc/Release
+                    ${DCMTK_DIR}/oflog/libsrc/Debug
+                    ${DCMTK_DIR}/oflog/Release
+                    ${DCMTK_DIR}/oflog/Debug
+                    ${DCMTK_DIR}/lib
+                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
+                    $ENV{H3D_ROOT}/../External/${LIB}/static
+                    ../../External/${LIB}/static
+                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_file_path}/../../dcmtk/lib
+                    /usr/local/dicom/lib
+              DOC "Path to oflog${DCMTK_LIBRARY_POSTFIX} library." )
+MARK_AS_ADVANCED(DCMTK_oflog_LIBRARY)
 
 FIND_PATH( DCMTK_dcmjpeg_INCLUDE_DIR NAMES dcmtk/dcmjpeg/djdecode.h
            PATHS ${DCMTK_DIR}/dcmjpeg/include 
@@ -477,6 +504,8 @@ IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
         )
   ENDIF( MSVC10 AND HAVE_DEBUG_LIBS)
 
+
+
   IF(DCMTK_imagedb_LIBRARY)
    SET( DCMTK_LIBRARIES
    ${DCMTK_LIBRARIES}
@@ -490,6 +519,13 @@ IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
    ${DCMTK_dcmnet_LIBRARY}
    )
   ENDIF(DCMTK_dcmnet_LIBRARY)
+
+  IF(DCMTK_oflog_LIBRARY)
+   SET( DCMTK_LIBRARIES
+   ${DCMTK_LIBRARIES}
+   ${DCMTK_oflog_LIBRARY}
+   )
+  ENDIF(DCMTK_oflog_LIBRARY)
 
   IF( WIN32 )
     SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} netapi32 ws2_32 )

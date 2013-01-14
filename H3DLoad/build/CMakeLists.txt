@@ -129,18 +129,26 @@ TARGET_LINK_LIBRARIES( H3DLoad ${requiredLibs} ${optionalLibs} )
 SET_TARGET_PROPERTIES( H3DLoad PROPERTIES DEBUG_POSTFIX "_d" )
 
 # set the install directory to the H3D directory on Windows
-IF(WIN32) 
+IF(MSVC) 
   # Set compile and link properties for projects.
-  IF(MSVC70 OR MSVC71)
-    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "/Zc:wchar_t" )
-  ELSEIF(MSVC80)
-    # Remove some warnings about deprecated functions. 
-    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE" )
-  ELSEIF(MSVC90 OR MSVC10)
-    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
-    SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /MP" )
-  ENDIF(MSVC70 OR MSVC71)
-ENDIF(WIN32)
+  SET( H3DLoad_COMPILE_FLAGS "" )
+  
+  # Treat wchar_t as built in type for all visual studio versions.
+  # This is default for every version above 7 ( so far ) but we still set it for all.
+  SET( H3DLoad_COMPILE_FLAGS "${H3DLoad_COMPILE_FLAGS} /Zc:wchar_t")
+  
+  IF( ${MSVC_VERSION} GREATER 1399 )
+    # Remove compiler warnings about deprecation for visual studio versions 8 and above.
+    SET( H3DLoad_COMPILE_FLAGS "${H3DLoad_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+  ENDIF( ${MSVC_VERSION} GREATER 1399 )
+  
+  IF( ${MSVC_VERSION} GREATER 1499 )
+    # Build using several threads for visual studio versions 9 and above.
+    SET( H3DLoad_COMPILE_FLAGS "${H3DLoad_COMPILE_FLAGS} /MP" )
+  ENDIF( ${MSVC_VERSION} GREATER 1499 )
+  
+  SET_TARGET_PROPERTIES( H3DLoad PROPERTIES COMPILE_FLAGS "${H3DLoad_COMPILE_FLAGS}" )
+ENDIF(MSVC)
 
 # Install to this destination.
 INSTALL( TARGETS H3DLoad

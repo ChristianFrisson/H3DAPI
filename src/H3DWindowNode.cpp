@@ -756,7 +756,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   X3DViewpointNode *navigation_vp = vp;
   vp = h3d_navigation->viewpointToUse( vp );
 
-  const Vec3f &vp_position = vp->totalPosition->getValue();
   const Rotation &vp_orientation = vp->totalOrientation->getValue();
   const Matrix4f &vp_inv_m = vp->accInverseMatrix->getValue();
   const Rotation &vp_inv_rot = (Rotation)vp_inv_m.getRotationPart();

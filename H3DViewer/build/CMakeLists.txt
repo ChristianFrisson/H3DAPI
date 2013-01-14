@@ -265,49 +265,50 @@ SET_TARGET_PROPERTIES( H3DViewer
     MACOSX_BUNDLE_ICON_FILE ${H3DViewer_SOURCE_DIR}/H3DViewer.icns
 )
 
-IF(WIN32)
+IF(MSVC)
 
   SET( H3DViewer_COMPILE_FLAGS "-DWXUSINGDLL" )
   IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -DH3DVIEWER_STANDALONE" )
   ENDIF( GENERATE_H3DVIEWER_CPACK_PROJECT )
 
-  # Set compile and link properties for projects.
-  IF(MSVC70 OR MSVC71)
-    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} /Zc:wchar_t /Od" )
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  ELSEIF(MSVC80)
-    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
-    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /Od" )
-    
+  # Treat wchar_t as built in type for all visual studio versions.
+  # This is default for every version above 7 ( so far ) but we still set it for all.
+  SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} /Zc:wchar_t")
+
+  IF( MSVC80 )
     # This might be useful for visual studio 2005 users that often recompile the api.
     IF( NOT DEFINED USE_VC8_MP_FLAG )
       SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
     ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
-    
+
     IF( USE_VC8_MP_FLAG )
       SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} /MP" )
     ENDIF( USE_VC8_MP_FLAG )
+  ENDIF( MSVC80 )
 
-    # Needed to run in debug mode. Removes warning about conflict between libraries.
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-  ELSEIF(MSVC90)
-    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
-    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP /Od" )
-    # Needed to run in debug mode. Removes warning about conflict between libraries.
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:msvcrt" )
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS " /INCREMENTAL:NO" )
-  ELSEIF(MSVC10)
-    # Remove some warnings about deprecated functions. Compile on multiple processors/threads if possible.
-    
-    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE /MP" )
-    # Needed to run in debug mode. Removes warning about conflict between libraries.
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG " /INCREMENTAL:NO /NODEFAULTLIB:msvcrt" )
-    SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS " /INCREMENTAL:NO" )
-  ENDIF(MSVC70 OR MSVC71)
+  IF( ${MSVC_VERSION} GREATER 1399 )
+    # Remove compiler warnings about deprecation for visual studio versions 8 and above.
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+  ENDIF( ${MSVC_VERSION} GREATER 1399 )
+
+  IF( ${MSVC_VERSION} GREATER 1499 )
+    # Build using several threads for visual studio versions 9 and above.
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} /MP" )
+  ENDIF( ${MSVC_VERSION} GREATER 1499 )
+
+  IF( ${MSVC_VERSION} LESS 1600 )
+    # Turn off optimization for visual studio versions 8 and below.
+    # Old setting which I (Markus) have no idea why it was added.
+    SET( H3DViewer_COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS} /Od" )
+  ENDIF( ${MSVC_VERSION} LESS 1600 )
+
+  # H3D API is now to big to link incrementally with vc. And remove link warning in debug build.
+  SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS_DEBUG "/INCREMENTAL:NO /NODEFAULTLIB:msvcrt" )
+  SET_TARGET_PROPERTIES( H3DViewer PROPERTIES LINK_FLAGS "/INCREMENTAL:NO" )
 
   SET_TARGET_PROPERTIES( H3DViewer PROPERTIES COMPILE_FLAGS "${H3DViewer_COMPILE_FLAGS}" )
-ENDIF(WIN32)
+ENDIF(MSVC)
 
 # Install in these folders.
 IF( APPLE )
