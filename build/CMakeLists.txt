@@ -507,7 +507,8 @@ IF( WIN32 )
 
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
-    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME ${PROJECT_NAME}_vc${H3D_MSVC_VERSION} )
+		SET( TEMP_OUTPUT_POSTFIX "_vc${H3D_MSVC_VERSION}" )
+    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${TEMP_OUTPUT_POSTFIX} )
 
     # Treat wchar_t as built in type for all visual studio versions.
     # This is default for every version above 7 ( so far ) but we still set it for all.
