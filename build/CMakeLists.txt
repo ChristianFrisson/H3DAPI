@@ -487,6 +487,10 @@ IF(APPLE)
                          INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF(APPLE)
 
+IF(UNIX)
+  SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME h3dapi )
+ENDIF(UNIX)
+
 IF( WIN32 )
   # Temporary variables used later to set LINK_FLAGS.
   SET( TEMP_OUTPUT_POSTFIX "" )
