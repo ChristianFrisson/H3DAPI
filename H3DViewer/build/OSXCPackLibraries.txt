@@ -44,9 +44,9 @@ SET( OSX_DEPENDENT_LIBRARIES ${H3DAPI_FILES}
 )
 
 
-FILE(GLOB MEDX3D_FILES "/usr/local/lib/libMedX3D.*.dylib")
-FILE(GLOB UI_FILES "/usr/local/lib/libUI.*.dylib")
-FILE(GLOB H3DPHYSICS_FILES "/usr/local/lib/libH3DPhysics.*.dylib")
+FILE(GLOB MEDX3D_FILES "/usr/local/lib/libh3dmedx3d.*.dylib")
+FILE(GLOB UI_FILES "/usr/local/lib/libh3dui.*.dylib")
+FILE(GLOB H3DPHYSICS_FILES "/usr/local/lib/libh3dphysics.*.dylib")
 
 SET( OSX_PLUGIN_LIBRARIES ${MEDX3D_FILES}
 			  ${UI_FILES}
