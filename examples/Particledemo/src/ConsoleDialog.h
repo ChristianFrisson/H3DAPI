@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2007, SenseGraphics AB
+//    Copyright 2006-2013, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //

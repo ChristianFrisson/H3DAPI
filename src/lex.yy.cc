@@ -3985,7 +3985,7 @@ static yyconst flex_int32_t yy_rule_linenum[30] =
 #line 1 "vrml.l"
 #line 3 "vrml.l"
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2007, SenseGraphics AB
+//    Copyright 2004-2013, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
