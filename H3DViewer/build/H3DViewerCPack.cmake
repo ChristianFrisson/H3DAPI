@@ -33,6 +33,9 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
   SET(CPACK_PACKAGE_VERSION_MINOR ${H3DViewer_MINOR_VERSION})
   SET(CPACK_PACKAGE_VERSION_PATCH ${H3DViewer_BUILD_VERSION})
   SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}" )
+  SET(CPACK_NSIS_PACKAGE_NAME "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${H3DViewer_BUILD_VERSION}" )
+  SET(CPACK_NSIS_UNINSTALL_NAME "H3DViewer-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}" )
+  SET(CPACK_NSIS_DISPLAY_NAME "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${H3DViewer_BUILD_VERSION}" )
   
   IF( APPLE )
     IF( NOT DEFINED H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
@@ -63,43 +66,12 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
   ENDIF( APPLE )
   
   IF( WIN32 )
-    SET(CPACK_NSIS_INSTALL_ROOT "C:\\Program Files" )
+    
+    
     SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL "ON" )
+    SET(CPACK_MONOLITHIC_INSTALL "TRUE" )
     SET( CPACK_PACKAGE_START_MENU_NAME "H3DViewer ${H3DViewer_MAJOR_VERSION}.${H3DViewer_MINOR_VERSION}" )
     SET( H3DVIEWER_PLUGIN_DIRECTORY CACHE PATH "Set this to the directory containing all plugins that should be distributed with H3DViewer" )
-
-    SET( H3D_VIEWER_CPACK_IGNORE_FILES "" )
-    IF(MSVC70 OR MSVC71)
-      SET( H3D_VIEWER_CPACK_IGNORE_FILES _vc8\\\\.dll$
-                                         _vc9\\\\.dll$ )
-    ELSEIF(MSVC80)
-      SET( H3D_VIEWER_CPACK_IGNORE_FILES _vc7\\\\.dll$
-                                         _vc9\\\\.dll$ )
-    ELSEIF(MSVC90)
-      SET( H3D_VIEWER_CPACK_IGNORE_FILES _vc7\\\\.dll$
-                                         _vc8\\\\.dll$ )
-    ENDIF(MSVC70 OR MSVC71)
-
-    # File patterns to ignore.
-    SET(CPACK_IGNORE_FILES ${H3D_VIEWER_CPACK_IGNORE_FILES}
-                           /\\\\.svn/
-                           \\\\.obj$
-                           \\\\.ncb$
-                           \\\\.log$
-                           \\\\.suo$
-                           \\\\.dir/
-                           \\\\.user$
-                           \\\\.cv$
-                           /pthreadGC2\\\\.dll$
-                           /pthreadGCE2\\\\.dll$
-                           /pthreadVSE2\\\\.dll$
-                           "/HapticAPI2\\\\.(lib)*(dll)*(h)*$"
-                           /xerces-c_2_7\\\\.dll$
-                           /xerces-c_2_7D\\\\.dll$
-                           "/DentalSimAPI\\\\.(lib)*(dll)*(h)*$"
-                           "/ogg_d\\\\.dll$"
-                           "_d\\\\.(lib)*(dll)*(exe)*$"
-                           "H3DLoad\\\\.exe$" )
                            
     SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DViewer_MAJOR_VERSION})
     SET(CPACK_PACKAGE_VERSION_MINOR ${H3DViewer_MINOR_VERSION})
@@ -114,62 +86,29 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
 
     SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
     
-    # Add cache variable vc8(9)_redist which should be set to the install file
-    # for microsoft visual studio redistributables, they can be found in the
-    # installation folder for each visual studio installation.
-    IF( NOT DEFINED vc8_redist )
-      SET( vc8_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 8" )
-      MARK_AS_ADVANCED(vc8_redist)
-    ENDIF( NOT DEFINED vc8_redist )
+    SET( redist_versions 8 9 10 )
     
-    IF( NOT DEFINED vc9_redist )
-      SET( vc9_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 9." )
-      MARK_AS_ADVANCED(vc9_redist)
-    ENDIF( NOT DEFINED vc9_redist )
-    
-    IF( NOT DEFINED vc10_redist )
-      SET( vc10_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 10." )
-      MARK_AS_ADVANCED(vc10_redist)
-    ENDIF( NOT DEFINED vc10_redist )
-
-    IF( vc8_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc8_redist ${vc8_redist} )
-      GET_FILENAME_COMPONENT( VC8_FILE_NAME ${vc8_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc8\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc8_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc8\\\"\\n\\n" )
-    ENDIF( vc8_redist )
-    
-    IF( vc9_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
-      GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc9\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc9_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
-    ENDIF( vc9_redist )
-    
-    IF( vc10_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc10_redist ${vc10_redist} )
-      GET_FILENAME_COMPONENT( VC10_FILE_NAME ${vc10_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc10\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc10_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc10\\\\${VC10_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc10\\\\${VC10_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc10\\\"\\n\\n" )
-    ENDIF( vc10_redist )
+    foreach( redist_version ${redist_versions} )
+      # Add cache variable vc${redist_version}_redist which should be set to the install file
+      # for microsoft visual studio redistributables, they can be found in the
+      # installation folder for each visual studio installation.
+      IF( NOT DEFINED vc${redist_version}_redist )
+        SET( vc${redist_version}_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio ${redist_version}" )
+        MARK_AS_ADVANCED(vc${redist_version})
+      ENDIF( NOT DEFINED vc${redist_version}_redist )
+      IF( vc${redist_version}_redist )
+        STRING( REPLACE "/" "\\\\" Temp_vc${redist_version}_redist ${vc${redist_version}_redist} )
+        GET_FILENAME_COMPONENT( VC${redist_version}_FILE_NAME ${vc${redist_version}_redist} NAME )
+        SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                               " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n"
+                                               " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc${redist_version}_redist}\\\"\\n"
+                                               " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
+                                               " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                               " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
+                                               " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                               " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n\\n" )
+      ENDIF( vc${redist_version}_redist )
+    endforeach( redist_version ${redist_versions} )
     
     # Install python if not already installed
     SET( PythonInstallMSI "" CACHE FILEPATH "Needs to be set to add python installation to the package." )
@@ -202,6 +141,9 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
 
     # Modify path since in the NSIS template.
     SET( CPACK_NSIS_MODIFY_PATH "ON" )
+    
+    SET( CPACK_NSIS_CREATE_ICONS "  CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\H3DViewer.lnk\\\" \\\"$INSTDIR\\\\H3DViewer\\\\bin\\\\H3DViewer.exe\\\"" )
+    SET( CPACK_NSIS_DELETE_ICONS_EXTRA "  Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\H3DViewer.lnk\\\"" )
   
     IF( EXISTS ${H3DViewer_CPACK_EXTERNAL_ROOT} )
       SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
@@ -237,51 +179,36 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     foreach( binary ${EXTERNAL_BINARIES} )
       IF( EXISTS ${binary} )
         INSTALL( FILES ${binary}
-                 DESTINATION H3DViewer/bin
-                 COMPONENT H3DViewer_cpack_external_runtime )
+                 DESTINATION H3DViewer/bin )
       ENDIF( EXISTS ${binary} )
-      # Add the other binary path as external_source since it only needs to be included when
-      # a user wants to build H3D or against it.
-      # STRING( REGEX REPLACE "(/${EXTERNAL_BIN_PATH}/)" "/${EXTERNAL_BIN_REPLACE_PATH}/" other_binary ${binary} )
-      # IF( EXISTS ${other_binary} )
-        # INSTALL( FILES ${other_binary}
-                 # DESTINATION bin
-                 # COMPONENT H3DViewer_cpack_external_source )
-      # ENDIF( EXISTS ${other_binary} )
     endforeach( binary )
     
-    # setting names and dependencies between components and also grouping them.
-    set(CPACK_COMPONENT_H3DVIEWER_CPACK_EXTERNAL_RUNTIME_DISPLAY_NAME "External runtime")
-    set(CPACK_COMPONENT_H3DVIEWER_CPACK_EXTERNAL_RUNTIME_DESCRIPTION "External runtime binaries needed by H3DViewer.")
-    set(CPACK_COMPONENT_H3DVIEWER_CPACK_EXTERNAL_RUNTIME_GROUP "H3DViewer_cpack_group")
+    SET( H3D_MSVC_VERSION 6 )
+    SET( TEMP_MSVC_VERSION 1299 )
+    WHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
+      MATH( EXPR H3D_MSVC_VERSION "${H3D_MSVC_VERSION} + 1" )
+      MATH( EXPR TEMP_MSVC_VERSION "${TEMP_MSVC_VERSION} + 100" )
+    ENDWHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
     
-    INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/Chai3DRenderer_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DAPI_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DPhysics_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DUtil_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/HAPI_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/MedX3D_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/NewtonsCradleNodes.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/npH3D32d.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/OpenHapticsRenderer_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/UI_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DViewer.exe
-           DESTINATION H3DViewer/bin
-           COMPONENT H3DViewer_cpack_runtime )
+    INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/Chai3DRenderer_vc${H3D_MSVC_VERSION}.dll
+                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DAPI_vc${H3D_MSVC_VERSION}.dll
+                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DUtil_vc${H3D_MSVC_VERSION}.dll
+                   ${H3DViewer_SOURCE_DIR}/../../../bin/HAPI_vc${H3D_MSVC_VERSION}.dll
+                   ${H3DViewer_SOURCE_DIR}/../../../bin/OpenHapticsRenderer_vc${H3D_MSVC_VERSION}.dll
+           DESTINATION H3DViewer/bin )
            
     # these part are added separately so that these plug in can be automatically added to H3DViewer
-    INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/H3DPhysics_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/MedX3D_vc10.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/UI_vc10.dll
-           DESTINATION H3DViewer/plugins
-           COMPONENT H3DViewer_cpack_runtime )
-           
-    # setting names and dependencies between components and also grouping them.
-    set(CPACK_COMPONENT_H3DVIEWER_CPACK_RUNTIME_DISPLAY_NAME "Runtime")
-    set(CPACK_COMPONENT_H3DVIEWER_CPACK_RUNTIME_DESCRIPTION "The runtime libraries (dlls) for H3DViewer.")
-    set(CPACK_COMPONENT_H3DVIEWER_CPACK_RUNTIME_GROUP "H3DViewer_cpack_group")
+    INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/H3DPhysics_vc${H3D_MSVC_VERSION}.dll
+                   ${H3DViewer_SOURCE_DIR}/../../../bin/MedX3D_vc${H3D_MSVC_VERSION}.dll
+                   ${H3DViewer_SOURCE_DIR}/../../../bin/UI_vc${H3D_MSVC_VERSION}.dll
+           DESTINATION H3DViewer/plugins )
     
-    set(CPACK_COMPONENT_GROUP_H3DVIEWER_CPACK_GROUP_DISPLAY_NAME "HAPI")
+    IF( EXISTS ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles )
+      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/ACKNOWLEDGEMENTS
+                     ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/NOTICE
+                     ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/ReadMe.txt
+             DESTINATION H3DViewer )
+    ENDIF( EXISTS ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles )
   ENDIF( WIN32 )  
   
   INCLUDE(CPack)
