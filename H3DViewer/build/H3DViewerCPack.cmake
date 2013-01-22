@@ -187,19 +187,53 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
       MATH( EXPR H3D_MSVC_VERSION "${H3D_MSVC_VERSION} + 1" )
       MATH( EXPR TEMP_MSVC_VERSION "${TEMP_MSVC_VERSION} + 100" )
     ENDWHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
-    
-    INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/Chai3DRenderer_vc${H3D_MSVC_VERSION}.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DAPI_vc${H3D_MSVC_VERSION}.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/H3DUtil_vc${H3D_MSVC_VERSION}.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/HAPI_vc${H3D_MSVC_VERSION}.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/OpenHapticsRenderer_vc${H3D_MSVC_VERSION}.dll
-           DESTINATION H3DViewer/bin )
-           
-    # these part are added separately so that these plug in can be automatically added to H3DViewer
-    INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/H3DPhysics_vc${H3D_MSVC_VERSION}.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/MedX3D_vc${H3D_MSVC_VERSION}.dll
-                   ${H3DViewer_SOURCE_DIR}/../../../bin/UI_vc${H3D_MSVC_VERSION}.dll
-           DESTINATION H3DViewer/plugins )
+
+    IF( H3D_USE_DEPENDENCIES_ONLY )
+      INSTALL( FILES ${H3DViewer_BINARY_DIR}/../HAPI/H3DUtil/Release/H3DUtil_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_BINARY_DIR}/../HAPI/Release/HAPI_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_BINARY_DIR}/../Release/H3DAPI_vc${H3D_MSVC_VERSION}.dll
+                     CONFIGURATIONS Release
+                     DESTINATION H3DViewer/bin )
+      IF( TARGET OpenHapticsRenderer )
+        INSTALL( FILES ${H3DViewer_BINARY_DIR}/../HAPI/Release/OpenHapticsRenderer_vc${H3D_MSVC_VERSION}.dll
+                       CONFIGURATIONS Release
+                       DESTINATION H3DViewer/bin )
+      ENDIF( TARGET OpenHapticsRenderer )
+      IF( TARGET Chai3DRenderer )
+        INSTALL( FILES ${H3DViewer_BINARY_DIR}/../HAPI/Release/Chai3DRenderer_vc${H3D_MSVC_VERSION}.dll
+                       CONFIGURATIONS Release
+                       DESTINATION H3DViewer/bin )
+      ENDIF( TARGET Chai3DRenderer )
+      
+      # these part are added separately so that these plug in can be automatically added to H3DViewer
+      INSTALL( FILES ${H3DViewer_BINARY_DIR}/../../H3DPhysics/Release/H3DPhysics_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_BINARY_DIR}/../../MedX3D/Release/MedX3D_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_BINARY_DIR}/../../UI/Release/UI_vc${H3D_MSVC_VERSION}.dll
+                     CONFIGURATIONS Release
+                     DESTINATION H3DViewer/plugins )
+    ELSE( H3D_USE_DEPENDENCIES_ONLY )
+      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/H3DUtil_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../bin/HAPI_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../bin/H3DAPI_vc${H3D_MSVC_VERSION}.dll
+                     CONFIGURATIONS Release
+                     DESTINATION H3DViewer/bin )
+      IF( TARGET OpenHapticsRenderer )
+        INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/OpenHapticsRenderer_vc${H3D_MSVC_VERSION}.dll
+                       CONFIGURATIONS Release
+                       DESTINATION H3DViewer/bin )
+      ENDIF( TARGET OpenHapticsRenderer )
+      IF( TARGET Chai3DRenderer )
+        INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/Chai3DRenderer_vc${H3D_MSVC_VERSION}.dll
+                       CONFIGURATIONS Release
+                       DESTINATION H3DViewer/bin )
+      ENDIF( TARGET Chai3DRenderer )
+      # these part are added separately so that these plug in can be automatically added to H3DViewer
+      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/H3DPhysics_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../bin/MedX3D_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../bin/UI_vc${H3D_MSVC_VERSION}.dll
+                     CONFIGURATIONS Release
+                     DESTINATION H3DViewer/plugins )
+    ENDIF( H3D_USE_DEPENDENCIES_ONLY )
     
     IF( EXISTS ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles )
       INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/ACKNOWLEDGEMENTS
