@@ -852,8 +852,8 @@ Section "-Core installation"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SuperShape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SuperShape\SuperShape.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\UI\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-    StrCmp "@CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS@" "ON" 0 +2
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\RigidBodyPhysics\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+    StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\H3DPhysics\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
 
@@ -1058,7 +1058,7 @@ Section "Uninstall"
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\OpacityMappedFoot.lnk"
     StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\UI Demo.lnk"
-    StrCmp "@CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS@" "ON" 0 +2
+    StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Tower.lnk"
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\VHTK Demo.lnk"
@@ -1123,7 +1123,7 @@ Section "Uninstall"
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\OpacityMappedFoot.lnk"
     StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\UI Demo.lnk"
-    StrCmp "@CPACK_ADD_RigidBodyPhysics_DEMOS_LINKS@" "ON" 0 +2
+    StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Tower.lnk"
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\VHTK Demo.lnk"
