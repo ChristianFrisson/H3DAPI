@@ -312,10 +312,11 @@ ENDIF(MSVC)
 
 # Install in these folders.
 IF( APPLE )
+ SET( OSX_BUNDLE_INSTALL_DESTINATION /Applications CACHE PATH "Directory into which to install the H3DViewer.app bundle." FORCE )
  INSTALL( TARGETS H3DViewer
           LIBRARY DESTINATION lib
           RUNTIME DESTINATION bin
-          BUNDLE DESTINATION "/Applications"
+          BUNDLE DESTINATION ${OSX_BUNDLE_INSTALL_DESTINATION}
           COMPONENT H3DAPI_cpack_runtime )
 ELSE(APPLE)
   SET( H3DViewer_package_install_dir "" )
