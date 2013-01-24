@@ -218,7 +218,8 @@ void writeNode( string out_dir, Node *n ) {
 #endif
 
 #ifdef HAVE_H3DPhysics
-#include <H3D/H3DPhysics/X3DRigidJointNode.h>
+#include <H3D/H3DPhysics/H3DBodyConstraintNode.h>
+#include <H3D/H3DPhysics/H3DJointNode.h>
 #include <H3D/H3DPhysics/X3DNBodyCollisionSpaceNode.h>
 #include <H3D/H3DPhysics/SliderJoint.h>
 #endif
@@ -306,8 +307,6 @@ int main(int argc, char* argv[]) {
   writeNode( out_dir, new X3DNBodyCollidableNode );
   resetSceneTimeField();
   writeNode( out_dir, new X3DNBodyCollisionSpaceNode );
-  resetSceneTimeField();
-  writeNode( out_dir, new X3DRigidJointNode );
   resetSceneTimeField();
 #endif
 
