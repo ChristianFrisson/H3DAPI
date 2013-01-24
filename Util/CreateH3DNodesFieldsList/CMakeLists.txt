@@ -31,11 +31,8 @@ IF( H3D_USE_DEPENDENCIES_ONLY )
   INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
   INCLUDE_DIRECTORIES( ${HAPI_INCLUDE_DIR} ) 
   INCLUDE_DIRECTORIES( ${H3DAPI_INCLUDE_DIR} ) 
-  INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} )
-  INCLUDE_DIRECTORIES( ${H3DPhysics_INCLUDE_DIR} )
-  INCLUDE_DIRECTORIES( ${MedX3D_INCLUDE_DIR} )
   
-  SET( requiredLibs ${requiredLibs} H3DUtil HAPI H3DAPI UI H3DPhysics MedX3D)
+  SET( requiredLibs ${requiredLibs} H3DUtil HAPI H3DAPI )
 ELSE( H3D_USE_DEPENDENCIES_ONLY )
   #H3DAPI
   FIND_PACKAGE(H3DAPI REQUIRED)
@@ -67,13 +64,18 @@ OPTION( INCLUDE_UI
         "Add UI nodes to list"
         OFF )
 IF( INCLUDE_UI )
-  SET( CMAKE_MODULE_PATH "${CreateH3DNodesFieldsList_SOURCE_DIR}/../NodeRoutesToDotFile/" )
-  FIND_PACKAGE(UI)
+  IF( TARGET UI )
+    INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} )
+    SET( requiredLibs ${requiredLibs} UI )
+  ELSE( TARGET UI )
+    SET( CMAKE_MODULE_PATH "${CreateH3DNodesFieldsList_SOURCE_DIR}/../NodeRoutesToDotFile/" )
+    FIND_PACKAGE(UI)
 
-  IF(UI_FOUND)
-    INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} ) 
-    SET(optionalLibs ${optionalLibs} ${UI_LIBRARIES} )
-  ENDIF(UI_FOUND)
+    IF(UI_FOUND)
+      INCLUDE_DIRECTORIES( ${UI_INCLUDE_DIR} ) 
+      SET(optionalLibs ${optionalLibs} ${UI_LIBRARIES} )
+    ENDIF(UI_FOUND)
+  ENDIF( TARGET UI )
 ENDIF( INCLUDE_UI )
 
 #H3DPhysics
@@ -81,12 +83,18 @@ OPTION( INCLUDE_H3DPhysics
         "Add H3DPhysics nodes to list"
         OFF )
 IF( INCLUDE_H3DPhysics )
-  FIND_PACKAGE(H3DPhysics)
+  IF( TARGET H3DPhysics )
+    INCLUDE_DIRECTORIES( ${H3DPhysics_INCLUDE_DIR} )
+    SET( requiredLibs ${requiredLibs} H3DPhysics )
+  ELSE( TARGET H3DPhysics )
+    SET( CMAKE_MODULE_PATH "${CreateH3DNodesFieldsList_SOURCE_DIR}/../NodeRoutesToDotFile/" )
+    FIND_PACKAGE(H3DPhysics)
 
-  IF(H3DPhysics_FOUND)
-    INCLUDE_DIRECTORIES( ${H3DPhysics_INCLUDE_DIR} ) 
-    SET(optionalLibs ${optionalLibs} ${H3DPhysics_LIBRARIES} )
-  ENDIF(H3DPhysics_FOUND)
+    IF(H3DPhysics_FOUND)
+      INCLUDE_DIRECTORIES( ${H3DPhysics_INCLUDE_DIR} ) 
+      SET(optionalLibs ${optionalLibs} ${H3DPhysics_LIBRARIES} )
+    ENDIF(H3DPhysics_FOUND)
+  ENDIF( TARGET H3DPhysics )
 ENDIF( INCLUDE_H3DPhysics )
 
 #MedX3D
@@ -94,13 +102,18 @@ OPTION( INCLUDE_MedX3D
         "Add MedX3D nodes to list"
         OFF )
 IF( INCLUDE_MedX3D )
-  SET( CMAKE_MODULE_PATH "${CreateH3DNodesFieldsList_SOURCE_DIR}" )
-  FIND_PACKAGE(MedX3D)
+  IF( TARGET MedX3D )
+    INCLUDE_DIRECTORIES( ${MedX3D_INCLUDE_DIR} )
+    SET( requiredLibs ${requiredLibs} MedX3D )
+  ELSE( TARGET MedX3D )
+    SET( CMAKE_MODULE_PATH "${CreateH3DNodesFieldsList_SOURCE_DIR}" )
+    FIND_PACKAGE(MedX3D)
 
-  IF(MedX3D_FOUND)
-    INCLUDE_DIRECTORIES( ${MedX3D_INCLUDE_DIR} ) 
-    SET(optionalLibs ${optionalLibs} ${MedX3D_LIBRARIES} )
-  ENDIF(MedX3D_FOUND)
+    IF(MedX3D_FOUND)
+      INCLUDE_DIRECTORIES( ${MedX3D_INCLUDE_DIR} ) 
+      SET(optionalLibs ${optionalLibs} ${MedX3D_LIBRARIES} )
+    ENDIF(MedX3D_FOUND)
+  ENDIF( TARGET MedX3D )
 ENDIF( INCLUDE_MedX3D )
 
 # Optional extra library. Used for sound in H3D API.

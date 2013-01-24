@@ -21,7 +21,7 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file NodeRoutesToDotFile.cpp
+/// \file CreateH3DNodesFieldsList.cpp
 /// \brief CPP file that goes through the node database and generates
 /// dot files that can be used with doxygen documentation.
 ///
