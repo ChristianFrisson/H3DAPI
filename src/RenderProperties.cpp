@@ -118,8 +118,8 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   alphaFunc->addValidValue ( "EQUAL" );
   alphaFunc->addValidValue ( "LEQUAL" );
   alphaFunc->addValidValue ( "GREATER" );
-  alphaFunc->addValidValue ( "NOTEQAUL" );
-  alphaFunc->addValidValue ( "GEQAUL" );
+  alphaFunc->addValidValue ( "NOTEQUAL" );
+  alphaFunc->addValidValue ( "GEQUAL" );
   alphaFunc->addValidValue ( "ALWAYS" );
 
   alphaFunc->setValue( "ALWAYS" );

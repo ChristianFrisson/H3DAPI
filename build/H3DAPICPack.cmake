@@ -13,7 +13,13 @@ IF( GENERATE_CPACK_PROJECT )
     # Add a cache variable which indicates where the Externals directory used for packaging
     # HAPI is located. If not set then FIND modules will be used instead.
     IF( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
-      SET( H3DAPI_CPACK_EXTERNAL_ROOT "$ENV{H3D_EXTERNAL_ROOT}" CACHE PATH "Set to the External directory used with H3DAPI, needed to pack properly. If not set FIND_modules will be used instead." )
+      SET( H3DAPI_CPACK_EXTERNAL_ROOT_DEFAULT "" )
+      IF( H3D_USE_DEPENDENCIES_ONLY )
+        SET( H3DAPI_CPACK_EXTERNAL_ROOT_DEFAULT "${EXTERNAL_INCLUDE_DIR}/.." )
+      ELSE( H3D_USE_DEPENDENCIES_ONLY )
+        SET( H3DAPI_CPACK_EXTERNAL_ROOT_DEFAULT "$ENV{H3D_EXTERNAL_ROOT}" )
+      ENDIF( H3D_USE_DEPENDENCIES_ONLY )
+      SET( H3DAPI_CPACK_EXTERNAL_ROOT "${H3DAPI_CPACK_EXTERNAL_ROOT_DEFAULT}" CACHE PATH "Set to the External directory used with H3DAPI, needed to pack properly. If not set FIND_modules will be used instead." )
       MARK_AS_ADVANCED(H3DAPI_CPACK_EXTERNAL_ROOT)
     ENDIF( NOT DEFINED H3DAPI_CPACK_EXTERNAL_ROOT )
 
