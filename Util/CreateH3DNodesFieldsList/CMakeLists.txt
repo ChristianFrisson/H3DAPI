@@ -73,7 +73,6 @@ OPTION( INCLUDE_UI
 IF( INCLUDE_UI )
   IF( TARGET UI )
     SET( UI_SEARCH_PATH "${CMAKE_INSTALL_PREFIX}/bin" )
-    #SET( requiredLibs ${requiredLibs} UI )
   ELSE( TARGET UI )
     SET( CMAKE_MODULE_PATH "${CreateH3DNodesFieldsList_SOURCE_DIR}/../NodeRoutesToDotFile/" )
     FIND_PACKAGE(UI)
@@ -146,14 +145,17 @@ IF(WIN32)
 
   IF( UI_FOUND OR H3D_USE_DEPENDENCIES_ONLY )
     SET( CreateH3DNodesFieldsList_COMPILE_FLAGS "${CreateH3DNodesFieldsList_COMPILE_FLAGS} -DHAVE_UI" )
+    ADD_DEPENDENCIES( CreateH3DNodesFieldsList UI )
   ENDIF( UI_FOUND OR H3D_USE_DEPENDENCIES_ONLY )
 
   IF( H3DPhysics_FOUND OR H3D_USE_DEPENDENCIES_ONLY )
     SET( CreateH3DNodesFieldsList_COMPILE_FLAGS "${CreateH3DNodesFieldsList_COMPILE_FLAGS} -DHAVE_H3DPhysics" )
+    ADD_DEPENDENCIES( CreateH3DNodesFieldsList H3DPhysics )
   ENDIF( H3DPhysics_FOUND OR H3D_USE_DEPENDENCIES_ONLY )
 
   IF( MEDX3D_FOUND OR H3D_USE_DEPENDENCIES_ONLY )
     SET( CreateH3DNodesFieldsList_COMPILE_FLAGS "${CreateH3DNodesFieldsList_COMPILE_FLAGS} -DHAVE_MedX3D" )
+    ADD_DEPENDENCIES( CreateH3DNodesFieldsList MedX3D )
   ENDIF( MEDX3D_FOUND OR H3D_USE_DEPENDENCIES_ONLY )
 
   # Set compile and link properties for projects.
