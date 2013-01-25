@@ -218,10 +218,30 @@ void writeNode( string out_dir, Node *n ) {
 #endif
 
 #ifdef HAVE_H3DPhysics
-#include <H3D/H3DPhysics/H3DBodyConstraintNode.h>
-#include <H3D/H3DPhysics/H3DJointNode.h>
 #include <H3D/H3DPhysics/X3DNBodyCollisionSpaceNode.h>
 #include <H3D/H3DPhysics/SliderJoint.h>
+#include <H3D/H3DPhysics/H3DAttachmentNode.h>
+#include <H3D/H3DPhysics/H3DBodyConstraintNode.h>
+#include <H3D/H3DPhysics/H3DBodyInteractorNode.h>
+#include <H3D/H3DPhysics/H3DBodyModifierNode.h>
+#include <H3D/H3DPhysics/H3DDeformationStrategyNode.h>
+#include <H3D/H3DPhysics/H3DDeviceSoftBodyModifierNode.h>
+#include <H3D/H3DPhysics/H3DGeometryMapping.h>
+#include <H3D/H3DPhysics/H3DJointNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsDampingNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsElasticityNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsFrictionNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsMassNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsMaterialNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsMaterialPropertyNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsPoissonRatioNode.h>
+#include <H3D/H3DPhysics/H3DPhysicsStiffnessNode.h>
+#include <H3D/H3DPhysics/H3DSoftBodyAttachment.h>
+#include <H3D/H3DPhysics/H3DSoftBodyLoader.h>
+#include <H3D/H3DPhysics/H3DSoftBodyNode.h>
+#include <H3D/H3DPhysics/H3DSoftBodyOutputNode.h>
+#include <H3D/H3DPhysics/H3DSolverNode.h>
+#include <H3D/H3DPhysics/H3DVertexBodyConstraintNode.h>
 #endif
 
 inline void resetSceneTimeField() {
@@ -307,6 +327,52 @@ int main(int argc, char* argv[]) {
   writeNode( out_dir, new X3DNBodyCollidableNode );
   resetSceneTimeField();
   writeNode( out_dir, new X3DNBodyCollisionSpaceNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DAttachmentNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DBodyConstraintNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DBodyInteractorNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DBodyModifierNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DBodyNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DDeformationStrategyNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DDeviceSoftBodyModifierNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DGeometryMapping );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DJointNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsDampingNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsElasticityNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsFrictionNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsMassNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsMaterialNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsMaterialPropertyNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsPoissonRatioNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DPhysicsStiffnessNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DSoftBodyAttachment );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DSoftBodyLoader );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DSoftBodyNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DSoftBodyOutputNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DSolverNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new H3DVertexBodyConstraintNode );
   resetSceneTimeField();
 #endif
 

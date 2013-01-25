@@ -32,6 +32,7 @@
 #include <H3D/Scene.h>
 #include <H3DUtil/Exception.h>
 #include <H3D/Node.h>
+#include <H3D/ImportLibrary.h>
 #include <set>
 #include <queue>
 #include <fstream>
@@ -103,82 +104,125 @@ void writeNode( ostream &os, Node *n ) {
   delete n;
 }
 
-#ifdef HAVE_UI
-#include <H3D/UI/Frame.h>
-#endif
-
-#ifdef HAVE_RigidBodyPhysics
-#include <H3D/RigidBodyPhysics/SliderJoint.h>
-#endif
-
 inline void resetSceneTimeField() {
   Scene::time.reset( new SFTime( TimeStamp() ) );
   Scene::time->setName( "Scene::time" );
 }
 
 
+string vc_post_fix = "_vc${H3D_MSVC_VERSION}";
+vector< string > extra_output;
+vector< string > base_path;
+
 int main(int argc, char* argv[]) {
+#ifdef HAVE_UI
+  extra_output.push_back( "UI" );
+  base_path.push_back( "${UI_SEARCH_PATH}/" );
+#endif
+#ifdef HAVE_H3DPhysics
+  extra_output.push_back( "H3DPhysics" );
+  base_path.push_back( "${H3DPhysics_SEARCH_PATH}/" );
+#endif
+#ifdef HAVE_MedX3D
+  extra_output.push_back( "MedX3D" );
+  base_path.push_back( "${MedX3D_SEARCH_PATH}/" );
+#endif
 
   if (argc < 2){
-    cerr << "Usage: " << argv[0] << " <Output file>" << endl;
+    cerr << "Usage: " << argv[0] << " <Output file 1>";
+    for( unsigned int i = 0; i < extra_output.size(); i++ ) {
+      stringstream s;
+      s << (i+1);
+      cerr << " (Output file " << s.str() << ")";
+    }
+    cerr << endl;
+    if( extra_output.size() > 0 ) {
+      cerr << "The optional output files indicate that nodesfields lists for ";
+      for( unsigned int i = 0; i < extra_output.size(); i++ ) {
+        cerr << extra_output[i];
+        if( i+2 == extra_output.size() )
+          cerr << " and ";
+        else if( i+1 < extra_output.size() )
+          cerr << ", ";
+      }
+      cerr << " should be generated." << endl;
+    }
     return 1;
   }
-#ifdef HAVE_UI
-  {
-    // To make sure that UI is linked in if used.
-    auto_ptr<Frame> kurt( new Frame );
-  }
-#endif
-
-#ifdef HAVE_RigidBodyPhysics
-  {
-    // To make sure that UI is linked in if used.
-    auto_ptr<SliderJoint> kurt( new SliderJoint );
-  }
-#endif
 
 	deprecated_names_list.push_back( pair< string, string >( "ImportLibrary", "library" ) );
 
 	field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "Text", pair< string, string >( "string", "stringF" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataDouble", pair< string, string >( "name", "nameF" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataFloat", pair< string, string >( "name", "nameF" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataInteger", pair< string, string >( "name", "nameF" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataSet", pair< string, string >( "name", "nameF" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataString", pair< string, string >( "name", "nameF" ) ) );
 
-  string out_file = argv[1];
-
-  ofstream os( out_file.c_str() );
-  if( !os.is_open() )
-    return 0;
-
-  os << "/// \\file " << out_file << endl
-     << "/// \\brief Extra page listing all nodes and fields." << endl
-     << "/// \\page NodeFieldList List of nodes and their fields." << endl;
-
-
-  try {
-    vector< string > ordered_node_names;
-    for( H3DNodeDatabase::NodeDatabaseConstIterator i = 
-           H3DNodeDatabase::begin();
-         i != H3DNodeDatabase::end();
-         i++ ) {
-      ordered_node_names.push_back( (*i).second->getName() );
+  vector< string > all_node_names;
+  for( unsigned int i = 0; i <= extra_output.size(); i++ ) {
+    if( i + 1 >= argc )
+		  return 0;
+    
+    string page_name = "";
+    if( i > 0 ) {
+      ImportLibrary * imp_lib = new ImportLibrary();
+      vector< string > url;
+      url.push_back( base_path[i-1] + extra_output[i-1] + vc_post_fix
+/*#ifdef _DEBUG
+                     + "_d"
+#endif
+#ifdef H3D_WINDOWS
+                     + ".dll"
+#endif*/
+			               );
+      imp_lib->url->setValue( url );
+      imp_lib->initialize();
+      delete imp_lib;
+      page_name = extra_output[i-1];
     }
 
-    sort( ordered_node_names.begin(), ordered_node_names.end() );
+    string out_file = argv[i + 1];
 
-    for( vector< string >::iterator i = ordered_node_names.begin();
-         i != ordered_node_names.end(); i++ ) {
-      Node *n = H3DNodeDatabase::createNode( (*i) );
-      if( !n ) {
-        cerr << (*i) << ": No such node exists in the node database"
-             << endl;
-      } else {
-        writeNode( os, n );
-        resetSceneTimeField();
+    ofstream os( out_file.c_str() );
+    if( !os.is_open() )
+      return 0;
+
+    os << "/// \\file " << out_file << endl
+       << "/// \\brief Extra page listing all nodes and fields." << endl
+       << "/// \\page NodeFieldList" << page_name << " List of nodes and their fields." << endl;
+
+    try {
+      vector< string > ordered_node_names;
+      for( H3DNodeDatabase::NodeDatabaseConstIterator i = 
+             H3DNodeDatabase::begin();
+           i != H3DNodeDatabase::end();
+           i++ ) {
+        ordered_node_names.push_back( (*i).second->getName() );
       }
-    }
-    cerr << "DONE!" << endl;
-    os.close();
-  } catch (const Exception::H3DException &e) {
+
+      sort( ordered_node_names.begin(), ordered_node_names.end() );
+
+      for( vector< string >::iterator i = ordered_node_names.begin();
+           i != ordered_node_names.end(); i++ ) {
+        if( find( all_node_names.begin(), all_node_names.end(), (*i) ) == all_node_names.end() ) {
+          all_node_names.push_back( (*i) );
+          Node *n = H3DNodeDatabase::createNode( (*i) );
+          if( !n ) {
+            cerr << (*i) << ": No such node exists in the node database"
+                 << endl;
+          } else {
+            writeNode( os, n );
+            resetSceneTimeField();
+          }
+        }
+      }
+      cerr << "DONE!" << endl;
       os.close();
-      cerr << e << endl;
+    } catch (const Exception::H3DException &e) {
+        os.close();
+        cerr << e << endl;
+    }
   }
   return 0;
 }
