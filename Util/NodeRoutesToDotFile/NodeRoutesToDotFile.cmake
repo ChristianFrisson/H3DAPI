@@ -242,6 +242,7 @@ void writeNode( string out_dir, Node *n ) {
 #include <H3D/H3DPhysics/H3DSoftBodyOutputNode.h>
 #include <H3D/H3DPhysics/H3DSolverNode.h>
 #include <H3D/H3DPhysics/H3DVertexBodyConstraintNode.h>
+#include <H3D/H3DPhysics/X3DNBodyCollidableNode.h>
 #endif
 
 inline void resetSceneTimeField() {
@@ -373,6 +374,8 @@ int main(int argc, char* argv[]) {
   writeNode( out_dir, new H3DSolverNode );
   resetSceneTimeField();
   writeNode( out_dir, new H3DVertexBodyConstraintNode );
+  resetSceneTimeField();
+  writeNode( out_dir, new X3DNBodyCollidableNode );
   resetSceneTimeField();
 #endif
 

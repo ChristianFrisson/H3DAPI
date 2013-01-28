@@ -62,8 +62,13 @@ void writeNode( ostream &os, Node *n ) {
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid(*n) );
 
   string node_name = n->getTypeName();
+	// In MedX3D ISOSurfaceVolumeData is the name of the class but IsoSurfaceVolumeData is the name of the type.
+	// Doxygen need the class name to link properly.
+	string class_name = node_name;
+  if( node_name == "IsoSurfaceVolumeData" )
+		class_name = "ISOSurfaceVolumeData";
   os << "/// <ul>" << endl
-     << "///   <li>\\link H3D::" << node_name << " "
+     << "///   <li>\\link H3D::" << class_name << " "
      << node_name << " \\endlink" << endl;
 
   if( db->fieldDBSize() > 0 ) {
@@ -94,7 +99,7 @@ void writeNode( ostream &os, Node *n ) {
 
     for( vector< pair< string, string > >::iterator i = ordered_field_names.begin();
          i != ordered_field_names.end(); i++ ) {
-      os << "///       <li>\\link H3D::" << node_name << "::"
+      os << "///       <li>\\link H3D::" << class_name << "::"
          << (*i).second << " " << (*i).first << " \\endlink" << "</li>" << endl;
     }
     os << "///     </ul>" << endl;
