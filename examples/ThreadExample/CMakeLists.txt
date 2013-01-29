@@ -95,15 +95,26 @@ TARGET_LINK_LIBRARIES( ThreadExample ${requiredLibs} ${optionalLibs} )
 # Debug versions have _d postfix.
 SET_TARGET_PROPERTIES( ThreadExample PROPERTIES DEBUG_POSTFIX "_d" )
 
-IF(WIN32) 
-  IF(MSVC80)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type
-    SET_TARGET_PROPERTIES( ThreadExample PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t-" )
-  ELSEIF(MSVC90)
-    # Remove some warnings about deprecated functions. Do not treat wchar_t as built in type. Compile on multiple processors/threads if possible.
-    SET_TARGET_PROPERTIES( ThreadExample PROPERTIES COMPILE_FLAGS "-D_CRT_SECURE_NO_DEPRECATE /Zc:wchar_t- /MP" )
-  ENDIF(MSVC80)
-ENDIF(WIN32)
+IF(MSVC)
+  # Set compile and link properties for projects.
+  SET( ThreadExample_COMPILE_FLAGS "" )
+  
+  # Treat wchar_t as built in type for all visual studio versions.
+  # This is default for every version above 7 ( so far ) but we still set it for all.
+  SET( ThreadExample_COMPILE_FLAGS "${ThreadExample_COMPILE_FLAGS} /Zc:wchar_t")
+  
+  IF( ${MSVC_VERSION} GREATER 1399 )
+    # Remove compiler warnings about deprecation for visual studio versions 8 and above.
+    SET( ThreadExample_COMPILE_FLAGS "${ThreadExample_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
+  ENDIF( ${MSVC_VERSION} GREATER 1399 )
+  
+  IF( ${MSVC_VERSION} GREATER 1499 )
+    # Build using several threads for visual studio versions 9 and above.
+    SET( ThreadExample_COMPILE_FLAGS "${ThreadExample_COMPILE_FLAGS} /MP" )
+  ENDIF( ${MSVC_VERSION} GREATER 1499 )
+  
+  SET_TARGET_PROPERTIES( ThreadExample PROPERTIES COMPILE_FLAGS "${ThreadExample_COMPILE_FLAGS}" )
+ENDIF(MSVC)
 
 # Install to these directories.
 INSTALL( TARGETS ThreadExample
