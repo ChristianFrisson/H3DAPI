@@ -122,7 +122,7 @@ void onDropFiles( wxCoord x, wxCoord y,
 #endif
 
 /*******************Global Constants*********************/
-static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2009.\nAll Rights Reserved.");
+static const wxChar *AUTHOR    = wxT("\nSenseGraphics\n\nCopyright 2006-2013.\nAll Rights Reserved.");
 static const wxChar *ABOUT     = wxT("About");
 static const wxChar *FILETYPES = wxT( "x3d or vrml 2.0 files|*.x3d;*.x3dv;*.wrl|All files|*.*"
                                    );
