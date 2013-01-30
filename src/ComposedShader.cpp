@@ -378,8 +378,13 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
     GLcharARB *log = new GLcharARB[nr_characters];
     glGetInfoLogARB( program_handle, nr_characters, NULL, log );
     Console(3) << "Warning: Error while linking shader parts in \""
-               << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
-               << endl << log << endl;
+               << const_cast<ComposedShader&>(*shader).getName() << "\" node. " << endl;
+    for ( MFShaderPart::const_iterator i = shader->parts->begin();
+          i != shader->parts->end(); i++ ) {
+       ShaderPart *part = static_cast< ShaderPart * >(*i);
+       Console(3) << part->type->getValue() << ": " << part->getURLUsed() << endl;
+    }
+    Console(3) << "Log: " << endl << log << endl;
     glDeleteObjectARB( program_handle );
     delete log;
 
