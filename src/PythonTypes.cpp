@@ -2055,6 +2055,7 @@ self, name, field_type, access_type )" );
   }
   
   int PyMatrix4f::init(PyMatrix4f *self, PyObject *args, PyObject *kwds)  {
+    Matrix4f *self_m = (Matrix4f *)self;
     Py_ssize_t args_size =  PyTuple_Size( args );
     if( args_size == 0 ) {
       // no arguments, identify matrix
@@ -2062,7 +2063,6 @@ self, name, field_type, access_type )" );
     } else if( args_size == 1 ) {
       // from Quaternion, Rotation and Matrix4f
       PyObject *o = PyTuple_GetItem( args, 0 );
-      Matrix4f *self_m = (Matrix4f *)self;
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
         *self_m = Matrix4f(r);
@@ -2075,9 +2075,55 @@ self, name, field_type, access_type )" );
       } else if( PyMatrix4d_Check( o ) ) {
         Matrix4d m = PyMatrix4d_AsMatrix4d( o );
         *self_m = (Matrix4f) m;
+        // Create transform matrix from a position
+      } else if ( PyVec3f_Check( o ) ) {
+        Vec3f v = PyVec3f_AsVec3f ( o );
+        *self_m = Matrix4f ( v );
+      } else if ( PyVec3d_Check( o ) ) {
+        Vec3d v = PyVec3d_AsVec3d ( o );
+        *self_m = Matrix4f ( Matrix4d ( v ) );
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix4f constructor." );
+        return -1;
+      }
+    } else if ( args_size == 2 ) {
+      // Create transform matrix from position and rotation
+      PyObject* pos= NULL;
+      PyObject* rot= NULL;
+      if ( !PyArg_ParseTuple ( args, "OO", &pos, &rot ) ) {
+        return -1;
+      }
+      if ( PyVec3f_Check ( pos ) && PyRotation_Check ( rot ) ) {
+        Vec3f v = PyVec3f_AsVec3f ( pos );
+        Rotation r = PyRotation_AsRotation ( rot );
+        *self_m= Matrix4f ( v, r );
+      } else if ( PyVec3d_Check ( pos ) && PyRotation_Check ( rot ) ) {
+        Vec3d v = PyVec3d_AsVec3d ( pos );
+        Rotationd r = PyRotation_AsRotation ( rot );
+        *self_m= Matrix4f ( Matrix4d ( v, r ) );
+      } else {
+        return -1;
+      }
+    } else if ( args_size == 3 ) {
+      // Create transform matrix from position, rotation and scale
+      PyObject* pos= NULL;
+      PyObject* rot= NULL;
+      PyObject* sca= NULL;
+      if ( !PyArg_ParseTuple ( args, "OOO", &pos, &rot, &sca ) ) {
+        return -1;
+      }
+      if ( PyVec3f_Check ( pos ) && PyRotation_Check ( rot ) && PyVec3f_Check ( sca ) ) {
+        Vec3f v = PyVec3f_AsVec3f ( pos );
+        Rotation r = PyRotation_AsRotation ( rot );
+        Vec3f s = PyVec3f_AsVec3f ( sca );
+        *self_m= Matrix4f ( v, r, s );
+      } else if ( PyVec3d_Check ( pos ) && PyRotation_Check ( rot ) && PyVec3d_Check ( sca ) ) {
+        Vec3d v = PyVec3d_AsVec3d ( pos );
+        Rotationd r = PyRotation_AsRotation ( rot );
+        Vec3d s = PyVec3d_AsVec3d ( sca );
+        *self_m= Matrix4f ( Matrix4d ( v, r, s ) );
+      } else {
         return -1;
       }
     } else {
@@ -2709,6 +2755,7 @@ self, name, field_type, access_type )" );
   }
   
   int PyMatrix4d::init(PyMatrix4d *self, PyObject *args, PyObject *kwds)  {
+    Matrix4d *self_m = (Matrix4d *)self;
     Py_ssize_t args_size =  PyTuple_Size( args );
     if( args_size == 0 ) {
       // no arguments, identify matrix
@@ -2716,7 +2763,6 @@ self, name, field_type, access_type )" );
     } else if( args_size == 1 ) {
       // from Quaternion, Rotation and Matrix4d
       PyObject *o = PyTuple_GetItem( args, 0 );
-      Matrix4d *self_m = (Matrix4d *)self;
       if( PyRotation_Check( o ) ) {
         Rotation r = PyRotation_AsRotation( o );
         *self_m = Matrix4d(r);
@@ -2729,9 +2775,55 @@ self, name, field_type, access_type )" );
       } else if( PyMatrix4f_Check( o ) ) {
         Matrix4f m = PyMatrix4f_AsMatrix4f( o );
         *self_m = Matrix4d(m);
+      // Create transform matrix from a position
+      } else if ( PyVec3f_Check( o ) ) {
+        Vec3f v = PyVec3f_AsVec3f ( o );
+        *self_m = Matrix4d ( Matrix4f ( v ) );
+      } else if ( PyVec3d_Check( o ) ) {
+        Vec3d v = PyVec3d_AsVec3d ( o );
+        *self_m = Matrix4d ( v );
       } else {
         PyErr_SetString(PyExc_TypeError, 
                         "invalid type given to Matrix4d constructor." );
+        return -1;
+      }
+    } else if ( args_size == 2 ) {
+      // Create transform matrix from position and rotation
+      PyObject* pos= NULL;
+      PyObject* rot= NULL;
+      if ( !PyArg_ParseTuple ( args, "OO", &pos, &rot ) ) {
+        return -1;
+      }
+      if ( PyVec3f_Check ( pos ) && PyRotation_Check ( rot ) ) {
+        Vec3f v = PyVec3f_AsVec3f ( pos );
+        Rotation r = PyRotation_AsRotation ( rot );
+        *self_m= Matrix4f ( v, r );
+      } else if ( PyVec3d_Check ( pos ) && PyRotation_Check ( rot ) ) {
+        Vec3d v = PyVec3d_AsVec3d ( pos );
+        Rotationd r = PyRotation_AsRotation ( rot );
+        *self_m= Matrix4f ( Matrix4d ( v, r ) );
+      } else {
+        return -1;
+      }
+    } else if ( args_size == 3 ) {
+      // Create transform matrix from position, rotation and scale
+      PyObject* pos= NULL;
+      PyObject* rot= NULL;
+      PyObject* sca= NULL;
+      if ( !PyArg_ParseTuple ( args, "OOO", &pos, &rot, &sca ) ) {
+        return -1;
+      }
+      if ( PyVec3f_Check ( pos ) && PyRotation_Check ( rot ) && PyVec3f_Check ( sca ) ) {
+        Vec3f v = PyVec3f_AsVec3f ( pos );
+        Rotation r = PyRotation_AsRotation ( rot );
+        Vec3f s = PyVec3f_AsVec3f ( sca );
+        *self_m= Matrix4d ( Matrix4f ( v, r, s ) );
+      } else if ( PyVec3d_Check ( pos ) && PyRotation_Check ( rot ) && PyVec3d_Check ( sca ) ) {
+        Vec3d v = PyVec3d_AsVec3d ( pos );
+        Rotationd r = PyRotation_AsRotation ( rot );
+        Vec3d s = PyVec3d_AsVec3d ( sca );
+        *self_m= Matrix4d ( v, r, s );
+      } else {
         return -1;
       }
     } else {
