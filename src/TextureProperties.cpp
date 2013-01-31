@@ -343,7 +343,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
   // priority
   H3DFloat priority = texturePriority->getValue();
   if( priority < 0 || priority > 1 ) {
-    Console(3) << "Warning: Invalid texturePriority \"" << anisotropic 
+    Console(3) << "Warning: Invalid texturePriority \"" << priority
                << "\". Must be in range [0, 1] (in " << getName()
                << ")" << endl;
         

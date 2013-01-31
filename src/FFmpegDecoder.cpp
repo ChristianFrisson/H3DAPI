@@ -74,29 +74,30 @@ void FFmpegDecoder::cleanupFFmpeg(void)
 
     have_new_frame = false;
     status = STOPPED;
-
-    av_free_packet(&packet);
-    av_free(temp_buffer);
-    av_free(data);
-
-    // Free codec 
-    av_free(pCodec);
-#ifdef WITH_AUDIO
-    av_free(aCodec);
-#endif // WITH_AUDIO
-
+    
+    if( temp_buffer != NULL ){
+      av_free(temp_buffer); }
+    if( data != NULL ){
+      av_free(data); }
+    
     // Free the RGB image
-    av_free(pFrameRGB);
+    if( pFrameRGB != NULL ){
+      av_free(pFrameRGB); }
 
     // Free the YUV frame
-    av_free(pFrame);
+    if( pFrame != NULL ){
+      av_free(pFrame); }
 
     // Close the codec
-    avcodec_close(aCodecCtx);
-    avcodec_close(pCodecCtx);
+    if( aCodecCtx != NULL ){
+      avcodec_close(aCodecCtx); }
+    if( pCodecCtx != NULL ){
+      avcodec_close(pCodecCtx); }
 
     // Close the video file
-    av_close_input_file(pFormatCtx);
+
+    if( pFormatCtx != NULL ){
+      avformat_close_input(&pFormatCtx); }
 
     duration = 0;
   }
@@ -105,7 +106,16 @@ void FFmpegDecoder::cleanupFFmpeg(void)
 
 
 FFmpegDecoder::FFmpegDecoder( )
-{
+: temp_buffer(NULL),
+  imgConvertCtx(NULL),
+  pFormatCtx(NULL),
+  pCodecCtx(NULL),
+  aCodecCtx(NULL),
+  pCodec(NULL),
+  aCodec(NULL),
+  pFrame(NULL),
+  pFrameRGB(NULL),
+  data(NULL) {
   av_register_all();
 }
 
@@ -133,14 +143,14 @@ bool FFmpegDecoder::testClip( const string &url ) {
 
   just_a_test=1; 
 
-  if (av_open_input_file(&pFormatCtx, url.c_str(), NULL, 0, NULL) != 0 )
+  if (avformat_open_input(&pFormatCtx, url.c_str(), NULL, NULL) != 0 )
   return 0;
 
-  if(av_find_stream_info(pFormatCtx)<0)
+  if(avformat_find_stream_info(pFormatCtx,NULL)<0)
   return 0;
  
-  dump_format(pFormatCtx, 0, url.c_str(), 0);
-  av_close_input_file(pFormatCtx);
+  av_dump_format(pFormatCtx, 0, url.c_str(), 0);
+  avformat_close_input(&pFormatCtx);
   return 1;
 }
 
@@ -165,13 +175,13 @@ bool FFmpegDecoder::loadClip( const string &url ) {
   videoStream=-1;
   audioStream=-1;
   for(int i=0; i < pFormatCtx->nb_streams; i++) {
-    if(pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO
+    if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO
        &&
          videoStream < 0) {
       videoStream=i;
     }
 #ifdef WITH_AUDIO
-    if(pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_AUDIO &&
+    if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO &&
        audioStream < 0) {
       audioStream=i;
     }
@@ -199,7 +209,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
     return -1; // Codec not found
   }
   // Open codec
-  if(avcodec_open(pCodecCtx, pCodec)<0)
+  if(avcodec_open2(pCodecCtx, pCodec, NULL)<0)
     return -1; // Could not open codec
 
 #ifdef WITH_AUDIO
@@ -208,7 +218,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
     fprintf(stderr, "Unsupported codec!\n");
     return -1;
   }
-  avcodec_open(aCodecCtx, aCodec);
+  avcodec_open2(aCodecCtx, aCodec, NULL);
 #endif // WITH_AUDIO
 
   // Allocate video frame
@@ -219,8 +229,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
   if(pFrameRGB==NULL)
     return -1;
 
-  uint8_t *temp_buffer;
-
+  
   // Determine required buffer size and allocate buffer
   numBytes=avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
                             pCodecCtx->height);
