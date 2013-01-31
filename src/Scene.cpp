@@ -125,11 +125,47 @@ namespace SceneInternal {
 
 void Scene::idle() {
   // calculate and set frame rate
+
   TimeStamp t;
-  frameRate->setValue( 1.0f / (H3DFloat)( t - last_time ), id );
+  TimeStamp dt = t - last_time;
+  frameRate->setValue( 1.0f / (H3DFloat)(dt), id );
   last_time = t;
   time->setValue( t, id );
 
+#ifdef THREAD_LOCK_DEBUG
+  static TimeStamp last_update_time;
+
+  ThreadBase::ThreadLockInfo &main_info =ThreadBase::thread_lock_info[ ThreadBase::getMainThreadId() ];
+  main_info.total_run_time += dt;
+  main_info.period_start_time = t;
+
+  if( t - last_update_time > THREAD_LOCK_DEBUG_UPDATE_INTERVAL ) {
+    Console(4) << "*************************************************" << endl;
+    for( ThreadBase::ThreadLockInfoMap::const_iterator i = ThreadBase::thread_lock_info.begin();
+         i != ThreadBase::thread_lock_info.end(); i++ ) {
+      ThreadBase *thread = H3DUtil::ThreadBase::getThreadById( (*i).first );
+      const ThreadBase::ThreadLockInfo &info = (*i).second;
+      if( thread ) {
+        Console(4) << "Thread:        " << thread->getThreadName() << endl;
+      } else {
+        if( pthread_equal( (*i).first, ThreadBase::getMainThreadId() ) ) {
+          Console(4) << "Thread:        " << "Main Thread" << endl;
+          static double last_main_thread_lock_time = 0;
+          Console(4) << "Lock (%) inst: " << (info.total_run_time == 0 ? 0 : (info.total_lock_time - last_main_thread_lock_time )/ (t - last_update_time)) *100  << endl;
+          last_main_thread_lock_time = info.total_lock_time;
+
+        } else {
+          Console(4) << "Thread:        " << "Non ThreadBase" << endl;
+        }
+      }
+      Console(4)   << "Tot runtime:   " << info.total_run_time << endl;
+      Console(4)   << "Lock (s):      " << info.total_lock_time << endl;
+      Console(4)   << "Lock (%):      " << (info.total_run_time == 0 ? 0 : (info.total_lock_time / info.total_run_time) *100)  << endl << endl;
+    }
+    last_update_time = t;
+  }
+
+#endif
    DefaultAppearance *def_app = NULL;
   
   GlobalSettings *default_settings = GlobalSettings::getActive();
