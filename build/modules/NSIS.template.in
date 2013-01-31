@@ -847,16 +847,16 @@ Section "-Core installation"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Magnetic lines.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\magneticlines\magneticlines.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +2
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\MedX3D\x3d\OpacityMapStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\OpacityMapVolumeStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Plane.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\plane\bobcat.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SuperShape.lnk" '"$INSTDIR\bin\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SuperShape\SuperShape.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\UI\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\UI\x3d\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\H3DPhysics\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\bin\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
 
@@ -866,7 +866,8 @@ Section "-Core installation"
     ;Create Docs folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Docs"
     ; Add reference guide and manuals
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\Reference Guide.lnk" "$INSTDIR\doc\H3DAPI\html\index.html"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\C++ Reference Guide.lnk" "$INSTDIR\doc\H3DAPI\html\index.html"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\H3D Python Reference Guide.lnk" "$INSTDIR\H3DAPI\lib\doc\html\index.html"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\H3D API Manual.lnk" "$INSTDIR\doc\H3D API Manual.pdf"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\HAPI Manual.lnk" "$INSTDIR\doc\HAPI Manual.pdf"
   
@@ -1081,7 +1082,8 @@ Section "Uninstall"
 
   StrCmp "@CPACK_ADD_H3DDOC_LINKS@" "ON" 0 +5
     ; Remove links to reference guide and manuals
-    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\C++ Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3D Python Reference Guide.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3D API Manual.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\HAPI Manual.lnk"
     
@@ -1146,7 +1148,8 @@ Section "Uninstall"
 
   StrCmp "@CPACK_ADD_H3DDOC_LINKS@" "ON" 0 +5
     ; Remove links to reference guide and manuals
-    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\C++ Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3D Python Reference Guide.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3D API Manual.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\HAPI Manual.lnk"
     
