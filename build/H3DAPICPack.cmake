@@ -95,45 +95,14 @@ IF( GENERATE_CPACK_PROJECT )
     
     # External binary directory to add to path.
     SET( CPACK_EXTERNAL_BIN "bin32" )
+    SET( CPACK_H3D_64_BIT "FALSE" )
+    SET( EXTERNAL_BIN_REPLACE_PATH "bin64" )
     IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
       SET( CPACK_EXTERNAL_BIN "bin64" )
+      SET( EXTERNAL_BIN_REPLACE_PATH "bin32" )
+      SET( CPACK_H3D_64_BIT "TRUE" )
     ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-
-    # Pattern in folders and files to ignore when adding files to installation package.
-    SET(CPACK_IGNORE_FILES ${H3DAPI_CPACK_IGNORE_PATTERNS}
-                           /fparser\\\\.lib$
-                           "/wxbase28_net(_vc8)*\\\\.lib$"
-                           "/wxbase28_odbc(_vc8)*\\\\.lib$"
-                           "/wxbase28_xml(_vc8)*\\\\.lib$"
-                           "/wxexpat(_vc8)*\\\\.lib$"
-                           "/wxjpeg(_vc8)*\\\\.lib$"
-                           "/wxmsw28_aui(_vc8)*\\\\.lib$"
-                           "/wxmsw28_dbgrid(_vc8)*\\\\.lib$"
-                           "/wxmsw28_media(_vc8)*\\\\.lib$"
-                           "/wxmsw28_qa(_vc8)*\\\\.lib$"
-                           "/wxmsw28_xrc(_vc8)*\\\\.lib$"
-                           "/wxpng(_vc8)*\\\\.lib$"
-                           "/wxregex(_vc8)*\\\\.lib$"
-                           "/wxtiff(_vc8)*\\\\.lib$"
-                           "/wxzlib(_vc8)*\\\\.lib$"
-                           /pthreadGC2\\\\.dll$
-                           /pthreadGCE2\\\\.dll$
-                           "/pthreadVSE2\\\\.(dll|lib)$"
-                           /HAPI/doc/
-                           /H3DUtil/doc/
-                           /include/fparser
-                           /HapticAPI2
-                           /xerces-c_2_7\\\\.dll$
-                           /xerces-c_2_7D\\\\.dll$
-                           /dcmdata\\\\.lib$
-                           /dcmimage\\\\.lib$
-                           /dcmimgle\\\\.lib$
-                           /ofstd\\\\.lib$
-                           /Definitions.h$
-                           "/DentalSimAPI\\\\.(lib)*(dll)*(h)*$"
-                           "/ogg_d\\\\.dll$"
-                           "/H3DLoad_d\\\\.exe$"
-                           "/H3DViewer_d\\\\.exe$" )
+    SET( EXTERNAL_BIN_PATH "${CPACK_EXTERNAL_BIN}" )
 
     # EXTERNAL_INCLUDES and EXTERNAL_INCLUDE_INSTALL_PATHS must be of equal lengths.
     # The reason for defining these variables here is in case we want to add functionality
@@ -145,13 +114,6 @@ IF( GENERATE_CPACK_PROJECT )
     SET( EXTERNAL_LIBRARIES "" )
     SET( EXTERNAL_STATIC_LIBRARIES "" )
     SET( EXTERNAL_BINARIES "" )
-    
-    SET( EXTERNAL_BIN_PATH "bin32" )
-    SET( EXTERNAL_BIN_REPLACE_PATH "bin64" )
-    IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-      SET( EXTERNAL_BIN_PATH "bin64" )
-      SET( EXTERNAL_BIN_REPLACE_PATH "bin32" )
-    ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     
     IF( EXISTS ${H3DAPI_CPACK_EXTERNAL_ROOT} )
       SET( EXTERNAL_INCLUDES ${H3DAPI_CPACK_EXTERNAL_ROOT}/include/xercesc/
@@ -365,62 +327,35 @@ IF( GENERATE_CPACK_PROJECT )
                                              " Delete install file\\n  Delete \\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\"\\n\\n" )
     ENDIF( OpenAlInstallExe )
     
-    # Add cache variable vc8(9)_redist which should be set to the install file
-    # for microsoft visual studio redistributables, they can be found in the
-    # installation folder for each visual studio installation.
-    IF( NOT DEFINED vc8_redist )
-      SET( vc8_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 8" )
-      MARK_AS_ADVANCED(vc8_redist)
-    ENDIF( NOT DEFINED vc8_redist )
-    
-    IF( NOT DEFINED vc9_redist )
-      SET( vc9_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 9." )
-      MARK_AS_ADVANCED(vc9_redist)
-    ENDIF( NOT DEFINED vc9_redist )
-    
-    IF( NOT DEFINED vc10_redist )
-      SET( vc10_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio 10." )
-      MARK_AS_ADVANCED(vc10_redist)
-    ENDIF( NOT DEFINED vc10_redist )
-
-    IF( vc8_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc8_redist ${vc8_redist} )
-      GET_FILENAME_COMPONENT( VC8_FILE_NAME ${vc8_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc8\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc8_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc8\\\\${VC8_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc8\\\"\\n\\n" )
-    ENDIF( vc8_redist )
-    
-    IF( vc9_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc9_redist ${vc9_redist} )
-      GET_FILENAME_COMPONENT( VC9_FILE_NAME ${vc9_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc9\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc9_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc9\\\\${VC9_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc9\\\"\\n\\n" )
-    ENDIF( vc9_redist )
-    
-    IF( vc10_redist )
-      STRING( REPLACE "/" "\\\\" Temp_vc10_redist ${vc10_redist} )
-      GET_FILENAME_COMPONENT( VC10_FILE_NAME ${vc10_redist} NAME )
-      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                             " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc10\\\"\\n"
-                                             " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc10_redist}\\\"\\n"
-                                             " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc10\\\\${VC10_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn /l*v %temp%\\\\vcredist_x86.log\\\"' $0\\n"
-                                             " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
-                                             " Delete file\\n  Delete \\\"$INSTDIR\\\\vc10\\\\${VC10_FILE_NAME}\\\"\\n"
-                                             " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
-                                             " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc10\\\"\\n\\n" )
-    ENDIF( vc10_redist )
+    SET( redist_versions 8 9 10 )
+    foreach( redist_version ${redist_versions} )
+      # Add cache variable vc${redist_version}_redist which should be set to the install file
+      # for microsoft visual studio redistributables, they can be found in the
+      # installation folder for each visual studio installation.
+      IF( NOT DEFINED vc${redist_version}_redist )
+        SET( vc${redist_version}_redist CACHE FILEPATH "Set this to the exe installing microsoft visual studio redistributable for visual studio ${redist_version}" )
+        MARK_AS_ADVANCED(vc${redist_version})
+      ENDIF( NOT DEFINED vc${redist_version}_redist )
+      IF( vc${redist_version}_redist )
+        STRING( REPLACE "/" "\\\\" Temp_vc${redist_version}_redist ${vc${redist_version}_redist} )
+        GET_FILENAME_COMPONENT( VC${redist_version}_FILE_NAME ${vc${redist_version}_redist} NAME )
+        SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                               " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n"
+                                               " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc${redist_version}_redist}\\\"\\n" )
+        IF( ${redist_version} LESS 9 )
+          SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n" )
+        ELSE( )
+          SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"' $0\\n" )
+        ENDIF( ${redist_version} LESS 9 )
+        SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                               " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                               " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
+                                               " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                               " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n\\n" )
+      ENDIF( vc${redist_version}_redist )
+    endforeach( redist_version ${redist_versions} )
 
     # Modify path in the the NSIS template.
     SET( CPACK_NSIS_MODIFY_PATH "ON" )
@@ -509,7 +444,20 @@ IF( GENERATE_CPACK_PROJECT )
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../examples
            DESTINATION H3DAPI
            COMPONENT H3DAPI_cpack_sources
-           REGEX "(/.svn)|(/CVS)" EXCLUDE )
+           REGEX "(/.svn)|(/CVS)" EXCLUDE
+           PATTERN "/berk/berk\\\\.wrl$" EXCLUDE
+					 PATTERN "/berk/berk_orig\\\\.x3d$" EXCLUDE
+					 PATTERN "/fish/Kumanomi\\\\.wrl$" EXCLUDE
+					 PATTERN "/fish/Kumanomi_orig\\\\.x3d$" EXCLUDE
+					 PATTERN "/humvee/humvee\\\\.WRL$" EXCLUDE
+					 PATTERN "/humvee/humvee_orig\\\\.x3d$" EXCLUDE
+					 PATTERN "/manikin/manikin\\\\.wrl$" EXCLUDE
+					 PATTERN "/manikin/manikin_orig\\\\.x3d$" EXCLUDE
+					 PATTERN "/moondial/moondial_orig\\\\.x3d$" EXCLUDE
+					 PATTERN "/moondial/themoondial\\\\.wrl$" EXCLUDE
+					 PATTERN "/plane/bobcat2\\\\.x3d$" EXCLUDE
+					 PATTERN "/plane/bobcat_nh\\\\.x3d$" EXCLUDE
+					 PATTERN "/plane/bobcat_orig\\\\.x3d$" EXCLUDE )
 
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../H3DLoad
            DESTINATION H3DAPI

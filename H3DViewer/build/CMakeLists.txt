@@ -334,9 +334,14 @@ ELSE(APPLE)
     SET( H3DViewer_package_install_dir "H3DViewer/" )
   ENDIF( WIN32 AND GENERATE_H3DVIEWER_CPACK_PROJECT )
 
+	SET( H3DVIEWER_INSTALL_COMPONENT_NAME "H3DViewer_cpack_runtime" )
+	IF( GENERATE_CPACK_PROJECT )
+	  SET( H3DVIEWER_INSTALL_COMPONENT_NAME "H3DAPI_cpack_runtime" )
+  ENDIF( GENERATE_CPACK_PROJECT )
+
   INSTALL( TARGETS H3DViewer
 					 LIBRARY DESTINATION lib
-					 RUNTIME DESTINATION ${H3DViewer_package_install_dir}bin COMPONENT H3DViewer_cpack_runtime )
+					 RUNTIME DESTINATION ${H3DViewer_package_install_dir}bin COMPONENT ${H3DVIEWER_INSTALL_COMPONENT_NAME} )
 ENDIF( APPLE )
 
 # Add a cache variable GENERATE_H3DVIEWER_CPACK_PROJECT to have the choice of generating a project

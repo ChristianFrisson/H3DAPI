@@ -20,6 +20,9 @@
 
   Var IS_DEFAULT_INSTALLDIR
 ;--------------------------------
+; Include x64 functions
+  !include x64.nsh
+;--------------------------------
 ;Include Modern UI
 
   !include "MUI.nsh"
@@ -34,13 +37,13 @@
   Name "@CPACK_NSIS_PACKAGE_NAME@"
   OutFile "@CPACK_TOPLEVEL_DIRECTORY@/@CPACK_OUTPUT_FILE_NAME@"
   
-  VIProductVersion                 "2.2.0.0"
+  VIProductVersion                 "@CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.@CPACK_PACKAGE_VERSION_PATCH@.0"
   VIAddVersionKey ProductName      "H3D"
   VIAddVersionKey Comments         "H3DAPI"
-  VIAddVersionKey CompanyName      "SenseGraphics AB" ;this appear as "copyright" under Properties->Details
-  VIAddVersionKey LegalCopyright   "SenseGraphics AB"
+  VIAddVersionKey CompanyName      "@CPACK_PACKAGE_VENDOR@" ;this appear as "copyright" under Properties->Details
+  VIAddVersionKey LegalCopyright   "@CPACK_PACKAGE_VENDOR@"
   VIAddVersionKey FileDescription  "H3DAPI. A cross platform, haptics device independent, X3D based API for 3D graphics and haptics."
-  VIAddVersionKey ProductVersion   2.2
+  VIAddVersionKey ProductVersion   @CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@
   VIAddVersionKey LegalTrademarks  "Pte Ltd"
 
   ;Set compression
@@ -518,7 +521,7 @@ Function un.DeleteEnvStr
 FunctionEnd 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Uninstall sutff
+; Uninstall stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ###########################################
@@ -931,6 +934,14 @@ FunctionEnd
 ;--------------------------------
 ; determine admin versus local install
 Function un.onInit
+  StrCmp @CPACK_H3D_64_BIT@ "TRUE" 0 done_64_bit_checking_uninit
+    ${If} ${RunningX64}
+      DetailPrint "Installer running on 64-bit host"
+      ; disable registry redirection (enable access to 64-bit portion of registry)
+      ; This is needed in order to read correct registry information about python.
+      SetRegView 64
+    ${EndIf}
+  done_64_bit_checking_uninit:
 
   ClearErrors
   UserInfo::GetName
@@ -1194,6 +1205,18 @@ SectionEnd
 ; "Program Files" for AllUsers, "My Documents" for JustMe...
 
 Function .onInit
+  StrCmp @CPACK_H3D_64_BIT@ "TRUE" 0 done_64_bit_checking
+    ${If} ${RunningX64}
+      DetailPrint "Installer running on 64-bit host"
+      ; disable registry redirection (enable access to 64-bit portion of registry)
+      ; This is needed in order to read correct registry information about python.
+      SetRegView 64
+    ${Else}
+      MessageBox MB_OK "32 bit Windows detected. This installer is for 64 bit Windows. Installer will exit."
+      Quit
+    ${EndIf}
+  done_64_bit_checking:
+  
   StrCmp "@CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL@" "ON" 0 inst
 
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "UninstallString"

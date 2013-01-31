@@ -41,7 +41,6 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
   SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}" )
   SET(CPACK_NSIS_PACKAGE_NAME "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
   SET(CPACK_NSIS_UNINSTALL_NAME "H3DViewer-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}" )
-  SET(CPACK_NSIS_DISPLAY_NAME "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
   
   IF( APPLE )
     IF( NOT DEFINED H3DVIEWER_CPACK_INCLUDE_LIBRARIES )
@@ -86,16 +85,19 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     # CPACK_NSIS_INSTALL_ROOT must be set properly because cmake does not set it correctly
     # for a 64 bit build.
     SET( CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32" )
+    SET(CPACK_NSIS_DISPLAY_NAME "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
+    SET( CPACK_H3D_64_BIT "FALSE" )
     IF( CMAKE_SIZEOF_VOID_P EQUAL 8 ) # check if the system is 64 bit
       SET( EXTERNAL_BIN_PATH "bin64" )
       SET( EXTERNAL_BIN_REPLACE_PATH "bin32" )
       SET( CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64" )
+      SET( CPACK_H3D_64_BIT "TRUE" )
+      SET(CPACK_NSIS_DISPLAY_NAME "H3DViewer (x64) ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
     ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
     SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
     
     SET( redist_versions 8 9 10 )
-    
     foreach( redist_version ${redist_versions} )
       # Add cache variable vc${redist_version}_redist which should be set to the install file
       # for microsoft visual studio redistributables, they can be found in the
@@ -109,8 +111,15 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
         GET_FILENAME_COMPONENT( VC${redist_version}_FILE_NAME ${vc${redist_version}_redist} NAME )
         SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                                " Set output Path\\n  SetOutPath \\\"$INSTDIR\\\\vc${redist_version}\\\"\\n"
-                                               " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc${redist_version}_redist}\\\"\\n"
-                                               " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"/q:a /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n"
+                                               " Code to install Visual studio redistributable\\n  File \\\"${Temp_vc${redist_version}_redist}\\\"\\n" )
+        IF( ${redist_version} LESS 9 )
+          SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n" )
+        ELSE( )
+          SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"' $0\\n" )
+        ENDIF( ${redist_version} LESS 9 )
+        SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                                " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
                                                " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
                                                " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
