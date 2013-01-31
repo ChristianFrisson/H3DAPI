@@ -1565,6 +1565,14 @@ class Matrix4f:
   ## \param m33 The value at position (3,3)
   def __init__( self, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33 ):
     pass
+    
+  ## Transformation constructor.
+  ## Creates a transformation matrix from translation and optional rotation and scale parameters.
+  ## \param translation A Vec3f describing the translation.
+  ## \param rotation A Rotation describing the rotation.
+  ## \param scale A Vec3f describing the scale.
+  def __init__( self, translation, rotation= None, scale= None ):
+    pass
 
   ## Set this matrix to the identity matrix.
   def setToIdentity():
@@ -1691,6 +1699,14 @@ class Matrix4d:
   ## \param m32 The value at position (3,2)
   ## \param m33 The value at position (3,3)
   def __init__( self, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33 ):
+    pass
+    
+  ## Transformation constructor.
+  ## Creates a transformation matrix from translation and optional rotation and scale parameters.
+  ## \param translation A Vec3d describing the translation.
+  ## \param rotation A Rotation describing the rotation (optional).
+  ## \param scale A Vec3d describing the scale (optional).
+  def __init__( self, translation, rotation= None, scale= None ):
     pass
 
   ## Set this matrix to the identity matrix.
