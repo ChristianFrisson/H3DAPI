@@ -16,9 +16,25 @@
     <DeviceInfo>
       <SpaceWareHapticsDevice
           posSensitivity='0.05'
-          ornSensitivity='0.0001'>
+          ornSensitivity='0.1'>
         <GodObjectRenderer />
+        <Group containerField="stylus">
+          <Shape>
+            <Appearance>
+              <Material/>
+            </Appearance>
+            <Sphere DEF="PROXY" radius="0.0025"/>
+          </Shape>
+          <Transform translation="0 0 0.08" rotation="1 0 0 1.570796" >
+            <Shape>
+              <Appearance>
+                <Material/>
+              </Appearance>
+              <Cylinder radius="0.005" height="0.1"/>
+            </Shape>
+          </Transform>
+        </Group>
       </SpaceWareHapticsDevice>
-    </DeviceInfo>    
+    </DeviceInfo>
   </Scene>
 </X3D>

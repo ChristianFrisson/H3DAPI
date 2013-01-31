@@ -17,7 +17,7 @@
     <Shape>
       <Appearance>
         <SimpleMovieTexture DEF = "MOVIE"
-			    url='E:/Markus/trunk/DentalSim/cme_grow_shrink.avi' />
+			    url='movies/SphereMovie.avi' />
       </Appearance>      
       <Rectangle2D size="0.2 0.15" />
     </Shape>

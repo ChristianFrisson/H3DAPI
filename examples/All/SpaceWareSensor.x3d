@@ -12,11 +12,23 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
-    <SpaceWareSensor DEF='S' />
+
+    <Transform DEF='BOX_TRANSFORM' >
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0.7 0.1 0' />
+        </Appearance>
+        <Box size='0.05 0.05 0.02' />
+      </Shape>
+    </Transform>
+    
+    <SpaceWareSensor DEF='S' translationScale="0.001" />
     
     <KeySensor DEF='K' />
     <PythonScript DEF='P1' url='script.py' />
-    <PythonScript DEF='P2' url='print.py' />
+    <PythonScript DEF='P2' url='print.py' >
+      <SpaceWareSensor USE='S' containerField="references"/>
+    </PythonScript>
     
     <ROUTE
       fromNode='K' fromField='keyPress'
@@ -24,5 +36,11 @@
     <ROUTE
       fromNode='P1' fromField='spacePressed'
       toNode='P2' toField='printFields' />
+    <ROUTE
+      fromNode='S' fromField='accumulatedTranslation'
+      toNode='BOX_TRANSFORM' toField='translation' />
+    <ROUTE
+      fromNode='S' fromField='accumulatedRotation'
+      toNode='BOX_TRANSFORM' toField='rotation' />
   </Scene>
 </X3D>
