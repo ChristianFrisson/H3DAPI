@@ -158,7 +158,7 @@ H3DWindowNode::H3DWindowNode(
   height->setValue( 600 );
   fullscreen->setValue( false );
   mirrored->setValue( false );
-  clipDistances->setValue( Vec2f( 0.01, 10 ), id );
+  clipDistances->setValue( Vec2f( 0.01f, 10 ), id );
 
   renderMode->addValidValue( "MONO" );
   renderMode->addValidValue( "QUAD_BUFFERED_STEREO" );
