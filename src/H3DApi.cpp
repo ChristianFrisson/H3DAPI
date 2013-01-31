@@ -111,6 +111,10 @@ double H3D::getH3DApiVersion() {
 }
 
 #ifdef WIN32
+#if defined(__MINGW32__) && defined(__cplusplus)
+// MinGW uses C linkage for DllMain()
+extern "C" {
+#endif
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -130,6 +134,9 @@ BOOL APIENTRY DllMain( HANDLE hModule,
   }
   return TRUE;
 }
+#if defined(__MINGW32__) && defined(__cplusplus)
+}
+#endif
 #else 
 #ifdef __cplusplus
 extern "C" {

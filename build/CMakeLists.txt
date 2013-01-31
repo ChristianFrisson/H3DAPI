@@ -221,11 +221,15 @@ ENDIF(WIN32)
 IF(GLUT_FOUND)
   INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
   IF(WIN32)
-    # This is used in order for the compiler to find freeglut.lib.
-    # If freeglut.lib is in any other place than glut32 on your system
-    # either this CMakeLists.txt or FindGLUTWin needs to be changed
-    # to allow for choice of extra library directory.
-    STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
+    IF(MINGW)
+      SET(requiredLibs ${requiredLibs} ${GLUT_LIBRARIES} )
+    ELSE(MINGW)
+      # This is used in order for the compiler to find freeglut.lib.
+      # If freeglut.lib is in any other place than glut32 on your system
+      # either this CMakeLists.txt or FindGLUTWin needs to be changed
+      # to allow for choice of extra library directory.
+      STRIP_AND_ADD_LIBRARY_DIRECTORIES( ${GLUT_LIBRARIES} )
+    ENDIF(MINGW)
   ELSE(WIN32)
     SET(requiredLibs ${requiredLibs} ${GLUT_LIBRARIES} )
   ENDIF(WIN32)
@@ -546,21 +550,23 @@ IF( WIN32 )
   ENDIF( MSVC )
 
   # Set delayload properties of H3D API.
-  SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"cgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\" /DELAYLOAD:\"VirtualHandDevice.dll\" /DELAYLOAD:\"VirtualHandCore.dll\"")
+  IF(MSVC)
+    SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"cg.dll\" /DELAYLOAD:\"cgGL.dll\" /DELAYLOAD:\"FreeImage.dll\" /DELAYLOAD:\"OpenAL32.dll\" /DELAYLOAD:\"vorbisfile.dll\" /DELAYLOAD:\"VirtualHandDevice.dll\" /DELAYLOAD:\"VirtualHandCore.dll\"")
+  ENDIF(MSVC)
 
-  IF(HAPTIK_FOUND)
+  IF(HAPTIK_FOUND AND MSVC)
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /DELAYLOAD:\"Haptik.Library.dll\"" )
-  ENDIF(HAPTIK_FOUND)
+  ENDIF(HAPTIK_FOUND AND MSVC)
 
-  IF( TARGET Chai3DRenderer)
+  IF( TARGET Chai3DRenderer AND MSVC)
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\"" )
     SET( H3DAPI_LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE} /DELAYLOAD:\"Chai3DRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
-  ENDIF( TARGET Chai3DRenderer)
+  ENDIF( TARGET Chai3DRenderer AND MSVC)
   
-  IF( TARGET OpenHapticsRenderer)
+  IF( TARGET OpenHapticsRenderer AND MSVC)
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}_d.dll\"" )
     SET( H3DAPI_LINK_FLAGS_RELEASE "${H3DAPI_LINK_FLAGS_RELEASE} /DELAYLOAD:\"OpenHapticsRenderer${TEMP_OUTPUT_POSTFIX}.dll\"" )
-  ENDIF( TARGET OpenHapticsRenderer)
+  ENDIF( TARGET OpenHapticsRenderer AND MSVC)
 
 
 ENDIF( WIN32 )
