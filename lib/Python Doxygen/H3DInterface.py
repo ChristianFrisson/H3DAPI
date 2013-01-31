@@ -222,7 +222,7 @@ class MField( Field ):
 
 
 
-## \ingroup TemplateFunctions.
+## \ingroup TemplateFunctions
 ## Returns a class definition with specified typing rules.
 ## Works similar to the TypedField template in C++. It sets restrictions
 ## on what types of fields can be routed to the class.
@@ -283,7 +283,7 @@ def TypedField( base_class, type_info = None, opt_type_info = None ):
 #auto_update_classes = {}
 
 
-## \ingroup TemplateFunctions.
+## \ingroup TemplateFunctions
 ## Returns a class definition where the event update method has
 ## changed from lazy evaluation to eager evaluation.
 ## Works similar to the AutoUpdate template in C++. 
@@ -316,7 +316,7 @@ def AutoUpdate( base_class ):
 
 #periodic_update_classes = {}
 
-## \ingroup TemplateFunctions.
+## \ingroup TemplateFunctions
 ## Returns a class definition where the field value is checked
 ## that it is up-to-date each scene graph loop. If it is not it is 
 ## updated. This is a preferrable to AutoUpdate in many cases where it
