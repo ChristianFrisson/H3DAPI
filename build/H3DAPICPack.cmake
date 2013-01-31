@@ -445,19 +445,19 @@ IF( GENERATE_CPACK_PROJECT )
            DESTINATION H3DAPI
            COMPONENT H3DAPI_cpack_sources
            REGEX "(/.svn)|(/CVS)" EXCLUDE
-           PATTERN "/berk/berk\\\\.wrl$" EXCLUDE
-					 PATTERN "/berk/berk_orig\\\\.x3d$" EXCLUDE
-					 PATTERN "/fish/Kumanomi\\\\.wrl$" EXCLUDE
-					 PATTERN "/fish/Kumanomi_orig\\\\.x3d$" EXCLUDE
-					 PATTERN "/humvee/humvee\\\\.WRL$" EXCLUDE
-					 PATTERN "/humvee/humvee_orig\\\\.x3d$" EXCLUDE
-					 PATTERN "/manikin/manikin\\\\.wrl$" EXCLUDE
-					 PATTERN "/manikin/manikin_orig\\\\.x3d$" EXCLUDE
-					 PATTERN "/moondial/moondial_orig\\\\.x3d$" EXCLUDE
-					 PATTERN "/moondial/themoondial\\\\.wrl$" EXCLUDE
-					 PATTERN "/plane/bobcat2\\\\.x3d$" EXCLUDE
-					 PATTERN "/plane/bobcat_nh\\\\.x3d$" EXCLUDE
-					 PATTERN "/plane/bobcat_orig\\\\.x3d$" EXCLUDE )
+           PATTERN "berk.wrl" EXCLUDE
+					 PATTERN "berk_orig.x3d" EXCLUDE
+					 PATTERN "Kumanomi.wrl" EXCLUDE
+					 PATTERN "Kumanomi_orig.x3d" EXCLUDE
+					 PATTERN "humvee.WRL" EXCLUDE
+					 PATTERN "humvee_orig.x3d" EXCLUDE
+					 PATTERN "manikin.wrl" EXCLUDE
+					 PATTERN "manikin_orig.x3d" EXCLUDE
+					 PATTERN "moondial_orig.x3d" EXCLUDE
+					 PATTERN "themoondial.wrl" EXCLUDE
+					 PATTERN "bobcat2.x3d" EXCLUDE
+					 PATTERN "bobcat_nh.x3d" EXCLUDE
+					 PATTERN "bobcat_orig.x3d" EXCLUDE )
 
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../H3DLoad
            DESTINATION H3DAPI
@@ -474,10 +474,40 @@ IF( GENERATE_CPACK_PROJECT )
            COMPONENT H3DAPI_cpack_sources
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
 
-  INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings
-           DESTINATION H3DAPI
+  INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/common
+           DESTINATION H3DAPI/settings
            COMPONENT H3DAPI_cpack_sources
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
+
+  INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/current
+           DESTINATION H3DAPI/settings
+           COMPONENT H3DAPI_cpack_sources
+           REGEX "(/.svn)|(/CVS)" EXCLUDE )
+
+  INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/display
+           DESTINATION H3DAPI/settings
+           COMPONENT H3DAPI_cpack_sources
+           REGEX "(/.svn)|(/CVS)" EXCLUDE )
+
+  INSTALL( FILES ${H3DAPI_SOURCE_DIR}/../settings/dist.py
+                 ${H3DAPI_SOURCE_DIR}/../settings/h3dload.ini
+                 ${H3DAPI_SOURCE_DIR}/../settings/SettingsGUI.py
+           DESTINATION H3DAPI/settings
+           COMPONENT H3DAPI_cpack_sources )
+
+  IF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/dist )
+    INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/dist/
+           DESTINATION H3DAPI/settings
+           COMPONENT H3DAPI_cpack_sources
+           REGEX "(/.svn)|(/CVS)" EXCLUDE )
+  ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/dist )
+  
+  IF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/icons )
+    INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/icons
+           DESTINATION H3DAPI/settings
+           COMPONENT H3DAPI_cpack_sources
+           REGEX "(/.svn)|(/CVS)" EXCLUDE )
+  ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/icons )
 
   # Add a cache variable H3DAPI_DOCS_DIRECTORY used to indicate where the H3DAPI docs are.
   IF( NOT DEFINED H3DAPI_DOCS_DIRECTORY )
