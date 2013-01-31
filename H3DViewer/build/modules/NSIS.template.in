@@ -151,7 +151,7 @@ Var AR_RegFlags
 
   IntCmp $R1 ${SF_SELECTED} "${SecName}_was_selected"
   !insertmacro "Deselect_required_by_${SecName}"
-  goto "${SecName}_unchanged"
+  Goto "${SecName}_unchanged"
 
   "${SecName}_was_selected:"
   !insertmacro "Select_${SecName}_depends"
@@ -518,7 +518,16 @@ Section "-Core installation"
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 @CPACK_NSIS_CREATE_ICONS@
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall@CPACK_NSIS_DISPLAY_NAME_POSTFIX@.lnk" "$INSTDIR\Uninstall_@CPACK_NSIS_UNINSTALL_NAME@.exe"
+  ${If} ${RunningX64}
+    StrCmp "@CPACK_H3D_64_BIT@" "FALSE" 0 normal_link
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer (x86).lnk" "$INSTDIR\H3DViewer\bin\H3DViewer.exe"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall (x86).lnk" "$INSTDIR\Uninstall_@CPACK_NSIS_UNINSTALL_NAME@.exe"
+      Goto end_link_checking
+  ${EndIf}
+  normal_link:
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" "$INSTDIR\H3DViewer\bin\H3DViewer.exe"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall_@CPACK_NSIS_UNINSTALL_NAME@.exe"
+  end_link_checking:
 
   ; Write special uninstall registry entries
   Push "StartMenu"
@@ -537,7 +546,7 @@ SectionEnd
 ;--------------------------------
 ; determine admin versus local install
 Function un.onInit
-  StrCmp @CPACK_H3D_64_BIT@ "TRUE" 0 done_64_bit_checking_uninit
+  StrCmp "@CPACK_H3D_64_BIT@" "TRUE" 0 done_64_bit_checking_uninit
     ${If} ${RunningX64}
       DetailPrint "Installer running on 64-bit host"
       ; disable registry redirection (enable access to 64-bit portion of registry)
@@ -642,7 +651,16 @@ Section "Uninstall"
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
 
-  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall@CPACK_NSIS_DISPLAY_NAME_POSTFIX@.lnk"
+  ${If} ${RunningX64}
+    StrCmp "@CPACK_H3D_64_BIT@" "FALSE" 0 normal_link_delete
+      Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall (x86).lnk"
+      Delete "$SMPROGRAMS\$MUI_TEMP\H3DViewer (x86).lnk"
+      Goto end_link_checking_delete
+  ${EndIf}
+  normal_link_delete:
+    Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\H3DViewer.lnk"
+  end_link_checking_delete:
 @CPACK_NSIS_DELETE_ICONS@
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
 
@@ -662,7 +680,17 @@ Section "Uninstall"
   ; If the user changed the shortcut, then untinstall may not work. This should
   ; try to fix it.
   StrCpy $MUI_TEMP "$START_MENU"
-  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall@CPACK_NSIS_DISPLAY_NAME_POSTFIX@.lnk"
+  ${If} ${RunningX64}
+    StrCmp "@CPACK_H3D_64_BIT@" "FALSE" 0 normal_link_delete2
+      Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall (x86).lnk"
+      Delete "$SMPROGRAMS\$MUI_TEMP\H3DViewer (x86).lnk"
+      Goto end_link_checking_delete2
+  ${EndIf}  
+  normal_link_delete2:
+    Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\H3DViewer.lnk"
+  end_link_checking_delete2:
+@CPACK_NSIS_DELETE_ICONS@
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
 
   ;Delete empty start menu parent diretories
@@ -692,7 +720,7 @@ SectionEnd
 ; "Program Files" for AllUsers, "My Documents" for JustMe...
 
 Function .onInit
-  StrCmp @CPACK_H3D_64_BIT@ "TRUE" 0 done_64_bit_checking
+  StrCmp "@CPACK_H3D_64_BIT@" "TRUE" 0 done_64_bit_checking
     ${If} ${RunningX64}
       DetailPrint "Installer running on 64-bit host"
       ; disable registry redirection (enable access to 64-bit portion of registry)
