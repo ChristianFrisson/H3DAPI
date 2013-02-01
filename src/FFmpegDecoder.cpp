@@ -38,6 +38,7 @@
 
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(52, 64, 0)
 #define CODEC_TYPE_VIDEO AVMEDIA_TYPE_VIDEO
+#define CODEC_TYPE_AUDIO AVMEDIA_TYPE_AUDIO
 #endif
 
 using namespace H3D;
@@ -175,13 +176,13 @@ bool FFmpegDecoder::loadClip( const string &url ) {
   videoStream=-1;
   audioStream=-1;
   for(int i=0; i < pFormatCtx->nb_streams; i++) {
-    if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO
+    if(pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO
        &&
          videoStream < 0) {
       videoStream=i;
     }
 #ifdef WITH_AUDIO
-    if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO &&
+    if(pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_AUDIO &&
        audioStream < 0) {
       audioStream=i;
     }
@@ -209,7 +210,11 @@ bool FFmpegDecoder::loadClip( const string &url ) {
     return -1; // Codec not found
   }
   // Open codec
+#if LIBAVCODEC_VERSION_MAJOR < 53
+  if(avcodec_open(pCodecCtx, pCodec)<0)
+#else
   if(avcodec_open2(pCodecCtx, pCodec, NULL)<0)
+#endif
     return -1; // Could not open codec
 
 #ifdef WITH_AUDIO
@@ -218,7 +223,11 @@ bool FFmpegDecoder::loadClip( const string &url ) {
     fprintf(stderr, "Unsupported codec!\n");
     return -1;
   }
+#if LIBAVCODEC_VERSION_MAJOR < 53
+  avcodec_open(aCodecCtx, aCodec);
+#else
   avcodec_open2(aCodecCtx, aCodec, NULL);
+#endif
 #endif // WITH_AUDIO
 
   // Allocate video frame

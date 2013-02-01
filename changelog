@@ -1,3 +1,142 @@
+Changes for version 2.2:
+- Some DynamicTransform now only updates when value actually change.
+- MField::insert() functions fixes to take const_iterator.
+- Fix so that ImportLibrary supports specification of several optional paths to
+ a library in the url field
+- Many CMake updates to handle configuration settings for building with various
+compilers.
+- New stereo formats, HDMI_FRAME_PACKED_720P and HDMI_FRAME_PACKED_1080P
+ and NVIDIA_3DVISION
+- Added support for tesselation shaders.
+- Added Testsuit (well first version) which can be used to detemine if
+rendering with vertex buffer objects is faster for a specific system.
+- Added support for giving inline scripts as CDATA for xml files.
+- TwoSidedMaterial::backTransparency is now properly used.
+- Fixed bug in CoordinateDeformer. It was always deforming for device 0.
+- Fixed issue with obtaining wrong ResourceResolver instance.
+- Added force and torque limits to haptics devices.
+- Added program settings functionality.
+- VRML parser updates to work properly with DEF/USE.
+- A DeformableShape instances first occurance in scene graph detemines its deformation.
+- deviceInfo field common for all force effects. It is now a MFInt32.
+- New base class H3DSingleTextureNode for texture nodes which specify a texture using a
+  single texture id.
+- Fixed use of wrong coordinate system in ProximitySensor.
+- Proper implementation of calibration field in PhantomDevice.
+- Extrusion updates to comply with latest spec.
+- H3DViewer navigation keyboard short-cut now need Alt button pressed.
+- Support for including dynamic fields in writeNodeToX3D functions.
+- Updates for better support of the X3D proto system.
+- H-anim X3D component support.
+- Fixed variuos bugs with textures.
+- Added generated shader nodes framework.
+- Updates to make it easier to configure correct stereo for head mounted displays.
+- Support for float internal texture formats.
+- Support for full screen anti-aliasing.
+- UnityBuild option for users that frequently recompile the API and want to save time.
+- H3DViewer use wxWidgets 2.9 and wxPropertyGrid feature.
+- 64 bit builds of external libraries.
+- DEF is no longer an alternative to moduleName for a PythonScript.
+- Documentation now contains a page listing all nodes and their fields.
+- Memory leak fixes.
+- Support for rendering using vertex buffer object of nodes IndexedTriangleSet, Sphere, Cylinder,
+ ElevationGrid and SuperShape.
+- Fixes to stereo modes HORIZONTAL_INTERLACED, VERTICAL_INTERLACED and VERTICAL_INTERLACED_GREEN_SHIFT.
+- Tangent space normal maps in PhongShader node and automatic tangent vertex attribute
+ generation for IndexedTriangleSet/IndexedFaceSet.
+- Support for haptics devices from Haption (VirtuoseDevice).
+- PythonScript cleanup on destruction fixes.
+- h3dload.ini is now stored in users location if user do not have access rights to
+write to default location.
+- GraphicsCachingOptions is now named GraphicsOptions.
+- X3DPointingDeviceSensor updates to comply with X3D specification.
+  Also fixed other errors with X3DPointingDeviceSensors.
+- Added support for geometry shaders.
+- Fixed maxDistance issues with HapticLayeredGroup.
+- SpiderMonkey updates. That is better ECMAscript support.
+- ToggleGroup and Clipplane can now be set to work per haptics device.
+- Default navigation parameters can now be set per windows (when several rendering windows are used).
+- Several new x3d example files to cover all nodes.
+- Updates to get correct default headlight in stereo rendering.
+- Updates to Shadow geometries and shadows can be done by shaders.
+- Several updates to multiPassTransparency.
+
+New H3D nodes:
+ComposedGeneratedShader
+EntactDevice
+EnvironmentMapShader
+FrameBufferTextureGenerator
+FullScreenRectangle
+GeneralDirectionalLight
+GeneralPointLight
+GeneralSpotlight
+GeneratedTexture
+GeneratedTexture3D
+GraphicsHardwareInfo
+HAnimHumanoid
+HAnimJoint
+LayeredRenderer
+MLHIDevice
+MultiDeviceSurface
+MultiRenderTargetShader
+NormalShader
+PhongShader
+RenderTargetSelectGroup
+RotationalSpringEffect
+ShaderCombiner
+ShadowTransform
+VirtuoseDevice
+
+Fields added to existing nodes:
+ClipPlane - hapticsOnDevice
+ComposedShader - transparencyDetectMode
+CoordinateDeformer - deviceAlgorithm
+FakeHapticsDevice - deviceName
+ForceField - torque
+GlobalSettings - x3dROUTESendsEvent, loadTexturesInThread, renderMode
+GraphicsOptions - useDefaultShadows, defaultShadowDarkness, preferVertexBufferObject
+H3DHapticsDevice - forceLimit, torqueLimit
+H3DWindowNode - clipDistances
+NavigationInfo - nearVisibilityLimit
+OrthoViewpoint - retainAspectRatio
+RenderProperties - alphaFunc, alphaFuncValue, blendFuncSrcFactorRGB,
+                   blendFuncSrcFactorAlpha, blendFuncDstFactorRGB,
+                   blendFuncDstFactorAlpha, blendEquationRGB,
+                   blendEquationAlpha, blendColor
+RuspiniRenderer - alwaysFollowSurface
+SpringEffect - damping
+ToggleGroup - hapticsOnDevice
+TransformInfo - outputGLMatrices, glModelViewMatrix, glModelViewMatrixInverse,
+                glProjectionMatrix, glProjectionMatrixInverse
+
+Deprecated nodes:
+GraphicsCachingOptions
+
+New python functionality:
+- Python created thread can run without H3D python code being run.
+- Copy constructors to H3DInterface.Vec classes.
+- new python functions:
+  throwQuitAPIException
+  getTopLevelFields
+  createNode
+  getNrHapticsDevices
+  getHapticsDevice
+  getNamedNode
+  TimerCallback.removeCallback
+  Field.getAccessType
+  MField.size
+- Python doxygen documentation added.
+- New constructor for Matrix4f/4d to construct matrix given
+translation, rotation and scale.
+
+Compatability issues:
+- If deviceInfo field of force effect is not explicitly set then a force effect
+will now affect all connected devices and not just the first one. In python
+deviceInfo must be set using a list (SFInt32 -> MFInt32).
+- preRender/postRender C++ functions must be updated due to change of handling
+OpenGL attribute stack (it is quite small).
+  
+
 Changes for version 2.1.1:
 - CMake updates for handling builds with Visual studio 2010 and CMake 2.8.0.
 Still considered test-verison since Visual studio 2010 is not released yet.
