@@ -125,7 +125,17 @@ SET_TARGET_PROPERTIES( Sphere_X3D PROPERTIES DEBUG_POSTFIX "_d" )
 SET_TARGET_PROPERTIES( Spheres_X3D PROPERTIES DEBUG_POSTFIX "_d" )
 
 # set the install directory to the H3D directory on Windows
-IF(WIN32) 
+SET( DEFAULT_BIN_INSTALL "bin" )
+SET( DEFAULT_LIB_INSTALL "lib" )
+
+IF( WIN32 )
+  SET( DEFAULT_BIN_INSTALL "bin32" )
+  SET( DEFAULT_LIB_INSTALL "lib32" )
+  IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    SET( DEFAULT_BIN_INSTALL "bin64" )
+    SET( DEFAULT_LIB_INSTALL "lib64" )
+  ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+  
   # Set compile and link properties for projects.
   SET( ManualExamples_COMPILE_FLAGS "" )
   
@@ -149,12 +159,12 @@ ENDIF(WIN32)
 
 # Install to these directories.
 INSTALL( TARGETS Sphere_X3D
-         LIBRARY DESTINATION lib
-         RUNTIME DESTINATION bin
+         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL}
+         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL}
          COMPONENT H3DAPI_cpack_examples_runtime )
 
 INSTALL( TARGETS Spheres_X3D
-         LIBRARY DESTINATION lib
-         RUNTIME DESTINATION bin
+         LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL}
+         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL}
          COMPONENT H3DAPI_cpack_examples_runtime )
 

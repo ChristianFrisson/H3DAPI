@@ -57,11 +57,6 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
       #Include all shared libraries in bundle
       INCLUDE("${H3DViewer_SOURCE_DIR}/OSXCPackLibraries.txt" )
 
-# Used previously to install all the dependent libraries listed. This
-# is now done automatially with the osx_bundle.py script instead.
-#      INSTALL( FILES ${OSX_DEPENDENT_LIBRARIES}
-#               DESTINATION lib )
-
       INSTALL( FILES ${OSX_PLUGIN_LIBRARIES}
                DESTINATION Plugins )
 
@@ -121,14 +116,14 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                                                  ${MS_REDIST_INSTALL_COMMAND_1} )
         IF( ${redist_version} LESS 9 )
           SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"'\\n" )
           SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /x vcredist.msi /qn\\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /x vcredist.msi /qn\\\"'\\n" )
         ELSE( )
           SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"'\\n" )
           SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /uninstall \\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /uninstall \\\"'\\n" )
         ENDIF( ${redist_version} LESS 9 )
         SET( MS_REDIST_INSTALL_COMMAND_2 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
                                          " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
@@ -160,14 +155,14 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                                                " Check if uninstall python \\n  MessageBox MB_YESNO \\\"Do you want to uninstall python? It is recommended if no other applications use python ${CPACK_PYTHON_VERSION}.\\\" IDYES uninstall_python_yes IDNO uninstall_python_no\\n"
                                                " A comment \\n  uninstall_python_yes:\\n"
                                                ${PYTHON_INSTALL_COMMAND_2}
-                                               " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /x \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn'  $0\\n"
+                                               " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /x \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn' \\n"
                                                ${PYTHON_INSTALL_COMMAND_3}
                                                " A comment \\n  uninstall_python_no:\\n" )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                              ${PYTHON_INSTALL_COMMAND_1}
                                              " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 +5\\n"
                                              ${PYTHON_INSTALL_COMMAND_2}
-                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'  $0\\n"
+                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"' \\n"
                                              ${PYTHON_INSTALL_COMMAND_3} )
     ENDIF( PythonInstallMSI )
     
@@ -182,13 +177,13 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                                     " Delete install file\\n  Delete \\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\"\\n" )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                              ${OPENAL_INSTALL_COMMAND_1}
-                                             " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /s' $0\\n"
+                                             " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /s'\\n"
                                              ${OPENAL_INSTALL_COMMAND_2} )
       SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
                                                " Check if uninstall OpenAL \\n  MessageBox MB_YESNO \\\"Do you want to uninstall OpenAL? It is recommended if no other applications use it.\\\" IDYES uninstall_openal_yes IDNO uninstall_openal_no\\n"
                                                " A comment \\n  uninstall_openal_yes:\\n"
                                                ${OPENAL_INSTALL_COMMAND_1}
-                                               " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /u /s' $0\\n"
+                                               " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /u /s'\\n"
                                                ${OPENAL_INSTALL_COMMAND_2}
                                                " A comment \\n  uninstall_openal_no:\\n\\n" )
     ENDIF( OpenAlInstallExe )
@@ -230,7 +225,7 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     foreach( binary ${EXTERNAL_BINARIES} )
       IF( EXISTS ${binary} )
         INSTALL( FILES ${binary}
-                 DESTINATION H3DViewer/bin )
+                 DESTINATION H3DViewer/${DEFAULT_BIN_INSTALL} )
       ENDIF( EXISTS ${binary} )
     endforeach( binary )
     
@@ -246,16 +241,16 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                      ${H3DViewer_BINARY_DIR}/../HAPI/Release/HAPI_vc${H3D_MSVC_VERSION}.dll
                      ${H3DViewer_BINARY_DIR}/../Release/H3DAPI_vc${H3D_MSVC_VERSION}.dll
                      CONFIGURATIONS Release
-                     DESTINATION H3DViewer/bin )
+                     DESTINATION H3DViewer/${DEFAULT_BIN_INSTALL} )
       IF( TARGET OpenHapticsRenderer )
         INSTALL( FILES ${H3DViewer_BINARY_DIR}/../HAPI/Release/OpenHapticsRenderer_vc${H3D_MSVC_VERSION}.dll
                        CONFIGURATIONS Release
-                       DESTINATION H3DViewer/bin )
+                       DESTINATION H3DViewer/${DEFAULT_BIN_INSTALL} )
       ENDIF( TARGET OpenHapticsRenderer )
       IF( TARGET Chai3DRenderer )
         INSTALL( FILES ${H3DViewer_BINARY_DIR}/../HAPI/Release/Chai3DRenderer_vc${H3D_MSVC_VERSION}.dll
                        CONFIGURATIONS Release
-                       DESTINATION H3DViewer/bin )
+                       DESTINATION H3DViewer/${DEFAULT_BIN_INSTALL} )
       ENDIF( TARGET Chai3DRenderer )
       
       # these part are added separately so that these plug in can be automatically added to H3DViewer
@@ -265,25 +260,25 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                      CONFIGURATIONS Release
                      DESTINATION H3DViewer/plugins )
     ELSE( H3D_USE_DEPENDENCIES_ONLY )
-      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/H3DUtil_vc${H3D_MSVC_VERSION}.dll
-                     ${H3DViewer_SOURCE_DIR}/../../../bin/HAPI_vc${H3D_MSVC_VERSION}.dll
-                     ${H3DViewer_SOURCE_DIR}/../../../bin/H3DAPI_vc${H3D_MSVC_VERSION}.dll
+      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/H3DUtil_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/HAPI_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/H3DAPI_vc${H3D_MSVC_VERSION}.dll
                      CONFIGURATIONS Release
-                     DESTINATION H3DViewer/bin )
+                     DESTINATION H3DViewer/${DEFAULT_BIN_INSTALL} )
       IF( TARGET OpenHapticsRenderer )
-        INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/OpenHapticsRenderer_vc${H3D_MSVC_VERSION}.dll
+        INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/OpenHapticsRenderer_vc${H3D_MSVC_VERSION}.dll
                        CONFIGURATIONS Release
-                       DESTINATION H3DViewer/bin )
+                       DESTINATION H3DViewer/${DEFAULT_BIN_INSTALL} )
       ENDIF( TARGET OpenHapticsRenderer )
       IF( TARGET Chai3DRenderer )
-        INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/Chai3DRenderer_vc${H3D_MSVC_VERSION}.dll
+        INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/Chai3DRenderer_vc${H3D_MSVC_VERSION}.dll
                        CONFIGURATIONS Release
-                       DESTINATION H3DViewer/bin )
+                       DESTINATION H3DViewer/${DEFAULT_BIN_INSTALL} )
       ENDIF( TARGET Chai3DRenderer )
       # these part are added separately so that these plug in can be automatically added to H3DViewer
-      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../bin/H3DPhysics_vc${H3D_MSVC_VERSION}.dll
-                     ${H3DViewer_SOURCE_DIR}/../../../bin/MedX3D_vc${H3D_MSVC_VERSION}.dll
-                     ${H3DViewer_SOURCE_DIR}/../../../bin/UI_vc${H3D_MSVC_VERSION}.dll
+      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/H3DPhysics_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/MedX3D_vc${H3D_MSVC_VERSION}.dll
+                     ${H3DViewer_SOURCE_DIR}/../../../${DEFAULT_BIN_INSTALL}/UI_vc${H3D_MSVC_VERSION}.dll
                      CONFIGURATIONS Release
                      DESTINATION H3DViewer/plugins )
     ENDIF( H3D_USE_DEPENDENCIES_ONLY )

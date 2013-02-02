@@ -10,8 +10,10 @@ GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 # Look for the header file.
 FIND_PATH(MEDX3D_INCLUDE_DIR NAMES H3D/MedX3D/MedX3D.h
            PATHS $ENV{H3D_ROOT}/../MedX3D/include
-                 ../../MedX3D/include
-                 ${module_file_path}/../../include )
+                 ../../../../MedX3D/include
+                 ${module_file_path}/../../../include
+                 ../../../MedX3D/include
+                 ${module_file_path}/../../../MedX3D/include                 )
 
 MARK_AS_ADVANCED(MEDX3D_INCLUDE_DIR)
 
@@ -28,15 +30,25 @@ ELSE(MSVC)
   SET( MEDX3D_NAME MedX3D )
 ENDIF( MSVC )
 
+SET( DEFAULT_LIB_INSTALL "lib" )
+IF( WIN32 )
+  SET( DEFAULT_LIB_INSTALL "lib32" )
+  IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    SET( DEFAULT_LIB_INSTALL "lib64" )
+  ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+ENDIF( WIN32 )
+
 FIND_LIBRARY( MEDX3D_LIBRARY NAMES ${MEDX3D_NAME}
-              PATHS $ENV{H3D_ROOT}/../lib
-                    $ENV{H3D_ROOT}/../MedX3D/lib
-                    ${module_file_path}/../../lib )
+              PATHS $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL}
+                    $ENV{H3D_ROOT}/../MedX3D/${DEFAULT_LIB_INSTALL}
+                    ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
+                    ${module_file_path}/../../../MedX3D/${DEFAULT_LIB_INSTALL} )
 
 FIND_LIBRARY( MEDX3D_DEBUG_LIBRARY NAMES ${MEDX3D_NAME}_d
-              PATHS $ENV{H3D_ROOT}/../lib
-                    $ENV{H3D_ROOT}/../MedX3D/lib
-                    ${module_file_path}/../../lib )
+              PATHS $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL}
+                    $ENV{H3D_ROOT}/../MedX3D/${DEFAULT_LIB_INSTALL}
+                    ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
+                    ${module_file_path}/../../../MedX3D/${DEFAULT_LIB_INSTALL} )
 MARK_AS_ADVANCED(MEDX3D_LIBRARY)
 MARK_AS_ADVANCED(MEDX3D_DEBUG_LIBRARY)
 

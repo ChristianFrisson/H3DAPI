@@ -320,14 +320,14 @@ IF( GENERATE_CPACK_PROJECT )
                                                  ${MS_REDIST_INSTALL_COMMAND_1} )
         IF( ${redist_version} LESS 9 )
           SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /i vcredist.msi /qn\\\"'\\n" )
           SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /x vcredist.msi /qn\\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q:a /norestart /c:\\\"msiexec /x vcredist.msi /qn\\\"'\\n" )
         ELSE( )
           SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /norestart \\\"'\\n" )
           SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
-                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /uninstall \\\"' $0\\n" )
+                                                 " Execute silent and wait\\n  ExecWait '\\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\" /q /uninstall \\\"'\\n" )
         ENDIF( ${redist_version} LESS 9 )
         SET( MS_REDIST_INSTALL_COMMAND_2 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
                                          " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version}\\\\${VC${redist_version}_FILE_NAME}\\\"\\n"
@@ -359,15 +359,18 @@ IF( GENERATE_CPACK_PROJECT )
                                                " Check if uninstall python \\n  MessageBox MB_YESNO \\\"Do you want to uninstall python? It is recommended if no other applications use python ${CPACK_PYTHON_VERSION}.\\\" IDYES uninstall_python_yes IDNO uninstall_python_no\\n"
                                                " A comment \\n  uninstall_python_yes:\\n"
                                                ${PYTHON_INSTALL_COMMAND_2}
-                                               " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /x \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn'  $0\\n"
+                                               " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /x \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn'\\n"
                                                ${PYTHON_INSTALL_COMMAND_3}
                                                " A comment \\n  uninstall_python_no:\\n" )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                              " Check if H3DAPI selected for installation\\n IntOp $0 $H3DAPI_cpack_sources_selected | H3DAPI_cpack_runtime_selected\\n"
+                                              " Check if H3DAPI selected for installation\\n \\\${If} $0 > 0\\n"
                                              ${PYTHON_INSTALL_COMMAND_1}
                                              " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 +5\\n"
                                              ${PYTHON_INSTALL_COMMAND_2}
-                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'  $0\\n"
-                                             ${PYTHON_INSTALL_COMMAND_3} )
+                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'\\n"
+                                             ${PYTHON_INSTALL_COMMAND_3}
+                                             "A comment \\n \\\${EndIf}\\n")
     ENDIF( PythonInstallMSI )
     
     # Install OpenAL.
@@ -381,13 +384,13 @@ IF( GENERATE_CPACK_PROJECT )
                                     " Delete install file\\n  Delete \\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\"\\n" )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                              ${OPENAL_INSTALL_COMMAND_1}
-                                             " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /s' $0\\n"
+                                             " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /s'\\n"
                                              ${OPENAL_INSTALL_COMMAND_2} )
       SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
                                                " Check if uninstall OpenAL \\n  MessageBox MB_YESNO \\\"Do you want to uninstall OpenAL? It is recommended if no other applications use it.\\\" IDYES uninstall_openal_yes IDNO uninstall_openal_no\\n"
                                                " A comment \\n  uninstall_openal_yes:\\n"
                                                ${OPENAL_INSTALL_COMMAND_1}
-                                               " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /u /s' $0\\n"
+                                               " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /u /s'\\n"
                                                ${OPENAL_INSTALL_COMMAND_2}
                                                " A comment \\n  uninstall_openal_no:\\n\\n" )
     ENDIF( OpenAlInstallExe )
@@ -555,12 +558,13 @@ IF( GENERATE_CPACK_PROJECT )
   ENDIF( NOT DEFINED H3DAPI_DOCS_DIRECTORY )
   
   IF( EXISTS ${H3DAPI_DOCS_DIRECTORY} )
-    # The trailing / is there in order to copy the contents of the doc without the actual document name, since the content
-    # should be put in a doc directory.
-    INSTALL( DIRECTORY ${H3DAPI_DOCS_DIRECTORY}/
+    INSTALL( DIRECTORY ${H3DAPI_DOCS_DIRECTORY}/H3DAPI
              DESTINATION doc
              COMPONENT H3DAPI_cpack_headers
              REGEX "(/.svn)|(/CVS)" EXCLUDE )
+    INSTALL( FILES "${H3DAPI_DOCS_DIRECTORY}/H3D API Manual.pdf"
+             DESTINATION doc
+             COMPONENT H3DAPI_cpack_headers )
   ENDIF( EXISTS ${H3DAPI_DOCS_DIRECTORY} )
   
   # setting names and dependencies between components and also grouping them.

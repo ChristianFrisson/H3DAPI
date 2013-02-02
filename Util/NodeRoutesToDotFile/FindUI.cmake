@@ -27,15 +27,23 @@ ELSE(MSVC)
   SET( UI_NAME UI )
 ENDIF( MSVC )
 
+SET( DEFAULT_LIB_INSTALL "lib" )
+IF( WIN32 )
+  SET( DEFAULT_LIB_INSTALL "lib32" )
+  IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    SET( DEFAULT_LIB_INSTALL "lib64" )
+  ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+ENDIF( WIN32 )
+
 FIND_LIBRARY( UI_LIBRARY NAMES ${UI_NAME}
-              PATHS $ENV{H3D_ROOT}/../UI/lib
-                    ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../UI/lib )
+              PATHS $ENV{H3D_ROOT}/../UI/${DEFAULT_LIB_INSTALL}
+                    ../../../${DEFAULT_LIB_INSTALL}
+                    ${CMAKE_MODULE_PATH}/../../../UI/${DEFAULT_LIB_INSTALL} )
 
 FIND_LIBRARY( UI_DEBUG_LIBRARY NAMES ${UI_NAME}_d
-              PATHS $ENV{H3D_ROOT}/../UI/lib
-                    ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../UI/lib )
+              PATHS $ENV{H3D_ROOT}/../UI/${DEFAULT_LIB_INSTALL}
+                    ../../../${DEFAULT_LIB_INSTALL}
+                    ${CMAKE_MODULE_PATH}/../../../UI/${DEFAULT_LIB_INSTALL} )
 MARK_AS_ADVANCED(UI_LIBRARY)
 MARK_AS_ADVANCED(UI_DEBUG_LIBRARY)
 

@@ -27,17 +27,25 @@ ELSE(MSVC)
   SET( H3DPhysics_NAME H3DPhysics )
 ENDIF( MSVC )
 
+SET( DEFAULT_LIB_INSTALL "lib" )
+IF( WIN32 )
+  SET( DEFAULT_LIB_INSTALL "lib32" )
+  IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    SET( DEFAULT_LIB_INSTALL "lib64" )
+  ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+ENDIF( WIN32 )
+
 FIND_LIBRARY( H3DPhysics_LIBRARY NAMES ${H3DPhysics_NAME}
-              PATHS $ENV{H3D_ROOT}/../H3DPhysics/lib
-                    ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/lib
-                    $ENV{H3D_ROOT}/../lib )
+              PATHS $ENV{H3D_ROOT}/../H3DPhysics/${DEFAULT_LIB_INSTALL}
+                    ../../../${DEFAULT_LIB_INSTALL}
+                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/${DEFAULT_LIB_INSTALL}
+                    $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL} )
 
 FIND_LIBRARY( H3DPhysics_DEBUG_LIBRARY NAMES ${H3DPhysics_NAME}_d
-              PATHS $ENV{H3D_ROOT}/../H3DPhysics/lib
-                    ../../../lib
-                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/lib
-                    $ENV{H3D_ROOT}/../lib )
+              PATHS $ENV{H3D_ROOT}/../H3DPhysics/${DEFAULT_LIB_INSTALL}
+                    ../../../${DEFAULT_LIB_INSTALL}
+                    ${CMAKE_MODULE_PATH}/../../../H3DPhysics/${DEFAULT_LIB_INSTALL}
+                    $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL} )
 MARK_AS_ADVANCED(H3DPhysics_LIBRARY)
 MARK_AS_ADVANCED(H3DPhysics_DEBUG_LIBRARY)
 
