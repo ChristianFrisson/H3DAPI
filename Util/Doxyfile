@@ -670,7 +670,7 @@ WARN_LOGFILE           =
 
 INPUT                  = ../include/H3D \
                          ../src \
-                         examples_doxygen_page \
+                         H3DAPIexamples_doxygen_page \
                          nodesFieldslist
 
 # This tag can be used to specify the character encoding of the source files
