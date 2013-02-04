@@ -84,8 +84,9 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
         // Otherwise fallback on using temp files
         string url_contents= ResourceResolver::resolveURLAsString ( *i );
         if ( url_contents != "" ) {
+          istringstream tmp_istream( url_contents );
           Image *image = 
-            static_cast< H3DImageLoaderNode * >(*il)->loadImage ( istringstream ( url_contents ) );
+            static_cast< H3DImageLoaderNode * >(*il)->loadImage ( tmp_istream );
           if( image ) {
             texture->setURLUsed( *i );
             return image;
@@ -114,11 +115,12 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
     // Otherwise fallback on using temp files
     string url_contents= ResourceResolver::resolveURLAsString ( *i );
     if ( url_contents != "" ) {
+      istringstream tmp_istream( url_contents );
       auto_ptr< H3DImageLoaderNode > 
-        il( H3DImageLoaderNode::getSupportedFileReader( istringstream ( url_contents ) ) );
+        il( H3DImageLoaderNode::getSupportedFileReader( tmp_istream ) );
       if( il.get() ) {
         texture->setURLUsed( *i );
-        Image *image = il->loadImage( istringstream ( url_contents ) );
+        Image *image = il->loadImage( tmp_istream );
         return image;
       }
     }

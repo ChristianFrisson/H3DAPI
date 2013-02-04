@@ -133,7 +133,6 @@ void MyApp::OnIdle(wxIdleEvent& event) {
     if( (*i)->isActive() )
       (*i)->idle();
   }
-  wxApp::OnIdle(event);
 }
 
 IMPLEMENT_APP(MyApp)

@@ -107,7 +107,8 @@ namespace H3D {
 
     ///// Destructor.
     ~WxWidgetsWindow() {
-      theWxGLCanvas->myOwner = NULL;
+      if( theWxGLCanvas )
+        theWxGLCanvas->myOwner = NULL;
 
       if( !have_parent ) {
         theWindow->Destroy();
