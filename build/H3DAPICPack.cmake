@@ -346,6 +346,7 @@ IF( GENERATE_CPACK_PROJECT )
     MARK_AS_ADVANCED(PythonInstallMSI)
     IF( PythonInstallMSI )
       STRING( REGEX MATCH 2\\.[456789] CPACK_PYTHON_VERSION ${PythonInstallMSI} )
+      STRING( REGEX REPLACE \\. "" CPACK_PYTHON_VERSION_NO_DOT ${CPACK_PYTHON_VERSION} )
       GET_FILENAME_COMPONENT( PYTHON_FILE_NAME ${PythonInstallMSI} NAME )
       STRING( REPLACE "/" "\\\\" TEMP_PythonInstallMSI ${PythonInstallMSI} )
       SET( PYTHON_INSTALL_COMMAND_1 " Code to install Python\\n  ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n" )
@@ -366,11 +367,20 @@ IF( GENERATE_CPACK_PROJECT )
                                               " Check if H3DAPI selected for installation\\n IntOp $0 $H3DAPI_cpack_sources_selected | H3DAPI_cpack_runtime_selected\\n"
                                               " Check if H3DAPI selected for installation\\n \\\${If} $0 > 0\\n"
                                              ${PYTHON_INSTALL_COMMAND_1}
-                                             " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 +5\\n"
+                                             " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 install_python_no\\n"
                                              ${PYTHON_INSTALL_COMMAND_2}
+                                             "A comment \\n  ClearErrors\\n"
+                                             "Check if python install path is free \\n  GetFullPathName $0 C:\\\\Python${CPACK_PYTHON_VERSION_NO_DOT}\\n"
+                                             "If errors then path was not found, i.e. empty\\n  IfErrors 0 python_install_not_hidden \\n"
+                                             "A comment \\n    ClearErrors\\n"
+                                             " Execute python installer silent, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn ALLUSERS=1'\\n"
+                                             "A comment \\n Goto python_end_install\\n"
+                                             "A comment \\n python_install_not_hidden:\\n"
                                              " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'\\n"
+                                             " A comment \\n  python_end_install:\\n"
                                              ${PYTHON_INSTALL_COMMAND_3}
-                                             "A comment \\n \\\${EndIf}\\n")
+                                             "A comment \\n  install_python_no:\\n"
+                                             "A comment \\n \\\${EndIf}\\n" )
     ENDIF( PythonInstallMSI )
     
     # Install OpenAL.

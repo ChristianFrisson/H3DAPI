@@ -53,13 +53,14 @@ write to default location.
   Also fixed other errors with X3DPointingDeviceSensors.
 - Added support for geometry shaders.
 - Fixed maxDistance issues with HapticLayeredGroup.
-- SpiderMonkey updates. That is better ECMAscript support.
+- SpiderMonkey updates. That is much better ECMAscript support.
 - ToggleGroup and Clipplane can now be set to work per haptics device.
-- Default navigation parameters can now be set per windows (when several rendering windows are used).
+- Fix bugs with dual windows navigation
 - Several new x3d example files to cover all nodes.
 - Updates to get correct default headlight in stereo rendering.
 - Updates to Shadow geometries and shadows can be done by shaders.
 - Several updates to multiPassTransparency.
+- Added resolveURLAsFolder functionality
 
 New H3D nodes:
 ComposedGeneratedShader
@@ -73,8 +74,11 @@ GeneralSpotlight
 GeneratedTexture
 GeneratedTexture3D
 GraphicsHardwareInfo
+HAnimDisplacer
 HAnimHumanoid
 HAnimJoint
+HAnimSegment
+HAnimSite
 LayeredRenderer
 MLHIDevice
 MultiDeviceSurface
@@ -99,6 +103,7 @@ H3DHapticsDevice - forceLimit, torqueLimit
 H3DWindowNode - clipDistances
 NavigationInfo - nearVisibilityLimit
 OrthoViewpoint - retainAspectRatio
+PhantomDevice - motorTemperatures
 RenderProperties - alphaFunc, alphaFuncValue, blendFuncSrcFactorRGB,
                    blendFuncSrcFactorAlpha, blendFuncDstFactorRGB,
                    blendFuncDstFactorAlpha, blendEquationRGB,

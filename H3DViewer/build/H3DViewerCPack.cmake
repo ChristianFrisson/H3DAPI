@@ -82,8 +82,10 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     SET( CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES32" )
     SET( CPACK_NSIS_DISPLAY_NAME_POSTFIX "(x86)" )
     SET( CPACK_H3D_64_BIT "FALSE" )
+    SET( CPACK_NSIS_EXECUTABLES_DIRECTORY bin32 )
     IF( CMAKE_SIZEOF_VOID_P EQUAL 8 ) # check if the system is 64 bit
       SET( EXTERNAL_BIN_PATH "bin64" )
+      SET( CPACK_NSIS_EXECUTABLES_DIRECTORY bin64 )
       SET( EXTERNAL_BIN_REPLACE_PATH "bin32" )
       SET( CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64" )
       SET( CPACK_H3D_64_BIT "TRUE" )
@@ -142,6 +144,7 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     MARK_AS_ADVANCED(PythonInstallMSI)
     IF( PythonInstallMSI )
       STRING( REGEX MATCH 2\\.[456789] CPACK_PYTHON_VERSION ${PythonInstallMSI} )
+      STRING( REGEX REPLACE \\. "" CPACK_PYTHON_VERSION_NO_DOT ${CPACK_PYTHON_VERSION} )
       GET_FILENAME_COMPONENT( PYTHON_FILE_NAME ${PythonInstallMSI} NAME )
       STRING( REPLACE "/" "\\\\" TEMP_PythonInstallMSI ${PythonInstallMSI} )
       SET( PYTHON_INSTALL_COMMAND_1 " Code to install Python\\n  ReadRegStr $0 HKLM SOFTWARE\\\\Python\\\\PythonCore\\\\${CPACK_PYTHON_VERSION}\\\\InstallPath \\\"\\\"\\n" )
@@ -155,15 +158,24 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                                                " Check if uninstall python \\n  MessageBox MB_YESNO \\\"Do you want to uninstall python? It is recommended if no other applications use python ${CPACK_PYTHON_VERSION}.\\\" IDYES uninstall_python_yes IDNO uninstall_python_no\\n"
                                                " A comment \\n  uninstall_python_yes:\\n"
                                                ${PYTHON_INSTALL_COMMAND_2}
-                                               " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /x \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn' \\n"
+                                               " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /x \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn'\\n"
                                                ${PYTHON_INSTALL_COMMAND_3}
                                                " A comment \\n  uninstall_python_no:\\n" )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                              ${PYTHON_INSTALL_COMMAND_1}
-                                             " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 +5\\n"
+                                             " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 install_python_no\\n"
                                              ${PYTHON_INSTALL_COMMAND_2}
-                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"' \\n"
-                                             ${PYTHON_INSTALL_COMMAND_3} )
+                                             "A comment \\n  ClearErrors\\n"
+                                             "Check if python install path is free \\n  GetFullPathName $0 C:\\\\Python${CPACK_PYTHON_VERSION_NO_DOT}\\n"
+                                             "If errors then path was not found, i.e. empty\\n  IfErrors 0 python_install_not_hidden \\n"
+                                             "A comment \\n    ClearErrors\\n"
+                                             " Execute python installer silent, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\" /qn ALLUSERS=1'\\n"
+                                             "A comment \\n Goto python_end_install\\n"
+                                             "A comment \\n python_install_not_hidden:\\n"
+                                             " Execute python installer, wait for completion\\n  ExecWait '\\\"msiexec\\\" /i \\\"$INSTDIR\\\\${PYTHON_FILE_NAME}\\\"'\\n"
+                                             " A comment \\n  python_end_install:\\n"
+                                             ${PYTHON_INSTALL_COMMAND_3}
+                                             " A comment \\n  install_python_no:\\n" )
     ENDIF( PythonInstallMSI )
     
     # Install OpenAL.

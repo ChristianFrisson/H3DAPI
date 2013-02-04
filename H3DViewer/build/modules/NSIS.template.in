@@ -520,12 +520,12 @@ Section "-Core installation"
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
   ${If} ${RunningX64}
     StrCmp "@CPACK_H3D_64_BIT@" "FALSE" 0 normal_link
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer (x86).lnk" "$INSTDIR\H3DViewer\bin\H3DViewer.exe"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer (x86).lnk" "$INSTDIR\H3DViewer\@CPACK_NSIS_EXECUTABLES_DIRECTORY@\H3DViewer.exe"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall (x86).lnk" "$INSTDIR\Uninstall_@CPACK_NSIS_UNINSTALL_NAME@.exe"
       Goto end_link_checking
   ${EndIf}
   normal_link:
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" "$INSTDIR\H3DViewer\bin\H3DViewer.exe"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" "$INSTDIR\H3DViewer\@CPACK_NSIS_EXECUTABLES_DIRECTORY@\H3DViewer.exe"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall_@CPACK_NSIS_UNINSTALL_NAME@.exe"
   end_link_checking:
 
