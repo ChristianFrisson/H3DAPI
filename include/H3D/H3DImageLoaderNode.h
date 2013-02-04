@@ -49,8 +49,11 @@ namespace H3D {
   public:
     typedef H3DImageLoaderNode*( *CreateNodeFunc)(); 
 
-    /// Function ptr type for  
+    /// Function ptr type for callback to ask if loader supports a url
     typedef bool ( *SupportsFileFunc)( const string &url );
+
+    /// Function ptr type for callback to ask if loader supports a stream
+    typedef bool ( *SupportsStreamFunc)( istream &is );
     
     template< class N >
     static H3DImageLoaderNode *newImageLoaderNode() { return new N; };
@@ -61,10 +64,12 @@ namespace H3D {
       /// Constructor.
       FileReaderRegistration( const string &_name,
                               CreateNodeFunc _create, 
-                              SupportsFileFunc _supports ):
+                              SupportsFileFunc _supports,
+                              SupportsStreamFunc _supports_stream= NULL ):
       name( _name ),
       create_func( _create ),
-      supports_func( _supports ) {
+      supports_func( _supports ),
+      supports_stream_func ( _supports_stream ) {
 		  
         if( !H3DImageLoaderNode::initialized ) {
           H3DImageLoaderNode::registered_file_readers.reset(
@@ -77,6 +82,7 @@ namespace H3D {
       string name;
       CreateNodeFunc create_func;
       SupportsFileFunc supports_func;
+      SupportsStreamFunc supports_stream_func;
     };
 #ifdef __BORLANDC__
     friend struct FileReaderRegistration;
@@ -92,8 +98,15 @@ namespace H3D {
     /// url.
     ///
     virtual Image *loadImage( const string &url ) = 0;
-    /// TODO: Implement 
-    ////virtual Image *loadImage( const istream &is ) = 0;
+
+    /// Load an image from an istream
+    ///
+    /// Does not need to be implemented for all image loaders
+    ///
+    /// \returns An Image * with the image data loaded from the
+    /// url. Returns NULL if not implemented for image loader.
+    ///
+    virtual Image *loadImage( istream &is ) { return NULL; }
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "imageLoader".
@@ -107,6 +120,11 @@ namespace H3D {
     /// NULL is returned.
     static H3DImageLoaderNode *getSupportedFileReader( const string &url );
 
+    /// Given an istream, it returns an instance of a H3DImageLoaderNode
+    /// class that can handle that image type. If no such class is registered
+    /// NULL is returned.
+    static H3DImageLoaderNode *getSupportedFileReader( istream &is );
+
     /// Register a file reader that can then be returned by 
     /// getSupportedFileReader().
     /// \param name The name of the class
@@ -115,8 +133,9 @@ namespace H3D {
     /// given file type.
     static void registerFileReader( const string &name,
                                     CreateNodeFunc create, 
-                                    SupportsFileFunc supports ) {
-      registerFileReader( FileReaderRegistration( name, create, supports ) );
+                                    SupportsFileFunc supports,
+                                    SupportsStreamFunc supports_stream= NULL ) {
+      registerFileReader( FileReaderRegistration( name, create, supports, supports_stream ) );
     }
 
     /// Register a file reader that can then be returned by 

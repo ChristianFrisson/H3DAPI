@@ -85,7 +85,7 @@ namespace H3D {
     virtual Image *loadImage( const string &url );
 
     /// TODO: Implement 
-    ////virtual Image *loadImage( const istream &is ) = 0;
+    ////virtual Image *loadImage( istream &is ) = 0;
    
     /// The width of the image in pixels.
     /// 

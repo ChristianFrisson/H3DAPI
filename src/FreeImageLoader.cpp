@@ -45,11 +45,17 @@ H3DImageLoaderNode::FileReaderRegistration
 FreeImageLoader::reader_registration(
                             "FreeImageLoader",
                             &(newImageLoaderNode< FreeImageLoader >),
-                            &FreeImageLoader::supportsFileType 
+                            &FreeImageLoader::supportsFileType,
+                            &FreeImageLoader::supportsStreamType
                             );
 
 bool FreeImageLoader::supportsFileType( const string &url ) {
   FREE_IMAGE_FORMAT format = FreeImage_GetFileType( url.c_str() );
+  return format != FIF_UNKNOWN;
+}
+
+bool FreeImageLoader::supportsStreamType( istream &is ) {
+  FREE_IMAGE_FORMAT format = FreeImage_GetFileTypeFromHandle ( FreeImageImage::getIStreamIO(), static_cast<fi_handle>(&is) );
   return format != FIF_UNKNOWN;
 }
 

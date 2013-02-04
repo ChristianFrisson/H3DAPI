@@ -50,3 +50,16 @@ H3DImageLoaderNode *H3DImageLoaderNode::getSupportedFileReader(
   }
   return NULL;
 }
+
+H3DImageLoaderNode *H3DImageLoaderNode::getSupportedFileReader( 
+   istream &is ) {
+  if( initialized ) {
+    for( list< FileReaderRegistration >::iterator i = 
+           registered_file_readers->begin();
+         i != registered_file_readers->end(); i++ ) {
+      if( (*i).supports_stream_func && (*i).supports_stream_func( is ) )
+        return (*(*i).create_func)();
+    }
+  }
+  return NULL;
+}
