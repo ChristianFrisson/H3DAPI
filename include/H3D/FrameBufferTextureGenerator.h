@@ -34,6 +34,7 @@
 #include <H3D/MFString.h>
 #include <H3D/GeneratedTexture.h>
 #include <H3D/X3DViewpointNode.h>
+#include <H3D/X3DBackgroundNode.h>
 
 namespace H3D {
 
@@ -144,6 +145,7 @@ namespace H3D {
     typedef TypedSFNode< TextureProperties > SFTexturePropertiesNode;
     typedef TypedMFNode< TextureProperties > MFTexturePropertiesNode;
     typedef TypedSFNode< X3DViewpointNode > SFViewpointNode;
+    typedef TypedSFNode< X3DBackgroundNode > SFBackgroundNode;
     typedef TypedMFNode< H3DSingleTextureNode > MFGeneratedTextureNode;
     typedef TypedSFNode< H3DSingleTextureNode > SFGeneratedTextureNode;
     typedef void (*RenderCallbackFunc)( FrameBufferTextureGenerator *, int i, void * );
@@ -167,6 +169,7 @@ namespace H3D {
                                  Inst< SFInt32          > _samples   = 0,
                                  Inst< SFString         > _update    = 0,
                                  Inst< SFViewpointNode  > _viewpoint = 0,
+                                 Inst< SFBackgroundNode > _background = 0,
                                  Inst< SFInt32          > _width     = 0,
                                  Inst< SFInt32          > _height    = 0 );
         
@@ -305,6 +308,13 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> NULL
     auto_ptr< SFViewpointNode > viewpoint;
+
+    /// The X3DBackgroundNode to use when rendering the scene. If NULL,
+    /// then no background is rendered.
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> NULL
+    auto_ptr< SFBackgroundNode > background;
 
     /// The width of the output textures in pixels. If set to -1 the
     /// current default frame buffer width is used.

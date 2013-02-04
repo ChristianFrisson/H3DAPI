@@ -93,6 +93,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
                                                           Inst< SFInt32        > _samples,
                                                           Inst< SFString       > _update,
                                                           Inst< SFViewpointNode > _viewpoint,
+                                                          Inst< SFBackgroundNode > _background,
                                                           Inst< SFInt32         > _width,
                                                           Inst< SFInt32         > _height ):
   X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, _bboxCenter, _bboxSize ),
@@ -107,6 +108,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   samples( _samples ),
   update( _update ),
   viewpoint( _viewpoint ),
+  background ( _background ),
   width( _width ),
   height( _height ),
   fbo_initialized( false ),
@@ -259,7 +261,7 @@ void FrameBufferTextureGenerator::render()     {
 
   // if a viewpoint has been specified use that instead of what has already 
   // been set up
-  X3DViewpointNode *vp = viewpoint->getValue();
+  X3DViewpointNode* vp = viewpoint->getValue();
   if( vp ) {
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
@@ -281,8 +283,39 @@ void FrameBufferTextureGenerator::render()     {
     if( render_func ) {
       render_func( this, -1, render_func_data );
     } else {
+      // Get background and set clear color
+      X3DBackgroundNode* bg = background->getValue();
+      X3DViewpointNode* bgVP= vp ? vp : X3DViewpointNode::getActive();
+      if ( bg && bgVP ) {
+        RGBA clear_color = bg->glClearColor();
+        glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+      }
+
       // Clear buffers.
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      
+      // Render background
+      if ( bg && bgVP ) {
+        const Vec3f &vp_position = bgVP->totalPosition->getValue();
+        const Rotation &vp_orientation = bgVP->totalOrientation->getValue();
+        const Matrix4f &vp_inv_m = bgVP->accInverseMatrix->getValue();
+        Rotation vp_inv_rot = Rotation(vp_inv_m.getRotationPart());
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+        glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
+                    vp_orientation.axis.x, 
+                    vp_orientation.axis.y,
+                    vp_orientation.axis.z );
+        glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
+                    vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
+        glDepthMask( GL_FALSE );
+        bg->renderBackground();
+        glDepthMask( GL_TRUE );
+        glPopMatrix();
+      }
+
       X3DShapeNode::GeometryRenderMode  m= X3DShapeNode::geometry_render_mode;
 
       if( children_multi_pass_transparency ) {
