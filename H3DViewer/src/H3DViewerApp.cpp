@@ -133,6 +133,10 @@ void MyApp::OnIdle(wxIdleEvent& event) {
     if( (*i)->isActive() )
       (*i)->idle();
   }
+
+#if defined( H3D_WINDOWS ) || defined( H3D_OSX ) || ( wxMAJOR_VERSION <= 2 && wxMINOR_VERSION < 9 )
+	wxApp::OnIdle(event);
+#endif
 }
 
 IMPLEMENT_APP(MyApp)
