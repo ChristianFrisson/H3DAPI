@@ -98,7 +98,7 @@ namespace H3D {
       return namestr.str();   
     }
     
-    virtual void loadScript( const string &script );
+    virtual void loadScript( const string &script_filename, const string &script_content= "" );
 
     static void setargv( int _argc, char *_argv[] );
 

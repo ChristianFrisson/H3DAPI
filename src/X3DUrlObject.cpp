@@ -45,26 +45,44 @@ X3DUrlObject::X3DUrlObject(
 
 string X3DUrlObject::resolveURLAsFile( const string &url,
                                        bool *is_tmp_file ) {
+  return resolveURL ( url, false, is_tmp_file );
+}
+
+string X3DUrlObject::resolveURLAsString( const string &url ) {
+  return resolveURL ( url, true );
+}
+
+string X3DUrlObject::resolveURL ( const string& url, bool return_contents, bool *is_tmp_file ) {
   for( list< string >::const_iterator i = supported_inline_prefixes.begin();
        i != supported_inline_prefixes.end(); i++ ) {
     size_t start = 0;
     size_t url_size = url.size();
     while( start < url_size && isspace(url[start]) ) start++;
     if( url.compare( start, (*i).size(), *i ) == 0 ) {
-      string tmp_file = ResourceResolver::getTmpFileName();
-      if( tmp_file != "" ) {
-        ofstream os( tmp_file.c_str() );
-        os << url.substr(start+(*i).size(), url.size()-1);
-        os.close();
-        if( is_tmp_file ) *is_tmp_file = true;
-        return tmp_file;
+      string contents= url.substr(start+(*i).size(), url.size()-1);
+      if ( return_contents ) {
+        return contents;
+      } else {
+        string tmp_file = ResourceResolver::getTmpFileName();
+        if( tmp_file != "" ) {
+          ofstream os( tmp_file.c_str() );
+          os << contents;
+          os.close();
+          if( is_tmp_file ) *is_tmp_file = true;
+          return tmp_file;
+        }
       }
     }
   }
 
   string old_base = ResourceResolver::getBaseURL();
   ResourceResolver::setBaseURL( url_base );
-  string result = ResourceResolver::resolveURLAsFile( url, is_tmp_file );
+  string result;
+  if ( return_contents ) {
+    result= ResourceResolver::resolveURLAsString ( url );
+  } else {
+    result= ResourceResolver::resolveURLAsFile ( url, is_tmp_file );
+  }
   ResourceResolver::setBaseURL( old_base );
   return result;
 }

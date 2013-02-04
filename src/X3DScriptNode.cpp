@@ -67,6 +67,15 @@ void X3DScriptNode::SFScriptString::update() {
   MFString *urls = static_cast< MFString * >( routes_in[0] );
 
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
+    // First try to resolve the url to file contents and load via string buffer
+    // Otherwise fallback on using temp files
+    string url_contents= ResourceResolver::resolveURLAsString ( *i );
+    if ( url_contents != "" ) {
+      script_node->setURLUsed( *i );
+      value= url_contents;
+      return;
+    }
+
     bool is_tmp_file;
     string url = script_node->resolveURLAsFile( *i, &is_tmp_file );
     if( url != "" ) {

@@ -68,6 +68,13 @@ Group* X3D::createX3DFromURL( const string &url,
                               DEFNodes *exported_nodes,
                               PrototypeVector *prototypes,
                               bool change_base_path_during_parsing ) {
+  // First try to resolve the url to file contents and load via string buffer
+  // Otherwise fallback on using temp files
+  string url_contents= ResourceResolver::resolveURLAsString ( url );
+  if ( url_contents != "" ) {
+    return createX3DFromString ( url_contents, dn, exported_nodes, prototypes );
+  }
+
   bool is_tmp_file;
   string resolved_url = ResourceResolver::resolveURLAsFile( url, 
     &is_tmp_file );
@@ -239,6 +246,12 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
                                            DEFNodes *exported_nodes,
                                            PrototypeVector *prototypes,
                                            bool change_base_path_during_parsing ) {
+  // First try to resolve the url to file contents and load via string buffer
+  // Otherwise fallback on using temp files
+  string url_contents= ResourceResolver::resolveURLAsString ( url );
+  if ( url_contents != "" ) {
+    return createX3DNodeFromString ( url_contents, dn, exported_nodes, prototypes );
+  }
 
   bool is_tmp_file;
   string resolved_url = ResourceResolver::resolveURLAsFile( url, 

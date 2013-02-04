@@ -111,6 +111,9 @@ namespace H3D {
     string resolveURLAsFile( const string &url, 
                              bool *is_tmp_file = NULL );
 
+    /// Get the content of the URL as a string
+    string resolveURLAsString( const string &url );
+
     /// Remove a tmpfile with the given name.
     /// Returns true on success, or false if no such file exists
     /// or the removal failed.
@@ -119,6 +122,9 @@ namespace H3D {
     /// The urls in decreasing order of preference.
     auto_ptr< MFString >  url;
   protected:
+    /// Helper function for resolveURLAs*() functions
+    string resolveURL ( const string& url, bool return_contents, bool *is_tmp_file = NULL ); 
+
     /// Add a inline prefix that this node supports.
     void addInlinePrefix( const string &s );
 

@@ -103,7 +103,7 @@ namespace H3D {
     /// is set to true if the resolved file is a temporary file.
     static string resolveURLAsFile( const string &urn,
                                     bool *is_tmp_file = NULL ){
-      return resolveURLAs(urn,is_tmp_file,false);
+      return resolveURLAs(urn,is_tmp_file,false,false);
     }
 
     /// Returns a local filename that contains the resource specified
@@ -111,7 +111,19 @@ namespace H3D {
     /// is set to true if the resolved file is a temporary folder.
     static string resolveURLAsFolder( const string &urn,
                                       bool *is_tmp_folder = NULL ){
-      return resolveURLAs(urn,is_tmp_folder,true);
+      return resolveURLAs(urn,is_tmp_folder,true,false);
+    }
+
+    /// Returns a string containing the contents of the url resource
+    ///
+    /// This function should be implemented by resource resolvers that
+    /// extract file data and wish to avoid the use of temporary files
+    ///
+    /// \param[in]   url     The URL to resolve
+    /// \param[out]  success True iff the resolver could resolve the URL
+    ///
+    static string resolveURLAsString ( const string &urn ) {
+      return resolveURLAs(urn,NULL,false,true);
     }
 
     /// Returns a new unique filename that can be used to create a temporary
@@ -126,9 +138,30 @@ namespace H3D {
 
   protected:
     
+    /// Returns a string containing the contents of the url resource
+    ///
+    /// This function should be implemented by resource resolvers that
+    /// extract file data and wish to avoid the use of temporary files.
+    ///
+    /// \param[in]   url     The URL to resolve
+    /// \return The contents of the url or an empty string on failure
+    ///
+    virtual string resolveURLAsStringInternal( const string &url ) { return ""; }
+
+    /// Resolves a URN and returns either a local file name or the file
+    /// contents itself.
+    ///
+    /// \param urn[in]              The URN to resolve.
+    /// \param is_tmp_file[out]     Will be set to true if the filename returned is temporary
+    ///                             the caller should then remove the file once it is no longer 
+    ///                             needed.
+    /// \param folder[in]           True if the resource is a folder.
+    /// \param return_contents[in]  If true then the file contents is returned, 
+    ///                             otherwise the local file name is returned.
     static string resolveURLAs( const string &urn,
                                 bool *is_tmp_file,
-                                bool folder );
+                                bool folder,
+                                bool return_contents= false );
     
     static auto_ptr< URNResolver > & urn_resolver();
     

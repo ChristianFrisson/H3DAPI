@@ -60,7 +60,7 @@ namespace H3D {
       return namestr.str();     
     };
     
-    virtual void loadScript( const string &url ) = 0;
+    virtual void loadScript( const string &script_filename, const string &script_content= "" )= 0;
     
     virtual Field* lookupField( const string &name ) = 0;
 

@@ -102,6 +102,13 @@ Group* X3D::createVRMLFromURL( const string &url,
                                DEFNodes *exported_nodes,
                                PrototypeVector *prototypes,
                                bool change_base_path_during_parsing ) {
+  // First try to resolve the url to file contents and load via string buffer
+  // Otherwise fallback on using temp files
+  string url_contents= ResourceResolver::resolveURLAsString ( url );
+  if ( url_contents != "" ) {
+    return createVRMLFromString ( url_contents, dn, exported_nodes, prototypes );
+  }
+
   Group *g = new Group;
 
   URNResolver *urn_resolver = ResourceResolver::getURNResolver();
@@ -179,6 +186,13 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
                                             DEFNodes *exported_nodes,
                                             PrototypeVector *prototypes,
                                             bool change_base_path_during_parsing ) {
+  // First try to resolve the url to file contents and load via string buffer
+  // Otherwise fallback on using temp files
+  string url_contents= ResourceResolver::resolveURLAsString ( url );
+  if ( url_contents != "" ) {
+    return createVRMLNodeFromString ( url_contents, dn, exported_nodes, prototypes );
+  }
+
   AutoRef< Node > g;
   VrmlDriver driver;
   

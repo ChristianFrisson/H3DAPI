@@ -47,7 +47,8 @@ ResourceResolver::TmpFileNameList ResourceResolver::tmp_files;
 
 string ResourceResolver::resolveURLAs( const string &urn,
                                        bool *is_tmp_file,
-                                       bool folder ) {
+                                       bool folder,
+                                       bool return_contents ) {
   if( urn == "" ) return "";
   string filename = urn;
   if( urn_resolver().get() ) {
@@ -58,23 +59,35 @@ string ResourceResolver::resolveURLAs( const string &urn,
   if( baseURL != "" ) {
     string full_url = baseURL + filename;
     
-    // if is a local file, just return the file name
-    struct stat file_info;
-    int file_status = ::stat(full_url.c_str(),&file_info);
-    if( file_status == 0 && ( folder ?
-                              S_ISDIR(file_info.st_mode) :
-                              S_ISREG(file_info.st_mode) ) != 0 ) {
-      if( is_tmp_file ) *is_tmp_file = false;
-      return full_url;
+    // Only return file contents if a resolver explicitly supports it
+    // i.e. if it implements resolveURLAsStringInternal()
+    if ( !return_contents ) {
+      // if is a local file, just return the file name
+      struct stat file_info;
+      int file_status = ::stat(full_url.c_str(),&file_info);
+      if( file_status == 0 && ( folder ?
+                                S_ISDIR(file_info.st_mode) :
+                                S_ISREG(file_info.st_mode) ) != 0 ) {
+        if( is_tmp_file ) *is_tmp_file = false;
+        return full_url;
+      }
     }
     
     // otherwise try the resolvers.
     for( AutoPtrVector< ResourceResolver >::iterator i = resolvers().begin();
          i != resolvers().end(); i++ ) {
-      string resolved_name = (*i)->resolveURLAsTmpFile( full_url );
-      if( resolved_name != "" ) {
-        if( is_tmp_file ) *is_tmp_file = true;
-        return resolved_name;
+      if ( !return_contents ) {
+        string resolved_name = (*i)->resolveURLAsTmpFile( full_url );
+        if( resolved_name != "" ) {
+          if( is_tmp_file ) *is_tmp_file = true;
+          return resolved_name;
+        }
+      } else {
+        string contents = (*i)->resolveURLAsStringInternal( full_url );
+        if( contents != "" ) {
+          if( is_tmp_file ) *is_tmp_file = false;
+          return contents;
+        }
       }
     }
   }
@@ -82,22 +95,32 @@ string ResourceResolver::resolveURLAs( const string &urn,
   // try as absolute path
   
   // if is a local file, just return the file name
-  struct stat file_info;
-  int file_status = ::stat(filename.c_str(),&file_info);
-  if( file_status == 0 && ( folder ?
-                            S_ISDIR(file_info.st_mode) :
-                            S_ISREG(file_info.st_mode) ) != 0 ) {
-    if( is_tmp_file ) *is_tmp_file = false;
-    return filename;
+  if ( !return_contents ) {
+    struct stat file_info;
+    int file_status = ::stat(filename.c_str(),&file_info);
+    if( file_status == 0 && ( folder ?
+                              S_ISDIR(file_info.st_mode) :
+                              S_ISREG(file_info.st_mode) ) != 0 ) {
+      if( is_tmp_file ) *is_tmp_file = false;
+      return filename;
+    }
   }
   
   // otherwise try the resolvers.
   for( AutoPtrVector< ResourceResolver >::iterator i = resolvers().begin();
        i != resolvers().end(); i++ ) {
-    string resolved_name = (*i)->resolveURLAsTmpFile( filename );
-    if( resolved_name != "" ) {
-      if( is_tmp_file ) *is_tmp_file = true;
-      return resolved_name;
+    if ( !return_contents ) {
+      string resolved_name = (*i)->resolveURLAsTmpFile( filename );
+      if( resolved_name != "" ) {
+        if( is_tmp_file ) *is_tmp_file = true;
+        return resolved_name;
+      }
+    } else {
+      string contents = (*i)->resolveURLAsStringInternal( filename );
+      if( contents != "" ) {
+        if( is_tmp_file ) *is_tmp_file = false;
+        return contents;
+      }
     }
   }
   if( is_tmp_file ) *is_tmp_file = false;

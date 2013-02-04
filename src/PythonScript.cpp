@@ -330,7 +330,7 @@ void PythonScript::initialiseParser() {
   PythonInternals::initH3D();
 }
 
-void PythonScript::loadScript( const string &script ) {
+void PythonScript::loadScript( const string &script_filename, const string &script_content ) {
   // ensure we have the GIL lock to work with multiple python threads.
   PyGILState_STATE state = PyGILState_Ensure();
   PyObject *ref = (PyObject*)PythonInternals::fieldAsPythonObject( references.get(), false );
@@ -345,58 +345,71 @@ void PythonScript::loadScript( const string &script ) {
       Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
   }  
   
-#ifdef WIN32
-  // have to read the script into a buffer instead of using FILE *
-  // since it is unsafe to use FILE * sent over DLL boundaries.
-  ifstream is( script.c_str() );
-  if( is.good() ) {
-    int length;
-    char * buffer;
-    
-    // get length of file:
-    is.seekg (0, ios::end);
-    length = is.tellg();
-    is.seekg (0, ios::beg);
-    
-    // allocate memory:
-    buffer = new char [length + 1];
-    // read data as a block:
-    is.read (buffer,length);
-    length = is.gcount();
-    is.close();
-    buffer[length ] = '\0';
-    
+  if ( script_content != "" ) {
     PyErr_Clear();
     PyObject *r = 
-      PythonScriptInternals::PyRun_StringFilename( buffer, script.c_str(),
-                                             Py_file_input,
-                                             static_cast< PyObject * >(module_dict), 
-                                             static_cast< PyObject * >(module_dict) );
+      PythonScriptInternals::PyRun_StringFilename( script_content.c_str(), script_filename.c_str(),
+                                                   Py_file_input,
+                                                   static_cast< PyObject * >(module_dict), 
+                                                   static_cast< PyObject * >(module_dict) );
 
     if ( r == NULL ) {
-      Console( 3 ) << "Python error in file \"" << script << "\":" << endl;
+      Console( 3 ) << "Python error in file \"" << script_filename << "\":" << endl;
       PyErr_Print();
     }
-    delete[] buffer;
-  }
+  } else {
+#ifdef WIN32
+    // have to read the script into a buffer instead of using FILE *
+    // since it is unsafe to use FILE * sent over DLL boundaries.
+    ifstream is( script_filename.c_str() );
+    if( is.good() ) {
+      int length;
+      char * buffer;
+    
+      // get length of file:
+      is.seekg (0, ios::end);
+      length = is.tellg();
+      is.seekg (0, ios::beg);
+    
+      // allocate memory:
+      buffer = new char [length + 1];
+      // read data as a block:
+      is.read (buffer,length);
+      length = is.gcount();
+      is.close();
+      buffer[length ] = '\0';
+    
+      PyErr_Clear();
+      PyObject *r = 
+        PythonScriptInternals::PyRun_StringFilename( buffer, script_filename.c_str(),
+                                               Py_file_input,
+                                               static_cast< PyObject * >(module_dict), 
+                                               static_cast< PyObject * >(module_dict) );
+
+      if ( r == NULL ) {
+        Console( 3 ) << "Python error in file \"" << script_filename << "\":" << endl;
+        PyErr_Print();
+      }
+      delete[] buffer;
+    }
 #else
-  FILE *f = fopen( script.c_str(), "r" );
-  if ( f ) {
-    PyErr_Clear();
-    PyObject *r = PyRun_FileEx( f, script.c_str(), Py_file_input,
-                                static_cast< PyObject * >(module_dict), 
-                                static_cast< PyObject * >(module_dict),
-                                true );
-    if ( r == NULL )
-      PyErr_Print();
+    FILE *f = fopen( script_filename.c_str(), "r" );
+    if ( f ) {
+      PyErr_Clear();
+      PyObject *r = PyRun_FileEx( f, script_filename.c_str(), Py_file_input,
+                                  static_cast< PyObject * >(module_dict), 
+                                  static_cast< PyObject * >(module_dict),
+                                  true );
+      if ( r == NULL )
+        PyErr_Print();
 
     
-  }
+    }
   
 #endif
-
-  else {
-    Console(4) << "Could not open \""<< script << endl;
+    else {
+      Console(4) << "Could not open \""<< script_filename << endl;
+    }
   }
 
   PyGILState_Release(state);
@@ -466,10 +479,16 @@ void PythonScript::initialize() {
 
   bool script_loaded = false;
   for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {
-    bool is_tmp_file;
-    string url = resolveURLAsFile( *i, &is_tmp_file );
-    if( url != "" ) {
-      loadScript( url );
+    // First try to resolve URL to file contents, if that is not supported
+    // by the resolvers then fallback to resolve as local filename
+    string url_contents= resolveURLAsString( *i );
+    bool is_tmp_file= false;
+    string url;
+    if ( url_contents == "" ) {
+      url= resolveURLAsFile( *i, &is_tmp_file );
+    }
+    if( url != "" || url_contents != "" ) {
+      loadScript( url, url_contents );
       if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
       script_loaded = true;
       break;

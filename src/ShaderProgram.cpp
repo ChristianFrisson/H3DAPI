@@ -157,16 +157,31 @@ void ShaderProgram::initCGShaderProgram() {
 
   if( cgGLIsProfileSupported( cg_profile ) ) {
     for( MFString::const_iterator i = url->begin(); 
-         i != url->end(); i++ ) { 
-      bool is_tmp_file;
-      string resolved_url = resolveURLAsFile( *i, &is_tmp_file );
-      if( resolved_url != "" ) {
+         i != url->end(); i++ ) {
+      // First try to resolve URL to file contents, if that is not supported
+      // by the resolvers then fallback to resolve as local filename
+      string url_contents= resolveURLAsString( *i );
+      bool is_tmp_file= false;
+      string resolved_url;
+      if ( url_contents == "" ) {
+        resolved_url= resolveURLAsFile( *i, &is_tmp_file );
+      }
+
+      if( resolved_url != "" || url_contents != "" ) {
         setURLUsed( *i );
-        cg_program = cgCreateProgramFromFile( cg_context,
-                                              CG_SOURCE, 
-                                              resolved_url.c_str(),
-                                              cg_profile,
-                                              NULL, NULL);
+        if ( url_contents == "" ) {
+          cg_program = cgCreateProgramFromFile( cg_context,
+                                                CG_SOURCE, 
+                                                resolved_url.c_str(),
+                                                cg_profile,
+                                                NULL, NULL);
+        } else {
+          cg_program = cgCreateProgram( cg_context,
+                                        CG_SOURCE, 
+                                        url_contents.c_str(),
+                                        cg_profile,
+                                        NULL, NULL);
+        }
         err = cgGetError();
         if( err == CG_NO_ERROR ) {
           source_url = *i;

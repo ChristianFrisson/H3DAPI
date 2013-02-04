@@ -168,15 +168,31 @@ void PackagedShader::initCGShaderProgram() {
       cgGLIsProfileSupported( cg_fragment_profile )) {
     for( MFString::const_iterator i = url->begin(); 
          i != url->end(); i++ ) {  
-      bool is_tmp_file;
-      string resolved_url = resolveURLAsFile( *i, &is_tmp_file );
-      if( resolved_url != "" ) {
+
+      // First try to resolve URL to file contents, if that is not supported
+      // by the resolvers then fallback to resolve as local filename
+      string url_contents= resolveURLAsString( *i );
+      bool is_tmp_file= false;
+      string resolved_url;
+      if ( url_contents == "" ) {
+        resolved_url= resolveURLAsFile( *i, &is_tmp_file );
+      }
+
+      if( resolved_url != "" || url_contents != "" ) {
         setURLUsed( *i );
-        cg_vertex_program = cgCreateProgramFromFile( cg_context,
-                                                     CG_SOURCE, 
-                                                     resolved_url.c_str(),
-                                                     cg_vertex_profile,
-                                                     "vert_main", NULL);
+        if ( url_contents == "" ) {
+          cg_vertex_program = cgCreateProgramFromFile( cg_context,
+                                                       CG_SOURCE, 
+                                                       resolved_url.c_str(),
+                                                       cg_vertex_profile,
+                                                       "vert_main", NULL);
+        } else {
+          cg_vertex_program = cgCreateProgram( cg_context,
+                                               CG_SOURCE, 
+                                               url_contents.c_str(),
+                                               cg_vertex_profile,
+                                               "vert_main", NULL);
+        }
         err = cgGetError();
         if( err != CG_NO_ERROR ) {
           Console(3) << "Warning: Shader program error when compiling vertex "
@@ -188,11 +204,19 @@ void PackagedShader::initCGShaderProgram() {
           if( last_listing ) Console(3) << last_listing  << endl;
         }
 
-        cg_fragment_program = cgCreateProgramFromFile( cg_context,
-                                                       CG_SOURCE, 
-                                                       resolved_url.c_str(),
-                                                       cg_fragment_profile,
-                                                       "frag_main", NULL);
+        if ( url_contents == "" ) {
+          cg_fragment_program = cgCreateProgramFromFile( cg_context,
+                                                         CG_SOURCE, 
+                                                         resolved_url.c_str(),
+                                                         cg_fragment_profile,
+                                                         "frag_main", NULL);
+        } else {
+          cg_fragment_program = cgCreateProgram( cg_context,
+                                                 CG_SOURCE, 
+                                                 url_contents.c_str(),
+                                                 cg_fragment_profile,
+                                                 "frag_main", NULL);
+        }
         if( is_tmp_file ) 
           ResourceResolver::releaseTmpFileName( resolved_url );
         err = cgGetError();

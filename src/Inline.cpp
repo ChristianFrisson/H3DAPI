@@ -113,9 +113,16 @@ void Inline::LoadedScene::update() {
   if( load ) {
     MFString *urls = static_cast< MFString * >( routes_in[1] );
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-      bool is_tmp_file;
-      string url = inline_node->resolveURLAsFile( *i, &is_tmp_file );
-      if( url != "" ) {
+
+      // First try to resolve URL to file contents, if that is not supported
+      // by the resolvers then fallback to resolve as local filename
+      string url_contents= inline_node->resolveURLAsString( *i );
+      bool is_tmp_file= false;
+      string url;
+      if ( url_contents == "" ) {
+        url= inline_node->resolveURLAsFile( *i, &is_tmp_file );
+      }
+      if( url != "" || url_contents != "" ) {
 #ifdef HAVE_XERCES
         try 
 #endif
@@ -126,9 +133,16 @@ void Inline::LoadedScene::update() {
             if( pos != string::npos )
               ResourceResolver::setBaseURL( (*i).substr( 0, pos + 1 ) );
           }
-          Group *g = X3D::createX3DFromURL( url, NULL, 
-                                            &inline_node->exported_nodes,
-                                            NULL, !is_tmp_file );
+          Group *g;
+          if ( url_contents != "" ) {
+            // We have resolved to file contents, load from string buffer
+            g= X3D::createX3DFromString ( url_contents, NULL, &inline_node->exported_nodes, NULL );
+          } else {
+            // We have resolved to local filename, load from file
+            g= X3D::createX3DFromURL( url, NULL, 
+                                      &inline_node->exported_nodes,
+                                      NULL, !is_tmp_file );
+          }
           if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
           value.push_back( g );
           inline_node->setURLUsed( *i );

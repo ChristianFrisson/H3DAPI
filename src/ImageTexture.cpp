@@ -73,13 +73,25 @@ ImageTexture::ImageTexture(
 Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
                                          const vector< string > &urls,
                                          const NodeVector &image_loaders ) {
-
+  // First try the image loader nodes specified
   if( image_loaders.size() ) { 
     for( vector<string>::const_iterator i = urls.begin(); 
          i != urls.end(); ++i ) {
       for( NodeVector::const_iterator il = image_loaders.begin();
            il != image_loaders.end();
            il++ ) {
+        // First try to resolve the url to file contents and load via string buffer
+        // Otherwise fallback on using temp files
+        string url_contents= ResourceResolver::resolveURLAsString ( *i );
+        if ( url_contents != "" ) {
+          Image *image = 
+            static_cast< H3DImageLoaderNode * >(*il)->loadImage ( istringstream ( url_contents ) );
+          if( image ) {
+            texture->setURLUsed( *i );
+            return image;
+          }
+        }
+
         bool is_tmp_file;
         string url = texture->resolveURLAsFile( *i, &is_tmp_file );
         if( !url.empty() ) {
@@ -95,8 +107,24 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
     }
   }
   
+  // Now try to find any image loader that can handle the format
   for( vector<string>::const_iterator i = urls.begin(); 
        i != urls.end(); ++i ) {
+    // First try to resolve the url to file contents and load via string buffer
+    // Otherwise fallback on using temp files
+    string url_contents= ResourceResolver::resolveURLAsString ( *i );
+    if ( url_contents != "" ) {
+      istringstream iss ( url_contents, ios_base::binary );
+      auto_ptr< H3DImageLoaderNode > 
+        il( H3DImageLoaderNode::getSupportedFileReader( iss ) );
+
+      if( il.get() ) {
+        texture->setURLUsed( *i );
+        Image *image = il->loadImage( iss );
+        return image;
+      }
+    }
+
     bool is_tmp_file;
     string url = texture->resolveURLAsFile( *i, &is_tmp_file );
     if( !url.empty() ) {
