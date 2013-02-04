@@ -107,7 +107,7 @@ double H3D::getH3DApiVersion() {
   stm << H3DAPI_MAJOR_VERSION;
   stm << ".";
   stm << H3DAPI_MINOR_VERSION;
-  return atof( stm.str().c_str() );
+  return X3D::Convert::atof( stm.str().c_str() );
 }
 
 #ifdef WIN32

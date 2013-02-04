@@ -633,14 +633,15 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
 	  else if (i == 1 ) gco->frustumCullingMode->setValue(WxFrameInternals::geometry);
 	  else if (i == 2 ) gco->frustumCullingMode->setValue(WxFrameInternals::all);
     } else if (id == ID_DEFAULT_SHADOWS ) {
-	  gco->useDefaultShadows->setValue( event.IsChecked() );
-	} else if (id == ID_VERTEX_BUFFER_OBJECT) {
-	  gco->preferVertexBufferObject->setValue (event.IsChecked());
-	} else if (id == ID_SHADOW_DARKNESS ) {
-	  gco->defaultShadowDarkness->setValue (atof( event.GetString().mb_str() ) );
-	} else if (id == ID_SHADOW_DEPTH_OFFSET) {
-	  gco->defaultShadowDepthOffset->setValue(atof( event.GetString().mb_str() ) );
-	}
+      gco->useDefaultShadows->setValue( event.IsChecked() );
+    } else if (id == ID_VERTEX_BUFFER_OBJECT) {
+      gco->preferVertexBufferObject->setValue (event.IsChecked());
+    } else if (id == ID_SHADOW_DARKNESS ) {
+      
+      gco->defaultShadowDarkness->setValue (X3D::Convert::atof( event.GetString().mb_str() ) );
+    } else if (id == ID_SHADOW_DEPTH_OFFSET) {
+      gco->defaultShadowDepthOffset->setValue(X3D::Convert::atof( event.GetString().mb_str() ) );
+    }
   } else if( id == ID_TOUCHABLE_FACE ||
              id == ID_DYNAMIC_MODE ||
              id == ID_MAX_DISTANCE ||
@@ -663,9 +664,9 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       else if( i == 1 ) ho->dynamicMode->setValue( WxFrameInternals::never );
       else if( i == 2 ) ho->dynamicMode->setValue( WxFrameInternals::always );
     } else if( id == ID_MAX_DISTANCE ) {
-      ho->maxDistance->setValue( atof( event.GetString().mb_str() ) );
+      ho->maxDistance->setValue( X3D::Convert::atof( event.GetString().mb_str() ) );
     } else if( id == ID_LOOK_AHEAD_FACTOR ) {
-      ho->lookAheadFactor->setValue( atof( event.GetString().mb_str() ) );
+      ho->lookAheadFactor->setValue( X3D::Convert::atof( event.GetString().mb_str() ) );
     } else if( id == ID_USE_BOUND_TREE ) {
       ho->useBoundTree->setValue( event.IsChecked() );
     } else if( id == ID_INTERPOLATE_FORCE_EFFECTS ) {
@@ -676,10 +677,10 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
     StereoInfo * stereo_info = StereoInfo::getActive();
 
     if( id == ID_FOCAL_DISTANCE ) {
-      stereo_info->focalDistance->setValue( atof( event.GetString().mb_str() ) );
+      stereo_info->focalDistance->setValue( X3D::Convert::atof( event.GetString().mb_str() ) );
     } else if( id == ID_INTEROCULAR_DISTANCE ) {
       stereo_info->interocularDistance->setValue(
-        atof( event.GetString().mb_str() ) );
+        X3D::Convert::atof( event.GetString().mb_str() ) );
     }
   } else if( id == ID_OH_SHAPE_TYPE ||
              id == ID_ADAPTIVE_VIEWPORT ||
@@ -721,7 +722,7 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
   }
 
   if( id == ID_PROXY_RADIUS ) {
-    wx_frame->setProxyRadius( atof( event.GetString().mb_str() ) );
+    wx_frame->setProxyRadius( X3D::Convert::atof( event.GetString().mb_str() ) );
   }
 
 }
