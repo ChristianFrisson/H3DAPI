@@ -804,8 +804,22 @@ namespace H3D {
                                     int height,
                                     int depth,
                                     int nr_components );
+    
+      /// The same as standard atof function with the difference that the decimal point
+      /// is always . regardless of locale settings.
+      ///
+      /// On success, the function returns the converted floating point number as a double value.
+      /// If no valid conversion could be performed, the function returns zero (0.0).
+      inline double atof( const char * s) {
+        try {
+          const char *pos;
+          return X3D::Convert::getValue< double >( s, pos );
+        } catch( X3D::Convert::X3DFieldConversionError & ) {
+          return 0.0;
+        }
+      } 
     }
-
+  
     /// Convert a string to a specified type according to the X3D/XML
     /// field encoding.
     /// \tparam Type The type to convert the string to.
@@ -893,7 +907,7 @@ namespace H3D {
         throw ConversionError( ss.str() );
       }
     }
-  
+
     /// Convert a string to a PixelImage according to the X3D/XML
     /// field encoding for SFImage.
     /// \param x3d_string The string to convert.
