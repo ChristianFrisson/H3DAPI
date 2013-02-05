@@ -636,9 +636,6 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       gco->useDefaultShadows->setValue( event.IsChecked() );
     } else if (id == ID_VERTEX_BUFFER_OBJECT) {
       gco->preferVertexBufferObject->setValue (event.IsChecked());
-    } else if (id == ID_SHADOW_DARKNESS ) {
-      
-      gco->defaultShadowDarkness->setValue (X3D::Convert::atof( event.GetString().mb_str() ) );
     } else if (id == ID_SHADOW_DEPTH_OFFSET) {
       gco->defaultShadowDepthOffset->setValue(X3D::Convert::atof( event.GetString().mb_str() ) );
     }
@@ -725,6 +722,20 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
     wx_frame->setProxyRadius( X3D::Convert::atof( event.GetString().mb_str() ) );
   }
 
+}
+
+void SettingsDialog::handleSliderEvent( wxScrollEvent &event ) {
+  GraphicsCachingOptions *gco = NULL;
+    wx_frame->global_settings->getOptionNode( gco );
+  int id = event.GetId();
+	if (id == ID_SHADOW_DARKNESS ) {
+	  H3DFloat new_value = H3DFloat( event.GetPosition() ) /
+			shadow_darkness_slider->GetMax();
+		stringstream darkness_value;
+		darkness_value << new_value ;
+		shadow_darkness_static_text->SetLabel( wxString( darkness_value.str().c_str(), wxConvUTF8 ));
+		gco->defaultShadowDarkness->setValue( new_value );
+	}
 }
 
 void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
@@ -1250,8 +1261,11 @@ bool WxFrame::loadFile( const string &filename) {
     
     stringstream dsd;
     dsd << gco->defaultShadowDarkness->getValue();
-    settings->shadow_darkness_text->
-      ChangeValue( wxString( dsd.str().c_str(), wxConvUTF8 ) );
+    settings->shadow_darkness_static_text->
+      SetLabel( wxString( dsd.str().c_str(), wxConvUTF8 ) );
+    settings->shadow_darkness_slider->
+      SetValue( gco->defaultShadowDarkness->getValue() *
+			          settings->shadow_darkness_slider->GetMax() );
     
     stringstream dsdo;
     dsdo << gco->defaultShadowDepthOffset->getValue();
@@ -1276,8 +1290,9 @@ bool WxFrame::loadFile( const string &filename) {
     gco->preferVertexBufferObject->
       setValue( settings->vertex_buffer_object_checkbox->GetValue() );
     
-    gco->defaultShadowDarkness->setValueFromString(
-                    toStr( settings->shadow_darkness_text->GetValue() ) );
+    gco->defaultShadowDarkness->setValue(
+                    H3DFloat( settings->shadow_darkness_slider->GetValue() ) /
+										settings->shadow_darkness_slider->GetMax() );
     gco->defaultShadowDepthOffset->setValueFromString(
                     toStr( settings->shadow_depth_offset_text->GetValue() ) );
 
@@ -2497,10 +2512,12 @@ void WxFrame::LoadSettings( bool from_config ) {
     settings->vertex_buffer_object_checkbox->SetValue(prefer_vertex_buffer_object);
     
     gco->defaultShadowDarkness->setValue( default_shadow_darkness );
+    settings->shadow_darkness_slider->
+      SetValue( default_shadow_darkness * settings->shadow_darkness_slider->GetMax() );
     stringstream def_shadow_darkness;
     def_shadow_darkness  <<  default_shadow_darkness;
-    settings->shadow_darkness_text->
-      ChangeValue( wxString( def_shadow_darkness.str().c_str(), wxConvUTF8 ) );
+    settings->shadow_darkness_static_text->
+      SetLabel( wxString( def_shadow_darkness.str().c_str(), wxConvUTF8 ) );
     
     gco->defaultShadowDepthOffset->setValue( default_shadow_depth_offset );
     stringstream def_shadow_depth_offset;
@@ -3086,7 +3103,7 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
   EVT_CHOICE (ID_CULLING, SettingsDialog::handleSettingsChange )
   EVT_CHECKBOX (ID_DEFAULT_SHADOWS, SettingsDialog::handleSettingsChange )
   EVT_CHECKBOX (ID_VERTEX_BUFFER_OBJECT, SettingsDialog::handleSettingsChange )
-  EVT_TEXT (ID_SHADOW_DARKNESS, SettingsDialog::handleSettingsChange )
+  EVT_COMMAND_SCROLL (ID_SHADOW_DARKNESS, SettingsDialog::handleSliderEvent )
   EVT_TEXT (ID_SHADOW_DEPTH_OFFSET, SettingsDialog::handleSettingsChange )
 
   EVT_CHOICE(ID_TOUCHABLE_FACE, SettingsDialog::handleSettingsChange)
@@ -3385,14 +3402,17 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent ) {
   graphics_caching_sizer->Add(vertex_buffer_object_sizer, 0, wxGROW|wxALL, 0);
   
   wxBoxSizer* shadow_darkness_sizer = new wxBoxSizer( wxHORIZONTAL );
-  shadow_darkness_sizer->Add(new wxStaticText(panel, wxID_ANY,
+	shadow_darkness_sizer->Add(new wxStaticText(panel, wxID_ANY,
                                          wxT("&Default Shadow Darkness:")), 0,
                                          wxALL|wxALIGN_CENTER_VERTICAL, 5);
-  shadow_darkness_text = new wxTextCtrl( panel, ID_SHADOW_DARKNESS,
-                                    wxEmptyString,
-                                    wxDefaultPosition,
-                                    wxSize(40, wxDefaultCoord) );
-  shadow_darkness_sizer->Add(shadow_darkness_text, 0, wxALL|wxALIGN_CENTER_VERTICAL,5);
+	shadow_darkness_static_text = new wxStaticText(panel, wxID_ANY,
+                                         wxT("0.4") );
+  shadow_darkness_sizer->Add(shadow_darkness_static_text, 0, wxALL|wxALIGN_CENTER_VERTICAL,5);
+
+  shadow_darkness_slider = new wxSlider( panel, ID_SHADOW_DARKNESS, 40, 0, 100,
+																					wxDefaultPosition,
+																					wxSize(80, wxDefaultCoord) );
+  shadow_darkness_sizer->Add(shadow_darkness_slider, 0, wxALL|wxALIGN_CENTER_VERTICAL,5);
   graphics_caching_sizer->Add(shadow_darkness_sizer, 0, wxGROW|wxALL, 5);
   
   wxBoxSizer* shadow_depth_offset_sizer = new wxBoxSizer( wxHORIZONTAL );

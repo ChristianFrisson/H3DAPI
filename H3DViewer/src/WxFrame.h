@@ -105,6 +105,7 @@ public:
     ~SettingsDialog();
 
   void handleSettingsChange (wxCommandEvent & event);
+	void handleSliderEvent( wxScrollEvent &event );
   void handleSpinEvent (wxSpinEvent & event);
   void OnOk (wxCommandEvent & event);
   void OnCancel (wxCommandEvent & event);
@@ -132,7 +133,8 @@ public:
   wxSpinCtrl *caching_delay_spin;
   wxChoice *culling_choice;
   wxCheckBox *default_shadows_checkbox;
-  wxTextCtrl *shadow_darkness_text;
+  wxSlider *shadow_darkness_slider;
+	wxStaticText *shadow_darkness_static_text;
   wxTextCtrl *shadow_depth_offset_text;
   wxCheckBox *vertex_buffer_object_checkbox;
 
