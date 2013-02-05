@@ -2010,6 +2010,7 @@ void WxFrame::OnExit (wxCommandEvent & event)
   // Close file so that printout in possible destructors does not
   // cause a crash if done after the console is destroyed.
   OnCloseFile( fake_event );
+  tree_view_dialog->clearTreeView();
   Close(true);
 }
 
@@ -2021,6 +2022,7 @@ void WxFrame::OnWindowExit (wxCloseEvent & event)
   // Close file so that printout in possible destructors does not
   // cause a crash if done after the console is destroyed.
   OnCloseFile( fake_event );
+  tree_view_dialog->clearTreeView();
   Destroy();
   SaveMRU();
   delete wxConfigBase::Set((wxConfigBase *) NULL);
