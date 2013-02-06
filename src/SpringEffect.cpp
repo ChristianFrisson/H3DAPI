@@ -46,6 +46,7 @@ namespace SpringEffectInternals {
   FIELDDB_ELEMENT( SpringEffect, escapeDistance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SpringEffect, active, OUTPUT_ONLY );
   FIELDDB_ELEMENT( SpringEffect, damping, INPUT_OUTPUT );
+	FIELDDB_ELEMENT( SpringEffect, positionInterpolation, INPUT_OUTPUT );
 }
 
 /// Constructor
@@ -57,7 +58,8 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
                             Inst< SFBool      > _active, 
                             Inst< MFInt32     > _deviceIndex,
                             Inst< SFNode      >  _metadata,
-                            Inst< SFFloat     > _damping ) :
+                            Inst< SFFloat     > _damping,
+														Inst< SFFloat     > _positionInterpolation ) :
   H3DForceEffect( _metadata, _deviceIndex ),
   position( _position ),
   force( _force ),
@@ -65,7 +67,8 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
   startDistance( _startDistance ),
   escapeDistance( _escapeDistance ),
   active( _active ),
-  damping( _damping ) {
+  damping( _damping ),
+	positionInterpolation( _positionInterpolation ) {
   
   type_name = "SpringEffect";
 
@@ -110,6 +113,7 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
             haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
             haptic_spring[index]->setSpringConstant( springConstant->getValue() );
             haptic_spring[index]->setDamping( damping->getValue() );
+						haptic_spring[index]->setPositionInterpolation( positionInterpolation->getValue() );
             ti.addForceEffect( index, haptic_spring[index] );
             any_active = true;
             force->setValue( index, (Vec3f) haptic_spring[index]->getLatestForce(), id );
@@ -121,6 +125,7 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
             haptic_spring[index]->setPosition( ti.getAccForwardMatrix() * spring_pos );
             haptic_spring[index]->setSpringConstant( springConstant->getValue() );
             haptic_spring[index]->setDamping( damping->getValue() );
+						haptic_spring[index]->setPositionInterpolation( positionInterpolation->getValue() );
             ti.addForceEffect( index, haptic_spring[index] );
             any_active = true;
           }

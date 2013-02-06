@@ -109,7 +109,7 @@ RenderProperties - alphaFunc, alphaFuncValue, blendFuncSrcFactorRGB,
                    blendFuncDstFactorAlpha, blendEquationRGB,
                    blendEquationAlpha, blendColor
 RuspiniRenderer - alwaysFollowSurface
-SpringEffect - damping
+SpringEffect - damping, positionInterpolation
 ToggleGroup - hapticsOnDevice
 TransformInfo - outputGLMatrices, glModelViewMatrix, glModelViewMatrixInverse,
                 glProjectionMatrix, glProjectionMatrixInverse
