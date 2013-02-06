@@ -89,7 +89,7 @@ INCLUDE_DIRECTORIES( ../include )
 # Version of H3D API.
 SET( H3DAPI_MAJOR_VERSION 2 )
 SET( H3DAPI_MINOR_VERSION 2 )
-SET( H3DAPI_BUILD_VERSION 0 )
+SET( H3DAPI_BUILD_VERSION 1 )
 
 
 # Set here already in case a special NSIS template needs to be used by cpack.
