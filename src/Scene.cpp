@@ -300,7 +300,7 @@ void Scene::idle() {
 
   // add the head light to shadow casting nodes if it is active.
   if( !shadow_caster->object->empty() ) {
-    bool head_light = true;
+    bool head_light = false;
     NavigationInfo *ni = NavigationInfo::getActive();
     if( ni ) {
       head_light = 
