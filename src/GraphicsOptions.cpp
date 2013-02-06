@@ -47,6 +47,7 @@ namespace GraphicsOptionsInternals {
   FIELDDB_ELEMENT( GraphicsOptions, useDefaultShadows, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsOptions, defaultShadowDarkness, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsOptions, defaultShadowDepthOffset, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, defaultShadowGeometryAlgorithm, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsOptions, preferVertexBufferObject, INPUT_OUTPUT );
 }
 
@@ -59,7 +60,8 @@ GraphicsOptions::GraphicsOptions(
                            Inst< SFBool  > _useDefaultShadows,
                            Inst< SFFloat > _defaultShadowDarkness,
                            Inst< SFFloat > _defaultShadowDepthOffset,
-                           Inst< SFBool > _preferVertexBufferObject ) :
+                           Inst< SFBool > _preferVertexBufferObject,
+                           Inst< SFString > _defaultShadowGeometryAlgorithm ) :
   H3DOptionNode( _metadata ),
   useCaching( _useCaching ),
   cachingDelay( _cachingDelay ),
@@ -68,7 +70,8 @@ GraphicsOptions::GraphicsOptions(
   useDefaultShadows( _useDefaultShadows ),
   defaultShadowDarkness( _defaultShadowDarkness ),
   defaultShadowDepthOffset( _defaultShadowDepthOffset ),
-  preferVertexBufferObject( _preferVertexBufferObject ) {
+  preferVertexBufferObject( _preferVertexBufferObject ),
+  defaultShadowGeometryAlgorithm( _defaultShadowGeometryAlgorithm ) {
   
   type_name = "GraphicsOptions";
   database.initFields( this );
@@ -84,6 +87,9 @@ GraphicsOptions::GraphicsOptions(
   defaultShadowDarkness->setValue( 0.4f );
   defaultShadowDepthOffset->setValue( 6 );
   preferVertexBufferObject->setValue( false );
+  defaultShadowGeometryAlgorithm->addValidValue( "GEOMETRY_SHADER" );
+  defaultShadowGeometryAlgorithm->addValidValue( "CPU" );
+  defaultShadowGeometryAlgorithm->setValue( "GEOMETRY_SHADER" );
 }
 
 

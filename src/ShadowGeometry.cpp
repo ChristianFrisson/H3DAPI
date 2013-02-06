@@ -106,7 +106,16 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
   }
   m_inv = m.inverse();
 
-  if( GLEW_EXT_geometry_shader4 ) {
+  GraphicsCachingOptions *graphics_options = NULL;
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) {
+    default_settings->getOptionNode( graphics_options );
+  }
+  
+  if( GLEW_EXT_geometry_shader4 && 
+      ( !graphics_options || 
+        (graphics_options && 
+         graphics_options->defaultShadowGeometryAlgorithm->getValue() == "GEOMETRY_SHADER" ) ) ) {
     renderShadowGeometryShader( g, light, draw_caps, m, m_inv );
   } else {
     renderShadowFallback( g, light, draw_caps, m, m_inv );
@@ -115,10 +124,10 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
 }
 
 void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
-					   X3DLightNode *light, 
-					   bool draw_caps,
-					   const Matrix4f &m,
-					   const Matrix4f &m_inv ) {
+                                           X3DLightNode *light, 
+                                           bool draw_caps,
+                                           const Matrix4f &m,
+                                           const Matrix4f &m_inv ) {
 
 
   if(!triangles_changed->isUpToDate() ) {
@@ -216,9 +225,9 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
           Vec3d v2 = triangles[i].b - p;
           Vec3d v3 = triangles[i].c - p;
           
-          glVertex4d(	v1.x, v1.y, v1.z, 0 );
-          glVertex4d(	v2.x, v2.y, v2.z, 0 );
-          glVertex4d(	v3.x, v3.y, v3.z, 0 );
+          glVertex4d(   v1.x, v1.y, v1.z, 0 );
+          glVertex4d(   v2.x, v2.y, v2.z, 0 );
+          glVertex4d(   v3.x, v3.y, v3.z, 0 );
         }
       }
     }
@@ -251,7 +260,7 @@ void ShadowGeometry::updateSilhouetteEdgesDirectionalLight( const vector< HAPI::
 
 
 void ShadowGeometry::updateSilhouetteEdgesPointLight( const vector< HAPI::Collision::Triangle > &triangles,
-						      const vector<int> &neighbours,
+                                                      const vector<int> &neighbours,
                                                       const Vec3d &pos ) {
   triangle_facing_light.resize( triangles.size(), false );
   is_silhouette_edge.resize( triangles.size()*3, false );
@@ -390,10 +399,10 @@ const char *fragment_shader_string =
 
 
 void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
-						 X3DLightNode *light, 
-						 bool draw_caps,
-						 const Matrix4f &m,
-						 const Matrix4f &m_inv ) {
+                                                 X3DLightNode *light, 
+                                                 bool draw_caps,
+                                                 const Matrix4f &m,
+                                                 const Matrix4f &m_inv ) {
 
   PointLight *point_light = dynamic_cast< PointLight * >( light );
   DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );
@@ -413,7 +422,7 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
     Field *model_matrix = new SFMatrix4f;
     modelMatrix->route( model_matrix );
     point_light_shader->addField( "modelMatrix", 
-				  Field::INPUT_OUTPUT, model_matrix );
+                                  Field::INPUT_OUTPUT, model_matrix );
 
     Field *drawCapsField = new SFBool;
     drawCaps->route( drawCapsField );
@@ -452,7 +461,7 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
     Field *model_matrix = new SFMatrix4f;
     modelMatrix->route( model_matrix );
     dir_light_shader->addField( "modelMatrix", 
-				Field::INPUT_OUTPUT, model_matrix );
+                                Field::INPUT_OUTPUT, model_matrix );
 
 
     Field *drawCapsField = new SFBool;
@@ -521,8 +530,8 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
 
 
 void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::Triangle > &triangles, 
-						 vector< Vec3d > &triangle_points, 
-						 vector< unsigned int > &adjacency_index ) {
+                                                 vector< Vec3d > &triangle_points, 
+                                                 vector< unsigned int > &adjacency_index ) {
   updateNeighbours( triangles );
   
   triangle_points.clear();
@@ -532,13 +541,13 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
 
   for( unsigned int i = 0; i < triangles.size(); i++ ) {
    
-	triangle_points.push_back( triangles[i].a );
+        triangle_points.push_back( triangles[i].a );
     triangle_points.push_back( triangles[i].b );
     triangle_points.push_back( triangles[i].c );
 
-	// if( triangles[i].a == triangles[i].b ||
-	//	triangles[i].b == triangles[i].c ||
-	//	triangles[i].c == triangles[i].a ) { Console(4) << "Degenerate" << endl; continue; }
+        // if( triangles[i].a == triangles[i].b ||
+        //      triangles[i].b == triangles[i].c ||
+        //      triangles[i].c == triangles[i].a ) { Console(4) << "Degenerate" << endl; continue; }
     //    cerr << triangles[i].a << endl;
 
     //    adjacency_index.push_back( i*3 );
@@ -575,9 +584,9 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
     } else {
       const HAPI::Collision::Triangle &n0 = triangles[n0_index];
       adjacency_index.push_back( n0_index*3 + 
-				 getMissingPointIndex( n0,
-						       triangles[i].a,
-						       triangles[i].b ) );
+                                 getMissingPointIndex( n0,
+                                                       triangles[i].a,
+                                                       triangles[i].b ) );
     }
 
     adjacency_index.push_back( i*3+1 );
@@ -591,9 +600,9 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
     } else {
       const HAPI::Collision::Triangle &n1 = triangles[n1_index];
       adjacency_index.push_back( n1_index*3 + 
-				 getMissingPointIndex( n1,
-						       triangles[i].b,
-						       triangles[i].c ) );
+                                 getMissingPointIndex( n1,
+                                                       triangles[i].b,
+                                                       triangles[i].c ) );
     }
 
     adjacency_index.push_back( i*3+2 );
@@ -607,17 +616,17 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
     } else {
       const HAPI::Collision::Triangle &n2 = triangles[n2_index];
       adjacency_index.push_back( n2_index*3 + 
-				 getMissingPointIndex( n2,
-						       triangles[i].c,
-						       triangles[i].a ) );
+                                 getMissingPointIndex( n2,
+                                                       triangles[i].c,
+                                                       triangles[i].a ) );
     }
   }
 }
 
 
 int ShadowGeometry::getMissingPointIndex( const HAPI::Collision::Triangle  &t,
-					  const Vec3d &p0, 
-					  const Vec3d &p1 ) {
+                                          const Vec3d &p0, 
+                                          const Vec3d &p1 ) {
   if( t.a != p0 && t.a != p1 ) return 0;
   if( t.b != p0 && t.b != p1 ) return 1;
   if( t.c != p0 && t.c != p1 ) return 2;
@@ -689,9 +698,9 @@ const char *geometry_shader_functions_string =
   "  vec3 light_pos = light_pos_view.xyz;\n"
   "  \n"
   "  if( triangleFacingPos( gl_PositionIn[0].xyz, \n"
-  "			    gl_PositionIn[2].xyz, \n"
-  "			    gl_PositionIn[4].xyz,\n"
-  "			    light_pos ) ) {\n"
+  "                         gl_PositionIn[2].xyz, \n"
+  "                         gl_PositionIn[4].xyz,\n"
+  "                         light_pos ) ) {\n"
   "    // triangle facing light\n"
   "\n"
   "    if( draw_caps ) {\n"
@@ -710,35 +719,35 @@ const char *geometry_shader_functions_string =
   "    // edge 0 silhouette edge\n"
   "    if( gl_PositionIn[0] == gl_PositionIn[1] || \n"
   "        !triangleFacingPos( gl_PositionIn[0].xyz, \n"
-  "			       gl_PositionIn[1].xyz, \n"
-  "			       gl_PositionIn[2].xyz,\n"
-  "			       light_pos ) ) {\n"
+  "                            gl_PositionIn[1].xyz, \n"
+  "                            gl_PositionIn[2].xyz,\n"
+  "                            light_pos ) ) {\n"
   "      edgeToInfinityGeometryPointLight( gl_PositionIn[0].xyz, \n"
-  "					   gl_PositionIn[2].xyz, \n"
-  "					   light_pos );\n"
+  "                                        gl_PositionIn[2].xyz, \n"
+  "                                        light_pos );\n"
   "    }\n"
   "\n"
   "    // edge 1 silhouette edge\n"
   "    if( gl_PositionIn[2] == gl_PositionIn[3] || \n"
   "       !triangleFacingPos( gl_PositionIn[2].xyz, \n"
-  "			      gl_PositionIn[3].xyz, \n"
-  "			      gl_PositionIn[4].xyz,\n"
-  "			      light_pos ) ) {\n"
+  "                           gl_PositionIn[3].xyz, \n"
+  "                           gl_PositionIn[4].xyz,\n"
+  "                           light_pos ) ) {\n"
   "      edgeToInfinityGeometryPointLight( gl_PositionIn[2].xyz, \n"
-  "				           gl_PositionIn[4].xyz, \n"
-  "					   light_pos );\n"
+  "                                        gl_PositionIn[4].xyz, \n"
+  "                                        light_pos );\n"
   "\n"
   "    }\n"
   "\n"
   "    // edge 2 silhouette edge\n"
   "    if( gl_PositionIn[4] == gl_PositionIn[5] || \n"
   "        !triangleFacingPos( gl_PositionIn[4].xyz, \n"
-  "			       gl_PositionIn[5].xyz, \n"
-  "			       gl_PositionIn[0].xyz,\n"
-  "			       light_pos ) ) {\n"
+  "                            gl_PositionIn[5].xyz, \n"
+  "                            gl_PositionIn[0].xyz,\n"
+  "                            light_pos ) ) {\n"
   "      edgeToInfinityGeometryPointLight( gl_PositionIn[4].xyz, \n"
-  "					   gl_PositionIn[0].xyz, \n"
-  "					   light_pos );\n"
+  "                                        gl_PositionIn[0].xyz, \n"
+  "                                        light_pos );\n"
   "\n"
   "    }\n"
   "  } else {\n"

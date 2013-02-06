@@ -48,14 +48,15 @@ namespace H3D {
     
     /// Constructor.
     GraphicsOptions( Inst< SFNode  > _metadata = 0,
-		     Inst< SFBool  > _useCaching = 0,
-		     Inst< SFInt32 > _cachingDelay  = 0,
-		     Inst< SFBool  > _cacheOnlyGeometryNodes = 0,
-		     Inst< SFString > _frustumCullingMode = 0,
-		     Inst< SFBool  > _useDefaultShadows = 0,
-		     Inst< SFFloat > _defaultShadowDarkness = 0,
-		     Inst< SFFloat > _defaultShadowDepthOffset = 0,
-		     Inst< SFBool > _preferVertexBufferObject = 0 );
+                     Inst< SFBool  > _useCaching = 0,
+                     Inst< SFInt32 > _cachingDelay  = 0,
+                     Inst< SFBool  > _cacheOnlyGeometryNodes = 0,
+                     Inst< SFString > _frustumCullingMode = 0,
+                     Inst< SFBool  > _useDefaultShadows = 0,
+                     Inst< SFFloat > _defaultShadowDarkness = 0,
+                     Inst< SFFloat > _defaultShadowDepthOffset = 0,
+                     Inst< SFBool > _preferVertexBufferObject = 0,
+                     Inst< SFString > _defaultShadowGeometryAlgorithm = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -152,6 +153,19 @@ namespace H3D {
     /// <b>Default value: </b> false \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFBool > preferVertexBufferObject;
+
+    /// The defaultShadowGeometryAlgorithm field controls how to calculate
+    /// and draw the shadow volumes for arbitrary volumes(see ShadowGeometry).
+    /// - "GEOMETRY_SHADER" means that all is done in a geometry shader on 
+    ///   the graphics card (if supported). This is faster but could have
+    ///   worse precision (depending on graphics card).
+    /// - "CPU" - all calculations for the shadow volume is done on the CPU.
+    ///
+    /// <b>Default value: </b> "GEOMETRY_SHADER" \n
+    /// <b>Valid values: </b> "CPU", "GEOMETRY_SHADER" \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFString > defaultShadowGeometryAlgorithm;
+
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
