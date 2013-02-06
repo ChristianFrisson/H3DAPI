@@ -363,6 +363,9 @@ namespace H3D {
     /// If this Node is a DynamicFieldsObject a new field is added.
     static PyObject* addField( PyObject *self, PyObject *args, 
                                PyObject *field_type, PyObject *access_type );
+
+    /// Create a clone the node
+    static PyObject* clone ( PyObject* self, PyObject *args );
   };
 
   //////////////////////////////////////////////////////

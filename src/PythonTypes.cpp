@@ -150,6 +150,7 @@ namespace H3D {
     { "getName", (PyCFunction) PyNode::getName, 0 },
     { "setName", (PyCFunction) PyNode::setName, 0 },
     { "getTypeName", (PyCFunction) PyNode::getTypeName, 0 },
+    { "clone", (PyCFunction) PyNode::clone, 0 },
     {NULL, NULL}
   };
   
@@ -288,6 +289,23 @@ self, name, field_type, access_type )" );
     return Py_None;
   }
   
+  PyObject* PyNode::clone ( PyObject *self, PyObject *arg ) {
+    Node *n = PyNode_AsNode( self );
+
+    bool deepCopy= true;
+    if( arg && !PyBool_Check( arg ) ) {
+      PyErr_SetString( PyExc_ValueError, 
+                       "Invalid argument(s) to function PyNode.clone( \
+self, deepCopy )" );
+      return NULL;
+    }
+    if ( arg ) {
+      deepCopy= PyObject_IsTrue ( arg );
+    }
+
+    return PyNode_FromNode ( n->clone ( deepCopy ) );
+  }
+
   void PyNode::installType( PyObject* H3D_module ) {
     // Install Node
     if (PyType_Ready(&PyNode_Type) < 0 )

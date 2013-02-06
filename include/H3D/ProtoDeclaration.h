@@ -40,7 +40,7 @@ namespace H3D {
 		class PrototypeVector;
 	}
 
-  /// The ProtoDeclaration class containse information about a PROTO node from
+  /// The ProtoDeclaration class contains information about a PROTO node from
   /// the X3D standard. It contains everything that is needed to now about the prototype
   /// and allows you to create new instances of the prototype with the newProtoInstance 
   /// function.

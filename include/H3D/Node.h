@@ -52,6 +52,16 @@ namespace H3D {
 
     /// Constructor.
     Node();
+
+    /// Returns a new instance of this node type with the same state as this one
+    ///
+    /// The default implementation copies the node's registered field values
+    /// of access type INPUT_OUTPUT and INITIALIZE_ONLY.
+    ///
+    /// \param deepCopy If true then references to other nodes will also be cloned. 
+    ///                 Otherwise just the pointer is copied.
+    ///
+    virtual Node* clone ( bool deepCopy= true );
     
     /// Destructor.
     virtual ~Node();

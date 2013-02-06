@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Clone.x3d'/>
+    <meta name='description' content='An example showing the use of the Node clone() function.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2013'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0.05 0.6' orientation='1 0 0 -0.1'/>
+    <Transform translation='-0.15 0 0'>
+      <Group DEF='SRC'>
+        <Shape>
+          <IndexedTriangleSet
+              ccw='true' colorPerVertex='false'
+              normalPerVertex='false' solid='false'
+              index='0 1 2 0 3 1'>
+            <Coordinate DEF='C'
+                point='0 0.1 0.1, 0 -0.1 0.1, -0.1 0 0, 0.1 0 0'/>
+          </IndexedTriangleSet>
+          <Appearance DEF='A'>
+            <Material />
+          </Appearance>
+        </Shape>
+        
+        <Transform translation='0 0 0.1'>
+          <Shape>
+            <Sphere radius='0.03' />
+            <Appearance>
+              <Material diffuseColor='0.3 0.3 1' />
+            </Appearance>
+          </Shape>
+        </Transform>
+      </Group>
+      
+    </Transform>
+    
+    <Transform DEF='DST' translation='0.15 0 0' />
+    
+    <PythonScript url="Clone.py" />
+  </Scene>
+</X3D>
