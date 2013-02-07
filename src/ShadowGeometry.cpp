@@ -29,6 +29,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/ShadowGeometry.h>
+#include <H3D/GraphicsOptions.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 
@@ -106,7 +108,7 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
   }
   m_inv = m.inverse();
 
-  GraphicsCachingOptions *graphics_options = NULL;
+  GraphicsOptions *graphics_options = NULL;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) {
     default_settings->getOptionNode( graphics_options );

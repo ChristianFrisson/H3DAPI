@@ -27,6 +27,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/Node.h>
+#include <H3D/MFNode.h>
+#include <H3D/MFString.h>
+#include <H3D/SFString.h>
 
 using namespace H3D;
 
