@@ -191,13 +191,27 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                                              ${OPENAL_INSTALL_COMMAND_1}
                                              " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /s'\\n"
                                              ${OPENAL_INSTALL_COMMAND_2} )
+      IF( CMAKE_SIZEOF_VOID_P EQUAL 8 ) # check if the system is 64 bit
+        SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+                                                 "A comment\\n \\\${If} \\\${RunningX64}\\n"
+                                                 "A comment\\n   SetRegView 32\\n"
+                                                 "A comment\\n \\\${EndIf}\\n" )
+      ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
       SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+                                               " Get OpenAL uninstall registry string\\n  ReadRegStr $0 HKLM SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Uninstall\\\\OpenAL \\\"UninstallString\\\"\\n"
+                                               " Check if OpenAL is installed\\n  StrCmp $0 \\\"\\\" uninstall_openal_no 0\\n"
                                                " Check if uninstall OpenAL \\n  MessageBox MB_YESNO \\\"Do you want to uninstall OpenAL? It is recommended if no other applications use it.\\\" IDYES uninstall_openal_yes IDNO uninstall_openal_no\\n"
                                                " A comment \\n  uninstall_openal_yes:\\n"
                                                ${OPENAL_INSTALL_COMMAND_1}
                                                " Execute install file\\n  ExecWait '\\\"$INSTDIR\\\\${OpenAL_FILE_NAME}\\\" /u /s'\\n"
                                                ${OPENAL_INSTALL_COMMAND_2}
                                                " A comment \\n  uninstall_openal_no:\\n\\n" )
+      IF( CMAKE_SIZEOF_VOID_P EQUAL 8 ) # check if the system is 64 bit
+        SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+                                                 "A comment\\n \\\${If} \\\${RunningX64}\\n"
+                                                 "A comment\\n   SetRegView 64\\n"
+                                                 "A comment\\n \\\${EndIf}\\n" )
+      ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     ENDIF( OpenAlInstallExe )
 
     # Modify path since in the NSIS template.
