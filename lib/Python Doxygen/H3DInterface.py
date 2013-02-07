@@ -881,6 +881,18 @@ eventSink = Field
 ## n.radius.setValue( 0.2 ) 
 ## \endcode
 class Node:
+
+  ## Returns a new instance of this node type with the same state as this one
+  ##
+  ## The default implementation copies the node's registered field values
+  ## of access type INPUT_OUTPUT and INITIALIZE_ONLY.
+  ##
+  ## \param deepCopy Bool: If true then references to other nodes will also be 
+  ##                 cloned. Otherwise just the pointer is copied.
+  ##
+  def clone ( deepCopy ):
+    pass
+
   ## Returns a list with all the fields of the node.
   ## \return A list with all the fields of the node.
   def getFieldList():

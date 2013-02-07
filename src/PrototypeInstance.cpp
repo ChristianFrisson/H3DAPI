@@ -38,3 +38,17 @@ H3DNodeDatabase PrototypeInstance::database(
                                             NULL,
                                             typeid( PrototypeInstance ),
                                             &X3DPrototypeInstance::database );
+
+Node* PrototypeInstance::clone ( bool deepCopy, DeepCopyMap& deepCopyMap ) {
+  // Basic clone
+  PrototypeInstance* n= new PrototypeInstance ( getClonedInstance ( prototyped_node.get(), deepCopy, deepCopyMap ) );
+  n->metadata->setValue ( getClonedInstance ( metadata->getValue (), deepCopy, deepCopyMap ) );
+
+  // Clone prototyped_node_extras
+  n->prototyped_node_extras.reserve ( prototyped_node_extras.size() );
+  for ( AutoRefVector< Node >::const_iterator i= prototyped_node_extras.begin(); i != prototyped_node_extras.end(); ++i ) {
+    n->prototyped_node_extras.push_back ( getClonedInstance ( *i, deepCopy, deepCopyMap ) );
+  }
+
+  return n;
+}

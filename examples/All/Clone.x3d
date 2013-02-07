@@ -8,6 +8,12 @@
   
   <Scene>
     <Viewpoint position='0 0.05 0.6' orientation='1 0 0 -0.1'/>
+    
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+    
     <Transform translation='-0.15 0 0'>
       <Group DEF='SRC'>
         <Shape>
@@ -19,18 +25,22 @@
                 point='0 0.1 0.1, 0 -0.1 0.1, -0.1 0 0, 0.1 0 0'/>
           </IndexedTriangleSet>
           <Appearance DEF='A'>
-            <Material />
+            <Material diffuseColor='0.3 0.3 1' />
           </Appearance>
         </Shape>
         
         <Transform translation='0 0 0.1'>
           <Shape>
             <Sphere radius='0.03' />
-            <Appearance>
-              <Material diffuseColor='0.3 0.3 1' />
-            </Appearance>
+            <Appearance USE='A' />
           </Shape>
         </Transform>
+        
+        <ProtoInstance name='Text'>
+          <fieldValue name='offset' value='0 -0.15 0' />
+          <fieldValue name='string' value='"This is a ProtoInstance."' />
+        </ProtoInstance>
+        
       </Group>
       
     </Transform>

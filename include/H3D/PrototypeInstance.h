@@ -51,6 +51,21 @@ namespace H3D {
       setPrototypedNode( _prototyped_node );
     }
 
+    /// Returns a new instance of this node type with the same state as this one
+    ///
+    /// The default implementation copies the node's registered field values
+    /// of access type INPUT_OUTPUT and INITIALIZE_ONLY.
+    ///
+    /// \param deepCopy If true then references to other nodes will also be cloned. 
+    ///                 Otherwise just the pointer is copied.
+    ///
+    /// \param deepCopyMap A map from original nodes to their cloned versions. 
+    ///                    This parameter is normally not required by the root caller, 
+    ///                    but is passed down the call graph to ensure that nodes that
+    ///                    appear multiple times will be assigned the same clone.
+    ///
+    virtual Node* clone ( bool deepCopy= true, DeepCopyMap& deepCopyMap= DeepCopyMap() );
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };

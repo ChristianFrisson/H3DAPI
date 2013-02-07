@@ -15,5 +15,7 @@ cloned_points= cloned_coord.point.getValue()
 cloned_points[0]= Vec3f ( 0, 0.15, 0.1 )
 cloned_coord.point.setValue ( cloned_points )
 
+# The Appearance node is shared between sphere and triangle set, so in both deep
+# and shallow copies, this should change the color of the sphere and triangle set
 cloned_mat= cloned.children.getValue()[1].children.getValue()[0].appearance.getValue().material.getValue()
 cloned_mat.diffuseColor.setValue ( RGB ( 1, 0, 0 ) )

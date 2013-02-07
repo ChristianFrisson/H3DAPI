@@ -41,7 +41,7 @@ Node::Node() :
   id( nr_nodes_created++ ),
   proto_parent( NULL ) {}
 
-Node* Node::clone ( bool deepCopy ) {
+Node* Node::clone ( bool deepCopy, DeepCopyMap& deepCopyMap ) {
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *this ) );
   if ( db ) {
     // Create a new instance of this node type
@@ -66,9 +66,7 @@ Node* Node::clone ( bool deepCopy ) {
               if ( MFNode *mfnode_to = dynamic_cast< MFNode * >( f_to ) ) {
                 NodeVector src= mfnode_from->getValue();
                 for ( size_t j= 0; j < src.size(); ++j ) {
-                  if ( deepCopy && src[j] ) {
-                    src.set ( j, src[j]->clone() );
-                  }
+                  src.set ( j, getClonedInstance ( src[j], deepCopy, deepCopyMap ) );
                 }
                 mfnode_to->setValue ( src );
               }
@@ -121,11 +119,7 @@ Node* Node::clone ( bool deepCopy ) {
             // SFNode
           } else if( SFNode *sfnode_from = dynamic_cast< SFNode * >( f_from ) ) {
             if ( SFNode *sfnode_to = dynamic_cast< SFNode * >( f_to ) ) {
-              Node* src= sfnode_from->getValue();
-              if ( deepCopy && src ) {
-                src= src->clone();
-              }
-              sfnode_to->setValue ( src );
+              sfnode_to->setValue ( getClonedInstance ( sfnode_from->getValue(), deepCopy, deepCopyMap ) );
             }
           }
         }
@@ -133,6 +127,30 @@ Node* Node::clone ( bool deepCopy ) {
     }
 
     return n; 
+  } else {
+    return NULL;
+  }
+}
+
+Node* Node::getClonedInstance ( Node* original, bool deepCopy, DeepCopyMap& deepCopyMap ) {
+  if ( original ) {
+    if ( !deepCopy ) {
+      // For shallow copy return the original
+      return original;
+    } else {
+      // Deep copy
+      // First check if the node has already been cloned
+      DeepCopyMap::iterator i= deepCopyMap.find ( original );
+      if ( i != deepCopyMap.end() ) {
+        // The node has already been cloned, return that instance
+        return (*i).second;
+      } else {
+        // The node has not already been cloned, clone it and add to the map
+        Node* n= original->clone( deepCopy, deepCopyMap );
+        deepCopyMap[original]= n;
+        return n;
+      }
+    }
   } else {
     return NULL;
   }

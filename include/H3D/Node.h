@@ -50,6 +50,10 @@ namespace H3D {
  
     typedef HAPI::Collision::IntersectionInfo IntersectionInfo;
 
+    /// A map type used during a deep copy clone() to map from original
+    /// nodes to cloned nodes.
+    typedef std::map < Node*, Node* > DeepCopyMap;
+
     /// Constructor.
     Node();
 
@@ -61,7 +65,12 @@ namespace H3D {
     /// \param deepCopy If true then references to other nodes will also be cloned. 
     ///                 Otherwise just the pointer is copied.
     ///
-    virtual Node* clone ( bool deepCopy= true );
+    /// \param deepCopyMap A map from original nodes to their cloned versions. 
+    ///                    This parameter is normally not required by the root caller, 
+    ///                    but is passed down the call graph to ensure that nodes that
+    ///                    appear multiple times will be assigned the same clone.
+    ///
+    virtual Node* clone ( bool deepCopy= true, DeepCopyMap& deepCopyMap= DeepCopyMap() );
     
     /// Destructor.
     virtual ~Node();
@@ -355,6 +364,19 @@ namespace H3D {
     friend class RefCountSField;
 
   protected:
+
+    /// A helper function for nodes that implement clone()
+    ///
+    /// Given an original node, the clone is returned.
+    ///
+    /// For shallow copy the original is returned.
+    /// For deep copy, if the original already in deepCopyMap that clone is returned, 
+    /// otherwise a new clone is created, added to the map and returned
+    ///
+    /// If original is NULL then NULL is returned.
+    ///
+    static Node* getClonedInstance ( Node* original, bool deepCopy, DeepCopyMap& deepCopyMap );
+
     static H3DNodeDatabase database;
     int id;
     static int nr_nodes_created;
