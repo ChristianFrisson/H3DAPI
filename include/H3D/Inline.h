@@ -54,7 +54,18 @@ namespace H3D {
   /// children of the Inline for rendering and interaction; however the
   /// children are not exposed to the current scene for routing and DEF name
   /// access unless their names have been explicitly imported into the scene
-  /// using the IMPORT statement (see 4.4.6.2 IMPORT semantics).
+  /// using the IMPORT statement (see 4.4.6.2 IMPORT semantics). However this 
+  /// can be changed using the importMode field.
+  ///
+  /// The importMode field defines the way that the Inline node exports its
+  /// nodes and how they are imported into the scene that use the Inline node.
+  ///
+  /// - "DEFAULT" - Explicit EXPORT/IMPORT statements are needed as per X3D spec.
+  /// - "AUTO" - All nodes with a DEF name will be exported and imported without
+  /// the requirement of an explicit EXPORT/IMPORT statement.
+  /// - "AUTO_IMPORT" - All nodes exported with the EXPORT statement will be 
+  /// automatically imported into the scene that uses the Inline node.
+  /// - "AUTO_EXPORT" - All nodes with a DEF name will be automatically exported.
   ///
   /// Each specified URL shall refer to a valid X3D file that contains a
   /// list of children nodes, prototypes and routes at the top level as
@@ -93,6 +104,8 @@ namespace H3D {
   /// The user is able to specify a bounding box for the Inline node using
   /// the bboxCenter and bboxSize fields. This is a hint to the browser and
   /// could be used for optimization purposes such as culling. 
+  ///
+  ///  
   ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/Switch.x3d">Switch.x3d</a>
@@ -172,10 +185,13 @@ namespace H3D {
             Inst< SFVec3f     >  _bboxCenter = 0,
             Inst< SFVec3f     >  _bboxSize   = 0,
             Inst< SFBool      >  _load       = 0,
-            Inst< LoadedScene > _loadedScene = 0 );
+            Inst< LoadedScene > _loadedScene = 0,
+            Inst< SFString    > _importMode  = 0,
+            Inst< SFBool      > _traverseOn  = 0 );
 
     virtual ~Inline() {
       exported_nodes.clear();
+      DEF_nodes.clear();
     }
 
     /// Sets up the bound field using the bboxCenter and bboxSize fields.
@@ -253,6 +269,31 @@ namespace H3D {
     /// \dotfile Inline_loadedScene.dot
     auto_ptr< LoadedScene > loadedScene;
 
+    /// The autoImport mode defines the way that the Inline node exports its
+    /// nodes and how they are imported into the scene that use the Inline node.
+    ///
+    /// - "DEFAULT" - Explicit EXPORT/IMPORT statements are needed as per X3D spec.
+    /// - "AUTO" - All nodes with a DEF name will be exported and imported without
+    /// the requirement of an explicit EXPORT/IMPORT statement.
+    /// - "AUTO_IMPORT" - All nodes exported with the EXPORT statement will be 
+    /// automatically imported into the scene that uses the Inline node.
+    /// - "AUTO_EXPORT" - All nodes with a DEF name will be automatically exported.
+    ///
+    /// <b>Access type:</b> initializeOnly \n
+    /// <b>Default value:</b> "DEFAULT" \n
+    /// <b>Valid values:</b> "DEFAULT", "AUTO", "AUTO_IMPORT", "AUTO_EXPORT" \n
+    /// \dotfile Inline_importMode.dot
+    auto_ptr< SFString > importMode;
+
+    /// If set to false the children nodes of the Inline node will not be traversed
+    /// at all, basically making them not part of the scene graph unless specific 
+    /// nodes are used elsewhere with a USE statement.
+    ///
+    /// <b>Access type:</b> initializeOnly \n
+    /// <b>Default value:</b> true \n
+    /// \dotfile Inline_traverseOn.dot
+    auto_ptr< SFBool > traverseOn;
+
     // if true a route will be set up between the bound field of the
     // loadedScene field and the bound field of the inline node. 
     bool use_union_bound;
@@ -260,9 +301,13 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
-    /// A DEFMap from the name of nodes exported with the EXPORT statement
-    /// in the url of the Inline node, to the acutal node.
+    /// A DEFNodes structure from the name of nodes exported with the EXPORT statement
+    /// in the url of the Inline node, to the actual node.
     X3D::DEFNodes exported_nodes;
+
+    /// A DEFNodes structure from the name of nodes named with the DEF statement
+    /// in the url of the Inline node, to the actual node.
+    X3D::DEFNodes DEF_nodes;
   };
 }
 

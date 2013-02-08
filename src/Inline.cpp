@@ -48,6 +48,8 @@ namespace InlineInternals {
   FIELDDB_ELEMENT( Inline, bboxCenter, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Inline, bboxSize, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Inline, loadedScene, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( Inline, importMode, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( Inline, traverseOn, INPUT_OUTPUT );
 }
 
 
@@ -59,13 +61,17 @@ Inline::Inline(
                Inst< SFVec3f     > _bboxCenter,
                Inst< SFVec3f     > _bboxSize,
                Inst< SFBool      > _load,
-               Inst< LoadedScene > _loadedScene ) :
+               Inst< LoadedScene > _loadedScene,
+               Inst< SFString    > _importMode,
+               Inst< SFBool      > _traverseOn ) :
   X3DChildNode( _metadata   ),
   X3DBoundedObject( _bound, _bboxCenter, _bboxSize ),
   X3DUrlObject( _url ),
   H3DDisplayListObject( _displayList ),
   load        ( _load       ),
   loadedScene ( _loadedScene ),
+  importMode( _importMode ),
+  traverseOn( _traverseOn ),
   use_union_bound( false ) {
 
   type_name = "Inline";
@@ -79,10 +85,17 @@ Inline::Inline(
   load->route( loadedScene, id );
   url->route( loadedScene, id );
   loadedScene->route( displayList );
+
+  importMode->addValidValue( "DEFAULT" );
+  importMode->addValidValue( "AUTO" );
+  importMode->addValidValue( "AUTO_IMPORT" );
+  importMode->addValidValue( "AUTO_EXPORT" );
+  importMode->setValue( "DEFAULT", id );
+  traverseOn->setValue( true );
 }
 
 void Inline::render() {
-  if( load->getValue() ) {
+  if( load->getValue() && traverseOn->getValue() ) {
     for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
       Group *g = loadedScene->getValueByIndex( i );
       if( g ) g->displayList->callList();
@@ -91,7 +104,7 @@ void Inline::render() {
 }
 
 void Inline::traverseSG( TraverseInfo &ti ) {
-  if( load->getValue() ) {
+  if( load->getValue() && traverseOn->getValue() ) {
     for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
       Group *g = loadedScene->getValueByIndex( i );
       if( g ) g->traverseSG( ti );
@@ -109,9 +122,15 @@ void Inline::LoadedScene::update() {
   // is the problem.
   if( !inline_node->exported_nodes.empty() )
     inline_node->exported_nodes.clear();
+
+  if( !inline_node->DEF_nodes.empty() )
+    inline_node->DEF_nodes.clear();
+
   bool load = static_cast< SFBool * >( routes_in[0] )->getValue();
   if( load ) {
     MFString *urls = static_cast< MFString * >( routes_in[1] );
+    const string &import_mode = inline_node->importMode->getValue();
+
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
 
       // First try to resolve URL to file contents, if that is not supported
@@ -136,13 +155,25 @@ void Inline::LoadedScene::update() {
           Group *g;
           if ( url_contents != "" ) {
             // We have resolved to file contents, load from string buffer
-            g= X3D::createX3DFromString ( url_contents, NULL, &inline_node->exported_nodes, NULL );
+            g= X3D::createX3DFromString ( url_contents, 
+                                          &inline_node->DEF_nodes, 
+                                          &inline_node->exported_nodes, 
+                                          NULL );
           } else {
             // We have resolved to local filename, load from file
-            g= X3D::createX3DFromURL( url, NULL, 
+            g= X3D::createX3DFromURL( url, 
+                                      &inline_node->DEF_nodes, 
                                       &inline_node->exported_nodes,
-                                      NULL, !is_tmp_file );
+                                      NULL, 
+                                      !is_tmp_file );
           }
+
+          // if import mode is a mode where all DEF nodes are to be automatically
+          // exported, add them to the exported_nodes
+          if( import_mode == "AUTO" || import_mode == "AUTO_EXPORT" ) {
+            inline_node->exported_nodes.merge( &inline_node->DEF_nodes );
+          }
+
           if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
           value.push_back( g );
           inline_node->setURLUsed( *i );
