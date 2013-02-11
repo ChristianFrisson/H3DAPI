@@ -70,7 +70,7 @@ namespace H3D {
     ///                    but is passed down the call graph to ensure that nodes that
     ///                    appear multiple times will be assigned the same clone.
     ///
-    virtual Node* clone ( bool deepCopy= true, DeepCopyMap& deepCopyMap= DeepCopyMap() );
+    virtual Node* clone ( bool deepCopy= true, DeepCopyMap *deepCopyMap = NULL );
     
     /// Destructor.
     virtual ~Node();

@@ -41,9 +41,14 @@ Node::Node() :
   id( nr_nodes_created++ ),
   proto_parent( NULL ) {}
 
-Node* Node::clone ( bool deepCopy, DeepCopyMap& deepCopyMap ) {
+Node* Node::clone ( bool deepCopy, DeepCopyMap *deepCopyMap ) {
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *this ) );
   if ( db ) {
+    bool delete_deep_copy_map = false;
+    if( deepCopyMap == NULL ) {
+      deepCopyMap = new DeepCopyMap;
+      delete_deep_copy_map = true;
+    }
     // Create a new instance of this node type
     Node* n= db->createNode ();
 
@@ -66,7 +71,7 @@ Node* Node::clone ( bool deepCopy, DeepCopyMap& deepCopyMap ) {
               if ( MFNode *mfnode_to = dynamic_cast< MFNode * >( f_to ) ) {
                 NodeVector src= mfnode_from->getValue();
                 for ( size_t j= 0; j < src.size(); ++j ) {
-                  src.set ( j, getClonedInstance ( src[j], deepCopy, deepCopyMap ) );
+                  src.set ( j, getClonedInstance ( src[j], deepCopy, *deepCopyMap ) );
                 }
                 mfnode_to->setValue ( src );
               }
@@ -119,13 +124,17 @@ Node* Node::clone ( bool deepCopy, DeepCopyMap& deepCopyMap ) {
             // SFNode
           } else if( SFNode *sfnode_from = dynamic_cast< SFNode * >( f_from ) ) {
             if ( SFNode *sfnode_to = dynamic_cast< SFNode * >( f_to ) ) {
-              sfnode_to->setValue ( getClonedInstance ( sfnode_from->getValue(), deepCopy, deepCopyMap ) );
+              sfnode_to->setValue ( getClonedInstance ( sfnode_from->getValue(), deepCopy, *deepCopyMap ) );
             }
           }
         }
       }
     }
 
+    if( delete_deep_copy_map ) {
+      delete deepCopyMap;
+      deepCopyMap = NULL;
+    }
     return n; 
   } else {
     return NULL;
@@ -146,7 +155,7 @@ Node* Node::getClonedInstance ( Node* original, bool deepCopy, DeepCopyMap& deep
         return (*i).second;
       } else {
         // The node has not already been cloned, clone it and add to the map
-        Node* n= original->clone( deepCopy, deepCopyMap );
+        Node* n= original->clone( deepCopy, &deepCopyMap );
         deepCopyMap[original]= n;
         return n;
       }

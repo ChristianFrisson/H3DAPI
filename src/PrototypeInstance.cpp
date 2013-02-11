@@ -39,15 +39,24 @@ H3DNodeDatabase PrototypeInstance::database(
                                             typeid( PrototypeInstance ),
                                             &X3DPrototypeInstance::database );
 
-Node* PrototypeInstance::clone ( bool deepCopy, DeepCopyMap& deepCopyMap ) {
+Node* PrototypeInstance::clone ( bool deepCopy, DeepCopyMap* deepCopyMap ) {
+  bool delete_deep_copy_map = false;
+  if( deepCopyMap == NULL ) {
+    deepCopyMap = new DeepCopyMap;
+    delete_deep_copy_map = true;
+  }
   // Basic clone
-  PrototypeInstance* n= new PrototypeInstance ( getClonedInstance ( prototyped_node.get(), deepCopy, deepCopyMap ) );
-  n->metadata->setValue ( getClonedInstance ( metadata->getValue (), deepCopy, deepCopyMap ) );
+  PrototypeInstance* n= new PrototypeInstance ( getClonedInstance ( prototyped_node.get(), deepCopy, *deepCopyMap ) );
+  n->metadata->setValue ( getClonedInstance ( metadata->getValue (), deepCopy, *deepCopyMap ) );
 
   // Clone prototyped_node_extras
   n->prototyped_node_extras.reserve ( prototyped_node_extras.size() );
   for ( AutoRefVector< Node >::const_iterator i= prototyped_node_extras.begin(); i != prototyped_node_extras.end(); ++i ) {
-    n->prototyped_node_extras.push_back ( getClonedInstance ( *i, deepCopy, deepCopyMap ) );
+    n->prototyped_node_extras.push_back ( getClonedInstance ( *i, deepCopy, *deepCopyMap ) );
+  }
+  if( delete_deep_copy_map ) {
+    delete deepCopyMap;
+    deepCopyMap = NULL;
   }
 
   return n;
