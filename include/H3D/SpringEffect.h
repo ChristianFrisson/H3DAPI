@@ -69,7 +69,8 @@ namespace H3D {
                   Inst< MFInt32     > _deviceIndex = 0,
                   Inst< SFNode      >  _metadata = 0,
                   Inst< SFFloat     > _damping = 0,
-									Inst< SFFloat     > _positionInterpolation = 0 );
+									Inst< SFFloat     > _positionInterpolation = 0,
+                  Inst< SFVec3f     > _interpolatedPosition = 0 );
 
     /// Adds the effect if within startDistance and removes it when 
     /// going outside escapeDistance.
@@ -139,6 +140,11 @@ namespace H3D {
     /// <b>Default value:</b> 1 \n
 		/// <b>Allowed values:</b> [0,1] \n
     auto_ptr< SFFloat > positionInterpolation;
+
+    /// The interpolated position of the spring. See positionInterpolation.
+    ///
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFVec3f > interpolatedPosition;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
