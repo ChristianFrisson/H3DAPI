@@ -115,8 +115,8 @@ public:
   wxPanel* CreateRuspiniSettingsPage(wxWindow* parent);
   wxPanel* CreateDebugSettingsPage(wxWindow* parent);
 
-  inline float getProxyRadius() {
-    return std::strtod( proxy_radius_text->GetValue().mb_str(), NULL );
+  float getProxyRadius() {
+		return X3D::Convert::atof( proxy_radius_text->GetValue().mb_str() );
   }
 
   // DebugOptionsUI

@@ -834,7 +834,6 @@ Section "-Core installation"
 
     ;Add Example shortcuts.
     ${If} $H3DAPI_cpack_sources_selected > 0
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Earth Shader.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Glass Shader.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_glass.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cubemap.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\CubeMap\CubeMap.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Deformable Shape.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DeformableShape\deform.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
@@ -844,19 +843,16 @@ Section "-Core installation"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Flight.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\flight\flight.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Polka Shader.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_polkadot.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Magnetic lines.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\magneticlines\magneticlines.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Plane.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\plane\bobcat.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SuperShape.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SuperShape\SuperShape.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $MedX3D_cpack_sources_selected > 0
-      StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +2
+      StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +3
         CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\OpacityMapVolumeStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Segmented head.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\SegmentedVolumeData.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $UI_cpack_sources_selected > 0
@@ -867,6 +863,10 @@ Section "-Core installation"
     ${If} $H3DPhysics_cpack_sources_selected > 0
       StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
         CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\Tower\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      ${If} $UI_cpack_sources_selected > 0
+        StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
+          CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\NewtonsCradle.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\NewtonsCradle\NewtonsCradle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      ${EndIf}
     ${EndIf}
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
@@ -1070,7 +1070,6 @@ Section "Uninstall"
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos1Done
     ;Delete Demos menu links
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cubemap.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Deformable Shape.lnk"
@@ -1080,23 +1079,21 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Flight.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Force Field.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Earth Shader.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Polka Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Haptic Layers.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Magnetic lines.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Plane.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Sound.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SpaceTennis.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Spring.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SuperShape.lnk"
     
-    StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +2
+    StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +3
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\OpacityMappedFoot.lnk"
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Segmented head.lnk"
         
     StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\UI Demo.lnk"
         
-    StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
+    StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +3
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Tower.lnk"
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\NewtonsCradle.lnk"
     
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\VHTK Demo.lnk"
@@ -1142,7 +1139,6 @@ Section "Uninstall"
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos2Done
     ;Delete Demos menu links
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Earth Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cubemap.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Deformable Shape.lnk"
@@ -1152,23 +1148,21 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Flight.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Force Field.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Earth Shader.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\GLSL Polka Shader.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Haptic Layers.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Magnetic lines.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Plane.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Sound.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SpaceTennis.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Spring.lnk"
-    Delete "$SMPROGRAMS\$MUI_TEMP\Demos\SuperShape.lnk"
     
-    StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +2
+    StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +3
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\OpacityMappedFoot.lnk"
-    
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Segmented head.lnk"
+        
     StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\UI Demo.lnk"
-    
-    StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
+        
+    StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +3
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Tower.lnk"
+      Delete "$SMPROGRAMS\$MUI_TEMP\Demos\NewtonsCradle.lnk"
     
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
       Delete "$SMPROGRAMS\$MUI_TEMP\Demos\VHTK Demo.lnk"

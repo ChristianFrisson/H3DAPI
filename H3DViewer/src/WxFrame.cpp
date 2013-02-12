@@ -1178,9 +1178,27 @@ bool WxFrame::loadFile( const string &filename) {
 		global_settings->x3dROUTESendsEvent->setValue( advancedMenu->IsChecked( FRAME_ROUTESENDSEVENTS ) );
 		// Set loadTexturesInThread
 		global_settings->loadTexturesInThread->setValue( advancedMenu->IsChecked( FRAME_LOADTEXTURESINTHREAD ) );
+		wxCommandEvent fake_event;
+		if( !renderMode->IsChecked( FRAME_RENDERMODE_DEFAULT ) ) {
+		  if( renderMode->IsChecked(FRAME_RENDERMODE_FILLED ) )
+				global_settings->renderMode->setValue( "FILLED" );
+			else if( renderMode->IsChecked(FRAME_RENDERMODE_WIREFRAME ) )
+				global_settings->renderMode->setValue( "WIREFRAME" );
+			else if( renderMode->IsChecked(FRAME_RENDERMODE_POINTS ) )
+				global_settings->renderMode->setValue( "POINTS" );
+		}
   } else {
 		advancedMenu->Check( FRAME_ROUTESENDSEVENTS, global_settings->x3dROUTESendsEvent->getValue() );
 		advancedMenu->Check( FRAME_LOADTEXTURESINTHREAD, global_settings->loadTexturesInThread->getValue() );
+		string global_settings_render_mode = global_settings->renderMode->getValue();
+		if( global_settings_render_mode == "DEFAULT" )
+			renderMode->Check( FRAME_RENDERMODE_DEFAULT, true );
+		else if( global_settings_render_mode == "FILLED" )
+			renderMode->Check( FRAME_RENDERMODE_FILLED, true );
+		else if( global_settings_render_mode == "WIREFRAME" )
+			renderMode->Check( FRAME_RENDERMODE_WIREFRAME, true );
+		else if( global_settings_render_mode == "POINTS" )
+			renderMode->Check( FRAME_RENDERMODE_POINTS, true );
 	}
 
   // Set CollisionOptions or update page.
