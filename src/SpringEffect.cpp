@@ -83,7 +83,8 @@ SpringEffect::SpringEffect( Inst< SFVec3f     > _position,
   escapeDistance->setValue( 0.01f );
   active->setValue( false, id );
   damping->setValue( 0 );
-  positionInterpolation->setValue ( 0 );
+	positionInterpolation->setValue( 1 );
+  
 }
 
 void SpringEffect::traverseSG( TraverseInfo &ti ) {

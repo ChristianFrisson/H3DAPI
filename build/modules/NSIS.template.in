@@ -828,48 +828,50 @@ Section "-Core installation"
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 @CPACK_NSIS_CREATE_ICONS@
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"'
+  
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 AddedH3DLoadDemosDone
     ;Create Demos folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Demos"
 
     ;Add Example shortcuts.
     ${If} $H3DAPI_cpack_sources_selected > 0
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Glass Shader.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_glass.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cubemap.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\CubeMap\CubeMap.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Deformable Shape.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DeformableShape\deform.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Depth map surface.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DepthMapSurface\depthMappedITS.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Dynamic.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DynamicTransform\dynamic.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Fish.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\fish\Kumanomi.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Flight.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\flight\flight.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\bin32\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Glass Shader.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_glass.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cubemap.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\CubeMap\CubeMap.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Deformable Shape.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DeformableShape\deform.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Depth map surface.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DepthMapSurface\depthMappedITS.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Dynamic.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DynamicTransform\dynamic.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Fish.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\fish\Kumanomi.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Flight.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\flight\flight.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $MedX3D_cpack_sources_selected > 0
       StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +3
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\OpacityMapVolumeStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Segmented head.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\SegmentedVolumeData.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\OpacityMapVolumeStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Segmented head.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\SegmentedVolumeData.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $UI_cpack_sources_selected > 0
       StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\UI\x3d\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\UI\x3d\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $H3DPhysics_cpack_sources_selected > 0
       StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\Tower\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\Tower\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       ${If} $UI_cpack_sources_selected > 0
         StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
-          CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\NewtonsCradle.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\NewtonsCradle\NewtonsCradle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+          CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\NewtonsCradle.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\NewtonsCradle\NewtonsCradle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       ${EndIf}
     ${EndIf}
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\bin32\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
 
   AddedH3DLoadDemosDone:
 
@@ -1068,6 +1070,7 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS@
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
+  Delete "$SMPROGRAMS\$MUI_TEMP\H3DViewer.lnk"
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos1Done
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
@@ -1137,6 +1140,7 @@ Section "Uninstall"
   StrCpy $MUI_TEMP "$START_MENU"
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
+  Delete "$SMPROGRAMS\$MUI_TEMP\H3DViewer.lnk"
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 RemovedH3DLoadDemos2Done
     ;Delete Demos menu links
     Delete "$SMPROGRAMS\$MUI_TEMP\Demos\Cg Glass Shader.lnk"
@@ -1217,7 +1221,7 @@ Section "Uninstall"
   Call un.DeleteEnvStr
 
 
-  Push $INSTDIR\bin32
+  Push $INSTDIR\@CPACK_EXTERNAL_BIN@
   StrCmp $DO_NOT_ADD_TO_PATH "1" doNotRemoveFromPath 0
     Call un.RemoveFromPath
     Push $INSTDIR\External\@CPACK_EXTERNAL_BIN@
@@ -1317,12 +1321,14 @@ inst:
   StrCpy $R4 "@CPACK_PACKAGE_VERSION_MAJOR@"
   StrCpy $R5 "@CPACK_PACKAGE_VERSION_MINOR@"
   StrCpy $R6 "@CPACK_PACKAGE_VERSION_PATCH@"
+  StrCpy $R7 "@CPACK_PACKAGE_NAME@"
   
   trypreviousversion:
-  
+  ClearErrors
   ReadRegStr $R0 SHCTX \
-  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
+  "Software\@CPACK_PACKAGE_VENDOR@\$R7 $R4.$R5.$R6" \
   ""
+
   IfErrors 0 alreadyinstalled
     IntCmp $R6 0 +3 +3 0
     IntOp $R6 $R6 - 1
@@ -1338,6 +1344,13 @@ inst:
     StrCpy $R5 "9"
     StrCpy $R6 "9"
     Goto trypreviousversion
+  
+  StrCmp "@CPACK_PACKAGE_NAME@" $R7 0 +6
+    StrCpy $R4 "@CPACK_PACKAGE_VERSION_MAJOR@"
+    StrCpy $R5 "@CPACK_PACKAGE_VERSION_MINOR@"
+    StrCpy $R6 "@CPACK_PACKAGE_VERSION_PATCH@"
+    StrCpy $R7 "H3DAPI"
+    Goto trypreviousversion
 
   IfFileExists $INSTDIR 0 checkH3DROOT
     MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
@@ -1350,8 +1363,9 @@ inst:
     Abort
 
   alreadyinstalled:
-  StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6"
-  StrCmp "@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" "H3DAPI 2.0.0" 0 +2
+  StrCpy $7 $R7
+  StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\$7 $R4.$R5.$R6"
+  StrCmp "$7 $R4.$R5.$R6" "H3DAPI 2.0.0" 0 +2
     StrCpy $R7 "Software\Microsoft\Windows\CurrentVersion\Uninstall\H3D"
   
   ReadRegStr $R1 SHCTX \
@@ -1381,7 +1395,7 @@ inst:
   StrCmp $R1 "" alreadyinstalledchecked
 
   ReadRegStr $R2 SHCTX \
-  "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_NAME@ $R4.$R5.$R6" \
+  "Software\@CPACK_PACKAGE_VENDOR@\$7 $R4.$R5.$R6" \
   ""
 
   StrCpy $R3 $INSTDIR
