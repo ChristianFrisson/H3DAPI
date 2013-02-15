@@ -1,4 +1,6 @@
 Changes for version 2.2:
+- Added functionality for more convenient Import/Export use of Inlined files.
+- Added a node clone function. Exposed in python.
 - Some DynamicTransform now only updates when value actually change.
 - MField::insert() functions fixes to take const_iterator.
 - Fix so that ImportLibrary supports specification of several optional paths to
@@ -98,9 +100,10 @@ CoordinateDeformer - deviceAlgorithm
 FakeHapticsDevice - deviceName
 ForceField - torque
 GlobalSettings - x3dROUTESendsEvent, loadTexturesInThread, renderMode
-GraphicsOptions - useDefaultShadows, defaultShadowDarkness, preferVertexBufferObject
+GraphicsOptions - useDefaultShadows, defaultShadowDarkness, preferVertexBufferObject, defaultShadowGeometryAlgorithm
 H3DHapticsDevice - forceLimit, torqueLimit
 H3DWindowNode - clipDistances
+Inline - importMode, traverseOn
 NavigationInfo - nearVisibilityLimit
 OrthoViewpoint - retainAspectRatio
 PhantomDevice - motorTemperatures
@@ -109,7 +112,7 @@ RenderProperties - alphaFunc, alphaFuncValue, blendFuncSrcFactorRGB,
                    blendFuncDstFactorAlpha, blendEquationRGB,
                    blendEquationAlpha, blendColor
 RuspiniRenderer - alwaysFollowSurface
-SpringEffect - damping, positionInterpolation
+SpringEffect - damping, positionInterpolation, interpolatedPosition
 ToggleGroup - hapticsOnDevice
 TransformInfo - outputGLMatrices, glModelViewMatrix, glModelViewMatrixInverse,
                 glProjectionMatrix, glProjectionMatrixInverse
@@ -130,6 +133,7 @@ New python functionality:
   TimerCallback.removeCallback
   Field.getAccessType
   MField.size
+  Node.clone
 - Python doxygen documentation added.
 - New constructor for Matrix4f/4d to construct matrix given
 translation, rotation and scale.
