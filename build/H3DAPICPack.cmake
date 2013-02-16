@@ -366,7 +366,7 @@ IF( GENERATE_CPACK_PROJECT )
                                                ${PYTHON_INSTALL_COMMAND_3}
                                                " A comment \\n  uninstall_python_no:\\n" )
       SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
-                                              " Check if H3DAPI selected for installation\\n IntOp $0 $H3DAPI_cpack_sources_selected | H3DAPI_cpack_runtime_selected\\n"
+                                              " Check if H3DAPI selected for installation\\n IntOp $0 $H3DAPI_cpack_sources_selected | $H3DAPI_cpack_runtime_selected\\n"
                                               " Check if H3DAPI selected for installation\\n \\\${If} $0 > 0\\n"
                                              ${PYTHON_INSTALL_COMMAND_1}
                                              " Check if python is installed\\n  StrCmp $0 \\\"\\\" 0 install_python_no\\n"
@@ -420,6 +420,52 @@ IF( GENERATE_CPACK_PROJECT )
                                                  "A comment\\n \\\${EndIf}\\n" )
       ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     ENDIF( OpenAlInstallExe )
+	
+	SET( CMakeInstallExe "" CACHE FILEPATH "Needs to be set to add CMake installation to the package." )
+    MARK_AS_ADVANCED(CMakeInstallExe)
+    IF( CMakeInstallExe )
+      SET( CMAKE_VERSION_TO_CHECK "" )
+      STRING( REGEX MATCH [0123456789]+\\.[0123456789]+\\.[0123456789]+\\.[0123456789]+ CMAKE_VERSION_TO_CHECK ${CMakeInstallExe} )
+      GET_FILENAME_COMPONENT( CMAKE_INSTALL_EXE_FILE_NAME ${CMakeInstallExe} NAME )
+      STRING( REPLACE "/" "\\\\" TEMP_CMakeInstallExe ${CMakeInstallExe} )
+      SET( CMAKE_INSTALL_EXE_INSTALL_COMMAND_2 " Extract CMake installer\\n  File \\\"${TEMP_CMakeInstallExe}\\\"\\n" )
+      SET( CMAKE_INSTALL_EXE_INSTALL_COMMAND_3 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
+                                       " Delete CMake installer\\n  Delete \\\"$INSTDIR\\\\${CMAKE_INSTALL_EXE_FILE_NAME}\\\"\\n\\n" )
+      
+      # could not find a way to uninstall using the exe command line, no idea how to do that yet.
+      #SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+      #                                         " Code to install CMake\\n  ReadRegStr $0 HKLM \\\"SOFTWARE\\\\Kitware\\\\CMake ${CMAKE_VERSION_TO_CHECK}\\\" \\\"\\\"\\n"
+      #                                         " Check if CMake is installed\\n  StrCmp $0 \\\"\\\" uninstall_cmake_no 0\\n"
+      #                                         " Check if uninstall CMake \\n  MessageBox MB_YESNO \\\"Do you want to uninstall CMake? It is recommended if no other builds on your system use CMake for configuration.\\\" IDYES uninstall_cmake_yes IDNO uninstall_cmake_no\\n"
+      #                                         " A comment \\n  uninstall_cmake_yes:\\n"
+      #                                         ${CMAKE_INSTALL_EXE_INSTALL_COMMAND_2}
+      #                                         " Execute CMake installer, wait for completion\\n  ExecWait '\\\"$INSTDIR\\\\${CMAKE_INSTALL_EXE_FILE_NAME}\\\" /S'\\n"
+      #                                         ${CMAKE_INSTALL_EXE_INSTALL_COMMAND_3}
+      #                                         " A comment \\n  uninstall_cmake_no:\\n" )
+      SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+                                             " Check if any sources selected for installation\\n IntOp $0 $H3DUtil_cpack_sources_selected | $HAPI_cpack_sources_selected\\n"
+                                             " Because of dependencies check only H3DUtil and HAPI sources\\n \\\${If} $0 > 0\\n"
+                                             " CMake major version\\n  StrCpy \\\$R0 \\\"-1\\\"\\n"
+                                             " A comment\\n  trypreviouscmakeversion:\\n"
+                                             " CMake reg key\\n  IntOp \\\$R0 \\\$R0 + 1\\n"
+                                             " A comment\\n  ClearErrors\\n"
+                                             " Read registry\\n  EnumRegKey $R1 SHCTX \\\"Software\\\\Kitware\\\" \\\"\\\$R0\\\"\\n"
+                                             " Check if string found\\n  IfErrors install_cmake 0\\n"
+                                             " Check if string empty\\n  StrCmp $R1 \\\"\\\" install_cmake 0\\n"
+                                             " Copy first five\\n  StrCpy $R1 $R1 5\\n"
+                                             " Check if string starts with CMake\\n  StrCmp $R1 \\\"CMake\\\" install_cmake_no trypreviouscmakeversion\\n"
+                                             " A comment \\n install_cmake:\\n"
+                                             ${CMAKE_INSTALL_EXE_INSTALL_COMMAND_2}
+                                             "A comment \\n    ClearErrors\\n"
+                                             " Execute cmake installer silent, wait for completion\\n  ExecWait '\\\"$INSTDIR\\\\${CMAKE_INSTALL_EXE_FILE_NAME}\\\" /S'\\n"
+                                             "A comment \\n Goto cmake_end_install\\n"
+                                             "A comment \\n cmake_install_not_hidden:\\n"
+                                             " Execute cmake installer, wait for completion\\n  ExecWait '\\\"$INSTDIR\\\\${CMAKE_INSTALL_EXE_FILE_NAME}\\\"'\\n"
+                                             " A comment \\n  cmake_end_install:\\n"
+                                             ${CMAKE_INSTALL_EXE_INSTALL_COMMAND_3}
+                                             "A comment \\n  install_cmake_no:\\n"
+                                             "A comment \\n \\\${EndIf}\\n" )
+    ENDIF( CMakeInstallExe )
 
     # Modify path in the the NSIS template.
     SET( CPACK_NSIS_MODIFY_PATH "ON" )

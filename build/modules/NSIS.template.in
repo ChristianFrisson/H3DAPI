@@ -828,7 +828,9 @@ Section "-Core installation"
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 @CPACK_NSIS_CREATE_ICONS@
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"'
+  ${If} $H3DAPI_cpack_runtime > 0
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"'
+  ${EndIf}
   
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 AddedH3DLoadDemosDone
     ;Create Demos folder.
