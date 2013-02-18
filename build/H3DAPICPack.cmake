@@ -579,10 +579,17 @@ IF( GENERATE_CPACK_PROJECT )
            COMPONENT H3DAPI_cpack_sources
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
 
-  INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../lib
-           DESTINATION H3DAPI
-           COMPONENT H3DAPI_cpack_sources
+  IF( EXISTS ${H3DAPI_SOURCE_DIR}/../lib/doc )
+    INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../lib/doc
+           DESTINATION H3DAPI/lib
+           COMPONENT H3DAPI_cpack_headers
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
+  ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../lib/doc )
+
+  INSTALL( FILES ${H3DAPI_SOURCE_DIR}/../lib/H3DInterface.py
+                 ${H3DAPI_SOURCE_DIR}/../lib/H3DUtils.py
+           DESTINATION H3DAPI/lib
+           COMPONENT H3DAPI_cpack_sources )
 
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/common
            DESTINATION H3DAPI/settings

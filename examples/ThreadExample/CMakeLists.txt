@@ -95,6 +95,10 @@ TARGET_LINK_LIBRARIES( ThreadExample ${requiredLibs} ${optionalLibs} )
 # Debug versions have _d postfix.
 SET_TARGET_PROPERTIES( ThreadExample PROPERTIES DEBUG_POSTFIX "_d" )
 
+IF(UNIX)
+  SET_TARGET_PROPERTIES( ThreadExample PROPERTIES OUTPUT_NAME threadexample )
+ENDIF(UNIX)
+
 IF(MSVC)
   # Set compile and link properties for projects.
   SET( ThreadExample_COMPILE_FLAGS "" )
