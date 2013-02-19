@@ -1,4 +1,4 @@
-Changes for version 2.2:
+Changes for version 2.2.0:
 - Added functionality for more convenient Import/Export use of Inlined files.
 - Added a node clone function. Exposed in python.
 - Some DynamicTransform now only updates when value actually change.
