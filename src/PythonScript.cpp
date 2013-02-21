@@ -226,7 +226,8 @@ PythonScript::PythonScript( Inst< MFString > _url,
 
   // Py_Initialize really should be done in the DLL loader function:
   if ( !Py_IsInitialized() ) {
-    Py_Initialize();  
+    Py_Initialize();
+    PyEval_InitThreads();
     if( argv )
       PySys_SetArgv(argc,argv);
     disallowMainThreadPython();
