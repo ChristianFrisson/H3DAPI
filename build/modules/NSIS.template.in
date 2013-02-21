@@ -833,8 +833,14 @@ Section "-Core installation"
   ${EndIf}
   
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 AddedH3DLoadDemosDone
+    IntOp $0 $H3DAPI_cpack_sources_selected | $MedX3D_cpack_sources_selected
+    IntOp $0 $0 | $UI_cpack_sources_selected
+    IntOp $0 $0 | $H3DPhysics_cpack_sources_selected
+    
     ;Create Demos folder.
-    CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Demos"
+    ${If} $0 > 0
+      CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Demos"
+    ${EndIf}
 
     ;Add Example shortcuts.
     ${If} $H3DAPI_cpack_sources_selected > 0
@@ -881,21 +887,21 @@ Section "-Core installation"
     ;Create Docs folder.
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\Docs"
     ; Add reference guide and manuals
-    ${If} $H3DAPI_cpack_sources_selected > 0
+    ${If} $H3DAPI_cpack_headers_selected > 0
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\C++ Reference Guide.lnk" "$INSTDIR\doc\H3DAPI\html\index.html"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\H3D Python Reference Guide.lnk" "$INSTDIR\H3DAPI\lib\doc\html\index.html"
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\H3D API Manual.lnk" "$INSTDIR\doc\H3D API Manual.pdf"
-    ${ElseIf} $HAPI_cpack_sources_selected > 0
+    ${ElseIf} $HAPI_cpack_headers_selected > 0
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\C++ Reference Guide.lnk" "$INSTDIR\doc\HAPI\html\index.html"
-    ${ElseIf} $H3DUtil_cpack_sources_selected > 0
+    ${ElseIf} $H3DUtil_cpack_headers_selected > 0
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\C++ Reference Guide.lnk" "$INSTDIR\doc\H3DUtil\html\index.html"
     ${EndIf}
-    ${If} $HAPI_cpack_sources_selected > 0
+    ${If} $HAPI_cpack_headers_selected > 0
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\HAPI Manual.lnk" "$INSTDIR\doc\HAPI Manual.pdf"
     ${EndIf}
   doc_links_added:
   
-  ${If} $H3DAPI_cpack_sources_selected > 0
+  ${If} $H3DAPI_cpack_runtime_selected > 0
     StrCmp "@CPACK_ADD_H3DSETTINGS_LINKS@" "ON" 0 +4
       ; Add link to settingsGUI.exe
       SetOutPath $INSTDIR\H3DAPI\settings

@@ -514,6 +514,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindAudiofile.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindDCMTK.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindDirectShow.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindDirectX.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFFmpeg.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFontConfig.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFreeImage.cmake
@@ -593,21 +594,24 @@ IF( GENERATE_CPACK_PROJECT )
 
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/common
            DESTINATION H3DAPI/settings
-           COMPONENT H3DAPI_cpack_sources
+           COMPONENT H3DAPI_cpack_runtime
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
 
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/current
            DESTINATION H3DAPI/settings
-           COMPONENT H3DAPI_cpack_sources
+           COMPONENT H3DAPI_cpack_runtime
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
 
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/display
            DESTINATION H3DAPI/settings
-           COMPONENT H3DAPI_cpack_sources
+           COMPONENT H3DAPI_cpack_runtime
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
 
+  INSTALL( FILES ${H3DAPI_SOURCE_DIR}/../settings/h3dload.ini
+           DESTINATION H3DAPI/settings
+           COMPONENT H3DAPI_cpack_runtime )
+
   INSTALL( FILES ${H3DAPI_SOURCE_DIR}/../settings/dist.py
-                 ${H3DAPI_SOURCE_DIR}/../settings/h3dload.ini
                  ${H3DAPI_SOURCE_DIR}/../settings/SettingsGUI.py
            DESTINATION H3DAPI/settings
            COMPONENT H3DAPI_cpack_sources )
@@ -615,14 +619,14 @@ IF( GENERATE_CPACK_PROJECT )
   IF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/dist )
     INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/dist/
            DESTINATION H3DAPI/settings
-           COMPONENT H3DAPI_cpack_sources
+           COMPONENT H3DAPI_cpack_runtime
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
   ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/dist )
   
   IF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/icons )
     INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../settings/icons
            DESTINATION H3DAPI/settings
-           COMPONENT H3DAPI_cpack_sources
+           COMPONENT H3DAPI_cpack_runtime
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
   ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../settings/icons )
 
