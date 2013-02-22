@@ -79,14 +79,15 @@ namespace H3D {
     typedef TypedMFNode< H3DOptionNode > MFOptionNode;
 
     /// Construtor.
-    GlobalSettings( Inst< SFSetBind >  _set_bind        = 0,
-                    Inst< SFNode    >  _metadata        = 0,
-                    Inst< SFTime    >  _bindTime        = 0,
-                    Inst< SFBool    >  _isBound         = 0,
-                    Inst< MFOptionNode >  _options         = 0,
-                    Inst< SFBool    >  _x3dROUTESendsEvent = 0,
-                    Inst< SFBool    >  _loadTexturesInThread = 0,
-                    Inst< SFString  >  _renderMode      = 0 );
+    GlobalSettings( Inst< SFSetBind    > _set_bind             = 0,
+                    Inst< SFNode       > _metadata             = 0,
+                    Inst< SFTime       > _bindTime             = 0,
+                    Inst< SFBool       > _isBound              = 0,
+                    Inst< MFOptionNode > _options           = 0,
+                    Inst< SFBool       > _x3dROUTESendsEvent   = 0,
+                    Inst< SFBool       > _loadTexturesInThread = 0,
+                    Inst< SFString     > _renderMode           = 0,
+                    Inst< SFBool       > _multiThreadedPython  = 0);
     
     /// Destructor.
     ~GlobalSettings() {
@@ -159,6 +160,20 @@ namespace H3D {
     /// <b>Default value: </b> "DEFAULT"
     auto_ptr< SFString > renderMode;
 
+    /// If true then the embedded Python interpreter is initialized to support
+    /// multi-threaded use of the Python C API by calling PyEval_InitThreads().
+    ///
+    /// This is not required to use threads created in a Python script, but is
+    /// required if threads other than the main thread, not created by Python,
+    /// will call the Python C API.
+    ///
+    /// There is a small overhead if enabled, and this option should be disabled
+    /// for most applications.
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> false
+    auto_ptr< SFBool > multiThreadedPython;
+    
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 

@@ -37,6 +37,7 @@
 #include <H3D/MFNode.h>
 #include <H3D/PythonMethods.h>
 #include <H3D/ResourceResolver.h>
+#include <H3D/GlobalSettings.h>
 
 #ifdef HAVE_PYTHON
 
@@ -227,7 +228,16 @@ PythonScript::PythonScript( Inst< MFString > _url,
   // Py_Initialize really should be done in the DLL loader function:
   if ( !Py_IsInitialized() ) {
     Py_Initialize();
-    PyEval_InitThreads();
+    
+    // Decide if we should initialize multi-threaded C API usage
+    bool multi_threaded= false;
+    if ( GlobalSettings* gs= GlobalSettings::getActive() ) {
+      multi_threaded= gs->multiThreadedPython->getValue();
+    }
+    if ( multi_threaded ) {
+      PyEval_InitThreads();
+    }
+    
     if( argv )
       PySys_SetArgv(argc,argv);
     disallowMainThreadPython();

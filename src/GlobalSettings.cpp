@@ -46,25 +46,27 @@ namespace GlobalSettingsInternals {
   FIELDDB_ELEMENT( GlobalSettings, x3dROUTESendsEvent, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GlobalSettings, loadTexturesInThread, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GlobalSettings, renderMode, INPUT_OUTPUT );
-
+  FIELDDB_ELEMENT( GlobalSettings, multiThreadedPython, INPUT_OUTPUT );
 }
 
 
 GlobalSettings::GlobalSettings( 
-                       Inst<   SFSetBind >  _set_bind,
-                       Inst< SFNode    >  _metadata,
-                       Inst<  SFTime    >  _bindTime,
-                       Inst<  SFBool    >  _isBound,
-                       Inst< MFOptionNode >  _options,
-                       Inst< SFBool     > _x3dROUTESendsEvent,
-                       Inst< SFBool     > _loadTexturesInThread,
-                       Inst< SFString   > _renderMode ):
+                       Inst< SFSetBind    > _set_bind,
+                       Inst< SFNode       > _metadata,
+                       Inst< SFTime       > _bindTime,
+                       Inst< SFBool       > _isBound,
+                       Inst< MFOptionNode > _options,
+                       Inst< SFBool       > _x3dROUTESendsEvent,
+                       Inst< SFBool       > _loadTexturesInThread,
+                       Inst< SFString     > _renderMode,
+                       Inst< SFBool       > _multiThreadedPython ):
   X3DBindableNode( "GlobalSettings", _set_bind, _metadata, 
                    _bindTime, _isBound ),
   options        ( _options ),
   x3dROUTESendsEvent( _x3dROUTESendsEvent ),
   loadTexturesInThread( _loadTexturesInThread ),
-  renderMode( _renderMode )  {
+  renderMode( _renderMode ),
+  multiThreadedPython ( _multiThreadedPython ) {
 
   type_name = "GlobalSettings";
   database.initFields( this );
@@ -79,4 +81,5 @@ GlobalSettings::GlobalSettings(
 
   renderMode->setValue( "DEFAULT" );
  
+  multiThreadedPython->setValue ( false );
 }
