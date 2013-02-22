@@ -512,6 +512,7 @@ IF( GENERATE_CPACK_PROJECT )
 
   INSTALL( FILES ${H3DAPI_SOURCE_DIR}/modules/Find3DXWARE.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindAudiofile.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindChai3D.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindDCMTK.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindDirectShow.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindDirectX.cmake
