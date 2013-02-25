@@ -450,7 +450,30 @@ ENDIF( DCMTK_ofstd_DEBUG_LIBRARY AND
        DCMTK_dcmimgle_DEBUG_LIBRARY AND
        DCMTK_dcmimage_DEBUG_LIBRARY AND
        DCMTK_dcmjpeg_DEBUG_LIBRARY )
-IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
+
+SET( DCMTK_Config_file_name "dummy" )
+IF( WIN32 )
+  SET( DCMTK_Config_file_name "cfwin32" )
+ELSE( WIN32 )
+  SET( DCMTK_Config_file_name "cfunix" )
+ENDIF( WIN32 )
+
+SET( HAVE_TIFF_OR_NO_TIFF_NEEDED 1 )
+IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS AND EXISTS ${DCMTK_config_INCLUDE_DIR}/dcmtk/config/${DCMTK_Config_file_name}.h )
+  
+  SET( regex_to_find "#define[ ]+WITH_LIBTIFF" )
+  FILE( STRINGS ${DCMTK_config_INCLUDE_DIR}/dcmtk/config/${DCMTK_Config_file_name}.h list_of_defines REGEX ${regex_to_find} )
+  LIST( LENGTH list_of_defines list_of_defines_length )
+  IF( list_of_defines_length )
+    # Dicom is compiled with tiff support. Find libtiff as well.
+    FIND_PACKAGE( TIFF )
+    IF(NOT TIFF_FOUND)
+      SET( HAVE_TIFF_OR_NO_TIFF_NEEDED 0 )
+    ENDIF(NOT TIFF_FOUND)
+  ENDIF( list_of_defines_length )
+ENDIF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS AND EXISTS ${DCMTK_config_INCLUDE_DIR}/dcmtk/config/${DCMTK_Config_file_name}.h )
+       
+IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS AND HAVE_TIFF_OR_NO_TIFF_NEEDED )
   SET( DCMTK_FOUND "YES" )
   SET( DCMTK_INCLUDE_DIR
     ${DCMTK_config_INCLUDE_DIR}
@@ -530,13 +553,21 @@ IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
   IF( WIN32 )
     SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} netapi32 ws2_32 )
   ENDIF( WIN32 )
+  
+  IF( TIFF_FOUND )
+    SET( DCMTK_INCLUDE_DIR ${DCMTK_INCLUDE_DIR} ${TIFF_INCLUDE_DIR} )
+    SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} ${TIFF_LIBRARIES} )
+  ENDIF( TIFF_FOUND )
 
-ENDIF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS )
+ENDIF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS AND HAVE_TIFF_OR_NO_TIFF_NEEDED )
 
 # Report the results.
 IF(NOT DCMTK_FOUND)
   SET( DCMTK_DIR_MESSAGE
        "DCMTK was not found. Make sure all cmake variables with prefix DCMTK_ set, see each one for description.")
+  IF( NOT HAVE_TIFF_OR_NO_TIFF_NEEDED )
+    SET( DCMTK_DIR_MESSAGE "${DCMTK_DIR_MESSAGE} Also make sure that TIFF is found." )
+  ENDIF( NOT HAVE_TIFF_OR_NO_TIFF_NEEDED )
   IF(DCMTK_FIND_REQUIRED)
     SET( DCMTK_DIR_MESSAGE
        "${DCMTK_DIR_MESSAGE} You need the Dicom Toolkit libraries and headers to compile.")
