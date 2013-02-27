@@ -190,13 +190,6 @@ IF(WIN32)
   SET(requiredLibs ${requiredLibs} winmm.lib DelayImp.lib )
 ENDIF(WIN32)
 
-# Find pthread library. Required to compile.
-FIND_PACKAGE(PTHREAD REQUIRED)
-IF(PTHREAD_FOUND)
-  INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${PTHREAD_LIBRARIES} )
-ENDIF(PTHREAD_FOUND)
-
 # Find OpenGL library. Required to compile.
 FIND_PACKAGE(OpenGL REQUIRED)
 IF(OPENGL_FOUND)

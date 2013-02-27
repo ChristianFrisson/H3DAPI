@@ -38,6 +38,11 @@ SET(requiredLibs)
 # Where to find modules used to find libraries.
 SET(CMAKE_MODULE_PATH "${ThreadExample_SOURCE_DIR}/../../build/modules/")
 
+IF( H3D_USE_DEPENDENCIES_ONLY )
+  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
+  INCLUDE_DIRECTORIES( ${EXTERNAL_INCLUDE_DIR} ) 
+ENDIF( H3D_USE_DEPENDENCIES_ONLY )
+
 IF( TARGET H3DUtil )
   INCLUDE_DIRECTORIES( ${H3DUTIL_INCLUDE_DIR} ) 
   SET( requiredLibs ${requiredLibs} H3DUtil )
@@ -76,14 +81,6 @@ ELSE( TARGET H3DAPI )
     SET(requiredLibs ${requiredLibs} ${H3DAPI_LIBRARIES} )
   ENDIF(H3DAPI_FOUND)
 ENDIF( TARGET H3DAPI )
-
-IF( H3D_USE_DEPENDENCIES_ONLY )
-  # The variables set here must be set by the CMakeLists.txt that sets H3D_USE_DEPENDENCIES_ONLY to true.
-  IF(PTHREAD_FOUND)
-    INCLUDE_DIRECTORIES( ${PTHREAD_INCLUDE_DIR} ) 
-  ENDIF(PTHREAD_FOUND)
-  INCLUDE_DIRECTORIES( ${EXTERNAL_INCLUDE_DIR} ) 
-ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
 # Build files created.
 ADD_LIBRARY(ThreadExample SHARED ${ThreadExample_SOURCE_DIR}/ThreadExample.h

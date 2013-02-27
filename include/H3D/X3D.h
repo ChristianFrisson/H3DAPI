@@ -171,7 +171,8 @@ namespace H3D {
     /// use in the stl file for the solid. 
     H3DAPI_API void writeGeometryAsSTL( ostream &os,
                                         X3DGeometryNode *geom,
-                                        const string &name = "" );
+                                        const string &name = "",
+                                        bool use_binary_format = false );
 
     /// Help function for writeNodeAsX3D and writeNodeAsVRML
     /// output_type = 0 means xml output, 1 means vrml output.
