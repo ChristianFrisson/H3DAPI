@@ -98,7 +98,7 @@ void FFmpegDecoder::cleanupFFmpeg(void)
     // Close the video file
 
 		if( pFormatCtx != NULL ){
-#if LIBAVCODEC_VERSION_MAJOR < 53
+#if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
 		av_close_input_file(pFormatCtx);
 #else
     avformat_close_input(&pFormatCtx);
@@ -156,18 +156,22 @@ bool FFmpegDecoder::testClip( const string &url ) {
 #endif
   return 0;
 
-#if LIBAVCODEC_VERSION_MAJOR < 53
+#if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
   if(av_find_stream_info(pFormatCtx)<0)
 #else
   if(avformat_find_stream_info(pFormatCtx,NULL)<0)
 #endif
   return 0;
- 
+
 #if LIBAVCODEC_VERSION_MAJOR < 53
-  dump_format(pFormatCtx, 0, url.c_str(), 0);
-	av_close_input_file(pFormatCtx);
+	dump_format(pFormatCtx, 0, url.c_str(), 0);
 #else
   av_dump_format(pFormatCtx, 0, url.c_str(), 0);
+#endif
+ 
+#if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
+	av_close_input_file(pFormatCtx);
+#else
 	avformat_close_input(&pFormatCtx);
 #endif
   return 1;
@@ -177,10 +181,18 @@ bool FFmpegDecoder::testClip( const string &url ) {
 bool FFmpegDecoder::loadClip( const string &url ) {
   status = STOPPED;
 
+#if LIBAVCODEC_VERSION_MAJOR < 53
   if(av_open_input_file(&pFormatCtx, url.c_str(), NULL, 0, NULL)!=0)
+#else
+  if(avformat_open_input(&pFormatCtx, url.c_str(), NULL, NULL) != 0 )
+#endif
   return -1;
 
+#if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
   if(av_find_stream_info(pFormatCtx)<0)
+#else
+  if(avformat_find_stream_info(pFormatCtx,NULL)<0)
+#endif
   return -1;
 
   // Dump information about file onto standard error
@@ -228,7 +240,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
     return -1; // Codec not found
   }
   // Open codec
-#if LIBAVCODEC_VERSION_MAJOR < 53
+#if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
   if(avcodec_open(pCodecCtx, pCodec)<0)
 #else
   if(avcodec_open2(pCodecCtx, pCodec, NULL)<0)
@@ -241,7 +253,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
     fprintf(stderr, "Unsupported codec!\n");
     return -1;
   }
-#if LIBAVCODEC_VERSION_MAJOR < 53
+#if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
   avcodec_open(aCodecCtx, aCodec);
 #else
   avcodec_open2(aCodecCtx, aCodec, NULL);

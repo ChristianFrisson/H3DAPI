@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Group>
-  <ImportLibrary url='"../../../bin/ThreadExample" "libthreadexample.so"' />
+  <ImportLibrary url='"../../../bin32/ThreadExample" "../../../bin64/ThreadExample" "libthreadexample.so"' />
   <Shape>
     <Appearance>
       <Material/>
