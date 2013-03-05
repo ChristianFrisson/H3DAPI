@@ -92,7 +92,8 @@ X3DGeometryNode::X3DGeometryNode(
   use_culling( false ),
   allow_culling( true ),
   draw_debug_options( true ),
-  cull_face( GL_BACK ) {
+  cull_face( GL_BACK ),
+	print_negative_scaling_warning( true ) {
 
   type_name = "X3DGeometryNode";
   
@@ -580,13 +581,16 @@ void X3DGeometryNode::createAndAddHapticShapes(
     }
   }
 
-  Matrix3f m3 = ti.getAccForwardMatrix().getScaleRotationPart();
-  if( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) < 0 ) {
-    Console(3) << "Warning: A parent transform node to the X3DGeometryNode "
-               << getName() << " contains a negative scaling coefficient. "
-               << " Haptics will most likely not be rendered correctly."
-               << endl;
-  }
+	if( print_negative_scaling_warning ) {
+		Matrix3f m3 = ti.getAccForwardMatrix().getScaleRotationPart();
+		if( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) < 0 ) {
+			Console(3) << "Warning: A parent transform node to the X3DGeometryNode "
+								 << getName() << " contains a negative scaling coefficient. "
+								 << " Haptics will most likely not be rendered correctly."
+								 << endl;
+			print_negative_scaling_warning = false;
+		}
+	}
   if( tris.size() > 0 )  {
     // Increase ref-count to have cleanupfunction decrease
     // it when the HapticTriangleSet is destructed.

@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
 
     ofstream os( out_file.c_str() );
     if( !os.is_open() )
-      return 0;
+      return 1;
 
     os << "/// \\file " << out_file << endl
        << "/// \\brief Extra page listing all nodes and fields." << endl

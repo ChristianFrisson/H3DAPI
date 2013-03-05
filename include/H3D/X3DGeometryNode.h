@@ -351,6 +351,9 @@ namespace H3D {
     GLenum cull_face;
     friend class H3DHapticsDevice;
 
+		// Variable used to indicate if warning is printed.
+		bool print_negative_scaling_warning;
+
   };
 }
 

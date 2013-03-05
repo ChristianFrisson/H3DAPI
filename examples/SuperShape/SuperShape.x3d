@@ -10,7 +10,7 @@
     uniformScalingOnly="true" active="true">
       <Shape>
         <Appearance>
-          <Material diffuseColor="0.7 1 0.7"/>
+          <Material DEF="MAT" diffuseColor="0.7 1 0.7"/>
           <SmoothSurface />
         </Appearance>
         <SuperShape DEF="SS" resolution="128"
@@ -20,5 +20,13 @@
                     ss2_n1="1" ss2_n2="1" ss2_n3="1"  />
       </Shape>
     </FitToBoxTransform>
+    
+    <PROGRAM_SETTING node="SS" field="ss1_m" name="ss1_m" section="SuperShape node parameters" />
+    <PROGRAM_SETTING node="SS" field="ss1_a" name="ss1_a" section="SuperShape node parameters" />
+    <PROGRAM_SETTING node="SS" field="ss1_b" name="ss1_b" section="SuperShape node parameters" />
+    <PROGRAM_SETTING node="SS" field="resolution" name="resolution" section="SuperShape node parameters" />
+    
+    <PROGRAM_SETTING node="MAT" field="diffuseColor" name="diffuseColor" section="SuperShape Material" />
+    <PROGRAM_SETTING node="MAT" field="emissiveColor" name="emissiveColor" section="SuperShape Material" />
   </Scene>
 </X3D>

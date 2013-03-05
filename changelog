@@ -125,11 +125,11 @@ New python functionality:
 - Copy constructors to H3DInterface.Vec classes.
 - new python functions:
   throwQuitAPIException
-  getTopLevelFields
   createNode
   getNrHapticsDevices
   getHapticsDevice
   getNamedNode
+  TimerCallback.addCallback
   TimerCallback.removeCallback
   Field.getAccessType
   MField.size

@@ -57,7 +57,8 @@
 /// in your Python file.
 ///
 /// \section H3DInterfaceModule Content of H3DInterface module
-/// The things included in the H3DInterface Python module are:
+/// In the H3DInterface Python module are ( for more information about
+/// method arguments see the H3DInterface python module doxygen documentation ):
 ///
 /// Global fields 
 /// - time - Python access to Scene::time, which is the current time updated
@@ -99,7 +100,11 @@
 ///   - resolverURLAsFile( file )
 ///   - resolverURLAsFolder( file )
 /// - Other functions - various other functions
-///   - throwQuitAPIException - Can be used to quit H3DLoad.
+///   - throwQuitAPIException() - Can be used to quit H3DLoad.
+///   - createNode( node_type ) - Create a node with a type name given by a string argument.
+///   - getNrHapticsDevices()
+///   - getHapticsDevice( index ) - Get haptics device using index.
+///   - getNamedNode( def_name ) - Get a reference to an existing node using its DEFed name.
 ///
 /// Types 
 /// - X3D field types - The field types included are: 
@@ -132,12 +137,17 @@
 ///   - back() - returns the last element 
 ///   - clear() - removes all elements 
 ///   - erase(element) - removes the first occurence of element 
+///   - size()
 /// - TypedField - used for fields where you define the type of all the routes
 ///   to it 
 /// - AutoUpdate - used if you want to add AutoUpdate capabilities to a field,
 ///   i.e. make it update its value as soon as it receives an event
 /// - PeriodicUpdate - used if you want to add PeriodicUpdate capabilities to
 ///   a field, i.e. make it update its value once per scene-graph loop.
+///   getAccessType
+///   TimerCallback functions - Functions for the specific TimerCallback field.
+///   - addCallback - add a callback to be executed at a specific time.
+///   - removeCallback - remove a previously added callback, before it is executed.
 ///
 /// - X3D Types - The types included are:
 ///   - Matrix3d, Matrix3f, Matrix4d, Matrix4f, Node, Quaternion,
@@ -171,6 +181,7 @@
 ///   - getField( name )
 ///   - getName()
 ///   - getTypeName()
+///   - clone(deep_copy)
 /// - Quaternion methods.
 ///   - %toEulerAngles() - returns the euler angles (yaw, pitch, roll) in
 ///     a Vec3f/d.
