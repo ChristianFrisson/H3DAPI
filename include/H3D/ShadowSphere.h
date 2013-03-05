@@ -32,6 +32,7 @@
 #include <H3D/H3DShadowObjectNode.h>
 #include <H3D/DirectionalLight.h>
 #include <H3D/PointLight.h>
+#include <H3D/SFInt32.h>
 
 namespace H3D {
 
@@ -55,10 +56,11 @@ namespace H3D {
     /// Constructor.
     ShadowSphere( Inst< SFNode > _metadata = 0,
                   Inst< SFFloat > _radius  = 0,
-                  Inst< SFVec3f > _pos     = 0 );
+                  Inst< SFVec3f > _pos     = 0,
+                  Inst< SFInt32 > _detailLevel = 0 );
 
     virtual void renderShadow( X3DLightNode *light, 
-                       	       bool render_caps,
+                               bool render_caps,
                                const Matrix4f &local_to_global = Matrix4f() );
  
     /// The radius of the sphere.
@@ -74,6 +76,15 @@ namespace H3D {
     /// <b>Default value:</b> Vec3f(0,0,0) \n
     /// \dotfile ShadowSphere_position.dot
     auto_ptr< SFVec3f > position;
+
+    /// The detailLevel field specifies the nr of faces to 
+    /// use for the sides of the shadow cone/cylinder that
+    /// this object produces. 
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 120 \n
+    /// \dotfile ShadowSphere_resolution.dot
+    auto_ptr< SFInt32 > detailLevel;
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
