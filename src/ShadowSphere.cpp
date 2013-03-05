@@ -41,19 +41,24 @@ H3DNodeDatabase ShadowSphere::database( "ShadowSphere",
 namespace ShadowSphereInternals {
   FIELDDB_ELEMENT( ShadowSphere, radius, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ShadowSphere, position, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ShadowSphere, detailLevel, INPUT_OUTPUT );
 }
 
 ShadowSphere::ShadowSphere( Inst< SFNode>  _metadata,
-                      Inst< SFFloat > _radius,
-                      Inst< SFVec3f > _position ) :
+                            Inst< SFFloat > _radius,
+                            Inst< SFVec3f > _position,
+                            Inst< SFInt32 > _detailLevel ) :
   H3DShadowObjectNode( _metadata ),
   radius( _radius ),
-  position( _position ) {
+  position( _position ),
+  detailLevel( _detailLevel ) {
+
   type_name = "ShadowSphere";
   database.initFields( this );
 
   radius->setValue( 1 );
   position->setValue( Vec3f( 0, 0, 0 ) );
+  detailLevel->setValue( 120 );
 }
 
 
@@ -63,7 +68,7 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
   H3DFloat r = radius->getValue();
   Vec3f pos = position->getValue();
   
-  int nr_faces = 120;
+  int nr_faces = detailLevel->getValue();
 
   MatrixTransform *t = transform->getValue();
 
@@ -117,7 +122,11 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
   glBegin( GL_QUAD_STRIP );
   for( int i=0; i<=nr_faces; ++i ) {
     float ratio = (float) i / nr_faces;
+    if( i == nr_faces ) {
+      ratio = 0;
+    }
     float angle =  (float)(ratio * (Constants::pi*2));
+    
     
     float sina = sin( angle );
     float cosa = cos( angle );
@@ -126,13 +135,12 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
     
     Vec3f d;
     if( point_light ) d = v - light_pos;
-    else d = Vec3f( 0, 1, 0 );
-    // point at infinity
+    else d = Vec3f( 0, 1, 0 ); 
+      // point at infinity 
     glVertex4f( d.x, d.y, d.z, 0 );
-    glVertex3f( v.x, v.y, v.z );
+    glVertex4f( v.x, v.y, v.z, 1 );
   }
   glEnd();
-  
   
   if ( render_caps ) {
     if( !dir_light ) {
@@ -141,7 +149,8 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
       // at infinity
       glBegin( GL_POLYGON );
       for( int i = 0; i < nr_faces; i++ ) {
-        float angle = (float)( i * (Constants::pi*2) / (float) nr_faces);
+        float ratio = (float) i / nr_faces;
+        float angle = (float)( ratio * (Constants::pi*2));
         float sina = sin( angle );
         float cosa = cos( angle );
         Vec3f v = Vec3f(-r * sina, 0, -r * cosa ) - light_pos; 
@@ -153,7 +162,8 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
     glBegin( GL_POLYGON );
     glNormal3f( 0, -1, 0 );
     for( int i = nr_faces; i >= 0; i-- ) {
-      float angle = (float)( i * (Constants::pi*2) / (float) nr_faces);
+      float ratio = (float) i / nr_faces;
+      float angle = (float)( ratio * (Constants::pi*2) );
       float sina = sin( angle );
       float cosa = cos( angle );
       glVertex3f( -r * sina, 0, -r * cosa );
