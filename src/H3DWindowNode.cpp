@@ -812,6 +812,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   if( nav_info ) {
     if( nav_info->visibilityLimit->getValue() > 0 )
       clip_far = nav_info->visibilityLimit->getValue();
+    else {
+      // If visibilityLimit is 0.0 or special value -1, then it means infinity.
+      // We let any negative value be infinity.
+      clip_far = -1; 
+    }
     if( nav_info->nearVisibilityLimit->getValue() > 0 )
       clip_near = nav_info->nearVisibilityLimit->getValue();
   }
