@@ -77,6 +77,11 @@ namespace H3D {
     const set< string > &getValidValues() {
       return valid_values;
     }
+
+		/// Clears the valid values for the field.
+    void clearValidValues() {
+      valid_values.clear();
+    }
     
   protected:
     set< string > valid_values;
