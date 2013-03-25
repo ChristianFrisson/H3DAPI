@@ -304,7 +304,7 @@ bool H3DDisplayListObject::DisplayList::usingFrustumCulling() {
     } 
   } 
   
-  return geom != NULL;
+  return false;
 }
 
 bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
