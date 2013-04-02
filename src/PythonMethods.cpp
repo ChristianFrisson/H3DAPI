@@ -249,8 +249,10 @@ return from_func( static_cast< field_type * >( field )->getValue() );
 #define SET_SFIELD( check_func, value_func, from_func, \
                        value_type, field_type, \
                        field, value ) \
-if( check_func( value ) ) {                                         \
+if( check_func( value ) ) { \
+  Py_BEGIN_ALLOW_THREADS \
   static_cast<field_type*>(field)->setValue( (value_type) value_func( value ) ); \
+  Py_END_ALLOW_THREADS \
 } else {                                                            \
   PyErr_SetString( PyExc_ValueError,                                \
                    "Invalid argument type to setValue() function " );            \
@@ -1285,7 +1287,10 @@ call the base class __init__ function." );
       char *filename = PyString_AsString( arg );
       X3D::DEFNodes dm;
       try{
-        AutoRef< Node > n = X3D::createX3DNodeFromURL( filename, &dm );
+        AutoRef< Node > n;
+        Py_BEGIN_ALLOW_THREADS
+        n= X3D::createX3DNodeFromURL( filename, &dm );
+        Py_END_ALLOW_THREADS
         return PythonInternals::createX3DHelp( n.get(), &dm );
       }
       catch(H3D::X3D::XMLParseError &e){
