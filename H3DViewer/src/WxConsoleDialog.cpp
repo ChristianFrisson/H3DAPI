@@ -106,6 +106,10 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   console_stream_buf = new ConsoleStreamBuf( logText );
   console_stream.reset( new ostream( console_stream_buf ) );
   H3DUtil::Console.setOutputStream( *console_stream );
+
+  // redirect the cout, cerr to logText wxTextCtrl so sofa output can be redirected to wxDialog
+  cout.rdbuf(console_stream_buf);
+  cerr.rdbuf(console_stream_buf);
 }
 
 WxConsoleDialog::~WxConsoleDialog() {
