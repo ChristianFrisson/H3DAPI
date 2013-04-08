@@ -38,7 +38,7 @@
 using namespace std;
 
 std::streamsize WxConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s, 
-							  std::streamsize n ) {
+                                                          std::streamsize n ) {
   // output to wxTextCtrl directly if in main wx thread, otherwise
   // save to temporary wxString.
   if( wxIsMainThread() ) {
@@ -108,14 +108,21 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   H3DUtil::Console.setOutputStream( *console_stream );
 
   // redirect the cout, cerr to logText wxTextCtrl so sofa output can be redirected to wxDialog
+  orig_cout_buf = cout.rdbuf(); 
+  orig_cerr_buf = cerr.rdbuf();
   cout.rdbuf(console_stream_buf);
   cerr.rdbuf(console_stream_buf);
 }
 
 WxConsoleDialog::~WxConsoleDialog() {
+  // restore cout and cerr
+  cout.rdbuf(orig_cout_buf);
+  cerr.rdbuf(orig_cerr_buf);
+
   // The contained buffer is not deleted, set a new buffer and delete
   // buffer to clear up memory.
   streambuf * tmp_buf = console_stream->rdbuf(NULL);
+  
   console_stream.reset( NULL );
   delete tmp_buf;
 }

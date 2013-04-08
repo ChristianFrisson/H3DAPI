@@ -112,6 +112,9 @@ protected:
   // the console_stream object.
   ConsoleStreamBuf *console_stream_buf;
 
+  // the streambuf of cerr and cout that was used when this WxConsoleDialog was created.
+  std::streambuf *orig_cerr_buf, *orig_cout_buf;
+
   // The console stream. The contents of other_thread_output is eventuelly
   // transferred to this stream.
   std::auto_ptr< std::ostream >console_stream;
