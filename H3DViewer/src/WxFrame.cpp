@@ -2328,7 +2328,7 @@ void WxFrame::LoadPlugins() {
   // Plugins should be in Contents/Resources/Plugins.
   wxString plugin_dir = executable_dir + wxT("/../Plugins");
   if( !wxDirExists( plugin_dir ) ) {
-    wxString plugin_dir = executable_dir + wxT("/../Resources/Plugins");
+    plugin_dir = executable_dir + wxT("/../Resources/Plugins");
   }
   wxString library_spec = plugin_dir + wxT("/*.dylib");
 #else
