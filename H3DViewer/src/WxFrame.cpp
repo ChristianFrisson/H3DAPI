@@ -2323,7 +2323,13 @@ void WxFrame::LoadPlugins() {
   wxString library_spec = plugin_dir + wxT("\\*.dll");
 #else
 #ifdef H3D_OSX
+  // executable_dir is Contents/Resources/bin if executed through H3DViewer
+  // packed into DMG file and Contents of executed as normal OSX bundle.
+  // Plugins should be in Contents/Resources/Plugins.
   wxString plugin_dir = executable_dir + wxT("/../Plugins");
+  if( !wxDirExists( plugin_dir ) ) {
+    wxString plugin_dir = executable_dir + wxT("/Plugins");
+  }
   wxString library_spec = plugin_dir + wxT("/*.dylib");
 #else
   wxString plugin_dir = executable_dir + wxT("/../plugins");
