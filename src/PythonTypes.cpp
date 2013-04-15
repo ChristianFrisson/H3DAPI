@@ -78,7 +78,7 @@ namespace H3D {
     Vec2d PyVec2d2f_AsVec2d( PyObject *o ) {
       if( PyVec2d_Check( o ) ) {
         return PyVec2d_AsVec2d( o );
-      } if( PyVec2f_Check( o ) ) {
+      } else if( PyVec2f_Check( o ) ) {
         return PyVec2f_AsVec2f( o );
       } else {
         throw Exception::H3DAPIException( "PyObject * is not a PyVec2d *", 
@@ -90,7 +90,7 @@ namespace H3D {
     Vec3d PyVec3d3f_AsVec3d( PyObject *o ) {
       if( PyVec3d_Check( o ) ) {
         return PyVec3d_AsVec3d( o );
-      } if( PyVec3f_Check( o ) ) {
+      } else if( PyVec3f_Check( o ) ) {
         return PyVec3f_AsVec3f( o );
       } else {
         throw Exception::H3DAPIException( "PyObject * is not a PyVec3d *", 
@@ -102,7 +102,7 @@ namespace H3D {
     Vec4d PyVec4d4f_AsVec4d( PyObject *o ) {
       if( PyVec4d_Check( o ) ) {
         return PyVec4d_AsVec4d( o );
-      } if( PyVec4f_Check( o ) ) {
+      } else if( PyVec4f_Check( o ) ) {
         return PyVec4f_AsVec4f( o );
       } else {
         throw Exception::H3DAPIException( "PyObject * is not a PyVec4d *", 
@@ -114,7 +114,7 @@ namespace H3D {
     Matrix3d PyMatrix3d3f_AsMatrix3d( PyObject *o ) {
       if( PyMatrix3d_Check( o ) ) {
         return PyMatrix3d_AsMatrix3d( o );
-      } if( PyMatrix3f_Check( o ) ) {
+      } else if( PyMatrix3f_Check( o ) ) {
         return Matrix3d( PyMatrix3f_AsMatrix3f( o ) );
       } else {
         throw Exception::H3DAPIException( "PyObject * is not a PyMatrix3d *", 
@@ -126,7 +126,7 @@ namespace H3D {
     Matrix4d PyMatrix4d4f_AsMatrix4d( PyObject *o ) {
       if( PyMatrix4d_Check( o ) ) {
         return PyMatrix4d_AsMatrix4d( o );
-      } if( PyMatrix4f_Check( o ) ) {
+      } else if( PyMatrix4f_Check( o ) ) {
         return Matrix4d( PyMatrix4f_AsMatrix4f( o ) );
       } else {
         throw Exception::H3DAPIException( "PyObject * is not a PyMatrix4d *", 
@@ -607,7 +607,7 @@ self, deepCopy )" );
         Vec2d vd = PyVec2d_AsVec2d( o );
         self->x = (H3DFloat)vd.x;
         self->y = (H3DFloat)vd.y;
-      } if( PyVec2f_Check( o ) ) {
+      } else if( PyVec2f_Check( o ) ) {
         Vec2f vd = PyVec2f_AsVec2f( o );
         self->x = vd.x;
         self->y = vd.y;
@@ -807,7 +807,7 @@ self, deepCopy )" );
         Vec2d vd = PyVec2d_AsVec2d( o );
         self->x = vd.x;
         self->y = vd.y;
-      } if( PyVec2f_Check( o ) ) {
+      } else if( PyVec2f_Check( o ) ) {
         Vec2f vd = PyVec2f_AsVec2f( o );
         self->x = vd.x;
         self->y = vd.y;
@@ -1001,7 +1001,7 @@ self, deepCopy )" );
         self->x = (H3DFloat)vd.x;
         self->y = (H3DFloat)vd.y;
         self->z = (H3DFloat)vd.z;
-      } if( PyVec3f_Check( o ) ) {
+      } else if( PyVec3f_Check( o ) ) {
         Vec3f vd = PyVec3f_AsVec3f( o );
         self->x = vd.x;
         self->y = vd.y;
@@ -1252,7 +1252,7 @@ self, deepCopy )" );
         self->x = vd.x;
         self->y = vd.y;
         self->z = vd.z;
-      } if( PyVec3f_Check( o ) ) {
+      } else if( PyVec3f_Check( o ) ) {
         Vec3f vd = PyVec3f_AsVec3f( o );
         self->x = vd.x;
         self->y = vd.y;
@@ -1449,7 +1449,7 @@ self, deepCopy )" );
         self->y = (H3DFloat)vd.y;
         self->z = (H3DFloat)vd.z;
         self->w = (H3DFloat)vd.w;
-      } if( PyVec4f_Check( o ) ) {
+      } else if( PyVec4f_Check( o ) ) {
         Vec4f vd = PyVec4f_AsVec4f( o );
         self->x = vd.x;
         self->y = vd.y;
@@ -1607,7 +1607,7 @@ self, deepCopy )" );
         self->y = vd.y;
         self->z = vd.z;
         self->w = vd.w;
-      } if( PyVec4f_Check( o ) ) {
+      } else if( PyVec4f_Check( o ) ) {
         Vec4f vd = PyVec4f_AsVec4f( o );
         self->x = vd.x;
         self->y = vd.y;

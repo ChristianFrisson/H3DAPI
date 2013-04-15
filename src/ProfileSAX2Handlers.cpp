@@ -43,8 +43,7 @@
 #include <xercesc/util/XMLUniDefs.hpp>
 
 using namespace std;
-
-
+using namespace H3D;
   
   // Temporary solution to be able to print XMLCh *
   ostream& operator<<(ostream& os,const XMLCh* & s) { 

@@ -34,9 +34,8 @@
 namespace H3D {
 
   /// \ingroup H3DNodes
-  /// \class GraphicsCachingOptions
+  /// \class H3D::GraphicsCachingOptions
   /// \deprecated Use GraphicsOptions instead.
-
   typedef GraphicsOptions GraphicsCachingOptions;
 
 }

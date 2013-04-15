@@ -442,6 +442,7 @@ IF( MSVC )
   FIND_FILE( SubWCRev
              NAMES "SubWCRev.exe"
              DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
+  MARK_AS_ADVANCED( SubWCRev )
 
   IF( SubWCRev )
     SET( H3DAPI_SVN_VERSION "$WCREV$" )

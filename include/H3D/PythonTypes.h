@@ -716,7 +716,7 @@ namespace H3D {
   /// Returns an Rotation representation of the contents of o.
   Rotation H3DAPI_API PyRotation_AsRotation( PyObject *o );
 
-  /// Returns true if its argument is a PyVec3f.
+  /// Returns true if its argument is a PyRotation.
   inline bool PyRotation_Check( PyObject *o) {
     return PyObject_TypeCheck(o,&PyRotation_Type);
   }
@@ -751,7 +751,7 @@ namespace H3D {
   
   extern H3DAPI_API PyTypeObject PyQuaternion_Type;
 
-  /// Returns which is the name the PyVec3f is to be installed
+  /// Returns which is the name the PyQuaternion is to be installed
   /// as in Python.
   inline string PyQuaternion_Name() { return "Quaternion"; }   
 

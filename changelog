@@ -99,7 +99,7 @@ ComposedShader - transparencyDetectMode
 CoordinateDeformer - deviceAlgorithm
 FakeHapticsDevice - deviceName
 ForceField - torque
-GlobalSettings - x3dROUTESendsEvent, loadTexturesInThread, renderMode
+GlobalSettings - x3dROUTESendsEvent, loadTexturesInThread, renderMode, multiThreadedPython
 GraphicsOptions - useDefaultShadows, defaultShadowDarkness, preferVertexBufferObject, defaultShadowGeometryAlgorithm
 H3DHapticsDevice - forceLimit, torqueLimit
 H3DWindowNode - clipDistances

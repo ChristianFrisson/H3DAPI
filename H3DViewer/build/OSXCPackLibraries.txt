@@ -43,10 +43,11 @@ SET( OSX_DEPENDENT_LIBRARIES ${H3DAPI_FILES}
 
 )
 
+MESSAGE( STATUS ${CMAKE_INSTALL_PREFIX} )
 
-FILE(GLOB MEDX3D_FILES "/usr/local/lib/libh3dmedx3d.*.dylib")
-FILE(GLOB UI_FILES "/usr/local/lib/libh3dui.*.dylib")
-FILE(GLOB H3DPHYSICS_FILES "/usr/local/lib/libh3dphysics.*.dylib")
+FILE(GLOB MEDX3D_FILES "${CMAKE_INSTALL_PREFIX}/lib/libh3dmedx3d.*.dylib")
+FILE(GLOB UI_FILES ${CMAKE_INSTALL_PREFIX}/lib/libh3dui.*.dylib)
+FILE(GLOB H3DPHYSICS_FILES "${CMAKE_INSTALL_PREFIX}/lib/libh3dphysics.*.dylib")
 
 SET( OSX_PLUGIN_LIBRARIES ${MEDX3D_FILES}
 			  ${UI_FILES}

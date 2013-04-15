@@ -46,7 +46,12 @@
 
 
 XERCES_CPP_NAMESPACE_USE
-using namespace std;
+#endif
+
+
+namespace H3D {
+
+#ifdef HAVE_XERCES
 
     /// This class implements the SAX2 ContentHandler and ErrorHandler 
     /// interface in order to read profile and components information
@@ -120,11 +125,11 @@ using namespace std;
       /// contains information about a node and what conformance
       /// levels fields should have.
       struct myX3DNode {
-        map< int, vector< string > > fields_per_level;
-        string name;
+        std::map< int, std::vector< std::string > > fields_per_level;
+        std::string name;
       };
 
-      typedef vector< myX3DNode > myX3DNodeVector;
+      typedef std::vector< myX3DNode > myX3DNodeVector;
 
       /// This is the definition of a component. What nodes belong in it
       /// per conformance level.
@@ -132,24 +137,25 @@ using namespace std;
         myX3DComponent() {
           conformance_level = 0;
         }
-        map< int, myX3DNodeVector > nodes_per_level;
-        string name;
-        map< int, vector< pair< string, int > > > prerequisites;
+        std::map< int, myX3DNodeVector > nodes_per_level;
+        std::string name;
+        std::map< int,
+					std::vector< std::pair< std::string, int > > > prerequisites;
         int conformance_level;
         int used_level;
         int max_level;
       };
 
-      typedef vector< myX3DComponent > myX3DComponentVector;
+      typedef std::vector< myX3DComponent > myX3DComponentVector;
 
       /// Contains information about what components at what level is
       /// required to have support for this profile.
       struct myX3DProfile {
-        string name;
-        map< string, int > component_names;
+        std::string name;
+        std::map< std::string, int > component_names;
       };
 
-      typedef vector< myX3DProfile > myX3DProfileVector;
+      typedef std::vector< myX3DProfile > myX3DProfileVector;
 
       myX3DComponentVector &getComponentVector() {
         return component_vector;
@@ -162,10 +168,10 @@ using namespace std;
     protected:
 
       /// All components read from files specified.
-      vector< myX3DComponent > component_vector;
+      std::vector< myX3DComponent > component_vector;
 
       /// All profiles read from files specified.
-      vector< myX3DProfile > profile_vector;
+      std::vector< myX3DProfile > profile_vector;
 
       /// Help parameters to correctly parse xml-files with
       /// profile and component information.
@@ -177,7 +183,7 @@ using namespace std;
       /// Returns a string with the current location as given
       /// by the current Locator object. system id and line number
       /// is included. Only valid during event callbacks.
-      string getLocationString();
+      std::string getLocationString();
 
       /// The locator object of the parser. Can be used to retrieve 
       /// the location of any document handler event in the XML source 
@@ -186,4 +192,5 @@ using namespace std;
         
     };
 #endif
+}
 #endif

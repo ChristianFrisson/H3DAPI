@@ -5,6 +5,7 @@ import subprocess
 import re
 import shutil
 import os
+import sys 
 
 #osx_app = "/Applications/H3DViewer.app"
 
@@ -25,7 +26,7 @@ def otool(s):
     for l in o.stdout:
         if l[0] == '\t':
             s = l.split(' ', 1)[0][1:]
-            if s.startswith("/usr/local/lib/") or s.startswith("/opt/local/lib" ):
+            if s.startswith("/usr/local/lib/") or s.startswith("/opt/local/lib" ) or s.startswith("/Users"):
                 yield s
 
 
@@ -75,10 +76,23 @@ for library in needed_libraries:
         shutil.copy2( src_full, dest_full )
     
     # Change the install name for all dependencies to be the path in the bundle.
-    deps = otool(dest_full)
-    for dep in deps:
-        dep_dir, dep_file = os.path.split( dep )
-        o = subprocess.Popen(["/usr/bin/install_name_tool", "-change", dep, "@executable_path/../lib/" + dep_file, dest_full], stdout=subprocess.PIPE)
+
+    # Sometimes the install_name_tool seems to fail without getting an error 
+    # message. We counter that by running it again until it succeeeds.
+    counter = 2
+    max_iterations = 2000
+
+    while(counter > 1 and counter < max_iterations ):
+      counter = 0
+      deps = otool(dest_full)
+      for dep in deps:
+          counter = counter + 1
+          dep_dir, dep_file = os.path.split( dep )
+          o = subprocess.Popen(["/usr/bin/install_name_tool", "-change", dep, "@executable_path/../lib/" + dep_file, dest_full], stdout=subprocess.PIPE)
+
+
+    if( counter >= max_iterations ):
+      sys.exit(1)
         #print o
 #        print "/usr/bin/install_name_tool", "-change", dep, "@executable_path/../lib/" + dep_file, dest_full
 

@@ -47,15 +47,37 @@ are required and optional by H3DAPI. The libraries used by H3DAPI are:
     with the Windows SDK.
   - FFmpeg. Required for the FFmpegDecoder class which is used for MovieTextures.
     http://ffmpeg.org/
+  - SpiderMonkey. Required for EcmaScript support.
+    http://www.mozilla.org/js/spidermonkey/
+  - Virtual Hand SDK. Needed for CyberGloveSensor and HumanHand nodes.
 
 -------------------------------------------------------------------------------
 
 Installation on Linux:
-Currently you need to build H3DAPI on Linux yourself. Since you have this file
+Using debian packages:
+1. Modify sources.list ( or whatever file is used to specify urls to debian
+   packages ) by adding ftp://www.h3dapi.org/pub/releases/linux/debian/
+   to it.
+   On Ubuntu 12.04 simply use:
+     sudo gedit /etc/apt/sources.list
+     Then add 
+       deb ftp://www.h3dapi.org/pub/releases/linux/debian precise sensegraphics
+       deb-src ftp://www.h3dapi.org/pub/releases/linux/debian precise sensegraphics
+     
+     If you use a different linux version simply switch "precise" for the name
+     of your distribution.
+     
+2. sudo apt-get update
+3. sudo apt-get install libh3dapi2
+4. sudo apt-get install h3dviewer. This step is optional.
+5. Use H3DViewer to open any x3d file.
+     
+Building from source:
+Since you have this file
 you have already obtained and unpacked the source for H3DAPI. To build H3DAPI
 on Linux follow these steps.
 
-1. Install version 2.4.7 or later of CMake. To do this on Ubuntu open a
+1. Install version 2.8.0 or later of CMake. To do this on Ubuntu open a
    terminal and write:
     sudo apt-get install cmake
 
@@ -84,14 +106,6 @@ on Linux follow these steps.
     alien
 
    The first two are the C++ compilers needed to compile H3DAPI.
-
-   Freeglut can be obtained using the following commands:
-    wget http://ovh.dl.sourceforge.net/sourceforge/freeglut/freeglut-2.4.0.tar.gz
-    tar -xzvf freeglut-2.4.0.tar.gz
-    cd freeglut-2.4.0
-    ./configure CFLAGS="-fexceptions" CXXFLAGS="-fexceptions"
-    make
-    sudo make install
 
    To install WxWidgets (version 2.8) write:
     sudo apt-get install libwxgtk2.8-dev
@@ -139,12 +153,21 @@ on Linux follow these steps.
 
 Installation on Windows:
 To install H3DAPI on Windows follow these steps:
-1. Download Windows installation file from www.h3d.org.
-2. Install H3DAPI using this file.
-3. Run examples through start menu.
+1. Go to www.h3d.org.
+2. Download latest release of H3DViewer
+3. Install H3DViewer.
+4. Open any x3d file.
 
-For information on how to build H3DAPI on Windows see the pdf-manual
-and/or the wiki.
+Build from source:
+1. Go to www.h3d.org.
+2. Download latest release of H3DAPI.
+3. In the installer, on the page where you choose what to install make sure
+   H3DAPI is seleted. Then continue installing.
+4. Use CMake to generate project files for your compiler. Tested with visual
+   studio 2003, 2005, 2008, 2010 and 2012.
+5. Open the solution file and build the INSTALL target.
+6. If H3DViewer/H3DLoad is desired check H3DAPI_LOADER_PROJECTS in the cmake
+   configuration step. Use these programs to open an x3d file.
 
 -------------------------------------------------------------------------------
 
@@ -152,7 +175,7 @@ Installation on MacOS X:
 Currently you need to build H3DAPI on MacOS X yourself. Since you have this
 file you have already obtained and unpacked the source for H3DAPI. To build
 H3DAPI on MacOS X follow these steps.
-1. Install version 2.4.7 or later of CMake.
+1. Install version 2.8.0 or later of CMake.
 2. Install XCode. If gcc is an unrecognized command in the terminal after
    installing XCode there is a high probability that CMake will not be able to
    generate build files for gcc and/or XCode. Another version of XCode could be

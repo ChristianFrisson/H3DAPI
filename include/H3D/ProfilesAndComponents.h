@@ -101,14 +101,14 @@ namespace H3D {
 
     /// Find a component named name in the given component_vector.
     bool findComponent( ProfileSAX2Handlers::myX3DComponentVector &component_vector,
-                    string name, int &place );
+												std::string name, int &place );
 
     // Temporary solution to know which profiles H3DAPI supports.
-    map< std::string, std::vector< std::string > > profiles_supported;
+    std::map< std::string, std::vector< std::string > > profiles_supported;
     ProfileSAX2Handlers::myX3DProfile used_profile;
     std::string version;
     bool main_profile_set;
-    map< std::string, std::map< std::string, int > > components_supported;
+    std::map< std::string, std::map< std::string, int > > components_supported;
     ProfileSAX2Handlers::myX3DComponentVector components_used;
 
     static ProfilesAndComponents * instance;

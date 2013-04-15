@@ -170,6 +170,9 @@ namespace H3D {
     /// There is a small overhead if enabled, and this option should be disabled
     /// for most applications.
     ///
+    /// This field has no effect if modified after a PythonScript node instance
+    /// has been created.
+    ///
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> false
     auto_ptr< SFBool > multiThreadedPython;
