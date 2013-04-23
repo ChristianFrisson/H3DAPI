@@ -223,6 +223,14 @@ IF( MSVC )
   IF( SubWCRev )
     SET( H3DViewer_SVN_VERSION "$WCREV$" )
   ENDIF( SubWCRev )
+  
+  IF( SubWCRev )
+    EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DViewer_SOURCE_DIR}/../
+                     RESULT_VARIABLE H3DViewer_is_working_copy )
+    IF( ${H3DViewer_is_working_copy} EQUAL 0 )
+      SET( H3DViewer_SVN_VERSION "$WCREV$" )
+    ENDIF( ${H3DViewer_is_working_copy} EQUAL 0 )
+  ENDIF( SubWCRev )
 
   # autogenerate H3DViewer.rc depending on the version
   CONFIGURE_FILE( H3DViewer.rc.cmake ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
@@ -238,7 +246,7 @@ IF( MSVC )
                       "H3DViewer_Output_Name"
                       "$(TargetFileName)" )
 
-  IF( SubWCRev )
+  IF( SubWCRev AND ${H3DViewer_is_working_copy} EQUAL 0 )
     # Update SVN revision in file.
     EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
     
@@ -246,7 +254,7 @@ IF( MSVC )
                         PRE_BUILD 
                         COMMAND ${SubWCRev} 
                         ARGS ${H3DViewer_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc )
-  ENDIF( SubWCRev )  
+  ENDIF( SubWCRev AND ${H3DViewer_is_working_copy} EQUAL 0 )
 ENDIF(MSVC)
 
 CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )

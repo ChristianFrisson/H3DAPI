@@ -445,7 +445,11 @@ IF( MSVC )
   MARK_AS_ADVANCED( SubWCRev )
 
   IF( SubWCRev )
-    SET( H3DAPI_SVN_VERSION "$WCREV$" )
+		EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DAPI_SOURCE_DIR}/../
+										 RESULT_VARIABLE H3DAPI_is_working_copy )
+		IF( ${H3DAPI_is_working_copy} EQUAL 0 )
+		  SET( H3DAPI_SVN_VERSION "$WCREV$" )
+		ENDIF( ${H3DAPI_is_working_copy} EQUAL 0 )
   ENDIF( SubWCRev )
 
   # autogenerate H3DAPI.rc depending on the version
@@ -460,7 +464,7 @@ IF( MSVC )
                       "H3DAPI_Output_Name"
                       "$(TargetFileName)" )
 
-  IF( SubWCRev )
+  IF( SubWCRev AND ${H3DAPI_is_working_copy} EQUAL 0 )
     # Update SVN revision in file.
     EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
 
@@ -468,7 +472,7 @@ IF( MSVC )
                         PRE_BUILD 
                         COMMAND ${SubWCRev} 
                         ARGS ${H3DAPI_SOURCE_DIR}/../ ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI.rc )
-  ENDIF( SubWCRev )
+  ENDIF( SubWCRev AND ${H3DAPI_is_working_copy} EQUAL 0 )
 ENDIF(MSVC)
 
 # add the libraries needed for linking
