@@ -205,10 +205,6 @@ IF( MSVC )
   MARK_AS_ADVANCED( SubWCRev )
 
   IF( SubWCRev )
-    SET( H3DViewer_SVN_VERSION "$WCREV$" )
-  ENDIF( SubWCRev )
-  
-  IF( SubWCRev )
     EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DViewer_SOURCE_DIR}/../
                      RESULT_VARIABLE H3DViewer_is_working_copy )
     IF( ${H3DViewer_is_working_copy} EQUAL 0 )
