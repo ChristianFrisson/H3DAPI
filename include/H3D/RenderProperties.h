@@ -98,7 +98,8 @@ namespace H3D {
                       Inst< SFString    > _blendFuncDstFactorAlpha = 0,
                       Inst< SFString    > _blendEquationRGB = 0,
                       Inst< SFString    > _blendEquationAlpha = 0,
-                      Inst< SFColorRGBA > _blendColor = 0
+                      Inst< SFColorRGBA > _blendColor = 0,
+                      Inst< SFBool      > _blendEnabled = 0
                       );
 
 
@@ -131,11 +132,11 @@ namespace H3D {
     auto_ptr< SFBool >  depthTestEnabled;
 
     /// The smoothShading field specifies if smooth shading of colors
-		/// should be used. If true then
-		/// colors are interpolated between vertices of a face. If false then
-		/// each face has a uniform color chosen from one of its vertices.
-		/// For more information see OpenGL reference for the
-		/// command glShadeModel.
+    /// should be used. If true then
+    /// colors are interpolated between vertices of a face. If false then
+    /// each face has a uniform color chosen from one of its vertices.
+    /// For more information see OpenGL reference for the
+    /// command glShadeModel.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> true \n
@@ -203,125 +204,133 @@ namespace H3D {
     /// \dotfile RenderProperties_colorBufferAlphaWriteEnabled.dot 
     auto_ptr< SFBool >  colorBufferAlphaWriteEnabled;
 
-		/// The alphaFunc field specifies if a alpha testing should be used and in
-		/// that case how the function should look. See
-		/// <a href="http://www.opengl.org/sdk/docs/man2/xhtml/glAlphaFunc.xml">opengl glAlphaFunc reference</a>
-		/// for more information about each value.
+    /// The alphaFunc field specifies if a alpha testing should be used and in
+    /// that case how the function should look. See
+    /// <a href="http://www.opengl.org/sdk/docs/man2/xhtml/glAlphaFunc.xml">opengl glAlphaFunc reference</a>
+    /// for more information about each value.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> ALWAYS \n
-		/// <b>Valid values:</b> NEVER, LESS, EQUAL, LEQUAL, GREATER, NOTEQUAL, \n
-		/// GEQUAL, ALWAYS \n
+    /// <b>Valid values:</b> NEVER, LESS, EQUAL, LEQUAL, GREATER, NOTEQUAL, \n
+    /// GEQUAL, ALWAYS \n
     /// 
     /// \dotfile RenderProperties_alphaFunc.dot 
     auto_ptr< SFString > alphaFunc;
 
-		/// The alphaFuncValue field specifies the reference value when alpha
-		/// testing is enabled. Only used if alphaFunc != ALWAYS.
+    /// The alphaFuncValue field specifies the reference value when alpha
+    /// testing is enabled. Only used if alphaFunc != ALWAYS.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 \n
-		/// <b>Valid values:</b> [0,1] \n
+    /// <b>Valid values:</b> [0,1] \n
     /// 
     /// \dotfile RenderProperties_alphaFuncValue.dot 
     auto_ptr< SFFloat  > alphaFuncValue;
 
-		/// The blendFuncSrcFactorRGB field specifies how the red, blue and green
-		/// channels are computed for source when using a blend function. See
-		/// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
-		/// for more information about each value.
+    /// The blendFuncSrcFactorRGB field specifies how the red, blue and green
+    /// channels are computed for source when using a blend function. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
+    /// for more information about each value.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> SRC_ALPHA \n
-		/// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
-		/// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
-		/// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
-		/// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA, \n
-		/// SRC_ALPHA_SATURATE \n
+    /// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
+    /// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
+    /// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
+    /// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA, \n
+    /// SRC_ALPHA_SATURATE \n
     /// 
     /// \dotfile RenderProperties_blendFuncSrcFactorRGB.dot 
     auto_ptr< SFString > blendFuncSrcFactorRGB;
 
-		/// The blendFuncDstFactorRGB field specifies how the red, blue and green
-		/// channels are computed for destination when using a blend function. See
-		/// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
-		/// for more information about each value.
+    /// The blendFuncDstFactorRGB field specifies how the red, blue and green
+    /// channels are computed for destination when using a blend function. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
+    /// for more information about each value.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> ONE_MINUS_SRC_ALPHA \n
-		/// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
-		/// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
-		/// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
-		/// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA \n
+    /// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
+    /// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
+    /// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
+    /// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA \n
     /// 
     /// \dotfile RenderProperties_blendFuncDstFactorRGB.dot 
     auto_ptr< SFString > blendFuncDstFactorRGB;
 
-		/// The blendFuncSrcFactorAlpha field specifies how the alpha
-		/// channel is computed for source when using a blend function. See
-		/// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
-		/// for more information about each value.
+    /// The blendFuncSrcFactorAlpha field specifies how the alpha
+    /// channel is computed for source when using a blend function. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
+    /// for more information about each value.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> SRC_ALPHA \n
-		/// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
-		/// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
-		/// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
-		/// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA, \n
-		/// SRC_ALPHA_SATURATE \n
+    /// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
+    /// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
+    /// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
+    /// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA, \n
+    /// SRC_ALPHA_SATURATE \n
     /// 
     /// \dotfile RenderProperties_blendFuncSrcFactorAlpha.dot 
     auto_ptr< SFString > blendFuncSrcFactorAlpha;
 
-		/// The blendFuncDstFactorAlpha field specifies how the alpha
-		/// channel is computed for destination when using a blend function. See
-		/// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
-		/// for more information about each value.
+    /// The blendFuncDstFactorAlpha field specifies how the alpha
+    /// channel is computed for destination when using a blend function. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendFuncSeparate.xml">opengl glBlendFuncSeparate reference</a>
+    /// for more information about each value.
     ///
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> ONE_MINUS_SRC_ALPHA \n
-		/// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
-		/// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
-		/// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
-		/// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA \n
+    /// <b>Default value:</b> ONE_MINUS_SRC_ALPHA \n
+    /// <b>Valid values:</b> ZERO, ONE, SRC_COLOR, ONE_MINUS_SRC_COLOR, \n
+    /// DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, \n
+    /// DST_ALPHA, ONE_MINUS_DST_ALPHA, CONSTANT_COLOR, \n
+    /// ONE_MINUS_CONSTANT_COLOR, CONSTANT_ALPHA, ONE_MINUS_CONSTANT_ALPHA \n
     /// 
     /// \dotfile RenderProperties_blendFuncDstFactorAlpha.dot 
     auto_ptr< SFString > blendFuncDstFactorAlpha;
 
-		/// The blendEquationRGB field specifies the blend equation used to
-		/// combine the red, green and blue channel. See
-		/// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendEquationSeparate.xml">opengl glBlendEquationSeparate reference</a>
-		/// for more information about each value.
+    /// The blendEquationRGB field specifies the blend equation used to
+    /// combine the red, green and blue channel. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendEquationSeparate.xml">opengl glBlendEquationSeparate reference</a>
+    /// for more information about each value.
     ///
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> ADD \n
-		/// <b>Valid values:</b> ADD, SUBTRACT, REVERSE_SUBTRACT, MIN, MAX \n
+    /// <b>Default value:</b> ADD \n
+    /// <b>Valid values:</b> ADD, SUBTRACT, REVERSE_SUBTRACT, MIN, MAX \n
     /// 
     /// \dotfile RenderProperties_blendEquationRGB.dot 
     auto_ptr< SFString > blendEquationRGB;
 
-		/// The blendEquationAlpha field specifies the blend equation used to
-		/// combine the alpha channel. See
-		/// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendEquationSeparate.xml">opengl glBlendEquationSeparate reference</a>
-		/// for more information about each value.
+    /// The blendEquationAlpha field specifies the blend equation used to
+    /// combine the alpha channel. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendEquationSeparate.xml">opengl glBlendEquationSeparate reference</a>
+    /// for more information about each value.
     ///
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> ADD \n
-		/// <b>Valid values:</b> ADD, SUBTRACT, REVERSE_SUBTRACT, MIN, MAX \n
+    /// <b>Default value:</b> ADD \n
+    /// <b>Valid values:</b> ADD, SUBTRACT, REVERSE_SUBTRACT, MIN, MAX \n
     /// 
     /// \dotfile RenderProperties_blendEquationAlpha.dot 
     auto_ptr< SFString > blendEquationAlpha;
 
-		/// The blendColor field specifies the blend color. See
-		/// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendColor.xml">opengl glBlendColor reference</a>
-		/// for more information.
+    /// The blendColor field specifies the blend color. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glBlendColor.xml">opengl glBlendColor reference</a>
+    /// for more information.
     ///
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> 0, 0, 0, 1 \n
+    /// <b>Default value:</b> 0, 0, 0, 1 \n
     /// 
     /// \dotfile RenderProperties_blendColor.dot 
     auto_ptr< SFColorRGBA > blendColor;
     
+    /// The blendEnabled field specifies if blending should be enabled or not.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> TRUE \n
+    /// 
+    /// \dotfile RenderProperties_blendEnabled.dot 
+    auto_ptr< SFBool > blendEnabled;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:

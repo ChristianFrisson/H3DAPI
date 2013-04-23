@@ -57,6 +57,7 @@ namespace RenderPropertiesInternals {
   FIELDDB_ELEMENT( RenderProperties, blendEquationRGB, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, blendEquationAlpha, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, blendColor, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, blendEnabled, INPUT_OUTPUT );
   
 }
 
@@ -79,7 +80,8 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
                                     Inst< SFString    > _blendFuncDstFactorAlpha,
                                     Inst< SFString    > _blendEquationRGB,
                                     Inst< SFString    > _blendEquationAlpha,
-                                    Inst< SFColorRGBA      > _blendColor
+                                    Inst< SFColorRGBA      > _blendColor,
+                                    Inst< SFBool      > _blendEnabled
 
  ) :
   X3DAppearanceChildNode( _displayList, _metadata ),
@@ -99,7 +101,8 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   blendFuncDstFactorAlpha( _blendFuncDstFactorAlpha ),
   blendEquationRGB ( _blendEquationRGB ),
   blendEquationAlpha ( _blendEquationAlpha ),
-  blendColor( _blendColor ) {
+  blendColor( _blendColor ),
+  blendEnabled( _blendEnabled ){
 
   type_name = "RenderProperties";
   database.initFields( this );
@@ -112,6 +115,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   colorBufferGreenWriteEnabled->setValue( true );
   colorBufferBlueWriteEnabled->setValue( true );
   colorBufferAlphaWriteEnabled->setValue( true );
+  blendEnabled->setValue( true );
 
   alphaFunc->addValidValue ( "NEVER" );
   alphaFunc->addValidValue ( "LESS" );
@@ -231,6 +235,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   blendEquationRGB->route( displayList );
   blendEquationAlpha->route( displayList );
   blendColor->route( displayList );
+  blendEnabled->route( displayList );
 }
 
 
@@ -352,7 +357,11 @@ void RenderProperties::render() {
 
   //  const string &alpha_test = alpha_test->getValue();
   //  if( alphaTest
-  glEnable( GL_BLEND );
+  if( blendEnabled->getValue() ) {
+    glEnable( GL_BLEND );
+  } else {
+    glDisable( GL_BLEND );
+  }
 
 
   // src factors
