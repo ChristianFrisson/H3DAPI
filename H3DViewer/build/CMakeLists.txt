@@ -39,37 +39,21 @@ SET(H3DViewer_MINOR_VERSION "2")
 SET(H3DViewer_BUILD_VERSION "1")
 SET( H3DVIEWER_APP_NAME "H3DViewer ${H3DViewer_MAJOR_VERSION}.${H3DViewer_MINOR_VERSION}.${H3DViewer_BUILD_VERSION}" )
 
-# Source files.
-SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerApp.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/WxFrame.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/WxFrame.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/WxWidgetsWindow.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialogPropGrid.cpp"  
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerFieldValuesDialogPropGrid.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerTreeViewDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPluginsDialog.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPluginsDialog.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPopupMenus.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPopupMenus.h"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.h" )
-
 # Include directories.
 INCLUDE_DIRECTORIES( ../src )
+
+INCLUDE( "${H3DViewer_SOURCE_DIR}/H3DViewerSourceFiles.txt" )
 
 # Add the H3DViewer.rc resource file if Visual Studio
 IF(MSVC)
   SET( H3DViewer_SRCS ${H3DViewer_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer.rc
                                         ${H3DViewer_SOURCE_DIR}/H3DViewer.ico )
 ENDIF(MSVC)
+
+# Add the directory to INCLUDE_DIRECTORIES before any other statement to make sure that this header file is found first.first.
+# This assumes that we always use "#include <path/include_header.h>" in our code even if the file is actually found in
+# the same directory as the file that contains the include statement.
+INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR}/include )
 
 # Add required libs to this variable.
 SET(requiredLibs)
@@ -257,10 +241,20 @@ IF( MSVC )
   ENDIF( SubWCRev AND ${H3DViewer_is_working_copy} EQUAL 0 )
 ENDIF(MSVC)
 
-CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
 
-# Link against requiredLibs and optionalLibs.
-TARGET_LINK_LIBRARIES( H3DViewer ${requiredLibs} ${optionalLibs} )
+IF( EXISTS ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
+  FILE( REMOVE ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
+ENDIF( EXISTS ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
+CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/H3DViewerConfig.h )
+
+IF( NOT GENERATE_CPACK_PROJECT )
+  # Install header files on non-windows system (e.g. Unix).
+  INSTALL( FILES ${CMAKE_CURRENT_BINARY_DIR}/include/H3DViewerConfig.h
+           DESTINATION ${H3DViewer_SOURCE_DIR}/../src )
+ENDIF( NOT GENERATE_CPACK_PROJECT )
+
+# Link against requiredLibs.
+TARGET_LINK_LIBRARIES( H3DViewer ${requiredLibs} )
 
 # Set postfix for debug version of H3DViewer.
 SET_TARGET_PROPERTIES( H3DViewer PROPERTIES DEBUG_POSTFIX "_d" )

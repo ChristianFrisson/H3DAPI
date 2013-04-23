@@ -16,8 +16,11 @@ IF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTA
   SET( H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET TRUE )
 ENDIF(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT AND NOT H3D_CMAKE_INSTALL_PREFIX_ALREADY_SET )
 
-# Set these variables so subdirectories ( added by ADD_SUBDIRECTORY ) can figure out where include files are.
-SET( H3DAPI_INCLUDE_DIR "${H3DAPI_SOURCE_DIR}/../include" )
+# Add the directory to INCLUDE_DIRECTORIES before any other statement to make sure that this header file is found first.
+# This assumes that we always use "#include <path/include_header.h>" in our code even if the file is actually found in
+# the same directory as the file that contains the include statement.
+INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR}/include )
+SET( H3DAPI_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include ${H3DAPI_SOURCE_DIR}/../include CACHE INTERNAL "Set to internal to propagate change" )
 
 # Make include files in paths like /usr/local/include have preference before
 # files in OSX frameworks. 
@@ -595,7 +598,16 @@ ENDIF( GENERATE_NODEROUTESTODOTFILE_BUILD )
 
 
 # autogenerate H3DAPI.h depending on the libraries available.
-CONFIGURE_FILE( ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.cmake ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.h )
+IF( EXISTS ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.h )
+  FILE( REMOVE ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.h )
+ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.h )
+CONFIGURE_FILE( ${H3DAPI_SOURCE_DIR}/../include/H3D/H3DApi.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/H3D/H3DApi.h )
+
+IF( NOT GENERATE_CPACK_PROJECT )
+  # Install header files on non-windows system (e.g. Unix).
+  INSTALL( FILES ${CMAKE_CURRENT_BINARY_DIR}/include/H3D/H3DApi.h
+           DESTINATION ${H3DAPI_SOURCE_DIR}/../include/H3D )
+ENDIF( NOT GENERATE_CPACK_PROJECT )
 
 # Intall directories.
 INSTALL( TARGETS H3DAPI

@@ -84,7 +84,7 @@
 /// sound files will then not be supported.
 #cmakedefine HAVE_LIBVORBIS
 
-///Undef if you do not have libaudiofile(www.68k.org/~michael/audiofile)
+/// Undef if you do not have libaudiofile(www.68k.org/~michael/audiofile)
 /// installed. Most sound files will then not be supported.
 #cmakedefine HAVE_LIBAUDIOFILE
 
