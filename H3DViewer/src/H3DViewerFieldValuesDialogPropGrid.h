@@ -32,7 +32,7 @@
 
 #define USE_VECTOR_PROPERTIES
 
-#include "H3DViewerConfig.h"
+#include <H3DViewerConfig.h>
 
 #ifdef HAVE_WXPROPGRID
 

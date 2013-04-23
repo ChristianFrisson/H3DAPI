@@ -32,7 +32,7 @@
 #include <wx/wx.h>
 
 #include <H3D/H3DWindowNode.h>
-#include "H3DViewerConfig.h"
+#include <H3DViewerConfig.h>
 #include <wx/glcanvas.h>
 #include <wx/dnd.h>
 #if !wxUSE_GLCANVAS

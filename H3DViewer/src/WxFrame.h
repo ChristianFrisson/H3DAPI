@@ -55,7 +55,7 @@
 #include "WxConsoleDialog.h"
 #include "H3DViewerTreeViewDialog.h"
 #include "H3DViewerPluginsDialog.h"
-#include "H3DViewerConfig.h"
+#include <H3DViewerConfig.h>
 
 using namespace std;
 using namespace H3D;

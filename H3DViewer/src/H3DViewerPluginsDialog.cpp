@@ -32,7 +32,7 @@
 #include <wx/confbase.h>
 #include <memory>
 
-#include "H3DViewerConfig.h"
+#include <H3DViewerConfig.h>
 #include <H3D/LibraryInfo.h>
 #include <H3DUtil/DynamicLibrary.h>
 
