@@ -255,10 +255,12 @@ namespace H3D {
     /// "DEPTH24" - 24 bit depth buffer.
     /// "DEPTH32" - 32 bit depth buffer.
     /// "DEPTH32F" - 32 bit floating point depth buffer.
+    /// "DEPTH_STENCIL" - default combined depth and stencil buffer type.
+    /// "DEPTH24_STENCIL8" - 24 bit depth buffer, 8 bit stencil buffer.
     ///
     /// <b>Access type:</b> initializeOnly
     /// <b>Default value:</b> "DEPTH"
-    /// <b>Valid values:</b> "DEPTH", "DEPTH16", "DEPTH24", "DEPTH32", "DEPTH32F"
+    /// <b>Valid values:</b> "DEPTH", "DEPTH16", "DEPTH24", "DEPTH32", "DEPTH32F", "DEPTH_STENCIL", "DEPTH24_STENCIL8"
     auto_ptr< SFString > depthBufferType;
 
     /// The outputTextureType field determines the output type of the generated
@@ -365,6 +367,10 @@ namespace H3D {
       return always_use_existing_viewport;
     }
 
+    /// The FrameBufferTextureGenerator that are currently in use in the
+    /// application. 
+    static std::set< FrameBufferTextureGenerator * > fbo_nodes;
+
   protected:
 
     /// Converts a string to a OpenGL internal texture format.
@@ -372,6 +378,12 @@ namespace H3D {
 
     /// Converts a string to a OpenGL internal depth texture format.
     GLenum stringToInternalDepthFormat( const string &s );
+
+    /// Converts a string to a OpenGL depth texture format.
+    GLenum stringToDepthFormat( const string &s );
+
+    /// Converts a string to a OpenGL depth type format.
+    GLenum stringToDepthType( const string &s );
 
     /// Checks the currently bound fbo for completeness and prints a error message
     /// if something is wrong. True is returned if fbo complete. 

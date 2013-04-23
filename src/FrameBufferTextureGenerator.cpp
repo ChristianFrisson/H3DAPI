@@ -34,6 +34,8 @@
 
 using namespace H3D;
 
+std::set< FrameBufferTextureGenerator*> FrameBufferTextureGenerator::fbo_nodes;
+
 H3DNodeDatabase FrameBufferTextureGenerator::database( 
                                                       "FrameBufferTextureGenerator", 
                                                       &newInstance< FrameBufferTextureGenerator >,
@@ -74,6 +76,7 @@ FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
       glDeleteRenderbuffersEXT(1, &multi_samples_color_ids[i] );
     } 
   }
+  fbo_nodes.erase( this );
 }
 
 FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    > _addChildren,
@@ -140,6 +143,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   depthBufferType->addValidValue( "DEPTH24" );
   depthBufferType->addValidValue( "DEPTH32" );
   depthBufferType->addValidValue( "DEPTH32F" );
+  depthBufferType->addValidValue( "DEPTH_STENCIL" );
+  depthBufferType->addValidValue( "DEPTH24_STENCIL8" );
   depthBufferType->setValue( "DEPTH" );
   
   update->addValidValue( "NONE" );
@@ -150,6 +155,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   // turn off display list since we want to get new values of the width
   // and height each loop to see if they have changed.
   displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
+
+  fbo_nodes.insert( this );
 }
 
 #ifdef H3D_WINDOWS
@@ -209,6 +216,8 @@ void FrameBufferTextureGenerator::render()     {
                << " or \"ALWAYS\". Using \"ALWAYS\" instead." << endl;
   }
 
+  GLint previous_fbo_id;
+  glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
   /// Save current state.
   glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT );
 
@@ -226,6 +235,8 @@ void FrameBufferTextureGenerator::render()     {
     if( current_height == -1 ) current_height = viewport[3];
   } 
 
+  bool using_stencil_buffer = (depthBufferType->getValue() == "DEPTH24_STENCIL8" ||
+                               depthBufferType->getValue() == "DEPTH_STENCIL" );
 
   if( !always_use_existing_viewport ) {
     // Set viewport to span entire frame buffer 
@@ -241,6 +252,7 @@ void FrameBufferTextureGenerator::render()     {
   
   // Don't do anything if buffer resize had an error.
   if( !last_resize_success ) {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
     glPopAttrib();
     return;
   }
@@ -293,7 +305,7 @@ void FrameBufferTextureGenerator::render()     {
       }
 
       // Clear buffers.
-      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
       
       // Render background
       if ( bg && bgVP ) {
@@ -344,7 +356,7 @@ void FrameBufferTextureGenerator::render()     {
       
       // blit multi sample buffers to textures.
       if( generateDepthTexture->getValue() ) {
-        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
       }
       
       for( unsigned int i = 0; i < color_ids.size(); i++ ) {
@@ -367,6 +379,8 @@ void FrameBufferTextureGenerator::render()     {
       // set the render target to the correct slice for depth texture.
       if( output_texture_type == "2D_ARRAY" && generateDepthTexture->getValue() ) {
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, i );
+        if( using_stencil_buffer )
+          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0, i );
       }
 
       // set the render target to the correct slice for color textures.
@@ -379,14 +393,18 @@ void FrameBufferTextureGenerator::render()     {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
       } 
      
-      if( !checkFBOCompleteness() ) return;
+      if( !checkFBOCompleteness() ) {
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
+        glPopAttrib();        
+        return;
+      }
 
       // render child
       if( render_func ) {
         render_func( this, i, render_func_data );
       } else {
         // Clear buffers.
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
         if( c[i] ) {
           H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
@@ -404,7 +422,7 @@ void FrameBufferTextureGenerator::render()     {
         
         // blit multi sample buffers to textures.
         if( generateDepthTexture->getValue() ) {
-          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
         }
         
         for( unsigned int i = 0; i < color_ids.size(); i++ ) {
@@ -424,7 +442,7 @@ void FrameBufferTextureGenerator::render()     {
   }
 
   // reset fbo
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
 
   // reset previous state.
   glPopAttrib();
@@ -550,6 +568,8 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
 
   string output_texture_type = outputTextureType->getValue();
   const vector< string > &color_texture_types = generateColorTextures->getValue();
+  bool using_stencil_buffer = (depthBufferType->getValue() == "DEPTH24_STENCIL8" ||
+                               depthBufferType->getValue() == "DEPTH_STENCIL");
      
   GLenum texture_type = GL_TEXTURE_2D;
   if( output_texture_type == "2D_RECTANGLE" ) {
@@ -581,6 +601,8 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
   }
 
   GLenum depth_internal_format = stringToInternalDepthFormat( depthBufferType->getValue() );
+  GLenum depth_format = stringToDepthFormat( depthBufferType->getValue() );
+  GLenum depth_type = stringToDepthType( depthBufferType->getValue() );
 
   if( nr_samples > 0 ) {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
@@ -589,6 +611,8 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_depth_id );
     glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, depth_internal_format, width, height);
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, multi_samples_depth_id);
+    if( using_stencil_buffer )
+      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, multi_samples_depth_id);
 
     for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_color_ids[i] );
@@ -619,14 +643,20 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
         
       if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
         glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, depth_internal_format, width, height, depth, 0, 
-                     GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+                     depth_format, depth_type, NULL);
         
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0 );
+        if( using_stencil_buffer )
+          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,depth_id, 0, 0 );
       } else {
         glTexImage2D( texture_type, 0, depth_internal_format, width, height, 0, 
-                      GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+                      depth_format, depth_type, NULL);
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                   texture_type, depth_id, 0 );
+        
+        if( using_stencil_buffer )
+          glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+                                    texture_type, depth_id, 0);
       } 
     }
   } else {
@@ -635,9 +665,16 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
                              width, height); 
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                  GL_RENDERBUFFER_EXT, depth_id);
+    if( using_stencil_buffer )
+      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+                                   GL_RENDERBUFFER_EXT, depth_id);
   }
     
   // set up stencil buffer
+  // NOTE: seems like separate stencil buffers are not supported by current hardware.
+  // Instead they use a special format and packs the depth and stencil buffer into
+  // the same buffer. So for now the only supported way to have a stencil buffer
+  // is to use the DEPTH_STENCIL depthBufferType.
   /*glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, stencil_id);
     glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT,
     width, height); 
@@ -770,33 +807,65 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
   return internal_format;
 }
 
+GLenum FrameBufferTextureGenerator::stringToDepthFormat( const string &s ) {
+  GLenum format = GL_DEPTH_COMPONENT;
+  if( (s == "DEPTH_STENCIL" ||
+       s == "DEPTH24_STENCIL8" ) &&
+      GLEW_EXT_packed_depth_stencil ) {
+    format = GL_DEPTH_STENCIL_EXT;
+  }
+  return format;
+}
+
+GLenum FrameBufferTextureGenerator::stringToDepthType( const string &s ) {
+  GLenum type = GL_FLOAT;
+  if( (s == "DEPTH_STENCIL" ||
+       s == "DEPTH24_STENCIL8" ) &&
+      GLEW_EXT_packed_depth_stencil ) {
+    type = GL_UNSIGNED_INT_24_8_EXT;
+  }
+  return type;
+}
+
 GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s ) {
 
-  GLint internal_format = GL_DEPTH_COMPONENT;
+  GLenum internal_format = GL_DEPTH_COMPONENT;
 
   if( s == "DEPTH16" ) { 
     if( GLEW_ARB_depth_texture ) {
       internal_format = GL_DEPTH_COMPONENT16_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support dpeth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(4) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "DEPTH24" ) { 
     if( GLEW_ARB_depth_texture ) {
       internal_format = GL_DEPTH_COMPONENT24_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support dpeth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(4) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "DEPTH32" ) { 
     if( GLEW_ARB_depth_texture ) {
       internal_format = GL_DEPTH_COMPONENT32_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support dpeth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(4) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "DEPTH32F" ) { 
     if( GLEW_ARB_depth_buffer_float ) {
       internal_format = GL_DEPTH_COMPONENT32F;
     } else {
-      Console(4) << "Warning: Your graphics card does not support floating point depth textures (ARB_depth_buffer_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(4) << "Warning: Your graphics card does not support floating point depth textures (ARB_depth_buffer_float). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
+    }
+  } else if( s == "DEPTH24_STENCIL8" ) { 
+    if( GLEW_EXT_packed_depth_stencil ) {
+      internal_format = GL_DEPTH24_STENCIL8_EXT;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support packed depth stencil buffers(EXT_packed_depth_stencil). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
+    }
+  } else if( s == "DEPTH_STENCIL" ) { 
+    if( GLEW_EXT_packed_depth_stencil ) {
+      internal_format = GL_DEPTH_STENCIL_EXT;
+    } else {
+      Console(4) << "Warning: Your graphics card does not support packed depth stencil buffers(EXT_packed_depth_stencil). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
     }
   } else {
     if( s != "DEPTH" ) {
