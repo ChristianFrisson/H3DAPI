@@ -447,6 +447,7 @@ IF( MSVC )
              DOC   "Set to SubWCRev.exe that comes with TortoiseSVN. Used to find svn revision number." )
   MARK_AS_ADVANCED( SubWCRev )
 
+  SET( H3DAPI_is_working_copy 10 )
   IF( SubWCRev )
 		EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DAPI_SOURCE_DIR}/../
 										 RESULT_VARIABLE H3DAPI_is_working_copy )
