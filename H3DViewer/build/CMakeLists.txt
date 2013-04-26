@@ -244,11 +244,11 @@ IF( EXISTS ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
 ENDIF( EXISTS ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.h )
 CONFIGURE_FILE( ${H3DViewer_SOURCE_DIR}/../src/H3DViewerConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/include/H3DViewerConfig.h )
 
-IF( NOT GENERATE_CPACK_PROJECT )
+IF( NOT ( GENERATE_CPACK_PROJECT OR GENERATE_H3DVIEWER_CPACK_PROJECT ) )
   # Install header files on non-windows system (e.g. Unix).
   INSTALL( FILES ${CMAKE_CURRENT_BINARY_DIR}/include/H3DViewerConfig.h
            DESTINATION ${H3DViewer_SOURCE_DIR}/../src )
-ENDIF( NOT GENERATE_CPACK_PROJECT )
+ENDIF( NOT ( GENERATE_CPACK_PROJECT OR GENERATE_H3DVIEWER_CPACK_PROJECT ) )
 
 # Link against requiredLibs.
 TARGET_LINK_LIBRARIES( H3DViewer ${requiredLibs} )
