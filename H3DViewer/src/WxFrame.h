@@ -53,6 +53,9 @@
 #include <H3DUtil/Console.h>
 
 #include "WxConsoleDialog.h"
+#ifdef HAVE_PROFILER
+#include "WxProfiledResultDialog.h"
+#endif
 #include "H3DViewerTreeViewDialog.h"
 #include "H3DViewerPluginsDialog.h"
 #include <H3DViewerConfig.h>
@@ -293,6 +296,9 @@ public:
   void RenderMode( wxCommandEvent & event );
   void StereoRenderMode( wxCommandEvent & event );
   void ShowConsole( wxCommandEvent & event );
+#ifdef HAVE_PROFILER
+  void ShowProfiledResult( wxCommandEvent & event );
+#endif
   void ShowTreeView( wxCommandEvent & event );
   void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
@@ -436,6 +442,9 @@ public:
 
 
   WxConsoleDialog * the_console;
+#ifdef HAVE_PROFILER
+  WxProfiledResultDialog * the_profiled_result;
+#endif
   H3DViewerTreeViewDialog * tree_view_dialog;
 #ifdef HAVE_WXPROPGRID
   H3DViewerFieldValuesDialogPropGrid * program_settings_dialog;
@@ -509,6 +518,9 @@ enum
   FRAME_TOGGLE_FULLSCREEN,
   FRAME_MIRROR,
   FRAME_CONSOLE,
+#ifdef HAVE_PROFILER
+  FRAME_PROFILEDRESULT,
+#endif
   FRAME_TREEVIEW,
   FRAME_PLUGINS,
   FRAME_FRAMERATE,

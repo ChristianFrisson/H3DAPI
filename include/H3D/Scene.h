@@ -33,11 +33,17 @@
 #include <H3D/H3DWindowNode.h>
 #include <H3D/SAIFunctions.h>
 #include <H3D/ShadowCaster.h>
+#include <string>
+
 
 // HAPI includes
 #include <H3DUtil/Threads.h>
-
+#ifdef HAVE_PROFILER
+#include <H3DUtil/H3DTimer.h>
+#endif
 #include <vector>
+
+
 
 namespace H3D {
 
@@ -91,7 +97,29 @@ namespace H3D {
       //      routes
     };
     */
-
+    #ifdef HAVE_PROFILER
+    // profiledResult structure
+    class profiledResultData
+    {
+      private:
+      pthread_t thread_id;
+      std::string profiled_result_string;
+      std::string thread_debug_string;
+      public:
+      void setResult(pthread_t id,std::string result_profile){this->thread_id=id;this->profiled_result_string="Profiling result:\n"+result_profile;}
+      void setResult(pthread_t id,std::string result_profile, std::string result_thread_debug)
+      {
+        this->thread_id=id;
+        this->profiled_result_string=result_profile;
+        this->thread_debug_string=result_thread_debug;
+      }
+      void setThread_debug(std::string result){this->thread_debug_string=result;}
+      bool profileIsEmpty(){return this->profiled_result_string.empty();}
+      pthread_t getId(){return thread_id;}
+      std::string getResult();
+      //std::string getString(){return profiled_result_string;}
+    };
+    #endif
 
     typedef TypedMFNode< H3DWindowNode > MFWindow;
     typedef TypedSFNode< X3DChildNode > SFChildNode;
@@ -99,7 +127,12 @@ namespace H3D {
     /// Constructor.
     Scene( Inst< SFChildNode > _sceneRoot   = 0,
            Inst< MFWindow    > _window      = 0,
-           Inst< SFFloat     > _frameRate   = 0 );
+           Inst< SFFloat     > _frameRate   = 0
+#ifdef HAVE_PROFILER
+           ,
+           Inst< MFString     > _profiledResult   = 0 
+#endif
+           );
 
     /// Destructor.
     ~Scene();
@@ -156,7 +189,16 @@ namespace H3D {
     ///
     /// <b>Access type: </b> outputOnly
     auto_ptr< SFFloat >  frameRate;
+#ifdef HAVE_PROFILER
+    auto_ptr< MFString > profiledResult;
+    
+    Scene::profiledResultData H3D_scene_result;
+    Scene::profiledResultData haptic_result;
+    Scene::profiledResultData H3D_sofa_result;
 
+    bool outputonce ;
+    std::string generateProfileResult();
+#endif
     /// Current time within the simulation, updated during each graphic loop.
     ///
     /// <b>Access type: </b> outputOnly

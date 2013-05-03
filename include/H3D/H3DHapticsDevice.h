@@ -36,6 +36,7 @@
 #include <H3D/SFFloat.h>
 #include <H3D/SFInt32.h>
 #include <H3D/SFBool.h>
+#include <H3D/SFString.h>
 #include <H3D/SFMatrix4f.h>
 #include <H3D/SFVec3f.h>
 #include <H3D/MFVec3f.h>
@@ -296,7 +297,12 @@ namespace H3D {
                       Inst< MFVec3f         > _proxyPositions         = 0,
                       Inst< SFBool          > _followViewpoint        = 0,
                       Inst< SFVec3f         > _deviceVelocity         = 0,
-                      Inst< TrackerVelocity > _trackerVelocity         = 0 );
+                      Inst< TrackerVelocity > _trackerVelocity        = 0
+                      #ifdef HAVE_PROFILER
+                      ,
+                      Inst< SFString        > _profiledResult         = 0
+                      #endif
+                      );
 
     /// Destuctor.
     virtual ~H3DHapticsDevice() {
@@ -413,7 +419,9 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_trackerPosition.dot
     auto_ptr< TrackerPosition >    trackerPosition;
-
+#ifdef HAVE_PROFILER
+    auto_ptr< SFString >  profiledResult;
+#endif
     /// The orientation of the device in the world coordinates of the API.
     ///
     /// <b>Access type:</b> outputOnly \n

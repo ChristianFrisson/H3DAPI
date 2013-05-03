@@ -32,44 +32,40 @@
 //  Includes
 // ---------------------------------------------------------------------------
 
-#include "WxConsoleDialog.h"
+#include "WxProfiledResultDialog.h"
+#ifdef HAVE_PROFILER
+
 #include <H3DUtil/Console.h>
+#include <wx/clipbrd.h>
+#include <H3D/Scene.h>
 
 using namespace std;
 
-std::streamsize WxConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s, 
-                                                          std::streamsize n ) {
-  // output to wxTextCtrl directly if in main wx thread, otherwise
-  // save to temporary wxString.
-  if( wxIsMainThread() ) {
-    text_ctrl->AppendText( wxString( s, wxConvUTF8) );
-  } else {
-    text_lock.lock();
-    other_threads_text.Append( wxString( s, wxConvUTF8 ) );
-    text_lock.unlock();
-  }
-  
-  return n;
-}
 
-WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
+WxProfiledResultDialog::WxProfiledResultDialog ( wxWindow *parent,
                  wxWindowID id,
                  const wxString &title,
                  const wxPoint& pos,
                  const wxSize& size,
                  long style
-                 ): wxDialog (parent, id, title, pos, size, style)
+                 ): wxDialog(parent, id, title, pos, size, style)
 {
   wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
-  
   // create text ctrl with minimal size 400x200
   logText = (wxTextCtrl *) NULL;
-  logText = new wxTextCtrl ( this, -1, wxT(""),
+ /* wxRichTextCtrl* logText = new wxRichTextCtrl ( this, -1, wxT(""),
                              wxDefaultPosition, wxSize(400, 200),
-                             wxTE_MULTILINE | wxTE_READONLY );
+                             wxTE_MULTILINE | wxTE_READONLY|wxTE_RICH2);*/
+  logText = new wxTextCtrl( this, -1, wxT(""),
+                             wxDefaultPosition, wxSize(400, 200),
+                             wxTE_MULTILINE | wxTE_READONLY|wxTE_RICH );
 
+  logText->SetFont(wxSystemSettings::GetFont(wxSYS_ANSI_FIXED_FONT));
+  //logText->SetDoubleBuffered(true);
+  logText->SetFocus();
   clip_board = new wxClipboard();
-
+  //logText->ShowNativeCaret(false);
+  //logText->HideNativeCaret();
   topsizer->Add(logText, 
                 1,            // make vertically stretchable
                 wxEXPAND |    // make horizontally stretchable
@@ -110,49 +106,51 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   
   topsizer->SetSizeHints( this );   // set size hints to honour minimum size
   
-  // redirect the console to logText wxTextCtrl.
-  console_stream_buf = new ConsoleStreamBuf( logText );
-  console_stream.reset( new ostream( console_stream_buf ) );
-  H3DUtil::Console.setOutputStream( *console_stream );
+  test = 0;
+  
+  s =  *H3D::Scene::scenes.begin();
+  //// redirect the console to logText wxTextCtrl.
+  //console_stream_buf = new ConsoleStreamBuf( logText );
+  //console_stream.reset( new ostream( console_stream_buf ) );
+  //H3DUtil::Console.setOutputStream( *console_stream );
 
-  // redirect the cout, cerr to logText wxTextCtrl so sofa output can be redirected to wxDialog
-  orig_cout_buf = cout.rdbuf(); 
-  orig_cerr_buf = cerr.rdbuf();
-  cout.rdbuf(console_stream_buf);
-  cerr.rdbuf(console_stream_buf);
+  //// redirect the cout, cerr to logText wxTextCtrl so sofa output can be redirected to wxDialog
+  //orig_cout_buf = cout.rdbuf(); 
+  //orig_cerr_buf = cerr.rdbuf();
+  //cout.rdbuf(console_stream_buf);
+  //cerr.rdbuf(console_stream_buf);
 }
 
-WxConsoleDialog::~WxConsoleDialog() {
+WxProfiledResultDialog::~WxProfiledResultDialog() {
   // restore cout and cerr
-  cout.rdbuf(orig_cout_buf);
-  cerr.rdbuf(orig_cerr_buf);
+  //cout.rdbuf(orig_cout_buf);
+  //cerr.rdbuf(orig_cerr_buf);
 
-  // The contained buffer is not deleted, set a new buffer and delete
-  // buffer to clear up memory.
-  streambuf * tmp_buf = console_stream->rdbuf(NULL);
-  
-  console_stream.reset( NULL );
-  delete tmp_buf;
+  //// The contained buffer is not deleted, set a new buffer and delete
+  //// buffer to clear up memory.
+  //streambuf * tmp_buf = console_stream->rdbuf(NULL);
+  //
+  //console_stream.reset( NULL );
+  //delete tmp_buf;
 }
 
 /*******************Event Table*********************/
-BEGIN_EVENT_TABLE(WxConsoleDialog, wxDialog)
-  EVT_BUTTON (wxID_CLOSE, WxConsoleDialog::OnConsoleClose)
-  EVT_BUTTON (wxID_CLEAR, WxConsoleDialog::OnConsoleClear)
-  EVT_BUTTON (wxID_ANY,   WxConsoleDialog::OnCopyToClipboard)
-  EVT_IDLE (WxConsoleDialog::OnIdle)
+BEGIN_EVENT_TABLE(WxProfiledResultDialog, wxDialog)
+  EVT_BUTTON (wxID_CLOSE, WxProfiledResultDialog::OnConsoleClose)
+  EVT_BUTTON (wxID_CLEAR, WxProfiledResultDialog::OnConsoleClear)
+  EVT_BUTTON (wxID_ANY,   WxProfiledResultDialog::OnCopyToClipboard)
+  EVT_IDLE (WxProfiledResultDialog::OnIdle)
+  /*EVT_SCROLL(WxProfiledResultDialog::OnScrollbar)*/
+  //EVT_PAINT(WxProfiledResultDialog::OnPaint)
+  
 END_EVENT_TABLE()
 
 /*******************Member Functions*********************/
-void WxConsoleDialog::OnConsoleClose(wxCommandEvent &event) {
+void WxProfiledResultDialog::OnConsoleClose(wxCommandEvent &event) {
   Close(TRUE);
 }
 
-void WxConsoleDialog::OnConsoleClear(wxCommandEvent &event) {
-  WxConsoleDialog::logText->Clear();
-}
-
-void WxConsoleDialog::OnCopyToClipboard(wxCommandEvent &event){
+void WxProfiledResultDialog::OnCopyToClipboard(wxCommandEvent &event){
   bool copied = false;
   if(!logText->IsEmpty()){
     if(clip_board->Open()){
@@ -170,20 +168,39 @@ void WxConsoleDialog::OnCopyToClipboard(wxCommandEvent &event){
   }
 }
 
-void WxConsoleDialog::OnIdle(wxIdleEvent &event) {
-  wxString output;
+void WxProfiledResultDialog::OnTextChange(wxCommandEvent &event)
+{
+  
+  std::cout<<"changed"<<std::endl;
+  //WxProfiledResultDialog::logText->SetValue("chagned");
+}
 
-  // transfer text output to console from other threads than
-  // main thread to the output variable and reset the console.
-  console_stream_buf->text_lock.lock();
-  if( !console_stream_buf->other_threads_text.IsEmpty() ) {
-    output.Alloc( 1000 );
-    output.swap( console_stream_buf->other_threads_text );
-  }
-  console_stream_buf->text_lock.unlock();
+void WxProfiledResultDialog::OnConsoleClear(wxCommandEvent &event) {
+  WxProfiledResultDialog::logText->Clear();
+}
 
-  // Send available text to wxTextCtrl.
-  if( !output.IsEmpty() ) {
-    logText->AppendText( output );
+void WxProfiledResultDialog::OnScrollbar(wxScrollEvent& event){
+  H3DUtil::Console(4)<<"scroll bar event happen"<<std::endl;
+}
+
+void WxProfiledResultDialog::OnPaint(wxPaintEvent &evetn){
+  //wxBufferedPaintDC dc(this);
+  //wxSize sz = GetClientSize();
+  ///*dc.DrawText(output,10,10);*/
+  //output.Alloc(1000);
+  ////std::cout<<"output value"<<std::endl;
+  //output =  s->profiledResult->getValueAsString();
+  //
+  //logText->SetValue(output);
+  //std::cout<<"paint"<<std::endl;
+}
+void WxProfiledResultDialog::OnIdle(wxIdleEvent &event) {
+
+  std::string output = s->profiledResult->getValueAsString();
+
+  if(!output.empty())
+  {
+    logText->SetValue(output); 
   }
 }
+#endif

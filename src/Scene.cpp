@@ -30,6 +30,9 @@
 
 #include <H3D/Scene.h>
 #include <H3DUtil/TimeStamp.h>
+#ifdef HAVE_PROFILER
+#include <H3DUtil/H3DTimer.h>
+#endif
 #include <H3D/DeviceInfo.h>
 #include <GL/glew.h>
 #ifdef MACOSX
@@ -67,7 +70,6 @@ H3DUtil::MutexLock Scene::callback_lock;
 Scene::CallbackList Scene::callbacks;
 Scene::ProgramSettingsCallbackList Scene::program_settings_callbacks;
 Scene::ProgramSettings Scene::program_settings;
-
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase Scene::database( 
                                 "Scene", 
@@ -78,6 +80,9 @@ namespace SceneInternals {
   FIELDDB_ELEMENT( Scene, sceneRoot, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Scene, window, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Scene, frameRate, OUTPUT_ONLY );
+#ifdef HAVE_PROFILER
+  FIELDDB_ELEMENT( Scene, profiledResult, INPUT_OUTPUT );
+#endif
 }
 
 
@@ -121,11 +126,49 @@ namespace SceneInternal {
     }
   }
 }
-
-
+#ifdef HAVE_PROFILER
+std::string Scene::generateProfileResult()
+{
+  haptic_result;
+  H3D_sofa_result;
+  this->H3D_scene_result;
+  
+  std::stringstream result;
+  if(H3D_sofa_result.getResult().empty()||H3D_scene_result.getResult().empty()||haptic_result.getResult().empty())
+  {
+    result<<"";
+  }
+  if(!H3D_scene_result.getResult().empty())
+  {
+    result<<std::endl
+          <<"====================================Main Thread=================================="<<std::endl;
+    result<<H3D_scene_result.getResult();
+    result<<"=======================================END======================================="<<std::endl;
+  }
+  if(!haptic_result.getResult().empty())
+  {
+    result<<"===================================Haptic Thread================================="<<std::endl;
+    result<<haptic_result.getResult();
+    result<<"=======================================END======================================="<<std::endl;
+  }
+  if(!H3D_sofa_result.getResult().empty())
+  {
+    result<<"====================================Sofa Thread=================================="<<std::endl;
+    result<<H3D_sofa_result.getResult();
+    result<<"=======================================END======================================="<<std::endl;
+  }
+  return result.str();
+}
+#endif
 void Scene::idle() {
   // calculate and set frame rate
-
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::begin("H3D_scene");
+  H3DUtil::H3DTimer::stepBegin("H3D_scene_loop");
+  //H3DUtil::H3DTimer::begin("H3D_scene2");
+  //H3DUtil::H3DTimer::stepBegin("H3D_inner");
+#endif HAVE_PROFILER
+  
   TimeStamp t;
   TimeStamp dt = t - last_time;
   frameRate->setValue( 1.0f / (H3DFloat)(dt), id );
@@ -133,12 +176,12 @@ void Scene::idle() {
   time->setValue( t, id );
 
 #ifdef THREAD_LOCK_DEBUG
+#ifndef HAVE_PROFILER
   static TimeStamp last_update_time;
-
+  #define THREAD_LOCK_DEBUG_UPDATE_INTERVAL 2
   ThreadBase::ThreadLockInfo &main_info =ThreadBase::thread_lock_info[ ThreadBase::getMainThreadId() ];
   main_info.total_run_time += dt;
   main_info.period_start_time = t;
-
   if( t - last_update_time > THREAD_LOCK_DEBUG_UPDATE_INTERVAL ) {
     Console(4) << "*************************************************" << endl;
     for( ThreadBase::ThreadLockInfoMap::const_iterator i = ThreadBase::thread_lock_info.begin();
@@ -164,7 +207,68 @@ void Scene::idle() {
     }
     last_update_time = t;
   }
+#endif
+#endif
 
+  #ifdef THREAD_LOCK_DEBUG
+#ifdef HAVE_PROFILER
+  #define THREAD_LOCK_DEBUG_UPDATE_INTERVAL 2
+    static TimeStamp last_update_time;
+
+  ThreadBase::ThreadLockInfo &main_info =ThreadBase::thread_lock_info[ ThreadBase::getMainThreadId() ];
+  std::stringstream thread_debug_info_main, thread_debug_info_haptic, thread_debug_info_sofa;
+  main_info.total_run_time += dt;
+  main_info.period_start_time = t;
+  if( t - last_update_time > THREAD_LOCK_DEBUG_UPDATE_INTERVAL ) {
+    for( ThreadBase::ThreadLockInfoMap::const_iterator i = ThreadBase::thread_lock_info.begin(); i != ThreadBase::thread_lock_info.end(); i++ ) {
+      ThreadBase *thread = H3DUtil::ThreadBase::getThreadById( (*i).first );
+      const ThreadBase::ThreadLockInfo &info = (*i).second;
+      if( thread ) 
+      {
+        if(pthread_equal((*i).first,this->H3D_sofa_result.getId()))
+        {
+          // sofa thread data
+          //thread_debug_info_sofa   << "Thread lock debug:" << endl;
+          thread_debug_info_sofa   << "Thread:        " << thread->getThreadName() << endl;
+          thread_debug_info_sofa   << "Tot runtime:   " << info.total_run_time << endl;
+          thread_debug_info_sofa   << "Lock (s):      " << info.total_lock_time << endl;
+          thread_debug_info_sofa   << "Lock (%):      " << (info.total_run_time == 0 ? 0 : (info.total_lock_time / info.total_run_time) *100)  << endl << endl; 
+          H3D_sofa_result.setThread_debug(thread_debug_info_sofa.str());
+        }
+        else if(pthread_equal((*i).first,this->haptic_result.getId()))
+        {
+          // sofa thread data
+          thread_debug_info_haptic   << "Thread:        " << thread->getThreadName() << endl;
+          thread_debug_info_haptic   << "Tot runtime:   " << info.total_run_time << endl;
+          thread_debug_info_haptic   << "Lock (s):      " << info.total_lock_time << endl;
+          thread_debug_info_haptic   << "Lock (%):      " << (info.total_run_time == 0 ? 0 : (info.total_lock_time / info.total_run_time) *100)  << endl << endl; 
+          haptic_result.setThread_debug(thread_debug_info_haptic.str());
+        }
+        //// other thread
+        //Console(temp_output_level)   << "Thread:        " << thread->getThreadName() << endl;
+        //Console(temp_output_level)   << "Tot runtime:   " << info.total_run_time << endl;
+        //Console(temp_output_level)   << "Lock (s):      " << info.total_lock_time << endl;
+        //Console(temp_output_level)   << "Lock (%):      " << (info.total_run_time == 0 ? 0 : (info.total_lock_time / info.total_run_time) *100)  << endl << endl;
+      } 
+      else 
+      {
+        if( pthread_equal( (*i).first, ThreadBase::getMainThreadId() ) ) 
+        {
+          thread_debug_info_main << "Thread:        " << "Main Thread" << endl;
+          static double last_main_thread_lock_time = 0;
+          thread_debug_info_main << "Lock (%) inst: " << (info.total_run_time == 0 ? 0 : (info.total_lock_time - last_main_thread_lock_time )/ (t - last_update_time)) *100  << endl;
+          last_main_thread_lock_time = info.total_lock_time;
+          thread_debug_info_main   << "Tot runtime:   " << info.total_run_time << endl;
+          thread_debug_info_main   << "Lock (s):      " << info.total_lock_time << endl;
+          thread_debug_info_main   << "Lock (%):      " << (info.total_run_time == 0 ? 0 : (info.total_lock_time / info.total_run_time) *100)  << endl << endl;
+          H3D_scene_result.setThread_debug(thread_debug_info_main.str());
+        }
+      }
+      
+    }
+    last_update_time = t;
+  }
+#endif
 #endif
    DefaultAppearance *def_app = NULL;
   
@@ -194,7 +298,7 @@ void Scene::idle() {
   H3DMultiPassRenderObject::resetCounters();
   shadow_caster->object->clear();
   shadow_caster->light->clear();
-
+  
   DeviceInfo *di = DeviceInfo::getActive();
   if( di ) {
     vector< H3DHapticsDevice * > hds;
@@ -208,18 +312,27 @@ void Scene::idle() {
         hd->updateDeviceValues();
       }
       hds.push_back( hd );
+      // add profiled result from haptic 
+#ifdef HAVE_PROFILER
+      this->haptic_result.setResult(hd->getThread()->getThreadId(),static_cast<SFString*>(hd->getField("profiledResult"))->getValueAsString());
+#endif
+      
     }
-
     // traverse the scene graph to collect the HapticObject instances to render.
     TraverseInfo *ti = new TraverseInfo( hds );
 
     ti->setUserData( "ShadowCaster", shadow_caster.get() );
 
     X3DChildNode *c = static_cast< X3DChildNode * >( sceneRoot->getValue() );
+#ifdef HAVE_PROFILER
+    H3DUtil::H3DTimer::stepBegin("Scene_traverse");
+#endif
     if( c ) {
       c->traverseSG( *ti );
     }
-
+#ifdef HAVE_PROFILER
+    H3DUtil::H3DTimer::stepEnd("Scene_traverse");
+#endif
     /// traverse the stylus of all haptics devices
     DeviceInfo *di = DeviceInfo::getActive();
     if( di ) {
@@ -276,6 +389,8 @@ void Scene::idle() {
     if( last_traverseinfo )
       delete last_traverseinfo;
     last_traverseinfo = ti;
+
+
   } else {
     // no HapticDevices exist, but we still have to traverse the scene-graph.
     // Haptics is disabled though to avoid unnecessary calculations.
@@ -283,9 +398,15 @@ void Scene::idle() {
     ti->setUserData( "ShadowCaster", shadow_caster.get() );
     ti->disableHaptics();
     X3DChildNode *c = static_cast< X3DChildNode *>( sceneRoot->getValue() );
+#ifdef HAVE_PROFILER
+    H3DUtil::H3DTimer::stepBegin("Scene_traverse");
+#endif
     if( c ) {
       c->traverseSG( *ti );
     }
+#ifdef HAVE_PROFILER
+    H3DUtil::H3DTimer::stepEnd("Scene_traverse");
+#endif
     // remove the TraverseInfo instance from the last loop. TraverseInfo 
     // instances must be kept alive until its HapticShapes and 
     // HAPIForceEffects are not rendered anymore, which in this case is 
@@ -294,7 +415,7 @@ void Scene::idle() {
       delete last_traverseinfo;
     last_traverseinfo = ti;
   }
-
+  
   // call the callback functions added during callback.
   last_traverseinfo->callPostTraverseCallbacks();
 
@@ -321,6 +442,9 @@ void Scene::idle() {
       shadow_caster->light->push_back( light );
     }
   }
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepBegin("Graphic_rendering");
+#endif
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
        w != window->end(); w++ ) {
@@ -333,9 +457,17 @@ void Scene::idle() {
     }
     window->render( static_cast< X3DChildNode * >( sceneRoot->getValue() ) );
   }
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepEnd("Graphic_rendering");
+#endif
   // update the eventSink
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepBegin("Event_sink_update");
+#endif
   eventSink->upToDate();
-
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepEnd("Event_sink_update");
+#endif
   callback_lock.lock();
   // execute callbacks
   for( CallbackList::iterator i = callbacks.begin();
@@ -348,8 +480,17 @@ void Scene::idle() {
     }
   }
   callback_lock.unlock();
-
+  
   Anchor::replaceSceneRoot( this );
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepEnd("H3D_scene_loop");
+  std::stringstream profiled_result_scene_temp;
+  H3DUtil::H3DTimer::end("H3D_scene",profiled_result_scene_temp);
+  this->H3D_scene_result.setResult(ThreadBase::getCurrentThreadId(),profiled_result_scene_temp.str());
+ 
+  profiledResult->setValueFromString(this->generateProfileResult());
+
+#endif
 }
 
 
@@ -361,15 +502,29 @@ void Scene::idle() {
 
 Scene::Scene( Inst< SFChildNode >  _sceneRoot,
               Inst< MFWindow    >  _window,
-              Inst< SFFloat     >  _frameRate ) :
+              Inst< SFFloat     >  _frameRate
+#ifdef HAVE_PROFILER
+              ,
+              Inst< MFString    >  _profiledResult 
+#endif
+              ) :
   sceneRoot( _sceneRoot ),
   window   ( _window    ),
   frameRate( _frameRate ),
+#ifdef HAVE_PROFILER
+  profiledResult( _profiledResult ),
+#endif
   active( true ),
   last_traverseinfo( NULL ),
   SAI_browser( this ),
   shadow_caster( new ShadowCaster ) {
 
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::setEnabled("H3D_scene",true);
+  H3DUtil::H3DTimer::setInterval("H3D_scene",1);
+  H3DUtil::H3DTimer::setEnabled("H3D_scene2",true);
+  H3DUtil::H3DTimer::setInterval("H3D_scene2",true);
+#endif HAVE_PROFILER
   scenes.insert( this );
   
   shadow_caster->algorithm->setValue( "ZFAIL" );
@@ -445,6 +600,7 @@ void Scene::addProgramSetting( Field *field,
     (*i).first( ADD_SETTING, program_settings.back(), (*i).second );
   }
 }
+
 
 bool Scene::removeProgramSetting( const string &name,
                                   const string &section ) {
@@ -640,3 +796,11 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
   else
     return NULL;
 }
+#ifdef HAVE_PROFILER
+std::string Scene::profiledResultData::getResult()
+{
+  if(this->thread_debug_string.empty()&&this->profiled_result_string.empty())
+    return "";
+  return this->thread_debug_string+'\n'+this->profiled_result_string;
+}
+#endif

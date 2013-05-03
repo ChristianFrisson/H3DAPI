@@ -55,6 +55,9 @@ namespace H3DHapticsDeviceInternals {
   FIELDDB_ELEMENT( H3DHapticsDevice, positionCalibration, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, orientationCalibration, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, proxyPosition, OUTPUT_ONLY );
+#ifdef HAVE_PROFILER
+  FIELDDB_ELEMENT( H3DHapticsDevice, profiledResult, INPUT_OUTPUT);
+#endif 
   FIELDDB_ELEMENT( H3DHapticsDevice, weightedProxyPosition, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, proxyWeighting, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, mainButton, OUTPUT_ONLY );
@@ -103,8 +106,16 @@ H3DHapticsDevice::H3DHapticsDevice(
                Inst< MFVec3f         > _proxyPositions,
                Inst< SFBool          > _followViewpoint,
                Inst< SFVec3f         > _deviceVelocity,
-               Inst< TrackerVelocity > _trackerVelocity ):
+               Inst< TrackerVelocity > _trackerVelocity
+               #ifdef HAVE_PROFILER
+               ,
+               Inst< SFString        > _profiledResult
+               #endif
+               ):
   devicePosition( _devicePosition ),
+#ifdef HAVE_PROFILER
+  profiledResult( _profiledResult ),
+#endif
   deviceOrientation( _deviceOrientation ),
   trackerPosition( _trackerPosition ),
   trackerOrientation( _trackerOrientation ),
@@ -261,7 +272,7 @@ void H3DHapticsDevice::renderShapes(
                          const HapticShapeVector &shapes,
                          unsigned int layer ) {
   if( hapi_device.get() ) {
-
+    
     setHapticsRenderer( layer );
 
     hapi_device->setShapes( shapes, layer );
@@ -274,7 +285,13 @@ void H3DHapticsDevice::updateDeviceValues() {
   TimeStamp dt = now - last_update_values;
   last_update_values = now;
 
-  if( hapi_device.get() ) {
+  if( hapi_device.get() ) { 
+#ifdef HAVE_PROFILER
+    string device_profiled_result = hapi_device->getProfiledResult();
+    if(device_profiled_result.length()!=0){
+      profiledResult->setValue(device_profiled_result);
+    }
+#endif
     hapi_device->setForceLimit( forceLimit->getValue() );
     hapi_device->setTorqueLimit( torqueLimit->getValue() );
 

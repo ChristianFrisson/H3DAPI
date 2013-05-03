@@ -208,7 +208,12 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   wxString console_string = wxT("Console");
   the_console = new WxConsoleDialog( this, wxID_ANY, console_string,
                                    wxDefaultPosition, wxDefaultSize,
-                                   wxDEFAULT_DIALOG_STYLE );
+                                   (wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX) );
+#ifdef HAVE_PROFILER
+  the_profiled_result = new WxProfiledResultDialog( this, wxID_ANY, console_string,
+                                   wxDefaultPosition, wxDefaultSize,
+                                   (wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxCLIP_CHILDREN) );
+#endif
   tree_view_dialog = new H3DViewerTreeViewDialog( this ); 
 #ifdef HAVE_WXPROPGRID
   program_settings_dialog = new H3DViewerFieldValuesDialogPropGrid( this ); 
@@ -393,6 +398,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   advancedMenu = new wxMenu;
   advancedMenu->Append(FRAME_CONSOLE, wxT("Show Console\tF10"),
                        wxT("Show the message console"));
+#ifdef HAVE_PROFILER
+  advancedMenu->Append(FRAME_PROFILEDRESULT, wxT("Show Profiled result\tF12"),
+                       wxT("Show the profiled result"));
+#endif
   advancedMenu->Append(FRAME_TREEVIEW, wxT("Show Tree View\tF9"),
                        wxT("Show the scene as a tree, making it possible to inspect and change values at runtime."));
    advancedMenu->Append(FRAME_FRAMERATE, wxT("Show Framerates\tF8"),
@@ -552,6 +561,9 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU_RANGE (FRAME_RENDERMODE_DEFAULT, 
                   FRAME_RENDERMODE_POINTS, WxFrame::RenderMode )
   EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
+#ifdef HAVE_PROFILER
+  EVT_MENU (FRAME_PROFILEDRESULT, WxFrame::ShowProfiledResult)
+#endif
   EVT_MENU (FRAME_TREEVIEW, WxFrame::ShowTreeView)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
@@ -1894,6 +1906,15 @@ void WxFrame::ShowConsole(wxCommandEvent & event)
   }
 }
 
+#ifdef HAVE_PROFILER
+//Show profiled result event
+void WxFrame::ShowProfiledResult(wxCommandEvent & event)
+{
+  if(!the_profiled_result->Show()){
+    the_profiled_result->SetFocus();
+  }
+}
+#endif
 //Show console event
 void WxFrame::ShowTreeView(wxCommandEvent & event)
 {
