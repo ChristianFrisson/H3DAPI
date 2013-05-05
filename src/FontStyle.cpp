@@ -556,6 +556,25 @@ X3DFontStyleNode::Justification FontStyle::getMinorJustification() {
   }
 }
 
+ void FontStyle::renderHorizontalLine( const string &text ) {
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+   H3DFloat s = size->getValue();
+   H3DFloat default_size = font->Ascender() - font->Descender();
+   H3DFloat scale_factor = s / default_size;
+   glScalef( scale_factor, scale_factor, scale_factor );
+   
+   if( renderType->getValue() == "TEXTURE" ) {
+     glEnable( GL_TEXTURE_2D);
+     glEnable( GL_ALPHA_TEST );
+     glAlphaFunc (GL_GREATER, 0);
+   }
+   
+   glNormal3f( 0, 0, 1 );
+   font->Render( text.c_str() );
+   glPopMatrix();
+ }
+
 void FontStyle::renderChar( unsigned char c ) {
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();

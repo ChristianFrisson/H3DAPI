@@ -231,11 +231,10 @@ void Text::renderTextLine( const string& text,
   switch( alignment ) {
   case X3DFontStyleNode::HORIZONTAL: {
     if( left_to_right ) {
-      for( unsigned int i = 0; i < text.length(); i++ ) {
-        font->renderChar( text[i] );
-        H3DFloat size = font->charDimensions( text[i] ).x;
-        glTranslatef( size, 0, 0 );
-      }
+      // Using special function for normal case of horizontal lines since this
+      // can be optimized by FTGL and render much faster than doing it 
+      // character by character.
+      font->renderHorizontalLine( text );
     } else {
       for( unsigned int i = 0; i < text.length(); i++ ) {
         if( i != 0 ) {

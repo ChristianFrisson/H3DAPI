@@ -105,6 +105,9 @@ namespace H3D {
     /// Render the given character with this font.
     virtual void renderChar( unsigned char c ) {}
 
+    /// Render the given string with this font from left to right horizontally.
+    virtual void renderHorizontalLine( const string &s ) {}
+
     /// Get the dimensions in metres of the character given when 
     /// rendered with this font.
     virtual Vec3f charDimensions( unsigned char c ) { return Vec3f(); }

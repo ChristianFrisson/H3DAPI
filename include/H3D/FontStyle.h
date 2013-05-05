@@ -208,7 +208,10 @@ namespace H3D {
     
     /// Render the character.
     virtual void renderChar( unsigned char c );
-    
+
+    /// Render the given string with this font from left to right horizontally.
+    virtual void renderHorizontalLine( const string &c );
+
     /// Returns how many metres in the the positive y-direction from the
     /// origin the characters of this font use. 
     virtual H3DFloat ascender();
