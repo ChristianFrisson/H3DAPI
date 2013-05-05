@@ -244,8 +244,9 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
         for( size_t s = 0; s < styles.size(); s++ ) {
           if (strcasecmp( styles[s].c_str(), 
               (char*)style ) == 0) {
+            string match( (char *)file );
             FcFontSetDestroy (fs);
-            return( string((char*)file) );
+            return( match );
         }
 
         // set value to use if no more correct font of same family is found.
@@ -299,11 +300,11 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
       char path[1024];
       FT_Long face_index;
       FT_Error r = FT_GetFilePath_From_Mac_ATS_Name( full_font_name.c_str(),
-						     (UInt8 * )path,
-						     1024,
-						     &face_index );
+                                                     (UInt8 * )path,
+                                                     1024,
+                                                     &face_index );
       if ( r != FT_Err_Ok ) {
-	return NULL;
+        return NULL;
       }
     
       full_font_path = path;
@@ -459,8 +460,8 @@ void FontStyle::buildFonts() {
     bold = true;
   } else {
     Console(4) << "Invalid FontStyle style: \"" << font_style 
-	             << "\" in " << style->getFullName() 
-	             << ". Valid values are \"PLAIN\", \"BOLD\", \"ITALIC\" and \"BOLDITALIC\"";
+                     << "\" in " << style->getFullName() 
+                     << ". Valid values are \"PLAIN\", \"BOLD\", \"ITALIC\" and \"BOLDITALIC\"";
   }
 
   // try all the font family names specified to find a font.
