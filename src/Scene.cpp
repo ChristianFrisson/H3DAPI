@@ -134,24 +134,22 @@ std::string Scene::generateProfileResult()
   this->H3D_scene_result;
   
   std::stringstream result;
-  if(H3D_sofa_result.getResult().empty()||H3D_scene_result.getResult().empty()||haptic_result.getResult().empty())
-  {
-    result<<"";
-  }
-  if(!H3D_scene_result.getResult().empty())
+
+  
+  if(!H3D_scene_result.isEmpty())
   {
     result<<std::endl
           <<"====================================Main Thread=================================="<<std::endl;
     result<<H3D_scene_result.getResult();
     result<<"=======================================END======================================="<<std::endl;
   }
-  if(!haptic_result.getResult().empty())
+  if(!haptic_result.isEmpty())
   {
     result<<"===================================Haptic Thread================================="<<std::endl;
     result<<haptic_result.getResult();
     result<<"=======================================END======================================="<<std::endl;
   }
-  if(!H3D_sofa_result.getResult().empty())
+  if(!H3D_sofa_result.isEmpty())
   {
     result<<"====================================Sofa Thread=================================="<<std::endl;
     result<<H3D_sofa_result.getResult();
@@ -165,8 +163,7 @@ void Scene::idle() {
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::begin("H3D_scene");
   H3DUtil::H3DTimer::stepBegin("H3D_scene_loop");
-  //H3DUtil::H3DTimer::begin("H3D_scene2");
-  //H3DUtil::H3DTimer::stepBegin("H3D_inner");
+
 #endif HAVE_PROFILER
   
   TimeStamp t;
@@ -208,9 +205,10 @@ void Scene::idle() {
     last_update_time = t;
   }
 #endif
+
 #endif
 
-  #ifdef THREAD_LOCK_DEBUG
+#ifdef THREAD_LOCK_DEBUG
 #ifdef HAVE_PROFILER
   #define THREAD_LOCK_DEBUG_UPDATE_INTERVAL 2
     static TimeStamp last_update_time;
@@ -314,7 +312,11 @@ void Scene::idle() {
       hds.push_back( hd );
       // add profiled result from haptic 
 #ifdef HAVE_PROFILER
-      this->haptic_result.setResult(hd->getThread()->getThreadId(),static_cast<SFString*>(hd->getField("profiledResult"))->getValueAsString());
+      if (hd->getThread())
+      {// if haptic device thread exist, gather profiled result collected by the haptic thread.
+        this->haptic_result.setResult(hd->getThread()->getThreadId(),static_cast<SFString*>(hd->getField("profiledResult"))->getValueAsString());
+      }
+      //this->haptic_result.setResult(hd->getThread()->getThreadId(),static_cast<SFString*>(hd->getField("profiledResult"))->getValueAsString());
 #endif
       
     }
@@ -481,16 +483,22 @@ void Scene::idle() {
   }
   callback_lock.unlock();
   
-  Anchor::replaceSceneRoot( this );
-#ifdef HAVE_PROFILER
+  #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::stepEnd("H3D_scene_loop");
   std::stringstream profiled_result_scene_temp;
   H3DUtil::H3DTimer::end("H3D_scene",profiled_result_scene_temp);
-  this->H3D_scene_result.setResult(ThreadBase::getCurrentThreadId(),profiled_result_scene_temp.str());
+  if(!profiled_result_scene_temp.str().empty())
+  {
+    this->H3D_scene_result.setResult(ThreadBase::getCurrentThreadId(),profiled_result_scene_temp.str());
+  }
+  
  
   profiledResult->setValueFromString(this->generateProfileResult());
 
 #endif
+
+  Anchor::replaceSceneRoot( this );
+
 }
 
 
@@ -521,9 +529,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
 
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::setEnabled("H3D_scene",true);
-  H3DUtil::H3DTimer::setInterval("H3D_scene",1);
-  H3DUtil::H3DTimer::setEnabled("H3D_scene2",true);
-  H3DUtil::H3DTimer::setInterval("H3D_scene2",true);
+  H3DUtil::H3DTimer::setInterval("H3D_scene",10);
 #endif HAVE_PROFILER
   scenes.insert( this );
   
@@ -796,11 +802,11 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
   else
     return NULL;
 }
-#ifdef HAVE_PROFILER
+#ifdef HAVE_PROFILER 
 std::string Scene::profiledResultData::getResult()
 {
-  if(this->thread_debug_string.empty()&&this->profiled_result_string.empty())
-    return "";
+  /*if(this->profiled_result_string.empty())
+    return "";*/
   return this->thread_debug_string+'\n'+this->profiled_result_string;
 }
 #endif

@@ -106,15 +106,22 @@ namespace H3D {
       std::string profiled_result_string;
       std::string thread_debug_string;
       public:
-      void setResult(pthread_t id,std::string result_profile){this->thread_id=id;this->profiled_result_string="Profiling result:\n"+result_profile;}
+      void setResult(pthread_t id,std::string result_profile)
+      {
+        if(!result_profile.empty())
+          {this->thread_id=id;this->profiled_result_string=result_profile;}
+      }
       void setResult(pthread_t id,std::string result_profile, std::string result_thread_debug)
       {
-        this->thread_id=id;
-        this->profiled_result_string=result_profile;
-        this->thread_debug_string=result_thread_debug;
+        if(!result_profile.empty())
+        {
+          this->thread_id=id;
+          this->profiled_result_string=result_profile;
+          this->thread_debug_string=result_thread_debug;
+        }
       }
       void setThread_debug(std::string result){this->thread_debug_string=result;}
-      bool profileIsEmpty(){return this->profiled_result_string.empty();}
+      bool isEmpty(){return this->profiled_result_string.empty()&&this->thread_debug_string.empty();}
       pthread_t getId(){return thread_id;}
       std::string getResult();
       //std::string getString(){return profiled_result_string;}
