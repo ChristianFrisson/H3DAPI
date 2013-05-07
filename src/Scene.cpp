@@ -797,6 +797,35 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
       }
       return NULL;
     }
+    H3D::Inline* inlinenode = dynamic_cast<H3D::Inline*>(node);
+    if (inlinenode)
+    {
+      if( inlinenode->load->getValue() && inlinenode->traverseOn->getValue() ) {
+        for( unsigned int i = 0; i < inlinenode->loadedScene->size(); i++ ) {
+          Group *g = inlinenode->loadedScene->getValueByIndex( i );
+          if( g ){
+            if (g->getTypeName() == nodeType)
+            {
+              if ( nodeName == "" )
+                return g;
+              else if (nodeName == g->getName())
+                return g;
+            }
+          }
+        }
+        for( unsigned int i = 0; i < inlinenode->loadedScene->size(); i++ ) {
+          Group *g = inlinenode->loadedScene->getValueByIndex( i );
+          if( g){
+            H3D::Node *node = findNodeType(g, nodeType, nodeName);
+            if (node)
+              return node;
+          }
+        }
+      }
+      return NULL;
+    }
+
+
     return NULL;
   }
   else
