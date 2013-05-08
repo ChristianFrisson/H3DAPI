@@ -57,6 +57,7 @@
 #include <H3D/GlobalSettings.h>
 #include <H3D/SAIFunctions.h>
 #include <H3D/Shape.h>
+#include <H3D/Inline.h>
 
 using namespace H3D;
 
