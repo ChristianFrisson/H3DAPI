@@ -33,7 +33,8 @@
 #include <H3D/ShaderPart.h>
 #include <H3D/X3DProgrammableShaderObject.h>
 #include <H3D/DependentNodeFields.h>
-#include<string>
+#include <H3D/FieldTemplates.h>
+#include <string>
 
 namespace H3D {
 
@@ -207,6 +208,12 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+
+    /// A field used to update any uniforms from their corresponding fields
+    class UpdateUniforms : public EventCollectingField < Field > {
+      virtual void update ();
+    };
+
     static bool shader_support_checked;
 
     /// True if a warning has already been output about
@@ -247,6 +254,9 @@ namespace H3D {
 
     /// C++ fields only. Contains instance of SetupDynamicRoutes.
     auto_ptr< SetupDynamicRoutes > setupDynamicRoutes;
+
+    /// A field used to update any uniforms from their corresponding fields
+    auto_ptr<UpdateUniforms> updateUniforms;
   };
 }
 

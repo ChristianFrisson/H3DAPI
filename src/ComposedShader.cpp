@@ -82,7 +82,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   geometryVerticesOut( _geometryVerticesOut ),
   transparencyDetectMode( _transparencyDetectMode ),
   program_handle( 0 ),
-  setupDynamicRoutes( new SetupDynamicRoutes ) {
+  setupDynamicRoutes( new SetupDynamicRoutes ),
+  updateUniforms ( new UpdateUniforms ) {
   type_name = "ComposedShader";
   database.initFields( this );
 
@@ -110,6 +111,9 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
 
   setupDynamicRoutes->setName( "setupDynamicRoutes" );
   setupDynamicRoutes->setOwner( this );
+
+  updateUniforms->setName ( "updateUniforms" );
+  updateUniforms->setOwner ( this );
 
   activate->route( displayList, id );
   parts->route( displayList, id );
@@ -145,6 +149,7 @@ bool ComposedShader::addField( const string &name,
     } else {
       field->route( displayList );
     }
+    field->route( updateUniforms );
   }
   return success;
 }
@@ -313,15 +318,8 @@ void ComposedShader::render() {
     if( program_handle ) {
       Shaders::renderTextures( this );
 
-      for( unsigned int i = 0; i < dynamic_fields.size(); i++ ) {
-        if( !Shaders::setGLSLUniformVariableValue( program_handle, 
-                                                   dynamic_fields[i] ) &&
-            !suppressUniformWarnings->getValue() ) {
-          Console(3) << "Warning: Uniform variable \"" << dynamic_fields[i]->getName() 
-                     << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
-                     << "in the node \"" << getName() << "\"" << endl;
-        }
-      }
+      // Lazily update uniform values, i.e., only those that have changed
+      updateUniforms->upToDate();
     }
   }
 }
@@ -378,13 +376,8 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
     GLcharARB *log = new GLcharARB[nr_characters];
     glGetInfoLogARB( program_handle, nr_characters, NULL, log );
     Console(3) << "Warning: Error while linking shader parts in \""
-               << const_cast<ComposedShader&>(*shader).getName() << "\" node. " << endl;
-    for ( MFShaderPart::const_iterator i = shader->parts->begin();
-          i != shader->parts->end(); i++ ) {
-       ShaderPart *part = static_cast< ShaderPart * >(*i);
-       Console(3) << part->type->getValue() << ": " << part->getURLUsed() << endl;
-    }
-    Console(3) << "Log: " << endl << log << endl;
+               << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
+               << endl << log << endl;
     glDeleteObjectARB( program_handle );
     delete log;
 
@@ -520,3 +513,21 @@ void ComposedShader::SetupDynamicRoutes::update() {
   }
 }
 
+void ComposedShader::UpdateUniforms::update() {
+  ComposedShader* node= static_cast<ComposedShader*>(getOwner());
+  
+  for( unsigned int i = 0; i < node->dynamic_fields.size(); i++ ) {
+    if ( hasCausedEvent ( node->dynamic_fields[i] ) ) {
+      //Console(4) << "update " << node->dynamic_fields[i]->getName() << endl;
+      if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
+                                                 node->dynamic_fields[i] ) &&
+          !node->suppressUniformWarnings->getValue() ) {
+        Console(3) << "Warning: Uniform variable \"" << node->dynamic_fields[i]->getName() 
+                    << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
+                    << "in the node \"" << getName() << "\"" << endl;
+      }
+    }
+  }
+
+  EventCollectingField < Field >::update();
+}

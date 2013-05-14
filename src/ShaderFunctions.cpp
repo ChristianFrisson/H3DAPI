@@ -441,6 +441,9 @@ namespace H3D {
 /// The name of the uniform variable is the same as the name of the field. 
 bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
                                                   Field *field ) {
+//#ifdef HAVE_PROFILER
+//  H3DUtil::H3DTimer::stepBegin("ShaderFunctions_setGLSLUniform");
+//#endif
   const string &name = field->getName();
   GLint location = glGetUniformLocationARB( program_handle,
                                             name.c_str() );
@@ -448,177 +451,297 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       
   // clear the error flag
   glGetError();
-  if( SFBool *f = dynamic_cast< SFBool * >( field ) ) {
-    glUniform1iARB( location, f->getValue() );
-  } else if( MFBool *f = dynamic_cast< MFBool * >( field ) ) {
-    GLint *v = toIntArray( f->getValue() );
-    glUniform1ivARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFInt32 *f = dynamic_cast< SFInt32 * >( field ) ) {
-    glUniform1iARB( location, f->getValue() );
-  } else if( MFInt32 *f = dynamic_cast< MFInt32 * >( field ) ) {
-    GLint *v = toIntArray( f->getValue() );
-    glUniform1ivARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFFloat *f = dynamic_cast< SFFloat * >( field ) ) {
-    glUniform1fARB( location, f->getValue() );
-  } else if( MFFloat *f = dynamic_cast< MFFloat * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform1fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFDouble *f = dynamic_cast< SFDouble * >( field ) ) {
-    glUniform1fARB( location, (GLfloat)f->getValue() );
-  } else if( MFDouble *f = dynamic_cast< MFDouble * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform1fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFTime *f = dynamic_cast< SFTime * >( field ) ) {
-    glUniform1fARB( location, (GLfloat)f->getValue() );
-  } else if( MFTime *f = dynamic_cast< MFTime * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform1fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFVec2f *f = dynamic_cast< SFVec2f * >( field ) ) {
-    const Vec2f &v = f->getValue(); 
-    glUniform2fARB( location, 
+  X3DTypes::X3DType x3d_type = field->getX3DType();
+	switch(x3d_type)
+	{
+  case X3DTypes::SFBOOL:{glUniform1iARB( location, static_cast<SFBool*>(field)->getValue() );break;}
+  case X3DTypes::MFBOOL:
+    {
+      MFBool *f = static_cast<MFBool*>(field);
+      GLint *v = toIntArray( f->getValue() );
+      glUniform1ivARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFINT32:{glUniform1iARB( location, static_cast<SFInt32*>(field)->getValue() );break;}
+  case X3DTypes::MFINT32:
+    {
+      MFInt32 *f = static_cast< MFInt32 * >( field );
+      GLint *v = toIntArray( f->getValue() );
+      glUniform1ivARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFFLOAT:{glUniform1fARB( location, static_cast<SFFloat*>(field)->getValue() );break;}
+  case X3DTypes::MFFLOAT:
+    {
+      MFFloat *f = static_cast< MFFloat * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform1fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFDOUBLE:{glUniform1fARB( location, (GLfloat)static_cast<SFDouble *>(field)->getValue() );break;}
+  case X3DTypes::MFDOUBLE:
+    {
+      MFDouble *f = static_cast< MFDouble * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform1fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFTIME:{ glUniform1fARB( location, (GLfloat)static_cast<SFTime*>(field)->getValue() );break;}
+  case X3DTypes::MFTIME:
+    {
+      MFTime *f = static_cast< MFTime * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform1fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC2F:
+    {
+      SFVec2f *f = static_cast< SFVec2f * >( field );
+      const Vec2f &v = f->getValue(); 
+      glUniform2fARB( location, 
                     (GLfloat)v.x,
                     (GLfloat)v.y );
-  } else if( MFVec2f *f = dynamic_cast< MFVec2f * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform2fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFVec3f *f = dynamic_cast< SFVec3f * >( field ) ) {
-    const Vec3f &v = f->getValue(); 
-    glUniform3fARB( location, 
+      break;
+    }
+  case X3DTypes::MFVEC2F:
+    {
+      MFVec2f *f = dynamic_cast< MFVec2f * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform3fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC3F:
+    {
+      SFVec3f *f = static_cast< SFVec3f * >( field );
+      const Vec3f &v = f->getValue(); 
+      glUniform3fARB( location, 
                     (GLfloat)v.x,
                     (GLfloat)v.y,
                     (GLfloat)v.z );
-  } else if( MFVec3f *f = dynamic_cast< MFVec3f * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform3fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFVec4f *f = dynamic_cast< SFVec4f * >( field ) ) {
-    const Vec4f &v = f->getValue(); 
-    glUniform4fARB( location, 
+      break;
+    }
+  case X3DTypes::MFVEC3F:
+    {
+      MFVec3f *f = static_cast< MFVec3f * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform3fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC4F:
+    {
+      SFVec4f *f = static_cast< SFVec4f * >( field );
+      const Vec4f &v = f->getValue(); 
+      glUniform4fARB( location, 
                     (GLfloat)v.x,
                     (GLfloat)v.y,
                     (GLfloat)v.z,
                     (GLfloat)v.w  );
-  } else if( MFVec4f *f = dynamic_cast< MFVec4f * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform4fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFVec2d *f = dynamic_cast< SFVec2d * >( field ) ) {
-    const Vec2d &v = f->getValue(); 
-    glUniform2fARB( location, 
+      break;
+    }
+  case X3DTypes::MFVEC4F:
+    {
+      MFVec4f *f = static_cast< MFVec4f * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform4fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC2D:
+    {
+      SFVec2d *f = static_cast< SFVec2d * >( field );
+      const Vec2d &v = f->getValue(); 
+      glUniform2fARB( location, 
                     (GLfloat)v.x,
                     (GLfloat)v.y );
-  } else if( MFVec2d *f = dynamic_cast< MFVec2d * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform2fvARB( location, f->size(), v );
-    delete[] v; //this one penny had not changed
-  } else if( SFVec3d *f = dynamic_cast< SFVec3d * >( field ) ) {
-    const Vec3d &v = f->getValue(); 
-    glUniform3fARB( location, 
+      break;
+    }
+  case X3DTypes::MFVEC2D:
+    {
+      MFVec2d *f = static_cast< MFVec2d * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform2fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC3D:
+    {
+      SFVec3d *f = static_cast< SFVec3d * >( field );
+      const Vec3d &v = f->getValue(); 
+      glUniform3fARB( location, 
                     (GLfloat)v.x,
                     (GLfloat)v.y,
                     (GLfloat)v.z );
-  } else if( MFVec3d *f = dynamic_cast< MFVec3d * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform3fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFVec4d *f = dynamic_cast< SFVec4d * >( field ) ) {
-    const Vec4d &v = f->getValue(); 
-    glUniform4fARB( location, 
+      break;
+    }
+  case X3DTypes::MFVEC3D:
+    {
+      MFVec3d *f = static_cast< MFVec3d * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform3fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC4D:
+    {
+      SFVec4d *f = static_cast< SFVec4d * >( field );
+      const Vec4d &v = f->getValue(); 
+      glUniform4fARB( location, 
                     (GLfloat)v.x,
                     (GLfloat)v.y,
                     (GLfloat)v.z,
                     (GLfloat)v.w  );
-  } else if( MFVec4d *f = dynamic_cast< MFVec4d * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform4fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFRotation *f = dynamic_cast< SFRotation * >( field ) ) {
-    const Rotation &r = f->getValue(); 
-    glUniform4fARB( location, 
+      break;
+    }
+  case X3DTypes::MFVEC4D:
+    {
+      MFVec4d *f = static_cast< MFVec4d * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform4fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFROTATION:
+    {
+      SFRotation *f = static_cast< SFRotation * >( field );
+      const Rotation &r = f->getValue(); 
+      glUniform4fARB( location, 
                     (GLfloat)r.axis.x,
                     (GLfloat)r.axis.y,
                     (GLfloat)r.axis.z,
                     (GLfloat)r.angle  );
-  } else if( MFRotation *f = dynamic_cast< MFRotation * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform4fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFColor *f = dynamic_cast< SFColor * >( field ) ) {
-    const RGB &r = f->getValue(); 
-    glUniform3fARB( location, 
+      break;
+    }
+  case X3DTypes::MFROTATION:
+    {
+      MFRotation *f = static_cast< MFRotation * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform4fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFCOLOR:
+    {
+      SFColor *f = static_cast< SFColor * >( field );
+      const RGB &r = f->getValue(); 
+      glUniform3fARB( location, 
                     (GLfloat)r.r,
                     (GLfloat)r.g,
                     (GLfloat)r.b );
-  } else if( MFColor *f = dynamic_cast< MFColor * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform4fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFColorRGBA *f = dynamic_cast< SFColorRGBA * >( field ) ) {
-    const RGBA &r = f->getValue(); 
-    glUniform4fARB( location, 
+      break;
+    }
+  case X3DTypes::MFCOLOR:
+    {
+      MFColor *f = static_cast< MFColor * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform4fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFCOLORRGBA:
+    {
+      SFColorRGBA *f = static_cast< SFColorRGBA * >( field );
+      const RGBA &r = f->getValue(); 
+      glUniform4fARB( location, 
                     (GLfloat)r.r,
                     (GLfloat)r.g,
                     (GLfloat)r.b,
                     (GLfloat)r.a );
-  } else if( MFColorRGBA *f = dynamic_cast< MFColorRGBA * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniform4fvARB( location, f->size(), v );
-    delete[] v;
-  } else if( SFMatrix3f *f = dynamic_cast< SFMatrix3f * >( field ) ) {
-    const Matrix3f &m = f->getValue(); 
-    glUniformMatrix3fvARB( location, 
-                           1,
-                           true,
-                           m[0] );
-  } else if( MFMatrix3f *f = dynamic_cast< MFMatrix3f * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniformMatrix3fvARB( location, f->size(), false, v );
-    delete[] v;
-  } else if( SFMatrix4f *f = dynamic_cast< SFMatrix4f * >( field ) ) {
-    const Matrix4f &m = f->getValue(); 
-    glUniformMatrix4fvARB( location, 
-                           1,
-                           true,
-                           m[0] );
-  } else if( MFMatrix4f *f = dynamic_cast< MFMatrix4f * >( field ) ) {
-    GLfloat *v = toFloatArray( f->getValue() );
-    glUniformMatrix4fvARB( location, f->size(), false, v );
-    delete[] v;
-  } else if( SFNode *f = dynamic_cast< SFNode * >( field ) ) {
-    Node *n = f->getValue(); 
-    if( n == NULL ) return true;
-    if( H3DSingleTextureNode *t = 
-        dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-      glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
-    } else {
-      return false;
+      break;
     }
-                                                                           
-  } else if( MFNode *f = dynamic_cast< MFNode * >( field ) ) {
-    unsigned int size = f->size();
-    GLint *v = new GLint[ size ];
-    for( unsigned int i = 0; i < size; i++ ) {
-      Node *n = f->getValueByIndex( i ); 
-      if( n == NULL ) continue;
-      if( H3DSingleTextureNode *t = 
-                 dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-        v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
-      } else {
-        delete[] v;
+  case X3DTypes::MFCOLORRGBA:
+    {
+      MFColorRGBA *f = static_cast< MFColorRGBA * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform4fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFMATRIX3F:
+    {
+      SFMatrix3f *f = static_cast< SFMatrix3f * >( field );
+      const Matrix3f &m = f->getValue(); 
+      glUniformMatrix3fvARB( location, 
+                           1,
+                           true,
+                           m[0] );
+      break;
+    }
+  case X3DTypes::MFMATRIX3F:
+    {
+      MFMatrix3f *f = static_cast< MFMatrix3f * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniformMatrix3fvARB( location, f->size(), false, v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFMATRIX4F:
+    {
+      SFMatrix4f *f = static_cast< SFMatrix4f * >( field );
+      const Matrix4f &m = f->getValue(); 
+      glUniformMatrix4fvARB( location, 
+                           1,
+                           true,
+                           m[0] );
+      break;
+    }
+  case X3DTypes::MFMATRIX4F:
+    {
+      MFMatrix4f *f = static_cast< MFMatrix4f * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniformMatrix4fvARB( location, f->size(), false, v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFNODE:
+    {
+      SFNode *f = static_cast< SFNode * >( field );
+      Node *n = f->getValue(); 
+      if( n == NULL ) return true;
+      if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
+      {
+        glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
+        break;
+      } 
+      else 
+      {
         return false;
       }
     }
-    glUniform1ivARB( location, size, v );
-  } else {
-    return false;
-  }
-
+  case X3DTypes::MFNODE:
+    {
+      MFNode *f = static_cast< MFNode * >( field );
+      unsigned int size = f->size();
+      GLint *v = new GLint[ size ];
+      for( unsigned int i = 0; i < size; i++ ) 
+      {
+        Node *n = f->getValueByIndex( i ); 
+        if( n == NULL ) continue;
+        if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
+        {
+          v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
+        } 
+        else 
+        {
+          delete[] v;
+          return false;
+        }
+      }
+      glUniform1ivARB( location, size, v );
+      break;
+    }
+  default:
+    return false;                                                                   
+  } 
+//#ifdef HAVE_PROFILER
+//  H3DUtil::H3DTimer::stepEnd("ShaderFunctions_setGLSLUniform");
+//#endif
   GLenum glerr = glGetError();
   
   // ignore any errors that occurs when setting uniform variables.
