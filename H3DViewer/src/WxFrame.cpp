@@ -2068,11 +2068,11 @@ void WxFrame::OnWindowExit (wxCloseEvent & event)
 }
 
 ///*******************Standard trivial functions*********************/
-////Get current filename
-//wxString WxFrame::GetCurrentFilename()
-//{
-// return currentFilename;
-//}
+//Get current filename
+wxString WxFrame::GetCurrentFilename()
+{
+ return currentFilename;
+}
 
 //Set current filename
 void WxFrame::SetCurrentFilename(wxString n)
