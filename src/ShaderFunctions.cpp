@@ -441,38 +441,24 @@ namespace H3D {
 /// The name of the uniform variable is the same as the name of the field. 
 bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
                                                   Field *field ) {
-//#ifdef HAVE_PROFILER
-//  H3DUtil::H3DTimer::stepBegin("ShaderFunctions_setGLSLUniform");
-//#endif
+
   const string &name = field->getName();
   GLint location = glGetUniformLocationARB( program_handle,
                                             name.c_str() );
-   if( location == -1 ) return false;
-      
-  // clear the error flag
-  glGetError();
+  GLenum glerr1 = glGetError();
+   if( location == -1 ) 
+   {
+     return false;
+   }
   X3DTypes::X3DType x3d_type = field->getX3DType();
 	switch(x3d_type)
 	{
-  case X3DTypes::SFBOOL:{glUniform1iARB( location, static_cast<SFBool*>(field)->getValue() );break;}
-  case X3DTypes::MFBOOL:
+  case X3DTypes::SFFLOAT:
     {
-      MFBool *f = static_cast<MFBool*>(field);
-      GLint *v = toIntArray( f->getValue() );
-      glUniform1ivARB( location, f->size(), v );
-      delete[] v;
+      SFFloat* f = static_cast<SFFloat*>(field);
+      glUniform1fARB( location, f->getValue() );
       break;
     }
-  case X3DTypes::SFINT32:{glUniform1iARB( location, static_cast<SFInt32*>(field)->getValue() );break;}
-  case X3DTypes::MFINT32:
-    {
-      MFInt32 *f = static_cast< MFInt32 * >( field );
-      GLint *v = toIntArray( f->getValue() );
-      glUniform1ivARB( location, f->size(), v );
-      delete[] v;
-      break;
-    }
-  case X3DTypes::SFFLOAT:{glUniform1fARB( location, static_cast<SFFloat*>(field)->getValue() );break;}
   case X3DTypes::MFFLOAT:
     {
       MFFloat *f = static_cast< MFFloat * >( field );
@@ -499,6 +485,19 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       delete[] v;
       break;
     }
+  case X3DTypes::SFINT32:
+    {
+      glUniform1iARB( location, static_cast<SFInt32*>(field)->getValue() );
+      break;
+    }
+  case X3DTypes::MFINT32:
+    {
+      MFInt32 *f = static_cast< MFInt32 * >( field );
+      GLint *v = toIntArray( f->getValue() );
+      glUniform1ivARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
   case X3DTypes::SFVEC2F:
     {
       SFVec2f *f = static_cast< SFVec2f * >( field );
@@ -510,9 +509,26 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::MFVEC2F:
     {
-      MFVec2f *f = dynamic_cast< MFVec2f * >( field );
+      MFVec2f *f = static_cast< MFVec2f * >( field );
       GLfloat *v = toFloatArray( f->getValue() );
       glUniform3fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC2D:
+    {
+      SFVec2d *f = static_cast< SFVec2d * >( field );
+      const Vec2d &v = f->getValue(); 
+      glUniform2fARB( location, 
+                    (GLfloat)v.x,
+                    (GLfloat)v.y );
+      break;
+    }
+  case X3DTypes::MFVEC2D:
+    {
+      MFVec2d *f = static_cast< MFVec2d * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform2fvARB( location, f->size(), v );
       delete[] v;
       break;
     }
@@ -529,6 +545,24 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   case X3DTypes::MFVEC3F:
     {
       MFVec3f *f = static_cast< MFVec3f * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform3fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFVEC3D:
+    {
+      SFVec3d *f = static_cast< SFVec3d * >( field );
+      const Vec3d &v = f->getValue(); 
+      glUniform3fARB( location, 
+                    (GLfloat)v.x,
+                    (GLfloat)v.y,
+                    (GLfloat)v.z );
+      break;
+    }
+  case X3DTypes::MFVEC3D:
+    {
+      MFVec3d *f = static_cast< MFVec3d * >( field );
       GLfloat *v = toFloatArray( f->getValue() );
       glUniform3fvARB( location, f->size(), v );
       delete[] v;
@@ -553,41 +587,6 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       delete[] v;
       break;
     }
-  case X3DTypes::SFVEC2D:
-    {
-      SFVec2d *f = static_cast< SFVec2d * >( field );
-      const Vec2d &v = f->getValue(); 
-      glUniform2fARB( location, 
-                    (GLfloat)v.x,
-                    (GLfloat)v.y );
-      break;
-    }
-  case X3DTypes::MFVEC2D:
-    {
-      MFVec2d *f = static_cast< MFVec2d * >( field );
-      GLfloat *v = toFloatArray( f->getValue() );
-      glUniform2fvARB( location, f->size(), v );
-      delete[] v;
-      break;
-    }
-  case X3DTypes::SFVEC3D:
-    {
-      SFVec3d *f = static_cast< SFVec3d * >( field );
-      const Vec3d &v = f->getValue(); 
-      glUniform3fARB( location, 
-                    (GLfloat)v.x,
-                    (GLfloat)v.y,
-                    (GLfloat)v.z );
-      break;
-    }
-  case X3DTypes::MFVEC3D:
-    {
-      MFVec3d *f = static_cast< MFVec3d * >( field );
-      GLfloat *v = toFloatArray( f->getValue() );
-      glUniform3fvARB( location, f->size(), v );
-      delete[] v;
-      break;
-    }
   case X3DTypes::SFVEC4D:
     {
       SFVec4d *f = static_cast< SFVec4d * >( field );
@@ -607,23 +606,57 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       delete[] v;
       break;
     }
-  case X3DTypes::SFROTATION:
+  case X3DTypes::SFBOOL:
     {
-      SFRotation *f = static_cast< SFRotation * >( field );
-      const Rotation &r = f->getValue(); 
-      glUniform4fARB( location, 
-                    (GLfloat)r.axis.x,
-                    (GLfloat)r.axis.y,
-                    (GLfloat)r.axis.z,
-                    (GLfloat)r.angle  );
+      glUniform1iARB( location, static_cast<SFBool*>(field)->getValue() );
       break;
     }
-  case X3DTypes::MFROTATION:
+
+  case X3DTypes::MFBOOL:
     {
-      MFRotation *f = static_cast< MFRotation * >( field );
-      GLfloat *v = toFloatArray( f->getValue() );
-      glUniform4fvARB( location, f->size(), v );
+      MFBool *f = static_cast<MFBool*>(field);
+      GLint *v = toIntArray( f->getValue() );
+      glUniform1ivARB( location, f->size(), v );
       delete[] v;
+      break;
+    }
+  case X3DTypes::SFSTRING: return false;
+  case X3DTypes::MFSTRING: return false;
+  case X3DTypes::SFNODE:
+    {
+      SFNode *f = static_cast< SFNode * >( field );
+      Node *n = f->getValue(); 
+      if( n == NULL ) return true;
+      if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
+      {
+        glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
+        break;
+      } 
+      else 
+      {
+        return false;
+      }
+    }
+  case X3DTypes::MFNODE:
+    {
+      MFNode *f = static_cast< MFNode * >( field );
+      unsigned int size = f->size();
+      GLint *v = new GLint[ size ];
+      for( unsigned int i = 0; i < size; i++ ) 
+      {
+        Node *n = f->getValueByIndex( i ); 
+        if( n == NULL ) continue;
+        if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
+        {
+          v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
+        } 
+        else 
+        {
+          delete[] v;
+          return false;
+        }
+      }
+      glUniform1ivARB( location, size, v );
       break;
     }
   case X3DTypes::SFCOLOR:
@@ -663,6 +696,27 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       delete[] v;
       break;
     }
+  case X3DTypes::SFROTATION:
+    {
+      SFRotation *f = static_cast< SFRotation * >( field );
+      const Rotation &r = f->getValue(); 
+      glUniform4fARB( location, 
+                    (GLfloat)r.axis.x,
+                    (GLfloat)r.axis.y,
+                    (GLfloat)r.axis.z,
+                    (GLfloat)r.angle  );
+      break;
+    }
+  case X3DTypes::MFROTATION:
+    {
+      MFRotation *f = static_cast< MFRotation * >( field );
+      GLfloat *v = toFloatArray( f->getValue() );
+      glUniform4fvARB( location, f->size(), v );
+      delete[] v;
+      break;
+    }
+  case X3DTypes::SFQUATERNION: return false;
+  case X3DTypes::MFQUATERNION: return false;
   case X3DTypes::SFMATRIX3F:
     {
       SFMatrix3f *f = static_cast< SFMatrix3f * >( field );
@@ -699,49 +753,9 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       delete[] v;
       break;
     }
-  case X3DTypes::SFNODE:
-    {
-      SFNode *f = static_cast< SFNode * >( field );
-      Node *n = f->getValue(); 
-      if( n == NULL ) return true;
-      if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
-      {
-        glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
-        break;
-      } 
-      else 
-      {
-        return false;
-      }
-    }
-  case X3DTypes::MFNODE:
-    {
-      MFNode *f = static_cast< MFNode * >( field );
-      unsigned int size = f->size();
-      GLint *v = new GLint[ size ];
-      for( unsigned int i = 0; i < size; i++ ) 
-      {
-        Node *n = f->getValueByIndex( i ); 
-        if( n == NULL ) continue;
-        if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
-        {
-          v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
-        } 
-        else 
-        {
-          delete[] v;
-          return false;
-        }
-      }
-      glUniform1ivARB( location, size, v );
-      break;
-    }
   default:
     return false;                                                                   
   } 
-//#ifdef HAVE_PROFILER
-//  H3DUtil::H3DTimer::stepEnd("ShaderFunctions_setGLSLUniform");
-//#endif
   GLenum glerr = glGetError();
   
   // ignore any errors that occurs when setting uniform variables.
@@ -968,20 +982,28 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
 
 GLbitfield H3D::Shaders::getAffectedGLAttribs( H3DDynamicFieldsObject *dfo ) {
   GLbitfield res = 0;
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
-       f != dfo->endField(); f++ ) {
-    if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
-      Node *n = sfnode->getValue(); 
+  Node *n;
+  MFNode *mfnode;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField(); f != dfo->endField(); f++ ) 
+  {
+    X3DTypes::X3DType x3d_type = (*f)->getX3DType();
+    if(x3d_type==X3DTypes::SFNODE)
+    {
+      n = static_cast<SFNode*>(*f)->getValue(); 
       if( H3DSingleTextureNode *t = 
-          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-        res = res | t->getAffectedGLAttribs();
-      } 
-    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
-      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
-        Node *n = mfnode->getValueByIndex( i ); 
-        if( H3DSingleTextureNode *t = 
-                   dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+        dynamic_cast< H3DSingleTextureNode *>( n ) ) 
+      {
           res = res | t->getAffectedGLAttribs();
+      } 
+    }
+    else if(x3d_type==X3DTypes::MFNODE)
+    {
+      mfnode = static_cast< MFNode * >( *f );
+      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+        n = mfnode->getValueByIndex( i ); 
+        if( H3DSingleTextureNode *t = 
+          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            res = res | t->getAffectedGLAttribs();
         } 
       }
     }
@@ -994,29 +1016,35 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
   X3DTextureNode *active_texture = X3DTextureNode::getActiveTexture();
   unsigned int nr_textures = 0; 
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
-       f != dfo->endField(); f++ ) {
-    if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
-      Node *n = sfnode->getValue(); 
+  Node* n;
+  MFNode *mfnode;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); f++ ) 
+  {
+    // only SFNODE and MFNODE type of in the dynamic filed can be texture object
+    if((*f)->getX3DType()==X3DTypes::SFNODE)
+    {
+      n = static_cast<SFNode*>(*f)->getValue(); 
       if( H3DSingleTextureNode *t = 
-          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->preRender();
-        nr_textures++;
-      } 
-    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
-      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
-        Node *n = mfnode->getValueByIndex( i ); 
-        if( H3DSingleTextureNode *t = 
-                   dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+        dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
           t->preRender();
           nr_textures++;
+      } 
+    }
+    else if((*f)->getX3DType()==X3DTypes::MFNODE)
+    {
+      mfnode = static_cast< MFNode * >( *f );
+      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+        Node *n = mfnode->getValueByIndex( i ); 
+        if( H3DSingleTextureNode *t = 
+          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
+            t->preRender();
+            nr_textures++;
         } 
       }
     }
-
-    if( nr_textures > nr_textures_supported ) {
+    if( nr_textures > (unsigned int)nr_textures_supported ) {
       Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
@@ -1031,30 +1059,36 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
 
   unsigned int nr_textures = 0; 
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
-       f != dfo->endField(); f++ ) {
-    if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
-      Node *n = sfnode->getValue(); 
-      if( H3DSingleTextureNode *t = 
-          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+  Node *n;
+  MFNode *mfnode;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); f++ ) 
+  {
+    // only SFNODE and MFNODE type can be texture object.
+    if((*f)->getX3DType()==X3DTypes::SFNODE)
+    {
+      n = static_cast<SFNode*>(*f)->getValue();
+      if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
+      {
         glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
         t->postRender();
         nr_textures++;
-      } 
-    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
+      }
+    }
+    else if((*f)->getX3DType()==X3DTypes::MFNODE) 
+    {
+      mfnode = static_cast< MFNode * >( *f );
       for( unsigned int i = 0; i < mfnode->size(); i++ ) {
-        Node *n = mfnode->getValueByIndex( i ); 
+        n = mfnode->getValueByIndex( i ); 
 
         if( H3DSingleTextureNode *t = 
-            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->postRender();
-          nr_textures++;
+          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
+            t->postRender();
+            nr_textures++;
         } 
       }
     }
- 
-    if( nr_textures > nr_textures_supported ) {
+    if( nr_textures > (unsigned int)nr_textures_supported ) {
       Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
@@ -1066,30 +1100,35 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
   GLint nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
   unsigned int nr_textures = 0; 
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();
-       f != dfo->endField(); f++ ) {
-    if( SFNode *sfnode = dynamic_cast< SFNode * >( *f ) ) {
-      Node *n = sfnode->getValue(); 
-
+  Node* n;
+  MFNode* mfnode;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); f++ ) 
+  {
+    X3DTypes::X3DType x3d_type = (*f)->getX3DType();
+    if(x3d_type==X3DTypes::SFNODE)
+    {
+      n = static_cast<SFNode*>(*f)->getValue(); 
       if( H3DSingleTextureNode *t = 
-                 dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-        glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-        t->displayList->callList();
-        nr_textures++;
-      } 
-    } else if( MFNode *mfnode = dynamic_cast< MFNode * >( *f ) ) {
-      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
-        Node *n = mfnode->getValueByIndex( i ); 
-        if( H3DSingleTextureNode *t = 
-            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+        dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
           t->displayList->callList();
           nr_textures++;
-        } 
       }
     }
-
-    if( nr_textures > nr_textures_supported ) {
+    else if(x3d_type==X3DTypes::MFNODE)
+    {
+      mfnode = static_cast< MFNode * >( *f );
+      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+          Node *n = mfnode->getValueByIndex( i ); 
+          if( H3DSingleTextureNode *t = 
+            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+              glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
+              t->displayList->callList();
+              nr_textures++;
+          } 
+        }
+    }
+    if( nr_textures > (unsigned int)nr_textures_supported ) {
       Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
