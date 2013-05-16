@@ -647,7 +647,7 @@ const char *geometry_shader_functions_string =
   "          gl_PositionIn[4] == gl_PositionIn[0] ); \n"
   "} \n"
   "\n"
-  "float facing_epsilon = 0.000000001f;\n"
+  "float facing_epsilon = -0.000000001f;\n"
   "\n"
   "// returns true if pos is on the same side of the triangle as the normal is pointing\n"
   "bool triangleFacingPos(vec3 v0, vec3 v1, vec3 v2, vec3 pos) {\n"
