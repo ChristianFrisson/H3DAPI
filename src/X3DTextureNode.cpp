@@ -31,7 +31,31 @@
 #include <H3D/X3DTextureNode.h>
 #include <assert.h>
 
+namespace {
+  /// X3D string containing frame buffer object used to save texture to file
+  const std::string save_to_url_x3d= 
+    "<FrameBufferTextureGenerator DEF='GENERATOR' outputTextureType='2D' generateColorTextures='RGBA' update='NONE'>"
+    "  <Shape>"
+    "    <Appearance DEF='APP' />"
+    "    <FullscreenRectangle zValue='0.99' screenAligned='true' /> "
+    "  </Shape>"
+    "</FrameBufferTextureGenerator>";
+}
+
 using namespace H3D;
+
+// Add this node to the H3DNodeDatabase system.
+H3DNodeDatabase X3DTextureNode::database( "X3DTextureNode", 
+                                          NULL, 
+                                          typeid( X3DTextureNode ),
+                                          &(X3DAppearanceChildNode::database) );
+
+namespace X3DTextureNodeInternals {
+  FIELDDB_ELEMENT( X3DTextureNode, saveToUrl, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DTextureNode, saveSuccess, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( X3DTextureNode, saveHeight, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DTextureNode, saveWidth, INPUT_OUTPUT );
+}
 
 H3D_API_EXCEPTION( UnsupportedPixelComponentType );
 H3D_VALUE_EXCEPTION( Image::PixelType, UnsupportedPixelType );
@@ -282,10 +306,23 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
 
 X3DTextureNode::X3DTextureNode( 
                                Inst< DisplayList > _displayList,
-                               Inst< SFNode>  _metadata ):
-  X3DAppearanceChildNode( _displayList, _metadata ) {
+                               Inst< SFNode>  _metadata,
+                               Inst< UpdateSaveToURL > _saveToUrl,
+                               Inst< SFBool > _saveSuccess,
+                               Inst< SFInt32 > _saveHeight,
+                               Inst< SFInt32 > _saveWidth ):
+  X3DAppearanceChildNode( _displayList, _metadata ),
+  saveToUrl ( _saveToUrl ),
+  saveSuccess ( _saveSuccess ),
+  saveHeight ( _saveHeight ),
+  saveWidth ( _saveWidth ) {
 
   type_name = "X3DTextureNode";
+  database.initFields( this );
+
+  saveSuccess->setValue ( false, id );
+  saveHeight->setValue ( -1 );
+  saveWidth->setValue ( -1 );
 }
 
 GLuint X3DTextureNode::renderImage( Image *image, 
@@ -379,9 +416,57 @@ void *X3DTextureNode::padTo4ByteAlignment( const void *data,
   return new_data;
 }
 
+std::pair<H3DInt32,H3DInt32> X3DTextureNode::getDefaultSaveDimensions () {
+  return std::pair<H3DInt32,H3DInt32> ( 512, 512 );
+}
 
+void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
+  X3DTextureNode* node= static_cast<X3DTextureNode*>(getOwner());
 
+#ifdef HAVE_FREEIMAGE
+  X3D::DEFNodes dn;
+  AutoRef<FrameBufferTextureGenerator> fbo ( 
+    static_cast<FrameBufferTextureGenerator*>(X3D::createX3DNodeFromString ( save_to_url_x3d, &dn ).get() ) );
 
+  // Set texture save dimensions
+  std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
 
+  fbo->height->setValue ( node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue() );
+  fbo->width->setValue  ( node->saveWidth->getValue()  == -1 ? default_size.first : node->saveWidth->getValue() );
 
+  Appearance* app= NULL;
+  dn.getNode ( "APP", app );
 
+  app->texture->setValue ( getOwner() );
+  fbo->update->setValue ( "NEXT_FRAME_ONLY" );
+  fbo->displayList->callList();
+
+  // Check that FrameBufferTextureGenerator succeeded.
+  if( fbo->isFBOInitialized() ) {
+    // frame buffer size, width was set earlier in the code.
+    int buffer_width = fbo->width->getValue();
+    int buffer_height = fbo->height->getValue();
+    int bpp = 32;
+
+    // Create container for image data, then bind buffer and read from it.
+    AutoRef<Image> image ( new PixelImage ( buffer_width, buffer_height, 1, bpp, Image::BGRA, Image::UNSIGNED ) );
+
+    // Save current FBO
+    GLint previous_fbo_id;
+    glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
+
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fbo->getFBOId() );
+    glReadPixels( 0, 0, buffer_width, buffer_height, GL_BGRA, GL_UNSIGNED_BYTE, image->getImageData() );
+
+    // Restore previous FBO
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, previous_fbo_id );
+
+    node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
+  }
+#else // HAVE_FREEIMAGE
+
+  Console(4) << "Warning: Could not save texture to file! Compiled without the required FreeImage library." << endl;
+  node->saveSuccess->setValue ( false, node->id );
+
+#endif // HAVE_FREEIMAGE
+}

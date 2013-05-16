@@ -31,7 +31,10 @@
 #define __X3DTEXTURENODE_H__
 
 #include <H3D/X3DAppearanceChildNode.h>
+#include <H3D/SFString.h>
+#include <H3D/SFInt32.h>
 #include <H3DUtil/Image.h>
+#include <H3D/FieldTemplates.h>
 #include "GL/glew.h"
 
 namespace H3D {
@@ -56,9 +59,19 @@ namespace H3D {
     /// without defining the glTexImage () function.
     H3D_API_EXCEPTION( glTexImageFunctionNotDefined );
 
+    /// A field used to execute the save to URL operation when the URL is set
+    class UpdateSaveToURL : public OnNewValueSField < AutoUpdate < SFString > > {
+      virtual void onNewValue( const std::string &v );
+    };
+
     /// Constructor.
     X3DTextureNode( Inst< DisplayList > _displayList = 0,
-                    Inst< SFNode>  _metadata = 0 );
+                    Inst< SFNode>  _metadata = 0,
+                    Inst< UpdateSaveToURL > _saveToUrl = 0,
+                    Inst< SFBool > _saveSuccess = 0,
+                    Inst< SFInt32 > _saveHeight = 0,
+                    Inst< SFInt32 > _saveWidth = 0
+                    );
         
     /// Virtual function for making all OpenGL calls that are needed to
     /// enable texturing for the texture.
@@ -169,6 +182,48 @@ namespace H3D {
     /// By default it is set to true.
     static bool load_images_in_separate_thread;
 
+    /// When a new value is specified for saveToUrl the current texture is rendered to
+    /// a buffer and saved to the specified filename. The URL must be a local filename.
+    ///
+    /// The texture is written immediately and the success of failure of the save 
+    /// operation can be checked using the saveSuccess field.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "" \n
+    ///
+    auto_ptr < UpdateSaveToURL > saveToUrl;
+
+    /// Contains the result of the last save operation. True if the last save operation
+    /// was successful.
+    /// 
+    /// <b>Access type:</b> outputOnly \n
+    /// <b>Default value:</b> false \n
+    ///
+    auto_ptr < SFBool > saveSuccess;
+
+    /// The height of the image to write to file when the saveToUrl field is used
+    ///
+    /// If -1 then a default is chosen. If this type of texture node has dimensions
+    /// then these will be used as the default.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> -1 \n
+    ///
+    auto_ptr < SFInt32 > saveHeight;
+
+    /// The width of the image to write to file when the saveToUrl field is used
+    ///
+    /// If -1 then a default is chosen. If this type of texture node has dimensions
+    /// then these will be used as the default.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> -1 \n
+    ///
+    auto_ptr < SFInt32 > saveWidth;
+
+    /// The H3DNodeDatabase for this node.
+    static H3DNodeDatabase database;
+
   protected:
     // The glTexImage functions needs each line of image data to be 4 byte 
     // aligned. This function takes a pointer to image data and width,height
@@ -181,7 +236,12 @@ namespace H3D {
                                       unsigned int depth,
                                       unsigned int bits_per_pixel );
 
-
+    /// Returns the default dimensions to use when this texture is saved to file.
+    ///
+    /// Texture nodes that have dimensions should use those dimensions as the default.
+    /// The default implementation returns (512, 512).
+    ///
+    virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
   
   private:
     static X3DTextureNode *active_texture;

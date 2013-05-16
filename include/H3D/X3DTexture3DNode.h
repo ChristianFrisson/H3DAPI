@@ -196,6 +196,13 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+
+    /// Returns the default dimensions to use when this texture is saved to file.
+    ///
+    /// Returns the x, y dimensions of the Image object
+    ///
+    virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
+
     /// The OpenGL texture id of the installed texture, 0 if not installed.
     GLuint texture_id;
     /// The OpenGL texture unit that is used to render this texture.

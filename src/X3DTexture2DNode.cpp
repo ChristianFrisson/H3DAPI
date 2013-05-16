@@ -407,3 +407,12 @@ GLenum X3DTexture2DNode::getTextureTarget() {
   }
   return GL_TEXTURE_2D;
 }
+
+std::pair<H3DInt32,H3DInt32> X3DTexture2DNode::getDefaultSaveDimensions () {
+  Image* im= image->getValue();
+  if ( im ) {
+    return std::pair<H3DInt32,H3DInt32> ( im->width(), im->height() );
+  } else {
+    return X3DTextureNode::getDefaultSaveDimensions();
+  }
+}
