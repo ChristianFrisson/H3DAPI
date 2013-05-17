@@ -60,7 +60,7 @@ namespace H3D {
     H3D_API_EXCEPTION( glTexImageFunctionNotDefined );
 
     /// A field used to execute the save to URL operation when the URL is set
-    class UpdateSaveToURL : public OnNewValueSField < AutoUpdate < SFString > > {
+    class H3DAPI_API UpdateSaveToURL : public OnNewValueSField < AutoUpdate < SFString > > {
       virtual void onNewValue( const std::string &v );
     };
 

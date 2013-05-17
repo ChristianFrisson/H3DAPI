@@ -29,7 +29,12 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/X3DTextureNode.h>
+#include <H3D/X3D.h>
+#include <H3D/FrameBufferTextureGenerator.h>
+#include <H3D/Appearance.h>
 #include <assert.h>
+
+#include <H3DUtil/LoadImageFunctions.h>
 
 namespace {
   /// X3D string containing frame buffer object used to save texture to file
