@@ -1160,7 +1160,7 @@ bool WxFrame::loadFile( const string &filename) {
 #endif
     }
 
-    tree_view_dialog->showEntireSceneAsTree( true );
+    tree_view_dialog->showEntireSceneAsTree( H3DViewerTreeViewDialog::EXPAND_GROUP );
   } 
     catch (const Exception::QuitAPI &e) {
       throw e;

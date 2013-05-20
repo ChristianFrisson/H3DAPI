@@ -60,6 +60,15 @@ using namespace H3D;
 class H3DViewerTreeViewDialog : public TreeViewDialog
 {
 public:
+  typedef enum {
+    /// Expand tree for all nodes
+    EXPAND_ALL,
+    /// Expand tree for all nodes that inherit from X3DGroupingNode
+    EXPAND_GROUP,
+    /// Don't expand anything
+    EXPAND_NONE
+  } ExpandMode;
+
   /** Constructor */
   H3DViewerTreeViewDialog( wxWindow* parent );
 
@@ -92,7 +101,7 @@ public:
   // Update the tree view of the entire scene. The expand_new argument
   // determines if hew nodes should be added with the tree expanded
   // or not.
-  void showEntireSceneAsTree( bool expand_new = true );
+  void showEntireSceneAsTree( ExpandMode expand = EXPAND_ALL );
 
   // Clear all data from the tree view. Releases all references
   // to any node in the dialog.
@@ -116,7 +125,7 @@ public:
   void addNodeToTree( wxTreeItemId tree_id, 
                       H3D::Node *n, 
                       string container_field,
-                      bool expand = true );
+                      ExpandMode expand = EXPAND_ALL );
 
   // Update a current tree. The list of nodes is a list of all the nodes
   // that are supposed to be children to tree_id. All nodes that are already
@@ -124,7 +133,7 @@ public:
   // are deleted.
   void updateNodeTree( wxTreeItemId tree_id, 
                        std::list< pair< H3D::Node *, string > >,
-                       bool expand_new = true );
+                       ExpandMode expand = EXPAND_ALL );
 
   // The time of the last update to the tree view.
   TimeStamp last_tree_update;

@@ -108,7 +108,7 @@ int H3DViewerTreeViewDialog::getNrTriangles( X3DGeometryNode *geom ) {
   return geom->nrTriangles();
 }
 
-void H3DViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
+void H3DViewerTreeViewDialog::showEntireSceneAsTree( H3DViewerTreeViewDialog::ExpandMode expand_new ) {
   // show the scene in the tree view.
   list< pair< H3D::Node *, string > > l;
   Scene *s =  *Scene::scenes.begin();
@@ -123,13 +123,13 @@ void H3DViewerTreeViewDialog::showEntireSceneAsTree( bool expand_new ) {
     X3DBindableNode *b = X3DBindableNode::getActive( (*i).first );
     if( b ) l.push_back( make_pair(b, b->defaultXMLContainerField() ) );
   }
-  updateNodeTree( bindable_tree_id, l, false );
+  updateNodeTree( bindable_tree_id, l, H3DViewerTreeViewDialog::EXPAND_NONE );
 }
 
 void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id, 
                                              H3D::Node *n,
                                              string container_field,
-                                             bool expand ) {
+                                             H3DViewerTreeViewDialog::ExpandMode expand ) {
 
   if( !n ) return;
 
@@ -166,7 +166,8 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
   // add an entry for the tree_id-node pair 
   node_map[ new_id.m_pItem ].reset( n );
 
-
+  bool expand_new_id = ( expand == H3DViewerTreeViewDialog::EXPAND_ALL || 
+                        (expand == H3DViewerTreeViewDialog::EXPAND_GROUP && (dynamic_cast< X3DGroupingNode * >( n ) || dynamic_cast< Scene * >( n ) ) ) );
   // recursively add all the child nodes of the node to the tree
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
@@ -175,31 +176,36 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
     
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
       if( sfnode->getAccessType() != Field::INPUT_ONLY ) {
-        addNodeToTree( new_id, sfnode->getValue(), sfnode->getName(), expand );
+        addNodeToTree( new_id, sfnode->getValue(), sfnode->getName(), expand_new_id ? expand : H3DViewerTreeViewDialog::EXPAND_NONE );
       }
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
       if( mfnode->getAccessType() != Field::INPUT_ONLY ) {
         for( MFNode::const_iterator i = mfnode->begin(); i != mfnode->end(); i++ ) {
-          addNodeToTree( new_id, *i, mfnode->getName(), expand );
+          addNodeToTree( new_id, *i, mfnode->getName(), expand_new_id ? expand : H3DViewerTreeViewDialog::EXPAND_NONE );
         }
       }
     }
   }
 
   // make the tree be open down to leaves or not.
-  if( expand ) 
+  if( expand_new_id ) {
     TreeViewTree->Expand( new_id );
+  } 
 }
 
 
 void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id, 
                                               list< pair< H3D::Node *, string > > nodes,
-                                              bool expand_new ) {
+                                              H3DViewerTreeViewDialog::ExpandMode expand_new ) {
 
   // find all children of tree_id
   list< wxTreeItemId > children_ids;
   wxTreeItemIdValue cookie;
+
   wxTreeItemId id = TreeViewTree->GetFirstChild( tree_id, cookie );
+  if( id.IsOk() && TreeViewTree->HasChildren(tree_id ) && !TreeViewTree->IsExpanded( tree_id ) ) { 
+    return;
+  }
   while( id.IsOk() ) {
     children_ids.push_back( id );
     id = TreeViewTree->GetNextSibling( id );
@@ -298,7 +304,7 @@ void H3DViewerTreeViewDialog::displayFieldsFromNode( Node *n ) {
 void H3DViewerTreeViewDialog::clearTreeView() {
   list< pair< Node *, string> > l;
   updateNodeTree( TreeViewTree->GetRootItem(), l );
-  updateNodeTree( bindable_tree_id, l, false );
+  updateNodeTree( bindable_tree_id, l, H3DViewerTreeViewDialog::EXPAND_NONE );
   displayFieldsFromNode( NULL );
 
 }
@@ -315,7 +321,11 @@ void H3DViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
 
     TimeStamp now;
     if( now - last_tree_update > 1 ) {
-      showEntireSceneAsTree( !shown_last_loop );
+      if( shown_last_loop ) {
+        showEntireSceneAsTree( H3DViewerTreeViewDialog::EXPAND_NONE );
+      } else {
+        showEntireSceneAsTree( H3DViewerTreeViewDialog::EXPAND_GROUP );
+      }
       last_tree_update = now;
     }
   } else if( shown_last_loop ) {
