@@ -392,8 +392,9 @@ void HAnimHumanoid::MFJoint::onAdd( Node *n ) {
     if( HAnimJoint *joint = dynamic_cast< HAnimJoint *>( n ) ) {
       joint->accumulatedJointMatrix->route( humanoid->joint_matrix_changed );
       joint->displacers->route( humanoid->joint_matrix_changed );
-    } else if( dynamic_cast< HAnimSite * >( n ) ) {
-      
+      joint->displayList->route( humanoid->displayList );
+    } else if( HAnimSite *site = dynamic_cast< HAnimSite * >( n ) ) {
+      site->displayList->route( humanoid->displayList );
     } else {
       Console(4) << "Invalid Node type: \"" << n->getTypeName() 
                  << "\" in HAnimHumanoid.skeleton field. Must be HAnimJoint or HAnimSite" << endl;
@@ -406,9 +407,12 @@ void HAnimHumanoid::MFJoint::onAdd( Node *n ) {
 void HAnimHumanoid::MFJoint::onRemove( Node *n ) {
   MFNode::onRemove( n );
   HAnimHumanoid *humanoid = static_cast< HAnimHumanoid * >( getOwner() );
-  HAnimJoint *joint = dynamic_cast< HAnimJoint *>( n ) ; 
-  if( joint ) {
+
+  if( HAnimJoint *joint = dynamic_cast< HAnimJoint *>( n ) ) {
     joint->accumulatedJointMatrix->unroute( humanoid->joint_matrix_changed );
     joint->displacers->unroute( humanoid->joint_matrix_changed );
-  } 
+    joint->displayList->unroute( humanoid->displayList );
+  } else if( HAnimSite *site = dynamic_cast< HAnimSite *>( n ) ) {
+    site->displayList->unroute( humanoid->displayList );
+  }
 }
