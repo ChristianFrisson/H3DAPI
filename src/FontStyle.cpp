@@ -573,6 +573,11 @@ X3DFontStyleNode::Justification FontStyle::getMinorJustification() {
    
    glNormal3f( 0, 0, 1 );
    font->Render( text.c_str() );
+
+   if( renderType->getValue() == "TEXTURE" ) {
+     glDisable( GL_ALPHA_TEST );
+     glDisable( GL_TEXTURE_2D);
+   }
    glPopMatrix();
  }
 
