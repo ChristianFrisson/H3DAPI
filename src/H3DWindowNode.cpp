@@ -802,12 +802,6 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   H3DFloat clip_near = 0.01f;  // near viewing plane at 1cm
   H3DFloat clip_far  = 10.f; // far viewing plane at 10m
-
-  // calculate the far and near clipping planes from the union of the 
-  // bounding box of the child_to_render node and the styli of the 
-  // haptics devices.
-  calculateFarAndNearPlane( clip_far, clip_near, 
-                            child_to_render, vp, true );
   
   if( nav_info ) {
     if( nav_info->visibilityLimit->getValue() > 0 )
@@ -819,6 +813,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
     if( nav_info->nearVisibilityLimit->getValue() > 0 )
       clip_near = nav_info->nearVisibilityLimit->getValue();
+  }
+  else
+  {
+    // if no nav_info is not exist, calculate the near and far clipping planes
+    // based on the union of bounding box of the child_to_render node and
+    // the styli of the haptics devices.
+    calculateFarAndNearPlane( clip_far, clip_near, child_to_render, vp, true );
   }
 
   if( background ) {
