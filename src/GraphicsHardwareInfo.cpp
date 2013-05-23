@@ -246,6 +246,8 @@ bool GraphicsHardwareInfo::initializeInfo() {
   info.max_viewport_width = vp[0];
   info.max_viewport_height = vp[1];
 
+  info_initialized = true;
+
   return true;
 }
 
