@@ -277,6 +277,7 @@ public:
   //Config object to save information (settings, file history etc...)
   wxConfigBase *h3dConfig;
 
+	bool loadIniFile();
   bool loadFile( const std::string &file );
   void clearData();
 
@@ -422,6 +423,8 @@ private:
   string stylus_file;
   string viewpoint_file;
   string render_mode;
+	bool ini_fullscreen;
+	bool ini_mirrored;
   bool manualCursorControl;
 
   // Autoref Variables

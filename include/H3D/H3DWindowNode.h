@@ -187,7 +187,8 @@ namespace H3D {
     virtual void swapBuffers() = 0;
 
     /// Virtual function that should create a new window and set its properties
-    /// depending on the fields.
+    /// depending on the fields. This function should set window_is_made_active
+    /// to true if window is made active at initialization.
     virtual void initWindow() = 0;
 
     /// Virtual function to initialize the window handler if needed.
@@ -199,6 +200,8 @@ namespace H3D {
 
     /// Virtual function to make the current window active, i.e. make subsequent
     /// OpenGL calls draw in the context of this window.
+    /// This function should set window_is_made_activeto true if window is
+    /// made active.
     virtual void makeWindowActive() = 0;
 
     /// Initialize the window node. 
@@ -507,6 +510,9 @@ namespace H3D {
 
     // Instance to class handling navigation for this window.
     H3DNavigation * h3d_navigation;
+
+		bool window_is_made_active, check_if_stereo_obtained;
+		void checkIfStereoObtained();
   };
 }
 

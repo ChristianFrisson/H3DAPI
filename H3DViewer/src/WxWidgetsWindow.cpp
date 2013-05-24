@@ -122,12 +122,20 @@ void WxWidgetsWindow::initWindow() {
   // TODO: stereo mode does not work with mac
   attribList[i++] = 0;
 #else
+	// On Windows we can not check here if stereo is supported, simply because
+	// on some systems GL_STEREO is false even though QUAD_BUFFERED_STEREO
+	// is supported. The check have to be made after SetCurrent.
   if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+		check_if_stereo_obtained = true;
+#ifndef H3D_WINDOWS
     GLboolean quad_stereo_supported;
     glGetBooleanv( GL_STEREO, &quad_stereo_supported);
-    if( quad_stereo_supported ){
+    if( quad_stereo_supported ) {
+#endif
       attribList[i++] = WX_GL_STEREO;
+#ifndef H3D_WINDOWS
     }
+#endif
   }
   attribList[i++] = 0;
 #endif
@@ -137,8 +145,12 @@ void WxWidgetsWindow::initWindow() {
       new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
                         wxSize( width->getValue(), height->getValue() ), 
                         attribList );
-  if( !theWxGLContext )
+
+  if( !theWxGLContext || ( last_render_mode != stereo_mode && ( last_render_mode == RenderMode::QUAD_BUFFERED_STEREO || stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) ) ) {
+		if( theWxGLContext )
+			delete theWxGLContext;
     theWxGLContext = new wxGLContext( theWxGLCanvas );
+	}
 
   if( old_canvas ) {
     old_canvas->Destroy();
@@ -194,9 +206,8 @@ void WxWidgetsWindow::initWindow() {
   theWxGLCanvas->Show();
   theWindow->Raise();
   theWindow->Layout();
-  if( theWxGLCanvas->IsShownOnScreen() ) {
-    theWxGLCanvas->SetCurrent( *theWxGLContext );
-  }
+	
+	makeWindowActive();
   if( stereo_mode == RenderMode::NVIDIA_3DVISION )
     theWxGLCanvas->Hide();
   
@@ -264,9 +275,10 @@ void WxWidgetsWindow::swapBuffers() {
 }
 
 void WxWidgetsWindow::makeWindowActive() {
-  if( theWxGLCanvas->IsShownOnScreen() ) {
-    theWxGLCanvas->SetCurrent( *theWxGLContext );
-  }
+	if( theWxGLCanvas->IsShownOnScreen() ) {
+		theWxGLCanvas->SetCurrent( *theWxGLContext );
+		window_is_made_active = true;
+	}
 }
 
 BEGIN_EVENT_TABLE(WxWidgetsWindow::MyWxGLCanvas, wxGLCanvas)

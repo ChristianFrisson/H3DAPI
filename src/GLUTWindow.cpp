@@ -168,15 +168,31 @@ void GLUTWindow::initWindow() {
       stereo_mode == RenderMode::HORIZONTAL_INTERLACED ||
       stereo_mode == RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT ) {
     //mode |= GLUT_STENCIL;
-  } else  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+  } else if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
     mode |= GLUT_STEREO;
   }
   
   glutInitDisplayMode( mode );
-  if( gameMode->getValue() == "" ){
+  if( gameMode->getValue() == "" ) {
     glutInitWindowSize( width->getValue(), height->getValue() );
     glutInitWindowPosition( posX->getValue(), posY->getValue() );
     window_id = glutCreateWindow( "H3D" );
+		// This code is here to check if we got a stereo window using stereo mode.
+		// It seems like on some systems GLUT_MULTISAMPLE can not be combined with
+		// GLUT_STEREO.
+		if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+			GLboolean quad_stereo_supported;
+			glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+			if( !quad_stereo_supported ) {
+				// No stereo, destroy the window, and then use a mode without
+				// GLUT_MULTISAMPLE to try to create a stereo window.
+				mode = mode ^ GLUT_MULTISAMPLE;
+				glutDestroyWindow(window_id);
+				glutInitDisplayMode( mode );
+				window_id = glutCreateWindow( "H3D" );
+				glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+			}
+		}
     glutSetWindow( window_id );
   } else {
     glutGameModeString(gameMode->getValue().c_str());
@@ -224,6 +240,7 @@ void GLUTWindow::initWindow() {
 #endif
 #endif
 #endif
+	window_is_made_active = true;
 }
 
 

@@ -189,7 +189,7 @@ ENDIF( DirectX_FOUND )
 IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
   # if generating CPACK project using BUNDLE we should not create the bundle here instead
   # it is built with CPack 
-  ADD_EXECUTABLE(H3DViewer WIN32 ${H3DViewer_SRCS})
+  ADD_EXECUTABLE(H3DViewer WIN32 ${H3DViewer_SRCS} ${H3DViewer_HEADERS})
 ELSE( GENERATE_H3DVIEWER_CPACK_PROJECT )
   ADD_EXECUTABLE(H3DViewer WIN32 MACOSX_BUNDLE ${H3DViewer_SRCS} ${H3DViewer_SOURCE_DIR}/H3DViewer.icns )
 ENDIF ( GENERATE_H3DVIEWER_CPACK_PROJECT )

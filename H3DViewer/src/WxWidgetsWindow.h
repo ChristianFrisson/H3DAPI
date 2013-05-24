@@ -117,6 +117,7 @@ namespace H3D {
       // Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
       if( theWxGLContext ) {
         delete theWxGLContext;
+				theWxGLContext = NULL;
       }
     }
 

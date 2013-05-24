@@ -202,6 +202,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   GetClientSize(&width, &height);
   glwindow->width->setValue(width);
   glwindow->height->setValue(height);
+	loadIniFile();
+	glwindow->renderMode->setValue(render_mode);
     
   scene->window->push_back( glwindow );
   
@@ -783,15 +785,8 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
   }
 }
 
-
-/*******************Member Functions*********************/
-
-bool WxFrame::loadFile( const string &filename) {
-#ifdef WIN32
-  UINT old_error_mode;
-  old_error_mode = SetErrorMode( 0 );
-#endif
-  char *r = getenv( "H3D_ROOT" );
+bool WxFrame::loadIniFile() {
+	char *r = getenv( "H3D_ROOT" );
   string h3d_root = r ? r : ""; 
 
 #ifdef WIN32
@@ -819,23 +814,16 @@ bool WxFrame::loadFile( const string &filename) {
       ini_file_exists = true; }
     check_ini_file.close();
   }
-  
-  INIFile ini_file( ini_file_path );
 
-  lastOpenedFilepath = filename;
-
-
-  //Clear existing data
-  viewpoint.reset( NULL );
-  tree_view_dialog->clearTreeView();
-
+	INIFile ini_file( ini_file_path );
+	common_path =  h3d_root + "/settings/common/";
   settings_path = 
     GET_ENV_INI_DEFAULT( "H3D_DISPLAY",
                          h3d_root + "/settings/display/",
                          "display","type",
-                         h3d_root + "/settings/common/" );
+                         h3d_root + common_path );
   
-  common_path =  h3d_root + "/settings/common/";
+  
 
   deviceinfo_file =
     GET_ENV_INI_DEFAULT_FILE( ini_file, "H3D_DEFAULT_DEVICEINFO",
@@ -872,12 +860,12 @@ bool WxFrame::loadFile( const string &filename) {
       << endl;
   }
 
-  bool fullscreen    = GET_BOOL("graphical", "fullscreen", false);
+  ini_fullscreen    = GET_BOOL("graphical", "fullscreen", false);
   if( char *buffer = getenv("H3D_FULLSCREEN") ) {
     if (strcmp( buffer, "TRUE" ) == 0 ){
-    fullscreen = true; }
+    ini_fullscreen = true; }
     else if (strcmp( buffer, "FALSE" ) == 0 ){
-    fullscreen = false; }
+    ini_fullscreen = false; }
     else
       Console(4) << "Invalid value \"" << buffer 
                  << "\" on environment "
@@ -885,17 +873,36 @@ bool WxFrame::loadFile( const string &filename) {
                  << endl;
   }
   
-  bool mirrored      = GET_BOOL("graphical", "mirrored", false);
+  bool ini_mirrored      = GET_BOOL("graphical", "mirrored", false);
   if( char *buffer = getenv("H3D_MIRRORED") ) {
     if (strcmp( buffer, "TRUE" ) == 0 ){
-      mirrored = true; }
+      ini_mirrored = true; }
     else if (strcmp( buffer, "FALSE" ) == 0 ){
-      mirrored = false; }
+      ini_mirrored = false; }
     else
       Console(4) << "Invalid value \"" << buffer 
                  << "\" on environment "
                  << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
   }
+	return ini_file_exists;
+}
+
+
+/*******************Member Functions*********************/
+
+bool WxFrame::loadFile( const string &filename) {
+#ifdef WIN32
+  UINT old_error_mode;
+  old_error_mode = SetErrorMode( 0 );
+#endif
+
+  lastOpenedFilepath = filename;
+
+  //Clear existing data
+  viewpoint.reset( NULL );
+  tree_view_dialog->clearTreeView();
+
+	bool ini_file_exists = loadIniFile();
 
   bool use_space_mouse = false;
 
@@ -961,9 +968,9 @@ bool WxFrame::loadFile( const string &filename) {
 
     /**********************Reset mirrored and fullscreen********************/
     if( !loaded_first_file ) {
-      rendererMenu->Check(FRAME_FULLSCREEN, fullscreen);
-      rendererMenu->Check(FRAME_MIRROR, mirrored);
-      lastmirror = mirrored;
+      rendererMenu->Check(FRAME_FULLSCREEN, ini_fullscreen);
+      rendererMenu->Check(FRAME_MIRROR, ini_mirrored);
+      lastmirror = ini_mirrored;
     }
 
     /****************************Navigation Info****************************/
@@ -1120,8 +1127,8 @@ bool WxFrame::loadFile( const string &filename) {
 
     if( !loaded_first_file ) {
       loaded_first_file = true;
-      this->glwindow->fullscreen->setValue( fullscreen );
-      this->glwindow->mirrored->setValue( mirrored );
+      this->glwindow->fullscreen->setValue( ini_fullscreen );
+      this->glwindow->mirrored->setValue( ini_mirrored );
       this->glwindow->manualCursorControl->setValue( manualCursorControl );
       this->glwindow->renderMode->setValue( render_mode );
       if( render_mode == "MONO" )

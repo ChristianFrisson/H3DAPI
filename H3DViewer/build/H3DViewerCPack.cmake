@@ -2,11 +2,6 @@ IF( NOT TARGET H3DViewer )
   MESSAGE( FATAL_ERROR "Include file H3DViewerCPack.cmake require the target H3DViewer to exist. Please add H3DAPI/H3DViewer/build/CMakeLists.txt as subdirectory first." )
 ENDIF( NOT TARGET H3DViewer )
 
-# Add all sources, they are added to a variable called H3DViewer_SRCS defined
-# in the included file. All header files are added to a variable called
-# H3DViewer_HEADERS.
-INCLUDE( ${H3DViewer_SOURCE_DIR}/H3DViewerSourceFiles.txt )
-
 # To allow other projects that use H3DVIEWER as a subproject to add extra include directories
 # when packaging.
 IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
@@ -74,10 +69,6 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     SET(CPACK_MONOLITHIC_INSTALL "TRUE" )
     SET( CPACK_PACKAGE_START_MENU_NAME "H3DViewer ${H3DViewer_MAJOR_VERSION}.${H3DViewer_MINOR_VERSION}" )
                            
-    SET(CPACK_PACKAGE_VERSION_MAJOR ${H3DViewer_MAJOR_VERSION})
-    SET(CPACK_PACKAGE_VERSION_MINOR ${H3DViewer_MINOR_VERSION})
-    SET(CPACK_PACKAGE_VERSION_PATCH ${H3DViewer_BUILD_VERSION})
-    
     SET( EXTERNAL_BIN_PATH "bin32" )
     SET( EXTERNAL_BIN_REPLACE_PATH "bin64" )
     SET( CPACK_PACKAGE_NAME "H3DViewer" )
