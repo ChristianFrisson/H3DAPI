@@ -133,6 +133,7 @@ WxConsoleDialog::~WxConsoleDialog() {
   
   console_stream.reset( NULL );
   delete tmp_buf;
+	delete clip_board;
 }
 
 /*******************Event Table*********************/
