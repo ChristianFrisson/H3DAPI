@@ -821,7 +821,7 @@ bool WxFrame::loadIniFile() {
     GET_ENV_INI_DEFAULT( "H3D_DISPLAY",
                          h3d_root + "/settings/display/",
                          "display","type",
-                         h3d_root + common_path );
+                         common_path );
   
   
 
@@ -873,7 +873,7 @@ bool WxFrame::loadIniFile() {
                  << endl;
   }
   
-  bool ini_mirrored      = GET_BOOL("graphical", "mirrored", false);
+  ini_mirrored      = GET_BOOL("graphical", "mirrored", false);
   if( char *buffer = getenv("H3D_MIRRORED") ) {
     if (strcmp( buffer, "TRUE" ) == 0 ){
       ini_mirrored = true; }
