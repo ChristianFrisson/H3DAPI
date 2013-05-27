@@ -529,7 +529,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
           ParsableField *default_field = dynamic_cast< ParsableField * >(
                default_value_node->getField( *i ) );
           string v = p_field->getValueAsString();
-          if( default_field->getValueAsString() != v ) {
+          if( default_field && default_field->getValueAsString() != v ) {
             if( output_type == X3D_OUTPUT ) {
               os << *i << "=\'" << v << "\' ";
             } else if( output_type == VRML_OUTPUT ) {
