@@ -672,6 +672,13 @@ void X3DSAX2Handlers::handleExportElement( const Attributes &attrs  ) {
 void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs, 
                                             Node *parent ) {
   // push NULL on the node stack to skip elements within connect element.
+	NodeElement *parent_node_element = NULL;
+	if( parent ) {
+		// This allows for proper parsing of CDATA in a python script inside a
+		// proto. This is needed in order to use any connect statements with
+		// fields created by the python code.
+		parent_node_element = &node_stack.top();
+	}
   node_stack.push( NodeElement( NULL ) );
 
   if( !defining_proto_connections ) {
@@ -710,6 +717,13 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
 #ifdef HAVE_PYTHON
       if( dynamic_cast< PythonScript * >(parent) ) {
         if( !parent->isInitialized() && parent->getManualInitialize() ) {
+					if( parent_node_element->haveCDATA() ) {
+						if( X3DUrlObject *url_object = 
+								dynamic_cast< X3DUrlObject * >( parent ) ) {
+							url_object->url->push_back( parent_node_element->getCDATA() );
+							parent_node_element->setCDATA( "" );
+						}
+					}
           parent->initialize();
           Console(3) << "WARNING: When using a PythonScript in a Protobody "
                      << "all nodes specified for the references field of PythonScript "
@@ -1255,7 +1269,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
   }
   
   // get the parent node.
-  if( node_stack.size() > 0 ) parent = node_stack.top().getNode();  
+  if( node_stack.size() > 0 ) parent = node_stack.top().getNode();
 
   if( !parent && node_stack.size() > 0 ) {
     // a NULL node is our parent, which means that we should skip all new 
