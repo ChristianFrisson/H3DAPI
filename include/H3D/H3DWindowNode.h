@@ -501,12 +501,6 @@ namespace H3D {
     vector< bool > left_mouse_button;
     // Stores previous left mouse button state.
     bool previous_left_mouse_button;
-    // Flag needed because of some kind of bug which is only apparent in
-    // H3DLoad (maybe glut). See bug report.
-    // TODO: This is only a work around, not really an optimal solution. To
-    // test bug report 0000176 simply set this value to true in
-    // H3DWindowNode constructor.
-    bool render_already_run_once;
 
     // Instance to class handling navigation for this window.
     H3DNavigation * h3d_navigation;
