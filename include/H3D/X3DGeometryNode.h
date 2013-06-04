@@ -282,6 +282,7 @@ namespace H3D {
     /// The field contains a contact point for each HapticsDevice with the index
     /// as specified in the DeviceInfo node. The value will be an empty vector
     /// before the first contact.
+		/// The contact point is given in local coordinates of the X3DGeometryNode.
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactPoint;
@@ -300,6 +301,7 @@ namespace H3D {
     /// geometry.
     /// The field contains a normal for each of the points in contactPoint. 
     /// The value will be an empty vector before the first contact.
+		/// The contact normal is given in local coordinates of the X3DGeometryNode.
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactNormal;

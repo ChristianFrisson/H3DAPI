@@ -82,6 +82,10 @@ X3DTexture2DNode::X3DTexture2DNode(
   textureProperties->route( displayList );
 }
 
+void X3DTexture2DNode::SFImage::setValueFromString( const string& s ) {
+  setValue( X3D::X3DStringTo2DImage( s ) );
+}
+
 string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
   // Slow but convenient. is only used for JS engine
 

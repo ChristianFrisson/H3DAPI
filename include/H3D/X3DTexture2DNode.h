@@ -48,9 +48,7 @@ namespace H3D {
     /// A SFNode encapsulating an Image class
     class H3DAPI_API SFImage: public H3DImageObject::SFImage {
     public:
-      virtual void setValueFromString( const string &s ) {
-        setValue( X3D::X3DStringTo2DImage( s ) );
-      }
+      virtual void setValueFromString( const string &s );
 
       virtual string getValueAsString(const string& separator = " ");
 
