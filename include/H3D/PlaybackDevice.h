@@ -34,19 +34,45 @@
 
 namespace H3D {
 
+  /// \ingroup H3DNodes
+  /// \class PlaybackDevice
+  /// \brief A PlaybackDevice is a fake haptics device node that can play back
+  ///        device values previously recorded using the DeviceLog node.
+  ///
+  /// This haptics device plays back device values from a file specified 
+  /// by the url field. The format of the file is the same as that produced
+  /// by the DeviceLog force effect. Both binary and text formats are 
+  /// supported.
+  ///
+  /// Any combination of columns are supported, however a TIME
+  /// column is required in order to play back the values at the original
+  /// speed.
+  ///
+  /// The following columns are used to define the device's raw values:
+  /// RAW_POSITION, RAW_ORIENTATION, RAW_VELOCITY, BUTTONS. Any other 
+  /// columns are ignored. The calibrated device values are calculated
+  /// based on the raw values in the usual way and the recorded calibrated
+  /// values (if present) are ignored.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/PlaybackDevice.x3d">PlaybackDevice.x3d</a>
+  ///     ( <a href="examples/PlaybackDevice.x3d.html">Source</a> )
   class H3DAPI_API PlaybackDevice: 
     public X3DUrlObject,
     public H3DHapticsDevice {
   public:
 
+    /// A field used to start and stop playback
     class OnPlay : public OnNewValueSField < AutoUpdate < SFBool > > {
       virtual void onNewValue( const bool& new_value );
     };
 
+    /// A field used to move playback to a specified time
     class OnSeekToTime : public OnNewValueSField < AutoUpdate < SFTime > > {
       virtual void onNewValue( const H3DTime& new_value );
     };
 
+    /// A field used to adjust the playback speed
     class OnPlaybackSpeed : public OnNewValueSField < AutoUpdate < SFFloat > > {
       virtual void onNewValue( const H3DFloat& new_value );
     };
@@ -84,10 +110,13 @@ namespace H3D {
         Inst< SFBool          > _playing                = 0
         );
 
+    /// Destructor
     virtual ~PlaybackDevice ();
 
+    /// Initialize the node
     virtual void initialize ();
 
+    /// Update the output fields
     virtual void updateDeviceValues ();
 
     /// Start and stop the playback. 
@@ -107,17 +136,29 @@ namespace H3D {
 
     /// If true, then the recording pointed to by url is assumed to contain
     /// binary data. Otherwise it is assumed to contain text data.
+    ///
+    /// The value set here will take effect the next time that a new url is 
+    /// specified and playback is started.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    ///
     auto_ptr< SFBool > binary;
 
     /// Move playback to the specified time.
+    ///
+    /// The value set here will take effect the next time playback is started.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.0 \n
     ///
     auto_ptr < OnSeekToTime > seekToTime;
 
-    /// Speed of playback. A value of 1 corresponds to the original 
-    /// recording speed.
+    /// A scaling factor to apply to the speed of playback. 
+    ///
+    /// A value of 1 corresponds to the original recording speed.
+    /// Changing this value during playback will result in discontinuities
+    /// in the playback position.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1.0 \n
@@ -145,9 +186,12 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-
+    /// A field used to detect if the url field has changed
+    /// since last playback started
     auto_ptr < Field > playback_url_changed;
 
+    /// Store the name of the temp file used to resolve the url
+    /// so that it can be removed later
     std::string tmp_filename;
   };
 }

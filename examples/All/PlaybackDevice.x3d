@@ -12,7 +12,7 @@
   <Scene>
     <Viewpoint position='0 0 0.6'/>
     <DeviceInfo>
-      <PlaybackDevice url='device_log' binary='true' play='true'>
+      <PlaybackDevice url='other/device_log' binary='true' play='true'>
         <Transform containerField='stylus' rotation='1 0 0 1.57'>
           <Shape>
             <Appearance>
