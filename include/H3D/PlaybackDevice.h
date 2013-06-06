@@ -95,7 +95,7 @@ namespace H3D {
         Inst< WeightedProxy   > _weightedProxyPosition  = 0,     
         Inst< SFFloat         > _proxyWeighting         = 0,
         Inst< SFBool          > _mainButton             = 0,
-        Inst< SFBool          > _secondaryButton       = 0,
+        Inst< SFBool          > _secondaryButton        = 0,
         Inst< SFInt32         > _buttons                = 0,
         Inst< SFVec3f         > _force                  = 0,
         Inst< SFVec3f         > _torque                 = 0,
@@ -114,6 +114,9 @@ namespace H3D {
         Inst< SFTime          > _playbackTime           = 0,
         Inst< SFBool          > _playing                = 0,
         Inst< MFString        > _playbackData           = 0,
+        Inst< SFVec3f         > _defaultDevicePosition  = 0,
+        Inst< SFRotation      > _defaultDeviceOrientation = 0,
+        Inst< SFVec3f         > _defaultDeviceVelocity  = 0,
         Inst< SFInt32         > _defaultButtons         = 0
         );
 
@@ -189,8 +192,51 @@ namespace H3D {
     ///
     auto_ptr < SFBool > playing;
 
+    /// The list of field names in the recording that should be played back.
+    ///
+    /// If the list is empty then all available columns are played back. If a field
+    /// is not played back, then the default value specified using the default* fields
+    /// is used instead.
+    ///
+    /// The TIME field is always used if present in the recording.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> [] \n
+    ///
+    /// <b>Allowed values:</b> "DEVICE_POSITION", "DEVICE_ORIENTATION", "DEVICE_VELOCITY",
+    ///                        "BUTTONS"
     auto_ptr < MFString > playbackData;
 
+    /// The default value to use for the devicePosition field if no value is
+    /// played back from the recording.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> Vec3f(0,0,0) \n
+    ///
+    auto_ptr < SFVec3f > defaultDevicePosition;
+
+    /// The default value to use for the deviceOrientation field if no value is
+    /// played back from the recording.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> Rotation(1,0,0,0) \n
+    ///
+    auto_ptr < SFRotation > defaultDeviceOrientation;
+
+    /// The default value to use for the deviceVelocity field if no value is
+    /// played back from the recording.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> Vec3f(0,0,0) \n
+    ///
+    auto_ptr < SFVec3f > defaultDeviceVelocity;
+
+    /// The default value to use for the buttons field if no value is
+    /// played back from the recording.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    ///
     auto_ptr < SFInt32 > defaultButtons;
 
     /// Node database entry
@@ -201,6 +247,7 @@ namespace H3D {
     /// since last playback started
     auto_ptr < Field > playback_url_changed;
 
+    /// A field used to update the default device values in the HAPI device
     auto_ptr < OnDefaultValuesChanged > default_values_changed;
 
     /// Store the name of the temp file used to resolve the url

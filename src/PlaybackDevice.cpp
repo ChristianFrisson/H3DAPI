@@ -46,6 +46,9 @@ namespace PlaybackDeviceInternals {
   FIELDDB_ELEMENT( PlaybackDevice, playbackTime, OUTPUT_ONLY );
   FIELDDB_ELEMENT( PlaybackDevice, playing, OUTPUT_ONLY );
   FIELDDB_ELEMENT( PlaybackDevice, playbackData, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlaybackDevice, defaultDevicePosition, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlaybackDevice, defaultDeviceOrientation, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlaybackDevice, defaultDeviceVelocity, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PlaybackDevice, defaultButtons, INPUT_OUTPUT );
 }
 
@@ -81,6 +84,9 @@ PlaybackDevice::PlaybackDevice(
           Inst< SFTime          > _playbackTime           ,
           Inst< SFBool          > _playing                ,
           Inst< MFString        > _playbackData           ,
+          Inst< SFVec3f         > _defaultDevicePosition  ,
+          Inst< SFRotation      > _defaultDeviceOrientation,
+          Inst< SFVec3f         > _defaultDeviceVelocity  ,
           Inst< SFInt32         > _defaultButtons ):
   X3DUrlObject ( _url ),
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
@@ -98,6 +104,9 @@ PlaybackDevice::PlaybackDevice(
   playbackTime ( _playbackTime ),
   playing ( _playing ),
   playbackData ( _playbackData ),
+  defaultDevicePosition ( _defaultDevicePosition ),
+  defaultDeviceOrientation ( _defaultDeviceOrientation ),
+  defaultDeviceVelocity ( _defaultDeviceVelocity ),
   defaultButtons ( _defaultButtons ),
   playback_url_changed ( new Field ),
   default_values_changed ( new OnDefaultValuesChanged ) {
@@ -113,6 +122,9 @@ PlaybackDevice::PlaybackDevice(
   url->route ( playback_url_changed );
   playbackData->route ( playback_url_changed );
 
+  defaultDevicePosition->route ( default_values_changed );
+  defaultDeviceOrientation->route ( default_values_changed );
+  defaultDeviceVelocity->route ( default_values_changed );
   defaultButtons->route ( default_values_changed );
 
   play->setValue ( false );
@@ -174,7 +186,17 @@ void PlaybackDevice::OnPlay::onNewValue( const bool& new_value ) {
         d->clearDataFields ();
         const std::vector < std::string > field_names= node->playbackData->getValue();
         for ( std::vector < std::string >::const_iterator i= field_names.begin(); i != field_names.end(); ++i ) {
-          d->addDataField ( *i );
+          std::string name= *i;
+
+          if ( name == "DEVICE_POSITION" ) {
+            d->addDataField ( "RAW_POSITION" );
+          } else if ( name == "DEVICE_ORIENTATION" ) {
+            d->addDataField ( "RAW_ORIENTATION" );
+          } else if ( name == "DEVICE_VELOCITY" ) {
+            d->addDataField ( "RAW_VELOCITY" );
+          } else if ( name == "BUTTONS" ) {
+            d->addDataField ( "BUTTONS" );
+          }
         }
 
         const std::vector < std::string > urls= node->url->getValue();
@@ -222,6 +244,10 @@ void PlaybackDevice::OnDefaultValuesChanged::update () {
   HAPI::PlaybackHapticsDevice* d= static_cast<HAPI::PlaybackHapticsDevice*>(node->getHAPIDevice());
   if ( d ) {
     HAPI::HAPIHapticsDevice::DeviceValues dv;
+    dv.position= node->defaultDevicePosition->getValue();
+    dv.orientation= node->defaultDeviceOrientation->getValue();
+    dv.velocity= node->defaultDeviceVelocity->getValue();
+
     dv.button_status= node->defaultButtons->getValue();
 
     d->setDefaultDeviceValues ( dv );
