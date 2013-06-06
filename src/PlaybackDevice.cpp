@@ -40,11 +40,13 @@ H3DNodeDatabase PlaybackDevice::database ( "PlaybackDevice",
 namespace PlaybackDeviceInternals {
   FIELDDB_ELEMENT( PlaybackDevice, url, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PlaybackDevice, play, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlaybackDevice, binary, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PlaybackDevice, seekToTime, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PlaybackDevice, playbackSpeed, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PlaybackDevice, playbackTime, OUTPUT_ONLY );
   FIELDDB_ELEMENT( PlaybackDevice, playing, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( PlaybackDevice, binary, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlaybackDevice, playbackData, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PlaybackDevice, defaultButtons, INPUT_OUTPUT );
 }
 
 /// Constructor.
@@ -77,7 +79,9 @@ PlaybackDevice::PlaybackDevice(
           Inst< OnSeekToTime    > _seekToTime             ,
           Inst< OnPlaybackSpeed > _playbackSpeed          ,
           Inst< SFTime          > _playbackTime           ,
-          Inst< SFBool          > _playing ):
+          Inst< SFBool          > _playing                ,
+          Inst< MFString        > _playbackData           ,
+          Inst< SFInt32         > _defaultButtons ):
   X3DUrlObject ( _url ),
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
         _trackerOrientation, _positionCalibration, 
@@ -93,14 +97,23 @@ PlaybackDevice::PlaybackDevice(
   playbackSpeed ( _playbackSpeed ),
   playbackTime ( _playbackTime ),
   playing ( _playing ),
-  playback_url_changed ( new Field ) {
+  playbackData ( _playbackData ),
+  defaultButtons ( _defaultButtons ),
+  playback_url_changed ( new Field ),
+  default_values_changed ( new OnDefaultValuesChanged ) {
 
   type_name = "PlaybackDevice";
   database.initFields( this );
 
+  default_values_changed->setName ( "default_values_changed" );
+  default_values_changed->setOwner ( this );
+
   hapi_device.reset( new HAPI::PlaybackHapticsDevice );
 
   url->route ( playback_url_changed );
+  playbackData->route ( playback_url_changed );
+
+  defaultButtons->route ( default_values_changed );
 
   play->setValue ( false );
   binary->setValue ( false );
@@ -150,13 +163,18 @@ void PlaybackDevice::OnPlay::onNewValue( const bool& new_value ) {
   if ( d ) {
 
     if ( new_value ) {
-      Console(4) << "PLAY: " << node->url->size() << endl;
 
       // Load new URL if required
       if ( !node->playback_url_changed->isUpToDate() ) {
         d->closeRecording();
         if ( !node->tmp_filename.empty() ) {
           node->removeTmpFile ( node->tmp_filename );
+        }
+
+        d->clearDataFields ();
+        const std::vector < std::string > field_names= node->playbackData->getValue();
+        for ( std::vector < std::string >::const_iterator i= field_names.begin(); i != field_names.end(); ++i ) {
+          d->addDataField ( *i );
         }
 
         const std::vector < std::string > urls= node->url->getValue();
@@ -196,5 +214,16 @@ void PlaybackDevice::OnPlaybackSpeed::onNewValue( const H3DFloat& new_value ) {
   HAPI::PlaybackHapticsDevice* d= static_cast<HAPI::PlaybackHapticsDevice*>(node->getHAPIDevice());
   if ( d ) {
     d->setPlaybackSpeed ( new_value );
+  }
+}
+
+void PlaybackDevice::OnDefaultValuesChanged::update () {
+  PlaybackDevice* node= static_cast<PlaybackDevice*>(getOwner());
+  HAPI::PlaybackHapticsDevice* d= static_cast<HAPI::PlaybackHapticsDevice*>(node->getHAPIDevice());
+  if ( d ) {
+    HAPI::HAPIHapticsDevice::DeviceValues dv;
+    dv.button_status= node->defaultButtons->getValue();
+
+    d->setDefaultDeviceValues ( dv );
   }
 }

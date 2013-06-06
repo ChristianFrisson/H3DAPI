@@ -77,6 +77,11 @@ namespace H3D {
       virtual void onNewValue( const H3DFloat& new_value );
     };
 
+    /// A field used to adjust the playback speed
+    class OnDefaultValuesChanged : public PeriodicUpdate < Field > {
+      virtual void update ();
+    };
+
     /// Constructor.
     PlaybackDevice( 
         Inst< MFString        >  _url                   = 0,
@@ -107,7 +112,9 @@ namespace H3D {
         Inst< OnSeekToTime    > _seekToTime             = 0,
         Inst< OnPlaybackSpeed > _playbackSpeed          = 0,
         Inst< SFTime          > _playbackTime           = 0,
-        Inst< SFBool          > _playing                = 0
+        Inst< SFBool          > _playing                = 0,
+        Inst< MFString        > _playbackData           = 0,
+        Inst< SFInt32         > _defaultButtons         = 0
         );
 
     /// Destructor
@@ -182,6 +189,10 @@ namespace H3D {
     ///
     auto_ptr < SFBool > playing;
 
+    auto_ptr < MFString > playbackData;
+
+    auto_ptr < SFInt32 > defaultButtons;
+
     /// Node database entry
     static H3DNodeDatabase database;
 
@@ -189,6 +200,8 @@ namespace H3D {
     /// A field used to detect if the url field has changed
     /// since last playback started
     auto_ptr < Field > playback_url_changed;
+
+    auto_ptr < OnDefaultValuesChanged > default_values_changed;
 
     /// Store the name of the temp file used to resolve the url
     /// so that it can be removed later
