@@ -31,6 +31,7 @@
 
 #include <H3D/X3DUrlObject.h>
 #include <H3D/H3DHapticsDevice.h>
+#include <H3D/PeriodicUpdate.h>
 
 namespace H3D {
 
