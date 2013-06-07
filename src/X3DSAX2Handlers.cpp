@@ -1053,6 +1053,7 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
         if( !pd ) {
           Console(3) << "Warning: Could not find any PROTO declaration "
                << getLocationString()<< endl;
+          node_stack.push( NodeElement( NULL ) );
         }
       } else {
         pd = proto_vector.getProtoDeclaration( proto_name );
@@ -1060,6 +1061,7 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
           Console(3) << "Warning: Could not find PROTO declaration \"" 
                << proto_name
                << "\" " << getLocationString()<< endl;
+          node_stack.push( NodeElement( NULL ) );
         }
       }
       
