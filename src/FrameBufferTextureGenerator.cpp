@@ -123,10 +123,13 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   nr_samples( 0 ),
   render_func( NULL ),
   render_func_data( NULL ),
-  always_use_existing_viewport( false ) {
+  always_use_existing_viewport( false ),
+  shadow_caster( new ShadowCaster ) {
 
   type_name = "FrameBufferTextureGenerator";
   database.initFields( this );
+
+  shadow_caster->algorithm->setValue( "ZFAIL" );
 
   generateDepthTexture->setValue( false );
   outputTextureType->addValidValue( "2D" );
@@ -162,6 +165,30 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
 #ifdef H3D_WINDOWS
 #undef max
 #endif
+void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
+  
+  shadow_caster->object->clear();
+  shadow_caster->light->clear();
+  ShadowCaster *prev_shadow_caster = NULL;
+  ti.getUserData( "ShadowCaster",  (void **)&prev_shadow_caster);
+  ti.setUserData( "ShadowCaster", shadow_caster.get() );
+ 
+  X3DGroupingNode::traverseSG( ti );
+
+  // add the head light to shadow casting nodes if it is active.
+  if( !shadow_caster->object->empty() ) {
+    shadow_caster->addHeadLight();
+  }
+
+  ti.setUserData( "ShadowCaster", prev_shadow_caster );
+}
+
+bool FrameBufferTextureGenerator::haveStencilBuffer() {
+  const string &type = depthBufferType->getValue();
+  return type == "DEPTH24_STENCIL8" || type == "DEPTH_STENCIL";
+}
+
+
 void FrameBufferTextureGenerator::render()     { 
 
   // Only render the texture once regardless of multi pass
@@ -176,6 +203,36 @@ void FrameBufferTextureGenerator::render()     {
                << "(EXT_frame_buffer_object). FrameBufferTextureGenerator nodes will "
                << "not work." << endl;
     return;
+  }
+
+  GraphicsCachingOptions *graphics_options = NULL;
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  ShadowCaster *current_shadow_caster = shadow_caster.get();
+  if( default_settings ) {
+    default_settings->getOptionNode( graphics_options );
+  }
+
+  // set options for default shadows
+  if( graphics_options ) {
+    if( !graphics_options->useDefaultShadows->getValue() ) {
+      current_shadow_caster = NULL;
+    }
+
+    if( current_shadow_caster ) {
+      if( haveStencilBuffer() ) {
+        current_shadow_caster->shadowDarkness->setValue( graphics_options->defaultShadowDarkness->getValue()  );
+        current_shadow_caster->shadowDepthOffset->setValue( graphics_options->defaultShadowDepthOffset->getValue()  );
+      } else {
+        static bool message_printed = false;
+        if( !message_printed && !current_shadow_caster->object->empty() ) {
+          Console(4) << "Warning: Shadows cannot be used with FrameBufferTextureGenerator (" << getName() 
+                     << ") since it does not have a stencil buffer. Make sure that a depthBufferType that supports"
+                     << " stencil buffer is used, e.g. DEPTH_STENCIL" << endl;
+          message_printed = true;
+        }
+        current_shadow_caster = 0;
+      }
+    }
   }
 
   string output_texture_type = outputTextureType->getValue();
@@ -235,8 +292,7 @@ void FrameBufferTextureGenerator::render()     {
     if( current_height == -1 ) current_height = viewport[3];
   } 
 
-  bool using_stencil_buffer = (depthBufferType->getValue() == "DEPTH24_STENCIL8" ||
-                               depthBufferType->getValue() == "DEPTH_STENCIL" );
+  bool using_stencil_buffer = haveStencilBuffer();
 
   if( !always_use_existing_viewport ) {
     // Set viewport to span entire frame buffer 
@@ -345,8 +401,9 @@ void FrameBufferTextureGenerator::render()     {
         X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
         X3DGroupingNode::render();
       }
-      
+
       X3DShapeNode::geometry_render_mode= m;
+      if( current_shadow_caster ) current_shadow_caster->render();
     }
     
     // blit multi sample render buffer to output textures if using multi sampling.
@@ -414,6 +471,8 @@ void FrameBufferTextureGenerator::render()     {
             c[i]->render();
         }
       }
+
+      if( current_shadow_caster ) current_shadow_caster->render();
 
       // blit multi sample render buffer to output textures if using multi sampling.
       if( nr_samples > 0 ) {
@@ -568,8 +627,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
 
   string output_texture_type = outputTextureType->getValue();
   const vector< string > &color_texture_types = generateColorTextures->getValue();
-  bool using_stencil_buffer = (depthBufferType->getValue() == "DEPTH24_STENCIL8" ||
-                               depthBufferType->getValue() == "DEPTH_STENCIL");
+  bool using_stencil_buffer = haveStencilBuffer();
      
   GLenum texture_type = GL_TEXTURE_2D;
   if( output_texture_type == "2D_RECTANGLE" ) {
@@ -809,8 +867,7 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
 
 GLenum FrameBufferTextureGenerator::stringToDepthFormat( const string &s ) {
   GLenum format = GL_DEPTH_COMPONENT;
-  if( (s == "DEPTH_STENCIL" ||
-       s == "DEPTH24_STENCIL8" ) &&
+  if( haveStencilBuffer() &&
       GLEW_EXT_packed_depth_stencil ) {
     format = GL_DEPTH_STENCIL_EXT;
   }
@@ -819,8 +876,7 @@ GLenum FrameBufferTextureGenerator::stringToDepthFormat( const string &s ) {
 
 GLenum FrameBufferTextureGenerator::stringToDepthType( const string &s ) {
   GLenum type = GL_FLOAT;
-  if( (s == "DEPTH_STENCIL" ||
-       s == "DEPTH24_STENCIL8" ) &&
+  if( haveStencilBuffer() &&
       GLEW_EXT_packed_depth_stencil ) {
     type = GL_UNSIGNED_INT_24_8_EXT;
   }

@@ -35,6 +35,7 @@
 #include <H3D/GeneratedTexture.h>
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/X3DBackgroundNode.h>
+#include <H3D/ShadowCaster.h>
 
 namespace H3D {
 
@@ -178,6 +179,12 @@ namespace H3D {
 
     /// Performes the OpenGL calls needed for generating the textures.
     virtual void render();
+
+    /// Traverse the scenegraph.
+    virtual void traverseSG( TraverseInfo &ti );
+
+    /// Returns true if the FBO used has a stencil buffer.
+    bool haveStencilBuffer();
 
     /// Set a callback function that will override the normal rendering of the children
     /// field into the textures and replace it with any OpenGL calls of your own.
@@ -459,6 +466,10 @@ namespace H3D {
     /// is called will be used for the rendering. If false, the viewport will be
     /// set to fill the entire frame buffer.
     bool always_use_existing_viewport;
+
+    // Reference to shadow caster used to cast shadows for shapes
+    // in scene graph in this FrameBufferTextureGenerator.
+    AutoRef< ShadowCaster > shadow_caster;
   };
 }
 
