@@ -40,12 +40,8 @@
 #include <GL/freeglut.h>
 #endif
 
-#if !( defined(FREEGLUT) && defined(WIN32) )
 #include <H3D/X3DKeyDeviceSensorNode.h>
-#endif
-#ifndef WIN32
 #include <H3D/MouseSensor.h>
-#endif
 
 using namespace H3D;
 
@@ -208,22 +204,30 @@ void GLUTWindow::initWindow() {
   // set up GLUT callback functions
   glutDisplayFunc ( GLUTWindowInternals::displayFunc  );
   glutReshapeFunc ( GLUTWindowInternals::reshapeFunc  );
-  // Only if FREEGLUT and WIN32 is defined the H3DWindowNode callback is used
-#if !( defined(FREEGLUT) && defined(WIN32) )
-  glutKeyboardFunc( glutKeyboardDownCallback );
-  glutSpecialFunc( glutSpecialDownCallback );
-  glutKeyboardUpFunc( glutKeyboardUpCallback );
-  glutSpecialUpFunc( glutSpecialUpCallback );
-#endif
-#ifndef WIN32
-  glutMouseFunc( glutMouseCallback );
-  glutMotionFunc( glutMotionCallback );
-  glutPassiveMotionFunc( glutMotionCallback );
-#endif
+ 
+#if defined(H3D_WINDOWS)
+  // When in gameMode events will not pass through the normal Windows callback
+  // system so we have to use the glut way instead of the default Windows key and
+  // mouse handling from H3DWindowNode
+  if( gameMode->getValue() != "" ) {
+#endif  // H3D_WINDOWS
+
+    glutKeyboardFunc( glutKeyboardDownCallback );
+    glutSpecialFunc( glutSpecialDownCallback );
+    glutKeyboardUpFunc( glutKeyboardUpCallback );
+    glutSpecialUpFunc( glutSpecialUpCallback );
+    glutMouseFunc( glutMouseCallback );
+    glutMotionFunc( glutMotionCallback );
+    glutPassiveMotionFunc( glutMotionCallback );
 #ifdef FREEGLUT
-#ifndef WIN32
-  glutMouseWheelFunc( glutMouseWheelCallback );
-#endif
+    glutMouseWheelFunc( glutMouseWheelCallback );
+#endif // FREEGLUT
+
+#if defined(H3D_WINDOWS)
+   }
+#endif // H3D_WINDOWS
+
+#ifdef FREEGLUT
   glutSetOption( GLUT_ACTION_ON_WINDOW_CLOSE, 
                  GLUT_ACTION_GLUTMAINLOOP_RETURNS );
 #ifdef H3D_WINDOWS
@@ -237,9 +241,9 @@ void GLUTWindow::initWindow() {
 #else
  wpOrigProc = (WNDPROC) SetWindowLongPtr(hWnd, 
                 GWL_WNDPROC, (LONG_PTR) WindowProc);
-#endif
-#endif
-#endif
+#endif // H3D_WIN64
+#endif // H3D_WINDOWS
+#endif // FREEGLUT
 	window_is_made_active = true;
 }
 
@@ -325,17 +329,15 @@ int GLUTWindow::setCursorType(const std::string & cursor_type) {
 
 void GLUTWindow::glutKeyboardDownCallback( unsigned char key, 
                                      int x, int y ) {
-#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     window->onKeyDown( key, false );
   }
-#endif
+
 }
 
 void GLUTWindow::glutSpecialDownCallback( int key, 
                                     int x, int y ) {
-#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     switch( key ) {
@@ -392,22 +394,18 @@ void GLUTWindow::glutSpecialDownCallback( int key,
       default: {}
     }
   }
-#endif
 }
 
 void GLUTWindow::glutKeyboardUpCallback( unsigned char key, 
                                    int x, int y ) {
-#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     window->onKeyUp( key, false );
   }
-#endif
 }
 
 void GLUTWindow::glutSpecialUpCallback( int key, 
                                   int x, int y ) {
-#if !( defined(FREEGLUT) && defined(WIN32) )
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     switch( key ) {
@@ -461,10 +459,9 @@ void GLUTWindow::glutSpecialUpCallback( int key,
       default: {}
     }
   }
-#endif
 }
 
-#ifndef WIN32
+
 void GLUTWindow::glutMouseCallback( int button, int state, 
                                    int x, int y ) {
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
@@ -496,11 +493,10 @@ void GLUTWindow::glutMotionCallback( int x, int y ) {
     window->onMouseMotionAction( x, y );
   }
 }
-#endif
+
 
 void GLUTWindow::glutMouseWheelCallback( int wheel, 
                                         int direction, int x, int y ) {
-#if defined(FREEGLUT) && !defined(WIN32)
   GLUTWindow *window = GLUTWindow::getGLUTWindow( glutGetWindow() );
   if( window ) {
     if( direction == 1 )
@@ -508,7 +504,6 @@ void GLUTWindow::glutMouseWheelCallback( int wheel,
     else
       window->onMouseWheelAction( MouseSensor::TOWARDS );
   }
-#endif
 }
 
 string GLUTWindow::getCursorForMode( const string &mode ) {

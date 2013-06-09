@@ -105,7 +105,6 @@ namespace H3D {
     static void glutSpecialUpCallback( int key, 
                                        int x, int y );
 
-#ifndef WIN32
     /// glut callback function. Calls onMouseButtonAction with the
     /// button and state translated to the enumerated values in KeySensor.h
     static void glutMouseCallback( int button, int state, 
@@ -113,7 +112,6 @@ namespace H3D {
     
     /// glut callback function. Calls onMouseMotionAction
     static void glutMotionCallback( int x, int y );
-#endif
 
     /// glut callback function for mouse scroll wheel.
     /// Calls onMouseWheelAction with direction translated to the
