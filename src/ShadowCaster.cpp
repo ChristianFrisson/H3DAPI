@@ -30,6 +30,8 @@
 
 #include <H3D/ShadowCaster.h>
 #include <H3D/X3DShapeNode.h>
+#include <H3D/DirectionalLight.h>
+#include <H3D/NavigationInfo.h>
 
 using namespace H3D;
 
@@ -73,6 +75,29 @@ ShadowCaster::ShadowCaster(
   shadowDarkness->setValue( 0.4f );
   shadowDepthOffset->setValue( 6 );
   displayList->setCacheMode( DisplayList::OFF );
+}
+
+void ShadowCaster::addHeadLight() {
+  bool head_light = false;
+  NavigationInfo *ni = NavigationInfo::getActive();
+  if( ni ) {
+    head_light = 
+      ni->headlightShadows->getValue() && 
+      ni->headlight->getValue();
+  }
+  
+  if( head_light ) {
+    X3DViewpointNode *vp = X3DViewpointNode::getActive();
+    Vec3f direction = Vec3f( 0, 0, -1 );
+    if( vp ) {
+      direction = 
+	vp->accForwardMatrix->getValue().getRotationPart() * 
+	(vp->totalOrientation->getValue() * Vec3f( 0, 0, -1 ));
+    }
+    DirectionalLight *dir_light = new DirectionalLight();
+    dir_light->direction->setValue( direction );
+    light->push_back( dir_light );
+  }
 }
 
 void ShadowCaster::render() {

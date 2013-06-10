@@ -105,6 +105,9 @@ namespace H3D {
     /// OpenGL render function.
     virtual void render();
 
+    /// Add headlight to light field, if it is enabled in currently bound NavigationInfo
+    void addHeadLight();
+
     /// The objects that should cast shadows.
     ///
     /// <b>Access type:</b> inputOutput \n
