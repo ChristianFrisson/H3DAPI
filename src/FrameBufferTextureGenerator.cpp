@@ -31,6 +31,8 @@
 #include <H3D/FrameBufferTextureGenerator.h>
 #include <H3D/GeneratedTexture3D.h>
 #include <H3D/X3DShapeNode.h>
+#include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsOptions.h>
 
 using namespace H3D;
 
@@ -205,7 +207,7 @@ void FrameBufferTextureGenerator::render()     {
     return;
   }
 
-  GraphicsCachingOptions *graphics_options = NULL;
+  GraphicsOptions *graphics_options = NULL;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   ShadowCaster *current_shadow_caster = shadow_caster.get();
   if( default_settings ) {
@@ -564,8 +566,8 @@ void FrameBufferTextureGenerator::initializeFBO() {
     const vector< string > &color_texture_types = generateColorTextures->getValue();
 
     size_t nr_color_textures = color_texture_types.size();
-    if( nr_color_textures > max_draw_buffers ||
-        nr_color_textures > max_color_attachments ) {
+    if( (GLint)nr_color_textures > max_draw_buffers ||
+        (GLint)nr_color_textures > max_color_attachments ) {
       nr_color_textures = H3DMin( max_draw_buffers, max_draw_buffers );
       Console(4) << "Warning: Too many color textures. Supported by your graphics card: "
                  << nr_color_textures << ". Tried to use: " << color_texture_types.size() 
