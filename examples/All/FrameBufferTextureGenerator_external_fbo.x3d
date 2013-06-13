@@ -11,7 +11,7 @@
     <Viewpoint position='0 0 0.7' />
     <Group>
       <!-- Generate color texture -->
-      <FrameBufferTextureGenerator DEF="COLOR" outputTextureType="2D" colorBufferStorages ='FBO_COPY_1' samples="0" generateColorTextures = 'RGBA'  >
+      <FrameBufferTextureGenerator DEF="COLOR" outputTextureType="2D" samples="0" generateColorTextures = 'RGBA'  >
         <Billboard axisOfRotation = '0 0 0'>
           <Transform translation = '0 0.2 0.15'>
             <Shape>  
