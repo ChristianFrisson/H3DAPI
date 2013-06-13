@@ -36,6 +36,7 @@
 #include <H3D/X3DViewpointNode.h>
 #include <H3D/X3DBackgroundNode.h>
 #include <H3D/ShadowCaster.h>
+#include <H3D/TypedField.h>
 
 namespace H3D {
 
@@ -111,7 +112,7 @@ namespace H3D {
   /// rendering has taken place already. Since this is a field change value,
   /// it will automatically generate an output event that may be routed.
   ///
-  /// The viewpoint field can be used to define a separatue X3DViewpointNode
+  /// The viewpoint field can be used to define a separate X3DViewpointNode
   /// to use when rendering the scene. If NULL, the current active viewpoint is used.
   ///
   /// The width and height field is the size of the output textures in pixels. 
@@ -127,6 +128,34 @@ namespace H3D {
   /// The depthTextureProperties contains TextureProperties to apply to the 
   /// generated depth texture. If no TextureProperties are assigned the
   /// default texture values are used.
+  /// 
+  /// The depthBufferStorage is a option to set what is going to be used
+  /// to initial the depth buffer. By default it is set to be LOCAL
+  /// The available types are:
+  /// 
+  /// "LOCAL"         - clear the local depth buffer
+  /// "DEFAULT_COPY"  - copy depth buffer from back buffer
+  /// "FBO_COPY"      - copy depth buffer from external specified FBO
+  /// "FBO_SHARE"     - share depth buffer with external specified FBO
+  /// 
+  /// The externalFBODepthBuffer is a filed used to specify the FBO to be used 
+  /// to provide depth buffer. It will only be used if the depthBufferStorage
+  /// is set to be FBO_COPY or FBO_SHARE
+  /// 
+  /// The colorBufferStorages contains the information about how to initialize 
+  /// every single color buffer. By default it is NULL and every needed color
+  /// buffer will use zeroed color buffer to start
+  /// The available types are:
+  /// "LOCAL"   - clear the corresponding color buffer
+  /// "DEFAULT_COPY"  - copy the corresponding color buffer from default color buffer
+  /// "FBO_COPY_x"    - copy the corresponding color buffer from x-th color buffer 
+  /// of external specified FBO
+  /// "FBO_SHARE_x"   - copy the corresponding color buffer from x-th color buffer
+  /// of external specified FBO
+  /// 
+  /// The externalFBOColorBuffers contains all the external FBOs which will be
+  /// used and only be used while one or more value in colorBufferStorages is
+  /// FBO_COPY_x or FBO_SHARE_x
   ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator.x3d">FrameBufferTextureGenerator.x3d</a>
@@ -137,6 +166,8 @@ namespace H3D {
   ///     ( <a href="examples/FrameBufferTextureGenerator_texturearray.x3d.html">Source</a> )
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator_fullscreen.x3d">FrameBufferTextureGenerator_fullscreen.x3d</a>
   ///     ( <a href="examples/FrameBufferTextureGenerator_fullscreen.x3d.html">Source</a> )
+  ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator__external_fbo.x3d">FrameBufferTextureGenerator_external_fbo.x3d</a>
+  ///     ( <a href="examples/FrameBufferTextureGenerator_external_fbo.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile FrameBufferTextureGenerator.dot
@@ -150,7 +181,8 @@ namespace H3D {
     typedef TypedMFNode< H3DSingleTextureNode > MFGeneratedTextureNode;
     typedef TypedSFNode< H3DSingleTextureNode > SFGeneratedTextureNode;
     typedef void (*RenderCallbackFunc)( FrameBufferTextureGenerator *, int i, void * );
-    
+    typedef TypedSFNode< FrameBufferTextureGenerator > SFFrameBufferTextureGeneratorNode;
+    typedef TypedMFNode< FrameBufferTextureGenerator > MFFrameBufferTextureGeneratorNode;
     /// Constructor.
     FrameBufferTextureGenerator( Inst< AddChildren    > _addChildren     = 0,
                                  Inst< RemoveChildren > _removeChildren  = 0,
@@ -172,7 +204,12 @@ namespace H3D {
                                  Inst< SFViewpointNode  > _viewpoint = 0,
                                  Inst< SFBackgroundNode > _background = 0,
                                  Inst< SFInt32          > _width     = 0,
-                                 Inst< SFInt32          > _height    = 0 );
+                                 Inst< SFInt32          > _height    = 0,
+                                 Inst< SFBool           > _blitFromScreen = 0,
+                                 Inst< SFString         > _depthBufferStorage = 0,
+                                 Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer = 0,
+                                 Inst< MFString         > _colorBufferStorages = 0,
+                                 Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers = 0);
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -182,6 +219,9 @@ namespace H3D {
 
     /// Traverse the scenegraph.
     virtual void traverseSG( TraverseInfo &ti );
+
+    /// Initialize the FrameBufferTextureGenerator
+    virtual void initialize();
 
     /// Returns true if the FBO used has a stencil buffer.
     bool haveStencilBuffer();
@@ -199,6 +239,44 @@ namespace H3D {
     /// \param func The callback function to use.
     /// \param args User specific data which is sent to the callback function when called.
     void setRenderCallback( RenderCallbackFunc func, void *args = NULL ); 
+
+    /// Defines what should be used as the depth buffer for current FBO before rendering
+    /// the sub-scene children
+    /// The available types are:
+    /// "LOCAL" - use internal FBO and clear it before every render loop.
+    /// "FBO_COPY" - blit the depth buffer of external FBO to internal FBO.
+    /// "FBO_SHARE" - bind the depth buffer of external FBo to internal FBO.
+    /// "DEFAULT_COPY" - blit the depth buffer of default frame buffer to internal FBO.
+    ///
+    /// <b>Access type:</b> initializeOnly
+    /// <b>Default value:</b> "LOCAL"
+    /// <b>Valid values:</b> "LOCAL", "FBO_COPY", "FBO_SHARE", "DEFAULT_COPY"
+    auto_ptr< SFString > depthBufferStorage;
+
+    /// Specifies the external FrameBufferTextureGenerator to be used for FBO_COPY 
+    /// and FBO_SHARE option of DepthBufferStorage
+    ///
+    /// <b>Access type:</b> inputOutput
+    auto_ptr< SFFrameBufferTextureGeneratorNode > externalFBODepthBuffer;
+
+    /// Defines what should be used as the color buffers for current FBO before rendering
+    /// the sub-scene children
+    /// The available types are:
+    /// "LOCAL" - use internal FBO and initialize all needed color buffers specified
+    /// "DEFAULT_COPY" - blit the depth buffer of default frame buffer to internal FBO.
+    /// "FBO_COPY_x" - blit the color buffer of index x of external FBO to internal FBO.
+    /// "FBO_SHARE_x" - bind the color buffer of index x of external FBO to inernal FBO.
+    /// 
+    /// <b>Access type:</b> initializeOnly
+    /// <b>Default value:</b> "LOCAL"
+    /// <b>Valid values:</b> "LOCAL", "DEFAULT_COPY", "FBO_COPY_x", "FBO_SHARE_x", x depends
+    /// on GPU supported max color attachment points.
+    auto_ptr< MFString > colorBufferStorages;
+
+    /// Specifies the external FrameBufferTextureGenerator to be used for FBO_COPY_x 
+    /// and FBO_SHARE_x option of ColorBufferStorages
+    /// <b>Access type:</b> inputOutput
+    auto_ptr< MFFrameBufferTextureGeneratorNode > externalFBOColorBuffers;
 
     /// Defines the color buffer textures to generate and their type. 
     /// For each texture to generate the type of the texture needs to be specified. 
@@ -361,6 +439,29 @@ namespace H3D {
       return fbo_id;
     }
 
+    /// Returns the OpenGL depth id attached to fbo_id
+    /// only valid if isFBOInitialized is true/
+    inline GLuint getDepthId() {
+      return depth_id;
+    }
+
+    /// Return the depth texture of current FrameBufferTextureGenerator
+    inline H3DSingleTextureNode* getDepthTexture() {
+      return depthTexture->getValue();
+    }
+
+    /// Returns the OpenGL color ids attached to fbo_id
+    /// only valid if isFBOInitialized is true/
+    inline vector<GLuint> getColorIds() {
+      return color_ids;
+    }
+
+    /// Returns the colorTextures of current FrameBufferTextureGenerator
+    /// only valid if isFBOInitialized is true/
+    inline NodeVector getColorTextures() {
+      return colorTextures->getValue();
+    }
+
     /// If set to true the currently set up viewport when the render() function 
     /// is called will be used for the rendering. If false, the viewport will be
     /// set to fill the entire frame buffer.
@@ -399,7 +500,37 @@ namespace H3D {
     /// Initialize all output textures and buffers needed for the node.
     void initializeFBO();
 
-    /// Help function that is called when the main frame buffer size has changed and
+    /// preProcess the FBO before rendering according to the depthBufferStorage
+    /// and colorBufferStorages
+    /// \param srcX The x component of low left corner of the area to be copied
+    /// \param srcY The y component of low left corner of the area to be copied
+    /// \param w    The width of area to be copied
+    /// \param h    The height of area to be copied
+    void preProcessFBO(int srcX, int srcY, int w, int h, int depth);
+
+    /// Blit the depth buffer from src fbo to dst fbo.
+    /// \param src  The source fbo used for copy
+    /// \param dst  The target fbo used for copy
+    /// \param srcX The x component of low left corner of the area to be copied
+    /// \param srcY The y component of low left corner of the area to be copied
+    /// \param w    The width of area to be copied
+    /// \param h    The height of area to be copied
+    void blitDepthBuffer(GLenum src, GLenum dst, int srcX, int srcY, int w, int h);
+
+    /// Blit the color buffer from src fbo to dst fbo.
+    /// \param src  The source fbo used for copy
+    /// \param dst  The target fbo used for copy
+    /// \param srcX The x component of low left corner of the area to be copied
+    /// \param srcY The y component of low left corner of the area to be copied
+    /// \param w    The width of area to be copied
+    /// \param h    The height of area to be copied
+    /// \param src_index  The color buffer index to be copied
+    /// \param src_index  The color buffer index to be used as target
+    void blitColorBuffer(GLenum src, GLenum dst, 
+      int srcX, int srcY, int w, int h, int src_index, int dst_index);
+
+
+    /// Help function that is called when the main frame buffer size has changed.
     /// it will resize all output textures to match the size of the frame buffer.
     /// \param w The new width of the textures(in pixels).
     /// \param h The new height of the textures(in pixels).
@@ -407,6 +538,36 @@ namespace H3D {
     /// when output texture type is "2D_ARRAY" or "3D".
     /// \return true on success, false on error.
     bool resizeBuffers( H3DInt32 w, H3DInt32 h, H3DInt32 d );
+
+    /// Function which is used to parse the string in colorBufferStorages
+    /// to retrieve what is the color buffer handling style, and index
+    /// \param color_buffer_storage The string which specify what should be 
+    /// used as the color buffer storage
+    /// \param style Options extracted from color_buffer_storage about how the base will be used to 
+    /// initialize the color buffer storage. 
+    /// \param index The extracted index number of the color buffer attachment in the fbo
+    bool parseColorBufferStorage( std::string color_buffer_storage, std::string& style, int& index );
+
+    /// Function which only clear the specified color buffer
+    /// \param src  The source FBO of which the clear will do
+    /// \param x  The x component of low left corner of the area to be cleared
+    /// \param y  The y component of low left corner of the area to be cleared
+    /// \param width  The width of the area to be cleared
+    /// \param height The height of the area to be cleared
+    /// \param value  A four component value to be used as clear color.
+    /// \param index  The color buffer index inside current active fbo
+    void clearColorBuffer(GLenum src, int x, int y, int width, int height, 
+                           GLfloat* value, GLint index );
+
+    /// Clear buffers of src fbo
+    /// \param src  The src fbo to be cleared
+    /// \param x  The x component of low left corner of the area to be cleared
+    /// \param y  The y component of low left corner of the area to be cleared
+    /// \param width  The width of the area to be cleared
+    /// \param height The height of the area to be cleared
+    /// \param mask   The mask indicate what buffers in current fbo will be cleared
+    void clearBuffers(GLenum src, int x, int y, int width, int height, GLbitfield mask);
+
 
     /// Flag used to determine if initializeFBO has been called or not.
     bool fbo_initialized;
@@ -453,7 +614,7 @@ namespace H3D {
     /// True if the last call to resizeBuffers from render() was true.
     bool last_resize_success;
 
-    /// The number of multisamples currently used for rendering.
+    /// The number of multi samples currently used for rendering.
     int nr_samples;
 
     /// The render callback function, if any.
@@ -467,9 +628,39 @@ namespace H3D {
     /// set to fill the entire frame buffer.
     bool always_use_existing_viewport;
 
-    // Reference to shadow caster used to cast shadows for shapes
-    // in scene graph in this FrameBufferTextureGenerator.
+    /// Reference to shadow caster used to cast shadows for shapes
+    /// in scene graph in this FrameBufferTextureGenerator.
     AutoRef< ShadowCaster > shadow_caster;
+
+    private:
+      /// A field used to reset the waning printed flag
+      class resetPrintedFlag : public TypedField< SFBool, Types<Any<SFString,MFString>> >
+      {
+      public:
+        virtual void update (){
+          this->value = false;
+        }
+      };
+      /// A field to reset multiple warning printed flags
+      class resetPrintedFlags: public TypedField< MFBool, 
+        MFString > {
+      public:
+        virtual void update(){
+          for( vector<bool>::iterator it = value.begin(); it!= value.end(); it++) {
+            
+            (*it) = false;
+          }
+        }
+      };
+      /// flag control the depth warning output
+      auto_ptr<resetPrintedFlag> depthWarningPrinted ;
+
+      /// flag control the warning printing of size mismatch
+      auto_ptr<resetPrintedFlag> colorMismatchWarningPrinted;
+
+      /// flag control the warning printing of storage init
+      auto_ptr<resetPrintedFlags> colorInitWarningPrinted;
+      
   };
 }
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='FrameBufferTextureGenerator.x3d'/>
+    <meta name='description' content='H3DAPI FrameBufferTextureGenerator example. It shows how to copy depth buffer from one FrameBufferTextureGenerator and use it to clip certain area while rendering another FrameBufferTextureGenerator. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2013'/>
+  </head>
+
+  <Scene>
+    <Viewpoint position='0 0 0.7' />
+    <Group>
+      <!-- Generate color texture -->
+      <FrameBufferTextureGenerator DEF="COLOR" outputTextureType="2D" colorBufferStorages ='FBO_COPY_1' samples="0" generateColorTextures = 'RGBA'  >
+        <Billboard axisOfRotation = '0 0 0'>
+          <Transform translation = '0 0.2 0.15'>
+            <Shape>  
+              <Text 
+            string='"H3DAPI rocks!""H3DAPI stones!"' 
+            length='' maxExtent='0' solid='true'>
+                <FontStyle DEF='F' size='0.03' spacing='1.0' justify='MIDDLE'/>
+              </Text>
+            </Shape>
+          </Transform>
+        </Billboard>
+      </FrameBufferTextureGenerator>
+
+      <!-- Generate depth texture -->
+      <FrameBufferTextureGenerator DEF="DEPTH" outputTextureType="2D" samples="4" generateDepthTexture = 'true' >
+        <Billboard axisOfRotation = '0 0 0'>
+          <Transform translation = '0 0 0.35'>
+            <Shape>
+              <Appearance>
+                <Material diffuseColor='0 1 1' />
+              </Appearance>      
+              <Disk2D innerRadius='0.1' outerRadius='1' solid='true' />
+            </Shape>
+          </Transform>
+        </Billboard>
+      </FrameBufferTextureGenerator>
+      <FrameBufferTextureGenerator DEF="GEN" depthBufferStorage = 'FBO_COPY' colorBufferStorages='FBO_COPY_0' outputTextureType="2D" samples="0" generateDepthTexture = 'true' generateColorTextures="RGBA" >
+        <FrameBufferTextureGenerator USE = 'DEPTH' containerField = "externalFBODepthBuffer"/>
+        <FrameBufferTextureGenerator USE = 'COLOR' containerField = "externalFBOColorBuffers"/>
+        <Inline url = 'Surfaces.x3d'/>
+      </FrameBufferTextureGenerator>
+
+      <!-- Render the final result -->
+      <Shape>
+        <Appearance DEF="APP" >
+          <ComposedShader DEF="SHADER" language="GLSL" suppressUniformWarnings="true">
+            <field name="texture" type="MFNode" accessType="inputOutput" />
+            <ShaderPart type="VERTEX" url="shaders/passthrough.vert" />
+            <ShaderPart type="FRAGMENT" url="shaders/passthrough.frag" />
+          </ComposedShader>	
+        </Appearance>
+        <FullscreenRectangle screenAligned="true" zValue="0.9" />
+      </Shape>
+    </Group>
+    <ROUTE fromNode="GEN" fromField="colorTextures" toNode="SHADER" toField="texture" />
+  </Scene>
+</X3D>

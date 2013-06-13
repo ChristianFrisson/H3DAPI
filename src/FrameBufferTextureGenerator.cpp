@@ -60,18 +60,22 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTextureProperties, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextureProperties, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, background, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthBufferStorage, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, externalFBODepthBuffer, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorBufferStorages, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, externalFBOColorBuffers, INPUT_OUTPUT );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
   if( fbo_initialized ) {
     glDeleteFramebuffersEXT( 1, &fbo_id );
     glDeleteFramebuffersEXT( 1, &multi_samples_fbo_id );
-    
+
     if( !generateDepthTexture->getValue() ) {
       glDeleteRenderbuffersEXT(1, &depth_id);      
       glDeleteRenderbuffersEXT(1, &multi_samples_depth_id);      
     }
-     
+
     glDeleteRenderbuffersEXT(1, &stencil_id);   
 
     for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
@@ -82,33 +86,43 @@ FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
 }
 
 FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    > _addChildren,
-                                                          Inst< RemoveChildren > _removeChildren,
-                                                          Inst< MFChild        > _children,
-                                                          Inst< SFNode         > _metadata,
-                                                          Inst< SFBound        > _bound,
-                                                          Inst< SFVec3f        > _bboxCenter,
-                                                          Inst< SFVec3f        > _bboxSize,
-                                                          Inst< MFString       > _generateColorTextures,
-                                                          Inst< SFBool         > _generateDepthTexture,
-                                                          Inst< MFTexturePropertiesNode > _colorTextureProperties,
-                                                          Inst< SFTexturePropertiesNode > _depthTextureProperties,
-                                                          Inst< MFGeneratedTextureNode > _colorTextures, 
-                                                          Inst< SFGeneratedTextureNode > _depthTexture,
-                                                          Inst< SFString         > _depthBufferType,
-                                                          Inst< SFString         > _outputTextureType,
-                                                          Inst< SFInt32        > _samples,
-                                                          Inst< SFString       > _update,
-                                                          Inst< SFViewpointNode > _viewpoint,
-                                                          Inst< SFBackgroundNode > _background,
-                                                          Inst< SFInt32         > _width,
-                                                          Inst< SFInt32         > _height ):
-  X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, _bboxCenter, _bboxSize ),
+  Inst< RemoveChildren > _removeChildren,
+  Inst< MFChild        > _children,
+  Inst< SFNode         > _metadata,
+  Inst< SFBound        > _bound,
+  Inst< SFVec3f        > _bboxCenter,
+  Inst< SFVec3f        > _bboxSize,
+  Inst< MFString       > _generateColorTextures,
+  Inst< SFBool         > _generateDepthTexture,
+  Inst< MFTexturePropertiesNode > _colorTextureProperties,
+  Inst< SFTexturePropertiesNode > _depthTextureProperties,
+  Inst< MFGeneratedTextureNode > _colorTextures, 
+  Inst< SFGeneratedTextureNode > _depthTexture,
+  Inst< SFString         > _depthBufferType,
+  Inst< SFString         > _outputTextureType,
+  Inst< SFInt32        > _samples,
+  Inst< SFString       > _update,
+  Inst< SFViewpointNode > _viewpoint,
+  Inst< SFBackgroundNode > _background,
+  Inst< SFInt32         > _width,
+  Inst< SFInt32         > _height,
+  Inst< SFBool          > _blitFromScreen,
+  Inst< SFString        > _depthBufferStorage,
+  Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer,
+  Inst< MFString        > _colorBufferStorages,
+  Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers):
+X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, 
+  _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
   generateDepthTexture( _generateDepthTexture ),
   colorTextureProperties( _colorTextureProperties ),
   depthTextureProperties( _depthTextureProperties ),
   colorTextures( _colorTextures ),
   depthTexture( _depthTexture ),
+  depthBufferStorage( _depthBufferStorage ),
+  colorBufferStorages( _colorBufferStorages ),
+  externalFBOColorBuffers( _externalFBOColorBuffers ),
+  externalFBODepthBuffer( _externalFBODepthBuffer ),
   depthBufferType( _depthBufferType ),
   outputTextureType( _outputTextureType ),
   samples( _samples ),
@@ -126,8 +140,10 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   render_func( NULL ),
   render_func_data( NULL ),
   always_use_existing_viewport( false ),
-  shadow_caster( new ShadowCaster ) {
-
+  shadow_caster( new ShadowCaster ),
+  depthWarningPrinted( new resetPrintedFlag ),
+  colorMismatchWarningPrinted( new resetPrintedFlag ),
+  colorInitWarningPrinted( new resetPrintedFlags ){
   type_name = "FrameBufferTextureGenerator";
   database.initFields( this );
 
@@ -151,17 +167,46 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   depthBufferType->addValidValue( "DEPTH_STENCIL" );
   depthBufferType->addValidValue( "DEPTH24_STENCIL8" );
   depthBufferType->setValue( "DEPTH" );
-  
   update->addValidValue( "NONE" );
   update->addValidValue( "NEXT_FRAME_ONLY" );
   update->addValidValue( "ALWAYS" );
   update->setValue( "ALWAYS" );
+
+  depthBufferStorage->addValidValue( "LOCAL" );
+  depthBufferStorage->addValidValue( "DEFAULT_COPY" );
+  depthBufferStorage->addValidValue( "FBO_COPY" );
+  depthBufferStorage->addValidValue( "FBO_SHARE" );
+  depthBufferStorage->setValue( "LOCAL" );
+
+  depthWarningPrinted->setName( "depthWarningPrinted" );
+  depthWarningPrinted->setOwner(this);
+  depthBufferStorage->route( depthWarningPrinted );
+  depthWarningPrinted->setValue(false);
+
+  colorMismatchWarningPrinted->setName( "colorMismatchWarningPrinted" );
+  colorMismatchWarningPrinted->setOwner(this);
+  colorBufferStorages->route( colorMismatchWarningPrinted );
+  colorMismatchWarningPrinted->setValue(false);
+
+  colorInitWarningPrinted->setName("colorWarningStroageInitPrinte");
+  colorInitWarningPrinted->setOwner(this);
+  colorBufferStorages->route( colorInitWarningPrinted );
+
 
   // turn off display list since we want to get new values of the width
   // and height each loop to see if they have changed.
   displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
 
   fbo_nodes.insert( this );
+}
+
+void FrameBufferTextureGenerator::initialize()
+{
+  X3DGroupingNode::initialize();
+  // initialize all necessary color buffer init warning message printed flag to false
+  for( int i = 0; i < colorBufferStorages->getValue().size()+1; i++ ) {
+    colorInitWarningPrinted->push_back(false);
+  }
 }
 
 #ifdef H3D_WINDOWS
@@ -257,9 +302,11 @@ void FrameBufferTextureGenerator::render()     {
   }
 
   /// Check if we need to generate any textures.
-  if( generateColorTextures->size() == 0 && (!generateDepthTexture->getValue() || output_texture_type == "3D" )  )
+  if( generateColorTextures->size() == 0 
+    && (!generateDepthTexture->getValue() 
+    || output_texture_type == "3D" )  )
     return;
-  
+
   const string &update_string = update->getValue();
 
   if( update_string == "NEXT_FRAME_ONLY" ) {
@@ -277,7 +324,7 @@ void FrameBufferTextureGenerator::render()     {
 
   GLint previous_fbo_id;
   glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
-  /// Save current state.
+  // Save current state.
   glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT );
 
   /// Make sure all textures and buffers are initialized.
@@ -286,18 +333,36 @@ void FrameBufferTextureGenerator::render()     {
   // get the width and height of the buffer in pixels.
   int current_width  = width->getValue();
   int current_height = height->getValue();
+  // get the viewport used for default frame buffer.
+  int default_x = 0;
+  int default_y = 0;
+  GLint viewport[4];
+  glGetIntegerv( GL_VIEWPORT, viewport );
+  default_x = viewport[0];
+  default_y = viewport[1];
 
   if( current_height == -1 || current_width == -1 ) {
-    GLint viewport[4];
-    glGetIntegerv( GL_VIEWPORT, viewport );
     if( current_width == -1 )  current_width  = viewport[2];
     if( current_height == -1 ) current_height = viewport[3];
   } 
-
+  
+  // current_width and current_height should be set to default viewport width, height
+  // when using DEFAULT_COPY option. it necessary for stereo rendering
+  vector<string> colorbuffer_storage = colorBufferStorages->getValue();
+  bool colorbuffer_default_copy = 
+  std::find(colorbuffer_storage.begin(), colorbuffer_storage.end(), "DEFAULT_COPY")
+    !=colorbuffer_storage.end();
+  if( colorbuffer_default_copy||depthBufferStorage->getValue()=="DEFAULT_COPY" ) {
+    current_width = viewport[2];
+    current_height = viewport[3];
+  }
+  
+  
+  
   bool using_stencil_buffer = haveStencilBuffer();
 
-  if( !always_use_existing_viewport ) {
-    // Set viewport to span entire frame buffer 
+  if( !always_use_existing_viewport) {
+    // Set viewport to span entire frame buffer  to be used as target
     glViewport( 0 , 0, current_width, current_height );
   }
 
@@ -307,7 +372,7 @@ void FrameBufferTextureGenerator::render()     {
   if( buffers_width != current_width || buffers_height != current_height || buffers_depth != current_depth ) {
     last_resize_success = resizeBuffers( current_width, current_height, current_depth );
   }
-  
+
   // Don't do anything if buffer resize had an error.
   if( !last_resize_success ) {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
@@ -315,11 +380,14 @@ void FrameBufferTextureGenerator::render()     {
     return;
   }
 
+  // if use multi-sampled render buffer, render the sub-scene into multi_samples_fbo_id as an intermediate step.
   if( nr_samples > 0 ) {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
   } else {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
   }
+
+
 
   // set up to render to all color buffers
   if( GLEW_ARB_draw_buffers ) {
@@ -361,10 +429,8 @@ void FrameBufferTextureGenerator::render()     {
         RGBA clear_color = bg->glClearColor();
         glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
       }
-
-      // Clear buffers.
-      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-      
+      // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
+      preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
       // Render background
       if ( bg && bgVP ) {
         const Vec3f &vp_position = bgVP->totalPosition->getValue();
@@ -417,14 +483,13 @@ void FrameBufferTextureGenerator::render()     {
       if( generateDepthTexture->getValue() ) {
         glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
       }
-      
+
       for( unsigned int i = 0; i < color_ids.size(); i++ ) {
         glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
         glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
         glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
       }
     }
-
   } else {
     // 3D texture. Each child in the children fields is rendered into a different
     // slice in the 3D texture.
@@ -451,7 +516,7 @@ void FrameBufferTextureGenerator::render()     {
       if( nr_samples > 0 ) {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
       } 
-     
+
       if( !checkFBOCompleteness() ) {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
         glPopAttrib();        
@@ -522,7 +587,8 @@ void FrameBufferTextureGenerator::initializeFBO() {
     } else {
       if( output_texture_type != "2D" && output_texture_type != "2D_RECTANGLE" ) {
         Console(4) << "Warning: Invalid outputTextureType value: \"" << output_texture_type 
-                   << "\". Valid values are \"2D\", \"2D_RECTANGLE\", \"2D_ARRAY\" and \"3D\". Using 2D instead(in FrameBufferTextureGenerator node). " << endl;
+          << "\". Valid values are \"2D\", \"2D_RECTANGLE\", \"2D_ARRAY\" and \"3D\". "
+          <<"Using 2D instead(in FrameBufferTextureGenerator node). " << endl;
       }
     }
 
@@ -549,7 +615,8 @@ void FrameBufferTextureGenerator::initializeFBO() {
           depthTexture->setValue( tex, id );
           depth_id = tex->getTextureId();
         } else if( output_texture_type == "3D" ) {
-          Console(4) << "Warning: 3D depth textures cannot be generated by FrameBufferTextureGenerator. OpenGL does not support it. Depth texture will be undefined" << endl;
+          Console(4) << "Warning: 3D depth textures cannot be generated by "
+            <<"FrameBufferTextureGenerator. OpenGL does not support it. Depth texture will be undefined" << endl;
         }
       }
     } else {
@@ -625,6 +692,358 @@ void FrameBufferTextureGenerator::initializeFBO() {
   }
 }
 
+void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d){
+  depthWarningPrinted->upToDate();
+  colorMismatchWarningPrinted->upToDate();
+  colorInitWarningPrinted->upToDate();
+  // prepare the fbo_id, multi_sample_fbo_id as user specified
+  GLenum target_fbo;
+  if( nr_samples > 0 ) {
+    // the multi_sample_fbo_id will be used as the starting point for rendering.
+    // as multi_sample_fbo_id use render buffer as color buffer and depth buffer
+    // FBO_SHARE option for depth buffer and FBO_SHARE_x for color buffer will
+    // not be valid, they will be copied anyway.
+    target_fbo = multi_samples_fbo_id;
+  } else {
+    target_fbo = fbo_id;
+  }
+  // protect currently bounded fbo.
+  GLint previous_fbo_id;
+  glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
+
+
+  string output_texture_type = outputTextureType->getValue();
+  const vector< string > &color_texture_types = generateColorTextures->getValue();
+  bool using_stencil_buffer = (depthBufferType->getValue() == "DEPTH24_STENCIL8" ||
+    depthBufferType->getValue() == "DEPTH_STENCIL");
+
+  GLenum texture_type = GL_TEXTURE_2D;
+  if( output_texture_type == "2D_RECTANGLE" ) {
+    texture_type = GL_TEXTURE_RECTANGLE_ARB;
+  } else if( output_texture_type == "3D" ) {
+    texture_type = GL_TEXTURE_3D;
+  } else if( output_texture_type == "2D_ARRAY" ) {
+    texture_type = GL_TEXTURE_2D_ARRAY_EXT;
+  }
+
+  // pre process depth buffer of fbo
+  if( generateDepthTexture->getValue() ) {
+    FrameBufferTextureGenerator* external_FBO_depth = 
+      dynamic_cast<FrameBufferTextureGenerator*>(externalFBODepthBuffer->getValue());
+    std::string depth_buffer_storage = depthBufferStorage->getValue();
+
+    if( depth_buffer_storage.empty()|| depth_buffer_storage == "LOCAL" ) { 
+      // use locally created depth buffer, just clear the buffer for present
+      clearBuffers(target_fbo, 0, 0, w, h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    } else if( depth_buffer_storage == "DEFAULT_COPY" ) { 
+      // copy depth buffer from default frame buffer
+      blitDepthBuffer(0,target_fbo,x,y,w,h);
+    } else if( depth_buffer_storage == "FBO_SHARE" ) { 
+      // use depth buffer from external frame buffer
+      if( !external_FBO_depth ) { // however no external fbo is set
+        if( !depthWarningPrinted->getValue() ) {
+          Console(4)<< "Warning: There is no external fbo set to be used for sharing "
+            << "please add one, if it is being forget!";
+          depthWarningPrinted->setValue(true);
+        }
+        clearBuffers(target_fbo,0,0,w,h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+      } else { // bind depth buffer from external fbo to internal fbo
+        // update the depth_id and depth tex of internal fbo bounded depth buffer.
+        if( nr_samples>0 ) {
+          if( !depthWarningPrinted->getValue() ) {
+            Console(4)<< "Warning: Multi-sampled FBO can not share depth buffer "
+              << "will use FBO_COPY instead" <<std::endl;
+            depthWarningPrinted->setValue(true);
+          }
+          GLuint external_FBO_id_depth = external_FBO_depth->getFBOId();
+          blitDepthBuffer(external_FBO_id_depth, target_fbo, 0, 0, w, h);
+        } else { // apply FBO_SHARE option
+          GeneratedTexture* external_FBO_depth_tex = 
+            static_cast<GeneratedTexture*>(external_FBO_depth ->getDepthTexture());
+          GLenum external_depth_target = external_FBO_depth_tex->getTextureTarget();
+          GLenum depth_target = depthTexture->getValue()->getTextureTarget();
+          if( external_depth_target != depth_target ) {
+            if( !depthWarningPrinted->getValue() ) {
+              Console(4)<< "Warning, the external specified texture target:["
+                << external_depth_target << "] is not the same as "
+                << "internal depth texture, depth texture sharing fail."
+                << std::endl;
+              depthWarningPrinted->setValue(true);
+            }
+            // clear local depth buffer when sharing fail
+            clearBuffers(target_fbo,0,0,w,h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+          } else {
+            depthTexture->setValue(external_FBO_depth_tex, id);
+            depth_id = external_FBO_depth_tex->getTextureId();
+            glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, target_fbo);
+            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
+              texture_type, depth_id, 0 );
+            if( using_stencil_buffer ) {
+              glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+                texture_type, depth_id, 0);
+            }
+          }
+        }
+      }
+    } else if( depth_buffer_storage == "FBO_COPY" ) { 
+      // blit depth buffer from external frame buffer
+      if( !external_FBO_depth ) { 
+        // however no external fbo is set
+        if( !depthWarningPrinted->getValue() ) {
+          Console(4)<< "Warning: There is no external fbo set to be copied "
+            << "please add one, if it is being forget!";
+          depthWarningPrinted->setValue(true);
+        }
+        clearBuffers(target_fbo, 0, 0, w, h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+      } else {
+        GLuint external_FBO_id_depth = external_FBO_depth->getFBOId();
+        blitDepthBuffer(external_FBO_id_depth, target_fbo, 0, 0, w, h);
+      }
+    } else { 
+      if( !depthWarningPrinted->getValue() ) {
+        Console(4)  << "The specified depth_buffer_storage value: ["
+          <<depth_buffer_storage<<"] is not currently supported" 
+          << std::endl;
+        depthWarningPrinted->setValue(true);
+      }
+      clearBuffers(target_fbo, 0, 0, w, h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    }
+  } else { // still need to clear depth buffer for color buffer rendering.
+    clearBuffers(target_fbo, 0, 0, w, h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+  }
+  // pre process color buffer of fbo
+  std::vector<std::string> color_buffer_storages = colorBufferStorages->getValue();
+  const NodeVector &external_fbo_colors_vector = externalFBOColorBuffers->getValue();
+
+  GLfloat bkColor[4];
+  glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
+  if( color_buffer_storages.empty() ) { 
+    // no external fbo for color buffers will be used
+    // use locally created color buffers, just clear the all color buffers for present
+    clearBuffers(target_fbo, 0, 0, w, h, GL_COLOR_BUFFER_BIT);
+    return;
+  } else { // check color_buffer_storages to decide how to handle color buffers
+    int start_index = 0; 
+    int end_index = color_buffer_storages.size();
+    if( color_buffer_storages.size()<color_ids.size() ) { 
+      // not enough storages set for color buffers, just handling those being set.
+      if( !colorMismatchWarningPrinted->getValue() ) {
+        Console(4)<<"Warning, number of generated color buffer texture is more "
+          <<"than external specified color storage, locally cleared "
+          <<"color buffer will be used for extra internal color buffers";
+        colorMismatchWarningPrinted->setValue(true);
+      }
+      end_index = color_buffer_storages.size();
+      for( int i = end_index; i < color_ids.size(); i++ ) {
+        clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i);
+      }
+    } else if( color_buffer_storages.size()>color_ids.size() ) {
+      if( !colorMismatchWarningPrinted->getValue() ) {
+        Console(4)<<"Warning, number of generated color buffer texture is "
+          <<"less than external specified color storage "
+          <<"extra external color storage will be ignored!"<<std::endl;
+        colorMismatchWarningPrinted->setValue(true);
+      }
+      end_index = color_ids.size();
+    } else { // size are the same, no warning
+      end_index = color_ids.size();
+    }
+    // get the maximum limit of attachment points.
+    GLint max_color_attachments = 0;
+    // need_external_fbo_num is the the num of currently needed external FBO
+    // need_external_fbo_num -1 will be the index of currently specified 
+    // external fbo in external_fbo_colors_vector
+    int need_external_fbo_num = 0;
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+
+
+    for( unsigned int i = 0;i < end_index; i++ ) {
+      // i is the index for current internal color buffer 
+      std::string color_buffer_storage = color_buffer_storages[i];
+      if( color_buffer_storage.empty() || color_buffer_storage == "LOCAL" ) { 
+        // clear the color buffer being processing which is i.
+        clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i );
+        continue;
+      } else { 
+        // colorBufferStorage is DEFAULT, FBO_COPY_x or FBO_SHARE_x
+        if( color_buffer_storage =="DEFAULT_COPY" ) { 
+          // blit color buffer from default frame buffer to the 
+          // i-th attachment point of internal FBO 
+          blitColorBuffer(0, target_fbo, x, y, w, h, -1, i);
+        } else { // color_buffer_storage can only be FBO_COPY_x or FBO_SHARE_x
+          need_external_fbo_num ++;
+          std::string style = "";
+          // index of the color buffer attachment point of external frame buffer.
+          int index = -1; 
+          parseColorBufferStorage(color_buffer_storage, style, index);
+          if( index > max_color_attachments ) {
+            if( !colorInitWarningPrinted->getValue()[i] ) {
+              Console(4) << "Warning, the specified attachment index exceeds "
+                <<"the maximum limit of color attachments, " 
+                << "this specified color buffer from external fbo "
+                <<"will not be used."<< std::endl;
+              colorInitWarningPrinted->setValue(i,true);
+            }
+            clearColorBuffer(target_fbo, 0, 0, w, h, bkColor, i);
+            continue;
+          }
+          if( style == "SHARE" ) { 
+            // bind index-th color buffer of external fbo 
+            // to i th attachment point of internal fbo
+            if( external_fbo_colors_vector.size()<need_external_fbo_num ) { 
+              // there is no external fbo can be used
+              if( !colorInitWarningPrinted->getValue()[i] ) {
+                Console(4)<< "Warning: There is not enough external fbo set "
+                  << "to be used for sharing "
+                  << "please add one, if it is being forget!" <<std::endl;
+                colorInitWarningPrinted->setValue(i,true);
+              }
+              clearColorBuffer(target_fbo, 0, 0, w, h, bkColor, i);
+              continue;
+            } else {
+              GeneratedTexture* external_FBO_color_tex = 
+                static_cast<GeneratedTexture*>(
+                static_cast<FrameBufferTextureGenerator*>(
+                external_fbo_colors_vector[need_external_fbo_num-1]
+              )->getColorTextures()[index]);
+              GLuint external_FBO_color_id = external_FBO_color_tex->getTextureId();
+              GLenum external_color_target = external_FBO_color_tex->getTextureTarget();
+              GLenum color_target = static_cast<H3DSingleTextureNode*>(
+                colorTextures->getValue()[i])->getTextureTarget();
+              if( static_cast<FrameBufferTextureGenerator*>(
+                external_fbo_colors_vector[need_external_fbo_num-1]
+              )->getColorIds().size()<=index ) {
+                if( !colorInitWarningPrinted->getValue()[i] ) {
+                  Console(4) <<"Warning, the specified color buffer texture index "
+                    <<"is smaller than color id numbers of external fbo "
+                    <<"will use cleared color buffer instead"<<std::endl;
+                  colorInitWarningPrinted->setValue(i,true);
+                } 
+                clearColorBuffer(target_fbo, 0, 0, w, h, bkColor, i );
+                continue;
+              }
+              if( nr_samples>0 ) {
+                // use FBO_COPY_x instead, as FBO_SHARE_x will not work
+                GLuint external_FBO_id_color = 
+                  static_cast<FrameBufferTextureGenerator*>(
+                  external_fbo_colors_vector[need_external_fbo_num-1])->getFBOId();
+                blitColorBuffer(external_FBO_id_color, target_fbo, 0, 0, w, h, index, i);
+                continue;
+              }
+              // replace what is set as the output of depth texture output with shared texture id.
+              // update the color_ids[i] and colorTextures[i] of internal fbo bounded depth buffer.
+              if( external_color_target!= color_target ) {
+                if( !colorInitWarningPrinted->getValue()[i] ) {
+                  Console(4) <<"Warning, the external FBO color texture target " 
+                    <<"is different from the local color texture"
+                    <<std::endl;
+                  colorInitWarningPrinted->setValue(i,true);
+                }
+                clearColorBuffer( target_fbo,0, 0, w, h, bkColor, i );
+                continue;
+              }
+              color_ids[i] = external_FBO_color_id;
+              colorTextures->setValue(i, external_FBO_color_tex, id);
+              glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, target_fbo );
+              glBindTextureEXT(texture_type,external_FBO_color_id);
+              switch (texture_type)
+              {
+              case GL_TEXTURE_2D :
+                glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, 
+                  (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ), 
+                  texture_type, external_FBO_color_id, 0 );
+                break;
+              case GL_TEXTURE_RECTANGLE_EXT:
+                glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, 
+                  (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ), 
+                  texture_type, external_FBO_color_id, 0 );
+                break;
+              case GL_TEXTURE_2D_ARRAY_EXT:
+                glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, 
+                  (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ), 
+                  external_FBO_color_id, 0,0 );
+                break;
+              case GL_TEXTURE_3D:
+                glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, 
+                  (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ), 
+                  texture_type, external_FBO_color_id, 0, 0 ); 
+              }
+            }
+          } else if( style == "COPY" ) { 
+            // base is FBO, handling style is COPY, blit index-th color buffer 
+            // of the external fbo to the i th color buffer of internal fbo
+            if( external_fbo_colors_vector.size()<need_external_fbo_num ) { 
+              if( !colorInitWarningPrinted->getValue()[i] ) {
+                Console(4)<< "Warning: There is no external fbo set to be used for copying "
+                  << "please add one, if it is being forget!" <<std::endl;
+                colorInitWarningPrinted->setValue(i,true);
+              }
+              clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i );
+              continue;
+            }
+            if( static_cast<FrameBufferTextureGenerator*>(
+              external_fbo_colors_vector[need_external_fbo_num-1]
+            )->getColorIds().size()<=index ) {
+              if( !colorInitWarningPrinted->getValue()[i] ) {
+                Console(4) <<"Warning, the specified color buffer texture index "
+                  <<"is smaller than color id numbers of external fbo "
+                  <<"will use cleared color buffer instead"<<std::endl;
+                colorInitWarningPrinted->setValue(i,true);
+              }
+              clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i );
+              continue;
+            }
+            GLuint external_FBO_id_color = 
+              static_cast<FrameBufferTextureGenerator*>(
+              external_fbo_colors_vector[need_external_fbo_num-1])->getFBOId();
+            blitColorBuffer(external_FBO_id_color, target_fbo, 0, 0, w, h, index, i);
+          }
+        }
+      }
+    }
+  }
+  // set the draw buffer back to original draw_buffers
+  if( GLEW_ARB_draw_buffers ) {
+    glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), draw_buffers.get() );
+  } else {
+    Console(4) << "ERROR: Your graphics card does not support multiple "
+      << "render targets(ARB_draw_buffers). Only one color texture will"
+      << " have update to their values" << std::endl;
+  }
+  // depth buffer and color buffers are processed, prepare to be rendered.
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
+}
+
+bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buffer_storage, std::string& style, int& index){
+  // retrieve the handling style and index value of color_buffer_storage, the color_buffer_stroage is FBO_SHARE_x, or FBO_COPY_x.
+  std::string base;
+  std::size_t found = color_buffer_storage.find("_");
+  if(found==std::string::npos){ 
+    // no "_" in the string,  such color_buffer_storage is not currently supported
+    Console(4) << "The color_buffer_storage value:[ "
+      <<color_buffer_storage<<" ] is not currently supported." <<std::endl;
+    return false;
+  }else{// at least one "_" in the string. get the first part as base.
+    base = color_buffer_storage.substr(0,found-0);
+    if( base!="FBO" ) {
+      Console(4) << "The color_buffer_storage value:[ "
+        <<color_buffer_storage<<" ] is not currently supported." <<std::endl;
+      return false;
+    }
+    std::size_t second_found = color_buffer_storage.find("_",found+1);
+    if(second_found==std::string::npos){
+      // only one "_" exist, such color_buffer_storage is not currently supported
+      Console(4) << "The color_buffer_storage value:[ "
+        <<color_buffer_storage<<" ] is not currently supported." <<std::endl;
+      return false;
+    }else{ // at least two "_" in the string. the string is either FBO_COPY_x or FBO_SHARE_x
+      style = color_buffer_storage.substr(found+1,second_found-found-1);
+      index = atoi(color_buffer_storage.substr(second_found+1).c_str());
+      return true;
+    }
+  }
+}
+
 bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height, H3DInt32 depth ) {
 
   string output_texture_type = outputTextureType->getValue();
@@ -644,16 +1063,16 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
   nr_samples = 0;
   if( !GLEW_EXT_framebuffer_blit || !GLEW_EXT_framebuffer_multisample ) {
     Console(4) << "Warning: Your graphics card does not support multi-sample draw "
-               << "buffers(EXT_framebuffer_multisample). Multi-sampling will be off"
-               << " (in FrameBufferTextureGenerator)." << endl;
+      << "buffers(EXT_framebuffer_multisample). Multi-sampling will be off"
+      << " (in FrameBufferTextureGenerator)." << endl;
   } else {
     GLint max_nr_samples;
     glGetIntegerv( GL_MAX_SAMPLES_EXT, &max_nr_samples );
     H3DInt32 s = samples->getValue();
     if( s > max_nr_samples ) {
       Console(4) << "Warning: Unsupported nr of multi-samples: " << s 
-                 << ". Your graphics draw supports a maximum of " << max_nr_samples 
-                 << " (in FrameBufferTextureGenerator)." << endl;
+        << ". Your graphics draw supports a maximum of " << max_nr_samples 
+        << " (in FrameBufferTextureGenerator)." << endl;
       nr_samples = max_nr_samples;
     } else {
       nr_samples = s;
@@ -669,20 +1088,23 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
 
     // create multi sample render buffers
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_depth_id );
-    glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, depth_internal_format, width, height);
-    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, multi_samples_depth_id);
+    glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
+      depth_internal_format, width, height);
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
+      GL_RENDERBUFFER_EXT, multi_samples_depth_id);
     if( using_stencil_buffer )
-      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, multi_samples_depth_id);
+      glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, 
+      GL_RENDERBUFFER_EXT, multi_samples_depth_id);
 
     for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_color_ids[i] );
       glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
-                                          stringToInternalFormat( color_texture_types[i]) ,
-                                          width, height);
+        stringToInternalFormat( color_texture_types[i]) ,
+        width, height);
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, 
-                                   GL_RENDERBUFFER_EXT, multi_samples_color_ids[i]);
+        GL_RENDERBUFFER_EXT, multi_samples_color_ids[i]);
     }
-  
+
     if( !checkFBOCompleteness() ) return false;
 
   } 
@@ -700,46 +1122,46 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       glTexParameteri(texture_type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       glTexParameteri(texture_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
-        
+
       if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
         glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, depth_internal_format, width, height, depth, 0, 
-                     depth_format, depth_type, NULL);
-        
+          depth_format, depth_type, NULL);
+
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0 );
         if( using_stencil_buffer )
           glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,depth_id, 0, 0 );
       } else {
         glTexImage2D( texture_type, 0, depth_internal_format, width, height, 0, 
-                      depth_format, depth_type, NULL);
+          depth_format, depth_type, NULL);
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                  texture_type, depth_id, 0 );
-        
+          texture_type, depth_id, 0 );
+
         if( using_stencil_buffer )
           glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-                                    texture_type, depth_id, 0);
+          texture_type, depth_id, 0);
       } 
     }
   } else {
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_id);
     glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, depth_internal_format,
-                             width, height); 
+      width, height); 
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                 GL_RENDERBUFFER_EXT, depth_id);
+      GL_RENDERBUFFER_EXT, depth_id);
     if( using_stencil_buffer )
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-                                   GL_RENDERBUFFER_EXT, depth_id);
+      GL_RENDERBUFFER_EXT, depth_id);
   }
-    
+
   // set up stencil buffer
   // NOTE: seems like separate stencil buffers are not supported by current hardware.
   // Instead they use a special format and packs the depth and stencil buffer into
   // the same buffer. So for now the only supported way to have a stencil buffer
   // is to use the DEPTH_STENCIL depthBufferType.
   /*glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, stencil_id);
-    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT,
-    width, height); 
-    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-    GL_RENDERBUFFER_EXT, stencil_id);
+  glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT,
+  width, height); 
+  glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+  GL_RENDERBUFFER_EXT, stencil_id);
   */
 
   // set up color buffers
@@ -756,26 +1178,26 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
 
     if( texture_type == GL_TEXTURE_2D ) {
       glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, 
-                   GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      
+        GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
       glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
-                                GL_TEXTURE_2D, color_ids[i], 0 );        
+        GL_TEXTURE_2D, color_ids[i], 0 );        
     } else if( texture_type == GL_TEXTURE_RECTANGLE_ARB ) {
       glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, internal_format, width, height, 0, 
-                   GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      
+        GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
       glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
-                                GL_TEXTURE_RECTANGLE_ARB, color_ids[i], 0 );        
+        GL_TEXTURE_RECTANGLE_ARB, color_ids[i], 0 );        
     } else if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
       glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, internal_format, width, height, depth, 0, 
-                   GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
-                                   color_ids[i], 0,0 );        
+        color_ids[i], 0,0 );        
     } else if( texture_type == GL_TEXTURE_3D ) {
       glTexImage3D(GL_TEXTURE_3D, 0, internal_format, width, height, depth, 0, 
-                   GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
-                                GL_TEXTURE_3D, color_ids[i], 0, 0 );        
+        GL_TEXTURE_3D, color_ids[i], 0, 0 );        
     }
   }
 
@@ -786,7 +1208,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
   }
 
   if( !checkFBOCompleteness() ) return false;
-     
+
   buffers_width = width;
   buffers_height = height;
   buffers_depth = depth;
@@ -860,10 +1282,10 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
   } else {
     if( s != "RGBA" ) {
       Console(4) << "Warning: Invalid generateColorTextures value: \"" << s 
-                 << "\". Using \"RGBA\" instead(in FrameBufferTextureGenerator node). " << endl;
+        << "\". Using \"RGBA\" instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
-  
+
   return internal_format;
 }
 
@@ -893,7 +1315,9 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
     if( GLEW_ARB_depth_texture ) {
       internal_format = GL_DEPTH_COMPONENT16_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(4)  << "Warning: Your graphics card does not support depth "
+                  << "textures (ARB_depth_texture). Using DEPTH instead"
+                  << "(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "DEPTH24" ) { 
     if( GLEW_ARB_depth_texture ) {
@@ -928,16 +1352,62 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
   } else {
     if( s != "DEPTH" ) {
       Console(4) << "Warning: Invalid depthBufferType value: \"" << s 
-                 << "\". Using \"DEPTH\" instead(in FrameBufferTextureGenerator node). " << endl;
+        << "\". Using \"DEPTH\" instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
-  
+
   return internal_format;
+}
+
+void FrameBufferTextureGenerator::clearBuffers(GLenum src, int x, int y, 
+  int width, int height, GLbitfield mask){
+  // clear buffer defined by mask of the area defined by x, y, width, height
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, src);
+  glScissor( x, y, width, height );
+  glEnable( GL_SCISSOR_TEST );
+  glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+  glClear( mask );
+  glPopAttrib();
+  glDisable( GL_SCISSOR_TEST );
+}
+
+void FrameBufferTextureGenerator::clearColorBuffer( GLenum src, int x, int y, 
+  int width, int height, GLfloat* value, GLint index ){
+  // clear index th attached color buffer
+  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, src );
+  glScissor( x, y, width, height );
+  glEnable( GL_SCISSOR_TEST );
+  glPushAttrib( GL_COLOR_BUFFER_BIT );
+  glClearBufferfv( GL_COLOR, index, value );
+  glPopAttrib();
+  glDisable( GL_SCISSOR_TEST );
 }
 
 
 void FrameBufferTextureGenerator::setRenderCallback( RenderCallbackFunc func, 
-                                                     void *args ) {
-  render_func = func;
-  render_func_data = args;
+  void *args ) {
+    render_func = func;
+    render_func_data = args;
+}
+
+void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst, 
+  int srcX, int srcY, int w, int h){
+    glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src );
+    glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
+    glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+      GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+}
+
+void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst, 
+  int srcX, int srcY, int w, int h, int src_index, int dst_index){
+    glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src);
+    glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
+    if( src_index == -1 ) {
+      glReadBuffer(GL_BACK);
+    } else {
+      glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + src_index );
+    }
+    glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + dst_index );
+    glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 
+                          0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
