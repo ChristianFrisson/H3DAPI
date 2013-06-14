@@ -86,6 +86,10 @@ namespace H3D {
       return shader_handle;
     }
 
+    /// Returns true if the shader part is compiled and up to date. False
+    /// if compilation is required.
+    virtual bool isCompiled ();
+
     /// The type field indicates whether this object shall be compiled
     /// as a vertex shader, fragment shader, or other future-defined shader 
     /// type. Valid values are "VERTEX", "FRAGMENT","GEOMETRY" "TESS_CONTROL"

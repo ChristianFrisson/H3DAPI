@@ -118,6 +118,9 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   activate->route( displayList, id );
   parts->route( displayList, id );
   setupDynamicRoutes->route( displayList );
+
+  // need to update uniform values if shader is re-linked
+  displayList->route ( updateUniforms );
 }
 
 bool ComposedShader::shader_support_checked = false;
@@ -228,11 +231,18 @@ void ComposedShader::render() {
     bool all_parts_valid = true;
     
     // compile all shader parts
+    bool re_link= false;
     for( MFShaderPart::const_iterator i = parts->begin();
          i != parts->end(); i++ ) {
-      if( static_cast< ShaderPart * >(*i)->compileShader() == 0 ) {
+      ShaderPart* s= static_cast< ShaderPart * >(*i);
+      re_link|= !s->isCompiled();
+      if( s->compileShader() == 0 ) {
         all_parts_valid = false;
       }
+    }
+
+    if ( re_link ) {
+      activate->setValue ( true );
     }
 
     if( isValid->getValue() != all_parts_valid )
@@ -273,7 +283,7 @@ void ComposedShader::render() {
       // if a TRUE event has been sent to the activate field we 
       // relink the program (without looking up)
       else if( displayList->hasCausedEvent( activate ) &&
-                  activate->getValue( id ) )
+               activate->getValue( id ) )
       {
         // deallocate old instance if not used anywhere
         if (phandle_counts.find(program_handle) != phandle_counts.end()) {
@@ -516,8 +526,9 @@ void ComposedShader::SetupDynamicRoutes::update() {
 void ComposedShader::UpdateUniforms::update() {
   ComposedShader* node= static_cast<ComposedShader*>(getOwner());
   
+  bool update_all= hasCausedEvent ( node->displayList );
   for( unsigned int i = 0; i < node->dynamic_fields.size(); i++ ) {
-    if ( hasCausedEvent ( node->dynamic_fields[i] ) ) {
+    if ( update_all || hasCausedEvent ( node->dynamic_fields[i] )  ) {
       //Console(4) << "update " << node->dynamic_fields[i]->getName() << endl;
       if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
                                                  node->dynamic_fields[i] ) &&

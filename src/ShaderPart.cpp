@@ -150,6 +150,10 @@ GLhandleARB ShaderPart::compileShader() {
   }
 }
 
+bool ShaderPart::isCompiled () {
+  return shaderString->isUpToDate();
+}
+
 void ShaderPart::SFShaderString::update() {
   //PROFILE_START("shaderpart: update");
   ShaderPart *shader_part = static_cast< ShaderPart * >( getOwner() ); 
