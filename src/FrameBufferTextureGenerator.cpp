@@ -33,6 +33,7 @@
 #include <H3D/X3DShapeNode.h>
 #include <H3D/GlobalSettings.h>
 #include <H3D/GraphicsOptions.h>
+#include <H3D/H3DWindowNode.h>
 
 using namespace H3D;
 
@@ -55,6 +56,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTexture, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextures, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, viewpoint, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, navigationInfo, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, width, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, height, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTextureProperties, INPUT_OUTPUT );
@@ -103,6 +105,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFInt32        > _samples,
   Inst< SFString       > _update,
   Inst< SFViewpointNode > _viewpoint,
+  Inst< SFNavigationInfo > _navigationInfo,
   Inst< SFBackgroundNode > _background,
   Inst< SFInt32         > _width,
   Inst< SFInt32         > _height,
@@ -128,6 +131,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   samples( _samples ),
   update( _update ),
   viewpoint( _viewpoint ),
+  navigationInfo( _navigationInfo ),
   background ( _background ),
   width( _width ),
   height( _height ),
@@ -192,7 +196,6 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   colorInitWarningPrinted->setOwner(this);
   colorBufferStorages->route( colorInitWarningPrinted );
 
-
   // turn off display list since we want to get new values of the width
   // and height each loop to see if they have changed.
   displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
@@ -201,8 +204,14 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
 }
 
 void FrameBufferTextureGenerator::initialize()
-{
-  X3DGroupingNode::initialize();
+{ // overwrite the initialize function of X3DGrouping node to stop the collecting
+  // of bound from the child of FBTG.
+  use_union_bound = false;
+  BoxBound *bb = new BoxBound();
+  bb->center->setValue( bboxCenter->getValue() );
+  bb->size->setValue( bboxSize->getValue() );
+  bound->setValue( bb );
+  X3DChildNode::initialize();
   // initialize all necessary color buffer init warning message printed flag to false
   for( int i = 0; i < colorBufferStorages->getValue().size()+1; i++ ) {
     colorInitWarningPrinted->push_back(false);
@@ -380,7 +389,8 @@ void FrameBufferTextureGenerator::render()     {
     return;
   }
 
-  // if use multi-sampled render buffer, render the sub-scene into multi_samples_fbo_id as an intermediate step.
+  // if use multi-sampled render buffer, render the sub-scene 
+  // into multi_samples_fbo_id as an intermediate step.
   if( nr_samples > 0 ) {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
   } else {
@@ -399,9 +409,43 @@ void FrameBufferTextureGenerator::render()     {
   }
 
   // if a viewpoint has been specified use that instead of what has already 
-  // been set up
-  X3DViewpointNode* vp = viewpoint->getValue();
+  // been set up (current active viewpoint)
+  
+  X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
+  NavigationInfo *nav_info = navigationInfo->getValue();
+  X3DBackgroundNode* bg = background->getValue();
   if( vp ) {
+  H3DFloat clip_near = 0.01;
+  H3DFloat clip_far = -1;
+
+  if( nav_info ) {
+    if( nav_info->visibilityLimit->getValue() > 0 ) {
+      clip_far = nav_info->visibilityLimit->getValue();
+    } else {
+      clip_far = -1;
+    }
+    if( nav_info->nearVisibilityLimit->getValue() > 0 ) {
+      clip_near = nav_info->nearVisibilityLimit->getValue();
+    }
+  } else { // calcualte far and near plane based on the children to be rendered
+    X3DGroupingNode* child_to_render = new X3DGroupingNode();
+    child_to_render->use_union_bound = true;
+    const NodeVector &c = children->getValue();
+    for( unsigned int i = 0; i < c.size(); i++ ) {
+      child_to_render->children->push_back(c[i]);
+    }
+    H3DWindowNode::calculateFarAndNearPlane( clip_far, clip_near, child_to_render, vp, false );
+  }
+  if( bg ) {
+    if( clip_near > 0.01f ) clip_near = 0.01f;
+    if( clip_far < 0.051f && clip_far != -1 ) clip_far = 0.1f;
+  }
+  if( &shadow_caster &&
+    !shadow_caster->object->empty()&&
+    shadow_caster->algorithm->getValue() == "ZFAIL" ) {
+      clip_far = -1;
+  }
+
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
     glLoadIdentity();
@@ -412,8 +456,8 @@ void FrameBufferTextureGenerator::render()     {
     vp->setupProjection( X3DViewpointNode::MONO,
                          (H3DFloat) current_width,
                          (H3DFloat) current_height,
-                         (H3DFloat) 0.01, (H3DFloat) -1 ); // TODO: calculate near and far plane
-  }
+                         clip_near, clip_far );
+  } 
 
   if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
     // 2D textures. Render all nodes in children field into the textures.

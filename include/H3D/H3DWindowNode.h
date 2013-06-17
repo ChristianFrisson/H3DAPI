@@ -269,7 +269,7 @@ namespace H3D {
     /// stylus fields and the child parameter.
     /// \returns True if successfully calculated and returned parameters.
     /// false if the bounding boxes was of another type than BoxBound.
-    bool calculateFarAndNearPlane( H3DFloat &far,
+    static bool calculateFarAndNearPlane( H3DFloat &far,
                                    H3DFloat &near,
                                    X3DChildNode *child,
                                    X3DViewpointNode *vp,

@@ -34,6 +34,7 @@
 #include <H3D/MFString.h>
 #include <H3D/GeneratedTexture.h>
 #include <H3D/X3DViewpointNode.h>
+#include <H3D/NavigationInfo.h>
 #include <H3D/X3DBackgroundNode.h>
 #include <H3D/ShadowCaster.h>
 #include <H3D/TypedField.h>
@@ -177,6 +178,7 @@ namespace H3D {
     typedef TypedSFNode< TextureProperties > SFTexturePropertiesNode;
     typedef TypedMFNode< TextureProperties > MFTexturePropertiesNode;
     typedef TypedSFNode< X3DViewpointNode > SFViewpointNode;
+    typedef TypedSFNode< NavigationInfo > SFNavigationInfo;
     typedef TypedSFNode< X3DBackgroundNode > SFBackgroundNode;
     typedef TypedMFNode< H3DSingleTextureNode > MFGeneratedTextureNode;
     typedef TypedSFNode< H3DSingleTextureNode > SFGeneratedTextureNode;
@@ -202,6 +204,7 @@ namespace H3D {
                                  Inst< SFInt32          > _samples   = 0,
                                  Inst< SFString         > _update    = 0,
                                  Inst< SFViewpointNode  > _viewpoint = 0,
+                                 Inst< SFNavigationInfo > _navigationInfo = 0,
                                  Inst< SFBackgroundNode > _background = 0,
                                  Inst< SFInt32          > _width     = 0,
                                  Inst< SFInt32          > _height    = 0,
@@ -395,6 +398,16 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> NULL
     auto_ptr< SFViewpointNode > viewpoint;
+
+	/// The NavigationInfo to be used when rendering the scene. Currently, it is
+	/// just used for providing far and near cliping distance. If NULL, the
+	/// current active viewpoint is used, if no current navigationinfo exists,
+	/// near clip distance will be 0.01, far clip distance is set to be -1 which
+	/// means infinite
+	/// 
+	/// <b>Access type:</b> inputOutput
+	/// <b>Default value:</b> NULL
+	auto_ptr<SFNavigationInfo> navigationInfo;
 
     /// The X3DBackgroundNode to use when rendering the scene. If NULL,
     /// then no background is rendered.
