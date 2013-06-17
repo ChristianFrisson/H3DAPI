@@ -634,7 +634,7 @@ namespace H3D {
 
     private:
       /// A field used to reset the waning printed flag
-      class resetPrintedFlag : public TypedField< SFBool, Types<Any<SFString,MFString>> >
+      class resetPrintedFlag : public TypedField< SFBool, Types<Any<SFString,MFString> > >
       {
       public:
         virtual void update (){
