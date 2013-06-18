@@ -34,6 +34,7 @@
 #include <H3D/GlobalSettings.h>
 #include <H3D/GraphicsOptions.h>
 #include <H3D/H3DWindowNode.h>
+#include <H3D/Scene.h>
 
 using namespace H3D;
 
@@ -59,6 +60,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, navigationInfo, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, width, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, useStereo, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTextureProperties, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextureProperties, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, background, INPUT_OUTPUT );
@@ -109,7 +111,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFBackgroundNode > _background,
   Inst< SFInt32         > _width,
   Inst< SFInt32         > _height,
-  Inst< SFBool          > _blitFromScreen,
+  Inst< SFBool          > _useStereo,
   Inst< SFString        > _depthBufferStorage,
   Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer,
   Inst< MFString        > _colorBufferStorages,
@@ -135,6 +137,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   background ( _background ),
   width( _width ),
   height( _height ),
+  useStereo( _useStereo ),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -145,6 +148,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   render_func_data( NULL ),
   always_use_existing_viewport( false ),
   shadow_caster( new ShadowCaster ),
+  child_to_render( new X3DGroupingNode ),
   depthWarningPrinted( new resetPrintedFlag ),
   colorMismatchWarningPrinted( new resetPrintedFlag ),
   colorInitWarningPrinted( new resetPrintedFlags ){
@@ -162,6 +166,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   samples->setValue( 0 );
   width->setValue( -1 );
   height->setValue( -1 );
+  useStereo->setValue( false );
 
   depthBufferType->addValidValue( "DEPTH" );
   depthBufferType->addValidValue( "DEPTH16" );
@@ -196,6 +201,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   colorInitWarningPrinted->setOwner(this);
   colorBufferStorages->route( colorInitWarningPrinted );
 
+
   // turn off display list since we want to get new values of the width
   // and height each loop to see if they have changed.
   displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
@@ -205,13 +211,30 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
 
 void FrameBufferTextureGenerator::initialize()
 { // overwrite the initialize function of X3DGrouping node to stop the collecting
-  // of bound from the child of FBTG.
-  use_union_bound = false;
+  // of bound from the child of FBTG, so local bound will not be routed to main
+  // scene.
+  this->use_union_bound = false;
   BoxBound *bb = new BoxBound();
   bb->center->setValue( bboxCenter->getValue() );
   bb->size->setValue( bboxSize->getValue() );
   bound->setValue( bb );
   X3DChildNode::initialize();
+  NavigationInfo* n = navigationInfo->getValue();
+  if( n ) {
+    n->set_bind->setValue(false);
+  }
+  X3DViewpointNode* v = viewpoint->getValue();
+  if( v ) {
+    v->set_bind->setValue(false);
+  }
+  // add children to the child_to_render grouping node to for collecting local
+  // bound.
+  child_to_render->use_union_bound = true;
+  const NodeVector &c = children->getValue();
+  for( unsigned int i = 0; i < c.size(); i++ ) {
+    child_to_render->children->push_back(c[i]);
+  }
+
   // initialize all necessary color buffer init warning message printed flag to false
   for( int i = 0; i < colorBufferStorages->getValue().size()+1; i++ ) {
     colorInitWarningPrinted->push_back(false);
@@ -415,49 +438,87 @@ void FrameBufferTextureGenerator::render()     {
   NavigationInfo *nav_info = navigationInfo->getValue();
   X3DBackgroundNode* bg = background->getValue();
   if( vp ) {
-  H3DFloat clip_near = 0.01;
-  H3DFloat clip_far = -1;
+    H3DFloat clip_near = 0.01;
+    H3DFloat clip_far = -1;
 
-  if( nav_info ) {
-    if( nav_info->visibilityLimit->getValue() > 0 ) {
-      clip_far = nav_info->visibilityLimit->getValue();
-    } else {
-      clip_far = -1;
+    if( nav_info ) {
+      if( nav_info->visibilityLimit->getValue() > 0 ) {
+        clip_far = nav_info->visibilityLimit->getValue();
+      } else {
+        clip_far = -1;
+      }
+      if( nav_info->nearVisibilityLimit->getValue() > 0 ) {
+        clip_near = nav_info->nearVisibilityLimit->getValue();
+      }
+    } else { // calculate far and near plane based on the children to be rendered
+      H3DWindowNode::calculateFarAndNearPlane( clip_far, clip_near, child_to_render.get(), vp, false );
     }
-    if( nav_info->nearVisibilityLimit->getValue() > 0 ) {
-      clip_near = nav_info->nearVisibilityLimit->getValue();
+    if( bg ) {
+      if( clip_near > 0.01f ) clip_near = 0.01f;
+      if( clip_far < 0.051f && clip_far != -1 ) clip_far = 0.1f;
     }
-  } else { // calcualte far and near plane based on the children to be rendered
-    X3DGroupingNode* child_to_render = new X3DGroupingNode();
-    child_to_render->use_union_bound = true;
-    const NodeVector &c = children->getValue();
-    for( unsigned int i = 0; i < c.size(); i++ ) {
-      child_to_render->children->push_back(c[i]);
+    if( &shadow_caster &&
+      !shadow_caster->object->empty()&&
+      shadow_caster->algorithm->getValue() == "ZFAIL" ) {
+        clip_far = -1;
     }
-    H3DWindowNode::calculateFarAndNearPlane( clip_far, clip_near, child_to_render, vp, false );
-  }
-  if( bg ) {
-    if( clip_near > 0.01f ) clip_near = 0.01f;
-    if( clip_far < 0.051f && clip_far != -1 ) clip_far = 0.1f;
-  }
-  if( &shadow_caster &&
-    !shadow_caster->object->empty()&&
-    shadow_caster->algorithm->getValue() == "ZFAIL" ) {
-      clip_far = -1;
-  }
-
+    X3DViewpointNode::EyeMode eye_mode = X3DViewpointNode::MONO;
+    StereoInfo* stereo_info = NULL;
+    H3DFloat projection_width = current_width;
+    H3DFloat projection_height = current_height;
+    if( useStereo->getValue() ) {
+      Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
+      H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
+      eye_mode = window->getEyeMode();
+      if( eye_mode!=X3DViewpointNode::MONO ) {
+        stereo_info = StereoInfo::getActive();
+        H3DFloat focal_distance = stereo_info->focalDistance->getValue();
+        if( focal_distance <= clip_near ) {
+          clip_near = focal_distance - 0.01f;
+        }
+        if( focal_distance >= clip_far && clip_far != -1 ) {
+          clip_far = focal_distance + 0.01f;
+        }
+        if( eye_mode == H3DWindowNode::RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
+          projection_width = projection_width/2.0f;
+        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_720P ) {
+          projection_width = 1280;
+        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_1080P ) {
+          projection_width = 1920;
+        }
+        if( eye_mode == H3DWindowNode::RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
+          projection_height = projection_width/2.0f;
+        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_720P ) {
+          projection_height = 720;
+        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_1080P ) {
+          projection_height = 1080;
+        }
+      }
+    }
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
     glLoadIdentity();
-    vp->setupViewMatrix( X3DViewpointNode::MONO );
+    vp->setupViewMatrix( eye_mode, stereo_info );
     glMatrixMode( GL_PROJECTION );
     glPushMatrix();
     glLoadIdentity();
-    vp->setupProjection( X3DViewpointNode::MONO,
-                         (H3DFloat) current_width,
-                         (H3DFloat) current_height,
-                         clip_near, clip_far );
-  } 
+    vp->setupProjection( eye_mode,
+      (H3DFloat) projection_width,
+      (H3DFloat) projection_height,
+      clip_near, clip_far, stereo_info );
+  } else {
+    // no local vp set, use the setting from H3DWindowNode
+    // projection matrix need to be changed however, as the far and near clip distance
+    // in h3dwindownode is not the same as it should be for the sub-scene
+    X3DViewpointNode* vp_active = X3DViewpointNode::getActive();
+    H3DFloat clip_far, clip_near;
+    H3DWindowNode::calculateFarAndNearPlane( clip_far, clip_near, child_to_render.get(), vp_active, false );
+    glMatrixMode( GL_PROJECTION );
+    glPushMatrix();
+    glLoadIdentity();
+    vp_active->changeProjection( clip_near, clip_far );
+
+  }
 
   if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
     // 2D textures. Render all nodes in children field into the textures.
@@ -608,6 +669,9 @@ void FrameBufferTextureGenerator::render()     {
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );
+    glPopMatrix();
+  } else {
+    glMatrixMode( GL_PROJECTION );
     glPopMatrix();
   }
 

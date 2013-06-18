@@ -918,7 +918,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     // eye remain parallell and an the asymmetric view frustum is set up using 
     // glFrustum. This is done by calling the setupProjection function of
     // X3DViewpointNode.
-    vp->setupProjection( X3DViewpointNode::LEFT_EYE,
+    eye_mode = X3DViewpointNode::LEFT_EYE;
+    vp->setupProjection( eye_mode,
                          projection_width,
                          projection_height,
                          clip_near, clip_far,
@@ -989,7 +990,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
 
     // add viewmatrix to model view matrix.
-    vp->setupViewMatrix( X3DViewpointNode::LEFT_EYE,
+    vp->setupViewMatrix( eye_mode,
                          stereo_info );
 
     if( ti ) {
@@ -1031,8 +1032,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else {
       glFrontFace( GL_CCW );
     }
-
-    vp->setupProjection( X3DViewpointNode::RIGHT_EYE,
+    eye_mode = X3DViewpointNode::RIGHT_EYE;
+    vp->setupProjection( eye_mode,
                          projection_width,
                          projection_height,
                          clip_near, clip_far,

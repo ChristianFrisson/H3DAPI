@@ -27,16 +27,15 @@
 
       <!-- Generate depth texture -->
       <FrameBufferTextureGenerator DEF="DEPTH" outputTextureType="2D" samples="4" generateDepthTexture = 'true' >
-        <Billboard axisOfRotation = '0 0 0'>
-          <Transform translation = '0 0 0.35'>
-            <Shape>
-              <Appearance>
-                <Material diffuseColor='0 1 1' />
-              </Appearance>      
-              <Disk2D innerRadius='0.1' outerRadius='1' solid='true' />
-            </Shape>
-          </Transform>
-        </Billboard>
+        <Viewpoint DEF='V2' position='0 0 0.7' containerField = 'viewpoint' />
+        <NavigationInfo visibilityLimit='1' nearVisibilityLimit='0.6999' containerField ='navigationInfo' />
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='0 1 1' />
+          </Appearance>      
+          <Disk2D innerRadius='0.2' outerRadius='1' solid='true' />
+        </Shape>
+
       </FrameBufferTextureGenerator>
       <FrameBufferTextureGenerator DEF="GEN" depthBufferStorage = 'FBO_COPY' colorBufferStorages='FBO_COPY_0' outputTextureType="2D" samples="0" generateDepthTexture = 'true' generateColorTextures="RGBA" >
         <FrameBufferTextureGenerator USE = 'DEPTH' containerField = "externalFBODepthBuffer"/>

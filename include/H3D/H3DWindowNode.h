@@ -381,6 +381,10 @@ namespace H3D {
       return multi_pass_transparency;
     }
 
+    inline X3DViewpointNode::EyeMode getEyeMode() {
+      return eye_mode;
+    }
+
     /// This function shares the rendering context between this H3DWindowNode
     /// and the one given as an argument. This means that the two windows
     /// after the call can share display lists and textures. When several
@@ -488,6 +492,9 @@ namespace H3D {
 
     /// The render mode used in the last render loop.
     RenderMode::Mode last_render_mode;
+
+    /// Current eye mode
+    X3DViewpointNode::EyeMode eye_mode;
 
     /// The cursor currently in use.
     string current_cursor;

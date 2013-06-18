@@ -117,10 +117,17 @@ bool Viewpoint::windowFromfieldOfView( H3DFloat width, H3DFloat height,
   return true;
 }
 
-void Viewpoint::setupProjection( EyeMode eye_mode,
-                                 H3DFloat width, H3DFloat height,
-                                 H3DFloat clip_near, H3DFloat clip_far,
-                                 StereoInfo * stereo_info ) {
+void Viewpoint::setupProjection(  EyeMode eye_mode,
+                                  H3DFloat width, H3DFloat height,
+                                  H3DFloat clip_near, H3DFloat clip_far,
+                                  StereoInfo * stereo_info ) 
+{
+  current_eye_mode = eye_mode;
+  current_width = width;
+  current_height = height;
+  current_clip_far = clip_far;
+  current_clip_near = clip_near;
+  current_stereo_info = stereo_info;
   H3DFloat top, bottom, right, left;
   getProjectionDimensions( eye_mode, width, height, clip_near, top,
                            bottom, right, left, stereo_info );
@@ -138,12 +145,13 @@ void Viewpoint::setupProjection( EyeMode eye_mode,
     C = epsilon - 1; 
     D = -2 * clip_near * (1-epsilon);
   }
-  
+
   GLdouble m[16] = { 2* clip_near/(right-left), 0, 0, 0,
                      0, 2*clip_near/(top - bottom), 0, 0,
                      A, B, C, -1,
                      0, 0, D, 0 };
 
   glMultMatrixd( m );
+
 }
 

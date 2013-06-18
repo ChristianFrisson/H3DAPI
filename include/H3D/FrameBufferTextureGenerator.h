@@ -208,7 +208,7 @@ namespace H3D {
                                  Inst< SFBackgroundNode > _background = 0,
                                  Inst< SFInt32          > _width     = 0,
                                  Inst< SFInt32          > _height    = 0,
-                                 Inst< SFBool           > _blitFromScreen = 0,
+                                 Inst< SFBool           > _useStereo = 0,
                                  Inst< SFString         > _depthBufferStorage = 0,
                                  Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer = 0,
                                  Inst< MFString         > _colorBufferStorages = 0,
@@ -430,6 +430,14 @@ namespace H3D {
     /// <b>Default value:</b> -1
     auto_ptr< SFInt32 > height;
 
+    /// An option to enable the use of same stereo setting as current window
+    /// by default,it will be set to false and MONO will be used for rendering
+    /// sub-scene.
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> false
+    auto_ptr< SFBool > useStereo;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
     
@@ -644,6 +652,10 @@ namespace H3D {
     /// Reference to shadow caster used to cast shadows for shapes
     /// in scene graph in this FrameBufferTextureGenerator.
     AutoRef< ShadowCaster > shadow_caster;
+
+    /// A group node container to gather all child node in MFChild field, used to
+    /// gathering bound information.
+    AutoRef< X3DGroupingNode > child_to_render;
 
     private:
       /// A field used to reset the waning printed flag

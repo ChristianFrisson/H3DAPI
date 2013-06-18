@@ -247,7 +247,9 @@ namespace H3D {
       /// For the left eye.
       LEFT_EYE = 1,
       /// For the right eye.
-      RIGHT_EYE = 2
+      RIGHT_EYE = 2,
+      /// For eye mode which is not set
+      NONE = 3
     };
 
     /// This field is used for the position field in order to reset the
@@ -465,6 +467,9 @@ namespace H3D {
     {}
 #endif
 
+    /// Change the clip near and clip far distance in current projection Matrix
+    virtual void changeProjection( H3DFloat clip_near, H3DFloat clip_far );
+
     /// Adds a view matrix to the current OpenGL matrix to transform from
     /// view coordinates (camera/viewpoint space) to world space. This means
     /// e.g. setting up position and orientation of the viewpoint.
@@ -600,6 +605,13 @@ namespace H3D {
 
     /// True is the viewpoint exists in scene graph
     bool in_scene_graph;
+
+    EyeMode current_eye_mode;
+    H3DFloat current_width;
+    H3DFloat current_height;
+    H3DFloat current_clip_near;
+    H3DFloat current_clip_far;
+    StereoInfo* current_stereo_info;
 
     // Internal function for easier calculations of parameters sent to
     // glFrustum or glOrtho. For usage see function setupProjection in
