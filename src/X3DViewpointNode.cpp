@@ -127,13 +127,6 @@ X3DViewpointNode::X3DViewpointNode( Inst< SFSetBind     > _set_bind,
 
   viewpoints.push_back( this );
   viewpoints_changed = true;
-
-  current_stereo_info = NULL;
-  current_clip_near = 0;
-  current_clip_far = 0;
-  current_eye_mode = EyeMode::NONE;
-  current_width = 0;
-  current_height = 0;
 }
 
 void X3DViewpointNode::traverseSG( TraverseInfo &ti ) {
@@ -381,34 +374,17 @@ void X3DViewpointNode::getProjectionDimensions( EyeMode eye_mode,
   right += frustum_shift;
 }
 
-
-
-void X3DViewpointNode::changeProjection( H3DFloat clip_near, H3DFloat clip_far ){
-  // change the clip_near and clip_far value of current projection
-    current_clip_far = clip_far;
-    current_clip_near = clip_near;
-    setupProjection(current_eye_mode, current_width, current_height, current_clip_near, 
-      current_clip_far, current_stereo_info);
-}
-
-
 void X3DViewpointNode::setupViewMatrix( EyeMode eye_mode,
-  StereoInfo * stereo_info  ) 
-{
-
-  current_eye_mode = eye_mode;
-  current_stereo_info = stereo_info;
+                                        StereoInfo * stereo_info  ) {
   const Vec3f &vp_position = totalPosition->getValue();
   const Rotation &vp_orientation = totalOrientation->getValue();
   const Matrix4f &vp_inv_m = accInverseMatrix->getValue();  
   // OpenGL version of vp_inv_m
-  GLfloat vp_inv_transform[] = 
-  { 
+  GLfloat vp_inv_transform[] = { 
     vp_inv_m[0][0], vp_inv_m[1][0], vp_inv_m[2][0], 0,
     vp_inv_m[0][1], vp_inv_m[1][1], vp_inv_m[2][1], 0,
     vp_inv_m[0][2], vp_inv_m[1][2], vp_inv_m[2][2], 0,
-    vp_inv_m[0][3], vp_inv_m[1][3], vp_inv_m[2][3], 1 
-  };
+    vp_inv_m[0][3], vp_inv_m[1][3], vp_inv_m[2][3], 1 };
 
   if( eye_mode != MONO ) {
     // if stereo mode, viewpoint varies depending on what eye 
@@ -448,6 +424,7 @@ void X3DViewpointNode::setupViewMatrix( EyeMode eye_mode,
   glMultMatrixf( vp_inv_transform );
 
 }
+
 
 Matrix4f X3DViewpointNode::getViewMatrix( EyeMode eye_mode,
                                           StereoInfo * stereo_info ) {

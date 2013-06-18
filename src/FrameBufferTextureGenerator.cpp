@@ -213,27 +213,32 @@ void FrameBufferTextureGenerator::initialize()
 { // overwrite the initialize function of X3DGrouping node to stop the collecting
   // of bound from the child of FBTG, so local bound will not be routed to main
   // scene.
-  this->use_union_bound = false;
-  BoxBound *bb = new BoxBound();
-  bb->center->setValue( bboxCenter->getValue() );
-  bb->size->setValue( bboxSize->getValue() );
-  bound->setValue( bb );
-  X3DChildNode::initialize();
+  X3DViewpointNode* v = viewpoint->getValue();
+  if( v ) {
+    v->set_bind->setValue(false);
+    this->use_union_bound = false;
+    BoxBound *bb = new BoxBound();
+    bb->center->setValue( bboxCenter->getValue() );
+    bb->size->setValue( bboxSize->getValue() );
+    this->bound->setValue( bb );
+    X3DChildNode::initialize();
+    // add children to the child_to_render grouping node to for collecting local
+    // bound.
+    child_to_render->use_union_bound = true;
+    const NodeVector &c = children->getValue();
+    for( unsigned int i = 0; i < c.size(); i++ ) {
+      child_to_render->children->push_back(c[i]);
+    }
+  } else {
+    this->use_union_bound = true;
+    X3DGroupingNode::initialize();
+  }
   NavigationInfo* n = navigationInfo->getValue();
   if( n ) {
     n->set_bind->setValue(false);
   }
-  X3DViewpointNode* v = viewpoint->getValue();
-  if( v ) {
-    v->set_bind->setValue(false);
-  }
-  // add children to the child_to_render grouping node to for collecting local
-  // bound.
-  child_to_render->use_union_bound = true;
-  const NodeVector &c = children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
-    child_to_render->children->push_back(c[i]);
-  }
+  
+  
 
   // initialize all necessary color buffer init warning message printed flag to false
   for( int i = 0; i < colorBufferStorages->getValue().size()+1; i++ ) {
@@ -444,8 +449,6 @@ void FrameBufferTextureGenerator::render()     {
     if( nav_info ) {
       if( nav_info->visibilityLimit->getValue() > 0 ) {
         clip_far = nav_info->visibilityLimit->getValue();
-      } else {
-        clip_far = -1;
       }
       if( nav_info->nearVisibilityLimit->getValue() > 0 ) {
         clip_near = nav_info->nearVisibilityLimit->getValue();
@@ -464,8 +467,6 @@ void FrameBufferTextureGenerator::render()     {
     }
     X3DViewpointNode::EyeMode eye_mode = X3DViewpointNode::MONO;
     StereoInfo* stereo_info = NULL;
-    H3DFloat projection_width = current_width;
-    H3DFloat projection_height = current_height;
     if( useStereo->getValue() ) {
       Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
       H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
@@ -479,20 +480,6 @@ void FrameBufferTextureGenerator::render()     {
         if( focal_distance >= clip_far && clip_far != -1 ) {
           clip_far = focal_distance + 0.01f;
         }
-        if( eye_mode == H3DWindowNode::RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
-          projection_width = projection_width/2.0f;
-        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_720P ) {
-          projection_width = 1280;
-        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_1080P ) {
-          projection_width = 1920;
-        }
-        if( eye_mode == H3DWindowNode::RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
-          projection_height = projection_width/2.0f;
-        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_720P ) {
-          projection_height = 720;
-        } else if( eye_mode ==  H3DWindowNode::RenderMode::HDMI_FRAME_PACKED_1080P ) {
-          projection_height = 1080;
-        }
       }
     }
     glMatrixMode( GL_MODELVIEW );
@@ -503,22 +490,10 @@ void FrameBufferTextureGenerator::render()     {
     glPushMatrix();
     glLoadIdentity();
     vp->setupProjection( eye_mode,
-      (H3DFloat) projection_width,
-      (H3DFloat) projection_height,
+      (H3DFloat) current_width,
+      (H3DFloat) current_height,
       clip_near, clip_far, stereo_info );
-  } else {
-    // no local vp set, use the setting from H3DWindowNode
-    // projection matrix need to be changed however, as the far and near clip distance
-    // in h3dwindownode is not the same as it should be for the sub-scene
-    X3DViewpointNode* vp_active = X3DViewpointNode::getActive();
-    H3DFloat clip_far, clip_near;
-    H3DWindowNode::calculateFarAndNearPlane( clip_far, clip_near, child_to_render.get(), vp_active, false );
-    glMatrixMode( GL_PROJECTION );
-    glPushMatrix();
-    glLoadIdentity();
-    vp_active->changeProjection( clip_near, clip_far );
-
-  }
+  } 
 
   if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
     // 2D textures. Render all nodes in children field into the textures.
@@ -669,9 +644,6 @@ void FrameBufferTextureGenerator::render()     {
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );
-    glPopMatrix();
-  } else {
-    glMatrixMode( GL_PROJECTION );
     glPopMatrix();
   }
 
