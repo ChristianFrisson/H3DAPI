@@ -52,7 +52,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, generateDepthTexture, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthBufferType, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, outputTextureType, INITIALIZE_ONLY );
-  FIELDDB_ELEMENT( FrameBufferTextureGenerator, samples, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, samples, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, update, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTexture, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextures, OUTPUT_ONLY );
@@ -164,6 +164,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   outputTextureType->addValidValue( "2D_ARRAY" );
   outputTextureType->setValue( "2D" );
   samples->setValue( 0 );
+  last_samples = 0;
   width->setValue( -1 );
   height->setValue( -1 );
   useStereo->setValue( false );
@@ -405,8 +406,9 @@ void FrameBufferTextureGenerator::render()     {
 
   unsigned int current_depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
 
-  // ensure that all buffers are always of the frame buffer size
-  if( buffers_width != current_width || buffers_height != current_height || buffers_depth != current_depth ) {
+
+  if( samples->getValue() != last_samples || buffers_width != current_width || buffers_height != current_height || buffers_depth != current_depth ) {
+    last_samples = samples->getValue();
     last_resize_success = resizeBuffers( current_width, current_height, current_depth );
   }
 

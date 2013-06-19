@@ -371,7 +371,7 @@ namespace H3D {
     /// with the specified number of sample points. Using multiple sample points reduces
     /// aliasing artifacts.
     /// 
-    /// <b>Access type:</b> initializeOnly
+    /// <b>Access type:</b> intputOutput
     /// <b>Default value:</b> 0
     auto_ptr< SFInt32 > samples;
 
@@ -592,6 +592,9 @@ namespace H3D {
 
     /// Flag used to determine if initializeFBO has been called or not.
     bool fbo_initialized;
+
+    /// previous sample value
+    int last_samples;
 
     /// The OpenGL texture ids for all textures generated in the colorTextures field.
     vector<GLuint> color_ids;
