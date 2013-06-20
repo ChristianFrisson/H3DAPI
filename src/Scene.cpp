@@ -165,7 +165,7 @@ void Scene::idle() {
   H3DUtil::H3DTimer::begin("H3D_scene");
   H3DUtil::H3DTimer::stepBegin("H3D_scene_loop");
 
-#endif HAVE_PROFILER
+#endif // HAVE_PROFILER
   
   TimeStamp t;
   TimeStamp dt = t - last_time;
@@ -531,7 +531,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::setEnabled("H3D_scene",true);
   H3DUtil::H3DTimer::setInterval("H3D_scene",10);
-#endif HAVE_PROFILER
+#endif //HAVE_PROFILER
   scenes.insert( this );
   
   shadow_caster->algorithm->setValue( "ZFAIL" );
