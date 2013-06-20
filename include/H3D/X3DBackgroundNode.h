@@ -34,6 +34,7 @@
 #include <H3D/MFFloat.h>
 #include <H3D/MFColor.h>
 #include <H3D/SFMatrix4f.h>
+#include <H3D/SFMatrix4d.h>
 #include <H3D/SFFloat.h>
 
 namespace H3D {
@@ -156,11 +157,7 @@ namespace H3D {
     /// Renders the background with OpenGL. Have to have a special call
     /// to be used by GLWindow instead of render() to avoid the background
     /// node to be rendered as part of the scene graph. 
-    virtual void renderBackground() {
-      render_enabled = true;
-      displayList->callList();
-      render_enabled = false;
-    }
+    virtual void renderBackground();
 
     /// Returns the color that OpenGL should clear the buffer with before
     /// starting to render to it. 
@@ -249,6 +246,11 @@ namespace H3D {
     static H3DNodeDatabase database;
   protected:
     auto_ptr< SFMatrix4f > localToGlobal;
+
+    /// projection matrix for background
+    auto_ptr< SFMatrix4d > projectionMatrix;
+
+
     bool render_enabled;
   };
 }

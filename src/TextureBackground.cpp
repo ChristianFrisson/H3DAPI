@@ -93,6 +93,15 @@ void TextureBackground::render() {
     glEnable( GL_CULL_FACE );
     glDisable( GL_LIGHTING );
 
+    Matrix4d pm = projectionMatrix->getValue();
+    H3DDouble projection_matrix[16] = { pm[0][0], pm[1][0], pm[2][0], pm[3][0],
+      pm[0][1], pm[1][1], pm[2][1], pm[3][1],
+      pm[0][2], pm[1][2], pm[2][2], pm[3][2],
+      pm[0][3], pm[1][3], pm[2][3], pm[3][3]};
+    glMatrixMode( GL_PROJECTION );
+    glPushMatrix();
+    glLoadMatrixd( projection_matrix );
+
     Matrix3f m = localToGlobal->getValue().getRotationPart();
 
     GLfloat mv[] = { 
@@ -231,6 +240,8 @@ void TextureBackground::render() {
 
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix(); 
+    glMatrixMode( GL_PROJECTION );
+    glPopMatrix();
     glPopAttrib();
   }
 }

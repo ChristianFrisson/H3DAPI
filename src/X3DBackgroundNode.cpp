@@ -67,12 +67,18 @@ X3DBackgroundNode::X3DBackgroundNode( Inst< SFSetBind > _set_bind,
   skyColor( _skyColor ),
   transparency( _transparency ),
   localToGlobal( new SFMatrix4f ),
+  projectionMatrix( new SFMatrix4d ),
   render_enabled( false ) {
   
   displayList->setOwner( this );
   displayList->setName( "displayList" );
   localToGlobal->setOwner( this );
   localToGlobal->setName( "localToGlobal" );
+  projectionMatrix->setOwner( this );
+  projectionMatrix->setName( "projectionMatrix" );
+  projectionMatrix->route( displayList );
+
+
 
   type_name = "X3DBackgroundNode";
   database.initFields( this );
@@ -132,7 +138,14 @@ void X3DBackgroundNode::render() {
     glDisable( GL_LIGHTING );
 
     H3DFloat alpha = 1 - transparency->getValue();
-
+    Matrix4d pm = projectionMatrix->getValue();
+    H3DDouble projection_matrix[16] = { pm[0][0], pm[1][0], pm[2][0], pm[3][0],
+                        pm[0][1], pm[1][1], pm[2][1], pm[3][1],
+                        pm[0][2], pm[1][2], pm[2][2], pm[3][2],
+                        pm[0][3], pm[1][3], pm[2][3], pm[3][3]};
+    glMatrixMode( GL_PROJECTION );
+    glPushMatrix();
+    glLoadMatrixd( projection_matrix );
     Matrix3f m = localToGlobal->getValue().getRotationPart();
     GLfloat mv[] = { 
       m[0][0], m[1][0], m[2][0], 0,
@@ -223,7 +236,77 @@ void X3DBackgroundNode::render() {
     }
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
+    glMatrixMode( GL_PROJECTION );
+    glPopMatrix();
     glPopAttrib();
   }
+}
+
+void X3DBackgroundNode::renderBackground(){
+  render_enabled = true;
+  // change projection matrix to shift the clip and far clip distance without
+  // changing the fov and aspect ratio
+  H3DDouble pm[16];
+  glGetDoublev( GL_PROJECTION_MATRIX, pm );
+  //  row major layout in matrix m.
+  Matrix4d m(  pm[0], pm[4], pm[8],  pm[12],
+    pm[1], pm[5], pm[9],  pm[13],
+    pm[2], pm[6], pm[10], pm[14],
+    pm[3], pm[7], pm[11], pm[15]
+  );
+  H3DDouble clip_near = (m[3][3]+m[2][3])/(m[3][2]+m[2][2]);
+  H3DDouble clip_far  = (m[3][3]-m[2][3])/(m[3][2]-m[2][2]);
+  H3DDouble left, right, top, bottom;
+  
+  if( clip_near>0.01 || (clip_far < 0.051f && clip_far != -1) ) {
+    // background will be clip out from the frustum
+    if( m[3][3] == 0 ) { // perspective projection
+      // perspective projection in row major layout
+      // 2n/r-l , 0       ,  (r+l)/(r-l)  ,   0
+      // 0      , 2n/(t-b),  (t+b)/(t-b)  ,   0
+      // 0      , 0       , -(f+n)/(f-n) ,  -2fn/(f-n)
+      // 0      , 0       , -1          ,   0
+      right   = (2.0 * clip_near / m[0][0] + 2 * clip_near * m[0][2] / m[0][0])/2.0;
+      left    = right - 2 * clip_near / m[0][0];
+      top     = (2.0 * clip_near / m[1][1] + 2 * clip_near * m[1][2] / m[1][1])/2.0;
+      bottom  = top - 2 * clip_near / m[1][1];
+      // scale the left right top bottom accordingly.
+      right = right*0.01/clip_near;
+      left = left*0.01/clip_near;
+      top = top*0.01/clip_near;
+      bottom = bottom*0.01/clip_near;
+      GLdouble A = (right+left)/(right - left );
+      GLdouble B = (top+bottom)/(top-bottom);
+      clip_near = 0.01;
+      clip_far = 0.1;
+      GLdouble C = -(clip_far + clip_near)/(clip_far-clip_near);
+      GLdouble D = -2.0 * clip_far * clip_near /(clip_far-clip_near);
+
+      pm[0] = 2* clip_near/(right-left);
+      pm[5] = 2*clip_near/(top - bottom);
+      pm[8] = A;
+      pm[9] = B;
+      pm[10] = C;
+      pm[14] = D;
+    } else {
+      // directly change the clip near and clip far value, as it will not affect
+      // the fov and aspect ratio
+      clip_near = 0.01;
+      clip_far = 0.1;
+      GLdouble C = -2/(clip_far-clip_near);
+      GLdouble tz = -(clip_far + clip_near) / (clip_far-clip_near);
+      pm[10] = C;
+      pm[14] = tz; 
+    }
+  }
+  projectionMatrix->setValue(Matrix4d(
+                                      pm[0],pm[4],pm[8],pm[12],
+                                      pm[1],pm[5],pm[9],pm[13],
+                                      pm[2],pm[6],pm[10],pm[14],
+                                      pm[3],pm[7],pm[11],pm[15]));
+  displayList->callList();
+
+  
+  render_enabled = false;
 }
 

@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////
 //    Copyright 2004-2013, SenseGraphics AB
 //
 //    This file is part of H3D API.
@@ -832,10 +832,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     calculateFarAndNearPlane( clip_far, clip_near, child_to_render, vp, true );
   }
 
-  if( background ) {
+ /* if( background ) {
     if( clip_near > 0.01f ) clip_near = 0.01f;
     if( clip_far < 0.051f && clip_far != -1 ) clip_far = 0.1f;
-  }
+  }*/
 
   // if using zfail shadow volume technique, far clip plane has to be at
   // infinity.
