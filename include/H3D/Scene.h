@@ -339,6 +339,7 @@ namespace H3D {
     /// Finds all the nodes of a given type (and optional name) by searching downwards from _node
     /// through all SFNode and MFNode fields.
     ///
+    /// \param[in]  _node      The node to start searching down from
     /// \param[out] _result    The list of nodes found matching the search criteria. The type of this parameter
     ///                        is used to define the type of nodes to search for. Only nodes that can be dynamically
     ///                        cast to NodeType will be included in the results.
@@ -356,16 +357,16 @@ namespace H3D {
     /// \code
     /// // Find all Shape nodes in a scene
     /// AutoRefVector<Shape> shapes;
-    /// scene->findNodes ( shapes );
+    /// Scene::findNodes ( scene, shapes );
     ///
     /// // Find all Shape node with name "MyShape"
     /// AutoRefVector<Shape> shapes;
-    /// scene->findNodes ( shapes, "MyShape" );
+    /// Scene::findNodes ( scene, shapes, "MyShape" );
     ///
     /// // Find all Material nodes and their parents and display them
     ///  AutoRefVector<Material> materials;
     ///  Node::NodeParentsMap parents;
-    ///  scene->findNodes ( materials, "", &parents );
+    ///  Scene::findNodes ( scene, materials, "", &parents );
     ///
     ///  for ( AutoRefVector<Material>::const_iterator i= materials.begin(); i != materials.end(); ++i ) {
     ///    Console(4) << *i << " " << (*i)->getName() << endl;
@@ -384,11 +385,11 @@ namespace H3D {
     /// search_fields["Anchor"].push_back ( "children" );
     /// search_fields["Shape"].push_back ( "appearance" );
     /// search_fields["Appearance"].push_back ( "material" );
-    /// scene->findNodes ( materials, "", NULL, &search_fields );
+    /// Scene::findNodes ( scene, materials, "", NULL, &search_fields );
     /// \endcode
     ///
     template < typename NodeType >
-    void findNodes ( 
+    static void findNodes ( 
       Node& _node,
       AutoRefVector<NodeType>& _result, 
       const std::string& _nodeName= "",
@@ -423,7 +424,7 @@ namespace H3D {
 
       for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
            db->fieldDBEnd() != i; i++ ) {
-        Field *f = i.getField( this ); 
+        Field *f = i.getField( &_node ); 
    
         if( f ) {
           if ( f->getAccessType() != Field::INPUT_ONLY ) {
