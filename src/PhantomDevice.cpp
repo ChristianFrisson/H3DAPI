@@ -216,7 +216,6 @@ void PhantomDevice::Calibrate::onValueChange( const bool &value ) {
 
 void PhantomDevice::postInit() {
 #ifdef HAVE_OPENHAPTICS
-	//setHapticsRenderer( 0 );
   if( hapi_device.get() && !started_scheduler ) {
     render_shapes_called++;
     if( nr_initialized_devices == render_shapes_called ) {

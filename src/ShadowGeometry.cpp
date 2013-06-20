@@ -504,11 +504,11 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
   if( point_light ) {
     lightParam->setValue( point_light->location->getValue() );
     point_light_shader->preRender();
-    point_light_shader->render();
+		point_light_shader->displayList->callList();
   } else if( dir_light ) {
     lightParam->setValue( dir_light->direction->getValue() );
     dir_light_shader->preRender();
-    dir_light_shader->render();
+		dir_light_shader->displayList->callList();
   }
 
   // draw shadow geometry using vertex arrays
