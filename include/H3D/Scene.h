@@ -331,8 +331,7 @@ namespace H3D {
     H3D::Node* findChildNode(H3D::Group *group, const std::string &nodeType, const std::string &nodeName="");
 
     /// Top down search for a node with a certain nodeType and optional name starting from node passed as argument
-    H3D::Node* findNodeType(H3D::Node *node, const std::string &nodeType, const std::string &nodeName="");
-
+    H3D::Node* findNodeType(H3D::Node *node, const std::string &nodeType, const std::string &nodeName="" );
     typedef std::map < Node*, AutoRefVector<Node> > NodeParentsMap;
     typedef std::map < std::string,std::vector < std::string > > SearchFieldNameMap;
 
@@ -357,16 +356,16 @@ namespace H3D {
     /// \code
     /// // Find all Shape nodes in a scene
     /// AutoRefVector<Shape> shapes;
-    /// Scene::findNodes ( scene, shapes );
+    /// Scene::findNodes ( *scene, shapes );
     ///
     /// // Find all Shape node with name "MyShape"
     /// AutoRefVector<Shape> shapes;
-    /// Scene::findNodes ( scene, shapes, "MyShape" );
+    /// Scene::findNodes ( *scene, shapes, "MyShape" );
     ///
     /// // Find all Material nodes and their parents and display them
     ///  AutoRefVector<Material> materials;
-    ///  Node::NodeParentsMap parents;
-    ///  Scene::findNodes ( scene, materials, "", &parents );
+    ///  Scene::NodeParentsMap parents;
+    ///  Scene::findNodes ( *scene, materials, "", &parents );
     ///
     ///  for ( AutoRefVector<Material>::const_iterator i= materials.begin(); i != materials.end(); ++i ) {
     ///    Console(4) << *i << " " << (*i)->getName() << endl;
@@ -379,13 +378,13 @@ namespace H3D {
     ///
     /// // Find all Material nodes, but only search through specific fields
     /// AutoRefVector<Material> materials;
-    /// Node::SearchFieldNameMap search_fields;
+    /// Scene::SearchFieldNameMap search_fields;
     /// search_fields["Scene"].push_back ( "sceneRoot" );
     /// search_fields["Group"].push_back ( "children" );
     /// search_fields["Anchor"].push_back ( "children" );
     /// search_fields["Shape"].push_back ( "appearance" );
     /// search_fields["Appearance"].push_back ( "material" );
-    /// Scene::findNodes ( scene, materials, "", NULL, &search_fields );
+    /// Scene::findNodes ( *scene, materials, "", NULL, &search_fields );
     /// \endcode
     ///
     template < typename NodeType >
@@ -439,7 +438,7 @@ namespace H3D {
               Node* c= sf_node->getValue();
               if ( c ) {
                 if ( _verbose ) {
-                  Console(4) << "Node::findNodes(): " << getName() << " -> " << f->getName() << endl;
+                  Console(4) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
                 }
                 findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _verbose, &_node );
               }
@@ -449,7 +448,7 @@ namespace H3D {
                 Node* c= *i;
                 if ( c ) {
                   if ( _verbose ) {
-                    Console(4) << "Node::findNodes(): " << getName() << " -> " << f->getName() << endl;
+                    Console(4) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
                   }
                   findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _verbose, &_node );
                 }
