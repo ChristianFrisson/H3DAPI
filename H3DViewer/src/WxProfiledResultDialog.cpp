@@ -109,29 +109,10 @@ WxProfiledResultDialog::WxProfiledResultDialog ( wxWindow *parent,
   test = 0;
   
   s =  *H3D::Scene::scenes.begin();
-  //// redirect the console to logText wxTextCtrl.
-  //console_stream_buf = new ConsoleStreamBuf( logText );
-  //console_stream.reset( new ostream( console_stream_buf ) );
-  //H3DUtil::Console.setOutputStream( *console_stream );
-
-  //// redirect the cout, cerr to logText wxTextCtrl so sofa output can be redirected to wxDialog
-  //orig_cout_buf = cout.rdbuf(); 
-  //orig_cerr_buf = cerr.rdbuf();
-  //cout.rdbuf(console_stream_buf);
-  //cerr.rdbuf(console_stream_buf);
 }
 
 WxProfiledResultDialog::~WxProfiledResultDialog() {
-  // restore cout and cerr
-  //cout.rdbuf(orig_cout_buf);
-  //cerr.rdbuf(orig_cerr_buf);
-
-  //// The contained buffer is not deleted, set a new buffer and delete
-  //// buffer to clear up memory.
-  //streambuf * tmp_buf = console_stream->rdbuf(NULL);
-  //
-  //console_stream.reset( NULL );
-  //delete tmp_buf;
+  delete clip_board;
 }
 
 /*******************Event Table*********************/
@@ -140,8 +121,6 @@ BEGIN_EVENT_TABLE(WxProfiledResultDialog, wxDialog)
   EVT_BUTTON (wxID_CLEAR, WxProfiledResultDialog::OnConsoleClear)
   EVT_BUTTON (wxID_ANY,   WxProfiledResultDialog::OnCopyToClipboard)
   EVT_IDLE (WxProfiledResultDialog::OnIdle)
-  /*EVT_SCROLL(WxProfiledResultDialog::OnScrollbar)*/
-  //EVT_PAINT(WxProfiledResultDialog::OnPaint)
   
 END_EVENT_TABLE()
 
@@ -162,17 +141,7 @@ void WxProfiledResultDialog::OnCopyToClipboard(wxCommandEvent &event){
       copied = true;
       clip_board->Close();
     }
-    /*if(!copied){
-      ::wxMessageBox("The clipboard copy failed", "Error", wxICON_ERROR | wxCENTRE);
-    }*/
   }
-}
-
-void WxProfiledResultDialog::OnTextChange(wxCommandEvent &event)
-{
-  
-  std::cout<<"changed"<<std::endl;
-  //WxProfiledResultDialog::logText->SetValue("chagned");
 }
 
 void WxProfiledResultDialog::OnConsoleClear(wxCommandEvent &event) {
@@ -184,15 +153,6 @@ void WxProfiledResultDialog::OnScrollbar(wxScrollEvent& event){
 }
 
 void WxProfiledResultDialog::OnPaint(wxPaintEvent &evetn){
-  //wxBufferedPaintDC dc(this);
-  //wxSize sz = GetClientSize();
-  ///*dc.DrawText(output,10,10);*/
-  //output.Alloc(1000);
-  ////std::cout<<"output value"<<std::endl;
-  //output =  s->profiledResult->getValueAsString();
-  //
-  //logText->SetValue(output);
-  //std::cout<<"paint"<<std::endl;
 }
 void WxProfiledResultDialog::OnIdle(wxIdleEvent &event) {
 
