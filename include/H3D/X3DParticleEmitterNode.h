@@ -83,7 +83,7 @@ namespace H3D {
                             Inst< SFFloat > _mass        = 0,
                             Inst< SFFloat > _surfaceArea = 0 );
 
-    class Particle {
+    class H3DAPI_API Particle {
     public:
       typedef enum {
         LINE,
