@@ -216,6 +216,7 @@ void PlaybackDevice::OnPlay::onNewValue( const bool& new_value ) {
     }
 
     if ( new_value ) {
+      node->default_values_changed->upToDate();
       d->startPlayback();
     } else {
       d->stopPlayback();
