@@ -176,7 +176,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   depthBufferType->addValidValue( "DEPTH32F" );
   depthBufferType->addValidValue( "DEPTH_STENCIL" );
   depthBufferType->addValidValue( "DEPTH24_STENCIL8" );
-  depthBufferType->setValue( "DEPTH" );
+  depthBufferType->setValue( "DEPTH24_STENCIL8" );
   update->addValidValue( "NONE" );
   update->addValidValue( "NEXT_FRAME_ONLY" );
   update->addValidValue( "ALWAYS" );
@@ -1470,14 +1470,27 @@ void FrameBufferTextureGenerator::setRenderCallback( RenderCallbackFunc func,
 
 void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h){
+    GLenum error = glGetError();
+    if( error!=GL_NO_ERROR ) {
+      Console(4)<<"Before depth buffer blit, opengl error occur:"<<gluErrorString(error)<<std::endl;
+    }
     glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src );
     glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
     glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
       GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+    error = glGetError();
+    if( error!=GL_NO_ERROR ) {
+      Console(4)<<"While blit depth buffer, opengl error occur:"<<gluErrorString(error)<<std::endl
+                <<"Make sure the depth buffer type match."<<std::endl;
+    }
 }
 
 void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h, int src_index, int dst_index){
+    GLenum error = glGetError();
+    if( error!=GL_NO_ERROR ) {
+      Console(4)<<"Before color buffer blit, opengl error occur:"<<gluErrorString(error)<<std::endl;
+    }
     glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src);
     glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
     if( src_index == -1 ) {
@@ -1488,4 +1501,7 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
     glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + dst_index );
     glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 
                           0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    if( error!=GL_NO_ERROR ) {
+      Console(4)<<"While blit color buffer, opengl error occur:"<<gluErrorString(error)<<std::endl;
+    }
 }
