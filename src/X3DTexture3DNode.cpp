@@ -107,7 +107,7 @@ string X3DTexture3DNode::SFImage::getValueAsString( const string& separator) {
             intval = intval << 8;
             intval = intval | data[i];
           }
-          delete data;
+          delete [] data;
           ss<< separator << intval;
         }
       }

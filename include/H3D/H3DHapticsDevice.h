@@ -135,6 +135,7 @@ namespace H3D {
     ///
     class H3DAPI_API TrackerPosition: 
       public TypedField< SFVec3f, Types< SFMatrix4f, SFVec3f > > {
+		protected:
       
       /// value = positionCalibration * devicePosition.
       virtual void update() {
@@ -189,6 +190,7 @@ namespace H3D {
     ///
     class H3DAPI_API TrackerOrientation: 
       public TypedField< SFRotation, Types< SFRotation, SFRotation > > {
+		protected:
 
       virtual void update() {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice *>(owner);
