@@ -171,6 +171,18 @@ namespace H3D {
       throw glTexImageFunctionNotDefined( "", H3D_FULL_LOCATION ); 
     }
 
+    /// Create a new Image object which contains the result of 
+    /// rendering this texture.
+    ///
+    /// The image is obtained by rendering the texture to a FBO
+    /// and reading it into the image using glReadPixels.
+    ///
+    /// \param _width The width of the Image to create
+    /// \param _height The height of the Image to create
+    /// \return A new Image instance, or NULL on failure.
+    ///
+    Image* renderToImage ( H3DInt32 _width, H3DInt32 _height );
+
     /// This is the default value for the GlobalSettings::loadTexturesInThread
     /// field.
     /// If set to true the default behaviour is that all images that are read

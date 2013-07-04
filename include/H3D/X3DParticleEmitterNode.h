@@ -94,6 +94,10 @@ namespace H3D {
         GEOMETRY
       } ParticleType;
 
+      /// Base class for user defined data stored with each particle
+      struct UserData {
+      };
+
       /// Constructor.
       Particle( const Vec3f &_position = Vec3f( 0, 0, 0 ),
                 const Vec3f &_velocity = Vec3f( 0, 0, 0 ),
@@ -107,7 +111,8 @@ namespace H3D {
         time_lived( 0 ),
         size( _size ),
         geometry( NULL ),
-        distance_from_viewer( 0 ) {}
+        distance_from_viewer( 0 ),
+        user_data ( NULL ) {}
       
       inline void updateParticle( const Matrix4f &_global_to_local,
                                   Vec3f vp_pos_local,
@@ -157,6 +162,28 @@ namespace H3D {
         return distance_from_viewer > p.distance_from_viewer;
       }
 
+      /// Set user defined data to store with this particle
+      ///
+      /// The data is assumed to be allocted with new and is destroyed
+      /// when the particle is destroyed.
+      ///
+      void setUserData ( UserData* _data ) {
+        if ( _data != user_data ) {
+          delete user_data;
+          user_data= _data;
+        }
+      }
+
+      UserData* getUserData () const {
+        return user_data;
+      }
+
+      /// Called by the particle system before the particle is removed
+      void remove () {
+        delete user_data;
+        user_data= NULL;
+      }
+
       H3DFloat mass;
       H3DFloat surface_area;
       Vec3f position;
@@ -173,6 +200,8 @@ namespace H3D {
     protected:
       void renderTexCoord( const Vec3f &tc );
       void renderTexCoord( unsigned int i, X3DTextureCoordinateNode *tc );
+
+      UserData* user_data;
     };
  
     virtual void generateParticles( ParticleSystem *ps,

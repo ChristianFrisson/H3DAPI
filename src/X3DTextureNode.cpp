@@ -425,24 +425,19 @@ std::pair<H3DInt32,H3DInt32> X3DTextureNode::getDefaultSaveDimensions () {
   return std::pair<H3DInt32,H3DInt32> ( 512, 512 );
 }
 
-void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
-  X3DTextureNode* node= static_cast<X3DTextureNode*>(getOwner());
-
-#ifdef HAVE_FREEIMAGE
+Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height ) {
   X3D::DEFNodes dn;
   AutoRef<FrameBufferTextureGenerator> fbo ( 
     static_cast<FrameBufferTextureGenerator*>(X3D::createX3DNodeFromString ( save_to_url_x3d, &dn ).get() ) );
 
   // Set texture save dimensions
-  std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
-
-  fbo->height->setValue ( node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue() );
-  fbo->width->setValue  ( node->saveWidth->getValue()  == -1 ? default_size.first : node->saveWidth->getValue() );
+  fbo->height->setValue ( _height );
+  fbo->width->setValue  ( _width );
 
   Appearance* app= NULL;
   dn.getNode ( "APP", app );
 
-  app->texture->setValue ( getOwner() );
+  app->texture->setValue ( this );
   fbo->update->setValue ( "NEXT_FRAME_ONLY" );
   fbo->displayList->callList();
 
@@ -454,7 +449,7 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
     int bpp = 32;
 
     // Create container for image data, then bind buffer and read from it.
-    AutoRef<Image> image ( new PixelImage ( buffer_width, buffer_height, 1, bpp, Image::BGRA, Image::UNSIGNED ) );
+    Image* image= new PixelImage ( buffer_width, buffer_height, 1, bpp, Image::BGRA, Image::UNSIGNED );
 
     // Save current FBO
     GLint previous_fbo_id;
@@ -466,6 +461,24 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
     // Restore previous FBO
     glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, previous_fbo_id );
 
+    return image;
+  }
+
+  return NULL;
+}
+
+void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
+  X3DTextureNode* node= static_cast<X3DTextureNode*>(getOwner());
+
+#ifdef HAVE_FREEIMAGE
+  // Set texture save dimensions
+  std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
+
+  AutoRef<Image> image ( node->renderToImage (
+    node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(),
+    node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue() ) );
+
+  if ( image.get() ) {
     node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
   }
 #else // HAVE_FREEIMAGE
