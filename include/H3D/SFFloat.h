@@ -40,8 +40,7 @@ namespace H3D {
   /// The SFFloat field contains one single-precision floating point number.
   class H3DAPI_API SFFloat: public SField< H3DFloat > {
   public:
-    SFFloat() {}
-    SFFloat( const H3DFloat &_value ): SField< H3DFloat >( _value ){}
+    SFFloat( const H3DFloat &_value = 0 ): SField< H3DFloat >( _value ){}
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFFLOAT; }
   };
 }

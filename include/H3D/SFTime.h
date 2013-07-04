@@ -38,8 +38,7 @@ namespace H3D {
   class H3DAPI_API SFTime: public TypedField< SFDouble, void, 
                                               AnyNumber< SFTime > > {
   public:
-    SFTime() {}
-    SFTime( const H3DTime &_value ) { value = _value; }
+    SFTime( const H3DTime &_value = 0 ) { value = _value; }
     virtual string getTypeName() { return classTypeName(); }
     static string classTypeName() { return "SFTime"; }
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFTIME; }

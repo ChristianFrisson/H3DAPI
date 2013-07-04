@@ -40,8 +40,7 @@ namespace H3D {
   /// The SFBool field contains a single boolean value.
   class H3DAPI_API SFBool: public SField< bool > {
   public:
-    SFBool() {}
-    SFBool( const bool &_value ): SField< bool >( _value ){}
+    SFBool( const bool &_value = false ): SField< bool >( _value ){}
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFBOOL; }
     
     /// Get the value of the field as a string.

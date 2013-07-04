@@ -40,8 +40,7 @@ namespace H3D {
   /// The SFDouble field contains one high-precision floating point number.
   class H3DAPI_API SFDouble: public SField< H3DDouble > {
   public:
-    SFDouble() {}
-    SFDouble( const H3DDouble &_value ): SField< H3DDouble >( _value ){}
+    SFDouble( const H3DDouble &_value = 0 ): SField< H3DDouble >( _value ){}
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFDOUBLE; }
   };
 }

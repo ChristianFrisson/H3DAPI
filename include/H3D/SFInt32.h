@@ -40,8 +40,7 @@ namespace H3D {
   /// The SFInt32 field contains one 32-bit integer.
   class H3DAPI_API SFInt32: public SField< H3DInt32 > {
   public:
-    SFInt32() {}
-    SFInt32( const H3DInt32 &_value ): SField< H3DInt32 >( _value ){}
+    SFInt32( const H3DInt32 &_value = 0 ): SField< H3DInt32 >( _value ){}
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFINT32; }
   };
 }
