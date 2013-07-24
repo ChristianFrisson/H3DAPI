@@ -511,7 +511,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     {
       MFVec2f *f = static_cast< MFVec2f * >( field );
       GLfloat *v = toFloatArray( f->getValue() );
-      glUniform3fvARB( location, f->size(), v );
+      glUniform2fvARB( location, f->size(), v );
       delete[] v;
       break;
     }
