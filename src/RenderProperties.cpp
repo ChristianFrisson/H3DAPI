@@ -42,6 +42,7 @@ H3DNodeDatabase RenderProperties::database(
 namespace RenderPropertiesInternals {
   FIELDDB_ELEMENT( RenderProperties, depthTestEnabled, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, depthBufferWriteEnabled, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( RenderProperties, depthFunc, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, colorBufferRedWriteEnabled, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, colorBufferGreenWriteEnabled, INPUT_OUTPUT );
   FIELDDB_ELEMENT( RenderProperties, colorBufferBlueWriteEnabled, INPUT_OUTPUT );
@@ -65,6 +66,7 @@ namespace RenderPropertiesInternals {
 RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
                                     Inst< DisplayList > _displayList,
                                     Inst< SFBool      > _depthTestEnabled,
+                                    Inst< SFString    > _depthFunc,
                                     Inst< SFBool      > _smoothShading,
                                     Inst< SFBool      > _multiPassTransparency,
                                     Inst< SFBool      > _depthBufferWriteEnabled,
@@ -86,6 +88,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
  ) :
   X3DAppearanceChildNode( _displayList, _metadata ),
   depthTestEnabled      ( _depthTestEnabled ),
+  depthFunc( _depthFunc ),
   smoothShading         ( _smoothShading ),
   multiPassTransparency( _multiPassTransparency ),
   depthBufferWriteEnabled( _depthBufferWriteEnabled ),
@@ -108,6 +111,17 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   database.initFields( this );
   
   depthTestEnabled->setValue( true );
+  depthFunc->addValidValue ( "NEVER" );
+  depthFunc->addValidValue ( "LESS" );
+  depthFunc->addValidValue ( "EQUAL" );
+  depthFunc->addValidValue ( "LEQUAL" );
+  depthFunc->addValidValue ( "GREATER" );
+  depthFunc->addValidValue ( "NOTEQUAL" );
+  depthFunc->addValidValue ( "GEQUAL" );
+  depthFunc->addValidValue ( "ALWAYS" );
+
+  depthFunc->setValue( "LESS" );
+
   smoothShading->setValue( true );
   multiPassTransparency->setValue( true );
   depthBufferWriteEnabled->setValue( true );
@@ -219,6 +233,7 @@ RenderProperties::RenderProperties( Inst< SFNode      >  _metadata,
   blendColor->setValue( RGBA( 0, 0, 0, 1 ) );
 
   depthTestEnabled->route( displayList );
+  depthFunc->route( displayList );
   smoothShading->route( displayList );
   multiPassTransparency->route( displayList );
   depthBufferWriteEnabled->route( displayList );
@@ -318,6 +333,32 @@ int RenderProperties::getAlphaFunc( const string &alpha_func_string,
   return 0;
 } 
 
+int RenderProperties::getDepthFunc( const string &depth_func_string, 
+  GLenum &depth_func ) {
+
+    if( depth_func_string == "NEVER" ) {
+      depth_func = GL_NEVER;
+    } else if( depth_func_string == "LESS" ) {
+      depth_func = GL_LESS;
+    } else if( depth_func_string == "EQUAL" ) {
+      depth_func = GL_EQUAL;
+    } else if( depth_func_string == "LEQUAL" ) {
+      depth_func = GL_LEQUAL;
+    } else if( depth_func_string == "GREATER" ) {
+      depth_func = GL_GREATER;
+    } else if( depth_func_string == "NOTEQUAL" ) {
+      depth_func = GL_NOTEQUAL;
+    } else if( depth_func_string == "GEQUAL" ) {
+      depth_func = GL_GEQUAL;
+    } else if( depth_func_string == "ALWAYS" ) {
+      depth_func = GL_ALWAYS;
+    } else {
+      return 1;
+    }
+
+    return 0;
+} 
+
 int RenderProperties::getBlendEquation( const string &equation_string, GLenum &equation ) {
   if( equation_string == "ADD" ) equation = GL_FUNC_ADD;
   else if( equation_string == "SUBTRACT" ) equation = GL_FUNC_SUBTRACT;
@@ -336,6 +377,19 @@ void RenderProperties::render() {
   } else {
     glDisable( GL_DEPTH_TEST );
   }
+
+  // depth test func
+
+  const string &depth_func = depthFunc->getValue();
+  GLenum gl_depth_func = GL_LESS;
+  if( getAlphaFunc( depth_func, gl_depth_func ) != 0 ) {
+    Console(4) << "Invalid value \"" << depth_func << "\" for depthFunc field in RenderProperties node. Using \"LESS\" instead." << endl;
+    gl_depth_func = GL_LESS;
+  }
+
+ 
+  glDepthFunc( gl_depth_func );
+
 
   if( smoothShading->getValue() ) {
     glShadeModel( GL_SMOOTH );

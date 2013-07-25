@@ -83,6 +83,7 @@ namespace H3D {
     RenderProperties( Inst< SFNode      >  _metadata   = 0 ,
                       Inst< DisplayList > _displayList      = 0,
                       Inst< SFBool      > _depthTestEnabled = 0,
+                      Inst< SFString    > _depthFunc = 0,
                       Inst< SFBool      > _smoothShading    = 0,
                       Inst< SFBool      > _multiPassTransparency = 0,
                       Inst< SFBool      > _depthBufferWriteEnabled = 0,
@@ -130,6 +131,19 @@ namespace H3D {
     /// 
     /// \dotfile RenderProperties_depthTestEnabled.dot 
     auto_ptr< SFBool >  depthTestEnabled;
+
+    /// The depthFunc field specifies if a alpha testing should be used and in
+    /// that case how the function should look. See
+    /// <a href="http://www.opengl.org/sdk/docs/man/xhtml/glDepthFunc.xml">opengl glDepthFunc reference</a>
+    /// for more information about each value.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> LESS \n
+    /// <b>Valid values:</b> NEVER, LESS, EQUAL, LEQUAL, GREATER, NOTEQUAL, \n
+    /// GEQUAL, ALWAYS \n
+    /// 
+    /// \dotfile RenderProperties_depthFunc.dot 
+    auto_ptr< SFString > depthFunc;
 
     /// The smoothShading field specifies if smooth shading of colors
     /// should be used. If true then
@@ -338,6 +352,7 @@ namespace H3D {
     int getDFactor( const string &dfactor_string, GLenum &dfactor );
     int getBlendEquation( const string &equation_string, GLenum &equation );
     int getAlphaFunc( const string &alpha_func_string, GLenum &alpha_func );
+    int getDepthFunc( const string &depth_func_string, GLenum &depth_func );
   };
 }
 
