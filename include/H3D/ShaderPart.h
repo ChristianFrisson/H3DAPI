@@ -122,6 +122,7 @@ namespace H3D {
   protected:
     /// The handle to the shader object used for this ShaderPart.
     GLhandleARB shader_handle;
+    GLhandleARB compileShaderPart();
   };
 }
 

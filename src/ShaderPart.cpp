@@ -78,15 +78,21 @@ GLhandleARB ShaderPart::compileShader() {
   if( shaderString->isUpToDate() ) {
     return shader_handle;
   } else {
+    return compileShaderPart();
+  }
+}
+
+GLhandleARB ShaderPart::compileShaderPart(){
+
     //PROFILE_START("shaderpart: compile");
     if( shader_handle ) {
       glDeleteObjectARB( shader_handle );
       shader_handle = 0;
     }
-    
+
     const string &s = shaderString->getValue();
     if( s == "" ) return 0;
-    
+
     const string &shader_type = type->getValue();
     if( shader_type == "FRAGMENT" ) {
       shader_handle = glCreateShaderObjectARB( GL_FRAGMENT_SHADER_ARB );
@@ -113,33 +119,33 @@ GLhandleARB ShaderPart::compileShader() {
     } else {
       shader_handle = 0;
       Console(3) << "Warning: Unsupported shader type \"" << shader_type
-                 << "\" in ShaderPart node. Must be either \"FRAGMENT\"," 
-                 << "\"VERTEX\", \"GEOMETRY\", \"TESS_CONTROL\" "
-                 << " or \"TESS_EVALUATION." << endl;
+        << "\" in ShaderPart node. Must be either \"FRAGMENT\"," 
+        << "\"VERTEX\", \"GEOMETRY\", \"TESS_CONTROL\" "
+        << " or \"TESS_EVALUATION." << endl;
       return shader_handle;
     }
-    
+
     const char * shader_string = s.c_str();
     glShaderSourceARB( shader_handle, 1, &shader_string, NULL );
     glCompileShaderARB( shader_handle );
-    
+
     GLint compile_success;
     glGetObjectParameterivARB( shader_handle,
-                               GL_OBJECT_COMPILE_STATUS_ARB,
-                               &compile_success );
+      GL_OBJECT_COMPILE_STATUS_ARB,
+      &compile_success );
     if( compile_success == GL_FALSE ) {
       GLint nr_characters;
       glGetObjectParameterivARB( shader_handle,
-                                 GL_OBJECT_INFO_LOG_LENGTH_ARB,
-                                 &nr_characters );
+        GL_OBJECT_INFO_LOG_LENGTH_ARB,
+        &nr_characters );
       GLcharARB *log = new GLcharARB[nr_characters];
       glGetInfoLogARB( shader_handle,
-                       nr_characters,
-                       NULL,
-                       log );
+        nr_characters,
+        NULL,
+        log );
       Console(3) << "Warning: Error when compiling shader source of \"" 
-                 << getName() << "\" node (" << url_used 
-                 << ")." << endl << log << endl;
+        << getName() << "\" node (" << url_used 
+        << ")." << endl << log << endl;
 
       glDeleteObjectARB( shader_handle );
       delete log;
@@ -147,7 +153,6 @@ GLhandleARB ShaderPart::compileShader() {
     }
     //PROFILE_END();
     return shader_handle;
-  }
 }
 
 bool ShaderPart::isCompiled () {
