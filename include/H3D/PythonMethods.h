@@ -158,6 +158,8 @@ namespace H3D {
 
     PyObject* pythonGetNamedNode( PyObject *self, PyObject *arg );
 
+    PyObject* pythonFieldGetTypeName( PyObject *self, PyObject *arg );
+
     /// addProgramSettings( field, setting_name = "", section = "" )
     PyObject* pythonAddProgramSetting( PyObject *self, PyObject *arg );
 /*

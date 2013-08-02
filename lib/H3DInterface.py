@@ -25,6 +25,9 @@ class Field:
     module = self.__class__.__dict__["__module__"]
     createField( self, auto_update, module + "." + self.__class__.__name__ )
 
+  def getTypeName(self):
+    return fieldGetTypeName( self )
+
   def route( self, dest ):
     return routeField( self, dest )
 

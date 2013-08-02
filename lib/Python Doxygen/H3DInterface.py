@@ -25,6 +25,11 @@ class Field:
     module = self.__class__.__dict__["__module__"]
     createField( self, auto_update, module + "." + self.__class__.__name__ )
 
+  ## Returns the X3D type of the field as a string, e.g. "SFString" 
+  ## or "MFInt32"
+  def getTypeName(self):
+    return fieldGetTypeName( self )
+
   ## Set up a route from this field to another field. The function will
   ## generate an event to the destination field.
   ## \param dest The field to route to.

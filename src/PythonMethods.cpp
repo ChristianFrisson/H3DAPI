@@ -628,6 +628,7 @@ if( check_func( value ) ) { \
       { "getHapticsDevice", pythonGetHapticsDevice, 0 },
       { "getNrHapticsDevices", pythonGetNrHapticsDevices, 0 },
       { "getNamedNode", pythonGetNamedNode, 0 },
+      { "fieldGetTypeName", pythonFieldGetTypeName, 0 },
       { "addProgramSetting", pythonAddProgramSetting, 0 },
       { NULL, NULL }      
     };
@@ -1966,6 +1967,38 @@ call the base class __init__ function." );
       return 0;  
     }
 
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject *pythonFieldGetTypeName( PyObject *self, PyObject *arg ) {
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                 "Invalid argument(s) to function H3D.fieldGetTypeName( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      Py_DECREF( py_field_ptr );
+      
+      if( field_ptr ) { 
+        bool success;
+        string type_name = field_ptr->getTypeName();
+	return PyString_FromString( type_name.c_str() );	
+      } else {
+	PyErr_SetString( PyExc_ValueError, 
+			 "Error: Field NULL pointer" );
+	return 0;  
+      }
+    }
 
     PyObject *pythonResolveURLAsFile( PyObject *self, PyObject *args ) {
 

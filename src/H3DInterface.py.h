@@ -59,6 +59,9 @@ class Field:\n\
     module = self.__class__.__dict__[\"__module__\"]\n\
     createField( self, auto_update, module + \".\" + self.__class__.__name__ )\n\
 \n\
+  def getTypeName(self):\n\
+    return fieldGetTypeName( self )\n\
+\n\
   def route( self, dest ):\n\
     return routeField( self, dest )\n\
 \n\
