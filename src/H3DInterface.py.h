@@ -100,6 +100,12 @@ class SField( Field ):\n\
   def getValue( self ):\n\
     return getFieldValue( self )\n\
 \n\
+  def setValueFromString( self, value ):\n\
+    setFieldValueFromString( self, value )\n\
+\n\
+  def getValueAsString( self ):\n\
+    return getFieldValueAsString( self )\n\
+\n\
 class MField( Field ):\n\
   type = UNKNOWN_X3D_TYPE\n\
   def setValue( self, value ):\n\
@@ -107,6 +113,12 @@ class MField( Field ):\n\
 \n\
   def getValue( self ):\n\
     return getFieldValue( self )\n\
+\n\
+  def setValueFromString( self, value ):\n\
+    setFieldValueFromString( self, value )\n\
+\n\
+  def getValueAsString( self ):\n\
+    return getFieldValueAsString( self )\n\
 \n\
   def push_back( self, v ):\n\
     pushBackElementInMField( self, v ) \n\

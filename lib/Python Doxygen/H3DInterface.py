@@ -92,6 +92,14 @@ class SField( Field ):
   def getValue( self ):
     return getFieldValue( self )
 
+  ## Set the value of the field from a string.
+  def setValueFromString( self, value ):
+    setFieldValueFromString( self, value )
+
+  ## Get the value of the field as a string.
+  def getValueAsString( self ):
+    return getFieldValueAsString( self )
+
 ## Base class for all Field types that contain a multiple values of a 
 ## specified type. 
 class MField( Field ):
@@ -108,6 +116,16 @@ class MField( Field ):
   def getValue( self ):
     return getFieldValue( self )
 
+  ## Set the value of the field.
+  ## \param value The value is a list of strings.
+  def setValueFromString( self, value ):
+    setFieldValue( self, value )
+
+  ## Returns the value of this field.
+  ## The returned value is a list of strings.
+  def getValueAsString( self ):
+    return getFieldValueAsString( self )
+    
   ## Add a value to the end of the list of values.
   ## \param v The value to add.
   def push_back( self, v ):

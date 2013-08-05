@@ -154,6 +154,17 @@ f = new PythonField< AutoUpdate< field_type > >( field );
                        field, value ) \
 return from_func( static_cast< field_type * >( field )->getValue() ); 
 
+	    // Macro used by pythonGetFieldValueAsString to get the value of a SField.
+#define GET_SFIELD_ASSTRING( check_func, value_func, from_func, \
+                       value_type, field_type, \
+                       field, value ) \
+  ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
+  if( !pfield_ptr ) { \
+    PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
+    return 0; \
+  } \
+  return PyFunctions::H3DPyString_FromString(  pfield_ptr->getValueAsString() );
+
     // Macro used by pythonGetFieldValue to get the value of a MField.
 #define GET_MFIELD( check_func, value_func, from_func, \
                        value_type, field_type, \
@@ -166,6 +177,16 @@ return from_func( static_cast< field_type * >( field )->getValue() );
   } \
   return list;
 
+//    // Macro used by pythonGetFieldValueAsString to get the value of a MField.
+#define GET_MFIELD_ASSTRING( check_func, value_func, from_func, \
+                       value_type, field_type, \
+                       field, value ) \
+  ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
+  if( !pfield_ptr ) { \
+    PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
+    return 0; \
+  } \
+  return PyFunctions::H3DPyString_FromString(  pfield_ptr->getValueAsString() );
 
     // Macro used by pythonMFieldEmpty.
 #define MFIELD_EMPTY( check_func, value_func, from_func, \
@@ -259,6 +280,25 @@ if( check_func( value ) ) { \
   return 0;                                                         \
 } 
 
+    // Macro used by pythonSetFieldValueFromString to set the value of a SField.
+#define SET_SFIELD_FROMSTRING( check_func, value_func, from_func, \
+                       value_type, field_type, \
+                       field, value ) \
+if( PyString_Check( value ) ) { \
+  ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
+  if( !pfield_ptr ) { \
+    PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
+    return 0; \
+  } \
+  Py_BEGIN_ALLOW_THREADS \
+  pfield_ptr->setValueFromString( ( string )PyString_AsString( value ) ); \
+  Py_END_ALLOW_THREADS \
+} else {                                                            \
+  PyErr_SetString( PyExc_ValueError,                                \
+                   "Invalid argument type to setValueFromString() function " ); \
+  return 0;                                                         \
+} 
+
     // Macro used by pythonSetFieldValue to set the value of a SField.
 #define SET_MFIELD( check_func, value_func, from_func, \
                        value_type, field_type, \
@@ -281,6 +321,25 @@ if( check_func( value ) ) { \
     }                                                          \
   }                                                          \
   static_cast<field_type *>(field)->setValue(fv);                  
+
+    // Macro used by pythonSetFieldValueFromString to set the value of a SField.
+#define SET_MFIELD_FROMSTRING( check_func, value_func, from_func, \
+                       value_type, field_type, \
+                       field, value ) \
+  if( PyString_Check( value ) ) { \
+    ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
+    if( !pfield_ptr ) { \
+      PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
+      return 0; \
+    } \
+    Py_BEGIN_ALLOW_THREADS \
+    pfield_ptr->setValueFromString( ( string )PyString_AsString( value ) ); \
+    Py_END_ALLOW_THREADS \
+  } else { \
+      PyErr_SetString( PyExc_ValueError,                                \
+                     "Invalid argument type to setValueFromString() function " ); \
+      return 0;                                                         \
+  } 
 
 
     // This macro is used in order to apply some macro where the values
@@ -586,6 +645,8 @@ if( check_func( value ) ) { \
       { "createField", pythonCreateField, 0 },
       { "setFieldValue", pythonSetFieldValue, 0 },
       { "getFieldValue", pythonGetFieldValue, 0 },
+      { "setFieldValueFromString", pythonSetFieldValueFromString, 0 },
+      { "getFieldValueAsString", pythonGetFieldValueAsString, 0 },
       { "getFieldAccessType", pythonGetFieldAccessType, 0 },
       { "routeField", pythonRouteField, 0 },
       { "routeFieldNoEvent", pythonRouteFieldNoEvent, 0 },
@@ -961,14 +1022,56 @@ call the base class __init__ function." );
       Py_DECREF( py_field_ptr );
 
       PyObject *v = PyTuple_GetItem( args, 1 );
-      //const char *value = PyString_AsString( PyObject_Repr( v ) );
-      //ParsableField *pf = static_cast< ParsableField* >(field_ptr);
       return PythonInternals::pythonSetFieldValueFromObject( field_ptr, v );
     }
     
     /////////////////////////////////////////////////////////////////////////
 
-    PyObject *pythonGetFieldValue( PyObject *self, PyObject *arg ) {
+    PyObject *pythonSetFieldValueFromString( PyObject *self, PyObject *args ) {
+      if( !args || ! PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument(s) to function H3D.setFieldValueFromString( self, value )" );
+        return 0;
+      }
+  
+      PyObject *field = PyTuple_GetItem( args, 0 );
+      if( ! PyInstance_Check( field ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid Field type given as argument to H3D.setFieldValueFromString( self, value )" );
+        return 0;
+      }
+      PyObject *py_field_ptr = PyObject_GetAttrString( field, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      Py_DECREF( py_field_ptr );
+
+      PyObject *v = PyTuple_GetItem( args, 1 );
+
+      if( field_ptr ) { 
+        bool success;
+        APPLY_SFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, SET_SFIELD_FROMSTRING, success );
+        if( !success )
+          APPLY_MFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, SET_MFIELD_FROMSTRING, success );
+        if( !success ) {
+          PyErr_SetString( PyExc_ValueError, 
+                           "Error: not a valid Field instance" );
+          return 0;  
+        }
+      }
+      Py_INCREF(Py_None);
+      return Py_None;
+    }
+    
+    /////////////////////////////////////////////////////////////////////////
+
+	PyObject *pythonGetFieldValue( PyObject *self, PyObject *arg ) {
       if(!arg || ! PyInstance_Check( arg ) ) {
         PyErr_SetString( PyExc_ValueError, 
                          "Invalid argument(s) to function H3D.getFieldValue( self )" );
@@ -994,6 +1097,45 @@ call the base class __init__ function." );
         APPLY_SFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_SFIELD, success );
         if( !success )
           APPLY_MFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_MFIELD, success );
+        if( !success ) {
+           PyErr_SetString( PyExc_ValueError, 
+                           "Error: not a valid Field instance" );
+          return 0;  
+        }
+      }
+      PyErr_SetString( PyExc_ValueError, 
+                       "Error: Field NULL pointer" );
+      return 0;  
+    }
+    
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject *pythonGetFieldValueAsString( PyObject *self, PyObject *arg ) {
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument(s) to function H3D.getFieldValue( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      
+      Py_DECREF( py_field_ptr );
+
+	  if( field_ptr ) {
+		bool success;
+        APPLY_SFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_SFIELD_ASSTRING, success );
+        if( !success )
+          APPLY_MFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_MFIELD_ASSTRING, success );
         if( !success ) {
            PyErr_SetString( PyExc_ValueError, 
                            "Error: not a valid Field instance" );

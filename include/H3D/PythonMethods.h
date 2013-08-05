@@ -76,7 +76,11 @@ namespace H3D {
 
     PyObject *pythonGetFieldValue( PyObject *self, PyObject *arg );
 
-    PyObject *pythonGetFieldAccessType( PyObject *self, PyObject *arg );
+    PyObject *pythonSetFieldValueFromString( PyObject *self, PyObject *args );
+
+	PyObject *pythonGetFieldValueAsString( PyObject *self, PyObject *arg );
+
+	PyObject *pythonGetFieldAccessType( PyObject *self, PyObject *arg );
 
     PyObject *pythonRouteField( PyObject *self, PyObject *args );
 
