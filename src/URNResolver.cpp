@@ -82,7 +82,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     pos = line.find( ' ', characters_processed );
     string::size_type tab_pos = line.find( '\t', characters_processed );
     
-    if( pos == string::npos && pos == string::npos )
+    if( pos == string::npos )
       Console(3) << "Invalid urn spec" << endl;
     
     pos = pos < tab_pos ? pos: tab_pos;

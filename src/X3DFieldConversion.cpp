@@ -181,7 +181,7 @@ unsigned char * X3D::Convert::readImageData( const char *s,
   int nr_pixels = width * height * depth;
 
   unsigned char *data = new unsigned char[ nr_pixels * nr_components ];
-  int x, y, z;
+  int x = 0, y = 0, z = 0;
   for( z = 0; z < depth; z++ )
     for( y = 0; y < height; y++ )
       for( x = 0; x < width; x++ ) {

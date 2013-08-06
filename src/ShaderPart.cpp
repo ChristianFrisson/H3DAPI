@@ -148,7 +148,7 @@ GLhandleARB ShaderPart::compileShaderPart(){
         << ")." << endl << log << endl;
 
       glDeleteObjectARB( shader_handle );
-      delete log;
+      delete [] log;
       shader_handle = 0;
     }
     //PROFILE_END();

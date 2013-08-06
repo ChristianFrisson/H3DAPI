@@ -389,7 +389,7 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
                << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
                << endl << log << endl;
     glDeleteObjectARB( program_handle );
-    delete log;
+    delete [] log;
 
     return 0;
   }

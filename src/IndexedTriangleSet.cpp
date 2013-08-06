@@ -546,7 +546,7 @@ void IndexedTriangleSet::AutoTangent::update() {
     }
   }
 
-  if( have_tangents_in_attrib && have_tangents_in_attrib ) {
+  if( have_tangents_in_attrib ) {
     value.clear();
     return;
   }
