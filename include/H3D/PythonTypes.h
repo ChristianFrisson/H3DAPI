@@ -97,8 +97,8 @@
 ///   - getCurrentScenes() - returns a list of all currently instantiated
 ///     Scene instances.
 /// - Resource resolver - access to the %H3D API ResourceResolver
-///   - resolverURLAsFile( file )
-///   - resolverURLAsFolder( file )
+///   - resolveURLAsFile( file )
+///   - resolveURLAsFolder( file )
 /// - Other functions - various other functions
 ///   - throwQuitAPIException() - Can be used to quit H3DLoad.
 ///   - createNode( node_type ) - Create a node with a type name given by a string argument.

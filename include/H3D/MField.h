@@ -176,26 +176,27 @@ namespace H3D {
     /// equal to s; otherwise, capacity() is unchanged. In either case, 
     /// size() is unchanged.
     /// 
-    inline void reserve( size_t s ) { 
+    inline void reserve( size_type s ) { 
       this->upToDate();
       value.reserve( s ); 
     }
 
     /// Inserts or erases elements at the end such that the size becomes n.
-    inline  void resize( size_t n, Type t = Type(), int id = 0 ) { 
+    inline void resize( size_type n, Type t = Type(), int id = 0 ) { 
       this->checkAccessTypeSet( id );
       this->upToDate();
-      value.resize( n ); 
+      value.resize( n );
       this->startEvent();
     }
 
     /// true if the vector's size is 0.
-    inline  bool empty() { 
+    inline bool empty() { 
       this->upToDate();
-      return value.empty(); 
+      return value.empty();
     }
+
     /// Returns the n'th element.
-    inline  const_reference operator[](size_type n ) {
+    inline const_reference operator[](size_type n ) {
       // check that we have the correct access type
       this->checkAccessTypeGet( 0 );
       this->upToDate();
@@ -203,7 +204,7 @@ namespace H3D {
     }
 
     /// Returns the first element.
-    inline  const_reference front( int id = 0 ) { 
+    inline const_reference front( int id = 0 ) { 
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
@@ -211,7 +212,7 @@ namespace H3D {
     }
 
     /// Returns the last element.
-    inline  const_reference back( int id = 0 ) {
+    inline const_reference back( int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
       this->upToDate();
@@ -219,7 +220,7 @@ namespace H3D {
     }
 
     /// Swaps the contents of two vectors.
-    inline  void swap( VectorClass &x, int id = 0 ) {
+    inline void swap( VectorClass &x, int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeSet( id );
       this->checkAccessTypeGet( id );
@@ -247,7 +248,7 @@ namespace H3D {
     }
 
     /// Erases all of the elements.
-    inline  void clear( int id = 0 ) {
+    inline void clear( int id = 0 ) {
       // check that we have the correct access type
       this->checkAccessTypeSet( id );
       value.clear();

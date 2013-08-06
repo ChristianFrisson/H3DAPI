@@ -99,9 +99,9 @@ void H3DImageObject::SFImage::setPixel( const Vec3f &tc,
     if( x < 0 ) x = 0;
     if( y < 0 ) y = 0;
     if( z < 0 ) z = 0;
-    if( x >= width ) x = width - 1;
-    if( y >= height ) x = height - 1;
-    if( z >= depth ) x = depth - 1;
+    if( x >= width ) x = H3DFloat( width - 1 );
+    if( y >= height ) x = H3DFloat( height - 1 );
+    if( z >= depth ) x = H3DFloat( depth - 1 );
   
     // set the pixel to new value
     setPixel( (unsigned int) x, (unsigned int) y, (unsigned int) z, color );

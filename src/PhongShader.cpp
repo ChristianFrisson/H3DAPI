@@ -1112,7 +1112,7 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
    // by OpenGL implementation.
    if( lights_have_changed ) {
      current_light_node_transforms.clear();
-     for( int i = max_lights; i < current_nr_lightsources; i++ ) {
+     for( unsigned int i = max_lights; i < current_nr_lightsources; i++ ) {
        current_light_node_transforms.push_back( new SFMatrix4f );
      }
    } 
@@ -1144,7 +1144,7 @@ string PhongShader::setupLight( X3DLightNode *light,
   DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );
   PointLight *point_light = dynamic_cast< PointLight * >( light );
 
-  if( index < max_lights ) {
+  if( index < (unsigned int)max_lights ) {
     s << "      gl_LightSourceParameters light = gl_LightSource[" << index << "];" << endl;
   } else {
     // we are using more lightsources than there are support for in fixed function
