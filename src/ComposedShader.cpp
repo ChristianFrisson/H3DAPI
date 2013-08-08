@@ -96,9 +96,9 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   geometryInputType->addValidValue( "LINES_ADJACENCY");
   geometryInputType->setValue( "TRIANGLES" );
 
-  geometryOutputType->setValue( "POINTS" );
-  geometryOutputType->setValue( "LINE_STRIP" );
-  geometryOutputType->setValue( "TRIANGLE_STRIP" );
+  geometryOutputType->addValidValue( "POINTS" );
+  geometryOutputType->addValidValue( "LINE_STRIP" );
+  geometryOutputType->addValidValue( "TRIANGLE_STRIP" );
 
   geometryOutputType->setValue( "TRIANGLE_STRIP" );
 
