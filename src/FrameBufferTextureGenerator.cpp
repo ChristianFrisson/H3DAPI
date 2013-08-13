@@ -242,7 +242,7 @@ void FrameBufferTextureGenerator::initialize()
   
 
   // initialize all necessary color buffer init warning message printed flag to false
-  for( int i = 0; i < colorBufferStorages->getValue().size()+1; i++ ) {
+  for( size_t i = 0, ilen = colorBufferStorages->getValue().size()+1; i < ilen; ++i ) {
     colorInitWarningPrinted->push_back(false);
   }
 }
@@ -445,7 +445,7 @@ void FrameBufferTextureGenerator::render()     {
   NavigationInfo *nav_info = navigationInfo->getValue();
   X3DBackgroundNode* bg = background->getValue();
   if( vp ) {
-    H3DFloat clip_near = 0.01;
+    H3DFloat clip_near = (H3DFloat)0.01;
     H3DFloat clip_far = -1;
 
     if( nav_info ) {
@@ -912,7 +912,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
         colorMismatchWarningPrinted->setValue(true);
       }
       end_index = color_buffer_storages.size();
-      for( int i = end_index; i < color_ids.size(); i++ ) {
+      for( size_t i = end_index, ilen = color_ids.size(); i < ilen; i++ ) {
         clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i);
       }
     } else if( color_buffer_storages.size()>color_ids.size() ) {
@@ -931,11 +931,11 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
     // need_external_fbo_num is the the num of currently needed external FBO
     // need_external_fbo_num -1 will be the index of currently specified 
     // external fbo in external_fbo_colors_vector
-    int need_external_fbo_num = 0;
+    size_t need_external_fbo_num = 0;
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
 
 
-    for( unsigned int i = 0;i < end_index; i++ ) {
+    for( int i = 0;i < end_index; i++ ) {
       // i is the index for current internal color buffer 
       std::string color_buffer_storage = color_buffer_storages[i];
       if( color_buffer_storage.empty() || color_buffer_storage == "LOCAL" ) { 
@@ -952,7 +952,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
           need_external_fbo_num ++;
           std::string style = "";
           // index of the color buffer attachment point of external frame buffer.
-          int index = -1; 
+          size_t index = -1; 
           parseColorBufferStorage(color_buffer_storage, style, index);
           if( index > max_color_attachments ) {
             if( !colorInitWarningPrinted->getValue()[i] ) {
@@ -1092,7 +1092,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
 }
 
-bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buffer_storage, std::string& style, int& index){
+bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buffer_storage, std::string& style, size_t& index){
   // retrieve the handling style and index value of color_buffer_storage, the color_buffer_stroage is FBO_SHARE_x, or FBO_COPY_x.
   std::string base;
   std::size_t found = color_buffer_storage.find("_");
@@ -1500,7 +1500,7 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
     }
     glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + dst_index );
     glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 
-                          0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+                          0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     if( error!=GL_NO_ERROR ) {
       Console(4)<<"While blit color buffer, opengl error occur:"<<gluErrorString(error)<<std::endl;
     }

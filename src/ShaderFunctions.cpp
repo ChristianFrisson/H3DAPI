@@ -411,7 +411,7 @@ namespace H3D {
     
     double *toDoubleArray( const vector< Matrix4f > &values ) {
       unsigned int size = (unsigned int) values.size();
-      double *v = new double[ size * 9 ];
+      double *v = new double[ size * 16 ];
       for( unsigned int i = 0; i < size; i++ ) {
         const Matrix4f &m = values[i];
         v[i*9]   = (H3DDouble) m[0][0];
@@ -434,6 +434,48 @@ namespace H3D {
       return v;
     }
 
+    double *toDoubleArray( const vector< Matrix3d > &values ){
+      unsigned int size = ( unsigned int ) values.size();
+      double *v = new double[ size * 9 ];
+      for( unsigned int i = 0; i < size; i++ ) {
+        const Matrix3d &m = values[i];
+        v[i*9]   = m[0][0];
+        v[i*9+1] = m[1][0];
+        v[i*9+2] = m[2][0];
+        v[i*9+3] = m[0][1];
+        v[i*9+4] = m[1][1];
+        v[i*9+5] = m[2][1];
+        v[i*9+6] = m[0][2];
+        v[i*9+7] = m[1][2];
+        v[i*9+8] = m[2][2];
+      }
+      return v;
+    }
+
+    double *toDoubleArray( const vector< Matrix4d > &values ){
+      unsigned int size = (unsigned int) values.size();
+      double *v = new double[ size * 16 ];
+      for( unsigned int i = 0; i < size; i++ ) {
+        const Matrix4d &m = values[i];
+        v[i*9]   = m[0][0];
+        v[i*9+1] = m[1][0];
+        v[i*9+2] = m[2][0];
+        v[i*9+3] = m[3][0];
+        v[i*9+4] = m[0][1];
+        v[i*9+5] = m[1][1];
+        v[i*9+6] = m[2][1];
+        v[i*9+7] = m[3][1];
+        v[i*9+8] = m[0][2];
+        v[i*9+9] = m[1][2];
+        v[i*9+10] = m[2][2];
+        v[i*9+11] = m[3][2];
+        v[i*9+12] = m[0][3];        
+        v[i*9+13] = m[1][3];
+        v[i*9+14] = m[2][3];
+        v[i*9+15] = m[3][3];
+      }
+      return v;
+    }
   }
 }
 
@@ -735,6 +777,24 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       delete[] v;
       break;
     }
+  case X3DTypes::SFMATRIX3D:
+    {
+      SFMatrix3d *f = static_cast< SFMatrix3d* >( field );
+      const Matrix3d &m = f->getValue();
+      glUniformMatrix3fvARB( location, 
+                            1,
+                            true,
+                            (GLfloat*)m[0]);
+      break;
+    }
+  case X3DTypes::MFMATRIX3D:
+    {
+      MFMatrix3d *f = static_cast< MFMatrix3d* >( field );
+      GLdouble* v = toDoubleArray( f->getValue() );
+      glUniformMatrix3fvARB( location, f->size(), false, (GLfloat*)v );
+      delete[] v;
+      break;
+    }
   case X3DTypes::SFMATRIX4F:
     {
       SFMatrix4f *f = static_cast< SFMatrix4f * >( field );
@@ -750,6 +810,24 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       MFMatrix4f *f = static_cast< MFMatrix4f * >( field );
       GLfloat *v = toFloatArray( f->getValue() );
       glUniformMatrix4fvARB( location, f->size(), false, v );
+      delete[] v;
+      break;
+    }
+  case  X3DTypes::SFMATRIX4D:
+    {
+      SFMatrix4d * f = static_cast< SFMatrix4d* >( field );
+      const Matrix4d &m = f->getValue();
+      glUniformMatrix4fvARB( location,
+                            1,
+                            true,
+                            (GLfloat*)m[0]);
+      break;
+    }
+  case X3DTypes::MFMATRIX4D:
+    {
+      MFMatrix4d *f = static_cast< MFMatrix4d* >( field );
+      GLdouble *v = toDoubleArray( f->getValue() );
+      glUniformMatrix4fvARB( location, f->size(), false, (GLfloat*)v );
       delete[] v;
       break;
     }

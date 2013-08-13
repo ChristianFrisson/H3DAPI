@@ -187,7 +187,7 @@ void ShaderPart::SFShaderString::update() {
         is.seekg (0, ios::beg);
         
       // allocate memory:
-        buffer = new char [length + 1];
+        buffer = new char [(unsigned int)length + 1];
         // read data as a block:
         is.read (buffer,length);
         length = is.gcount();
