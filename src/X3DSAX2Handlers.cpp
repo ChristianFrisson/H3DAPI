@@ -126,6 +126,8 @@ namespace X3DSAX2HandlersInternals {
   static const XMLCh gUSE[] =  { chLatin_U, chLatin_S, chLatin_E, chNull };
   static const XMLCh gX3D[] =  { chLatin_X, chDigit_3, chLatin_D, chNull };
   static const XMLCh gurl[] =  { chLatin_u, chLatin_r, chLatin_l, chNull };
+  static const XMLCh gCOPY[] =  { chLatin_C, chLatin_O, chLatin_P, chLatin_Y, chNull };
+  static const XMLCh gDEF[] =  { chLatin_D, chLatin_E, chLatin_F, chNull };
   static const XMLCh gname[] =  
     { chLatin_n, chLatin_a, chLatin_m, chLatin_e, chNull };
   static const XMLCh gvalue[] =  
@@ -1399,6 +1401,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         }
       } else {
         const XMLCh *use_name = attrs.getValue( gUSE );
+        const XMLCh *copy_value = attrs.getValue( gCOPY );
         bool proto_instance = false;
 
         if( localname_string == "ProtoInstance" ) {
@@ -1412,6 +1415,27 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         } else if( use_name ) {
           // if we have a USE attribute, lookup the matching node and use that.
           new_node = DEF_map->getNode( toString( use_name ) );
+          if ( toString(copy_value) == "true" && new_node )
+          {
+              const XMLCh *def_name = attrs.getValue( gDEF );
+              if ( def_name )
+              {
+                  Node *copied_node = new_node->clone();
+                  DEF_map->addNode( toString( def_name ), copied_node );
+                  copied_node->setName( toString( def_name ) );
+                  new_node = copied_node;
+              }
+              else
+              {
+                  stringstream s;
+                  s << "Invalid COPY attribute. " 
+                      << "No DEF node name defined.";
+                  throw X3D::XMLParseError( s.str(), "", 
+                      toString( locator->getSystemId() ),
+                      (int)locator->getLineNumber() );
+              }
+          }
+
           if( !new_node ) {
             stringstream s;
             s << "Invalid USE attribute. " 
