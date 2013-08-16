@@ -952,7 +952,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
           need_external_fbo_num ++;
           std::string style = "";
           // index of the color buffer attachment point of external frame buffer.
-          size_t index = -1; 
+          int index = -1; 
           parseColorBufferStorage(color_buffer_storage, style, index);
           if( index > max_color_attachments ) {
             if( !colorInitWarningPrinted->getValue()[i] ) {
@@ -988,7 +988,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
               GLenum external_color_target = external_FBO_color_tex->getTextureTarget();
               GLenum color_target = static_cast<H3DSingleTextureNode*>(
                 colorTextures->getValue()[i])->getTextureTarget();
-              if( static_cast<FrameBufferTextureGenerator*>(
+              if( (int)static_cast<FrameBufferTextureGenerator*>(
                 external_fbo_colors_vector[need_external_fbo_num-1]
               )->getColorIds().size()<=index ) {
                 if( !colorInitWarningPrinted->getValue()[i] ) {
@@ -1059,7 +1059,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
               clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i );
               continue;
             }
-            if( static_cast<FrameBufferTextureGenerator*>(
+            if( (int)static_cast<FrameBufferTextureGenerator*>(
               external_fbo_colors_vector[need_external_fbo_num-1]
             )->getColorIds().size()<=index ) {
               if( !colorInitWarningPrinted->getValue()[i] ) {
@@ -1092,7 +1092,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
 }
 
-bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buffer_storage, std::string& style, size_t& index){
+bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buffer_storage, std::string& style, int& index){
   // retrieve the handling style and index value of color_buffer_storage, the color_buffer_stroage is FBO_SHARE_x, or FBO_COPY_x.
   std::string base;
   std::size_t found = color_buffer_storage.find("_");

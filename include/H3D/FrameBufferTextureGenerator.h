@@ -567,7 +567,7 @@ namespace H3D {
     /// \param style Options extracted from color_buffer_storage about how the base will be used to 
     /// initialize the color buffer storage. 
     /// \param index The extracted index number of the color buffer attachment in the fbo
-    bool parseColorBufferStorage( std::string color_buffer_storage, std::string& style, size_t& index );
+    bool parseColorBufferStorage( std::string color_buffer_storage, std::string& style, int& index );
 
     /// Function which only clear the specified color buffer
     /// \param src  The source FBO of which the clear will do
