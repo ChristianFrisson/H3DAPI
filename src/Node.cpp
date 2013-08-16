@@ -31,6 +31,7 @@
 #include <H3D/MFString.h>
 #include <H3D/SFString.h>
 #include <H3D/H3DDynamicFieldsObject.h>
+#include <H3D/X3DUrlObject.h>
 #include <H3D/X3DTypeFunctions.h>
 
 using namespace H3D;
@@ -53,6 +54,13 @@ Node* Node::clone ( bool deepCopy, DeepCopyMap *deepCopyMap ) {
     }
     // Create a new instance of this node type
     Node* n= db->createNode ();
+    
+    // Also clone base URL so that the same resources can be loaded
+    X3DUrlObject* url_obj= dynamic_cast<X3DUrlObject*> ( this );
+    if ( url_obj ) {
+      X3DUrlObject* n_url_obj= dynamic_cast<X3DUrlObject*> ( n );
+      n_url_obj->setURLBase ( url_obj->getURLBase () );
+    }
 
     // For all dynamic fields
     H3DDynamicFieldsObject* dfo= dynamic_cast<H3DDynamicFieldsObject*> ( this );
