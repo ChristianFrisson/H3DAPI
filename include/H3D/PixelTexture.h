@@ -103,6 +103,20 @@ namespace H3D {
                  Inst< SFImage > _image     = 0,
                  Inst< SFTextureProperties > _textureProperties = 0 );
 
+    /// Returns a new instance of this node type with the same state as this one
+    ///
+    /// Overridden in order to correctly copy the image as a string
+    ///
+    /// \param deepCopy If true then references to other nodes will also be cloned. 
+    ///                 Otherwise just the pointer is copied.
+    ///
+    /// \param deepCopyMap A map from original nodes to their cloned versions. 
+    ///                    This parameter is normally not required by the root caller, 
+    ///                    but is passed down the call graph to ensure that nodes that
+    ///                    appear multiple times will be assigned the same clone.
+    ///
+    virtual Node* clone ( bool deepCopy= true, DeepCopyMap *deepCopyMap = NULL );
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };

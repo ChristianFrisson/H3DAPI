@@ -60,3 +60,8 @@ Pixel3DTexture::Pixel3DTexture(
   database.initFields( this );
 }
 
+Node* Pixel3DTexture::clone ( bool deepCopy, DeepCopyMap *deepCopyMap ) {
+  Pixel3DTexture* n= static_cast < Pixel3DTexture* > ( Node::clone ( deepCopy, deepCopyMap ) );
+  static_cast<X3DTexture3DNode::SFImage*>(n->image.get())->setValueFromString ( image->getValueAsString() );
+  return n;
+}
