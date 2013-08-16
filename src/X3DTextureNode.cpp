@@ -470,6 +470,8 @@ Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height ) {
 void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
   X3DTextureNode* node= static_cast<X3DTextureNode*>(getOwner());
 
+  if ( v.empty() ) return;
+
 #ifdef HAVE_FREEIMAGE
   // Set texture save dimensions
   std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();

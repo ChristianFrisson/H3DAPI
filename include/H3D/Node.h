@@ -377,6 +377,12 @@ namespace H3D {
     ///
     static Node* getClonedInstance ( Node* original, bool deepCopy, DeepCopyMap& deepCopyMap );
 
+    /// A helper function for the clone() method
+    ///
+    /// Recursively clone a single field value
+    ///
+    void cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMap& deepCopyMap );
+
     static H3DNodeDatabase database;
     int id;
     static int nr_nodes_created;

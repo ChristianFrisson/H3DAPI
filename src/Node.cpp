@@ -30,6 +30,8 @@
 #include <H3D/MFNode.h>
 #include <H3D/MFString.h>
 #include <H3D/SFString.h>
+#include <H3D/H3DDynamicFieldsObject.h>
+#include <H3D/X3DTypeFunctions.h>
 
 using namespace H3D;
 
@@ -52,82 +54,37 @@ Node* Node::clone ( bool deepCopy, DeepCopyMap *deepCopyMap ) {
     // Create a new instance of this node type
     Node* n= db->createNode ();
 
-    // For each field
+    // For all dynamic fields
+    H3DDynamicFieldsObject* dfo= dynamic_cast<H3DDynamicFieldsObject*> ( this );
+    if ( dfo ) {
+      H3DDynamicFieldsObject* n_dfo= dynamic_cast<H3DDynamicFieldsObject*> ( n );
+      for ( H3DDynamicFieldsObject::field_iterator i= dfo->firstField(); i != dfo->endField(); ++i ) {
+        Field* f_from= *i;
+        Field* f_to= X3DTypes::newFieldInstance ( f_from->getX3DType() );
+
+        if ( f_to ) {
+          // Add this field in the clone
+          if ( n_dfo->addField( f_from->getName(), f_from->getAccessType(), f_to ) ) {
+            // Copy the field value
+            cloneFieldValue ( *f_from, *f_to, deepCopy, *deepCopyMap );
+          } else {
+            delete f_to;
+            Console(4) << "Warning: Failed to add cloned dynamic field " << f_from->getFullName() << "!" << endl;
+          }
+        } else {
+          Console(4) << "Warning: Failed to clone dynamic field " << f_from->getFullName() << "!" << endl;
+        }
+      }
+    }
+
+    // For each (static) field
     for ( H3DNodeDatabase::FieldDBConstIterator i= db->fieldDBBegin(); i != db->fieldDBEnd(); ++i ) {
       Field* f_from= getField ( *i );
       Field* f_to= n->getField ( *i );
 
       // Copy the field value
       if ( f_from && f_to ) {
-
-        // Only copy INPUT_OUTPUT and INITIALIZE_ONLY
-        if ( f_from->getAccessType() == Field::INPUT_OUTPUT || f_from->getAccessType() == Field::INITIALIZE_ONLY ) {
-
-          // MField types
-          if( MFieldClass *mfield_from = dynamic_cast< MFieldClass * >( f_from ) ) {
-            
-            // MFNode
-            if( MFNode *mfnode_from = dynamic_cast< MFNode * >( f_from ) ) {
-              if ( MFNode *mfnode_to = dynamic_cast< MFNode * >( f_to ) ) {
-                NodeVector src= mfnode_from->getValue();
-                for ( size_t j= 0; j < src.size(); ++j ) {
-                  src.set ( j, getClonedInstance ( src[j], deepCopy, *deepCopyMap ) );
-                }
-                mfnode_to->setValue ( src );
-              }
-
-              // MFString
-            } else if ( MFString *mfstring_from = dynamic_cast< MFString * > ( f_from ) ) {
-              // MFString does not work with getValueAsVoidPtr. Do special case or fix getValueAsVoidPtr.
-              if ( MFString *mfstring_to = dynamic_cast< MFString * >( f_to ) ) {
-                mfstring_to->setValue ( mfstring_from->getValue () );
-              }
-
-              // Generic MField
-            } else {
-              if ( MFieldClass *mfield_to = dynamic_cast< MFieldClass * >( f_to ) ) {
-                unsigned int data_size = mfield_from->valueTypeSize() * mfield_from->size();
-                unsigned int nr_elements;
-                unsigned char* data = new unsigned char[ data_size ];
-                int result = mfield_from->getValueAsVoidPtr( data, nr_elements, data_size );
-                if ( result != -1 ) {
-                  mfield_to->setValueFromVoidPtr ( data, nr_elements, data_size );
-                }
-                delete [] data;
-              }
-            }
-
-            // SField types
-          } else if( SFieldClass *sfield_from = dynamic_cast< SFieldClass * >( f_from ) ) {
-
-            // SFString
-            if( SFString *sfstring_from = dynamic_cast< SFString * > ( f_from ) ) {
-              // the getValueAsVoidPtr function does not work well with
-              // SFString fields so do a special case for that type.
-              if ( SFString *sfstring_to = dynamic_cast< SFString * >( f_to ) ) {
-                sfstring_to->setValue ( sfstring_from->getValue() );
-              }
-
-              // Generic SField
-            } else {
-              if ( SFieldClass *sfield_to = dynamic_cast< SFieldClass * >( f_to ) ) {
-                unsigned int data_size = sfield_from->valueTypeSize();
-                unsigned char* data = new unsigned char[ data_size ];
-                data_size = sfield_from->getValueAsVoidPtr( data, data_size );
-                if ( data_size != -1 ) {
-                  sfield_to->setValueFromVoidPtr ( data, data_size );
-                }
-                delete [] data;
-              }
-            }
-
-            // SFNode
-          } else if( SFNode *sfnode_from = dynamic_cast< SFNode * >( f_from ) ) {
-            if ( SFNode *sfnode_to = dynamic_cast< SFNode * >( f_to ) ) {
-              sfnode_to->setValue ( getClonedInstance ( sfnode_from->getValue(), deepCopy, *deepCopyMap ) );
-            }
-          }
-        }
+        cloneFieldValue ( *f_from, *f_to, deepCopy, *deepCopyMap );
       }
     }
 
@@ -135,6 +92,7 @@ Node* Node::clone ( bool deepCopy, DeepCopyMap *deepCopyMap ) {
       delete deepCopyMap;
       deepCopyMap = NULL;
     }
+
     return n; 
   } else {
     return NULL;
@@ -162,6 +120,77 @@ Node* Node::getClonedInstance ( Node* original, bool deepCopy, DeepCopyMap& deep
     }
   } else {
     return NULL;
+  }
+}
+
+void Node::cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMap& deepCopyMap ) {
+  // Only copy INPUT_OUTPUT and INITIALIZE_ONLY
+  if ( _from.getAccessType() == Field::INPUT_OUTPUT || _from.getAccessType() == Field::INITIALIZE_ONLY ) {
+
+    // MField types
+    if( MFieldClass *mfield_from = dynamic_cast< MFieldClass * >( &_from ) ) {
+            
+      // MFNode
+      if( MFNode *mfnode_from = dynamic_cast< MFNode * >( &_from ) ) {
+        if ( MFNode *mfnode_to = dynamic_cast< MFNode * >( &_to ) ) {
+          NodeVector src= mfnode_from->getValue();
+          for ( size_t j= 0; j < src.size(); ++j ) {
+            src.set ( j, getClonedInstance ( src[j], deepCopy, deepCopyMap ) );
+          }
+          mfnode_to->setValue ( src );
+        }
+
+        // MFString
+      } else if ( MFString *mfstring_from = dynamic_cast< MFString * > ( &_from ) ) {
+        // MFString does not work with getValueAsVoidPtr. Do special case or fix getValueAsVoidPtr.
+        if ( MFString *mfstring_to = dynamic_cast< MFString * >( &_to ) ) {
+          mfstring_to->setValue ( mfstring_from->getValue () );
+        }
+
+        // Generic MField
+      } else {
+        if ( MFieldClass *mfield_to = dynamic_cast< MFieldClass * >( &_to ) ) {
+          unsigned int data_size = mfield_from->valueTypeSize() * mfield_from->size();
+          unsigned int nr_elements;
+          unsigned char* data = new unsigned char[ data_size ];
+          int result = mfield_from->getValueAsVoidPtr( data, nr_elements, data_size );
+          if ( result != -1 ) {
+            mfield_to->setValueFromVoidPtr ( data, nr_elements, data_size );
+          }
+          delete [] data;
+        }
+      }
+
+      // SField types
+    } else if( SFieldClass *sfield_from = dynamic_cast< SFieldClass * >( &_from ) ) {
+      
+      // SFString
+      if( SFString *sfstring_from = dynamic_cast< SFString * > ( &_from ) ) {
+        // the getValueAsVoidPtr function does not work well with
+        // SFString fields so do a special case for that type.
+        if ( SFString *sfstring_to = dynamic_cast< SFString * >( &_to ) ) {
+          sfstring_to->setValue ( sfstring_from->getValue() );
+        }
+        // Generic SField
+      } else {
+        if ( SFieldClass *sfield_to = dynamic_cast< SFieldClass * >( &_to ) ) {
+          unsigned int data_size = sfield_from->valueTypeSize();
+          unsigned char* data = new unsigned char[ data_size ];
+          data_size = sfield_from->getValueAsVoidPtr( data, data_size );
+          if ( data_size != -1 ) {
+            sfield_to->setValueFromVoidPtr ( data, data_size );
+          }
+          delete [] data;
+        }
+      }
+
+      // SFNode
+    } else if( SFNode *sfnode_from = dynamic_cast< SFNode * >( &_from ) ) {
+      if ( SFNode *sfnode_to = dynamic_cast< SFNode * >( &_to ) ) {
+        Node* n= getClonedInstance ( sfnode_from->getValue(), deepCopy, deepCopyMap );
+        sfnode_to->setValue ( n );
+      }
+    }
   }
 }
 
