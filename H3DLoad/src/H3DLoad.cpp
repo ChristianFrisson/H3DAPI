@@ -60,18 +60,12 @@
 using namespace std;
 using namespace H3D;
 
-
-class QuitAPIField: public PeriodicUpdate< SFString > {
-  virtual void update() {
-    string s = static_cast< SFString * >(routes_in[0])->getValue();
-    if( !s.empty() && s[0] == 27 ) {
-      throw Exception::QuitAPI();
-    }
-  }
-};
-
-
-class ChangeViewport : public AutoUpdate< SFInt32> { 
+class ChangeViewport : public PeriodicUpdate< SFInt32> { 
+	public:
+		inline void setOwnerWindow( H3DWindowNode * owner_window ) {
+			glwindow = owner_window;
+		}
+	protected:
   virtual void update() {
     int key = static_cast< SFInt32 * >(routes_in[0])->getValue();
     X3DViewpointNode::ViewpointList vp_list = X3DViewpointNode::getAllViewpoints();
@@ -160,12 +154,20 @@ class ChangeViewport : public AutoUpdate< SFInt32> {
         }
         break;
       }
+			case KeySensor::F11: {
+        if( glwindow ) {
+					glwindow->fullscreen->setValue( !glwindow->fullscreen->getValue() );
+				}
+        break;
+      }
       default: {}
     }
   }
+
+	H3DWindowNode *glwindow;
 };
     
-class ChangeNavType : public AutoUpdate< SFString > { 
+class ChangeNavType : public PeriodicUpdate< SFString > { 
 public:
   ChangeNavType() : glwindow( 0 ), speed_increment( 0.1f ) {}
 
@@ -180,8 +182,11 @@ protected:
       mynav = NavigationInfo::getActive();
     }
     string s = static_cast< SFString * >(routes_in[0])->getValue();
-	if( s.empty() ) return;
-    if( s[0] == 119) {
+		if( s.empty() ) return;
+
+		if( s[0] == 27 ) {
+      throw Exception::QuitAPI();
+    } else if( s == "w") {
       // Set navigation type to WALK
       if(mynav){
         mynav->setNavType("WALK");
@@ -189,7 +194,7 @@ protected:
       else{
         glwindow->default_nav = "WALK"; 
       }
-    } else if( s[0] == 102 ) {
+    } else if( s == "f" ) {
       // Set navigation type to FLY
       if(mynav){
         mynav->setNavType("FLY");
@@ -197,7 +202,7 @@ protected:
       else{
         glwindow->default_nav = "FLY"; 
       }
-    } else if( s[0] == 101 ) {
+    } else if( s == "e" ) {
       // Set navigation type to EXAMINE
       if(mynav){
         mynav->setNavType("EXAMINE");
@@ -205,7 +210,7 @@ protected:
       else{
         glwindow->default_nav = "EXAMINE"; 
       }
-    } else if( s[0] == 108 ) {
+    } else if( s == "l" ) {
       // Set navigation type to LOOKAT
       if(mynav){
         mynav->setNavType("LOOKAT");
@@ -213,7 +218,7 @@ protected:
       else{
         glwindow->default_nav = "LOOKAT"; 
       }
-    } else if( s[0] == 110 ) {
+    } else if( s == "n" ) {
       // Set navigation type to NONE
       if(mynav){
         mynav->setNavType("NONE");
@@ -628,7 +633,6 @@ int main(int argc, char* argv[]) {
     AutoRef< KeySensor > ks( new KeySensor );
 
     X3D::DEFNodes dn;
-    auto_ptr< QuitAPIField > quit_api( new QuitAPIField );
     auto_ptr< ChangeViewport > change_viewpoint( new ChangeViewport );
     auto_ptr< ChangeNavType > change_nav_type( new ChangeNavType );
     AutoRef< Node > device_info;
@@ -672,6 +676,7 @@ int main(int argc, char* argv[]) {
     // create a window to display
     GLUTWindow *glwindow = new GLUTWindow;
     change_nav_type->setOwnerWindow( glwindow );
+		change_viewpoint->setOwnerWindow( glwindow );
     ks->keyPress->route( change_nav_type );  //###########
     glwindow->fullscreen->setValue( fullscreen );
     glwindow->mirrored->setValue( mirrored );
@@ -705,7 +710,6 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    ks->keyPress->route( quit_api );
     ks->actionKeyPress->route( change_viewpoint );  //###########
 
 #ifndef MACOSX

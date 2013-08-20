@@ -97,7 +97,11 @@ GLUTWindow::GLUTWindow( Inst< SFInt32     > _width,
                         Inst< SFString    > _gameMode ) :
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
                  _viewpoint, _posX, _posY, _manualCursorControl, _cursorType ),
-  gameMode( _gameMode ) {
+  gameMode( _gameMode ),
+	last_x_pos( -1 ),
+	last_y_pos( -1 ),
+	last_width( -1 ),
+	last_height( -1 ) {
   
   type_name = "GLUTWindow";
   database.initFields( this );
@@ -124,6 +128,7 @@ GLUTWindow::GLUTWindow( Inst< SFInt32     > _width,
   cursorType->addValidValue( "BOTTOM_LEFT_CORNER" ); 
   cursorType->addValidValue( "FULL_CROSSHAIR" ); 
   cursorType->addValidValue( "NONE" );
+	last_fullscreen = fullscreen->getValue();
 }
 
 GLUTWindow::~GLUTWindow() {
@@ -205,7 +210,7 @@ void GLUTWindow::initWindow() {
   glutDisplayFunc ( GLUTWindowInternals::displayFunc  );
   glutReshapeFunc ( GLUTWindowInternals::reshapeFunc  );
  
-#if defined(H3D_WINDOWS)
+#if defined(H3D_WINDOWS) && defined( FREEGLUT )
   // When in gameMode events will not pass through the normal Windows callback
   // system so we have to use the glut way instead of the default Windows key and
   // mouse handling from H3DWindowNode
@@ -223,7 +228,7 @@ void GLUTWindow::initWindow() {
     glutMouseWheelFunc( glutMouseWheelCallback );
 #endif // FREEGLUT
 
-#if defined(H3D_WINDOWS)
+#if defined(H3D_WINDOWS) && defined( FREEGLUT )
    }
 #endif // H3D_WINDOWS
 
@@ -261,8 +266,26 @@ GLUTWindow *GLUTWindow::getGLUTWindow( int glut_id ) {
 }
 
 void GLUTWindow::setFullscreen( bool fullscreen ) {
-  if( fullscreen && gameMode->getValue() == "" ){
-    glutFullScreen(); 
+  if( gameMode->getValue() == "" ){
+		if( fullscreen != last_fullscreen ) {
+			if( fullscreen ) {
+#ifndef FREEGLUT
+				last_x_pos = glutGet( GLUT_WINDOW_X );
+				last_y_pos = glutGet( GLUT_WINDOW_Y );
+				last_width = width->getValue();
+				last_height = height->getValue();
+#endif
+				glutFullScreen();
+			}
+#ifdef FREEGLUT
+			else
+				glutLeaveFullScreen();
+#else
+			glutReshapeWindow(last_width, last_height);
+      glutPositionWindow(last_x_pos,last_y_pos);
+#endif
+			last_fullscreen = fullscreen;
+		}
   }
 }
 

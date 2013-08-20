@@ -151,6 +151,9 @@ namespace H3D {
 
     static bool GLUT_init;
     int window_id;
+
+		bool last_fullscreen;
+		int last_x_pos, last_y_pos, last_width, last_height;
   };
 }
 #endif
