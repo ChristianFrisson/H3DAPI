@@ -120,7 +120,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   setupDynamicRoutes->route( displayList );
 
   // need to update uniform values if shader is re-linked
-  displayList->route ( updateUniforms );
+  // displayList->route ( updateUniforms );
+  activate->route( updateUniforms, id );
 }
 
 bool ComposedShader::shader_support_checked = false;
@@ -143,6 +144,8 @@ bool ComposedShader::isTransparent( X3DMaterialNode *material ) {
 
 bool ComposedShader::addField( const string &name, 
                                const Field::AccessType &access, Field *field ){
+  // composed shader added field can be node field such as texture
+  // or just field such as SFFloat, SFBool
   bool success = X3DProgrammableShaderObject::addField( name, access, field  );
   if( success ) {
     SFNode * sf_node_field = dynamic_cast< SFNode * >( field );
@@ -526,7 +529,7 @@ void ComposedShader::SetupDynamicRoutes::update() {
 void ComposedShader::UpdateUniforms::update() {
   ComposedShader* node= static_cast<ComposedShader*>(getOwner());
   
-  bool update_all= hasCausedEvent ( node->displayList );
+  bool update_all= hasCausedEvent ( node->activate );
   for( unsigned int i = 0; i < node->dynamic_fields.size(); i++ ) {
     if ( update_all || hasCausedEvent ( node->dynamic_fields[i] )  ) {
       //Console(4) << "update " << node->dynamic_fields[i]->getName() << endl;
