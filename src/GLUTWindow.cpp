@@ -266,23 +266,25 @@ GLUTWindow *GLUTWindow::getGLUTWindow( int glut_id ) {
 }
 
 void GLUTWindow::setFullscreen( bool fullscreen ) {
-  if( gameMode->getValue() == "" ){
+  if( gameMode->getValue() == "" ) {
 		if( fullscreen != last_fullscreen ) {
+// Note: This define check is needed since freeglut does not have a
+// working version compile time definition. freegluts svn repository
+// was checked and GLUT_FULL_SCREEN was added at the same time as
+// glutFullScreenToggle.
+#if defined( FREEGLUT ) && defined( GLUT_FULL_SCREEN )
+			glutFullScreenToggle();
+#else
 			if( fullscreen ) {
-#ifndef FREEGLUT
 				last_x_pos = glutGet( GLUT_WINDOW_X );
 				last_y_pos = glutGet( GLUT_WINDOW_Y );
 				last_width = width->getValue();
 				last_height = height->getValue();
-#endif
 				glutFullScreen();
+			} else {
+				glutReshapeWindow(last_width, last_height);
+				glutPositionWindow(last_x_pos,last_y_pos);
 			}
-#ifdef FREEGLUT
-			else
-				glutLeaveFullScreen();
-#else
-			glutReshapeWindow(last_width, last_height);
-      glutPositionWindow(last_x_pos,last_y_pos);
 #endif
 			last_fullscreen = fullscreen;
 		}
