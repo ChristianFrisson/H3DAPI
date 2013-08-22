@@ -55,8 +55,11 @@
 #include <H3D/CollisionOptions.h>
 #include <H3D/H3DNavigation.h>
 #include <H3D/HapticsRenderers.h>
+#include <H3D/GraphicsHardwareInfo.h>
 
 #include <H3DUtil/DynamicLibrary.h>
+
+#include <wx/display.h>
 
 using namespace std;
 using namespace H3D;
@@ -181,7 +184,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   change_nav_type( new ChangeNavType ),
   handle_action_key( new HandleActionKey ),
   itemIdViewpointMap(),
-  current_viewpoint_id(0)
+  current_viewpoint_id(0),
+	check_dialogs_position_because_of_fullscreen_and_not_quadro( false )
 {
   lastOpenedFilepath = "";
   wxAcceleratorEntry entries[1];
@@ -1700,19 +1704,22 @@ void WxFrame::OnFullscreen (wxCommandEvent & event)
 void WxFrame::SetFullscreen( bool fullscreen ) {
   if( glwindow->fullscreen->getValue() != fullscreen ) {
     if( fullscreen ) {
-      WxFrame::ShowFullScreen(true, wxFULLSCREEN_NOMENUBAR | 
-			      wxFULLSCREEN_NOTOOLBAR | wxFULLSCREEN_NOBORDER | 
-			      wxFULLSCREEN_NOCAPTION | wxFULLSCREEN_NOSTATUSBAR);
-      glwindow->fullscreen->setValue( true );
+			long style = getFullScreenStyle();
+      WxFrame::ShowFullScreen(true, style);
+			if( style != wxFULLSCREEN_ALL ) {
+				hideAllDialogs();
+			}
+			glwindow->fullscreen->setValue( true );
       rendererMenu->Check(FRAME_FULLSCREEN, true);
       SetStatusText(wxT("Press F11 to exit fullscreen mode"), 0);
       SetStatusText(wxT("Viewing in Fullscreen"), 1);
     } else {
-      WxFrame::ShowFullScreen(false, wxFULLSCREEN_ALL);
-      glwindow->fullscreen->setValue( false );
+			WxFrame::ShowFullScreen(false, wxFULLSCREEN_ALL);
+			glwindow->fullscreen->setValue( false );
       rendererMenu->Check(FRAME_FULLSCREEN, false);
       SetStatusText(currentFilename, 0);
       SetStatusText(currentPath, 1);
+			showPreviouslyHiddenDialogs();
     }
   }
 }
@@ -1907,36 +1914,41 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
 //Show console event
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
-  if (!the_console->Show()) {
-    // already shown, bring it up
-    the_console->SetFocus();
-  }
+	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+			GetScreenRect().Intersects( the_console->GetScreenRect() ) ) && !the_console->Show()) {
+		// already shown, bring it up
+		the_console->SetFocus();
+	}
 }
 
 #ifdef HAVE_PROFILER
 //Show profiled result event
 void WxFrame::ShowProfiledResult(wxCommandEvent & event)
 {
-  if(!the_profiled_result->Show()){
-    the_profiled_result->SetFocus();
-  }
+	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+			GetScreenRect().Intersects( the_profiled_result->GetScreenRect() ) ) && !the_profiled_result->Show()) {
+		the_profiled_result->SetFocus();
+	}
 }
 #endif
 //Show console event
 void WxFrame::ShowTreeView(wxCommandEvent & event)
 {
-  if (!tree_view_dialog->Show()) {
-    tree_view_dialog->SetFocus();
-  }
+	if (!tree_view_dialog->Show()) {
+		// already shown, bring it up
+		tree_view_dialog->SetFocus();
+	}
 }
 
 //Show program settings window
 void WxFrame::ShowProgramSettings(wxCommandEvent & event)
 {
 #ifdef HAVE_WXPROPGRID
-  if (!program_settings_dialog->Show()) {
-    program_settings_dialog->SetFocus();
-  }
+	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+			GetScreenRect().Intersects( program_settings_dialog->GetScreenRect() ) ) && !program_settings_dialog->Show()) {
+			// already shown, bring it up
+		program_settings_dialog->SetFocus();
+	}
 #endif
 }
 
@@ -1966,7 +1978,10 @@ void WxFrame::OnLoadTexturesInThreadCheck(wxCommandEvent & event)
 
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)
 {
-  plugins_dialog->Show();
+	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+			GetScreenRect().Intersects( plugins_dialog->GetScreenRect() ) ) && !plugins_dialog->Show()) {
+		plugins_dialog->Show();
+	}
 }
 
 void WxFrame::ShowFrameRate(wxCommandEvent & event)
@@ -1979,9 +1994,11 @@ void WxFrame::ShowFrameRate(wxCommandEvent & event)
   frameRates->graphics_rate->SetLabel( wxT("100") );
   frameRates->haptics_rate->SetLabel( wxT("1000") );
   frameRates->haptics_time->SetLabel( wxT("100") );
-  if (!frameRates->Show()) {
-    frameRates->SetFocus();
-  }
+	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+			GetScreenRect().Intersects( frameRates->GetScreenRect() ) ) && !frameRates->Show()) {
+			// already shown, bring it up
+		frameRates->SetFocus();
+	}
 }
 
 //Change Viewpoint
@@ -2022,7 +2039,10 @@ void WxFrame::ChangeCollision (wxCommandEvent & event) {
 }
 
 void WxFrame::OnSpeed( wxCommandEvent & event ) {
-  speed_slider->Show();
+	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+			GetScreenRect().Intersects( speed_slider->GetScreenRect() ) ) && !speed_slider->Show()) {
+		speed_slider->Show();
+	}
 }
 
 //Change Navigation
@@ -2939,7 +2959,10 @@ bool WxFrame::validateNavType (string a) {
 
 void WxFrame::OnSettings (wxCommandEvent & event) {
   SaveSettings( false );
-  settings->Show();
+	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+			GetScreenRect().Intersects( settings->GetScreenRect() ) ) && !settings->Show()) {
+		settings->SetFocus();
+	}
 }
 
 
@@ -3136,6 +3159,63 @@ list< Node * > WxFrame::GetTopLevelViews() {
       v_list.push_back( *i );
   }
   return v_list;
+}
+
+long WxFrame::getFullScreenStyle() {
+	long style = wxFULLSCREEN_ALL;
+#if defined( H3D_WINDOWS ) && defined( H3D_MODIFICATION_MS_BUILD_OF_WX )
+			H3DWindowNode::RenderMode::Mode stereo_mode = glwindow->renderMode->getRenderMode();
+			if( stereo_mode == H3DWindowNode::RenderMode::QUAD_BUFFERED_STEREO ) {
+				AutoRef< GraphicsHardwareInfo > graphics_hardware_info( new GraphicsHardwareInfo );
+				string vendor = graphics_hardware_info->vendor->getValue();
+				transform( vendor.begin(), vendor.end(), vendor.begin(), ::tolower );
+				if( vendor.find( "nvidia" ) != string::npos ) {
+					string renderer = graphics_hardware_info->renderer->getValue();
+					transform( renderer.begin(), renderer.end(), renderer.begin(), ::tolower );
+					if( renderer.find( "quadro" ) == string::npos ) {
+						style |= wxFULLSCREEN_POPUP;
+						check_dialogs_position_because_of_fullscreen_and_not_quadro = true;
+					}
+				}
+			}
+#endif
+	return style;
+}
+
+void WxFrame::hideAllDialogs() {
+	wxRect frame_rect = GetScreenRect();
+	if( the_console->IsShown() && frame_rect.Intersects( the_console->GetScreenRect() ) ) {
+		the_console->Show(false);
+		dialogs_hidden_because_of_fullscreen.push_back( the_console );
+	}
+	if( frameRates->IsShown() && frame_rect.Intersects( frameRates->GetScreenRect() ) ) {
+		frameRates->Show(false);
+		dialogs_hidden_because_of_fullscreen.push_back( frameRates );
+	}
+#ifdef HAVE_PROFILER
+	if( the_profiled_result->IsShown() && frame_rect.Intersects( the_profiled_result->GetScreenRect() ) ) {
+		the_profiled_result->Show(false);
+		dialogs_hidden_because_of_fullscreen.push_back( the_profiled_result );
+	}
+#endif
+	if( plugins_dialog->IsShown() && frame_rect.Intersects( plugins_dialog->GetScreenRect() ) ) {
+		plugins_dialog->Show(false);
+		dialogs_hidden_because_of_fullscreen.push_back( plugins_dialog );
+	}
+	if( speed_slider->IsShown() && frame_rect.Intersects( speed_slider->GetScreenRect() ) ) {
+		speed_slider->Show(false);
+		dialogs_hidden_because_of_fullscreen.push_back( speed_slider );
+	}
+	if( settings->IsShown() && frame_rect.Intersects( settings->GetScreenRect() ) ) {
+		settings->Show(false);
+		dialogs_hidden_because_of_fullscreen.push_back( settings );
+	}
+}
+
+void WxFrame::showPreviouslyHiddenDialogs() {
+	for( unsigned int i = 0; i < dialogs_hidden_because_of_fullscreen.size(); ++i )
+		dialogs_hidden_because_of_fullscreen[i]->Show();
+	check_dialogs_position_because_of_fullscreen_and_not_quadro = false;
 }
 
 

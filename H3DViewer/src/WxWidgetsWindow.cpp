@@ -222,8 +222,19 @@ void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
     wxTopLevelWindow * tlw = dynamic_cast< wxTopLevelWindow * >(theWindow);
 #ifndef MACOSX
     //TODO: fullscreen does not work well on macosx
-    if( tlw )
-      tlw->ShowFullScreen(fullscreen);
+    if( tlw ) {
+			long style = wxFULLSCREEN_ALL;
+			WxFrame * tmp_frame = dynamic_cast< WxFrame * >( theWindow );
+			if( tmp_frame ) {
+				if( fullscreen )
+					style = tmp_frame->getFullScreenStyle();
+				else
+					tmp_frame->showPreviouslyHiddenDialogs();
+			}
+			tlw->ShowFullScreen( fullscreen, style );
+			if( fullscreen && tmp_frame && style != wxFULLSCREEN_ALL )
+				tmp_frame->hideAllDialogs();
+		}
 #endif
     last_fullscreen = fullscreen;
     fullscreen_initialized= true;

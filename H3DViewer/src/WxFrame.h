@@ -462,6 +462,12 @@ public:
 
   AutoRef< StereoInfo > stereo_info;
 
+	long getFullScreenStyle();
+	void hideAllDialogs();
+	void showPreviouslyHiddenDialogs();
+	bool check_dialogs_position_because_of_fullscreen_and_not_quadro;
+	vector< wxWindow * > dialogs_hidden_because_of_fullscreen;
+
   friend class SettingsDialog;
 
   class ChangeNavType : public AutoUpdate< SFString > { 

@@ -50,8 +50,6 @@ namespace H3D {
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/GraphicsHardwareInfo.x3d">GraphicsHardwareInfo.x3d</a>
   ///     ( <a href="examples/GraphicsHardwareInfo.x3d.html">Source</a> )
-  ///   - <a href="../../../H3DAPI/examples/All/GraphicsHardwareInfo1.x3d">GraphicsHardwareInfo1.x3d</a>
-  ///     ( <a href="examples/GraphicsHardwareInfo1.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile GraphicsHardwareInfo.dot
