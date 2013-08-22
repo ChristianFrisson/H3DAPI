@@ -3215,6 +3215,7 @@ void WxFrame::hideAllDialogs() {
 void WxFrame::showPreviouslyHiddenDialogs() {
 	for( unsigned int i = 0; i < dialogs_hidden_because_of_fullscreen.size(); ++i )
 		dialogs_hidden_because_of_fullscreen[i]->Show();
+	dialogs_hidden_because_of_fullscreen.clear();
 	check_dialogs_position_because_of_fullscreen_and_not_quadro = false;
 }
 
