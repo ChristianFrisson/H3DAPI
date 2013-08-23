@@ -34,7 +34,9 @@
 #include <H3D/X3DProgrammableShaderObject.h>
 #include <H3D/DependentNodeFields.h>
 #include <H3D/FieldTemplates.h>
+#include <H3D/SField.h>
 #include <string>
+#include <H3D/ShaderFunctions.h>
 
 namespace H3D {
 
@@ -63,11 +65,50 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile ComposedShader.dot
+  /// 
+
+  /// object to provide acutalChanged acquiring interface
+  class ValueChangeMonitoredObject
+  {
+  public:
+    bool actualChanged;
+  };
+  /// template class to provide value change checking after update
+  template< class SF >
+  class SFUniform : public SF, public ValueChangeMonitoredObject{
+  public:
+    virtual void setValue( const typename SF::value_type &v, int id = 0 ){
+      typename SF::value_type old_value = this->value;
+      SF::setValue( v, id );
+      if( this->value != old_value ) {
+        actualChanged = true;
+      }else {
+        actualChanged = false;
+      }
+    }
+    virtual string getTypeName() { return "SFUniform"; }
+  protected:
+    virtual void update(){
+      typename SF::value_type old_value = this->value;
+      SF::update();
+      if( this->value != old_value ) {
+        //Console(4)<<"monitored value actually changed"<<endl;
+        actualChanged = true;
+      }else {
+        actualChanged = false;
+      }
+    }
+  };
+  
   class H3DAPI_API ComposedShader : 
     public X3DShaderNode, 
     public X3DProgrammableShaderObject {
   public:
   
+    
+
+    // a map to maintain the uniform values and their related properties 
+    std::map< Field*, H3D::Shaders::UniformInfo > uniformFields; 
     /// The MFShaderPart is dependent on the url field of the
     /// containing ShaderPart node.
     typedef DependentMFNode< ShaderPart,

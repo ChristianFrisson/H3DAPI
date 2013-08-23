@@ -479,19 +479,27 @@ namespace H3D {
   }
 }
 
+
 /// Set the value of a uniform variable in the current GLSL shader.
 /// The name of the uniform variable is the same as the name of the field. 
 bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
-                                                  Field *field ) {
+                                                  Field *field, UniformInfo* ui ) {
 
-  const string &name = field->getName();
-  GLint location = glGetUniformLocationARB( program_handle,
-                                            name.c_str() );
-  GLenum glerr1 = glGetError();
-   if( location == -1 ) 
-   {
-     return false;
-   }
+
+  GLint location = -1;
+  if( !ui ) {// no extra uniform info was set, need to extract location based on name
+    const string &name = field->getName();
+    location = glGetUniformLocationARB( program_handle,
+      name.c_str() );
+  } else
+  {
+    location = ui->location;
+  }
+  GLenum glerr1 = glGetError(); // clear the OpenGL error status
+  if( location == -1 ) 
+  {
+    return false;
+  }
   X3DTypes::X3DType x3d_type = field->getX3DType();
 	switch(x3d_type)
 	{

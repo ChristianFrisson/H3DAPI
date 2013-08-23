@@ -28,7 +28,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3D/ShaderFunctions.h>
 #include <H3D/ComposedShader.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
@@ -148,6 +147,9 @@ bool ComposedShader::addField( const string &name,
   // or just field such as SFFloat, SFBool
   bool success = X3DProgrammableShaderObject::addField( name, access, field  );
   if( success ) {
+    // insert a new entry for the newly added field
+    H3D::Shaders::UniformInfo ui = { false, 0 };
+    uniformFields.insert( std::pair< Field*, H3D::Shaders::UniformInfo >( field , ui ) );
     SFNode * sf_node_field = dynamic_cast< SFNode * >( field );
     MFNode * mf_node_field = dynamic_cast< MFNode * >( field );
     if( sf_node_field || mf_node_field ) {
@@ -528,20 +530,64 @@ void ComposedShader::SetupDynamicRoutes::update() {
 
 void ComposedShader::UpdateUniforms::update() {
   ComposedShader* node= static_cast<ComposedShader*>(getOwner());
-  
   bool update_all= hasCausedEvent ( node->activate );
-  for( unsigned int i = 0; i < node->dynamic_fields.size(); i++ ) {
-    if ( update_all || hasCausedEvent ( node->dynamic_fields[i] )  ) {
-      //Console(4) << "update " << node->dynamic_fields[i]->getName() << endl;
-      if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
-                                                 node->dynamic_fields[i] ) &&
-          !node->suppressUniformWarnings->getValue() ) {
-        Console(3) << "Warning: Uniform variable \"" << node->dynamic_fields[i]->getName() 
-                    << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
-                    << "in the node \"" << getName() << "\"" << endl;
+  if( update_all ) { // program re-linked, need to update all uniform
+    // update the uniform location information in unifromFields
+    //Console(4)<<"program relinked!!!"<<endl;
+    std::map<Field*, H3D::Shaders::UniformInfo>::iterator it;
+    for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); it++  ) {
+      const string &name = it->first->getName();
+      GLint location = glGetUniformLocationARB( node->program_handle,
+        name.c_str() );
+      it->second.location = location;
+      if( !Shaders::setGLSLUniformVariableValue( node->program_handle, it->first, &(it->second) ) 
+        && !node->suppressUniformWarnings->getValue() ) {
+        Console(3) << "Warning: Uniform variable \"" << it->first->getName() 
+          << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
+          << "in the node \"" << getName() << "\"" << endl;
       }
     }
+    // all fields are updated, clear the event to finish the update and return.
+    EventCollectingField < Field >::update();
+    return;
   }
-
+  
+  // no need to update all, check field one by one to update the one needs to be updated
+  std::map<Field*, H3D::Shaders::UniformInfo>::iterator it;
+  for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); it++ ) {
+    Field* current_field = it->first;
+    if( hasCausedEvent( current_field ) ) {// current_field update since last time
+      if( current_field->getTypeName()=="SFUniform" ) {
+        // this is a SFUniform value, check if its value actually changed
+        current_field->upToDate();
+       
+        // static_cast current_field to SFUniform< SFBool >* is not generally safe, but as the casted pointer will always contain actualChange
+        // it will be ok here
+        if( static_cast< SFUniform< SFBool >* > (current_field)->actualChanged ) { // TODO: need to transfer this value change check into UnifromInfo
+          //Console(4)<<current_field->getFullName()<<" actually changed value, will update this uniform "<<endl;
+          // value actual changed when update, update the uniform value
+          if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
+            current_field, &it->second ) &&
+            !node->suppressUniformWarnings->getValue() ) {
+              Console(3) << "Warning: Uniform variable \"" << it->first->getName() 
+                << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
+                << "in the node \"" << getName() << "\"" << endl;
+          }
+        } 
+        // current_field do updates, but the actual value is not change, no need to update uniform value
+        // check next field
+        continue;
+      }
+      // current_field needs update, do not know if the value actually changed or not, do uniform update anyway for now
+      if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
+        it->first, &it->second ) &&
+        !node->suppressUniformWarnings->getValue() ) {
+          Console(3) << "Warning: Uniform variable \"" << it->first->getName() 
+            << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
+            << "in the node \"" << getName() << "\"" << endl;
+      }
+    }
+    // It is not the current_field caused the update event, skip uniform update
+  }
   EventCollectingField < Field >::update();
 }

@@ -48,10 +48,16 @@ namespace H3D {
     bool H3DAPI_API setCGUniformVariableValue( CGprogram program_handle,
                                                Field *field );
 #endif
+    // struct contains the uniform value changed tag and GLSL uniform location
+    struct UniformInfo 
+    {
+      bool value_changed; // value to indicate whether is actually changed after update
+      GLint location; // uniform field location in shader program, need update after re-link
+    };
     /// Set the value of a uniform variable in the given GLSL shader.
     /// The name of the uniform variable is the same as the name of the field. 
     bool H3DAPI_API setGLSLUniformVariableValue( GLhandleARB program_handle,
-                                                 Field *field );
+                                                 Field *field, UniformInfo* ui = NULL );
 
     void H3DAPI_API renderTextures( H3DDynamicFieldsObject * );
     void H3DAPI_API postRenderTextures( H3DDynamicFieldsObject * );
