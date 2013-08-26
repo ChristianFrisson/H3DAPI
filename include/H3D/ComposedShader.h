@@ -108,7 +108,7 @@ namespace H3D {
     
 
     // a map to maintain the uniform values and their related properties 
-    std::map< Field*, H3D::Shaders::UniformInfo > uniformFields; 
+    std::map< string , H3D::Shaders::UniformInfo > uniformFields; 
     /// The MFShaderPart is dependent on the url field of the
     /// containing ShaderPart node.
     typedef DependentMFNode< ShaderPart,
