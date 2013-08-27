@@ -112,6 +112,12 @@ string H3DGeneratedShaderNode::addUniformFields( ComposedShader *shader ) {
 }
 
 void H3DGeneratedShaderNode::buildShader() {
+
+  // clear the uniform field map
+
+  uniformFields.clear();
+
+
   // clear the previous fields that 
   clearFields();
 
