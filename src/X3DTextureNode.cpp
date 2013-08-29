@@ -348,7 +348,7 @@ GLuint X3DTextureNode::renderImage( Image *image,
       stringstream msg;
 
       GLint border_width;
-      glGetTexLevelParameteriv( texture_target, GL_TEXTURE_BORDER, 0, &border_width );
+      glGetTexLevelParameteriv( texture_target, 0, GL_TEXTURE_BORDER, &border_width );
       
       string m;
       if( border_width == 0 ) {
