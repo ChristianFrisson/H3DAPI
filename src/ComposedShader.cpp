@@ -150,17 +150,16 @@ bool ComposedShader::addField( const string &name,
   // For shader program, the name in dynamic field will match the field in shader
   
   if( uniformFields.find( name )!=uniformFields.end() ) {
-      //field already added, give warning for potential duplication
-      // can not use a field name twice, even though for different field
-      Console(4)<<"Warning: field name: "<<name<< " is already used for the shader"
-        << this->getName()<<endl;
+    // different shader part may add the same field with same name
+    // we do not need to add it again into the map.
       return false;
     }
   // the field being added have a unique name never being used before in this shader
   bool success = X3DProgrammableShaderObject::addField( name, access, field  );
   if( success ) {
     // insert a new entry for the newly added field
-    H3D::Shaders::UniformInfo ui = { field, false, 0 };
+    
+    H3D::Shaders::UniformInfo ui = { field, 0 };
     uniformFields.insert( std::pair< string, H3D::Shaders::UniformInfo >( name , ui ) );
     SFNode * sf_node_field = dynamic_cast< SFNode * >( field );
     MFNode * mf_node_field = dynamic_cast< MFNode * >( field );
@@ -170,7 +169,8 @@ bool ComposedShader::addField( const string &name,
       field->route( displayList );
     }
     field->route( updateUniforms );
-  }else{// can not add same field twice,even though it has different name.
+  }else{
+    // can not add same field twice,even though it has different name.
     // This is the limit of h3d dynamic field object. 
     Console(4)<<"Warning: Failed to add field: "<<name<<" to shader"<< getName()
       <<", either current node is invalid or the added field is already in the node database!"
@@ -349,9 +349,14 @@ void ComposedShader::render() {
 
     if( program_handle ) {
       Shaders::renderTextures( this );
-
+//#ifdef HAVE_PROFILER
+//      H3DTimer::stepBegin("updateUniform");
+//#endif
       // Lazily update uniform values, i.e., only those that have changed
       updateUniforms->upToDate();
+//#ifdef HAVE_PROFILER
+//      H3DTimer::stepEnd("updateUniform");
+//#endif
     }
   }
 }
@@ -574,28 +579,11 @@ void ComposedShader::UpdateUniforms::update() {
   for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); it++ ) {
     Field* current_field = it->second.field;
     if( hasCausedEvent( current_field ) ) {// current_field update since last time
-      if( current_field->getTypeName()=="SFUniform" ) {
-        // this is a SFUniform value, check if its value actually changed
-        current_field->upToDate();
-       
-        // static_cast current_field to SFUniform< SFBool >* is not generally safe, but as the casted pointer will always contain actualChange
-        // it will be ok here
-        if( static_cast< SFUniform< SFBool >* > (current_field)->actualChanged ) { // TODO: need to transfer this value change check into UnifromInfo
-          //Console(4)<<current_field->getFullName()<<" actually changed value, will update this uniform "<<endl;
-          // value actual changed when update, update the uniform value
-          if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
-            current_field, &it->second ) &&
-            !node->suppressUniformWarnings->getValue() ) {
-              Console(4) << "Warning: Uniform variable \"" << it->first 
-                << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
-                << "in the node \"" << node->getName() << "\"" << endl;
-          }
-        } 
-        // current_field do updates, but the actual value is not change, no need to update uniform value
-        // check next field
-        continue;
-      }
-      // current_field needs update, do not know if the value actually changed or not, do uniform update anyway for now
+      //if( current_field->getTypeName()=="SFUniform" ) {
+      //  // this is a SFUniform value, check if its value actually changed
+      current_field->upToDate();
+      // within setGLSLUniformVariableValue, check if the updated value
+      // is the same as before to decide whether to reload uniform value to GPU
       if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
         it->second.field, &it->second ) &&
         !node->suppressUniformWarnings->getValue() ) {

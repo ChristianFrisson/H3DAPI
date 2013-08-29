@@ -67,38 +67,7 @@ namespace H3D {
   /// \dotfile ComposedShader.dot
   /// 
 
-  /// object to provide acutalChanged acquiring interface
-  class ValueChangeMonitoredObject
-  {
-  public:
-    bool actualChanged;
-  };
-  /// template class to provide value change checking after update
-  template< class SF >
-  class SFUniform : public SF, public ValueChangeMonitoredObject{
-  public:
-    virtual void setValue( const typename SF::value_type &v, int id = 0 ){
-      typename SF::value_type old_value = this->value;
-      SF::setValue( v, id );
-      if( this->value != old_value ) {
-        actualChanged = true;
-      }else {
-        actualChanged = false;
-      }
-    }
-    virtual string getTypeName() { return "SFUniform"; }
-  protected:
-    virtual void update(){
-      typename SF::value_type old_value = this->value;
-      SF::update();
-      if( this->value != old_value ) {
-        //Console(4)<<"monitored value actually changed"<<endl;
-        actualChanged = true;
-      }else {
-        actualChanged = false;
-      }
-    }
-  };
+  
   
   class H3DAPI_API ComposedShader : 
     public X3DShaderNode, 

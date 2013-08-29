@@ -38,6 +38,36 @@
 #endif
 
 namespace H3D {
+
+
+  /// template class to provide value change checking after update for SField
+  template< class SF >
+  class SFUniform : public SF {
+  public:
+    bool actualChanged;
+    virtual void setValue( const typename SF::value_type &v, int id = 0 ){
+      typename SF::value_type old_value = this->value;
+      SF::setValue( v, id );
+      if( this->value == old_value ) {
+        actualChanged = false;
+      }else {
+        actualChanged = true;
+      }
+    }
+    virtual string getTypeName() { return "SFUniform"; }
+  protected:
+    virtual void update(){
+      typename SF::value_type old_value = this->value;
+      SF::update();
+      if( this->value == old_value ) {
+        //Console(4)<<"monitored value actually changed"<<endl;
+        actualChanged = false;
+      }else {
+        actualChanged = true;
+      }
+    }
+  };
+
   namespace Shaders {
 #ifdef HAVE_CG
     CGprofile H3DAPI_API cgProfileFromString( const string &profile, 
@@ -52,7 +82,6 @@ namespace H3D {
     struct UniformInfo 
     {
       Field* field;
-      bool value_changed; // value to indicate whether is actually changed after update
       GLint location; // uniform field location in shader program, need update after re-link
     };
     /// Set the value of a uniform variable in the given GLSL shader.

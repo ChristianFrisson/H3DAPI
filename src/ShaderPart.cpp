@@ -204,7 +204,7 @@ void ShaderPart::SFShaderString::update() {
       if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
      }
   }
-  Console(4) << "None of the urls in ShaderPart with url [";
+  Console(4) << "None of the urls in ShaderPart:"<<this->getFullName()<<" with url [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
     Console(4) << " \"" << *i << "\"";
   }
