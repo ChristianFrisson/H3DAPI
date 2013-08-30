@@ -375,23 +375,27 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
 void X3DTexture2DNode::enableTexturing() {
   glEnable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i && 
-      ( i->pixelType() == Image::LUMINANCE_ALPHA || 
-	i->pixelType() == Image::RGBA ||
-	i->pixelType() == Image::BGRA ) ) {
-    glEnable( GL_BLEND );
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  if( i ) {
+    Image::PixelType pixel_type = i->pixelType();
+    if( pixel_type == Image::LUMINANCE_ALPHA ||
+      pixel_type == Image::RGBA || 
+      pixel_type == Image::BGRA ) {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
   }
 }
 
 void X3DTexture2DNode::disableTexturing() {
   glDisable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i && 
-      ( i->pixelType() == Image::LUMINANCE_ALPHA || 
-	i->pixelType() == Image::RGBA ||
-	i->pixelType() == Image::BGRA ) ) {
-    glDisable( GL_BLEND );
+  if( i ) {
+    Image::PixelType pixel_type = i->pixelType();
+    if( pixel_type == Image::LUMINANCE_ALPHA ||
+      pixel_type == Image::RGBA || 
+      pixel_type == Image::BGRA ) {
+        glDisable( GL_BLEND );
+    }
   }
 }
 

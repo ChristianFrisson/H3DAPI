@@ -61,6 +61,7 @@ ImageTexture::ImageTexture(
                     _scaleToP2, _image, _textureProperties ),
   X3DUrlObject( _url ),
   imageLoader( _imageLoader ),
+  imageChanged( new Field ),
   load_thread( NULL ) {
 
   type_name = "ImageTexture";
@@ -68,6 +69,11 @@ ImageTexture::ImageTexture(
 
   url->route( image );
   imageLoader->route( image );
+  
+  imageChanged->setName( "imageChanged" );
+  imageChanged->setOwner( this );
+
+  image->route( imageChanged );
 }
 
 Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
@@ -215,6 +221,34 @@ void ImageTexture::SFImage::update() {
   resetChanges();
 }
 
+void ImageTexture::enableTexturing(){
+  glEnable( texture_target );
+  // only reset the GL_BLEND state when image updated
+  if( !imageChanged->isUpToDate() ) {
+    Image::PixelType pixel_type = image->getValue()->pixelType();
+    if( pixel_type == Image::LUMINANCE_ALPHA ||
+      pixel_type == Image::RGBA || 
+      pixel_type == Image::BGRA ) {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
+  }
+}
+
+void ImageTexture::disableTexturing(){
+  glDisable( texture_target );
+  // only reset the GL_BLEND state when image updated
+  if( !imageChanged->isUpToDate() ) {
+    Image::PixelType pixel_type = image->getValue()->pixelType();
+    if( pixel_type == Image::LUMINANCE_ALPHA ||
+      pixel_type == Image::RGBA || 
+      pixel_type == Image::BGRA ) {
+        glEnable( GL_BLEND );
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    }
+  }
+}
+
 void ImageTexture::render() {
   if( url->size() > 0 ) {
     try {
@@ -242,6 +276,8 @@ void ImageTexture::render() {
     texture_target = getTextureTarget();
     disableTexturing();
   }
+  // clear the imageChanged event field
+  imageChanged->upToDate();
 }
 
 
