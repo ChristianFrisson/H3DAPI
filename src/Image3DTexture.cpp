@@ -61,18 +61,13 @@ Image3DTexture::Image3DTexture(
   X3DTexture3DNode( _displayList, _metadata, _repeatS, _repeatT, _repeatR,
                     _scaleToP2, _image, _textureProperties ),
   X3DUrlObject( _url ),
-  imageLoader( _imageLoader ),
-  imageChanged ( new Field ){
+  imageLoader( _imageLoader ) {
 
   type_name = "Image3DTexture";
   database.initFields( this );
 
   url->route( image );
   imageLoader->route( image );
-
-  imageChanged->setName( "imageChanged" );
-  imageChanged->setOwner( this );
-  image->route( imageChanged );
 }
 
 Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
@@ -207,34 +202,6 @@ void Image3DTexture::SFImage::update() {
   resetChanges();
 }
 
-void Image3DTexture::enableTexturing(){
-  glEnable( texture_target );
-  // only reset the GL_BLEND state when image updated
-  if( !imageChanged->isUpToDate() ) {
-    Image::PixelType pixel_type = image->getValue()->pixelType();
-    if( pixel_type == Image::LUMINANCE_ALPHA ||
-      pixel_type == Image::RGBA || 
-      pixel_type == Image::BGRA ) {
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    }
-  }
-}
-
-void Image3DTexture::disableTexturing(){
-  glDisable( texture_target );
-  // only reset the GL_BLEND state when image updated
-  if( !imageChanged->isUpToDate() ) {
-    Image::PixelType pixel_type = image->getValue()->pixelType();
-    if( pixel_type == Image::LUMINANCE_ALPHA ||
-      pixel_type == Image::RGBA || 
-      pixel_type == Image::BGRA ) {
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    }
-  }
-}
-
 void Image3DTexture::render() {
   if( url->size() > 0 ) {
     try {
@@ -262,8 +229,6 @@ void Image3DTexture::render() {
     texture_target = getTextureTarget();
     disableTexturing();
   }
-  // clear iamgeChanged event field
-  imageChanged->upToDate();
 }
 
 

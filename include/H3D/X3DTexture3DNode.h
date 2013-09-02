@@ -209,6 +209,9 @@ namespace H3D {
     GLint texture_unit;
     /// The OpenGL texture target that is used to render this texture.
     GLenum texture_target; 
+
+    /// Field to indicate image will change
+    auto_ptr< Field > imageNeedsUpdate;
   };
 }
 

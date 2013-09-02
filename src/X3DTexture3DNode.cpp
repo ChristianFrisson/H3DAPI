@@ -66,7 +66,8 @@ X3DTexture3DNode::X3DTexture3DNode(
   textureProperties( _textureProp ),
   texture_id( 0 ),
   texture_unit( GL_TEXTURE0_ARB ),
-  texture_target( 0 ) {
+  texture_target( 0 ),
+  imageNeedsUpdate( new Field ){
 
   type_name = "X3DTexture3DNode";
 
@@ -85,6 +86,10 @@ X3DTexture3DNode::X3DTexture3DNode(
   repeatR->route( displayList );
   scaleToPowerOfTwo->route( displayList );
   textureProperties->route( displayList );
+
+  imageNeedsUpdate->setName( "ImageNeedsUpdate" );
+  imageNeedsUpdate->setOwner( this );
+  image->route( imageNeedsUpdate );
 }
 
 string X3DTexture3DNode::SFImage::getValueAsString( const string& separator) {
@@ -293,6 +298,7 @@ void X3DTexture3DNode::render()     {
   if( i ) {
     renderTextureProperties();
   }
+  imageNeedsUpdate->upToDate();
 }
 
 void X3DTexture3DNode::renderTextureProperties() {
@@ -384,7 +390,7 @@ void X3DTexture3DNode::enableTexturing() {
   if( texture_target != GL_TEXTURE_2D_ARRAY_EXT ) 
     glEnable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i ) {
+  if( i&&!imageNeedsUpdate->isUpToDate() ) {
     Image::PixelType pixel_type = i->pixelType();
     if( pixel_type == Image::LUMINANCE_ALPHA ||
       pixel_type == Image::RGBA ||
@@ -403,7 +409,7 @@ void X3DTexture3DNode::disableTexturing() {
   if( texture_target != GL_TEXTURE_2D_ARRAY_EXT ) 
     glDisable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i ) {
+  if( i&&!imageNeedsUpdate->isUpToDate() ) {
     Image::PixelType pixel_type = i->pixelType();
     if( pixel_type == Image::LUMINANCE_ALPHA ||
       pixel_type == Image::RGBA ||

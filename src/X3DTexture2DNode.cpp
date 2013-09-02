@@ -63,7 +63,8 @@ X3DTexture2DNode::X3DTexture2DNode(
   textureProperties( _textureProp ),
   texture_id( 0 ),
   texture_unit( GL_TEXTURE0_ARB ),
-  texture_target( 0 ) {
+  texture_target( 0 ),
+  imageNeedsUpdate ( new Field ){
 
   type_name = "X3DTexture2DNode";
 
@@ -80,6 +81,10 @@ X3DTexture2DNode::X3DTexture2DNode(
   repeatT->route( displayList );
   scaleToPowerOfTwo->route( displayList );
   textureProperties->route( displayList );
+
+  imageNeedsUpdate->setName( "ImageNeedsUpdate" );
+  imageNeedsUpdate->setOwner( this );
+  image->route( imageNeedsUpdate );
 }
 
 void X3DTexture2DNode::SFImage::setValueFromString( const string& s ) {
@@ -299,6 +304,7 @@ void X3DTexture2DNode::render()     {
   if( i ) {
     renderTextureProperties();
   }
+  imageNeedsUpdate->upToDate();
 }
 
 void X3DTexture2DNode::renderTextureProperties() {
@@ -375,7 +381,8 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
 void X3DTexture2DNode::enableTexturing() {
   glEnable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i ) {
+  if( i&&!imageNeedsUpdate->isUpToDate() ) {
+    // update blend state when image exist and image needs update
     Image::PixelType pixel_type = i->pixelType();
     if( pixel_type == Image::LUMINANCE_ALPHA ||
       pixel_type == Image::RGBA || 
@@ -389,7 +396,7 @@ void X3DTexture2DNode::enableTexturing() {
 void X3DTexture2DNode::disableTexturing() {
   glDisable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i ) {
+  if( i&&!imageNeedsUpdate->isUpToDate() ) {
     Image::PixelType pixel_type = i->pixelType();
     if( pixel_type == Image::LUMINANCE_ALPHA ||
       pixel_type == Image::RGBA || 

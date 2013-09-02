@@ -145,12 +145,6 @@ namespace H3D {
     /// render() is overridden to include the url in error messages.
     virtual void render();
 
-    /// enableTexturing() is overrided to avoid check pixelType when not necessary
-    virtual void enableTexturing();
-
-    /// disableTexturing() is overrided to avoid check pixelType when not necessary
-    virtual void disableTexturing();
-
     /// The ImageLoader nodes to use to read the image files.
     /// 
     /// <b>Access type:</b> inputOutput \n
@@ -165,9 +159,6 @@ namespace H3D {
     /// The thread used for downloading images when 
     /// load_images_in_separate_thread is true.
     auto_ptr< H3DUtil::SimpleThread > load_thread;
-
-    /// Field to indicate image will change
-    auto_ptr< Field > imageChanged;
   };
 }
 
