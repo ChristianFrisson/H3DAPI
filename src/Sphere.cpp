@@ -37,7 +37,7 @@
 #include <H3D/HapticsRenderers.h>
 #include <H3D/H3DHapticsDevice.h>
 #include <H3D/ShadowSphere.h>
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsOptions.h>
 
 // HAPI includes
 #include <HAPI/HapticPrimitive.h>
@@ -91,16 +91,16 @@ H3DShadowObjectNode *Sphere::getShadowObject() {
 void Sphere::render() {
   bool prefer_vertex_buffer_object = false;
   if( GLEW_ARB_vertex_buffer_object ) {
-    GraphicsCachingOptions * gco = NULL;
-    getOptionNode( gco );
-    if( !gco ) {
+    GraphicsOptions * go = NULL;
+    getOptionNode( go );
+    if( !go ) {
       GlobalSettings * gs = GlobalSettings::getActive();
       if( gs ) {
-        gs->getOptionNode( gco );
+        gs->getOptionNode( go );
       }
     }
-    if( gco ) {
-      prefer_vertex_buffer_object = gco->preferVertexBufferObject->getValue();
+    if( go ) {
+      prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
     }
   }
 

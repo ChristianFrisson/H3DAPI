@@ -50,7 +50,7 @@
 #include <H3D/X3DLightNode.h>
 #include <H3D/CollisionOptions.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsOptions.h>
 #include <H3D/GraphicsHardwareInfo.h>
 
 #include <H3DUtil/TimeStamp.h>
@@ -698,7 +698,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   
   X3DShapeNode::disable_lighting_if_no_app = true;
 
-  GraphicsCachingOptions *graphics_options = NULL;
+  GraphicsOptions *graphics_options = NULL;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) {
     default_settings->getOptionNode( graphics_options );

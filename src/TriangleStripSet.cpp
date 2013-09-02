@@ -31,7 +31,7 @@
 #include <H3D/TriangleStripSet.h>
 #include <H3D/Normal.h>
 #include <H3D/GlobalSettings.h>
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsOptions.h>
 
 using namespace H3D;
 
@@ -162,17 +162,17 @@ void TriangleStripSet::render() {
     if( normalPerVertex->getValue() ) {
       bool prefer_vertex_buffer_object = false;
       if( GLEW_ARB_vertex_buffer_object ) {
-        GraphicsCachingOptions * gco = NULL;
-        getOptionNode( gco );
-        if( !gco ) {
+        GraphicsOptions * go = NULL;
+        getOptionNode( go );
+        if( !go ) {
           GlobalSettings * gs = GlobalSettings::getActive();
           if( gs ) {
-            gs->getOptionNode( gco );
+            gs->getOptionNode( go );
           }
         }
-        if( gco ) {
+        if( go ) {
           prefer_vertex_buffer_object =
-            gco->preferVertexBufferObject->getValue();
+            go->preferVertexBufferObject->getValue();
         }
       }
 

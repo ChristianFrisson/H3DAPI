@@ -30,7 +30,7 @@
 
 #include <H3D/Cylinder.h>
 #include <H3D/GlobalSettings.h>
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsOptions.h>
 
 using namespace H3D;
 
@@ -106,16 +106,16 @@ void Cylinder::render() {
   X3DGeometryNode::render();
   bool prefer_vertex_buffer_object = false;
   if( GLEW_ARB_vertex_buffer_object ) {
-    GraphicsCachingOptions * gco = NULL;
-    getOptionNode( gco );
-    if( !gco ) {
+    GraphicsOptions * go = NULL;
+    getOptionNode( go );
+    if( !go ) {
       GlobalSettings * gs = GlobalSettings::getActive();
       if( gs ) {
-        gs->getOptionNode( gco );
+        gs->getOptionNode( go );
       }
     }
-    if( gco ) {
-      prefer_vertex_buffer_object = gco->preferVertexBufferObject->getValue();
+    if( go ) {
+      prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
     }
   }
 

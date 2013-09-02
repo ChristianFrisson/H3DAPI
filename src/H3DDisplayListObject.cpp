@@ -32,7 +32,7 @@
 #include <H3D/Node.h>
 #include <H3D/Scene.h>
 #include <H3D/GlobalSettings.h>
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsOptions.h>
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/MatrixTransform.h>
 #include <H3D/H3DWindowNode.h>
@@ -274,7 +274,7 @@ bool H3DDisplayListObject::DisplayList::usingFrustumCulling() {
   if( frustum_culling_mode == ON ) return true;
   if( frustum_culling_mode == OFF ) return false;
 
-  GraphicsCachingOptions *options = NULL;
+  GraphicsOptions *options = NULL;
   H3DBoundedObject *bound_object = 
     dynamic_cast< H3DBoundedObject * >( getOwner() );
 
@@ -421,7 +421,7 @@ bool H3DDisplayListObject::DisplayList::usingCaching() {
   if( cache_mode == ON ) return true;
   if( cache_mode == OFF ) return false;
 
-  GraphicsCachingOptions *options = NULL;
+  GraphicsOptions *options = NULL;
  
   if( geom ) {
     geom->getOptionNode( options );
@@ -455,7 +455,7 @@ void H3DDisplayListObject::DisplayList::breakCache() {
 }
 
 unsigned int H3DDisplayListObject::DisplayList::cachingDelay() {
-  GraphicsCachingOptions *options = NULL;
+  GraphicsOptions *options = NULL;
   X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
   if( geom ) {
     geom->getOptionNode( options );

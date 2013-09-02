@@ -48,7 +48,7 @@
 #include <H3D/Viewpoint.h>
 #include <H3D/ViewpointGroup.h>
 #include <H3D/INIFile.h>
-#include <H3D/GraphicsCachingOptions.h>
+#include <H3D/GraphicsOptions.h>
 #include <H3D/DebugOptions.h>
 #include <H3D/HapticsOptions.h>
 #include <H3D/GeometryBoundTreeOptions.h>
@@ -257,7 +257,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   global_settings->options->push_back( new CollisionOptions );
   global_settings->options->push_back( new DebugOptions );
   global_settings->options->push_back( new GeometryBoundTreeOptions );
-  global_settings->options->push_back( new GraphicsCachingOptions );
+  global_settings->options->push_back( new GraphicsOptions );
   global_settings->options->push_back( new HapticsOptions );
   global_settings->options->push_back( new OpenHapticsOptions );
   stereo_info.reset( new StereoInfo );
@@ -638,24 +638,24 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
              id == ID_SHADOW_DARKNESS ||
              id == ID_SHADOW_DEPTH_OFFSET ) {
 
-    GraphicsCachingOptions *gco = NULL;
-    wx_frame->global_settings->getOptionNode( gco );
+    GraphicsOptions *go = NULL;
+    wx_frame->global_settings->getOptionNode( go );
 
     if( id == ID_USE_DISPLAY_LISTS ) {
-      gco->useCaching->setValue( event.IsChecked() );
+      go->useCaching->setValue( event.IsChecked() );
     } else if( id == ID_CACHE_ONLY_GEOMS ){ 
-      gco->cacheOnlyGeometries->setValue( event.IsChecked() );
+      go->cacheOnlyGeometries->setValue( event.IsChecked() );
 	} else if( id == ID_CULLING ) {
 	  int i = event.GetSelection();
-	  if (i == 0 ) gco->frustumCullingMode->setValue(WxFrameInternals::no_culling);
-	  else if (i == 1 ) gco->frustumCullingMode->setValue(WxFrameInternals::geometry);
-	  else if (i == 2 ) gco->frustumCullingMode->setValue(WxFrameInternals::all);
+	  if (i == 0 ) go->frustumCullingMode->setValue(WxFrameInternals::no_culling);
+	  else if (i == 1 ) go->frustumCullingMode->setValue(WxFrameInternals::geometry);
+	  else if (i == 2 ) go->frustumCullingMode->setValue(WxFrameInternals::all);
     } else if (id == ID_DEFAULT_SHADOWS ) {
-      gco->useDefaultShadows->setValue( event.IsChecked() );
+      go->useDefaultShadows->setValue( event.IsChecked() );
     } else if (id == ID_VERTEX_BUFFER_OBJECT) {
-      gco->preferVertexBufferObject->setValue (event.IsChecked());
+      go->preferVertexBufferObject->setValue (event.IsChecked());
     } else if (id == ID_SHADOW_DEPTH_OFFSET) {
-      gco->defaultShadowDepthOffset->setValue(X3D::Convert::atof( event.GetString().mb_str() ) );
+      go->defaultShadowDepthOffset->setValue(X3D::Convert::atof( event.GetString().mb_str() ) );
     }
   } else if( id == ID_TOUCHABLE_FACE ||
              id == ID_DYNAMIC_MODE ||
@@ -743,8 +743,8 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
 }
 
 void SettingsDialog::handleSliderEvent( wxScrollEvent &event ) {
-  GraphicsCachingOptions *gco = NULL;
-    wx_frame->global_settings->getOptionNode( gco );
+  GraphicsOptions *go = NULL;
+    wx_frame->global_settings->getOptionNode( go );
   int id = event.GetId();
 	if (id == ID_SHADOW_DARKNESS ) {
 	  H3DFloat new_value = H3DFloat( event.GetPosition() ) /
@@ -752,7 +752,7 @@ void SettingsDialog::handleSliderEvent( wxScrollEvent &event ) {
 		stringstream darkness_value;
 		darkness_value << new_value ;
 		shadow_darkness_static_text->SetLabel( wxString( darkness_value.str().c_str(), wxConvUTF8 ));
-		gco->defaultShadowDarkness->setValue( new_value );
+		go->defaultShadowDarkness->setValue( new_value );
 	}
 }
 
@@ -769,12 +769,12 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
     on_cancel_rebuild_displaylist = true;
   }
 
-  GraphicsCachingOptions *gco = NULL;
-  wx_frame->global_settings->getOptionNode( gco );
+  GraphicsOptions *go = NULL;
+  wx_frame->global_settings->getOptionNode( go );
 
-  if( gco ) {
+  if( go ) {
     if( id == ID_CACHING_DELAY ) 
-      gco->cachingDelay->setValue( event.GetInt() );
+      go->cachingDelay->setValue( event.GetInt() );
   }
 
   GeometryBoundTreeOptions *gbto = NULL;
@@ -1275,16 +1275,16 @@ bool WxFrame::loadFile( const string &filename) {
   }
 
   // Set GraphicsCachingOptions or update page.
-  GraphicsCachingOptions * gco = 0;
-  global_settings->getOptionNode( gco );
+  GraphicsOptions * go = 0;
+  global_settings->getOptionNode( go );
 
-  if( gco ) {
-    settings->display_list_checkbox->SetValue( gco->useCaching->getValue() );
+  if( go ) {
+    settings->display_list_checkbox->SetValue( go->useCaching->getValue() );
     settings->only_geoms_checkbox->
-      SetValue( gco->cacheOnlyGeometries->getValue() );
-    settings->caching_delay_spin->SetValue( gco->cachingDelay->getValue() );
+      SetValue( go->cacheOnlyGeometries->getValue() );
+    settings->caching_delay_spin->SetValue( go->cachingDelay->getValue() );
     
-    string frustum_culling_mode = gco->frustumCullingMode->getValue();
+    string frustum_culling_mode = go->frustumCullingMode->getValue();
     if (frustum_culling_mode == WxFrameInternals::no_culling)
       settings->culling_choice->
         SetStringSelection( WxFrameInternals::wx_no_culling );
@@ -1296,48 +1296,48 @@ bool WxFrame::loadFile( const string &filename) {
         SetStringSelection( WxFrameInternals::wx_all);
     
     settings->default_shadows_checkbox->
-      SetValue( gco->useDefaultShadows->getValue() );
+      SetValue( go->useDefaultShadows->getValue() );
     settings->vertex_buffer_object_checkbox->
-      SetValue( gco->preferVertexBufferObject->getValue() );
+      SetValue( go->preferVertexBufferObject->getValue() );
     
     stringstream dsd;
-    dsd << gco->defaultShadowDarkness->getValue();
+    dsd << go->defaultShadowDarkness->getValue();
     settings->shadow_darkness_static_text->
       SetLabel( wxString( dsd.str().c_str(), wxConvUTF8 ) );
     settings->shadow_darkness_slider->
-      SetValue( gco->defaultShadowDarkness->getValue() *
+      SetValue( go->defaultShadowDarkness->getValue() *
 			          settings->shadow_darkness_slider->GetMax() );
     
     stringstream dsdo;
-    dsdo << gco->defaultShadowDepthOffset->getValue();
+    dsdo << go->defaultShadowDepthOffset->getValue();
     settings->shadow_depth_offset_text->
       ChangeValue( wxString( dsdo.str().c_str(), wxConvUTF8 ) );
     
     SaveGraphicsCachingOptions(false);
   } else {
-    gco = new GraphicsCachingOptions;
-    gco->useCaching->setValue( settings->display_list_checkbox->GetValue() );
-    gco->cacheOnlyGeometries->
+    go = new GraphicsOptions;
+    go->useCaching->setValue( settings->display_list_checkbox->GetValue() );
+    go->cacheOnlyGeometries->
       setValue( settings->only_geoms_checkbox->GetValue() );
-    gco->cachingDelay->setValue( settings->caching_delay_spin->GetValue() );
+    go->cachingDelay->setValue( settings->caching_delay_spin->GetValue() );
     
     int i = settings->culling_choice->GetSelection();
-    if (i == 0) gco->frustumCullingMode->setValue(WxFrameInternals::no_culling);
-    else if (i == 1) gco->frustumCullingMode->setValue(WxFrameInternals::geometry);
-    if (i == 2) gco->frustumCullingMode->setValue(WxFrameInternals::all);
+    if (i == 0) go->frustumCullingMode->setValue(WxFrameInternals::no_culling);
+    else if (i == 1) go->frustumCullingMode->setValue(WxFrameInternals::geometry);
+    if (i == 2) go->frustumCullingMode->setValue(WxFrameInternals::all);
     
-    gco->useDefaultShadows->
+    go->useDefaultShadows->
       setValue( settings->default_shadows_checkbox->GetValue() );
-    gco->preferVertexBufferObject->
+    go->preferVertexBufferObject->
       setValue( settings->vertex_buffer_object_checkbox->GetValue() );
     
-    gco->defaultShadowDarkness->setValue(
+    go->defaultShadowDarkness->setValue(
                     H3DFloat( settings->shadow_darkness_slider->GetValue() ) /
 										settings->shadow_darkness_slider->GetMax() );
-    gco->defaultShadowDepthOffset->setValueFromString(
+    go->defaultShadowDepthOffset->setValueFromString(
                     toStr( settings->shadow_depth_offset_text->GetValue() ) );
 
-    global_settings->options->push_back( gco );
+    global_settings->options->push_back( go );
   }
 
   // Set HapticsOptions or update page.
@@ -2205,17 +2205,17 @@ void WxFrame::SaveGeometryBoundTreeOptions( bool to_config ) {
 
 void WxFrame::SaveGraphicsCachingOptions( bool to_config ) {
   // Save graphics caching options
-  GraphicsCachingOptions *gco = NULL;
-  global_settings->getOptionNode (gco);
-  if(gco) {
-    bool use_caching = gco->useCaching->getValue();
-    bool cache_only_geometries = gco->cacheOnlyGeometries->getValue();
-    int caching_delay = gco->cachingDelay->getValue();
-	string frustum_culling_mode = gco->frustumCullingMode->getValue();
-	bool use_default_shadows = gco->useDefaultShadows->getValue();
-	bool prefer_vertex_buffer_object = gco->preferVertexBufferObject->getValue();
-	float default_shadow_darkness = gco->defaultShadowDarkness->getValue();
-	float default_shadow_depth_offset = gco->defaultShadowDepthOffset->getValue();
+  GraphicsOptions *go = NULL;
+  global_settings->getOptionNode (go);
+  if(go) {
+    bool use_caching = go->useCaching->getValue();
+    bool cache_only_geometries = go->cacheOnlyGeometries->getValue();
+    int caching_delay = go->cachingDelay->getValue();
+	string frustum_culling_mode = go->frustumCullingMode->getValue();
+	bool use_default_shadows = go->useDefaultShadows->getValue();
+	bool prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
+	float default_shadow_darkness = go->defaultShadowDarkness->getValue();
+	float default_shadow_depth_offset = go->defaultShadowDepthOffset->getValue();
     if( to_config ) {
       h3dConfig = wxConfigBase::Get();
       h3dConfig->SetPath(wxT("/Settings/GraphicsCaching"));
@@ -2516,9 +2516,9 @@ void WxFrame::LoadSettings( bool from_config ) {
   }
 
   // Load Graphics caching options
-  GraphicsCachingOptions *gco = NULL;
-  global_settings->getOptionNode(gco);
-  if(gco) {
+  GraphicsOptions *go = NULL;
+  global_settings->getOptionNode(go);
+  if(go) {
     bool use_caching;
     bool cache_only_geometries;
     int caching_delay;
@@ -2542,14 +2542,14 @@ void WxFrame::LoadSettings( bool from_config ) {
         h3dConfig->Read(wxT("defaultShadowDepthOffset"), &default_shadow_depth_offset);
       } else {
         // on clean system
-        use_caching = gco->useCaching->getValue();
-        cache_only_geometries = gco->cacheOnlyGeometries->getValue();
-        caching_delay = gco->cachingDelay->getValue();
-        frustum_culling_mode = gco->frustumCullingMode->getValue();
-		use_default_shadows = gco->useDefaultShadows->getValue();
-		prefer_vertex_buffer_object = gco->preferVertexBufferObject->getValue();
-		default_shadow_darkness = gco->defaultShadowDarkness->getValue();
-		default_shadow_depth_offset = gco->defaultShadowDepthOffset->getValue();
+        use_caching = go->useCaching->getValue();
+        cache_only_geometries = go->cacheOnlyGeometries->getValue();
+        caching_delay = go->cachingDelay->getValue();
+        frustum_culling_mode = go->frustumCullingMode->getValue();
+		use_default_shadows = go->useDefaultShadows->getValue();
+		prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
+		default_shadow_darkness = go->defaultShadowDarkness->getValue();
+		default_shadow_depth_offset = go->defaultShadowDepthOffset->getValue();
       }
     } else {
       use_caching = non_conf_opt.use_caching;
@@ -2562,14 +2562,14 @@ void WxFrame::LoadSettings( bool from_config ) {
       default_shadow_depth_offset = non_conf_opt.default_shadow_depth_offset;
     }
 
-    gco->useCaching->setValue( use_caching );
+    go->useCaching->setValue( use_caching );
     settings->display_list_checkbox->SetValue( use_caching );
-    gco->cacheOnlyGeometries->setValue( cache_only_geometries );
+    go->cacheOnlyGeometries->setValue( cache_only_geometries );
     settings->only_geoms_checkbox->SetValue( cache_only_geometries );
-    gco->cachingDelay->setValue( caching_delay );
+    go->cachingDelay->setValue( caching_delay );
     settings->caching_delay_spin->SetValue( caching_delay );
     
-    gco->frustumCullingMode->setValue( frustum_culling_mode );
+    go->frustumCullingMode->setValue( frustum_culling_mode );
     if( frustum_culling_mode == WxFrameInternals::no_culling )
       settings->culling_choice->
         SetStringSelection( WxFrameInternals::wx_no_culling );
@@ -2579,13 +2579,13 @@ void WxFrame::LoadSettings( bool from_config ) {
     else if( frustum_culling_mode == WxFrameInternals::all )
       settings->culling_choice->SetStringSelection( WxFrameInternals::wx_all );
       
-    gco->useDefaultShadows->setValue(use_default_shadows);
+    go->useDefaultShadows->setValue(use_default_shadows);
     settings->default_shadows_checkbox->SetValue(use_default_shadows);
     
-    gco->preferVertexBufferObject->setValue(prefer_vertex_buffer_object);
+    go->preferVertexBufferObject->setValue(prefer_vertex_buffer_object);
     settings->vertex_buffer_object_checkbox->SetValue(prefer_vertex_buffer_object);
     
-    gco->defaultShadowDarkness->setValue( default_shadow_darkness );
+    go->defaultShadowDarkness->setValue( default_shadow_darkness );
     settings->shadow_darkness_slider->
       SetValue( default_shadow_darkness * settings->shadow_darkness_slider->GetMax() );
     stringstream def_shadow_darkness;
@@ -2593,7 +2593,7 @@ void WxFrame::LoadSettings( bool from_config ) {
     settings->shadow_darkness_static_text->
       SetLabel( wxString( def_shadow_darkness.str().c_str(), wxConvUTF8 ) );
     
-    gco->defaultShadowDepthOffset->setValue( default_shadow_depth_offset );
+    go->defaultShadowDepthOffset->setValue( default_shadow_depth_offset );
     stringstream def_shadow_depth_offset;
     def_shadow_depth_offset  << default_shadow_depth_offset;
     settings->shadow_depth_offset_text->

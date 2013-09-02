@@ -64,11 +64,6 @@
 #include <H3D/INIFile.h>
 #include <H3D/ResourceResolver.h>
 
-#include <H3D/GraphicsCachingOptions.h>
-#include <H3D/DebugOptions.h>
-#include <H3D/HapticsOptions.h>
-#include <H3D/GeometryBoundTreeOptions.h>
-#include <H3D/OpenHapticsOptions.h>
 
 #include <H3D/HapticsRenderers.h>
 
