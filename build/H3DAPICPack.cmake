@@ -537,7 +537,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindOpenHaptics.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindPTHREAD.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindSpiderMonkey.cmake
-                 ${H3DAPI_SOURCE_DIR}/modules/FindTEEM.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindH3DTEEM.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindV8.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindVirtualHand.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindVorbis.cmake
