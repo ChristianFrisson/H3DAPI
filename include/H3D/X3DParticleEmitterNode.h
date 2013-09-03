@@ -95,8 +95,7 @@ namespace H3D {
       } ParticleType;
 
       /// Base class for user defined data stored with each particle
-      struct UserData {
-      };
+      typedef RefCountedClass UserData;
 
       /// Constructor.
       Particle( const Vec3f &_position = Vec3f( 0, 0, 0 ),
@@ -169,20 +168,11 @@ namespace H3D {
       /// when the particle is destroyed.
       ///
       void setUserData ( UserData* _data ) {
-        if ( _data != user_data ) {
-          delete user_data;
-          user_data= _data;
-        }
+        user_data.reset ( _data );
       }
 
       UserData* getUserData () const {
-        return user_data;
-      }
-
-      /// Called by the particle system before the particle is removed
-      void remove () {
-        delete user_data;
-        user_data= NULL;
+        return user_data.get();
       }
 
       H3DFloat mass;
@@ -204,7 +194,7 @@ namespace H3D {
       void renderTexCoord( const Vec3f &tc );
       void renderTexCoord( unsigned int i, X3DTextureCoordinateNode *tc );
 
-      UserData* user_data;
+      AutoRef < UserData > user_data;
     };
  
     virtual void generateParticles( ParticleSystem *ps,
