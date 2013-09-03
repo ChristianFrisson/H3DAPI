@@ -165,7 +165,7 @@ void SuperShape::render() {
 
     H3DInt32 size = res * ( res + 1 ) * 2;
     // draw each triangle strip from the arrays
-    for( int i = 0; i < res; i++ ) {
+    for( int i = 0; i < res; ++i ) {
       // render the triangle strip
       glDrawArrays( GL_TRIANGLE_STRIP, 
                     size * i / res, 
@@ -216,7 +216,7 @@ void SuperShape::SFCoordinateNode::update() {
   vector< Vec3f > normals;
   
   // Generate coordinates as if it was several trianglestrips
-  for(int lat_count = 0; lat_count < res; lat_count++ )
+  for(int lat_count = 0; lat_count < res; ++lat_count )
     {
       H3DFloat phi1 = (H3DFloat)lat_count * lat_step - 
                       ( (H3DFloat)(Constants::pi)/2 );
@@ -227,7 +227,7 @@ void SuperShape::SFCoordinateNode::update() {
       Vec3f fa;
       Vec3f fc;
       // New triangle strip is assumed from here.
-      for(int long_count = 0;long_count<=res; long_count++) {
+      for(int long_count = 0;long_count<=res; ++long_count) {
         H3DFloat theta1 = (H3DFloat)long_count * long_step -
                           (H3DFloat)(Constants::pi);
         H3DFloat theta2 = theta1 + long_step;
@@ -408,7 +408,7 @@ void SuperShape::startTexGen() {
       dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
     if( mt ) {
       size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; i++ ) {
+      for( size_t i = 0; i < texture_units; ++i ) {
         glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
         glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
         glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
@@ -444,7 +444,7 @@ void SuperShape::stopTexGen() {
     dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
   if( mt ) {
     size_t texture_units = mt->texture->size();
-    for( size_t i = 0; i < texture_units; i++ ) {
+    for( size_t i = 0; i < texture_units; ++i ) {
       glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
       glDisable( GL_TEXTURE_GEN_S );
       glDisable( GL_TEXTURE_GEN_T );

@@ -67,7 +67,7 @@ void ForceField::traverseSG( TraverseInfo &ti ) {
     } else {
       Vec3f tmp_force( rotation * force->getValue() );
       Vec3f tmp_torque( rotation * torque->getValue() );
-      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+      for( unsigned int i = 0; i < device_index.size(); ++i ) {
         if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
           ti.addForceEffect( device_index[i],
                              new HAPI::HapticForceField( tmp_force,

@@ -123,7 +123,7 @@ void SurfaceEmitter::generateParticles( ParticleSystem *ps,
     // create new particle
     Particle p = newParticle( ps, pos, dir );
     particles.push_back( p );
-    particles_to_emit--;
+    --particles_to_emit;
   }
 }
 

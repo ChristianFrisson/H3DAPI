@@ -261,15 +261,15 @@ void PointEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
         break;
       case 2:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
         z = 0;
         break;
       case 3:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
-        iter++;
+        ++iter;
         z = *iter;
         break;
     }
@@ -299,15 +299,15 @@ void PointEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
         break;
       case 2:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
         z = 0;
         break;
       case 3:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
-        iter++;
+        ++iter;
         z = *iter;
         break;
     }
@@ -762,15 +762,15 @@ void ConeEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
         break;
       case 2:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
         z = 0;
         break;
       case 3:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
-        iter++;
+        ++iter;
         z = *iter;
         break;
     }
@@ -800,15 +800,15 @@ void ConeEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
         break;
       case 2:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
         z = 0;
         break;
       case 3:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
-        iter++;
+        ++iter;
         z = *iter;
         break;
     }
@@ -1005,15 +1005,15 @@ void ExplosionEmitterDialog::handleSettingsChange (wxCommandEvent & event) {
         break;
       case 2:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
         z = 0;
         break;
       case 3:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
-        iter++;
+        ++iter;
         z = *iter;
         break;
     }

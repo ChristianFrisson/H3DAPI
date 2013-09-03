@@ -55,7 +55,7 @@ void H3DScriptNode::addNamedNodes( X3D::DEFNodes *dn ) {
   if( !dn ) return;
 
   for( X3D::DEFNodes::const_iterator i = dn->begin();
-       i != dn->end(); i++ ) {
+       i != dn->end(); ++i ) {
     addNamedNode( (*i).first, (*i).second );
   }
 }
@@ -82,7 +82,7 @@ int H3DScriptNode::removeNamedNode( const string &name ) {
   
 void H3DScriptNode::clearNamedNodes() {
   for( NamedNodes::iterator i = named_nodes.begin();
-       i != named_nodes.end(); i++ ) {
+       i != named_nodes.end(); ++i ) {
     (*i).second->removeDestructCallback( removeNamedNodeCB, this );
   }
   named_nodes.clear();
@@ -100,7 +100,7 @@ Node *H3DScriptNode::getNamedNode( const string &name ) {
 void H3DScriptNode::removeNamedNodeCB( Node *n, void *data ) {
   H3DScriptNode *script_node = static_cast< H3DScriptNode * >( data );
   for( NamedNodes::iterator i = script_node->named_nodes.begin();
-       i != script_node->named_nodes.end(); i++ ) {
+       i != script_node->named_nodes.end(); ++i ) {
     if( (*i).second == n ) {
       script_node->named_nodes.erase( i );
       break;

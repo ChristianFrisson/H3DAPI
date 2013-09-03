@@ -138,11 +138,11 @@ void H3DGeneratedShaderNode::buildShader() {
   // vertex shader
   stringstream sv;
 
-  for( unsigned int i = 0; i < varying.size(); i++ ) {
+  for( unsigned int i = 0; i < varying.size(); ++i ) {
     sv << "varying " << varying[i].type << " " << varying[i].name << ";" << endl; 
   }
 
-  for( unsigned int i = 0; i < attributes.size(); i++ ) {
+  for( unsigned int i = 0; i < attributes.size(); ++i ) {
     sv << "attribute " << attributes[i].type << " " << attributes[i].name << ";" << endl; 
   }
 
@@ -158,7 +158,7 @@ void H3DGeneratedShaderNode::buildShader() {
     
   sv << getVertexShaderString() << endl;
 
-  for( unsigned int i = 0; i < varying.size(); i++ ) {
+  for( unsigned int i = 0; i < varying.size(); ++i ) {
     sv << "  {" << endl;
     sv << "    " << varying[i].calculation << ";" << endl; 
     sv << "  }" << endl;
@@ -172,7 +172,7 @@ void H3DGeneratedShaderNode::buildShader() {
   // fragment shader
   stringstream sf;
 
-  for( unsigned int i = 0; i < varying.size(); i++ ) {
+  for( unsigned int i = 0; i < varying.size(); ++i ) {
     sf << "varying " << varying[i].type << " " << varying[i].name << ";" << endl; 
   }
 

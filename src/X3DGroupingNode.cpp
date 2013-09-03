@@ -89,7 +89,7 @@ void X3DGroupingNode::render()     {
   X3DChildNode::render();
   
   for( MFNode::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
+       i != children->end(); ++i ) {
     H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
     if ( l ) {
       l->enableGraphicsState();
@@ -99,7 +99,7 @@ void X3DGroupingNode::render()     {
   // not using iterators since they can become invalid if the 
   // traversal changes the children field while iterating.
   const NodeVector &c = children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
       if( tmp )
@@ -110,7 +110,7 @@ void X3DGroupingNode::render()     {
   }
 
   for( MFNode::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
+       i != children->end(); ++i ) {
     H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
     if ( l ) {
       l->disableGraphicsState();
@@ -127,7 +127,7 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
   ti.setMultiPassTransparency( false );
 
   for( MFNode::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
+       i != children->end(); ++i ) {
     H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
     if ( l ) {
       l->enableHapticsState( ti );
@@ -137,13 +137,13 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
   // not using iterators since they can become invalid if the 
   // traversal changes the children field while iterating.
   const NodeVector &c = children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] )
       c[i]->traverseSG( ti );
   }
 
   for( MFNode::const_reverse_iterator i = children->rbegin();
-       i != children->rend(); i++ ) {
+       i != children->rend(); ++i ) {
     H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
     if ( l ) {
       l->disableHapticsState( ti );
@@ -165,7 +165,7 @@ bool X3DGroupingNode::lineIntersect(
   if( add_pt_devices ) {
     LineIntersectResult::PointingDeviceResultStruct temp_ptd_struct;
     temp_ptd_struct.global_to_local = result.getCurrentTransform().inverse();
-    for( unsigned int i = 0; i < pt_dev_sensors.size(); i++ ) {
+    for( unsigned int i = 0; i < pt_dev_sensors.size(); ++i ) {
       if( pt_dev_sensors[i]->enabled->getValue() ) {
         temp_ptd_struct.x3dptd.push_back( pt_dev_sensors[i] );
       }
@@ -182,7 +182,7 @@ bool X3DGroupingNode::lineIntersect(
     Vec3f local_from = from;
     bool below_one_plane = false;
     const NodeVector &children_nodes = children->getValue();
-    for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
+    for( unsigned int i = 0; i < children_nodes.size(); ++i ) {
       ClipPlane * cp = dynamic_cast< ClipPlane * >(children_nodes[i]);
       if( cp ) {
         if( !cp->truncateLine( local_from, local_to,
@@ -194,7 +194,7 @@ bool X3DGroupingNode::lineIntersect(
     }
 
     if( !below_one_plane ) {
-      for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
+      for( unsigned int i = 0; i < children_nodes.size(); ++i ) {
         if( children_nodes[i] &&
             children_nodes[i]->lineIntersect( local_from,
                                               local_to,
@@ -214,7 +214,7 @@ bool X3DGroupingNode::lineIntersect(
 void X3DGroupingNode::closestPoint( const Vec3f &p,
                                     NodeIntersectResult &result ) {
   const NodeVector &children_nodes = children->getValue();
-  for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
+  for( unsigned int i = 0; i < children_nodes.size(); ++i ) {
     if( children_nodes[i] )
       children_nodes[i]->closestPoint( p, result );
   }
@@ -282,7 +282,7 @@ void X3DGroupingNode::MFChild::onRemove( Node *n ) {
         vector< X3DPointingDeviceSensorNode * >::iterator i;
         bool found = false;
         for( i = o->pt_dev_sensors.begin();
-          i < o->pt_dev_sensors.end(); i++ ) {
+          i < o->pt_dev_sensors.end(); ++i ) {
             if( *i == n ) {
               found = true;
               break;
@@ -307,7 +307,7 @@ bool X3DGroupingNode::movingSphereIntersect( H3DFloat radius,
   if( !the_bound || the_bound->movingSphereIntersect( from, to, radius ) ) {
     const NodeVector &children_nodes = children->getValue();
     bool hit = false;
-    for( unsigned int i = 0; i < children_nodes.size(); i++ ) {
+    for( unsigned int i = 0; i < children_nodes.size(); ++i ) {
       if( children_nodes[i] &&
           children_nodes[i]->movingSphereIntersect( radius, from, to, result ))
         hit = true;
@@ -322,7 +322,7 @@ void X3DGroupingNode::AddChildren::onAdd( Node *n ) {
 
   X3DGroupingNode *group_node = static_cast< X3DGroupingNode * >(getOwner());
   const NodeVector &c = group_node->children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( n == c[i] )
       return;
   }

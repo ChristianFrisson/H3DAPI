@@ -43,7 +43,7 @@ H3DSoundFileNode *H3DSoundFileNode::getSupportedFileReader( const string &url ) 
   if( initialized ) { 
     for( list< FileReaderRegistration >::iterator i = 
            registered_file_readers->begin();
-         i != registered_file_readers->end(); i++ ) {
+         i != registered_file_readers->end(); ++i ) {
       if( (*i).supports_func( url ) )
         return (*(*i).create_func)();
     }

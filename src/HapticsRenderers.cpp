@@ -105,7 +105,7 @@ RuspiniRenderer::RuspiniRenderer( Inst< ProxyRadius > _proxyRadius,
 void RuspiniRenderer::ProxyRadius::onValueChange( const H3DFloat &v ) {
   RuspiniRenderer *ruspini_node = 
     static_cast< RuspiniRenderer * >( getOwner() );
-  for( unsigned int i = 0; i < ruspini_node->renderers.size(); i++ ) {
+  for( unsigned int i = 0; i < ruspini_node->renderers.size(); ++i ) {
     HAPI::RuspiniRenderer *r = 
       static_cast< HAPI::RuspiniRenderer * >(ruspini_node->getHapticsRenderer( i ) );
     r->setProxyRadius( v );
@@ -115,7 +115,7 @@ void RuspiniRenderer::ProxyRadius::onValueChange( const H3DFloat &v ) {
 void RuspiniRenderer::AlwaysFollowSurface::onValueChange( const bool &b ) {
   RuspiniRenderer *ruspini_node = 
     static_cast< RuspiniRenderer * >( getOwner() );
-  for( unsigned int i = 0; i < ruspini_node->renderers.size(); i++ ) {
+  for( unsigned int i = 0; i < ruspini_node->renderers.size(); ++i ) {
     HAPI::RuspiniRenderer *r = 
       static_cast< HAPI::RuspiniRenderer * >(ruspini_node->getHapticsRenderer( i ) );
     r->setAlwaysFollowSurface( b );
@@ -127,7 +127,7 @@ void OpenHapticsRenderer::ShapeType::onValueChange( const string &v ) {
   OpenHapticsRenderer *oh_node = 
     static_cast< OpenHapticsRenderer * >( getOwner() );
 
-  for( unsigned int i = 0; i < oh_node->renderers.size(); i++ ) {
+  for( unsigned int i = 0; i < oh_node->renderers.size(); ++i ) {
     HAPI::OpenHapticsRenderer *r = 
       static_cast< HAPI::OpenHapticsRenderer * >(oh_node->getHapticsRenderer( i ) );
   
@@ -150,7 +150,7 @@ void OpenHapticsRenderer::AdaptiveViewport::onValueChange( const bool &v ) {
 #ifdef HAVE_OPENHAPTICS
   OpenHapticsRenderer *oh_node = 
     static_cast< OpenHapticsRenderer * >( getOwner() );
-  for( unsigned int i = 0; i < oh_node->renderers.size(); i++ ) {
+  for( unsigned int i = 0; i < oh_node->renderers.size(); ++i ) {
     HAPI::OpenHapticsRenderer *r = 
       static_cast< HAPI::OpenHapticsRenderer * >(oh_node->getHapticsRenderer( i ) );
     r->setDefaultAdaptiveViewport( v );
@@ -162,7 +162,7 @@ void OpenHapticsRenderer::CameraView::onValueChange( const bool &v ) {
 #ifdef HAVE_OPENHAPTICS
   OpenHapticsRenderer *oh_node = 
     static_cast< OpenHapticsRenderer * >( getOwner() );
-  for( unsigned int i = 0; i < oh_node->renderers.size(); i++ ) {
+  for( unsigned int i = 0; i < oh_node->renderers.size(); ++i ) {
     HAPI::OpenHapticsRenderer *r = 
       static_cast< HAPI::OpenHapticsRenderer * >(oh_node->getHapticsRenderer( i ) );
     r->setDefaultHapticCameraView( v );
@@ -266,7 +266,7 @@ void LayeredRenderer::MFHapticsRendererNode::onAdd( Node *n ) {
   DeviceInfo * di = DeviceInfo::getActive();
   if( di ) {
     const NodeVector &devices = di->device->getValue();
-    for( unsigned int i = 0; i < devices.size(); i++ ) {
+    for( unsigned int i = 0; i < devices.size(); ++i ) {
       H3DHapticsDevice * h3d_device =
         static_cast< H3DHapticsDevice * >(devices[i]);
       LayeredRenderer *layered_renderer =
@@ -296,7 +296,7 @@ void LayeredRenderer::MFHapticsRendererNode::onRemove( Node *n ) {
   DeviceInfo * di = DeviceInfo::getActive();
   if( di ) {
     const NodeVector &devices = di->device->getValue();
-    for( unsigned int i = 0; i < devices.size(); i++ ) {
+    for( unsigned int i = 0; i < devices.size(); ++i ) {
       H3DHapticsDevice * h3d_device =
         static_cast< H3DHapticsDevice * >(devices[i]);
       LayeredRenderer *layered_renderer =
@@ -306,14 +306,14 @@ void LayeredRenderer::MFHapticsRendererNode::onRemove( Node *n ) {
       }
     }
   }
-  for( unsigned int i = 0; i < size(); i++ ) {
+  for( unsigned int i = 0; i < size(); ++i ) {
     if( value[i] == n ) {
       layered_renderer->hapticsRendererRemovedInternal( i, true );
       HAPI::HAPIHapticsRenderer *current_hapi_renderer =
         i < layered_renderer->renderers.size() ?
           layered_renderer->renderers[i] : NULL;
       static_cast< H3DHapticsRendererNode *>(n)->hapticsRendererRemoved(0);
-      for( unsigned int j = 0; j < renderer_in_these_devices.size(); j++ ) {
+      for( unsigned int j = 0; j < renderer_in_these_devices.size(); ++j ) {
         if( HAPI::HAPIHapticsDevice* hapi_device =
             renderer_in_these_devices[j]->getHAPIDevice() ) {
           if ( PeriodicThreadBase* ht= hapi_device->getThread() ) {

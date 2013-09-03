@@ -93,7 +93,7 @@ void Circle2D::render() {
   H3DFloat x, y;
   glBegin( GL_LINE_STRIP );
   int i = 0;
-  for ( ; i < nr_segments; i++ ) {
+  for ( ; i < nr_segments; ++i ) {
     theta = i * angle_increment;
     x = r * H3DCos(theta);
     y = r * H3DSin(theta);

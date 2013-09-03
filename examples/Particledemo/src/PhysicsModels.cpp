@@ -132,14 +132,14 @@ void BoundedPhysicsModelDialog::getIndex () {
   int count = 0;
   for( ParticleSystem::MFPhysicsModelNode::const_iterator i = 
        ePS->physics->begin();
-       i != ePS->physics->end(); i++ ) {
+       i != ePS->physics->end(); ++i ) {
     boundedPhysicsModel = 
       dynamic_cast<BoundedPhysicsModel *> (*i);
     if (boundedPhysicsModel) {
         index = count;
         break;
     }
-    count++;
+    ++count;
   }
 }
 
@@ -276,15 +276,15 @@ void GravityPhysicsModelDialog::handleSettingsChange (wxCommandEvent & event) {
         break;
       case 2:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
         z = 0;
         break;
       case 3:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
-        iter++;
+        ++iter;
         z = *iter;
         break;
     }
@@ -297,14 +297,14 @@ void GravityPhysicsModelDialog::getIndex () {
   int count = 0;
   for( ParticleSystem::MFPhysicsModelNode::const_iterator i = 
        ePS->physics->begin();
-       i != ePS->physics->end(); i++ ) {
+       i != ePS->physics->end(); ++i ) {
     gravityPhysicsModel = 
       dynamic_cast<GravityPhysicsModel *> (*i);
     if (gravityPhysicsModel) {
         index = count;
         break;
     }
-    count++;
+    ++count;
   }
 }
 
@@ -485,15 +485,15 @@ void WindPhysicsModelDialog::handleSettingsChange (wxCommandEvent & event) {
         break;
       case 2:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
         z = 0;
         break;
       case 3:
         x = *iter;
-        iter++;
+        ++iter;
         y = *iter;
-        iter++;
+        ++iter;
         z = *iter;
         break;
     }
@@ -515,13 +515,13 @@ void WindPhysicsModelDialog::getIndex () {
   int count = 0;
   for( ParticleSystem::MFPhysicsModelNode::const_iterator i = 
        ePS->physics->begin();
-       i != ePS->physics->end(); i++ ) {
+       i != ePS->physics->end(); ++i ) {
     windPhysicsModel = 
       dynamic_cast<WindPhysicsModel *> (*i);
     if (windPhysicsModel) {
         index = count;
         break;
     }
-    count++;
+    ++count;
   }
 }

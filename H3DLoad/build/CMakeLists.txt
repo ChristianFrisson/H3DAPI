@@ -29,6 +29,10 @@ IF("${isSystemDir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
+SET(H3DLoad_MAJOR_VERSION "2")
+SET(H3DLoad_MINOR_VERSION "2")
+SET(H3DLoad_BUILD_VERSION "1")
+
 # Where to find Source files.
 SET( H3DLoad_SRCS "${H3DLoad_SOURCE_DIR}/../src/H3DLoad.cpp" )
 
@@ -42,7 +46,7 @@ INCLUDE_DIRECTORIES( ../src )
 SET(requiredLibs)
 
 # Where to find modules, used when finding packages.
-SET(CMAKE_MODULE_PATH "${H3DLoad_SOURCE_DIR}/../../build/modules/")
+SET(CMAKE_MODULE_PATH "${H3DLoad_SOURCE_DIR}/modules" "${H3DLoad_SOURCE_DIR}/../../build/modules/")
 IF( COMMAND cmake_policy )
   IF( POLICY CMP0011 )
     cmake_policy( SET CMP0011 NEW )
@@ -151,6 +155,7 @@ ENDIF(MSVC)
 SET( DEFAULT_BIN_INSTALL "bin" )
 SET( DEFAULT_LIB_INSTALL "lib" )
 
+SET( H3DLoad_package_install_dir "" )
 IF( WIN32 )
   SET( DEFAULT_BIN_INSTALL "bin32" )
   SET( DEFAULT_LIB_INSTALL "lib32" )
@@ -158,11 +163,36 @@ IF( WIN32 )
     SET( DEFAULT_BIN_INSTALL "bin64" )
     SET( DEFAULT_LIB_INSTALL "lib64" )
   ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+  
+  IF( WIN32 AND GENERATE_H3DLoad_CPACK_PROJECT )
+    SET( H3DLoad_package_install_dir "H3DLoad/" )
+  ENDIF( WIN32 AND GENERATE_H3DLoad_CPACK_PROJECT )
+
+	SET( H3DLoad_INSTALL_COMPONENT_NAME "H3DLoad_cpack_runtime" )
+	IF( GENERATE_CPACK_PROJECT )
+	  SET( H3DLoad_INSTALL_COMPONENT_NAME "H3DAPI_cpack_runtime" )
+  ENDIF( GENERATE_CPACK_PROJECT )
+
+  INSTALL( TARGETS H3DLoad
+					 LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL}
+					 RUNTIME DESTINATION ${H3DLoad_package_install_dir}${DEFAULT_BIN_INSTALL} COMPONENT ${H3DLoad_INSTALL_COMPONENT_NAME} )
 ENDIF( WIN32 )
+
 
 # Install to this destination.
 INSTALL( TARGETS H3DLoad
          LIBRARY DESTINATION ${DEFAULT_LIB_INSTALL}
-         RUNTIME DESTINATION ${DEFAULT_BIN_INSTALL}
-         COMPONENT H3DAPI_cpack_runtime )
+         RUNTIME DESTINATION ${H3DLoad_package_install_dir}${DEFAULT_BIN_INSTALL}
+         COMPONENT ${H3DLoad_INSTALL_COMPONENT_NAME} )
 
+
+# Add a cache variable GENERATE_H3DLoad_CPACK_PROJECT to have the choice of generating a project
+# for packaging H3DLoad. Default is NO since most people will not use this.
+IF( NOT DEFINED GENERATE_H3DLoad_CPACK_PROJECT )
+  SET( GENERATE_H3DLoad_CPACK_PROJECT "NO" CACHE BOOL "Decides if a cpack project should be generated. The project in the first loaded CMakeLists will configure CPack." )
+  MARK_AS_ADVANCED(GENERATE_H3DLoad_CPACK_PROJECT)
+ENDIF( NOT DEFINED GENERATE_H3DLoad_CPACK_PROJECT )
+
+IF( GENERATE_H3DLoad_CPACK_PROJECT )
+  include( ${H3DLoad_SOURCE_DIR}/H3DLoadCPack.cmake )
+ENDIF( GENERATE_H3DLoad_CPACK_PROJECT )

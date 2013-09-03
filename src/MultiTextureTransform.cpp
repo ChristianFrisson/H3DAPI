@@ -78,7 +78,7 @@ void MultiTextureTransform::renderForTextureUnits( unsigned int start_unit,
     end_unit = start_index - 1; 
   }
   
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     X3DTextureTransformNode *tt = textureTransform->getValueByIndex( i );
     if( tt ) tt->renderForTextureUnit( i );
   }	  

@@ -136,7 +136,7 @@ namespace H3D {
     size_t p_size = points.size();
     size_t d_size = displace.size();
 
-    for( size_t i = 0; i < indices.size(); i++ ) {
+    for( size_t i = 0; i < indices.size(); ++i ) {
       int index = indices[i];
       if( (unsigned int) index < p_size && i < d_size) {
         Vec4f point_displacement = displace_transform * Vec4f( displace[i].x, displace[i].y, displace[i].z, 0 ) ;

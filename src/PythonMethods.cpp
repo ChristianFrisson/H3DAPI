@@ -171,7 +171,7 @@ return from_func( static_cast< field_type * >( field )->getValue() );
                        field, value ) \
   field_type *mfield = static_cast< field_type* >( field ); \
   PyObject *list = PyList_New( (int)mfield->size() ); \
-  for( size_t i = 0; i < mfield->size(); i++ ) { \
+  for( size_t i = 0; i < mfield->size(); ++i ) { \
     PyObject *v = from_func( (*mfield)[i] ); \
     PyList_SetItem( list, i, v ); \
   } \
@@ -311,7 +311,7 @@ if( PyString_Check( value ) ) { \
   Py_ssize_t n = PyList_GET_SIZE( value );                     \
   vector< value_type > fv;                                     \
   fv.resize( n );                                              \
-  for ( int i=0; i < n; i++ ) {                                \
+  for ( int i=0; i < n; ++i ) {                                \
     if ( check_func( PyList_GET_ITEM( value, i ) ) ) {         \
               fv[i] = (value_type)value_func( PyList_GET_ITEM( value, i ) ); \
     } else { \
@@ -580,10 +580,10 @@ if( PyString_Check( value ) ) { \
 
     // Insert all the X3DTypes in the given Python dictionary.
     void insertFieldTypes( PyObject *dict ) {
-      for( int i = 0; i <= X3DTypes::UNKNOWN_X3D_TYPE; i++ ) {
+      for( int i = 0; i <= X3DTypes::UNKNOWN_X3D_TYPE; ++i ) {
         // insert each type from the enumerated list into Python
         string str = X3DTypes::typeToString( (X3DTypes::X3DType)i );
-        for( string::iterator x = str.begin(); x != str.end(); x++ )
+        for( string::iterator x = str.begin(); x != str.end(); ++x )
           *x = std::toupper( *x );
         PyDict_SetItem( dict, 
                         PyString_FromString( str.c_str() ), 
@@ -609,7 +609,7 @@ if( PyString_Check( value ) ) { \
     
     // Insert all the Field::AccessType constants in the given Python dictionary.
     void insertFieldAccessTypes( PyObject *dict ) {
-      for( int i = 0; i <= Field::INPUT_OUTPUT; i++ ) {
+      for( int i = 0; i <= Field::INPUT_OUTPUT; ++i ) {
         // insert each type from the enumerated list into Python
         string str = accessTypeToString( (Field::AccessType)i );
         PyDict_SetItem( dict, 
@@ -627,7 +627,7 @@ if( PyString_Check( value ) ) { \
       // make a python dict out of the DEFNodes.
       PyObject *py_def_map = PyDict_New();
       for( X3D::DEFNodes::const_iterator i = dn->begin(); 
-           i != dn->end(); i++ ) {
+           i != dn->end(); ++i ) {
         PyObject *node = PyNode_FromNode( (*i).second );
         PyDict_SetItemString( py_def_map, 
                               (*i).first.c_str(), 
@@ -1576,7 +1576,7 @@ call the base class __init__ function." );
       Field::FieldVector routes_in =  field_ptr->getRoutesIn();
       PyObject *retval = PyTuple_New( routes_in.size() );
 
-      for( unsigned int i = 0; i < routes_in.size() ; i++ ) {
+      for( unsigned int i = 0; i < routes_in.size() ; ++i ) {
         PyObject *t = (PyObject *)PythonInternals::fieldAsPythonObject( routes_in[i] );
         PyTuple_SetItem( retval, i, t );
       }
@@ -1613,7 +1613,7 @@ call the base class __init__ function." );
 
       Field::FieldSet::iterator fi = routes_out.begin();
       unsigned int i = 0;
-      for( ; fi != routes_out.end(); i++,fi++ ) {
+      for( ; fi != routes_out.end(); ++i,++fi ) {
       PyObject *t = (PyObject *) PythonInternals::fieldAsPythonObject( *fi );
         PyTuple_SetItem( retval, i, t );
       }
@@ -1646,7 +1646,7 @@ call the base class __init__ function." );
       PyObject *scenes = PyTuple_New( Scene::scenes.size() );
       unsigned int counter = 0;
       for( set< Scene * >::const_iterator i = Scene::scenes.begin(); 
-           i != Scene::scenes.end(); i++, counter++ ) {
+           i != Scene::scenes.end(); ++i, ++counter ) {
         PyObject *node = PyNode_FromNode( *i );
         PyTuple_SetItem( scenes, 
                          counter, 

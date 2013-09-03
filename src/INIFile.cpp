@@ -37,7 +37,7 @@ namespace {
                       const string &s2 ) {
     if( s1.size() != s2.size() ) return false;
     
-    for( unsigned int i = 0; i < s1.size(); i++ ) {
+    for( unsigned int i = 0; i < s1.size(); ++i ) {
       if( toupper( s1[i]) != toupper( s2[i] ) )
         return false;
     }

@@ -47,14 +47,14 @@ using namespace H3D;
   
   // Temporary solution to be able to print XMLCh *
   ostream& operator<<(ostream& os,const XMLCh* & s) { 
-    for( int i = 0; s[i] != 0; i++ ) {
+    for( int i = 0; s[i] != 0; ++i ) {
       os << (unsigned char)s[i];
     }
     return os; 
   }
   
   ostream& operator<<(ostream& os,const XMLCh* const & s) { 
-    for( int i = 0; s[i] != 0; i++ ) {
+    for( int i = 0; s[i] != 0; ++i ) {
       os << (unsigned char)s[i];
     }
     return os; 
@@ -64,7 +64,7 @@ using namespace H3D;
   string toString( const XMLCh * const xmls ) {
     XMLSize_t str_len = XMLString::stringLen( xmls );
     string s( str_len, 'a' );
-    for( unsigned int i = 0; i < str_len; i++)
+    for( unsigned int i = 0; i < str_len; ++i)
       s[i] = (char)xmls[i];
     return s;
   }
@@ -103,7 +103,7 @@ void ProfileSAX2Handlers::startElement(const XMLCh* const uri,
     if( in_profile ) {
       string comp_name;
       int level = 0;
-      for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+      for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
         string name = toString( attrs.getQName( i ) );
         if( name == "name" ) {
           comp_name = toString( attrs.getValue( i ) );
@@ -115,7 +115,7 @@ void ProfileSAX2Handlers::startElement(const XMLCh* const uri,
       profile_vector.back().component_names[ comp_name ] = level;
     }
     else {
-      for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+      for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
         string name = toString( attrs.getQName( i ) );
         if( name == "name" ) {
           myX3DComponent temp_component;
@@ -135,12 +135,12 @@ void ProfileSAX2Handlers::startElement(const XMLCh* const uri,
            localname_string == "Level_8" ||
            localname_string == "Level_9" ||
            localname_string == "Level_10" ) {
-    current_level++;
+    ++current_level;
   }
   else if( localname_string == "Node" ) {
     in_node = true;
     XMLSize_t nr_attrs = attrs.getLength();
-    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
       string name = toString( attrs.getQName( i ) );
       if( name == "name" ) {
         myX3DNode temp_node;
@@ -156,7 +156,7 @@ void ProfileSAX2Handlers::startElement(const XMLCh* const uri,
   else if( localname_string == "Profile" ) {
     in_profile = true;
     XMLSize_t nr_attrs = attrs.getLength();
-    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
       string name = toString( attrs.getQName( i ) );
       if( name == "name" ) {
         myX3DProfile temp_profile;
@@ -172,7 +172,7 @@ void ProfileSAX2Handlers::startElement(const XMLCh* const uri,
   else if( in_prerequisites ) {
     XMLSize_t nr_attrs = attrs.getLength();
     int the_level = 0;
-    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
       string name = toString( attrs.getQName( i ) );
       if( name == "level" ) {
         the_level = atoi( (char * )attrs.getValue( i ) );

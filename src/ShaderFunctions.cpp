@@ -83,7 +83,7 @@ namespace H3D {
     GLint *toIntArray( const vector< Type > &values ) {
       unsigned int size = (unsigned int) values.size();
       GLint *v = new GLint[ size ];
-      for( unsigned int i = 0; i < size; i++ ) 
+      for( unsigned int i = 0; i < size; ++i ) 
         v[i] = (GLint) values[i];
       return v;
     }
@@ -92,7 +92,7 @@ namespace H3D {
     float *toFloatArray( const vector< Type > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size ];
-      for( unsigned int i = 0; i < size; i++ ) 
+      for( unsigned int i = 0; i < size; ++i ) 
         v[i] = (float) values[i];
       return v;
     }
@@ -100,7 +100,7 @@ namespace H3D {
     float *toFloatArray( const vector< Vec2f > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 2 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec2f &a = values[i];
         v[i*2] = a.x;
         v[i*2+1] = a.y;
@@ -112,7 +112,7 @@ namespace H3D {
     float *toFloatArray( const vector< Vec3f > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 3 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec3f &a = values[i];
         v[i*3] = a.x;
         v[i*3+1] = a.y;
@@ -125,7 +125,7 @@ namespace H3D {
     float *toFloatArray( const vector< Vec4f > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec4f &a = values[i];
         v[i*4] = a.x;
         v[i*4+1] = a.y;
@@ -139,7 +139,7 @@ namespace H3D {
     float *toFloatArray( const vector< Vec2d > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 2 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec2d &a = values[i];
         v[i*2]   = (H3DFloat) a.x;
         v[i*2+1] = (H3DFloat) a.y;
@@ -151,7 +151,7 @@ namespace H3D {
     float *toFloatArray( const vector< Vec3d > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 3 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec3d &a = values[i];
         v[i*3] =   (H3DFloat)a.x;
         v[i*3+1] = (H3DFloat)a.y;
@@ -164,7 +164,7 @@ namespace H3D {
     float *toFloatArray( const vector< Vec4d > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec4d &a = values[i];
         v[i*4]   = (H3DFloat) a.x;
         v[i*4+1] = (H3DFloat) a.y;
@@ -178,7 +178,7 @@ namespace H3D {
     float *toFloatArray( const vector< Rotation > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Rotation &r = values[i];
         v[i*4]   = (H3DFloat) r.axis.x;
         v[i*4+1] = (H3DFloat) r.axis.y;
@@ -192,7 +192,7 @@ namespace H3D {
     float *toFloatArray( const vector< RGB > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 3 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const RGB &r = values[i];
         v[i*3]   = (H3DFloat) r.r;
         v[i*3+1] = (H3DFloat) r.g;
@@ -205,7 +205,7 @@ namespace H3D {
     float *toFloatArray( const vector< RGBA > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const RGBA &r = values[i];
         v[i*4]   = (H3DFloat) r.r;
         v[i*4+1] = (H3DFloat) r.g;
@@ -219,7 +219,7 @@ namespace H3D {
     float *toFloatArray( const vector< Matrix3f > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 9 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Matrix3f &m = values[i];
         v[i*9]   = (H3DFloat) m[0][0];
         v[i*9+1] = (H3DFloat) m[1][0];
@@ -238,7 +238,7 @@ namespace H3D {
     float *toFloatArray( const vector< Matrix4f > &values ) {
       unsigned int size = (unsigned int) values.size();
       float *v = new float[ size * 16 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Matrix4f &m = values[i];
         v[i*16]   = (H3DFloat) m[0][0];
         v[i*16+1] = (H3DFloat) m[1][0];
@@ -266,7 +266,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Type > &values ) {
       unsigned int size = (unsigned int)values.size();
       double *v = new double[ size ];
-      for( unsigned int i = 0; i < size; i++ ) 
+      for( unsigned int i = 0; i < size; ++i ) 
         v[i] = (double) values[i];
       return v;
     }
@@ -274,7 +274,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Vec2f > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 2 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec2f &a = values[i];
         v[i*2] = a.x;
         v[i*2+1] = a.y;
@@ -286,7 +286,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Vec3f > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 3 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec3f &a = values[i];
         v[i*3] = a.x;
         v[i*3+1] = a.y;
@@ -299,7 +299,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Vec4f > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec4f &a = values[i];
         v[i*4] = a.x;
         v[i*4+1] = a.y;
@@ -313,7 +313,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Vec2d > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 2 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec2d &a = values[i];
         v[i*2]   = (H3DDouble) a.x;
         v[i*2+1] = (H3DDouble) a.y;
@@ -325,7 +325,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Vec3d > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 3 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec3d &a = values[i];
         v[i*3] =   (H3DDouble)a.x;
         v[i*3+1] = (H3DDouble)a.y;
@@ -338,7 +338,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Vec4d > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Vec4d &a = values[i];
         v[i*4]   = (H3DDouble) a.x;
         v[i*4+1] = (H3DDouble) a.y;
@@ -352,7 +352,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Rotation > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Rotation &r = values[i];
         v[i*4]   = (H3DDouble) r.axis.x;
         v[i*4+1] = (H3DDouble) r.axis.y;
@@ -366,7 +366,7 @@ namespace H3D {
     double *toDoubleArray( const vector< RGB > &values ) {
       unsigned int size =(unsigned int)  values.size();
       double *v = new double[ size * 3 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const RGB &r = values[i];
         v[i*3]   = (H3DDouble) r.r;
         v[i*3+1] = (H3DDouble) r.g;
@@ -379,7 +379,7 @@ namespace H3D {
     double *toDoubleArray( const vector< RGBA > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 4 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const RGBA &r = values[i];
         v[i*4]   = (H3DDouble) r.r;
         v[i*4+1] = (H3DDouble) r.g;
@@ -393,7 +393,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Matrix3f > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 9 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Matrix3f &m = values[i];
         v[i*9]   = (H3DDouble) m[0][0];
         v[i*9+1] = (H3DDouble) m[1][0];
@@ -412,7 +412,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Matrix4f > &values ) {
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 16 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Matrix4f &m = values[i];
         v[i*9]   = (H3DDouble) m[0][0];
         v[i*9+1] = (H3DDouble) m[1][0];
@@ -437,7 +437,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Matrix3d > &values ){
       unsigned int size = ( unsigned int ) values.size();
       double *v = new double[ size * 9 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Matrix3d &m = values[i];
         v[i*9]   = m[0][0];
         v[i*9+1] = m[1][0];
@@ -455,7 +455,7 @@ namespace H3D {
     double *toDoubleArray( const vector< Matrix4d > &values ){
       unsigned int size = (unsigned int) values.size();
       double *v = new double[ size * 16 ];
-      for( unsigned int i = 0; i < size; i++ ) {
+      for( unsigned int i = 0; i < size; ++i ) {
         const Matrix4d &m = values[i];
         v[i*9]   = m[0][0];
         v[i*9+1] = m[1][0];
@@ -804,7 +804,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       MFNode *f = static_cast< MFNode * >( field );
       unsigned int size = f->size();
       GLint *v = new GLint[ size ];
-      for( unsigned int i = 0; i < size; i++ ) 
+      for( unsigned int i = 0; i < size; ++i ) 
       {
         Node *n = f->getValueByIndex( i ); 
         if( n == NULL ) continue;
@@ -1261,7 +1261,7 @@ GLbitfield H3D::Shaders::getAffectedGLAttribs( H3DDynamicFieldsObject *dfo ) {
   GLbitfield res = 0;
   Node *n;
   MFNode *mfnode;
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField(); f != dfo->endField(); f++ ) 
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField(); f != dfo->endField(); ++f ) 
   {
     X3DTypes::X3DType x3d_type = (*f)->getX3DType();
     if(x3d_type==X3DTypes::SFNODE)
@@ -1276,7 +1276,7 @@ GLbitfield H3D::Shaders::getAffectedGLAttribs( H3DDynamicFieldsObject *dfo ) {
     else if(x3d_type==X3DTypes::MFNODE)
     {
       mfnode = static_cast< MFNode * >( *f );
-      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
         n = mfnode->getValueByIndex( i ); 
         if( H3DSingleTextureNode *t = 
           dynamic_cast< H3DSingleTextureNode *>( n ) ) {
@@ -1295,7 +1295,7 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
   unsigned int nr_textures = 0; 
   Node* n;
   MFNode *mfnode;
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); f++ ) 
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
   {
     // only SFNODE and MFNODE type of in the dynamic filed can be texture object
     if((*f)->getX3DType()==X3DTypes::SFNODE)
@@ -1305,19 +1305,19 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
         dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
           t->preRender();
-          nr_textures++;
+          ++nr_textures;
       } 
     }
     else if((*f)->getX3DType()==X3DTypes::MFNODE)
     {
       mfnode = static_cast< MFNode * >( *f );
-      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
         Node *n = mfnode->getValueByIndex( i ); 
         if( H3DSingleTextureNode *t = 
           dynamic_cast< H3DSingleTextureNode *>( n ) ) {
             glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
             t->preRender();
-            nr_textures++;
+            ++nr_textures;
         } 
       }
     }
@@ -1338,7 +1338,7 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
   unsigned int nr_textures = 0; 
   Node *n;
   MFNode *mfnode;
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); f++ ) 
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
   {
     // only SFNODE and MFNODE type can be texture object.
     if((*f)->getX3DType()==X3DTypes::SFNODE)
@@ -1348,20 +1348,20 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
       {
         glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
         t->postRender();
-        nr_textures++;
+        ++nr_textures;
       }
     }
     else if((*f)->getX3DType()==X3DTypes::MFNODE) 
     {
       mfnode = static_cast< MFNode * >( *f );
-      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
         n = mfnode->getValueByIndex( i ); 
 
         if( H3DSingleTextureNode *t = 
           dynamic_cast< H3DSingleTextureNode *>( n ) ) {
             glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
             t->postRender();
-            nr_textures++;
+            ++nr_textures;
         } 
       }
     }
@@ -1379,7 +1379,7 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
   unsigned int nr_textures = 0; 
   Node* n;
   MFNode* mfnode;
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); f++ ) 
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
   {
     X3DTypes::X3DType x3d_type = (*f)->getX3DType();
     if(x3d_type==X3DTypes::SFNODE)
@@ -1389,19 +1389,19 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
         dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
           t->displayList->callList();
-          nr_textures++;
+          ++nr_textures;
       }
     }
     else if(x3d_type==X3DTypes::MFNODE)
     {
       mfnode = static_cast< MFNode * >( *f );
-      for( unsigned int i = 0; i < mfnode->size(); i++ ) {
+      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
           Node *n = mfnode->getValueByIndex( i ); 
           if( H3DSingleTextureNode *t = 
             dynamic_cast< H3DSingleTextureNode *>( n ) ) {
               glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
               t->displayList->callList();
-              nr_textures++;
+              ++nr_textures;
           } 
         }
     }

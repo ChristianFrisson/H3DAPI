@@ -197,7 +197,7 @@ string ShaderCombiner::addUniformFields( ComposedShader *shader  ) {
 
   // add fragment shader uniform fields
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -267,7 +267,7 @@ string ShaderCombiner::getFunctionShaderString() {
 
   // fragment shader
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -281,7 +281,7 @@ string ShaderCombiner::getFunctionShaderString() {
 void ShaderCombiner::getVaryingVariables( vector< VaryingVariable > &variables ) {
   // fragment shader
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -294,7 +294,7 @@ void ShaderCombiner::getVaryingVariables( vector< VaryingVariable > &variables )
 void ShaderCombiner::getAttributes( vector< Attribute > &attributes ) {
   // fragment shader
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -310,7 +310,7 @@ string ShaderCombiner::getVertexShaderString() {
 
   // fragment shader
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -432,7 +432,7 @@ string ShaderCombiner::getFragmentShaderString() {
     s << applyAlphaModifier( v0_string, am0, uniqueShaderName( "alphaArg0Value" ) ) << endl;   
   }
 
-  for( unsigned int i = 1; i < c.size(); i++ ) {
+  for( unsigned int i = 1; i < c.size(); ++i ) {
     s << "   { " << endl;
     if( c[i] ) {
 
@@ -461,7 +461,7 @@ string ShaderCombiner::getFragmentShaderString() {
 /// Traverse the scene-graph.
 void ShaderCombiner::traverseSG( TraverseInfo &ti ) {
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       c[i]->traverseSG( ti );
     }

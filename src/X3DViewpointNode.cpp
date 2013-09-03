@@ -272,7 +272,7 @@ void X3DViewpointNode::translate( Vec3f direction, bool collision,
 
       int closest_index = -1;
       H3DFloat closest_t = 2;
-      for( unsigned int i = 0; i < result.result.size(); i++ ) {
+      for( unsigned int i = 0; i < result.result.size(); ++i ) {
         if( result.result[i].t < closest_t ) {
           closest_index = i;
           closest_t = (H3DFloat)result.result[i].t;
@@ -318,7 +318,7 @@ void X3DViewpointNode::translate( Vec3f direction, bool collision,
           global_to = global_from + movement;
         }
       }
-      counter++;
+      ++counter;
     }
     relPos->setValue( acc_fr_mt.inverse() * global_from - vp_pos );
   } else

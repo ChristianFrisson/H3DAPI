@@ -108,7 +108,7 @@ string NavigationInfo::getUsedNavType() {
   bool hasAny = false;
 
   if( !nav_type.empty() ) {
-    for( unsigned int i = 0; i < navigation_types.size(); i++ ) {
+    for( unsigned int i = 0; i < navigation_types.size(); ++i ) {
       if( navigation_types[i] == "ANY" ) {
         hasAny = true;
         break;
@@ -123,7 +123,7 @@ string NavigationInfo::getUsedNavType() {
         return nav_type;
     }
     else {
-      for( unsigned int i = 0; i < navigation_types.size(); i++ ) {
+      for( unsigned int i = 0; i < navigation_types.size(); ++i ) {
         if( nav_type == navigation_types[i] )
           return nav_type;
       }
@@ -132,7 +132,7 @@ string NavigationInfo::getUsedNavType() {
 
   bool onlyANY = false;
   // Default behaviour
-  for( unsigned int i = 0; i < navigation_types.size(); i++ ) {
+  for( unsigned int i = 0; i < navigation_types.size(); ++i ) {
     if( navigation_types[i] == "EXAMINE" ) {
       return "EXAMINE";
     }

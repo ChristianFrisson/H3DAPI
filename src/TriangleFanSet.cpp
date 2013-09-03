@@ -145,7 +145,7 @@ void TriangleFanSet::render() {
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
       if( shader_program ) {
-        for( unsigned int i = 0; i < attrib->size(); i++ ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
           X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
           if( attr ) {
             GLint loc = 
@@ -167,7 +167,7 @@ void TriangleFanSet::render() {
       if( fog_coord_node) fog_coord_node->renderArray();
       // Set up shader vertex attributes.
       for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
+           attrib_index < attrib->size(); ++attrib_index ) {
         X3DVertexAttributeNode *attr = 
           attrib->getValueByIndex( attrib_index );
         if( attr ) attr->renderArray();
@@ -179,7 +179,7 @@ void TriangleFanSet::render() {
       // draw each triangle fan from the arrays 
       for( vector<int>::const_iterator sc = fan_count.begin();
            sc != fan_count.end();
-           sc++ ) {      
+           ++sc ) {
 
         // check that fan count value >=3
         if( (*sc) < 3 ) {
@@ -202,7 +202,7 @@ void TriangleFanSet::render() {
       if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
       if( fog_coord_node) fog_coord_node->disableArray();
       for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
+           attrib_index < attrib->size(); ++attrib_index ) {
         X3DVertexAttributeNode *attr = 
           attrib->getValueByIndex( attrib_index );
         if( attr ) attr->disableArray();
@@ -229,7 +229,7 @@ void TriangleFanSet::render() {
 
       for( vector<int>::const_iterator sc = fan_count.begin();
            sc != fan_count.end();
-           sc++ ) {      
+           ++sc ) {
 
         // check that fan count value >=3
         if( (*sc) < 3 ) {
@@ -241,7 +241,7 @@ void TriangleFanSet::render() {
         
         glBegin( GL_TRIANGLES );
 
-        for( int i = 0; i < (*sc) - 2; i++ ) {
+        for( int i = 0; i < (*sc) - 2; ++i ) {
           normal_node->render( triangle_counter );
 
           // vertex 1
@@ -250,7 +250,7 @@ void TriangleFanSet::render() {
                                                       tex_coord_node );
           if( fog_coord_node) fog_coord_node->render(fan_root);
           for( unsigned int attrib_index = 0;
-               attrib_index < attrib->size(); attrib_index++ ) {
+               attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->render( fan_root );
@@ -263,7 +263,7 @@ void TriangleFanSet::render() {
                                                       tex_coord_node );
           if( fog_coord_node) fog_coord_node->render(vertex_counter+1);
           for( unsigned int attrib_index = 0;
-               attrib_index < attrib->size(); attrib_index++ ) {
+               attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->render( vertex_counter+1 );
@@ -276,14 +276,14 @@ void TriangleFanSet::render() {
                                                       tex_coord_node );
           if( fog_coord_node) fog_coord_node->render(vertex_counter+2);
           for( unsigned int attrib_index = 0;
-               attrib_index < attrib->size(); attrib_index++ ) {
+               attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->render( vertex_counter+2 );
           }
           coordinate_node->render( vertex_counter+2 );
-          triangle_counter++;
-          vertex_counter++;
+          ++triangle_counter;
+          ++vertex_counter;
         }
         glEnd();
         
@@ -348,10 +348,10 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerVertex(
     
     for( vector<int>::const_iterator sc = fan_count.begin();
          sc != fan_count.end();
-         sc++ ) {
+         ++sc ) {
 
       // calculate normals for the triangle fan
-      for( int j = 0; j < (*sc) - 2; j++ ) {
+      for( int j = 0; j < (*sc) - 2; ++j ) {
         Vec3f norm, A, B, C, AB, BC;
         // calculate a normal 
         A = coord->getCoord( fan_root );
@@ -367,7 +367,7 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerVertex(
         normals[ fan_root ] += norm;
         normals[ vertex_count + 1 ] += norm;
         normals[ vertex_count + 2 ] += norm;
-        vertex_count++;
+        ++vertex_count;
       }
       
       if( (*sc) >=3 )
@@ -379,7 +379,7 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerVertex(
       
     for( vector<Vec3f>::iterator i = normals.begin(); 
          i != normals.end(); 
-         i++ ) {
+         ++i ) {
       (*i).normalizeSafe();
     }
     normal->vector->setValue( normals );
@@ -401,10 +401,10 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerFace(
     
     for( vector<int>::const_iterator sc = fan_count.begin();
          sc != fan_count.end();
-         sc++ ) {
+         ++sc ) {
 
       // calculate normals for the triangle fan
-      for( int j = 0; j < (*sc) - 2; j++ ) {
+      for( int j = 0; j < (*sc) - 2; ++j ) {
       
         Vec3f norm, A, B, C, AB, BC;
         // calculate a normal for the triangle
@@ -427,7 +427,7 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerFace(
           norm = -norm;
         
         normals.push_back( norm );
-        vertex_count++;
+        ++vertex_count;
       }
       if( (*sc) >=3 )
         // skip to the next triangle fan

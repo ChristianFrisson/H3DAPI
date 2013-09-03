@@ -140,7 +140,7 @@ void Cylinder::render() {
       GLsizei index_data_size =
         (GLsizei)( ( 4 * nr_faces - 4 ) * nr_index_data );
       GLuint * cylinder_index_data = new GLuint[index_data_size];
-      for( int i = 0; i < nr_faces; i++ ) {
+      for( int i = 0; i < nr_faces; ++i ) {
         float ratio = (float) i / nr_faces;
         float angle = (float)(ratio * (Constants::pi*2));
         
@@ -361,7 +361,7 @@ void Cylinder::render() {
     if ( top->getValue() ) {
       glBegin( GL_POLYGON );
       glNormal3f( 0, 1, 0 );
-      for( int i = 0; i < nr_faces; i++ ) {
+      for( int i = 0; i < nr_faces; ++i ) {
         float angle = (float)( i * (Constants::pi*2) / (float) nr_faces);
         float sina = sin( angle );
         float cosa = cos( angle );
@@ -376,7 +376,7 @@ void Cylinder::render() {
     if ( bottom->getValue() ) {
       glBegin( GL_POLYGON );
       glNormal3f( 0, -1, 0 );
-      for( int i = nr_faces; i >= 0; i-- ) {
+      for( int i = nr_faces; i >= 0; --i ) {
         float angle = (float)( i * (Constants::pi*2) / (float) nr_faces);
         float sina = sin( angle );
         float cosa = cos( angle );

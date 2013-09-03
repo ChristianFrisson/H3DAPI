@@ -104,7 +104,7 @@ namespace H3D {
           for( i = 0; 
             i < ( H3DInt32 )key_value.size() - 1 &&
             !( setFraction >= keys[i] && setFraction < keys[ i + 1 ] );
-          i++ );
+          ++i );
           return key_value[i];
         }
       }
@@ -146,7 +146,7 @@ namespace H3D {
 
           // The keys shall be monotonically non-decreasing,
           // otherwise the results are undefined.
-          for( int i = 0; i < (int)keys.size() - 1; i++ ) {
+          for( int i = 0; i < (int)keys.size() - 1; ++i ) {
             if( keys[i] > keys[ i + 1 ] )
               notMonotonically = true;
           }
@@ -160,7 +160,7 @@ namespace H3D {
 
           // next value
           if( TheType::routes_in[0] == TheType::event.ptr ) {
-            currentPosition++;
+            ++currentPosition;
             if( currentPosition > ( H3DInt32 )key_value.size() - 1 )
               currentPosition = 0;
 
@@ -168,7 +168,7 @@ namespace H3D {
           }
           // previous value
           else if( TheType::routes_in[1] == TheType::event.ptr ) {
-            currentPosition--;
+            --currentPosition;
             if( currentPosition < 0 )
               currentPosition = (H3DInt32) key_value.size() - 1;
 

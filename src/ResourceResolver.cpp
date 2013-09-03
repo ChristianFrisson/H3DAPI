@@ -75,7 +75,7 @@ string ResourceResolver::resolveURLAs( const string &urn,
     
     // otherwise try the resolvers.
     for( AutoPtrVector< ResourceResolver >::iterator i = resolvers().begin();
-         i != resolvers().end(); i++ ) {
+         i != resolvers().end(); ++i ) {
       if ( !return_contents ) {
         string resolved_name = (*i)->resolveURLAsTmpFile( full_url );
         if( resolved_name != "" ) {
@@ -108,7 +108,7 @@ string ResourceResolver::resolveURLAs( const string &urn,
   
   // otherwise try the resolvers.
   for( AutoPtrVector< ResourceResolver >::iterator i = resolvers().begin();
-       i != resolvers().end(); i++ ) {
+       i != resolvers().end(); ++i ) {
     if ( !return_contents ) {
       string resolved_name = (*i)->resolveURLAsTmpFile( filename );
       if( resolved_name != "" ) {
@@ -154,7 +154,7 @@ string ResourceResolver::getTmpFileName() {
 
 bool ResourceResolver::releaseTmpFileName( const string &file ) {
   for( list< string >::iterator i = tmp_files.begin();
-       i != tmp_files.end(); i++ ) {
+       i != tmp_files.end(); ++i ) {
     if( file == (*i) ) {
       remove( (*i).c_str() );
       tmp_files.erase( i );

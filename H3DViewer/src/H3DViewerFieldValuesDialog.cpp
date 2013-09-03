@@ -128,7 +128,7 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
   list< FieldDBElement * > input_output_fields;
 
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       db->fieldDBEnd() != i; i++ ) {
+       db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); 
    
     if( !f ||
@@ -160,15 +160,15 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
     FieldValuesGrid->SetReadOnly( rows, 0 );
     FieldValuesGrid->SetCellBackgroundColour( rows, 0, wxColour(159, 222,222) );
     FieldValuesGrid->SetCellTextColour( rows, 0, wxColour(100, 100,100) );
-    rows++;
+    ++rows;
   }
 
   for( list< FieldDBElement * >::iterator i = init_only_fields.begin();
-       i != init_only_fields.end(); i++ ) {
+       i != init_only_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     Field *default_field = (*i)->getField( default_values_node );
     updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
-    rows++;
+    ++rows;
   }
 
   // input/output  fields.
@@ -181,15 +181,15 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
     FieldValuesGrid->SetReadOnly( rows, 0 );
     FieldValuesGrid->SetCellBackgroundColour( rows, 0, wxColour(159, 222,222) );
     FieldValuesGrid->SetCellTextColour( rows, 0, wxColour(100, 100,100) );
-    rows++;
+    ++rows;
   }
 
   for( list< FieldDBElement * >::iterator i = input_output_fields.begin();
-       i != input_output_fields.end(); i++ ) {
+       i != input_output_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     Field *default_field = (*i)->getField( default_values_node );
     updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
-    rows++;
+    ++rows;
   }
   
   // output only fields.
@@ -202,15 +202,15 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
     FieldValuesGrid->SetReadOnly( rows, 0 );
     FieldValuesGrid->SetCellBackgroundColour( rows, 0, wxColour(159, 222,222) );
     FieldValuesGrid->SetCellTextColour( rows, 0, wxColour(100, 100,100) );
-    rows++;
+    ++rows;
   }
 
   for( list< FieldDBElement * >::iterator i = output_only_fields.begin();
-       i != output_only_fields.end(); i++ ) {
+       i != output_only_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     Field *default_field = (*i)->getField( default_values_node );
     updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
-    rows++;
+    ++rows;
   }
 
   // input only fields.
@@ -223,15 +223,15 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
     FieldValuesGrid->SetReadOnly( rows, 0 );
     FieldValuesGrid->SetCellBackgroundColour( rows, 0, wxColour(159, 222,222) );
     FieldValuesGrid->SetCellTextColour( rows, 0, wxColour(100, 100,100) );
-    rows++;
+    ++rows;
   }
 
   for( list< FieldDBElement * >::iterator i = input_only_fields.begin();
-       i != input_only_fields.end(); i++ ) {
+       i != input_only_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     Field *default_field = (*i)->getField( default_values_node );
     updateRowFromField( FieldValuesGrid, rows, f, default_field, new_node );
-    rows++;
+    ++rows;
   }
 
 #ifdef HAVE_PYTHONSCRIPT
@@ -251,18 +251,18 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
       FieldValuesGrid->SetReadOnly( rows, 0 );
       FieldValuesGrid->SetCellBackgroundColour( rows, 0, wxColour(159, 222,222) );
       FieldValuesGrid->SetCellTextColour( rows, 0, wxColour(100, 100,100) );
-      rows++;
+      ++rows;
     }
 
     for( vector< pair< string, Field *> >::iterator i = python_fields.begin();
-         i != python_fields.end(); i++ ) {
+         i != python_fields.end(); ++i ) {
       Field *f = (*i).second;
       const string &name = (*i).first;
       if( dynamic_cast< SFNode * >( f ) || 
           dynamic_cast< MFNode * >( f ) ) continue;
         
       updateRowFromField( FieldValuesGrid, rows, f, f, new_node, name );
-      rows++;
+      ++rows;
     }
   }
 #endif
@@ -367,7 +367,7 @@ void H3DViewerFieldValuesPanel::updateRowFromField( wxGrid *FieldValuesGrid,
           wxArrayString choices;
           choices.Alloc( valid_values.size() );
           for( set<string>::const_iterator i = valid_values.begin();
-               i != valid_values.end(); i++ ) {
+               i != valid_values.end(); ++i ) {
             choices.Add( wxString( (*i).c_str(), wxConvUTF8 ));
           }
           // GetCellEditor increases reference count.

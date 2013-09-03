@@ -119,7 +119,7 @@ void PackagedShader::render() {
   }
 
   if( cg_vertex_program && cg_fragment_program ) {
-    for( unsigned int i = 0; i < dynamic_fields.size(); i++ ) {
+    for( unsigned int i = 0; i < dynamic_fields.size(); ++i ) {
       if( !Shaders::setCGUniformVariableValue( cg_vertex_program, 
                                                dynamic_fields[i] ) ) {
         Console(3) << "Warning: Uniform variable \"" 
@@ -167,7 +167,7 @@ void PackagedShader::initCGShaderProgram() {
   if( cgGLIsProfileSupported( cg_vertex_profile ) &&
       cgGLIsProfileSupported( cg_fragment_profile )) {
     for( MFString::const_iterator i = url->begin(); 
-         i != url->end(); i++ ) {  
+         i != url->end(); ++i ) {  
 
       // First try to resolve URL to file contents, if that is not supported
       // by the resolvers then fallback to resolve as local filename

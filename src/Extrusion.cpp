@@ -282,11 +282,11 @@ void Extrusion::VertexVector::update() {
     // build vectors containing indicies to the first non-coincident spine. 
     // Backward and forward.
     // these vectors are used to calculate axis for the SCP around each spine.
-    for( int i = 0; i < spine_size; i++ ) {
+    for( int i = 0; i < spine_size; ++i ) {
       int j = i;
 
       do {
-        j++;
+        ++j;
 
         if( j >= spine_size )
           j -= spine_size;
@@ -305,7 +305,7 @@ void Extrusion::VertexVector::update() {
       j = i;
 
       do {
-        j--;
+        --j;
 
         if( j < 0 )
           j += spine_size;
@@ -326,7 +326,7 @@ void Extrusion::VertexVector::update() {
       y_axis.push_back( Vec3f( 0, 1, 0 ) );
       z_axis.push_back( Vec3f( 0, 0, 1 ) );
 
-      for( int i = 0; i < spine_size; i++ )
+      for( int i = 0; i < spine_size; ++i )
       {
         x_axis.push_back( x_axis.front() );
         y_axis.push_back( y_axis.front() );
@@ -352,7 +352,7 @@ void Extrusion::VertexVector::update() {
 
       // calculate z-axes for all spine points but the last and for the first 
       // spine point if it is undetermined.
-      for( int  i = 1; i < spine_size - 1; i++ ) {
+      for( int  i = 1; i < spine_size - 1; ++i ) {
         Vec3f temp =( spine_vector[ spine_forward[i] ] - spine_vector[i] )
           .crossProduct( 
           spine_vector[ spine_backward[i] ] - spine_vector[i] );
@@ -372,7 +372,7 @@ void Extrusion::VertexVector::update() {
             z_axis.front() = z_axis.back();
             for( int j = 1; 
               j < i && H3DAbs( z_axis[j].lengthSqr() ) < Constants::f_epsilon;
-              j++ )
+              ++j )
               z_axis[j] = z_axis.front();
           }
         }
@@ -423,7 +423,7 @@ void Extrusion::VertexVector::update() {
         Vec3f spine_dir = spine_vector.back() - spine_vector.front();
         for ( int i = spine_size - 1; 
           i > 0 && H3DAbs( spine_dir.lengthSqr() ) < Constants::f_epsilon;
-          i-- ) {
+          --i ) {
             spine_dir = ( spine_vector[i] - spine_vector.front() );
         }
 
@@ -435,7 +435,7 @@ void Extrusion::VertexVector::update() {
         x_axis.front() = rotationMatrix * x_axis.front();
         z_axis.front() = rotationMatrix * z_axis.front();
 
-        for( int i = 1; i < spine_size; i++ ) {
+        for( int i = 1; i < spine_size; ++i ) {
           x_axis.push_back( x_axis.front() );
           y_axis.push_back( y_axis.front() );
           z_axis.push_back( z_axis.front() );
@@ -461,7 +461,7 @@ void Extrusion::VertexVector::update() {
         x_axis.push_back( temp );
 
         // axes for all but the last and first spine point
-        for( int i = 1; i < spine_size - 1; i++ ) {
+        for( int i = 1; i < spine_size - 1; ++i ) {
           temp = spine_vector[ spine_forward[i] ]
           - spine_vector[ spine_backward[i] ];
           temp.normalizeSafe();
@@ -486,11 +486,11 @@ void Extrusion::VertexVector::update() {
       }
     }
 
-    for( int i = 0; i < nr_of_orn_values; i++ )
+    for( int i = 0; i < nr_of_orn_values; ++i )
       spine_orientations.push_back( orn_vector[i] );
 
     // calculate vertices.
-    for( int i = 0; i < spine_size; i++ ) {
+    for( int i = 0; i < spine_size; ++i ) {
       // Scp is the spine-aligned cross section plane, the orientation field should be
       // applied in the local coordinate system for that plane.
       Matrix3f scp_to_global( x_axis[i].x, y_axis[i].x, z_axis[i].x,
@@ -498,7 +498,7 @@ void Extrusion::VertexVector::update() {
                              x_axis[i].z, y_axis[i].z, z_axis[i].z );
       x_axis[i] = scp_to_global * ( spine_orientations[ i % nr_of_orn_values ] * Vec3f( 1, 0, 0 ) );
       z_axis[i] = scp_to_global * ( spine_orientations[ i % nr_of_orn_values ] * Vec3f( 0, 0, 1 ) );
-      for( int j = 0; j < nr_of_cross_section_points; j++ ) {
+      for( int j = 0; j < nr_of_cross_section_points; ++j ) {
         Vec3f point0_x = scale_vector[ i % nr_of_scale_values ].x
           * cross_section[j].x * x_axis[i];
         Vec3f point0_z = scale_vector[ i % nr_of_scale_values ].y
@@ -563,7 +563,7 @@ void Extrusion::render() {
         glNormal3f( n.x, n.y, n.z );
       }
 
-      for( int i = nr_of_cross_section_points - 1; i >= 0; i-- )
+      for( int i = nr_of_cross_section_points - 1; i >= 0; --i )
       {
         renderTexCoordForActiveTexture( Vec3f( caps_tex_coord[i].x, 
                                                caps_tex_coord[i].y,
@@ -581,8 +581,8 @@ void Extrusion::render() {
     // draw the quads of the body.
     unsigned int quad_index = 0;
     Vec3f v, n;
-    for( int i = 0; i < spine_size - 1; i++ ) {
-      for( int j = 0; j < nr_of_cross_section_points - 1; j++ ) {
+    for( int i = 0; i < spine_size - 1; ++i ) {
+      for( int j = 0; j < nr_of_cross_section_points - 1; ++j ) {
         H3DInt32 lower = i * nr_of_cross_section_points + j;
         H3DInt32 upper = ( i + 1 ) * nr_of_cross_section_points + j;
 
@@ -645,7 +645,7 @@ void Extrusion::render() {
         glVertex3f( v.x, v.y, v.z );
 
         glEnd();
-        quad_index++;
+        ++quad_index;
       }
     }
 
@@ -660,7 +660,7 @@ void Extrusion::render() {
         glNormal3f( n.x, n.y, n.z );
       }
 
-      for(int i = 0; i < nr_of_cross_section_points; i++ )
+      for(int i = 0; i < nr_of_cross_section_points; ++i )
       {
         renderTexCoordForActiveTexture( Vec3f( caps_tex_coord[i].x, 
                                                caps_tex_coord[i].y,
@@ -704,11 +704,11 @@ void Extrusion::AutoNormal::update() {
   // build vectors containing indicies to the first non-coincident spine. 
   // Backward and forward.
   // these vectors are used to calculate axis for the SCP around each spine.
-  for( int i = 0; i < spine_size; i++ ) {
+  for( int i = 0; i < spine_size; ++i ) {
     int j = i;
 
     do {
-      j++;
+      ++j;
 
       if( j >= spine_size )
           j -= spine_size;
@@ -725,7 +725,7 @@ void Extrusion::AutoNormal::update() {
     j = i;
 
     do {
-      j--;
+      --j;
 
       if( j < 0 )
         j += spine_size;
@@ -758,7 +758,7 @@ void Extrusion::AutoNormal::update() {
         collinear = false;
     }
 
-    for( int  i = 1; i < spine_size - 1 && collinear; i++ ) {
+    for( int  i = 1; i < spine_size - 1 && collinear; ++i ) {
       Vec3f temp =( spine_vector[ spine_forward[i] ] - spine_vector[i] )
         .crossProduct(
         spine_vector[ spine_backward[i] ] - spine_vector[i] );
@@ -781,7 +781,7 @@ void Extrusion::AutoNormal::update() {
       Vec3f spine_dir = spine_vector.back() - spine_vector.front();
       for ( int i = spine_size - 1;
         i > 0 && H3DAbs( spine_dir.lengthSqr() ) < Constants::f_epsilon;
-        i-- ) {
+        --i ) {
           spine_dir = ( spine_vector[i] - spine_vector.front() );
       }
 
@@ -871,7 +871,7 @@ void Extrusion::AutoNormal::update() {
   // the cross section point corresponding to the index and the first cross
   // section point
   extrusion->u_tex_coord.push_back(cross_section_length);
-  for( unsigned int i = 1; i < cross_section.size(); i++ ) {
+  for( unsigned int i = 1; i < cross_section.size(); ++i ) {
     cross_section_length += ( cross_section[i] - cross_section[i-1] ).length();
     extrusion->u_tex_coord.push_back( cross_section_length );
     if( cross_section[i].x < cross_section_xmin )
@@ -887,7 +887,7 @@ void Extrusion::AutoNormal::update() {
   // Use the cross_section length to calculate the texture coordinate in
   // the u direction. Remember that u_tex_coord[i] currently contains the
   // distance from first point to the point at index i.
-  for( unsigned int i = 0; i < cross_section.size(); i++ ) {
+  for( unsigned int i = 0; i < cross_section.size(); ++i ) {
     extrusion->u_tex_coord[i] = extrusion->u_tex_coord[i] /
                                 cross_section_length;
   }
@@ -899,7 +899,7 @@ void Extrusion::AutoNormal::update() {
     cross_section_range = cross_section_zmax - cross_section_zmin;
 
   // Calculate u, v coordinates for the cap
-  for( unsigned int i = 0; i < cross_section.size(); i++ )
+  for( unsigned int i = 0; i < cross_section.size(); ++i )
     extrusion->caps_tex_coord.push_back( Vec3f(
       ( cross_section[i].x - cross_section_xmin ) / cross_section_range,
       ( cross_section[i].y - cross_section_zmin ) / cross_section_range,
@@ -910,12 +910,12 @@ void Extrusion::AutoNormal::update() {
   // the values to the [0,1] range.
   H3DFloat spine_length = 0;
   extrusion->v_tex_coord.push_back(spine_length);
-  for( int i = 1; i < spine_size; i++ ) {
+  for( int i = 1; i < spine_size; ++i ) {
     spine_length += ( spine_vector[ i ] - spine_vector[i-1] ).length();
     extrusion->v_tex_coord.push_back( spine_length );
   }
 
-  for( int i = 0; i < spine_size; i++ ) {
+  for( int i = 0; i < spine_size; ++i ) {
     extrusion->v_tex_coord[i] = extrusion->v_tex_coord[i] / spine_length;
   }
 }
@@ -942,7 +942,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerFace(
   // direction from the positive y-axis.
   for( int i = 0;
        i < nr_of_cross_section_points - closed_cross_section_int;
-       i++ )
+       ++i )
     ccw_or_cw += cross_section[i].y * 
                cross_section[ ( i + 1 ) % nr_of_cross_section_points ].x -
                cross_section[ ( i + 1 ) % nr_of_cross_section_points ].y *
@@ -959,8 +959,8 @@ Normal * Extrusion::AutoNormal::generateNormalsPerFace(
   }
 
   // calculate one normal for each face of the main body
-  for( int i = 0; i < spine_size - 1; i++ ) {
-    for( int j = 0; j < nr_of_cross_section_points - 1; j++ ) {
+  for( int i = 0; i < spine_size - 1; ++i ) {
+    for( int j = 0; j < nr_of_cross_section_points - 1; ++j ) {
       vector < H3DInt32 > indices;
       indices.push_back( i * nr_of_cross_section_points + j );
       indices.push_back( i * nr_of_cross_section_points + j + 1 );
@@ -969,7 +969,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerFace(
       bool zero_normal = true;
       Vec3f the_normal;
 
-      for(int k = 4; k < 8 && zero_normal; k++ ) {
+      for(int k = 4; k < 8 && zero_normal; ++k ) {
         the_normal = ExtrusionInternals::calculateNormal( vertex_vector,
                                            indices[ ( k + 1 ) % 4 ],
                                            indices[ k % 4 ],
@@ -1036,8 +1036,8 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
     if_caps_add = 1;
 
   // no separate normals are needed for the caps.
-  for( int i = 0; i < spine_size; i++ ) {
-    for( int j = 0; j < nr_of_cross_section_points; j++ ) {
+  for( int i = 0; i < spine_size; ++i ) {
+    for( int j = 0; j < nr_of_cross_section_points; ++j ) {
       vector< H3DInt32 > indices;
       normal_vector.push_back( Vec3f( 0, 0, 0 ) );
       bool begin_cap_summed = false;
@@ -1052,7 +1052,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
                                          begin_cap,
                                          end_cap );
 
-      for( int k = 0; k < 4; k++ ) {
+      for( int k = 0; k < 4; ++k ) {
         if( indices[k] == -1 && indices[ k + 4 ] != -2 && !begin_cap_summed ) {
           normal_vector.back() = normal_vector.back() +
                                  normals_per_face.front();
@@ -1132,7 +1132,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
     }
     normal_vector.back().normalizeSafe();
 
-    for( int i = 1; i < nr_of_cross_section_points - 1; i++ )
+    for( int i = 1; i < nr_of_cross_section_points - 1; ++i )
     {
       normal_vector.push_back( face_normal );
 
@@ -1161,8 +1161,8 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
   }
 
   // normals for every face except the beginCap and endCap
-  for( int i = 0; i < spine_size - 1; i++ ) {
-    for( int j = 0; j < nr_of_cross_section_points - 1; j++ ) {
+  for( int i = 0; i < spine_size - 1; ++i ) {
+    for( int j = 0; j < nr_of_cross_section_points - 1; ++j ) {
       vector< H3DInt32 > indices;
       Vec3f face_normal = 
         normals_per_face[ if_caps_add +
@@ -1182,7 +1182,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
                                            nr_of_cross_section_points,
                                            begin_cap, end_cap );
 
-      for( int k = 0; k < 4; k++ ) {
+      for( int k = 0; k < 4; ++k ) {
         if( indices[ k ] == -1 && 
             indices[ k + 4 ] != -2 &&
             !begin_cap_summed ) {
@@ -1226,7 +1226,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
                                            nr_of_cross_section_points,
                                            begin_cap, end_cap );
 
-      for( int k = 0; k < 4; k++ ) {
+      for( int k = 0; k < 4; ++k ) {
         if( indices[k] == -1 &&
             indices[ k + 4 ] != -2 &&
             !begin_cap_summed ) {
@@ -1270,7 +1270,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
                                            nr_of_cross_section_points,
                                            begin_cap, end_cap );
 
-      for( int k = 0; k < 4; k++) {
+      for( int k = 0; k < 4; ++k) {
         if( indices[ k ] == -1 && 
             indices[ k + 4 ] != -2 && 
             !begin_cap_summed ) {
@@ -1314,7 +1314,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
                                            nr_of_cross_section_points,
                                            begin_cap, end_cap );
 
-      for( int k = 0; k < 4; k++) {
+      for( int k = 0; k < 4; ++k) {
         if( indices[k] == -1 && 
             indices[ k + 4 ] != -2 &&
             !begin_cap_summed ) {
@@ -1365,7 +1365,7 @@ Normal * Extrusion::AutoNormal::generateNormalsPerVertex(
     }
     normal_vector.back().normalizeSafe();
 
-    for( int i = 1; i < nr_of_cross_section_points - 1; i++ )  {
+    for( int i = 1; i < nr_of_cross_section_points - 1; ++i )  {
       normal_vector.push_back( face_normal );
 
       quad_normal = 

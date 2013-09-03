@@ -298,7 +298,7 @@ void Field::touch() {
   Event e( this, event.time_stamp );
 
   event_lock = true;
-  for( unsigned int i = 0; i < routes_out.size(); i++ ) {
+  for( unsigned int i = 0; i < routes_out.size(); ++i ) {
     Field *f = routes_out[i];
     f->propagateEvent( e );
   }
@@ -316,7 +316,7 @@ void Field::startEvent() {
   Event e( this, event.time_stamp );
 
   event_lock = true;
-  for( unsigned int i = 0; i < routes_out.size(); i++ ) {
+  for( unsigned int i = 0; i < routes_out.size(); ++i ) {
     Field *f = routes_out[i];
     f->propagateEvent( e );
   }
@@ -332,7 +332,7 @@ void Field::propagateEvent( Event e ) {
     event.ptr = e.ptr;
     event_lock = true;
     Event newe( this, event.time_stamp );
-    for( unsigned int i = 0; i < routes_out.size(); i++ ) {
+    for( unsigned int i = 0; i < routes_out.size(); ++i ) {
       Field *f = routes_out[i];
       f->propagateEvent( newe );
     }

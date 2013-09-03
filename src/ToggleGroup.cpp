@@ -88,7 +88,7 @@ void ToggleGroup::traverseSG( TraverseInfo &ti ) {
       ti.disableHaptics();
     }
   } else {
-    for( unsigned int i = 0; i < haptics_was_enabled.size(); i++ ) {
+    for( unsigned int i = 0; i < haptics_was_enabled.size(); ++i ) {
       if( haptics_was_enabled[i] ) {
         size_t index =  
           i < haptics_on_device.size() ? i : haptics_on_device.size() - 1;

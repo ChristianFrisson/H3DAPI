@@ -205,7 +205,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
   // Find the first video stream
   videoStream=-1;
   audioStream=-1;
-  for(int i=0; i < pFormatCtx->nb_streams; i++) {
+  for(int i=0; i < pFormatCtx->nb_streams; ++i) {
     if(pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO
        &&
          videoStream < 0) {
@@ -344,11 +344,11 @@ void FFmpegDecoder::getNewFrame( unsigned char *buffer ) {
           
         // Render the image to the texture 
         if (pCodecCtx->height > 0 && pCodecCtx->width > 0) {
-          for(int y=pCodecCtx->height-1; y>-1; y--) {
+          for(int y=pCodecCtx->height-1; y>-1; --y) {
             memcpy( buffer, pFrameRGB->data[0]+(y*pFrameRGB->linesize[0]), pCodecCtx->width*3 );
             buffer+=pCodecCtx->width*3;
           }
-          current_frame++;
+          ++current_frame;
         }
         
         //have_new_frame = false;

@@ -135,7 +135,7 @@ void TriangleSet::render() {
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
       if( shader_program ) {
-        for( unsigned int i = 0; i < attrib->size(); i++ ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
           X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
           if( attr ) {
             GLint loc = 
@@ -175,7 +175,7 @@ void TriangleSet::render() {
         renderTexCoordVertexBufferObject( tex_coord_node );
       // Set up shader vertex attributes.
       for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
+           attrib_index < attrib->size(); ++attrib_index ) {
         X3DVertexAttributeNode *attr = 
           attrib->getValueByIndex( attrib_index );
         if( attr ) attr->renderVertexBufferObject();
@@ -191,7 +191,7 @@ void TriangleSet::render() {
         disableTexCoordVertexBufferObject( tex_coord_node );
       if( fog_coord_node) fog_coord_node->disableVertexBufferObject();
       for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
+           attrib_index < attrib->size(); ++attrib_index ) {
         X3DVertexAttributeNode *attr = 
           attrib->getValueByIndex( attrib_index );
         if( attr ) attr->disableVertexBufferObject();
@@ -205,7 +205,7 @@ void TriangleSet::render() {
       if( tex_coords_per_vertex ) renderTexCoordArray( tex_coord_node );
       // Set up shader vertex attributes.
       for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
+           attrib_index < attrib->size(); ++attrib_index ) {
         X3DVertexAttributeNode *attr = 
           attrib->getValueByIndex( attrib_index );
         if( attr ) attr->renderArray();
@@ -220,7 +220,7 @@ void TriangleSet::render() {
       if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
       if( fog_coord_node) fog_coord_node->disableArray();
       for( unsigned int attrib_index = 0;
-           attrib_index < attrib->size(); attrib_index++ ) {
+           attrib_index < attrib->size(); ++attrib_index ) {
         X3DVertexAttributeNode *attr = 
           attrib->getValueByIndex( attrib_index );
         if( attr ) attr->disableArray();
@@ -291,7 +291,7 @@ X3DNormalNode *TriangleSet::AutoNormal::generateNormalsPerVertex(
     
     for( vector<Vec3f>::iterator i = normals.begin(); 
          i != normals.end(); 
-         i++ ) 
+         ++i ) 
       (*i).normalizeSafe();
     normal->vector->setValue( normals );
   }

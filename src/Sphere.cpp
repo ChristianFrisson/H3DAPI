@@ -129,8 +129,8 @@ void Sphere::render() {
       GLuint * sphere_index_data = new GLuint[index_data_size];
       // Iterate through the parts to create vertices.
       // Create sphere of radius 1.
-      for (unsigned int p = 0; p <= phi_parts; p++ ) {
-        for (unsigned int t = 0; t <= theta_parts; t++ ) {
+      for (unsigned int p = 0; p <= phi_parts; ++p ) {
+        for (unsigned int t = 0; t <= theta_parts; ++t ) {
           H3DFloat phi = p * inc_phi;
           bool at_seam = t == theta_parts;
           H3DFloat theta = ( at_seam ? 0 :t * inc_theta );
@@ -237,8 +237,8 @@ void Sphere::render() {
     // in displaylist.
     glBegin( GL_QUADS );
 
-    for (unsigned int p = 0; p < phi_parts; p++ ) {
-      for (unsigned int t = 0; t < theta_parts; t++ ) {
+    for (unsigned int p = 0; p < phi_parts; ++p ) {
+      for (unsigned int t = 0; t < theta_parts; ++t ) {
         H3DFloat phi = p * inc_phi;
         H3DFloat theta = t * inc_theta;
         H3DFloat next_phi = phi + inc_phi;
@@ -305,7 +305,7 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
   if( ti.getCurrentSurface() ) {
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
 
-    for( unsigned int i = 0; i < devices.size(); i++ ) {
+    for( unsigned int i = 0; i < devices.size(); ++i ) {
       if( ti.hapticsEnabled(i) ) { 
       H3DHapticsDevice *hd = devices[i];
 

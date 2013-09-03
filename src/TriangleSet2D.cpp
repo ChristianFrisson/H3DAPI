@@ -100,7 +100,7 @@ void TriangleSet2D::render() {
     
     if( mt ) {
       size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; i++ ) {
+      for( size_t i = 0; i < texture_units; ++i ) {
         glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
         glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
         glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
@@ -171,7 +171,7 @@ void TriangleSet2D::render() {
 
   if( bb && mt ) {
     size_t texture_units = mt->texture->size();
-    for( size_t i = 0; i < texture_units; i++ ) {
+    for( size_t i = 0; i < texture_units; ++i ) {
       glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
       glDisable( GL_TEXTURE_GEN_S );
       glDisable( GL_TEXTURE_GEN_T );

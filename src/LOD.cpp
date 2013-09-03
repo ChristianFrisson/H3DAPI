@@ -101,7 +101,7 @@ void LOD::traverseSG( TraverseInfo &ti ){
   if(forceTransitions->getValue()){
     // if forceTransitions is TRUE the LOD should always change 
     // to the closest LOD, comparing d to the range_vector[i]
-    for(int i=0; i<n-1; i++){
+    for(int i=0; i<n-1; ++i){
       if( d < range_vector[0]){
         if(display_index->getValue() !=0){
           display_index->setValue(0);
@@ -132,7 +132,7 @@ void LOD::traverseSG( TraverseInfo &ti ){
 
     vector <H3DFloat> range_d;
     H3DFloat min_distance = 0.5;
-    for(int i=0; i<n-1; i++){
+    for(int i=0; i<n-1; ++i){
       range_d.push_back(range_vector[i+1] - range_vector[i]);
       if(range_d[i] > min_distance){
         if( d < range_vector[0]){

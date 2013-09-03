@@ -78,7 +78,7 @@ Anchor::Anchor(
   stringstream stm;
   stm << temp_internname;
   intern_pdsn->setName( stm.str() );
-  temp_internname++;
+  ++temp_internname;
   pt_dev_sensors.push_back( intern_pdsn.get() );
   pt_dev_sens_index[ intern_pdsn.get() ] = -1;
 }
@@ -98,7 +98,7 @@ void Anchor::GeometrySelected::update() {
     else {
       bool no_valid_things = true;
 
-      for( vector<string>::const_iterator i = url.begin(); i != url.end(); i++ ) {
+      for( vector<string>::const_iterator i = url.begin(); i != url.end(); ++i ) {
         X3D::DEFNodes node_names;
         string base_url;
         string vp_name = "";
@@ -147,7 +147,7 @@ void Anchor::GeometrySelected::update() {
             X3DViewpointNode::getAllViewpoints();
           bool found = false;
           for( X3DViewpointNode::ViewpointList::const_iterator j = vp_list.begin();
-               j != vp_list.end() ; j++ ) {
+               j != vp_list.end() ; ++j ) {
             if( vp_name == (*j)->getName() ) {
               H3DNavigation::force_jump = true;
               (*j)->set_bind->setValue( true );
@@ -173,7 +173,7 @@ void Anchor::replaceScene( AutoRef< Node > new_world,
                            const Anchor *the_anchor ) {
   for( set< Scene * >::iterator i = Scene::scenes.begin();
        i != Scene::scenes.end();
-       i++ ) {
+       ++i ) {
     if( (*i)->isActive() ) {
       X3DGroupingNode * scene_root = dynamic_cast< X3DGroupingNode * >
         ( (*i)->sceneRoot->getValue() );
@@ -227,12 +227,12 @@ void Anchor::replaceSceneRoot( Scene * the_scene ) {
 bool Anchor::isAnchorInScene( const X3DGroupingNode *group_node,
                               const Anchor *anchor_to_find ) {
   NodeVector c = group_node->children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] == anchor_to_find )
       return true;
   }
 
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     X3DGroupingNode *temp_group = dynamic_cast< X3DGroupingNode * >( c[i] );
     if( temp_group )
       if( isAnchorInScene( temp_group, anchor_to_find ) )

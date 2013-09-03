@@ -92,7 +92,7 @@ void Disk2D::render() {
     glVertex2f( 0, 0 );
     H3DFloat x, y;
     int i = 0;
-    for ( ; i < nr_segments; i++ ) {
+    for ( ; i < nr_segments; ++i ) {
       theta = i * angle_increment;
       x = outer_radius * H3DCos(theta);
       y = outer_radius * H3DSin(theta);
@@ -116,7 +116,7 @@ void Disk2D::render() {
     H3DFloat x, y;
     glBegin( GL_LINE_STRIP );
     int i = 0;
-    for ( ; i < nr_segments; i++ ) {
+    for ( ; i < nr_segments; ++i ) {
       theta = i * angle_increment;
       x = outer_radius * H3DCos(theta);
       y = outer_radius * H3DSin(theta);
@@ -137,7 +137,7 @@ void Disk2D::render() {
     Vec2f inner_start_point, outer_start_point;
     glNormal3f( 0.f, 0.f, 1.f );
     int i = 0;
-    for ( ; i < nr_segments; i++ ) {
+    for ( ; i < nr_segments; ++i ) {
       theta = i * angle_increment;
       H3DFloat cos_t = H3DCos( theta );
       H3DFloat sin_t = H3DSin( theta );

@@ -104,7 +104,7 @@ namespace H3D {
           counter = 0;
           return true;
         } else {
-          counter++;
+          ++counter;
           return false;
         }
       }

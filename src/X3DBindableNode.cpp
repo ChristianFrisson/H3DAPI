@@ -88,7 +88,7 @@ void X3DBindableNode::removeFromStack() {
       }
     } else {
       for( StackType::iterator i = s.begin();
-           i != s.end(); i++ ) {
+           i != s.end(); ++i ) {
         if ( (*i) == this ) {
           s.erase( i );
           isBound->setValue( false, id );
@@ -106,7 +106,7 @@ void X3DBindableNode::toStackTop() {
   if ( active != this ) {
     // remove this from the stack, if it was in the stack...
     for( StackType::iterator i = s.begin();
-         i != s.end(); i++ ) {
+         i != s.end(); ++i ) {
       if ( (*i) == this ) {
         s.erase( i );
         break;

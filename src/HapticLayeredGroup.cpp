@@ -55,7 +55,7 @@ HapticLayeredGroup::HapticLayeredGroup( Inst< AddChildren    > _addChildren,
 
 void HapticLayeredGroup::traverseSG( TraverseInfo &ti ) {
   for( MFNode::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
+       i != children->end(); ++i ) {
     H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
     if ( l ) {
       l->enableHapticsState( ti );
@@ -68,7 +68,7 @@ void HapticLayeredGroup::traverseSG( TraverseInfo &ti ) {
   // not using iterators since they can become invalid if the 
   // traversal changes the children field while iterating.
   const NodeVector &c = children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       ti.setCurrentLayer( i );
       c[i]->traverseSG( ti );
@@ -78,7 +78,7 @@ void HapticLayeredGroup::traverseSG( TraverseInfo &ti ) {
   ti.setCurrentLayer( current_layer );
 
   for( MFNode::const_reverse_iterator i = children->rbegin();
-       i != children->rend(); i++ ) {
+       i != children->rend(); ++i ) {
     H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
     if ( l ) {
       l->disableHapticsState( ti );

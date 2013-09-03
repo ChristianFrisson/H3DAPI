@@ -91,11 +91,11 @@ void SpringEffect::traverseSG( TraverseInfo &ti ) {
   if( !ti.getHapticsDevices().empty()) {
     vector< H3DInt32 > device_index = deviceIndex->getValue();
     if( device_index.empty() ) {
-      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ )
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); ++i )
         device_index.push_back( i );
     }
     bool any_active = false;
-    for( unsigned int i = 0; i < device_index.size(); i++ ) {
+    for( unsigned int i = 0; i < device_index.size(); ++i ) {
       int index = device_index[i];
       if( index >= 0 && ti.hapticsEnabled( index ) ) {
         H3DHapticsDevice *hd = ti.getHapticsDevice( index );

@@ -104,7 +104,7 @@ namespace H3D {
                         const string &s2 ) {
       if( s1.size() != s2.size() ) return false;
       
-      for( unsigned int i = 0; i < s1.size(); i++ ) {
+      for( unsigned int i = 0; i < s1.size(); ++i ) {
         if( toupper( s1[i]) != toupper( s2[i] ) )
           return false;
       }
@@ -114,14 +114,14 @@ namespace H3D {
     bool hasPrefix( const string &s,
                     const string &prefix ) {
       if( prefix.size() > s.size() ) return false;
-      for( unsigned int i = 0; i < prefix.size(); i++ )
+      for( unsigned int i = 0; i < prefix.size(); ++i )
         if( s[i] != prefix[i] ) return false;
       return true;
     }
 
     string toLower( const string &s ) {
       string res = s;
-      for( unsigned int i = 0; i < s.size(); i++ )
+      for( unsigned int i = 0; i < s.size(); ++i )
         res[i] = tolower( s[i] );
       return res;
     }

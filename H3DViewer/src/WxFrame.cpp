@@ -68,7 +68,7 @@ inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
   char *b = new char[s.size()+1];
   const wchar_t *wb = s.c_str();
-  for( unsigned int i = 0; i < s.size(); i++ ) {
+  for( unsigned int i = 0; i < s.size(); ++i ) {
     b[i] = (char)(wb[i]);
   }
   
@@ -513,7 +513,7 @@ void WxFrame::HandleActionKey::update() {
        //Goes to the final viewpoint 
        wxCommandEvent fake_event;
        map< int, X3DViewpointNode * >::iterator last_item = frame->itemIdViewpointMap.end();
-       last_item--;
+       --last_item;
        fake_event.SetId( last_item->first );
        frame->ChangeViewpoint( fake_event );
        break;
@@ -524,7 +524,7 @@ void WxFrame::HandleActionKey::update() {
        wxCommandEvent fake_event;
        int new_int = frame->current_viewpoint_id + 1;
        map< int, X3DViewpointNode * >::iterator last_item = frame->itemIdViewpointMap.end();
-       last_item--;
+       --last_item;
        if( new_int > last_item->first ) {
          new_int = frame->itemIdViewpointMap.begin()->first;
        }
@@ -539,7 +539,7 @@ void WxFrame::HandleActionKey::update() {
        int new_int = frame->current_viewpoint_id - 1;
        if( new_int < frame->itemIdViewpointMap.begin()->first ) {
          map< int, X3DViewpointNode * >::iterator last_item = frame->itemIdViewpointMap.end();
-         last_item--;
+         --last_item;
          new_int = last_item->first;
        }
        fake_event.SetId( new_int );
@@ -943,7 +943,7 @@ bool WxFrame::loadFile( const string &filename) {
         }
 
         for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
-          i != di->device->end(); i++ ) {
+          i != di->device->end(); ++i ) {
             H3DHapticsDevice *d = static_cast< H3DHapticsDevice * >(*i);
             if( !d->stylus->getValue() )
               d->stylus->setValue( default_stylus );
@@ -959,14 +959,14 @@ bool WxFrame::loadFile( const string &filename) {
     if( di && device_infos.size() > device_info_size ) {
       unsigned int j = 0;
       for( DeviceInfo::DeviceInfoList::iterator i = device_infos.begin();
-           i != device_infos.end(); i++ ) {
+           i != device_infos.end(); ++i ) {
         if( j < device_info_size )
           (*i)->set_bind->setValue( false );
         else {
           (*i)->set_bind->setValue( true );
           break;
         }
-        j++;
+        ++j;
       }
     }
 
@@ -996,7 +996,7 @@ bool WxFrame::loadFile( const string &filename) {
       allDevices = mydevice->device->getValue();
 
       for( NodeVector::const_iterator nv = allDevices.begin();
-           nv != allDevices.end(); nv++ ) {
+           nv != allDevices.end(); ++nv ) {
         H3DHapticsRendererNode *renderer =
           static_cast < H3DHapticsDevice *> (*nv)->hapticsRenderer->getValue();
         RuspiniRenderer *ruspini_renderer = 
@@ -1096,7 +1096,7 @@ bool WxFrame::loadFile( const string &filename) {
 
         // Set stylus and calibration matrix.
         for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
-             i != di->device->end(); i++ ) {
+             i != di->device->end(); ++i ) {
           H3DHapticsDevice *d = static_cast< H3DHapticsDevice * >(*i);
           d->positionCalibration->setValue( pos_cal_matrix );
           if( !d->stylus->getValue() )
@@ -1527,7 +1527,7 @@ void WxFrame::clearData () {
 	if( new_viewpoint_on_load ) {
 		X3DViewpointNode::ViewpointList viewpoint_list = X3DViewpointNode::getAllViewpoints();
 		for( X3DViewpointNode::ViewpointList::iterator i = viewpoint_list.begin();
-				 i != viewpoint_list.end(); i++ ) {
+				 i != viewpoint_list.end(); ++i ) {
 			(*i)->set_bind->setValue( false );
 		}
 	}
@@ -1536,7 +1536,7 @@ void WxFrame::clearData () {
   DestroyViewpointsMenu();
 
   //Delete items from navigation menu & disconnect events
-  for (int j = 0; j < navTypeCount; j++) {
+  for (int j = 0; j < navTypeCount; ++j) {
     navigationMenu->Destroy(FRAME_NAVIGATION + j);
     Disconnect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED,
                wxCommandEventHandler(WxFrame::ChangeNavigation));
@@ -1861,7 +1861,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
           DynamicLibrary::load( "hl.dll" ) ) {
 #endif
         for (NodeVector::const_iterator nv = allDevices.begin(); 
-          nv != allDevices.end(); nv++) {
+          nv != allDevices.end(); ++nv) {
             static_cast < H3DHapticsDevice *> 
               (*nv)->hapticsRenderer->setValue(new OpenHapticsRenderer);
         }
@@ -1872,7 +1872,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
     case FRAME_CHAI3D:
 #ifdef HAVE_CHAI3D
         for (NodeVector::const_iterator nv = allDevices.begin(); 
-              nv != allDevices.end(); nv++) {
+              nv != allDevices.end(); ++nv) {
           static_cast < H3DHapticsDevice *> 
             (*nv)->hapticsRenderer->setValue(new Chai3DRenderer);
         }
@@ -1880,14 +1880,14 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
       break;
     case FRAME_GODOBJECT:
       for (NodeVector::const_iterator nv = allDevices.begin(); 
-             nv != allDevices.end(); nv++) {
+             nv != allDevices.end(); ++nv) {
           static_cast < H3DHapticsDevice *> (*nv)->
               hapticsRenderer->setValue(new GodObjectRenderer);
       }
       break;
     case FRAME_RUSPINI:
         for (NodeVector::const_iterator nv = allDevices.begin(); 
-                 nv != allDevices.end(); nv++) {
+                 nv != allDevices.end(); ++nv) {
             static_cast < H3DHapticsDevice *> (*nv)->
               hapticsRenderer->setValue(new RuspiniRenderer);
         }
@@ -1899,7 +1899,7 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
 //Toggle haptics
 //void WxFrame::ToggleHaptics (wxCommandEvent & event) {
 //  for (NodeVector::const_iterator nv = allDevices.begin(); 
-//        nv != allDevices.end(); nv++) {
+//        nv != allDevices.end(); ++nv) {
 //    if (lastDeviceStatus) {
 //      static_cast < H3DHapticsDevice *> (*nv)->disableDevice();
 //      lastDeviceStatus = false;
@@ -2129,7 +2129,7 @@ void WxFrame::SaveMRU () {
 
   //Store each individual file info
   h3dConfig->SetPath(wxT("/Recent/List"));
-  for (int i = 0; i < (int)recentFiles->GetCount(); i++) {
+  for (int i = 0; i < (int)recentFiles->GetCount(); ++i) {
     wxString entry = wxString (wxT("")) << i;
     h3dConfig->Write(entry, recentFiles->GetHistoryFile(i));
   }
@@ -2339,7 +2339,7 @@ void WxFrame::LoadMRU () {
     h3dConfig->Read(wxT("Count"), &count);
     h3dConfig->SetPath(wxT("/Recent/List"));
     // Going backwards since AddFileToHistory will append to list.
-    for (int i = count - 1; i >= 0; i--) {
+    for (int i = count - 1; i >= 0; --i) {
       wxString entry = wxString(wxT("")) << i;
       if (h3dConfig->Exists(entry)) {
         recentFiles->AddFileToHistory(h3dConfig->Read(entry));
@@ -2815,7 +2815,7 @@ void WxFrame::buildNavMenu () {
       vector<string>::iterator navList = navTypes.begin();
       bool hasAny = false;
       for (vector<string>::iterator navList = navTypes.begin(); 
-           navList != navTypes.end(); navList++) { 
+           navList != navTypes.end(); ++navList) { 
         if (validateNavType(*navList) && (*navList != "NONE")) {
           if (allowedTypes.empty()) {
             if ((*navList != "ANY")) {
@@ -2832,7 +2832,7 @@ void WxFrame::buildNavMenu () {
           else {
             bool found = false;
             for (vector<string>::iterator allowedList = allowedTypes.begin(); 
-                 allowedList != allowedTypes.end(); allowedList++) {
+                 allowedList != allowedTypes.end(); ++allowedList) {
               if ((*navList == "ANY")) {
                 hasAny = true;
                 found = true;
@@ -2856,10 +2856,10 @@ void WxFrame::buildNavMenu () {
         allTypes.push_back("LOOKAT");
          vector<string>::iterator allList = allTypes.begin();
         for (vector<string>::iterator allList = allTypes.begin();
-             allList != allTypes.end(); allList++) {
+             allList != allTypes.end(); ++allList) {
           bool found = false;
           for (vector<string>::iterator allowedList = allowedTypes.begin();
-               allowedList != allowedTypes.end(); allowedList++) {
+               allowedList != allowedTypes.end(); ++allowedList) {
             if ((*allowedList) == (*allList)) {
               found = true;
               break;
@@ -2873,23 +2873,23 @@ void WxFrame::buildNavMenu () {
       navTypeCount = int(allowedTypes.size());
       int j = 0;
       for (vector<string>::iterator menuList = allowedTypes.begin(); 
-           menuList != allowedTypes.end(); menuList++) {
+           menuList != allowedTypes.end(); ++menuList) {
         string typeName = (*menuList);
         navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString(navTypeToNavMenuString(typeName).c_str(),wxConvUTF8),
                                         wxT("Select a navigation mode"));
         Connect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(WxFrame::ChangeNavigation));
-        j++;
+        ++j;
       }
 
     int index = 0;
        for (vector<string>::iterator menuList = allowedTypes.begin();
-           menuList != allowedTypes.end(); menuList++) {
+           menuList != allowedTypes.end(); ++menuList) {
         if (mynav->getUsedNavType() == (*menuList)) {
           navigationMenu->Check(FRAME_NAVIGATION+index, true);
           break;
         }
-        index++;
+        ++index;
       }
     }
   }
@@ -2904,12 +2904,12 @@ void WxFrame::buildNavMenu () {
     navTypeCount = 5;
     int j = 0;
     for (vector<string>::iterator allList = allTypes.begin();
-         allList != allTypes.end(); allList++) {
+         allList != allTypes.end(); ++allList) {
       navigationMenu->AppendRadioItem(FRAME_NAVIGATION + j, wxString(navTypeToNavMenuString( (*allList) ).c_str(),wxConvUTF8),
                                       wxT("Select a navigation mode"));
       Connect(FRAME_NAVIGATION + j,wxEVT_COMMAND_MENU_SELECTED, 
               wxCommandEventHandler(WxFrame::ChangeNavigation));
-      j++;
+      ++j;
     }
     glwindow->default_nav = "EXAMINE";
   }
@@ -3078,14 +3078,14 @@ void WxFrame::BuildViewpointsMenu( list< Node * > v_list ) {
 
 void WxFrame::BuildViewpointsSubMenu( 
   list< Node* > v_list, wxMenu * menu, int &count, int &unnamed_vp, int &unnamed_vg ) {
-  for ( list<Node*>::iterator v = v_list.begin(); v != v_list.end(); v++ ) {
+  for ( list<Node*>::iterator v = v_list.begin(); v != v_list.end(); ++v ) {
     if ( ViewpointGroup * vg = dynamic_cast< ViewpointGroup* >(*v) ) {
       string v_description = vg->description->getValue();
       if( v_description == "" ) {
         stringstream v_dscr;
         v_dscr << "Unnamed Viewpoint Group " << unnamed_vg;
         v_description = v_dscr.str();
-        unnamed_vg++;
+        ++unnamed_vg;
       }
       // create submenu
       wxMenu *submenu = new wxMenu();
@@ -3099,7 +3099,7 @@ void WxFrame::BuildViewpointsSubMenu(
         stringstream v_dscr;
         v_dscr << "Unnamed Viewpoint " << unnamed_vp;
         v_description = v_dscr.str();
-        unnamed_vp++;
+        ++unnamed_vp;
       }      
       int id = FRAME_VIEWPOINT+count;
       menu->AppendCheckItem( id, wxString(v_description.c_str(),wxConvUTF8),
@@ -3111,7 +3111,7 @@ void WxFrame::BuildViewpointsSubMenu(
       Connect(id, wxEVT_COMMAND_MENU_SELECTED,
               wxCommandEventHandler(WxFrame::ChangeViewpoint));
       itemIdViewpointMap[id] = vp;
-      count++;
+      ++count;
     }
   }
 }
@@ -3125,7 +3125,7 @@ void WxFrame::DestroyViewpointsSubMenu( wxMenu * menu ) {
   //Delete items from viewpoint menu & disconnect events
   wxMenuItemList items = menu->GetMenuItems();
   for ( wxMenuItemList::iterator i = items.begin();
-    i != items.end(); i++ ) {
+    i != items.end(); ++i ) {
     int id = (*i)->GetId();
     wxMenu * submenu = (*i)->GetSubMenu();
     if ( submenu != NULL ) {          
@@ -3149,12 +3149,12 @@ list< Node * > WxFrame::GetTopLevelViews() {
     ViewpointGroup::getAllViewpointGroups();
   list< Node * > v_list;
   for ( ViewpointGroup::ViewpointGroupList::iterator i = vg_list.begin();
-    i != vg_list.end(); i++ ) {
+    i != vg_list.end(); ++i ) {
     if ( (*i)->isTopLevel() || !(*i)->inSceneGraph() )
       v_list.push_back( *i );
   }
   for ( X3DViewpointNode::ViewpointList::iterator i = vp_list.begin();
-    i != vp_list.end(); i++ ) {
+    i != vp_list.end(); ++i ) {
     if ( (*i)->isTopLevel() || !(*i)->inSceneGraph() )
       v_list.push_back( *i );
   }
@@ -3755,7 +3755,7 @@ void SettingsDialog::OnCancel (wxCommandEvent & event) {
 void WxFrame::setProxyRadius( float r ) {
 
   for (NodeVector::const_iterator nv = allDevices.begin(); 
-       nv != allDevices.end(); nv++) {
+       nv != allDevices.end(); ++nv) {
     RuspiniRenderer *renderer = dynamic_cast< RuspiniRenderer * >(
       static_cast < H3DHapticsDevice *> (*nv)->
         hapticsRenderer->getValue() );

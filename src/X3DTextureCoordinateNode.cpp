@@ -43,7 +43,7 @@ X3DTextureCoordinateNode::X3DTextureCoordinateNode(
 void X3DTextureCoordinateNode::renderForTextureUnits( int index,
                                                       unsigned int start_unit,
                                                       unsigned int end_unit ) {
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     renderForTextureUnit( index, i );
   }
 }
@@ -52,7 +52,7 @@ void X3DTextureCoordinateNode::renderArrayForTextureUnits( unsigned int start_un
                                                            unsigned int end_unit ) {
   GLint saved_texture;
   glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     renderArrayForTextureUnit( i );
   }
   glClientActiveTexture( saved_texture );
@@ -64,7 +64,7 @@ void X3DTextureCoordinateNode::disableArrayForTextureUnits(
                                    unsigned int end_unit ) {
   GLint saved_texture;
   glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     disableArrayForTextureUnit( i );
   }
   glClientActiveTexture( saved_texture );
@@ -80,7 +80,7 @@ void X3DTextureCoordinateNode::renderTexCoordForTexture( const Vec3f &tc,
     dynamic_cast< MultiTexture * >( t );
   if( mt ) {
     size_t texture_units = mt->texture->size();
-    for( unsigned int i = 0; i < texture_units; i++ ) {
+    for( unsigned int i = 0; i < texture_units; ++i ) {
       glMultiTexCoord3f( GL_TEXTURE0_ARB + i, tc.x, tc.y, tc.z );
     }
   } else {
@@ -113,7 +113,7 @@ void X3DTextureCoordinateNode::renderForTexture( int index,
     dynamic_cast< MultiTexture * >( t );
   if( mt ) {
     size_t texture_units = mt->texture->size();
-    for( unsigned int i = 0; i < texture_units; i++ ) {
+    for( unsigned int i = 0; i < texture_units; ++i ) {
       renderForTextureUnit( index, i );
     }
   } else {
@@ -146,7 +146,7 @@ void X3DTextureCoordinateNode::stopTexGenForTextureUnit( unsigned int texture_un
 void X3DTextureCoordinateNode::startTexGenForTextureUnits( 
                                    unsigned int start_unit,
                                    unsigned int end_unit ) {
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     startTexGenForTextureUnit( i );
   }
 }
@@ -154,7 +154,7 @@ void X3DTextureCoordinateNode::startTexGenForTextureUnits(
 void X3DTextureCoordinateNode::stopTexGenForTextureUnits( 
                                    unsigned int start_unit,
                                    unsigned int end_unit ) {
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     stopTexGenForTextureUnit( i );
   }
 }
@@ -229,7 +229,7 @@ void X3DTextureCoordinateNode::renderVertexBufferObjectForTextureUnits(
   unsigned int end_unit ) {
   GLint saved_texture;
   glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     renderVertexBufferObjectForTextureUnit( i );
   }
   glClientActiveTexture( saved_texture );
@@ -241,7 +241,7 @@ void X3DTextureCoordinateNode::disableVertexBufferObjectForTextureUnits(
                                    unsigned int end_unit ) {
   GLint saved_texture;
   glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     disableVertexBufferObjectForTextureUnit( i );
   }
   glClientActiveTexture( saved_texture );
@@ -318,7 +318,7 @@ void X3DTextureCoordinateNode::renderVertexBufferObjectForTexture(
   if( mt ) {
     // If multitexture set texture coordinate for each texture.
     size_t texture_units = mt->texture->size();
-    for( unsigned int i = 0; i < texture_units; i++ ) {
+    for( unsigned int i = 0; i < texture_units; ++i ) {
       glClientActiveTexture( GL_TEXTURE0_ARB + i );
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glTexCoordPointer( 3, GL_FLOAT, 9 * sizeof(GLfloat),
@@ -346,7 +346,7 @@ void X3DTextureCoordinateNode::disableVBOForTexture( X3DTextureNode *t ) {
   if( mt ) {
     // If multitexture disable texture coordinate for each texture.
     size_t texture_units = mt->texture->size();
-    for( unsigned int i = 0; i < texture_units; i++ ) {
+    for( unsigned int i = 0; i < texture_units; ++i ) {
       glClientActiveTexture( GL_TEXTURE0_ARB + i );
       glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }

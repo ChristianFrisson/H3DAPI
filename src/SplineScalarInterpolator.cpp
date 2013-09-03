@@ -122,7 +122,7 @@ void SplineScalarInterpolator::SFValue::update() {
       ignoreClosed = true;
     }
     //Calculate  D = distance from keyValue[0]->keyValue[N-1]
-    for(int i=0; i<key_size-1; i++){ //n=keys.size()
+    for(int i=0; i<key_size-1; ++i){ //n=keys.size()
       D = D + H3DAbs(key_value[i]-key_value[i+1]);
     }
 
@@ -133,7 +133,7 @@ void SplineScalarInterpolator::SFValue::update() {
         T=key_velocity;
       }
       else if(normalizeVelocity){  
-        for(int i=0; i<key_size; i++){
+        for(int i=0; i<key_size; ++i){
           T.push_back(key_velocity[i]*(D/H3DAbs(key_velocity[i])));
         }
       }
@@ -142,7 +142,7 @@ void SplineScalarInterpolator::SFValue::update() {
 
 
     else if(closed && !ignoreClosed){
-      for(int i=0; i<key_size; i++){
+      for(int i=0; i<key_size; ++i){
         if(i==0){
           T.push_back((key_value[i+1]-key_value[tMinus1])/2);
         }
@@ -157,7 +157,7 @@ void SplineScalarInterpolator::SFValue::update() {
 
     else if(!closed || ignoreClosed){
       T.push_back(0); 
-      for(int i=1; i<key_size-1; i++){
+      for(int i=1; i<key_size-1; ++i){
         T.push_back((key_value[i+1]-key_value[i-1])/2);
       }
       notSpecified=true;
@@ -188,7 +188,7 @@ void SplineScalarInterpolator::SFValue::update() {
     //Calculate F1, F2, T0, T1
     if (!closed || specified || ignoreClosed){
       // Denna loop fungerar för notSpec.
-      for(int i=1; i<key_size-1; i++){
+      for(int i=1; i<key_size-1; ++i){
         F1.push_back(2*((key[i] - key[i-1])/(key[i+1] - key[i-1])));
         F2.push_back(2*((key[i+1] - key[i])/(key[i+1] - key[i-1])));
       }
@@ -215,7 +215,7 @@ void SplineScalarInterpolator::SFValue::update() {
     }
 
     else if(closed && !ignoreClosed){
-      for(int i=0; i<key_size; i++){
+      for(int i=0; i<key_size; ++i){
         if(i==0){
           F1.push_back(2*((key[i] - key[tMinus1])/(key[i+1] - key[tMinus1])));
           F2.push_back(2*((key[i+1] - key[i])/(key[i+1] - key[tMinus1])));

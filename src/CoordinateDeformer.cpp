@@ -61,7 +61,7 @@ void CoordinateDeformer::deformPoints( const vector< bool  > &is_touched,
 
   bool touched = false;
   for( MFBool::const_iterator i = is_touched.begin(); 
-       i != is_touched.end(); i++ ) {
+       i != is_touched.end(); ++i ) {
     if( *i ) {
       touched = true;
       break;
@@ -80,13 +80,13 @@ void CoordinateDeformer::deformPoints( const vector< bool  > &is_touched,
       if( sum_offsets ) {
         // Calculate is_touched if device algorithm is to average
         // since it is the same for all resting_points.
-        for( unsigned int i = 0; i < nr_devices; i++ )
-          if( is_touched[i] ) count++;
+        for( unsigned int i = 0; i < nr_devices; ++i )
+          if( is_touched[i] ) ++count;
       }
-      for( unsigned int i = 0; i < resting_points.size(); i++ ) {
+      for( unsigned int i = 0; i < resting_points.size(); ++i ) {
         Vec3f offset = Vec3f( 0, 0, 0 );
         H3DFloat max_depth_sqr = 0;
-        for( unsigned int j = 0; j < nr_devices; j++ ) {
+        for( unsigned int j = 0; j < nr_devices; ++j ) {
           if( is_touched[j] ) {
             H3DFloat distance = ( resting_points[i] - touch_points[j] ).length();
             Vec3f o = ( penetration_points[j] - touch_points[j] ) *

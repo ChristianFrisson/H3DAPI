@@ -90,7 +90,7 @@ class ChangeViewport : public PeriodicUpdate< SFInt32> {
         ListIterator it = find(vp_list.begin(),vp_list.end(),active_vp);
         //Checks if the active viewpoint exists
         if(it!=vp_list.end()) {
-          it++;
+          ++it;
           //Checks if the active viewpoint is the last one
           if(it==vp_list.end()){
             (*vp_list.begin())->set_bind->setValue(true);
@@ -514,7 +514,7 @@ int main(int argc, char* argv[]) {
   bool antialiasing = true;
   // Command line arguments ---
 
-  for( int i = 1 ; i < argc ; i++ ){
+  for( int i = 1 ; i < argc ; ++i ){
 
     if( argv[i][0] != '-' ){
       xml_files.push_back( string(argv[i]) );
@@ -666,7 +666,7 @@ int main(int argc, char* argv[]) {
       }
 
       for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
-        i != di->device->end(); i++ ) {
+        i != di->device->end(); ++i ) {
           H3DHapticsDevice *d = static_cast< H3DHapticsDevice * >(*i);
           if( !d->stylus->getValue() )
             d->stylus->setValue( default_stylus );
@@ -690,7 +690,7 @@ int main(int argc, char* argv[]) {
 
     AutoRef< Group > g( new Group );
     for( vector<string>::iterator file = xml_files.begin() ;
-      file != xml_files.end() ; file++ ){
+      file != xml_files.end() ; ++file ){
       Console(3) << "Loading " << *file << endl;
       scene->loadSceneRoot( *file );
     }
@@ -699,14 +699,14 @@ int main(int argc, char* argv[]) {
     if( di && device_infos.size() > device_info_size ) {
       unsigned int j = 0;
       for( DeviceInfo::DeviceInfoList::iterator i = device_infos.begin();
-           i != device_infos.end(); i++ ) {
+           i != device_infos.end(); ++i ) {
         if( j < device_info_size )
           di->set_bind->setValue( false );
         else {
           (*i)->set_bind->setValue( true );
           break;
         }
-        j++;
+        ++j;
       }
     }
 

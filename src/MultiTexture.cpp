@@ -99,7 +99,7 @@ void MultiTexture::render() {
   GLint nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &nr_textures_supported );
 
-  for( unsigned int i = 0; i < texture->size(); i++ ) {
+  for( unsigned int i = 0; i < texture->size(); ++i ) {
     if( i >= (unsigned int)nr_textures_supported ) {
       Console(4) << "Warning! MultiTexture: Unable to display all"
                  << "textures. Your device only has support for " 
@@ -359,12 +359,12 @@ void MultiTexture::enableTexturing() {
   int used_texture_units = 0;
   for( MFTexture::const_iterator i = texture->begin();
        i != texture->end();
-       i++ ) {
+       ++i ) {
     if( dynamic_cast< MultiTexture * >( *i ) ){
       //TODO::::
     } else {
       glActiveTexture( GL_TEXTURE0_ARB + used_texture_units );
-      used_texture_units++;
+      ++used_texture_units;
       static_cast< X3DTextureNode * >(*i)->enableTexturing();
     }
   }
@@ -378,12 +378,12 @@ void MultiTexture::disableTexturing() {
   int used_texture_units = 0;
   for( MFTexture::const_iterator i = texture->begin();
        i != texture->end();
-       i++ ) {
+       ++i ) {
     if( dynamic_cast< MultiTexture * >( *i ) ) {
       //TODO:::
     } else {
       glActiveTexture( GL_TEXTURE0_ARB + used_texture_units );
-      used_texture_units++;
+      ++used_texture_units;
       static_cast< X3DTextureNode * >(*i)->disableTexturing();
     }
   }

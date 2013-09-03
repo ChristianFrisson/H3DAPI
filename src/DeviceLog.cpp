@@ -77,11 +77,11 @@ void DeviceLog::traverseSG( TraverseInfo &ti ) {
   if( !updateLogForceEffect->isUpToDate() ) {
     updateLogForceEffect->upToDate();
     if( device_index.empty() ) {
-      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); ++i ) {
         createLogForceEffect( i );
       }
     } else {
-      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+      for( unsigned int i = 0; i < device_index.size(); ++i ) {
         createLogForceEffect( device_index[i] );
       }
     }
@@ -90,13 +90,13 @@ void DeviceLog::traverseSG( TraverseInfo &ti ) {
   // haptics device.
   if( !ti.getHapticsDevices().empty() ) {
     if( device_index.empty() ) {
-      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); ++i ) {
         if( ti.hapticsEnabled( i ) ) {
           ti.addForceEffect( i, log_force_effect[i] );
         }
       }
     } else {
-      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+      for( unsigned int i = 0; i < device_index.size(); ++i ) {
         if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] )
             && log_force_effect[device_index[i]] ) {
           ti.addForceEffect( device_index[i], log_force_effect[device_index[i]] );
@@ -131,7 +131,7 @@ void DeviceLog::createLogForceEffect( int index ) {
     HAPI::DeviceLog::LogTypeVector log_types;
     const vector< string > &log_data = logData->getValue();
     for( vector< string >::const_iterator i = log_data.begin();
-      i != log_data.end(); i++ ) {
+      i != log_data.end(); ++i ) {
       if( (*i) == "ALL" ) {
         log_types.clear();
         log_types.push_back( HAPI::DeviceLog::TIME );

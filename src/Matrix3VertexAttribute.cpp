@@ -91,7 +91,7 @@ void Matrix3VertexAttribute::renderArray() {
   if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
     glEnableVertexAttribArrayARB( attrib_index );
     GLfloat *data = new GLfloat[ 9 * value->size() ];
-    for( unsigned int i = 0; i < value->size(); i++ ) {
+    for( unsigned int i = 0; i < value->size(); ++i ) {
       const Matrix3f &m = value->getValueByIndex( i );
       data[ i*9   ] = m[0][0];
       data[ i*9+1 ] = m[1][0];
@@ -135,7 +135,7 @@ void Matrix3VertexAttribute::renderVertexBufferObject() {
         }
         glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
         GLfloat *data = new GLfloat[ 9 * value->size() ];
-        for( unsigned int i = 0; i < value->size(); i++ ) {
+        for( unsigned int i = 0; i < value->size(); ++i ) {
           const Matrix3f &m = value->getValueByIndex( i );
           data[ i*9   ] = m[0][0];
           data[ i*9+1 ] = m[1][0];

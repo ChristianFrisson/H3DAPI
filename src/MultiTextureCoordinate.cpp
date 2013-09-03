@@ -99,7 +99,7 @@ unsigned int MultiTextureCoordinate::nrAvailableTexCoords() {
 
   for( MFTextureCoordinateNode::const_iterator i = texCoord->begin();
        i != texCoord->end();
-       i++ ) {
+       ++i ) {
     X3DTextureCoordinateNode *tc = static_cast< X3DTextureCoordinateNode * >(*i);
     
     if( tc->supportsExplicitTexCoords() ) { 
@@ -128,7 +128,7 @@ bool MultiTextureCoordinate::supportsExplicitTexCoords() {
 
   for( MFTextureCoordinateNode::const_iterator i = texCoord->begin();
        i != texCoord->end();
-       i++ ) {
+       ++i ) {
     X3DTextureCoordinateNode *tc = static_cast< X3DTextureCoordinateNode * >(*i);
     if( tc->supportsExplicitTexCoords() ) return true;
   }
@@ -139,7 +139,7 @@ bool MultiTextureCoordinate::supportsTexGen() {
 
   for( MFTextureCoordinateNode::const_iterator i = texCoord->begin();
        i != texCoord->end();
-       i++ ) {
+       ++i ) {
     X3DTextureCoordinateNode *tc = static_cast< X3DTextureCoordinateNode * >(*i);
     if( tc->supportsTexGen() ) return true;
   }

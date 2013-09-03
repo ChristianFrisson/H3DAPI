@@ -84,7 +84,7 @@ void TransferFunctionTexture::SFImage::update() {
     static_cast< SFFunctionNode * >( routes_in[3] )->getValue();
 
   unsigned char lut[256*4];
-  for( int i = 0 ; i < 256 ; i++ ){
+  for( int i = 0 ; i < 256 ; ++i ){
     lut[i*4  ] = (unsigned char) (red_function ?  
                                   red_function->evaluate( i / 255.0 ) * 255 :
                                   i ) ;

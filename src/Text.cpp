@@ -236,7 +236,7 @@ void Text::renderTextLine( const string& text,
       // character by character.
       font->renderHorizontalLine( text );
     } else {
-      for( unsigned int i = 0; i < text.length(); i++ ) {
+      for( unsigned int i = 0; i < text.length(); ++i ) {
         if( i != 0 ) {
           H3DFloat size = font->charDimensions( text[i] ).x;
           glTranslatef( -size, 0, 0 );
@@ -248,13 +248,13 @@ void Text::renderTextLine( const string& text,
   }
   case X3DFontStyleNode::VERTICAL: {
     if( top_to_bottom ) {
-      for( unsigned int i = 0; i < text.length(); i++ ) {
+      for( unsigned int i = 0; i < text.length(); ++i ) {
         font->renderChar( text[i] );
         H3DFloat size = font->charDimensions( text[i] ).y;
         glTranslatef( 0, -size, 0 );
       }
     } else {
-      for( unsigned int i = 0; i < text.length(); i++ ) {
+      for( unsigned int i = 0; i < text.length(); ++i ) {
         if( i != 0 ) {
           H3DFloat size = font->charDimensions( text[i] ).y;
           glTranslatef( 0, size, 0 );
@@ -300,7 +300,7 @@ void Text::scaleToMaxExtent( const vector< string >& text,
       // strings.
       for( ; 
            l != line_length.end() && s != text.end();
-           l++, s++ ) {
+           ++l, ++s ) {
         if( max_length < *l ) max_length = *l;
       }
       
@@ -311,7 +311,7 @@ void Text::scaleToMaxExtent( const vector< string >& text,
         while( s != text.end() ) {
           Vec3f dims = font->stringDimensions( *s, alignment );
           if( max_length < dims.x ) max_length = dims.x;
-          s++;
+          ++s;
         }
         if( max_length > max_extent )
           glScalef( max_extent / max_length, 1, 1 ); 
@@ -320,7 +320,7 @@ void Text::scaleToMaxExtent( const vector< string >& text,
         while( s != text.end() ) {
           Vec3f dims = font->stringDimensions( *s, alignment );
           if( max_length < dims.y ) max_length = dims.y;
-          s++;
+          ++s;
         }
         if( max_length > max_extent )
           glScalef( 1, max_extent / max_length, 1 ); 
@@ -362,7 +362,7 @@ void Text::render() {
   vector< H3DFloat >::const_iterator l = line_length.begin();
   for( vector< string >::const_iterator line = text.begin();
        line != text.end();
-       line++ ) {
+       ++line ) {
       
     // translate to the next line. What the next line is depends on the 
     // values in the font node.
@@ -383,7 +383,7 @@ void Text::render() {
         glScalef( 1,
                   (*l)/ font->stringDimensions( *line, alignment ).y, 
                   1 );
-      l++;
+      ++l;
     }
 
     // justify the line in the major alignment depending on the justify
@@ -560,7 +560,7 @@ void Text::updateLineBounds() {
     // Case of horizontal alignment
     H3DFloat offset = bb->size->getValue().x;
     for ( vector<string>::const_iterator i = text.begin(); 
-      i != text.end(); i++ ) {
+      i != text.end(); ++i ) {
       const string &line = *i;
       Vec3f dim = font_style->
         stringDimensions( line, X3DFontStyleNode::HORIZONTAL );
@@ -585,7 +585,7 @@ void Text::updateLineBounds() {
     // Case of vertical alignment
     H3DFloat offset = bb->size->getValue().y;
     for ( vector<string>::const_iterator i = text.begin(); 
-      i != text.end(); i++ ) {
+      i != text.end(); ++i ) {
       const string &line = *i;
       Vec3f dim = font_style->
         stringDimensions( line, X3DFontStyleNode::VERTICAL );

@@ -88,7 +88,7 @@ void AudioClip::ALrender() {
     // and replace it with the new
     
     for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-         i != parent_sound_nodes.end(); i++ ) {
+         i != parent_sound_nodes.end(); ++i ) {
       alSourceStop( (*i)->getALSourceId() );
       alSourcei( (*i)->getALSourceId(), AL_BUFFER, 0 );
     }
@@ -145,7 +145,7 @@ void AudioClip::ALrender() {
       initALBuffers( NR_STREAM_BUFFERS * STREAM_BUFFER_SIZE <= 
                      reader->totalDataSize() );
       for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-           i != parent_sound_nodes.end(); i++ ) {
+           i != parent_sound_nodes.end(); ++i ) {
         if( isActive->getValue() && !isPaused->getValue() )
           alSourcePlay( (*i)->getALSourceId() );
       }

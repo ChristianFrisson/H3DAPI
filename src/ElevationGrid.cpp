@@ -277,7 +277,7 @@ void ElevationGrid::render() {
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
       if( shader_program ) {
-        for( unsigned int i = 0; i < attrib->size(); i++ ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
           X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
           if( attr ) {
             GLint loc = 
@@ -328,8 +328,8 @@ void ElevationGrid::render() {
           (GLsizei)( ( xdim -1 ) * ( zdim - 1 ) * nr_index_data );
         GLuint * indices = new GLuint[index_data_size];
         int index_index = 0;
-        for( int z = 0; z < zdim; z++ ) {
-          for( int x = 0; x < xdim; x++ ) {
+        for( int z = 0; z < zdim; ++z ) {
+          for( int x = 0; x < xdim; ++x ) {
             int base_index = z * xdim + x;
             int vertex_index = base_index * nr_data_vertices;
             vertices[vertex_index] = x * xspace;
@@ -412,8 +412,8 @@ void ElevationGrid::render() {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
     } else {
-      for( int z = 0; z < zdim - 1; z++ ) {
-        for( int x = 0; x < xdim - 1; x++ ) {
+      for( int z = 0; z < zdim - 1; ++z ) {
+        for( int x = 0; x < xdim - 1; ++x ) {
           if( color_node && !color_per_vertex ) {
             color_node->render( quad_index );
           }
@@ -459,7 +459,7 @@ void ElevationGrid::render() {
           } 
         
           glVertex3f( x * xspace, heights[vertex_index], z * zspace ); 
-          vertex_index++;
+          ++vertex_index;
 
           // vertex 1
           vertex_index = (z+1) * xdim + x;
@@ -564,7 +564,7 @@ void ElevationGrid::render() {
           glVertex3f( (x+1) * xspace, heights[vertex_index], z * zspace ); 
 
           glEnd();
-          quad_index++;
+          ++quad_index;
         }
       }
     }
@@ -668,7 +668,7 @@ void ElevationGrid::startTexGen(
         dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
       if( mt ) {
         size_t texture_units = mt->texture->size();
-        for( size_t i = 0; i < texture_units; i++ ) {
+        for( size_t i = 0; i < texture_units; ++i ) {
           glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
           glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
           glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
@@ -702,7 +702,7 @@ void ElevationGrid::startTexGen(
       dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
     if( mt ) {
       size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; i++ ) {
+      for( size_t i = 0; i < texture_units; ++i ) {
         glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
         tex_coord_gen->startTexGen();
       }
@@ -720,7 +720,7 @@ void ElevationGrid::stopTexGen(
   if( !tex_coord_gen ) {
     if( mt ) {
       size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; i++ ) {
+      for( size_t i = 0; i < texture_units; ++i ) {
         glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
         glDisable( GL_TEXTURE_GEN_S );
         glDisable( GL_TEXTURE_GEN_T );
@@ -734,7 +734,7 @@ void ElevationGrid::stopTexGen(
   } else {
     if( mt ) {
       size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; i++ ) {
+      for( size_t i = 0; i < texture_units; ++i ) {
         glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
         tex_coord_gen->stopTexGen();
       }
@@ -760,7 +760,7 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
                                                     x_spacing, z_spacing,
                                                     height, ccw ) );
     for( unsigned int face = 0; 
-         face < normals_per_face->nrAvailableNormals(); face++ ) {
+         face < normals_per_face->nrAvailableNormals(); ++face ) {
       int row = face / (x_dim-1);
       int col = face % (x_dim-1);
       Vec3f norm = normals_per_face->getNormal( face );
@@ -772,7 +772,7 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
     
     for( vector<Vec3f>::iterator i = normals.begin(); 
          i != normals.end(); 
-         i++ ) {
+         ++i ) {
       (*i).normalizeSafe();
     }
     normal->vector->setValue( normals );
@@ -804,7 +804,7 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
 
     // build a map from each vertex to a vector of all the normals 
     // of the faces the vertex is a part of.
-    for( int face = 0; face < (int)normals_per_face->nrAvailableNormals(); face++ ) {
+    for( int face = 0; face < (int)normals_per_face->nrAvailableNormals(); ++face ) {
 
       int quad_x_dim = x_dim - 1;
       int quad_z_dim = z_dim - 1;
@@ -931,7 +931,7 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerFace(
     vector< Vec3f > normals( nr_quads );
     normals.clear();
 
-    for( unsigned int face = 0; face < nr_quads; face++ ) {
+    for( unsigned int face = 0; face < nr_quads; ++face ) {
       Vec3f norm, AB, AD, CB, CD;
       H3DFloat A_height, B_height, C_height, D_height;
       int row = face / quad_x_dim;
@@ -978,7 +978,7 @@ void ElevationGrid::SFBound::update() {
   if( height.size() > 0 ) {
     min_h = max_h = height[0];
     for( vector< H3DFloat >::const_iterator i = height.begin();
-         i != height.end(); i++ ) {
+         i != height.end(); ++i ) {
       if( *i < min_h ) min_h = *i;
       else if( *i  > max_h ) max_h = *i;
     }

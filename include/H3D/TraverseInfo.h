@@ -82,7 +82,7 @@ namespace H3D {
     /// Make sure that the TraverseInfo object have enough resources allocated
     /// for the given amount of haptic layers.
     inline void initializeLayers( unsigned int nr_layers ) {
-      for( unsigned int i = 0; i < haptic_shapes.size(); i++ ) {
+      for( unsigned int i = 0; i < haptic_shapes.size(); ++i ) {
         if( haptic_shapes[i].size() < nr_layers )
           haptic_shapes[i].resize( nr_layers );
       }
@@ -106,7 +106,7 @@ namespace H3D {
       int index = 0;
       for( vector< H3DHapticsDevice * >::iterator i = haptics_devices.begin();
            i != haptics_devices.end();
-           i++, index++ ) {
+           ++i, ++index ) {
         if( (*i) == hd ) return index;
       }
       return -1;
@@ -233,7 +233,7 @@ namespace H3D {
     /// functions will not add any shapes until enableHaptics() is called.
     inline void disableHaptics( unsigned int i = -1 ) {
       if( i == -1 ) {
-        for( unsigned int j = 0; j < haptics_enabled.size(); j++ ) {
+        for( unsigned int j = 0; j < haptics_enabled.size(); ++j ) {
           haptics_enabled[j] = false;
         }
       } else {
@@ -245,7 +245,7 @@ namespace H3D {
     /// calls will add HapticShapes to render. Haptics is enabled by default.
     inline void enableHaptics( unsigned int i = -1 ) {
       if( i == -1 ) {
-        for( unsigned int j = 0; j < haptics_enabled.size(); j++ ) {
+        for( unsigned int j = 0; j < haptics_enabled.size(); ++j ) {
           haptics_enabled[j] = true;
         }
       } else {
@@ -301,7 +301,7 @@ namespace H3D {
 
     /// Returns true if haptics is enabled for all haptics devices.
     inline bool hapticsEnabledForAll() {
-      for( unsigned int i = 0; i < haptics_enabled.size(); i++ ) {
+      for( unsigned int i = 0; i < haptics_enabled.size(); ++i ) {
         if( !haptics_enabled[i] ) return false;
       }
       return true;
@@ -309,7 +309,7 @@ namespace H3D {
 
     /// Returns true if haptics is disabled for all haptics devices.
     inline bool hapticsDisabledForAll() {
-      for( unsigned int i = 0; i < haptics_enabled.size(); i++ ) {
+      for( unsigned int i = 0; i < haptics_enabled.size(); ++i ) {
         if( haptics_enabled[i] ) return false;
       }
       return true;

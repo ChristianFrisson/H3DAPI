@@ -78,10 +78,10 @@ void RotationalSpringEffect::traverseSG( TraverseInfo &ti ) {
   if( tmp_enabled && !ti.getHapticsDevices().empty() ) {
     vector< H3DInt32 > device_index = deviceIndex->getValue();
     if( device_index.empty() ) {
-      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ )
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); ++i )
         device_index.push_back( i );
     }
-    for( unsigned int i = 0; i < device_index.size(); i++ ) {
+    for( unsigned int i = 0; i < device_index.size(); ++i ) {
       int index = device_index[i];
       if( index >= 0 && ti.hapticsEnabled( index ) ) { 
         H3DHapticsDevice *hd = ti.getHapticsDevice( index );
@@ -102,7 +102,7 @@ void RotationalSpringEffect::traverseSG( TraverseInfo &ti ) {
       }
     }
   } else if( last_enabled != tmp_enabled ) {
-    for( unsigned int i = 0; i < torque->size(); i++ )
+    for( unsigned int i = 0; i < torque->size(); ++i )
       torque->setValue( i, Vec3f( 0, 0, 0 ), id );
   }
   last_enabled = tmp_enabled;

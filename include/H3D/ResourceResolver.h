@@ -53,7 +53,7 @@ namespace H3D {
     public:
       ~TmpFileNameList() {
         for( list< string >::iterator i = begin();
-           i != end(); i++ ) {
+           i != end(); ++i ) {
 		  std::remove( (*i).c_str() );
         }
       }

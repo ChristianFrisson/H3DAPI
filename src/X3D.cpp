@@ -171,7 +171,7 @@ Group* X3D::createX3DFromURL( const string &url,
     // else...
     ifstream is( resolved_url.c_str() );
     XMLCh *url_ch = new XMLCh[ url.size() + 1 ];
-    for( unsigned int i = 0; i < url.size(); i++ ) {
+    for( unsigned int i = 0; i < url.size(); ++i ) {
       url_ch[i] = url[i];
     }
     url_ch[ url.size() ] = '\0'; 
@@ -352,7 +352,7 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
     // else...
     ifstream is( resolved_url.c_str() );
     XMLCh *url_ch = new XMLCh[ url.size() + 1 ];
-    for( unsigned int i = 0; i < url.size(); i++ ) {
+    for( unsigned int i = 0; i < url.size(); ++i ) {
       url_ch[i] = url[i];
     }
     url_ch[ url.size() ] = '\0'; 
@@ -386,7 +386,7 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
   parser->setErrorHandler(&handler);
   parser->setLexicalHandler( &handler ); 
   XMLCh *system_id_ch = new XMLCh[ system_id.size() + 1 ];
-  for( unsigned int i = 0; i < system_id.size(); i++ ) {
+  for( unsigned int i = 0; i < system_id.size(); ++i ) {
     system_id_ch[i] = system_id[i];
   }
   system_id_ch[ system_id.size() ] = '\0'; 
@@ -486,7 +486,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
       dynamic_cast< H3DDynamicFieldsObject * >(node);
     AutoRef< Node > default_value_node( H3DNodeDatabase::createNode( node_name ) );
     for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-         i != db->fieldDBEnd(); i++ ) {
+         i != db->fieldDBEnd(); ++i ) {
       Field *f = node->getField( *i );
       // In the case of dynamic fields a field in the field database might not
       // exist for this node, in that case just check next.
@@ -498,7 +498,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
       H3DDynamicFieldsObject::field_iterator j;
       if( dyn_f_obj ) {
         for( j = dyn_f_obj->firstField();
-             j != dyn_f_obj->endField(); j++ )
+             j != dyn_f_obj->endField(); ++j )
           if( (*j) == f ) {
             dynamic_field = true;
             break;
@@ -573,7 +573,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
     }
 
     // Handle dynamic parsable fields
-    for( unsigned int i = 0; i < dyn_parse_fields.size(); i++ ) {
+    for( unsigned int i = 0; i < dyn_parse_fields.size(); ++i ) {
       if( output_type == X3D_OUTPUT ) {
         Field::AccessType access_type =
           dyn_parse_fields[i].second->getAccessType();
@@ -615,7 +615,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
     }
 
     // process child nodes
-    for( unsigned int i = 0; i < sf_nodes.size(); i++ ) {
+    for( unsigned int i = 0; i < sf_nodes.size(); ++i ) {
       if( output_type == VRML_OUTPUT ) {
         os << new_prefix << sf_nodes[i].first << " ";
       }
@@ -628,13 +628,13 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
            output_type);
     }
 
-    for( unsigned int i = 0; i < mf_nodes.size(); i++ ) {
+    for( unsigned int i = 0; i < mf_nodes.size(); ++i ) {
       if( output_type == VRML_OUTPUT ) {
          os << new_prefix << mf_nodes[i].first << " ["<< endl;
       }
 
       for( MFNode::const_iterator n = mf_nodes[i].second->begin();
-           n != mf_nodes[i].second->end(); n++ ) {
+           n != mf_nodes[i].second->end(); ++n ) {
         X3D::writeNodeAsX3DHelp( os, 
          *n, 
          mf_nodes[i].first, 
@@ -651,7 +651,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
     // Handle dynamic sf node fields, might not work when exporting
     // to wrl because I do not know the syntax when not using the
     // USE attribute, or if it is even possible.
-    for( unsigned int i = 0; i < dyn_sf_nodes.size(); i++ ) {
+    for( unsigned int i = 0; i < dyn_sf_nodes.size(); ++i ) {
       if( output_type == X3D_OUTPUT ) {
         Field::AccessType access_type =
           dyn_sf_nodes[i].second->getAccessType();
@@ -686,7 +686,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
     // Handle dynamic mf node fields, might not work when exporting
     // to wrl because I do not know the syntax when not using the
     // USE attribute, or if it is even possible.
-    for( unsigned int i = 0; i < dyn_mf_nodes.size(); i++ ) {
+    for( unsigned int i = 0; i < dyn_mf_nodes.size(); ++i ) {
       if( output_type == X3D_OUTPUT ) {
         Field::AccessType access_type =
           dyn_mf_nodes[i].second->getAccessType();
@@ -707,7 +707,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
       }
 
       for( MFNode::const_iterator n = dyn_mf_nodes[i].second->begin();
-           n != dyn_mf_nodes[i].second->end(); n++ ) {
+           n != dyn_mf_nodes[i].second->end(); ++n ) {
         X3D::writeNodeAsX3DHelp( os, 
          *n, 
          "", 
@@ -753,7 +753,7 @@ H3DAPI_API void X3D::writeGeometryAsSTL( ostream &os,
 		os.write( (char*)&triangles, sizeof(unsigned int) );
   
 		for( vector< HAPI::Collision::Triangle >::iterator i = tris.begin();
-				 i != tris.end(); i++ ) {
+				 i != tris.end(); ++i ) {
     
 			float normal[3] = { (float) (*i).normal.x, 
 													(float) (*i).normal.y, 
@@ -775,7 +775,7 @@ H3DAPI_API void X3D::writeGeometryAsSTL( ostream &os,
 		os << "solid " << name << endl;
 
 		for( vector< HAPI::Collision::Triangle >::iterator i = tris.begin();
-				 i != tris.end(); i++ ) {
+				 i != tris.end(); ++i ) {
 			os << "  facet normal " << (*i).normal << endl;
 			os << "    outer loop" << endl;
 			os << "      vertex " << (*i).a << endl;

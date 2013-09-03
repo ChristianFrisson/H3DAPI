@@ -73,7 +73,7 @@ inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
   char *b = new char[s.size()+1];
   const wchar_t *wb = s.c_str();
-  for( unsigned int i = 0; i < s.size(); i++ ) {
+  for( unsigned int i = 0; i < s.size(); ++i ) {
     b[i] = (char)(wb[i]);
   }
   
@@ -388,7 +388,7 @@ bool WxFrame::loadFile( const string &filename) {
       }
       
       for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
-           i != di->device->end(); i++ ) {
+           i != di->device->end(); ++i ) {
         H3DHapticsDevice *d = static_cast< H3DHapticsDevice * >(*i);
         if( !d->stylus->getValue() )
           d->stylus->setValue( default_stylus );
@@ -412,7 +412,7 @@ bool WxFrame::loadFile( const string &filename) {
     ParticleSystem::ParticleSystemList PSList = ParticleSystem::getAllParticleSystems();
 
     ParticleSystem::ParticleSystemList::iterator psiterator = PSList.begin();
-    //for (psiterator = PSList.begin(); psiterator != PSList.end(); psiterator++) {
+    //for (psiterator = PSList.begin(); psiterator != PSList.end(); ++psiterator) {
     if(!PSList.empty()) {
       PS = PSList.front();
       if (PS->enabled->getValue()) {

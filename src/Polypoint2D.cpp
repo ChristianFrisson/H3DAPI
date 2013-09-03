@@ -138,7 +138,7 @@ void Polypoint2D::render() {
   } else {
     // render the points
     glBegin( GL_POINTS );
-    for( MFVec2f::const_iterator i = point->begin(); i!=point->end(); i++ ) {
+    for( MFVec2f::const_iterator i = point->begin(); i!=point->end(); ++i ) {
       // Render the vertices.
       glVertex3f( (*i).x, (*i).y, 0.f );
     }

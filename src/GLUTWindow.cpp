@@ -257,7 +257,7 @@ void GLUTWindow::initWindow() {
 // that created that window is returned.
 GLUTWindow *GLUTWindow::getGLUTWindow( int glut_id ) {
   for( set< H3DWindowNode* >::iterator i = H3DWindowNode::windows.begin(); 
-       i != H3DWindowNode::windows.end(); i ++ ) {
+       i != H3DWindowNode::windows.end(); ++i ) {
     GLUTWindow *glut_window = dynamic_cast< GLUTWindow * >( *i );
     if( glut_window && glut_window->getGLUTWindowId() == glut_id )
       return glut_window;

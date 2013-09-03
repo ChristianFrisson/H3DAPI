@@ -164,7 +164,7 @@ namespace H3D {
     /// Returns true if such a field declaration exists, false otherwise
     FieldDeclaration *getFieldDeclaration( const string& name ) {
       for( list< FieldDeclaration >::iterator i = field_declarations.begin();
-           i != field_declarations.end(); i++ ) {
+           i != field_declarations.end(); ++i ) {
         if( (*i).name == name ) {
           return &(*i);
         }
@@ -178,7 +178,7 @@ namespace H3D {
 		/// how default values should be set.
 		void setFieldDeclarationsExternal( bool is_external ) {
 			for( list< FieldDeclaration >::iterator i = field_declarations.begin();
-           i != field_declarations.end(); i++ ) {
+           i != field_declarations.end(); ++i ) {
         (*i).external = is_external;
       }
 		}

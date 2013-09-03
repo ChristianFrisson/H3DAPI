@@ -61,7 +61,7 @@ inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
   char *b = new char[s.size()+1];
   const wchar_t *wb = s.c_str();
-  for( unsigned int i = 0; i < s.size(); i++ ) {
+  for( unsigned int i = 0; i < s.size(); ++i ) {
     b[i] = (char)(wb[i]);
   }
   
@@ -110,7 +110,7 @@ public:
   }
 
   virtual bool OnCmdLineParsed(wxCmdLineParser& parser) {
-    for (int i = 0; i < (int)parser.GetParamCount(); i++) {
+    for (int i = 0; i < (int)parser.GetParamCount(); ++i) {
       cmd_line_filename = parser.GetParam(i);
     }
 
@@ -129,7 +129,7 @@ END_EVENT_TABLE()
 void MyApp::OnIdle(wxIdleEvent& event) {
   for( set< Scene * >::iterator i = Scene::scenes.begin();
     i != Scene::scenes.end();
-    i++ ) {
+    ++i ) {
     if( (*i)->isActive() )
       (*i)->idle();
   }
@@ -189,7 +189,7 @@ bool MyApp::OnInit()
 #ifdef HAVE_PYTHON
     char argvd[32][256] = { '\0' };
     static char *(argv[32]);
-    for( int idx = 0 ; idx < wxApp::argc ; idx++ ){
+    for( int idx = 0 ; idx < wxApp::argc ; ++idx ){
       strncpy(argvd[idx],wxString(wxApp::argv[idx]).mb_str(wxConvUTF8),255);
       argv[idx] = argvd[idx];
     }

@@ -82,7 +82,7 @@ void Composed3DTexture::SFImage::update() {
   bool have_all_images = true;
 
   // check that all the texture nodes has images loaded. 
-  for( unsigned int i = 0; i < texture->size(); i++ ) {
+  for( unsigned int i = 0; i < texture->size(); ++i ) {
     X3DTexture2DNode *t = texture->getValueByIndex( i );
     if( !t || !t->image->getValue() ) {
       have_all_images = false;
@@ -98,7 +98,7 @@ void Composed3DTexture::SFImage::update() {
   // find the maximum width, height and bit depth of all the textures. Also
   // find the pixel type that has most components. These will be used as
   // internal format for the 3d texture we are going to render.
-  for( unsigned int i = 0; i < texture->size(); i++ ) {
+  for( unsigned int i = 0; i < texture->size(); ++i ) {
     X3DTexture2DNode *t = texture->getValueByIndex( i );
     if(t) {
       Image *tex_image = t->image->getValue();
@@ -134,7 +134,7 @@ void Composed3DTexture::SFImage::update() {
 
   // for each 2d texture, scale it to proper size and transfer it to texture
   // memory
-  for( unsigned int i = 0; i < texture->size(); i++ ) {
+  for( unsigned int i = 0; i < texture->size(); ++i ) {
     X3DTexture2DNode *t = texture->getValueByIndex( i );
     if(t) {
       Image *tex_image = t->image->getValue();

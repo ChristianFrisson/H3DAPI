@@ -79,7 +79,7 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
          i != urls.end(); ++i ) {
       for( NodeVector::const_iterator il = image_loaders.begin();
            il != image_loaders.end();
-           il++ ) {
+           ++il ) {
         // First try to resolve the url to file contents and load via string buffer
         // Otherwise fallback on using temp files
         string url_contents= ResourceResolver::resolveURLAsString ( *i );

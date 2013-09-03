@@ -79,7 +79,7 @@ string ComposedGeneratedShader::addUniformFields( ComposedShader *shader  ) {
 
   // add vertex shader uniform fields
   const NodeVector &v = vertexShaders->getValue();
-  for( unsigned int i = 0; i < v.size(); i++ ) {
+  for( unsigned int i = 0; i < v.size(); ++i ) {
     if( v[i] ) {
       H3DGeneratedVertexShaderNode *vs = 
         static_cast< H3DGeneratedVertexShaderNode * >( v[i] );
@@ -89,7 +89,7 @@ string ComposedGeneratedShader::addUniformFields( ComposedShader *shader  ) {
 
   // add fragment shader uniform fields
   const NodeVector &c = fragmentShaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -103,7 +103,7 @@ string ComposedGeneratedShader::addUniformFields( ComposedShader *shader  ) {
 void ComposedGeneratedShader::traverseSG( TraverseInfo &ti ) {
  // vertex shader
   const NodeVector &v = vertexShaders->getValue();
-  for( unsigned int i = 0; i < v.size(); i++ ) {
+  for( unsigned int i = 0; i < v.size(); ++i ) {
     if( v[i] ) {
       v[i]->traverseSG( ti );
     }
@@ -111,7 +111,7 @@ void ComposedGeneratedShader::traverseSG( TraverseInfo &ti ) {
 
   // fragment shader
   const NodeVector &c = fragmentShaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       c[i]->traverseSG( ti );
     }
@@ -123,7 +123,7 @@ string ComposedGeneratedShader::getFunctionShaderString() {
 
   // vertex shader
   const NodeVector &v = vertexShaders->getValue();
-  for( unsigned int i = 0; i < v.size(); i++ ) {
+  for( unsigned int i = 0; i < v.size(); ++i ) {
     if( v[i] ) {
       H3DGeneratedVertexShaderNode *vs = 
         static_cast< H3DGeneratedVertexShaderNode * >( v[i] );
@@ -133,7 +133,7 @@ string ComposedGeneratedShader::getFunctionShaderString() {
 
   // fragment shader
   const NodeVector &c = fragmentShaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -147,7 +147,7 @@ string ComposedGeneratedShader::getFunctionShaderString() {
 void ComposedGeneratedShader::getVaryingVariables( vector< VaryingVariable > &variables ) {
   // vertex shader
   const NodeVector &v = vertexShaders->getValue();
-  for( unsigned int i = 0; i < v.size(); i++ ) {
+  for( unsigned int i = 0; i < v.size(); ++i ) {
     if( v[i] ) {
       H3DGeneratedVertexShaderNode *vs = 
         static_cast< H3DGeneratedVertexShaderNode * >( v[i] );
@@ -157,7 +157,7 @@ void ComposedGeneratedShader::getVaryingVariables( vector< VaryingVariable > &va
 
   // fragment shader
   const NodeVector &c = fragmentShaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -170,7 +170,7 @@ void ComposedGeneratedShader::getVaryingVariables( vector< VaryingVariable > &va
 void ComposedGeneratedShader::getAttributes( vector< Attribute > &attributes ) {
   // vertex shader
   const NodeVector &v = vertexShaders->getValue();
-  for( unsigned int i = 0; i < v.size(); i++ ) {
+  for( unsigned int i = 0; i < v.size(); ++i ) {
     if( v[i] ) {
       H3DGeneratedVertexShaderNode *vs = 
         static_cast< H3DGeneratedVertexShaderNode * >( v[i] );
@@ -180,7 +180,7 @@ void ComposedGeneratedShader::getAttributes( vector< Attribute > &attributes ) {
 
   // fragment shader
   const NodeVector &c = fragmentShaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -196,7 +196,7 @@ string ComposedGeneratedShader::getVertexShaderString() {
 
   // vertex shader
   const NodeVector &v = vertexShaders->getValue();
-  for( unsigned int i = 0; i < v.size(); i++ ) {
+  for( unsigned int i = 0; i < v.size(); ++i ) {
     if( v[i] ) {
       H3DGeneratedVertexShaderNode *vs = 
         static_cast< H3DGeneratedVertexShaderNode * >( v[i] );
@@ -206,7 +206,7 @@ string ComposedGeneratedShader::getVertexShaderString() {
 
   // fragment shader
   const NodeVector &c = fragmentShaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -220,7 +220,7 @@ string ComposedGeneratedShader::getVertexShaderString() {
 string ComposedGeneratedShader::getFragmentShaderString() {
   stringstream s;
   const NodeVector &c = fragmentShaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     s << "   { " << endl;
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 

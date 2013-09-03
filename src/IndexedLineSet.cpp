@@ -182,12 +182,12 @@ void IndexedLineSet::render() {
         tmp_coord_index.reserve( coord_index.size() );
         nr_index.clear();
 
-        for( unsigned int i = 0; i < coord_index.size(); i++ ) {
+        for( unsigned int i = 0; i < coord_index.size(); ++i ) {
           // render all vertices for this polyline.
           GLsizei tmp_i = i;
           GLsizei lowest;
           GLsizei highest;
-          for(; i < coord_index.size() && coord_index[i] != -1; i++ ) {
+          for(; i < coord_index.size() && coord_index[i] != -1; ++i ) {
             H3DInt32 index = coord_index[i];
             if( i == tmp_i ) {
               lowest = index;
@@ -230,7 +230,7 @@ void IndexedLineSet::render() {
         coordinate_node->renderVertexBufferObject();
 
       GLsizei offset = 0;
-      for( unsigned int i = 0; i < nr_index.size(); i++ ) {
+      for( unsigned int i = 0; i < nr_index.size(); ++i ) {
         const pair< GLsizei, pair< GLsizei, GLsizei > > &item = nr_index[i];
         // Draw the triangles
         glDrawRangeElements( GL_LINE_STRIP,
@@ -256,7 +256,7 @@ void IndexedLineSet::render() {
 
       // render all polylines. Each loop will render one polyline.
       for( unsigned int i = 0; i < coord_index.size();
-           i++ ) {
+           ++i ) {
         // start the polyline rendering.
         glBegin( GL_LINE_STRIP );
       
@@ -279,7 +279,7 @@ void IndexedLineSet::render() {
         }
 
         // render all vertices for this polyline.
-        for(; i < coord_index.size() && coord_index[i] != -1;  i ++ ) {
+        for(; i < coord_index.size() && coord_index[i] != -1; ++i ) {
           // Set up colors if colors are specified per vertex.
           if( color_node && color_per_vertex ) {
             int ci;
@@ -310,7 +310,7 @@ void IndexedLineSet::render() {
         // end GL_LINE_STRIP
         glEnd();
 
-        line_count++;
+        ++line_count;
       }
     }
 

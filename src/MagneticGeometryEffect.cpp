@@ -87,11 +87,11 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
 		const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
 		vector< H3DInt32 > device_index = deviceIndex->getValue();
 		if( device_index.empty() ) {
-			for( unsigned int i = 0; i < devices.size(); i++ )
+			for( unsigned int i = 0; i < devices.size(); ++i )
 				device_index.push_back( i );
 		}
 		bool any_active = false;
-		for( unsigned int i = 0; i < device_index.size(); i++ ) {
+		for( unsigned int i = 0; i < device_index.size(); ++i ) {
 			int index = device_index[i];
 			if( index >= 0 && ti.hapticsEnabled( index ) ) {
 				H3DHapticsDevice *hd = devices[index];
@@ -166,18 +166,18 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
 										points );
 							vector< HAPI::Collision::GeometryPrimitive * > primitives;
 							primitives.reserve( 200 );
-							for( unsigned int j = 0; j < tris.size(); j++ ) {
+							for( unsigned int j = 0; j < tris.size(); ++j ) {
 								primitives.push_back(
 									new HAPI::Collision::Triangle(
 										tris[j].a, tris[j].b, tris[j].c,
 										tris[j].ta, tris[j].tb, tris[j].tc ) );
 							}
-							for( unsigned int j = 0; j < lines.size(); j++ ) {
+							for( unsigned int j = 0; j < lines.size(); ++j ) {
 								primitives.push_back(
 									new HAPI::Collision::LineSegment( lines[j].start,
 																										lines[j].end ) );
 							}
-							for( unsigned int j = 0; j < points.size(); j++ ) {
+							for( unsigned int j = 0; j < points.size(); ++j ) {
 								primitives.push_back(
 									new HAPI::Collision::Point( points[j].position ) );
 							}

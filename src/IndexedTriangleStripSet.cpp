@@ -165,7 +165,7 @@ void IndexedTriangleStripSet::render() {
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
       if( shader_program ) {
-        for( unsigned int i = 0; i < attrib->size(); i++ ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
           X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
           if( attr ) {
             GLint loc = 
@@ -207,7 +207,7 @@ void IndexedTriangleStripSet::render() {
         if( fog_coord_node ) fog_coord_node->renderVertexBufferObject();
         // Set up shader vertex attributes.
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->renderVertexBufferObject();
@@ -220,9 +220,9 @@ void IndexedTriangleStripSet::render() {
           tmp_indices.reserve( indices.size() );
           nr_index_per_strip.clear();
           // increase i to the end of the triangle fan
-          for( unsigned int i = 0; i < indices.size(); i++ ) {
+          for( unsigned int i = 0; i < indices.size(); ++i ) {
             unsigned int old_i = i;
-            for( ; i < indices.size() && indices[i] != -1; i++ )
+            for( ; i < indices.size() && indices[i] != -1; ++i )
               tmp_indices.push_back( indices[i] );
             if( i - old_i > 0 ) {
               nr_index_per_strip.push_back( i - old_i );
@@ -243,7 +243,7 @@ void IndexedTriangleStripSet::render() {
         // the index in indices for the start of the current triangle strip.
         GLsizei start_pos = 0;
         // draw each triangle strip from the arrays 
-        for( unsigned int i = 0; i < nr_index_per_strip.size(); i++ ) {
+        for( unsigned int i = 0; i < nr_index_per_strip.size(); ++i ) {
           // render the triangle fan
           glDrawElements( GL_TRIANGLE_STRIP, 
                           nr_index_per_strip[i],
@@ -261,7 +261,7 @@ void IndexedTriangleStripSet::render() {
         if( fog_coord_node ) fog_coord_node->disableVertexBufferObject();
         // Set up shader vertex attributes.
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->disableVertexBufferObject();
@@ -274,7 +274,7 @@ void IndexedTriangleStripSet::render() {
         if( fog_coord_node) fog_coord_node->renderArray();
         // Set up shader vertex attributes.
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->renderArray();
@@ -283,9 +283,9 @@ void IndexedTriangleStripSet::render() {
         unsigned int start_pos = 0;
    
         // draw each triangle strip from the arrays 
-        for( unsigned int i = 0; i < indices.size(); i++ ) {
+        for( unsigned int i = 0; i < indices.size(); ++i ) {
           // increase i to the end of the triangle strip
-          for( ; i < indices.size() && indices[i] != -1; i++ );
+          for( ; i < indices.size() && indices[i] != -1; ++i );
 
           // render the triangle strip
           glDrawElements( GL_TRIANGLE_STRIP, 
@@ -301,7 +301,7 @@ void IndexedTriangleStripSet::render() {
         if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
         if( fog_coord_node) fog_coord_node->disableArray();
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->disableArray();
@@ -319,11 +319,11 @@ void IndexedTriangleStripSet::render() {
       // have to be per face. Also since the indices specifies a triangle strip
       // we have to alternate the direction of vertices every second triangle
       // in order to get the front face correct.
-      for( unsigned int i = 0; i < indices.size() - 2; i++ ) {
+      for( unsigned int i = 0; i < indices.size() - 2; ++i ) {
         glBegin( GL_TRIANGLES );
         // the number of triangles rendered so far in this triangle strip
         unsigned int triangles_in_strip = 0;
-        for( ; i < indices.size() - 2 && indices[i] != -1; i++ ) {
+        for( ; i < indices.size() - 2 && indices[i] != -1; ++i ) {
           if( indices[i+1] != -1 && 
               indices[i+2] != -1 ) {
             normal_node->render( triangle_counter );
@@ -334,7 +334,7 @@ void IndexedTriangleStripSet::render() {
                                                           tex_coord_node );
               if( fog_coord_node) fog_coord_node->render(indices[i]);
               for( unsigned int attrib_index = 0;
-                   attrib_index < attrib->size(); attrib_index++ ) {
+                   attrib_index < attrib->size(); ++attrib_index ) {
                 X3DVertexAttributeNode *attr = 
                   attrib->getValueByIndex( attrib_index );
                 if( attr ) attr->render( indices[i] );
@@ -347,7 +347,7 @@ void IndexedTriangleStripSet::render() {
                                                           tex_coord_node );
               if( fog_coord_node) fog_coord_node->render(indices[i+1]);
               for( unsigned int attrib_index = 0;
-                   attrib_index < attrib->size(); attrib_index++ ) {
+                   attrib_index < attrib->size(); ++attrib_index ) {
                 X3DVertexAttributeNode *attr = 
                   attrib->getValueByIndex( attrib_index );
                 if( attr ) attr->render( indices[i+1] );
@@ -360,7 +360,7 @@ void IndexedTriangleStripSet::render() {
                                                           tex_coord_node );
               if( fog_coord_node) fog_coord_node->render(indices[i+2]);
               for( unsigned int attrib_index = 0;
-                   attrib_index < attrib->size(); attrib_index++ ) {
+                   attrib_index < attrib->size(); ++attrib_index ) {
                 X3DVertexAttributeNode *attr = 
                   attrib->getValueByIndex( attrib_index );
                 if( attr ) attr->render( indices[i+2] );
@@ -372,7 +372,7 @@ void IndexedTriangleStripSet::render() {
               if( tex_coords_per_vertex ) renderTexCoord( indices[i],
                                                           tex_coord_node );
               for( unsigned int attrib_index = 0;
-                   attrib_index < attrib->size(); attrib_index++ ) {
+                   attrib_index < attrib->size(); ++attrib_index ) {
                 X3DVertexAttributeNode *attr = 
                   attrib->getValueByIndex( attrib_index );
                 if( attr ) attr->render( indices[i] );
@@ -384,7 +384,7 @@ void IndexedTriangleStripSet::render() {
               if( tex_coords_per_vertex ) renderTexCoord( indices[i+2],
                                                           tex_coord_node );
               for( unsigned int attrib_index = 0;
-                   attrib_index < attrib->size(); attrib_index++ ) {
+                   attrib_index < attrib->size(); ++attrib_index ) {
                 X3DVertexAttributeNode *attr = 
                   attrib->getValueByIndex( attrib_index );
                 if( attr ) attr->render( indices[i+2] );
@@ -396,15 +396,15 @@ void IndexedTriangleStripSet::render() {
               if( tex_coords_per_vertex ) renderTexCoord( indices[i+1],
                                                           tex_coord_node );
               for( unsigned int attrib_index = 0;
-                   attrib_index < attrib->size(); attrib_index++ ) {
+                   attrib_index < attrib->size(); ++attrib_index ) {
                 X3DVertexAttributeNode *attr = 
                   attrib->getValueByIndex( attrib_index );
                 if( attr ) attr->render( indices[i+1] );
               }
               coordinate_node->render( indices[i+1] );
             }
-            triangle_counter++;
-            triangles_in_strip++;
+            ++triangle_counter;
+            ++triangles_in_strip;
           }
         }
         glEnd();
@@ -459,7 +459,7 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerVertex(
     vector< Vec3f > normals( coord->nrAvailableCoords(), 
                              Vec3f( 0, 0, 0 ) );
     unsigned int triangles_in_strip = 0;
-    for( unsigned int j = 0; j < index.size() - 2; j++ ) {
+    for( unsigned int j = 0; j < index.size() - 2; ++j ) {
       if( j+2 < index.size() && 
           index[j] != -1 && 
           index[j+1] != -1 && 
@@ -485,7 +485,7 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerVertex(
         normals[index[ j ]] += norm;
         normals[index[ j+1 ]] += norm;
         normals[index[ j+2 ]] += norm;
-        triangles_in_strip++;
+        ++triangles_in_strip;
       } else {
         triangles_in_strip = 0;
       }
@@ -493,7 +493,7 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerVertex(
 
     for( vector<Vec3f>::iterator i = normals.begin(); 
          i != normals.end(); 
-         i++ ) {
+         ++i ) {
         (*i).normalizeSafe();
     }
     normal->vector->setValue( normals );
@@ -509,7 +509,7 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerFace(
   if( coord ) {
     vector< Vec3f > normals;
     unsigned int triangles_in_strip = 0;
-    for( unsigned int j = 0; j < index.size() - 2; j++ ) {
+    for( unsigned int j = 0; j < index.size() - 2; ++j ) {
       
       if( j+2 < index.size() && 
           index[j] != -1 && 
@@ -542,7 +542,7 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerFace(
           norm = -norm;
 
         normals.push_back( norm );
-        triangles_in_strip++;
+        ++triangles_in_strip;
       } else {
         triangles_in_strip = 0;
       }

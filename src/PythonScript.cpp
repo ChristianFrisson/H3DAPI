@@ -261,7 +261,7 @@ void findModulesInDict( void * _dict, list< pair< string, Py_ssize_t > > &module
       // The name is a module. add it to imported_module_names.
       string mod_name = PyString_AsString( key );
       list< pair< string, Py_ssize_t > >::iterator i = module_names.begin();
-      for( ; i != module_names.end(); i++ )
+      for( ; i != module_names.end(); ++i )
         if( (*i).first == mod_name )
           break;
       if( i == module_names.end() && value->ob_refcnt > 1 ) {
@@ -323,11 +323,11 @@ PythonScript::~PythonScript() {
             break;
           i = imported_module_names.begin();
         } else
-          i++;
+          ++i;
       } else {
         // This module does not exist anymore, simply remove it from the list.
         list< pair< string, Py_ssize_t > >::iterator to_erase = i;
-        i++;
+        ++i;
         imported_module_names.erase( to_erase );
       }
     }

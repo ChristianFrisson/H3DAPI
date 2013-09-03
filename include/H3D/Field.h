@@ -198,7 +198,7 @@ namespace H3D {
     /// as argument.
     inline bool routesTo( Field *f ) {
       for( FieldSet::const_iterator i = routes_out.begin();
-           i != routes_out.end(); i++ ) {
+           i != routes_out.end(); ++i ) {
         if( (*i) == f ) return true;
       }
       return false;
@@ -208,7 +208,7 @@ namespace H3D {
     /// this field.
     inline bool hasRouteFrom( Field *f ) {
       for( FieldVector::const_iterator i = routes_in.begin();
-           i != routes_in.end(); i++ ) {
+           i != routes_in.end(); ++i ) {
         if( (*i) == f ) return true;
       }
       return false;

@@ -96,7 +96,7 @@ HAnimSegment::HAnimSegment(
  void HAnimSegment::updateCoordinates( VectorType &points ) {
    const NodeVector &disp = displacers->getValue();  
    if( disp.size() > 0 ) {
-     for( unsigned int i = 0; i < disp.size(); i++ ) {
+     for( unsigned int i = 0; i < disp.size(); ++i ) {
        HAnimDisplacer *displacer = 
          static_cast< HAnimDisplacer* >( disp[i]);
        if( displacer ) {

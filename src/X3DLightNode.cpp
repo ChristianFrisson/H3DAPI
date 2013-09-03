@@ -158,16 +158,16 @@ void X3DLightNode::enableGraphicsState() {
   }  else {
     had_light_index.push_back( false );
   }
-  graphics_state_counter++;
+  ++graphics_state_counter;
 };
 
 void X3DLightNode::disableGraphicsState() {
-  graphics_state_counter--;
+  --graphics_state_counter;
   if( had_light_index.back() ) {
     if( global_light_index + 1 <= max_lights ) {
       glPopAttrib();
     }
-    global_light_index--;
+    --global_light_index;
   }
   had_light_index.pop_back();
   displayList->breakCache();
@@ -186,7 +186,7 @@ void X3DLightNode::traverseSG( TraverseInfo &ti ) {
 
   if( global->getValue() && on->getValue() ) {    
     global_light_transforms.push_back( ti.getAccForwardMatrix() );
-    traverse_sg_counter++;
+    ++traverse_sg_counter;
     act_global = true;
   }
   else
@@ -197,7 +197,7 @@ GLuint X3DLightNode::getLightIndex( string name_for_error ) {
   if( max_lights == -1 ) {
     glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
   }
-  global_light_index++;
+  ++global_light_index;
     
   return (GLuint)global_light_index;
 }

@@ -123,29 +123,29 @@ void FunctionPlotTexture::SFImage::update() {
   }
 
   if( !function ) {
-    for( unsigned int x = 0; x < (unsigned int)x_resolution; x++ ) {
-      for( unsigned int y = 0; y < (unsigned int)y_resolution; y++ ) {
+    for( unsigned int x = 0; x < (unsigned int)x_resolution; ++x ) {
+      for( unsigned int y = 0; y < (unsigned int)y_resolution; ++y ) {
         setPixel( x, y, bg_color );
       }
     }
   } else {
     
     H3DFloat step_length = (x_range.y - x_range.x) / x_resolution;
-    for( unsigned int i = 0; i < (unsigned int)x_resolution; i++ ) {
+    for( unsigned int i = 0; i < (unsigned int)x_resolution; ++i ) {
       H3DDouble x = x_range.x +  i * step_length;
       H3DDouble y = function->evaluate( &x );
       
       H3DInt32 y_pixel = (H3DInt32 ) ((y - y_range.x)/(y_range.y-y_range.x) * (y_resolution - 1 ));
 
       if( y_pixel < 0 || y_pixel >= y_resolution ) {
-        for( unsigned int j = 0; j < (unsigned int)y_resolution; j++ ) {
+        for( unsigned int j = 0; j < (unsigned int)y_resolution; ++j ) {
           setPixel( i, j, bg_color );
         }
       } else {
-        for( unsigned int j = 0; j < (unsigned int) y_pixel; j++ )
+        for( unsigned int j = 0; j < (unsigned int) y_pixel; ++j )
           setPixel( i, j, bg_color );
         setPixel( i, y_pixel, RGBA( plot_color ) );
-        for( unsigned int j = y_pixel+1; j < (unsigned int )y_resolution; j++ )
+        for( unsigned int j = y_pixel+1; j < (unsigned int )y_resolution; ++j )
           setPixel( i, j, bg_color );
       }
     }

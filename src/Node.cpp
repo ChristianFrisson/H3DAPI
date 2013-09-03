@@ -233,7 +233,7 @@ int Node::removeDestructCallback( void (*func)( Node *, void * ), void *args ) {
 
 Node::~Node() {
   for( DestructCallbacks::iterator i = destruct_callbacks.begin();
-       i != destruct_callbacks.end(); i++ ) {
+       i != destruct_callbacks.end(); ++i ) {
     (*i).first( this, (*i).second );
   }
 }

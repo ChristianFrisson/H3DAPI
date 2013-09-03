@@ -166,7 +166,7 @@ SAIScene *Browser::createX3DFromURL( MFString *urls ) {
   SAIScene *scene = new SAIScene;
   
   for( MFString::const_iterator i = urls->begin();
-       i != urls->end(); i++ ) {
+       i != urls->end(); ++i ) {
     try {
       scene->root_node.reset( X3D::createX3DFromURL( *i, 
                                                      &scene->named_nodes, 

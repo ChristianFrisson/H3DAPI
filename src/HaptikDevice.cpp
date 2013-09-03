@@ -97,7 +97,7 @@ HaptikDevice::HaptikDevice(
 
 #ifdef HAVE_HAPTIK_LIBRARY
   RSLib::Haptik haptik;
-  for(UINT32 i = 0 ; i<haptik.numberOfDevices ; i++) {
+  for(UINT32 i = 0 ; i<haptik.numberOfDevices ; ++i) {
     deviceName->push_back( haptik.device[i].name, id );
     modelName->push_back( haptik.device[i].model, id );
     manufacturer->push_back( haptik.device[i].manufacturer, id );

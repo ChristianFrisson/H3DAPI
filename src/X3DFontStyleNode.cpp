@@ -45,7 +45,7 @@ Vec3f X3DFontStyleNode::stringDimensions( const string &text,
   Vec3f dimensions = Vec3f( 0, 0, 0 ); 
   
   if( alignment == HORIZONTAL ) {
-    for( size_t i = 0; i < text.length(); i++ ) {
+    for( size_t i = 0; i < text.length(); ++i ) {
       Vec3f c_dimensions = charDimensions( text[i] ); 
       dimensions.x += c_dimensions.x;
       if( dimensions.y < c_dimensions.y )
@@ -54,7 +54,7 @@ Vec3f X3DFontStyleNode::stringDimensions( const string &text,
         dimensions.z = c_dimensions.z;
     }
   } else {
-    for( size_t i = 0; i < text.length(); i++ ) {
+    for( size_t i = 0; i < text.length(); ++i ) {
       Vec3f c_dimensions = charDimensions( text[i] ); 
       if( dimensions.x < c_dimensions.x )
         dimensions.x = c_dimensions.x;
@@ -77,12 +77,12 @@ Vec3f X3DFontStyleNode::stringDimensions( const vector< string > &text,
 
   for( vector< string >::const_iterator i = text.begin();
        i != text.end();
-       i++ ) {
+       ++i ) {
     Vec3f line_dims = stringDimensions( *i, alignment );
     if( alignment == X3DFontStyleNode::HORIZONTAL ) {
       if( l != length.end() ) {
         line_dims.x = *l;
-        l++;
+        ++l;
       }
       if( i != text.begin() ) {
         if( dims.x < line_dims.x ) dims.x = line_dims.x;
@@ -93,7 +93,7 @@ Vec3f X3DFontStyleNode::stringDimensions( const vector< string > &text,
     } else if( alignment == X3DFontStyleNode::VERTICAL ) {
       if( l != length.end() ) {
         line_dims.y = *l;
-        l++;
+        ++l;
       }
       if( i != text.begin() ) {
         dims.x += line_dims.x * spacing;

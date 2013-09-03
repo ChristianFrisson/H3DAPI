@@ -209,7 +209,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
       sizeOfVertex = 3;
       map2Vertex3Or4 = GL_MAP2_VERTEX_3;
       withWeights = new GLfloat[ noWeights.size() * sizeOfVertex ];
-      for( unsigned int i = 0; i < noWeights.size(); i++ ) {
+      for( unsigned int i = 0; i < noWeights.size(); ++i ) {
         withWeights[ i * sizeOfVertex ] = (GLfloat)noWeights[i].x;
         withWeights[ i * sizeOfVertex + 1 ] = (GLfloat)noWeights[i].y;
         withWeights[ i * sizeOfVertex + 2 ] = (GLfloat)noWeights[i].z;
@@ -219,7 +219,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
       sizeOfVertex = 4;
       map2Vertex3Or4 = GL_MAP2_VERTEX_4;
       withWeights = new GLfloat[ noWeights.size() * sizeOfVertex ];
-      for( unsigned int i = 0; i < noWeights.size(); i++ ) {
+      for( unsigned int i = 0; i < noWeights.size(); ++i ) {
         withWeights[ i * sizeOfVertex ] = (GLfloat)noWeights[i].x;
         withWeights[ i * sizeOfVertex + 1 ] = (GLfloat)noWeights[i].y;
         withWeights[ i * sizeOfVertex + 2 ] = (GLfloat)noWeights[i].z;
@@ -236,11 +236,11 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     if( uk.size() == (unsigned int)(u_dimension + u_order) )  {
       generateUniform = false;
       H3DInt32 consecutiveKnots = 0;
-      for( unsigned int i = 0; i < uk.size(); i++ ) {
+      for( unsigned int i = 0; i < uk.size(); ++i ) {
         u_knots[i] = (GLfloat)uk[i];        
         if( i > 0 ) {
           if( u_knots[i] == u_knots[ i - 1 ] )
-            consecutiveKnots++;
+            ++consecutiveKnots;
           else
             consecutiveKnots = 0;
           if( consecutiveKnots > u_order - 1 )
@@ -260,7 +260,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
         << getName() << "). A default uKnot array will be generated. " << endl;
       delete[] u_knots;
       u_knots = new GLfloat[ uSizeToUse ];
-      for( int i = 0; i < uSizeToUse; i++ )
+      for( int i = 0; i < uSizeToUse; ++i )
         u_knots[i] = (GLfloat)( (H3DDouble)i / ( uSizeToUse - 1 ) );
     }
 
@@ -268,11 +268,11 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     if( vk.size() == (unsigned int)(v_dimension + v_order) )  {
       generateUniform = false;
       H3DInt32 consecutiveKnots = 0;
-      for( unsigned int i = 0; i < vk.size(); i++ ) {
+      for( unsigned int i = 0; i < vk.size(); ++i ) {
         v_knots[i] = (GLfloat)vk[i];        
         if( i > 0 ) {
           if( v_knots[i] == v_knots[ i - 1 ] )
-            consecutiveKnots++;
+            ++consecutiveKnots;
           else
             consecutiveKnots = 0;
           if( consecutiveKnots > v_order - 1 )
@@ -292,7 +292,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
         << getName() << "). A default vKnot array will be generated. " << endl;
       delete[] v_knots;
       v_knots = new GLfloat[ vSizeToUse ];
-      for( int i = 0; i < vSizeToUse; i++ )
+      for( int i = 0; i < vSizeToUse; ++i )
         v_knots[i] = (GLfloat)( (H3DDouble)i / ( vSizeToUse - 1 ) );
     }
 

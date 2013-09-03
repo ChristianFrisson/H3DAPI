@@ -143,7 +143,7 @@ void LineSet::render() {
       unsigned int vertex_counter = 0;
       // render all polylines. Each loop will render one polyline.
       for( vector< int >::const_iterator  i = vertex_count.begin();
-           i != vertex_count.end(); i++ ) {
+           i != vertex_count.end(); ++i ) {
         // Check that the vertex count value is > 2
         if( (*i) < 2 ) {
           stringstream s;
@@ -171,7 +171,7 @@ void LineSet::render() {
       // render all polylines. Each loop will render one polyline.
       for( vector< int >::const_iterator  i = vertex_count.begin();
            i != vertex_count.end(); 
-           i++ ) {
+           ++i ) {
         // start the polyline rendering.
         glBegin( GL_LINE_STRIP );
 
@@ -186,7 +186,7 @@ void LineSet::render() {
         unsigned int stop_index = vertex_counter + (*i);
 
         // render all vertices for this polyline.
-        for( ; vertex_counter < stop_index; vertex_counter++ ) {
+        for( ; vertex_counter < stop_index; ++vertex_counter ) {
           // Set up colors if colors are specified per vertex.
           if( color_node ) {
             color_node->render( vertex_counter );

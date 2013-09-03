@@ -674,7 +674,7 @@ namespace H3D {
         MFString > {
       public:
         virtual void update(){
-          for( vector<bool>::iterator it = value.begin(); it!= value.end(); it++) {
+          for( vector<bool>::iterator it = value.begin(); it!= value.end(); ++it) {
             
             (*it) = false;
           }

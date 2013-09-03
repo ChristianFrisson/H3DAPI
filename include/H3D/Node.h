@@ -179,7 +179,7 @@ namespace H3D {
       /// Transforms point and normal in the IntersectionInfo vector from local
       /// to global space.
       inline void transformResult() {
-        for( unsigned int i = 0; i < result.size(); i++ ) {
+        for( unsigned int i = 0; i < result.size(); ++i ) {
           result[i].point = geometry_transforms[i] * result[i].point;
           result[i].normal = geometry_transforms[i].getRotationPart() *
                              result[i].normal;
@@ -255,7 +255,7 @@ namespace H3D {
         current_pt_device.push( tmp );
         list< Node * > &tmp_list = current_pt_device.top().x3dptd;
         for( list< Node * >::iterator i = tmp_list.begin();
-          i != tmp_list.end(); i++ ) {
+          i != tmp_list.end(); ++i ) {
           current_pt_device.top().lowest_enabled.push_back( *i );
         }
         tmp_list.insert( tmp_list.end(),

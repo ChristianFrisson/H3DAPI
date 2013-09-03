@@ -99,7 +99,7 @@ string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
   if( img ) {
   ss << img->width() << separator << img->height()
      << separator << (int)img->pixelType() + 1;
-  for(unsigned int index = 0; index < img->width() * img->height(); index++) {
+  for(unsigned int index = 0; index < img->width() * img->height(); ++index) {
     int ix = index % img->width();
     int iy = index / img->width();
     RGBA color = img->getPixel( ix, iy );
@@ -107,7 +107,7 @@ string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
     unsigned char* data = new unsigned char[ bytes_per_pixel ];
     img->RGBAToImageValue(color, (void*) data);
     int intval = 0;
-    for (int i = 0; i < bytes_per_pixel; i++) {
+    for (int i = 0; i < bytes_per_pixel; ++i) {
       intval = intval << 8;
       intval = intval | data[i];
     }
@@ -339,7 +339,7 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
 
   unsigned char *modified_data = 
     new unsigned char[ width * height * bytes_per_pixel ]; 
-  for( unsigned int i = 0; i < (unsigned int)height; i++ ) {
+  for( unsigned int i = 0; i < (unsigned int)height; ++i ) {
     memcpy( modified_data + i * width * bytes_per_pixel, 
             image_data + ( (i + y_offset )* image->width() + x_offset) * bytes_per_pixel,
             width * bytes_per_pixel );

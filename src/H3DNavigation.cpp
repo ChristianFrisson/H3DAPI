@@ -156,7 +156,7 @@ void H3DNavigation::doNavigation(
           Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
   
           vector< H3DFloat > temp_avatar_size( avatar_size );
-          for( unsigned int i = 0; i < temp_avatar_size.size(); i++ ) {
+          for( unsigned int i = 0; i < temp_avatar_size.size(); ++i ) {
              temp_avatar_size[i] *= scaling.x;
           }
           Vec3f direction = vp->centerOfRotation->getValue() - 
@@ -218,7 +218,7 @@ void H3DNavigation::doNavigation(
       Vec3f scaling = vp->accForwardMatrix->getValue().getScalePart();
       
       vector< H3DFloat > temp_avatar_size( avatar_size );
-      for( unsigned int i = 0; i < temp_avatar_size.size(); i++ ) {
+      for( unsigned int i = 0; i < temp_avatar_size.size(); ++i ) {
         temp_avatar_size[i] *= scaling.x;
       }
       H3DNavigationDevices::MoveInfo move_info;
@@ -290,7 +290,7 @@ void H3DNavigation::doNavigation(
             H3DFloat closestDistance = 
               (H3DFloat)( result.result[closest].point
                           - near_plane_pos ).lengthSqr();
-            for( unsigned int kl = 1; kl < result.theNodes.size(); kl++ ) {
+            for( unsigned int kl = 1; kl < result.theNodes.size(); ++kl ) {
               H3DFloat tempClose = 
                 (H3DFloat)( result.result[kl].point -
                             near_plane_pos).lengthSqr();
@@ -377,7 +377,7 @@ void H3DNavigation::doNavigation(
 
 void H3DNavigation::disableDevice( int device ) {
   for( list< H3DNavigation * >::iterator i = h3d_navigations.begin();
-       i != h3d_navigations.end(); i++ ) {
+       i != h3d_navigations.end(); ++i ) {
     switch( device ) {
       case ALL: {
         if( (*i)->mouse_nav.get() )
@@ -411,7 +411,7 @@ void H3DNavigation::disableDevice( int device ) {
 
 void H3DNavigation::enableDevice( int device ) {
   for( list< H3DNavigation * >::iterator i = h3d_navigations.begin();
-       i != h3d_navigations.end(); i++ ) {
+       i != h3d_navigations.end(); ++i ) {
     switch( device ) {
       case ALL: {
         if( (*i)->mouse_nav.get() ) {
@@ -459,7 +459,7 @@ void H3DNavigation::enableDevice( int device ) {
 
 bool H3DNavigation::isEnabled( int device ) {
   for( list< H3DNavigation * >::iterator i = h3d_navigations.begin();
-       i != h3d_navigations.end(); i++ ) {
+       i != h3d_navigations.end(); ++i ) {
     switch( device ) {
       case ALL: {
         if( !(*i)->mouse_nav.get() || !(*i)->mouse_nav->isEnabled() ) {
@@ -505,8 +505,8 @@ H3DNavigation::viewpointToUse( X3DViewpointNode *potential_vp,
                                int nav_index ) {
   if( nav_index >= 0 && nav_index < (int)h3d_navigations.size() ) {
     list< H3DNavigation * >::iterator i = h3d_navigations.begin();
-    for( int j = 0; j < nav_index; j++ ) {
-      i++;
+    for( int j = 0; j < nav_index; ++j ) {
+      ++i;
     }
     return (*i)->viewpointToUse( potential_vp );
   }
@@ -515,7 +515,7 @@ H3DNavigation::viewpointToUse( X3DViewpointNode *potential_vp,
 
 string H3DNavigation::getTransitionType(
   const vector< string > &transition_types ) {
-  for( unsigned int i = 0; i < transition_types.size(); i++ ) {
+  for( unsigned int i = 0; i < transition_types.size(); ++i ) {
     if( transition_types[i] == "LINEAR" ||
         transition_types[i] == "TELEPORT" ||
         transition_types[i] == "ANIMATE" )

@@ -96,7 +96,7 @@ Inline::Inline(
 
 void Inline::render() {
   if( load->getValue() && traverseOn->getValue() ) {
-    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+    for( unsigned int i = 0; i < loadedScene->size(); ++i ) {
       Group *g = loadedScene->getValueByIndex( i );
       if( g ) g->displayList->callList();
     }
@@ -105,7 +105,7 @@ void Inline::render() {
 
 void Inline::traverseSG( TraverseInfo &ti ) {
   if( load->getValue() && traverseOn->getValue() ) {
-    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+    for( unsigned int i = 0; i < loadedScene->size(); ++i ) {
       Group *g = loadedScene->getValueByIndex( i );
       if( g ) g->traverseSG( ti );
     }
@@ -236,7 +236,7 @@ bool Inline::lineIntersect( const Vec3f &from,
                             LineIntersectResult &result ) {
   bool intersection = false;
   if( load->getValue() ) {
-    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+    for( unsigned int i = 0; i < loadedScene->size(); ++i ) {
       Group *g = loadedScene->getValueByIndex( i );
       if( g ) intersection = intersection || g->lineIntersect( from,
                                                                to,
@@ -249,7 +249,7 @@ bool Inline::lineIntersect( const Vec3f &from,
 void Inline::closestPoint( const Vec3f &p,
                            NodeIntersectResult &result ) {
   if( load->getValue() ) {
-    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+    for( unsigned int i = 0; i < loadedScene->size(); ++i ) {
       Group *g = loadedScene->getValueByIndex( i );
       if( g ) g->closestPoint( p, result );
     }
@@ -262,7 +262,7 @@ bool Inline::movingSphereIntersect( H3DFloat radius,
                                     NodeIntersectResult &result ) {
   bool intersection = false;
   if( load->getValue() ) {
-    for( unsigned int i = 0; i < loadedScene->size(); i++ ) {
+    for( unsigned int i = 0; i < loadedScene->size(); ++i ) {
       Group *g = loadedScene->getValueByIndex( i );
       if( g ) intersection = intersection ||
                              g->movingSphereIntersect( radius,

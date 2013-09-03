@@ -40,7 +40,7 @@ inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
   char *b = new char[s.size()+1];
   const wchar_t *wb = s.c_str();
-  for( unsigned int i = 0; i < s.size(); i++ ) {
+  for( unsigned int i = 0; i < s.size(); ++i ) {
     b[i] = (char)(wb[i]);
   }
   

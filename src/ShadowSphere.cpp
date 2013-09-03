@@ -148,7 +148,7 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
       // since then it is already capped since all point converge to the same point
       // at infinity
       glBegin( GL_POLYGON );
-      for( int i = 0; i < nr_faces; i++ ) {
+      for( int i = 0; i < nr_faces; ++i ) {
         float ratio = (float) i / nr_faces;
         float angle = (float)( ratio * (Constants::pi*2));
         float sina = sin( angle );
@@ -161,7 +161,7 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
     // render bottom
     glBegin( GL_POLYGON );
     glNormal3f( 0, -1, 0 );
-    for( int i = nr_faces; i >= 0; i-- ) {
+    for( int i = nr_faces; i >= 0; --i ) {
       float ratio = (float) i / nr_faces;
       float angle = (float)( ratio * (Constants::pi*2) );
       float sina = sin( angle );

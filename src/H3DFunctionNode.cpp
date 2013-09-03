@@ -60,13 +60,13 @@ void H3DFunctionNode::Value::update() {
 
   if( input.size() <= 8 ) {
     H3DDouble inp[8];
-    for( unsigned int i = 0; i <=input.size(); i++ ) {
+    for( unsigned int i = 0; i <=input.size(); ++i ) {
       inp[i] = input[i];
     }
     value = function->evaluate( inp );
   } else {
     H3DDouble *inp = new H3DDouble[input.size()];
-    for( unsigned int i = 0; i <=input.size(); i++ ) {
+    for( unsigned int i = 0; i <=input.size(); ++i ) {
       inp[i] = input[i];
     }
     value = function->evaluate( inp );

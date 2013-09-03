@@ -121,7 +121,7 @@ void SplinePositionInterpolator::SFValue::update() {
       ignoreClosed = true;
     }
     //Calculate  D = distance from keyValue[0]->keyValue[N-1]
-    for(int i=0; i<key_size-1; i++){ //n=keys.size()
+    for(int i=0; i<key_size-1; ++i){ //n=keys.size()
       D = D + ((key_value[i]-key_value[i+1]).length());
     }
 
@@ -133,7 +133,7 @@ void SplinePositionInterpolator::SFValue::update() {
       }
       else if(normalizeVelocity){  
         Vec3f a;
-        for(int i=0; i<key_size; i++){
+        for(int i=0; i<key_size; ++i){
           a = key_velocity[i];
           T.push_back(key_velocity[i]*(D/a.length()) );
         }
@@ -143,7 +143,7 @@ void SplinePositionInterpolator::SFValue::update() {
 
 
     else if(closed && !ignoreClosed){
-      for(int i=0; i<key_size; i++){
+      for(int i=0; i<key_size; ++i){
         if(i==0){
           T.push_back((key_value[i+1]-key_value[tMinus1])/2);
         }
@@ -158,7 +158,7 @@ void SplinePositionInterpolator::SFValue::update() {
 
     else if(!closed || ignoreClosed){
       T.push_back(Vec3f(0,0,0)); 
-      for(int i=1; i<key_size-1; i++){
+      for(int i=1; i<key_size-1; ++i){
         T.push_back((key_value[i+1]-key_value[i-1])/2);
       }
       notSpecified=true;
@@ -191,7 +191,7 @@ void SplinePositionInterpolator::SFValue::update() {
 
     //Calculate F1, F2, T0, T1
     if (!closed || specified || ignoreClosed){
-      for(int i=1; i<key_size-1; i++){
+      for(int i=1; i<key_size-1; ++i){
         F1.push_back(2*((key[i] - key[i-1])/(key[i+1] - key[i-1])));
         F2.push_back(2*((key[i+1] - key[i])/(key[i+1] - key[i-1])));
       }
@@ -218,7 +218,7 @@ void SplinePositionInterpolator::SFValue::update() {
     }
 
     else if(closed && !ignoreClosed){
-      for(int i=0; i<key_size; i++){
+      for(int i=0; i<key_size; ++i){
         if(i==0){
           F1.push_back(2*((key[i] - key[tMinus1])/(key[i+1] - key[tMinus1])));
           F2.push_back(2*((key[i+1] - key[i])/(key[i+1] - key[tMinus1])));

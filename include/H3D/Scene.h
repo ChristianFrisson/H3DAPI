@@ -422,7 +422,7 @@ namespace H3D {
       H3DNodeDatabase* db= H3DNodeDatabase::lookupTypeId( typeid( _node ) );
 
       for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-           db->fieldDBEnd() != i; i++ ) {
+           db->fieldDBEnd() != i; ++i ) {
         Field *f = i.getField( &_node ); 
    
         if( f ) {

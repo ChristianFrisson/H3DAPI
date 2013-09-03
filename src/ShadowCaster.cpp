@@ -113,7 +113,7 @@ void ShadowCaster::render() {
                                   1.f / light->size() );
   
   for( MFLightNode::const_iterator l = light->begin(); 
-       l != light->end(); l++ ) {
+       l != light->end(); ++l ) {
 
     glClear(GL_STENCIL_BUFFER_BIT );
     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | 
@@ -163,7 +163,7 @@ void ShadowCaster::render() {
 
     // First Pass. Increase Stencil Value In The Shadow 
     for( MFShadowObjectNode::const_iterator o = object->begin(); 
-         o != object->end(); o++ ) {
+         o != object->end(); ++o ) {
 
       static_cast< H3DShadowObjectNode * >(*o)->renderShadow( static_cast< X3DLightNode * >(*l), alg == "ZFAIL" );
     }
@@ -178,7 +178,7 @@ void ShadowCaster::render() {
     }
     
     for( MFShadowObjectNode::const_iterator o = object->begin(); 
-         o != object->end(); o++ ) {
+         o != object->end(); ++o ) {
       static_cast< H3DShadowObjectNode * >(*o)->renderShadow( static_cast< X3DLightNode * >(*l), alg == "ZFAIL" );
     }
 

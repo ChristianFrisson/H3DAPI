@@ -73,7 +73,7 @@ namespace H3D {
 
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti ) {
-      nr_times_in_scene++;
+      ++nr_times_in_scene;
     }
 
     /// Reset the counter.
@@ -86,7 +86,7 @@ namespace H3D {
     static void renderPreViewpointAll( X3DChildNode *n,
                                        X3DViewpointNode *vp ) { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
-           i != instances.end(); i++ ) {
+           i != instances.end(); ++i ) {
         if( (*i)->nr_times_in_scene > 0 )
           (*i)->renderPreViewpoint( n, vp );
       }
@@ -96,7 +96,7 @@ namespace H3D {
     static void renderPostViewpointAll( X3DChildNode *n,
                                         X3DViewpointNode *vp ) { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
-           i != instances.end(); i++ ) {
+           i != instances.end(); ++i ) {
         if( (*i)->nr_times_in_scene > 0 )
           (*i)->renderPostViewpoint( n, vp );
       }
@@ -106,7 +106,7 @@ namespace H3D {
     static void renderPostSceneAll( X3DChildNode *n,
                                     X3DViewpointNode *vp ) { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
-           i != instances.end(); i++ ) {
+           i != instances.end(); ++i ) {
         if( (*i)->nr_times_in_scene > 0 )
           (*i)->renderPostScene( n, vp );
       }
@@ -115,7 +115,7 @@ namespace H3D {
     /// Run resetCounter on all instances of H3DMultiPassRenderObject.
     static void resetCounters() { 
       for( list< H3DMultiPassRenderObject * >::iterator i = instances.begin();
-           i != instances.end(); i++ ) {
+           i != instances.end(); ++i ) {
         (*i)->resetCounter();
       }
     }

@@ -84,7 +84,7 @@ void LoadSensor::traverseSG( TraverseInfo &ti ) {
     bool failed = false;
     
     for( MFUrlObject::const_iterator i = watchList->begin();
-         i != watchList->end(); i++ ) {
+         i != watchList->end(); ++i ) {
       X3DUrlObject *url_object = dynamic_cast< X3DUrlObject * >(*i);
 	  if( url_object ) {
       X3DUrlObject::LoadStatus status = url_object->loadStatus();

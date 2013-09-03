@@ -265,7 +265,7 @@ void H3DViewerPopupMenus::OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ) {
         c->point->setValue( triangles );
         vector< int > indices;
         indices.reserve( triangles.size() );
-        for( unsigned int i = 0; i < triangles.size(); i++ ) {
+        for( unsigned int i = 0; i < triangles.size(); ++i ) {
           indices.push_back( i );
         }
 
@@ -325,7 +325,7 @@ void H3DViewerPopupMenus::OnTreeViewDeleteNode( wxCommandEvent& event ) {
 
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       db->fieldDBEnd() != i; i++ ) {
+       db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); 
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
       if( sfnode->getValue() == selected_node ) {
@@ -340,7 +340,7 @@ void H3DViewerPopupMenus::OnTreeViewDeleteNode( wxCommandEvent& event ) {
         return;
       }
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
-      for( unsigned int j = 0; j < mfnode->size(); j++ ) {
+      for( unsigned int j = 0; j < mfnode->size(); ++j ) {
         if( mfnode->getValueByIndex( j ) == selected_node ) { 
           if( mfnode->getAccessType() == Field::OUTPUT_ONLY ||
               mfnode->getAccessType() == Field::INITIALIZE_ONLY ) {
@@ -372,7 +372,7 @@ void H3DViewerPopupMenus::OnTreeViewAddChildNode( wxCommandEvent& event ) {
   Node *selected_node = (*ni).second.get();
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *selected_node ) );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       db->fieldDBEnd() != i; i++ ) {
+       db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( selected_node ); 
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
       if( sfnode->getAccessType() == Field::INPUT_ONLY ||
@@ -398,7 +398,7 @@ void H3DViewerPopupMenus::OnTreeViewAddChildNode( wxCommandEvent& event ) {
 
   if( node_fields.size() > 1 ) {
     wxString *choices = new wxString[ node_fields.size() ];
-    for( unsigned int i = 0; i < node_fields.size(); i++ ) {
+    for( unsigned int i = 0; i < node_fields.size(); ++i ) {
       choices[i] = node_fields[i];
     }
     wxSingleChoiceDialog *choice_dialog = new wxSingleChoiceDialog ( this,

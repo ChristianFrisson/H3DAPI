@@ -69,7 +69,7 @@ DeviceInfo::DeviceInfo(
 
 void DeviceInfo::renderStyli() {
   for( MFDevice::const_iterator i = device->begin();
-       i != device->end(); i++ ) {
+       i != device->end(); ++i ) {
     H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
     if( hd ) hd->renderStylus();
   }
@@ -84,7 +84,7 @@ void DeviceInfo::removeFromStack() {
   X3DBindableNode::removeFromStack();
 
   for( MFDevice::const_iterator i = device->begin();
-       i != device->end(); i++ ) {
+       i != device->end(); ++i ) {
     H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
     if( hd ) {
       hd->releaseDevice();
@@ -95,7 +95,7 @@ void DeviceInfo::removeFromStack() {
       static_cast< DeviceInfo * >( stack[bindable_stack_name].front() );
     if( new_top ) {
       for( MFDevice::const_iterator i = new_top->device->begin();
-        i != new_top->device->end(); i++ ) {
+        i != new_top->device->end(); ++i ) {
           H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
           if( hd ) {
             hd->initDevice();
@@ -114,7 +114,7 @@ void DeviceInfo::toStackTop() {
   if( active != this ) {
     if( active ) {
       for( MFDevice::const_iterator i = active->device->begin();
-           i != active->device->end(); i++ ) {
+           i != active->device->end(); ++i ) {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
         if( hd ) {
           hd->releaseDevice();
@@ -123,7 +123,7 @@ void DeviceInfo::toStackTop() {
     }
     X3DBindableNode::toStackTop();
     for( MFDevice::const_iterator i = device->begin();
-         i != device->end(); i++ ) {
+         i != device->end(); ++i ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd ) {
         hd->initDevice();
@@ -133,7 +133,7 @@ void DeviceInfo::toStackTop() {
   } else {
     X3DBindableNode::toStackTop();
     for( MFDevice::const_iterator i = device->begin();
-         i != device->end(); i++ ) {
+         i != device->end(); ++i ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
@@ -141,7 +141,7 @@ void DeviceInfo::toStackTop() {
       }
     }
   }
-	for( unsigned int i = 0; i < initialized_devices.size(); i++ ) {
+	for( unsigned int i = 0; i < initialized_devices.size(); ++i ) {
 			initialized_devices[i]->postInit();
 		}
 }
@@ -151,14 +151,14 @@ void DeviceInfo::initialize() {
   if( isStackTop() ) {
 		vector< H3DHapticsDevice * > initialized_devices;
     for( MFDevice::const_iterator i = device->begin();
-         i != device->end(); i++ ) {
+         i != device->end(); ++i ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
 				initialized_devices.push_back( hd );
       }
     }
-		for( unsigned int i = 0; i < initialized_devices.size(); i++ ) {
+		for( unsigned int i = 0; i < initialized_devices.size(); ++i ) {
 			initialized_devices[i]->postInit();
 		}
   }

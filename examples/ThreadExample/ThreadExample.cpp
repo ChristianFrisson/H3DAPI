@@ -81,7 +81,7 @@ void ThreadExample::initialize() {
   l_animationDirection = animationDirection->getValue();
   l_limit = limit->getValue();
   l_speed = speed->getValue();
-  for( unsigned int i = 0; i < rt_points.size(); i++ )
+  for( unsigned int i = 0; i < rt_points.size(); ++i )
     rt_currentDirection.push_back( Vec3f( 1, 1, 1 ) );
   rt_last_time = TimeStamp();
   simulationThread = new PeriodicThread();
@@ -106,7 +106,7 @@ void ThreadExample::render() {
   if( !sg_points.empty() ) {
     glDisable( GL_LIGHTING );
     glBegin( GL_LINE_STRIP );
-    for( H3DInt32 i = 0; i < (H3DInt32)sg_points.size(); i++) {
+    for( H3DInt32 i = 0; i < (H3DInt32)sg_points.size(); ++i) {
       glVertex3f( sg_points[i].x, sg_points[i].y, sg_points[i].z );
     }
     glEnd();
@@ -134,7 +134,7 @@ void ThreadExample::mySimulation() {
   rt_limit.y = H3DAbs( rt_limit.y );
   rt_limit.z = H3DAbs( rt_limit.z );
   rt_animationDirection.normalizeSafe();
-  for( unsigned int i = 0; i < rt_points.size(); i++ ) {
+  for( unsigned int i = 0; i < rt_points.size(); ++i ) {
     if( rt_points[i].x > rt_limit.x || rt_points[i].x < -rt_limit.x )
       rt_currentDirection[i].x = -rt_currentDirection[i].x;
     if( rt_points[i].y > rt_limit.y || rt_points[i].y < -rt_limit.y )

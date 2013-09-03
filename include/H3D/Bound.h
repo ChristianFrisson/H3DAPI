@@ -168,7 +168,7 @@ namespace H3D {
       InputIterator i = begin;
       Vec3f min_p( *i );
       Vec3f max_p( *i );
-      i++;
+      ++i;
       for( ; i != end; ++i ) {
         if( (*i).x < min_p.x ) min_p.x = (H3DFloat) (*i).x;
         if( (*i).y < min_p.y ) min_p.y = (H3DFloat) (*i).y;
@@ -193,7 +193,7 @@ namespace H3D {
       InputIterator i = begin;
       Vec2f min_p(*i);
       Vec2f max_p(*i);
-      i++;
+      ++i;
       for( ; i != end; ++i ) {
         if( (*i).x < min_p.x ) min_p.x = (*i).x;
         if( (*i).y < min_p.y ) min_p.y = (*i).y;
@@ -269,7 +269,7 @@ namespace H3D {
       Vec3f result;
       // for each coordinate axis, if the point coordinate value
       // is outside box, clamp it to the box, e;se keep it as it is
-      for( int i = 0; i < 3; i++ ) {
+      for( int i = 0; i < 3; ++i ) {
         H3DFloat v = p[i];
         if( v < min[i] ) v = min[i];
         if( v > max[i] ) v = max[i];
@@ -367,7 +367,7 @@ namespace H3D {
 	  vector< Vec3f >::iterator i = corners.begin();
 	  Vec3f min = *i;
 	  Vec3f max = *i;
-	  i++;
+	  ++i;
 	  for( ; i != corners.end(); ++i ) {
 	    if( (*i).x < min.x ) min.x = (*i).x;
 	    if( (*i).y < min.y ) min.y = (*i).y;
@@ -424,7 +424,7 @@ namespace H3D {
                                   Iterator end,
                                   Bound *(*getBound) ( const Iterator & ) ) {
       BoxBound *box_bound = NULL;
-      for( Iterator i = begin; i != end; i++ ) {
+      for( Iterator i = begin; i != end; ++i ) {
         Bound *b = getBound( i );
         if( b ) {
           BoxBound *bb = dynamic_cast< BoxBound * >( b );

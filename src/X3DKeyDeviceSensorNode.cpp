@@ -51,7 +51,7 @@ X3DKeyDeviceSensorNode::~X3DKeyDeviceSensorNode() {
 void  X3DKeyDeviceSensorNode::keyboardDownCallback( unsigned char key ) {
   for( list< X3DKeyDeviceSensorNode * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->keyboardDown( key, false );
   }
 }
@@ -59,7 +59,7 @@ void  X3DKeyDeviceSensorNode::keyboardDownCallback( unsigned char key ) {
 void  X3DKeyDeviceSensorNode::keyboardSpecialDownCallback( int key ) {
   for( list< X3DKeyDeviceSensorNode * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->keyboardDown( key, true );
   }
 }
@@ -67,7 +67,7 @@ void  X3DKeyDeviceSensorNode::keyboardSpecialDownCallback( int key ) {
 void X3DKeyDeviceSensorNode::keyboardUpCallback( unsigned char key ) {
   for( list< X3DKeyDeviceSensorNode * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->keyboardUp( key, false );
   }
 }
@@ -75,7 +75,7 @@ void X3DKeyDeviceSensorNode::keyboardUpCallback( unsigned char key ) {
 void X3DKeyDeviceSensorNode::keyboardSpecialUpCallback( int key ) {
   for( list< X3DKeyDeviceSensorNode * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->keyboardUp( key, true );
   }
 }

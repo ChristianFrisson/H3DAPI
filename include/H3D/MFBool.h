@@ -50,7 +50,7 @@ namespace H3D {
       if( v.size() == 0 )
         return "";
       unsigned int i;
-      for( i = 0; i < v.size() - 1; i++ ) {
+      for( i = 0; i < v.size() - 1; ++i ) {
         if( v[i] ) s << "true";
         else s << "false";
         s << separator;

@@ -584,18 +584,18 @@ void SpaceWareSensor::updateValues(){
   button_data.swap( thread_buttons );
   for( vector<ButtonData >::iterator i = button_data.begin();
        i != button_data.end();
-       i++ ) {
+       ++i ) {
     buttons->setValue( (*i).current_state, id  );
     int mask = 1;
     int b;
-    for( b = 0; b <=32; b++, mask *= 2 ) {
+    for( b = 0; b <=32; ++b, mask *= 2 ) {
       if( mask & (*i).pressed ) {
         latestButtonPress->setValue( b, id  );
       }  
     }
 
     mask = 1; 
-    for( b = 0; b <=32; b++, mask *= 2 ) {
+    for( b = 0; b <=32; ++b, mask *= 2 ) {
       if( mask & (*i).released ) {
         latestButtonRelease->setValue( b, id  );
       }  

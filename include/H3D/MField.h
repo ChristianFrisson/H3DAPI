@@ -272,7 +272,7 @@ namespace H3D {
       return -1;
       
       std::vector< Type > new_data( nr_elements );
-      for( unsigned int i = 0; i < nr_elements; i++ ) {
+      for( unsigned int i = 0; i < nr_elements; ++i ) {
         new_data[i] = static_cast< value_type * >( data )[i];
       }
       this->value.swap( new_data );
@@ -304,7 +304,7 @@ namespace H3D {
 
       this->upToDate();
 
-      for( unsigned int i = 0; i < nr_elements; i++ ) {
+      for( unsigned int i = 0; i < nr_elements; ++i ) {
         data_ptr[i] = value[i];
       }
       return sz * nr_elements;
@@ -437,7 +437,7 @@ namespace H3D {
       if( v.size() == 0 )
         return "";
       unsigned int i;
-      for( i = 0; i < v.size() - 1; i++ )
+      for( i = 0; i < v.size() - 1; ++i )
         s << v[i] << separator;
       s << v[i];
       return s.str();

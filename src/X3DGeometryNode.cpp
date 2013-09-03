@@ -133,7 +133,7 @@ H3DShadowObjectNode *X3DGeometryNode::getShadowObject() {
 int X3DGeometryNode::getHapticShapeId( unsigned int index ) {
 
   if( index >= haptic_shape_ids.size() ) {
-    for( size_t i = haptic_shape_ids.size(); i <= index; i++ ) {
+    for( size_t i = haptic_shape_ids.size(); i <= index; ++i ) {
       int shape_id = HAPI::HAPIHapticShape::genShapeId();
       haptic_shape_ids.push_back( make_pair( shape_id, 
                                              make_pair( Matrix4f(),
@@ -427,7 +427,7 @@ void X3DGeometryNode::traverseSG( TraverseInfo &ti ) {
     }
 
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
-    for( unsigned int i = 0; i < devices.size(); i++ ) {
+    for( unsigned int i = 0; i < devices.size(); ++i ) {
       
       if( !ti.hapticsEnabled( i ) || 
           !ti.getCurrentSurface() ||

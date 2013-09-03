@@ -257,7 +257,7 @@ void H3DWindowNode::initialize() {
 
   for( set< H3DWindowNode * >::iterator i = windows.begin();
        i != windows.end();
-       i++ ) {
+       ++i ) {
     if( (*i)!=this && (*i)->isInitialized() )
       shareRenderingContext( *i );
   }
@@ -312,12 +312,12 @@ void renderHapticTriangles() {
 
   unsigned int current_layer = ti->getCurrentLayer();
 
-  for( unsigned int di = 0; di < ti->getHapticsDevices().size(); di++ ) {
-    for( unsigned int l = 0; l < ti->nrLayers(); l++ ) {
+  for( unsigned int di = 0; di < ti->getHapticsDevices().size(); ++di ) {
+    for( unsigned int l = 0; l < ti->nrLayers(); ++l ) {
       ti->setCurrentLayer( l );
       const HapticShapeVector &shapes = ti->getHapticShapes( di );
       for( HapticShapeVector::const_iterator i = shapes.begin();
-           i != shapes.end(); i++ ) {
+           i != shapes.end(); ++i ) {
         bool render_triangles = global_render_triangles;
         X3DGeometryNode *geom = 
           static_cast< X3DGeometryNode * >( (*i)->getUserData() );
@@ -396,7 +396,7 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
     if( di ) {
       for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
            i != di->device->end();
-           i++ ) {
+           ++i ) {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
         H3DBoundedObject *stylus_bound = 
           dynamic_cast< H3DBoundedObject * >( hd->stylus->getValue() );
@@ -612,7 +612,7 @@ void H3DWindowNode::fboCallback( FrameBufferTextureGenerator *g, int i, void *ar
   static int count = 0;
   if( count % 2 == 0 ) 
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-  count++;
+  ++count;
 
   // render the node to the fbo.
   data->window->renderChild( data->renderChild, true );
@@ -747,7 +747,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if( vps.size() > 1 && vp_ref.get() ) {
       // find a viewpoint that is not the default local viewpoint and bind it.
       for( X3DViewpointNode::ViewpointList::iterator i = vps.begin();
-           i != vps.end(); i++ ) {
+           i != vps.end(); ++i ) {
         if( (*i) != vp_ref.get() ) {
           (*i)->set_bind->setValue( true );
         }
@@ -790,20 +790,20 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     switch(stereo_mode){
       case RenderMode::HORIZONTAL_INTERLACED: {
-        for( int i = 0; i < h; i++ )
-          for( int j = 0; j < w; j++ )
+        for( int i = 0; i < h; ++i )
+          for( int j = 0; j < w; ++j )
             stencil_mask[i*w+j]=(i+1)%2;
         break;
       }
       case RenderMode::CHECKER_INTERLACED: {
-        for( int i = 0; i < h; i++ )
-          for( int j = 0; j < w; j++ )
+        for( int i = 0; i < h; ++i )
+          for( int j = 0; j < w; ++j )
             stencil_mask[i*w+j]=(i+j+1)%2;
         break;
       }
       default: {
-        for( int i = 0; i < h; i++ )
-          for( int j = 0; j < w; j++ )
+        for( int i = 0; i < h; ++i )
+          for( int j = 0; j < w; ++j )
             stencil_mask[i*w+j]=(j+1)%2;
       }
     }
@@ -997,7 +997,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
-           i++ ) {
+           ++i ) {
         (*i).getLight()->enableGraphicsState();
       }
     }
@@ -1017,7 +1017,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
-           i++ ) {
+           ++i ) {
         (*i).getLight()->disableGraphicsState();
       }
     }
@@ -1103,7 +1103,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
-           i++ ) {
+           ++i ) {
         (*i).getLight()->enableGraphicsState();
       }
     }
@@ -1123,7 +1123,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
-           i++ ) {
+           ++i ) {
         (*i).getLight()->disableGraphicsState();
       }
     }
@@ -1284,7 +1284,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
-           i++ ) {
+           ++i ) {
         (*i).getLight()->enableGraphicsState();
       }
     }
@@ -1301,7 +1301,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
            i != ti->getActiveLightNodes().end();
-           i++ ) {
+           ++i ) {
         (*i).getLight()->disableGraphicsState();
       }
     }
@@ -1383,7 +1383,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 			far_plane_pos );
 	}
 
-	for( unsigned int i = 0; i < left_mouse_button.size(); i++ ) {
+	for( unsigned int i = 0; i < left_mouse_button.size(); ++i ) {
 		bool tmp_button = left_mouse_button[i];
 		if( previous_left_mouse_button != tmp_button ) {
 			X3DPointingDeviceSensorNode::updateButtonDependentFields( tmp_button );
@@ -1559,7 +1559,7 @@ LRESULT CALLBACK H3DWindowNode::WindowProc(HWND _hWnd,
   H3DWindowNode *thisWindow = 0;
   for( set< H3DWindowNode *>::iterator pos = windows.begin();
     pos != windows.end();
-    pos++ ) {
+    ++pos ) {
     if( (*pos)->hWnd == _hWnd )
       thisWindow = *pos;
   }

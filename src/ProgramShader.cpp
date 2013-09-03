@@ -62,7 +62,7 @@ ProgramShader::ProgramShader( Inst< DisplayList     > _displayList,
 #ifdef HAVE_CG
 void ProgramShader::preRender() {
   for( MFShaderProgram::const_iterator i = programs->begin();
-       i != programs->end(); i++ ) {
+       i != programs->end(); ++i ) {
     ShaderProgram *sp = static_cast< ShaderProgram * >( *i );
     sp->enableCGShaderProgram();
   }
@@ -71,7 +71,7 @@ void ProgramShader::preRender() {
 
 void ProgramShader::postRender() {
   for( MFShaderProgram::const_iterator i = programs->begin();
-       i != programs->end(); i++ ) {
+       i != programs->end(); ++i ) {
     ShaderProgram *sp = static_cast< ShaderProgram * >( *i );
     sp->disableCGShaderProgram();
   }
@@ -84,7 +84,7 @@ void ProgramShader::render() {
     activate->getValue( id );
 
   for( MFShaderProgram::const_iterator i = programs->begin();
-       i != programs->end(); i++ ) {
+       i != programs->end(); ++i ) {
     ShaderProgram *sp = static_cast< ShaderProgram * >( *i );
     if( reinitialize ) sp->initCGShaderProgram();
     sp->displayList->callList();

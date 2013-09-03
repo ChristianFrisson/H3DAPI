@@ -138,7 +138,7 @@ void Polyline2D::render() {
     // render the lines
     glBegin( GL_LINE_STRIP );
     for( MFVec2f::const_iterator i = lineSegments->begin();
-         i != lineSegments->end(); i++ ) {
+         i != lineSegments->end(); ++i ) {
       // Render the vertices.
       glVertex3f( (*i).x, (*i).y, 0.f );
     }

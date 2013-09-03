@@ -96,7 +96,7 @@ int H3DViewerTreeViewDialog::getNrTriangles( X3DGeometryNode *geom ) {
     while( i < index.size() ) {
       unsigned int nr_face_vertices = 0;
       while( i < index.size() && index[i++] != -1 ) {
-        nr_face_vertices++;
+        ++nr_face_vertices;
       }
       
       if( nr_face_vertices >= 3 ) {
@@ -119,7 +119,7 @@ void H3DViewerTreeViewDialog::showEntireSceneAsTree( H3DViewerTreeViewDialog::Ex
   l.clear();  
   const X3DBindableNode::StackMapType &stacks = X3DBindableNode::getStackMap();
   for( X3DBindableNode::StackMapType::const_iterator i = stacks.begin(); 
-       i != stacks.end();i++ ) {
+       i != stacks.end();++i ) {
     X3DBindableNode *b = X3DBindableNode::getActive( (*i).first );
     if( b ) l.push_back( make_pair(b, b->defaultXMLContainerField() ) );
   }
@@ -171,7 +171,7 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
   // recursively add all the child nodes of the node to the tree
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       db->fieldDBEnd() != i; i++ ) {
+       db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); //n->getField( *i );
     
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
@@ -180,7 +180,7 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
       }
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
       if( mfnode->getAccessType() != Field::INPUT_ONLY ) {
-        for( MFNode::const_iterator i = mfnode->begin(); i != mfnode->end(); i++ ) {
+        for( MFNode::const_iterator i = mfnode->begin(); i != mfnode->end(); ++i ) {
           addNodeToTree( new_id, *i, mfnode->getName(), expand_new_id ? expand : H3DViewerTreeViewDialog::EXPAND_NONE );
         }
       }
@@ -215,7 +215,7 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
   // them if they still refer to a node or deleting them otherwise.
   bool have_node_in_tree = false;
   for( list< wxTreeItemId >::iterator i = children_ids.begin();
-       i != children_ids.end(); i++ ) {
+       i != children_ids.end(); ++i ) {
     // find the node corresponding to the id in the current tree view.
 
     if( node_map.find( (*i).m_pItem ) == node_map.end() ) {
@@ -226,7 +226,7 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
 
     // check if this node still exists in the new node structure
     list< pair< H3D::Node *, string > >::iterator ni;
-    for( ni = nodes.begin(); ni != nodes.end(); ni++ ) {
+    for( ni = nodes.begin(); ni != nodes.end(); ++ni ) {
       Node *node = (*ni).first;
       if( node->getProtoInstanceParent() ) {
         node = node->getProtoInstanceParent(); 
@@ -242,7 +242,7 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
       list< pair< H3D::Node *, string > > child_nodes;
       H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *id_node ) );
       for( H3DNodeDatabase::FieldDBConstIterator j = db->fieldDBBegin();
-           db->fieldDBEnd() != j; j++ ) {
+           db->fieldDBEnd() != j; ++j ) {
          Field *f = j.getField( id_node ); //Field *f = id_node->getField( *j );
 
         if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
@@ -253,7 +253,7 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
         } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
           if( mfnode->getAccessType() != Field::INPUT_ONLY ) {
             for( MFNode::const_iterator mf = mfnode->begin(); 
-                 mf != mfnode->end(); mf++ ) {
+                 mf != mfnode->end(); ++mf ) {
               if( *mf ) child_nodes.push_back( make_pair( *mf, mfnode->getName() ) );
             }
           }
@@ -270,7 +270,7 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
 
   // add all new nodes to the tree. 
   for( list< pair< H3D::Node *, string > >::iterator i = nodes.begin();
-       i != nodes.end(); i++ ) {
+       i != nodes.end(); ++i ) {
     addNodeToTree( tree_id, (*i).first, (*i).second, expand_new );
   }
 
@@ -289,7 +289,7 @@ void H3DViewerTreeViewDialog::deleteTree( const wxTreeItemId &id ) {
   }
 
   for( list< wxTreeItemId >::iterator i = children_ids.begin();
-       i != children_ids.end(); i++ ) {
+       i != children_ids.end(); ++i ) {
     deleteTree( *i );
   }
 
@@ -399,7 +399,7 @@ void H3DViewerTreeViewDialog::collectAllTriangles( Node *n,
     if( geom ) {
       vector< HAPI::Collision::Triangle > tris;
       geom->boundTree->getValue()->getAllTriangles( tris );
-      for( unsigned int i = 0; i < tris.size(); i++ ) {
+      for( unsigned int i = 0; i < tris.size(); ++i ) {
         triangles.push_back( transform * (Vec3f) tris[i].a );
         triangles.push_back( transform * (Vec3f) tris[i].b );
         triangles.push_back( transform * (Vec3f) tris[i].c );
@@ -412,12 +412,12 @@ void H3DViewerTreeViewDialog::collectAllTriangles( Node *n,
 
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       db->fieldDBEnd() != i; i++ ) {
+       db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); 
     if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
       collectAllTriangles( sfnode->getValue(), new_transform, triangles );
     } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
-      for( unsigned int j = 0; j < mfnode->size(); j++ ) {
+      for( unsigned int j = 0; j < mfnode->size(); ++j ) {
         Node *n = mfnode->getValueByIndex( j ); 
         collectAllTriangles( n, new_transform, triangles );
       }

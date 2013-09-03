@@ -445,7 +445,7 @@ self, deepCopy )" );
     PyObject *list = PyList_New( (int)db->fieldDBSize() );
     int j=0;
     for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-         db->fieldDBEnd() != i; i++ ) {
+         db->fieldDBEnd() != i; ++i ) {
       PyObject *v = PyString_FromString( (*i).c_str() );
       PyList_SetItem( list, j++, v );
     }

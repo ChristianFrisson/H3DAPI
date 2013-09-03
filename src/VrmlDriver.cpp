@@ -84,7 +84,7 @@ int VrmlDriver::parse( istream *inp, const char *fn, DEFNodes *dn, DEFNodes
   }
 
   // add named nodes from script to all script nodes.
-  for( size_t i = 0; i < script_nodes.size(); i++ ) {
+  for( size_t i = 0; i < script_nodes.size(); ++i ) {
     script_nodes[i]->addNamedNodes( DEF_map );
   }
 
@@ -113,13 +113,13 @@ void VrmlDriver::setFieldValue( const char *v ) {
   bool sf_or_mf_string = false;
   if ( dynamic_cast<SFString*>(field) ) {
     sf_or_mf_string = true;
-    while ( *p=='\n' || *p==' ' || *p=='\t' ) p++;
+    while ( *p=='\n' || *p==' ' || *p=='\t' ) ++p;
     if ( *p=='"' ) {
       l=p+1;
       // go to end
-      while ( *(p+1) ) p++;
+      while ( *(p+1) ) ++p;
       // now go backwards
-      while ( *p=='\n' || *p==' ' || *p=='\t' ) p--;
+      while ( *p=='\n' || *p==' ' || *p=='\t' ) --p;
       if ( *p=='"' )
         r=p;
     } 
@@ -143,9 +143,9 @@ void VrmlDriver::setFieldValue( const char *v ) {
           s += ' ';
         else
           s += *p;
-        p++;
+        ++p;
       } else {
-        while( p && *p != '\0' && *p != '\n' ) p++;
+        while( p && *p != '\0' && *p != '\n' ) ++p;
       }       
     }
     // then pass the string on to the field value parser:
@@ -242,11 +242,11 @@ void VrmlDriver::addLine( const char *c ) {
    const char *last_line=c;
    while (*x!='\0') {
      if (*x=='\n') {
-       vrml_line_no++;
+       ++vrml_line_no;
        last_line=x+1;
        vrml_line="";
      }
-     x++;
+     ++x;
   }
    vrml_line += last_line;
 }

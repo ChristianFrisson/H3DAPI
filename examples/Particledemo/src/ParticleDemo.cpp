@@ -60,7 +60,7 @@ inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
   char *b = new char[s.size()+1];
   const wchar_t *wb = s.c_str();
-  for( unsigned int i = 0; i < s.size(); i++ ) {
+  for( unsigned int i = 0; i < s.size(); ++i ) {
     b[i] = (char)(wb[i]);
   }
   
@@ -110,7 +110,7 @@ public:
   }
 
   virtual bool OnCmdLineParsed(wxCmdLineParser& parser) {
-    for (unsigned int i = 0; i < parser.GetParamCount(); i++) {
+    for (unsigned int i = 0; i < parser.GetParamCount(); ++i) {
       cmd_line_filename = parser.GetParam(i);
     }
 
@@ -129,7 +129,7 @@ END_EVENT_TABLE()
 void MyApp::OnIdle(wxIdleEvent& event) {
   for( set< Scene * >::iterator i = Scene::scenes.begin();
     i != Scene::scenes.end();
-    i++ ) {
+    ++i ) {
     if( (*i)->isActive() )
       (*i)->idle();
   }

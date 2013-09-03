@@ -166,7 +166,7 @@ H3DHapticsDevice::ErrorCode PhantomDevice::initDevice() {
     inputDOF->setValue( pd->getInputDOF(), id );
     outputDOF->setValue( pd->getOutputDOF(), id );
 
-    nr_initialized_devices++;
+    ++nr_initialized_devices;
     render_shapes_called = 0;
     started_scheduler = false;
   }
@@ -178,7 +178,7 @@ H3DHapticsDevice::ErrorCode PhantomDevice::releaseDevice() {
   H3DHapticsDevice::ErrorCode e = H3DHapticsDevice::releaseDevice();
 #ifdef HAVE_OPENHAPTICS
   if( e == HAPI::HAPIHapticsDevice::SUCCESS ) {
-    nr_initialized_devices--;
+    --nr_initialized_devices;
   }
   HAPI::PhantomHapticsDevice::setEnableStartScheduler( true );
 #endif
@@ -217,7 +217,7 @@ void PhantomDevice::Calibrate::onValueChange( const bool &value ) {
 void PhantomDevice::postInit() {
 #ifdef HAVE_OPENHAPTICS
   if( hapi_device.get() && !started_scheduler ) {
-    render_shapes_called++;
+    ++render_shapes_called;
     if( nr_initialized_devices == render_shapes_called ) {
       HAPI::PhantomHapticsDevice::startScheduler();
       started_scheduler = true;

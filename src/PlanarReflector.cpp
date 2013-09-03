@@ -235,7 +235,7 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
       n->render();
     }
     glDisable( GL_CLIP_PLANE0 + plane_index );
-    ClipPlane::nr_active_clip_planes--;
+    --ClipPlane::nr_active_clip_planes;
   }
   glPopMatrix();
   glDisable( GL_STENCIL_TEST );

@@ -159,7 +159,7 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
     Vec3f dir = dir_light->direction->getValue();
     dir = m_inv.getRotationPart() * dir;
     updateSilhouetteEdgesDirectionalLight( triangles, neighbours, dir );
-    for( size_t i = 0; i < triangles.size(); i++ ) {
+    for( size_t i = 0; i < triangles.size(); ++i ) {
       // no silhouette edges are on triangles not facing the light
       if( !triangle_facing_light[i] ) continue;
       if( is_silhouette_edge[ i*3 ] ) 
@@ -179,7 +179,7 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
     light_pos = point_light->location->getValue();
     light_pos = m_inv * light_pos;
     updateSilhouetteEdgesPointLight( triangles, neighbours, light_pos );
-    for( size_t i = 0; i < triangles.size(); i++ ) {
+    for( size_t i = 0; i < triangles.size(); ++i ) {
       // no silhouette edges are on triangles not facing the light
       if( !triangle_facing_light[i] ) continue;
       if( is_silhouette_edge[ i*3 ] ) renderPointLightQuad( triangles[i].a, triangles[i].b, light_pos );
@@ -199,7 +199,7 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
       Vec3d dir = dir_light->direction->getValue();
       dir = m_inv.getRotationPart() * dir;
       
-      for( size_t i = 0; i < triangles.size(); i++ ) {
+      for( size_t i = 0; i < triangles.size(); ++i ) {
         if( triangle_facing_light[i] ) {
           Vec3d v1 = triangles[i].a;
           Vec3d v2 = triangles[i].b;
@@ -212,7 +212,7 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
         // converge to the same point at infinity.
       }
     } else if( point_light ) {
-      for( size_t i = 0; i < triangles.size(); i++ ) {
+      for( size_t i = 0; i < triangles.size(); ++i ) {
         if( triangle_facing_light[i] ) {
           Vec3d v1 = triangles[i].a;
           Vec3d v2 = triangles[i].b;
@@ -245,11 +245,11 @@ void ShadowGeometry::updateSilhouetteEdgesDirectionalLight( const vector< HAPI::
   triangle_facing_light.resize( triangles.size(), false );
   is_silhouette_edge.resize( triangles.size()*3, false );
   
-  for( size_t i = 0; i < triangles.size(); i++ ) {
+  for( size_t i = 0; i < triangles.size(); ++i ) {
     triangle_facing_light[i] = direction.dotProduct( triangles[i].normal ) <= 0;
   }
  
-  for( size_t i = 0; i < neighbours.size(); i++ ) {
+  for( size_t i = 0; i < neighbours.size(); ++i ) {
     if(!triangle_facing_light[i/3]) {
       // silhouette edges are only on triangles facing the light
       is_silhouette_edge[i] = false;
@@ -267,12 +267,12 @@ void ShadowGeometry::updateSilhouetteEdgesPointLight( const vector< HAPI::Collis
   triangle_facing_light.resize( triangles.size(), false );
   is_silhouette_edge.resize( triangles.size()*3, false );
 
-  for( size_t i = 0; i < triangles.size(); i++ ) {
+  for( size_t i = 0; i < triangles.size(); ++i ) {
     Vec3d direction = triangles[i].a - pos;
     triangle_facing_light[i] = direction.dotProduct( triangles[i].normal ) <= 0;
   }
 
-  for( size_t i = 0; i < neighbours.size(); i++ ) {
+  for( size_t i = 0; i < neighbours.size(); ++i ) {
     if(!triangle_facing_light[i/3]) {
       // silhouette edges are only on triangles facing the light
       is_silhouette_edge[i] = false;
@@ -308,7 +308,7 @@ void ShadowGeometry::updateNeighbours( const vector< HAPI::Collision::Triangle >
   typedef map< pair< Vec3d, Vec3d >, pair<int, int>, lt >  EdgeTriangleMap;
   EdgeTriangleMap edges;
  
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+  for( unsigned int i = 0; i < triangles.size(); ++i ) {
     const HAPI::Collision::Triangle &tri = triangles[i];
 
     // ignore invalid triangles that are lines or points
@@ -541,7 +541,7 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
   adjacency_index.clear();
   adjacency_index.reserve( triangles.size() * 6 );
 
-  for( unsigned int i = 0; i < triangles.size(); i++ ) {
+  for( unsigned int i = 0; i < triangles.size(); ++i ) {
    
         triangle_points.push_back( triangles[i].a );
     triangle_points.push_back( triangles[i].b );

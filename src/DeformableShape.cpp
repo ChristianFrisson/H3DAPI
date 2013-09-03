@@ -113,7 +113,7 @@ void DeformableShape::traverseSG( TraverseInfo &ti ) {
       for( vector< H3DHapticsDevice *>::const_iterator hd = 
              haptics_devices.begin();
            hd != haptics_devices.end() && i < is_touched.size();
-           hd++, i++ ) {
+           ++hd, ++i ) {
         penetration_points.push_back( ti.getAccInverseMatrix() * 
                                       (*hd)->weightedProxyPosition->getValue() );
       }

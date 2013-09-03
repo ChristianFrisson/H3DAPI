@@ -136,7 +136,7 @@ void MouseSensor::buttonCallback( int button, int state ) {
   list< MouseSensor * >::iterator end_iterator = instances.end();
   for( list< MouseSensor * >::iterator i = instances.begin();
        i != end_iterator;
-       i++ ) {
+       ++i ) {
     (*i)->mouseButtonAction( button, state );
     if( invalid_instance_ptr ) {
       if( instances.empty() ) {
@@ -152,7 +152,7 @@ void MouseSensor::buttonCallback( int button, int state ) {
 void MouseSensor::motionCallback( int x, int y ) {
   for( list< MouseSensor * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->mouseMotionAction( x, y );
   }
 }
@@ -160,7 +160,7 @@ void MouseSensor::motionCallback( int x, int y ) {
 void MouseSensor::wheelCallback( int direction ) {
   for( list< MouseSensor * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->mouseWheelAction( direction );
   }
 }

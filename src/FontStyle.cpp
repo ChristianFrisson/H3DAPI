@@ -136,7 +136,7 @@ LONG GetNextNameValue(HKEY key, LPCTSTR subkey, LPTSTR szName, LPTSTR szData)
     }
     dwIndex = 0;
   }  else  {
-    dwIndex++;
+    ++dwIndex;
   }
   
   *szName = 0;
@@ -230,7 +230,7 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
   if (fs) {
     int  j;
     
-    for (j = 0; j < fs->nfont; j++) {
+    for (j = 0; j < fs->nfont; ++j) {
       FcChar8 *file;
       FcChar8 *style;
       FcChar8 *family;
@@ -241,7 +241,7 @@ string FC_GetFontByName( const char *font_name, bool bold, bool italic ) {
    
       if (strncasecmp(font_name, (char*)family, strlen(font_name)) == 0) {
         // check if the font is of the correct type.
-        for( size_t s = 0; s < styles.size(); s++ ) {
+        for( size_t s = 0; s < styles.size(); ++s ) {
           if (strcasecmp( styles[s].c_str(), 
               (char*)style ) == 0) {
             string match( (char *)file );
@@ -467,7 +467,7 @@ void FontStyle::buildFonts() {
   // try all the font family names specified to find a font.
   for( MFString::const_iterator n = family->begin();
        n != family->end();
-       n++ ) {
+       ++n ) {
     const char *font_name = (*n).c_str();
     if( strcmp( font_name, "SANS" ) == 0 ) {
       font_name = DEFAULT_SANS_FONT;
@@ -494,7 +494,7 @@ void FontStyle::buildFonts() {
       Console(4) << "Warning: None of the fonts [";
       for( MFString::const_iterator n = family->begin();
            n != family->end();
-           n++ ) {
+           ++n ) {
         Console(4) << " \"" << *n << "\""; 
       }
 

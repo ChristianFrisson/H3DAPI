@@ -63,7 +63,7 @@ namespace H3D {
     /// Destructor
     virtual ~H3DNavigationDevices() {
       for( DeviceMap::iterator i = all_devices.begin();
-           i != all_devices.end(); i++ ) {
+           i != all_devices.end(); ++i ) {
         (*i).second.remove( this );
       }
     }
@@ -76,14 +76,14 @@ namespace H3D {
       int centerCounter = 0;
       for( list< H3DNavigationDevices * >::iterator i =
              all_devices[h3d_navigation].begin();
-           i != all_devices[h3d_navigation].end(); i++ ) {
+           i != all_devices[h3d_navigation].end(); ++i ) {
         if( (*i)->shouldGetInfo->getValue() ) {
           move_info.translation_sum += (*i)->move_dir;
           move_info.rotation_sum = move_info.rotation_sum * (*i)->rel_rot;
           move_info.zoom = (*i)->zoom;
           if( (*i)->use_center ) {
             move_info.use_center_sum = true;
-            centerCounter++;
+            ++centerCounter;
             move_info.center_of_rot_sum += (*i)->getCenterOfRot();
           }
           (*i)->resetAll();
@@ -109,7 +109,7 @@ namespace H3D {
                                   H3DNavigation * h3d_navigation ) {
       for( list< H3DNavigationDevices * >::iterator i =
              all_devices[h3d_navigation].begin();
-           i != all_devices[h3d_navigation].end(); i++ ) {
+           i != all_devices[h3d_navigation].end(); ++i ) {
           (*i)->setNavType( _nav_type );
       }
     }

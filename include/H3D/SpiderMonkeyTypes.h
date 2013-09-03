@@ -1455,7 +1455,7 @@ namespace H3D {
     //    values.push_back(x);
     //    values.push_back(y);
     //    values.push_back(comp);
-    //    for ( int i = 0; i < x * y; i++) {
+    //    for ( int i = 0; i < x * y; ++i) {
     //      values.push_back( arr_v[i] );
     //    }
     //  }
@@ -1504,7 +1504,7 @@ namespace H3D {
     //    ImagePrivate ip = getValue();
     //    stringstream ss;
     //    ss<< ip.x() << " " << ip.y() << " " << ip.comp();
-    //    for (int i = 0; i < ip.x() * ip.y(); i++) {
+    //    for (int i = 0; i < ip.x() * ip.y(); ++i) {
     //      ss<< " " << ip.arr()[i + 3];
     //    }
     //    return ss.str();

@@ -82,7 +82,7 @@ FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
 
     glDeleteRenderbuffersEXT(1, &stencil_id);   
 
-    for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
+    for( unsigned int i = 0; i<multi_samples_color_ids.size(); ++i ) {
       glDeleteRenderbuffersEXT(1, &multi_samples_color_ids[i] );
     } 
   }
@@ -227,7 +227,7 @@ void FrameBufferTextureGenerator::initialize()
     // bound.
     child_to_render->use_union_bound = true;
     const NodeVector &c = children->getValue();
-    for( unsigned int i = 0; i < c.size(); i++ ) {
+    for( unsigned int i = 0; i < c.size(); ++i ) {
       child_to_render->children->push_back(c[i]);
     }
   } else {
@@ -562,7 +562,7 @@ void FrameBufferTextureGenerator::render()     {
         glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
       }
 
-      for( unsigned int i = 0; i < color_ids.size(); i++ ) {
+      for( unsigned int i = 0; i < color_ids.size(); ++i ) {
         glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
         glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
         glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -574,7 +574,7 @@ void FrameBufferTextureGenerator::render()     {
 
     const NodeVector &c = children->getValue();
     
-    for( unsigned int i = 0; i < c.size(); i++ ) {
+    for( unsigned int i = 0; i < c.size(); ++i ) {
       
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
 
@@ -586,7 +586,7 @@ void FrameBufferTextureGenerator::render()     {
       }
 
       // set the render target to the correct slice for color textures.
-      for( unsigned int j = 0; j < color_ids.size(); j++ ) {
+      for( unsigned int j = 0; j < color_ids.size(); ++j ) {
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
                                      color_ids[j], 0, i );   
       }
@@ -629,7 +629,7 @@ void FrameBufferTextureGenerator::render()     {
           glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
         }
         
-        for( unsigned int i = 0; i < color_ids.size(); i++ ) {
+        for( unsigned int i = 0; i < color_ids.size(); ++i ) {
           glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
           glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
           glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -731,7 +731,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
     TextureProperties *tp = NULL;
 
     // initialize color textures.
-    for( size_t i = 0; i < nr_color_textures; i++ ) {
+    for( size_t i = 0; i < nr_color_textures; ++i ) {
       if( i < colorTextureProperties->size() ) {
         tp = colorTextureProperties->getValueByIndex( i );
       }
@@ -912,7 +912,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
         colorMismatchWarningPrinted->setValue(true);
       }
       end_index = color_buffer_storages.size();
-      for( size_t i = end_index, ilen = color_ids.size(); i < ilen; i++ ) {
+      for( size_t i = end_index, ilen = color_ids.size(); i < ilen; ++i ) {
         clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i);
       }
     } else if( color_buffer_storages.size()>color_ids.size() ) {
@@ -935,7 +935,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
 
 
-    for( int i = 0;i < end_index; i++ ) {
+    for( int i = 0;i < end_index; ++i ) {
       // i is the index for current internal color buffer 
       std::string color_buffer_storage = color_buffer_storages[i];
       if( color_buffer_storage.empty() || color_buffer_storage == "LOCAL" ) { 
@@ -949,7 +949,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
           // i-th attachment point of internal FBO 
           blitColorBuffer(0, target_fbo, x, y, w, h, -1, i);
         } else { // color_buffer_storage can only be FBO_COPY_x or FBO_SHARE_x
-          need_external_fbo_num ++;
+          ++need_external_fbo_num;
           std::string style = "";
           // index of the color buffer attachment point of external frame buffer.
           int index = -1; 
@@ -1174,7 +1174,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, 
       GL_RENDERBUFFER_EXT, multi_samples_depth_id);
 
-    for( unsigned int i = 0; i<multi_samples_color_ids.size(); i++ ) {
+    for( unsigned int i = 0; i<multi_samples_color_ids.size(); ++i ) {
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_color_ids[i] );
       glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
         stringToInternalFormat( color_texture_types[i]) ,
@@ -1243,7 +1243,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
   */
 
   // set up color buffers
-  for( size_t i = 0; i < color_texture_types.size(); i++ ) {
+  for( size_t i = 0; i < color_texture_types.size(); ++i ) {
     glBindTexture( texture_type, color_ids[i] );
     // filter needs to be something else than GL_MIPMAP_LINEAR that is default
     // since that is not supported by FBO.

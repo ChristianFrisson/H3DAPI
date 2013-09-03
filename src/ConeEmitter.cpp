@@ -108,7 +108,7 @@ void ConeEmitter::generateParticles( ParticleSystem *ps,
 
     Particle p = newParticle( ps, position->getValue(), dir );
     particles.push_back( p );
-    particles_to_emit--;
+    --particles_to_emit;
   }
 }
 

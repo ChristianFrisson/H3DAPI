@@ -50,8 +50,8 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     // skip all whitespaces
     while( (line[pos] == ' ' || line[ pos ] == '\t') &&
            pos < line.size() ) {
-      pos++;
-      characters_processed++;
+      ++pos;
+      ++characters_processed;
     }
     
     // empty line
@@ -94,8 +94,8 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     // skip all whitespaces
     while( (line[pos] == ' ' || line[ pos ] == '\t') &&
            pos < line.size() ) {
-      pos++;
-      characters_processed++;
+      ++pos;
+      ++characters_processed;
     }
     
     if( pos >= line.size() ) {
@@ -130,7 +130,7 @@ string URNResolver::resolveURN( const string &urn ) {
                    urn.substr( pos, urn.size() - pos ) ; 
 
   for( URNmap::reverse_iterator i = urn_prefix_map.rbegin(); 
-       i != urn_prefix_map.rend(); i++ ) {
+       i != urn_prefix_map.rend(); ++i ) {
     string prefix = (*i).first;
     string path = (*i).second;
     if( hasPrefix( urn, prefix ) ) {
@@ -149,7 +149,7 @@ string URNResolver::fromURLtoURN( const string &url ) {
   }
 
   for( URNmap::reverse_iterator i = urn_prefix_map.rbegin(); 
-       i != urn_prefix_map.rend(); i++ ) {
+       i != urn_prefix_map.rend(); ++i ) {
     if( (*i).second == url.substr( 0, (*i).second.size() ) ) {
       string urn = url;
       urn.replace( 0, (*i).second.size(), (*i).first );

@@ -56,7 +56,7 @@ void X3DTextureTransformNode::preRender() {
     glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &saved_texture );
     GLint saved_mode;
     glGetIntegerv( GL_MATRIX_MODE, &saved_mode );
-    for( size_t i = 0; i < texture_units; i++ ) {
+    for( size_t i = 0; i < texture_units; ++i ) {
       glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
       glMatrixMode( GL_TEXTURE );
       glPushMatrix();
@@ -86,7 +86,7 @@ void X3DTextureTransformNode::postRender() {
     glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &saved_texture );
     GLint saved_mode;
     glGetIntegerv( GL_MATRIX_MODE, &saved_mode );
-    for( size_t i = 0; i < texture_units; i++ ) {
+    for( size_t i = 0; i < texture_units; ++i ) {
       glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
       glMatrixMode( GL_TEXTURE );
       glPopMatrix();
@@ -116,7 +116,7 @@ void X3DTextureTransformNode::renderForTextureUnits( unsigned int start_unit,
   
   GLint saved_texture;
   glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &saved_texture );
-  for( unsigned int i = start_unit; i <= end_unit; i++ ) {
+  for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     renderForTextureUnit( i );
   }
   

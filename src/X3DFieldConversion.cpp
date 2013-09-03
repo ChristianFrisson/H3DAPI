@@ -182,9 +182,9 @@ unsigned char * X3D::Convert::readImageData( const char *s,
 
   unsigned char *data = new unsigned char[ nr_pixels * nr_components ];
   int x = 0, y = 0, z = 0;
-  for( z = 0; z < depth; z++ )
-    for( y = 0; y < height; y++ )
-      for( x = 0; x < width; x++ ) {
+  for( z = 0; z < depth; ++z )
+    for( y = 0; y < height; ++y )
+      for( x = 0; x < width; ++x ) {
         // pixel_index is the index in the data vector where
         // the current pixel starts
         unsigned int pixel_index = 

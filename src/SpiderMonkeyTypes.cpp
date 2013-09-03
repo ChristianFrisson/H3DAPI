@@ -61,8 +61,8 @@ void changePixelImageDimension(PixelImage* img, unsigned int nw, unsigned int nh
   unsigned char bytes_in_image = nw * nh * bytes_per_pixel;
   unsigned char* dataNew = new unsigned char[bytes_in_image];
   memset(dataNew, 0, bytes_in_image );
-  for (int x = 0; x < std::min<int>( nw, ow); x++) {
-    for (int y = 0; y < std::min<int>(nh, oh); y++) {
+  for (int x = 0; x < std::min<int>( nw, ow); ++x) {
+    for (int y = 0; y < std::min<int>(nh, oh); ++y) {
       memcpy( (void*)(dataNew + (y*nw+x)*bytes_per_pixel),
               (dataOld + (y * ow + x)*bytes_per_pixel), bytes_per_pixel);
     }
@@ -224,7 +224,7 @@ JSBool SpiderMonkey::JS_MField<MFieldType, ElementType>::getProperty(JSContext *
         unsigned char* data = new unsigned char[ bytes_per_pixel ];
         img->RGBAToImageValue(color, (void*) data);
         intval = 0;
-        for (int i = 0; i < bytes_per_pixel; i++) {
+        for (int i = 0; i < bytes_per_pixel; ++i) {
           intval = intval << 8;
           intval = intval | data[i];
         }
@@ -277,7 +277,7 @@ JSBool SpiderMonkey::JS_MField< MFieldType, ElementType >::construct(JSContext *
 
   MFieldType *mfield = new MFieldType;
   auto_ptr< ElementType > element( new ElementType );
-  for( unsigned int i = 0; i < argc; i++ ) {
+  for( unsigned int i = 0; i < argc; ++i ) {
     if( setFieldValueFromjsval( cx, element.get(), argv[i] ) ) {
       mfield->push_back( element->getValue() );
     } else {
@@ -335,7 +335,7 @@ JSBool SpiderMonkey::JS_MField< MFieldType, ElementType >::setProperty(JSContext
         int iy = index / img->width();
         unsigned char bytes_per_pixel = img->pixelType() + 1;
         unsigned char* data = new unsigned char[ bytes_per_pixel ];
-        for (int i = bytes_per_pixel-1; i >= 0; i--) {
+        for (int i = bytes_per_pixel-1; i >= 0; --i) {
           data[i] = intval & 0x0000FF;
           intval = intval >> 8;
         }
@@ -2672,7 +2672,7 @@ JSBool SpiderMonkey::SFImage_construct(JSContext *cx, JSObject *obj, uintN argc,
   vector<int> arr_v = arr_obj->getValue();
   stringstream ss;
   ss<< x << " " << y << " " << comp;
-  for (size_t i = 0; i < arr_v.size(); i++) {
+  for (size_t i = 0; i < arr_v.size(); ++i) {
     ss<< " " << arr_v[i];
   }
 
@@ -2799,7 +2799,7 @@ JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id,
 
         stringstream ss;
         ss<< img->width() << "" << img->height() << " " << (int)img->pixelType() + 1;
-        for( unsigned int i = 0; i < vals.size(); i++ ) {
+        for( unsigned int i = 0; i < vals.size(); ++i ) {
           ss<< " " << vals[i];
         }
         string s = ss.str();
@@ -3819,7 +3819,7 @@ bool SpiderMonkey::helper_sanityCheck(JSContext *cx, JSObject *obj, uintN argc, 
   }
 
   // check if the arguments are of correct type (number or object)
-  for (uintN i = 0; i < argc; i++) {
+  for (uintN i = 0; i < argc; ++i) {
     if (e_argtypes[i+1] == &SFNumberClass) {
       if ( !JSVAL_IS_NUMBER(argv[i]) ) {
         JS_ReportError(cx, "Argument %d is not number.", i);
@@ -4114,7 +4114,7 @@ JSBool SpiderMonkey::X3DMatrix3_construct(JSContext *cx, JSObject *obj, uintN ar
     return JS_FALSE;
   }
   float a[9];
-  for (size_t i = 0; i < argc; i++) {
+  for (size_t i = 0; i < argc; ++i) {
     jsdouble r;
     if (!JS_ValueToNumber( cx, argv[i], &r) ) {
       std::cout<< "failed in construct" << std::endl;
@@ -4437,7 +4437,7 @@ JSBool SpiderMonkey::X3DMatrix4_construct(JSContext *cx, JSObject *obj, uintN ar
     return JS_FALSE;
   }
   float a[16];
-  for (size_t i = 0; i < argc; i++) {
+  for (size_t i = 0; i < argc; ++i) {
     jsdouble r;
     if (!JS_ValueToNumber( cx, argv[i], &r) ) {
       std::cout<< "failed in construct" << std::endl;

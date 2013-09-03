@@ -87,7 +87,7 @@ X3DPointingDeviceSensorNode::~X3DPointingDeviceSensorNode() {
   instances.erase( find( instances.begin(), instances.end(), this ) );
   // Reset states if active is true.
   if( isActive->getValue() ) {
-    number_of_active--;
+    --number_of_active;
     if( number_of_active < 0 )
       number_of_active = 0;
   }
@@ -127,7 +127,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
         H3DFloat closestDistance = 
           (H3DFloat)( result.result[closest].point -
                       from ).lengthSqr();
-        for( unsigned int kl = 1; kl < result.theNodes.size(); kl++ ) {
+        for( unsigned int kl = 1; kl < result.theNodes.size(); ++kl ) {
           H3DFloat tempClose = 
             (H3DFloat)( result.result[kl].point -
                         from ).lengthSqr();
@@ -139,7 +139,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
       }
 
       // Reset states for the all instances.
-      for( unsigned int i = 0; i < instances.size(); i++ ) {
+      for( unsigned int i = 0; i < instances.size(); ++i ) {
         instances[i]->new_value = false;
         instances[i]->lowest_enabled = false;
       }
@@ -154,7 +154,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
         // set (to cause isOver events).
         for( list< Node * >::iterator i =
                (*found_ptds).second.x3dptd.begin();
-             i != (*found_ptds).second.x3dptd.end(); i++ ) {
+             i != (*found_ptds).second.x3dptd.end(); ++i ) {
           static_cast< X3DPointingDeviceSensorNode * >(*i)->new_value = true;
         }
         // Go through list of X3DPointingDeviceSensor nodes that belong to the
@@ -162,13 +162,13 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
         // pointing device sensors and therefore needs updating.
         for( list< Node * >::iterator i =
                (*found_ptds).second.lowest_enabled.begin();
-             i != (*found_ptds).second.lowest_enabled.end(); i++ ) {
+             i != (*found_ptds).second.lowest_enabled.end(); ++i ) {
           static_cast< X3DPointingDeviceSensorNode * >(*i)->lowest_enabled
             = true;
         }
       }
 
-      for( unsigned int i = 0; i < instances.size(); i++ ) {
+      for( unsigned int i = 0; i < instances.size(); ++i ) {
         if( instances[i]->new_value )
           instances[i]->onIsOver( &result.result[ closest ],
             &(*found_ptds).second.global_to_local );
@@ -181,7 +181,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
       // X3DPointingDeviceSensors only sets event if
       // the pointing device sensor is enabled and active or if it is enabled
       // and no other pointing device sensors are active.
-      for( unsigned int i = 0; i < instances.size(); i++ ) {
+      for( unsigned int i = 0; i < instances.size(); ++i ) {
         instances[i]->new_value = false;
         instances[i]->onIsOver();
       }
@@ -189,7 +189,7 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
 
     // Call the setDragOutputEvents function. Most pointing device sensors
     // update some events only when it is active, i.e. all X3DDragSensorNodes.
-    for( unsigned int i = 0; i < instances.size(); i++ ) {
+    for( unsigned int i = 0; i < instances.size(); ++i ) {
       instances[i]->setDragOutputEvents( instances[i]->enabled->getValue(),
                                          from, to );
     }
@@ -247,15 +247,15 @@ void X3DPointingDeviceSensorNode::setIsActive( bool primary_button ) {
     // fields.
     if( itIsActive != isActive->getValue() ) {
       if( itIsActive ) {
-        number_of_active++;
+        ++number_of_active;
         H3DNavigation::disableDevice( H3DNavigation::MOUSE );
         //H3DNavigation::disableDevice( H3DNavigation::ALL );
-        for( unsigned int i = 0; i < instances.size(); i++ ) {
+        for( unsigned int i = 0; i < instances.size(); ++i ) {
           if( !instances[i]->lowest_enabled )
             instances[i]->isOver->setValue( false, instances[i]->id );
         }
       }  else {
-        number_of_active--;
+        --number_of_active;
         if( number_of_active <= 0 ) {
           number_of_active = 0;
           //TODO: give option to only try to enable those that actually
@@ -288,7 +288,7 @@ void X3DPointingDeviceSensorNode::setIsEnabled( bool primary_button ) {
       // Call one last time with enable set to true to have a chance to reset
       // variables to how they should be when isActive is false.
       setDragOutputEvents( true, last_from, last_to );
-      number_of_active--;
+      --number_of_active;
       if( number_of_active <= 0 ) {
         number_of_active = 0;
         //TODO: give option to only try to enable those that actually

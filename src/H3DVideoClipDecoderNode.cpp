@@ -46,7 +46,7 @@ H3DVideoClipDecoderNode *H3DVideoClipDecoderNode::getSupportedDecoder(
   if( initialized ) {
     for( list< DecoderRegistration >::iterator i = 
            registered_decoders->begin();
-         i != registered_decoders->end(); i++ ) {
+         i != registered_decoders->end(); ++i ) {
       if( (*i).supports_func( url ) )
         return (*(*i).create_func)();
     }

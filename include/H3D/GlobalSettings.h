@@ -106,7 +106,7 @@ namespace H3D {
     template< class OptionNodeType >
     void getOptionNode( OptionNodeType * &option ) {
        for( MFOptionNode::const_iterator i = options->begin();
-           i != options->end(); i++ ) {
+           i != options->end(); ++i ) {
         OptionNodeType *options = dynamic_cast< OptionNodeType * >( *i );
         if( options ) {
           option = options;

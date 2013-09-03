@@ -86,14 +86,14 @@ parent( _parent ) {
 
 H3DNodeDatabase::~H3DNodeDatabase(void){
   
-  for(FieldDBType::const_iterator i = fields.begin(); i !=fields.end(); i++){
+  for(FieldDBType::const_iterator i = fields.begin(); i !=fields.end(); ++i){
     delete (*i).second;
   }
 
   if(initialized) {
     // remove entry from global database
     for( H3DNodeDatabaseType::iterator i = database->begin();
-	 i != database->end(); i++ ) {
+	 i != database->end(); ++i ) {
       if( (*i).second == this ) {
 	database->erase( i );
 	break;
@@ -119,7 +119,7 @@ Node *H3DNodeDatabase::createNode( const string &name ) {
 }
 
 void H3DNodeDatabase::initFields( Node *n ) const {
-  for( FieldDBType::const_iterator i = fields.begin(); i != fields.end(); i++ ) {
+  for( FieldDBType::const_iterator i = fields.begin(); i != fields.end(); ++i ) {
     FieldDBElement *fdb = (*i).second;
     if ( fdb ) {
       Field *f = fdb->getField( n );
@@ -136,7 +136,7 @@ void H3DNodeDatabase::initFields( Node *n ) const {
 
 
 Field *H3DNodeDatabase::getFieldHelp( Node *n, const string &f ) const {
-  for( FieldDBType::const_iterator i = fields.begin(); i != fields.end(); i++ ) {
+  for( FieldDBType::const_iterator i = fields.begin(); i != fields.end(); ++i ) {
     FieldDBElement *fdb = (*i).second;
     const string &name = (*i).first;
     if ( name == f )
@@ -199,7 +199,7 @@ H3DNodeDatabase *H3DNodeDatabase::lookupTypeId( const type_info &t ) {
 
 H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &name ) {
    for( H3DNodeDatabaseType::iterator i = database->begin(); 
-       i != database->end(); i++ ) {
+       i != database->end(); ++i ) {
     H3DNodeDatabase *n = (*i).second;
     // name is a match
     if ( n->name == name )
@@ -207,7 +207,7 @@ H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &name ) {
 
     // an alias is a match
     for( list< string >::iterator a = n->aliases.begin();
-         a != n->aliases.end(); a++ ) {
+         a != n->aliases.end(); ++a ) {
       if( name == *a ) {
         return n;
       }
@@ -238,7 +238,7 @@ bool H3DNodeDatabase::FieldDBConstIterator::operator==(
 H3DNodeDatabase::FieldDBConstIterator &H3DNodeDatabase::FieldDBConstIterator::operator++() {
   if( status == END ) return *this;
   else if( status == LOCAL ) {
-    local_iterator++;
+    ++local_iterator;
     if( local_iterator == ndb->fields.end() ) {
       if( ndb->parent  && ndb->parent->fieldDBBegin() != ndb->parent->fieldDBEnd() ) {
         *inherited_iterator = ndb->parent->fieldDBBegin();
@@ -249,7 +249,7 @@ H3DNodeDatabase::FieldDBConstIterator &H3DNodeDatabase::FieldDBConstIterator::op
     }
   } else {
     // status == INHERITED
-    (*inherited_iterator)++;
+    ++(*inherited_iterator);
      if( *inherited_iterator == ndb->parent->fieldDBEnd() )
       status = END;
   }
@@ -285,7 +285,7 @@ void H3DNodeDatabase::clearDynamicFields() {
     DynamicFieldDBElement *fdb = 
       dynamic_cast< DynamicFieldDBElement * >( (*i).second );
     FieldDBType::iterator to_erase = i;
-    i++;
+    ++i;
     if( fdb ) {
       fields.erase( to_erase );
       delete fdb;
@@ -298,7 +298,7 @@ void H3DNodeDatabase::clearDynamicFields( Node *n ) {
     DynamicFieldDBElement *fdb = 
       dynamic_cast< DynamicFieldDBElement * >( (*i).second );
     FieldDBType::iterator to_erase = i;
-    i++;
+    ++i;
     // Only remove the entry if its contained field belongs to the
     // specified node.
     if( fdb && fdb->getField( n ) ) {

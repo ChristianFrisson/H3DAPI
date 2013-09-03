@@ -412,8 +412,8 @@ void *X3DTextureNode::padTo4ByteAlignment( const void *data,
 
   void *new_data = malloc( depth * height * new_bytes_per_line );
  
-  for( unsigned int d = 0; d < depth; d++ )
-    for( unsigned int h = 0; h < height; h++ ) {
+  for( unsigned int d = 0; d < depth; ++d )
+    for( unsigned int h = 0; h < height; ++h ) {
       memcpy( (unsigned char*)new_data + d*height*new_bytes_per_line + h*new_bytes_per_line,
               (const unsigned char*)data + d*height*bytes_per_line + h * bytes_per_line,
               bytes_per_line );

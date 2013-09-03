@@ -100,15 +100,15 @@ string X3DTexture3DNode::SFImage::getValueAsString( const string& separator) {
   if( img ) {
     ss << img->width() << separator << img->height() << separator << img->depth()
        << separator << (int)img->pixelType() + 1;
-    for(unsigned int ix = 0; ix < img->width(); ix++) {
-      for(unsigned int iy = 0; iy < img->height(); iy++) {
-        for(unsigned int iz = 0; iz < img->depth(); iz++) {
+    for(unsigned int ix = 0; ix < img->width(); ++ix) {
+      for(unsigned int iy = 0; iy < img->height(); ++iy) {
+        for(unsigned int iz = 0; iz < img->depth(); ++iz) {
           RGBA color = img->getPixel( ix, iy, iz );
           unsigned char bytes_per_pixel = img->pixelType() + 1;
           unsigned char* data = new unsigned char[ bytes_per_pixel ];
           img->RGBAToImageValue(color, (void*) data);
           int intval = 0;
-          for (int i = 0; i < bytes_per_pixel; i++) {
+          for (int i = 0; i < bytes_per_pixel; ++i) {
             intval = intval << 8;
             intval = intval | data[i];
           }
@@ -343,8 +343,8 @@ void X3DTexture3DNode::renderSubImage( Image *image,
 
   unsigned char *modified_data = 
     new unsigned char[ width * height * depth * bytes_per_pixel ]; 
-  for( unsigned int z = 0; z < (unsigned int)depth; z++ ) {
-    for( unsigned int y = 0; y < (unsigned int)height; y++ ) {
+  for( unsigned int z = 0; z < (unsigned int)depth; ++z ) {
+    for( unsigned int y = 0; y < (unsigned int)height; ++y ) {
       memcpy( modified_data + (z * height + y ) * width * bytes_per_pixel, 
               image_data + 
               ( ((z + z_offset) * image->height() + (y + y_offset ) ) * 

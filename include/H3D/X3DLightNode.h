@@ -163,7 +163,7 @@ namespace H3D {
 
     /// must be called if getLightIndex have been called outside
     /// X3DLightNode.
-    static void decreaseLightIndex() { global_light_index--; }
+    static void decreaseLightIndex() { --global_light_index; }
 
     /// Specifies the intensity of the ambient emission from the light.
     ///

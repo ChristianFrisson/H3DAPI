@@ -189,7 +189,7 @@ void IndexedFaceSet::render() {
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
       if( shader_program ) {
-        for( unsigned int i = 0; i < attrib->size(); i++ ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
           X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
           if( attr ) {
             GLint loc = 
@@ -201,7 +201,7 @@ void IndexedFaceSet::render() {
 
         // render tangents as an attribute if needed.
         if( render_tangents ) {
-          for( unsigned int i = 0; i < autoTangent->size(); i++ ) {
+          for( unsigned int i = 0; i < autoTangent->size(); ++i ) {
             X3DVertexAttributeNode *attr = autoTangent->getValueByIndex( i );
             if( attr ) {
               GLint loc = 
@@ -224,7 +224,7 @@ void IndexedFaceSet::render() {
 
     //    if texcoord and tex_coord_index check size is equal with coord_index;
     
-    for( unsigned int i = 0; i < coord_index.size(); i++ ) {
+    for( unsigned int i = 0; i < coord_index.size(); ++i ) {
       glBegin( GL_POLYGON );
       // set up normals if the normals are specified per face
       if( normals ) {
@@ -241,7 +241,7 @@ void IndexedFaceSet::render() {
           // render tangents(they have the same layout as normals)
           if( render_tangents ) {
             for( unsigned int attrib_index = 0;
-                 attrib_index < autoTangent->size(); attrib_index++ ) {
+                 attrib_index < autoTangent->size(); ++attrib_index ) {
               X3DVertexAttributeNode *attr = 
                 autoTangent->getValueByIndex( attrib_index );
               if( attr ) attr->render( ni );
@@ -264,7 +264,7 @@ void IndexedFaceSet::render() {
       }
       
       // render all vertices for this face.
-      for(;  i < coord_index.size() && coord_index[i] != -1; i++ ) {
+      for(;  i < coord_index.size() && coord_index[i] != -1; ++i ) {
         // Set up texture coordinates.
         if( tex_coords_per_vertex ) {
           int tci;
@@ -310,7 +310,7 @@ void IndexedFaceSet::render() {
                 // render tangents(they have the same layout as normals)
                 if( render_tangents ) {
                   for( unsigned int attrib_index = 0;
-                       attrib_index < autoTangent->size(); attrib_index++ ) {
+                       attrib_index < autoTangent->size(); ++attrib_index ) {
                     X3DVertexAttributeNode *attr = 
                       autoTangent->getValueByIndex( attrib_index );
                     if( attr ) attr->render( ni );
@@ -332,7 +332,7 @@ void IndexedFaceSet::render() {
               // render tangents(they have the same layout as normals)
               if( render_tangents ) {
                 for( unsigned int attrib_index = 0;
-                     attrib_index < autoTangent->size(); attrib_index++ ) {
+                     attrib_index < autoTangent->size(); ++attrib_index ) {
                   X3DVertexAttributeNode *attr = 
                     autoTangent->getValueByIndex( attrib_index );
                   if( attr ) attr->render( ni );
@@ -367,7 +367,7 @@ void IndexedFaceSet::render() {
   
         // Set up shader vertex attributes.
         if( shader_program ) {
-          for( unsigned int j = 0; j < attrib->size(); j++ ) {
+          for( unsigned int j = 0; j < attrib->size(); ++j ) {
             X3DVertexAttributeNode *attr =  attrib->getValueByIndex( j );
             if( attr ) {
               attr->render( coord_index[i] );
@@ -381,10 +381,10 @@ void IndexedFaceSet::render() {
 
         // Render the vertices.
         coords->render( coord_index[ i ] );
-        vertex_count++;
+        ++vertex_count;
       }
       glEnd();
-      face_count++;
+      ++face_count;
     }
 
     // restore previous fog attributes
@@ -436,17 +436,17 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
                                                     ccw ) );
     unsigned int i = 0;
     for( unsigned int face = 0; 
-         face < normals_per_face->nrAvailableNormals(); face++ ) {
+         face < normals_per_face->nrAvailableNormals(); ++face ) {
       Vec3f norm = normals_per_face->getNormal( face );
       while( i < coord_index.size() && coord_index[i] != -1 ) {    
         normals[coord_index[i++]]   += norm;
       }
-      i++;
+      ++i;
     }
     
     for( vector<Vec3f>::iterator i = normals.begin(); 
          i != normals.end(); 
-         i++ ) {
+         ++i ) {
       (*i).normalizeSafe();
     }
     normal->vector->setValue( normals );
@@ -478,13 +478,13 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
     // build a map from each vertex to a vector of all the normals 
     // of the faces the vertex is a part of.
     for( unsigned int face = 0; 
-         face < normals_per_face->nrAvailableNormals(); face++ ) {
+         face < normals_per_face->nrAvailableNormals(); ++face ) {
       while( i < coord_index.size() && coord_index[i] != -1 ) {    
         int index = coord_index[i++];
         vector< int > &v =point_to_face_normal_map[ index ];
         v.push_back( face );
       }
-      i++;
+      ++i;
     }
 
     i = 0;
@@ -492,7 +492,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
     // the normal for the vertex is the average of all normals of the faces
     // which normal angle from the current face is less than the crease angle
     for( unsigned int face = 0; 
-         face < normals_per_face->nrAvailableNormals(); face++ ) {
+         face < normals_per_face->nrAvailableNormals(); ++face ) {
       while( i < coord_index.size() && coord_index[i] != -1 ) {    
         int index = coord_index[i++];
         Vec3f face_normal = normals_per_face->getNormal( face );
@@ -502,7 +502,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
           point_to_face_normal_map[ index ];
         
         for( vector< int >::const_iterator n = face_normals.begin();
-             n != face_normals.end(); n++ ) {
+             n != face_normals.end(); ++n ) {
           // a < b <=> cos(a) > cos(b)
           Vec3f nn = normals_per_face->getNormal( *n );
           if( face_normal * nn > cos_crease_angle ) {
@@ -512,7 +512,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
         point_normal.normalizeSafe();
         normals.push_back( point_normal );
       }
-      i++;
+      ++i;
     }
     normal->vector->setValue( normals );
   }
@@ -861,7 +861,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
       binormals_per_face_node->value->getValue();
 
     unsigned int i = 0;
-    for( unsigned int face = 0; face < tangents_per_face.size()/3; face++ ) {
+    for( unsigned int face = 0; face < tangents_per_face.size()/3; ++face ) {
        // add tangent and binormal value from each face to all vertices
        // the face has.
        while( i < coord_index.size() && coord_index[i] != -1 ) {    
@@ -871,9 +871,9 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
          binormals[coord_index[ i ]*3   ] += binormals_per_face[face*3  ];
          binormals[coord_index[ i ]*3+1 ] += binormals_per_face[face*3+1];
          binormals[coord_index[ i ]*3+2 ] += binormals_per_face[face*3+2];
-         i++;
+         ++i;
        }
-       i++;
+       ++i;
     }
     
     // normalize tangents and binormals
@@ -953,13 +953,13 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
     // build a map from each vertex to a vector of all the normals 
     // of the faces the vertex is a part of.
     for( unsigned int face = 0; 
-         face < normals_per_face->nrAvailableNormals(); face++ ) {
+         face < normals_per_face->nrAvailableNormals(); ++face ) {
       while( i < coord_index.size() && coord_index[i] != -1 ) {    
         int index = coord_index[i++];
         vector< int > &v = point_to_face_normal_map[ index ];
         v.push_back( face );
       }
-      i++;
+      ++i;
     }
 
     i = 0;
@@ -968,7 +968,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
     // and binormals of the faces which normal angle from the current face
     // is less than the crease angle
     for( unsigned int face = 0; 
-         face < normals_per_face->nrAvailableNormals(); face++ ) {
+         face < normals_per_face->nrAvailableNormals(); ++face ) {
       while( i < coord_index.size() && coord_index[i] != -1 ) {    
         int index = coord_index[i++];
         Vec3f face_normal = normals_per_face->getNormal(face);
@@ -979,7 +979,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
           point_to_face_normal_map[ index ];
         
         for( vector< int >::const_iterator n = face_normals.begin();
-             n != face_normals.end(); n++ ) {
+             n != face_normals.end(); ++n ) {
           // a < b <=> cos(a) > cos(b)
           Vec3f nn = normals_per_face->getNormal( *n );
           if( face_normal * nn > cos_crease_angle ) {
@@ -1002,7 +1002,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
         binormals.push_back( point_binormal.z );
 
       }
-      i++;
+      ++i;
     }
 
     tangent_node->value->setValue( tangents );

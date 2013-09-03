@@ -315,7 +315,7 @@ void H3DHapticsDevice::updateDeviceValues() {
         default_vp_pos_mtx = default_vp_pos_mtx.inverse();
 
         default_vp_orn_mtx = vp_accFrw.inverse().getRotationPart();
-        vp_initialized++;
+        ++vp_initialized;
       }
 
       // create matrix for new point
@@ -380,7 +380,7 @@ void H3DHapticsDevice::updateDeviceValues() {
 
     vector< Vec3f > proxies;
 
-    for( unsigned int layer = 0; layer < hapi_device->nrLayers(); layer++ ) {
+    for( unsigned int layer = 0; layer < hapi_device->nrLayers(); ++layer ) {
       HAPI::HAPIHapticsRenderer *renderer = 
         hapi_device->getHapticsRenderer( layer );
 
@@ -409,7 +409,7 @@ void H3DHapticsDevice::updateDeviceValues() {
     int device_index = -1;
     if( di ) {
       const NodeVector &devices = di->device->getValue();
-      for( unsigned int i = 0; i < devices.size(); i++ ) {
+      for( unsigned int i = 0; i < devices.size(); ++i ) {
         if( (Node *)devices[i] == this )
           device_index = i;
       }
@@ -418,7 +418,7 @@ void H3DHapticsDevice::updateDeviceValues() {
 
     HAPI::HAPIHapticsRenderer::Contacts all_contacts;
 
-    for( unsigned int layer = 0; layer < hapi_device->nrLayers(); layer++ ) {
+    for( unsigned int layer = 0; layer < hapi_device->nrLayers(); ++layer ) {
       HAPI::HAPIHapticsRenderer *renderer = 
         hapi_device->getHapticsRenderer( layer );
       HAPI::HAPIHapticsRenderer::Contacts contacts;
@@ -429,7 +429,7 @@ void H3DHapticsDevice::updateDeviceValues() {
                              contacts.end() );
       }
       for( HAPI::HAPIHapticsRenderer::Contacts::iterator i = contacts.begin();
-           i != contacts.end(); i++ ) {
+           i != contacts.end(); ++i ) {
         X3DGeometryNode *geom =
           static_cast< X3DGeometryNode * >( (*i).first->getUserData() );
       
@@ -484,11 +484,11 @@ void H3DHapticsDevice::updateDeviceValues() {
 
     for( HAPI::HAPIHapticsRenderer::Contacts::iterator j =
           last_contacts.begin();
-         j != last_contacts.end(); j++ ) {
+         j != last_contacts.end(); ++j ) {
       bool still_in_contact = false;
       for( HAPI::HAPIHapticsRenderer::Contacts::iterator i =
             all_contacts.begin();
-           i != all_contacts.end(); i++ ) {
+           i != all_contacts.end(); ++i ) {
         if( (*i).first->getUserData() == (*j).first->getUserData() ) {
           still_in_contact = true;
           break;

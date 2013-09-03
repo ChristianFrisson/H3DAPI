@@ -86,13 +86,13 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
       // First Instance DEF/USE of traveseSG
       prev_maxnoinstances = no_instance;
       vector<int>::iterator p;
-      for( p = list.begin(); p != list.end(); p++ ) {
+      for( p = list.begin(); p != list.end(); ++p ) {
         if( *p > no_instance)
           p=list.erase( p );
       }
       no_instance = 0;
     }
-    no_instance++;
+    ++no_instance;
       
     const Matrix4f &vs_frw_m = ti.getAccForwardMatrix();
 

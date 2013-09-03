@@ -98,7 +98,7 @@ RGB getColor( H3DFloat theta,
               const vector< RGB > & color,
               const vector< H3DFloat > &angle ) {
   unsigned int i;
-  for( i = 0; i < angle.size(); i++ ) {
+  for( i = 0; i < angle.size(); ++i ) {
     if( theta <= angle[i] ) {
       break;
     }  
@@ -166,12 +166,12 @@ void X3DBackgroundNode::render() {
       // draw outer sphere( sky sphere ). Don't need to draw sphere unless
       // more than one skyColor. Buffer will be cleared with skyColor[0]
       // in GLWindow.cpp
-      for (j=0;j<n/2;j++) {
+      for (j=0;j<n/2;++j) {
         theta1 = j * TWOPI / n - PID2;
         theta2 = (j + 1) * TWOPI / n - PID2;
       
         glBegin(GL_QUAD_STRIP);
-        for (i=0;i<=n;i++) {
+        for (i=0;i<=n;++i) {
           theta3 = i * TWOPI / n;
           e.x = H3DCos(theta2) * H3DCos(theta3);
           e.y = H3DSin(theta2);
@@ -203,12 +203,12 @@ void X3DBackgroundNode::render() {
     if( ground_color.size() > 0 ) {
       // draw inner half sphere( ground sphere )
       r = r * (H3DFloat) 0.95;
-      for (j=0;j<n/4;j++) {
+      for (j=0;j<n/4;++j) {
         theta1 = j * TWOPI / n - PID2;
         theta2 = (j + 1) * TWOPI / n - PID2;
       
         glBegin(GL_QUAD_STRIP);
-        for (i=0;i<=n;i++) {
+        for (i=0;i<=n;++i) {
           theta3 = i * TWOPI / n;
           e.x = cos(theta2) * cos(theta3);
           e.y = sin(theta2);

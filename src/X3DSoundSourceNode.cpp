@@ -103,7 +103,7 @@ bool X3DSoundSourceNode::initALBuffers( bool stream ) {
                   reader->samplesPerSecond() );
     delete[] buffer;
     for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-         i != parent_sound_nodes.end(); i++ ) {
+         i != parent_sound_nodes.end(); ++i ) {
       if( loop->getValue() )
         alSourcei( (*i)->getALSourceId(), AL_LOOPING, AL_TRUE );
       else
@@ -114,7 +114,7 @@ bool X3DSoundSourceNode::initALBuffers( bool stream ) {
   } else {
     sound_as_stream = true;
     char *buffer = new char[ STREAM_BUFFER_SIZE ];
-    for( unsigned int i = 0; i < NR_STREAM_BUFFERS; i++ ) {
+    for( unsigned int i = 0; i < NR_STREAM_BUFFERS; ++i ) {
       unsigned int bytes_read = reader->read( buffer, STREAM_BUFFER_SIZE );
       alBufferData( al_buffers[i], al_format, 
                     buffer, bytes_read, 
@@ -123,7 +123,7 @@ bool X3DSoundSourceNode::initALBuffers( bool stream ) {
     delete[] buffer;
     
     for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-         i != parent_sound_nodes.end(); i++ ) {
+         i != parent_sound_nodes.end(); ++i ) {
       alSourcei( (*i)->getALSourceId(), AL_LOOPING, AL_FALSE );
       alSourcei( (*i)->getALSourceId(), AL_BUFFER, 0 );
       alSourceQueueBuffers( (*i)->getALSourceId(), NR_STREAM_BUFFERS, 
@@ -144,7 +144,7 @@ void X3DSoundSourceNode::onStart() {
 
   if( initALBuffers( sound_as_stream ) ) {
     for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-         i != parent_sound_nodes.end(); i++ ) {
+         i != parent_sound_nodes.end(); ++i ) {
       alSourcei( (*i)->getALSourceId(), AL_BUFFER, 0 );
       if( !sound_as_stream ) {
         alSourcei( (*i)->getALSourceId(), AL_BUFFER, al_buffers[0] );
@@ -163,7 +163,7 @@ void X3DSoundSourceNode::onStop() {
   
 #ifdef HAVE_OPENAL
   for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-       i != parent_sound_nodes.end(); i++ ) {
+       i != parent_sound_nodes.end(); ++i ) {
     alSourceStop( (*i)->getALSourceId() );  
     alSourcei( (*i)->getALSourceId(), AL_BUFFER, 0 );
   }
@@ -176,7 +176,7 @@ void X3DSoundSourceNode::onPause() {
   X3DTimeDependentNode::onPause();
 #ifdef HAVE_OPENAL
   for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-       i != parent_sound_nodes.end(); i++ ) {
+       i != parent_sound_nodes.end(); ++i ) {
     alSourcePause( (*i)->getALSourceId() );  
   }
 #endif
@@ -186,7 +186,7 @@ void X3DSoundSourceNode::onResume() {
   X3DTimeDependentNode::onResume();
 #ifdef HAVE_OPENAL
   for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-       i != parent_sound_nodes.end(); i++ ) {
+       i != parent_sound_nodes.end(); ++i ) {
     alSourcePlay( (*i)->getALSourceId() );  
   }
 #endif
@@ -206,7 +206,7 @@ void X3DSoundSourceNode::TimeHandler::update() {
       ALint state;
       bool playing = false;
       for( list< X3DSoundNode * >::iterator i = sound_source->parent_sound_nodes.begin();
-           i != sound_source->parent_sound_nodes.end(); i++ ) {
+           i != sound_source->parent_sound_nodes.end(); ++i ) {
         alGetSourcei( (*i)->getALSourceId(), AL_SOURCE_STATE, &state );
         if( state == AL_PLAYING ) playing = true;
       }
@@ -222,7 +222,7 @@ void X3DSoundSourceNode::TimeHandler::update() {
 
       bool have_buffers = false;
       for( list< X3DSoundNode * >::iterator i = sound_source->parent_sound_nodes.begin();
-           i != sound_source->parent_sound_nodes.end(); i++ ) {
+           i != sound_source->parent_sound_nodes.end(); ++i ) {
         ALint processed_in_src;
         ALint in_queue;
         alGetSourcei( (*i)->getALSourceId(), AL_BUFFERS_PROCESSED, &processed_in_src );
@@ -243,7 +243,7 @@ void X3DSoundSourceNode::TimeHandler::update() {
           // Unqueue from all sound sources
           for( list< X3DSoundNode * >::iterator i =
                  sound_source->parent_sound_nodes.begin();
-               i != sound_source->parent_sound_nodes.end(); i++ ) {
+               i != sound_source->parent_sound_nodes.end(); ++i ) {
             alSourceUnqueueBuffers( (*i)->getALSourceId(), 1, &buffer_id);
           }
         
@@ -270,7 +270,7 @@ void X3DSoundSourceNode::TimeHandler::update() {
             // Queue the buffer on all sound sources.
             for( list< X3DSoundNode * >::iterator i =
                    sound_source->parent_sound_nodes.begin();
-                 i != sound_source->parent_sound_nodes.end(); i++ ) {
+                 i != sound_source->parent_sound_nodes.end(); ++i ) {
               alSourceQueueBuffers((*i)->getALSourceId(), 1, 
                                    &buffer_id );  
               ALint state;
@@ -297,7 +297,7 @@ void X3DSoundSourceNode::ALrender() {
   }
 
   for( list< X3DSoundNode * >::iterator i = parent_sound_nodes.begin();
-       i != parent_sound_nodes.end(); i++ ) {
+       i != parent_sound_nodes.end(); ++i ) {
     if( !sound_as_stream ) {
       if( loop->getValue() )
         alSourcei( (*i)->getALSourceId(), AL_LOOPING, AL_TRUE );

@@ -140,14 +140,14 @@ void ParticleSystem::render() {
   if ( particles.size() > 0 ) {
     if( geometry_render_mode == ALL ) {
       for( Particles::iterator p = particles.begin(); 
-           p != particles.end(); p++ ) {
+           p != particles.end(); ++p ) {
         (*p).render( this );
       }
     } else if( geometry_render_mode == SOLID ) {
       // only render non-transparent objects
       if( !a || !a->isTransparent() ) {
         for( Particles::iterator p = particles.begin(); 
-           p != particles.end(); p++ ) {
+           p != particles.end(); ++p ) {
           (*p).render( this );
         }
       }
@@ -155,7 +155,7 @@ void ParticleSystem::render() {
     else if( a && a->isTransparent() ) {
       if( geometry_render_mode == TRANSPARENT_ONLY ) {
         for( Particles::iterator p = particles.begin(); 
-             p != particles.end(); p++ ) {
+             p != particles.end(); ++p ) {
           (*p).render( this );
         }
       } else if( geometry_render_mode == TRANSPARENT_FRONT ) {
@@ -168,7 +168,7 @@ void ParticleSystem::render() {
             g->setCullFace( GL_BACK );
             g->useCulling( true );
             for( Particles::iterator p = particles.begin(); 
-              p != particles.end(); p++ ) {
+              p != particles.end(); ++p ) {
                 (*p).render( this );
             }
             g->setCullFace( previous_cull_face );
@@ -179,7 +179,7 @@ void ParticleSystem::render() {
           glCullFace( GL_BACK );
           glEnable( GL_CULL_FACE );
           for( Particles::iterator p = particles.begin(); 
-            p != particles.end(); p++ ) {
+            p != particles.end(); ++p ) {
               (*p).render( this );
           }
         }
@@ -194,7 +194,7 @@ void ParticleSystem::render() {
             g->setCullFace( GL_FRONT );
             g->useCulling( true );
             for( Particles::iterator p = particles.begin(); 
-              p != particles.end(); p++ ) {
+              p != particles.end(); ++p ) {
                 (*p).render( this );
               }
               g->setCullFace( previous_cull_face );
@@ -205,7 +205,7 @@ void ParticleSystem::render() {
           glCullFace( GL_FRONT );
           glEnable( GL_CULL_FACE );
           for( Particles::iterator p = particles.begin(); 
-            p != particles.end(); p++ ) {
+            p != particles.end(); ++p ) {
               (*p).render( this );
           }
         }
@@ -240,7 +240,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   if( emitter_node ) emitter_node->traverseSG( ti );
 
   for( MFPhysicsModelNode::const_iterator pm = physics->begin();
-       pm != physics->end(); pm++ ) {
+       pm != physics->end(); ++pm ) {
     if( *pm )(*pm)->traverseSG( ti );
   }
 
@@ -279,7 +279,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   Vec3f vp_lookat = vp_to_local_rot * ( vp_orn *  Vec3f( 0, 0, -1 ) );
 
   for( Particles::iterator p = particles.begin(); 
-       p != particles.end(); p++ ) {
+       p != particles.end(); ++p ) {
     displayList->breakCache();
     X3DParticleEmitterNode::Particle last_particle = *p;
     // update the position of the particle due to velocity
@@ -292,7 +292,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
     if( !(*p).isDead() ) {
       // update the particles values due to physics effects
       for( MFPhysicsModelNode::const_iterator i = physics->begin();
-           i != physics->end(); i++ ) {
+           i != physics->end(); ++i ) {
         X3DParticlePhysicsModelNode *pm = 
           static_cast< X3DParticlePhysicsModelNode * >( *i );
         pm->updateParticleValues( last_particle, *p, 
@@ -306,7 +306,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
   
   // remove all particles which lifetime has ended
   for( vector< Particles::iterator >::iterator i = to_remove.begin();
-       i != to_remove.end(); i++ ) {
+       i != to_remove.end(); ++i ) {
     particles.erase( *i );
   }
 
@@ -323,7 +323,7 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
     Particles::iterator p = particles.begin(); 
     Vec3f min, max;
     min = max = (*p).position;
-    p++;
+    ++p;
 
 		// find the min and max center values for each particle
 		for( ; p != particles.end(); ++p ) {

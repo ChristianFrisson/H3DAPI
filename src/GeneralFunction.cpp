@@ -94,11 +94,11 @@ unsigned int GeneralFunction::nrInputValues() {
   const string &p = params->getValue();
   unsigned int nr_commas = 0;
   bool has_non_whitespace = false;
-  for( unsigned int i = 0; i < p.size(); i++ ) {
+  for( unsigned int i = 0; i < p.size(); ++i ) {
     if( !has_non_whitespace && !isspace(p[i]) ) {
       has_non_whitespace = true;
     }
-    if( p[i] == ',' ) nr_commas++;
+    if( p[i] == ',' ) ++nr_commas;
   }
   
   if( has_non_whitespace ) return nr_commas + 1;

@@ -47,7 +47,7 @@ TraverseInfo::TraverseInfo( const vector< H3DHapticsDevice * > &_haptics_devices
 
 		initializeLayers( 1 );
 		haptics_enabled.reserve( haptics_devices.size() ); 
-		for( unsigned int i = 0; i < haptics_devices.size(); i++ ) {
+		for( unsigned int i = 0; i < haptics_devices.size(); ++i ) {
 			haptics_enabled.push_back( !(haptics_devices[i]->hapticsLoopTime->getValue() < 0) );
 		}
 
@@ -57,14 +57,14 @@ TraverseInfo::TraverseInfo( const vector< H3DHapticsDevice * > &_haptics_devices
 
 void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
   shape->ref();
-  for( unsigned int i = 0; i < haptic_shapes.size(); i++ ) {
+  for( unsigned int i = 0; i < haptic_shapes.size(); ++i ) {
     if( hapticsEnabled(i) ) {
       if( shape->getShapeId() == -1 ) {
         X3DGeometryNode *geometry = 
           static_cast< X3DGeometryNode * >( shape->getUserData() );
         shape->setShapeId(
           geometry->getHapticShapeId( geometry_count[ geometry ] ));
-        geometry_count[ geometry ]++;
+        ++(geometry_count[ geometry ]);
       }
       haptic_shapes[i][current_layer].push_back( shape );
     }
@@ -74,7 +74,7 @@ void TraverseInfo::addHapticShapeToAll( HAPI::HAPIHapticShape *shape ) {
 
 void TraverseInfo::addForceEffectToAll( HAPI::HAPIForceEffect *effect ) {
   effect->ref();
-  for( unsigned int i = 0; i < haptic_effects.size(); i++ ) {
+  for( unsigned int i = 0; i < haptic_effects.size(); ++i ) {
     if( hapticsEnabled(i) ) {
       haptic_effects[i].push_back( effect );
     }
@@ -116,7 +116,7 @@ void TraverseInfo::addHapticShape( int device_index,
           static_cast< X3DGeometryNode * >( shape->getUserData() );
         shape->setShapeId( 
           geometry->getHapticShapeId( geometry_count[ geometry ] ) );
-        geometry_count[ geometry ]++;
+        ++(geometry_count[ geometry ]);
       }
     haptic_shapes[device_index][current_layer].push_back( shape );
   } else {
@@ -127,7 +127,7 @@ void TraverseInfo::addHapticShape( int device_index,
 
 void TraverseInfo::callPostTraverseCallbacks() {
   for( CallbackList::iterator i = post_traverse_callbacks.begin();
-       i != post_traverse_callbacks.end(); i++ ) {
+       i != post_traverse_callbacks.end(); ++i ) {
     (*i).first( *this, (*i).second );
   }
 }
@@ -138,7 +138,7 @@ void TraverseInfo::addActiveLightNode( X3DLightNode *light, const Matrix4f &tran
 } 
 void TraverseInfo::removeActiveLightNode( X3DLightNode *light, const Matrix4f &transform ) {
   for( LightVector::iterator i = x3dlightnode_vector.begin();
-       i != x3dlightnode_vector.end(); i++ ) {
+       i != x3dlightnode_vector.end(); ++i ) {
     if( (*i).getLight() == light && (*i).getLightTransform() == transform ) {
       x3dlightnode_vector.erase( i );    
       break;

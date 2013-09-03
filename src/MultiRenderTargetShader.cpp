@@ -74,7 +74,7 @@ MultiRenderTargetShader::MultiRenderTargetShader( Inst< DisplayList  > _displayL
 string MultiRenderTargetShader::addUniformFields( ComposedShader *shader  ) {
   stringstream s;
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -87,7 +87,7 @@ string MultiRenderTargetShader::addUniformFields( ComposedShader *shader  ) {
 string MultiRenderTargetShader::getFunctionShaderString() {
   stringstream s;
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -100,7 +100,7 @@ string MultiRenderTargetShader::getFunctionShaderString() {
 /// Get the varying variables used by the shader generator.
 void MultiRenderTargetShader::getVaryingVariables( vector< VaryingVariable > &variables ) {
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -112,7 +112,7 @@ void MultiRenderTargetShader::getVaryingVariables( vector< VaryingVariable > &va
 /// Get the attribues used by the shader generator.
 void MultiRenderTargetShader::getAttributes( vector< Attribute > &attributes ) {
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -129,7 +129,7 @@ string MultiRenderTargetShader::getFinalFragmentShaderOutputString() {
 string MultiRenderTargetShader::getVertexShaderString() {
   stringstream s;
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       H3DGeneratedFragmentShaderNode *fs = 
         static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
@@ -143,7 +143,7 @@ string MultiRenderTargetShader::getVertexShaderString() {
 string MultiRenderTargetShader::getFragmentShaderString() {
   stringstream s;
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     s << "   generated_color = vec4(1.0, 1.0, 1.0, 1.0 ); " << endl;
     s << "   { " << endl;
     if( c[i] ) {
@@ -160,7 +160,7 @@ string MultiRenderTargetShader::getFragmentShaderString() {
 /// Traverse the scene-graph.
 void MultiRenderTargetShader::traverseSG( TraverseInfo &ti ) {
   const NodeVector &c = shaders->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     if( c[i] ) {
       c[i]->traverseSG( ti );
     }

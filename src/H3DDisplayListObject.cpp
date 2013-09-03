@@ -171,7 +171,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
                  << "\" when rendering " << getFullName() << endl;
     } else {
       if( delay_cache_counter > 0 ) 
-         delay_cache_counter--;
+        --delay_cache_counter;
     }
   }  
 }
@@ -183,7 +183,7 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
   // a display list for this field based on the status of the 
   // DisplayList field in the H3DDisplayListObjects.
   for( FieldVector::iterator i = routes_in.begin();
-       i != routes_in.end(); i++ ) {
+       i != routes_in.end(); ++i ) {
     SFNode *sfnode = 
       dynamic_cast< SFNode* >( *i );
     DisplayList *dl = dynamic_cast< DisplayList * >( *i );
@@ -224,7 +224,7 @@ bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_activ
         dynamic_cast< MFNode* >( *i );
       if( mfnode ) {
         for( MFNode::const_iterator n = mfnode->begin();
-             n != mfnode->end(); n++ ) {
+             n != mfnode->end(); ++n ) {
           H3DDisplayListObject *dlo = 
             dynamic_cast< H3DDisplayListObject * >( *n );
           if( dlo ) {
@@ -393,7 +393,7 @@ bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
 
   // for each plane check if all bounding box points are behind it.
   // if so, we can cull it.
-  for( int plane = 0; plane < 6; plane++ ) {
+  for( int plane = 0; plane < 6; ++plane ) {
     bool all_behind = true;
     for( int i = 0; i < 8; ++i ) {
       if( !planes[plane].isBehind( box_points[i] ) ) {

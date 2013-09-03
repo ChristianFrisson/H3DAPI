@@ -102,13 +102,13 @@ void RenderTargetSelectGroup::render() {
     // construct current draw buffers array
 
     // reset all draw buffers to NONE.
-    for( size_t i = 0; i < (size_t)max_nr_draw_buffers; i++ ) {
+    for( size_t i = 0; i < (size_t)max_nr_draw_buffers; ++i ) {
       draw_buffers.get()[i] = GL_NONE;
     }
 
     // set the specified draw buffers to the color attachement specified by renderTargets.
     int draw_buffer_size = 0;
-    for( size_t i = 0; i < render_targets.size(); i++ ) {
+    for( size_t i = 0; i < render_targets.size(); ++i ) {
       int target = render_targets[i];
       if( target >= 0 && target < max_nr_draw_buffers ) {
 	draw_buffers.get()[target] = GL_COLOR_ATTACHMENT0_EXT + target;

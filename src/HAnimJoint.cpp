@@ -141,7 +141,7 @@ void HAnimJoint::traverseSG( TraverseInfo &ti ) {
   accumulatedForward->setValue( ti.getAccForwardMatrix(), id );
   accumulatedInverse->setValue( ti.getAccInverseMatrix(), id );
   const NodeVector &c = children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     Node *n = c[i];
     if( n ) n->traverseSG( ti );
   }
@@ -178,7 +178,7 @@ void HAnimJoint::renderSkeleton( RenderType type ) {
   multiplyGLMatrix();
  
   const NodeVector &c = children->getValue();
-  for( unsigned int i = 0; i < c.size(); i++ ) {
+  for( unsigned int i = 0; i < c.size(); ++i ) {
     HAnimJoint *joint = dynamic_cast< HAnimJoint* >( c[i]);
     if( joint ) joint->renderSkeleton( type );
   }    
@@ -191,7 +191,7 @@ void HAnimJoint::renderSkeleton( RenderType type ) {
     glColor3f( 1, 1, 1 );
     
     glBegin( GL_LINES );
-    for( unsigned int i = 0; i < c.size(); i++ ) {
+    for( unsigned int i = 0; i < c.size(); ++i ) {
       HAnimJoint *joint = dynamic_cast< HAnimJoint* >( c[i]);
       if( joint ) {
         Vec3f joint_center = matrix->getValue() * joint->center->getValue();

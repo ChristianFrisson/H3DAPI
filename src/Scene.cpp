@@ -100,7 +100,7 @@ namespace SceneInternal {
     try {
       for( set< Scene * >::iterator i = Scene::scenes.begin();
            i != Scene::scenes.end();
-           i++ ) {
+           ++i ) {
         if( (*i)->isActive() )
           (*i)->idle();
       }
@@ -183,7 +183,7 @@ void Scene::idle() {
   if( t - last_update_time > THREAD_LOCK_DEBUG_UPDATE_INTERVAL ) {
     Console(4) << "*************************************************" << endl;
     for( ThreadBase::ThreadLockInfoMap::const_iterator i = ThreadBase::thread_lock_info.begin();
-         i != ThreadBase::thread_lock_info.end(); i++ ) {
+         i != ThreadBase::thread_lock_info.end(); ++i ) {
       ThreadBase *thread = H3DUtil::ThreadBase::getThreadById( (*i).first );
       const ThreadBase::ThreadLockInfo &info = (*i).second;
       if( thread ) {
@@ -219,7 +219,7 @@ void Scene::idle() {
   main_info.total_run_time += dt;
   main_info.period_start_time = t;
   if( t - last_update_time > THREAD_LOCK_DEBUG_UPDATE_INTERVAL ) {
-    for( ThreadBase::ThreadLockInfoMap::const_iterator i = ThreadBase::thread_lock_info.begin(); i != ThreadBase::thread_lock_info.end(); i++ ) {
+    for( ThreadBase::ThreadLockInfoMap::const_iterator i = ThreadBase::thread_lock_info.begin(); i != ThreadBase::thread_lock_info.end(); ++i ) {
       ThreadBase *thread = H3DUtil::ThreadBase::getThreadById( (*i).first );
       const ThreadBase::ThreadLockInfo &info = (*i).second;
       if( thread ) 
@@ -304,7 +304,7 @@ void Scene::idle() {
     // update the values for all H3DHapticsDevices
     for( DeviceInfo::MFDevice::const_iterator d = di->device->begin();
          d != di->device->end();
-         d++ ) {
+         ++d ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *d );
       if( hd->initialized->getValue() ) { 
         hd->preRender();
@@ -340,7 +340,7 @@ void Scene::idle() {
     DeviceInfo *di = DeviceInfo::getActive();
     if( di ) {
       for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
-           i != di->device->end(); i++ ) {
+           i != di->device->end(); ++i ) {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
         Node *stylus = hd->stylus->getValue();
         if( stylus ) {
@@ -361,7 +361,7 @@ void Scene::idle() {
     // render the HapticShapes and HapticForceEffets in the TraverseInfo 
     // instance on the H3DHapticsDevices.
     unsigned int nr_devices = (unsigned int) ti->getHapticsDevices().size();
-    for( unsigned int i = 0; i < nr_devices; i++ ) {
+    for( unsigned int i = 0; i < nr_devices; ++i ) {
       H3DHapticsDevice *hd = ti->getHapticsDevice( i );
       // nr_of_layers is the biggest of the nr of layers in this traverseinfo
       // and last_traverseinfo.
@@ -369,7 +369,7 @@ void Scene::idle() {
       if( last_traverseinfo && last_traverseinfo->nrLayers() > nr_of_layers )
         nr_of_layers = last_traverseinfo->nrLayers();
       if( hd->initialized->getValue() ) {
-        for( unsigned int l = 0; l < nr_of_layers; l++ ) {
+        for( unsigned int l = 0; l < nr_of_layers; ++l ) {
           if( l < ti->nrLayers() ) {
             ti->setCurrentLayer( l );
             hd->renderShapes( ti->getHapticShapes( i ), l );
@@ -450,7 +450,7 @@ void Scene::idle() {
 #endif
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
-       w != window->end(); w++ ) {
+       w != window->end(); ++w ) {
     H3DWindowNode *window = static_cast< H3DWindowNode * >(*w);
     bool used_mpt = window->getMultiPassTransparency();
     window->setMultiPassTransparency( 
@@ -479,7 +479,7 @@ void Scene::idle() {
     if( c == CALLBACK_DONE ) {
       i = callbacks.erase( i );
     } else {
-      i++;
+      ++i;
     }
   }
   callback_lock.unlock();
@@ -565,7 +565,7 @@ void Scene::mainLoop() {
 }
 
 void Scene::EventSink::update() {
-  for( unsigned int i = 0; i < routes_in.size(); i++ ) {
+  for( unsigned int i = 0; i < routes_in.size(); ++i ) {
     if( PeriodicUpdateField *pf = 
         dynamic_cast< PeriodicUpdateField * >( routes_in[i] ) ) {
       if( pf->timeToUpdate() ) routes_in[i]->upToDate();
@@ -603,7 +603,7 @@ void Scene::addProgramSetting( Field *field,
   program_settings.push_back( ProgramSetting( field, setting_name, section ) );
   field->markProgramSetting( true );
   for( ProgramSettingsCallbackList::iterator i = program_settings_callbacks.begin();
-       i != program_settings_callbacks.end(); i++ ) {
+       i != program_settings_callbacks.end(); ++i ) {
     (*i).first( ADD_SETTING, program_settings.back(), (*i).second );
   }
 }
@@ -620,7 +620,7 @@ Field *Scene::getProgramSetting( const string &name,
                                  const string &section ) {
   Field *f = NULL;
   for( Scene::SettingsIterator i = program_settings.begin();
-         i != program_settings.end(); i++ ) {
+         i != program_settings.end(); ++i ) {
     const Scene::ProgramSetting &setting = *i;
     if( setting.name == name &&
         setting.section== section ) {
@@ -670,7 +670,7 @@ void Scene::clearProgramSettingsCallbacks() {
 bool Scene::removeProgramSetting( Field *field ) {
   bool removed = false;
   for( Scene::SettingsIterator i = program_settings.begin();
-         i != program_settings.end(); i++ ) {
+         i != program_settings.end(); ++i ) {
     Scene::ProgramSetting setting = *i;
     if( setting.field == field ) {
       program_settings.erase( i );
@@ -678,7 +678,7 @@ bool Scene::removeProgramSetting( Field *field ) {
       removed = true;
       // call callbacks
       for( ProgramSettingsCallbackList::iterator i = program_settings_callbacks.begin();
-           i != program_settings_callbacks.end(); i++ ) {
+           i != program_settings_callbacks.end(); ++i ) {
         (*i).first( REMOVE_SETTING, setting, (*i).second );
       }
       
@@ -694,7 +694,7 @@ H3D::Node* Scene::findChildNode(H3D::Group *group, const std::string &nodeType, 
   if(group)
   {
     const NodeVector &c = group->children->getValue();
-    for( unsigned int i = 0; i < c.size(); i++ ) {
+    for( unsigned int i = 0; i < c.size(); ++i ) {
       Node* n = c[i];
       if( n ){
         if (n->getTypeName() == nodeType)
@@ -706,7 +706,7 @@ H3D::Node* Scene::findChildNode(H3D::Group *group, const std::string &nodeType, 
         }
       }
     }
-    for( unsigned int i = 0; i < c.size(); i++ ) {
+    for( unsigned int i = 0; i < c.size(); ++i ) {
       if( c[i]){
         H3D::Group *childgroup = dynamic_cast<H3D::Group*>(c[i]);
         if (childgroup){	
@@ -729,7 +729,7 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
     if (group)
     {
       const NodeVector &c = group->children->getValue();
-      for( unsigned int i = 0; i < c.size(); i++ ) {
+      for( unsigned int i = 0; i < c.size(); ++i ) {
         Node* n = c[i];
         if( n ){
           if (n->getTypeName() == nodeType)
@@ -741,7 +741,7 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
           }
         }
       }
-      for( unsigned int i = 0; i < c.size(); i++ ) {
+      for( unsigned int i = 0; i < c.size(); ++i ) {
         if( c[i]){
           H3D::Node *node = findNodeType(c[i], nodeType, nodeName);
           if (node)
@@ -802,7 +802,7 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
     if (inlinenode)
     {
       if( inlinenode->load->getValue() ) {
-        for( unsigned int i = 0; i < inlinenode->loadedScene->size(); i++ ) {
+        for( unsigned int i = 0; i < inlinenode->loadedScene->size(); ++i ) {
           Group *g = inlinenode->loadedScene->getValueByIndex( i );
           if( g ){
             if (g->getTypeName() == nodeType)
@@ -814,7 +814,7 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
             }
           }
         }
-        for( unsigned int i = 0; i < inlinenode->loadedScene->size(); i++ ) {
+        for( unsigned int i = 0; i < inlinenode->loadedScene->size(); ++i ) {
           Group *g = inlinenode->loadedScene->getValueByIndex( i );
           if( g){
             H3D::Node *node = findNodeType(g, nodeType, nodeName);

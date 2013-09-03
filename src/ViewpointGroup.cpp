@@ -133,7 +133,7 @@ void ViewpointGroup::traverseSG( TraverseInfo &ti ) {
   }
 
   for( MFChild::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
+       i != children->end(); ++i ) {
     (*i)->traverseSG( ti );
   }
   ti.deleteUserData( "ViewpointGroup" );
@@ -141,7 +141,7 @@ void ViewpointGroup::traverseSG( TraverseInfo &ti ) {
 
 bool ViewpointGroup::containsViewpoint( X3DViewpointNode *vp ) const {
   for( MFChild::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
+       i != children->end(); ++i ) {
     if( ViewpointGroup *g = dynamic_cast< ViewpointGroup * >( *i ) ) {
       if( g->containsViewpoint( vp ) ) return true;
     } else {
@@ -154,7 +154,7 @@ bool ViewpointGroup::containsViewpoint( X3DViewpointNode *vp ) const {
 list< Node * > ViewpointGroup::getChildrenAsList() {
   list< Node * > list;
   for( MFChild::const_iterator i = children->begin();
-       i != children->end(); i++ ) {
+       i != children->end(); ++i ) {
     list.push_back( *i );
   }
   return list;

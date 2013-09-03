@@ -98,14 +98,14 @@ namespace H3D {
   
   // Temporary solution to be able to print XMLCh *
   ostream& operator<<(ostream& os,const XMLCh* & s) { 
-    for( int i = 0; s[i] != 0; i++ ) {
+    for( int i = 0; s[i] != 0; ++i ) {
       os << (unsigned char)s[i];
     }
     return os; 
   }
   
   ostream& operator<<(ostream& os,const XMLCh* const & s) { 
-    for( int i = 0; s[i] != 0; i++ ) {
+    for( int i = 0; s[i] != 0; ++i ) {
       os << (unsigned char)s[i];
     }
     return os; 
@@ -115,7 +115,7 @@ namespace H3D {
   string toString( const XMLCh * const xmls ) {
     XMLSize_t str_len = XMLString::stringLen( xmls );
     string s( str_len, 'a' );
-    for( unsigned int i = 0; i < str_len; i++)
+    for( unsigned int i = 0; i < str_len; ++i)
       s[i] = (char)xmls[i];
     return s;
   }
@@ -163,7 +163,7 @@ void X3DSAX2Handlers::handleProtoInterfaceFieldElement( const Attributes &attrs 
     const XMLCh *field_access_type    = NULL;
     const XMLCh *field_value    = NULL;
     
-    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
       string name = toString( attrs.getQName( i ) );
       if( !field_name && name == "name" ) {
         field_name = attrs.getValue( i );
@@ -256,7 +256,7 @@ Field * X3DSAX2Handlers::handleFieldElement( const Attributes &attrs,
     const XMLCh *field_access_type    = NULL;
     const XMLCh *field_value    = NULL;
     
-    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
       string name = toString( attrs.getQName( i ) );
       if( !field_name && name == "name" ) {
         field_name = attrs.getValue( i );
@@ -391,7 +391,7 @@ void X3DSAX2Handlers::handleRouteElement( const Attributes &attrs,
   const XMLCh *to_field_name   = NULL;
   
   // get all the route specific attributes
-  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+  for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
     string name = toString( attrs.getQName( i ) );
     if( !from_node_name && name == "fromNode" ) {
       from_node_name = attrs.getValue( i );
@@ -485,7 +485,7 @@ void X3DSAX2Handlers::handleProgramSettingElement( const Attributes &attrs ) {
   const XMLCh *setting_section  = (XMLCh *)(L"Main settings");  
 
   // get all the program specific attributes
-  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+  for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
     string name = toString( attrs.getQName( i ) );
     if( !node_name && name == "node" ) {
       node_name = attrs.getValue( i );
@@ -549,7 +549,7 @@ void X3DSAX2Handlers::handleImportElement( const Attributes &attrs  ) {
   const XMLCh *as_name    = NULL;
   
   // get all the route specific attributes
-  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+  for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
     string name = toString( attrs.getQName( i ) );
     if( !inline_def_name && name == "inlineDEF" ) {
       inline_def_name = attrs.getValue( i );
@@ -633,7 +633,7 @@ void X3DSAX2Handlers::handleExportElement( const Attributes &attrs  ) {
   const XMLCh *as_name    = NULL;
   
   // get all the route specific attributes
-  for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+  for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
     string name = toString( attrs.getQName( i ) );
     if( !local_def_name && name == "localDEF" ) {
       local_def_name = attrs.getValue( i );
@@ -693,7 +693,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
     const XMLCh *proto_field_name    = NULL;
     
     // get all the route specific attributes
-    for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+    for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
       string name = toString( attrs.getQName( i ) );
       if( !node_field_name && name == "nodeField" ) {
         node_field_name = attrs.getValue( i );
@@ -771,7 +771,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
 
                         const Field::FieldSet &routes_out = node_field->getRoutesOut();
                         for( Field::FieldSet::const_iterator i = routes_out.begin();
-                                         i != routes_out.end(); i++ ) {
+                                         i != routes_out.end(); ++i ) {
                                 if( (*i)->getOwner() == proto_instance ) {
                                         Console(3) << "WARNING: \"nodeField\"("
                                                                                  << node_field->getName()
@@ -855,7 +855,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
           proto_declaration->getFieldDeclaration( name );
         if( fd ) {stringstream s;
         s << "<" << localname << " ";
-        for( unsigned int i = 0; i < attrs.getLength(); i++ ) {
+        for( unsigned int i = 0; i < attrs.getLength(); ++i ) {
           s << attrs.getQName( i ) << "=\"" << attrs.getValue( i ) << "\" ";
         }
         s << ">" << endl;
@@ -875,7 +875,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
         stringstream s;
 
         s << "<" << localname << " ";
-        for( unsigned int i = 0; i < attrs.getLength(); i++ ) {
+        for( unsigned int i = 0; i < attrs.getLength(); ++i ) {
           // make sure that MFString are correct. All attribute values
           // are enclosed in "..", unless the string itself starts with "
           // then they are inclosed in '..'
@@ -883,7 +883,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
           char quote = '"';
           if( v ) {
             unsigned int ci = 0;
-            while( v[ci] != '\0' && isspace( v[ci] ) ) ci++;
+            while( v[ci] != '\0' && isspace( v[ci] ) ) ++ci;
             if( v[ci] == '"' ) quote = '\'';
           }
           s << attrs.getQName( i ) << "=" << quote << v << quote << " ";
@@ -891,7 +891,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
         s << ">" << endl;
 
         proto_body += s.str();
-        proto_body_count++;
+        ++proto_body_count;
       } 
   
     }
@@ -933,7 +933,7 @@ void X3DSAX2Handlers::protoEndElement( const XMLCh* const uri,
       s << "</" << localname << ">" << endl;
       proto_body += s.str();
 
-      proto_body_count--;
+      --proto_body_count;
       if( proto_body_count == 0 ) {
         if( proto_declaration->getProtoBody().empty() ) {
           proto_declaration->setProtoBody( proto_body );
@@ -1021,7 +1021,7 @@ void X3DSAX2Handlers::handleExternProtoDeclareElement( const Attributes &attrs )
       string url_used = "";
       string proto_name = "";
 
-      for( vector<string>::iterator i = urls.begin(); i != urls.end(); i++ ) {
+      for( vector<string>::iterator i = urls.begin(); i != urls.end(); ++i ) {
         proto_vector.clear();
         string base_url;
         string::size_type pos = (*i).find_last_of( "#" );
@@ -1228,7 +1228,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
       XMLSize_t nr_attrs = attrs.getLength();
       string profile_name;
       string version;
-      for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+      for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
         string name = toString( attrs.getQName( i ) );
         if( name == "profile" ) {
           profile_name = toString( attrs.getValue(i) );
@@ -1366,7 +1366,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
           XMLSize_t nr_attrs = attrs.getLength();
           string component_name;
           int level = 0;
-          for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+          for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
             string name = toString( attrs.getQName( i ) );
             if( name == "name" ) {
               component_name = toString( attrs.getValue(i) );
@@ -1482,7 +1482,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
 
         if( new_node ) {
           XMLSize_t nr_attrs = attrs.getLength();
-          for( XMLSize_t i = 0; i < nr_attrs; i++ ) {
+          for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
             string name = toString( attrs.getQName( i ) );
       
             if( name == "USE" ) {
@@ -1749,7 +1749,7 @@ void X3DSAX2Handlers::warning(const SAXParseException& e) {
 }
 
 void X3DSAX2Handlers::endDocument() {
-  for( size_t i = 0; i < script_nodes.size(); i++ ) {
+  for( size_t i = 0; i < script_nodes.size(); ++i ) {
     script_nodes[i]->addNamedNodes( DEF_map );
   }
 }

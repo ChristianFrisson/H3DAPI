@@ -164,7 +164,7 @@ void IndexedTriangleFanSet::render() {
       // Set the attribute index to use for all vertex attributes
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
       if( shader_program ) {
-        for( unsigned int i = 0; i < attrib->size(); i++ ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
           X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
           if( attr ) {
             GLint loc = 
@@ -206,7 +206,7 @@ void IndexedTriangleFanSet::render() {
         if( fog_coord_node ) fog_coord_node->renderVertexBufferObject();
         // Set up shader vertex attributes.
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->renderVertexBufferObject();
@@ -219,9 +219,9 @@ void IndexedTriangleFanSet::render() {
           tmp_indices.reserve( indices.size() );
           nr_index_per_fan.clear();
           // increase i to the end of the triangle fan
-          for( unsigned int i = 0; i < indices.size(); i++ ) {
+          for( unsigned int i = 0; i < indices.size(); ++i ) {
             unsigned int old_i = i;
-            for( ; i < indices.size() && indices[i] != -1; i++ )
+            for( ; i < indices.size() && indices[i] != -1; ++i )
               tmp_indices.push_back( indices[i] );
             if( i - old_i > 0 ) {
               nr_index_per_fan.push_back( i - old_i );
@@ -242,7 +242,7 @@ void IndexedTriangleFanSet::render() {
         // the index in indices for the start of the current triangle strip.
         GLsizei start_pos = 0;
         // draw each triangle strip from the arrays 
-        for( unsigned int i = 0; i < nr_index_per_fan.size(); i++ ) {
+        for( unsigned int i = 0; i < nr_index_per_fan.size(); ++i ) {
           // render the triangle fan
           glDrawElements( GL_TRIANGLE_FAN, 
                           nr_index_per_fan[i],
@@ -260,7 +260,7 @@ void IndexedTriangleFanSet::render() {
         if( fog_coord_node ) fog_coord_node->disableVertexBufferObject();
         // Set up shader vertex attributes.
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->disableVertexBufferObject();
@@ -273,7 +273,7 @@ void IndexedTriangleFanSet::render() {
         if( fog_coord_node ) fog_coord_node->renderArray();
         // Set up shader vertex attributes.
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->renderArray();
@@ -283,9 +283,9 @@ void IndexedTriangleFanSet::render() {
         unsigned int start_pos = 0;
    
         // draw each triangle strip from the arrays 
-        for( unsigned int i = 0; i < indices.size(); i++ ) {
+        for( unsigned int i = 0; i < indices.size(); ++i ) {
           // increase i to the end of the triangle fan
-          for( ; i < indices.size() && indices[i] != -1; i++ );
+          for( ; i < indices.size() && indices[i] != -1; ++i );
 
           // render the triangle fan
           glDrawElements( GL_TRIANGLE_FAN, 
@@ -302,7 +302,7 @@ void IndexedTriangleFanSet::render() {
         if( fog_coord_node ) fog_coord_node->disableArray();
         // Set up shader vertex attributes.
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
             attrib->getValueByIndex( attrib_index );
           if( attr ) attr->disableArray();
@@ -320,11 +320,11 @@ void IndexedTriangleFanSet::render() {
       // have to be per face. Also since the indices specifies a triangle strip
       // we have to alternate the direction of vertices every second triangle
       // in order to get the front face correct.
-      for( unsigned int i = 0; i < indices.size() - 2; i++ ) {
+      for( unsigned int i = 0; i < indices.size() - 2; ++i ) {
         glBegin( GL_TRIANGLES );
         // the number of triangles rendered so far in this triangle strip
         unsigned int fan_root = i;
-        for( ; i < indices.size() - 2 && indices[i] != -1; i++ ) {
+        for( ; i < indices.size() - 2 && indices[i] != -1; ++i ) {
           if( indices[i+1] != -1 && 
               indices[i+2] != -1 ) {
             // set the normal for the triangle
@@ -337,7 +337,7 @@ void IndexedTriangleFanSet::render() {
             if( fog_coord_node ) fog_coord_node->render(indices[fan_root]);
             // Set up shader vertex attributes.
             for( unsigned int attrib_index = 0;
-                 attrib_index < attrib->size(); attrib_index++ ) {
+                 attrib_index < attrib->size(); ++attrib_index ) {
               X3DVertexAttributeNode *attr = 
                 attrib->getValueByIndex( attrib_index );
               if( attr ) attr->render( indices[fan_root] );
@@ -351,7 +351,7 @@ void IndexedTriangleFanSet::render() {
             if( fog_coord_node ) fog_coord_node->render(indices[i+1]);
             // Set up shader vertex attributes.
             for( unsigned int attrib_index = 0;
-                 attrib_index < attrib->size(); attrib_index++ ) {
+                 attrib_index < attrib->size(); ++attrib_index ) {
               X3DVertexAttributeNode *attr = 
                 attrib->getValueByIndex( attrib_index );
               if( attr ) attr->render( indices[i+1] );
@@ -365,13 +365,13 @@ void IndexedTriangleFanSet::render() {
             if( fog_coord_node ) fog_coord_node->render(indices[i+2]);
             // Set up shader vertex attributes.
             for( unsigned int attrib_index = 0;
-                 attrib_index < attrib->size(); attrib_index++ ) {
+                 attrib_index < attrib->size(); ++attrib_index ) {
               X3DVertexAttributeNode *attr = 
                 attrib->getValueByIndex( attrib_index );
               if( attr ) attr->render( indices[i+2] );
             }
             coordinate_node->render( indices[i+2] );
-            triangle_counter++;
+            ++triangle_counter;
           }
         }
         glEnd();
@@ -425,7 +425,7 @@ X3DNormalNode *IndexedTriangleFanSet::AutoNormal::generateNormalsPerVertex(
                              Vec3f( 0, 0, 0 ) );
     // the start index of the current triangle fan
     unsigned int fan_root = 0;
-    for( unsigned int j = 0; j < index.size() - 2; j++ ) {
+    for( unsigned int j = 0; j < index.size() - 2; ++j ) {
       if( j+2 < index.size() && 
           index[j] != -1 && 
           index[j+1] != -1 && 
@@ -454,7 +454,7 @@ X3DNormalNode *IndexedTriangleFanSet::AutoNormal::generateNormalsPerVertex(
 
     for( vector<Vec3f>::iterator i = normals.begin(); 
          i != normals.end(); 
-         i++ ) {
+         ++i ) {
         (*i).normalizeSafe();
     }
     normal->vector->setValue( normals );
@@ -471,7 +471,7 @@ X3DNormalNode *IndexedTriangleFanSet::AutoNormal::generateNormalsPerFace(
     vector< Vec3f > normals;
     // the start index of the current triangle fan
     unsigned int fan_root = 0;
-    for( unsigned int j = 0; j < index.size() - 2; j++ ) {
+    for( unsigned int j = 0; j < index.size() - 2; ++j ) {
       
       if( j+2 < index.size() && 
           index[j] != -1 && 

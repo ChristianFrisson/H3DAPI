@@ -239,7 +239,7 @@ void H3DViewerFieldValuesPanelPropGrid::OnIdle( wxIdleEvent& event ) {
   if( now - last_fields_update > 0.25 ) {
     if( mode == 0 ) displayFieldsFromNode( displayed_node.get() );
     last_fields_update = now;
-    for( unsigned int i = 0; i < property_update_fields.size(); i++ ) {
+    for( unsigned int i = 0; i < property_update_fields.size(); ++i ) {
       property_update_fields[i]->upToDate();
     }
   }
@@ -344,7 +344,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   list< FieldDBElement * > input_output_fields;
 
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
-       db->fieldDBEnd() != i; i++ ) {
+       db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); 
    
     if( !f ||
@@ -372,7 +372,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   }
 
   for( list< FieldDBElement * >::iterator i = init_only_fields.begin();
-       i != init_only_fields.end(); i++ ) {
+       i != init_only_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     Field *default_f = (*i)->getField( default_values_node );
     setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
@@ -384,7 +384,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   }
 
   for( list< FieldDBElement * >::iterator i = input_output_fields.begin();
-       i != input_output_fields.end(); i++ ) {
+       i != input_output_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     Field *default_f = (*i)->getField( default_values_node );
     setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
@@ -397,7 +397,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   }
 
   for( list< FieldDBElement * >::iterator i = output_only_fields.begin();
-       i != output_only_fields.end(); i++ ) {
+       i != output_only_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     Field *default_f = (*i)->getField( default_values_node );
     setupProperty( FieldValuesGrid, f, default_f, property_update_fields );
@@ -409,7 +409,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
   }
 
   for( list< FieldDBElement * >::iterator i = input_only_fields.begin();
-       i != input_only_fields.end(); i++ ) {
+       i != input_only_fields.end(); ++i ) {
     Field *f = (*i)->getField( n ); 
     // input only fields do not have a default value
     setupProperty( FieldValuesGrid, f, NULL, property_update_fields );
@@ -425,7 +425,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
     FieldValuesGrid->Append( new wxPropertyCategory(wxT("Python fields"),wxPG_LABEL) );
 
     for( vector< pair< string, Field *> >::iterator i = python_fields.begin();
-         i != python_fields.end(); i++ ) {
+         i != python_fields.end(); ++i ) {
       Field *f = (*i).second;
       const string &name = (*i).first;
       if( dynamic_cast< SFNode * >( f ) || 
@@ -568,7 +568,7 @@ bool H3DViewerFieldValuesPanelPropGrid::PropertyUpdater::isDefaultValue( Field *
 		return false;
 	}
 
-  for( unsigned int i = 0; i < value_size; i++ ) {
+  for( unsigned int i = 0; i < value_size; ++i ) {
     if( value[i] != default_value.get()[i] ) {
 			delete [] value;
 			return false;
@@ -622,7 +622,7 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
 
         unsigned int index = 0;
         for( set<string>::const_iterator i = valid_values.begin();
-             i != valid_values.end(); i++ ) {
+             i != valid_values.end(); ++i ) {
           choices.Add( wxString( (*i).c_str(), wxConvUTF8 ), index++ );
         }
         
@@ -760,7 +760,7 @@ wxVectorProperty::wxVectorProperty( const wxString& label,
 
   assert( value.nrValues() == element_labels.GetCount() );
   
-  for( unsigned int i = 0; i < value.nrValues(); i++ ) {
+  for( unsigned int i = 0; i < value.nrValues(); ++i ) {
     wxPGProperty *property =  new wxFloatProperty( element_labels.Item( i ) ,wxPG_LABEL );
     if( use_spin_ctrl ) {
       property->SetEditor( "SpinCtrl" );
@@ -776,7 +776,7 @@ void wxVectorProperty::RefreshChildren()
 {
   if ( !GetChildCount() ) return;
   const H3DwxVector& vector = H3DwxVectorRefFromVariant(m_value);
-  for( unsigned int i = 0; i < vector.nrValues(); i++ ) {
+  for( unsigned int i = 0; i < vector.nrValues(); ++i ) {
     Item(i)->SetValue( vector.getValue( i ) );
   }
 }
@@ -808,7 +808,7 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromProgramSettings( wxPrope
 
   // Add the main settings and collect other settings in sections map.
   for( Scene::SettingsIterator i = Scene::programSettingsBegin();
-       i != Scene::programSettingsEnd(); i++ ) {
+       i != Scene::programSettingsEnd(); ++i ) {
     const Scene::ProgramSetting &setting = *i;
     if( setting.section == "Main settings" ) {
       setupProperty( FieldValuesGrid, setting.field, 
@@ -820,10 +820,10 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromProgramSettings( wxPrope
 
   // Add all other sections
   for( SectionsMap::iterator i = sections.begin();
-       i != sections.end(); i++ ) {
+       i != sections.end(); ++i ) {
     FieldValuesGrid->Append( new wxPropertyCategory(wxString((*i).first.c_str(),wxConvUTF8 ),wxPG_LABEL) ); 
     for( vector< Scene::ProgramSetting >::iterator j = (*i).second.begin();
-         j != (*i).second.end(); j++ ) {
+         j != (*i).second.end(); ++j ) {
 
       Scene::ProgramSetting &setting = *j;
       setupProperty( FieldValuesGrid, setting.field, 

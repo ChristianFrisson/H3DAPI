@@ -195,7 +195,7 @@ void IndexedTriangleSet::render() {
     if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
       shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
       if( shader_program ) {
-        for( unsigned int i = 0; i < attrib->size(); i++ ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
           X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
           if( attr ) {
             GLint loc = 
@@ -207,7 +207,7 @@ void IndexedTriangleSet::render() {
 
         // render tangents as an attribute if needed.
         if( render_tangents ) {
-          for( unsigned int i = 0; i < autoTangent->size(); i++ ) {
+          for( unsigned int i = 0; i < autoTangent->size(); ++i ) {
             X3DVertexAttributeNode *attr = autoTangent->getValueByIndex( i );
             if( attr ) {
               GLint loc = 
@@ -250,7 +250,7 @@ void IndexedTriangleSet::render() {
         if( fog_coord_node ) fog_coord_node->renderVertexBufferObject();
         if( render_tangents ) {
           for( unsigned int attrib_index = 0;
-               attrib_index < autoTangent->size(); attrib_index++ ) {
+               attrib_index < autoTangent->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               autoTangent->getValueByIndex( attrib_index );
             if( attr ) attr->renderVertexBufferObject();
@@ -258,7 +258,7 @@ void IndexedTriangleSet::render() {
         }
 
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->renderVertexBufferObject();
@@ -307,7 +307,7 @@ void IndexedTriangleSet::render() {
           disableTexCoordVertexBufferObject( tex_coord_node );
         if( fog_coord_node) fog_coord_node->disableVertexBufferObject();
           for( unsigned int attrib_index = 0;
-          attrib_index < attrib->size(); attrib_index++ ) {
+          attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->disableVertexBufferObject();
@@ -315,7 +315,7 @@ void IndexedTriangleSet::render() {
 
         if( render_tangents ) {
           for( unsigned int attrib_index = 0;
-               attrib_index < autoTangent->size(); attrib_index++ ) {
+               attrib_index < autoTangent->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               autoTangent->getValueByIndex( attrib_index );
             if( attr ) attr->disableVertexBufferObject();
@@ -330,7 +330,7 @@ void IndexedTriangleSet::render() {
         if( fog_coord_node ) fog_coord_node->renderArray();
         if( render_tangents ) {
           for( unsigned int attrib_index = 0;
-               attrib_index < autoTangent->size(); attrib_index++ ) {
+               attrib_index < autoTangent->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               autoTangent->getValueByIndex( attrib_index );
             if( attr ) attr->renderArray();
@@ -338,7 +338,7 @@ void IndexedTriangleSet::render() {
         }
 
         for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); attrib_index++ ) {
+             attrib_index < attrib->size(); ++attrib_index ) {
           X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->renderArray();
@@ -367,7 +367,7 @@ void IndexedTriangleSet::render() {
         if( tex_coords_per_vertex ) disableTexCoordArray( tex_coord_node );
         if( fog_coord_node) fog_coord_node->disableArray();
         for( unsigned int attrib_index = 0;
-          attrib_index < attrib->size(); attrib_index++ ) {
+          attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->disableArray();
@@ -375,7 +375,7 @@ void IndexedTriangleSet::render() {
 
         if( render_tangents ) {
           for( unsigned int attrib_index = 0;
-               attrib_index < autoTangent->size(); attrib_index++ ) {
+               attrib_index < autoTangent->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               autoTangent->getValueByIndex( attrib_index );
             if( attr ) attr->disableArray();
@@ -394,11 +394,11 @@ void IndexedTriangleSet::render() {
         glBegin( GL_PATCHES );
       }
 
-      for( unsigned int i = 0; i < nr_triangles; i++ ) {
+      for( unsigned int i = 0; i < nr_triangles; ++i ) {
         normal_node->render( i );
         if( render_tangents ) {
           for( unsigned int attrib_index = 0;
-               attrib_index < autoTangent->size(); attrib_index++ ) {
+               attrib_index < autoTangent->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               autoTangent->getValueByIndex( attrib_index );
             if( attr ) attr->render( i );
@@ -412,7 +412,7 @@ void IndexedTriangleSet::render() {
           tex_coord_node );
         if( fog_coord_node) fog_coord_node->render(indices[v]);
         for( unsigned int attrib_index = 0;
-          attrib_index < attrib->size(); attrib_index++ ) {
+          attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->render( indices[v] );
@@ -425,7 +425,7 @@ void IndexedTriangleSet::render() {
           tex_coord_node );
         if( fog_coord_node) fog_coord_node->render(indices[v+1]);
         for( unsigned int attrib_index = 0;
-          attrib_index < attrib->size(); attrib_index++ ) {
+          attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->render( indices[v+1] );
@@ -438,7 +438,7 @@ void IndexedTriangleSet::render() {
           tex_coord_node );
         if( fog_coord_node) fog_coord_node->render(indices[v+2]);
         for( unsigned int attrib_index = 0;
-          attrib_index < attrib->size(); attrib_index++ ) {
+          attrib_index < attrib->size(); ++attrib_index ) {
             X3DVertexAttributeNode *attr = 
               attrib->getValueByIndex( attrib_index );
             if( attr ) attr->render( indices[v+2] );
@@ -537,7 +537,7 @@ void IndexedTriangleSet::AutoTangent::update() {
   bool have_tangents_in_attrib = false; 
   bool have_binormals_in_attrib = false; 
   
-  for( unsigned int i = 0; i < its->attrib->size(); i++ ) {
+  for( unsigned int i = 0; i < its->attrib->size(); ++i ) {
     X3DVertexAttributeNode *attr = its->attrib->getValueByIndex( i );
     if( attr ) {
       const string &name = attr->name->getValue();
@@ -563,7 +563,7 @@ void IndexedTriangleSet::AutoTangent::update() {
       tangent = new FloatVertexAttribute;
       value.push_back( tangent );
     }
-    nr_attribs_used++;
+    ++nr_attribs_used;
     //Console(4) << "Calculating tangents" << endl;
   }
 
@@ -621,7 +621,7 @@ X3DNormalNode *IndexedTriangleSet::AutoNormal::generateNormalsPerVertex(
 
       for( vector<Vec3f>::iterator i = normals.begin(); 
         i != normals.end(); 
-        i++ ) {
+        ++i ) {
           (*i).normalizeSafe();
       }
       normal->vector->setValue( normals );
@@ -754,12 +754,12 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
 
     /*
     cerr << "Tangents: " ;
-    for( unsigned int i = 0; i < tangents.size(); i++ ) {
+    for( unsigned int i = 0; i < tangents.size(); ++i ) {
       cerr << tangents[i] << " ";
     }
     cerr << endl;
     cerr << "Binormal: ";
-    for( unsigned int i = 0; i < binormals.size(); i++ ) {
+    for( unsigned int i = 0; i < binormals.size(); ++i ) {
       cerr << binormals[i] << " ";
     }
     cerr << endl;

@@ -97,7 +97,7 @@ void SpaceballSensor::addGLUTButtonAction( int button, int state ) {
 void SpaceballSensor::glutMotionCallback( int x, int y, int z ) {
   for( list< SpaceballSensor * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->addGLUTMotionAction( x, y, z );
   }
 }
@@ -105,7 +105,7 @@ void SpaceballSensor::glutMotionCallback( int x, int y, int z ) {
 void SpaceballSensor::glutRotateCallback( int x, int y, int z ) {
   for( list< SpaceballSensor * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->addGLUTRotateAction( x, y, z );
   }
 }
@@ -113,7 +113,7 @@ void SpaceballSensor::glutRotateCallback( int x, int y, int z ) {
 void SpaceballSensor::glutButtonCallback( int button, int state ) {
   for( list< SpaceballSensor * >::iterator i = instances.begin();
        i != instances.end();
-       i++ ) {
+       ++i ) {
     (*i)->addGLUTButtonAction( button, state );
   }
 }

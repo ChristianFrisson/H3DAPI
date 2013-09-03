@@ -77,13 +77,13 @@ void NormalInterpolator::MFValue::update() {
   if ( key_index >= 0 && 
        (key_index + 2)* value_size - 1 < (int)key_values.size() ) {
     if (weight<=0) 
-      for (int x = 0; x < value_size; x++ )
+      for (int x = 0; x < value_size; ++x )
 	value[x] = key_values[ key_index*value_size + x ];
     else if (weight>=1)
-      for (int x = 0; x < value_size; x++ )
+      for (int x = 0; x < value_size; ++x )
 	value[x] = key_values[ (key_index+1)*value_size + x];
     else { 
-      for (int x = 0; x < value_size; x++ ) {
+      for (int x = 0; x < value_size; ++x ) {
         Vec3f n1 = key_values[ key_index*value_size + x ];
         Vec3f n2 = key_values[ (key_index+1)*value_size + x  ];
         H3DFloat cos_alpha = n1 * n2;

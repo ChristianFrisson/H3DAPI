@@ -269,7 +269,7 @@ bool ProfilesAndComponents::setProfileInternal( string profile,
           for( map< string, int >::iterator i =
             used_profile.component_names.begin();
             i != used_profile.component_names.end();
-            i++ ) {
+            ++i ) {
               string component_path = h3d_root + "/Conformance/" +
                 _version +"/Components/" + (*i).first + ".xml";
               ifstream component_file( component_path.c_str() );
@@ -285,7 +285,7 @@ bool ProfilesAndComponents::setProfileInternal( string profile,
               }
           }
           components_used = handler.getComponentVector();
-          for( int i = 0; i < (int)components_used.size(); i++ ) {
+          for( int i = 0; i < (int)components_used.size(); ++i ) {
             components_used[i].conformance_level =
               components_supported[_version][ components_used[i].name ];
             components_used[i].used_level =
@@ -298,7 +298,7 @@ bool ProfilesAndComponents::setProfileInternal( string profile,
           for( map< string, int >::iterator i =
                temp_profile.component_names.begin();
                i != temp_profile.component_names.end();
-               i++ ) {
+               ++i ) {
             int place;
             if( findComponent( components_used, (*i).first, place ) ) {
               /*stringstream stm;
@@ -439,7 +439,7 @@ bool ProfilesAndComponents::findComponent(
     ProfileSAX2Handlers::myX3DComponentVector &component_vector,
     string name,
     int &place ) {
-  for( int i = 0; i < (int)component_vector.size(); i++ ) {
+  for( int i = 0; i < (int)component_vector.size(); ++i ) {
     if( component_vector[i].name == name ) {
       place = i;
       return true;

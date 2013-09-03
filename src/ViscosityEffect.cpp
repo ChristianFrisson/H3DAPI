@@ -73,7 +73,7 @@ void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
   if( enabled->getValue() ) {
     const vector< H3DInt32 > &device_index = deviceIndex->getValue();
     if( device_index.empty() ) {
-      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); i++ ) {
+      for( unsigned int i = 0; i < ti.getHapticsDevices().size(); ++i ) {
         if( ti.hapticsEnabled( i ) ) {
           ti.addForceEffect( i,
                              new HAPI::HapticViscosity(
@@ -83,7 +83,7 @@ void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
         }
       }
     } else {
-      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+      for( unsigned int i = 0; i < device_index.size(); ++i ) {
         if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
           ti.addForceEffect( device_index[i],
                              new HAPI::HapticViscosity(

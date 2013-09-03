@@ -79,7 +79,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 	if( contour_poly_line_2D )
 		thePoint = contour_poly_line_2D->controlPoint->getValue().back();
 
-	for( int i = 1; i < childrenSize; i++ ) {
+	for( int i = 1; i < childrenSize; ++i ) {
 		Vec2d theBackPoint;
 		
 		nurbs_curve_2D = 
@@ -136,7 +136,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 	GLfloat *knot = NULL;
 	GLfloat *curve = NULL;
 	
-	for( int i = 0; i < childrenSize; i++ ) {
+	for( int i = 0; i < childrenSize; ++i ) {
 		nurbs_curve_2D = 
 			dynamic_cast< NurbsCurve2D * >( theChildren[i] );
 
@@ -179,11 +179,11 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 			if( theKnot.size() == theCurve.size() + order )  {
 				generateUniform = false;
 				H3DInt32 consecutiveKnots = 0;
-				for( unsigned int i = 0; i < theKnot.size(); i++ ){
+				for( unsigned int i = 0; i < theKnot.size(); ++i ){
 					knot[i] = (GLfloat)theKnot[i];				
 					if( i > 0 ) {
 						if( knot[i] == knot[ i - 1 ] )
-							consecutiveKnots++;
+							++consecutiveKnots;
 						else
 							consecutiveKnots = 0;
 						if( consecutiveKnots > order - 1 )
@@ -205,7 +205,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 				if( knot != NULL )
 					delete [] knot;
 				knot = new GLfloat[ theSizeToUse ];
-				for( int i = 0; i < theSizeToUse; i++ )
+				for( int i = 0; i < theSizeToUse; ++i )
 					knot[i] = (GLfloat)( (H3DDouble)i / ( theSizeToUse - 1 ) );
 			}
 
@@ -213,7 +213,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 				delete [] curve;
 			curve = new GLfloat[ theCurve.size() * 2 ];
 
-			for( unsigned int j = 0; j < theCurve.size(); j++ ) {
+			for( unsigned int j = 0; j < theCurve.size(); ++j ) {
 				curve[ j * 2 ] = (GLfloat)theCurve[j].x;
 				curve[ j * 2 + 1 ] = (GLfloat)theCurve[j].y;
 			}
@@ -232,7 +232,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
 				delete [] curve;
 			curve = new GLfloat[ theCurve.size() * 2 ];
 
-			for( unsigned int j = 0; j < theCurve.size(); j++ ) {
+			for( unsigned int j = 0; j < theCurve.size(); ++j ) {
 				curve[ j * 2 ] = (GLfloat)theCurve[j].x;
 				curve[ j * 2 + 1 ] = (GLfloat)theCurve[j].y;
 			}

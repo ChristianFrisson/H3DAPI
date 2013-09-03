@@ -345,7 +345,7 @@ void X3DParticleEmitterNode::Particle::renderTexCoord( const Vec3f &tc ) {
     dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
   if( mt ) {
     size_t texture_units = mt->texture->size();
-    for( unsigned int i = 0; i < texture_units; i++ ) {
+    for( unsigned int i = 0; i < texture_units; ++i ) {
       glMultiTexCoord3f( GL_TEXTURE0_ARB + i, tc.x, tc.y, tc.z );
     }
   } else {
@@ -358,7 +358,7 @@ void X3DParticleEmitterNode::Particle::renderTexCoord( unsigned int index, X3DTe
     dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
   if( mt ) {
     size_t texture_units = mt->texture->size();
-    for( unsigned int i = 0; i < texture_units; i++ ) {
+    for( unsigned int i = 0; i < texture_units; ++i ) {
       tc->renderForTextureUnit( index, GL_TEXTURE0_ARB + i );
     }
   } else {

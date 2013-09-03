@@ -54,10 +54,10 @@ string X3DUrlObject::resolveURLAsString( const string &url ) {
 
 string X3DUrlObject::resolveURL ( const string& url, bool return_contents, bool *is_tmp_file ) {
   for( list< string >::const_iterator i = supported_inline_prefixes.begin();
-       i != supported_inline_prefixes.end(); i++ ) {
+       i != supported_inline_prefixes.end(); ++i ) {
     size_t start = 0;
     size_t url_size = url.size();
-    while( start < url_size && isspace(url[start]) ) start++;
+    while( start < url_size && isspace(url[start]) ) ++start;
     if( url.compare( start, (*i).size(), *i ) == 0 ) {
       string contents= url.substr(start+(*i).size(), url.size()-1);
       if ( return_contents ) {

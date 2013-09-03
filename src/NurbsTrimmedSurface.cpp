@@ -137,7 +137,7 @@ void NurbsTrimmedSurface::renderBetweenBeginEnd(
     // Specify every trimming contour.
     if( !trimming_contour.empty() )
     {
-      for( unsigned int i = 0; i < trimming_contour.size(); i++ ) {
+      for( unsigned int i = 0; i < trimming_contour.size(); ++i ) {
         Contour2D *contour_2D = 
           dynamic_cast< Contour2D * >( trimming_contour[i] );
         contour_2D->renderTrimmedCurve( nurbs_object );

@@ -62,7 +62,7 @@ void X3DPrototypeInstance::render() {
     }
   }
 
-  for( unsigned int i = 0; i < prototyped_node_extras.size(); i++ ) {
+  for( unsigned int i = 0; i < prototyped_node_extras.size(); ++i ) {
     H3DDisplayListObject *dlo = 
       dynamic_cast< H3DDisplayListObject * >( prototyped_node_extras[i] );
     if( dlo ) {
@@ -77,7 +77,7 @@ void X3DPrototypeInstance::traverseSG( TraverseInfo &ti ) {
   if( prototyped_node.get() )
     prototyped_node.get()->traverseSG( ti );
 
-  for( unsigned int i = 0; i < prototyped_node_extras.size(); i++ ) {
+  for( unsigned int i = 0; i < prototyped_node_extras.size(); ++i ) {
     prototyped_node_extras[i]->traverseSG( ti );
   }
   

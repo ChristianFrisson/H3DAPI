@@ -59,7 +59,7 @@ ImportLibrary::ImportLibrary( Inst< SFNode >  _metadata,
 void ImportLibrary::initialize() {
   for( MFString::const_iterator i = url->begin();
        i != url->end();
-       i++ ) {
+       ++i ) {
     string urn_name = *i;
     URNResolver *urn_resolver = ResourceResolver::getURNResolver();
     if( urn_resolver ) {
@@ -103,7 +103,7 @@ void ImportLibrary::initialize() {
   Console(4) << "WARNING: Could not load any of the dynamic libraries ";
   for( MFString::const_iterator i = url->begin();
        i != url->end();
-       i++ ) {
+       ++i ) {
     Console(4) << "\"" << *i << "\" ";
   }
 

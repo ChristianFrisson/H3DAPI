@@ -130,16 +130,16 @@ void NurbsCurve::render( ) {
   bool generate_uniform = true;
   vector< H3DFloat > knots;
   if(knots_double.size() == (unsigned int) no_of_knots){
-    for ( int i = 0; i<no_of_knots; i++){
+    for ( int i = 0; i<no_of_knots; ++i){
       knots_float[i]= (GLfloat)knots_double[i];
     }
     generate_uniform = false;
     H3DInt32 consecutiveKnots = 0;
-    for( int i = 0; i < no_of_knots; i++ ) {
+    for( int i = 0; i < no_of_knots; ++i ) {
       knots.push_back(knots_float[i]);
       if( i > 0 ) {
         if( knots[i] == knots[ i - 1 ] ){
-          consecutiveKnots++;
+          ++consecutiveKnots;
           if( consecutiveKnots > (local_order - 1) ){
             if (!generate_uniform) generate_uniform = true;
             Console(3) << "Warning: There are more consecutive knots than"
@@ -160,7 +160,7 @@ void NurbsCurve::render( ) {
     }
   }
   else if(generate_uniform || (knots_double.size() != (unsigned int)no_of_knots )){
-    for( int i = 0; i < no_of_knots; i++ ){
+    for( int i = 0; i < no_of_knots; ++i ){
       knots_float[i] = (GLfloat)( (H3DDouble)i / ( no_of_knots - 1 ) );
     }
   }
@@ -171,7 +171,7 @@ void NurbsCurve::render( ) {
   if(no_of_weights == no_of_control_points){
     const vector< H3DDouble > &w = weight->getValue();
     if(!valid_weight) valid_weight = true;
-    for (unsigned int j = 0; j<w.size(); j++){
+    for (unsigned int j = 0; j<w.size(); ++j){
       weight_float[j]= (GLfloat)w[j];
     }
   } 
@@ -234,7 +234,7 @@ void NurbsCurve::render( ) {
   if(valid_controlPoints && valid_order){
     if(coord_node){
       GLfloat *control_point_f = new GLfloat [no_of_control_points*4];
-      for ( int i = 0; i<no_of_control_points; i++){
+      for ( int i = 0; i<no_of_control_points; ++i){
         Vec3f p = coord_node->getCoord(i);
         control_point_f[i*4]= p.x;
         control_point_f[i*4+1]= p.y;

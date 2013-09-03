@@ -54,7 +54,7 @@ ProtoDeclaration::ProtoDeclaration( const string &_name,
 	if( _existing_protos ) {
 		existing_protos = new PrototypeVector;
 		for( PrototypeVector::const_iterator i = _existing_protos->begin();
-				 i != _existing_protos->end(); i++ ) {
+				 i != _existing_protos->end(); ++i ) {
 			if( (*i)->name != name )
 				existing_protos->push_back( *i );
 		}
@@ -77,7 +77,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
   try {
 
     for( list< FieldDeclaration >::iterator i = field_declarations.begin();
-         i != field_declarations.end(); i++ ) {
+         i != field_declarations.end(); ++i ) {
       Field *f = X3DTypes::newFieldInstance( (*i).type );
       if( f ) {
         f->setOwner( proto );
@@ -149,7 +149,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
       proto->setPrototypedNode( n.get() );
       
       // parse and set any extra nodes from the proto body
-      for( unsigned int i = 0; i < body_extra.size(); i++ ) {
+      for( unsigned int i = 0; i < body_extra.size(); ++i ) {
         if( !body_extra[i].empty() ) {
           AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i] );
 					if( n.get() )
@@ -180,7 +180,7 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance
     Group *c = driver.getRoot();
     if ( c && !c->children->empty() ) {
       n.reset( c->children->front() );
-      for( unsigned int i = 1; i < c->children->size(); i++ ) {
+      for( unsigned int i = 1; i < c->children->size(); ++i ) {
 				if( c->children->getValueByIndex( i ) )
 					proto->addPrototypedNodeExtra( c->children->getValueByIndex(i) );
       }

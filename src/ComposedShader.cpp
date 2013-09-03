@@ -216,7 +216,7 @@ void ComposedShader::traverseSG ( TraverseInfo& ti ) {
   // Look for tessellation shader
   require_patches = false;
   for( MFShaderPart::const_iterator i = parts->begin();
-        i != parts->end(); i++ ) {
+        i != parts->end(); ++i ) {
     ShaderPart* shader_part= static_cast< ShaderPart * >(*i);
     if ( shader_part->type->getValue() == "TESS_CONTROL" || shader_part->type->getValue() == "TESS_EVALUATION" ) {
       require_patches= true;
@@ -255,7 +255,7 @@ void ComposedShader::render() {
     // compile all shader parts
     bool re_link= false;
     for( MFShaderPart::const_iterator i = parts->begin();
-         i != parts->end(); i++ ) {
+         i != parts->end(); ++i ) {
       ShaderPart* s= static_cast< ShaderPart * >(*i);
       re_link|= !s->isCompiled();
       if( s->compileShader() == 0 ) {
@@ -279,7 +279,7 @@ void ComposedShader::render() {
         if (phandles_map.find(key) != phandles_map.end()) {
           // if a handle found, use that!
           program_handle = phandles_map[key];
-          phandle_counts[program_handle]++;
+          ++(phandle_counts[program_handle]);
           //std::cout<< getName() << " use program handle " << program_handle
           // << std::endl;
           glUseProgramObjectARB( program_handle );
@@ -294,7 +294,7 @@ void ComposedShader::render() {
             phandles_map[key] = h;
             // register shader objects
             for ( MFShaderPart::const_iterator i = parts->begin();
-                  i != parts->end(); i++ ) {
+                  i != parts->end(); ++i ) {
               current_shaders.push_back(
                 static_cast< ShaderPart * >(*i)->getShaderHandle() );
             }
@@ -309,11 +309,11 @@ void ComposedShader::render() {
       {
         // deallocate old instance if not used anywhere
         if (phandle_counts.find(program_handle) != phandle_counts.end()) {
-          phandle_counts[program_handle]--;
+          --(phandle_counts[program_handle]);
           if (phandle_counts[program_handle] == 0) {
             // detach the old shaders from the program
             for( vector< GLhandleARB >::iterator i = current_shaders.begin();
-              i != current_shaders.end(); i++ ) {
+              i != current_shaders.end(); ++i ) {
               glDetachObjectARB( program_handle, *i );
             }
             current_shaders.clear();
@@ -339,7 +339,7 @@ void ComposedShader::render() {
           glUseProgramObjectARB( h );
           // register shader objects
           for ( MFShaderPart::const_iterator i = parts->begin();
-                i != parts->end(); i++ ) {
+                i != parts->end(); ++i ) {
             current_shaders.push_back(
               static_cast< ShaderPart * >(*i)->getShaderHandle() );
           }
@@ -371,13 +371,13 @@ std::string ComposedShader::genKeyFromShader(ComposedShader* shader)
   vector<GLhandleARB> keys;
   keys.reserve( shader->parts->size() );
   for( MFShaderPart::const_iterator i = shader->parts->begin();
-       i != shader->parts->end(); i++ ) {
+       i != shader->parts->end(); ++i ) {
     GLhandleARB handle = static_cast< ShaderPart * >(*i)->getShaderHandle();
     keys.push_back( handle );
   }
   sort( keys.begin(), keys.end() );
   stringstream ss;
-  for( unsigned int i = 0; i < keys.size(); i++ ) ss << keys[i] << "_";
+  for( unsigned int i = 0; i < keys.size(); ++i ) ss << keys[i] << "_";
   return ss.str();
 }
 
@@ -392,7 +392,7 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
 
   // add the shaders to program
   for ( MFShaderPart::const_iterator i = shader->parts->begin();
-        i != shader->parts->end(); i++ ) {
+        i != shader->parts->end(); ++i ) {
     GLhandleARB handle = static_cast< ShaderPart * >(*i)->getShaderHandle();
     glAttachObjectARB( program_handle, handle );
   }
@@ -511,7 +511,7 @@ void ComposedShader::SetupDynamicRoutes::update() {
   // also be so that the new node does not inherit from H3DDisplayListObject.
   if( in_map != fields_to_nodes.end() ) {
     const NodeVector &node_vector = (*in_map).second;
-    for( unsigned int i = 0; i < node_vector.size(); i++ ) {
+    for( unsigned int i = 0; i < node_vector.size(); ++i ) {
       H3DDisplayListObject *hdln =
         dynamic_cast< H3DDisplayListObject * >( node_vector[i] );
       if( hdln )
@@ -537,7 +537,7 @@ void ComposedShader::SetupDynamicRoutes::update() {
     // Add entry to map to remove later.
     const NodeVector &node_vector = mf_node_field->getValue();
     NodeVector tmp_node_vector;
-    for( unsigned int i = 0; i < node_vector.size(); i++ ) {
+    for( unsigned int i = 0; i < node_vector.size(); ++i ) {
       H3DDisplayListObject *hdln =
         dynamic_cast< H3DDisplayListObject * >( node_vector[i] );
       if( hdln ) {
@@ -557,7 +557,7 @@ void ComposedShader::UpdateUniforms::update() {
     // update the uniform location information in unifromFields
     //Console(4)<<"program relinked!!!"<<endl;
     std::map< string, H3D::Shaders::UniformInfo >::iterator it;
-    for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); it++  ) {
+    for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); ++it  ) {
       const string &name = it->first;
       GLint location = glGetUniformLocationARB( node->program_handle,
         name.c_str() );
@@ -576,7 +576,7 @@ void ComposedShader::UpdateUniforms::update() {
   
   // no need to update all, check field one by one to update the one needs to be updated
   std::map< string, H3D::Shaders::UniformInfo >::iterator it;
-  for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); it++ ) {
+  for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); ++it ) {
     Field* current_field = it->second.field;
     if( hasCausedEvent( current_field ) ) {// current_field update since last time
       //if( current_field->getTypeName()=="SFUniform" ) {

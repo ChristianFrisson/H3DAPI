@@ -159,7 +159,7 @@ void PointSet::render() {
     } else {
       // render the points
       glBegin( GL_POINTS );
-      for( unsigned int i = 0; i < coordinate_node->nrAvailableCoords(); i++ ) {
+      for( unsigned int i = 0; i < coordinate_node->nrAvailableCoords(); ++i ) {
         // Set up colors if colors are specified per vertex.
         if( color_node ) {
           color_node->render( i );

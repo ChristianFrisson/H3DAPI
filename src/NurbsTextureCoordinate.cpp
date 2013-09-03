@@ -151,7 +151,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
   if(withWeights != NULL ) 
     delete [] withWeights;
   withWeights = new GLfloat[ noWeights.size() * sizeOfVertex ];
-  for( unsigned int i = 0; i < noWeights.size(); i++ ) {
+  for( unsigned int i = 0; i < noWeights.size(); ++i ) {
     withWeights[ i * sizeOfVertex ] = (GLfloat)noWeights[i].x;
     withWeights[ i * sizeOfVertex + 1 ] = (GLfloat)noWeights[i].y;
     if ( theWeights.size() == 0 ||
@@ -170,11 +170,11 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
   if( uk.size() == (unsigned int)(u_dimension + u_order) )  {
     generateUniform = false;
     H3DInt32 consecutiveKnots = 0;
-    for( unsigned int i = 0; i < uk.size(); i++ ){
+    for( unsigned int i = 0; i < uk.size(); ++i ){
       u_knots[i] = (GLfloat)uk[i];        
       if( i > 0 ) {
         if( u_knots[i] == u_knots[ i - 1 ] )
-          consecutiveKnots++;
+          ++consecutiveKnots;
         else
           consecutiveKnots = 0;
         if( consecutiveKnots > u_order - 1 )
@@ -193,7 +193,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
     u_knots = new GLfloat[ theSizeToUse ];
     Console(3) << "Warning: The uKnot array is not according to standard in NurbsTextureCoordinate node( "
       << getName() << "). A default uKnot array will be generated. " << endl;
-    for( int i = 0; i < theSizeToUse; i++ )
+    for( int i = 0; i < theSizeToUse; ++i )
       u_knots[i] = (GLfloat)( (H3DDouble)i / ( theSizeToUse - 1 ) );
   }
 
@@ -202,11 +202,11 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
   if( vk.size() == (unsigned int)(v_dimension + v_order) )  {
     generateUniform = false;
     H3DInt32 consecutiveKnots = 0;
-    for( unsigned int i = 0; i < vk.size(); i++ ){
+    for( unsigned int i = 0; i < vk.size(); ++i ){
       v_knots[i] = (GLfloat)vk[i];        
       if( i > 0 ) {
         if( v_knots[i] == v_knots[ i - 1 ] )
-          consecutiveKnots++;
+          ++consecutiveKnots;
         else
           consecutiveKnots = 0;
         if( consecutiveKnots > v_order - 1 )
@@ -225,7 +225,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
     v_knots = new GLfloat[ theSizeToUse ];
     Console(3) << "Warning: The vKnot array is not according to standard in NurbsTextureCoordinate node( "
       << getName() << "). A default vKnot array will be generated. " << endl;
-    for( int i = 0; i < theSizeToUse; i++ )
+    for( int i = 0; i < theSizeToUse; ++i )
       v_knots[i] = (GLfloat)( (H3DDouble)i / ( theSizeToUse - 1 ) );
   }
 

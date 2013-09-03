@@ -90,7 +90,7 @@ void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
     // if clipping should be done for all devices or not.
     if( clipHaptics->getValue()  ) {
       const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
-      for( unsigned int i = 0; i < devices.size(); i++ ) {
+      for( unsigned int i = 0; i < devices.size(); ++i ) {
 	      H3DHapticsDevice *hd = ti.getHapticsDevice( i );
 	      const Vec3f &pos = ti.getAccInverseMatrix() 
 	                         * hd->trackerPosition->getValue();
@@ -102,7 +102,7 @@ void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
     // we have per device values, so use them to determine if clipping
     // should be done.
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
-    for( unsigned int i = 0; i < devices.size(); i++ ) {
+    for( unsigned int i = 0; i < devices.size(); ++i ) {
       size_t index =  
 	      i < clip_per_device.size() ? i : clip_per_device.size() - 1;
       if( clip_per_device[ index ] ) {
@@ -138,7 +138,7 @@ void ClipPlane::disableGraphicsState() {
       clipGraphics->getValue() && 
     plane_index < max_nr_clip_planes ) {
     glDisable( GL_CLIP_PLANE0 + plane_index );
-    nr_active_clip_planes--;
+    --nr_active_clip_planes;
     plane_index = -1;
   }
 };

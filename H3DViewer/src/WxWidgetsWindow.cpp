@@ -259,7 +259,7 @@ void WxWidgetsWindow::swapBuffers() {
     glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
     
     int row_length = 4 * current_w;
-    for( unsigned int i = 0; i < current_h; i++ ) {
+    for( unsigned int i = 0; i < current_h; ++i ) {
       memcpy( &gl_d3d_frame_buffer[0] + (current_h - i -1 )*row_length,
               &gl_frame_buffer[0] + i *row_length, 
               row_length );

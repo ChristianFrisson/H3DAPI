@@ -136,7 +136,7 @@ bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
   // Add all fields specificed in the script to the global object in order
   // to be able to access them directly in the ecmascript source code.
   for( H3DDynamicFieldsObject::field_iterator i = script_node->firstField();
-       i != script_node->endField(); i++ ) {
+       i != script_node->endField(); ++i ) {
     addField( *i );
   }
   
@@ -164,7 +164,7 @@ string SpiderMonkeySAI::loadScript( const string &script, const string &filename
     // to a function we rename it to the callback function name and
     // and restore a field propert to the name.
     for( H3DDynamicFieldsObject::field_iterator i = script_node->firstField();
-	 i != script_node->endField(); i++ ) {
+	 i != script_node->endField(); ++i ) {
 
       string field_name = (*i)->getName();
       jsval res;
@@ -262,7 +262,7 @@ bool SpiderMonkeySAI::addField( Field *field ) {
 void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
   SpiderMonkeySAI *sai = (SpiderMonkeySAI *)( getOwner() );
   bool event_processed = false;
-  for( unsigned int i = 0; i < routes_in.size(); i++ ) {
+  for( unsigned int i = 0; i < routes_in.size(); ++i ) {
     if( hasCausedEvent( routes_in[i] ) && routes_in[i] != Scene::time.get() ) {
       string field_name = routes_in[i]->getName();
       string function_name = sai->fieldNameToCallbackName( field_name );

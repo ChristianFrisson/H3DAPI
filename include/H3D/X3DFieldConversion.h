@@ -69,7 +69,7 @@ namespace H3D {
       inline const char *skipWhitespaces( const char *s ) {
         int i = 0; 
         while( isspace(s[i]) && s[i]!='\0' ) {
-          i++;
+          ++i;
         }
         return s+i;
       }
@@ -83,7 +83,7 @@ namespace H3D {
         int i = 0; 
         while( true ) {
           if( s[i] == ',' || isspace(s[i] ) ) {
-            i++;
+            ++i;
           } else { 
             break;
           }
@@ -100,9 +100,9 @@ namespace H3D {
         if( s[0] != '\"' ) {
           throw X3DFieldConversionError( "string" ); 
         }
-        i++;
+        ++i;
         while( s[i] !='\"' && s[i]!='\0' ) {
-          i++;
+          ++i;
         }
         if( s[i] != '\"' ) {
           throw X3DFieldConversionError( "string" ); 
@@ -155,7 +155,7 @@ namespace H3D {
         int i = 0;
         //bool valid = false;
         while( isspace(s[i]) && s[i]!='\0' ) {
-          i++;
+          ++i;
         }
         if( strncmp( s, "true", 4 ) == 0 ||
             strncmp( s, "TRUE", 4 ) == 0 ) {
@@ -185,45 +185,45 @@ namespace H3D {
         double fractional_part = 0;
         bool valid = false;
         while( isspace(s[i]) && s[i]!='\0' ) {
-          i++;
+          ++i;
         }
         if( s[i] == '+' ) {
-          i++;
+          ++i;
         } else if( s[i] == '-' ) {
-          i++;
+          ++i;
           negative = true;
         }
         while( isdigit( s[i] ) && s[i]!='\0' ) {
           integer_part = 10 * integer_part + ( s[i] - '0' );
-          i++;
+          ++i;
           valid = true;
         }
         if( s[i] == '.' ) {
-          i++;
+          ++i;
           unsigned int divider = 10;
           while( isdigit( s[i] ) && s[i]!='\0' ) {
             fractional_part = fractional_part + (double)(  s[i] - '0' ) / divider;
             divider *= 10;
             valid = true;
-            i++;
+            ++i;
           }
         }
         int saved_i = i;
         int exponent = 0;
         bool exponent_negative = false;
         if( s[i] == 'd' || s[i] == 'D' || s[i] == 'e' || s[i] == 'E' ) {
-          i++;
+          ++i;
           if( s[i] == '+' ) {
-            i++;
+            ++i;
           } else if ( s[i] == '-' ) {
-            i++;
+            ++i;
             exponent_negative = true;
           }
           
           int before_digit = i;
           while( isdigit( s[i] ) && s[i]!='\0' ) {
             exponent = 10 * exponent + ( s[i] - '0' );
-            i++;
+            ++i;
           }
           // make sure that we have at least one digit, otherwise this
           // part is invalid and only the previous part will be used.
@@ -269,7 +269,7 @@ namespace H3D {
         bool valid = false;
         // remove whitespaces
         while( isspace(s[i]) && s[i]!='\0' ) {
-          i++;
+          ++i;
         }
         if( s[0] == '0' && s[1] == 'x' ) {
           i+=2;
@@ -277,7 +277,7 @@ namespace H3D {
           int max_index = i + 8;
           int return_value = 0;
           int pos_value;
-          for( ; i < max_index; i++ ) {
+          for( ; i < max_index; ++i ) {
             if (s[i]=='\0')
               break;
             if (s[i] > 0x29 && s[i] < 0x40 )      //if 0 to 9
@@ -304,16 +304,16 @@ namespace H3D {
           bool negative = false;
 
           if( s[i] == '+' ) {
-            i++;
+            ++i;
           } else if ( s[i] == '-' ) {
             negative = true;
-            i++;
+            ++i;
           }
           
           int result = 0;
           while( isdigit( s[i] ) && s[i]!='\0' ) {
             result = 10 * result + ( s[i] - '0' );
-            i++;
+            ++i;
             valid = true;
           }
 

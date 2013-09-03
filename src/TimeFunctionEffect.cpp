@@ -75,7 +75,7 @@ void TimeFunctionEffect::traverseSG( TraverseInfo &ti ) {
       z_function && z_function->nrInputValues() == 1 ) {
     if( deviceIndex->empty() ) {
       // Render the force on all devices.
-      for( int i = 0; i < (H3DInt32)ti.getHapticsDevices().size(); i++ ) {
+      for( int i = 0; i < (H3DInt32)ti.getHapticsDevices().size(); ++i ) {
         if( ti.hapticsEnabled(i) ) {
           HAPI::HAPIFunctionObject * x_hapi_func =
             x_function->getAsHAPIFunctionObject();
@@ -96,7 +96,7 @@ void TimeFunctionEffect::traverseSG( TraverseInfo &ti ) {
       // Only render the force on the devices specified by the indices
       // in the deviceIndex field.
       const vector< H3DInt32 > &device_index = deviceIndex->getValue();
-      for( unsigned int i = 0; i < device_index.size(); i++ ) {
+      for( unsigned int i = 0; i < device_index.size(); ++i ) {
         if( device_index[i] >= 0 && ti.hapticsEnabled( device_index[i] ) ) {
           HAPI::HAPIFunctionObject * x_hapi_func =
             x_function->getAsHAPIFunctionObject();

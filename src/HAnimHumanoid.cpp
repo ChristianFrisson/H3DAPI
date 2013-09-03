@@ -150,7 +150,7 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
   const NodeVector &jts = joints->getValue();
  
   // do joint movements
-  for( unsigned int i = 0; i < jts.size(); i++ ) {
+  for( unsigned int i = 0; i < jts.size(); ++i ) {
     HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
     if( joint ) {
       const vector<int> &indices = joint->skinCoordIndex->getValue();
@@ -159,7 +159,7 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
       Matrix4f joint_to_humanoid = joint->accumulatedJointMatrix->getValue();
       Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
 
-      for( unsigned int j = 0; j < indices.size(); j++ ) {
+      for( unsigned int j = 0; j < indices.size(); ++j ) {
         unsigned int index = indices[j];
 
         // point calculation
@@ -201,12 +201,12 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
   }
 
   // do displacer movements
-  for( unsigned int i = 0; i < jts.size(); i++ ) {
+  for( unsigned int i = 0; i < jts.size(); ++i ) {
     HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
     if( joint ) {
       const NodeVector &disp = joint->displacers->getValue();  
       if( disp.size() > 0 ) {
-        for( unsigned int i = 0; i < disp.size(); i++ ) {
+        for( unsigned int i = 0; i < disp.size(); ++i ) {
           HAnimDisplacer *displacer = 
             static_cast< HAnimDisplacer* >( disp[i]);
           if( displacer ) {
@@ -256,7 +256,7 @@ void HAnimHumanoid::render()     {
     glPushMatrix();
     root_transform->multiplyGLMatrix();
     const NodeVector &skel = skeleton->getValue();
-    for( unsigned int i = 0; i < skel.size(); i++ ) {
+    for( unsigned int i = 0; i < skel.size(); ++i ) {
       HAnimJoint *joint = dynamic_cast< HAnimJoint* >( skel[i]);
       if( joint ) joint->renderSkeleton( type );
     }
@@ -265,7 +265,7 @@ void HAnimHumanoid::render()     {
     // render skinned version
     root_transform->displayList->callList();
     const NodeVector &skel = skeleton->getValue();
-    for( unsigned int i = 0; i < skel.size(); i++ ) {
+    for( unsigned int i = 0; i < skel.size(); ++i ) {
       HAnimJoint *joint = dynamic_cast< HAnimJoint* >( skel[i]);
       if( joint ) joint->displayList->callList();
     }
@@ -318,7 +318,7 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
   const NodeVector &jts = joints->getValue();
 
   // traverse skeleton 
-  for( unsigned int i = 0; i < skel.size(); i++ ) {
+  for( unsigned int i = 0; i < skel.size(); ++i ) {
     Node *n = skel[i];
     if( n ) n->traverseSG( ti );
   }

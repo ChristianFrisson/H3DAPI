@@ -187,7 +187,7 @@ void Appearance::render()     {
 
   for( MFShaderNode::const_iterator i = shaders->begin();
        i != shaders->end();
-       i++ ) {
+       ++i ) {
     X3DShaderNode *s = static_cast< X3DShaderNode * >( *i );
     if ( s && s->isSelected->getValue() ) {
       s->displayList->callList();
@@ -225,7 +225,7 @@ GLbitfield Appearance::getAffectedGLAttribs() {
   
   for( MFShaderNode::const_iterator i = shaders->begin();
        i != shaders->end();
-       i++ ) {
+       ++i ) {
     X3DShaderNode *s = static_cast< X3DShaderNode * >( *i );
     if ( s ) {
       if( s->isSupported() ) {
@@ -267,7 +267,7 @@ void Appearance::preRender() {
   
   for( MFShaderNode::const_iterator i = shaders->begin();
        i != shaders->end();
-       i++ ) {
+       ++i ) {
     X3DShaderNode *s = static_cast< X3DShaderNode * >( *i );
     if ( s ) {
       if( s->isSupported() ) {
@@ -295,7 +295,7 @@ void Appearance::postRender() {
 
   for( MFShaderNode::const_iterator i = shaders->begin();
        i != shaders->end();
-       i++ ) {
+       ++i ) {
     X3DShaderNode *s = static_cast< X3DShaderNode * >( *i );
     if ( s && s->isSelected->getValue() ) {
       s->postRender();
@@ -339,7 +339,7 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
   
   for( MFShaderNode::const_iterator i = shaders->begin();
        i != shaders->end();
-       i++ ) {
+       ++i ) {
    X3DShaderNode *sn = static_cast< X3DShaderNode * >( *i );
    if ( sn ) sn->traverseSG( ti );
   }
@@ -353,7 +353,7 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
   NavigationInfo *ni = NavigationInfo::getActive();
   unsigned int nr_lights = ti.getActiveLightNodes().size();
   if( !ni || ni->headlight->getValue() ) {
-    nr_lights++;
+    ++nr_lights;
   }
   if( shaders->size() == 0 && (GLint)nr_lights > max_lights )
       Console(4) << "Warning: Maximum number of lightsources (" << max_lights
@@ -365,7 +365,7 @@ bool Appearance::isTransparent() {
   // if we have shaders, the shaders 
   X3DMaterialNode *m = material->getValue();
   if( !shaders->empty() ) {
-    for( MFShaderNode::const_iterator i = shaders->begin(); i != shaders->end(); i++ ) {
+    for( MFShaderNode::const_iterator i = shaders->begin(); i != shaders->end(); ++i ) {
       X3DShaderNode *shader = static_cast< X3DShaderNode * >( *i );
       if( shader->isTransparent(m) ) return true;
     }

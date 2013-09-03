@@ -508,7 +508,7 @@ void PhongShader::getAttributes( vector< Attribute > &attributes ) {
   if( normalMap->getValue() && normalMapCoordSpace->getValue() == "TANGENT" ) {
     bool have_binormal = false;
     bool have_tangent = false;
-    for( unsigned int i = 0; i < attributes.size(); i++ ) {
+    for( unsigned int i = 0; i < attributes.size(); ++i ) {
       if( attributes[i].name == "binormal" ) have_binormal = true;
       else if( attributes[i].name == "tangent" ) have_tangent = true;
     }
@@ -634,7 +634,7 @@ string PhongShader::getFragmentShaderString() {
   // add headlight if enabled
   bool have_headlight = current_nr_lightsources > current_light_nodes.size();
     
-  for( unsigned int i = 0; i < current_nr_lightsources; i++ ) { 
+  for( unsigned int i = 0; i < current_nr_lightsources; ++i ) { 
     X3DLightNode *light_node = NULL;
     if( have_headlight ) {
       if( i > 0 ) light_node = current_light_nodes[i-1].getLight();
@@ -696,7 +696,7 @@ string PhongShader::getFragmentShaderString() {
     "    final_color.a = back_diffuse_color.a;\n"
     "  } else { \n";
 
-  for( unsigned int i = 0; i < current_nr_lightsources; i++ ) { 
+  for( unsigned int i = 0; i < current_nr_lightsources; ++i ) { 
     X3DLightNode *light_node = NULL;
     if( have_headlight ) {
       if( i > 0 ) light_node = current_light_nodes[i-1].getLight();
@@ -917,11 +917,11 @@ string PhongShader::addUniformFields( ComposedShader *shader ) {
   // add headlight if enabled
   bool have_headlight = current_nr_lightsources > current_light_nodes.size();
   if( have_headlight ) {
-    index_offset++;
+    ++index_offset;
   }
     
   // add light uniforms
-  for( unsigned int i = 0; i < current_light_nodes.size(); i++ ) {
+  for( unsigned int i = 0; i < current_light_nodes.size(); ++i ) {
     s << addUniformFieldsForLight( shader, current_light_nodes[i].getLight(), i+index_offset );
   }
 
@@ -1059,7 +1059,7 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
    NavigationInfo *ni = NavigationInfo::getActive();
    bool headlight = !ni || ni->headlight->getValue();
    size_t nr_active_lights = 0;
-   if( headlight ) nr_active_lights++;
+   if( headlight ) ++nr_active_lights;
 
    TraverseInfo::LightVector light_nodes = ti.getActiveLightNodes();
 
@@ -1071,18 +1071,18 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
    int gl_index = 0;
   
    // add global lights
-   for( unsigned int i = 0; i < light_nodes.size(); i++ ) {
+   for( unsigned int i = 0; i < light_nodes.size(); ++i ) {
      if( light_nodes[i].getLight()->global->getValue() ) {
        ordered_light_nodes.push_back( light_nodes[i] );
-       gl_index++;
+       ++gl_index;
      }
    }
 
    // add local lights
-   for( unsigned int i = 0; i < light_nodes.size(); i++ ) {
+   for( unsigned int i = 0; i < light_nodes.size(); ++i ) {
      if( !light_nodes[i].getLight()->global->getValue() ) {
        ordered_light_nodes.push_back( light_nodes[i] );
-       gl_index++;
+       ++gl_index;
      }
    }
 
@@ -1093,7 +1093,7 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
 
    // check if the light source nodes have changed
    if( !lights_have_changed ) {
-     for( unsigned int i = 0; i < ordered_light_nodes.size(); i++ ) {
+     for( unsigned int i = 0; i < ordered_light_nodes.size(); ++i ) {
        if( ordered_light_nodes[i].getLight() != current_light_nodes[i].getLight() ) {
          lights_have_changed = true;
          break;
@@ -1112,7 +1112,7 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
    // by OpenGL implementation.
    if( lights_have_changed ) {
      current_light_node_transforms.clear();
-     for( unsigned int i = max_lights; i < current_nr_lightsources; i++ ) {
+     for( unsigned int i = max_lights; i < current_nr_lightsources; ++i ) {
        current_light_node_transforms.push_back( new SFMatrix4f );
      }
    } 
@@ -1123,7 +1123,7 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
    // local model space.
    // This transform will be multiplied by gl_ModelViewMatrix in shader
    // to get the light to view space.
-   for( int i = 0; i < (int) current_light_nodes.size() - max_lights; i++ ) {
+   for( int i = 0; i < (int) current_light_nodes.size() - max_lights; ++i ) {
      current_light_node_transforms[i]->setValue( ti.getAccInverseMatrix() * current_light_nodes[i+max_lights].getLightTransform() );
    }
 
