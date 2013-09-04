@@ -89,6 +89,12 @@ class Field:\n\
   def getAccessType( self ):\n\
     return getFieldAccessType( self )\n\
 \n\
+  def setValueFromString( self, value ):\n\
+    return fieldSetValueFromString( self, value )\n\
+\n\
+  def getValueAsString( self ):\n\
+    return fieldGetValueAsString( self )\n\
+\n\
   def __cmp__( self, o ):\n\
     return getCPtr(self) - getCPtr(o)\n\
 \n\
@@ -99,12 +105,6 @@ class SField( Field ):\n\
 \n\
   def getValue( self ):\n\
     return getFieldValue( self )\n\
-\n\
-  def setValueFromString( self, value ):\n\
-    setFieldValueFromString( self, value )\n\
-\n\
-  def getValueAsString( self ):\n\
-    return getFieldValueAsString( self )\n\
 \n\
 class MField( Field ):\n\
   type = UNKNOWN_X3D_TYPE\n\

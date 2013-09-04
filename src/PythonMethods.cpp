@@ -152,18 +152,24 @@ f = new PythonField< AutoUpdate< field_type > >( field );
 #define GET_SFIELD( check_func, value_func, from_func, \
                        value_type, field_type, \
                        field, value ) \
-return from_func( static_cast< field_type * >( field )->getValue() ); 
-
-	    // Macro used by pythonGetFieldValueAsString to get the value of a SField.
-#define GET_SFIELD_ASSTRING( check_func, value_func, from_func, \
-                       value_type, field_type, \
-                       field, value ) \
-  ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
-  if( !pfield_ptr ) { \
-    PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
-    return 0; \
-  } \
-  return PyFunctions::H3DPyString_FromString(  pfield_ptr->getValueAsString() );
+    value_type va; \
+    PyThreadState *_save; \
+    try { \
+      Py_UNBLOCK_THREADS \
+      va = static_cast< field_type * >( field )->getValue();    \
+      Py_BLOCK_THREADS                                          \
+    }                                                           \
+    catch ( H3D::Exception::H3DException &e ) {                 \
+      Py_BLOCK_THREADS                                          \
+      ostringstream errstr;                                     \
+      errstr << e;                                                   \
+      PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );     \
+      return 0;                                                      \
+    } catch( ... ) {                                                 \
+      Py_BLOCK_THREADS                                               \
+      throw;                                                         \
+    }                                                                \
+    return from_func( va );
 
     // Macro used by pythonGetFieldValue to get the value of a MField.
 #define GET_MFIELD( check_func, value_func, from_func, \
@@ -176,17 +182,6 @@ return from_func( static_cast< field_type * >( field )->getValue() );
     PyList_SetItem( list, i, v ); \
   } \
   return list;
-
-//    // Macro used by pythonGetFieldValueAsString to get the value of a MField.
-#define GET_MFIELD_ASSTRING( check_func, value_func, from_func, \
-                       value_type, field_type, \
-                       field, value ) \
-  ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
-  if( !pfield_ptr ) { \
-    PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
-    return 0; \
-  } \
-  return PyFunctions::H3DPyString_FromString(  pfield_ptr->getValueAsString() );
 
     // Macro used by pythonMFieldEmpty.
 #define MFIELD_EMPTY( check_func, value_func, from_func, \
@@ -271,31 +266,25 @@ return from_func( static_cast< field_type * >( field )->getValue() );
                        value_type, field_type, \
                        field, value ) \
 if( check_func( value ) ) { \
-  Py_BEGIN_ALLOW_THREADS \
-  static_cast<field_type*>(field)->setValue( (value_type) value_func( value ) ); \
-  Py_END_ALLOW_THREADS \
+  PyThreadState *_save; \
+  try { \
+    Py_UNBLOCK_THREADS \
+    static_cast<field_type*>(field)->setValue( (value_type) value_func( value ) ); \
+    Py_BLOCK_THREADS \
+  } \
+  catch ( H3D::Exception::H3DException &e ) { \
+    Py_BLOCK_THREADS \
+    ostringstream errstr; \
+    errstr << e; \
+    PyErr_SetString( PyExc_ValueError, errstr.str().c_str() ); \
+    return 0; \
+  } catch( ... ) { \
+    Py_BLOCK_THREADS \
+    throw; \
+  } \
 } else {                                                            \
   PyErr_SetString( PyExc_ValueError,                                \
                    "Invalid argument type to setValue() function " );            \
-  return 0;                                                         \
-} 
-
-    // Macro used by pythonSetFieldValueFromString to set the value of a SField.
-#define SET_SFIELD_FROMSTRING( check_func, value_func, from_func, \
-                       value_type, field_type, \
-                       field, value ) \
-if( PyString_Check( value ) ) { \
-  ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
-  if( !pfield_ptr ) { \
-    PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
-    return 0; \
-  } \
-  Py_BEGIN_ALLOW_THREADS \
-  pfield_ptr->setValueFromString( ( string )PyString_AsString( value ) ); \
-  Py_END_ALLOW_THREADS \
-} else {                                                            \
-  PyErr_SetString( PyExc_ValueError,                                \
-                   "Invalid argument type to setValueFromString() function " ); \
   return 0;                                                         \
 } 
 
@@ -321,26 +310,6 @@ if( PyString_Check( value ) ) { \
     }                                                          \
   }                                                          \
   static_cast<field_type *>(field)->setValue(fv);                  
-
-    // Macro used by pythonSetFieldValueFromString to set the value of a SField.
-#define SET_MFIELD_FROMSTRING( check_func, value_func, from_func, \
-                       value_type, field_type, \
-                       field, value ) \
-  if( PyString_Check( value ) ) { \
-    ParsableField *pfield_ptr = dynamic_cast< ParsableField * >(field);\
-    if( !pfield_ptr ) { \
-      PyErr_SetString( PyExc_ValueError, "Error: not a valid ParsableField instance" ); \
-      return 0; \
-    } \
-    Py_BEGIN_ALLOW_THREADS \
-    pfield_ptr->setValueFromString( ( string )PyString_AsString( value ) ); \
-    Py_END_ALLOW_THREADS \
-  } else { \
-      PyErr_SetString( PyExc_ValueError,                                \
-                     "Invalid argument type to setValueFromString() function " ); \
-      return 0;                                                         \
-  } 
-
 
     // This macro is used in order to apply some macro where the values
     // given to the macro depends on the X3DType of the field it is given.
@@ -645,8 +614,6 @@ if( PyString_Check( value ) ) { \
       { "createField", pythonCreateField, 0 },
       { "setFieldValue", pythonSetFieldValue, 0 },
       { "getFieldValue", pythonGetFieldValue, 0 },
-      { "setFieldValueFromString", pythonSetFieldValueFromString, 0 },
-      { "getFieldValueAsString", pythonGetFieldValueAsString, 0 },
       { "getFieldAccessType", pythonGetFieldAccessType, 0 },
       { "routeField", pythonRouteField, 0 },
       { "routeFieldNoEvent", pythonRouteFieldNoEvent, 0 },
@@ -690,6 +657,8 @@ if( PyString_Check( value ) ) { \
       { "getNrHapticsDevices", pythonGetNrHapticsDevices, 0 },
       { "getNamedNode", pythonGetNamedNode, 0 },
       { "fieldGetTypeName", pythonFieldGetTypeName, 0 },
+      { "fieldSetValueFromString", pythonFieldSetValueFromString, 0 },
+      { "fieldGetValueAsString", pythonFieldGetValueAsString, 0 },
       { "addProgramSetting", pythonAddProgramSetting, 0 },
       { NULL, NULL }      
     };
@@ -1027,51 +996,7 @@ call the base class __init__ function." );
     
     /////////////////////////////////////////////////////////////////////////
 
-    PyObject *pythonSetFieldValueFromString( PyObject *self, PyObject *args ) {
-      if( !args || ! PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
-        PyErr_SetString( PyExc_ValueError, 
-                         "Invalid argument(s) to function H3D.setFieldValueFromString( self, value )" );
-        return 0;
-      }
-  
-      PyObject *field = PyTuple_GetItem( args, 0 );
-      if( ! PyInstance_Check( field ) ) {
-        PyErr_SetString( PyExc_ValueError, 
-                         "Invalid Field type given as argument to H3D.setFieldValueFromString( self, value )" );
-        return 0;
-      }
-      PyObject *py_field_ptr = PyObject_GetAttrString( field, "__fieldptr__" );
-      if( !py_field_ptr ) {
-        PyErr_SetString( PyExc_ValueError, 
-                         "Python object not a Field type. Make sure that if you \
-have defined an __init__ function in a specialized field class, you \
-call the base class __init__ function." );
-        return 0;
-      }
-      Field *field_ptr = static_cast< Field * >
-        ( PyCObject_AsVoidPtr( py_field_ptr ) );
-      Py_DECREF( py_field_ptr );
-
-      PyObject *v = PyTuple_GetItem( args, 1 );
-
-      if( field_ptr ) { 
-        bool success;
-        APPLY_SFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, SET_SFIELD_FROMSTRING, success );
-        if( !success )
-          APPLY_MFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, SET_MFIELD_FROMSTRING, success );
-        if( !success ) {
-          PyErr_SetString( PyExc_ValueError, 
-                           "Error: not a valid Field instance" );
-          return 0;  
-        }
-      }
-      Py_INCREF(Py_None);
-      return Py_None;
-    }
-    
-    /////////////////////////////////////////////////////////////////////////
-
-	PyObject *pythonGetFieldValue( PyObject *self, PyObject *arg ) {
+        PyObject *pythonGetFieldValue( PyObject *self, PyObject *arg ) {
       if(!arg || ! PyInstance_Check( arg ) ) {
         PyErr_SetString( PyExc_ValueError, 
                          "Invalid argument(s) to function H3D.getFieldValue( self )" );
@@ -1097,45 +1022,6 @@ call the base class __init__ function." );
         APPLY_SFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_SFIELD, success );
         if( !success )
           APPLY_MFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_MFIELD, success );
-        if( !success ) {
-           PyErr_SetString( PyExc_ValueError, 
-                           "Error: not a valid Field instance" );
-          return 0;  
-        }
-      }
-      PyErr_SetString( PyExc_ValueError, 
-                       "Error: Field NULL pointer" );
-      return 0;  
-    }
-    
-    /////////////////////////////////////////////////////////////////////////
-
-    PyObject *pythonGetFieldValueAsString( PyObject *self, PyObject *arg ) {
-      if(!arg || ! PyInstance_Check( arg ) ) {
-        PyErr_SetString( PyExc_ValueError, 
-                         "Invalid argument(s) to function H3D.getFieldValue( self )" );
-        return 0;
-      }
-      
-      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
-      if( !py_field_ptr ) {
-        PyErr_SetString( PyExc_ValueError, 
-                         "Python object not a Field type. Make sure that if you \
-have defined an __init__ function in a specialized field class, you \
-call the base class __init__ function." );
-        return 0;
-      }
-      
-      Field *field_ptr = static_cast< Field * >
-        ( PyCObject_AsVoidPtr( py_field_ptr ) );
-      
-      Py_DECREF( py_field_ptr );
-
-	  if( field_ptr ) {
-		bool success;
-        APPLY_SFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_SFIELD_ASSTRING, success );
-        if( !success )
-          APPLY_MFIELD_MACRO( field_ptr, field_ptr->getX3DType(), v, GET_MFIELD_ASSTRING, success );
         if( !success ) {
            PyErr_SetString( PyExc_ValueError, 
                            "Error: not a valid Field instance" );
@@ -1429,18 +1315,37 @@ call the base class __init__ function." );
       }
       char *filename = PyString_AsString( arg );
       X3D::DEFNodes dm;
+
+       PyThreadState *_save;
+       // release the interpreter lock to let other python threads execute while setting
+       // field value. Need to make sure here that that if any exception is thrown we 
+       // reaquire the lock with Py_BLOCK_THREADS
+
       try{
         AutoRef< Node > n;
-        Py_BEGIN_ALLOW_THREADS
+        Py_UNBLOCK_THREADS
         n= X3D::createX3DNodeFromURL( filename, &dm );
-        Py_END_ALLOW_THREADS
+        Py_BLOCK_THREADS
         return PythonInternals::createX3DHelp( n.get(), &dm );
       }
       catch(H3D::X3D::XMLParseError &e){
+        Py_BLOCK_THREADS
         ostringstream err;
         err << "Error creating X3D Node from URL: " << e.message;
         PyErr_SetString( PyExc_RuntimeError, err.str().c_str() );
         return 0;
+      }
+      catch ( H3D::Exception::H3DException &e ) {
+        // H3D error are set as Python exceptions
+        Py_BLOCK_THREADS
+        ostringstream errstr;
+        errstr << e;
+        PyErr_SetString( PyExc_RuntimeError, errstr.str().c_str() );
+        return 0;
+      } catch( ... ) {
+        // rethrow all other exceptions
+        Py_BLOCK_THREADS
+        throw;
       }
     }
 
@@ -2111,6 +2016,139 @@ call the base class __init__ function." );
 
     /////////////////////////////////////////////////////////////////////////
 
+    PyObject *pythonFieldGetValueAsString( PyObject *self, PyObject *arg ) {
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                 "Invalid argument(s) to function H3D.fieldGetValueAsString( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      Py_DECREF( py_field_ptr );
+      
+      if( field_ptr ) { 
+        ParsableField *parsable_field = dynamic_cast< ParsableField * >( field_ptr );
+        if( parsable_field ) {
+          string type_name;
+                  PyThreadState *_save;
+          // release the interpreter lock to let other python threads execute while setting
+          // field value. Need to make sure here that that if any exception is thrown we 
+          // reaquire the lock with Py_BLOCK_THREADS
+          try {
+            Py_UNBLOCK_THREADS
+            type_name = parsable_field->getValueAsString();
+            Py_BLOCK_THREADS
+          }
+          catch ( H3D::Exception::H3DException &e ) {
+            // H3D error are set as Python exceptions
+            Py_BLOCK_THREADS
+            ostringstream errstr;
+            errstr << e;
+            PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
+            return 0;
+          } catch( ... ) {
+            // rethrow all other exceptions
+            Py_BLOCK_THREADS
+            throw;
+          }
+          return PyString_FromString( type_name.c_str() );      
+        } else {
+          PyErr_SetString( PyExc_ValueError, 
+                           "Field not a ParsableField." );
+          return 0; 
+        }
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;  
+      }
+    }
+
+    PyObject *pythonFieldSetValueFromString( PyObject *self, PyObject *args ) {
+      if( !args || ! PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument(s) to function H3D.fieldSetValueFromString( self, value )" );  
+        return 0;
+      }
+
+      PyObject *py_field_obj = PyTuple_GetItem( args, 0 );
+      if( ! PyInstance_Check( py_field_obj ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+ "Invalid Field type given as argument to H3D.fieldSetValueFromString( self, value )" );
+        return 0;
+      }
+
+      PyObject *py_field_ptr = PyObject_GetAttrString( py_field_obj, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+
+      PyObject *py_value_string = PyTuple_GetItem( args, 1 );
+      if( !PyString_Check( py_value_string ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument type. Expecting string" );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      string value_str( PyString_AsString( py_value_string ) );
+      Py_DECREF( py_field_ptr );
+      if( field_ptr ) {  
+        ParsableField *parsable_field = dynamic_cast< ParsableField * >( field_ptr );
+        if( parsable_field ) {
+          PyThreadState *_save;
+          // release the interpreter lock to let other python threads execute while setting
+          // field value. Need to make sure here that that if any exception is thrown we 
+          // reaquire the lock with Py_BLOCK_THREADS
+
+          try {
+            Py_UNBLOCK_THREADS
+            parsable_field->setValueFromString( value_str );
+            Py_BLOCK_THREADS
+          } catch ( H3D::Exception::H3DException &e ) {
+            // H3D error are set as Python exceptions
+            Py_BLOCK_THREADS
+            ostringstream errstr;
+            errstr << e;
+            PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
+            return 0;
+          } catch( ... ) {
+            // rethrow all other exceptions
+            Py_BLOCK_THREADS
+            throw;
+          }
+        } else {
+          PyErr_SetString( PyExc_ValueError, 
+                           "Field not a ParsableField." );
+          return 0; 
+        }
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;  
+      }
+
+      Py_INCREF(Py_None);
+      return Py_None; 
+       //Console(4) <<"11" << endl;
+    }
+
+
     PyObject *pythonFieldGetTypeName( PyObject *self, PyObject *arg ) {
       if(!arg || ! PyInstance_Check( arg ) ) {
         PyErr_SetString( PyExc_ValueError, 
@@ -2132,13 +2170,12 @@ call the base class __init__ function." );
       Py_DECREF( py_field_ptr );
       
       if( field_ptr ) { 
-        bool success;
         string type_name = field_ptr->getTypeName();
-	return PyString_FromString( type_name.c_str() );	
+        return PyString_FromString( type_name.c_str() );        
       } else {
-	PyErr_SetString( PyExc_ValueError, 
-			 "Error: Field NULL pointer" );
-	return 0;  
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;  
       }
     }
 
@@ -2301,9 +2338,9 @@ call the base class __init__ function." );
        nr_args =  PyTuple_Size( args );
        py_field = PyTuple_GetItem( args, 0 ); // borrowed ref ?
        if( nr_args > 3 || nr_args < 1  ) {
-	 PyErr_SetString( PyExc_ValueError, 
-			  "Invalid argument(s) to function addProgramSettings( field, setting_name, section_name )" );
-	 return NULL;
+         PyErr_SetString( PyExc_ValueError, 
+                          "Invalid argument(s) to function addProgramSettings( field, setting_name, section_name )" );
+         return NULL;
        } 
      }
      
@@ -2313,7 +2350,7 @@ call the base class __init__ function." );
      if( !py_field_ptr ) {
        Py_DECREF( py_field_ptr );
        PyErr_SetString( PyExc_ValueError, 
-			"Invalid argument 0 to function addProgramSettings. Expecting Field type" );
+                        "Invalid argument 0 to function addProgramSettings. Expecting Field type" );
         return NULL;
      }
       

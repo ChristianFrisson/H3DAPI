@@ -76,11 +76,7 @@ namespace H3D {
 
     PyObject *pythonGetFieldValue( PyObject *self, PyObject *arg );
 
-    PyObject *pythonSetFieldValueFromString( PyObject *self, PyObject *args );
-
-	PyObject *pythonGetFieldValueAsString( PyObject *self, PyObject *arg );
-
-	PyObject *pythonGetFieldAccessType( PyObject *self, PyObject *arg );
+    PyObject *pythonGetFieldAccessType( PyObject *self, PyObject *arg );
 
     PyObject *pythonRouteField( PyObject *self, PyObject *args );
 
@@ -163,6 +159,10 @@ namespace H3D {
     PyObject* pythonGetNamedNode( PyObject *self, PyObject *arg );
 
     PyObject* pythonFieldGetTypeName( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldSetValueFromString( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldGetValueAsString( PyObject *self, PyObject *arg );
 
     /// addProgramSettings( field, setting_name = "", section = "" )
     PyObject* pythonAddProgramSetting( PyObject *self, PyObject *arg );

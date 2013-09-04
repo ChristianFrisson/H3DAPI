@@ -55,6 +55,12 @@ class Field:
   def getAccessType( self ):
     return getFieldAccessType( self )
 
+  def setValueFromString( self, value ):
+    return fieldSetValueFromString( self, value )
+
+  def getValueAsString( self ):
+    return fieldGetValueAsString( self )
+
   def __cmp__( self, o ):
     return getCPtr(self) - getCPtr(o)
 
@@ -66,12 +72,6 @@ class SField( Field ):
   def getValue( self ):
     return getFieldValue( self )
 
-  def setValueFromString( self, value ):
-    setFieldValueFromString( self, value )
-
-  def getValueAsString( self ):
-    return getFieldValueAsString( self )
-
 class MField( Field ):
   type = UNKNOWN_X3D_TYPE
   def setValue( self, value ):
@@ -79,12 +79,6 @@ class MField( Field ):
 
   def getValue( self ):
     return getFieldValue( self )
-
-  def setValueFromString( self, value ):
-    setFieldValueFromString( self, value )
-
-  def getValueAsString( self ):
-    return getFieldValueAsString( self )
 
   def push_back( self, v ):
     pushBackElementInMField( self, v ) 
