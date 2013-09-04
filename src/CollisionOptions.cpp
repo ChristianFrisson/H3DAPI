@@ -57,6 +57,10 @@ CollisionOptions::CollisionOptions(
   type_name = "CollisionOptions";
   database.initFields( this );
 
+  avatarCollision->route( updateOption );
+  sensorCollideToggleGraphicsOff->route( updateOption );
+  sensorCollideCollisionFalse->route( updateOption );
+
   avatarCollision->setValue( true );
   sensorCollideToggleGraphicsOff->setValue( true );
   sensorCollideCollisionFalse->setValue( true );

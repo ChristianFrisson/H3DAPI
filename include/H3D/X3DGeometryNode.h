@@ -77,6 +77,9 @@ namespace H3D {
     public:
       /// Perform front face code outside the display list.
       virtual void callList( bool build_list = true );
+      /// Override cachingDelay function to give local graphic option 
+      /// higher priority than global graphic option
+      virtual unsigned int cachingDelay();
     };
 
     /// The SFBoundTree constructs a BinaryBoundTree that can be used

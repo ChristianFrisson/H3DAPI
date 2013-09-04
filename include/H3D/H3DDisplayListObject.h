@@ -142,7 +142,7 @@ namespace H3D {
 
       /// Returns the number of loops the DisplayList must render without
       /// receiving an event before a display is built.
-      unsigned int cachingDelay();
+      virtual unsigned int cachingDelay();
 
       /// If called the display list will be rebuilt on next call to
       void breakCache();
@@ -175,7 +175,8 @@ namespace H3D {
       inline bool hasCausedEvent( auto_ptr< FieldType > &f ) {
         return hasCausedEvent( f.get() );
       }
-
+      /// initialize previous cache delay
+      void initCacheDelay();
     protected:
       bool childrenCachesReady( bool consider_active_field );
 
@@ -220,6 +221,12 @@ namespace H3D {
       /// This field is routed to all instances of DisplayList and can be used 
       /// to force a rebuild of all display lists.
       static auto_ptr< Field > break_list_field; 
+      
+      /// previous cache delay
+      int cache_delay_previous;
+      
+      /// default cache delay value
+      static const int cache_delay_default = 3;
 
       friend class H3DDisplayListObject;
     };

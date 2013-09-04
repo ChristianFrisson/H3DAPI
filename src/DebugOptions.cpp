@@ -57,6 +57,10 @@ DebugOptions::DebugOptions(
 
   database.initFields( this );
 
+  drawBound->route( updateOption );
+  drawBoundTree->route( updateOption );
+  drawHapticTriangles->route( updateOption );
+
   drawBound->setValue( false );
   drawBoundTree->setValue( -1 );
   drawHapticTriangles->setValue( false );

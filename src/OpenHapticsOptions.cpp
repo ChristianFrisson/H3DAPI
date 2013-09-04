@@ -60,6 +60,11 @@ OpenHapticsOptions::OpenHapticsOptions(
 
   database.initFields( this );
 
+  GLShape->route( updateOption );
+  useAdaptiveViewport->route( updateOption );
+  useHapticCameraView->route( updateOption );
+  forceFullGeometryRender->route( updateOption );
+
   GLShape->addValidValue( "FEEDBACK_BUFFER" );
   GLShape->addValidValue( "DEPTH_BUFFER" );
   GLShape->setValue( "FEEDBACK_BUFFER" );

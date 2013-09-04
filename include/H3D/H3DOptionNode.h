@@ -49,6 +49,10 @@ namespace H3D {
     virtual string defaultXMLContainerField() {
       return "options";
     }
+
+    /// Field to collect update event from every option parameters,
+    /// all inherited Option Node should route its option parameter fields to it
+    auto_ptr< Field > updateOption;
   };
 }
 

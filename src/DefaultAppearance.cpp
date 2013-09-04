@@ -47,7 +47,7 @@ DefaultAppearance::DefaultAppearance(
                            Inst< SFAppearance > _defaultAppearance ) :
   H3DOptionNode( _metadata ),
   defaultAppearance( _defaultAppearance ) {
-  
+  defaultAppearance->route( updateOption );
   type_name = "DefaultAppearance";
   database.initFields( this );
 }

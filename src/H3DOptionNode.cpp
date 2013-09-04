@@ -34,7 +34,10 @@ using namespace H3D;
 
 H3DOptionNode::H3DOptionNode( 
                            Inst< SFNode>  _metadata ) :
-  X3DNode( _metadata ) {
+  X3DNode( _metadata ),
+  updateOption( new Field ) {
+  updateOption->setName( "UpdateOption" );
+  updateOption->setOwner( this );
   type_name = "H3DOptionNode";
 }
 

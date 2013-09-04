@@ -67,6 +67,13 @@ HapticsOptions::HapticsOptions(
 
   database.initFields( this );
 
+  touchableFace->route( updateOption );
+  maxDistance->route( updateOption );
+  lookAheadFactor->route( updateOption );
+  useBoundTree->route( updateOption );
+  interpolateForceEffects->route( updateOption );
+  dynamicMode->route( updateOption );
+
   touchableFace->addValidValue( "AS_GRAPHICS" );
   touchableFace->addValidValue( "FRONT" );
   touchableFace->addValidValue( "BACK" );

@@ -56,6 +56,9 @@ GeometryBoundTreeOptions::GeometryBoundTreeOptions(
   type_name = "GeometryBoundTreeOptions";
   database.initFields( this );
 
+  boundType->route( updateOption );
+  maxTrianglesInLeaf->route( updateOption );
+
   boundType->addValidValue( "AABB" );
   boundType->addValidValue( "OBB" );
   boundType->addValidValue( "SPHERE" );

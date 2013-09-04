@@ -336,6 +336,29 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
 
 }
 
+unsigned int X3DGeometryNode::DisplayList::cachingDelay(){
+  // use local graphic option first, if local graphic option is null, check global one
+  GraphicsOptions *options = NULL;
+  X3DGeometryNode *geom = static_cast< X3DGeometryNode * >( getOwner() );
+  geom->getOptionNode( options );
+  if( options ) {// This geometry contains graphic option 
+    return options->cachingDelay->getValue();
+  }
+  if( !options ) {// check global graphic option instead
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings&&default_settings->optionNodesUpdated() ) {
+      default_settings->getOptionNode( options );
+      if( options ) {
+        cache_delay_previous = options->cachingDelay->getValue();
+      }
+      return cache_delay_previous;
+    }else if( default_settings ) { // global setting option node no need to update
+      return cache_delay_previous;
+    }else{
+      return cache_delay_default;
+    }
+  }
+}
 
 /// The HAPIBoundTree constructs a 
 void X3DGeometryNode::SFBoundTree::update() { 

@@ -76,6 +76,16 @@ GraphicsOptions::GraphicsOptions(
   type_name = "GraphicsOptions";
   database.initFields( this );
 
+  useCaching->route( updateOption );
+  cachingDelay->route( updateOption );
+  cacheOnlyGeometries->route( updateOption );
+  frustumCullingMode->route( updateOption );
+  useDefaultShadows->route( updateOption );
+  defaultShadowDarkness->route( updateOption );
+  defaultShadowDepthOffset->route( updateOption );
+  preferVertexBufferObject->route( updateOption );
+  defaultShadowGeometryAlgorithm->route( updateOption );
+
   useCaching->setValue( true );
   cachingDelay->setValue( 5 );
   cacheOnlyGeometries->setValue( false );

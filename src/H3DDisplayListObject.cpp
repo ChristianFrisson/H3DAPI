@@ -53,7 +53,7 @@ H3DDisplayListObject::DisplayList::DisplayList():
   frustum_culling_mode( OPTIONS ),
   have_valid_display_list( false ),
   isActive( new IsActive ){
-
+  initCacheDelay();
   delay_cache_counter = cachingDelay();
   isActive->setValue( true );
   isActive->setName( "H3DDisplayListObject::isActive" );
@@ -454,22 +454,34 @@ void H3DDisplayListObject::DisplayList::breakCache() {
   startEvent();
 }
 
-unsigned int H3DDisplayListObject::DisplayList::cachingDelay() {
+void H3DDisplayListObject::DisplayList::initCacheDelay() {
   GraphicsOptions *options = NULL;
-  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
-  if( geom ) {
-    geom->getOptionNode( options );
-  }
-  if( !options ) {
-    GlobalSettings *default_settings = GlobalSettings::getActive();
-    if( default_settings ) {
-      default_settings->getOptionNode( options );
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) {
+    default_settings->getOptionNode( options );
+    if( options ) {
+      cache_delay_previous = options->cachingDelay->getValue();
+      return ;
     }
   }
-  
-  if( options ) {
-    return options->cachingDelay->getValue();
+  cache_delay_previous = cache_delay_default;
+}
+
+unsigned int H3DDisplayListObject::DisplayList::cachingDelay() {
+  GraphicsOptions *options = NULL;
+
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings&&default_settings->optionNodesUpdated() ) {
+    default_settings->getOptionNode( options );
+    if( options ) {// update cache_delay_previous value
+      cache_delay_previous = options->cachingDelay->getValue();
+    }
+    return cache_delay_previous;
+  }else if( default_settings ) { 
+    // global setting option node not updated
+    return cache_delay_previous;
+  }else{
+    // no default setting
+    return cache_delay_default;
   }
-  
-  return 3;
 }

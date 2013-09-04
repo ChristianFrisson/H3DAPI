@@ -66,7 +66,8 @@ GlobalSettings::GlobalSettings(
   x3dROUTESendsEvent( _x3dROUTESendsEvent ),
   loadTexturesInThread( _loadTexturesInThread ),
   renderMode( _renderMode ),
-  multiThreadedPython ( _multiThreadedPython ) {
+  multiThreadedPython ( _multiThreadedPython ),
+  updateOptions( new UpdateOptions ){
 
   type_name = "GlobalSettings";
   database.initFields( this );
@@ -82,4 +83,29 @@ GlobalSettings::GlobalSettings(
   renderMode->setValue( "DEFAULT" );
  
   multiThreadedPython->setValue ( false );
+  updateOptions->setName( "UpdateOptions" );
+  updateOptions->setOwner( this );
+  options->route( updateOptions );
+}
+
+void GlobalSettings::MFOptionNode::onAdd( Node* n ){
+  // route updateOption node of every option to updateOptions in global
+  // setting node
+  GlobalSettings* gs = static_cast< GlobalSettings* >( getOwner() );
+  H3DOptionNode* hon = dynamic_cast< H3DOptionNode* >( n );
+  hon->updateOption->route( gs->updateOptions );
+  TypedMFNode< H3DOptionNode >::onAdd( n );
+}
+
+void GlobalSettings::MFOptionNode::onRemove( Node* n ){
+  
+  GlobalSettings* gs = static_cast< GlobalSettings* >( getOwner() );
+  H3DOptionNode* hon = dynamic_cast< H3DOptionNode* >( n );
+  // touch options
+  // to generate an event to indicate one option node removed
+  gs->options->touch(); 
+  hon->updateOption->unroute( gs->updateOptions );
+
+  TypedMFNode< H3DOptionNode >::onRemove( n );
+  
 }

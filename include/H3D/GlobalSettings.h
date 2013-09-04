@@ -34,7 +34,9 @@
 #include <H3D/SFBool.h>
 #include <H3D/SFFloat.h>
 #include <H3D/H3DOptionNode.h>
+#include <H3D/GraphicsOptions.h>
 #include <H3D/MFNode.h>
+#include <H3D/PeriodicUpdate.h>
 
 namespace H3D {
   /// \ingroup H3DNodes
@@ -73,10 +75,18 @@ namespace H3D {
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/GlobalSettings.x3d">GlobalSettings.x3d</a>
   ///     ( <a href="examples/GlobalSettings.x3d.html">Source</a> )
+  //class GraphicsOptions;
   class H3DAPI_API GlobalSettings : public X3DBindableNode {
   public:
-
-    typedef TypedMFNode< H3DOptionNode > MFOptionNode;
+    typedef PeriodicUpdate< Field > UpdateOptions;
+    class H3DAPI_API  MFOptionNode : public TypedMFNode< H3DOptionNode >
+    {
+    protected:
+      virtual void onAdd( Node *n );
+      virtual void onRemove( Node *n );
+    };
+    
+    //typedef TypedMFNode< H3DOptionNode > MFOptionNode;
 
     /// Construtor.
     GlobalSettings( Inst< SFSetBind    > _set_bind             = 0,
@@ -182,6 +192,14 @@ namespace H3D {
 
     /// The default value for the x3dROUTESendsEvent field.
     static bool default_x3d_route_sends_event;
+
+    /// check whether option nodes has updated since last scene graph loop
+    bool optionNodesUpdated(){ return !updateOptions->isUpToDate(); }
+
+  protected:
+    
+    auto_ptr< UpdateOptions > updateOptions;
+    
   };
 }
 
