@@ -261,7 +261,6 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
     
   X3DGeometryNode *geom = 
     static_cast< X3DGeometryNode * >( owner );
-    
   GLboolean culling_enabled;
   glGetBooleanv( GL_CULL_FACE, &culling_enabled );
 
@@ -344,7 +343,7 @@ unsigned int X3DGeometryNode::DisplayList::cachingDelay(){
   if( options ) {// This geometry contains graphic option 
     return options->cachingDelay->getValue();
   }
-  if( !options ) {// check global graphic option instead
+  else {// check global graphic option instead
     GlobalSettings *default_settings = GlobalSettings::getActive();
     if( default_settings&&default_settings->optionNodesUpdated() ) {
       default_settings->getOptionNode( options );

@@ -228,6 +228,9 @@ namespace H3D {
       /// default cache delay value
       static const int cache_delay_default = 3;
 
+      /// flag to require resetting delay_cache_counter
+      bool reset_delay_cache_counter;
+
       friend class H3DDisplayListObject;
     };
     

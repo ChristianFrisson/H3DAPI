@@ -54,6 +54,7 @@ H3DDisplayListObject::DisplayList::DisplayList():
   have_valid_display_list( false ),
   isActive( new IsActive ){
   initCacheDelay();
+  reset_delay_cache_counter = true;
   delay_cache_counter = cachingDelay();
   isActive->setValue( true );
   isActive->setName( "H3DDisplayListObject::isActive" );
@@ -112,9 +113,12 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
 }
 
 void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
+  // this function could be called a lot of times in one frame, depending on
+  // how many events finally route to this display list object. Normally, there will
+  // be quite a lot, so add as less logic as possible here.
   Field::propagateEvent( e );
   have_valid_display_list = false;
-  delay_cache_counter = cachingDelay();
+  reset_delay_cache_counter = true;
   event_fields.insert( e.ptr );
 }
 
@@ -132,16 +136,20 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
   // return.
   if( usingFrustumCulling() && isOutsideViewFrustum() ) 
     return;
-
   bool using_caching = usingCaching(); 
 
   if( using_caching && build_list ) { 
     if( !display_list ) {
       display_list = glGenLists( 1 );
     }
-
+    // when trying to build display list, first check if need to reset
+    // delay_cache_counter, no matter it is caused by break cache or propagateEvent
+    if( reset_delay_cache_counter ) {
+      delay_cache_counter = cachingDelay();
+      reset_delay_cache_counter = false;
+    }
     if( event.ptr ) {
-      // will update the display list if events have occured
+      // will update the display list if events have occurred
       upToDate();
       return;
     } else {
@@ -450,7 +458,7 @@ bool H3DDisplayListObject::DisplayList::usingCaching() {
 
 void H3DDisplayListObject::DisplayList::breakCache() {
   have_valid_display_list = false;
-  delay_cache_counter = cachingDelay();
+  reset_delay_cache_counter = true;
   startEvent();
 }
 
