@@ -656,6 +656,9 @@ if( check_func( value ) ) { \
       { "getHapticsDevice", pythonGetHapticsDevice, 0 },
       { "getNrHapticsDevices", pythonGetNrHapticsDevices, 0 },
       { "getNamedNode", pythonGetNamedNode, 0 },
+      { "fieldSetName", pythonFieldSetName, 0 },
+      { "fieldGetName", pythonFieldGetName, 0 },
+      { "fieldGetFullName", pythonFieldGetFullName, 0 },
       { "fieldGetTypeName", pythonFieldGetTypeName, 0 },
       { "fieldSetValueFromString", pythonFieldSetValueFromString, 0 },
       { "fieldGetValueAsString", pythonFieldGetValueAsString, 0 },
@@ -2148,6 +2151,111 @@ call the base class __init__ function." );
        //Console(4) <<"11" << endl;
     }
 
+    PyObject *pythonFieldSetName( PyObject *self, PyObject *arg ) {
+      if( !arg || ! PyTuple_Check( arg ) || PyTuple_Size( arg ) != 2  ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument(s) to function H3D.fieldSetValueFromString( self, value )" );  
+        return 0;
+      }
+
+      PyObject *py_field_obj = PyTuple_GetItem( arg, 0 );
+      if( ! PyInstance_Check( py_field_obj ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+ "Invalid Field type given as argument to H3D.fieldSetName( self, value )" );
+        return 0;
+      }
+
+      PyObject *py_field_ptr = PyObject_GetAttrString( py_field_obj, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+
+      PyObject *py_value_string = PyTuple_GetItem( arg, 1 );
+      if( !PyString_Check( py_value_string ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument type. Expecting string" );
+        return 0;
+      }
+
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      string value_str( PyString_AsString( py_value_string ) );
+      Py_DECREF( py_field_ptr );
+      
+      if( field_ptr ) {
+        field_ptr->setName( value_str );
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;
+      }
+      Py_INCREF(Py_None);
+      return Py_None;
+    }
+
+    PyObject *pythonFieldGetName( PyObject *self, PyObject *arg ) {
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                 "Invalid argument(s) to function H3D.fieldGetName( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      Py_DECREF( py_field_ptr );
+      
+      if( field_ptr ) { 
+        string type_name = field_ptr->getName();
+        return PyString_FromString( type_name.c_str() );        
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;  
+      }
+    }
+
+    PyObject *pythonFieldGetFullName( PyObject *self, PyObject *arg ) {
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                 "Invalid argument(s) to function H3D.fieldGetFullName( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      Py_DECREF( py_field_ptr );
+      
+      if( field_ptr ) { 
+        string type_name = field_ptr->getFullName();
+        return PyString_FromString( type_name.c_str() );        
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;  
+      }
+    }
 
     PyObject *pythonFieldGetTypeName( PyObject *self, PyObject *arg ) {
       if(!arg || ! PyInstance_Check( arg ) ) {

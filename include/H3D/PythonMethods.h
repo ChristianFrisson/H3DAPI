@@ -158,6 +158,12 @@ namespace H3D {
 
     PyObject* pythonGetNamedNode( PyObject *self, PyObject *arg );
 
+    PyObject* pythonFieldSetName( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldGetName( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldGetFullName( PyObject *self, PyObject *arg );
+
     PyObject* pythonFieldGetTypeName( PyObject *self, PyObject *arg );
 
     PyObject* pythonFieldSetValueFromString( PyObject *self, PyObject *arg );

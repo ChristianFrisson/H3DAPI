@@ -59,6 +59,15 @@ class Field:\n\
     module = self.__class__.__dict__[\"__module__\"]\n\
     createField( self, auto_update, module + \".\" + self.__class__.__name__ )\n\
 \n\
+  def setName(self, name):\n\
+    return fieldSetName( self, name )\n\
+\n\
+  def getName(self):\n\
+    return fieldGetName( self )\n\
+\n\
+  def getFullName(self):\n\
+    return fieldGetFullName( self )\n\
+\n\
   def getTypeName(self):\n\
     return fieldGetTypeName( self )\n\
 \n\

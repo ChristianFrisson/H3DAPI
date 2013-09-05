@@ -25,6 +25,15 @@ class Field:
     module = self.__class__.__dict__["__module__"]
     createField( self, auto_update, module + "." + self.__class__.__name__ )
 
+  def setName(self, name):
+    return fieldSetName( self, name )
+
+  def getName(self):
+    return fieldGetName( self )
+    
+  def getFullName(self):
+    return fieldGetFullName( self )
+ 
   def getTypeName(self):
     return fieldGetTypeName( self )
 

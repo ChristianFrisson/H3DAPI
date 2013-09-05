@@ -25,6 +25,19 @@ class Field:
     module = self.__class__.__dict__["__module__"]
     createField( self, auto_update, module + "." + self.__class__.__name__ )
 
+  ## Sets the local name of the field used in error reporting.
+  def setName(self, name):
+    return fieldSetName( self, name )
+
+  ## Gets the name of the field.
+  def getName(self):
+    return fieldGetName( self )
+    
+  ## Gets the name of the field including the name of the owner node if it exists,
+  ## ownername.fieldname.
+  def getFullName(self):
+    return fieldGetFullName( self )
+
   ## Returns the X3D type of the field as a string, e.g. "SFString" 
   ## or "MFInt32"
   def getTypeName(self):
