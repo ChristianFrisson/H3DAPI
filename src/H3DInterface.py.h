@@ -104,6 +104,12 @@ class Field:\n\
   def getValueAsString( self ):\n\
     return fieldGetValueAsString( self )\n\
 \n\
+  def upToDate( self ):\n\
+    return fieldUpToDate( self )\n\
+\n\
+  def isUpToDate( self ):\n\
+    return fieldIsUpToDate( self )\n\
+\n\
   def __cmp__( self, o ):\n\
     return getCPtr(self) - getCPtr(o)\n\
 \n\

@@ -70,6 +70,12 @@ class Field:
   def getValueAsString( self ):
     return fieldGetValueAsString( self )
 
+  def upToDate( self ):
+    return fieldUpToDate( self )
+
+  def isUpToDate( self ):
+    return fieldIsUpToDate( self )
+    
   def __cmp__( self, o ):
     return getCPtr(self) - getCPtr(o)
 

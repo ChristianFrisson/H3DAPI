@@ -95,6 +95,15 @@ class Field:
   ## syntax. Field must be a parsable field.
   def getValueAsString( self ):
     return fieldGetValueAsString( self )
+
+  ## Check that the field is up-to -date, if not update() is called to 
+  ## make it up-to-date.
+  def upToDate( self ):
+    return fieldUpToDate( self )
+
+  ## Returns true if the field is up to date.
+  def isUpToDate( self ):
+    return fieldIsUpToDate( self )
     
   ## Comparison operator. Two fields are equal if it encapsulates the same
   ## underlying C++-field.

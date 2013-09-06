@@ -166,9 +166,13 @@ namespace H3D {
 
     PyObject* pythonFieldGetTypeName( PyObject *self, PyObject *arg );
 
+    PyObject* pythonFieldGetValueAsString( PyObject *self, PyObject *arg );
+
     PyObject* pythonFieldSetValueFromString( PyObject *self, PyObject *arg );
 
-    PyObject* pythonFieldGetValueAsString( PyObject *self, PyObject *arg );
+    PyObject* pythonFieldUpToDate( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldIsUpToDate( PyObject *self, PyObject *arg );
 
     /// addProgramSettings( field, setting_name = "", section = "" )
     PyObject* pythonAddProgramSetting( PyObject *self, PyObject *arg );

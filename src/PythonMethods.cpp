@@ -661,6 +661,8 @@ if( check_func( value ) ) { \
       { "fieldGetTypeName", pythonFieldGetTypeName, 0 },
       { "fieldSetValueFromString", pythonFieldSetValueFromString, 0 },
       { "fieldGetValueAsString", pythonFieldGetValueAsString, 0 },
+      { "fieldUpToDate", pythonFieldUpToDate, 0 },
+      { "fieldIsUpToDate", pythonFieldIsUpToDate, 0 },
       { "addProgramSetting", pythonAddProgramSetting, 0 },
       { NULL, NULL }      
     };
@@ -786,7 +788,6 @@ if( check_func( value ) ) { \
         delete field;
       }
     }
-
 
     PyObject *fieldAsPythonObject( Field * f, bool destruct ) {
       PyObject *obj = PyDict_GetItemString( PythonInternals::H3DInterface_dict, 
@@ -2283,6 +2284,91 @@ call the base class __init__ function." );
         PyErr_SetString( PyExc_ValueError, 
                          "Error: Field NULL pointer" );
         return 0;  
+      }
+    }
+
+    PyObject *pythonFieldUpToDate( PyObject *self, PyObject *arg ) {
+      
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                 "Invalid argument(s) to function H3D.fieldUpToDate( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      Py_DECREF( py_field_ptr );
+      
+      if( field_ptr ) { 
+        string type_name;
+        PyThreadState *_save;
+        // release the interpreter lock to let other python threads execute while updating
+        // field value. Need to make sure here that that if any exception is thrown we 
+        // reaquire the lock with Py_BLOCK_THREADS
+        try {
+          Py_UNBLOCK_THREADS
+          field_ptr->upToDate();
+          Py_BLOCK_THREADS
+          Py_INCREF(Py_None);
+          return Py_None; 
+        }
+        catch ( H3D::Exception::H3DException &e ) {
+          // H3D error are set as Python exceptions
+          Py_BLOCK_THREADS
+          ostringstream errstr;
+          errstr << e;
+          PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
+          return 0;
+        } catch( ... ) {
+          // rethrow all other exceptions
+          Py_BLOCK_THREADS
+          throw;
+        }        
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;  
+      }
+      return 0;
+    }
+
+    PyObject *pythonFieldIsUpToDate( PyObject *self, PyObject *arg ) {
+      
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument(s) to function H3D.fieldTouch( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      if( field_ptr ){
+        if ( field_ptr->isUpToDate() )
+          Py_RETURN_TRUE;
+        Py_RETURN_FALSE;
+      }
+      else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;
       }
     }
 
