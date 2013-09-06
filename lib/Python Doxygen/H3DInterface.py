@@ -47,44 +47,44 @@ class Field:
   ## generate an event to the destination field.
   ## \param dest The field to route to.
   def route( self, dest ):
-    return routeField( self, dest )
+    return fieldRoute( self, dest )
 
   ## Set up a route from this field to another field without generating
   ## an event to the destination field. 
   ## \param dest The field to route to.
   def routeNoEvent( self, dest ):
-    return routeFieldNoEvent( self, dest )
+    return fieldRouteNoEvent( self, dest )
 
   ## Remove a route between this field and another field. If no such 
   ## route exists nothing happens.
   ## \param dest The field to remove the route to.
   def unroute( self, dest ):
-    return unrouteField( self, dest )
+    return fieldUnroute( self, dest )
 
 #  def replaceRoute( self, dest, i ):
-#    return unrouteField( self, dest )
+#    return fieldReplaceRoute( self, dest )
 
 #  def replaceRouteNoEvent( self, dest, i ):
-#    return unrouteField( self, dest, i )
+#    return fieldReplaceRouteNoEvent( self, dest, i )
 
   ## Generate an event from this field.
   def touch( self ):
-    return touchField( self )
+    return fieldTouch( self )
 
   ## Returns a tuple containing all the fields that are routed to this field. 
   def getRoutesIn( self ):
-    return getRoutesIn( self )
+    return fieldGetRoutesIn( self )
 
   ## Returns a tuple containing all the fields that this field is routed to.
   def getRoutesOut( self ):
-    return getRoutesOut( self )
+    return fieldGetRoutesOut( self )
 
   ## Returns a int constant describing the field's access type.
   ##
   ## Possible return values: INITIALIZE_ONLY, OUTPUT_INPUT, INPUT_ONLY, INPUT_OUTPUT.
   ##
   def getAccessType( self ):
-    return getFieldAccessType( self )
+    return fieldGetAccessType( self )
 
   ## Set the value of the field from a string. String must be in the X3D/XML
   ## syntax and field must be a parsable field.
@@ -109,11 +109,11 @@ class SField( Field ):
 
   ## Set the value of the field.
   def setValue( self, value ):
-    setFieldValue( self, value )
+    fieldSetValue( self, value )
 
   ## Get the value of the field.
   def getValue( self ):
-    return getFieldValue( self )
+    return fieldGetValue( self )
 
 ## Base class for all Field types that contain a multiple values of a 
 ## specified type. 
@@ -124,17 +124,17 @@ class MField( Field ):
   ## Set the value of the field.
   ## \param value The value is a list of values of the type of the MField.
   def setValue( self, value ):
-    setFieldValue( self, value )
+    fieldSetValue( self, value )
 
   ## Returns the value of this field.
   ## The returned value is a list of values.
   def getValue( self ):
-    return getFieldValue( self )
+    return fieldGetValue( self )
 
   ## Add a value to the end of the list of values.
   ## \param v The value to add.
   def push_back( self, v ):
-    pushBackElementInMField( self, v ) 
+    MFieldPushBack( self, v ) 
 
   ## Removes the last element. 
   def pop_back( self ):
@@ -159,7 +159,7 @@ class MField( Field ):
   ## Removes an element from the MField. 
   ## \param v The element to remove.
   def erase( self, v ):
-    eraseElementFromMField( self, v ) 
+    MFieldErase( self, v ) 
     
   ## Returns the size of the MField. 
   ## \return The number of elements in the MField.

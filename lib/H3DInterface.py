@@ -38,31 +38,31 @@ class Field:
     return fieldGetTypeName( self )
 
   def route( self, dest ):
-    return routeField( self, dest )
+    return fieldRoute( self, dest )
 
   def routeNoEvent( self, dest ):
-    return routeFieldNoEvent( self, dest )
+    return fieldRouteNoEvent( self, dest )
 
   def unroute( self, dest ):
-    return unrouteField( self, dest )
+    return fieldUnroute( self, dest )
 
 #  def replaceRoute( self, dest, i ):
-#    return unrouteField( self, dest )
+#    return fieldReplaceRoute( self, dest )
 
 #  def replaceRouteNoEvent( self, dest, i ):
-#    return unrouteField( self, dest, i )
+#    return fieldReplaceRouteNoEvent( self, dest, i )
 
   def touch( self ):
-    return touchField( self )
+    return fieldTouch( self )
 
   def getRoutesIn( self ):
-    return getRoutesIn( self )
+    return fieldGetRoutesIn( self )
 
   def getRoutesOut( self ):
-    return getRoutesOut( self )
+    return fieldGetRoutesOut( self )
 
   def getAccessType( self ):
-    return getFieldAccessType( self )
+    return fieldGetAccessType( self )
 
   def setValueFromString( self, value ):
     return fieldSetValueFromString( self, value )
@@ -76,21 +76,21 @@ class Field:
 class SField( Field ):
   type = UNKNOWN_X3D_TYPE
   def setValue( self, value ):
-    setFieldValue( self, value )
+    fieldSetValue( self, value )
 
   def getValue( self ):
-    return getFieldValue( self )
+    return fieldGetValue( self )
 
 class MField( Field ):
   type = UNKNOWN_X3D_TYPE
   def setValue( self, value ):
-    setFieldValue( self, value )
+    fieldSetValue( self, value )
 
   def getValue( self ):
-    return getFieldValue( self )
+    return fieldGetValue( self )
 
   def push_back( self, v ):
-    pushBackElementInMField( self, v ) 
+    MFieldPushBack( self, v ) 
 
   def pop_back( self ):
     MFieldPopBack( self )
@@ -108,7 +108,7 @@ class MField( Field ):
     MFieldClear( self )
 
   def erase( self, v ):
-    eraseElementFromMField( self, v ) 
+    MFieldErase( self, v ) 
     
   def size( self ):
     return MFieldSize( self )

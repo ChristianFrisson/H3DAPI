@@ -72,31 +72,31 @@ class Field:\n\
     return fieldGetTypeName( self )\n\
 \n\
   def route( self, dest ):\n\
-    return routeField( self, dest )\n\
+    return fieldRoute( self, dest )\n\
 \n\
   def routeNoEvent( self, dest ):\n\
-    return routeFieldNoEvent( self, dest )\n\
+    return fieldRouteNoEvent( self, dest )\n\
 \n\
   def unroute( self, dest ):\n\
-    return unrouteField( self, dest )\n\
+    return fieldUnroute( self, dest )\n\
 \n\
 #  def replaceRoute( self, dest, i ):\n\
-#    return unrouteField( self, dest )\n\
+#    return fieldReplaceRoute( self, dest )\n\
 \n\
 #  def replaceRouteNoEvent( self, dest, i ):\n\
-#    return unrouteField( self, dest, i )\n\
+#    return fieldReplaceRouteNoEvent( self, dest, i )\n\
 \n\
   def touch( self ):\n\
-    return touchField( self )\n\
+    return fieldTouch( self )\n\
 \n\
   def getRoutesIn( self ):\n\
-    return getRoutesIn( self )\n\
+    return fieldGetRoutesIn( self )\n\
 \n\
   def getRoutesOut( self ):\n\
-    return getRoutesOut( self )\n\
+    return fieldGetRoutesOut( self )\n\
 \n\
   def getAccessType( self ):\n\
-    return getFieldAccessType( self )\n\
+    return fieldGetAccessType( self )\n\
 \n\
   def setValueFromString( self, value ):\n\
     return fieldSetValueFromString( self, value )\n\
@@ -110,27 +110,27 @@ class Field:\n\
 class SField( Field ):\n\
   type = UNKNOWN_X3D_TYPE\n\
   def setValue( self, value ):\n\
-    setFieldValue( self, value )\n\
+    fieldSetValue( self, value )\n\
 \n\
   def getValue( self ):\n\
-    return getFieldValue( self )\n\
+    return fieldGetValue( self )\n\
 \n\
 class MField( Field ):\n\
   type = UNKNOWN_X3D_TYPE\n\
   def setValue( self, value ):\n\
-    setFieldValue( self, value )\n\
+    fieldSetValue( self, value )\n\
 \n\
   def getValue( self ):\n\
-    return getFieldValue( self )\n\
+    return fieldGetValue( self )\n\
 \n\
   def setValueFromString( self, value ):\n\
-    setFieldValueFromString( self, value )\n\
+    fieldSetValueFromString( self, value )\n\
 \n\
   def getValueAsString( self ):\n\
-    return getFieldValueAsString( self )\n\
+    return fieldGetValueAsString( self )\n\
 \n\
   def push_back( self, v ):\n\
-    pushBackElementInMField( self, v ) \n\
+    MFieldPushBack( self, v ) \n\
 \n\
   def pop_back( self ):\n\
     MFieldPopBack( self )\n\
@@ -148,7 +148,7 @@ class MField( Field ):\n\
     MFieldClear( self )\n\
 \n\
   def erase( self, v ):\n\
-    eraseElementFromMField( self, v ) \n\
+    MFieldErase( self, v ) \n\
 \n\
   def size( self ):\n\
     return MFieldSize( self ) \n\

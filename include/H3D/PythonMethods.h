@@ -72,17 +72,17 @@ namespace H3D {
     
     PyObject *pythonSetFieldValueFromObject( Field *field_ptr, PyObject *v );
 
-    PyObject *pythonSetFieldValue( PyObject *self, PyObject *args );
+    PyObject *pythonFieldSetValue( PyObject *self, PyObject *args );
 
-    PyObject *pythonGetFieldValue( PyObject *self, PyObject *arg );
+    PyObject *pythonFieldGetValue( PyObject *self, PyObject *arg );
 
-    PyObject *pythonGetFieldAccessType( PyObject *self, PyObject *arg );
+    PyObject *pythonFieldGetAccessType( PyObject *self, PyObject *arg );
 
-    PyObject *pythonRouteField( PyObject *self, PyObject *args );
+    PyObject *pythonFieldRoute( PyObject *self, PyObject *args );
 
-    PyObject *pythonRouteFieldNoEvent( PyObject *self, PyObject *args );
+    PyObject *pythonFieldRouteNoEvent( PyObject *self, PyObject *args );
 
-    PyObject *pythonUnrouteField( PyObject *self, PyObject *args );
+    PyObject *pythonFieldUnroute( PyObject *self, PyObject *args );
 
     PyObject *pythonGetCPtr( PyObject *self, PyObject *arg  );
 
@@ -104,9 +104,9 @@ namespace H3D {
 
     PyObject* pythonCreateVRMLNodeFromString( PyObject *self, PyObject *arg );
 
-    PyObject* pythonGetRoutesIn( PyObject *self, PyObject *arg );
+    PyObject* pythonFieldGetRoutesIn( PyObject *self, PyObject *arg );
 
-    PyObject* pythonGetRoutesOut( PyObject *self, PyObject *arg );
+    PyObject* pythonFieldGetRoutesOut( PyObject *self, PyObject *arg );
 
     PyObject* pythonGetCurrentScenes( PyObject *self, PyObject *arg );
 
@@ -126,9 +126,9 @@ namespace H3D {
 
     PyObject* pythonGetActiveGlobalSettings( PyObject *self, PyObject *arg );
 
-    PyObject* pythonEraseElementFromMField( PyObject *self, PyObject *arg );
+    PyObject* pythonMFieldErase( PyObject *self, PyObject *arg );
 
-    PyObject* pythonPushBackElementInMField( PyObject *self, PyObject *arg );
+    PyObject* pythonMFieldPushBack( PyObject *self, PyObject *arg );
 
     PyObject* pythonMFieldClear( PyObject *self, PyObject *arg );
 
@@ -142,7 +142,7 @@ namespace H3D {
 
     PyObject* pythonMFieldSize( PyObject *self, PyObject *arg );
 
-    PyObject* pythonTouchField( PyObject *self, PyObject *arg );
+    PyObject* pythonFieldTouch( PyObject *self, PyObject *arg );
 
     PyObject* pythonResolveURLAsFile( PyObject *self, PyObject *arg );
 
