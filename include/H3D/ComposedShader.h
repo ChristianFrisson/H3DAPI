@@ -99,7 +99,8 @@ namespace H3D {
                     Inst< SFString     > _geometryInputType = 0,
                     Inst< SFString     > _geometryOutputType = 0,
                     Inst< SFInt32      > _geometryVerticesOut = 0,
-                    Inst< SFString     > _transparencyDetectMode = 0 );
+                    Inst< SFString     > _transparencyDetectMode = 0,
+                    Inst< MFString     > _transformFeedbackVaryings = 0 );
 
     /// The addField method is specialized to add a route from the field
     /// added to the displayList field.
@@ -214,6 +215,9 @@ namespace H3D {
     ///
     /// \dotfile ComposedShader_transparencyDetectMode.dot
     auto_ptr< SFString  > transparencyDetectMode;
+
+    /// List of varying names to capture during transform feedback
+    auto_ptr< MFString > transformFeedbackVaryings;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

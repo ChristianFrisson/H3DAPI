@@ -57,6 +57,7 @@ namespace ComposedShaderInternals {
   FIELDDB_ELEMENT( ComposedShader, geometryOutputType, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, geometryVerticesOut, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, transparencyDetectMode, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ComposedShader, transformFeedbackVaryings, INPUT_OUTPUT );
 }
 
 ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
@@ -70,7 +71,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFString     > _geometryInputType,
                                 Inst< SFString     > _geometryOutputType,
                                 Inst< SFInt32      > _geometryVerticesOut,
-                                Inst< SFString     > _transparencyDetectMode ) :
+                                Inst< SFString     > _transparencyDetectMode,
+                                Inst< MFString     > _transformFeedbackVaryings ) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
                  _isValid, _activate, _language),
   X3DProgrammableShaderObject( &database ),
@@ -80,6 +82,7 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   geometryOutputType( _geometryOutputType ),
   geometryVerticesOut( _geometryVerticesOut ),
   transparencyDetectMode( _transparencyDetectMode ),
+  transformFeedbackVaryings ( _transformFeedbackVaryings ),
   program_handle( 0 ),
   setupDynamicRoutes( new SetupDynamicRoutes ),
   updateUniforms ( new UpdateUniforms ) {
@@ -117,6 +120,7 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   activate->route( displayList, id );
   parts->route( displayList, id );
   setupDynamicRoutes->route( displayList );
+  transformFeedbackVaryings->route ( displayList, id );
 
   // need to update uniform values if shader is re-linked
   // displayList->route ( updateUniforms );
@@ -399,6 +403,15 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
 
   // set geometry shader values 
   shader->setGeometryShaderParameters( program_handle );
+
+  // Add transform feedback varyings before program is linked
+  if ( !shader->transformFeedbackVaryings->empty() ) {
+    std::vector<const GLchar*> varyings ( shader->transformFeedbackVaryings->size() );
+    for ( size_t i= 0; i < shader->transformFeedbackVaryings->size(); ++i ) {
+      varyings[i]= shader->transformFeedbackVaryings->getValueByIndex ( i ).c_str();
+    }
+    glTransformFeedbackVaryings(program_handle, varyings.size(), &varyings[0], GL_INTERLEAVED_ATTRIBS);
+  }
 
   // link shader program
   glLinkProgramARB( program_handle );
