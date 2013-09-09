@@ -45,6 +45,11 @@ namespace H3D {
   class SFUniform : public SF {
   public:
     bool actualChanged;
+
+    SFUniform(){
+        actualChanged = true;
+        SF();
+            }
     virtual void setValue( const typename SF::value_type &v, int id = 0 ){
       typename SF::value_type old_value = this->value;
       SF::setValue( v, id );
