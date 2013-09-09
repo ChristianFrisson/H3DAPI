@@ -80,11 +80,14 @@ class Field:\n\
   def unroute( self, dest ):\n\
     return fieldUnroute( self, dest )\n\
 \n\
-#  def replaceRoute( self, dest, i ):\n\
-#    return fieldReplaceRoute( self, dest )\n\
+  def replaceRoute( self, dest, i ):\n\
+    return fieldReplaceRoute( self, dest, i )\n\
 \n\
-#  def replaceRouteNoEvent( self, dest, i ):\n\
-#    return fieldReplaceRouteNoEvent( self, dest, i )\n\
+  def replaceRouteNoEvent( self, dest, i ):\n\
+    return fieldReplaceRouteNoEvent( self, dest, i )\n\
+\n\
+  def unrouteAll( self ):\n\
+    return fieldUnrouteAll( self )\n\
 \n\
   def touch( self ):\n\
     return fieldTouch( self )\n\

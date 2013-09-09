@@ -61,11 +61,17 @@ class Field:
   def unroute( self, dest ):
     return fieldUnroute( self, dest )
 
-#  def replaceRoute( self, dest, i ):
-#    return fieldReplaceRoute( self, dest )
+  ## Replace the i:th route to f with a route from this field.
+  def replaceRoute( self, dest, i ):
+    return fieldReplaceRoute( self, dest, i )
 
-#  def replaceRouteNoEvent( self, dest, i ):
-#    return fieldReplaceRouteNoEvent( self, dest, i )
+  ## Replace the i:th route to f with a route from this field.  
+  def replaceRouteNoEvent( self, dest, i ):
+    return fieldReplaceRouteNoEvent( self, dest, i )
+
+  ## Remove all the routes from this field.
+  def unrouteAll( self ):
+    return fieldUnrouteAll( self )
 
   ## Generate an event from this field.
   def touch( self ):

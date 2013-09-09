@@ -618,6 +618,9 @@ if( check_func( value ) ) { \
       { "fieldRoute", pythonFieldRoute, 0 },
       { "fieldRouteNoEvent", pythonFieldRouteNoEvent, 0 },
       { "fieldUnroute", pythonFieldUnroute, 0 },
+      { "fieldReplaceRoute", pythonFieldReplaceRoute, 0 },
+      { "fieldReplaceRouteNoEvent", pythonFieldReplaceRouteNoEvent, 0 },
+      { "fieldUnrouteAll", pythonFieldUnrouteAll, 0 },
       { "getCPtr", pythonGetCPtr, 0 },
       { "writeNodeAsX3D", pythonWriteNodeAsX3D, 0 },
       { "createX3DFromURL", pythonCreateX3DFromURL, 0 },
@@ -1539,6 +1542,156 @@ call the base class __init__ function." );
     PyObject *pythonFieldRouteNoEvent( PyObject *self, 
                                        PyObject *args ) {
       return pythonRouteFieldHelp( self, args, false );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    PyObject *pythonFieldUnrouteAll( PyObject *self, PyObject *arg  ) {
+      if(!arg || ! PyInstance_Check( arg ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                 "Invalid argument(s) to function H3D.fieldUnrouteAll( self )" );
+        return 0;
+      }
+      
+      PyObject *py_field_ptr = PyObject_GetAttrString( arg, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      Py_DECREF( py_field_ptr );
+
+      if( field_ptr ) { 
+        string type_name;
+        PyThreadState *_save;
+        // release the interpreter lock to let other python threads execute while updating
+        // field value. Need to make sure here that that if any exception is thrown we 
+        // reaquire the lock with Py_BLOCK_THREADS
+        try {
+          Py_UNBLOCK_THREADS
+          field_ptr->unrouteAll();
+          Py_BLOCK_THREADS
+          Py_INCREF(Py_None);
+          return Py_None; 
+        } catch ( H3D::Exception::H3DException &e ) {
+          Py_BLOCK_THREADS
+          ostringstream errstr;
+          errstr << e;
+          PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
+          return 0;
+        } catch( ... ) {
+          // rethrow all other exceptions
+          Py_BLOCK_THREADS
+          throw;
+        }        
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;  
+      }      
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    
+    // help function for pythonFieldReplaceRoute and pythonFieldReplaceRouteNoEvent.
+    PyObject *pythonFieldReplaceRouteHelp( PyObject *self, 
+                                    PyObject *args, 
+                                    bool send_event  ) {
+      if( !args || !PyTuple_Check( args ) || PyTuple_Size( args ) != 3  ) {
+        ostringstream err;
+        err << "Invalid argument(s) to function H3D.fieldReplaceRoute( fromField, toField )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      
+      PyObject *from_field = PyTuple_GetItem( args, 0 );
+      PyObject *to_field = PyTuple_GetItem( args, 1 );
+      PyObject *route_id = PyTuple_GetItem( args, 2 );
+      
+      if( !PyInstance_Check( from_field ) ) {
+        ostringstream err;
+        err << "Invalid Field type given as fromField argument to H3D.fieldReplaceRoute( )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      if( !PyInstance_Check( to_field ) ) {
+        ostringstream err;
+        err << "Invalid Field type given as toField argument to H3D.fieldReplaceRoute( )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      
+      if( !PyInt_Check( route_id ) ) {
+      
+        ostringstream err;
+        err << "Invalid index argument to function H3D.fieldReplaceRoute(  ).";
+        err << " index should be of int type.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+
+      PyObject *py_from_field_ptr = PyObject_GetAttrString( from_field, 
+                                                            "__fieldptr__" );
+      PyObject *py_to_field_ptr = PyObject_GetAttrString( to_field, 
+                                                          "__fieldptr__" );
+      if( !py_from_field_ptr || !py_to_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      Field *from_field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_from_field_ptr ) );
+      Field *to_field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_to_field_ptr ) );
+      
+      if( from_field_ptr == 0 ) {
+        ostringstream err;
+        err << "Source not a Field class in H3D.fieldReplaceRoute( )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;       
+      }
+      if( to_field_ptr == 0 ) {
+        ostringstream err;
+        err << "Destination not a Field class in call to H3D.fieldReplaceRoute( )";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;       
+      }
+      try {
+
+        int route_index = (int)( PyInt_AsLong( route_id ) );
+        if( send_event )
+          from_field_ptr->replaceRoute( to_field_ptr, route_index );
+        else
+          from_field_ptr->replaceRouteNoEvent( to_field_ptr, route_index );
+
+      } catch ( H3D::Exception::H3DException &e ) {
+        ostringstream errstr;
+        errstr << e;
+        PyErr_SetString( PyExc_ValueError, errstr.str().c_str() );
+        return NULL;
+      }
+
+      Py_DECREF( py_to_field_ptr );
+      Py_DECREF( py_from_field_ptr );
+      Py_INCREF(Py_None);
+      return Py_None; 
+    }
+    
+    /////////////////////////////////////////////////////////////////////////
+    PyObject *pythonFieldReplaceRoute( PyObject *self, PyObject *args ) {
+      return pythonFieldReplaceRouteHelp( self, args, true );
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+
+    PyObject *pythonFieldReplaceRouteNoEvent( PyObject *self, PyObject *args ) {
+      return pythonFieldReplaceRouteHelp( self, args, false );
     }
 
     /////////////////////////////////////////////////////////////////////////

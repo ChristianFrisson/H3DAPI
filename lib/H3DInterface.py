@@ -46,12 +46,15 @@ class Field:
   def unroute( self, dest ):
     return fieldUnroute( self, dest )
 
-#  def replaceRoute( self, dest, i ):
-#    return fieldReplaceRoute( self, dest )
+  def replaceRoute( self, dest, i ):
+    return fieldReplaceRoute( self, dest, i )
 
-#  def replaceRouteNoEvent( self, dest, i ):
-#    return fieldReplaceRouteNoEvent( self, dest, i )
+  def replaceRouteNoEvent( self, dest, i ):
+    return fieldReplaceRouteNoEvent( self, dest, i )
 
+  def unrouteAll( self ):
+    return fieldUnrouteAll( self )
+    
   def touch( self ):
     return fieldTouch( self )
 
