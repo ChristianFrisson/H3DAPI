@@ -26,22 +26,30 @@ class Field:
     createField( self, auto_update, module + "." + self.__class__.__name__ )
 
   ## Sets the local name of the field used in error reporting.
-  def setName(self, name):
+  def setName( self, name ):
     return fieldSetName( self, name )
 
   ## Gets the name of the field.
-  def getName(self):
+  def getName( self ):
     return fieldGetName( self )
     
   ## Gets the name of the field including the name of the owner node if it exists,
   ## ownername.fieldname.
-  def getFullName(self):
+  def getFullName( self ):
     return fieldGetFullName( self )
 
   ## Returns the X3D type of the field as a string, e.g. "SFString" 
   ## or "MFInt32"
-  def getTypeName(self):
+  def getTypeName( self ):
     return fieldGetTypeName( self )
+
+  ## Get the Node that contains this field.
+  def getOwner( self ):
+    return fieldGetOwner( self )
+
+  ## Set the Node that contains this field.
+  def setOwner( self, n ):
+    return fieldSetOwner( self, n )
 
   ## Set up a route from this field to another field. The function will
   ## generate an event to the destination field.
@@ -77,6 +85,14 @@ class Field:
   def touch( self ):
     return fieldTouch( self )
 
+  ## Returns true if this field is routed to the field given as argument.
+  def routesTo( self, f ):
+    return fieldRoutesTo( self, f )
+
+  ## Returns true if the field given as an argument is routed to this field.
+  def hasRouteFrom( self, f ):
+    return fieldHasRouteFrom( self, f )
+    
   ## Returns a tuple containing all the fields that are routed to this field. 
   def getRoutesIn( self ):
     return fieldGetRoutesIn( self )
@@ -85,12 +101,27 @@ class Field:
   def getRoutesOut( self ):
     return fieldGetRoutesOut( self )
 
+  ## Sets the field's access type.
+  ##
+  ## Possible values: INITIALIZE_ONLY, OUTPUT_INPUT, INPUT_ONLY, INPUT_OUTPUT.
+  ##
+  def setAccessType( self, access_type ):
+    return fieldSetAccessType( self, access_type )
+
   ## Returns a int constant describing the field's access type.
   ##
   ## Possible return values: INITIALIZE_ONLY, OUTPUT_INPUT, INPUT_ONLY, INPUT_OUTPUT.
   ##
   def getAccessType( self ):
     return fieldGetAccessType( self )
+
+  ## Set access type checking on or off.
+  def setAccessCheck( self, access_check ):
+    return fieldSetAccessCheck( self, access_check )
+
+  ## Returns true if checking of access types is on.
+  def isAccessCheckOn( self ):
+    return fieldIsAccessCheckOn( self )
 
   ## Set the value of the field from a string. String must be in the X3D/XML
   ## syntax and field must be a parsable field.

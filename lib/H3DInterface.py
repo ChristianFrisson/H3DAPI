@@ -25,17 +25,23 @@ class Field:
     module = self.__class__.__dict__["__module__"]
     createField( self, auto_update, module + "." + self.__class__.__name__ )
 
-  def setName(self, name):
+  def setName( self, name ):
     return fieldSetName( self, name )
 
-  def getName(self):
+  def getName( self ):
     return fieldGetName( self )
     
-  def getFullName(self):
+  def getFullName( self ):
     return fieldGetFullName( self )
  
-  def getTypeName(self):
+  def getTypeName( self ):
     return fieldGetTypeName( self )
+
+  def getOwner( self ):
+    return fieldGetOwner( self )
+
+  def setOwner( self, n ):
+    return fieldSetOwner( self, n )
 
   def route( self, dest ):
     return fieldRoute( self, dest )
@@ -58,14 +64,29 @@ class Field:
   def touch( self ):
     return fieldTouch( self )
 
+  def routesTo( self, f ):
+    return fieldRoutesTo( self, f )
+
+  def hasRouteFrom( self, f ):
+    return fieldHasRouteFrom( self, f )
+
   def getRoutesIn( self ):
     return fieldGetRoutesIn( self )
 
   def getRoutesOut( self ):
     return fieldGetRoutesOut( self )
 
+  def setAccessType( self, access_type ):
+    return fieldSetAccessType( self, access_type )
+
   def getAccessType( self ):
     return fieldGetAccessType( self )
+
+  def setAccessCheck( self, access_check ):
+    return fieldSetAccessCheck( self, access_check )
+
+  def isAccessCheckOn( self ):
+    return fieldIsAccessCheckOn( self )
 
   def setValueFromString( self, value ):
     return fieldSetValueFromString( self, value )

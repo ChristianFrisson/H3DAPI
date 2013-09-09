@@ -76,7 +76,13 @@ namespace H3D {
 
     PyObject *pythonFieldGetValue( PyObject *self, PyObject *arg );
 
+    PyObject *pythonFieldSetAccessType( PyObject *self, PyObject *arg );
+
     PyObject *pythonFieldGetAccessType( PyObject *self, PyObject *arg );
+
+    PyObject *pythonFieldSetAccessCheck( PyObject *self, PyObject *arg );
+
+    PyObject *pythonFieldIsAccessCheckOn( PyObject *self, PyObject *arg );
 
     PyObject *pythonFieldRoute( PyObject *self, PyObject *args );
 
@@ -109,6 +115,10 @@ namespace H3D {
     PyObject* pythonCreateVRMLNodeFromURL( PyObject *self, PyObject *arg );
 
     PyObject* pythonCreateVRMLNodeFromString( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldRoutesTo( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldHasRouteFrom( PyObject *self, PyObject *arg );
 
     PyObject* pythonFieldGetRoutesIn( PyObject *self, PyObject *arg );
 
@@ -171,6 +181,10 @@ namespace H3D {
     PyObject* pythonFieldGetFullName( PyObject *self, PyObject *arg );
 
     PyObject* pythonFieldGetTypeName( PyObject *self, PyObject *arg );
+
+    PyObject* pythonFieldGetOwner( PyObject *self, PyObject *arg );
+    
+    PyObject* pythonFieldSetOwner( PyObject *self, PyObject *arg );
 
     PyObject* pythonFieldGetValueAsString( PyObject *self, PyObject *arg );
 

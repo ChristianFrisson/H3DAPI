@@ -71,6 +71,12 @@ class Field:\n\
   def getTypeName(self):\n\
     return fieldGetTypeName( self )\n\
 \n\
+  def getOwner( self ):\n\
+    return fieldGetOwner( self )\n\
+\n\
+  def setOwner( self, n ):\n\
+    return fieldSetOwner( self, n )\n\
+\n\
   def route( self, dest ):\n\
     return fieldRoute( self, dest )\n\
 \n\
@@ -92,14 +98,29 @@ class Field:\n\
   def touch( self ):\n\
     return fieldTouch( self )\n\
 \n\
+  def routesTo( self, f ):\n\
+    return fieldRoutesTo( self, f )\n\
+\n\
+  def hasRouteFrom( self, f ):\n\
+    return fieldHasRouteFrom( self, f )\n\
+\n\
   def getRoutesIn( self ):\n\
     return fieldGetRoutesIn( self )\n\
 \n\
   def getRoutesOut( self ):\n\
     return fieldGetRoutesOut( self )\n\
 \n\
+  def setAccessType( self, access_type ):\n\
+    return fieldSetAccessType( self, access_type )\n\
+\n\
   def getAccessType( self ):\n\
     return fieldGetAccessType( self )\n\
+\n\
+  def setAccessCheck( self, access_check ):\n\
+    return fieldSetAccessCheck( self, access_check )\n\
+\n\
+  def isAccessCheckOn( self ):\n\
+    return fieldIsAccessCheckOn( self )\n\
 \n\
   def setValueFromString( self, value ):\n\
     return fieldSetValueFromString( self, value )\n\
