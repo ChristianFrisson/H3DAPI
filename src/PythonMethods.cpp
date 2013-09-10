@@ -44,6 +44,7 @@
 #include <H3D/VrmlParser.h>
 #include <H3D/Scene.h>
 #include <H3D/ResourceResolver.h>
+#include <H3D/Field.h>
 #include "H3DInterface.py.h"
 
 #include <sstream>
@@ -1110,13 +1111,13 @@ call the base class __init__ function." );
         long at = PyInt_AsLong( at_py );
         Field::AccessType access_type;
         if ( at == 0 )
-          access_type = Field::AccessType::INITIALIZE_ONLY;
+          access_type = Field::INITIALIZE_ONLY;
         else if ( at == 1 )
-          access_type = Field::AccessType::OUTPUT_ONLY;
+          access_type = Field::OUTPUT_ONLY;
         else if ( at == 2 )
-          access_type = Field::AccessType::INPUT_ONLY;
+          access_type = Field::INPUT_ONLY;
         else if ( at == 3 )
-          access_type = Field::AccessType::INPUT_OUTPUT;
+          access_type = Field::INPUT_OUTPUT;
         else {
           PyErr_SetString( PyExc_ValueError,
               "Error: Access type is not valid in H3D.fieldSetAccessType( self, access_type )" );
