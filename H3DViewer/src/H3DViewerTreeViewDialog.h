@@ -133,7 +133,8 @@ public:
   // are deleted.
   void updateNodeTree( wxTreeItemId tree_id, 
                        std::list< pair< H3D::Node *, string > >,
-                       ExpandMode expand = EXPAND_ALL );
+                       ExpandMode expand = EXPAND_ALL,
+											 bool check_if_expanded = true );
 
   // The time of the last update to the tree view.
   TimeStamp last_tree_update;
