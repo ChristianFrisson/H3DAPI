@@ -1915,9 +1915,12 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
 	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( the_console->GetScreenRect() ) ) && !the_console->Show()) {
+			GetScreenRect().Intersects( the_console->GetScreenRect() ) ) ) {
+		if( the_console->IsIconized() )
+			the_console->Iconize(false);
+		if( !the_console->Show())
 		// already shown, bring it up
-		the_console->SetFocus();
+			the_console->SetFocus();
 	}
 }
 
@@ -1926,14 +1929,20 @@ void WxFrame::ShowConsole(wxCommandEvent & event)
 void WxFrame::ShowProfiledResult(wxCommandEvent & event)
 {
 	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( the_profiled_result->GetScreenRect() ) ) && !the_profiled_result->Show()) {
-		the_profiled_result->SetFocus();
+			GetScreenRect().Intersects( the_profiled_result->GetScreenRect() ) ) ) 
+		if( the_profiled_result->IsIconized() )
+			the_profiled_result->Iconize(false);
+		if( !the_profiled_result->Show())
+		// already shown, bring it up
+			the_profiled_result->SetFocus();
 	}
 }
 #endif
 //Show console event
 void WxFrame::ShowTreeView(wxCommandEvent & event)
 {
+	if( tree_view_dialog->IsIconized() )
+		tree_view_dialog->Iconize(false);
 	if (!tree_view_dialog->Show()) {
 		// already shown, bring it up
 		tree_view_dialog->SetFocus();
@@ -1945,9 +1954,12 @@ void WxFrame::ShowProgramSettings(wxCommandEvent & event)
 {
 #ifdef HAVE_WXPROPGRID
 	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( program_settings_dialog->GetScreenRect() ) ) && !program_settings_dialog->Show()) {
-			// already shown, bring it up
-		program_settings_dialog->SetFocus();
+			GetScreenRect().Intersects( program_settings_dialog->GetScreenRect() ) ) ) {
+		if( program_settings_dialog->IsIconized() )
+			program_settings_dialog->Iconize(false);
+		if( !program_settings_dialog->Show())
+		// already shown, bring it up
+			program_settings_dialog->SetFocus();
 	}
 #endif
 }
@@ -1979,8 +1991,12 @@ void WxFrame::OnLoadTexturesInThreadCheck(wxCommandEvent & event)
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)
 {
 	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( plugins_dialog->GetScreenRect() ) ) && !plugins_dialog->Show()) {
-		plugins_dialog->Show();
+			GetScreenRect().Intersects( plugins_dialog->GetScreenRect() ) ) ) {
+		if( plugins_dialog->IsIconized() )
+			plugins_dialog->Iconize(false);
+		if( !plugins_dialog->Show())
+		// already shown, bring it up
+			plugins_dialog->SetFocus();
 	}
 }
 
@@ -1995,9 +2011,12 @@ void WxFrame::ShowFrameRate(wxCommandEvent & event)
   frameRates->haptics_rate->SetLabel( wxT("1000") );
   frameRates->haptics_time->SetLabel( wxT("100") );
 	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( frameRates->GetScreenRect() ) ) && !frameRates->Show()) {
-			// already shown, bring it up
-		frameRates->SetFocus();
+			GetScreenRect().Intersects( frameRates->GetScreenRect() ) ) ) {
+		if( frameRates->IsIconized() )
+			frameRates->Iconize(false);
+		if( !frameRates->Show())
+		// already shown, bring it up
+			frameRates->SetFocus();
 	}
 }
 
