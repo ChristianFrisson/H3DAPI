@@ -1404,15 +1404,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
         const XMLCh *copy_value = attrs.getValue( gCOPY );
         bool proto_instance = false;
 
-        if( localname_string == "ProtoInstance" ) {
-          // if a ProtoInstance create a new instance of the prototype.
-          new_node = handleProtoInstanceElement( attrs );
-                  // remove the initialization that occurs on first reference
-          // since we don't want it to occur until all child nodes
-          // have been created and set.
-                  if( new_node ) new_node->setManualInitialize( true );
-          proto_instance = true;
-        } else if( use_name ) {
+        if( use_name ) {
           // if we have a USE attribute, lookup the matching node and use that.
           new_node = DEF_map->getNode( toString( use_name ) );
           if ( toString(copy_value) == "true" && new_node )
@@ -1447,34 +1439,44 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
           }
         } else {
           // the element is a node declaration so create a new Node.
-          try {
-            new_node = 
-              H3DNodeDatabase::createNode( localname_string );
-            if( !new_node ) {
-              Console(3) << "WARNING: Could not create \"" << localname 
-                   << "\" node. It does not exist in the H3DNodeDatabase " 
-                   << getLocationString() << endl;
-            } else {
-              // remove the initialization that occurs on first reference
-              // since we don't want it to occur until all child nodes
-              // have been created and set.
-              new_node->setManualInitialize( true );
+          if( localname_string == "ProtoInstance" ) {
+            // if a ProtoInstance create a new instance of the prototype.
+            new_node = handleProtoInstanceElement( attrs );
+            // remove the initialization that occurs on first reference
+            // since we don't want it to occur until all child nodes
+            // have been created and set.
+            if( new_node ) new_node->setManualInitialize( true );
+            proto_instance = true;
+          } else {
+            try {
+              new_node = 
+                H3DNodeDatabase::createNode( localname_string );
+              if( !new_node ) {
+                Console(3) << "WARNING: Could not create \"" << localname 
+                     << "\" node. It does not exist in the H3DNodeDatabase " 
+                     << getLocationString() << endl;
+              } else {
+                // remove the initialization that occurs on first reference
+                // since we don't want it to occur until all child nodes
+                // have been created and set.
+                new_node->setManualInitialize( true );
 
-              // if node is a script node add the current named nodes
-              // from the current DEF_map and store the node in the 
-              // script_nodes vector. When parsing is done the named
-              // nodes will be updated in all scripts to contain
-              // all named nodes from the parsed file.
-              if( H3DScriptNode *script_node = 
-                  dynamic_cast< H3DScriptNode * >( new_node ) ) {
-                script_node->addNamedNodes( DEF_map );
-                script_nodes.push_back( script_node );
-              } 
+                // if node is a script node add the current named nodes
+                // from the current DEF_map and store the node in the 
+                // script_nodes vector. When parsing is done the named
+                // nodes will be updated in all scripts to contain
+                // all named nodes from the parsed file.
+                if( H3DScriptNode *script_node = 
+                    dynamic_cast< H3DScriptNode * >( new_node ) ) {
+                  script_node->addNamedNodes( DEF_map );
+                  script_nodes.push_back( script_node );
+                } 
+              }
+            } catch (  const H3D::Exception::H3DException &e ) {
+              Console(3) << "WARNING: Could not create \"" << localname 
+                   << "\" node. Exception in constructor: "
+                   << e << " " << getLocationString() << endl;
             }
-          } catch (  const H3D::Exception::H3DException &e ) {
-            Console(3) << "WARNING: Could not create \"" << localname 
-                 << "\" node. Exception in constructor: "
-                 << e << " " << getLocationString() << endl;
           }
         }
         string container_field = new_node ?

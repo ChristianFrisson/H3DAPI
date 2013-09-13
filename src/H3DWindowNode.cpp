@@ -241,6 +241,7 @@ void H3DWindowNode::initialize() {
   initWindowWithContext();
 
   if( !GLEW_init ) {
+    glewExperimental = GL_TRUE;
     GLenum err = glewInit();
     if (GLEW_OK != err) {
       stringstream s;
@@ -266,6 +267,7 @@ void H3DWindowNode::initialize() {
 
   // configure OpenGL context for rendering.
   glEnable( GL_DEPTH_TEST );
+  glGetError(); // Clear error flag caused by bug in glewInit()
   glDepthFunc( GL_LESS );
   glDepthMask( GL_TRUE );
   glEnable( GL_LIGHTING );
