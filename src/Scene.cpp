@@ -299,6 +299,7 @@ void Scene::idle() {
   shadow_caster->light->clear();
   
   DeviceInfo *di = DeviceInfo::getActive();
+	X3DChildNode *scene_root = static_cast< X3DChildNode * >( sceneRoot->getValue() );
   if( di ) {
     vector< H3DHapticsDevice * > hds;
     // update the values for all H3DHapticsDevices
@@ -326,12 +327,11 @@ void Scene::idle() {
 
     ti->setUserData( "ShadowCaster", shadow_caster.get() );
 
-    X3DChildNode *c = static_cast< X3DChildNode * >( sceneRoot->getValue() );
 #ifdef HAVE_PROFILER
     H3DUtil::H3DTimer::stepBegin("Scene_traverse");
 #endif
-    if( c ) {
-      c->traverseSG( *ti );
+    if( scene_root ) {
+      scene_root->traverseSG( *ti );
     }
 #ifdef HAVE_PROFILER
     H3DUtil::H3DTimer::stepEnd("Scene_traverse");
@@ -400,12 +400,11 @@ void Scene::idle() {
     TraverseInfo *ti = new TraverseInfo( vector< H3DHapticsDevice * >() );
     ti->setUserData( "ShadowCaster", shadow_caster.get() );
     ti->disableHaptics();
-    X3DChildNode *c = static_cast< X3DChildNode *>( sceneRoot->getValue() );
 #ifdef HAVE_PROFILER
     H3DUtil::H3DTimer::stepBegin("Scene_traverse");
 #endif
-    if( c ) {
-      c->traverseSG( *ti );
+    if( scene_root ) {
+      scene_root->traverseSG( *ti );
     }
 #ifdef HAVE_PROFILER
     H3DUtil::H3DTimer::stepEnd("Scene_traverse");
@@ -458,7 +457,7 @@ void Scene::idle() {
     if( used_mpt != window->getMultiPassTransparency() ) {
       H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
     }
-    window->render( static_cast< X3DChildNode * >( sceneRoot->getValue() ) );
+    window->render( scene_root );
   }
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::stepEnd("Graphic_rendering");

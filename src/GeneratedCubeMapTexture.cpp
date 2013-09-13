@@ -321,9 +321,9 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
 }
 
 
-/// Updates the cube map textures of all instances of 
-/// GeneratedCubeMapTexture. The update field will be checked to 
-/// see if an update is required. 
+// Updates the cube map textures of all instances of 
+// GeneratedCubeMapTexture. The update field will be checked to 
+// see if an update is required. 
 void GeneratedCubeMapTexture::renderPreViewpoint( X3DChildNode *n,
                                                   X3DViewpointNode *vp ) {
   const string &update_string = update->getValue();

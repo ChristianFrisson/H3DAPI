@@ -153,7 +153,7 @@ bool ComposedShader::addField( const string &name,
   // as the id for field.
   // For shader program, the name in dynamic field will match the field in shader
   
-  if( uniformFields.find( name )!=uniformFields.end() ) {
+  if( !field || uniformFields.find( name )!=uniformFields.end() ) {
     // different shader part may add the same field with same name
     // we do not need to add it again into the map.
       return false;
@@ -545,7 +545,7 @@ void ComposedShader::SetupDynamicRoutes::update() {
       tmp_node_vector.push_back( n );
       fields_to_nodes[ event.ptr ] = tmp_node_vector;
     }
-  } else {
+  } else if( mf_node_field ) {
     // Setup routes for all nodes contained in mf_node_field.
     // Add entry to map to remove later.
     const NodeVector &node_vector = mf_node_field->getValue();

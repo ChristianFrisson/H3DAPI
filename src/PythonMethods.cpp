@@ -3057,7 +3057,6 @@ call the base class __init__ function." );
        PyObject_GetAttrString( py_field, "__fieldptr__" ); //ref
 
      if( !py_field_ptr ) {
-       Py_DECREF( py_field_ptr );
        PyErr_SetString( PyExc_ValueError, 
                         "Invalid argument 0 to function addProgramSettings. Expecting Field type" );
         return NULL;

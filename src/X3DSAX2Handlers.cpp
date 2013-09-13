@@ -737,7 +737,7 @@ void X3DSAX2Handlers::handleConnectElement( const Attributes &attrs,
 #endif
       
       // Lookup the nodes and fields and set up the route.
-      Field *node_field = parent->getField( toString( node_field_name ) ); 
+      Field *node_field = parent == NULL ? NULL : parent->getField( toString( node_field_name ) ); 
       Field *proto_field = 
         proto_instance->getField( toString( proto_field_name ) );
       

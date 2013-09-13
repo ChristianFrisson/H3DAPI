@@ -190,11 +190,15 @@ void MatrixTransform::SFTransformedBound::update() {
     value = new InfiniteBound;
   } else if( dynamic_cast< EmptyBound * >( bound ) ) {
     value = new EmptyBound;
-  } else {
+  } else if( bound ) {
     stringstream s;
     s << "Unsupported Bound type " << typeid( *bound ).name();
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-  }
+  } else {
+		stringstream s;
+    s << "Bound is NULL. Congratulations, you found a bug. Please file a bug report.";
+    throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
+	}
 }
 
 bool MatrixTransform::movingSphereIntersect( H3DFloat radius,

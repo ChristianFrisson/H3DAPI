@@ -195,6 +195,7 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
   // set up clip plane to clip everything behind the mirror
   glMultMatrixf( t );
   GLint front_face;
+	glGetIntegerv( GL_FRONT_FACE, &front_face );
   // Make sure that there are enough free clip plane indicies and
   // use the correct one and increase nr_active_clip_planes so that
   // ClipPlane nodes work fine.
@@ -213,7 +214,6 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
     
     // reflection matrix contains a negative scaling so we need to change
     // front face.
-    glGetIntegerv( GL_FRONT_FACE, &front_face );
     if( front_face == GL_CW ) {
       // we are in mirrored mode, so we have to set the front face
         // to the opposite in order for it to be right when mirrored.

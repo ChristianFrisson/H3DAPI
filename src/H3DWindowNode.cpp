@@ -717,7 +717,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   // add headlight shadows if specified in NavigationInfo
   Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
-  TraverseInfo *ti = scene->getLastTraverseInfo();
+  TraverseInfo *ti = scene == NULL ? NULL : scene->getLastTraverseInfo();
   ShadowCaster *shadow_caster = NULL;
   if( ti ) {
     ti->getUserData( "ShadowCaster",  (void **)&shadow_caster);

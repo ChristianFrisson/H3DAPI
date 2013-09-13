@@ -200,7 +200,7 @@ void TextureBackground::render() {
     }
 
     if( top_texture ) {
-      glPushAttrib( front_texture->getAffectedGLAttribs() );
+      glPushAttrib( top_texture->getAffectedGLAttribs() );
       top_texture->preRender();
       top_texture->displayList->callList();
       glBegin( GL_QUADS );

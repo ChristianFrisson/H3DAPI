@@ -102,7 +102,7 @@ void SplineScalarInterpolator::SFValue::update() {
   vector< H3DFloat > key=interpolator->key->getValue();
   //MFFloat keyValue=interpolator->keyValue->getValue();
   vector< H3DFloat >  T;
-  H3DFloat T0;
+  H3DFloat T0 = 0;
   H3DFloat T1;
   vector< H3DFloat > F1;
   vector< H3DFloat > F2;

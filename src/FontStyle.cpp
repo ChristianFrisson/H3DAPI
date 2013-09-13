@@ -116,6 +116,7 @@ LONG GetNameValue(HKEY key, LPCTSTR subkey, LPCTSTR valuename, LPTSTR retdata)
 
 ///////////////////////////////////////////////////////////////////////////////
 // GetNextNameValue
+// NOTE: Never call this function unless subkey, szName, szData are all NULL or all not NULL.
 LONG GetNextNameValue(HKEY key, LPCTSTR subkey, LPTSTR szName, LPTSTR szData)
 {
   static HKEY hkey = NULL;
