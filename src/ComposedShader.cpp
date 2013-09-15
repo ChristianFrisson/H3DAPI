@@ -541,6 +541,7 @@ void ComposedShader::SetupDynamicRoutes::update() {
       dynamic_cast< H3DDisplayListObject * >( n );
     if( hdln ) {
       hdln->displayList->route( cs->displayList, cs->id );
+      cs->activate->setValue( true );
       NodeVector tmp_node_vector;
       tmp_node_vector.push_back( n );
       fields_to_nodes[ event.ptr ] = tmp_node_vector;
@@ -555,6 +556,7 @@ void ComposedShader::SetupDynamicRoutes::update() {
         dynamic_cast< H3DDisplayListObject * >( node_vector[i] );
       if( hdln ) {
         hdln->displayList->route( cs->displayList, cs->id );
+        cs->activate->setValue( true );
         tmp_node_vector.push_back( node_vector[i] );
       }
     }
