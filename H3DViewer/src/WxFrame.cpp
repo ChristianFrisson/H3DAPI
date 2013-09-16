@@ -1929,7 +1929,7 @@ void WxFrame::ShowConsole(wxCommandEvent & event)
 void WxFrame::ShowProfiledResult(wxCommandEvent & event)
 {
 	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( the_profiled_result->GetScreenRect() ) ) ) 
+			GetScreenRect().Intersects( the_profiled_result->GetScreenRect() ) ) ) {
 		if( the_profiled_result->IsIconized() )
 			the_profiled_result->Iconize(false);
 		if( !the_profiled_result->Show())

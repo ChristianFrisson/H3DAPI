@@ -527,8 +527,10 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindGLEW.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindGLUTWin.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DAPI.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindH3DBZip2.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DCURL.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DOpenAL.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindH3DTEEM.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DUtil.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DZLIB.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindHAPI.cmake
@@ -537,7 +539,6 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindOpenHaptics.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindPTHREAD.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindSpiderMonkey.cmake
-                 ${H3DAPI_SOURCE_DIR}/modules/FindH3DTEEM.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindV8.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindVirtualHand.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindVorbis.cmake
