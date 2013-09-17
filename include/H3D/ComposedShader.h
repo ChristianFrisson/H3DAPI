@@ -67,7 +67,8 @@ namespace H3D {
   /// \dotfile ComposedShader.dot
   /// 
 
-  
+
+//#define EXPORT_SHADER
   
   class H3DAPI_API ComposedShader : 
     public X3DShaderNode, 
@@ -87,6 +88,17 @@ namespace H3D {
                              true >
     MFShaderPart;
 
+#ifdef EXPORT_SHADER
+    /// UpdateSaveShadersToUrl 
+    class H3DAPI_API UpdateSaveShadersToUrl: public OnNewValueSField < AutoUpdate < SFString > >
+    {
+      protected:
+        virtual void onNewValue( const std::string &v );
+    };
+    
+
+#endif
+
     /// Constructor.
     ComposedShader( Inst< DisplayList  > _displayList = 0,
                     Inst< SFNode       > _metadata    = 0,
@@ -100,7 +112,12 @@ namespace H3D {
                     Inst< SFString     > _geometryOutputType = 0,
                     Inst< SFInt32      > _geometryVerticesOut = 0,
                     Inst< SFString     > _transparencyDetectMode = 0,
-                    Inst< MFString     > _transformFeedbackVaryings = 0 );
+                    Inst< MFString     > _transformFeedbackVaryings = 0
+#ifdef EXPORT_SHADER
+                    ,
+                    Inst< UpdateSaveShadersToUrl > _saveShadersToUrl = 0
+#endif
+                    );
 
     /// The addField method is specialized to add a route from the field
     /// added to the displayList field.
@@ -139,6 +156,12 @@ namespace H3D {
     GLhandleARB getProgramHandle() {
       return program_handle;
     }
+   
+#ifdef EXPORT_SHADER
+    /// field to update shader program exporting
+    auto_ptr< UpdateSaveShadersToUrl > saveShadersToUrl;
+#endif
+    
 
     /// The shader parts to use in the ComposedShader 
     ///

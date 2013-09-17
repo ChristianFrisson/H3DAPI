@@ -32,6 +32,7 @@
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
 
+#include<fstream>
 #include<sstream>
 #include<algorithm>
 
@@ -58,6 +59,9 @@ namespace ComposedShaderInternals {
   FIELDDB_ELEMENT( ComposedShader, geometryVerticesOut, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, transparencyDetectMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, transformFeedbackVaryings, INPUT_OUTPUT );
+#ifdef EXPORT_SHADER
+  FIELDDB_ELEMENT( ComposedShader, saveShadersToUrl, INPUT_OUTPUT );
+#endif
 }
 
 ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
@@ -72,7 +76,12 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFString     > _geometryOutputType,
                                 Inst< SFInt32      > _geometryVerticesOut,
                                 Inst< SFString     > _transparencyDetectMode,
-                                Inst< MFString     > _transformFeedbackVaryings ) :
+                                Inst< MFString     > _transformFeedbackVaryings
+#ifdef EXPORT_SHADER
+                                ,
+                                Inst< UpdateSaveShadersToUrl > _saveShadersToUrl
+#endif
+                                ) :
   X3DShaderNode( _displayList, _metadata, _isSelected, 
                  _isValid, _activate, _language),
   X3DProgrammableShaderObject( &database ),
@@ -83,6 +92,9 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   geometryVerticesOut( _geometryVerticesOut ),
   transparencyDetectMode( _transparencyDetectMode ),
   transformFeedbackVaryings ( _transformFeedbackVaryings ),
+#ifdef EXPORT_SHADER
+  saveShadersToUrl( _saveShadersToUrl ),
+#endif
   program_handle( 0 ),
   setupDynamicRoutes( new SetupDynamicRoutes ),
   updateUniforms ( new UpdateUniforms ) {
@@ -611,3 +623,109 @@ void ComposedShader::UpdateUniforms::update() {
   }
   EventCollectingField < Field >::update();
 }
+
+#ifdef EXPORT_SHADER
+
+
+void ComposedShader::UpdateSaveShadersToUrl::onNewValue( const std::string &v ){
+  // when url string changed, re export the shaders
+  ComposedShader* cs = static_cast< ComposedShader* >( getOwner() );
+  if( v.empty() ) return;
+  GLenum error = glGetError();
+  vector< GLhandleARB > handlers = cs->current_shaders;
+  ofstream outFile;
+  for( vector< GLhandleARB >::iterator it = handlers.begin(); it != handlers.end(); it++ ) {
+    GLint shader_type;
+    GLsizei shader_length;
+    const GLsizei MAX_SHADER_LENGTH = 1000000;
+    GLchar shader_content[MAX_SHADER_LENGTH];
+    glGetShaderiv( *it, GL_SHADER_TYPE, &shader_type );
+    error = glGetError();
+    if( error!=GL_NO_ERROR ) {
+      Console(4)<<" Warning: get shader type error: "<<gluErrorString(error)<<endl;
+      continue;
+    }
+    glGetShaderSource( *it, MAX_SHADER_LENGTH, &shader_length, shader_content  );
+    error = glGetError();
+    if( error!=GL_NO_ERROR ) {
+      Console(4)<<" Warning: extract shader information error: "<<gluErrorString(error)<<endl;
+      continue;
+    }
+    //glewGetString( shader_type );
+    switch (shader_type)
+    {
+    case GL_VERTEX_SHADER_ARB:
+      outFile.open( v+"_vertex_shader.txt" );
+      outFile<< "shader type is vertex shader, content is:"<<endl;
+      outFile<< shader_content <<endl;
+      outFile.close();
+      break;
+    case GL_FRAGMENT_SHADER_ARB:
+      outFile.open( v+"_fragment_shader.txt" );
+      outFile<< "shader type is fragment shader:"<<endl;
+      outFile<< shader_content <<endl;
+      outFile.close();
+      break;
+    case GL_GEOMETRY_SHADER_ARB:
+      outFile.open( v+"_geometry_shader.txt" );
+      outFile<< "geometry shader:"<<endl;
+      outFile<< shader_content <<endl;
+      outFile.close();
+      break;
+    case GL_TESS_CONTROL_SHADER:
+      outFile.open( v+"_tess_cont_shader.txt" );
+      outFile<< "Tessellation control shader: "<<endl;
+      outFile<< shader_content <<endl;
+      outFile.close();
+      break;
+    case GL_TESS_EVALUATION_SHADER:
+      outFile.open( v+"_tess_eva_shader.txt" );
+      outFile<< "Tessellation evaluation shader: "<<endl;
+      outFile<< shader_content <<endl;
+      outFile.close();
+      break;
+    default:
+      Console(4)<<"shader type unsupported yet"<<endl;
+    }
+  }
+  //Console(4)<<"will output shader uniform"<<endl;
+  outFile.open( v+"_shader_uniforms.txt" );
+  //Console(4)<<"shader uniform txt opened."<<endl;
+  int total = -1;
+  GLhandleARB program_id = cs->getProgramHandle();
+
+  glGetProgramiv( program_id , GL_ACTIVE_UNIFORMS, &total ); 
+  outFile<<"current active uniform values:"<<endl;
+  for(int i=0; i<total; ++i)  {
+    int name_len=-1, num=-1;
+    GLenum type = GL_ZERO;
+    char name[256];
+    glGetActiveUniform( program_id, GLuint(i), sizeof(name)-1,
+      &name_len, &num, &type, name );
+    name[name_len] = 0;
+    GLuint location = glGetUniformLocation( program_id, name );
+    float uniform_value[50];
+    glGetUniformfvARB( program_id, location, uniform_value  );
+    outFile<< name <<" : " ;
+    switch ( type )
+    {
+    case GL_FLOAT:
+    case GL_INT:
+    case GL_BOOL:
+    case GL_DOUBLE:
+      outFile<<uniform_value[0] <<endl;
+      break;
+    case GL_FLOAT_VEC3:
+    case GL_BOOL_VEC3:
+    case GL_INT_VEC3:
+    case GL_DOUBLE_VEC3_EXT:
+      outFile<<uniform_value[0] <<" , " << uniform_value[1] <<
+      " , " << uniform_value[2]<< endl;
+      break;
+    default:
+      outFile<<"unsupported uniform type!"<<endl;
+    }
+  }
+  outFile.close();
+}
+#endif
