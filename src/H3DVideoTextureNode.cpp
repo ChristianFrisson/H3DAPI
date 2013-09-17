@@ -48,15 +48,20 @@ void H3DVideoTextureNode::render() {
   unsigned int required_frame_bytes = 
     decoder->getFrameSize();
 
+  if( required_frame_bytes == 0 ) return;
+
   if( frame_bytes_allocated != required_frame_bytes ) {
     unsigned char *buffer = new unsigned char[ required_frame_bytes ];
-    image->setValue( new PixelImage( decoder->getFrameWidth(),
+    PixelImage *pi = new PixelImage( decoder->getFrameWidth(),
                                      decoder->getFrameHeight(),
                                      1, 
                                      decoder->getFrameBitsPerPixel(),
                                      decoder->getFramePixelType(),
                                      decoder->getFramePixelComponentType(),
-                                     buffer ) );
+                                     buffer ) ;
+    pi->setByteAlignment( decoder->getFrameByteAlignment() ) ;
+    image->setValue( pi );
+
     frame_bytes_allocated = required_frame_bytes;
     X3DTexture2DNode::render();
   } else {
@@ -72,11 +77,11 @@ void H3DVideoTextureNode::render() {
       unsigned int height = pi->height();
       bool free_image_data = false;
       void *image_data = pi->getImageData();
-      
+      glPixelStorei( GL_UNPACK_ALIGNMENT, pi->byteAlignment() );
       glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 
                        width, height, 
-                       GL_RGB,
-                       GL_UNSIGNED_BYTE,
+                       glPixelFormat( pi ),
+                       glPixelComponentType( pi ),
                        image_data );
       if( free_image_data ) free( image_data );
       

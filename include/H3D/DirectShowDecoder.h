@@ -177,11 +177,16 @@ struct __declspec(uuid("{71771540-2017-11cf-ae26-0020afd79767}")) CLSID_TextureR
 
     /// The size in bytes of the current frame.
     virtual unsigned int getFrameSize() { 
-      return frame_width * frame_height * 3; 
+      return frame_size;
+    }
+
+    /// The byte alignment of each row in the buffer data from getNewFrame.
+    virtual unsigned int getFrameByteAlignment() {
+      return 4;
     }
 
     /// The pixel type of the current frame.
-    virtual Image::PixelType getFramePixelType() { return Image::RGB; }
+    virtual Image::PixelType getFramePixelType() { return Image::BGR; }
     
     /// The pixel component type of the current frame.
     virtual Image::PixelComponentType getFramePixelComponentType() { 
@@ -218,7 +223,10 @@ struct __declspec(uuid("{71771540-2017-11cf-ae26-0020afd79767}")) CLSID_TextureR
     /// The height in pixels of the frame.
     unsigned int frame_height;
 
-    /// The size in bytes of the data.
+    /// The size in bytes of a frame.
+    unsigned int frame_size;
+
+    /// The size in bytes of the memory allocated in the data member.
     unsigned int data_size;
 
     /// The latest frame.

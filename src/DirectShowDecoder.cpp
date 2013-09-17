@@ -51,6 +51,62 @@ DirectShowDecoder::reader_registration(
                             &DirectShowDecoder::supportsFileType 
                             );
 
+
+HRESULT GetPin(IBaseFilter *pFilter, PIN_DIRECTION PinDir, IPin **ppPin)
+{
+    IEnumPins  *pEnum = NULL;
+    IPin       *pPin = NULL;
+    HRESULT    hr;
+
+    if (ppPin == NULL)
+    {
+        return E_POINTER;
+    }
+
+    hr = pFilter->EnumPins(&pEnum);
+    if (FAILED(hr))
+    {
+        return hr;
+        }
+
+    while(pEnum->Next(1, &pPin, 0) == S_OK)
+    {
+        PIN_DIRECTION PinDirThis;
+        hr = pPin->QueryDirection(&PinDirThis);
+        if (FAILED(hr))
+        {
+            pPin->Release();
+            pEnum->Release();
+            return hr;
+        }
+
+        bool supports_video = false;
+        
+        IEnumMediaTypes *pEnumMediaTypes;
+        pPin->EnumMediaTypes( &pEnumMediaTypes );
+        AM_MEDIA_TYPE *t;
+        while(pEnumMediaTypes->Next(1, &t, 0) == S_OK) {
+          if( IsEqualGUID( t->majortype, MEDIATYPE_Video) || 
+              IsEqualGUID( t->majortype, MEDIATYPE_Stream)) {
+            supports_video = true;
+          }
+        }
+                
+        if (PinDir == PinDirThis && supports_video ) {
+          // Found a match. Return the IPin pointer to the caller.
+          *ppPin = pPin;
+          pEnum->Release();
+          return S_OK;
+        }
+        
+        // Release the pin for the next time through the loop.
+        pPin->Release();
+    }
+    // No more pins. We did not find a match.
+    pEnum->Release();
+    return E_FAIL;  
+}
+
 HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
 {
     HRESULT hr = S_OK;
@@ -116,7 +172,8 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
       return hr;
     }
 
-    if (FAILED(hr = pFSrc->FindPin(L"Output", &pFSrcPinOut))) {
+    //if (FAILED(hr = pFSrc->FindPin(L"Output", &pFSrcPinOut))) {
+    if (FAILED(hr = GetPin( pFSrc, PINDIR_OUTPUT, &pFSrcPinOut))) {
 #ifdef DSHOW_DEBUG_MSG
       Console(4) << "Could not find output pin! " 
                  << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
@@ -191,10 +248,10 @@ void DirectShowDecoder::cleanupDShow(void)
     if (!(!g_pMS)) g_pMS.Release();
     if (!(!g_pGB)) g_pGB.Release();
     if (!(!g_pRenderer)) g_pRenderer.Release();
-		if( data ) {
-			delete[] data;
-			data = NULL;
-		}
+                if( data ) {
+                        delete[] data;
+                        data = NULL;
+                }
     duration = 0;
 }
 
@@ -202,6 +259,7 @@ void DirectShowDecoder::cleanupDShow(void)
 DirectShowDecoder::DirectShowDecoder( )
                                   : frame_width( 0 ),
                                     frame_height( 0 ),
+                                    frame_size( 0 ),
                                     data_size( 0 ),
                                     data( NULL ), 
                                     have_new_frame( false ),
@@ -257,6 +315,7 @@ HRESULT DirectShowDecoder::CFrameGrabber::SetMediaType(const CMediaType *pmt) {
     VIDEOINFO *pviBmp;                      // Bitmap info header
     pviBmp = (VIDEOINFO *)pmt->Format();
 
+    decoder->frame_size = pviBmp->bmiHeader.biSizeImage;
     decoder->frame_width  = pviBmp->bmiHeader.biWidth;
     decoder->frame_height = abs(pviBmp->bmiHeader.biHeight);
 
@@ -275,13 +334,12 @@ HRESULT DirectShowDecoder::CFrameGrabber::DoRenderSample( IMediaSample * pSample
     // Get the video bitmap buffer
     pSample->GetPointer( &pBmpBuffer );
     
-    unsigned int bytes_to_copy = decoder->getFrameSize();
+    unsigned int bytes_to_copy = pSample->GetSize();
     if( decoder->data_size < bytes_to_copy ) {
       if( decoder->data ) delete[] decoder->data;
       decoder->data = new unsigned char[ bytes_to_copy ];
       decoder->data_size = bytes_to_copy;
     }
-
     memcpy( decoder->data, pBmpBuffer, bytes_to_copy );
     decoder->have_new_frame = true;
 
@@ -382,12 +440,12 @@ bool DirectShowDecoder::supportsFileType( const string &url ) {
 H3DTime DirectShowDecoder::getPosition() {
   LONGLONG pos;
   if( g_pMS ) {
-		// Set time format to be expressed in nano seconds, then get it and
-		// convert to seconds.
-		if( SUCCEEDED( g_pMS->SetTimeFormat( &TIME_FORMAT_MEDIA_TIME ) ) &&
-				SUCCEEDED( g_pMS->GetCurrentPosition(&pos) ) ) {
-			return H3DTime(pos / 10000000.0);
-		}
+                // Set time format to be expressed in nano seconds, then get it and
+                // convert to seconds.
+                if( SUCCEEDED( g_pMS->SetTimeFormat( &TIME_FORMAT_MEDIA_TIME ) ) &&
+                                SUCCEEDED( g_pMS->GetCurrentPosition(&pos) ) ) {
+                        return H3DTime(pos / 10000000.0);
+                }
   }
   return 0;
 }

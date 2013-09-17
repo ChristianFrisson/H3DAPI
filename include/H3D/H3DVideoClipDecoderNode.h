@@ -111,6 +111,11 @@ namespace H3D {
     /// The pixel type of the current frame.
     virtual Image::PixelType getFramePixelType() = 0;
 
+    /// The byte alignment of each row in the buffer data from getNewFrame.
+    virtual unsigned int getFrameByteAlignment() {
+      return 1;
+    }
+
     /// The pixel component type of the current frame.
     virtual Image::PixelComponentType getFramePixelComponentType() = 0;
 
