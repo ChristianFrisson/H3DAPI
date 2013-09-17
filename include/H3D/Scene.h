@@ -38,9 +38,6 @@
 
 // HAPI includes
 #include <H3DUtil/Threads.h>
-#ifdef HAVE_PROFILER
-#include <H3DUtil/H3DTimer.h>
-#endif
 #include <vector>
 
 

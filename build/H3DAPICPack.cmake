@@ -521,7 +521,6 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindDirectX.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFFmpeg.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFontConfig.cmake
-                 ${H3DAPI_SOURCE_DIR}/modules/FindFreeImage.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFreeType.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFTGL.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindGLEW.cmake
@@ -529,6 +528,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DAPI.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DBZip2.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DCURL.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindH3DFreetype.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DOpenAL.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DTEEM.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindH3DUtil.cmake
