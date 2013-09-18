@@ -44,7 +44,7 @@ namespace SimpleMovieTextureInternals {
   FIELDDB_ELEMENT( SimpleMovieTexture, stop, INPUT_ONLY );
   FIELDDB_ELEMENT( SimpleMovieTexture, pause, INPUT_ONLY );
   FIELDDB_ELEMENT( SimpleMovieTexture, duration, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( SimpleMovieTexture, rate, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( SimpleMovieTexture, rate, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SimpleMovieTexture, videoWidth, OUTPUT_ONLY );
   FIELDDB_ELEMENT( SimpleMovieTexture, videoHeight, OUTPUT_ONLY );
   FIELDDB_ELEMENT( SimpleMovieTexture, loop, INPUT_OUTPUT );
@@ -129,7 +129,7 @@ void SimpleMovieTexture::DecoderManager::update() {
   } else if( event.ptr == routes_in[3] ) {
     // loop
     if( tex->decoder.get() )
-      tex->decoder->setLooping( static_cast< SFBool * >( routes_in[2] )->getValue( tex->id ) );
+      tex->decoder->setLooping( static_cast< SFBool * >( routes_in[3] )->getValue( tex->id ) );
   } else if( event.ptr == routes_in[4] ) {
     // url
     MFString *urls = static_cast< MFString * >( routes_in[4] );
@@ -168,7 +168,7 @@ void SimpleMovieTexture::DecoderManager::update() {
     H3DFloat rate =static_cast< SFFloat * >( routes_in[5] )->getValue( tex->id );
     if( tex->decoder.get() ) {
       if(! tex->decoder->setRate( rate ) ) {
-        Console(2) << "Warning: Unable to set rate to " << rate 
+        Console(3) << "Warning: Unable to set rate to " << rate 
                    << ". Rate not supported by decoder ( " 
                    << tex->decoder->getName() << " in " 
                    << tex->getName() << endl;
