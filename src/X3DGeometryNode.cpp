@@ -347,15 +347,66 @@ unsigned int X3DGeometryNode::DisplayList::cachingDelay(){
     GlobalSettings *default_settings = GlobalSettings::getActive();
     if( default_settings&&default_settings->optionNodesUpdated() ) {
       default_settings->getOptionNode( options );
-      if( options ) {
-        cache_delay_previous = options->cachingDelay->getValue();
+      if( options ) {// update graphic options
+        graphic_options_previous = options;
+        //cache_delay_previous = options->cachingDelay->getValue();
+        return options->cachingDelay->getValue();
+      }else{
+        // global setting change in last frame, but no graphic in it now
+        graphic_options_previous = NULL;
+        return cache_delay_default;
       }
-      return cache_delay_previous;
-    }else if( default_settings ) { // global setting option node no need to update
-      return cache_delay_previous;
+    }
+    else if( default_settings ) { 
+      // global setting option node exist but not updated
+      if( graphic_options_previous!=NULL ) {
+        return graphic_options_previous->cachingDelay->getValue();
+      }else{
+        return cache_delay_default;
+      }
     }else{
+      // no global settings at all now
+      graphic_options_previous = NULL;
       return cache_delay_default;
     }
+  }
+}
+
+bool X3DGeometryNode::DisplayList::usingCaching(){
+  X3DGeometryNode *geom = static_cast< X3DGeometryNode * >( getOwner() );
+
+
+  if( cache_mode == ON ) return true;
+  if( cache_mode == OFF ) return false;
+
+  GraphicsOptions *options = NULL;
+
+  geom->getOptionNode( options );
+  if( !options ) {// no local option, try to use global setting
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings&&default_settings->optionNodesUpdated() ) {
+      default_settings->getOptionNode( options );
+      if( options ) { // global graphic option exist and need update
+        graphic_options_previous = options;
+        return options->useCaching->getValue();
+      }else{
+        // no graphic option in updated global setting
+        graphic_options_previous = NULL;
+        return true;
+      }
+    }else if( default_settings ) {// global setting exit but no option updated
+      if( graphic_options_previous!=NULL ) {
+        return graphic_options_previous->useCaching->getValue();
+      }else{
+        return true;
+      }
+    }else{// no global setting at all
+      graphic_options_previous = NULL;
+      return true;
+    }
+  }else{
+    // local option exist, use local option
+    return options->useCaching->getValue();
   }
 }
 

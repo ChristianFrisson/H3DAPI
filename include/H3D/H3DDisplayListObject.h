@@ -49,6 +49,8 @@ namespace H3D {
   /// have changed. In order to make use of the display list the callList()
   /// function of the displayList field should be called instead of the 
   /// render() function.
+  
+  class GraphicsOptions;
   class H3DAPI_API H3DDisplayListObject {
   public:
 
@@ -128,7 +130,7 @@ namespace H3D {
       }
 
       /// Returns true if caching is in use and false otherwise.
-      bool usingCaching();
+      virtual bool usingCaching();
 
       /// Returns true if view frustum culling is on.
       bool usingFrustumCulling();
@@ -175,8 +177,10 @@ namespace H3D {
       inline bool hasCausedEvent( auto_ptr< FieldType > &f ) {
         return hasCausedEvent( f.get() );
       }
-      /// initialize previous cache delay
-      void initCacheDelay();
+
+      /// initialize previous graphic option
+      void initGraphicOption();
+
     protected:
       bool childrenCachesReady( bool consider_active_field );
 
@@ -222,8 +226,8 @@ namespace H3D {
       /// to force a rebuild of all display lists.
       static auto_ptr< Field > break_list_field; 
       
-      /// previous cache delay
-      int cache_delay_previous;
+      /// previous graphic option
+      GraphicsOptions* graphic_options_previous;
       
       /// default cache delay value
       static const int cache_delay_default = 3;

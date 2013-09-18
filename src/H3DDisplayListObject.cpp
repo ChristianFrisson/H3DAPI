@@ -53,7 +53,7 @@ H3DDisplayListObject::DisplayList::DisplayList():
   frustum_culling_mode( OPTIONS ),
   have_valid_display_list( false ),
   isActive( new IsActive ){
-  initCacheDelay();
+  initGraphicOption();
   reset_delay_cache_counter = true;
   delay_cache_counter = cachingDelay();
   isActive->setValue( true );
@@ -120,6 +120,7 @@ void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
   have_valid_display_list = false;
   reset_delay_cache_counter = true;
   event_fields.insert( e.ptr );
+  /*Console(4)<<"display list object have a event from :"<<e.ptr->getFullName()<<endl;*/
 }
 
 void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
@@ -295,23 +296,53 @@ bool H3DDisplayListObject::DisplayList::usingFrustumCulling() {
   }
   if( !options ) {
     GlobalSettings *default_settings = GlobalSettings::getActive();
-    if( default_settings ) {
+    if( default_settings&&default_settings->optionNodesUpdated() ) {
       default_settings->getOptionNode( options );
+      if( options ) {
+        graphic_options_previous = options;
+        const string &mode = options->frustumCullingMode->getValue();
+        if( mode == "NO_CULLING" ) {
+          return false;
+        } else if( mode == "GEOMETRY" ) {
+          return geom != NULL;
+        } else if( mode == "ALL" ) {
+          return true;
+        }
+      }else{
+        // update global settings do not have option, return false by default
+        graphic_options_previous = NULL;
+        return false;
+      }
+    }else if( default_settings ) {// global setting unchanged
+      if( graphic_options_previous!=NULL ) {
+        const string &mode = graphic_options_previous->frustumCullingMode->getValue();
+        if( mode == "NO_CULLING" ) {
+          return false;
+        } else if( mode == "GEOMETRY" ) {
+          return geom != NULL;
+        } else if( mode == "ALL" ) {
+          return true;
+        }
+      }else{ // return false by default, as previous graphic setting is null
+        return false;
+      }
+    }else{
+      // no global setting, return false by default.
+      graphic_options_previous = NULL;
+      return false;
     }
   }
-
-  if( options ) {
+  if( options ){ 
+    //geometry node has local graphic setting, use local
     const string &mode = options->frustumCullingMode->getValue();
-    
     if( mode == "NO_CULLING" ) {
       return false;
     } else if( mode == "GEOMETRY" ) {
       return geom != NULL;
     } else if( mode == "ALL" ) {
       return true;
-    } 
-  } 
-  
+    }
+  }
   return false;
 }
 
@@ -417,42 +448,51 @@ bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
 }
 
 bool H3DDisplayListObject::DisplayList::usingCaching() {
-  X3DGeometryNode *geom = dynamic_cast< X3DGeometryNode * >( getOwner() );
+  // geometry node will be have specific usingCaching(), no geometry node condition 
+  // will be considered here
+  
   // if multi_pass_transparency is in use caching cannot be used
   // for anything else than geometries since the scene will be 
   // rendered thrice with different properties set and if e.g. a solid
   // object is cached it might me rendered for each of these passes
   // when it should only be rendered for one.
-  if( H3DWindowNode::getMultiPassTransparency() && !geom) {
+  if( H3DWindowNode::getMultiPassTransparency() ) {
     return false;
   }
   if( cache_mode == ON ) return true;
   if( cache_mode == OFF ) return false;
 
   GraphicsOptions *options = NULL;
- 
-  if( geom ) {
-    geom->getOptionNode( options );
-  }
-  if( !options ) {
-    GlobalSettings *default_settings = GlobalSettings::getActive();
-    if( default_settings ) {
-      default_settings->getOptionNode( options );
+  // as no geometry node condition will be considered, only check global option
+  // setting
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings&&default_settings->optionNodesUpdated() ) {
+    default_settings->getOptionNode( options );
+    if( options ) {
+      //Console(4)<<"global setting update, update graphic option"<<endl;
+      // options exist in global setting and gs is updated
+      // need to update graphic option
+      graphic_options_previous = options;
+      if( options->useCaching->getValue() ) {
+        // for non-geometry object, caching is determined by cacheOnlyGeometry also
+        return !options->cacheOnlyGeometries->getValue();
+      }else{
+        return false;
+      }
+    }else{// global setting update, but no option in global setting, return true by default
+      graphic_options_previous = NULL;
+      return true;
     }
-  }
-
-  if( options ) {
-    if( options->useCaching->getValue() ) {
-      if( options->cacheOnlyGeometries->getValue() ) {
-        return geom != NULL;
-      } else {
-        return true;
-      } 
-    } else {
-      return false;
+  }else if( default_settings ) {// global setting exist, but not update since last frame
+    if( graphic_options_previous!=NULL ) {
+      return graphic_options_previous->useCaching->getValue();
+    }else{ // no previous graphic options exist, return true by default.
+      return true;
     }
-  } else
+  }else{// no default settings at all, return true by default, set previous to null
+    graphic_options_previous = NULL;
     return true;
+  }
 }
 
 
@@ -462,17 +502,20 @@ void H3DDisplayListObject::DisplayList::breakCache() {
   startEvent();
 }
 
-void H3DDisplayListObject::DisplayList::initCacheDelay() {
+void H3DDisplayListObject::DisplayList::initGraphicOption() {
   GraphicsOptions *options = NULL;
+  // if global setting exist and it contains graphic option, assign it
+  // to graphic_option_previous
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) {
     default_settings->getOptionNode( options );
     if( options ) {
-      cache_delay_previous = options->cachingDelay->getValue();
-      return ;
+      graphic_options_previous = options;
+      return;
     }
   }
-  cache_delay_previous = cache_delay_default;
+  // else set previous graphic option to NULL.
+  graphic_options_previous = NULL;
 }
 
 unsigned int H3DDisplayListObject::DisplayList::cachingDelay() {
@@ -481,15 +524,26 @@ unsigned int H3DDisplayListObject::DisplayList::cachingDelay() {
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings&&default_settings->optionNodesUpdated() ) {
     default_settings->getOptionNode( options );
-    if( options ) {// update cache_delay_previous value
-      cache_delay_previous = options->cachingDelay->getValue();
+    if( options ) {// update graphic options
+      graphic_options_previous = options;
+      //cache_delay_previous = options->cachingDelay->getValue();
+      return options->cachingDelay->getValue();
+    }else{
+      // global setting change in last frame, but no graphic in it now
+      graphic_options_previous = NULL;
+      return cache_delay_default;
     }
-    return cache_delay_previous;
-  }else if( default_settings ) { 
-    // global setting option node not updated
-    return cache_delay_previous;
+  }
+  else if( default_settings ) { 
+    // global setting option node exist but not updated
+    if( graphic_options_previous!=NULL ) {
+      return graphic_options_previous->cachingDelay->getValue();
+    }else{
+      return cache_delay_default;
+    }
   }else{
-    // no default setting
+    // no global settings at all now
+    graphic_options_previous = NULL;
     return cache_delay_default;
   }
 }
