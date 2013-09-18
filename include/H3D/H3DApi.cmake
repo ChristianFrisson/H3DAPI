@@ -135,6 +135,10 @@
 #cmakedefine HAVE_DSHOW
 #endif
 
+/// Undef if you do not have Sixense SDK available. Needed for the 
+/// RazerHydraSensor node.
+#cmakedefine HAVE_SIXENSE
+
 /// Undef if you do not have FFmpeg available. Needed for the 
 /// FFmpegDecoder node.
 #cmakedefine HAVE_FFMPEG

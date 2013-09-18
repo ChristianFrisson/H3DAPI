@@ -336,6 +336,14 @@ IF(3DXWARE_FOUND)
   SET(optionalLibs ${optionalLibs} ${3DXWARE_LIBRARIES} )
 ENDIF(3DXWARE_FOUND)
 
+# Optional extra library. Used for RazerHydraSensor
+FIND_PACKAGE( SixenseSDK )
+IF( SIXENSE_FOUND )
+  SET( HAVE_SIXENSE 1 )
+  INCLUDE_DIRECTORIES( ${SIXENSE_INCLUDE_DIR} )
+  SET( requiredLibs ${requiredLibs} ${SIXENSE_LIBRARIES} )
+ENDIF( SIXENSE_FOUND )
+
 # Optional extra library. Used to render fonts in OpenGL.
 FIND_PACKAGE(FTGL)
 IF(FTGL_FOUND)
