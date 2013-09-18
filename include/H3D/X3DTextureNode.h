@@ -237,17 +237,6 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
-    // The glTexImage functions needs each line of image data to be 4 byte 
-    // aligned. This function takes a pointer to image data and width,height
-    // and bits per pixel for that data and returns a pointer to new image
-    // data where the data has been padded with dummy values in order to
-    // align it to the closest 4 byte position.
-    static void *padTo4ByteAlignment( const void *data,
-                                      unsigned int width,
-                                      unsigned int height,
-                                      unsigned int depth,
-                                      unsigned int bits_per_pixel );
-
     /// Returns the default dimensions to use when this texture is saved to file.
     ///
     /// Texture nodes that have dimensions should use those dimensions as the default.

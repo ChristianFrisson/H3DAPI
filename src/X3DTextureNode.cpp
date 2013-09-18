@@ -393,34 +393,6 @@ GLuint X3DTextureNode::renderImage( Image *image,
 
 }
 
-// The glTexImage2D function needs each line of image data to be 4 byte 
-// aligned. This function takes a pointer to image data and width,height
-// and bits per pixel for that data and returns a pointer to new image
-// data where the data has been padded with dummy values in order to
-// align it to the closest 4 byte position.
-void *X3DTextureNode::padTo4ByteAlignment( const void *data,
-                                           unsigned int width,
-                                           unsigned int height,
-                                           unsigned int depth,
-                                           unsigned int bits_per_pixel ) {
-  unsigned int bits_per_line = width * bits_per_pixel;
-  assert( bits_per_line % 8 == 0 );
-  unsigned int bytes_per_line = bits_per_line / 8;
-  unsigned int bytes_to_pad = 4 - bytes_per_line % 4;
-
-  unsigned int new_bytes_per_line = bytes_per_line + bytes_to_pad;
-
-  void *new_data = malloc( depth * height * new_bytes_per_line );
- 
-  for( unsigned int d = 0; d < depth; ++d )
-    for( unsigned int h = 0; h < height; ++h ) {
-      memcpy( (unsigned char*)new_data + d*height*new_bytes_per_line + h*new_bytes_per_line,
-              (const unsigned char*)data + d*height*bytes_per_line + h * bytes_per_line,
-              bytes_per_line );
-    }
-  return new_data;
-}
-
 std::pair<H3DInt32,H3DInt32> X3DTextureNode::getDefaultSaveDimensions () {
   return std::pair<H3DInt32,H3DInt32> ( 512, 512 );
 }
