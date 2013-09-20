@@ -84,6 +84,13 @@ void FullscreenRectangle::render() {
   if( z_value == -1 ) z_value = z_value + epsilon;
   else if( z_value == 1 ) z_value = z_value - epsilon;
 
+  // Set polygon mode to always be filled. FullscreenRectangle is almost exclusively used for 
+  // post processing effects and if wireframe mode is used we do not want the default behavior
+  // being to render it in wireframe as nothing at all will be shown then. Hence we force it 
+  // filled.
+  glPushAttrib( GL_POLYGON_MODE );
+  glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
   GLdouble mvmatrix[16], projmatrix[16];
   glGetDoublev( GL_MODELVIEW_MATRIX, mvmatrix );
   glGetDoublev( GL_PROJECTION_MATRIX, projmatrix );
@@ -144,6 +151,8 @@ void FullscreenRectangle::render() {
 
   // restore previous front face.
   glFrontFace( front_face );
+
+  glPopAttrib();
 }
 
 
