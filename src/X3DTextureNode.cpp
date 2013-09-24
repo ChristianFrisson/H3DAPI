@@ -449,8 +449,8 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
   std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
 
   AutoRef<Image> image ( node->renderToImage (
-    node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(),
-    node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue() ) );
+     node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
+     node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue()) );
 
   if ( image.get() ) {
     node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
