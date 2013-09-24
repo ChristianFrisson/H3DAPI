@@ -167,7 +167,7 @@ namespace H3D {
   ///     ( <a href="examples/FrameBufferTextureGenerator_texturearray.x3d.html">Source</a> )
   ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator_fullscreen.x3d">FrameBufferTextureGenerator_fullscreen.x3d</a>
   ///     ( <a href="examples/FrameBufferTextureGenerator_fullscreen.x3d.html">Source</a> )
-  ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator__external_fbo.x3d">FrameBufferTextureGenerator_external_fbo.x3d</a>
+  ///   - <a href="../../../H3DAPI/examples/All/FrameBufferTextureGenerator_external_fbo.x3d">FrameBufferTextureGenerator_external_fbo.x3d</a>
   ///     ( <a href="examples/FrameBufferTextureGenerator_external_fbo.x3d.html">Source</a> )
   ///
   /// \par Internal routes:

@@ -41,11 +41,11 @@ using namespace H3D;
 std::set< FrameBufferTextureGenerator*> FrameBufferTextureGenerator::fbo_nodes;
 
 H3DNodeDatabase FrameBufferTextureGenerator::database( 
-                                                      "FrameBufferTextureGenerator", 
-                                                      &newInstance< FrameBufferTextureGenerator >,
-                                                      typeid( FrameBufferTextureGenerator ),
-                                                      &X3DGroupingNode::database 
-                                                       );
+  "FrameBufferTextureGenerator", 
+  &newInstance< FrameBufferTextureGenerator >,
+  typeid( FrameBufferTextureGenerator ),
+  &X3DGroupingNode::database 
+  );
 
 namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, generateColorTextures, INITIALIZE_ONLY );
@@ -152,62 +152,62 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   depthWarningPrinted( new resetPrintedFlag ),
   colorMismatchWarningPrinted( new resetPrintedFlag ),
   colorInitWarningPrinted( new resetPrintedFlags ){
-  type_name = "FrameBufferTextureGenerator";
-  database.initFields( this );
+    type_name = "FrameBufferTextureGenerator";
+    database.initFields( this );
 
-  shadow_caster->algorithm->setValue( "ZFAIL" );
+    shadow_caster->algorithm->setValue( "ZFAIL" );
 
-  generateDepthTexture->setValue( false );
-  outputTextureType->addValidValue( "2D" );
-  outputTextureType->addValidValue( "2D_RECTANGLE" );
-  outputTextureType->addValidValue( "3D" );
-  outputTextureType->addValidValue( "2D_ARRAY" );
-  outputTextureType->setValue( "2D" );
-  samples->setValue( 0 );
-  last_samples = 0;
-  width->setValue( -1 );
-  height->setValue( -1 );
-  useStereo->setValue( false );
+    generateDepthTexture->setValue( false );
+    outputTextureType->addValidValue( "2D" );
+    outputTextureType->addValidValue( "2D_RECTANGLE" );
+    outputTextureType->addValidValue( "3D" );
+    outputTextureType->addValidValue( "2D_ARRAY" );
+    outputTextureType->setValue( "2D" );
+    samples->setValue( 0 );
+    last_samples = 0;
+    width->setValue( -1 );
+    height->setValue( -1 );
+    useStereo->setValue( false );
 
-  depthBufferType->addValidValue( "DEPTH" );
-  depthBufferType->addValidValue( "DEPTH16" );
-  depthBufferType->addValidValue( "DEPTH24" );
-  depthBufferType->addValidValue( "DEPTH32" );
-  depthBufferType->addValidValue( "DEPTH32F" );
-  depthBufferType->addValidValue( "DEPTH_STENCIL" );
-  depthBufferType->addValidValue( "DEPTH24_STENCIL8" );
-  depthBufferType->setValue( "DEPTH24_STENCIL8" );
-  update->addValidValue( "NONE" );
-  update->addValidValue( "NEXT_FRAME_ONLY" );
-  update->addValidValue( "ALWAYS" );
-  update->setValue( "ALWAYS" );
+    depthBufferType->addValidValue( "DEPTH" );
+    depthBufferType->addValidValue( "DEPTH16" );
+    depthBufferType->addValidValue( "DEPTH24" );
+    depthBufferType->addValidValue( "DEPTH32" );
+    depthBufferType->addValidValue( "DEPTH32F" );
+    depthBufferType->addValidValue( "DEPTH_STENCIL" );
+    depthBufferType->addValidValue( "DEPTH24_STENCIL8" );
+    depthBufferType->setValue( "DEPTH24_STENCIL8" );
+    update->addValidValue( "NONE" );
+    update->addValidValue( "NEXT_FRAME_ONLY" );
+    update->addValidValue( "ALWAYS" );
+    update->setValue( "ALWAYS" );
 
-  depthBufferStorage->addValidValue( "LOCAL" );
-  depthBufferStorage->addValidValue( "DEFAULT_COPY" );
-  depthBufferStorage->addValidValue( "FBO_COPY" );
-  depthBufferStorage->addValidValue( "FBO_SHARE" );
-  depthBufferStorage->setValue( "LOCAL" );
+    depthBufferStorage->addValidValue( "LOCAL" );
+    depthBufferStorage->addValidValue( "DEFAULT_COPY" );
+    depthBufferStorage->addValidValue( "FBO_COPY" );
+    depthBufferStorage->addValidValue( "FBO_SHARE" );
+    depthBufferStorage->setValue( "LOCAL" );
 
-  depthWarningPrinted->setName( "depthWarningPrinted" );
-  depthWarningPrinted->setOwner(this);
-  depthBufferStorage->route( depthWarningPrinted );
-  depthWarningPrinted->setValue(false);
+    depthWarningPrinted->setName( "depthWarningPrinted" );
+    depthWarningPrinted->setOwner(this);
+    depthBufferStorage->route( depthWarningPrinted );
+    depthWarningPrinted->setValue(false);
 
-  colorMismatchWarningPrinted->setName( "colorMismatchWarningPrinted" );
-  colorMismatchWarningPrinted->setOwner(this);
-  colorBufferStorages->route( colorMismatchWarningPrinted );
-  colorMismatchWarningPrinted->setValue(false);
+    colorMismatchWarningPrinted->setName( "colorMismatchWarningPrinted" );
+    colorMismatchWarningPrinted->setOwner(this);
+    colorBufferStorages->route( colorMismatchWarningPrinted );
+    colorMismatchWarningPrinted->setValue(false);
 
-  colorInitWarningPrinted->setName("colorWarningStroageInitPrinte");
-  colorInitWarningPrinted->setOwner(this);
-  colorBufferStorages->route( colorInitWarningPrinted );
+    colorInitWarningPrinted->setName("colorWarningStroageInitPrinte");
+    colorInitWarningPrinted->setOwner(this);
+    colorBufferStorages->route( colorInitWarningPrinted );
 
 
-  // turn off display list since we want to get new values of the width
-  // and height each loop to see if they have changed.
-  displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
+    // turn off display list since we want to get new values of the width
+    // and height each loop to see if they have changed.
+    displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
 
-  fbo_nodes.insert( this );
+    fbo_nodes.insert( this );
 }
 
 void FrameBufferTextureGenerator::initialize()
@@ -238,9 +238,36 @@ void FrameBufferTextureGenerator::initialize()
   if( n ) {
     n->set_bind->setValue(false);
   }
-  
-  
 
+  if( n&& !v ) {
+    Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
+      <<" navigation info is defined but no local viewpoint is defined and local"
+      <<" viewpoint is necessary for local navigation info to be applied!"<<endl;
+  }
+
+  X3DBackgroundNode* b = background->getValue();
+  if( b ) {
+    b->set_bind->setValue( false );
+  }
+
+  for( MFNode::const_iterator i = children->begin(), i_end = children->end();
+    i != i_end; ++i ) {
+      NavigationInfo* n_c = dynamic_cast< NavigationInfo* >( *i );
+      X3DViewpointNode* v_c = dynamic_cast< X3DViewpointNode* >( *i );
+      X3DBackgroundNode* b_c = dynamic_cast< X3DBackgroundNode* >( *i );
+      if( v_c&&!v ) {
+        Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local viewpoint"
+          <<"is defined without setting its containerField!"<<endl;
+      }
+      if( n_c&&!n ) {
+        Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
+          <<" navigation info is defined without setting containerField!"<<endl;
+      }
+      if( b_c&&!b ) {
+        Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
+          <<" background is defined without setting containerField!"<<endl;
+      }
+  }
   // initialize all necessary color buffer init warning message printed flag to false
   for( size_t i = 0, ilen = colorBufferStorages->getValue().size()+1; i < ilen; ++i ) {
     colorInitWarningPrinted->push_back(false);
@@ -251,13 +278,13 @@ void FrameBufferTextureGenerator::initialize()
 #undef max
 #endif
 void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
-  
+
   shadow_caster->object->clear();
   shadow_caster->light->clear();
   ShadowCaster *prev_shadow_caster = NULL;
   ti.getUserData( "ShadowCaster",  (void **)&prev_shadow_caster);
   ti.setUserData( "ShadowCaster", shadow_caster.get() );
- 
+
   X3DGroupingNode::traverseSG( ti );
 
   // add the head light to shadow casting nodes if it is active.
@@ -279,14 +306,14 @@ void FrameBufferTextureGenerator::render()     {
   // Only render the texture once regardless of multi pass
   // rendering state.
   if ( X3DShapeNode::geometry_render_mode != X3DShapeNode::ALL &&
-       X3DShapeNode::geometry_render_mode != X3DShapeNode::SOLID ) {
-    return;
+    X3DShapeNode::geometry_render_mode != X3DShapeNode::SOLID ) {
+      return;
   }
 
   if( !GLEW_EXT_framebuffer_object ) {
     Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
-               << "(EXT_frame_buffer_object). FrameBufferTextureGenerator nodes will "
-               << "not work." << endl;
+      << "(EXT_frame_buffer_object). FrameBufferTextureGenerator nodes will "
+      << "not work." << endl;
     return;
   }
 
@@ -311,8 +338,8 @@ void FrameBufferTextureGenerator::render()     {
         static bool message_printed = false;
         if( !message_printed && !current_shadow_caster->object->empty() ) {
           Console(4) << "Warning: Shadows cannot be used with FrameBufferTextureGenerator (" << getName() 
-                     << ") since it does not have a stencil buffer. Make sure that a depthBufferType that supports"
-                     << " stencil buffer is used, e.g. DEPTH_STENCIL" << endl;
+            << ") since it does not have a stencil buffer. Make sure that a depthBufferType that supports"
+            << " stencil buffer is used, e.g. DEPTH_STENCIL" << endl;
           message_printed = true;
         }
         current_shadow_caster = 0;
@@ -323,20 +350,20 @@ void FrameBufferTextureGenerator::render()     {
   string output_texture_type = outputTextureType->getValue();
   if( output_texture_type == "2D_ARRAY" && !GLEW_EXT_texture_array) {
     Console(4) << "Warning: Texture arrays not supported by your graphics card "
-               << "(EXT_texture_array). FrameBufferTextureGenerator nodes with \"2D_ARRAY\" will "
-               << "not work." << endl;
+      << "(EXT_texture_array). FrameBufferTextureGenerator nodes with \"2D_ARRAY\" will "
+      << "not work." << endl;
     return;
   } else if( output_texture_type == "2D_RECTANGLE" && !GLEW_ARB_texture_rectangle) {
     Console(4) << "Warning: Texture rectangles not supported by your graphics card "
-               << "(ARB_texture_rectangle). FrameBufferTextureGenerator nodes with \"2D_RECTANGLE\" will "
-               << "not work." << endl;
+      << "(ARB_texture_rectangle). FrameBufferTextureGenerator nodes with \"2D_RECTANGLE\" will "
+      << "not work." << endl;
     return;
   }
 
   if( output_texture_type != "3D" && 
-      output_texture_type != "2D_ARRAY" &&
-      output_texture_type != "2D_RECTANGLE" ) {
-    output_texture_type = "2D";
+    output_texture_type != "2D_ARRAY" &&
+    output_texture_type != "2D_RECTANGLE" ) {
+      output_texture_type = "2D";
   }
 
   /// Check if we need to generate any textures.
@@ -355,9 +382,9 @@ void FrameBufferTextureGenerator::render()     {
     if( fbo_initialized ) return;
   } else {
     Console(3) << "Warning: Invalid value for \"update\" field in \""
-               << getName() << "\" node (\"" << update_string
-               << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
-               << " or \"ALWAYS\". Using \"ALWAYS\" instead." << endl;
+      << getName() << "\" node (\"" << update_string
+      << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
+      << " or \"ALWAYS\". Using \"ALWAYS\" instead." << endl;
   }
 
   GLint previous_fbo_id;
@@ -367,7 +394,7 @@ void FrameBufferTextureGenerator::render()     {
 
   /// Make sure all textures and buffers are initialized.
   if( !fbo_initialized ) initializeFBO();
-  
+
   // get the width and height of the buffer in pixels.
   int current_width  = width->getValue();
   int current_height = height->getValue();
@@ -383,20 +410,20 @@ void FrameBufferTextureGenerator::render()     {
     if( current_width == -1 )  current_width  = viewport[2];
     if( current_height == -1 ) current_height = viewport[3];
   } 
-  
+
   // current_width and current_height should be set to default viewport width, height
   // when using DEFAULT_COPY option. it necessary for stereo rendering
   vector<string> colorbuffer_storage = colorBufferStorages->getValue();
   bool colorbuffer_default_copy = 
-  std::find(colorbuffer_storage.begin(), colorbuffer_storage.end(), "DEFAULT_COPY")
+    std::find(colorbuffer_storage.begin(), colorbuffer_storage.end(), "DEFAULT_COPY")
     !=colorbuffer_storage.end();
   if( colorbuffer_default_copy||depthBufferStorage->getValue()=="DEFAULT_COPY" ) {
     current_width = viewport[2];
     current_height = viewport[3];
   }
-  
-  
-  
+
+
+
   bool using_stencil_buffer = haveStencilBuffer();
 
   if( !always_use_existing_viewport) {
@@ -434,13 +461,13 @@ void FrameBufferTextureGenerator::render()     {
     glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), draw_buffers.get() );
   } else {
     Console(4) << "Warning: Your graphics card does not support multiple "
-               << "render targets(ARB_draw_buffers). Only one color texture will"
-               << " have update to their values";
+      << "render targets(ARB_draw_buffers). Only one color texture will"
+      << " have update to their values";
   }
 
   // if a viewpoint has been specified use that instead of what has already 
   // been set up (current active viewpoint)
-  
+
   X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
   NavigationInfo *nav_info = navigationInfo->getValue();
   X3DBackgroundNode* bg = background->getValue();
@@ -495,7 +522,7 @@ void FrameBufferTextureGenerator::render()     {
 
   if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
     // 2D textures. Render all nodes in children field into the textures.
-   
+
     // render scene.
     if( render_func ) {
       render_func( this, -1, render_func_data );
@@ -520,11 +547,11 @@ void FrameBufferTextureGenerator::render()     {
         glPushMatrix();
         glLoadIdentity();
         glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
-                    vp_orientation.axis.x, 
-                    vp_orientation.axis.y,
-                    vp_orientation.axis.z );
+          vp_orientation.axis.x, 
+          vp_orientation.axis.y,
+          vp_orientation.axis.z );
         glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
-                    vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
+          vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
         glDepthMask( GL_FALSE );
         bg->renderBackground();
         glDepthMask( GL_TRUE );
@@ -536,10 +563,10 @@ void FrameBufferTextureGenerator::render()     {
       if( children_multi_pass_transparency ) {
         X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID;
         X3DGroupingNode::render();
-    
+
         X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
         X3DGroupingNode::render();
-    
+
         X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
         X3DGroupingNode::render();
         X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
@@ -551,12 +578,12 @@ void FrameBufferTextureGenerator::render()     {
       X3DShapeNode::geometry_render_mode= m;
       if( current_shadow_caster ) current_shadow_caster->render();
     }
-    
+
     // blit multi sample render buffer to output textures if using multi sampling.
     if( nr_samples > 0 ) {
       glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
       glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, fbo_id );
-      
+
       // blit multi sample buffers to textures.
       if( generateDepthTexture->getValue() ) {
         glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
@@ -573,9 +600,9 @@ void FrameBufferTextureGenerator::render()     {
     // slice in the 3D texture.
 
     const NodeVector &c = children->getValue();
-    
+
     for( unsigned int i = 0; i < c.size(); ++i ) {
-      
+
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
 
       // set the render target to the correct slice for depth texture.
@@ -588,7 +615,7 @@ void FrameBufferTextureGenerator::render()     {
       // set the render target to the correct slice for color textures.
       for( unsigned int j = 0; j < color_ids.size(); ++j ) {
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
-                                     color_ids[j], 0, i );   
+          color_ids[j], 0, i );   
       }
 
       if( nr_samples > 0 ) {
@@ -623,12 +650,12 @@ void FrameBufferTextureGenerator::render()     {
       if( nr_samples > 0 ) {
         glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
         glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, fbo_id );
-        
+
         // blit multi sample buffers to textures.
         if( generateDepthTexture->getValue() ) {
           glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
         }
-        
+
         for( unsigned int i = 0; i < color_ids.size(); ++i ) {
           glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
           glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
@@ -712,12 +739,12 @@ void FrameBufferTextureGenerator::initializeFBO() {
 
     size_t nr_color_textures = color_texture_types.size();
     if( (GLint)nr_color_textures > max_draw_buffers ||
-        (GLint)nr_color_textures > max_color_attachments ) {
-      nr_color_textures = H3DMin( max_draw_buffers, max_draw_buffers );
-      Console(4) << "Warning: Too many color textures. Supported by your graphics card: "
-                 << nr_color_textures << ". Tried to use: " << color_texture_types.size() 
-                 << ". Additional textures will be ignored(in FrameBufferTextureGenerator). "
-                 << endl;
+      (GLint)nr_color_textures > max_color_attachments ) {
+        nr_color_textures = H3DMin( max_draw_buffers, max_draw_buffers );
+        Console(4) << "Warning: Too many color textures. Supported by your graphics card: "
+          << nr_color_textures << ". Tried to use: " << color_texture_types.size() 
+          << ". Additional textures will be ignored(in FrameBufferTextureGenerator). "
+          << endl;
     }
 
     // generate glDrawBuffers input array
@@ -759,7 +786,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
         colorTextures->push_back( tex, id );
         color_ids.push_back( tex->getTextureId() );
       }
-       
+
       GLuint ms_id;
       glGenRenderbuffersEXT( 1, &ms_id );
       multi_samples_color_ids.push_back( ms_id );
@@ -1127,7 +1154,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
   string output_texture_type = outputTextureType->getValue();
   const vector< string > &color_texture_types = generateColorTextures->getValue();
   bool using_stencil_buffer = haveStencilBuffer();
-     
+
   GLenum texture_type = GL_TEXTURE_2D;
   if( output_texture_type == "2D_RECTANGLE" ) {
     texture_type = GL_TEXTURE_RECTANGLE_ARB;
@@ -1370,8 +1397,8 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
 GLenum FrameBufferTextureGenerator::stringToDepthFormat( const string &s ) {
   GLenum format = GL_DEPTH_COMPONENT;
   if( haveStencilBuffer() &&
-      GLEW_EXT_packed_depth_stencil ) {
-    format = GL_DEPTH_STENCIL_EXT;
+    GLEW_EXT_packed_depth_stencil ) {
+      format = GL_DEPTH_STENCIL_EXT;
   }
   return format;
 }
@@ -1379,8 +1406,8 @@ GLenum FrameBufferTextureGenerator::stringToDepthFormat( const string &s ) {
 GLenum FrameBufferTextureGenerator::stringToDepthType( const string &s ) {
   GLenum type = GL_FLOAT;
   if( haveStencilBuffer() &&
-      GLEW_EXT_packed_depth_stencil ) {
-    type = GL_UNSIGNED_INT_24_8_EXT;
+    GLEW_EXT_packed_depth_stencil ) {
+      type = GL_UNSIGNED_INT_24_8_EXT;
   }
   return type;
 }
@@ -1394,8 +1421,8 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
       internal_format = GL_DEPTH_COMPONENT16_ARB;
     } else {
       Console(4)  << "Warning: Your graphics card does not support depth "
-                  << "textures (ARB_depth_texture). Using DEPTH instead"
-                  << "(in FrameBufferTextureGenerator node). " << endl;
+        << "textures (ARB_depth_texture). Using DEPTH instead"
+        << "(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "DEPTH24" ) { 
     if( GLEW_ARB_depth_texture ) {
@@ -1439,26 +1466,26 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
 
 void FrameBufferTextureGenerator::clearBuffers(GLenum src, int x, int y, 
   int width, int height, GLbitfield mask){
-  // clear buffer defined by mask of the area defined by x, y, width, height
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, src);
-  glScissor( x, y, width, height );
-  glEnable( GL_SCISSOR_TEST );
-  glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-  glClear( mask );
-  glPopAttrib();
-  glDisable( GL_SCISSOR_TEST );
+    // clear buffer defined by mask of the area defined by x, y, width, height
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, src);
+    glScissor( x, y, width, height );
+    glEnable( GL_SCISSOR_TEST );
+    glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+    glClear( mask );
+    glPopAttrib();
+    glDisable( GL_SCISSOR_TEST );
 }
 
 void FrameBufferTextureGenerator::clearColorBuffer( GLenum src, int x, int y, 
   int width, int height, GLfloat* value, GLint index ){
-  // clear index th attached color buffer
-  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, src );
-  glScissor( x, y, width, height );
-  glEnable( GL_SCISSOR_TEST );
-  glPushAttrib( GL_COLOR_BUFFER_BIT );
-  glClearBufferfv( GL_COLOR, index, value );
-  glPopAttrib();
-  glDisable( GL_SCISSOR_TEST );
+    // clear index th attached color buffer
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, src );
+    glScissor( x, y, width, height );
+    glEnable( GL_SCISSOR_TEST );
+    glPushAttrib( GL_COLOR_BUFFER_BIT );
+    glClearBufferfv( GL_COLOR, index, value );
+    glPopAttrib();
+    glDisable( GL_SCISSOR_TEST );
 }
 
 
@@ -1481,7 +1508,7 @@ void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst,
     error = glGetError();
     if( error!=GL_NO_ERROR ) {
       Console(4)<<"While blit depth buffer, opengl error occur:"<<gluErrorString(error)<<std::endl
-                <<"Make sure the depth buffer type match."<<std::endl;
+        <<"Make sure the depth buffer type match."<<std::endl;
     }
 }
 
@@ -1500,7 +1527,7 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
     }
     glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + dst_index );
     glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 
-                          0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     if( error!=GL_NO_ERROR ) {
       Console(4)<<"While blit color buffer, opengl error occur:"<<gluErrorString(error)<<std::endl;
     }
