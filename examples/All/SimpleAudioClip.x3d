@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='SimpleAudioClip.x3d'/>
+    <meta name='description' content=' SimpleAudioClip node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2004-2013'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Sound maxFront="0.9" maxBack="0.9"  minFront="0.0001" intensity="1" DEF="SOUND" >
+      <SimpleAudioClip DEF="AUDIO" url="ding.wav" loop="FALSE"/>
+    </Sound>
+  </Scene>
+</X3D>
