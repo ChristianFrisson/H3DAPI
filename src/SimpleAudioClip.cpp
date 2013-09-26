@@ -90,6 +90,7 @@ SimpleAudioClip::SimpleAudioClip(
   stop->routeNoEvent( updateAudioPlay, id );
   pause->routeNoEvent( updateAudioPlay, id );
   url->routeNoEvent( updateAudioPlay, id );
+  isActive->routeNoEvent( updateAudioPlay, id );
 
 }
 
@@ -124,4 +125,11 @@ void SimpleAudioClip::UpdateAudioPlay::update(){
   else if( event.ptr == routes_in[3] ) {
     sac->audioState->setValue( "STOPPED" );
   }
+  // isActive change
+  else if( event.ptr == routes_in[4] ) {
+    if (sac->audioState->getValue() == "PLAYING"&&!sac->isActive->getValue()){
+      sac->audioState->setValue( "STOPPED" );
+    }
+  }
+  
 }

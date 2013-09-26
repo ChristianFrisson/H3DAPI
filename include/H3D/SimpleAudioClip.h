@@ -52,7 +52,7 @@ namespace H3D {
 
     class UpdateAudioPlay: public TypedField< AutoUpdate< SFBool >,
                           Types< SFBool, SFBool, SFBool, 
-    MFString > >{
+    MFString, SFBool > >{
     public:
       virtual void update(); 
     };
