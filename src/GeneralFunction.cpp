@@ -31,6 +31,7 @@
 #include <H3D/GeneralFunction.h>
 
 #ifdef HAVE_FPARSER
+#include <HAPI/ParsedFunction.h>
 
 using namespace H3D;
 
@@ -117,6 +118,17 @@ HAPI::HAPIFunctionObject *GeneralFunction::getAsHAPIFunctionObject() {
   }
 
   return return_function;
+}
+
+GeneralFunction::SFFunctionObject::SFFunctionObject() {
+  value = new HAPI::ParsedFunction;
+}
+
+GeneralFunction::SFFunctionObject::~SFFunctionObject() {
+	if( value ) {
+		delete value;
+		value = NULL;
+	}
 }
 
 #endif

@@ -33,10 +33,12 @@
 #include <H3D/H3DFunctionNode.h>
 #include <H3D/SFString.h>
 
-//HAPI includes
-#include <HAPI/ParsedFunction.h>
-
 #ifdef HAVE_FPARSER
+
+namespace HAPI {
+	// Forward declaration.
+	class ParsedFunction;
+}
 
 namespace H3D {
   /// \ingroup H3DNodes
@@ -150,16 +152,9 @@ namespace H3D {
                          Types< SFString, SFString > > {
     public:
       /// Constructor.
-      SFFunctionObject() {
-        value = new HAPI::ParsedFunction;
-      }
+      SFFunctionObject();
 
-      ~SFFunctionObject() {
-        if( value ) {
-          delete value;
-          value = NULL;
-        }
-      }
+      ~SFFunctionObject();
 
     protected:
       virtual void update();
