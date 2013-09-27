@@ -173,7 +173,7 @@ namespace H3D {
     /// Returns the function as a HAPIFunctionObject. Should return a new copy
     /// if the H3DFunctionNode stores a copy of HAPIFunctionObject since owner
     /// ship of the returned HAPIFunctionObject should be considered to belong
-    /// to the caller of the function. Returns 0 if the H3DFunctionNode can not
+    /// to the caller of the function. Returns NULL if the H3DFunctionNode can not
     /// be represented as a HAPIFunctionObject.
     virtual HAPI::HAPIFunctionObject *getAsHAPIFunctionObject();
 

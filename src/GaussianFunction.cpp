@@ -70,8 +70,11 @@ H3DDouble GaussianFunction::evaluate( H3DDouble *x ) {
 }
 
 HAPI::HAPIFunctionObject *GaussianFunction::getAsHAPIFunctionObject() {
+#ifdef HAVE_FPARSER
   string function_string = amplitude->getValueAsString() + " * exp(-" + "(x-" + center->getValueAsString() + ")^2/(" + width->getValueAsString() + ")^2)";
   HAPI::ParsedFunction *return_function = new HAPI::ParsedFunction();
   return_function->setFunctionString( function_string );
   return return_function;
+#endif
+	return NULL;
 }
