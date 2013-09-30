@@ -105,31 +105,32 @@ void SimpleAudioClip::UpdateAudioPlay::update(){
     }else{
       sac->startTime->setValue( TimeStamp() );
     }
-    sac->audioState->setValue( "PLAYING" );
+    sac->audioState->setValue( "PLAYING", sac->id );
     sac->play->setValue( false, sac->id );
   }
   // stop
   else if( event.ptr == routes_in[1] ) {
     sac->stopTime->setValue( TimeStamp() );
-    sac->audioState->setValue( "STOPPED" );
+    sac->audioState->setValue( "STOPPED", sac->id );
     sac->stop->setValue( false, sac->id );
   }
   // pause
   else if( event.ptr == routes_in[2] ) {
     sac->pauseTime->setValue( TimeStamp() );
-    sac->audioState->setValue( "PAUSED" );
+    sac->audioState->setValue( "PAUSED", sac->id );
     sac->pause->setValue( false, sac->id );
   }
   
   // url change
   else if( event.ptr == routes_in[3] ) {
-    sac->audioState->setValue( "STOPPED" );
+    sac->audioState->setValue( "STOPPED", sac->id );
   }
   // isActive change
   else if( event.ptr == routes_in[4] ) {
     if (sac->audioState->getValue() == "PLAYING"&&!sac->isActive->getValue()){
-      sac->audioState->setValue( "STOPPED" );
+      sac->audioState->setValue( "STOPPED", sac->id );
     }
   }
+  routes_in.clear();
   
 }
