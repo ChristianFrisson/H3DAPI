@@ -483,9 +483,7 @@ namespace H3D {
 /// Set the value of a uniform variable in the current GLSL shader.
 /// The name of the uniform variable is the same as the name of the field. 
 bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
-                                                  Field *field, UniformInfo* ui ) {
-
-
+                                                Field *field, UniformInfo* ui, bool force ) {
   GLint location = -1;
   if( !ui ) {// no extra uniform info was set, need to extract location based on name
     const string &name = field->getName();
@@ -506,7 +504,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   case X3DTypes::SFFLOAT:
     {
       // implicit SFUniform field, check actualChanged
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFFloat > * f = static_cast< SFUniform< SFFloat >* >( field );
         if( f->actualChanged ) {
           glUniform1fARB( location, f->getValue() );
@@ -528,7 +526,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFDOUBLE:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFDouble > * f = static_cast< SFUniform< SFDouble >* >( field );
         if( f->actualChanged ) {
           glUniform1fARB( location, (GLfloat)f->getValue() );
@@ -549,7 +547,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFTIME:
     { 
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFTime > * f = static_cast< SFUniform< SFTime >* >( field );
         if( f->actualChanged ) {
           glUniform1fARB( location, (GLfloat)f->getValue() );
@@ -569,7 +567,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFINT32:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFInt32 > * f = static_cast< SFUniform< SFInt32 >* >( field );
         if( f->actualChanged ) {
           glUniform1iARB( location, f->getValue() );
@@ -589,7 +587,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFVEC2F:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFVec2f > * f = static_cast< SFUniform< SFVec2f >* >( field );
         if( f->actualChanged ) {
           const Vec2f &v = f->getValue(); 
@@ -616,7 +614,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFVEC2D:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFVec2d > * f = static_cast< SFUniform< SFVec2d >* >( field );
         if( f->actualChanged ) {
           const Vec2d &v = f->getValue(); 
@@ -643,7 +641,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFVEC3F:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFVec3f > * f = static_cast< SFUniform< SFVec3f >* >( field );
         if( f->actualChanged ) {
           const Vec3f &v = f->getValue(); 
@@ -672,7 +670,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFVEC3D:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFVec3d > * f = static_cast< SFUniform< SFVec3d >* >( field );
         if( f->actualChanged ) {
           const Vec3d &v = f->getValue(); 
@@ -701,7 +699,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFVEC4F:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFVec4f > * f = static_cast< SFUniform< SFVec4f >* >( field );
         if( f->actualChanged ) {
           const Vec4f &v = f->getValue(); 
@@ -732,7 +730,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFVEC4D:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFVec4d > * f = static_cast< SFUniform< SFVec4d >* >( field );
         if( f->actualChanged ) {
           const Vec4d &v = f->getValue(); 
@@ -763,7 +761,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFBOOL:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFBool > * f = static_cast< SFUniform< SFBool >* >( field );
         if( f->actualChanged ) {
           glUniform1iARB( location, f->getValue() );
@@ -823,7 +821,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFCOLOR:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFColor > * f = static_cast< SFUniform< SFColor >* >( field );
         if( f->actualChanged ) {
           const RGB &r = f->getValue(); 
@@ -852,7 +850,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFCOLORRGBA:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFColorRGBA > * f = static_cast< SFUniform< SFColorRGBA >* >( field );
         if( f->actualChanged ) {
           const RGBA &r = f->getValue(); 
@@ -883,7 +881,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFROTATION:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFRotation > * f = static_cast< SFUniform< SFRotation >* >( field );
         if( f->actualChanged ) {
           const Rotation &r = f->getValue(); 
@@ -916,7 +914,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   case X3DTypes::MFQUATERNION: return false;
   case X3DTypes::SFMATRIX3F:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFMatrix3f > * f = static_cast< SFUniform< SFMatrix3f >* >( field );
         if( f->actualChanged ) {
           const Matrix3f &m = f->getValue(); 
@@ -945,7 +943,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFMATRIX3D:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFMatrix3d > * f = static_cast< SFUniform< SFMatrix3d >* >( field );
         if( f->actualChanged ) {
           const Matrix3d &m = f->getValue(); 
@@ -974,7 +972,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case X3DTypes::SFMATRIX4F:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFMatrix4f > * f = static_cast< SFUniform< SFMatrix4f >* >( field );
         if( f->actualChanged ) {
           const Matrix4f &m = f->getValue(); 
@@ -1003,7 +1001,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     }
   case  X3DTypes::SFMATRIX4D:
     {
-      if( field->getTypeName()=="SFUniform" ) {
+      if( !force && field->getTypeName()=="SFUniform" ) {
         SFUniform< SFMatrix4d > * f = static_cast< SFUniform< SFMatrix4d >* >( field );
         if( f->actualChanged ) {
           const Matrix4d &m = f->getValue(); 

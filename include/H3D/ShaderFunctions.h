@@ -91,8 +91,12 @@ namespace H3D {
     };
     /// Set the value of a uniform variable in the given GLSL shader.
     /// The name of the uniform variable is the same as the name of the field. 
+    ///
+    /// \param force If true, then the uniform value is always set even if the field
+    ///              value has not changed.
+    ///
     bool H3DAPI_API setGLSLUniformVariableValue( GLhandleARB program_handle,
-                                                 Field *field, UniformInfo* ui = NULL );
+                                                 Field *field, UniformInfo* ui = NULL, bool force= false );
 
     void H3DAPI_API renderTextures( H3DDynamicFieldsObject * );
     void H3DAPI_API postRenderTextures( H3DDynamicFieldsObject * );

@@ -589,7 +589,7 @@ void ComposedShader::UpdateUniforms::update() {
       GLint location = glGetUniformLocationARB( node->program_handle,
         name.c_str() );
       it->second.location = location;
-      if( !Shaders::setGLSLUniformVariableValue( node->program_handle, it->second.field, &(it->second) ) 
+      if( !Shaders::setGLSLUniformVariableValue( node->program_handle, it->second.field, &(it->second), true /* force update */ ) 
         && !node->suppressUniformWarnings->getValue() ) {
         Console(4) << "Warning: Uniform variable \"" << it->first
           << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
