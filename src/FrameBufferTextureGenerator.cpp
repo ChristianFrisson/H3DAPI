@@ -54,6 +54,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, outputTextureType, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, samples, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, update, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, framesBeforeStop, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTexture, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextures, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, viewpoint, INPUT_OUTPUT );
@@ -106,6 +107,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFString         > _outputTextureType,
   Inst< SFInt32        > _samples,
   Inst< SFString       > _update,
+  Inst< SFInt32        > _framesBeforeStop,
   Inst< SFViewpointNode > _viewpoint,
   Inst< SFNavigationInfo > _navigationInfo,
   Inst< SFBackgroundNode > _background,
@@ -132,6 +134,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   outputTextureType( _outputTextureType ),
   samples( _samples ),
   update( _update ),
+  framesBeforeStop( _framesBeforeStop ),
   viewpoint( _viewpoint ),
   navigationInfo( _navigationInfo ),
   background ( _background ),
@@ -179,8 +182,11 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     depthBufferType->setValue( "DEPTH24_STENCIL8" );
     update->addValidValue( "NONE" );
     update->addValidValue( "NEXT_FRAME_ONLY" );
+    update->addValidValue( "SPECIFIED_FRAMES_ONLY" );
     update->addValidValue( "ALWAYS" );
     update->setValue( "ALWAYS" );
+
+    framesBeforeStop->setValue(-1);
 
     depthBufferStorage->addValidValue( "LOCAL" );
     depthBufferStorage->addValidValue( "DEFAULT_COPY" );
@@ -373,20 +379,29 @@ void FrameBufferTextureGenerator::render()     {
     return;
 
   const string &update_string = update->getValue();
-
-  if( update_string == "NEXT_FRAME_ONLY" ) {
-    update->setValue( "NONE" );
-  } else if( update_string == "ALWAYS" ) {
-    // just continue
-  } else if( update_string == "NONE" ) {
-    if( fbo_initialized ) return;
-  } else {
+  if( update_string == "SPECIFIED_FRAMES_ONLY" ) {
+    if( framesBeforeStop->getValue()<=1 ) {
+      // if frame left is 1 or smaller than 1, set it to NONE to stop it next frame
+      // set update to NONE
+      update->setValue("NONE");
+      framesBeforeStop->setValue(0);
+    }else{
+      framesBeforeStop->setValue(framesBeforeStop->getValue()-1);
+    }
+  }else if( update_string == "NEXT_FRAME_ONLY" ) {
+    update->setValue("NONE");
+  }else if( update_string == "ALWAYS" ) {
+    //continue
+  }else if( update_string =="NONE" ) {
+    if( fbo_initialized ) {
+      return;
+    }
+  }else{
     Console(3) << "Warning: Invalid value for \"update\" field in \""
       << getName() << "\" node (\"" << update_string
-      << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
+      << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\", , \"NEXT_FRAME_ONLY\"" 
       << " or \"ALWAYS\". Using \"ALWAYS\" instead." << endl;
   }
-
   GLint previous_fbo_id;
   glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
   // Save current state.

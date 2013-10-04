@@ -203,6 +203,7 @@ namespace H3D {
                                  Inst< SFString         > _outputTextureType = 0,
                                  Inst< SFInt32          > _samples   = 0,
                                  Inst< SFString         > _update    = 0,
+                                 Inst< SFInt32          > _framesBeforeStop = 0,
                                  Inst< SFViewpointNode  > _viewpoint = 0,
                                  Inst< SFNavigationInfo > _navigationInfo = 0,
                                  Inst< SFBackgroundNode > _background = 0,
@@ -386,11 +387,22 @@ namespace H3D {
     /// value will be automatically set back to "NONE" to indicate that the 
     /// rendering has taken place already. Since this is a field change value,
     /// it will automatically generate an output event that may be routed.
+    /// "SPECIFIED_FRAMES_ONLY" will do similar thing as "NEXT_FRAME_ONLY", and
+    /// let the user define how many frame it should generate texture until it change
+    /// to NONE. The purpose of SPECIFIED_FRAMES_ONLY option is to provide a way
+    /// to give a longer delay before the generator stop.
     ///
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> "ALWAYS"
-    /// <b>Valid values:</b> "NONE", "ALWAYS", "NEXT_FRAME_ONLY"
+    /// <b>Valid values:</b> "NONE", "ALWAYS", "NEXT_FRAME_ONLY", "SPECIFIED_FRAMES_ONLY"
     auto_ptr< SFString > update;
+
+    /// The frameBeforeStop is check when SPECIFIED_FRAME_ONLY is set and to provide
+    /// the info about how many frame before the update field change to NONE to stop
+    /// the generator. By default it is -1
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> -1
+    auto_ptr< SFInt32 > framesBeforeStop;
 
     /// The X3DViewpointNode to use when rendering the scene. If NULL,
     /// the current active viewpoint is used.
