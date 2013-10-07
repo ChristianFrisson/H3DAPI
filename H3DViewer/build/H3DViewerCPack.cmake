@@ -132,6 +132,10 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
                              ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_propgrid_vc_custom.dll
                              ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_richtext_vc_custom.dll
                              ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/ode_double.dll )
+      INSTALL( FILES "${H3DViewer_CPACK_EXTERNAL_ROOT}/include/ACKNOWLEDGEMENTS"
+               DESTINATION H3DViewer )
+      INSTALL( DIRECTORY ${H3DViewer_CPACK_EXTERNAL_ROOT}/include/ExternalLicenses/
+               DESTINATION H3DViewer/ExternalLicenses )
     ENDIF( EXISTS ${H3DViewer_CPACK_EXTERNAL_ROOT} )
 
     foreach( binary ${EXTERNAL_BINARIES} )
@@ -165,9 +169,7 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     ENDIF( H3D_USE_DEPENDENCIES_ONLY )
     
     IF( EXISTS ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles )
-      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/ACKNOWLEDGEMENTS
-                     ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/NOTICE
-                     ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/ReadMe.txt
+      INSTALL( FILES ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles/ReadMe.txt
              DESTINATION H3DViewer )
     ENDIF( EXISTS ${H3DViewer_SOURCE_DIR}/../../Util/H3DViewerPackageExtraFiles )
   ENDIF( WIN32 )  
