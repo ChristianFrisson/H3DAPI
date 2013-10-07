@@ -543,6 +543,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindVorbis.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindWxWidgetsWin.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindXerces.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/InstallH3DAPIAndExternals.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/NSIS.InstallOptions.ini.in
                  ${H3DAPI_SOURCE_DIR}/modules/NSIS.template.in
                  ${H3DAPI_SOURCE_DIR}/modules/StripAndAddLibraryDirectories.cmake
