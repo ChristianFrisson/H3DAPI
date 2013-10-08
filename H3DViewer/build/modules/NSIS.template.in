@@ -719,7 +719,19 @@ SectionEnd
 ; Choose different default installation folder based on SV_ALLUSERS...
 ; "Program Files" for AllUsers, "My Documents" for JustMe...
 
+!include LogicLib.nsh
+!include WinVer.nsh
+
 Function .onInit
+  ${IfNot} ${AtLeastWinVista}
+    MessageBox MB_YESNO|MB_ICONEXCLAMATION \
+    "Windows versions earlier than Vista is not fully supported. Using AnyDevice and EntactDevice nodes will not be possible. Continue with install?" \
+  IDYES instAnyways IDNO exitBecauseNotVistaOrLater
+exitBecauseNotVistaOrLater:
+    Quit
+  ${EndIf}
+
+instAnyways:
   StrCmp "@CPACK_H3D_64_BIT@" "TRUE" 0 done_64_bit_checking
     ${If} ${RunningX64}
       DetailPrint "Installer running on 64-bit host"
