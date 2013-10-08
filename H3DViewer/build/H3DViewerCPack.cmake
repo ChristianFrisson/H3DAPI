@@ -1,3 +1,6 @@
+IF(WIN32)
+  cmake_minimum_required(VERSION 2.8.5)
+ENDIF(WIN32)
 IF( NOT TARGET H3DViewer )
   MESSAGE( FATAL_ERROR "Include file H3DViewerCPack.cmake require the target H3DViewer to exist. Please add H3DAPI/H3DViewer/build/CMakeLists.txt as subdirectory first." )
 ENDIF( NOT TARGET H3DViewer )
