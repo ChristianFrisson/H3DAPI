@@ -50,11 +50,11 @@ ENDIF( WIN32 )
 
 IF( NOT DEFINED H3DAPI_CMAKE_INSTALL_PREFIX )
   SET( H3DAPI_CMAKE_INSTALL_PREFIX_DEFAULT "" )
-  IF( TARGET H3DUtil )
+  IF( TARGET H3DAPI )
     SET( H3DAPI_CMAKE_INSTALL_PREFIX_DEFAULT ${CMAKE_INSTALL_PREFIX} )
   ELSEIF( NOT "${H3D_ROOT_CMAKE_PATH}" STREQUAL  "" )
     SET( H3DAPI_CMAKE_INSTALL_PREFIX_DEFAULT "${H3D_ROOT_CMAKE_PATH}/.." )
-  ENDIF( TARGET H3DUtil )
+  ENDIF( TARGET H3DAPI )
   SET( H3DAPI_CMAKE_INSTALL_PREFIX ${H3DAPI_CMAKE_INSTALL_PREFIX_DEFAULT} CACHE PATH "Set this to the CMAKE_INSTALL_PREFIX directory used when installing H3DUtil. It is assumed that H3DUtil is installed in bin32/bin64 and lib32/lib64." )
   MARK_AS_ADVANCED(H3DAPI_CMAKE_INSTALL_PREFIX)
 ENDIF( NOT DEFINED H3DAPI_CMAKE_INSTALL_PREFIX )
@@ -424,7 +424,8 @@ IF( H3DAPI_INCLUDE_DIR AND EXTERNAL_ROOT)
             ENDIF( ${include_length} GREATER ${include_dir_to_check_length} )
           endforeach( include_dir_to_check )
           INSTALL( DIRECTORY ${ext_dir}
-                   DESTINATION ${feature_to_install} )
+                   DESTINATION ${feature_to_install}
+                   REGEX "(/.svn)|(/CVS)" EXCLUDE )
         endforeach( ext_dir )
       ENDIF( H3DAPI_INCLUDE_DIRECTORIES_INSTALL )
       
