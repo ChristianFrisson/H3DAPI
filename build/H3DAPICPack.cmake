@@ -521,6 +521,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindDirectX.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFFmpeg.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFontConfig.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindFreeImage.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindFTGL.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindGLEW.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindGLUTWin.cmake
@@ -537,6 +538,7 @@ IF( GENERATE_CPACK_PROJECT )
                  ${H3DAPI_SOURCE_DIR}/modules/FindNvidiaCG.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindOpenHaptics.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindPTHREAD.cmake
+                 ${H3DAPI_SOURCE_DIR}/modules/FindSixenseSDK.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindSpiderMonkey.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindV8.cmake
                  ${H3DAPI_SOURCE_DIR}/modules/FindVirtualHand.cmake
