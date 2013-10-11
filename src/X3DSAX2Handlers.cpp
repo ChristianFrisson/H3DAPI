@@ -795,13 +795,48 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
   if( node_stack.size() > 0 ) parent = node_stack.top().getNode();  
 
   if( !parent ) {
-    node_stack.push( NodeElement( NULL ) );
-    return;
+		if( called_from_proto_declaration ) {
+			// Assume that the ProtoDeclaration is the first of the nodes in some x3d syntax
+			// given by ProtoDeclaration::createProtoInstanceNodeX3D.
+			node_stack.push( NodeElement( new Group ) );
+		} else {
+			node_stack.push( NodeElement( NULL ) );
+			return;
+		}
   }
 
   string localname_string = toString( localname );
 
-  if( localname_string == "ProtoDeclare" ) {
+	if( defining_proto_body > 0 ) {
+		if( defining_proto_connections ) {
+			Console(3) << "Warning: Only \"connect\" elements allowed in IS element "
+								 << getLocationString() << endl;
+			node_stack.push( NodeElement( NULL ) );
+		} else {
+			if( localname_string == "ProtoBody" )
+				defining_proto_body++;
+			stringstream s;
+
+			s << "<" << localname << " ";
+			for( unsigned int i = 0; i < attrs.getLength(); ++i ) {
+				// make sure that MFString are correct. All attribute values
+				// are enclosed in "..", unless the string itself starts with "
+				// then they are inclosed in '..'
+				const XMLCh *v = attrs.getValue( i );
+				char quote = '"';
+				if( v ) {
+					unsigned int ci = 0;
+					while( v[ci] != '\0' && isspace( v[ci] ) ) ++ci;
+					if( v[ci] == '"' ) quote = '\'';
+				}
+				s << attrs.getQName( i ) << "=" << quote << v << quote << " ";
+			}
+			s << ">" << endl;
+
+			proto_body += s.str();
+			++proto_body_count;
+		}
+  } else if( localname_string == "ProtoDeclare" ) {
     if( proto_declaration.get() ) {
       Console(3) << "Warning: ProtoDeclare element not allowed inside other ProtoDeclare element"
            << getLocationString() << endl;
@@ -821,7 +856,7 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
     handleExternProtoDeclareElement( attrs );
   } else if( localname_string == "ProtoInterface" ) {
     if( !proto_declaration.get() || defining_proto_interface || 
-        defining_proto_body || defining_extern_proto ) {
+        defining_proto_body != 0 || defining_extern_proto ) {
       Console(3) << "Warning: ProtoInterface element can only be a child element of ProtoDeclare element "
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
@@ -830,16 +865,16 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
     }
   } else if( localname_string == "ProtoBody" ) {
     if( !proto_declaration.get() || defining_proto_interface || 
-        defining_proto_body || defining_extern_proto ||
+        defining_proto_body != 0 || defining_extern_proto ||
         proto_declaration->getProtoBody() != "" ) {
       Console(3) << "Warning: ProtoBody element can only be a child element of ProtoDeclare element "
            << getLocationString() << endl;
       node_stack.push( NodeElement( NULL ) );
     } else {
-      defining_proto_body = true;
+      defining_proto_body = 1;
     }
   } else if( proto_declaration.get() && !defining_proto_interface && 
-             !defining_proto_body && !defining_extern_proto ) {
+             !defining_proto_body == 0 && !defining_extern_proto ) {
     // Element in ProtoDeclare proto declare that is not ProtoInterface 
     // or ProtoBody.
     Console(3) << "Warning: Only ProtoBody and ProtoInterface elements allowed in ProtoDeclare element "
@@ -866,34 +901,6 @@ void X3DSAX2Handlers::protoStartElement( const XMLCh* const uri,
              << getLocationString() << endl;
         node_stack.push( NodeElement( NULL ) );
       }
-    } else if( defining_proto_body ) {
-      if( defining_proto_connections ) {
-        Console(3) << "Warning: Only \"connect\" elements allowed in IS element "
-             << getLocationString() << endl;
-        node_stack.push( NodeElement( NULL ) );
-      } else {
-        stringstream s;
-
-        s << "<" << localname << " ";
-        for( unsigned int i = 0; i < attrs.getLength(); ++i ) {
-          // make sure that MFString are correct. All attribute values
-          // are enclosed in "..", unless the string itself starts with "
-          // then they are inclosed in '..'
-          const XMLCh *v = attrs.getValue( i );
-          char quote = '"';
-          if( v ) {
-            unsigned int ci = 0;
-            while( v[ci] != '\0' && isspace( v[ci] ) ) ++ci;
-            if( v[ci] == '"' ) quote = '\'';
-          }
-          s << attrs.getQName( i ) << "=" << quote << v << quote << " ";
-        }
-        s << ">" << endl;
-
-        proto_body += s.str();
-        ++proto_body_count;
-      } 
-  
     }
   }
 }
@@ -908,8 +915,25 @@ void X3DSAX2Handlers::protoEndElement( const XMLCh* const uri,
   }
 
   string localname_string = toString( localname );
+	if( localname_string == "ProtoBody" ) {
+    defining_proto_body--;
+  }
+	
+	if( defining_proto_body > 0) { 
+		stringstream s;
+		s << "</" << localname << ">" << endl;
+		proto_body += s.str();
 
-  if( localname_string == "ProtoDeclare" ) {
+		--proto_body_count;
+		if( proto_body_count == 0 ) {
+			if( proto_declaration->getProtoBody().empty() ) {
+				proto_declaration->setProtoBody( proto_body );
+			} else {
+				proto_declaration->addProtoBodyExtra( proto_body );
+			}
+			proto_body = "";
+		}
+	} else if( localname_string == "ProtoDeclare" ) {
     if( proto_declaration.get() ) {
       proto_declarations->push_back( proto_declaration.get() );
       if( !proto_declarations->getFirstProtoDeclaration() ) {
@@ -925,24 +949,8 @@ void X3DSAX2Handlers::protoEndElement( const XMLCh* const uri,
     defining_extern_proto = false;
   } else if( localname_string == "ProtoInterface" ) {
     defining_proto_interface = false;
-  } else if( localname_string == "ProtoBody" ) {
-    defining_proto_body = false;
   } else {
-    if( defining_proto_body ) { 
-      stringstream s;
-      s << "</" << localname << ">" << endl;
-      proto_body += s.str();
-
-      --proto_body_count;
-      if( proto_body_count == 0 ) {
-        if( proto_declaration->getProtoBody().empty() ) {
-          proto_declaration->setProtoBody( proto_body );
-        } else {
-          proto_declaration->addProtoBodyExtra( proto_body );
-        }
-        proto_body = "";
-      }
-    } else if( defining_proto_interface || defining_extern_proto ) { 
+    if( defining_proto_interface || defining_extern_proto ) { 
       FieldValue *fv = dynamic_cast< FieldValue * >( top.get() );
       if( fv ) {
         if( localname_string == "field" ) {

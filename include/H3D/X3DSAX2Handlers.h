@@ -77,11 +77,12 @@ namespace H3D {
       /// \param _proto_declarations Storage of all proto declarations.
       X3DSAX2Handlers( DEFNodes *dn = NULL,
                        DEFNodes *_exported_nodes = NULL,
-                       PrototypeVector *_proto_declarations = NULL ): 
+                       PrototypeVector *_proto_declarations = NULL,
+											 bool _called_from_proto_declaration = false ): 
         proto_instance( NULL ),
         proto_declaration( NULL ),
         proto_body_count( 0 ),
-        defining_proto_body( false ),
+        defining_proto_body( 0 ),
         defining_proto_interface( false ),
         defining_proto_connections( false ),
         defining_extern_proto( false ),
@@ -91,6 +92,7 @@ namespace H3D {
         DEF_map( dn ),
         exported_nodes( _exported_nodes ),
         proto_declarations( _proto_declarations ),
+				called_from_proto_declaration( _called_from_proto_declaration ),
         locator( NULL ),
         profile_set( false ),
         meta_set( false ),
@@ -345,6 +347,10 @@ namespace H3D {
       /// proto_declaration will be set to NULL again;
       AutoRef< ProtoDeclaration > proto_declaration;
 
+			/// If true then this handler is created in proto_declaration so
+			/// a ProtoDeclare element is allowed at top level.
+			bool called_from_proto_declaration;
+
       /// The string_body string is used when defining ProtoBody. All elements will then
       /// just be translated to a string to be used by the ProtoDeclaration.
       string proto_body;
@@ -356,7 +362,7 @@ namespace H3D {
       unsigned int proto_body_count;
 
       /// true if we are inside a ProtoBody element.
-      bool defining_proto_body;
+      H3DInt32 defining_proto_body;
 
       /// true if we are inside a ProtoInterface element.
       bool defining_proto_interface;

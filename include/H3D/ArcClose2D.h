@@ -144,6 +144,7 @@ namespace H3D {
     /// by defining a straight line segment from the end point to the start point.
     ///
     /// <b>Access type:</b> inputOutput \n
+		/// <b>Default value:</b> PIE \n
     /// 
     /// \dotfile ArcClose2D_closureType.dot
     auto_ptr< SFString > closureType;
