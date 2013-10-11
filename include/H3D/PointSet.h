@@ -98,10 +98,19 @@ namespace H3D {
                 FieldRef< X3DGeometricPropertyNode,
                           Field,
                           &FogCoordinate::propertyChanged > > 
-    SFFogCoordinate; 
+    SFFogCoordinate;
 
     /// The bound field for PointSet is a CoordBoundField.
     typedef CoordBoundField SFBound;
+
+    /// The MFVertexAttributeNode is dependent on the propertyChanged
+    /// field of the contained X3DVertexAttributeNode.
+    class H3DAPI_API MFVertexAttributeNode : public DependentMFNode< 
+                X3DVertexAttributeNode,
+                FieldRef< X3DGeometricPropertyNode,
+                          Field,
+                          &X3DVertexAttributeNode::propertyChanged > > {
+    };
 
     /// Display list is extended in order to set color to emissive
     /// color from material outside of display list, since we have to
@@ -114,12 +123,13 @@ namespace H3D {
     };
 
     /// Constructor.
-    PointSet( Inst< SFNode           > _metadata       = 0,
-              Inst< SFBound          > _bound          = 0,
-              Inst< DisplayList      > _displayList    = 0,
-              Inst< SFColorNode      > _color          = 0,
-              Inst< SFCoordinateNode > _coord          = 0,
-              Inst< SFFogCoordinate  > _fogCoord        =0);
+    PointSet( Inst< SFNode                > _metadata       = 0,
+              Inst< SFBound               > _bound          = 0,
+              Inst< DisplayList           > _displayList    = 0,
+              Inst< SFColorNode           > _color          = 0,
+              Inst< SFCoordinateNode      > _coord          = 0,
+              Inst< SFFogCoordinate       > _fogCoord       = 0,
+              Inst< MFVertexAttributeNode > _attrib         = 0 );
 
     /// Render the LineSet with OpenGL
     virtual void render();
@@ -177,6 +187,15 @@ namespace H3D {
     ///
     /// \dotfile PointSet_fogCoord.dot 
     auto_ptr< SFFogCoordinate > fogCoord;
+
+    /// If the attrib field is not empty it shall contain a list of
+    /// X3DVertexAttributeNode instances with per-vertex attribute
+    /// information for programmable shaders.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile PointSet_attrib.dot 
+    auto_ptr< MFVertexAttributeNode > attrib;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -46,18 +46,21 @@ namespace PointSetInternals {
   FIELDDB_ELEMENT( PointSet, color, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PointSet, coord, INPUT_OUTPUT );
   FIELDDB_ELEMENT( PointSet, fogCoord, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( PointSet, attrib, INPUT_OUTPUT );
 }
 
-PointSet::PointSet(  Inst< SFNode           > _metadata,
-                     Inst< SFBound          > _bound,
-                     Inst< DisplayList      > _displayList,
-                     Inst< SFColorNode      > _color,
-                     Inst< SFCoordinateNode > _coord,
-                     Inst< SFFogCoordinate  > _fogCoord  ):
+PointSet::PointSet(  Inst< SFNode                > _metadata,
+                     Inst< SFBound               > _bound,
+                     Inst< DisplayList           > _displayList,
+                     Inst< SFColorNode           > _color,
+                     Inst< SFCoordinateNode      > _coord,
+                     Inst< SFFogCoordinate       > _fogCoord,
+                     Inst< MFVertexAttributeNode > _attrib ):
   X3DGeometryNode( _metadata, _bound, _displayList ),
   color   ( _color    ),
   coord   ( _coord    ),
-  fogCoord( _fogCoord ){
+  fogCoord( _fogCoord ),
+  attrib ( _attrib ) {
 
   type_name = "PointSet";
   database.initFields( this );
@@ -65,6 +68,7 @@ PointSet::PointSet(  Inst< SFNode           > _metadata,
   color->route( displayList );
   coord->route( displayList );
   fogCoord->route( displayList );
+  attrib->route( displayList );
 
   coord->route( bound );
 
@@ -140,6 +144,23 @@ void PointSet::render() {
       }
     }
 
+    GLhandleARB shader_program = 0;
+    // Set the attribute index to use for all vertex attributes
+    if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
+      shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
+      if( shader_program ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
+          X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
+          if( attr ) {
+            GLint loc = 
+              glGetAttribLocationARB( shader_program, 
+              attr->name->getValue().c_str()); 
+            attr->setAttribIndex( loc );
+          }
+        }
+      }
+    }
+
     if( prefer_vertex_buffer_object ) {
       if( fog_coord_node )
         fog_coord_node->renderVertexBufferObject();
@@ -147,6 +168,13 @@ void PointSet::render() {
         color_node->renderVertexBufferObject();
       if( coordinate_node )
         coordinate_node->renderVertexBufferObject();
+
+      for( unsigned int attrib_index = 0;
+            attrib_index < attrib->size(); ++attrib_index ) {
+        X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderVertexBufferObject();
+      }
 
       glDrawArrays( GL_POINTS, 0, coordinate_node->nrAvailableCoords() );
 
@@ -156,6 +184,13 @@ void PointSet::render() {
         color_node->disableVertexBufferObject();
       if( coordinate_node )
         coordinate_node->disableVertexBufferObject();
+
+      for( unsigned int attrib_index = 0;
+        attrib_index < attrib->size(); ++attrib_index ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableVertexBufferObject();
+      }
     } else {
       // render the points
       glBegin( GL_POINTS );
@@ -164,6 +199,17 @@ void PointSet::render() {
         if( color_node ) {
           color_node->render( i );
         }
+
+        // Render vertex attribute
+        for( unsigned int attrib_index = 0;
+             attrib_index < attrib->size(); ++attrib_index ) {
+          X3DVertexAttributeNode *attr = 
+              attrib->getValueByIndex( attrib_index );
+            if( attr ) {
+              attr->render( i );
+            }
+        }
+
         // Render the vertices.
         coordinate_node->render( i );
          if( fog_coord_node) fog_coord_node->render(i);
