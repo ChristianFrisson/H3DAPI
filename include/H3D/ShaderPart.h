@@ -34,6 +34,7 @@
 #include <GL/glew.h>
 #include <H3D/SFString.h>
 #include <H3D/SFInt32.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -64,16 +65,18 @@ namespace H3D {
     /// Update the string to use as shader depending from the urls given.
     class H3DAPI_API SFShaderString: 
       public TypedField< SFString,
-                         MFString > {
+                         Types<MFString,SFBool> > {
     protected:
       virtual void update();
     };
 
+    typedef SFBool ForceReload;
     /// Constructor.
     ShaderPart( Inst< SFNode         > _metadata      = 0,
                 Inst< MFString       > _url           = 0,
                 Inst< SFString       > _type          = 0,
-                Inst< SFShaderString > _shader_string = 0 );
+                Inst< SFShaderString > _shader_string = 0,
+                Inst< SFBool         > _forceReload   = 0);
     
     /// Compile the shader using the shader_string field as text input.
     /// Returns a handle to the compiled shader or 0 if compiling 
@@ -104,6 +107,14 @@ namespace H3D {
     /// 
     /// \dotfile ShaderPart_shaderString.dot
     auto_ptr< SFShaderString > shaderString;
+
+    /// The forceReload field is used to force the reloading of this shaderPart
+    /// and also cause the composed shader recompile and relink.
+    /// Directly change its value from tree view of h3dviewer, or route someother
+    /// field to it will both work
+    /// <b>Access type:<\b> inputOutput \n
+    /// \dotfile ShaderPart_forceReload
+    auto_ptr< SFBool > forceReload;
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "parts".

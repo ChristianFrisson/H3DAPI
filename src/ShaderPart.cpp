@@ -45,16 +45,19 @@ H3DNodeDatabase ShaderPart::database(
 namespace ShaderPartInternals {
   FIELDDB_ELEMENT( ShaderPart, url, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ShaderPart, type, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( ShaderPart, forceReload, INPUT_OUTPUT );
 }
 
 ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
                         Inst< MFString       > _url ,
                         Inst< SFString       > _type,
-                        Inst< SFShaderString > _shader_string ):
+                        Inst< SFShaderString > _shader_string,
+                        Inst< SFBool         > _forceReload):
   X3DNode( _metadata ),
   X3DUrlObject( _url ),
   type( _type ),
   shaderString( _shader_string ),
+  forceReload( _forceReload ),
   shader_handle( 0 ) {
   type_name = "ShaderPart";
   database.initFields( this );
@@ -71,6 +74,7 @@ ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
   type->addValidValue( "TESS_EVALUATION" );
   type->setValue( "VERTEX", id );
   url->route( shaderString );
+  forceReload->route( shaderString );
 }
 
 
