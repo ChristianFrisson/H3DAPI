@@ -5,6 +5,7 @@ import os
 
 # Files generated when this variable is true might not load on your system.
 generate_super_big_files = False
+generate_big_files = False
 
 # Class that can be used to generate geometry files.
 class GenerateGeometryFiles:
@@ -180,11 +181,12 @@ class GenerateGeometryFiles:
                                                   rows = 501 ) )
 
     # 1000000 triangles ITS
-    self.generateITSFile( self.FunctionArguments( nr_shapes = 1, \
-                                                  x_size = 0.4, \
-                                                  y_size = 0.4, \
-                                                  columns = 1001, \
-                                                  rows = 501 ) )
+    if generate_big_files:
+      self.generateITSFile( self.FunctionArguments( nr_shapes = 1, \
+                                                    x_size = 0.4, \
+                                                    y_size = 0.4, \
+                                                    columns = 1001, \
+                                                    rows = 501 ) )
     if generate_super_big_files:
       self.generateITSFile( self.FunctionArguments( nr_shapes = 500, \
                                                     x_size = 0.4, \
@@ -193,11 +195,12 @@ class GenerateGeometryFiles:
                                                     rows = 501 ) )
 
     # 1000000 triangles IFS
-    self.generateIFSFile( self.FunctionArguments( nr_shapes = 1, \
-                                                  x_size = 0.4, \
-                                                  y_size = 0.4, \
-                                                  columns = 1001, \
-                                                  rows = 501 ) )
+    if generate_big_files:
+      self.generateIFSFile( self.FunctionArguments( nr_shapes = 1, \
+                                                    x_size = 0.4, \
+                                                    y_size = 0.4, \
+                                                    columns = 1001, \
+                                                    rows = 501 ) )
 
     print "All files successfully generated in " + str( time.time() - begin_time ) + " seconds."
     print ""
@@ -314,8 +317,33 @@ class GenerateGeometryFiles:
                        "  </head>\n" + \
                        "  <Scene>\n" )
     vp_z_value = content_function( function_arguments )
-    file_handle.write( "    <Viewpoint DEF='VP' position='0 0 " + str( vp_z_value ) + "' />\n"
-                       "  </Scene>\n" + \
+    file_handle.write( "    <Viewpoint DEF='VP' position='0 0 " + str( vp_z_value ) + "' />\n" )
+    if function_arguments.node_names:
+      for i, l in enumerate( function_arguments.node_names ):
+        if l[1].endswith( "TOUCH" ):
+          pos = l[1].rfind( "_" )
+          if pos != -1:
+            field_name = l[1][ pos+1:len(l[1])-5 ]
+          file_handle.write( """    <PythonScript >
+    <%s USE="%s_%s" containerField="references" />
+          <![CDATA[python:from H3DInterface import *
+
+the_node, = references.getValue()
+
+class TouchField( AutoUpdate( SFTime ) ):
+  def __init__( self, field_to_touch ):
+    AutoUpdate( SFTime ).__init__(self)
+    self.field_to_touch = field_to_touch
+    time.routeNoEvent( self )
+
+  def update( self, event ):
+    self.field_to_touch.touch()
+    return event.getValue()
+
+touchField = TouchField(the_node.%s)
+]]>
+          </PythonScript>""" % (l[0], str(i), l[1], field_name) )
+    file_handle.write( "  </Scene>\n" + \
                        "</X3D>\n" )
 
   # Generate indexedtriangleset files.

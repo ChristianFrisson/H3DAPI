@@ -3,9 +3,6 @@
 # result.
 #"Files in H3DAPI\examples\TestSuite will be loaded by this file.
 # Those files must contain a viewpoint named VP
-# Any node in those files whose name ends with TOUCH will be assumed to be named
-# _fieldnameTOUCH where fieldname is the name of the field in the node that should be
-# touched once per scenegraph node.
 
 #Idea from Neil. Make program generate good settings file, or make a program that does.
 
@@ -168,25 +165,6 @@ if os.path.isdir( test_suite_directory ):
 else:
   print "The directory " + test_suite_directory + " does not exist. Check that H3D_ROOT is set correctly."
 
-# Field class that call Field.touch() on all fields given to this
-# class in the constructor.
-class TouchFields( AutoUpdate( SFTime ) ):
-  def __init__( self ):
-    AutoUpdate( SFTime ).__init__(self)
-    self.fields_to_touch = []
-    time.routeNoEvent( self )
-
-  def update( self, event ):
-    for f in self.fields_to_touch:
-      f.touch()
-    return event.getValue()
-  
-  def addFieldToTouch( self, f ):
-    self.fields_to_touch.append( f )
-
-  def clearFieldToTouch( self ):
-    self.fields_to_touch = []
-
 # Field class that takes care of checking each file.
 class CheckFile( AutoUpdate( SFTime ) ):
 
@@ -274,7 +252,6 @@ class CheckFile( AutoUpdate( SFTime ) ):
     self.options_fields_index = None
     # Used for printout to console
     self.file_test_nr = 0
-    self.touchField = TouchFields()
     # Contains statistics for each file.
     self.statistics = dict()
     # The currently loaded file.
@@ -313,14 +290,6 @@ class CheckFile( AutoUpdate( SFTime ) ):
           dn["VP"].set_bind.setValue( True )
           self.graphics_frame_rate = []
           self.haptics_frame_rate = []
-          # Find fields which should be touched each frame.
-          for n in dn:
-            if n.endswith( "TOUCH" ):
-              pos = n.rfind( "_" )
-              if pos != -1:
-                f = dn[n].getField( n[ pos+1:len(n)-5 ] )
-                if f:
-                  self.touchField.addFieldToTouch( f )
           # Measure time here, since file is now loaded.
           self.test_file_start_time = python_time.time()
         else:
@@ -334,7 +303,6 @@ class CheckFile( AutoUpdate( SFTime ) ):
       # remove file.
       self.storeDataSample()
       self.writeDataToConsole()
-      self.touchField.clearFieldToTouch()
       #dn["VP"].set_bind.setValue( False )
       content_group.children.clear()
       self.test_file_start_time = None
