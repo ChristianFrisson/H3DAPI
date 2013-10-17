@@ -7,7 +7,8 @@ from H3DInterface import *
 group, = references.getValue()
 
 # create the sphere geometry
-sphere = createX3DNodeFromString( """<Sphere radius="0.02" /> """)[0]
+sphere = createNode( "Sphere" )
+sphere.radius.setValue( 0.02 )
 
 # The AddSphere class adds a new sphere to the group nodes children
 # field each time a field routed to it generates an 1 event.

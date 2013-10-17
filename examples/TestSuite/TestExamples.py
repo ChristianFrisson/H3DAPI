@@ -438,19 +438,13 @@ scene = None
  
     results= []
  
-    counter = 0
     for root, dirs, files in os.walk(directory):
-      if counter >= 1:
-        break
       for file in files:
-        if counter >= 1:
-          break
         base, ext= os.path.splitext(file)
         if ext.lower() in fileExtensions:
           file_path= os.path.join(root,file)
           if self._isTestable ( file_path ):
             print "Testing: " + file_path
-            counter = counter + 1
             
             if variations:
               variation_results= []

@@ -22,11 +22,9 @@ bonustime=15
 
 path = ""
 
-# get the first haptics device and put it into the hdev variable
-hdev = None
-di = getActiveDeviceInfo()
-if( di and len( di.device.getValue() ) > 0 ):
-  hdev=di.device.getValue()[0]
+# get the first haptics device and put it into the hdev variable.
+hdev = getHapticsDevice(0)
+if hdev:
   hdev.stylus.setValue( None )
 
 # TimerCallback used for delayed events.
