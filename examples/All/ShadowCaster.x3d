@@ -7,7 +7,7 @@
     <meta name='author' content='SenseGraphics AB, 2006-2009'/>
   </head>
 
-  <Group>
+  <Scene>
     <Viewpoint position="0 0 0.55" />
 
     <Transform DEF="TX1">
@@ -105,5 +105,5 @@
 
     <NavigationInfo headlight="false" />
 
-  </Group>
+  </Scene>
 </X3D>

@@ -53,6 +53,7 @@ NrrdImageLoader::reader_registration(
                             );
 
 bool NrrdImageLoader::supportsFileType( const string &url ) {
+#if TEEM_VERSION < 11100
   // only allow it to read files with the extension .nrrd since
   // otherwise nrrd can crash or hand when it gets a .gif or .jpg 
   // file in the code below (at least on Linux).
@@ -62,6 +63,7 @@ bool NrrdImageLoader::supportsFileType( const string &url ) {
 		 end_of_url.begin(), ::tolower);
   string vtk_end = url.substr( url.size() - 4, end_of_url.size() ); 
   if( end_of_url != ".nrrd" && vtk_end != ".vtk" ) return false;
+#endif
 
   NrrdIoState *nio;
   Nrrd *nin;

@@ -19,8 +19,7 @@
           reset='true'
           waitForReset='true' 
           endEffectorMass='0.1'
-          useBrakes='true'
-          deviceType='DHD_DEVICE_OMEGA'>
+          useBrakes='true'>
         <RuspiniRenderer/>
       </ForceDimensionDevice>
     </DeviceInfo>    
