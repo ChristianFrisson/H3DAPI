@@ -291,6 +291,12 @@ void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
   ti.getUserData( "ShadowCaster",  (void **)&prev_shadow_caster);
   ti.setUserData( "ShadowCaster", shadow_caster.get() );
 
+  // save previous state of multi-pass transparency and reset
+  // to false in order to be able to identify if any of the children
+  // nodes sets it.
+  bool previous_multi_pass  = ti.getMultiPassTransparency();
+  ti.setMultiPassTransparency( false );
+
   X3DGroupingNode::traverseSG( ti );
 
   // add the head light to shadow casting nodes if it is active.
@@ -298,7 +304,9 @@ void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
     shadow_caster->addHeadLight();
   }
 
+  // set values back so that the changes made by children are ignored
   ti.setUserData( "ShadowCaster", prev_shadow_caster );
+  ti.setMultiPassTransparency( previous_multi_pass );
 }
 
 bool FrameBufferTextureGenerator::haveStencilBuffer() {
