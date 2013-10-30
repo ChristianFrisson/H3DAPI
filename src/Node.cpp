@@ -152,7 +152,10 @@ void Node::cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMa
       } else if ( MFString *mfstring_from = dynamic_cast< MFString * > ( &_from ) ) {
         // MFString does not work with getValueAsVoidPtr. Do special case or fix getValueAsVoidPtr.
         if ( MFString *mfstring_to = dynamic_cast< MFString * >( &_to ) ) {
-          mfstring_to->setValue ( mfstring_from->getValue () );
+          if ( !mfstring_from->getValueAsString().empty() ){
+            // avoid setting value when not actaully needed
+            mfstring_to->setValue ( mfstring_from->getValue ( ) );
+          }
         }
 
         // Generic MField
@@ -177,7 +180,10 @@ void Node::cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMa
         // the getValueAsVoidPtr function does not work well with
         // SFString fields so do a special case for that type.
         if ( SFString *sfstring_to = dynamic_cast< SFString * >( &_to ) ) {
-          sfstring_to->setValue ( sfstring_from->getValue() );
+          if ( !sfstring_from->getValue().empty() ){
+            // avoid setValue for sfstring_to when not really needed
+            sfstring_to->setValue ( sfstring_from->getValue ( ) );
+          }
         }
         // Generic SField
       } else {
