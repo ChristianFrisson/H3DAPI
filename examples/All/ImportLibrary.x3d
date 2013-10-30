@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='ImportLibrary.x3d'/>
     <meta name='description' content='H3DAPI ImportLibrary example.
-      The RigidBodyPhysics library is needed for this example to work.
+      The H3DPhysics library is needed for this example to work.
       Insert the path to the library into the library field of the
       ImportLibrary node.
       This example uses H3DAPI node(s) and runs on H3DAPI-supported 
@@ -16,12 +16,11 @@
   
   <Scene>
     <Viewpoint position='0 0 0.6' />
-    <ImportLibrary library='RigidBodyPhysics.dll' />
-    <ImportLibrary library='RigidBodyPhysics.so' />
+    <ImportLibrary url='"../../../bin32/H3DPhysics_vc10" "../../../bin64/H3DPhysics_vc10" "libh3dphysics.so" "libh3dphysics.so.1.2.1"' />
     
     <Transform DEF='BOX-T'>
       <Shape DEF='BOX-S'>
-        <Appearance DEF='A'>
+        <Appearance>
           <Material diffuseColor='0.7 0.2 0.4' />
           <FrictionalSurface />
         </Appearance>
@@ -31,12 +30,15 @@
     
     <Transform DEF='BOX2-T'>
       <Shape DEF='BOX2-S'>
-        <Appearance USE='A' />
+        <Appearance>
+          <Material diffuseColor='0.2 0.7 0.4' />
+          <FrictionalSurface />
+        </Appearance>
         <Box DEF='BOX2-G' size='0.4 0.01 0.4' />
       </Shape>
     </Transform>
     
-    <RigidBodyCollection physicsEngine='ODE' gravity='0 -10 0'>
+    <RigidBodyCollection physicsEngine='ODE' gravity='0 -0.1 0'>
       <CollisionCollection 
           containerField='collider' frictionCoefficients='0.2 0.5'>
         <CollidableShape DEF='BOX-C' containerField='collidables'>

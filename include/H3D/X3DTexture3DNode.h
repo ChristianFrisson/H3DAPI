@@ -49,7 +49,7 @@ namespace H3D {
     class H3DAPI_API SFImage: public H3DImageObject::SFImage {
     public:
       virtual void setValueFromString( const string &s ) {
-        setValue( X3D::X3DStringTo2DImage( s ) );
+        setValue( X3D::X3DStringTo3DImage( s ) );
       }
 
       virtual string getValueAsString(const string& separator = " ");

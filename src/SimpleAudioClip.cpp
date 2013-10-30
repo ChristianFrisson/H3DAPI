@@ -131,6 +131,4 @@ void SimpleAudioClip::UpdateAudioPlay::update(){
       sac->audioState->setValue( "STOPPED", sac->id );
     }
   }
-  routes_in.clear();
-  
 }

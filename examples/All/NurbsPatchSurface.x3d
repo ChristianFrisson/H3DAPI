@@ -44,11 +44,9 @@
           solid='false'
           uClosed='false'
           uDimension='4'
-          uKnot='8'
           uOrder='3'
           vClosed='false'
           vDimension='4'
-          vKnot=''
           vOrder='3'>
         <Coordinate USE='P' containerField='controlPoint'/>
       </NurbsPatchSurface>

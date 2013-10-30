@@ -114,6 +114,7 @@ namespace H3D {
     /// \dotfile SimpleAudioClip_audioState.dot
     auto_ptr< SFString > audioState;
 
+	protected:
     /// update the playing of audio
     auto_ptr< UpdateAudioPlay > updateAudioPlay;
   };

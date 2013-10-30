@@ -16,7 +16,9 @@
     
     <KeySensor DEF='K' />
     <PythonScript DEF='P1' url='script.py' />
-    <PythonScript DEF='P2' url='print.py' />
+    <PythonScript DEF='P2' url='print.py' >
+      <SpaceballSensor USE='S' containerField="references"/>
+    </PythonScript>
     
     <ROUTE
       fromNode='K' fromField='keyPress'

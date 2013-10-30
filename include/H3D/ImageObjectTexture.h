@@ -52,7 +52,7 @@ namespace H3D {
     /// a route from the contained object's image field to the image field
     /// of the ImageObjectTexture it resides in.
     class H3DAPI_API SFImageObject: 
-      public TypedSFNodeObject< H3DImageObject > {
+      public AutoUpdate< TypedSFNodeObject< H3DImageObject > > {
     protected:
       /// Sets up a route between the added node's image field and the
       /// owners image field.

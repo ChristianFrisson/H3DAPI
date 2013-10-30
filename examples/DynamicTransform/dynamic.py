@@ -32,7 +32,7 @@ linDamper = LinDamper( 10 )
 class SumForces( TypedField( SFVec3f, (SFVec3f, SFVec3f, MFVec3f) ) ):
   def update( self, event ):
     f = Vec3f( 0, 0, 0 );
-    routes = getRoutesIn( self )
+    routes = self.getRoutesIn()
     for r in routes:
       if isinstance( r, SFVec3f ):
         f = f + r.getValue();
@@ -122,7 +122,7 @@ class ApplyTorque( TypedField( SFVec3f, ( SFMatrix4f, MFVec3f, MFVec3f ) ) ):
 class SumTorques( SFVec3f ):
   def update( self, event ):
     f = Vec3f( 0, 0, 0 );
-    routes_in = getRoutesIn( self )
+    routes_in = self.getRoutesIn()
     
     for r in routes_in:
       f = f + r.getValue();

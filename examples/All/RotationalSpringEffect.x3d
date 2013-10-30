@@ -14,7 +14,7 @@
   <Scene>
     <Viewpoint position='0 0 0.6' />    
     <RotationalSpringEffect
-      position='0 0 0'
+      desiredAxis='0 1 0'
       springConstant='100'
       />
   </Scene>

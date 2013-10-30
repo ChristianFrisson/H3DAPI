@@ -57,7 +57,7 @@
             specularColor='0 0 0'
             transparency='0'
           />
-          <ImageTexture url='C:\SenseGraphics\x3dmodels\KumanoT.gif'/>
+          <ImageTexture url='KumanoT.gif'/>
           <TextureTransform 
             center='0 0'
             rotation='0'

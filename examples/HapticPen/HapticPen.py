@@ -4,7 +4,7 @@ COORD, TEXT_TOGGLE, = references.getValue()
 
 class DevicePositionChangeField( AutoUpdate(TypedField(SFBool, (SFBool, SFVec3f))) ):
   def update(self, event):
-    click, pos = getRoutesIn(self)
+    click, pos = self.getRoutesIn()
     if click.getValue():
       COORD.point.push_back( pos.getValue() )
     return True

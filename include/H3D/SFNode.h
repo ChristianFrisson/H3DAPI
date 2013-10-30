@@ -147,7 +147,7 @@ namespace H3D {
   class TypedSFNodeObject: public SFNode {
   protected:
     /// We check that the type of the Node is of the correct type.
-    void onAdd( Node *n) {
+    virtual void onAdd( Node *n) {
       if( !dynamic_cast< Type * >( n ) ) {
         Node *pi = getPrototypeNode( n );
         if( !dynamic_cast< Type * >( pi ) ) {

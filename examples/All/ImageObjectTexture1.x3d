@@ -12,6 +12,20 @@
   <Scene>
     <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
     
+    <Transform translation='0 0.17 0' rotation="0 1 0 0.78" >
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0 1 1' />
+        </Appearance>
+        <Text DEF='TX' string='"Wait at least 6 seconds."'>
+          <FontStyle family='SERIF' horizontal='true' 
+                     justify='MIDDLE' language='en' 
+                     leftToRight='true' size='0.1' spacing='1.0' 
+                     style='ITALIC' topToBottom='true' renderType='TEXTURE' />
+        </Text>
+      </Shape>
+    </Transform>
+    
     <Transform rotation='1 0 -1 0.6'>
       <Shape>
         <Appearance>
@@ -35,7 +49,7 @@
     </Transform>
     
     <TimeSensor DEF='S' cycleInterval='6' loop='true' />
-    <PythonScript DEF='P' url='ImageObjectTexture.py' />
+    <PythonScript DEF='P' url='ImageObjectTexture1.py' />
     
     <ROUTE
         fromNode='S' fromField='cycleTime'

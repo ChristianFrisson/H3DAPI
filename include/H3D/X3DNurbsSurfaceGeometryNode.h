@@ -376,7 +376,7 @@ namespace H3D {
     
   protected:
     GLUnurbsObj *nurbs_object;
-
+		auto_ptr< Field > printWarning;
   };
 }
 
