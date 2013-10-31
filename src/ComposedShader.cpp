@@ -626,70 +626,57 @@ void ComposedShader::UpdateUniforms::update() {
 
 #ifdef EXPORT_SHADER
 
-
 void ComposedShader::UpdateSaveShadersToUrl::onNewValue( const std::string &v ){
+
   // when url string changed, re export the shaders
+  if ( v.empty ( ) ) return;
   ComposedShader* cs = static_cast< ComposedShader* >( getOwner() );
-  if( v.empty() ) return;
   GLenum error = glGetError();
   vector< GLhandleARB > handlers = cs->current_shaders;
-  ofstream outFile;
+  GLchar* shader_content;
   for( vector< GLhandleARB >::iterator it = handlers.begin(); it != handlers.end(); it++ ) {
     GLint shader_type;
     GLsizei shader_length;
+    glGetShaderiv ( *it, GL_SHADER_SOURCE_LENGTH , &shader_length);
+
     const GLsizei MAX_SHADER_LENGTH = 1000000;
-    GLchar shader_content[MAX_SHADER_LENGTH];
     glGetShaderiv( *it, GL_SHADER_TYPE, &shader_type );
-    error = glGetError();
-    if( error!=GL_NO_ERROR ) {
-      Console(4)<<" Warning: get shader type error: "<<gluErrorString(error)<<endl;
-      continue;
-    }
-    glGetShaderSource( *it, MAX_SHADER_LENGTH, &shader_length, shader_content  );
+    shader_content = new GLchar [shader_length];
+    glGetShaderSource ( *it, MAX_SHADER_LENGTH, &shader_length, shader_content );
+    
     error = glGetError();
     if( error!=GL_NO_ERROR ) {
       Console(4)<<" Warning: extract shader information error: "<<gluErrorString(error)<<endl;
       continue;
     }
     //glewGetString( shader_type );
-    switch (shader_type)
-    {
-    case GL_VERTEX_SHADER_ARB:
-      outFile.open( v+"_vertex_shader.txt" );
-      outFile<< "shader type is vertex shader, content is:"<<endl;
+    if( shader_type==GL_VERTEX_SHADER_ARB ) {
+      ofstream   outFile( v+"_vertex_shader.txt", ofstream::out  );
+      outFile<< shader_content <<endl;
+      outFile.close();
+    }else if( shader_type==GL_GEOMETRY_SHADER_ARB ) {
+      ofstream   outFile( v+"_geometry_shader.txt", ofstream::out  );
       outFile<< shader_content <<endl;
       outFile.close();
       break;
-    case GL_FRAGMENT_SHADER_ARB:
-      outFile.open( v+"_fragment_shader.txt" );
-      outFile<< "shader type is fragment shader:"<<endl;
+    }else if( shader_type==GL_TESS_EVALUATION_SHADER ) {
+      ofstream   outFile( v+"_tessEva_shader.txt", ofstream::out  );
       outFile<< shader_content <<endl;
       outFile.close();
-      break;
-    case GL_GEOMETRY_SHADER_ARB:
-      outFile.open( v+"_geometry_shader.txt" );
-      outFile<< "geometry shader:"<<endl;
+    }else if( shader_type==GL_TESS_CONTROL_SHADER ) {
+      ofstream   outFile( v+"_tessControl_shader.txt", ofstream::out  );
       outFile<< shader_content <<endl;
       outFile.close();
-      break;
-    case GL_TESS_CONTROL_SHADER:
-      outFile.open( v+"_tess_cont_shader.txt" );
-      outFile<< "Tessellation control shader: "<<endl;
+    }else if( shader_type==GL_FRAGMENT_SHADER_ARB ) {
+      ofstream   outFile( v+"_fragment_shader.txt", ofstream::out  );
       outFile<< shader_content <<endl;
       outFile.close();
-      break;
-    case GL_TESS_EVALUATION_SHADER:
-      outFile.open( v+"_tess_eva_shader.txt" );
-      outFile<< "Tessellation evaluation shader: "<<endl;
-      outFile<< shader_content <<endl;
-      outFile.close();
-      break;
-    default:
+    }else{
       Console(4)<<"shader type unsupported yet"<<endl;
     }
   }
   //Console(4)<<"will output shader uniform"<<endl;
-  outFile.open( v+"_shader_uniforms.txt" );
+  ofstream   outFile( v+"_shader_uniform.txt", ofstream::out  );
   //Console(4)<<"shader uniform txt opened."<<endl;
   int total = -1;
   GLhandleARB program_id = cs->getProgramHandle();

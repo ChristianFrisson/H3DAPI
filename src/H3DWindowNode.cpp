@@ -60,7 +60,7 @@
 #include <H3D/X3DLightNode.h>
 
 #include <GL/glew.h>
-
+#include <H3DUtil/H3DTimer.h>
 
 
 using namespace H3D;
@@ -1194,9 +1194,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glPopAttrib();
       glDisable( GL_SCISSOR_TEST );
     }
-
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepBegin("Stereo_swapBuffers");
+#endif
     swapBuffers();
-
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepEnd("Stereo_swapBuffers");
+#endif
     if( any_pointing_device_sensors ) {
       // Get values for mono_projmatrix and mono_mvmatrix which should
       // be used when calculating argument for
@@ -1310,8 +1314,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
     if ( !norm ) 
       glDisable( GL_NORMALIZE );
-
+#ifdef HAVE_PROFILER
+    H3DUtil::H3DTimer::stepBegin("mono_swapBuffers");
+#endif
     swapBuffers();
+#ifdef HAVE_PROFILER
+    H3DUtil::H3DTimer::stepEnd("mono_swapBuffers");
+#endif
   }
   glPopAttrib();
 
