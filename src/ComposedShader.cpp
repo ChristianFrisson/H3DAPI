@@ -639,11 +639,11 @@ void ComposedShader::UpdateSaveShadersToUrl::onNewValue( const std::string &v ){
     GLsizei shader_length;
     glGetShaderiv ( *it, GL_SHADER_SOURCE_LENGTH , &shader_length);
 
-    const GLsizei MAX_SHADER_LENGTH = 1000000;
-    glGetShaderiv( *it, GL_SHADER_TYPE, &shader_type );
-    shader_content = new GLchar [shader_length];
-    glGetShaderSource ( *it, MAX_SHADER_LENGTH, &shader_length, shader_content );
     
+    glGetShaderiv( *it, GL_SHADER_TYPE, &shader_type );
+    shader_content = new GLchar [shader_length+1];
+    glGetShaderSource ( *it, shader_length+1, NULL, shader_content );
+    // if
     error = glGetError();
     if( error!=GL_NO_ERROR ) {
       Console(4)<<" Warning: extract shader information error: "<<gluErrorString(error)<<endl;
