@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2.1'>
+  <head>
+    <meta name='title' content='GeometryGroup.x3d'/>
+    <meta name='description' content='H3DAPI example. This example 
+          uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit
+          http://www.h3d.org for more information and to download an H3DAPI-
+          compatible browser. Haptics device is needed for demonstration of haptics.
+          The example demonstrates the GeometryGroup. It can be used as a normal
+          geometry but can contains several geometries. This can be useful
+          when setting up shadows and approximating Haptic Geometries.'/>
+    <meta name='author' content='SenseGraphics AB, 2013'/>
+  </head>
+  
+  <Scene>
+    <NavigationInfo headlight='false' />
+    
+    <PointLight location='-0.2 0.05 0.4' />
+    
+    <Shape>
+      <Appearance shadow='true'>
+        <Material diffuseColor='1 0 0' />
+        <FrictionalSurface />
+      </Appearance>      
+      <GeometryGroup>
+        <Box size='0.1 0.01 0.1' />
+        <IndexedTriangleSet
+            ccw='true' colorPerVertex='true'
+            normalPerVertex='false'
+            index='0 1 2 0 2 3 0 3 4 0 4 1 5 2 1 5 3 2 5 4 3 5 1 4'>
+          <Coordinate point='0.15 0.1 0, 0.2 0 0.05, 0.2 0 -0.05, 0.1 0 -0.05, 0.1 0 0.05, 0.15 -0.1 0' />
+          <Color      color='1 0 0, 0.8 0 0, 0.5 0 0, 0.5 0.5 0, 0 0.8 0, 0 1 0' />
+        </IndexedTriangleSet>
+      </GeometryGroup>
+    </Shape>
+    
+    <Transform translation='0.15 0 -0.1'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0.4 0.4 0.4' />
+        </Appearance>      
+        <GeometryGroup>
+          <Box size='0.2 0.4 0.01' />
+          <IndexedTriangleSet
+              ccw='true' colorPerVertex='true'
+              normalPerVertex='false' solid='false'
+              index='0 1 2 0 2 3'>
+            <Coordinate point='0.1 0.2 0, 0.1 -0.2 0, 0.1 -0.2 0.2, 0.1 0.2 0.2' />
+          </IndexedTriangleSet>
+        </GeometryGroup>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>
