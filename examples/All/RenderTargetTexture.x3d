@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2'>
+  <head>
+    <meta name='title' content='RenderTargetTexture.x3d.x3d'/>
+    <meta name='description' content='H3DAPI RenderTargetTexture.x3d example. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Background skyColor="0.5 0.5 0.5" />
+    <NavigationInfo type="NONE" />
+
+    <!-- Render to texture -->
+    <FrameBufferTextureGenerator DEF="GEN" generateColorTextures='"RGBA" "RGBA"' samples="4" width="500" height="500">
+      <Background skyColor="0 0 1" containerField="background" />
+      <Viewpoint position="0 0 0.6" containerField="viewpoint" />
+      <!-- Scene to render to texture 0-->
+      <RenderTargetSelectGroup renderTargets="0" >
+	<Shape>
+	  <Appearance> 
+	    <Material diffuseColor="0 1 0"/>
+	  </Appearance>
+	  <Box size="0.2 0.2 0.2" />
+	</Shape>
+      </RenderTargetSelectGroup> 
+      
+      <!-- Scene to render to texture 1-->
+      <RenderTargetSelectGroup renderTargets="1" >
+	<Shape>
+	  <Appearance> 
+	    <Material diffuseColor="1 0 0" />
+	  </Appearance>
+	  <Sphere radius="0.2" />
+	</Shape>
+      </RenderTargetSelectGroup> 
+
+    </FrameBufferTextureGenerator>
+
+    <!-- Render scene texture with applied shader -->
+    <Transform translation="-0.15 0 0" >
+      <Shape>
+	<Appearance>
+	  <RenderTargetTexture index="0">
+	    <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
+	  </RenderTargetTexture>
+	</Appearance>
+	<Rectangle2D size="0.2 0.2" />
+      </Shape>
+    </Transform>
+
+    <Transform translation="0.15 0 0" >
+      <Shape>
+	<Appearance>
+	  <RenderTargetTexture index="1">
+	    <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
+	  </RenderTargetTexture>
+	</Appearance>
+	<Rectangle2D size="0.2 0.2" />
+      </Shape>
+    </Transform>
+    
+  </Scene>
+</X3D>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2'>
+  <head>
+    <meta name='title' content='ConvolutionFilterShader.x3d'/>
+    <meta name='description' content='H3DAPI ConvolutionFilterShader example. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <NavigationInfo type="NONE" />
+
+    <Shape>
+      <Appearance>
+	<ConvolutionFilterShader DEF="SHADER" >
+	  <ImageTexture url="textures/Day.jpg" />
+	</ConvolutionFilterShader>
+      </Appearance>
+      <FullscreenRectangle />
+    </Shape>
+    
+    <Transform>
+      <Shape>
+	<Appearance>
+	  <Material diffuseColor="1 0 0"/>
+	  <RenderProperties depthTestEnabled="false" />
+	</Appearance>
+	<Text DEF="TEXT" string="Original" >
+	  <FontStyle family='SERIF' horizontal='true' 
+                     justify='MIDDLE' language='en' 
+                     leftToRight='true' size='0.1' renderType='TEXTURE' />
+	</Text>
+      </Shape>
+    </Transform>
+
+    <PythonScript url="convolution_filter_shader.py" />
+  </Scene>
+</X3D>
