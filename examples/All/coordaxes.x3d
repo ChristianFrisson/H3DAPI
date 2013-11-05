@@ -1,68 +1,79 @@
-<Group>
-	<!-- y-axis -->
-	<Transform>
-		<Group DEF="AXIS">
-			<Shape>
-				<Appearance DEF="AXIS_APP">
-					<Material diffuseColor="0.3 0.3 0.8" />
-				</Appearance>
-				<Cylinder height="0.3" radius="0.001"/>
-			</Shape>
-			<Transform translation="0 0.15 0">
-				<Shape>
-					<Appearance USE="AXIS_APP" />
-					<Cone height="0.01" bottomRadius="0.003"/>
-				</Shape>
-			</Transform>
-		</Group>
-	</Transform>
-	
-	<!-- x-axis -->
-	<Transform rotation="0 0 1 -1.571">
-		<Group USE="AXIS" />
-	</Transform>
-	
-	<!-- z-axis -->
-	<Transform rotation="1 0 0 1.571">
-		<Group USE="AXIS" />
-	</Transform>
-	
-	<!-- y label -->
-	<Transform translation="0 0.17 0">
-		<Billboard>
-			<Shape>
-				<Appearance DEF="AXIS_LABEL_APP">
-					<Material diffuseColor="1 1 1" />
-				</Appearance>
-				<Text string='"y"' solid="true">
-					<FontStyle DEF="LABEL_STYLE" size="0.02" spacing="0.8" justify="MIDDLE"/>
-				</Text>
-			</Shape>
-		</Billboard>
-	</Transform>
-	
-	<!-- x label -->
-	<Transform translation="0.17 0 0">
-		<Billboard>
-			<Shape>
-				<Appearance USE="AXIS_LABEL_APP" />
-				<Text string='"x"' solid="true">
-					<FontStyle USE="LABEL_STYLE" />
-				</Text>
-			</Shape>
-		</Billboard>
-	</Transform>
-	
-	<!-- z label -->
-	<Transform translation="0 0 0.17">
-		<Billboard>
-			<Shape>
-				<Appearance USE="AXIS_LABEL_APP" />
-				<Text string='"z"' solid="true">
-					<FontStyle USE="LABEL_STYLE" />
-				</Text>
-			</Shape>
-		</Billboard>
-	</Transform>
-	
-</Group>
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='coordaxes.x3d'/>
+    <meta name='description' content='Help file for VertexAttributes.x3d and VertexAttributes1.x3d'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2013'/>
+  </head>
+
+  <Scene>
+    <Group>
+      <!-- y-axis -->
+      <Transform>
+        <Group DEF="AXIS">
+          <Shape>
+            <Appearance DEF="AXIS_APP">
+              <Material diffuseColor="0.3 0.3 0.8" />
+            </Appearance>
+            <Cylinder height="0.3" radius="0.001"/>
+          </Shape>
+          <Transform translation="0 0.15 0">
+            <Shape>
+              <Appearance USE="AXIS_APP" />
+              <Cone height="0.01" bottomRadius="0.003"/>
+            </Shape>
+          </Transform>
+        </Group>
+      </Transform>
+
+      <!-- x-axis -->
+      <Transform rotation="0 0 1 -1.571">
+        <Group USE="AXIS" />
+      </Transform>
+
+      <!-- z-axis -->
+      <Transform rotation="1 0 0 1.571">
+        <Group USE="AXIS" />
+      </Transform>
+
+      <!-- y label -->
+      <Transform translation="0 0.17 0">
+        <Billboard>
+          <Shape>
+            <Appearance DEF="AXIS_LABEL_APP">
+              <Material diffuseColor="1 1 1" />
+            </Appearance>
+            <Text string='"y"' solid="true">
+              <FontStyle DEF="LABEL_STYLE" size="0.02" spacing="0.8" justify="MIDDLE"/>
+            </Text>
+          </Shape>
+        </Billboard>
+      </Transform>
+
+      <!-- x label -->
+      <Transform translation="0.17 0 0">
+        <Billboard>
+          <Shape>
+            <Appearance USE="AXIS_LABEL_APP" />
+            <Text string='"x"' solid="true">
+              <FontStyle USE="LABEL_STYLE" />
+            </Text>
+          </Shape>
+        </Billboard>
+      </Transform>
+
+      <!-- z label -->
+      <Transform translation="0 0 0.17">
+        <Billboard>
+          <Shape>
+            <Appearance USE="AXIS_LABEL_APP" />
+            <Text string='"z"' solid="true">
+              <FontStyle USE="LABEL_STYLE" />
+            </Text>
+          </Shape>
+        </Billboard>
+      </Transform>
+
+    </Group>
+  </Scene>
+</X3D>

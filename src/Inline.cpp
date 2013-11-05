@@ -142,11 +142,11 @@ void Inline::LoadedScene::update() {
         url= inline_node->resolveURLAsFile( *i, &is_tmp_file );
       }
       if( url != "" || url_contents != "" ) {
+				string old_url_base = ResourceResolver::getBaseURL();
 #ifdef HAVE_XERCES
         try 
 #endif
         {
-          string old_url_base = ResourceResolver::getBaseURL();
           if( is_tmp_file && (*i).find( "://" ) != string::npos ) {
             string::size_type pos = (*i).find_last_of( "/\\" );
             if( pos != string::npos )
@@ -181,6 +181,7 @@ void Inline::LoadedScene::update() {
         } 
 #ifdef HAVE_XERCES
         catch( const X3D::XMLParseError &e ) {
+					ResourceResolver::setBaseURL( old_url_base );
           Console(3) << "Warning: Error when parsing \"" << *i << "\" in \"" 
                      << getOwner()->getName() << "\" (" << e << ")." << endl;
         } 

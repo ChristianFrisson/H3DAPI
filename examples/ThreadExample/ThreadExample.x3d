@@ -1,13 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Group>
-  <ImportLibrary url='"../../../bin32/ThreadExample" "../../../bin64/ThreadExample" "libthreadexample.so"' />
-  <Shape>
-    <Appearance>
-      <Material/>
-    </Appearance>
-    <ThreadExample points="0 0 0, 0.1 0.0 0.1, 0.15 0.1 0"
-                   animationDirection="1.0 0.2 0"
-                   limit="0.2 0.2 0.2"
-                   speed="0.05 0.05 0.05"/>
-  </Shape>
-</Group>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='ThreadExample.x3d'/>
+    <meta name='description' content='A simple example showing update in separate thread as well as use of ImportLibrary with custom made binary.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2013'/>
+  </head>
+  
+  <Scene>
+    <Group>
+      <ImportLibrary url='"../../../bin32/ThreadExample" "../../../bin64/ThreadExample" "libthreadexample.so"' />
+      <Shape>
+        <Appearance>
+          <Material/>
+        </Appearance>
+        <ThreadExample points="0 0 0, 0.1 0.0 0.1, 0.15 0.1 0"
+                       animationDirection="1.0 0.2 0"
+                       limit="0.2 0.2 0.2"
+                       speed="0.05 0.05 0.05"/>
+      </Shape>
+    </Group>
+</Scene>
+</X3D>
