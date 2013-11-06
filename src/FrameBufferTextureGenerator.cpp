@@ -1544,7 +1544,15 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
     glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src);
     glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
     if( src_index == -1 ) {
-      glReadBuffer(GL_BACK);
+      Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
+      H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
+      glReadBuffer(GL_BACK_LEFT);
+      if( window->renderMode->getValue() == "QUAD_BUFFERED_STEREO" ) {
+        X3DViewpointNode::EyeMode eye_mode = window->getEyeMode();
+        if( eye_mode== X3DViewpointNode::EyeMode::RIGHT_EYE ) {
+          glReadBuffer(GL_BACK_RIGHT);
+        }
+      }
     } else {
       glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + src_index );
     }
