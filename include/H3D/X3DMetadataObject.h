@@ -47,6 +47,10 @@ namespace H3D {
     X3DMetadataObject( Inst< SFString > _name = 0,
                        Inst< SFString > _reference = 0 );
 
+    /// Force polymorphic 
+    /// E.g., to allow dynamic_cast to concrete metadata types
+    virtual ~X3DMetadataObject () {}
+
     /// Metadata name.
     ///
     /// <b>Access type:</b> inputOutput
