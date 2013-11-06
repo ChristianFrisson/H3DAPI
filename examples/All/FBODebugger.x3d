@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='FrameBufferTextureGenerator.x3d'/>
+    <meta name='description' content='H3DAPI FrameBufferTextureGenerator example. It shows how to generate a depth buffer texture for a cube and render it to a rectangle. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />  
+
+    <Shape>
+      <Appearance> <Material /> </Appearance>
+      <Text DEF='TX' string='"Use the Treeview to change the fields of the FBODebugger node"' >
+        <FontStyle size='0.03' justify='MIDDLE' />
+      </Text>
+    </Shape>
+
+    <FrameBufferTextureGenerator DEF="BOX_FBO" samples="4" generateColorTextures="RGBA"  outputTextureType="2D" generateDepthTexture="true" >
+      <!-- Scene to render to texture -->
+      <Shape>
+        <Appearance><Material diffuseColor="1 0 0" /></Appearance> 
+        <Box size="0.2 0.2 0.2" />
+      </Shape>
+    </FrameBufferTextureGenerator>
+    
+    <FrameBufferTextureGenerator DEF="SPHERE_FBO" samples="4"  generateColorTextures="RGBA" outputTextureType="2D" generateDepthTexture="true" >
+      <!-- Scene to render to texture -->
+      <Shape>
+        <Appearance><Material diffuseColor="0 1 0" /></Appearance> 
+        <Sphere radius="0.1" />
+      </Shape>
+    </FrameBufferTextureGenerator>
+    
+    <FBODebugger />
+
+  </Scene>
+</X3D>
