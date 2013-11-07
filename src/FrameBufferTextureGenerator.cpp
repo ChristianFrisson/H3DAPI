@@ -1549,7 +1549,7 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
       glReadBuffer(GL_BACK_LEFT);
       if( window->renderMode->getValue() == "QUAD_BUFFERED_STEREO" ) {
         X3DViewpointNode::EyeMode eye_mode = window->getEyeMode();
-        if( eye_mode== X3DViewpointNode::EyeMode::RIGHT_EYE ) {
+        if( eye_mode== X3DViewpointNode::RIGHT_EYE ) {
           glReadBuffer(GL_BACK_RIGHT);
         }
       }
