@@ -63,6 +63,21 @@ void GeneratedTexture::render() {
   enableTexturing();
 }
 
+void GeneratedTexture::renderTextureProperties(){
+  if( this->texture_target==GL_TEXTURE_RECTANGLE_ARB ) {
+    // GL_TEXTURE_RECTANGLE_ARB target do not support GL_REPEAT
+    TextureProperties *texture_properties = textureProperties->getValue();
+
+      // set up texture parameters 
+    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+    glTexParameteri( texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+   
+  }else{
+    X3DTexture2DNode::renderTextureProperties();
+  }
+}
 
 bool GeneratedTexture::ensureInitialized( GLenum tex_target ) {
  if( !texture_id_initialized ) {
@@ -75,3 +90,19 @@ bool GeneratedTexture::ensureInitialized( GLenum tex_target ) {
 }
 
 
+
+std::pair<H3DInt32,H3DInt32> H3D::GeneratedTexture::getDefaultSaveDimensions()
+{
+  if( textureIdIsInitialized() ) {
+    GLuint tex_id = getTextureId();
+    glPushAttrib( GL_TEXTURE_BIT );
+    glBindTexture(getTextureTarget(), tex_id);
+    GLint h, w;
+    glGetTexLevelParameteriv( getTextureTarget(), 0, GL_TEXTURE_WIDTH, &w );
+    glGetTexLevelParameteriv( getTextureTarget(), 0, GL_TEXTURE_HEIGHT, &h);
+    glPopAttrib();
+    return std::pair<H3DInt32,H3DInt32> ( w, h );
+  }else {
+    return X3DTextureNode::getDefaultSaveDimensions();
+  }
+}

@@ -61,6 +61,9 @@ namespace H3D {
     /// to be used for. E.g. GL_TEXTURE_2D.
     /// \return  true on success, false on failure to initialize.
     bool ensureInitialized( GLenum texture_target = GL_TEXTURE_2D  );
+
+    /// Render all OpenGL texture properties.
+    virtual void renderTextureProperties();
     
     /// Returns true if the OpenGL texture id for this texture is initialized.
     inline bool textureIdIsInitialized() {
@@ -76,6 +79,10 @@ namespace H3D {
   protected:
     /// True of the texture_id parameter has been initialized.
     bool texture_id_initialized;
+
+    /// Override getDefaultSaveDimensions function to get current texture dimension
+    /// for this generatedTexture
+    virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
   };
 }
 
