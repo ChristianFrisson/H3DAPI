@@ -51,6 +51,7 @@ MultiTextureCoordinate::MultiTextureCoordinate(
   
   type_name = "MultiTextureCoordinate";
   database.initFields( this );
+	texCoord->route( propertyChanged, id );
 }
 
 void MultiTextureCoordinate::renderForTextureUnit( int index,

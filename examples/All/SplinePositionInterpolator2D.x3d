@@ -10,11 +10,24 @@
   <Scene>
     <Viewpoint position='0 0 0.6' />
     
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+    
     <Transform translation='-0.15 0 0'>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.16 0' />
+        <fieldValue name='string' value='"PositionInterpolator2D"' />
+      </ProtoInstance>
       <Inline url='PositionInterpolator2D.x3d' />
     </Transform>
     
     <Transform translation='0.15 0 0'>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.16 0' />
+        <fieldValue name='string' value='"SplinePositionInterpolator2D"' />
+      </ProtoInstance>
       <Shape>
         <Appearance>
           <Material diffuseColor='0 1 1' />

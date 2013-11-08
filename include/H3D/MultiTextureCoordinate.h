@@ -30,6 +30,7 @@
 #define __MULTITEXTURECOORDINATE_H__
 
 #include <H3D/X3DTextureCoordinateNode.h>
+#include <H3D/DependentNodeFields.h>
 #include <H3D/MFNode.h>
 
 namespace H3D {
@@ -74,8 +75,15 @@ namespace H3D {
   ///     ( <a href="examples/MultiTextureCoordinate.x3d.html">Source</a> )
   class H3DAPI_API MultiTextureCoordinate : public X3DTextureCoordinateNode {
   public:
-    
-    typedef TypedMFNode< X3DTextureCoordinateNode > MFTextureCoordinateNode;    
+
+		/// The MFTextureCoordinateNode is dependent on the propertyChanged 
+    /// field of the contained X3DTextureCoordinateNodes.
+    typedef DependentMFNode< 
+                X3DTextureCoordinateNode,
+                FieldRef< X3DGeometricPropertyNode,
+                          Field,
+                          &X3DTextureCoordinateNode::propertyChanged >, true >
+		MFTextureCoordinateNode;
 
     /// Constructor.
     MultiTextureCoordinate( Inst< SFNode                  > _metadata = 0,

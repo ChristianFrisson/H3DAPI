@@ -52,6 +52,7 @@ MultiTextureTransform::MultiTextureTransform(
   
   type_name = "MultiTextureTransform";
   database.initFields( this );
+	textureTransform->route( displayList, id );
 }
 
 

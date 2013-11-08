@@ -12,5 +12,13 @@
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <StereoInfo focalDistance='0.6' interocularDistance='0.06' />
+    
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+    
+    <ProtoInstance name='Text'>
+        <fieldValue name='string' value='"Stereo setup needed to see any effect." "This text should be in focal plane by default."' />
+      </ProtoInstance>
   </Scene>
 </X3D>

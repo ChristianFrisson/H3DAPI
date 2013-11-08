@@ -31,7 +31,7 @@
       </Shape>
       <ProtoInstance name='Text'>
         <fieldValue name='offset' value='0 0.11 0' />
-        <fieldValue name='string' value='"smoothSurface on"' />
+        <fieldValue name='string' value='"smoothShading on"' />
       </ProtoInstance>
     </Transform>
     
@@ -48,7 +48,7 @@
       </Shape>
       <ProtoInstance name='Text'>
         <fieldValue name='offset' value='0 0.11 0' />
-        <fieldValue name='string' value='"smoothSurface off"' />
+        <fieldValue name='string' value='"smoothShading off"' />
       </ProtoInstance>
     </Transform>
   </Scene>

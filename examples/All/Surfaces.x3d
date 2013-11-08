@@ -103,7 +103,7 @@
       </Shape>
       <ProtoInstance name='Text'>
         <fieldValue name='offset' value='0 -0.09 0' />
-        <fieldValue name='string' value='"DepthMapSurface""(works on Ruspini or""God Object renderer)"' />
+        <fieldValue name='string' value='"DepthMapSurface""(works on Ruspini or""GodObjectRenderer)"' />
       </ProtoInstance>
     </Transform>
     
@@ -129,7 +129,7 @@
       </Shape>
       <ProtoInstance name='Text'>
         <fieldValue name='offset' value='0 -0.09 0' />
-        <fieldValue name='string' value='"HapticTexturesSurface""(works on Ruspini or""God Object renderer)"' />
+        <fieldValue name='string' value='"HapticTexturesSurface""(works on Ruspini or""GodObjectRenderer)"' />
       </ProtoInstance>
     </Transform>
   </Scene>

@@ -322,13 +322,13 @@ void X3DTextureCoordinateNode::renderVertexBufferObjectForTexture(
       glClientActiveTexture( GL_TEXTURE0_ARB + i );
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glTexCoordPointer( 3, GL_FLOAT, 9 * sizeof(GLfloat),
-                         (GLvoid*)(6*sizeof(GLfloat)) );
+                         pointer );
     }
   } else {
     glClientActiveTexture( GL_TEXTURE0_ARB );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glTexCoordPointer( 3, GL_FLOAT, 9 * sizeof(GLfloat),
-                      (GLvoid*)(6*sizeof(GLfloat)) );
+                      pointer );
   }
   glClientActiveTexture( saved_texture );
 }
