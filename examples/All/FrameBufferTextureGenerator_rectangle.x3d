@@ -11,28 +11,28 @@
     <Viewpoint position='0 0 0.6' />
 
     <Group>
-      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D_RECTANGLE"  generateColorTextures='"RGB"' generateDepthTexture="true">
+      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D_RECTANGLE"  generateColorTextures='"RGB"' generateDepthTexture="false">
+        <Background containerField="background" skyColor="1 1 0" />
         <!-- Scene to render to texture -->
         <Shape>
           <Appearance>
-            <Material diffuseColor="1 0 0" />
+            <Material diffuseColor="0 1 0" />
           </Appearance>
           <Box size="0.2 0.2 0.2" />
         </Shape>
-
       </FrameBufferTextureGenerator>
 
       <!-- Shape for rendering texture array slice 0 on -->
-      <Transform translation="-0.2 0 0">
+      <Transform translation="0 0 0">
         <Shape>
           <Appearance>
             <ComposedShader DEF="SHADER0" language="GLSL">
               <field name="texRect" type="MFNode" accessType="inputOutput"/>
-              <ShaderPart type="VERTEX" url="shaders/mrt.vert" />
+              <ShaderPart type="VERTEX" url="shaders/passthrough.vert" />
               <ShaderPart type="FRAGMENT" url="shaders/texrectangle.frag" />
             </ComposedShader>
           </Appearance>
-          <FullscreenRectangle/>
+          <Rectangle2D size="0.2666666 0.2" solid="true"/>
         </Shape>
       </Transform>
 
