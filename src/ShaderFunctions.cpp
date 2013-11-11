@@ -817,6 +817,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
         }
       }
       glUniform1ivARB( location, size, v );
+			delete[] v;
       break;
     }
   case X3DTypes::SFCOLOR:
