@@ -42,7 +42,7 @@ H3DNodeDatabase X3DSoundSourceNode::database(
 namespace X3DSoundSourceNodeInternals {
   FIELDDB_ELEMENT( X3DSoundSourceNode, description, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DSoundSourceNode, pitch, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( X3DSoundSourceNode, duration_changed, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DSoundSourceNode, duration_changed, OUTPUT_ONLY );
 }
 
 X3DSoundSourceNode::X3DSoundSourceNode( Inst< SFNode  >  _metadata,
@@ -75,7 +75,7 @@ X3DSoundSourceNode::X3DSoundSourceNode( Inst< SFNode  >  _metadata,
 
   description->setValue( "" );
   pitch->setValue( 1.0 );
-  duration_changed->setValue( 0 );
+  duration_changed->setValue( 0, id );
 
   pitch->route( sound_buffer );
   loop->route( sound_buffer );

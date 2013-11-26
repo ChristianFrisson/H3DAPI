@@ -50,6 +50,7 @@ namespace IndexedLineSetInternals {
   FIELDDB_ELEMENT( IndexedLineSet, colorPerVertex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( IndexedLineSet, coordIndex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( IndexedLineSet, fogCoord, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( IndexedLineSet, attrib, INPUT_OUTPUT );
 }
 
 IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
@@ -62,7 +63,8 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
                                 Inst< MFInt32 >  _colorIndex,
                                 Inst< SFBool  >  _colorPerVertex,
                                 Inst< MFInt32 >  _coordIndex, 
-                                Inst< SFFogCoordinate > _fogCoord  ) :
+                                Inst< SFFogCoordinate > _fogCoord,
+                                Inst< MFVertexAttributeNode > _attrib ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   set_colorIndex ( _set_colorIndex ),
   set_coordIndex ( _set_coordIndex ),
@@ -73,7 +75,8 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
   coordIndex     ( _coordIndex     ),
   fogCoord       ( _fogCoord       ),
   vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  vbo_id( NULL ),
+  attrib( _attrib ) {
 
   type_name = "IndexedLineSet";
   database.initFields( this );
@@ -86,6 +89,7 @@ IndexedLineSet::IndexedLineSet( Inst< SFNode           > _metadata,
   colorPerVertex->route( displayList );
   coordIndex->route( displayList );
   fogCoord->route( displayList );
+  attrib->route( displayList );
 
   set_colorIndex->route( colorIndex, id );
   set_coordIndex->route( coordIndex, id );
@@ -172,6 +176,23 @@ void IndexedLineSet::render() {
       }
     }
 
+    GLhandleARB shader_program = 0;
+    // Set the attribute index to use for all vertex attributes
+    if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
+      shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
+      if( shader_program ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
+          X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
+          if( attr ) {
+            GLint loc = 
+              glGetAttribLocationARB( shader_program, 
+              attr->name->getValue().c_str()); 
+            attr->setAttribIndex( loc );
+          }
+        }
+      }
+    }
+
     if( prefer_vertex_buffer_object && ( !color_node ||
       ( color_per_vertex && color_index.empty() ) ) ) {
       // Use vertex buffer objects to create IndexedLineSet.
@@ -229,6 +250,13 @@ void IndexedLineSet::render() {
       if( coordinate_node )
         coordinate_node->renderVertexBufferObject();
 
+      for( unsigned int attrib_index = 0;
+            attrib_index < attrib->size(); ++attrib_index ) {
+        X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderVertexBufferObject();
+      }
+
       GLsizei offset = 0;
       for( unsigned int i = 0; i < nr_index.size(); ++i ) {
         const pair< GLsizei, pair< GLsizei, GLsizei > > &item = nr_index[i];
@@ -248,6 +276,13 @@ void IndexedLineSet::render() {
         color_node->disableVertexBufferObject();
       if( coordinate_node )
         coordinate_node->disableVertexBufferObject();
+      for( unsigned int attrib_index = 0;
+        attrib_index < attrib->size(); ++attrib_index ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableVertexBufferObject();
+      }
+
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
     } else {
       // index of the current polyline being rendered. It will be incremented
@@ -299,7 +334,16 @@ void IndexedLineSet::render() {
               color_node->render( ci );
             }
           }
-        
+          
+          // Render vertex attribute
+          for( unsigned int attrib_index = 0;
+               attrib_index < attrib->size(); ++attrib_index ) {
+            X3DVertexAttributeNode *attr = 
+                attrib->getValueByIndex( attrib_index );
+              if( attr ) {
+                attr->render( coord_index[ i ] );
+              }
+          }
           // Render the vertices.
           coordinate_node->render( coord_index[ i ] );
           if( fog_coord_node ){

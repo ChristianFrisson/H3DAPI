@@ -218,12 +218,14 @@ class Variation ( object ):
     self.name= name
     self.options= []
     self.global_insertion_string = insertion_string
+    self.global_insertion_string_failed = False
     
   def parse ( self, input ):
     replace_with= ""
     output= input
     reg_use = None
     reg_field = None
+    self.global_insertion_string_failed = False
     
     def replace_callback(r):
       if r.group(1):
@@ -242,7 +244,11 @@ class Variation ( object ):
       
     if self.global_insertion_string != "":
       reg = re.compile( r'<Scene>' )
-      output = reg.sub('<Scene>\n' + self.global_insertion_string, output)
+      output_after = reg.sub('<Scene>\n' + self.global_insertion_string, output)
+      if output_after == output:
+        self.global_insertion_string_failed = True
+      else:
+        output = output_after
           
     for o in self.options:
       for node_type in o.node_type:
@@ -252,11 +258,11 @@ class Variation ( object ):
         if o.field_name == "":
           replace_with = ""
         else:
-          replace_with= "%s=\"%s\"" % (o.field_name, o.field_value)        
+          replace_with= " %s=\"%s\"" % (o.field_name, o.field_value)
         output = reg.sub(replace_callback, output)
         
         if o.add_if_missing:
-          reg = re.compile( r'<'+node_type+r'(\s|/)[^>]*>')
+          reg = re.compile( r'<'+node_type+r'[^>]*>')
           if reg.search( output ) == None:
             reg = re.compile( r'(<'+o.container_node+r'[^>]*>\s*)' )
             replace_string = r'\1<' + node_type + ' '
@@ -309,7 +315,7 @@ class TestResults ( object ):
     
 class TestExamples ( object ):
 
-  def __init__ ( self, filepath, startup_time= 10, shutdown_time= 5, testable_callback= None ):
+  def __init__ ( self, filepath, startup_time= 10, shutdown_time= 5, testable_callback= None, fake_fullscreen_due_to_PIL_bug = True ):
     self.filepath= filepath
     self.startup_time= startup_time
     self.shutdown_time= shutdown_time
@@ -317,6 +323,11 @@ class TestExamples ( object ):
     self.fps_data_file = '%s/fps.txt' % (os.getcwd())
     self.early_shutdown_file = '%s/test_complete' % (os.getcwd())
     self.startup_time_multiplier = 10
+    self.load_flags = ["-f"]
+    if fake_fullscreen_due_to_PIL_bug:
+      import ctypes
+      user32 = ctypes.windll.user32
+      self.load_flags = ["-F", "--screen=%ix%i" % (user32.GetSystemMetrics(0)-50, user32.GetSystemMetrics(1)-50)]
     self.fps_insertion_string = """<PythonScript >
           <![CDATA[python:from H3DInterface import *
 
@@ -350,14 +361,14 @@ scene = None
 
   def launchExample ( self, url, cwd ):
     process= ProcessWin32()
-    process.launch ( ["H3DLoad.exe", "-f", url], cwd )
+    process.launch ( ["H3DLoad.exe"] + self.load_flags + [url], cwd )
     return process
     
-  def testStartUp ( self, url, cwd ):
+  def testStartUp ( self, url, cwd, variation ):
     """ Returns true if the example can be started. """
     
     process= ProcessWin32()
-    return process.testLaunch ( ["H3DLoad.exe", "-f", url], cwd, self.startup_time, self.shutdown_time, self.startup_time_multiplier, self.early_shutdown_file )
+    return process.testLaunch ( ["H3DLoad.exe"] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
     
   def testExample ( self, name, url, orig_url= None, var_name= "", variation = None ):
     
@@ -372,12 +383,13 @@ scene = None
     cwd= os.path.split ( orig_url )[0]
     filename= os.path.abspath ( url )
     
-    test_results.started_ok= self.testStartUp ( filename, cwd )
+    test_results.started_ok= self.testStartUp ( filename, cwd, variation )
     
     if os.path.isfile( self.early_shutdown_file ):
       os.remove( self.early_shutdown_file )
     process= self.launchExample ( filename, cwd )
-    for i in range( 0, self.startup_time_multiplier ):
+    startup_time_multiplier = 1 if variation.global_insertion_string_failed else self.startup_time_multiplier
+    for i in range( 0, startup_time_multiplier ):
       time.sleep(self.startup_time)
       if os.path.isfile( self.early_shutdown_file ) or not process.isRunning():
         break
@@ -392,7 +404,6 @@ scene = None
       im= ImageGrab.grab()
       test_results.screenshot= os.path.join(self.filepath,createFilename(orig_url, var_name)+".jpg")
       im.save(test_results.screenshot, "JPEG")
-      
       im.thumbnail((256,256), Image.ANTIALIAS)
       test_results.screenshot_thumb= os.path.join(self.filepath,createFilename(orig_url, var_name)+"_thumb.jpg")
       im.save(test_results.screenshot_thumb, "JPEG")
@@ -561,7 +572,7 @@ class TestReportHTML ( object ):
             createFilename(r.url, v.name) + "_report.html" )
       
           output+= "<td>"
-          output+= "<h3>" + v.name + "</h3>"
+          output+= "<h3>" + v.name + ( "" if r.created_variation else " (Unchanged file)" ) + "</h3>"
           output+= self._getThumbnail ( r )
           output+= "<p>Start: " + self._getStatus ( r.started_ok ) + "; "
           output+= "Exit:" + self._getStatus ( r.terminated_ok ) + "</p>\n"
@@ -706,7 +717,7 @@ def testH3DAPI (global_variations):
   def isTestable ( file_path ):
     return file_path.find ( 'TestAll' ) < 0
 
-  tester= TestExamples( os.path.join(args.output, "H3DAPI"), startup_time= 10, shutdown_time= 5, testable_callback= isTestable )
+  tester= TestExamples( os.path.join(args.output, "H3DAPI"), startup_time= 10, shutdown_time= 10, testable_callback= isTestable )
   results= tester.testAllExamples( global_variations, directory= "../../../H3DAPI/examples" )
 
   reporter= TestReport()
@@ -724,6 +735,8 @@ def testH3DPhysics (global_variations):
       
   def isTestable ( file_path ):
     
+    if file_path.find ( 'ParallelPhysicsEngines/x3d' ) >= 0 or file_path.find ( 'ParallelPhysicsEngines\\x3d' ) >= 0:
+      return false
     f= open ( file_path, 'r' )
     contents= f.read ()
     f.close()
@@ -740,7 +753,7 @@ def testH3DPhysics (global_variations):
   
   if h3dphysics_header_string == "" or h3dphysics_header_string.find( "define HAVE_ODE" ) != -1:
     ode_variation= Variation ( "ODE" )
-    ode_variation.options.append ( Option ( ["RigidBodyCollection","PhysicsBodyCollection"], "physicsEngine", "ODE" ) )
+    ode_variation.options.append ( Option ( ["RigidBodyCollection"], "physicsEngine", "ODE" ) )
     variations.append( ode_variation )
 
   if h3dphysics_header_string == "" or h3dphysics_header_string.find( "define HAVE_BULLET" ) != -1:
@@ -763,7 +776,7 @@ def testH3DPhysics (global_variations):
     sofa_variation.options.append ( Option ( ["RigidBodyCollection","PhysicsBodyCollection"], "physicsEngine", "SOFA" ) )
     variations.append( sofa_variation )
 
-  tester= TestExamples( os.path.join(args.output, "H3DPhysics"), startup_time= 10, shutdown_time= 5, testable_callback= isTestable )
+  tester= TestExamples( os.path.join(args.output, "H3DPhysics"), startup_time= 10, shutdown_time= 10, testable_callback= isTestable )
   results= tester.testAllExamples( variations, directory= "../../../H3DPhysics/examples" )
 
   reporter= TestReport()
@@ -779,7 +792,7 @@ def testH3DPhysics (global_variations):
 
 def testMedX3D (global_variations):
 
-  tester= TestExamples( os.path.join(args.output, "MedX3D"), startup_time= 10, shutdown_time= 5 )
+  tester= TestExamples( os.path.join(args.output, "MedX3D"), startup_time= 10, shutdown_time= 10 )
   results= tester.testAllExamples( global_variations, directory= "../../../MedX3D/x3d" )
 
   reporter= TestReport()
@@ -795,7 +808,7 @@ def testMedX3D (global_variations):
   
 def testUI (global_variations):
 
-  tester= TestExamples( os.path.join(args.output, "UI"), startup_time= 10, shutdown_time= 5 )
+  tester= TestExamples( os.path.join(args.output, "UI"), startup_time= 10, shutdown_time= 10 )
   results= tester.testAllExamples( global_variations, directory= "../../../UI/x3d" )
 
   reporter= TestReport()

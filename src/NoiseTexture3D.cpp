@@ -111,14 +111,14 @@ NoiseTexture3D::NoiseTexture3D(
 }
 
 void NoiseTexture3D::SFImage::update() {
-  float frequency = static_cast< SFFloat * >(routes_in[0])->getValue(); 
-  float lacunarity = static_cast< SFFloat * >(routes_in[1])->getValue(); 
-  int octaveCount = static_cast< SFInt32 * >(routes_in[2])->getValue(); 
-  float persistence = static_cast< SFFloat * >(routes_in[3])->getValue(); 
-  int seed = static_cast< SFInt32 * >(routes_in[4])->getValue();
-  int width = static_cast< SFInt32 * >(routes_in[5])->getValue();
-  int height = static_cast< SFInt32 * >(routes_in[6])->getValue();
-  int depth = static_cast< SFInt32 * >(routes_in[7])->getValue();
+  H3DFloat frequency = static_cast< SFFloat * >(routes_in[0])->getValue(); 
+  H3DFloat lacunarity = static_cast< SFFloat * >(routes_in[1])->getValue(); 
+  H3DInt32 octaveCount = static_cast< SFInt32 * >(routes_in[2])->getValue(); 
+  H3DFloat persistence = static_cast< SFFloat * >(routes_in[3])->getValue(); 
+  H3DInt32 seed = static_cast< SFInt32 * >(routes_in[4])->getValue();
+  H3DInt32 width = static_cast< SFInt32 * >(routes_in[5])->getValue();
+  H3DInt32 height = static_cast< SFInt32 * >(routes_in[6])->getValue();
+  H3DInt32 depth = static_cast< SFInt32 * >(routes_in[7])->getValue();
   const string & type = static_cast< SFString * >(routes_in[8])->getValue();
   bool tileable = static_cast< SFBool * >(routes_in[9])->getValue();
 
@@ -128,23 +128,26 @@ void NoiseTexture3D::SFImage::update() {
   unsigned char *data = new unsigned char[ width * height * depth ];
 
   int x, y, z;
-  double perlinValue;
-  H3DUtil::H3DFloat perlinGrayValue;
+  H3DFloat perlinValue;
+  H3DFloat perlinGrayValue;
   unsigned int pixel = 0;
 
+	H3DFloat width_minus_1 = H3DFloat( width-1 );
+	H3DFloat height_minus_1 = H3DFloat( height-1 );
+	H3DFloat depth_minus_1 = H3DFloat( depth-1 );
   for( z = 0; z < depth; ++z ) {
     for( y = 0; y < height; ++y) {
       for( x = 0; x < width; ++x,pixel++) {
-        double x_norm = x/(width-1.0);
-        double y_norm = y/(height-1.0);
-        double z_norm = z/(depth-1.0);
+        H3DFloat x_norm = x/width_minus_1;
+				H3DFloat y_norm = y/height_minus_1;
+				H3DFloat z_norm = z/depth_minus_1;
 
         if( !simplexNoise ) {
       } else {
           if( tileable ) {
-            perlinValue = NoiseTexture3D::simplexNoiseTileable( x_norm, y_norm, z_norm, frequency, lacunarity, octaveCount, persistence );
+            perlinValue = NoiseTexture3D::simplexNoiseTileable( x_norm, y_norm, z_norm, frequency, lacunarity, H3DFloat( octaveCount ), persistence );
           } else {
-            perlinValue = NoiseTexture3D::simplexNoise( x_norm, y_norm, z_norm, frequency, lacunarity, octaveCount, persistence );
+            perlinValue = NoiseTexture3D::simplexNoise( x_norm, y_norm, z_norm, frequency, lacunarity, H3DFloat( octaveCount ), persistence );
           }
         }
         
@@ -155,9 +158,9 @@ void NoiseTexture3D::SFImage::update() {
           perlinValue = 1.0;
 
         // shift to interval 0.0 to 1.0
-        perlinGrayValue = 0.5 * perlinValue + 0.5;
+        perlinGrayValue = H3DFloat( 0.5 * perlinValue + 0.5 );
 
-        data[pixel] = 255 * perlinGrayValue;
+        data[pixel] = unsigned char( 255 * perlinGrayValue );
       }
     }
   }
@@ -187,24 +190,24 @@ H3DFloat NoiseTexture3D::simplexNoise( H3DFloat x, H3DFloat y, H3DFloat z, H3DFl
 
 H3DFloat NoiseTexture3D::simplexNoiseTileable( H3DFloat x, H3DFloat y, H3DFloat z, H3DFloat frequency, H3DFloat lacunarity, H3DFloat octaves, H3DFloat persistence ) {
 
-   double Fhhh = simplexNoise(x,   y,   z, frequency, lacunarity, octaves, persistence );
-   double Flhh = simplexNoise(x-1, y,   z, frequency, lacunarity, octaves, persistence );
-   double Fhlh = simplexNoise(x,   y-1, z, frequency, lacunarity, octaves, persistence );
-   double Fllh = simplexNoise(x-1, y-1, z, frequency, lacunarity, octaves, persistence );
+   H3DFloat Fhhh = simplexNoise(x,   y,   z, frequency, lacunarity, octaves, persistence );
+   H3DFloat Flhh = simplexNoise(x-1, y,   z, frequency, lacunarity, octaves, persistence );
+   H3DFloat Fhlh = simplexNoise(x,   y-1, z, frequency, lacunarity, octaves, persistence );
+   H3DFloat Fllh = simplexNoise(x-1, y-1, z, frequency, lacunarity, octaves, persistence );
    
-   double Fhhl = simplexNoise(x, y, z-1, frequency, lacunarity, octaves, persistence );
-   double Flhl = simplexNoise(x-1, y, z-1, frequency, lacunarity, octaves, persistence );
-   double Fhll = simplexNoise(x, y-1, z-1, frequency, lacunarity, octaves, persistence );
-   double Flll = simplexNoise(x-1, y-1, z-1, frequency, lacunarity, octaves, persistence );
+   H3DFloat Fhhl = simplexNoise(x, y, z-1, frequency, lacunarity, octaves, persistence );
+   H3DFloat Flhl = simplexNoise(x-1, y, z-1, frequency, lacunarity, octaves, persistence );
+   H3DFloat Fhll = simplexNoise(x, y-1, z-1, frequency, lacunarity, octaves, persistence );
+   H3DFloat Flll = simplexNoise(x-1, y-1, z-1, frequency, lacunarity, octaves, persistence );
 
    H3DFloat v  = 
-     Fhhh * (1.0-x) * (1.0-y ) * (1.0-z) +
-     Flhh * x       * (1.0-y)  * (1.0-z) +
-     Fhlh * (1.0-x) * y        * (1.0-z) +
-     Fllh * x       * y        * (1.0-z) +
-     Fhhl * (1.0-x) * (1.0-y ) * (z) +
-     Flhl * x       * (1.0-y)  * (z) +
-     Fhll * (1.0-x) * y        * (z) +
+     Fhhh * (1-x) * (1-y ) * (1-z) +
+     Flhh * x       * (1-y)  * (1-z) +
+     Fhlh * (1-x) * y        * (1-z) +
+     Fllh * x       * y        * (1-z) +
+     Fhhl * (1-x) * (1-y ) * (z) +
+     Flhl * x       * (1-y)  * (z) +
+     Fhll * (1-x) * y        * (z) +
      Flll * x       * y        * (z);
 
   return v;

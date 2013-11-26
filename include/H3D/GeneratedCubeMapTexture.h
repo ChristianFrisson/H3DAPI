@@ -76,11 +76,19 @@ namespace H3D {
     public X3DEnvironmentTextureNode,
     public H3DMultiPassRenderObject {
   public:
+		/// The SFTextureProperties is dependent on the propertyChanged field of
+    /// the contained TextureProperties.
+    typedef  DependentSFNode< FieldRef<TextureProperties,
+                                       Field,
+                                       &TextureProperties::propertyChanged > > 
+    SFTextureProperties;
+
     /// Constructor.
     GeneratedCubeMapTexture( Inst< DisplayList > _displayList = 0,
                              Inst< SFNode      > _metadata   = 0,
                              Inst< SFString    > _update     = 0,
-                             Inst< SFInt32     > _size       = 0 );
+                             Inst< SFInt32     > _size       = 0,
+												Inst< SFTextureProperties > _textureProperties = 0 );
 
     /// Destructor.
     ~GeneratedCubeMapTexture();
@@ -90,6 +98,9 @@ namespace H3D {
 
     /// Disables cube map texturing.
     virtual void disableTexturing();
+
+		/// Render all OpenGL texture properties.
+    virtual void renderTextureProperties();
 
     /// Creates the cube map from the texture fields.
     virtual void render();
@@ -164,6 +175,14 @@ namespace H3D {
     /// 
     /// \dotfile GeneratedCubeMapTexture_size.dot
     auto_ptr< SFInt32 > size;
+
+		/// The textureProperties field contains a TextureProperties node
+    /// which allows fine control over a texture's application.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile GeneratedCubeMapTexture_textureProperties.dot 
+    auto_ptr< SFTextureProperties > textureProperties;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

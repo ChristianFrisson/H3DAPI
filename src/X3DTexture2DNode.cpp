@@ -54,13 +54,13 @@ X3DTexture2DNode::X3DTexture2DNode(
                                    Inst< SFBool  > _repeatT,
                                    Inst< SFBool  > _scaleToP2,
                                    Inst< SFImage > _image,
-                                   Inst< SFTextureProperties > _textureProp ) :
+                                   Inst< SFTextureProperties > _textureProperties ) :
   H3DSingleTextureNode( _displayList, _metadata ),
   H3DImageObject( _image ),
   repeatS ( _repeatS  ),
   repeatT ( _repeatT  ),
   scaleToPowerOfTwo( _scaleToP2 ),
-  textureProperties( _textureProp ),
+  textureProperties( _textureProperties ),
   texture_id( 0 ),
   texture_unit( GL_TEXTURE0_ARB ),
   texture_target( 0 ),

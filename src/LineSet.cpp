@@ -47,6 +47,7 @@ namespace LineSetInternals {
   FIELDDB_ELEMENT( LineSet, coord, INPUT_OUTPUT );
   FIELDDB_ELEMENT( LineSet, vertexCount, INPUT_OUTPUT );
   FIELDDB_ELEMENT( LineSet, fogCoord, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( LineSet, attrib, INPUT_OUTPUT );
 
 }
 
@@ -57,12 +58,14 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
                   Inst< SFColorNode      > _color,
                   Inst< SFCoordinateNode > _coord,
                   Inst< MFInt32          > _vertexCount, 
-                  Inst< SFFogCoordinate  > _fogCoord  ) :
+                  Inst< SFFogCoordinate  > _fogCoord,
+                  Inst< MFVertexAttributeNode > _attrib ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   color          ( _color       ),
   coord          ( _coord       ),
   vertexCount    ( _vertexCount ),
-  fogCoord       ( _fogCoord    ) {
+  fogCoord       ( _fogCoord    ),
+  attrib( _attrib ) {
 
   type_name = "LineSet";
   database.initFields( this );
@@ -71,6 +74,7 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
   coord->route( displayList );
   vertexCount->route( displayList );
   fogCoord->route( displayList );
+  attrib->route( displayList );
 
   coord->route( bound );
 }
@@ -130,6 +134,23 @@ void LineSet::render() {
       }
     }
 
+    GLhandleARB shader_program = 0;
+    // Set the attribute index to use for all vertex attributes
+    if( GLEW_ARB_shader_objects && GLEW_ARB_vertex_shader ) {
+      shader_program = glGetHandleARB( GL_PROGRAM_OBJECT_ARB );
+      if( shader_program ) {
+        for( unsigned int i = 0; i < attrib->size(); ++i ) {
+          X3DVertexAttributeNode *attr = attrib->getValueByIndex( i );
+          if( attr ) {
+            GLint loc = 
+              glGetAttribLocationARB( shader_program, 
+              attr->name->getValue().c_str()); 
+            attr->setAttribIndex( loc );
+          }
+        }
+      }
+    }
+
     if( prefer_vertex_buffer_object ) {
       if( fog_coord_node )
         fog_coord_node->renderVertexBufferObject();
@@ -137,6 +158,13 @@ void LineSet::render() {
         color_node->renderVertexBufferObject();
       if( coordinate_node )
         coordinate_node->renderVertexBufferObject();
+
+      for( unsigned int attrib_index = 0;
+            attrib_index < attrib->size(); ++attrib_index ) {
+        X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderVertexBufferObject();
+      }
 
       // index of the current vertex whose index is added. It will be
       // incremented for each vertex whose index is added.
@@ -162,6 +190,13 @@ void LineSet::render() {
         color_node->disableVertexBufferObject();
       if( coordinate_node )
         coordinate_node->disableVertexBufferObject();
+
+      for( unsigned int attrib_index = 0;
+        attrib_index < attrib->size(); ++attrib_index ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableVertexBufferObject();
+      }
     } else {
 
       // index of the current vertex being rendered. It will be incremented
@@ -190,6 +225,15 @@ void LineSet::render() {
           // Set up colors if colors are specified per vertex.
           if( color_node ) {
             color_node->render( vertex_counter );
+          }
+          // Render vertex attribute
+          for( unsigned int attrib_index = 0;
+               attrib_index < attrib->size(); ++attrib_index ) {
+            X3DVertexAttributeNode *attr = 
+                attrib->getValueByIndex( attrib_index );
+              if( attr ) {
+                attr->render( vertex_counter );
+              }
           }
             
           // Render the vertices.

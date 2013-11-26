@@ -102,6 +102,15 @@ namespace H3D {
     /// The bound field for LineSet is a CoordBoundField.
     typedef CoordBoundField SFBound;
 
+    /// The MFVertexAttributeNode is dependent on the propertyChanged
+    /// field of the contained X3DVertexAttributeNode.
+    class H3DAPI_API MFVertexAttributeNode : public DependentMFNode< 
+                X3DVertexAttributeNode,
+                FieldRef< X3DGeometricPropertyNode,
+                          Field,
+                          &X3DVertexAttributeNode::propertyChanged > > {
+    };
+
     /// Display list is extended in order to set color to emissive
     /// color from material outside of display list, since we have to
     /// do a glGet to get the value. If we have it inside, the display
@@ -119,7 +128,8 @@ namespace H3D {
              Inst< SFColorNode      > _color          = 0,
              Inst< SFCoordinateNode > _coord          = 0,
              Inst< MFInt32          > _vertexCount    = 0,
-             Inst< SFFogCoordinate  > _fogCoord       = 0 );
+             Inst< SFFogCoordinate  > _fogCoord       = 0,
+             Inst< MFVertexAttributeNode > _attrib    = 0 );
 
     /// The number of lines rendered by this geometry.
     virtual int nrLines() {
@@ -170,6 +180,15 @@ namespace H3D {
     ///
     /// \dotfile LineSet_fogCoord.dot 
     auto_ptr< SFFogCoordinate > fogCoord;
+
+    /// If the attrib field is not empty it shall contain a list of
+    /// X3DVertexAttributeNode instances with per-vertex attribute
+    /// information for programmable shaders.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile LineSet_attrib.dot 
+    auto_ptr< MFVertexAttributeNode > attrib;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

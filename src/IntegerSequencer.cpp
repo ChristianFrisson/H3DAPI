@@ -41,7 +41,7 @@ H3DNodeDatabase IntegerSequencer::database(
 
 namespace IntegerSequencerInternals {
   FIELDDB_ELEMENT( IntegerSequencer, keyValue, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( IntegerSequencer, value_changed, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( IntegerSequencer, value_changed, OUTPUT_ONLY );
 }
 
 IntegerSequencer::IntegerSequencer( 

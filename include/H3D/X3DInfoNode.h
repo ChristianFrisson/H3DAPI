@@ -43,7 +43,6 @@ namespace H3D {
     X3DInfoNode( Inst< SFNode>  _metadata = 0 ) :
       X3DChildNode( _metadata ){
       type_name = "X3DInfoNode";
-      database.initFields( this );
     }
   };
 }

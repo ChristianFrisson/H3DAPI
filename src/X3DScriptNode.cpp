@@ -40,7 +40,7 @@ H3DNodeDatabase X3DScriptNode::database(
                                          );
 
 namespace X3DScriptNodeInternals {
-  FIELDDB_ELEMENT( X3DScriptNode, url, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( X3DScriptNode, url, INPUT_OUTPUT );
 }
 
 X3DScriptNode::X3DScriptNode( Inst< SFNode>  _metadata,

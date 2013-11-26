@@ -119,7 +119,7 @@ string X3DTexture3DNode::SFImage::getValueAsString( const string& separator) {
     }
   } else {
     ss << 0 << separator << 0
-     << separator << 1;
+     << separator << 0 << separator << 0;
   }
   return ss.str();
 }

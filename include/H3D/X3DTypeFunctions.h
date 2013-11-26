@@ -203,7 +203,7 @@ namespace H3D {
       case X3DTypes::MFVEC3F: 
         return new MFVec3f;
       case X3DTypes::SFVEC3D: 
-        return new SFVec3f;
+        return new SFVec3d;
       case X3DTypes::MFVEC3D: 
         return new MFVec3d;
       case X3DTypes::SFVEC4F: 
@@ -211,7 +211,7 @@ namespace H3D {
       case X3DTypes::MFVEC4F: 
         return new MFVec4f;
       case X3DTypes::SFVEC4D: 
-        return new SFVec4f;
+        return new SFVec4d;
       case X3DTypes::MFVEC4D: 
         return new MFVec4d;
       case X3DTypes::SFBOOL:  

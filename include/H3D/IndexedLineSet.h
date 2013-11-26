@@ -143,6 +143,15 @@ namespace H3D {
                           &FogCoordinate::propertyChanged > > 
     SFFogCoordinate; 
 
+    /// The MFVertexAttributeNode is dependent on the propertyChanged
+    /// field of the contained X3DVertexAttributeNode.
+    class H3DAPI_API MFVertexAttributeNode : public DependentMFNode< 
+                X3DVertexAttributeNode,
+                FieldRef< X3DGeometricPropertyNode,
+                          Field,
+                          &X3DVertexAttributeNode::propertyChanged > > {
+    };
+
     /// Display list is extended in order to set color to emissive
     /// color from material outside of display list, since we have to
     /// do a glGet to get the value. If we have it inside, the display
@@ -164,7 +173,8 @@ namespace H3D {
                     Inst< MFInt32          > _colorIndex     = 0,
                     Inst< SFBool           > _colorPerVertex = 0,
                     Inst< MFInt32          > _coordIndex     = 0, 
-                    Inst< SFFogCoordinate  > _fogCoord       = 0);
+                    Inst< SFFogCoordinate  > _fogCoord       = 0,
+                    Inst< MFVertexAttributeNode > _attrib    = 0 );
 
     ~IndexedLineSet();
 
@@ -258,6 +268,15 @@ namespace H3D {
     ///
     /// \dotfile IndexedLineSet_fogCoord.dot 
     auto_ptr< SFFogCoordinate > fogCoord;
+
+    /// If the attrib field is not empty it shall contain a list of
+    /// X3DVertexAttributeNode instances with per-vertex attribute
+    /// information for programmable shaders.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    ///
+    /// \dotfile IndexedLineSet_attrib.dot 
+    auto_ptr< MFVertexAttributeNode > attrib;
 
     /// The H3DNodeDatabase instance for this node.
     static H3DNodeDatabase database;

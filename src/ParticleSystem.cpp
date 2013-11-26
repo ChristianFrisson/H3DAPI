@@ -50,7 +50,7 @@ namespace ParticleSystemInternals {
   FIELDDB_ELEMENT( ParticleSystem, maxParticles, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ParticleSystem, particleLifetime, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ParticleSystem, particleSize, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( ParticleSystem, isActive, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ParticleSystem, isActive, OUTPUT_ONLY );
   FIELDDB_ELEMENT( ParticleSystem, colorRamp, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ParticleSystem, colorKey, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ParticleSystem, emitter, INPUT_OUTPUT );
