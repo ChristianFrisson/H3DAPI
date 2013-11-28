@@ -30,7 +30,7 @@ IF("${isSystemDir}" STREQUAL "-1")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
 SET(H3DLoad_MAJOR_VERSION "2")
-SET(H3DLoad_MINOR_VERSION "2")
+SET(H3DLoad_MINOR_VERSION "3")
 SET(H3DLoad_BUILD_VERSION "1")
 
 # Where to find Source files.
