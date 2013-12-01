@@ -160,7 +160,7 @@ void NoiseTexture3D::SFImage::update() {
         // shift to interval 0.0 to 1.0
         perlinGrayValue = H3DFloat( 0.5 * perlinValue + 0.5 );
 
-        data[pixel] = 255 * (unsigned char)perlinGrayValue;
+        data[pixel] = (unsigned char)(255 * perlinGrayValue);
       }
     }
   }
