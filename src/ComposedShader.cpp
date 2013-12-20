@@ -167,7 +167,7 @@ bool ComposedShader::addField( const string &name,
   
   if( !field || uniformFields.find( name )!=uniformFields.end() ) {
     // different shader part may add the same field with same name
-    // we do not need to add it again into the map.
+    // as uniformFields is a global dataset for the shader program
       return false;
     }
   // the field being added have a unique name never being used before in this shader
@@ -177,6 +177,8 @@ bool ComposedShader::addField( const string &name,
     
     H3D::Shaders::UniformInfo ui = { field, 0 };
     uniformFields.insert( std::pair< string, H3D::Shaders::UniformInfo >( name , ui ) );
+    // if inserted node is a SFNode, or MFNode, need to handle the actul node inside
+    // the field specially
     SFNode * sf_node_field = dynamic_cast< SFNode * >( field );
     MFNode * mf_node_field = dynamic_cast< MFNode * >( field );
     if( sf_node_field || mf_node_field ) {

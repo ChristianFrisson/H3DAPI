@@ -209,6 +209,8 @@ namespace H3D {
                                  Inst< SFBackgroundNode > _background = 0,
                                  Inst< SFInt32          > _width     = 0,
                                  Inst< SFInt32          > _height    = 0,
+                                 Inst< SFInt32          > _widthInUse = 0,
+                                 Inst< SFInt32          > _heightInUse = 0,
                                  Inst< SFBool           > _useStereo = 0,
                                  Inst< SFString         > _depthBufferStorage = 0,
                                  Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer = 0,
@@ -441,6 +443,14 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> -1
     auto_ptr< SFInt32 > height;
+
+    /// It contains the actual width value used at realtime
+    /// <b>Access type:</b> outputOnly
+    auto_ptr< SFInt32 > widthInUse;
+
+    /// It contains the actual height value for this node used at realtime
+    /// <b>Access type:</b> outputOnly
+    auto_ptr< SFInt32 > heightInUse;
 
     /// An option to enable the use of same stereo setting as current window
     /// by default,it will be set to false and MONO will be used for rendering

@@ -86,8 +86,9 @@ namespace H3D {
     // struct contains the uniform value changed tag and GLSL uniform location
     struct UniformInfo 
     {
-      Field* field;
-      GLint location; // uniform field location in shader program, need update after re-link
+      Field* field;   // associated field for the uniform
+      // uniform field location in shader program, need update after re-link
+      GLint location; 
     };
     /// Set the value of a uniform variable in the given GLSL shader.
     /// The name of the uniform variable is the same as the name of the field. 

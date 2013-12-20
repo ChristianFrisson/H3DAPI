@@ -33,6 +33,7 @@
 #include <H3D/MFNode.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
+#include <H3D/ShaderImageNode.h>
 #include <H3D/X3DEnvironmentTextureNode.h>
 #include <H3D/SFFloat.h>
 #include <H3D/MFFloat.h>
@@ -791,7 +792,11 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       {
         glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
         break;
-      } 
+      }
+      //else if ( ShaderImageNode *i = dynamic_cast< ShaderImageNode* >( n ) )
+      //{
+      //  /*glUniform1i ( location, t->getImageUnit ( ) );*/
+      //}
       else 
       {
         return false;
