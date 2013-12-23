@@ -73,33 +73,38 @@ ShaderImage2D::ShaderImage2D(
   imageFormat->route ( imageFormat );
 }
 
-void ShaderImage2D::preRender(  )
-{
-
-}
-
-void ShaderImage2D::postRender()
-{
-  cout<<"Being implementation"<<endl;
-}
+//void ShaderImage2D::preRender(  )
+//{
+//
+//}
+//
+//void ShaderImage2D::postRender()
+//{
+//  cout<<"Being implementation"<<endl;
+//}
 
 void ShaderImage2D::render ( ){
-  if ( texture_id == 0 || image_unit == 0||displayList->hasCausedEvent ( imageWidth )
+  if ( texture_id == 0 || image_unit == -1||displayList->hasCausedEvent ( imageWidth )
     ||displayList->hasCausedEvent(imageHeight)||displayList->hasCausedEvent(imageFormat) )
   {// either the first render invocation or parameter for the image needs update
-    prepareShaderImage ( texture_unit );
+    prepareShaderImage ( );
   }
-  glBindImageTextureEXT ( image_unit, texture_unit, 0, false, 0, GL_READ_WRITE, stringImageFormat_map[imageFormat->getValue ( )] );
+  glActiveTexture ( texture_unit );
+  glMemoryBarrier ( GL_SHADER_IMAGE_ACCESS_BARRIER_BIT|GL_ATOMIC_COUNTER_BARRIER_BIT|GL_SHADER_STORAGE_BARRIER_BIT );
+  glBindImageTextureEXT ( image_unit, texture_id, 0, false, 0, GL_READ_WRITE, stringImageFormat_map[imageFormat->getValue ( )] );
 }
 
-void ShaderImage2D::prepareShaderImage ( unsigned int texture_unit_id ){
-  texture_unit = texture_unit_id;
+void ShaderImage2D::prepareShaderImage ( ){
   if ( !texture_id ) {
     // texture for shader image is zero, need to create a new one
     glGenTextures ( 1, &texture_id );
   }
+  if ( image_unit==-1 )
+  {
+    image_unit = generateImage ( );
+  }
   // bind to specified texture unit 
-  glActiveTexture ( texture_unit_id );
+  glActiveTexture ( texture_unit );
   glBindTexture ( GL_TEXTURE_2D, texture_id );
 
   // set filter, have to be GL_NEAREST

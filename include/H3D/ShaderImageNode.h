@@ -48,6 +48,7 @@ namespace H3D {
                             Inst< SFNode>  _metadata = 0 );
 
     /// specify the texture_unit will be used for rendering this shader image
+    /// 
     virtual void preRender( GLenum texture_unit_id );
 
 
@@ -58,7 +59,7 @@ namespace H3D {
 
     //virtual void renderImage( unsigned int texture_unit_id );
     /// install texture and image for current node to specified texture unit
-    virtual void prepareShaderImage ( unsigned int texture_unit_id );
+    /*virtual void prepareShaderImage ( );*/
 
     virtual unsigned int getImageUnit ( ){
       return image_unit;

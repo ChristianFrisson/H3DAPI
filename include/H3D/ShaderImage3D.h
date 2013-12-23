@@ -54,16 +54,16 @@ namespace H3D {
                    Inst< SFInt32      > _imageDepth = 0, 
                    Inst< SFString     > _imageFormat = 0);
 
-    virtual void preRender();
+    /*virtual void preRender();
 
 
-    virtual void postRender();
+    virtual void postRender();*/
 
     virtual void render ( );
 
     ///virtual void renderImage( unsigned int texture_unit_id );
     /// set up texture and image and configure them
-    virtual void prepareShaderImage ( unsigned int texture_unit_id );
+    virtual void prepareShaderImage ( );
 
     auto_ptr<SFInt32> imageWidth;
     

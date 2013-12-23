@@ -47,8 +47,9 @@ ShaderImageNode::ShaderImageNode(
   displayList->setOwner( this );
   texture_id = 0;
   texture_unit = GL_TEXTURE0;
-  image_unit = generateImage();
+  image_unit = -1;
   glGetIntegerv ( GL_MAX_IMAGE_SAMPLES_EXT, (GLint*)&max_image_unit );
+  //image_unit = generateImage ( );
   
 }
 
@@ -63,13 +64,13 @@ void ShaderImageNode::postRender()
   texture_unit = GL_TEXTURE0;
 }
 
-void ShaderImageNode::prepareShaderImage ( unsigned int texture_unit_id  ){
-  if ( !texture_id )
-  {// current texture id is zero , needs to create new texture object
-    glGenTextures ( 1, &texture_id );
-  }
-
-}
+//void ShaderImageNode::prepareShaderImage ( ){
+//  if ( !texture_id )
+//  {// current texture id is zero , needs to create new texture object
+//    glGenTextures ( 1, &texture_id );
+//  }
+//
+//}
 
 ShaderImageNode::~ShaderImageNode ( ){
   if ( image_unit!=-1 )
@@ -88,11 +89,12 @@ unsigned int ShaderImageNode::generateImage ( ){
   set<unsigned int>::const_iterator it_end = global_image_units.end ( );
   if ( global_image_units.size()>=max_image_unit )
   {// all valid id for image units are used, return -1 represent invalid
+    global_image_units_lock.unlock ( );
     return -1;
   }
   for ( size_t i = 0; i < max_image_unit; i++ )
   {
-    if ( global_image_units.find ( i ) != it_end )
+    if ( global_image_units.find ( i ) == it_end )
     {
       // no previous hit in global image units, use this one and insert it into the set
       global_image_units.insert ( i );
@@ -101,6 +103,7 @@ unsigned int ShaderImageNode::generateImage ( ){
     }
   }
   // it should never goes here, return -1 just in case it does
+  global_image_units_lock.unlock ( );
   return -1;
 }
 

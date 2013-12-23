@@ -80,6 +80,15 @@ namespace H3D {
         value = m.inverse();
       }
     };
+    // matrix4f type matrix which accept modelView matrix and return 
+    // its inverse transposed matrix
+    class H3DAPI_API Matrix4fInverseTranspose : public SFMatrix4f{
+      virtual void update ( ){
+        const Matrix4f &m =
+          static_cast<SFMatrix4f*>(event.ptr)->getValue ( );
+        value = m.inverse ( ).transpose ( );
+      }
+    };
 
     /// Constructor.
     TransformInfo( Inst< SFNode      > _metadata  = 0,
@@ -89,6 +98,7 @@ namespace H3D {
                    Inst< SFBool      > _outputGLMatrices = 0,
                    Inst< SFMatrix4f  > _glModelViewMatrix = 0,
                    Inst< Matrix4fInverse > _glModelViewMatrixInverse = 0,
+                   Inst< Matrix4fInverseTranspose > _glModelViewMatrixInverseTranspose = 0,
                    Inst< SFMatrix4f  > _glProjectionMatrix = 0,
                    Inst< Matrix4fInverse > _glProjectionMatrixInverse = 0 );
 
@@ -141,6 +151,10 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< Matrix4fInverse >  glProjectionMatrixInverse;
+
+    /// The inverse transposed matrix of glModelViewMatrix, used to transform
+    /// normal from object space to view/eye/camera space.
+    auto_ptr< Matrix4fInverseTranspose > glModelViewMatrixInverseTranspose;
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
