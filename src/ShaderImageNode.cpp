@@ -117,4 +117,6 @@ void ShaderImageNode::deleteImage ( unsigned int id ){
     global_image_units.erase ( id );
     global_image_units_lock.unlock ( );
   }
+  // the shader image you want to delete is not valid, release the lock anyway
+  global_image_units_lock.unlock ();
 }
