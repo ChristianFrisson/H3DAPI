@@ -83,7 +83,7 @@ ShaderImageNode::~ShaderImageNode ( ){
   }
 }
 
-unsigned int ShaderImageNode::generateImage ( ){
+ int ShaderImageNode::generateImage ( ){
 
   global_image_units_lock.lock ( );
   set<unsigned int>::const_iterator it_end = global_image_units.end ( );
@@ -107,7 +107,7 @@ unsigned int ShaderImageNode::generateImage ( ){
   return -1;
 }
 
-void ShaderImageNode::deleteImage ( unsigned int id ){
+void ShaderImageNode::deleteImage ( int id ){
   global_image_units_lock.lock ( );
   
   set<unsigned int>::const_iterator it_end = global_image_units.end ( );

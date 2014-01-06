@@ -61,7 +61,7 @@ namespace H3D {
     /// install texture and image for current node to specified texture unit
     /*virtual void prepareShaderImage ( );*/
 
-    virtual unsigned int getImageUnit ( ){
+    virtual int getImageUnit ( ){
       return image_unit;
     }
 
@@ -74,7 +74,7 @@ namespace H3D {
 
     /// image unit used, will be used to bind to shader program
     /// the value of image_unit will be maintained in this node
-    unsigned int image_unit;
+    int image_unit;
 
     /// texture object id which is used to bind to the texture unit
     /// this value will be maintained in this node
@@ -82,13 +82,13 @@ namespace H3D {
 
     
     
-    /// all the current image units already used, it will be used to help
-    /// generate idential image unit id
+    // all the current image units already used, it will be used to help
+    // generate non-idential image unit id
     static set<unsigned int> global_image_units;
     static H3DUtil::MutexLock global_image_units_lock;
     static unsigned int max_image_unit;
-    static unsigned generateImage ( );
-    static void deleteImage ( unsigned int id );
+    static int generateImage ( );
+    static void deleteImage ( int id );
   };
 }
 
