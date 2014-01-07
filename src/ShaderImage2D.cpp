@@ -84,6 +84,7 @@ ShaderImage2D::ShaderImage2D(
 //}
 
 void ShaderImage2D::render ( ){
+#ifdef glMemoryBarrier
   if ( texture_id == 0 || image_unit == -1||displayList->hasCausedEvent ( imageWidth )
     ||displayList->hasCausedEvent(imageHeight)||displayList->hasCausedEvent(imageFormat) )
   {// either the first render invocation or parameter for the image needs update
@@ -92,9 +93,11 @@ void ShaderImage2D::render ( ){
   glActiveTexture ( texture_unit );
   glMemoryBarrier ( GL_SHADER_IMAGE_ACCESS_BARRIER_BIT|GL_ATOMIC_COUNTER_BARRIER_BIT|GL_SHADER_STORAGE_BARRIER_BIT );
   glBindImageTextureEXT ( image_unit, texture_id, 0, false, 0, GL_READ_WRITE, stringImageFormat_map[imageFormat->getValue ( )] );
+#endif
 }
 
 void ShaderImage2D::prepareShaderImage ( ){
+#ifdef glMemoryBarrier
   if ( !texture_id ) {
     // texture for shader image is zero, need to create a new one
     glGenTextures ( 1, &texture_id );
@@ -113,6 +116,7 @@ void ShaderImage2D::prepareShaderImage ( ){
 
   // texture creation 
   glTexImage2D ( GL_TEXTURE_2D, 0, stringImageFormat_map[imageFormat->getValue ( )], imageWidth->getValue ( ), imageHeight->getValue ( ), 0, GL_RED, GL_UNSIGNED_INT, 0 );
+#endif
 }
 
 std::map<string, GLenum> ShaderImage2D::initStringImageFormat_map ( ){

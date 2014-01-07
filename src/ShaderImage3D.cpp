@@ -88,6 +88,7 @@ ShaderImage3D::ShaderImage3D( Inst< DisplayList  > _displayList ,
 //}
 
 void ShaderImage3D::render ( ){
+#ifdef glMemoryBarrier
   glGetError ( );
   if ( texture_id == 0 || image_unit == -1 || displayList->hasCausedEvent ( imageWidth )
     || displayList->hasCausedEvent ( imageHeight ) || displayList->hasCausedEvent(imageDepth) 
@@ -116,9 +117,11 @@ void ShaderImage3D::render ( ){
   {
     Console ( 4 ) << "Error: when binding the texture whic is: "<<gluErrorString(err) << endl;
   }
+#endif
 }
 
 void ShaderImage3D::prepareShaderImage ( ){
+#ifdef glMemoryBarrier
   if( !texture_id ) {
     // generate texture if do not have valid one
     glGenTextures(1,&texture_id);
@@ -161,6 +164,7 @@ void ShaderImage3D::prepareShaderImage ( ){
   {
     Console ( 4 ) << "error while set tex image 3d: " << gluErrorString ( err ) << endl;
   }
+#endif
 }
 
 std::map<string, GLenum> ShaderImage3D::initStringImageFormat_map ( ){

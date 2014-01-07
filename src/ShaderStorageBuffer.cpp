@@ -53,6 +53,7 @@ ShaderStorageBuffer::ShaderStorageBuffer(
 }
 
 void ShaderStorageBuffer::initialize ( ){
+#ifdef GLEW_ARB_shader_storage_buffer_object
   if ( !GLEW_ARB_shader_storage_buffer_object )
   {
     Console ( 4 ) << "No shader storage buffer object extenstion support in your system"
@@ -61,8 +62,13 @@ void ShaderStorageBuffer::initialize ( ){
   else{
     glGetIntegerv ( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, (GLint*)max_block_bindings );
   }
+#else
+    Console ( 4 ) << "Binary compiled without support for shader storage buffered object extension."
+      << endl;
+#endif
 }
 
+#ifdef GLEW_ARB_shader_storage_buffer_object
 void ShaderStorageBuffer::preRender( unsigned int program )
 {
   if ( program!=0 )
@@ -117,6 +123,7 @@ void ShaderStorageBuffer::render ( ){
   // bind the actual buffer to the storage block binding on storage buffer
   glBindBufferBase ( GL_SHADER_STORAGE_BUFFER, storage_block_binding, buffer_id );
 }
+#endif
 
 ShaderStorageBuffer::~ShaderStorageBuffer ( ){
   if ( storage_block_binding!=-1 )
