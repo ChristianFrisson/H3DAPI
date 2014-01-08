@@ -98,9 +98,9 @@ namespace H3D {
                    Inst< SFBool      > _outputGLMatrices = 0,
                    Inst< SFMatrix4f  > _glModelViewMatrix = 0,
                    Inst< Matrix4fInverse > _glModelViewMatrixInverse = 0,
-                   Inst< Matrix4fInverseTranspose > _glModelViewMatrixInverseTranspose = 0,
                    Inst< SFMatrix4f  > _glProjectionMatrix = 0,
-                   Inst< Matrix4fInverse > _glProjectionMatrixInverse = 0 );
+                   Inst< Matrix4fInverse > _glProjectionMatrixInverse = 0,
+                   Inst< Matrix4fInverseTranspose > _glModelViewMatrixInverseTranspose = 0 );
 
     /// Set the matrix fields from the values provided in ti.
     virtual void traverseSG( TraverseInfo &ti );

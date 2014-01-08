@@ -57,9 +57,9 @@ TransformInfo::TransformInfo( Inst< SFNode     > _metadata,
                               Inst< SFBool      > _outputGLMatrices,
                               Inst< SFMatrix4f  > _glModelViewMatrix,
                               Inst< Matrix4fInverse > _glModelViewMatrixInverse,
-                              Inst< Matrix4fInverseTranspose > _glModelViewMatrixInverseTranspose,
                               Inst< SFMatrix4f  > _glProjectionMatrix,
-                              Inst< Matrix4fInverse > _glProjectionMatrixInverse ) :
+                              Inst< Matrix4fInverse > _glProjectionMatrixInverse,
+                              Inst< Matrix4fInverseTranspose > _glModelViewMatrixInverseTranspose ) :
   X3DChildNode( _metadata ),
   H3DDisplayListObject( _displayList ),
   accForwardMatrix( _accForwardMatrix ),
@@ -67,9 +67,9 @@ TransformInfo::TransformInfo( Inst< SFNode     > _metadata,
   outputGLMatrices( _outputGLMatrices ),
   glModelViewMatrix( _glModelViewMatrix ),
   glModelViewMatrixInverse( _glModelViewMatrixInverse ),
-  glModelViewMatrixInverseTranspose( _glModelViewMatrixInverseTranspose ),
   glProjectionMatrix( _glProjectionMatrix ),
-  glProjectionMatrixInverse( _glProjectionMatrixInverse ) {
+  glProjectionMatrixInverse( _glProjectionMatrixInverse ),
+  glModelViewMatrixInverseTranspose( _glModelViewMatrixInverseTranspose ) {
 
   type_name = "TransformInfo";
   database.initFields( this );
