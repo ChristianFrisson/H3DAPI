@@ -32,24 +32,41 @@
 
 using namespace H3D;
 
+H3DNodeDatabase ShaderStorageBuffer::database ( "ShaderStorageBuffer",
+  &(newInstance<ShaderStorageBuffer>),
+  typeid(ShaderStorageBuffer),
+  &(ShaderChildNode::database) );
+
 // initialize static member
 H3DUtil::MutexLock ShaderStorageBuffer::global_block_bindings_lock;
 std::set<unsigned int> ShaderStorageBuffer::global_block_bindings;
 unsigned int ShaderStorageBuffer::max_block_bindings;
 
+namespace ShaderStorageBufferInternals{
+  FIELDDB_ELEMENT ( ShaderStorageBuffer, width, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( ShaderStorageBuffer, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( ShaderStorageBuffer, depth, INPUT_OUTPUT  ); 
+}
 
 ShaderStorageBuffer::ShaderStorageBuffer( 
-                                Inst< DisplayList > _displayList,
-                                Inst< SFNode>  _metadata ) :
-  ShaderChildNode(_displayList,_metadata) {
+                                Inst< DisplayList   > _displayList,
+                                Inst< SFNode        > _metadata,
+                                Inst< SFInt32       > _width,
+                                Inst< SFInt32       > _height,
+                                Inst< SFInt32       > _depth ) :
+  ShaderChildNode(_displayList,_metadata),
+  width(_width),
+  height(_height),
+  depth(_depth){
   type_name = "ShaderStorageBuffer";
+  database.initFields(this);
   displayList->setName( "displayList" );
   displayList->setOwner( this );
-
+  width->setValue ( 512 );
+  height->setValue ( 512 );
+  depth->setValue ( 16 );
   storage_block_binding = -1;
   buffer_id = -1;
-  //image_unit = generateImage ( );
-  
 }
 
 void ShaderStorageBuffer::initialize ( ){
@@ -60,7 +77,7 @@ void ShaderStorageBuffer::initialize ( ){
       << endl;
   }
   else{
-    glGetIntegerv ( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, (GLint*)max_block_bindings );
+    glGetIntegerv ( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, (GLint*)&max_block_bindings );
   }
 #else
     Console ( 4 ) << "Binary compiled without support for shader storage buffered object extension."
@@ -101,11 +118,11 @@ void ShaderStorageBuffer::prepareStorageBuffer ( ){
     NULL, GL_DYNAMIC_COPY ); 
 
   storage_block_index = glGetProgramResourceIndex ( program_handle, GL_SHADER_STORAGE_BLOCK,
-    (GLchar*)name->getValue ( ).c_str ( ) );
+    (GLchar*)getName().c_str ( ) );
   if ( storage_block_index == GL_INVALID_INDEX )
   {
     Console ( 4 ) << "Warning[ShaderStorageBuffer]:"
-      << "There is no active shader storage block named as " << name->getValue ( ) << endl;
+      << "There is no active shader storage block named as " << getName() << endl;
     return;
   }
   // bind the assigned storage block index to the storage block binding point for the shader storage buffer
@@ -121,6 +138,7 @@ void ShaderStorageBuffer::render ( ){
   // setup barrier to ensure the previous read/write to the storage buffer is finished
   glMemoryBarrier ( GL_SHADER_STORAGE_BARRIER_BIT );
   // bind the actual buffer to the storage block binding on storage buffer
+  // so shader program will have access to the buffer
   glBindBufferBase ( GL_SHADER_STORAGE_BUFFER, storage_block_binding, buffer_id );
 }
 #endif

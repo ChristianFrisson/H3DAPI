@@ -34,6 +34,8 @@
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
 #include <H3D/ShaderImageNode.h>
+#include <H3D/ShaderStorageBuffer.h>
+#include <H3D/ShaderAtomicCounter.h>
 #include <H3D/X3DEnvironmentTextureNode.h>
 #include <H3D/SFFloat.h>
 #include <H3D/MFFloat.h>
@@ -1356,6 +1358,60 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
   X3DTextureNode::setActiveTexture( active_texture );
 }
 
+// preRender some resources to assign necessary context value of the shader
+// to specific shader resources. For example, preRender shaderImage
+// shaderStorageBuffer, shaderAtomicCounter
+void H3D::Shaders::preRenderShaderResources( H3DDynamicFieldsObject * dfo, GLhandleARB program){
+
+  Node* n;
+  MFNode *mfnode;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) {
+    if((*f)->getX3DType()==X3DTypes::SFNODE){
+      n = static_cast<SFNode*>(*f)->getValue(); 
+      if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(n) ) {
+        ssbo->preRender( program );
+      }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+        sac->preRender( program );
+      }
+    }else if( (*f)->getX3DType()==X3DTypes::MFNODE ) {
+      mfnode = static_cast< MFNode * >( *f );
+      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
+        n = mfnode->getValueByIndex( i ); 
+        if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(n) ) {
+          ssbo->preRender( program );
+        }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+          sac->preRender( program );
+        }
+      }
+    }
+  }
+}
+
+void H3D::Shaders::postRenderShaderResources( H3DDynamicFieldsObject* dfo, GLhandleARB program){
+  Node* n;
+  MFNode *mfnode;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) {
+    if((*f)->getX3DType()==X3DTypes::SFNODE){
+      n = static_cast<SFNode*>(*f)->getValue(); 
+      if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(n) ) {
+        ssbo->preRender( program );
+      }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+        sac->preRender( program );
+      }
+    }else if( (*f)->getX3DType()==X3DTypes::MFNODE ) {
+      mfnode = static_cast< MFNode * >( *f );
+      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
+        n = mfnode->getValueByIndex( i ); 
+        if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(n) ) {
+          ssbo->preRender( program );
+        }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+          sac->preRender( program );
+        }
+      }
+    }
+  }
+}
+
 void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
   GLint nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
@@ -1363,6 +1419,7 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
   unsigned int nr_textures = 0; 
   Node *n;
   MFNode *mfnode;
+  GLenum current_texture_unit = GL_TEXTURE0_ARB;
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
   {
     // only SFNODE and MFNODE type can be texture object.
@@ -1373,6 +1430,11 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
       {
         glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
         t->postRender();
+        ++nr_textures;
+      } else if ( ShaderImageNode *si = dynamic_cast<ShaderImageNode*>(n) ){
+        current_texture_unit = GL_TEXTURE0_ARB + nr_textures;
+        glActiveTextureARB ( current_texture_unit );
+        si->preRender ( current_texture_unit );
         ++nr_textures;
       }
     }
@@ -1387,7 +1449,11 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
             glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
             t->postRender();
             ++nr_textures;
-        } 
+        } else if ( ShaderImageNode* si = dynamic_cast<ShaderImageNode*>(n) ){
+          current_texture_unit = GL_TEXTURE0_ARB + nr_textures;
+          glActiveTextureARB ( current_texture_unit );
+          si->preRender ( current_texture_unit );
+        }
       }
     }
     if( nr_textures > (unsigned int)nr_textures_supported ) {
@@ -1397,6 +1463,7 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
   }
   glActiveTextureARB(GL_TEXTURE0_ARB );
 }
+
 
 void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
   GLint nr_textures_supported;
@@ -1448,3 +1515,31 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
   glActiveTextureARB(GL_TEXTURE0_ARB );
 }
 
+void H3D::Shaders::renderShaderResources( H3DDynamicFieldsObject * dfo){
+  Node* n;
+  MFNode* mfnode;
+  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
+  {
+    X3DTypes::X3DType x3d_type = (*f)->getX3DType();
+    if(x3d_type==X3DTypes::SFNODE){
+      n = static_cast<SFNode*>(*f)->getValue();
+      if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(n) ) {
+        ssbo->displayList->callList();
+      }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+        sac->displayList->callList();
+      }
+    }else if( x3d_type==X3DTypes::MFNODE ) {
+      mfnode = static_cast< MFNode* >(*f);
+      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
+        Node *n = mfnode->getValueByIndex( i ); 
+        if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(n) ) {
+          ssbo->displayList->callList();
+        }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+          sac->displayList->callList();
+        }
+      }
+      
+    }
+    
+  }
+}

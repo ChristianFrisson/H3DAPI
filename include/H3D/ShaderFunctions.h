@@ -100,8 +100,11 @@ namespace H3D {
                                                  Field *field, UniformInfo* ui = NULL, bool force= false );
 
     void H3DAPI_API renderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API renderShaderResources( H3DDynamicFieldsObject * );
     void H3DAPI_API postRenderTextures( H3DDynamicFieldsObject * );
     void H3DAPI_API preRenderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API preRenderShaderResources( H3DDynamicFieldsObject *, const GLhandleARB program );
+    void H3DAPI_API postRenderShaderResources( H3DDynamicFieldsObject*, const GLhandleARB program );
     GLbitfield H3DAPI_API getAffectedGLAttribs( H3DDynamicFieldsObject * );
 
   }

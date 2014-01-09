@@ -210,6 +210,7 @@ void ComposedShader::preRender() {
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( program_handle );
     Shaders::preRenderTextures( this );
+    Shaders::preRenderShaderResources( this, program_handle );
     X3DShaderNode::preRender();
   }
 
@@ -367,6 +368,7 @@ void ComposedShader::render() {
 
     if( program_handle ) {
       Shaders::renderTextures( this );
+      Shaders::renderShaderResources( this );
 //#ifdef HAVE_PROFILER
 //      H3DTimer::stepBegin("updateUniform");
 //#endif
