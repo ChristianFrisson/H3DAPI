@@ -133,7 +133,7 @@ namespace H3D {
     };
 
 
-    // travese func.
+    // traverse func.
     virtual void traverseSG( TraverseInfo &ti ); 
 
     // Fields
@@ -144,8 +144,8 @@ namespace H3D {
     /// <b>Access type:</b> inputOnly \n
     auto_ptr< SetTime > set_time;
 
-    /// Adress of traverseInfo 
-    /// only interested in adress, what it points to will be invalid
+    /// address of traverseInfo 
+    /// only interested in address, what it points to will be invalid
     TraverseInfo *prev_travinfoadr;
 
     //  Number of Instances(DEF/USE) cases in the previous traverseSG

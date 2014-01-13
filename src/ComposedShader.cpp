@@ -31,6 +31,7 @@
 #include <H3D/ComposedShader.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
+#include <H3D/ShaderAtomicCounter.h>
 
 #include<fstream>
 #include<sstream>
@@ -228,6 +229,17 @@ void ComposedShader::postRender() {
 
 void ComposedShader::traverseSG ( TraverseInfo& ti ) {
   X3DShaderNode::traverseSG ( ti );
+  Node* n;
+  for( H3DDynamicFieldsObject::field_iterator f = this->firstField();f != this->endField(); ++f ) 
+  {
+    X3DTypes::X3DType x3d_type = (*f)->getX3DType();
+    if(x3d_type==X3DTypes::SFNODE){
+      n = static_cast<SFNode*>(*f)->getValue();
+      if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+        sac->traverseSG(ti);
+      }
+    }
+  }
 
   // Will be set to true if tessellation shader is present
   static bool require_patches; 

@@ -54,6 +54,7 @@ ShaderAtomicCounter::ShaderAtomicCounter(
   displayList->setOwner( this );
   buffer_id = -1;
   initialValue->setValue(0);
+  prev_travinfoadr = NULL;
 }
 
 void ShaderAtomicCounter::initialize ( ){
@@ -109,8 +110,19 @@ void ShaderAtomicCounter::render ( ){
   // bind the actual buffer to the storage block binding on storage buffer
   // so shader program will have access to the buffer
   glBindBufferBase ( GL_ATOMIC_COUNTER_BUFFER, atomic_counter_binding, buffer_id );
-  static const unsigned int zero = 0;
-  glBufferSubData( GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(zero), &zero );
+  
+  //glBufferSubData( GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(zero), &zero );
+}
+
+void ShaderAtomicCounter::traverseSG( TraverseInfo &ti ){
+  if( prev_travinfoadr != &ti){
+    // First Instance DEF/USE of traveseSG in scene graph
+    glBindBufferBase( GL_ATOMIC_COUNTER_BUFFER, atomic_counter_binding, buffer_id );
+    static const unsigned int initial_value = (unsigned int)initialValue->getValue();
+    //static const unsigned int zero = 0;
+    glBufferSubData( GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(initial_value),&initial_value); 
+  }
+  prev_travinfoadr = &ti;
 }
 
 ShaderAtomicCounter::~ShaderAtomicCounter ( ){

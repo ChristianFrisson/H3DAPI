@@ -71,6 +71,14 @@ namespace H3D {
 
     ~ShaderAtomicCounter ( );
 
+    // traverse func.
+    virtual void traverseSG( TraverseInfo &ti ); 
+
+    /// Address of traverseInfo 
+    /// only interested in address, what it points to will be invalid
+    TraverseInfo *prev_travinfoadr;
+
+
     // width, height and depth is used to set the size
     // of the buffer data. It should be just one value, as shader storage
     // buffer is used in shader, to separate it into three dimension
