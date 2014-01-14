@@ -88,6 +88,13 @@ void ShaderAtomicCounter::prepareAtomicCounterBuffer(){
   glBindBuffer( GL_ATOMIC_COUNTER_BUFFER, buffer_id );
   // assume buffer size if one here temporarily, it can be more than one of course
   glBufferData( GL_ATOMIC_COUNTER_BUFFER, sizeof(unsigned int), NULL, GL_DYNAMIC_COPY );
+}
+
+void ShaderAtomicCounter::render ( ){
+  if ( buffer_id == -1 )
+  {// either it is the first that the buffer is used, or the size need to be changed
+    prepareAtomicCounterBuffer();
+  }
   // the second parameter here refers to the index of an active atomic counter buffer
   // it has to being in range from zero to GL_ACTIVE_ATOMIC_COUNTER_BUFFERS minus one
   // as i am not actually not very sure how to make the multiple atomic counter buffers
@@ -98,13 +105,7 @@ void ShaderAtomicCounter::prepareAtomicCounterBuffer(){
   }else if( atomic_counter_binding==GL_INVALID_ENUM ) {
     Console(4)<<"parameter token is not accepted!"<<endl;
   }
-}
 
-void ShaderAtomicCounter::render ( ){
-  //if ( buffer_id == -1 )
-  {// either it is the first that the buffer is used, or the size need to be changed
-    prepareAtomicCounterBuffer();
-  }
   // setup barrier to ensure the previous read/write to the storage buffer is finished
   glMemoryBarrier ( GL_ATOMIC_COUNTER_BARRIER_BIT );
   // bind the actual buffer to the storage block binding on storage buffer
@@ -121,8 +122,9 @@ void ShaderAtomicCounter::traverseSG( TraverseInfo &ti ){
     static const unsigned int initial_value = (unsigned int)initialValue->getValue();
     //static const unsigned int zero = 0;
     glBufferSubData( GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(initial_value),&initial_value); 
+    prev_travinfoadr = &ti;
   }
-  prev_travinfoadr = &ti;
+  
 }
 
 ShaderAtomicCounter::~ShaderAtomicCounter ( ){

@@ -116,7 +116,14 @@ void ShaderStorageBuffer::prepareStorageBuffer ( ){
   // we use GL_DYNAMIC_COPY here
   glBufferData ( GL_SHADER_STORAGE_BUFFER, width->getValue ( )*height->getValue ( )*depth->getValue ( ),
     NULL, GL_DYNAMIC_COPY ); 
+}
 
+void ShaderStorageBuffer::render ( ){
+  if ( buffer_id == -1 || displayList->hasCausedEvent(width)
+    || displayList->hasCausedEvent(height)||displayList->hasCausedEvent(depth))
+  {// either it is the first that the buffer is used, or the size need to be changed
+    prepareStorageBuffer ( );
+  }
   storage_block_index = glGetProgramResourceIndex ( program_handle, GL_SHADER_STORAGE_BLOCK,
     (GLchar*)getName().c_str ( ) );
   if ( storage_block_index == GL_INVALID_INDEX )
@@ -127,14 +134,7 @@ void ShaderStorageBuffer::prepareStorageBuffer ( ){
   }
   // bind the assigned storage block index to the storage block binding point for the shader storage buffer
   glShaderStorageBlockBinding ( program_handle, storage_block_index, storage_block_binding );
-}
 
-void ShaderStorageBuffer::render ( ){
-  if ( buffer_id == -1 || displayList->hasCausedEvent(width)
-    || displayList->hasCausedEvent(height)||displayList->hasCausedEvent(depth))
-  {// either it is the first that the buffer is used, or the size need to be changed
-    prepareStorageBuffer ( );
-  }
   // setup barrier to ensure the previous read/write to the storage buffer is finished
   glMemoryBarrier ( GL_SHADER_STORAGE_BARRIER_BIT );
   // bind the actual buffer to the storage block binding on storage buffer
