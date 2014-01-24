@@ -76,11 +76,13 @@ namespace H3D {
     /// <b>Default value:</b> GL_RGBA16F \n
     auto_ptr<SFString> imageFormat;
 
+    static std::map<string, string> imageFormatQualifier_map;
+    static std::map<string, string> initImageFormatQualifier_map ( );
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   private:
-
     static std::map<string, GLenum> stringImageFormat_map;
     static std::map<string, GLenum> initStringImageFormat_map ( );
     static const std::vector<string> image_formats;

@@ -46,6 +46,7 @@ namespace ShaderStorageBufferInternals{
   FIELDDB_ELEMENT ( ShaderStorageBuffer, width, INPUT_OUTPUT );
   FIELDDB_ELEMENT ( ShaderStorageBuffer, height, INPUT_OUTPUT );
   FIELDDB_ELEMENT ( ShaderStorageBuffer, depth, INPUT_OUTPUT  ); 
+  FIELDDB_ELEMENT ( ShaderStorageBuffer, storageName, INPUT_OUTPUT );
 }
 
 ShaderStorageBuffer::ShaderStorageBuffer( 
@@ -53,11 +54,13 @@ ShaderStorageBuffer::ShaderStorageBuffer(
                                 Inst< SFNode        > _metadata,
                                 Inst< SFInt32       > _width,
                                 Inst< SFInt32       > _height,
-                                Inst< SFInt32       > _depth ) :
+                                Inst< SFInt32       > _depth,
+                                Inst< SFString      > _storageName ) :
   ShaderChildNode(_displayList,_metadata),
   width(_width),
   height(_height),
-  depth(_depth){
+  depth(_depth),
+  storageName(_storageName){
   type_name = "ShaderStorageBuffer";
   database.initFields(this);
   displayList->setName( "displayList" );
@@ -67,13 +70,14 @@ ShaderStorageBuffer::ShaderStorageBuffer(
   depth->setValue ( 16 );
   storage_block_binding = -1;
   buffer_id = -1;
+  storageName->setValue(getName());
 }
 
 void ShaderStorageBuffer::initialize ( ){
 #ifdef GLEW_ARB_shader_storage_buffer_object
   if ( !GLEW_ARB_shader_storage_buffer_object )
   {
-    Console ( 4 ) << "No shader storage buffer object extenstion support in your system"
+    Console ( 4 ) << "No shader storage buffer object extension support in your system"
       << endl;
   }
   else{
@@ -124,12 +128,11 @@ void ShaderStorageBuffer::render ( ){
   {// either it is the first that the buffer is used, or the size need to be changed
     prepareStorageBuffer ( );
   }
-  storage_block_index = glGetProgramResourceIndex ( program_handle, GL_SHADER_STORAGE_BLOCK,
-    (GLchar*)getName().c_str ( ) );
+  storage_block_index = glGetProgramResourceIndex ( program_handle, GL_SHADER_STORAGE_BLOCK, storageName->getValue().c_str() );
   if ( storage_block_index == GL_INVALID_INDEX )
   {
     Console ( 4 ) << "Warning[ShaderStorageBuffer]:"
-      << "There is no active shader storage block named as " << getName() << endl;
+      << "There is no active shader storage block named as " << storageName->getValue() << endl;
     return;
   }
   // bind the assigned storage block index to the storage block binding point for the shader storage buffer

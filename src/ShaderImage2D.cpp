@@ -39,6 +39,7 @@ H3DNodeDatabase ShaderImage2D::database ( "ShaderImage2D",
 
 map<string, GLenum> ShaderImage2D::stringImageFormat_map = ShaderImage2D::initStringImageFormat_map ( );
 const vector<string> ShaderImage2D::image_formats = ShaderImage2D::initImage_formats ( );
+map<string, string> ShaderImage2D::imageFormatQualifier_map = ShaderImage2D::initImageFormatQualifier_map();
 
 namespace ShaderImage2DInternals{
   FIELDDB_ELEMENT ( ShaderImage2D, imageWidth,  INPUT_OUTPUT );
@@ -122,10 +123,12 @@ void ShaderImage2D::prepareShaderImage ( ){
 
 std::map<string, GLenum> ShaderImage2D::initStringImageFormat_map ( ){
   map<string, GLenum> m;
+  // there is bug currently, GL_R32UI seems not correctly working
+  // so use GL_R32F  as temp workaround
   m["GL_RGBA32F"] = GL_RGBA32F; m["GL_RGBA16F"] = GL_RGBA16F; 
   m["GL_R32F"] = GL_R32F; m["GL_R16F"] = GL_R16F;
   m["GL_RGBA32UI"] = GL_RGBA32UI; m["GL_RGBA16UI"] = GL_RGBA16UI; m["GL_RGBA8UI"] = GL_RGBA8UI;
-  m["GL_R32UI"] = GL_R32UI; m["GL_R16UI"] = GL_R16UI; m["GL_R8UI"] = GL_R8UI;
+  m["GL_R32UI"] = GL_R32F; m["GL_R16UI"] = GL_R16UI; m["GL_R8UI"] = GL_R8UI;
   m["GL_RGBA32I"] = GL_RGBA32I; m["GL_RGBA16I"] = GL_RGBA16I; m["GL_RGBA8I"] = GL_RGBA8I;
   m["GL_R32I"] = GL_R32I; m["GL_R16I"] = GL_R16I; m["GL_R8I"] = GL_R8I;
   return m;
@@ -137,5 +140,16 @@ std::vector<string> ShaderImage2D::initImage_formats ( ){
     "GL_RGBA32I", "GL_RGBA16I", "GL_RGBA8I", "GL_R32I", "GL_R16I", "GL_R8I" };
   vector<string> v ( &vs[0], &vs[0] + 16 );
   return v;
+}
+
+std::map<string, string> ShaderImage2D::initImageFormatQualifier_map(){
+  map<string, string> m;
+  m["GL_RGBA32F"] = "rgba32f"; m["GL_RGBA16F"] = "rgba16f"; 
+  m["GL_R32F"] = "r32f"; m["GL_R16F"] = "r16f";
+  m["GL_RGBA32UI"] = "rgba32ui"; m["GL_RGBA16UI"] = "rgba16ui"; m["GL_RGBA8UI"] = "rgba8ui";
+  m["GL_R32UI"] = "r32ui"; m["GL_R16UI"] = "r16ui"; m["GL_R8UI"] = "r8ui";
+  m["GL_RGBA32I"] = "rgba32i"; m["GL_RGBA16I"] = "rgba16i"; m["GL_RGBA8I"] = "rgba8i";
+  m["GL_R32I"] = "r32i"; m["GL_R16I"] = "r16i"; m["GL_R8I"] = "r8i";
+  return m;
 }
 

@@ -50,7 +50,8 @@ namespace H3D {
                          Inst< SFNode       >  _metadata = 0,
                          Inst< SFInt32      > _width = 0,
                          Inst< SFInt32      > _height = 0,
-                         Inst< SFInt32      > _depth = 0
+                         Inst< SFInt32      > _depth = 0,
+                         Inst< SFString     > _storageName = 0
                          );
 
 
@@ -79,7 +80,7 @@ namespace H3D {
 
     // width, height and depth is used to set the size
     // of the buffer data. It should be just one value, as shader storage
-    // buffer is used in shader, to seperate it into three dimenstion
+    // buffer is used in shader, to separate it into three dimension
     // will make it more intuitive
 
     /// horizontal dimension for the data
@@ -88,6 +89,9 @@ namespace H3D {
     auto_ptr<SFInt32> height;
     /// layers for the data
     auto_ptr<SFInt32> depth;
+    /// storage buffer name used in shader
+    /// by default, it will use the node name if not being set
+    auto_ptr<SFString> storageName;
 
     /// The H3DNodeDatabase for this node
     static H3DNodeDatabase database;
@@ -104,14 +108,14 @@ namespace H3D {
     /// valid value only after the shader program get linked.
     unsigned int storage_block_index;
 
-    /// the block binding point on shader storage buffer in openGL contex
+    /// the block binding point on shader storage buffer in openGL context
     /// its value must be less than the MAX_SHADER_STORAGE_BUFFER_BINDINGS.
     /// together with storage_block_index, it will provide the actual data
     /// from OpenGL to shader program
     int storage_block_binding;
     
     // all the current storage block binding points already used, 
-    // it will be used to help generate non-idential block binding
+    // it will be used to help generate non-identical block binding
     static set<unsigned int> global_block_bindings;
     static H3DUtil::MutexLock global_block_bindings_lock;
     static unsigned int max_block_bindings;
