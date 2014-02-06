@@ -100,7 +100,8 @@ namespace H3D {
       Inst< SFTime >  _enterTime  = 0,
       Inst< SFTime >  _exitTime   = 0,
       Inst< SFBool >  _enabled    = 0,
-      Inst< SFBool >  _isActive   = 0);
+      Inst< SFBool >  _isActive   = 0,
+	  Inst< SFBool >  _viewFrustumMode = 0 );
     
     /// The SetTime class is specialize to set the value of either
     /// the inputTrue or inputFalse field in the BooleanFilter node
@@ -136,16 +137,22 @@ namespace H3D {
     // traverse func.
     virtual void traverseSG( TraverseInfo &ti ); 
 
-    // Fields
-
     /// Sets enterTime if the set_boolean value is set to
     /// TRUE. Else sets exitTime
     /// 
     /// <b>Access type:</b> inputOnly \n
     auto_ptr< SetTime > set_time;
 
-    /// address of traverseInfo 
-    /// only interested in address, what it points to will be invalid
+	  /// If true, isActive field will be true as long as the sensor
+	  /// stays within the view frustum without being affected by the
+	  /// depth test. Otherwise depth test will affect the result.
+    /// 
+    /// Default Value False
+    /// <b>Access type:</b> inputOutput \n
+    auto_ptr< SFBool > viewFrustumMode;
+
+    /// Adress of traverseInfo 
+    /// only interested in adress, what it points to will be invalid
     TraverseInfo *prev_travinfoadr;
 
     //  Number of Instances(DEF/USE) cases in the previous traverseSG

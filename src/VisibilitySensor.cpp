@@ -47,13 +47,17 @@ H3DNodeDatabase VisibilitySensor::database(
         &X3DEnvironmentalSensorNode::database 
         );
 
+namespace VisibilitySensorInternals {
+  FIELDDB_ELEMENT( VisibilitySensor, viewFrustumMode, INPUT_OUTPUT );
+}
 VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
                                     Inst< SFVec3f > _center ,
                                     Inst< SFVec3f > _size ,
                                     Inst< SFTime > _enterTime ,
                                     Inst< SFTime > _exitTime ,
                                     Inst< SFBool > _enabled ,
-                                    Inst< SFBool > _isActive ) :
+                                    Inst< SFBool > _isActive,
+									Inst< SFBool > _viewFrustumMode ) :
                                     X3DEnvironmentalSensorNode( _metadata, 
                                                                 _center, 
                                                                 _enabled, 
@@ -61,6 +65,7 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
                                                                 _enterTime,
                                                                 _exitTime,
                                                                 _isActive ),
+									viewFrustumMode(_viewFrustumMode),
                                     set_time( new SetTime ) {
 
   type_name = "VisibilitySensor";
@@ -69,6 +74,8 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
   set_time->setOwner( this );
   set_time->setName( "set_time" );
   isActive->route( set_time );
+
+  viewFrustumMode->setValue( false );
   visib_pix_no_threshold = 10;
   prev_travinfoadr = 0;
   
@@ -141,8 +148,12 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     // before this point, render major occluders
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glDepthMask(GL_FALSE);
-      
-    // also disable texturing and any fancy shaders
+
+	bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+	if( viewFrustumMode->getValue() )
+	  glDisable(GL_DEPTH_TEST);
+	
+	// also disable texturing and any fancy shaders
     glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queries[0]);
     // render bounding box for object i
     glBegin( GL_QUADS );
@@ -211,6 +222,9 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glDepthMask(GL_TRUE);
+
+	if( viewFrustumMode->getValue() && depthTestEnabled )
+	  glEnable(GL_DEPTH_TEST);
       
     glGetQueryObjectuivARB(queries[0], GL_QUERY_RESULT_ARB,
                 &sampleCount);
