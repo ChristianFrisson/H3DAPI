@@ -82,24 +82,33 @@ void ShaderAtomicCounter::postRender()
 }
 
 void ShaderAtomicCounter::prepareAtomicCounterBuffer(){
+#ifdef GLEW_ARB_shader_atomic_counters
   if( buffer_id == -1 ) {
     glGenBuffers(1, (GLuint *)&buffer_id);
   }
   glBindBuffer( GL_ATOMIC_COUNTER_BUFFER, buffer_id );
   // assume buffer size if one here temporarily, it can be more than one of course
   glBufferData( GL_ATOMIC_COUNTER_BUFFER, sizeof(unsigned int), NULL, GL_DYNAMIC_COPY );
+#endif
 }
 
 void ShaderAtomicCounter::render ( ){
+#ifdef GLEW_ARB_shader_atomic_counters
   if ( buffer_id == -1 )
   {// either it is the first that the buffer is used, or the size need to be changed
     prepareAtomicCounterBuffer();
   }
+  GLenum err = glGetError();
   // the second parameter here refers to the index of an active atomic counter buffer
   // it has to being in range from zero to GL_ACTIVE_ATOMIC_COUNTER_BUFFERS minus one
   // as i am not actually not very sure how to make the multiple atomic counter buffers
   // work for one shader program, so, it is set to zero here temporarily.
+  Console(4)<<"program_handle is: "<<program_handle<<endl;
   glGetActiveAtomicCounterBufferiv( program_handle, 0, GL_ATOMIC_COUNTER_BUFFER_BINDING, (GLint*)&atomic_counter_binding );
+  err = glGetError();
+  if( err!=GL_NO_ERROR ) {
+    Console(4)<<"error happens when getting atomic counter buffer: "<<gluErrorString(err)<<endl;
+  }
   if( atomic_counter_binding==GL_INVALID_VALUE ) {
     Console(4)<<"program is invalid or the bufferIndex do not exist for the buffer!"<<endl;
   }else if( atomic_counter_binding==GL_INVALID_ENUM ) {
@@ -110,12 +119,21 @@ void ShaderAtomicCounter::render ( ){
   glMemoryBarrier ( GL_ATOMIC_COUNTER_BARRIER_BIT );
   // bind the actual buffer to the storage block binding on storage buffer
   // so shader program will have access to the buffer
+  err = glGetError();
+  if( err!=GL_NO_ERROR ) {
+    Console(4)<<"error happens when set memory barrier: "<<gluErrorString(err)<<endl;
+  }
   glBindBufferBase ( GL_ATOMIC_COUNTER_BUFFER, atomic_counter_binding, buffer_id );
-  
+  err = glGetError();
+  if( err!=GL_NO_ERROR ) {
+    Console(4)<<"error happens when bind buffer base: "<<gluErrorString(err)<<endl;
+  }
   //glBufferSubData( GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(zero), &zero );
+#endif
 }
 
 void ShaderAtomicCounter::traverseSG( TraverseInfo &ti ){
+#ifdef GLEW_ARB_shader_atomic_counters
   if( prev_travinfoadr != &ti){
     // First Instance DEF/USE of traveseSG in scene graph
     glBindBufferBase( GL_ATOMIC_COUNTER_BUFFER, atomic_counter_binding, buffer_id );
@@ -124,7 +142,7 @@ void ShaderAtomicCounter::traverseSG( TraverseInfo &ti ){
     glBufferSubData( GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(initial_value),&initial_value); 
     prev_travinfoadr = &ti;
   }
-  
+#endif
 }
 
 ShaderAtomicCounter::~ShaderAtomicCounter ( ){

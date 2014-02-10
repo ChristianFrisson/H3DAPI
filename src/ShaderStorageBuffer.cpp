@@ -89,9 +89,10 @@ void ShaderStorageBuffer::initialize ( ){
 #endif
 }
 
-#ifdef GLEW_ARB_shader_storage_buffer_object
+
 void ShaderStorageBuffer::preRender( unsigned int program )
 {
+#ifdef GLEW_ARB_shader_storage_buffer_object
   if ( program!=0 )
   {
     program_handle = program;
@@ -99,6 +100,7 @@ void ShaderStorageBuffer::preRender( unsigned int program )
   else{
     Console ( 4 ) << "The program handle you specified is not valid shader program" << endl;
   }
+#endif
 }
 
 void ShaderStorageBuffer::postRender()
@@ -107,6 +109,7 @@ void ShaderStorageBuffer::postRender()
 }
 
 void ShaderStorageBuffer::prepareStorageBuffer ( ){
+#ifdef GLEW_ARB_shader_storage_buffer_object
   if ( buffer_id==-1 )
   {// buffer id is not generated yet
     glGenBuffers ( 1, (GLuint*)&buffer_id );
@@ -120,9 +123,11 @@ void ShaderStorageBuffer::prepareStorageBuffer ( ){
   // we use GL_DYNAMIC_COPY here
   glBufferData ( GL_SHADER_STORAGE_BUFFER, width->getValue ( )*height->getValue ( )*depth->getValue ( ),
     NULL, GL_DYNAMIC_COPY ); 
+#endif
 }
 
 void ShaderStorageBuffer::render ( ){
+#ifdef GLEW_ARB_shader_storage_buffer_object
   if ( buffer_id == -1 || displayList->hasCausedEvent(width)
     || displayList->hasCausedEvent(height)||displayList->hasCausedEvent(depth))
   {// either it is the first that the buffer is used, or the size need to be changed
@@ -143,8 +148,9 @@ void ShaderStorageBuffer::render ( ){
   // bind the actual buffer to the storage block binding on storage buffer
   // so shader program will have access to the buffer
   glBindBufferBase ( GL_SHADER_STORAGE_BUFFER, storage_block_binding, buffer_id );
-}
 #endif
+}
+
 
 ShaderStorageBuffer::~ShaderStorageBuffer ( ){
   if ( storage_block_binding!=-1 )

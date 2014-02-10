@@ -88,7 +88,7 @@ ShaderImage3D::ShaderImage3D( Inst< DisplayList  > _displayList ,
 //}
 
 void ShaderImage3D::render ( ){
-#ifdef glMemoryBarrier
+#ifdef GLEW_ARB_shader_image_load_store
   glGetError ( );
   if ( texture_id == 0 || image_unit == -1 || displayList->hasCausedEvent ( imageWidth )
     || displayList->hasCausedEvent ( imageHeight ) || displayList->hasCausedEvent(imageDepth) 
@@ -121,7 +121,7 @@ void ShaderImage3D::render ( ){
 }
 
 void ShaderImage3D::prepareShaderImage ( ){
-#ifdef glMemoryBarrier
+#ifdef GLEW_ARB_shader_image_load_store
   if( !texture_id ) {
     // generate texture if do not have valid one
     glGenTextures(1,&texture_id);

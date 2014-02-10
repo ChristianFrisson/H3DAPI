@@ -85,7 +85,7 @@ ShaderImage2D::ShaderImage2D(
 //}
 
 void ShaderImage2D::render ( ){
-#ifdef glMemoryBarrier
+#ifdef GLEW_ARB_shader_image_load_store
   if ( texture_id == 0 || image_unit == -1||displayList->hasCausedEvent ( imageWidth )
     ||displayList->hasCausedEvent(imageHeight)||displayList->hasCausedEvent(imageFormat) )
   {// either the first render invocation or parameter for the image needs update
@@ -98,7 +98,7 @@ void ShaderImage2D::render ( ){
 }
 
 void ShaderImage2D::prepareShaderImage ( ){
-#ifdef glMemoryBarrier
+#ifdef GLEW_ARB_shader_image_load_store
   if ( !texture_id ) {
     // texture for shader image is zero, need to create a new one
     glGenTextures ( 1, &texture_id );
