@@ -55,7 +55,7 @@ namespace H3D {
                          );
 
 
-#ifdef GLEW_ARB_shader_storage_buffer_object
+
     /// specify the texture_unit will be used for rendering this shader image
     virtual void preRender( unsigned int program );
 
@@ -68,7 +68,7 @@ namespace H3D {
     //virtual void renderImage( unsigned int texture_unit_id );
     /// install texture and image for current node to specified texture unit
     virtual void prepareStorageBuffer ( );
-#endif
+
 
     virtual int getStorageBlockBinding ( ){
       return storage_block_binding;
