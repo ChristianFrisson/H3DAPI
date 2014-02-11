@@ -58,11 +58,13 @@ ShaderAtomicCounter::ShaderAtomicCounter(
 }
 
 void ShaderAtomicCounter::initialize ( ){
+#ifdef GLEW_ARB_shader_atomic_counters
   if ( !GLEW_ARB_shader_atomic_counters )
   {
     Console ( 4 ) << "No shader atomic counters extension support in your system"
       << endl;
   }
+#endif
 }
 
 void ShaderAtomicCounter::preRender( unsigned int program )
