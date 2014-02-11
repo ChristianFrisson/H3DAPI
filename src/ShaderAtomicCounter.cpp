@@ -73,9 +73,6 @@ void ShaderAtomicCounter::preRender( unsigned int program )
   {
     program_handle = program;
   }
-  else{
-    Console ( 4 ) << "The program handle you specified is not valid shader program" << endl;
-  }
 }
 
 void ShaderAtomicCounter::postRender()
@@ -96,6 +93,11 @@ void ShaderAtomicCounter::prepareAtomicCounterBuffer(){
 
 void ShaderAtomicCounter::render ( ){
 #ifdef GLEW_ARB_shader_atomic_counters
+  if ( !glIsProgram(program_handle) )
+  {
+    // program_handle is not correctly compiled, no need to render 
+    return;
+  }
   if ( buffer_id == -1 )
   {// either it is the first that the buffer is used, or the size need to be changed
     prepareAtomicCounterBuffer();
@@ -105,7 +107,7 @@ void ShaderAtomicCounter::render ( ){
   // it has to being in range from zero to GL_ACTIVE_ATOMIC_COUNTER_BUFFERS minus one
   // as i am not actually not very sure how to make the multiple atomic counter buffers
   // work for one shader program, so, it is set to zero here temporarily.
-  Console(4)<<"program_handle is: "<<program_handle<<endl;
+  //Console(4)<<"program_handle is: "<<program_handle<<endl;
   glGetActiveAtomicCounterBufferiv( program_handle, 0, GL_ATOMIC_COUNTER_BUFFER_BINDING, (GLint*)&atomic_counter_binding );
   err = glGetError();
   if( err!=GL_NO_ERROR ) {

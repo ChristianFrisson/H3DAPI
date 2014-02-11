@@ -499,6 +499,17 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   GLenum glerr1 = glGetError(); // clear the OpenGL error status
   if( location == -1 ) 
   {
+    // check if the field is actually not uniform value
+    // TODO: logically ShaderAtomicCounter and ShaderStorageBuffer field should never reach here
+    // need to to handled earlier
+    if ( field->getX3DType()==X3DTypes::SFNODE )
+    {
+      SFNode *f = static_cast< SFNode * >(field);
+      Node *n = f->getValue ( );
+      if ( n && (dynamic_cast<ShaderAtomicCounter*>(n)||dynamic_cast<ShaderStorageBuffer*>(n) ) ){
+        return true;
+      }
+    }
     return false;
   }
   X3DTypes::X3DType x3d_type = field->getX3DType();

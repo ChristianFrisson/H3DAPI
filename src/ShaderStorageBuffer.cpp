@@ -97,9 +97,6 @@ void ShaderStorageBuffer::preRender( unsigned int program )
   {
     program_handle = program;
   }
-  else{
-    Console ( 4 ) << "The program handle you specified is not valid shader program" << endl;
-  }
 #endif
 }
 
@@ -128,6 +125,11 @@ void ShaderStorageBuffer::prepareStorageBuffer ( ){
 
 void ShaderStorageBuffer::render ( ){
 #ifdef GLEW_ARB_shader_storage_buffer_object
+  if ( !glIsProgram(program_handle) )
+  {
+    // program_handle is not correctly compiled, no need to render  
+    return;
+  }
   if ( buffer_id == -1 || displayList->hasCausedEvent(width)
     || displayList->hasCausedEvent(height)||displayList->hasCausedEvent(depth))
   {// either it is the first that the buffer is used, or the size need to be changed
