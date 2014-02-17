@@ -38,6 +38,7 @@
 #include <H3D/X3DBackgroundNode.h>
 #include <H3D/ShadowCaster.h>
 #include <H3D/TypedField.h>
+#include <H3D/FieldTemplates.h>
 
 namespace H3D {
 
@@ -185,6 +186,11 @@ namespace H3D {
     typedef void (*RenderCallbackFunc)( FrameBufferTextureGenerator *, int i, void * );
     typedef TypedSFNode< FrameBufferTextureGenerator > SFFrameBufferTextureGeneratorNode;
     typedef TypedMFNode< FrameBufferTextureGenerator > MFFrameBufferTextureGeneratorNode;
+
+    class UpdateMode : public AutoUpdate < OnNewValueSField < SFString > > {
+        virtual void onNewValue( const std::string& new_value );
+    };
+
     /// Constructor.
     FrameBufferTextureGenerator( Inst< AddChildren    > _addChildren     = 0,
                                  Inst< RemoveChildren > _removeChildren  = 0,
@@ -202,7 +208,7 @@ namespace H3D {
                                  Inst< SFString         > _depthBufferType = 0,
                                  Inst< SFString         > _outputTextureType = 0,
                                  Inst< SFInt32          > _samples   = 0,
-                                 Inst< SFString         > _update    = 0,
+                                 Inst< UpdateMode       > _update    = 0,
                                  Inst< SFInt32          > _framesBeforeStop = 0,
                                  Inst< SFViewpointNode  > _viewpoint = 0,
                                  Inst< SFNavigationInfo > _navigationInfo = 0,
@@ -392,12 +398,15 @@ namespace H3D {
     /// "SPECIFIED_FRAMES_ONLY" will do similar thing as "NEXT_FRAME_ONLY", and
     /// let the user define how many frame it should generate texture until it change
     /// to NONE. The purpose of SPECIFIED_FRAMES_ONLY option is to provide a way
-    /// to give a longer delay before the generator stop.
+    /// to give a longer delay before the generator stop. Setting the value to "NOW"
+    /// will result in immediate rendering of the texture generator without waiting
+    /// for the next traversal of the node. The value is then set to "NONE" upon the 
+    /// next traversal of render.
     ///
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> "ALWAYS"
-    /// <b>Valid values:</b> "NONE", "ALWAYS", "NEXT_FRAME_ONLY", "SPECIFIED_FRAMES_ONLY"
-    auto_ptr< SFString > update;
+    /// <b>Valid values:</b> "NONE", "ALWAYS", "NEXT_FRAME_ONLY", "SPECIFIED_FRAMES_ONLY", "NOW"
+    auto_ptr< UpdateMode > update;
 
     /// The frameBeforeStop is check when SPECIFIED_FRAME_ONLY is set and to provide
     /// the info about how many frame before the update field change to NONE to stop

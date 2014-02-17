@@ -108,7 +108,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFString         > _depthBufferType,
   Inst< SFString         > _outputTextureType,
   Inst< SFInt32        > _samples,
-  Inst< SFString       > _update,
+  Inst< UpdateMode     > _update,
   Inst< SFInt32        > _framesBeforeStop,
   Inst< SFViewpointNode > _viewpoint,
   Inst< SFNavigationInfo > _navigationInfo,
@@ -192,6 +192,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     update->addValidValue( "NEXT_FRAME_ONLY" );
     update->addValidValue( "SPECIFIED_FRAMES_ONLY" );
     update->addValidValue( "ALWAYS" );
+    update->addValidValue( "NOW" );
     update->setValue( "ALWAYS" );
 
     framesBeforeStop->setValue(-1);
@@ -404,7 +405,7 @@ void FrameBufferTextureGenerator::render()     {
     }else{
       framesBeforeStop->setValue(framesBeforeStop->getValue()-1);
     }
-  }else if( update_string == "NEXT_FRAME_ONLY" ) {
+  }else if( update_string == "NEXT_FRAME_ONLY" || update_string == "NOW" ) {
     update->setValue("NONE");
   }else if( update_string == "ALWAYS" ) {
     //continue
@@ -1575,5 +1576,11 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
       0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     if( error!=GL_NO_ERROR ) {
       Console(4)<<"While blit color buffer, opengl error occur:"<<gluErrorString(error)<<std::endl;
+    }
+}
+
+void FrameBufferTextureGenerator::UpdateMode::onNewValue( const std::string& new_value ) {
+    if ( new_value == "NOW" ) {
+        static_cast < FrameBufferTextureGenerator* > ( getOwner() )->render();
     }
 }
