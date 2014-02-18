@@ -187,7 +187,7 @@ namespace H3D {
     typedef TypedSFNode< FrameBufferTextureGenerator > SFFrameBufferTextureGeneratorNode;
     typedef TypedMFNode< FrameBufferTextureGenerator > MFFrameBufferTextureGeneratorNode;
 
-    class UpdateMode : public AutoUpdate < OnNewValueSField < SFString > > {
+    class H3DAPI_API UpdateMode : public AutoUpdate < OnNewValueSField < SFString > > {
         virtual void onNewValue( const std::string& new_value );
     };
 
