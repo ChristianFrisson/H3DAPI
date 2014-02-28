@@ -72,12 +72,12 @@ class WxFrame;
 class SpeedDialog: public wxDialog {
   DECLARE_CLASS( SpeedDialog )
 public:
-  SpeedDialog( wxWindow* parent, WxFrame *f );
+  SpeedDialog( WxFrame *parent );
   void handleSliderEvent( wxScrollEvent &event );
 
   // Calls the second version of set speed with the speed taken from
   // current navigation info if there is one, otherwise the speed is the
-  // current default speed for gl_window.
+  // current default speed for glwindow.
   void setSpeed();
 
   // Called to update speed.
@@ -104,7 +104,7 @@ class SettingsDialog: public wxPropertySheetDialog
 {
 DECLARE_CLASS(SettingsDialog)
 public:
-    SettingsDialog(wxWindow* parent, WxFrame *f );
+    SettingsDialog(WxFrame* parent );
     ~SettingsDialog();
 
   void handleSettingsChange (wxCommandEvent & event);
@@ -248,7 +248,8 @@ public:
   WxFrame( wxWindow *_parent, wxWindowID _id, const wxString& _title,
               const wxPoint& _pos, const wxSize& _size,
               long _style = wxDEFAULT_FRAME_STYLE,
-              const wxString& name = wxT("H3D Player") );
+              const wxString& name = wxT("H3D Player"),
+							bool cmd_line_filename = false );
 
   ~WxFrame() {
     if( recentFiles )

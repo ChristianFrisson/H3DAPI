@@ -203,6 +203,7 @@ void WxWidgetsWindow::initWindow() {
 #endif
     //  theWindow->Layout();
   theWindow->Show();
+	setFullscreen( fullscreen->getValue() );
   theWxGLCanvas->Show();
   theWindow->Raise();
   theWindow->Layout();

@@ -174,7 +174,8 @@ namespace WxFrameInternals {
 WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         const wxString& _title, const wxPoint& _pos,
                         const wxSize& _size, long _style,
-                        const wxString& _name ):
+                        const wxString& _name,
+												bool cmd_line_filename ):
   wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
   navTypeCount(0),
   deviceCount(0),
@@ -185,7 +186,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   handle_action_key( new HandleActionKey ),
   itemIdViewpointMap(),
   current_viewpoint_id(0),
-	check_dialogs_position_because_of_fullscreen_and_not_quadro( false )
+	check_dialogs_position_because_of_fullscreen_and_not_quadro( false ),
+	glwindow( NULL )
 {
   lastOpenedFilepath = "";
   wxAcceleratorEntry entries[1];
@@ -197,19 +199,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   ks.reset ( new KeySensor );
   viewpoint.reset( new Viewpoint );
   device_info.reset (NULL);
-
-  glwindow = new WxWidgetsWindow(this);
-#if wxUSE_DRAG_AND_DROP
-  glwindow->onFileDraggedAndDroppedFunction( &onDropFiles, this );
-#endif
-  int width, height;
-  GetClientSize(&width, &height);
-  glwindow->width->setValue(width);
-  glwindow->height->setValue(height);
-	loadIniFile();
-	glwindow->renderMode->setValue(render_mode);
-    
-  scene->window->push_back( glwindow );
   
   wxString console_string = wxT("Console");
   the_console = new WxConsoleDialog( this, wxID_ANY, console_string,
@@ -297,13 +286,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
 
   //Load file history and settings from previous session(s)
   LoadMRU();
-
-  // Create settings dialog
-  settings = new SettingsDialog(this, this );
-  // Load settings for dialog
-  LoadSettings( true );
-
-  LoadPlugins();
 
   //Submenus for Renderer Menu
   //hapticsRenderer
@@ -446,7 +428,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   menuBar->Append(rendererMenu, wxT("&Rendering"));
   menuBar->Append(viewpointMenu, wxT("&Viewpoints"));
   menuBar->Append(navigationMenu, wxT("&Navigation"));
-  speed_slider = new SpeedDialog( this, this );
+  speed_slider = new SpeedDialog( this );
   speed_slider->Show( false );
   menuBar->Append(advancedMenu, wxT("&Advanced"));
   menuBar->Append(helpMenu, wxT("&Help"));
@@ -462,15 +444,39 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   rendererMenu->Enable(FRAME_RENDERMODE, false);
   rendererMenu->Enable(FRAME_STEREORENDERMODE, false);
 
-  change_nav_type->setOwnerWindows( glwindow, this );
-  handle_action_key->setOwnerWindows( glwindow, this );
-  ks->keyPress->route( change_nav_type );
-  ks->actionKeyPress->route( handle_action_key );
 #ifdef WIN32
   wxIcon tmpIcon( wxT( "IDI_ICON1" ), wxBITMAP_TYPE_ICO_RESOURCE );
   SetIcon( tmpIcon );
 #endif
-  Layout();
+
+	glwindow = new WxWidgetsWindow(this);
+#if wxUSE_DRAG_AND_DROP
+  glwindow->onFileDraggedAndDroppedFunction( &onDropFiles, this );
+#endif
+  int width, height;
+  GetClientSize(&width, &height);
+  glwindow->width->setValue(width);
+  glwindow->height->setValue(height);
+	loadIniFile();
+	glwindow->renderMode->setValue(render_mode);
+	if( cmd_line_filename )
+		glwindow->fullscreen->setValue( ini_fullscreen );
+
+  change_nav_type->setOwnerWindows( glwindow, this );
+  handle_action_key->setOwnerWindows( glwindow, this );
+  ks->keyPress->route( change_nav_type );
+  ks->actionKeyPress->route( handle_action_key );
+
+	scene->window->push_back( glwindow );
+	// Create settings dialog
+  settings = new SettingsDialog(this );
+	
+  // Load settings for dialog
+  LoadSettings( true );
+
+  LoadPlugins();
+	Raise();
+	Layout();
 }
 
 void WxFrame::ChangeNavType::update() {
@@ -1705,7 +1711,7 @@ void WxFrame::SetFullscreen( bool fullscreen ) {
   if( glwindow->fullscreen->getValue() != fullscreen ) {
     if( fullscreen ) {
 			long style = getFullScreenStyle();
-      WxFrame::ShowFullScreen(true, style);
+      ShowFullScreen(true, style);
 			if( style != wxFULLSCREEN_ALL ) {
 				hideAllDialogs();
 			}
@@ -1714,7 +1720,7 @@ void WxFrame::SetFullscreen( bool fullscreen ) {
       SetStatusText(wxT("Press F11 to exit fullscreen mode"), 0);
       SetStatusText(wxT("Viewing in Fullscreen"), 1);
     } else {
-			WxFrame::ShowFullScreen(false, wxFULLSCREEN_ALL);
+			ShowFullScreen(false, wxFULLSCREEN_ALL);
 			glwindow->fullscreen->setValue( false );
       rendererMenu->Check(FRAME_FULLSCREEN, false);
       SetStatusText(currentFilename, 0);
@@ -3238,6 +3244,26 @@ void WxFrame::showPreviouslyHiddenDialogs() {
 	check_dialogs_position_because_of_fullscreen_and_not_quadro = false;
 }
 
+void WxFrame::setProxyRadius( float r ) {
+
+  for (NodeVector::const_iterator nv = allDevices.begin(); 
+       nv != allDevices.end(); ++nv) {
+    RuspiniRenderer *renderer = dynamic_cast< RuspiniRenderer * >(
+      static_cast < H3DHapticsDevice *> (*nv)->
+        hapticsRenderer->getValue() );
+
+    if( renderer ) {
+      renderer->proxyRadius->setValue( r );
+      Node *proxy = default_stylus_dn.getNode("PROXY");
+      if( proxy ) {
+        SFFloat *radius = 
+          dynamic_cast< SFFloat * >( proxy->getField("radius") );
+        if( radius ) 
+          radius->setValue( r );
+      }
+    }
+  }
+}
 
 // ----------------------------------------------------------------------------
 // SettingsDialog
@@ -3286,8 +3312,8 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
 
 END_EVENT_TABLE()
 
-SettingsDialog::SettingsDialog(wxWindow* win, WxFrame *w ):
-    wx_frame( w ), on_cancel_rebuild_displaylist( false )
+SettingsDialog::SettingsDialog(WxFrame *parent ):
+    wx_frame( parent ), on_cancel_rebuild_displaylist( false )
 {
 
 
@@ -3301,7 +3327,7 @@ SettingsDialog::SettingsDialog(wxWindow* win, WxFrame *w ):
 
     m_imageList = NULL;
 
-    Create(win, wxID_ANY, wxT("Settings"), wxDefaultPosition, wxDefaultSize,
+    Create(parent, wxID_ANY, wxT("Settings"), wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE|
         (int)wxPlatform::IfNot(wxOS_WINDOWS_CE, resizeBorder)
     );
@@ -3771,30 +3797,9 @@ void SettingsDialog::OnCancel (wxCommandEvent & event) {
   this->Show(false);
 }
 
-void WxFrame::setProxyRadius( float r ) {
-
-  for (NodeVector::const_iterator nv = allDevices.begin(); 
-       nv != allDevices.end(); ++nv) {
-    RuspiniRenderer *renderer = dynamic_cast< RuspiniRenderer * >(
-      static_cast < H3DHapticsDevice *> (*nv)->
-        hapticsRenderer->getValue() );
-
-    if( renderer ) {
-      renderer->proxyRadius->setValue( r );
-      Node *proxy = default_stylus_dn.getNode("PROXY");
-      if( proxy ) {
-        SFFloat *radius = 
-          dynamic_cast< SFFloat * >( proxy->getField("radius") );
-        if( radius ) 
-          radius->setValue( r );
-      }
-    }
-  }
-}
-
-SpeedDialog::SpeedDialog( wxWindow* parent, WxFrame *f ):
+SpeedDialog::SpeedDialog( WxFrame *parent ):
   wxDialog( parent, wxID_ANY, wxString( _T("Navigation Speed") ) ),
-    wx_frame( f ) {
+    wx_frame( parent ) {
   wxGridBagSizer *top_sizer = new wxGridBagSizer;
   top_sizer->SetFlexibleDirection( wxBOTH );
   top_sizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );

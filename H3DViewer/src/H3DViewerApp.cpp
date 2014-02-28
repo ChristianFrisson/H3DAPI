@@ -198,7 +198,7 @@ bool MyApp::OnInit()
     
     // create a window to display
     theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
-           wxDefaultPosition, wxSize(800, 600));
+           wxDefaultPosition, wxSize(800, 600), wxDEFAULT_FRAME_STYLE, wxT("H3D Player"), !cmd_line_filename.IsEmpty() );
     
     theWxFrame->Show(true);
     
