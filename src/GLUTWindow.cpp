@@ -178,6 +178,7 @@ void GLUTWindow::initWindow() {
     glutInitWindowSize( width->getValue(), height->getValue() );
     glutInitWindowPosition( posX->getValue(), posY->getValue() );
     window_id = glutCreateWindow( "H3D" );
+		setFullscreen( fullscreen->getValue() );
 		// This code is here to check if we got a stereo window using stereo mode.
 		// It seems like on some systems GLUT_MULTISAMPLE can not be combined with
 		// GLUT_STEREO.
