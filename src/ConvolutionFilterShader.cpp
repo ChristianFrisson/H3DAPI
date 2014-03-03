@@ -70,6 +70,7 @@ ConvolutionFilterShader::ConvolutionFilterShader( Inst< DisplayList  > _displayL
 
   kernelSize->route( rebuildShader );
   type->route( rebuildShader );
+  weights->route( rebuildShader );
 }
 
 void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
@@ -80,6 +81,17 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
 bool ConvolutionFilterShader::canBuildShader() {
   H3DInt32 kernel_size = kernelSize->getValue();
   // have texture and kernel size is an odd number larger than 0.
+  if( type->getValue()=="FULL" ) {
+    if( int( std::sqrt(double(weights->size())) )!= kernel_size ) {
+      Console(4)<<"Warning(CovolutionFilterShader)["<<getName()
+        <<"]: weights size does not match the sqrt of kernel size"<<endl;
+    }
+  }else{
+    if( weights->size()!= kernel_size ) {
+      Console(4)<<"Warning(CovolutionFilterShader)["<<getName()
+        <<"]: weights size does not match the kernel size"<<endl;
+    }
+  }
   return kernel_size > 0 && kernel_size % 2 == 1;
 }
 
@@ -99,12 +111,6 @@ string ConvolutionFilterShader::addUniformFields( ComposedShader *shader ) {
                                      H3D::Field::INPUT_OUTPUT,
                                      copyAndRouteField( texture ) );
     
-    int nr_weights;
-    if( type->getValue() == "FULL" ) {
-      nr_weights = kernelSize->getValue()  * kernelSize->getValue();
-    } else {
-      nr_weights = kernelSize->getValue();
-    }
 
     /*s << addUniformToFragmentShader( shader,
                                      uniqueShaderName( "weights" ), 
