@@ -16,6 +16,7 @@
 
 #include <H3D/MFFloat.h>
 #include <H3D/H3DGeneratedFragmentShaderNode.h>
+#include <H3D/FieldTemplates.h>
 
 namespace H3D {
 
@@ -97,7 +98,7 @@ namespace H3D {
 			     Inst< SFTexture2DNode > _texture = 0,
 			     Inst< SFString     > _type        = 0,
 			     Inst< MFFloat      > _weights     = 0,
-			     Inst< SFInt32      > _kernelSize  = 0 );
+			     Inst< SFInt32      > _kernelSize  = 0);
     
     /// The texture field contains the texture on which to apply the 
     /// filter kernel.
@@ -133,7 +134,7 @@ namespace H3D {
 
     /// The kernelSize field specifies the size convolution kernel.
     ///
-    /// This referes to how many pixels should be sampled in each direction.
+    /// This refers to how many pixels should be sampled in each direction.
     /// 
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 1
@@ -145,15 +146,11 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+    /// Get the varying variables used by the shader generator.
+    virtual void getVaryingVariables( vector< VaryingVariable > &varyings );
 
-    /// The width of the node instance in the texture field.
-    auto_ptr< SFInt32 > textureWidth;
-
-    /// The width of the node instance in the texture field.
-    auto_ptr< SFInt32 > textureHeight;
-    
     /// Returns true if all conditions to be able to use the values to build a
-    /// proper shader are fullfilled.
+    /// proper shader are fulfilled.
     virtual bool canBuildShader();
 
     /// Overriding buildShader to only build the shader if canBuildShader is true.
@@ -161,7 +158,7 @@ namespace H3D {
 
     /// Adds uniform fields to the shader. A ComposedShader uses its
     /// dynamic fields to define uniform variables. Hence we need to
-    /// add dynamic fields for each field that we want to be accessable
+    /// add dynamic fields for each field that we want to be accessible
     /// in the shader.
     string addUniformFields( ComposedShader *shader );
 
