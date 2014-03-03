@@ -675,6 +675,7 @@ if( check_func( value ) ) { \
       { "fieldUpToDate", pythonFieldUpToDate, 0 },
       { "fieldIsUpToDate", pythonFieldIsUpToDate, 0 },
       { "addProgramSetting", pythonAddProgramSetting, 0 },
+      { "findNodes", pythonFindNodes, 0 },
       { NULL, NULL }      
     };
     
@@ -3095,6 +3096,179 @@ call the base class __init__ function." );
      Py_INCREF(Py_None);
      return Py_None; 
    }
+
+   PyObject *pythonFindNodes( PyObject *self, PyObject *args ) {
+     // args are ( node, type_names, node_name= "", field_names= [], exactNodeName= true, verbose= false )
+     // return value is [(found_node,(parent0,parent1,...))]
+     unsigned int nr_args= 1;
+     Node* node= NULL;
+     Scene::StringVec type_names;
+     std::string node_name;
+     Scene::SearchFieldNameMap search_field_names;
+     bool verbose= false;
+     bool exact_node_name= true;
+
+     if( PyTuple_Check ( args ) ) {
+       nr_args =  PyTuple_Size( args );
+       
+       // node (arg 0)
+       if ( nr_args > 0 ) {
+         node= PyNode_AsNode ( PyTuple_GetItem( args, 0 ) );
+         if ( !node ) {
+           PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes( node, type_names, node_name= "", field_names= [], exactNodeName= true, verbose= false ): Invalid node argument (1)." );
+           return NULL;
+         }
+       }
+
+       // node names (arg 1)
+       if ( nr_args > 1 ) {
+         // Node type names
+         PyObject* py_type_names= PyTuple_GetItem( args, 1 );
+         if ( PyString_Check ( py_type_names ) ) {
+           // Single type name
+           type_names.push_back ( PyString_AsString ( py_type_names ) );
+         } else if ( PyList_Check ( py_type_names ) ) {
+           // List of type names
+           Py_ssize_t size= PyList_Size ( py_type_names );
+           for ( Py_ssize_t i= 0; i < size; ++i ) {
+             PyObject* py_type_name= PyList_GetItem ( py_type_names, i );
+             if ( PyString_Check ( py_type_name ) ) {
+               type_names.push_back ( PyString_AsString ( py_type_name ) );
+             } else {
+               PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid type_names argument (2)." );
+               return NULL;
+             }
+           }
+         } else {
+           PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid type_names argument (2)." );
+           return NULL;
+         }
+       }
+
+       // node name (arg 2)
+       if ( nr_args > 2 ) {
+         // Node name
+         PyObject* py_node_name= PyTuple_GetItem( args, 2 );
+         if ( PyString_Check ( py_node_name ) ) {
+           node_name= PyString_AsString ( py_node_name );
+         } else {
+           PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid node_name argument (3)." );
+           return NULL;
+         }
+       }
+
+       // field names (arg 3)
+       if ( nr_args > 3 ) {
+         // List of field names per node type
+         PyObject* py_node_list= PyTuple_GetItem( args, 3 );
+         if ( PyList_Check ( py_node_list ) ) {
+           Py_ssize_t size= PyList_Size ( py_node_list );
+           for ( Py_ssize_t i= 0; i < size; ++i ) {
+             PyObject* py_field_list= PyList_GetItem ( py_node_list, i );
+             if ( PyList_Check ( py_field_list ) ) {
+               Py_ssize_t size1= PyList_Size ( py_field_list );
+               if ( size1 > 1 ) {
+                 std::string type_name;
+                 for ( Py_ssize_t j= 0; j < size1; ++j ) {
+                   PyObject* py_name= PyList_GetItem ( py_field_list, j );
+                   if ( PyString_Check ( py_name ) ) {
+                     if ( j == 0 ) {
+                       type_name= PyString_AsString ( py_name );
+                     } else {
+                       search_field_names[type_name].push_back ( PyString_AsString ( py_name ) );
+                     }
+                   } else {
+                     PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid field_names argument (4)." );
+                     return NULL;
+                   }
+                 }
+               } else {
+                 PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid field_names argument (4)." );
+                 return NULL;
+               }
+             } else {
+               PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid field_names argument (4)." );
+               return NULL;
+             }
+           }
+         }
+       }
+
+       // verbose (arg 4)
+       if ( nr_args > 4 ) {
+         // Verbose
+         PyObject* py_exact_node_name= PyTuple_GetItem( args, 4 );
+         if ( PyBool_Check ( py_exact_node_name ) ) {
+           exact_node_name= PyObject_IsTrue ( py_exact_node_name );
+         } else {
+           PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid exactNodeName argument (5)." );
+           return NULL;
+         }
+       }
+
+       // verbose (arg 5)
+       if ( nr_args > 5 ) {
+         // Verbose
+         PyObject* py_verbose= PyTuple_GetItem( args, 5 );
+         if ( PyBool_Check ( py_verbose ) ) {
+           verbose= PyObject_IsTrue ( py_verbose );
+         } else {
+           PyErr_SetString( PyExc_ValueError, 
+                            "Invalid argument(s) to function findNodes(): Invalid verbose argument (6)." );
+           return NULL;
+         }
+       }
+         
+       } else {
+         PyErr_SetString( PyExc_ValueError, 
+                          "Invalid argument(s) to function findNodes ()" );
+         return NULL;
+       } 
+     
+     AutoRefVector<Node> result;
+     Scene::NodeParentsMap parent_map;
+     Scene::findNodes (
+       *node, result, node_name,
+       &parent_map,
+       search_field_names.empty() ? NULL : &search_field_names,
+       type_names.empty() ? NULL : &type_names,
+       exact_node_name,
+       verbose );
+
+     // return value is [(found_node,(parent0,parent1,...))]
+     PyObject* py_result= PyList_New(result.size()); // New ref that is returned (no need to decr)
+     for ( size_t i= 0; i < result.size(); ++i ) {
+       Node* child_node= result[i];
+       AutoRefVector<Node>& parents= parent_map[child_node];
+
+       // New ref that is stolen by PyTuple_SetItem() (no need to decr)
+       PyObject* py_result_item= PyTuple_New ( parents.empty() ? 1 : 2 );
+
+       PyTuple_SetItem ( py_result_item, 0, PyNode_FromNode ( child_node ) );
+
+       if ( !parents.empty() ) {
+         // New ref that is stolen by PyTuple_SetItem() (no need to decr)
+         PyObject* py_parent_list= PyTuple_New ( parents.size() );
+         for ( size_t j= 0; j < parents.size(); ++j ) {
+           PyTuple_SetItem ( py_parent_list, j, PyNode_FromNode ( parents[j] ) );
+         }
+         PyTuple_SetItem ( py_result_item, 1, py_parent_list );
+       }
+       
+       PyList_SetItem ( py_result, i, py_result_item );
+     }
+
+     return py_result; 
+   }
+
   }
 }
 

@@ -329,8 +329,10 @@ namespace H3D {
 
     /// Top down search for a node with a certain nodeType and optional name starting from node passed as argument
     static H3D::Node* findNodeType(H3D::Node *node, const std::string &nodeType, const std::string &nodeName="" );
+
     typedef std::map < Node*, AutoRefVector<Node> > NodeParentsMap;
     typedef std::map < std::string,std::vector < std::string > > SearchFieldNameMap;
+    typedef std::vector < std::string > StringVec;
 
     /// Finds all the nodes of a given type (and optional name) by searching downwards from _node
     /// through all SFNode and MFNode fields.
@@ -345,6 +347,8 @@ namespace H3D {
     ///                        information about the found node's parents is collected.
     /// \param[in]  _searchFieldNames A map from node type name, to a list of field names to search through for that
     ///                               node type. If NULL then all fields are searched.
+    /// \param[in]  _typeNames List of acceptable node type names that found nodes must match.
+    /// \param[in]  _exactNodeName If true, then _nodeName must exactly match the node's name, otherwise the node's name must just contain _nodeName.
     /// \param[in]  _verbose   If true, then output will be written to the Console to show the search path.
     /// \param[in]  _parent    The parent of this node. Used during recursion, should usually be left as NULL when
     ///                        called from user code.
@@ -391,14 +395,22 @@ namespace H3D {
       const std::string& _nodeName= "",
       NodeParentsMap* _parentMap= NULL,
       SearchFieldNameMap* _searchFieldNames= NULL,
+      StringVec* _typeNames= NULL,
+      bool _exactNodeName= true,
       bool _verbose= false,
       Node* _parent= NULL ) {
 
-      if ( NodeType* n= dynamic_cast < NodeType* > ( &_node ) ) {
-        if ( _nodeName.empty() || _nodeName == n->getName() ) {
-          _result.push_back ( n );
-          if ( _parentMap && _parent ) {
-            (*_parentMap)[n].push_back ( _parent );
+      if ( _typeNames == NULL || 
+            find ( _typeNames->begin(), _typeNames->end(), _node.getTypeName() ) != _typeNames->end() ) {
+        if ( NodeType* n= dynamic_cast < NodeType* > ( &_node ) ) {
+          const std::string& node_name= n->getName();
+          if ( _nodeName.empty() || 
+               ( ( _exactNodeName && _nodeName == node_name) ||
+                 (!_exactNodeName && node_name.find ( _nodeName ) != std::string::npos ) ) ) {
+            _result.push_back ( n );
+            if ( _parentMap && _parent ) {
+              (*_parentMap)[n].push_back ( _parent );
+            }
           }
         }
       }
@@ -437,7 +449,7 @@ namespace H3D {
                 if ( _verbose ) {
                   Console(4) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
                 }
-                findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _verbose, &_node );
+                findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _typeNames, _exactNodeName, _verbose, &_node );
               }
             } else if ( MFNode* mf_node= dynamic_cast< MFNode * >( f ) ) {
               const NodeVector& children= mf_node->getValue();
@@ -447,7 +459,7 @@ namespace H3D {
                   if ( _verbose ) {
                     Console(4) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
                   }
-                  findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _verbose, &_node );
+                  findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _typeNames, _exactNodeName, _verbose, &_node );
                 }
               }
             }
