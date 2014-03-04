@@ -170,8 +170,10 @@ string ConvolutionFilterShader::getFragmentShaderString() {
     s << "  // the step in texture coordinates between each pixel " << endl;
     s << "  const vec2 pixel_step = vec2( 1.0 / float( texture_width ), 1.0 / float( texture_height ) ); " << endl;
     string weightsInString = "";
-    for( int i = 0; i< weights->size(); ++i ) {
-      string currentValue = std::to_string((long double) weights->getValueByIndex(i) );
+    for( unsigned int i = 0; i< weights->size(); ++i ) {
+			stringstream ss;
+			ss << weights->getValueByIndex(i);
+      string currentValue( ss.str() );
       if( currentValue.find(".")==std::string::npos ) {
         currentValue+= ".0";
       }
