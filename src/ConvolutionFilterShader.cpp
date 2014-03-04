@@ -162,7 +162,8 @@ string ConvolutionFilterShader::addUniformFields( ComposedShader *shader ) {
 string ConvolutionFilterShader::getFragmentShaderString() {
   if( canBuildShader() ) {
     stringstream s;
-    s << "  const int KERNEL_SIZE = " << kernelSize->getValue() << "; " << endl;
+    int kernel_size = kernelSize->getValue();
+    s << "  const int KERNEL_SIZE = " << kernel_size << "; " << endl;
     s << "  const int texture_width =  " << textureWidth->getValueAsString() <<"; "<<endl;
     s << "  const int texture_height = " << textureHeight->getValueAsString() << "; "<<endl;
     s << "  // the step in texture coordinates between each pixel " << endl;
@@ -185,32 +186,31 @@ string ConvolutionFilterShader::getFragmentShaderString() {
     if( t == "VERTICAL" ) {
       s << "  const int min_index_h = 0; " << endl;
       s << "  const int max_index_h = 0; " << endl;
-      s << "  const int min_index_v = -(KERNEL_SIZE - 1)/2; " << endl;
-      s << "  const int max_index_v = -min_index_v; " << endl;
+      s << "  const int min_index_v = " <<-(kernel_size - 1)/2 <<";" << endl;
+      s << "  const int max_index_v = " << (kernel_size - 1)/2 <<";" << endl;
     } else if( t == "HORIZONTAL" ) {
-      s << "  const int min_index_h = -(KERNEL_SIZE - 1)/2; " << endl;
-      s << "  const int max_index_h = -min_index_h; " << endl;
+      s << "  const int min_index_h = " <<-(kernel_size - 1)/2<< ";" << endl;
+      s << "  const int max_index_h = " << (kernel_size - 1)/2<< ";" << endl;
       s << "  const int min_index_v = 0; " << endl;
       s << "  const int max_index_v = 0; " << endl;
     } else {
       if( t != "FULL" ) {
 	// print error message
       }
-      s << "  const int min_index_h = -(KERNEL_SIZE - 1)/2; " << endl;
-      s << "  const int max_index_h = -min_index_h; " << endl;
-      s << "  const int min_index_v = min_index_h; " << endl;
-      s << "  const int max_index_v = max_index_h; " << endl;
+      s << "  const int min_index_h = " << -(kernel_size - 1)/2<< ";" << endl;
+      s << "  const int max_index_h = " <<  (kernel_size - 1)/2<< ";" << endl;
+      s << "  const int min_index_v = " << -(kernel_size - 1)/2<< ";" << endl;
+      s << "  const int max_index_v = " <<  (kernel_size - 1)/2<< ";" << endl;
     } 
 
-    s << "  int index = 0; " << endl;
+    s << "  uint index = 0; " << endl;
     s << "  vec4 color = vec4( 0.0, 0.0, 0.0, 0.0 ); " << endl;
     s << "  for( int v = min_index_v; v <= max_index_v; v++ ) { " << endl;
     s << "    for( int h = min_index_h; h <= max_index_h; h++ ) { " << endl;
     s << "       vec2 tc = vec2( h,v )*(pixel_step+vec2("<<pixelStepOffset->getValueAsString()<<")) + gl_TexCoord[0].st; " << endl;
-	s << "       tc.x = clamp(tc.x,0.0,1.0); " << endl;
-	s << "       tc.y = clamp(tc.y,0.0,1.0); " << endl;
-    s << "       color = color + texture2D( " << uniqueShaderName("texture") 
-      << ", tc  ) * " <<"weights[index]; " << endl;
+    s << "       tc = clamp(tc,vec2(0),vec2(1));" << endl;
+    s << "       color = texture2D( " << uniqueShaderName("texture") 
+      << ", tc  ) * " <<"weights[index] + color; " << endl;
     s << "       index++; " << endl;
     s << "    } " << endl;
     s << "  } " << endl;
