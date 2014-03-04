@@ -96,8 +96,6 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
   }
 
   if( image ) {
-	t->repeatS->setValue(false);
-	t->repeatT->setValue(false);
     if( textureWidth->getValue() != image->width() ) {
       textureWidth->setValue( image->width() );
     }
