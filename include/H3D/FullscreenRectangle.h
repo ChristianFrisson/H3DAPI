@@ -110,6 +110,17 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+  protected:
+    // Internal variable used to store id for vertex of FullScreenRectangle
+    static GLuint vbo_id[2];
+    // Internal variable used to indicate if vbo_id is initialized
+    static bool vbo_initialized;
+    static vector< GLfloat > fullscreenRectangle_data;
+    static vector< GLuint > fullscreenRectangle_index_data;
+
+    void  fillVec3ToArray( const Vec3d V, vector<float>& array );
+    void  fillVec3ToArray( const Vec3f V, vector<GLuint>& array );
   };
 }
 

@@ -43,6 +43,10 @@ namespace FullscreenRectangleInternals {
   FIELDDB_ELEMENT( FullscreenRectangle, screenAligned, INPUT_OUTPUT );
 }
 
+GLuint  FullscreenRectangle::vbo_id[2] = { 0, 0 };
+bool FullscreenRectangle::vbo_initialized = false;
+vector< GLfloat > FullscreenRectangle::fullscreenRectangle_data = vector< GLfloat >();
+vector< GLuint > FullscreenRectangle::fullscreenRectangle_index_data = vector< GLuint >();
 
 FullscreenRectangle::FullscreenRectangle( Inst< SFNode      > _metadata,
                                           Inst< SFBound     > _bound,
@@ -76,6 +80,30 @@ FullscreenRectangle::FullscreenRectangle( Inst< SFNode      > _metadata,
 }
 
 void FullscreenRectangle::render() {
+
+  bool prefer_vertex_buffer_object = false;
+  if( GLEW_ARB_vertex_array_object ) {
+    GraphicsOptions *go = NULL;
+    getOptionNode( go );
+    if( !go ) {
+      GlobalSettings *gs = GlobalSettings::getActive();
+      if( gs ) {
+        gs->getOptionNode( go );
+      }
+    }
+    if( go ) {
+      prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
+    }
+  }
+
+  // build up the vertex data
+  unsigned int nr_data_vertices = 9; // 9 floats (3 each for VTN) per vertex
+  fullscreenRectangle_data.clear();
+  //fullscreenRectangle_data.resize( (unsigned int) 4*nr_data_vertices, 0 ); // 4 vertices in total
+  unsigned int nr_index = 6; // 2 triangles, 3 vertices/triangle.
+  //fullscreenRectangle_index_data.resize( (unsigned int) 4, 0 );
+  fullscreenRectangle_index_data.clear();
+
   H3DFloat z_value = zValue->getValue();
   H3DFloat epsilon = (H3DFloat) 1e-6;
 
@@ -114,6 +142,13 @@ void FullscreenRectangle::render() {
   Vec3d v0, v1, v2, v3;
   Vec3f t0, t1, t2, t3;
   GLint front_face;
+  t0 = Vec3f( 1, 1, 0 );
+  t1 = Vec3f( 0, 1, 0 );
+  t2 = Vec3f( 0, 0, 0 );
+  t3 = Vec3f( 1, 0, 0 );
+  Vec3d normal = normalized_to_local.getScaleRotationPart() * Vec3d( 0, 0, -1 );
+  normal.normalizeSafe();
+
   glGetIntegerv( GL_FRONT_FACE, &front_face );
   if( front_face == GL_CW && !screenAligned->getValue() ) {
     // we are in mirrored mode and want the screen to flip.
@@ -121,23 +156,95 @@ void FullscreenRectangle::render() {
     v1 = normalized_to_local * Vec3d( -1, -1, z_value );
     v2 = normalized_to_local * Vec3d( -1, 1, z_value );
     v3 = normalized_to_local * Vec3d(  1, 1, z_value );
+    fillVec3ToArray(v0, fullscreenRectangle_data);
+    fillVec3ToArray(normal, fullscreenRectangle_data);
+    fillVec3ToArray(t0, fullscreenRectangle_data);
+    fillVec3ToArray(v1, fullscreenRectangle_data);
+    fillVec3ToArray(normal, fullscreenRectangle_data);
+    fillVec3ToArray(t1, fullscreenRectangle_data);
+    fillVec3ToArray(v2, fullscreenRectangle_data);
+    fillVec3ToArray(normal, fullscreenRectangle_data);
+    fillVec3ToArray(t2, fullscreenRectangle_data);
+    fillVec3ToArray(v3, fullscreenRectangle_data);
+    fillVec3ToArray(normal,fullscreenRectangle_data);
+    fillVec3ToArray(t3,fullscreenRectangle_data);
+    
   } else {
     glFrontFace( GL_CCW );
     v0 = normalized_to_local * Vec3d(  1, 1, z_value );
     v1 = normalized_to_local * Vec3d( -1, 1, z_value );
     v2 = normalized_to_local * Vec3d( -1, -1, z_value );
     v3 = normalized_to_local * Vec3d(  1, -1, z_value );
+    fillVec3ToArray(v0, fullscreenRectangle_data);
+    fillVec3ToArray(normal, fullscreenRectangle_data);
+    fillVec3ToArray(t0, fullscreenRectangle_data);
+    fillVec3ToArray(v1, fullscreenRectangle_data);
+    fillVec3ToArray(normal, fullscreenRectangle_data);
+    fillVec3ToArray(t1, fullscreenRectangle_data);
+    fillVec3ToArray(v2, fullscreenRectangle_data);
+    fillVec3ToArray(normal, fullscreenRectangle_data);
+    fillVec3ToArray(t2, fullscreenRectangle_data);
+    fillVec3ToArray(v3, fullscreenRectangle_data);
+    fillVec3ToArray(normal,fullscreenRectangle_data);
+    fillVec3ToArray(t3,fullscreenRectangle_data);
+  }
+  fillVec3ToArray(Vec3f(0,1,2),fullscreenRectangle_index_data);
+  fillVec3ToArray(Vec3f(0,2,3),fullscreenRectangle_index_data);
+
+  // setup data pointer and send to graphic card 
+  GLvoid *vertex_pointer = NULL, *normal_pointer = NULL, *texture_pointer = NULL, *index_pointer = NULL;
+
+  if( prefer_vertex_buffer_object ) {
+    if( !vbo_initialized ) {
+      vbo_initialized = true;
+      
+      glGenBuffersARB( 2, vbo_id );
+
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, vbo_id[0] );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB, fullscreenRectangle_data.size()*sizeof(GLfloat), &(*fullscreenRectangle_data.begin()), GL_DYNAMIC_DRAW_ARB );
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_id[1] );
+      glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, fullscreenRectangle_index_data.size()*sizeof(GLuint), &(*fullscreenRectangle_index_data.begin()), GL_DYNAMIC_DRAW_ARB );
+    }else{
+      glBindBufferARB( GL_ARRAY_BUFFER_ARB, vbo_id[0] );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB, fullscreenRectangle_data.size()*sizeof(GLfloat), &(*fullscreenRectangle_data.begin()), GL_DYNAMIC_DRAW_ARB );
+      glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_id[1] );
+      glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, fullscreenRectangle_index_data.size()*sizeof(GLuint), &(*fullscreenRectangle_index_data.begin()), GL_DYNAMIC_DRAW_ARB );
+    }
+    vertex_pointer = (GLvoid*)(0*sizeof(GLfloat));
+    normal_pointer = (GLvoid*)(3*sizeof(GLfloat));
+    texture_pointer = (GLvoid*)(6*sizeof(GLfloat)); 
+  }else{
+    vector< GLfloat >::iterator start_pointer = fullscreenRectangle_data.begin();
+    vertex_pointer = &(*start_pointer);
+    start_pointer += 3;
+    normal_pointer = &(*start_pointer);
+    start_pointer += 3;
+    texture_pointer = &(*start_pointer);
+    index_pointer = &(*fullscreenRectangle_index_data.begin());
   }
 
-  t0 = Vec3f( 1, 1, 0 );
-  t1 = Vec3f( 0, 1, 0 );
-  t2 = Vec3f( 0, 0, 0 );
-  t3 = Vec3f( 1, 0, 0 );
-  
-  Vec3d normal = normalized_to_local.getScaleRotationPart() * Vec3d( 0, 0, -1 );
-  normal.normalizeSafe();
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(3, GL_FLOAT, 9 * sizeof(GLfloat), vertex_pointer);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glNormalPointer(GL_FLOAT, 9*sizeof(GLfloat),normal_pointer);
+  X3DTextureCoordinateNode::renderVertexBufferObjectForActiveTexture(3,GL_FLOAT,9*sizeof(GLfloat),texture_pointer);
 
-  glBegin( GL_QUADS );
+  glDrawRangeElements(  GL_TRIANGLES,
+                        0,
+                        GLsizei(3),   //index start from 0 to 3
+                        GLsizei(6),   //will be 6 index in total, 3 for each triangle
+                        GL_UNSIGNED_INT,
+                        index_pointer);
+
+  X3DTextureCoordinateNode::disableVBOForActiveTexture();
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  if( prefer_vertex_buffer_object ) {
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+    glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+  }
+
+  /*glBegin( GL_QUADS );
   glNormal3d  ( normal.x, normal.y, normal.z );
   renderTexCoordForActiveTexture( t0 );
   glVertex3d  ( v0.x, v0.y, v0.z );
@@ -147,7 +254,7 @@ void FullscreenRectangle::render() {
   glVertex3d  ( v2.x, v2.y, v2.z );
   renderTexCoordForActiveTexture( t3 );
   glVertex3d  ( v3.x, v3.y, v3.z );
-  glEnd();
+  glEnd();*/
 
   // restore previous front face.
   glFrontFace( front_face );
@@ -155,5 +262,14 @@ void FullscreenRectangle::render() {
   glPopAttrib();
 }
 
+void FullscreenRectangle::fillVec3ToArray( const Vec3d V, vector<float>& array ){
+  array.push_back(V.x);
+  array.push_back(V.y);
+  array.push_back(V.z);
+}
 
-
+void FullscreenRectangle::fillVec3ToArray( const Vec3f V, vector<GLuint>& array ){
+  array.push_back(V.x);
+  array.push_back(V.y);
+  array.push_back(V.z);
+}
