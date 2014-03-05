@@ -924,6 +924,26 @@ def resolveURLAsFolder( url ):
 def throwQuitAPIException():
   pass
 
+## \namespace H3DInterface 
+## \fn def findNodes()
+## Recursively searches for child nodes that match the given criteria, starting from the 
+## specified root node.
+##
+## \param node          The root node to start the search from
+## \param type_name     Type names of nodes to find, as a list of strings
+## \param node_name     The name (or partial name) of the nodes to find (also see exactNodeName parameter)
+## \param field_names   List of field names to recursively look for children, for each node type.
+##                      For each node type, the list will contain a sub-list of strings, where the first string is
+##                      the type name of the node, and the remaining strings are field names to search.
+##                      If field_names is [] then all fields will be included in the search.
+## \param exactNodeName If True then the node_name must match exactly the node's name, otherwise the node name
+##                      must contain node_name as a sub-string.
+## \param verbose       If true then the function prints debugging information about the search to the console.
+##
+## \return A list containing 1 tuple for each node found. Each tuple contains the found node, followed by a tuple 
+##         containing all the nodes parents. I.e., [(found_node,(parent0,parent1,...)),...]
+def findNodes ( node, type_names, node_name= "", field_names= [], exactNodeName= True, verbose= False ):
+  pass
 
 ## \namespace H3DInterface
 ## \var time 
