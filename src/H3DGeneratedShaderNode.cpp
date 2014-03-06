@@ -111,6 +111,16 @@ string H3DGeneratedShaderNode::addUniformFields( ComposedShader *shader ) {
   
 }
 
+string H3DGeneratedShaderNode::getVertexShaderString(){
+  stringstream vss;
+  vss << 
+    "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+    "  gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;\n"
+    "  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;\n";
+  return vss.str();
+
+}
+
 void H3DGeneratedShaderNode::buildShader() {
 
   // clear the uniform field map
@@ -150,11 +160,7 @@ void H3DGeneratedShaderNode::buildShader() {
 
   sv << function_string << endl;
 
-  sv << 
-    "void main() {\n"
-    "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-    "  gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;\n"
-    "  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;\n";
+  sv << "void main() {\n" <<endl;
     
   sv << getVertexShaderString() << endl;
 
