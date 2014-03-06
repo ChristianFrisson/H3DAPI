@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/FullscreenRectangle.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 

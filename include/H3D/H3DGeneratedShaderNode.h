@@ -245,7 +245,7 @@ namespace H3D {
     /// the default calculation of e.g. gl_Position before 
     /// calculating the value of the varying variables. Can be used
     /// to e.g. do deformations etc.
-    virtual string getVertexShaderString();
+    virtual string getVertexShaderString() { return ""; }
 
     /// Returns the shader code for the fragment shader.
     ///
