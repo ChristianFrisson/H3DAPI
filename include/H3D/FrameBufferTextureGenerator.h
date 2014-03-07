@@ -204,6 +204,7 @@ namespace H3D {
                                  Inst< MFTexturePropertiesNode > _colorTextureProperties = 0,
                                  Inst< SFTexturePropertiesNode > _depthTextureProperties = 0,
                                  Inst< MFGeneratedTextureNode > _colorTextures = 0, 
+                                 Inst< SFGeneratedTextureNode > _colorTexture  = 0,
                                  Inst< SFGeneratedTextureNode > _depthTexture  = 0,
                                  Inst< SFString         > _depthBufferType = 0,
                                  Inst< SFString         > _outputTextureType = 0,
@@ -338,6 +339,11 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFGeneratedTextureNode > colorTextures;
+
+    /// The texture node generated from first color buffer specified in generateColorTextures.
+    ///
+    /// <b>Access type:</b> outputOnly
+    auto_ptr< SFGeneratedTextureNode > colorTexture;
 
     /// The texture node generated from depth buffers if specified in generateDepthTexture.
     ///

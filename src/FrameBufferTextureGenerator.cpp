@@ -57,6 +57,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, framesBeforeStop, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, depthTexture, OUTPUT_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTextures, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorTexture, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, viewpoint, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, navigationInfo, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, width, INPUT_OUTPUT );
@@ -104,6 +105,7 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< MFTexturePropertiesNode > _colorTextureProperties,
   Inst< SFTexturePropertiesNode > _depthTextureProperties,
   Inst< MFGeneratedTextureNode > _colorTextures, 
+  Inst< SFGeneratedTextureNode > _colorTexture, 
   Inst< SFGeneratedTextureNode > _depthTexture,
   Inst< SFString         > _depthBufferType,
   Inst< SFString         > _outputTextureType,
@@ -129,6 +131,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   colorTextureProperties( _colorTextureProperties ),
   depthTextureProperties( _depthTextureProperties ),
   colorTextures( _colorTextures ),
+  colorTexture( _colorTexture ),
   depthTexture( _depthTexture ),
   depthBufferStorage( _depthBufferStorage ),
   colorBufferStorages( _colorBufferStorages ),
@@ -830,6 +833,9 @@ void FrameBufferTextureGenerator::initializeFBO() {
       multi_samples_color_ids.push_back( ms_id );
       draw_buffers.get()[i] = (GLenum) (GL_COLOR_ATTACHMENT0_EXT+i);
     }
+
+    if (!colorTextures->empty())
+      colorTexture->setValue(colorTextures->front());
 
     fbo_initialized = true;
   }
