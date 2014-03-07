@@ -52,6 +52,19 @@ namespace H3D {
   /// ignored. Shader source files shall be plain text encoded as specified
   /// for MIME type text/plain and interpreted according to the type field.
   ///
+  /// \par Preprocessor
+  /// Preprocessor commands are supported as an extension to the %X3D standard.
+  /// These begin "#pragma h3dapi [command] [arguments]".
+  ///
+  /// Supported commands:
+  /// <ul>
+  ///   <li>
+  ///     <b>include "url_to_include"</b> - 
+  ///     The contents of the file pointed to by the specified URL are imported
+  ///     and used to replace the include statement before the shader is compiled.
+  ///   </li>
+  /// </ul>
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/ComposedShader.x3d">ComposedShader.x3d</a>
   ///     ( <a href="examples/ComposedShader.x3d.html">Source</a> )
@@ -134,6 +147,20 @@ namespace H3D {
     /// The handle to the shader object used for this ShaderPart.
     GLhandleARB shader_handle;
     GLhandleARB compileShaderPart();
+
+    /// Given the URL of a shader source, return the source code, or "" on failure
+    std::string shaderStringFromURL ( const std::string& shader_url );
+
+    /// Given the raw shader source, return the preprocessed source having parsed all preprocessor
+    /// commands, e.g., includes etc.
+    ///
+    /// \param input The raw shader source code, including preprocessor commands
+    /// \param url   The URL from which the raw source code was loaded (used for base of relative includes)
+    /// \param depth The current recursion depth. The root caller should always leave this as the default 0.
+    ///
+    /// \return The preprocessed shader source, with all preprocessor commands applied.
+    ///
+    std::string preProcess ( const std::string& input, const std::string& url, int depth= 0 );
   };
 }
 

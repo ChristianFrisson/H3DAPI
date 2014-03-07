@@ -48,6 +48,11 @@ namespace ShaderPartInternals {
   FIELDDB_ELEMENT( ShaderPart, forceReload, INPUT_OUTPUT );
 }
 
+namespace {
+  const int pre_processor_max_recurse_depth= 32;
+  const std::string include_marker= "#pragma h3dapi include";
+}
+
 ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
                         Inst< MFString       > _url ,
                         Inst< SFString       > _type,
@@ -159,6 +164,98 @@ GLhandleARB ShaderPart::compileShaderPart(){
     return shader_handle;
 }
 
+std::string ShaderPart::shaderStringFromURL ( const std::string& shader_url ) {
+  // First try to resolve the url to file contents and load via string buffer
+  // Otherwise fallback on using temp files
+  string url_contents= resolveURLAsString ( shader_url );
+  if ( url_contents != "" ) {
+    return url_contents;
+  }
+
+  bool is_tmp_file;
+  string url = resolveURLAsFile( shader_url, &is_tmp_file );
+  if( url != "" ) {
+    ifstream is( url.c_str() );
+    if( is.good() ) {
+      std::streamsize length;
+      char * buffer;
+        
+      // get length of file:
+      is.seekg (0, ios::end);
+      length = is.tellg();
+      is.seekg (0, ios::beg);
+        
+      // allocate memory:
+      buffer = new char [(unsigned int)length + 1];
+      // read data as a block:
+      is.read (buffer,length);
+      length = is.gcount();
+      is.close();
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+      buffer[length] = '\0';
+      string value= string( buffer );
+      delete [] buffer;
+      //PROFILE_END();
+      return value;
+    }
+    is.close();
+    if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+  }
+
+  return "";
+}
+
+std::string ShaderPart::preProcess ( const std::string& input, const std::string& url, int depth ) {
+  // Catch infinite recursion
+  if ( depth > pre_processor_max_recurse_depth ) {
+    Console(4) << "WARNING: ShaderPart: " << getName() << ": Maximum recursion depth reached in pre-processing. Could be recursive include." << endl;
+    return input;
+  }
+
+  string output;
+  stringstream ss ( input );
+  string line;
+  while ( getline ( ss, line ) ) {
+
+    // #include statements
+    size_t i= line.find ( include_marker );
+    if ( i != string::npos ) {
+      string path= line.substr ( i+include_marker.length() );
+
+      // Strip white space and quotes
+      size_t a, b;
+      for ( a= 0; a < path.size() && (isspace ( path[a] ) || path[a] == '\"'); ++a );
+      for ( b= path.size()-1; b >= 0 && (isspace ( path[b] ) || path[b] == '\"'); --b );
+      path= path.substr ( a, b-a+1 );
+
+      // change url resolver base
+      string old_base= getURLBase ();
+      string base= url.substr( 0, url.find_last_of( "/\\" ) + 1 );
+
+      // if the url is relative this should succeed
+      setURLBase ( old_base + base );
+      string include_source= shaderStringFromURL ( path );
+      if ( include_source == "" ) {
+        // if the url is absolute this should succeed
+        setURLBase ( base );
+        include_source= shaderStringFromURL ( path );
+      }
+
+      if ( include_source != "" ) {
+        include_source= preProcess ( include_source, path, depth+1 );
+        output+= include_source + "\n";
+      } else {
+        Console(4) << "WARNING: ShaderPart: " << getName() << ": Could not include shader file: " << path << " in " << getURLBase() << "." << endl;
+      }
+
+      setURLBase ( old_base );
+    } else {
+      output+= line + "\n";
+    }
+  }
+  return output;
+}
+
 bool ShaderPart::isCompiled () {
   return shaderString->isUpToDate();
 }
@@ -168,45 +265,13 @@ void ShaderPart::SFShaderString::update() {
   ShaderPart *shader_part = static_cast< ShaderPart * >( getOwner() ); 
   MFString *urls = static_cast< MFString * >( routes_in[0] );
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-    // First try to resolve the url to file contents and load via string buffer
-    // Otherwise fallback on using temp files
-    string url_contents= ResourceResolver::resolveURLAsString ( *i );
-    if ( url_contents != "" ) {
-      shader_part->setURLUsed( *i );
-      value= url_contents;
+    string include_source= shader_part->shaderStringFromURL ( *i );
+    if ( include_source != "" ) {
+      include_source= shader_part->preProcess ( include_source, *i );
+      value= include_source;
+      shader_part->setURLUsed ( *i );
       return;
     }
-
-    bool is_tmp_file;
-    string url = shader_part->resolveURLAsFile( *i, &is_tmp_file );
-    if( url != "" ) {
-      ifstream is( url.c_str() );
-      if( is.good() ) {
-        std::streamsize length;
-        char * buffer;
-        
-        // get length of file:
-        is.seekg (0, ios::end);
-        length = is.tellg();
-        is.seekg (0, ios::beg);
-        
-      // allocate memory:
-        buffer = new char [(unsigned int)length + 1];
-        // read data as a block:
-        is.read (buffer,length);
-        length = is.gcount();
-        is.close();
-        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
-        buffer[length] = '\0';
-        shader_part->setURLUsed( *i );
-        value = string( buffer );
-        delete [] buffer;
-        //PROFILE_END();
-        return;
-      }
-      is.close();
-      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
-     }
   }
   Console(4) << "None of the urls in ShaderPart:"<<this->getFullName()<<" with url [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
