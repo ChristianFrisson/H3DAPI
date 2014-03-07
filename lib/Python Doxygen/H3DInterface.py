@@ -924,13 +924,12 @@ def resolveURLAsFolder( url ):
 def throwQuitAPIException():
   pass
 
-## \namespace H3DInterface 
-## \fn def findNodes()
+## Find nodes matching the specified criteria.
 ## Recursively searches for child nodes that match the given criteria, starting from the 
 ## specified root node.
 ##
 ## \param node          The root node to start the search from
-## \param type_name     Type names of nodes to find, as a list of strings
+## \param type_names    Type names of nodes to find, as a list of strings
 ## \param node_name     The name (or partial name) of the nodes to find (also see exactNodeName parameter)
 ## \param field_names   List of field names to recursively look for children, for each node type.
 ##                      For each node type, the list will contain a sub-list of strings, where the first string is
