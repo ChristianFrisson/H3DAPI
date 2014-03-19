@@ -222,7 +222,8 @@ namespace H3D {
                                  Inst< SFString         > _depthBufferStorage = 0,
                                  Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer = 0,
                                  Inst< MFString         > _colorBufferStorages = 0,
-                                 Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers = 0);
+                                 Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers = 0,
+                                 Inst< SFBool           > _useNavigation = 0 );
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -474,6 +475,17 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> false
     auto_ptr< SFBool > useStereo;
+
+    /// An option to enable the use of user navigation which is used by the current
+    /// window. If this is enabled, the local viewpoint set by the user will be ignored
+    /// as to use a separate viewpoint for navigation will cause the navigation trigger
+    /// transition. When no local viewpoint is specified, useNavigation will always have
+    /// effect as global active viewpoint will be used then. So basically only specify
+    /// useNavigation when you want to use local viewpoint 
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> false
+    auto_ptr< SFBool > useNavigation;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

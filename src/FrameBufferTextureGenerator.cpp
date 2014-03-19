@@ -35,6 +35,8 @@
 #include <H3D/GraphicsOptions.h>
 #include <H3D/H3DWindowNode.h>
 #include <H3D/Scene.h>
+#include <H3D/H3DWindowNode.h>
+#include <H3D/H3DNavigation.h>
 
 using namespace H3D;
 
@@ -72,6 +74,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, externalFBODepthBuffer, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorBufferStorages, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, externalFBOColorBuffers, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, useNavigation, INPUT_OUTPUT );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
@@ -123,7 +126,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFString        > _depthBufferStorage,
   Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer,
   Inst< MFString        > _colorBufferStorages,
-  Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers):
+  Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers,
+  Inst< SFBool          > _useNavigation ):
 X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, 
   _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
@@ -150,6 +154,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   widthInUse( _widthInUse ),
   heightInUse( _heightInUse ),
   useStereo( _useStereo ),
+  useNavigation( _useNavigation ),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -182,6 +187,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     widthInUse->setValue( -1, id );
     heightInUse->setValue( -1, id );
     useStereo->setValue( false );
+    useNavigation->setValue( false );
 
     depthBufferType->addValidValue( "DEPTH" );
     depthBufferType->addValidValue( "DEPTH16" );
@@ -509,9 +515,24 @@ void FrameBufferTextureGenerator::render()     {
   // been set up (current active viewpoint)
 
   X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
+  
+  Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
+  bool use_local_viewpoint = true;
+  if( useNavigation->getValue()||!vp ) { 
+    // when useNavigation or no local viewpoint exist, use current active viewpoint
+    vp = X3DViewpointNode::getActive();
+    use_local_viewpoint = false;
+  }
   NavigationInfo *nav_info = navigationInfo->getValue();
+  bool use_local_navi = true;
+  if( !nav_info ) {
+    nav_info = NavigationInfo::getActive();
+    use_local_navi = false; 
+  }
   X3DBackgroundNode* bg = background->getValue();
-  if( vp ) {
+  if( use_local_viewpoint||use_local_navi ) {
+    // have to setup separate rendering view matrix and projection matrix when 
+    // either local viewpoint or local navigationInfo is specified.
     H3DFloat clip_near = (H3DFloat)0.01;
     H3DFloat clip_far = -1;
 
@@ -706,7 +727,7 @@ void FrameBufferTextureGenerator::render()     {
     }
   }
 
-  if( vp ) {
+  if( use_local_navi||use_local_viewpoint ) {
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );
