@@ -146,6 +146,9 @@ bool MyApp::OnExceptionInMainLoop() {
     throw;
   }
   catch (const Exception::QuitAPI &) {
+    // Ensure we exit cleanly even on QuitAPI exception
+    wxCommandEvent fake_event;
+    theWxFrame->OnExit ( fake_event );
     return false;
   }
   catch (const Exception::H3DException &e) {

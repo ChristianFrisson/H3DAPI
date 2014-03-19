@@ -628,7 +628,7 @@ int main(int argc, char* argv[]) {
 
 
   // Loading X3D file and setting up VR environment ---
-
+  AutoRef< Scene > scene( new Scene );
   try {
     AutoRef< KeySensor > ks( new KeySensor );
 
@@ -637,7 +637,7 @@ int main(int argc, char* argv[]) {
     auto_ptr< ChangeNavType > change_nav_type( new ChangeNavType );
     AutoRef< Node > device_info;
     AutoRef< Node > viewpoint;
-    AutoRef< Scene > scene( new Scene );
+    
 
     SAI::Browser *sai_browser = scene->getSAIBrowser();
     sai_browser->setName( "H3DLoad" );
@@ -742,11 +742,20 @@ int main(int argc, char* argv[]) {
 
   catch (const Exception::H3DException &e) {
     Console(4) << e << endl;
+
+    // This is required to ensure the scene is deleted
+    // in all cases probably due to circular references
+    scene->setSceneRoot ( NULL );
+
 #ifdef H3DAPI_LIB
     deinitializeH3D();
 #endif
     return 1;
   }
+
+  // This is required to ensure the scene is deleted
+  // in all cases probably due to circular references
+  scene->setSceneRoot ( NULL );
 
 #ifdef H3DAPI_LIB
   deinitializeH3D();
