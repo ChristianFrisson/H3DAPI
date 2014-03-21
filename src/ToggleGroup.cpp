@@ -42,6 +42,7 @@ namespace ToggleGroupInternals {
   FIELDDB_ELEMENT( ToggleGroup, hapticsOn, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ToggleGroup, graphicsOn, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ToggleGroup, hapticsOnDevice, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ToggleGroup, traverseOn, INPUT_OUTPUT );
 }
 
 ToggleGroup::ToggleGroup( Inst< AddChildren    > _addChildren,
@@ -53,12 +54,14 @@ ToggleGroup::ToggleGroup( Inst< AddChildren    > _addChildren,
                           Inst< SFVec3f        > _bboxSize,
                           Inst< SFBool         > _hapticsOn,
                           Inst< SFBool         > _graphicsOn,
-                          Inst< MFBool         > _hapticsOnDevice  ) :
+                          Inst< MFBool         > _hapticsOnDevice,
+                          Inst< SFBool         > _traverseOn) :
   X3DGroupingNode( _addChildren, _removeChildren, _children,
                    _metadata, _bound, _bboxCenter, _bboxSize ),
   hapticsOn( _hapticsOn ),
   graphicsOn( _graphicsOn ),
-  hapticsOnDevice( _hapticsOnDevice ) {
+  hapticsOnDevice( _hapticsOnDevice ),
+  traverseOn(_traverseOn){
   type_name = "ToggleGroup";
   database.initFields( this );
 
@@ -66,6 +69,7 @@ ToggleGroup::ToggleGroup( Inst< AddChildren    > _addChildren,
   graphicsOn->setValue( true );
 
   graphicsOn->route( displayList );
+  traverseOn->setValue( true );
 
 }
 
@@ -100,8 +104,9 @@ void ToggleGroup::traverseSG( TraverseInfo &ti ) {
   if( graphics_was_enabled && !graphicsOn->getValue() ) {
     ti.disableGraphics();
   }
-
-  X3DGroupingNode::traverseSG( ti );
+  if( traverseOn->getValue() ) {
+    X3DGroupingNode::traverseSG( ti );
+  }
 
   // reset to previous values
   ti.setHapticsEnabled( haptics_was_enabled );

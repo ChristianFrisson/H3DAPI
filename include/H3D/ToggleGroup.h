@@ -73,7 +73,8 @@ namespace H3D {
                  Inst< SFVec3f        > _bboxSize        = 0,
                  Inst< SFBool         > _hapticsOn       = 0,
                  Inst< SFBool         > _graphicsOn      = 0,
-                 Inst< MFBool         > _hapticsOnDevice = 0 );
+                 Inst< MFBool         > _hapticsOnDevice = 0,
+                 Inst< SFBool         > _traverseOn  = 0);
 
     /// Haptics is disabled if hapticsOn is false.
     virtual void traverseSG( TraverseInfo &ti );
@@ -156,6 +157,13 @@ namespace H3D {
     /// 
     /// \dotfile ToggleGroup_hapticsOnDevice.dot
     auto_ptr< MFBool > hapticsOnDevice;
+
+    /// If set to false the children nodes of this node will not be traversed
+    /// at all
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> true \n
+    auto_ptr< SFBool > traverseOn;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
