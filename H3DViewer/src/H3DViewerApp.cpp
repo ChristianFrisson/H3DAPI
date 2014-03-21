@@ -76,7 +76,8 @@ inline string toStr( const wxString &s ) {
 
 const wxCmdLineEntryDesc gCmdLineDesc[] = 
   {
-    { wxCMD_LINE_PARAM, NULL, NULL, 
+    { wxCMD_LINE_SWITCH , "dp", "disable_plugins", "No registered plugins are loaded on startup. They are however still listed in the plugins dialog and can be enabled if desired." },
+		{ wxCMD_LINE_PARAM, NULL, NULL, 
 #if( defined( wxUSE_UNICODE ) && wxMAJOR_VERSION == 2 && wxMINOR_VERSION <= 8 )
       wxT("File to load"), 
 #else 
@@ -110,14 +111,16 @@ public:
   }
 
   virtual bool OnCmdLineParsed(wxCmdLineParser& parser) {
+		disable_plugin_dialog = parser.Found( wxString( "dp", wxConvUTF8 ) );
     for (int i = 0; i < (int)parser.GetParamCount(); ++i) {
-      cmd_line_filename = parser.GetParam(i);
+			cmd_line_filename = parser.GetParam(i);
     }
 
     return true;
   }
 protected:
   wxString cmd_line_filename;
+	bool disable_plugin_dialog;
   WxFrame *theWxFrame;
   DECLARE_EVENT_TABLE()
 };
@@ -201,7 +204,7 @@ bool MyApp::OnInit()
     
     // create a window to display
     theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
-           wxDefaultPosition, wxSize(800, 600), wxDEFAULT_FRAME_STYLE, wxT("H3D Player"), !cmd_line_filename.IsEmpty() );
+           wxDefaultPosition, wxSize(800, 600), wxDEFAULT_FRAME_STYLE, wxT("H3D Player"), !cmd_line_filename.IsEmpty(), disable_plugin_dialog );
     
     theWxFrame->Show(true);
     

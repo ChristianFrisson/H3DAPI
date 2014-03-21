@@ -249,7 +249,8 @@ public:
               const wxPoint& _pos, const wxSize& _size,
               long _style = wxDEFAULT_FRAME_STYLE,
               const wxString& name = wxT("H3D Player"),
-							bool cmd_line_filename = false );
+							bool cmd_line_filename = false,
+							bool disable_plugin_dialog = false );
 
   ~WxFrame() {
     if( recentFiles )

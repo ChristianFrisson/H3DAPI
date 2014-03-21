@@ -175,7 +175,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         const wxString& _title, const wxPoint& _pos,
                         const wxSize& _size, long _style,
                         const wxString& _name,
-												bool cmd_line_filename ):
+												bool cmd_line_filename,
+												bool disable_plugin_dialog ):
   wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
   navTypeCount(0),
   deviceCount(0),
@@ -216,6 +217,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   program_settings_dialog->destroy_on_close = false;
 #endif
   plugins_dialog = new H3DViewerPluginsDialog( this ); 
+	if( disable_plugin_dialog )
+		plugins_dialog->DisablePluginsCheckBox->SetValue( true );
   frameRates = new FrameRateDialog( this );
 
   current_viewpoint = (X3DViewpointNode *) NULL;
