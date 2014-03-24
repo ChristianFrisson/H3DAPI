@@ -38,15 +38,16 @@ attrib_size( 0 ),
 attrib_data( NULL ){
   vboFieldsUpToDate->setName ( "vboFieldsUpToDate" );
   isDynamic->route ( vboFieldsUpToDate );
-  isDynamic->setValue ( false );
+  isDynamic->setValue ( true );
 }
 
 void GLVertexAttributeObject::updateVertexBufferObject ( ){
 
-  setAttributeData ( );
+  
   if ( !GLEW_ARB_vertex_program ) return;
   if ( !vboFieldsUpToDate->isUpToDate() ){
     vboFieldsUpToDate->upToDate ( );
+    setAttributeData();
     if ( !vbo_id ){
       vbo_id = new GLuint;
       glGenBuffersARB ( 1, vbo_id );
