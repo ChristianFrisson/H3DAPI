@@ -52,12 +52,12 @@ namespace H3D {
   class ShadowTransform : public H3DShadowObjectNode {
   public:
 
-    typedef TypedSFNode< H3DShadowObjectNode > SFShadowObjectNode;
+    typedef TypedMFNode< H3DShadowObjectNode > MFShadowObjectNode;
 
     /// Constructor.
     ShadowTransform( Inst< SFNode          > _metadata  = 0,
 		     Inst< SFTransformNode > _transform = 0,
-		     Inst< SFShadowObjectNode  > _shadowVolume  = 0);
+		     Inst< MFShadowObjectNode  > _shadowVolume  = 0);
 
     /// Render the shadow volume for this shadow object.
     virtual void renderShadow( X3DLightNode *light, 
@@ -66,7 +66,7 @@ namespace H3D {
 
   public:
     /// The shadow volume we want to transform.
-    auto_ptr< SFShadowObjectNode > shadowVolume;
+    auto_ptr< MFShadowObjectNode > shadowVolume;
 
     /// The H3DNodeDatabase object for this node.
     static H3DNodeDatabase database;
