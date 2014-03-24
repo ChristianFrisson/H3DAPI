@@ -219,7 +219,7 @@ void X3DShapeNode::traverseSG( TraverseInfo &ti ) {
       ShadowTransform *t = new ShadowTransform;
       MatrixTransform *mt = new MatrixTransform;
       t->transform->setValue( mt );
-      t->shadowVolume->setValue( shadow_object );
+      t->shadowVolume->push_back(shadow_object);
       mt->matrix->setValue( ti.getAccForwardMatrix() );
       shadow_caster->object->push_back( t ); 
     } 
