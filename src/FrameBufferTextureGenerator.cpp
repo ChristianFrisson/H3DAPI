@@ -559,13 +559,6 @@ void FrameBufferTextureGenerator::render()     {
       eye_mode = window->getEyeMode();
       if( eye_mode!=X3DViewpointNode::MONO ) {
         stereo_info = StereoInfo::getActive();
-        H3DFloat focal_distance = stereo_info->focalDistance->getValue();
-        if( focal_distance <= clip_near ) {
-          clip_near = focal_distance - 0.01f;
-        }
-        if( focal_distance >= clip_far && clip_far != -1 ) {
-          clip_far = focal_distance + 0.01f;
-        }
       }
     }
     glMatrixMode( GL_MODELVIEW );
