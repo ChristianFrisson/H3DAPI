@@ -50,7 +50,7 @@ namespace H3D {
     /// Constructor.
     Matrix3VertexAttribute( Inst< SFNode     > _metadata = 0,
                             Inst< SFString   > _name     = 0,
-                            Inst< MFMatrix3f > _value  = 0 );
+                            Inst< MFMatrix3f > _value    = 0);
 
     /// Destructor
     virtual ~Matrix3VertexAttribute();
@@ -68,12 +68,14 @@ namespace H3D {
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject();
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject();
+    /// VBO rendering implementation
+    virtual void renderVBO ( );
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( );
 
     /// The value field specifies an arbitrary collection of Matrix3f values 
     /// that will be passed to the shader as per-vertex information.
@@ -83,11 +85,6 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
   };
 }
 

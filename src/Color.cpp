@@ -40,6 +40,7 @@ H3DNodeDatabase Color::database( "Color",
 
 namespace ColorInternals {
   FIELDDB_ELEMENT( Color, color, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( Color, isDynamic, INPUT_OUTPUT );
 }
 
 
@@ -83,32 +84,18 @@ void Color::disableArray() {
   glDisableClientState(GL_COLOR_ARRAY);
 }
 
-// Perform the OpenGL commands to render all vertices as a vertex
-// buffer object.
-void Color::renderVertexBufferObject() {
-  if( !color->empty() ) {
-    if( !vboFieldsUpToDate->isUpToDate() ) {
-      // Only transfer data when it has been modified.
-      vboFieldsUpToDate->upToDate();
-      if( !vbo_id ) {
-        vbo_id = new GLuint;
-        glGenBuffersARB( 1, vbo_id );
-      }
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
-                       color->size() * 3 * sizeof(GLfloat),
-                       &(*color->begin()), GL_STATIC_DRAW_ARB );
-    } else {
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-    }
-    glEnableClientState(GL_COLOR_ARRAY);
-    glColorPointer(3, GL_FLOAT, 0, NULL );
-  }
+void Color::setAttributeData ( ){
+  if ( color->empty ( ) ) return;
+  attrib_data = (GLvoid*)&(*color->begin ( ));
+  attrib_size = color->size ( ) * 3 * sizeof(GLfloat);
 }
 
-// Disable the array state enabled in renderVertexBufferObject().
-void Color::disableVertexBufferObject() {
-  glDisableClientState(GL_COLOR_ARRAY);
-  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+void Color::renderVBO ( ){
+  glEnableClientState ( GL_COLOR_ARRAY );
+  glColorPointer ( 3, GL_FLOAT, 0, NULL );
 }
 
+void Color::disableVBO ( ){
+  glDisableClientState ( GL_COLOR_ARRAY );
+  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
+}

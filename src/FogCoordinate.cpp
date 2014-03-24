@@ -41,19 +41,19 @@ H3DNodeDatabase FogCoordinate::database(
 
 namespace FogCoordinateInternals {
   FIELDDB_ELEMENT( FogCoordinate, depth, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( FogCoordinate, isDynamic, INPUT_OUTPUT );
 }
 
 FogCoordinate::FogCoordinate(   Inst< MFFloat  > _depth,
-                                Inst< SFNode   > _metadata ):
+                                Inst< SFNode   > _metadata):
   X3DGeometricPropertyNode( _metadata ),
-  depth( _depth ),
-  vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  GLVertexAttributeObject(VERTEXATTRIBUTE::FOGCOORD),
+  depth( _depth ){
 
   type_name = "FogCoordinate";
   database.initFields( this );
   depth->route( propertyChanged );
-  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
+
   depth->route( vboFieldsUpToDate );
 }
 
@@ -97,33 +97,20 @@ void FogCoordinate::disableArray() {
     glDisableClientState(GL_FOG_COORD_ARRAY);
 }
 
-// Perform the OpenGL commands to render all vertices as a vertex
-// buffer object.
-void FogCoordinate::renderVertexBufferObject() {
-  if( GLEW_EXT_fog_coord  && !depth->empty() ) {
-    if( !vboFieldsUpToDate->isUpToDate() ) {
-      // Only transfer data when it has been modified.
-      vboFieldsUpToDate->upToDate();
-      if( !vbo_id ) {
-        vbo_id = new GLuint;
-        glGenBuffersARB( 1, vbo_id );
-      }
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
-                       depth->size() * sizeof(GLfloat),
-                       &(*depth->begin()), GL_STATIC_DRAW_ARB );
-    } else {
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-    }
-    glEnableClientState(GL_FOG_COORD_ARRAY);
-    glFogCoordPointerEXT(GL_FLOAT, 0, NULL );
-  }
+void FogCoordinate::setAttributeData ( ){
+  if ( !GLEW_EXT_fog_coord || depth->empty ( ) ) return;
+  attrib_data = (GLvoid*)&(*depth->begin ( ));
+  attrib_size = depth->size ( ) *sizeof(GLfloat);
 }
 
-// Disable the array state enabled in renderVertexBufferObject().
-void FogCoordinate::disableVertexBufferObject() {
-  if( GLEW_EXT_fog_coord ) {
-    glDisableClientState(GL_FOG_COORD_ARRAY);
-    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+void FogCoordinate::renderVBO ( ){
+  glEnableClientState ( GL_FOG_COORD_ARRAY );
+  glFogCoordPointerEXT ( GL_FLOAT, 0, NULL );
+}
+
+void FogCoordinate::disableVBO ( ){
+  if ( GLEW_EXT_fog_coord ) {
+    glDisableClientState ( GL_FOG_COORD_ARRAY );
+    glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
   }
 }

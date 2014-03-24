@@ -30,6 +30,7 @@
 #define __X3DNORMALNODE_H__
 
 #include <H3D/X3DGeometricPropertyNode.h>
+#include <H3D/GLVertexAttributeObject.h>
 
 namespace H3D {
 
@@ -39,7 +40,9 @@ namespace H3D {
   /// normals are specified in nodes derived from this abstract node type.
   ///
   /// 
-  class H3DAPI_API X3DNormalNode : public X3DGeometricPropertyNode {
+  class H3DAPI_API X3DNormalNode : 
+    public X3DGeometricPropertyNode,
+    public GLVertexAttributeObject{
   public:
     
     /// Constructor.
@@ -59,12 +62,14 @@ namespace H3D {
     /// Disable the array state enabled in renderArray().
     virtual void disableArray(){}
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject() {}
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( ){};
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject() {}
+    /// VBO rendering implementation
+    virtual void renderVBO ( ){};
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( ){};
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "normal".

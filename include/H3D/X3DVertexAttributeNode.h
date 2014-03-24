@@ -30,6 +30,7 @@
 #define __X3DVERTEXATTRIBUTENODE_H__
 
 #include <H3D/X3DGeometricPropertyNode.h>
+#include <H3D/GLVertexAttributeObject.h>
 #include <H3D/SFString.h>
 
 namespace H3D {
@@ -40,11 +41,13 @@ namespace H3D {
   ///
   /// The name field describes a name that is mapped to the shading 
   /// language-specific name for describing per-vertex data. 
-  class H3DAPI_API X3DVertexAttributeNode: public X3DGeometricPropertyNode {
+  class H3DAPI_API X3DVertexAttributeNode: 
+    public X3DGeometricPropertyNode,
+    public GLVertexAttributeObject{
   public:
     /// Constructor.
     X3DVertexAttributeNode( Inst< SFNode   > _metadata = 0,
-                            Inst< SFString > _name     = 0 );
+                            Inst< SFString > _name     = 0);
    
     /// Perform the OpenGL commands to set the vertex attribute
     /// with the given index. value_index is the index of the 
@@ -68,12 +71,14 @@ namespace H3D {
       attrib_index = _attrib_index;
     }
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject() {}
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( ){};
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject() {}
+    /// VBO rendering implementation
+    virtual void renderVBO ( ){};
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( ){};
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "attrib".

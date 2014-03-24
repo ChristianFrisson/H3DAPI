@@ -410,7 +410,8 @@ Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height ) {
   dn.getNode ( "APP", app );
 
   app->texture->setValue ( this );
-  fbo->update->setValue ( "NEXT_FRAME_ONLY" );
+  fbo->update->setValue ( "SPECIFIED_FRAMES_ONLY" );
+  fbo->framesBeforeStop->setValue ( 10 );
   fbo->displayList->callList();
 
   // Check that FrameBufferTextureGenerator succeeded.

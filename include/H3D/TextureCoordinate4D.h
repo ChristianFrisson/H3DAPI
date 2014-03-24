@@ -78,12 +78,14 @@ namespace H3D {
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject();
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject();
+    /// VBO rendering implementation
+    virtual void renderVBO ( );
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( );
 
     /// Returns the number of texture coordinates this node can render.
     virtual unsigned int nrAvailableTexCoords() {
@@ -110,11 +112,6 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
   };
 }
 

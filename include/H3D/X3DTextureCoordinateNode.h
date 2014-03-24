@@ -31,6 +31,7 @@
 
 #include <H3D/X3DGeometricPropertyNode.h>
 #include <GL/glew.h>
+#include <H3D/GLVertexAttributeObject.h>
 
 namespace H3D {
   class X3DTextureNode;
@@ -49,7 +50,9 @@ namespace H3D {
   /// functions.
   ///
   /// 
-  class H3DAPI_API X3DTextureCoordinateNode : public X3DGeometricPropertyNode {
+  class H3DAPI_API X3DTextureCoordinateNode : 
+    public X3DGeometricPropertyNode,
+    public GLVertexAttributeObject{
   public:
     
     /// Constructor.
@@ -165,9 +168,6 @@ namespace H3D {
     void disableArrayForTextureUnits( unsigned int start_unit,
                                       unsigned int end_unit );
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject() {}
 
     /// Render the texture coordinate for all texture units used by
     /// the texture
@@ -187,8 +187,14 @@ namespace H3D {
     void renderVertexBufferObjectForTextureUnits( unsigned int start_unit,
                                      unsigned int end_unit );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject() {}
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( ){};
+
+    /// VBO rendering implementation
+    virtual void renderVBO ( ){};
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( ){};
 
     /// Disable the vertex buffer object state state enabled in
     /// renderVertexBufferObjectForTexture

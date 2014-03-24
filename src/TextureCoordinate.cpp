@@ -41,6 +41,7 @@ H3DNodeDatabase TextureCoordinate::database(
 
 namespace TextureCoordinateInternals {
   FIELDDB_ELEMENT( TextureCoordinate, point, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( TextureCoordinate, isDynamic, INPUT_OUTPUT );
 }
 
 
@@ -48,14 +49,11 @@ TextureCoordinate::TextureCoordinate(
                                      Inst< SFNode >  _metadata,
                                      Inst< MFVec2f>  _point ) :
   X3DTextureCoordinateNode( _metadata ),
-  point( _point ),
-  vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  point( _point ) {
 
   type_name = "TextureCoordinate";
   database.initFields( this );
   point->route( propertyChanged );
-  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   point->route( vboFieldsUpToDate );
 }
 
@@ -92,32 +90,18 @@ void TextureCoordinate::disableArray() {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-// Perform the OpenGL commands to render all vertices as a vertex
-// buffer object.
-void TextureCoordinate::renderVertexBufferObject() {
-  if( !point->empty() ) {
-    if( !vboFieldsUpToDate->isUpToDate() ) {
-      // Only transfer data when it has been modified.
-      vboFieldsUpToDate->upToDate();
-      if( !vbo_id ) {
-        vbo_id = new GLuint;
-        glGenBuffersARB( 1, vbo_id );
-      }
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
-                       point->size() * 2 * sizeof(GLfloat),
-                       &(*point->begin()), GL_STATIC_DRAW_ARB );
-    } else {
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-    }
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, 0, NULL );
-  }
+void TextureCoordinate::setAttributeData ( ){
+  if ( point->empty ( ) ) return;
+  attrib_data = (GLvoid*)&(*point->begin ( ));
+  attrib_size = point->size ( ) * 2 * sizeof(GLfloat);
 }
 
-// Disable the array state enabled in renderVertexBufferObject().
-void TextureCoordinate::disableVertexBufferObject() {
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+void TextureCoordinate::renderVBO ( ){
+  glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
+  glTexCoordPointer ( 2, GL_FLOAT, 0, NULL );
 }
 
+void TextureCoordinate::disableVBO ( ){
+  glDisableClientState ( GL_TEXTURE_COORD_ARRAY );
+  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
+}

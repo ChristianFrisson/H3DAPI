@@ -36,7 +36,8 @@ using namespace H3D;
 
 X3DTextureCoordinateNode::X3DTextureCoordinateNode( 
                                                    Inst< SFNode>  _metadata ) :
-  X3DGeometricPropertyNode( _metadata ) {
+  X3DGeometricPropertyNode( _metadata ),
+  GLVertexAttributeObject(VERTEXATTRIBUTE::TEXCOORD){
   type_name = "X3DTextureCoordinateNode";
 }
 

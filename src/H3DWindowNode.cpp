@@ -812,8 +812,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     rebuild_stencil_mask = false;
   }
 
-  H3DFloat clip_near = 0.01f;  // near viewing plane at 1cm
-  H3DFloat clip_far  = 10.f; // far viewing plane at 10m
+  clip_near = 0.01f;  // near viewing plane at 1cm
+  clip_far  = 10.f; // far viewing plane at 10m
   
   if( nav_info ) {
     if( nav_info->visibilityLimit->getValue() > 0 )

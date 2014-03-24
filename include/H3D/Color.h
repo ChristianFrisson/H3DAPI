@@ -91,12 +91,14 @@ namespace H3D {
       return color->size();
     }
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject();
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject();
+    /// VBO rendering implementation
+    virtual void renderVBO ( );
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( );
 
     /// A vector of Color values.
     ///

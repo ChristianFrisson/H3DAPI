@@ -33,6 +33,7 @@
 #include <H3D/FieldTemplates.h>
 #include <GL/glew.h>
 #include <H3D/MFVec3d.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -52,7 +53,7 @@ namespace H3D {
   public:
     /// Constructor.
     CoordinateDouble( Inst< SFNode  >  _metadata = 0,
-                      Inst< MFVec3d >  _point    = 0 );
+                      Inst< MFVec3d >  _point    = 0);
 
     /// Destructor.
     virtual ~CoordinateDouble();
@@ -82,12 +83,14 @@ namespace H3D {
       return point->size();
     }; 
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject();
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject();
+    /// VBO rendering implementation
+    virtual void renderVBO ( );
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( );
 
     /// A vector of Vec3d defining points in 3d-space.
     ///
@@ -97,11 +100,7 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
+
   };
 }
 

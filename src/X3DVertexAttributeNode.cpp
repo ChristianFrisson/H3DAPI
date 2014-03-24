@@ -45,8 +45,9 @@ namespace X3DVertexAttributeNodeInternals {
 }
 
 X3DVertexAttributeNode::X3DVertexAttributeNode( Inst< SFNode   > _metadata,
-                                                Inst< SFString > _name ):
+                                                Inst< SFString > _name):
   X3DGeometricPropertyNode( _metadata ),
+  GLVertexAttributeObject ( VERTEXATTRIBUTE::GENERIC ),
   name( _name ),
   attrib_index( -1 ) {
 

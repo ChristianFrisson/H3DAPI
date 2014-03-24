@@ -33,6 +33,8 @@
 #include <H3D/MFFloat.h>
 #include <H3D/SFInt32.h>
 #include <GL/glew.h>
+#include <H3D/GLVertexAttributeObject.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
   /// \ingroup X3DNodes
@@ -57,7 +59,9 @@ namespace H3D {
   // shall be replicated for any further vertices. If too many depth values
   // are supplied, the excess depth values shall be ignored.
 
-  class H3DAPI_API FogCoordinate: public X3DGeometricPropertyNode {
+  class H3DAPI_API FogCoordinate: 
+    public X3DGeometricPropertyNode,
+    public GLVertexAttributeObject{
   public:
     /// Constructor.
     FogCoordinate(  Inst< MFFloat  > _depth         = 0,
@@ -77,12 +81,14 @@ namespace H3D {
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject();
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject();
+    /// VBO rendering implementation
+    virtual void renderVBO ( );
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( );
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "fogCoord".
@@ -100,11 +106,7 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
+
   };
 }
 

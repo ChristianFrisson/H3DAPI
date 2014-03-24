@@ -34,7 +34,8 @@ using namespace H3D;
 
 X3DNormalNode::X3DNormalNode( 
                              Inst< SFNode>  _metadata ) :
-  X3DGeometricPropertyNode( _metadata ) {
+  X3DGeometricPropertyNode( _metadata ),
+  GLVertexAttributeObject(VERTEXATTRIBUTE::NORMAL){
 
   type_name = "X3DNormalNode";
 }

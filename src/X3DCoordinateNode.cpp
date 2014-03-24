@@ -33,8 +33,9 @@
 using namespace H3D;
 
 X3DCoordinateNode::X3DCoordinateNode( 
-                                     Inst< SFNode>  _metadata ) :
-  X3DGeometricPropertyNode( _metadata ) {
+                                     Inst< SFNode>  _metadata) :
+  X3DGeometricPropertyNode( _metadata ),
+  GLVertexAttributeObject(VERTEXATTRIBUTE::VERTEX){
 
   type_name = "X3DCoordinateNode";
 }

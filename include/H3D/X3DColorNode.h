@@ -30,6 +30,7 @@
 #define __X3DCOLORNODE_H__
 
 #include <H3D/X3DGeometricPropertyNode.h>
+#include <H3D/GLVertexAttributeObject.h>
 
 namespace H3D {
 
@@ -38,7 +39,9 @@ namespace H3D {
   /// \brief This is the base node type for color specifications in X3D. 
   ///
   /// 
-  class H3DAPI_API X3DColorNode : public X3DGeometricPropertyNode {
+  class H3DAPI_API X3DColorNode : 
+    public X3DGeometricPropertyNode,
+    public GLVertexAttributeObject{
   public:
     /// Constructor.
     X3DColorNode( Inst< SFNode>  _metadata = 0 );
@@ -63,12 +66,14 @@ namespace H3D {
     /// Disable state set in preRender() function.
     virtual void postRender();
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject() {}
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( ){};
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject() {}
+    /// VBO rendering implementation
+    virtual void renderVBO ( ){};
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( ){};
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "color".

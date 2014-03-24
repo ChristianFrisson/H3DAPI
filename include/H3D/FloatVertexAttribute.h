@@ -33,6 +33,8 @@
 #include <H3D/MFFloat.h>
 #include <H3D/SFInt32.h>
 #include <GL/glew.h>
+#include <H3D/SFBool.h>
+#include <H3D/GLVertexAttributeObject.h>
 
 namespace H3D {
   /// \ingroup X3DNodes
@@ -50,13 +52,14 @@ namespace H3D {
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/VertexAttributes.x3d">VertexAttributes.x3d</a>
   ///     ( <a href="examples/VertexAttributes.x3d.html">Source</a> )
-  class H3DAPI_API FloatVertexAttribute: public X3DVertexAttributeNode {
+  class H3DAPI_API FloatVertexAttribute: 
+    public X3DVertexAttributeNode{
   public:
     /// Constructor.
     FloatVertexAttribute( Inst< SFNode   > _metadata      = 0,
                           Inst< SFString > _name          = 0,
                           Inst< MFFloat  > _value         = 0,
-                          Inst< SFInt32  > _numComponents = 0 );
+                          Inst< SFInt32  > _numComponents = 0);
 
     /// Destructor.
     virtual ~FloatVertexAttribute();
@@ -74,12 +77,14 @@ namespace H3D {
     /// Disable the array state enabled in renderArray().
     virtual void disableArray();
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject();
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject();
+    /// VBO rendering implementation
+    virtual void renderVBO ( );
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( );
 
      /// The value field specifies an arbitrary collection of floating point 
     /// values that will be passed to the shader as per-vertex information.
@@ -96,13 +101,10 @@ namespace H3D {
     /// <b>Valid range:</b> [1-4]
     auto_ptr< SFInt32 > numComponents;
 
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
+
   };
 }
 

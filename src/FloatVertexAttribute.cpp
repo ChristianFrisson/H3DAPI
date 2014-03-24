@@ -43,24 +43,23 @@ H3DNodeDatabase FloatVertexAttribute::database(
 namespace FloatVertexAttributeInternals {
   FIELDDB_ELEMENT( FloatVertexAttribute, value, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FloatVertexAttribute, numComponents, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( FloatVertexAttribute, isDynamic, INPUT_OUTPUT );
 }
 
 FloatVertexAttribute::FloatVertexAttribute( Inst< SFNode   > _metadata,
                                             Inst< SFString > _name,
                                             Inst< MFFloat  > _value,
-                                            Inst< SFInt32  > _numComponents ):
+                                            Inst< SFInt32  > _numComponents):
   X3DVertexAttributeNode( _metadata, _name ),
   value( _value ),
-  numComponents( _numComponents ),
-  vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  numComponents( _numComponents ){
 
   type_name = "FloatVertexAttribute";
   database.initFields( this );
 
   value->route(propertyChanged);
   numComponents->route(propertyChanged);
-  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
+
   value->route( vboFieldsUpToDate );
   numComponents->route( vboFieldsUpToDate );
 
@@ -117,40 +116,25 @@ void FloatVertexAttribute::disableArray() {
   }
 }
 
-// Perform the OpenGL commands to render all values as a vertex
-// buffer object.
-void FloatVertexAttribute::renderVertexBufferObject() {
-  if( !value->empty() ) {
-    if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
-      if( !vboFieldsUpToDate->isUpToDate() ) {
-        // Only transfer data when it has been modified.
-        vboFieldsUpToDate->upToDate();
-        if( !vbo_id ) {
-          vbo_id = new GLuint;
-          glGenBuffersARB( 1, vbo_id );
-        }
-        glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-        glBufferDataARB( GL_ARRAY_BUFFER_ARB,
-                         value->size() * sizeof(GLfloat),
-                         &(*value->begin()), GL_STATIC_DRAW_ARB );
-      } else {
-        glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-      }
-      glEnableVertexAttribArrayARB( attrib_index );
-      glVertexAttribPointerARB( attrib_index,
-                                numComponents->getValue(),
-                                GL_FLOAT,
-                                GL_FALSE,
-                                0,
-                                0 );
-    }
-  }
+void FloatVertexAttribute::setAttributeData ( ){
+  if ( value->empty ( )|| attrib_index<0 ) return;
+  attrib_data = (GLvoid*)&(*value->begin ( ));
+  attrib_size = value->size ( )*sizeof(GLfloat);
 }
 
-// Disable the array state enabled in renderVertexBufferObject().
-void FloatVertexAttribute::disableVertexBufferObject() {
-  if( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
-    glDisableVertexAttribArrayARB( attrib_index );
-    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+void FloatVertexAttribute::renderVBO ( ){
+  glEnableVertexAttribArrayARB ( attrib_index );
+  glVertexAttribPointerARB ( attrib_index,
+    numComponents->getValue ( ),
+    GL_FLOAT,
+    GL_FALSE,
+    0,
+    0 );
+}
+
+void FloatVertexAttribute::disableVBO ( ){
+  if ( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
+    glDisableVertexAttribArrayARB ( attrib_index );
+    glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
   }
 }

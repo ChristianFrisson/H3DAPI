@@ -51,7 +51,7 @@ namespace H3D {
   public:
     /// Constructor.
     Coordinate( Inst< SFNode  >  _metadata = 0,
-                Inst< MFVec3f > _point    = 0 );
+                Inst< MFVec3f > _point    = 0);
 
     /// Destructor.
     virtual ~Coordinate();
@@ -80,12 +80,14 @@ namespace H3D {
       return point->size();
     };
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject();
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( );
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject();
+    /// VBO rendering implementation
+    virtual void renderVBO ( );
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( );
 
     /// A vector of Vec3f defining points in 3d-space.
     ///
@@ -96,11 +98,6 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
   };
 }
 

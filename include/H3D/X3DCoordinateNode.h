@@ -30,6 +30,8 @@
 #define __X3DCOORDINATENODE_H__
 
 #include <H3D/X3DGeometricPropertyNode.h>
+#include <H3D/GLVertexAttributeObject.h>
+#include <H3D/SFBool.h>
 
 namespace H3D {
 
@@ -40,12 +42,14 @@ namespace H3D {
   /// abstract node type.
   ///
   /// 
-  class H3DAPI_API X3DCoordinateNode : public X3DGeometricPropertyNode {
+  class H3DAPI_API X3DCoordinateNode : 
+    public X3DGeometricPropertyNode, 
+    public GLVertexAttributeObject {
   public:
     // Iterator for X3DCoordinateNode, iterates through point field
     // value of X3DCoordinateNode
     /// Constructor.
-    X3DCoordinateNode( Inst< SFNode>  _metadata = 0 );
+    X3DCoordinateNode( Inst< SFNode>  _metadata = 0);
 
     // Gets the coordinate of a given index.
     virtual Vec3f getCoord( int index ) = 0;
@@ -71,12 +75,14 @@ namespace H3D {
     /// Returns the number of coordinates this coordinate node can render.
     virtual unsigned int nrAvailableCoords() = 0; 
 
-    /// Perform the OpenGL commands to render all vertices as a vertex
-    /// buffer object.
-    virtual void renderVertexBufferObject() {}
+    /// Implement the method to specify data and releated information
+    virtual void setAttributeData ( ){};
 
-    /// Disable the vertex buffer object enabled in renderVertexBufferObject().
-    virtual void disableVertexBufferObject() {}
+    /// VBO rendering implementation
+    virtual void renderVBO ( ){};
+
+    /// VBO disabling implementation
+    virtual void disableVBO ( ){};
 
     class Iterator {
     private:
@@ -124,6 +130,7 @@ namespace H3D {
     Iterator pointEnd() {
       return Iterator();
     }
+
   };
 }
 

@@ -40,21 +40,19 @@ H3DNodeDatabase CoordinateDouble::database( "CoordinateDouble",
 
 namespace CoordinateDoubleInternals {
   FIELDDB_ELEMENT( CoordinateDouble, point, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( CoordinateDouble, isDynamic, INPUT_OUTPUT );
 }
 
 CoordinateDouble::CoordinateDouble( 
                             Inst< SFNode  > _metadata,
                             Inst< MFVec3d > _point ) :
   X3DCoordinateNode( _metadata ),
-  point( _point ),
-  vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  point( _point ) {
 
   type_name = "CoordinateDouble";
   database.initFields( this );
 
   point->route( propertyChanged );
-  vboFieldsUpToDate->setName( "vboFieldsUpToDate" );
   point->route( vboFieldsUpToDate );
 }
 
@@ -83,32 +81,18 @@ void CoordinateDouble::disableArray() {
   glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-// Perform the OpenGL commands to render all vertices as a vertex
-// buffer object.
-void CoordinateDouble::renderVertexBufferObject() {
-  if( !point->empty() ) {
-    if( !vboFieldsUpToDate->isUpToDate() ) {
-      // Only transfer data when it has been modified.
-      vboFieldsUpToDate->upToDate();
-      if( !vbo_id ) {
-        vbo_id = new GLuint;
-        glGenBuffersARB( 1, vbo_id );
-      }
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
-                       point->size() * 3 * sizeof(GLdouble),
-                       &(*point->begin()), GL_STATIC_DRAW_ARB );
-    } else {
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-    }
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_DOUBLE, 0, NULL );
-  }
+void CoordinateDouble::setAttributeData ( ){
+  if ( point->empty ( ) ) return;
+  attrib_data = (GLvoid*)&(*point->begin ( ));
+  attrib_size = point->size ( ) * 3 * sizeof(GLdouble);
 }
 
-// Disable the array state enabled in renderVertexBufferObject().
-void CoordinateDouble::disableVertexBufferObject() {
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+void CoordinateDouble::renderVBO ( ){
+  glEnableClientState ( GL_VERTEX_ARRAY );
+  glVertexPointer ( 3, GL_DOUBLE, 0, NULL );
 }
 
+void CoordinateDouble::disableVBO ( ){
+  glDisableClientState ( GL_VERTEX_ARRAY );
+  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
+}

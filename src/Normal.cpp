@@ -41,6 +41,7 @@ H3DNodeDatabase Normal::database(
 
 namespace NormalInternals {
   FIELDDB_ELEMENT( Normal, vector, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( Normal, isDynamic, INPUT_OUTPUT );
 }
 
 
@@ -84,33 +85,19 @@ void Normal::disableArray() {
   glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-// Perform the OpenGL commands to render all vertices as a vertex
-// buffer object.
-void Normal::renderVertexBufferObject() {
-  if( !vector->empty() ) {
-    if( !vboFieldsUpToDate->isUpToDate() ) {
-      // Only transfer data when it has been modified.
-      vboFieldsUpToDate->upToDate();
-      if( !vbo_id ) {
-        vbo_id = new GLuint;
-        glGenBuffersARB( 1, vbo_id );
-      }
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-      glBufferDataARB( GL_ARRAY_BUFFER_ARB,
-                       vector->size() * 3 * sizeof(GLfloat),
-                       &(*vector->begin()), GL_STATIC_DRAW_ARB );
-    } else {
-      glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id );
-    }
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glNormalPointer(GL_FLOAT, 0, NULL );
-  }
+void Normal::setAttributeData ( ){
+  if ( vector->empty() ) return;
+  attrib_data = (GLvoid*)&(*vector->begin ( ));
+  attrib_size = vector->size ( ) * 3 * sizeof(GLfloat);
 }
 
-// Disable the array state enabled in renderVertexBufferObject().
-void Normal::disableVertexBufferObject() {
-  glDisableClientState(GL_NORMAL_ARRAY);
-  glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+void Normal::renderVBO ( ){
+  glEnableClientState ( GL_NORMAL_ARRAY );
+  glNormalPointer ( GL_FLOAT, 0, NULL );
 }
 
+void Normal::disableVBO ( ){
+  glDisableClientState ( GL_NORMAL_ARRAY );
+  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
+}
 

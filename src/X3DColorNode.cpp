@@ -39,7 +39,8 @@ using namespace H3D;
 
 X3DColorNode::X3DColorNode( 
                            Inst< SFNode>  _metadata ) :
-  X3DGeometricPropertyNode( _metadata ) {
+  X3DGeometricPropertyNode( _metadata ),
+  GLVertexAttributeObject(VERTEXATTRIBUTE::COLOR){
   type_name = "X3DColorNode";
 }
 
