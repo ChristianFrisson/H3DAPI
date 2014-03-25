@@ -91,6 +91,9 @@ namespace H3D {
     /// VBO disabling implementation
     virtual void disableVBO ( );
 
+    /// Check if this vertex attribute needs to be rendered
+    virtual bool preRenderCheckFail ( );
+
     /// Returns the number of normals this normal node can render.
     virtual unsigned int nrAvailableNormals() {
       return vector->size();

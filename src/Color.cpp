@@ -84,18 +84,34 @@ void Color::disableArray() {
   glDisableClientState(GL_COLOR_ARRAY);
 }
 
+bool Color::preRenderCheckFail ( ){
+  return GLVertexAttributeObject::preRenderCheckFail ( ) ||
+    color->empty ( );
+}
+
 void Color::setAttributeData ( ){
-  if ( color->empty ( ) ) return;
   attrib_data = (GLvoid*)&(*color->begin ( ));
   attrib_size = color->size ( ) * 3 * sizeof(GLfloat);
 }
 
 void Color::renderVBO ( ){
   glEnableClientState ( GL_COLOR_ARRAY );
-  glColorPointer ( 3, GL_FLOAT, 0, NULL );
+  if ( use_bindless )
+  {
+    glColorFormatNV ( 3, GL_FLOAT, 0 );
+    glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+    // vbo is dedicated for this vertex attribute, so there is no offset
+    glBufferAddressRangeNV ( GL_COLOR_ARRAY_ADDRESS_NV, 0, vbo_GPUaddr, attrib_size );
+  } else
+  {
+    glColorPointer ( 3, GL_FLOAT, 0, NULL );
+  }
 }
 
 void Color::disableVBO ( ){
+  if ( use_bindless )
+  {
+    glDisableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+  }
   glDisableClientState ( GL_COLOR_ARRAY );
-  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
 }

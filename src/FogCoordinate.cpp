@@ -97,20 +97,34 @@ void FogCoordinate::disableArray() {
     glDisableClientState(GL_FOG_COORD_ARRAY);
 }
 
+bool FogCoordinate::preRenderCheckFail ( ){
+  return GLVertexAttributeObject::preRenderCheckFail()||
+    !GLEW_EXT_fog_coord || depth->empty ( );
+}
+
 void FogCoordinate::setAttributeData ( ){
-  if ( !GLEW_EXT_fog_coord || depth->empty ( ) ) return;
   attrib_data = (GLvoid*)&(*depth->begin ( ));
   attrib_size = depth->size ( ) *sizeof(GLfloat);
 }
 
 void FogCoordinate::renderVBO ( ){
   glEnableClientState ( GL_FOG_COORD_ARRAY );
-  glFogCoordPointerEXT ( GL_FLOAT, 0, NULL );
+  if ( use_bindless )
+  {
+    glFogCoordFormatNV ( GL_FLOAT, 0 );
+    glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+    // vbo is dedicated for this vertex attribute, so there is no offset
+    glBufferAddressRangeNV ( GL_FOG_COORD_ARRAY_ADDRESS_NV, 0, vbo_GPUaddr, attrib_size );
+  } else
+  {
+    glFogCoordPointerEXT ( GL_FLOAT, 0, NULL );
+  }
 }
 
 void FogCoordinate::disableVBO ( ){
-  if ( GLEW_EXT_fog_coord ) {
-    glDisableClientState ( GL_FOG_COORD_ARRAY );
-    glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
+  if ( use_bindless )
+  {
+    glDisableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
   }
+  glDisableClientState ( GL_FOG_COORD_ARRAY );
 }

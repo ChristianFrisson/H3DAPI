@@ -87,6 +87,9 @@ namespace H3D {
     /// VBO disabling implementation
     virtual void disableVBO ( );
 
+    /// Check if this vertex attribute needs to be rendered
+    virtual bool preRenderCheckFail ( );
+
     /// Returns true if the getTexCoord function is available for use.
     /// For a TextureCoordinate node it is
     inline virtual bool supportsGetTexCoord( unsigned int texture_unit ) {

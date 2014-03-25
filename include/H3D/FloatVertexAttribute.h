@@ -86,6 +86,9 @@ namespace H3D {
     /// VBO disabling implementation
     virtual void disableVBO ( );
 
+    /// Check if this vertex attribute needs to be rendered
+    virtual bool preRenderCheckFail ( );
+
      /// The value field specifies an arbitrary collection of floating point 
     /// values that will be passed to the shader as per-vertex information.
     /// The length of the value field shall be a multiple of numComponents.

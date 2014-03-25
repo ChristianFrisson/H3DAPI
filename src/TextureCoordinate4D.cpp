@@ -90,18 +90,33 @@ void TextureCoordinate4D::disableArray() {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
+bool TextureCoordinate4D::preRenderCheckFail ( ){
+  return GLVertexAttributeObject::preRenderCheckFail ( ) ||
+    point->empty ( );
+}
+
 void TextureCoordinate4D::setAttributeData ( ){
-  if ( point->empty ( ) ) return;
   attrib_data = (GLvoid*)&(*point->begin ( ));
   attrib_size = point->size ( ) * 4 * sizeof(GLfloat);
 }
 
 void TextureCoordinate4D::renderVBO ( ){
   glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
-  glTexCoordPointer ( 4, GL_FLOAT, 0, NULL );
+  if ( use_bindless )
+  {
+    glTexCoordFormatNV ( 4, GL_FLOAT, 0 );
+    glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+    // vbo is dedicated for this vertex attribute, so there is no offset
+    glBufferAddressRangeNV ( GL_TEXTURE_COORD_ARRAY_ADDRESS_NV, 0, vbo_GPUaddr, attrib_size );
+  } else{
+    glTexCoordPointer ( 4, GL_FLOAT, 0, NULL );
+  }
 }
 
 void TextureCoordinate4D::disableVBO ( ){
+  if ( use_bindless )
+  {
+    glDisableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+  }
   glDisableClientState ( GL_TEXTURE_COORD_ARRAY );
-  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
 }

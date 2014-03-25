@@ -89,6 +89,9 @@ namespace H3D {
 
     /// VBO disabling implementation
     virtual void disableVBO ( );
+
+    /// check if need to render the vertex attribute
+    virtual bool preRenderCheckFail ( );
     
     /// Returns the default xml containerField attribute value.
     /// For this node it is "fogCoord".

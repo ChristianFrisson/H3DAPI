@@ -89,6 +89,9 @@ namespace H3D {
     /// VBO disabling implementation
     virtual void disableVBO ( );
 
+    /// Check if this vertex attribute needs to be rendered
+    virtual bool preRenderCheckFail ( );
+
     /// A vector of Vec3f defining points in 3d-space.
     ///
     /// <b>Access type:</b> inputOutput \n

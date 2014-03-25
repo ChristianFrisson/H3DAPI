@@ -62,6 +62,9 @@ namespace H3D {
     /// to specify the actual render disable function
     virtual void disableVBO ( ) = 0;
 
+    /// pre-render check to dertermine if need to render this vertex attribute
+    virtual bool preRenderCheckFail( );
+
     /// Perform the OpenGL commands to render all vertices as a vertex
     /// buffer object.
     void renderVertexBufferObject ( );
@@ -92,6 +95,14 @@ namespace H3D {
 
     // the type of vertex attribute
     VERTEXATTRIBUTE::VERTEXATTRIBUTETYPE attrib_type;
+
+
+    // address of the vertex buffer object, will be used for binless
+    // vertex attribute
+    GLuint64 vbo_GPUaddr;
+
+    bool use_bindless;
+    
   };
 }
 

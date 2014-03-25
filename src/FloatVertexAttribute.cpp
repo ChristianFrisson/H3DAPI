@@ -116,25 +116,38 @@ void FloatVertexAttribute::disableArray() {
   }
 }
 
+bool FloatVertexAttribute::preRenderCheckFail ( ){
+  return GLVertexAttributeObject::preRenderCheckFail ( ) ||
+    value->empty ( ) || attrib_index < 0;
+}
+
 void FloatVertexAttribute::setAttributeData ( ){
-  if ( value->empty ( )|| attrib_index<0 ) return;
   attrib_data = (GLvoid*)&(*value->begin ( ));
   attrib_size = value->size ( )*sizeof(GLfloat);
 }
 
 void FloatVertexAttribute::renderVBO ( ){
   glEnableVertexAttribArrayARB ( attrib_index );
-  glVertexAttribPointerARB ( attrib_index,
-    numComponents->getValue ( ),
-    GL_FLOAT,
-    GL_FALSE,
-    0,
-    0 );
+  if ( use_bindless )
+  {
+    glVertexAttribFormatNV ( attrib_index, numComponents->getValue(), GL_FLOAT, GL_FALSE, 0 );
+    glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+    // vbo is dedicated for this vertex attribute, so there is no offset
+    glBufferAddressRangeNV ( GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV, attrib_index, vbo_GPUaddr, attrib_size );
+  } else{
+    glVertexAttribPointerARB ( attrib_index,
+      numComponents->getValue ( ),
+      GL_FLOAT,
+      GL_FALSE,
+      0,
+      0 );
+  }
 }
 
 void FloatVertexAttribute::disableVBO ( ){
-  if ( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
-    glDisableVertexAttribArrayARB ( attrib_index );
-    glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
+  if ( use_bindless )
+  {
+    glDisableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
   }
+  glDisableVertexAttribArrayARB ( attrib_index );
 }

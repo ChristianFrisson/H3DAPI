@@ -85,19 +85,36 @@ void Normal::disableArray() {
   glDisableClientState(GL_NORMAL_ARRAY);
 }
 
+bool Normal::preRenderCheckFail ( ){
+  return GLVertexAttributeObject::preRenderCheckFail ( ) ||
+    vector->empty ( );
+}
+
 void Normal::setAttributeData ( ){
-  if ( vector->empty() ) return;
   attrib_data = (GLvoid*)&(*vector->begin ( ));
   attrib_size = vector->size ( ) * 3 * sizeof(GLfloat);
 }
 
 void Normal::renderVBO ( ){
   glEnableClientState ( GL_NORMAL_ARRAY );
-  glNormalPointer ( GL_FLOAT, 0, NULL );
+  if ( use_bindless )
+  {
+    glNormalFormatNV ( GL_FLOAT, 0 );
+    glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+    // vbo is dedicated for this vertex attribute, so there is no offset
+    glBufferAddressRangeNV ( GL_NORMAL_ARRAY_ADDRESS_NV, 0, vbo_GPUaddr, attrib_size );
+  } else
+  {
+    glNormalPointer ( GL_FLOAT, 0, NULL );
+  }
+  
 }
 
 void Normal::disableVBO ( ){
+  if ( use_bindless )
+  {
+    glDisableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+  }
   glDisableClientState ( GL_NORMAL_ARRAY );
-  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
 }
 

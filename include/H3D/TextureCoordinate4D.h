@@ -87,6 +87,9 @@ namespace H3D {
     /// VBO disabling implementation
     virtual void disableVBO ( );
 
+    /// Check if this vertex attribute needs to be rendered
+    virtual bool preRenderCheckFail ( );
+
     /// Returns the number of texture coordinates this node can render.
     virtual unsigned int nrAvailableTexCoords() {
       return point->size();

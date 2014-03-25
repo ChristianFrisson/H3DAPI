@@ -81,18 +81,34 @@ void CoordinateDouble::disableArray() {
   glDisableClientState(GL_VERTEX_ARRAY);
 }
 
+bool CoordinateDouble::preRenderCheckFail ( )  {
+  return GLVertexAttributeObject::preRenderCheckFail ( ) ||
+    point->empty ( );
+}
+
 void CoordinateDouble::setAttributeData ( ){
-  if ( point->empty ( ) ) return;
   attrib_data = (GLvoid*)&(*point->begin ( ));
   attrib_size = point->size ( ) * 3 * sizeof(GLdouble);
 }
 
 void CoordinateDouble::renderVBO ( ){
   glEnableClientState ( GL_VERTEX_ARRAY );
-  glVertexPointer ( 3, GL_DOUBLE, 0, NULL );
+  if ( use_bindless )
+  {
+    glVertexFormatNV ( 3, GL_DOUBLE, 0 );
+    glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+    // vbo is dedicated for this vertex attribute, so there is no offset
+    glBufferAddressRangeNV ( GL_VERTEX_ARRAY_ADDRESS_NV, 0, vbo_GPUaddr, attrib_size );
+  } else
+  {
+    glVertexPointer ( 3, GL_DOUBLE, 0, NULL );
+  }
 }
 
 void CoordinateDouble::disableVBO ( ){
+  if ( use_bindless )
+  {
+    glDisableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+  }
   glDisableClientState ( GL_VERTEX_ARRAY );
-  glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
 }

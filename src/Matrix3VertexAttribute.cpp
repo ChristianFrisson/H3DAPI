@@ -120,8 +120,12 @@ void Matrix3VertexAttribute::disableArray() {
   }
 }
 
+bool Matrix3VertexAttribute::preRenderCheckFail ( ){
+  return GLVertexAttributeObject::preRenderCheckFail ( ) ||
+    value->empty ( ) || attrib_index < 0;
+}
+
 void Matrix3VertexAttribute::setAttributeData ( ) {
-  if ( value->empty ( )||!GLEW_ARB_vertex_program||attrib_index<0 ) return;
   GLfloat *data = new GLfloat[9 * value->size ( )];
   for ( unsigned int i = 0; i < value->size ( ); ++i ) {
     const Matrix3f &m = value->getValueByIndex ( i );
@@ -141,18 +145,27 @@ void Matrix3VertexAttribute::setAttributeData ( ) {
 
 void Matrix3VertexAttribute::renderVBO ( ){
   glEnableVertexAttribArrayARB ( attrib_index );
-  glVertexAttribPointerARB ( attrib_index,
-    3,
-    GL_FLOAT,
-    GL_FALSE,
-    0,
-    0 );
+  if ( use_bindless )
+  {
+    glVertexAttribFormatNV ( attrib_index, 3, GL_FLOAT, GL_FALSE, 0 );
+    glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+    // vbo is dedicated for this vertex attribute, so there is no offset
+    glBufferAddressRangeNV ( GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV, attrib_index, vbo_GPUaddr, attrib_size );
+  } else{
+    glVertexAttribPointerARB ( attrib_index,
+      3,
+      GL_FLOAT,
+      GL_FALSE,
+      0,
+      0 );
+  }
 }
 
 void Matrix3VertexAttribute::disableVBO ( ){
-  if ( GLEW_ARB_vertex_program && attrib_index >= 0 ) {
-    glDisableVertexAttribArrayARB ( attrib_index );
-    glBindBufferARB ( GL_ARRAY_BUFFER_ARB, 0 );
+  if ( use_bindless )
+  {
+    glDisableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
   }
+  glDisableVertexAttribArrayARB ( attrib_index );
 }
 
