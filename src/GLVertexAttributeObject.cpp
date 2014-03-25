@@ -51,7 +51,7 @@ bool GLVertexAttributeObject::preRenderCheckFail ( ){
   return !GLEW_ARB_vertex_program;
 }
 void GLVertexAttributeObject::updateVertexBufferObject ( ){
-  if (preRenderCheckFail ( )) return;
+  
   if ( !vboFieldsUpToDate->isUpToDate() ){
     vboFieldsUpToDate->upToDate ( );
     setAttributeData();
@@ -83,7 +83,7 @@ void GLVertexAttributeObject::updateVertexBufferObject ( ){
 }
 
 void GLVertexAttributeObject::renderVertexBufferObject ( ){
-
+  if ( preRenderCheckFail ( ) ) return;
   updateVertexBufferObject ( );
   renderVBO ( );
 
