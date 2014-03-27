@@ -100,7 +100,7 @@ namespace H3D {
     /// point values should be grouped together per vertex.
     /// 
     /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> 0 \n
+    /// <b>Default value:</b> 4 \n
     /// <b>Valid range:</b> [1-4]
     auto_ptr< SFInt32 > numComponents;
 
