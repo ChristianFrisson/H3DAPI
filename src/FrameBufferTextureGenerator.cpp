@@ -516,7 +516,6 @@ void FrameBufferTextureGenerator::render()     {
 
   X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
   
-  Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
   bool use_local_viewpoint = true;
   if( useNavigation->getValue()||!vp ) { 
     // when useNavigation or no local viewpoint exist, use current active viewpoint
@@ -553,13 +552,12 @@ void FrameBufferTextureGenerator::render()     {
     }
     X3DViewpointNode::EyeMode eye_mode = X3DViewpointNode::MONO;
     StereoInfo* stereo_info = NULL;
-    if( useStereo->getValue() ) {
-      Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
-      H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
-      eye_mode = window->getEyeMode();
-      if( eye_mode!=X3DViewpointNode::MONO ) {
-        stereo_info = StereoInfo::getActive();
-      }
+    Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
+    H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
+    if( useStereo->getValue()&&window->getEyeMode()!=eye_mode ) {
+      // when current active eyemode is not MONO and FBO need to use stereo, need to specify 
+      // stereo_info
+      stereo_info = StereoInfo::getActive();
     }
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
