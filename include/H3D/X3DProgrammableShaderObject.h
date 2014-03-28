@@ -62,8 +62,7 @@ namespace H3D {
     public H3DDynamicFieldsObject {
   public:
     /// Constructor. 
-    X3DProgrammableShaderObject( H3DNodeDatabase *_database ):
-      H3DDynamicFieldsObject( _database ) {}
+    X3DProgrammableShaderObject( H3DNodeDatabase *_database ) {}
 
     /// Destructor.
     virtual ~X3DProgrammableShaderObject();

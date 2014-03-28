@@ -50,7 +50,6 @@ Script::Script( Inst< SFNode   > _metadata,
                 Inst< SFBool   > _directOutput,
                 Inst< SFBool   > _mustEvaluate ) : 
 X3DScriptNode( _metadata, _url ),
-H3DDynamicFieldsObject( &database ),
 directOutput( _directOutput ),
 mustEvaluate( _mustEvaluate ) {
   type_name = "Script";

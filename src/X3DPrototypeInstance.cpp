@@ -42,7 +42,6 @@ H3DNodeDatabase X3DPrototypeInstance::database(
 
 X3DPrototypeInstance::X3DPrototypeInstance( Inst< SFNode>  _metadata ):
   X3DNode( _metadata ),
-  H3DDynamicFieldsObject( &database ),
   H3DBoundedObject(),
   prototyped_node( NULL ) {
   type_name = "X3DPrototypeInstance";
