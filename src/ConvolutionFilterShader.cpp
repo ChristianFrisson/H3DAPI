@@ -167,7 +167,8 @@ string ConvolutionFilterShader::getFragmentShaderString() {
     s << "  const int texture_width =  " << textureWidth->getValueAsString() <<"; "<<endl;
     s << "  const int texture_height = " << textureHeight->getValueAsString() << "; "<<endl;
     s << "  // the step in texture coordinates between each pixel " << endl;
-    s << "  const vec2 pixel_step = vec2( 1.0 / float( texture_width ), 1.0 / float( texture_height ) ); " << endl;
+    s << "  const vec2 pixel_step = vec2( (1.0+" << pixelStepOffset->getValueAsString ( ) 
+      << ") / float( texture_width ), (1.0+" << pixelStepOffset->getValueAsString ( ) << ") / float( texture_height ) ); " << endl;
     string weightsInString = "";
     for( unsigned int i = 0; i< weights->size(); ++i ) {
 			stringstream ss;
@@ -207,7 +208,7 @@ string ConvolutionFilterShader::getFragmentShaderString() {
     s << "  vec4 color = vec4( 0.0, 0.0, 0.0, 0.0 ); " << endl;
     s << "  for( int v = min_index_v; v <= max_index_v; v++ ) { " << endl;
     s << "    for( int h = min_index_h; h <= max_index_h; h++ ) { " << endl;
-    s << "       vec2 tc = vec2( h,v )*(pixel_step+vec2("<<pixelStepOffset->getValueAsString()<<")) + gl_TexCoord[0].st; " << endl;
+    s << "       vec2 tc = vec2( h,v )*pixel_step + gl_TexCoord[0].st; " << endl;
     s << "       tc = clamp(tc,vec2(0),vec2(1));" << endl;
     s << "       color = texture2D( " << uniqueShaderName("texture") 
       << ", tc  ) * " <<"weights[index] + color; " << endl;

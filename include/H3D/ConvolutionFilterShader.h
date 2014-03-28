@@ -151,7 +151,8 @@ namespace H3D {
     auto_ptr< SFInt32  > kernelSize;
 
     /// The pixelStepOffset is used to add customized offset to the pixel step
-    /// using in convolving, this value is supposed to be quite small.
+    /// using in convolving, the metric of this value is pixel, so please keep 
+    /// this value relatively small as too many pixel offset will make result strange.
     /// By using this value, you can enhance or weaken the convolving effect with
     /// slight artifact while no extra texture read
     /// <b>Access type:</b> inputOutput
