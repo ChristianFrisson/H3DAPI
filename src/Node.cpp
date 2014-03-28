@@ -209,7 +209,7 @@ void Node::cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMa
 }
 
 Field *Node::getField( const string &name ) {
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *this ) );
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( this );
   if ( db )
     return db->getField( this, name ); 
   else

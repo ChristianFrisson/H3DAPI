@@ -169,7 +169,7 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
   bool expand_new_id = ( expand == H3DViewerTreeViewDialog::EXPAND_ALL || 
                         (expand == H3DViewerTreeViewDialog::EXPAND_GROUP && (dynamic_cast< X3DGroupingNode * >( n ) || dynamic_cast< Scene * >( n ) ) ) );
   // recursively add all the child nodes of the node to the tree
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( n );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); //n->getField( *i );
@@ -242,7 +242,7 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
 
       // find all child nodes of the node
       list< pair< H3D::Node *, string > > child_nodes;
-      H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *id_node ) );
+      H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( id_node );
       for( H3DNodeDatabase::FieldDBConstIterator j = db->fieldDBBegin();
            db->fieldDBEnd() != j; ++j ) {
          Field *f = j.getField( id_node ); //Field *f = id_node->getField( *j );
@@ -412,7 +412,7 @@ void H3DViewerTreeViewDialog::collectAllTriangles( Node *n,
   MatrixTransform *t = dynamic_cast< MatrixTransform * >( n );
   Matrix4f new_transform = t ? t->matrix->getValue() * transform :transform;
 
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( n );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); 

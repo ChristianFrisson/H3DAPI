@@ -98,6 +98,8 @@ void H3DViewerFieldValuesPanel::displayFieldsFromNode( Node *n ) {
     return;
   }
 
+  // Not accessing the fields here. createNode does not need the
+  // db specific to this node instance.
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
 
 #ifdef DEFAULT_VALUES
@@ -120,7 +122,7 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
     FieldValuesGrid->SaveEditControlValue();
   }
 
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( n );
 
   list< FieldDBElement * > init_only_fields;
   list< FieldDBElement * > input_only_fields;

@@ -441,7 +441,7 @@ self, deepCopy )" );
   
   PyObject* PyNode::getFieldList( PyObject *myself ) {
     PyNode *n = (PyNode*)myself;
-    H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *(n->ptr) ) );
+    H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( n->ptr );
     // Can't set the size of the list beforehand since dynamic nodes are not
     // handled correctly then (they would get too many fields).
     PyObject *list = PyList_New( 0 );

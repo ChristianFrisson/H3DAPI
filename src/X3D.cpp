@@ -433,7 +433,7 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
   }
 
   
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *node ) );
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( node );
   string node_name = node->getTypeName();
 
   // construct a unique name for this node.

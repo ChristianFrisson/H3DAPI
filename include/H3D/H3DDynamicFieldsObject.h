@@ -42,14 +42,14 @@ namespace H3D {
   /// 
   class H3DAPI_API H3DDynamicFieldsObject {
   public:
-    /// Constructor. 
+    /// Constructor.
+		/// \deprecated Use the one without explicit database pointer input ( the default )
+		/// The argument to this constructor will be ignored.
     H3DDynamicFieldsObject( H3DNodeDatabase *_database ):
-      database( _database ), inherited_node( 0 ) {}
+      database( NULL ), inherited_node( NULL ) {}
 
     /// Destructor. Virtual to make H3DDynamicFieldsObject a polymorphic type.
     virtual ~H3DDynamicFieldsObject() {
-      // Remove dynamic fields from database.
-      database->clearDynamicFields( inherited_node );
     }
 
     /// Add a field to the Node. 
@@ -63,18 +63,24 @@ namespace H3D {
                                   const Field::AccessType &access,
                                   Field *field ) {
       Node *n = dynamic_cast< Node * >( this );
-      if( n && !database->getField( n, name.c_str() ) ) {
-        // Set the placeholder to the node address.
-        inherited_node = n;
-        field->setOwner( n );
-        field->setName( name );
-        field->setAccessType( access );
-        database->addField( new DynamicFieldDBElement( database,
-                                                       name.c_str(),
-                                                       access,
-                                                       field ) );
-        dynamic_fields.push_back( field );
-        return true;
+      if( n ) {
+				if( !database.get() ) {
+					H3DNodeDatabase *parent_db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+					database.reset( new H3DNodeDatabase( n, parent_db ) );
+				}
+				if( !database->getField( n, name ) ) {
+					// Set the placeholder to the node address.
+					inherited_node = n;
+					field->setOwner( n );
+					field->setName( name );
+					field->setAccessType( access );
+					database->addField( new DynamicFieldDBElement( database.get(),
+																												 name,
+																												 access,
+																												 field ) );
+					dynamic_fields.push_back( field );
+					return true;
+				}
       }
       return false;
     }
@@ -103,7 +109,7 @@ namespace H3D {
     //    bool removeField( const string &name );
 
   protected:
-    H3DNodeDatabase *database;
+    auto_ptr< H3DNodeDatabase > database;
     AutoPtrVector< Field > dynamic_fields;
     // Holds a pointer to the node instance to which dynamic fields
     // belong to. Note that this pointer should only be used for pointer
@@ -116,6 +122,11 @@ namespace H3D {
     // result in an invalid value for dynamic_cast< Node * >(this) 
     // and the database is then not cleaned up properly.
     Node * inherited_node;
+	public:
+		
+		/// Constructor
+		H3DDynamicFieldsObject():
+      database( NULL ), inherited_node( NULL ) {}
   };
 }
 

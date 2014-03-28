@@ -323,7 +323,7 @@ void H3DViewerPopupMenus::OnTreeViewDeleteNode( wxCommandEvent& event ) {
 
   Node *n = (*ni_parent).second.get();
 
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( n );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( n ); 
@@ -370,7 +370,7 @@ void H3DViewerPopupMenus::OnTreeViewAddChildNode( wxCommandEvent& event ) {
   vector< wxString > node_fields;
 
   Node *selected_node = (*ni).second.get();
-  H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *selected_node ) );
+  H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( selected_node );
   for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
        db->fieldDBEnd() != i; ++i ) {
     Field *f = i.getField( selected_node ); 

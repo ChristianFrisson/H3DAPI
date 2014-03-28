@@ -428,7 +428,7 @@ namespace H3D {
       }
 
       // Iterate over all fields and recurse into children
-      H3DNodeDatabase* db= H3DNodeDatabase::lookupTypeId( typeid( _node ) );
+      H3DNodeDatabase* db= H3DNodeDatabase::lookupNodeInstance( &_node );
 
       for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
            db->fieldDBEnd() != i; ++i ) {

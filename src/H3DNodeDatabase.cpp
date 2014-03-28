@@ -45,7 +45,8 @@ H3DNodeDatabase::H3DNodeDatabase( const string &_name,
 name( _name ), 
 createf( _createf ),
 ti( _ti ),
-parent( _parent ) {
+parent( _parent ),
+database_allocated_dynamic( false ) {
   if (!initialized) {
     database = new H3DNodeDatabaseType;
     initialized = true;
@@ -61,7 +62,8 @@ H3DNodeDatabase::H3DNodeDatabase( const string &_name,
 name( _name ), 
 createf( _createf ),
 ti( _ti ),
-parent( _parent ) {
+parent( _parent ),
+database_allocated_dynamic( false ) {
   if (!initialized) {
     database = new H3DNodeDatabaseType;
     initialized = true;
@@ -77,7 +79,8 @@ H3DNodeDatabase::H3DNodeDatabase( const type_info &_ti,
 name( "" ),
 createf( NULL ),
 ti( _ti ),
-parent( _parent ) {
+parent( _parent ),
+database_allocated_dynamic( false ) {
   if (!initialized) {
     database = new H3DNodeDatabaseType;
     initialized = true;
@@ -92,13 +95,35 @@ H3DNodeDatabase::~H3DNodeDatabase(void){
 
   if(initialized) {
     // remove entry from global database
-    for( H3DNodeDatabaseType::iterator i = database->begin();
-	 i != database->end(); ++i ) {
-      if( (*i).second == this ) {
-	database->erase( i );
-	break;
-      }
-    }
+		if( !database_allocated_dynamic ) {
+			for( H3DNodeDatabaseType::iterator i = database->begin();
+					 i != database->end(); ++i ) {
+				if( (*i).second == this ) {
+					database->erase( i );
+					break;
+				}
+			}
+		}
+
+		for( H3DNodeInstanceDatabase::iterator i = node_instance_database.begin();
+				 i != node_instance_database.end(); ++i ) {
+			(*i).second->parent = NULL;
+		}
+		node_instance_database.clear();
+
+		if( database_allocated_dynamic ) {
+			// Using lookupTypeID since we can't be sure that the parent variable is still alive.
+			H3DNodeDatabase *parent_db = H3DNodeDatabase::lookupTypeId( ti );
+			if( parent_db ) {
+				for( H3DNodeInstanceDatabase::iterator i = parent_db->node_instance_database.begin();
+						 i != parent_db->node_instance_database.end(); ++i ) {
+					if( (*i).second == this ) {
+						parent_db->node_instance_database.erase( i );
+						break;
+					}
+				}
+			}
+		}
 
     // remove static database if last entry.
     if( database->empty() ){
@@ -141,16 +166,7 @@ Field *H3DNodeDatabase::getFieldHelp( Node *n, const string &f ) const {
     const string &name = (*i).first;
     if ( name == f )
       return fdb->getField( n );
-
-    // check for dynamic field.
-    ostringstream namestr;
-    namestr << fdb << "_" << f; 
-    if( namestr.str() == name ) {
-      Field *the_field = fdb->getField( n );
-      if( the_field )
-        return the_field;
-    }
-  }    
+  }
   if ( parent )
     return parent->getField( n, f );
   else
@@ -178,15 +194,19 @@ Field *H3DNodeDatabase::getField( Node *n, const string &name ) const {
 
 void H3DNodeDatabase::addField( FieldDBElement *f ) {
   string tmp_name = f->getName();
-  DynamicFieldDBElement *f_ptr = dynamic_cast< DynamicFieldDBElement *>(f);
-  if( f_ptr && fields.find( tmp_name ) == fields.end() ) {
-    // If the field is added at run-time it should not overwrite an
-    // existing non-runtime-added field.
-    ostringstream namestr;
-    namestr << f << "_" << tmp_name; 
-    tmp_name = namestr.str();
-  }
-  fields[tmp_name] = f;
+	if( database_allocated_dynamic ) {
+		FieldDBConstIterator i = fieldDBBegin();
+		for( ; fieldDBEnd() != i; ++i )
+			if( tmp_name == (*i) ) break;
+		if( i == fieldDBEnd() ) fields[tmp_name] = f;
+	} else {
+		// In the case of static intialized databases the lower-most node in
+		// an inheritance hierarchy decides how a field should look. Therefore we
+		// only check its own fields. The other reason is also that
+		// fieldDBBegin() can't be used in the static initialization sequence
+		// because of how the parent is referenced.
+		if( fields.find( tmp_name ) == fields.end() ) fields[tmp_name] = f;
+	}
 }
 
 H3DNodeDatabase *H3DNodeDatabase::lookupTypeId( const type_info &t ) {
@@ -330,4 +350,29 @@ H3DNodeDatabase::FieldDBConstIterator & H3DNodeDatabase::FieldDBConstIterator::o
     inherited_iterator.reset( NULL );
   }
   return *this;
+}
+
+H3DNodeDatabase::H3DNodeDatabase( Node * n,
+																	H3DNodeDatabase *_parent ) :
+name( _parent->name ),
+createf( _parent->createf ),
+ti( _parent->ti ),
+parent( _parent ),
+database_allocated_dynamic( true ) {
+  if (!initialized) {
+    database = new H3DNodeDatabaseType;
+    initialized = true;
+  }
+	aliases = parent->aliases;
+	parent->node_instance_database[n] = this;
+}
+
+H3DNodeDatabase *H3DNodeDatabase::lookupNodeInstance( Node * n ) {
+	H3DNodeDatabase *db_candidate = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+  if( db_candidate ) {
+		H3DNodeInstanceDatabase::iterator pos = db_candidate->node_instance_database.find( n );
+		if( pos != db_candidate->node_instance_database.end() )
+			return (*pos).second;
+	}
+	return db_candidate;
 }
