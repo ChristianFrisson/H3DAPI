@@ -99,7 +99,8 @@ namespace H3D {
 
     /// Remove all dynamic fields that have been previously added.
     inline void clearFields() {
-      database->clearDynamicFields(inherited_node);
+      if( database.get() )
+        database->clearDynamicFields(inherited_node);
       dynamic_fields.clear();
     }
 
