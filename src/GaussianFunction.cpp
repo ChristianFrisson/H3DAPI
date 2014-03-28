@@ -61,6 +61,10 @@ GaussianFunction::GaussianFunction( Inst< SFNode  > _metadata,
   center->setValue( 0 );
   amplitude->setValue( 1 );
   width->setValue( 1 );
+
+  center->route ( functionChanged );
+  amplitude->route ( functionChanged );
+  width->route ( functionChanged );
 }
 
 H3DDouble GaussianFunction::evaluate( H3DDouble *x ) {
