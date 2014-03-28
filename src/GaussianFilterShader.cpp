@@ -83,9 +83,13 @@ std::vector<float> GaussianFilterShader::gauss2D(int width, int height, float si
         g = result[(width-x-1)*width+y];
       else if(x<midX&&y>midY)
         g = result[x*width+(height-y-1)];
-      else
-        g = (float) ( 1/(2.0*H3DUtil::Constants::pi*sigma*sigma)*H3DUtil::H3DExp(-(x*x+y*y)/(2*sigma*sigma)) );
-      result[x*width+y] = g;
+      else {
+        H3DFloat i_x = x - midX;
+        H3DFloat i_y = y - midY;
+        g = (float) ( 1/(2.0*H3DUtil::Constants::pi*sigma*sigma)*H3DUtil::H3DExp(-(i_x*i_x+i_y*i_y)/(2*sigma*sigma)) );
+
+      }
+     result[x*width+y] = g;
       sum += g;
     }
   }
