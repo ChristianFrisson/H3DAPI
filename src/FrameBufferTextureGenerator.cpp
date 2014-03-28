@@ -557,6 +557,7 @@ void FrameBufferTextureGenerator::render()     {
     if( useStereo->getValue()&&window->getEyeMode()!=eye_mode ) {
       // when current active eyemode is not MONO and FBO need to use stereo, need to specify 
       // stereo_info
+      eye_mode = window->getEyeMode ( );
       stereo_info = StereoInfo::getActive();
     }
     glMatrixMode( GL_MODELVIEW );
