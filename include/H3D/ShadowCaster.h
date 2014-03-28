@@ -34,15 +34,19 @@
 #include <H3D/X3DChildNode.h>
 #include <H3D/X3DLightNode.h>
 #include <H3D/MFNode.h>
+#include <H3D/Shape.h> 
 #include <H3D/SFString.h>
+#include <H3D/X3DShaderNode.h>
+#include <H3D/DEFNodes.h>
 
 namespace H3D {
 
+  class FrameBufferTextureGenerator;
   /// \ingroup H3DNodes
   /// \class ShadowCaster
   /// The ShadowCaster node uses shadow volumes using stencil buffer
   /// to cast shadows from objects in a scene. 
-  ///
+  /// 
   /// NOTE! Do not use this node unless you really need to. If you 
   /// just want to use shadows please use the shadow field in the 
   /// Appearance node for a much easier way of adding shadows.
@@ -74,6 +78,11 @@ namespace H3D {
   /// that casts the shadow(flickering). If this happens increase this value.
   /// The value needed depends on the precision of the depth buffer.
   ///
+  /// The shadowShader field can contain a shader to perform effects
+  /// on the shadow volume texture(stencil buffer) before it is applied to the scene.
+  /// Can be used e.g. with a GaussianFilterShader to make softer edges.
+  /// Any shader put into the shadowShader field needs to have the field
+  /// "texture" in it which will be used as input to the shadow volume texture.
   ///
   /// The ShadowCaster node is affected by the transform hierarchy
   /// that it is in and all objects and lighs are specified in 
@@ -92,6 +101,7 @@ namespace H3D {
 
     typedef TypedMFNode< X3DLightNode > MFLightNode;
     typedef TypedMFNode< H3DShadowObjectNode > MFShadowObjectNode;
+    typedef TypedSFNode< X3DShaderNode > SFShaderNode;
 
     /// Constructor.
     ShadowCaster( Inst< SFNode             > _metadata = 0,
@@ -100,12 +110,12 @@ namespace H3D {
                   Inst< SFFloat            > _shadowDarkness = 0,
                   Inst< SFFloat            > _shadowDepthOffset = 0,
                   Inst< DisplayList        > _displayList = 0,
-                  Inst< SFString           > _algorithm = 0 );
+                  Inst< SFString           > _algorithm = 0,
+                  Inst< SFShaderNode       > _shadowShader = 0 );
 
     /// OpenGL render function.
     virtual void render();
 
-    /// Add headlight to light field, if it is enabled in currently bound NavigationInfo
     void addHeadLight();
 
     /// The objects that should cast shadows.
@@ -159,8 +169,37 @@ namespace H3D {
     /// \dotfile ShadowCaster_algorithm.dot
     auto_ptr< SFString > algorithm;
 
+    /// The shadowShader field can contain a shader to perform effects
+    /// on the shadow volume texture(stencil buffer) before it is applied to the scene.
+    /// Can be used e.g. with a GaussianFilterShader to make softer edges.
+    /// Any shader put into the shadowShader field needs to have the field
+    /// "texture" in it which will be used as input to the shadow volume texture.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> NULL \n
+    /// \dotfile ShadowCaster_shadowShader.dot
+    auto_ptr< SFShaderNode > shadowShader;
+
     /// The H3DNodeDatablase object for this node.
     static H3DNodeDatabase database;
+
+  protected:
+    // Internal fbo that renders the main stencil buffer to a RGBA texture.
+    AutoRef< FrameBufferTextureGenerator > generator;
+
+    // DEFNodes of the nodes in shape.
+    X3D::DEFNodes dn;
+
+    // holds the Shape used to render the texture from generator onto
+    // a FullscreenRectangle with shadowShader applied.
+    AutoRef<Shape> shape;
+
+    // the shader that was used last loop.
+    X3DShaderNode *last_shader;
+
+    // Callback function to FrameBufferTextureGenerator to render the stencil buffer
+    // to an fbo. 
+    static void renderShadows( FrameBufferTextureGenerator *fbo, int i, void *args );
    
   };
 }

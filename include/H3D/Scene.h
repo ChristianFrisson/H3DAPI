@@ -173,6 +173,10 @@ namespace H3D {
     inline SAI::Browser *getSAIBrowser() {
       return &SAI_browser;
     }
+
+    ShadowCaster *getDefaultShadowCaster() {
+      return shadow_caster.get();
+    }
     
     /// Static function that is called to start the main event loop.
     /// Before this function is called at least one instance

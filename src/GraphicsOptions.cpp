@@ -34,10 +34,10 @@ using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase GraphicsOptions::database( "GraphicsOptions", 
-					   "GraphicsCachingOptions", 
-					   &(newInstance<GraphicsOptions>),
-					   typeid( GraphicsOptions ),
-					   &H3DOptionNode::database );
+                                           "GraphicsCachingOptions", 
+                                           &(newInstance<GraphicsOptions>),
+                                           typeid( GraphicsOptions ),
+                                           &H3DOptionNode::database );
 
 namespace GraphicsOptionsInternals {
   FIELDDB_ELEMENT( GraphicsOptions, useCaching, INPUT_OUTPUT );
@@ -49,19 +49,21 @@ namespace GraphicsOptionsInternals {
   FIELDDB_ELEMENT( GraphicsOptions, defaultShadowDepthOffset, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsOptions, defaultShadowGeometryAlgorithm, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsOptions, preferVertexBufferObject, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, defaultShadowCaster, INPUT_OUTPUT );
 }
 
 GraphicsOptions::GraphicsOptions( 
-                           Inst< SFNode>  _metadata,
-                           Inst< SFBool  > _useCaching,
-                           Inst< SFInt32 > _cachingDelay,
-                           Inst< SFBool  > _cacheOnlyGeometryNodes,
-                           Inst< SFString > _frustumCullingMode,
-                           Inst< SFBool  > _useDefaultShadows,
-                           Inst< SFFloat > _defaultShadowDarkness,
-                           Inst< SFFloat > _defaultShadowDepthOffset,
-                           Inst< SFBool > _preferVertexBufferObject,
-                           Inst< SFString > _defaultShadowGeometryAlgorithm ) :
+                                 Inst< SFNode>  _metadata,
+                                 Inst< SFBool  > _useCaching,
+                                 Inst< SFInt32 > _cachingDelay,
+                                 Inst< SFBool  > _cacheOnlyGeometryNodes,
+                                 Inst< SFString > _frustumCullingMode,
+                                 Inst< SFBool  > _useDefaultShadows,
+                                 Inst< SFFloat > _defaultShadowDarkness,
+                                 Inst< SFFloat > _defaultShadowDepthOffset,
+                                 Inst< SFBool > _preferVertexBufferObject,
+                                 Inst< SFString > _defaultShadowGeometryAlgorithm,
+                                 Inst< SFShadowCaster > _defaultShadowCaster ) :
   H3DOptionNode( _metadata ),
   useCaching( _useCaching ),
   cachingDelay( _cachingDelay ),
@@ -71,7 +73,8 @@ GraphicsOptions::GraphicsOptions(
   defaultShadowDarkness( _defaultShadowDarkness ),
   defaultShadowDepthOffset( _defaultShadowDepthOffset ),
   preferVertexBufferObject( _preferVertexBufferObject ),
-  defaultShadowGeometryAlgorithm( _defaultShadowGeometryAlgorithm ) {
+  defaultShadowGeometryAlgorithm( _defaultShadowGeometryAlgorithm ),
+  defaultShadowCaster( _defaultShadowCaster ) {
   
   type_name = "GraphicsOptions";
   database.initFields( this );
@@ -85,6 +88,7 @@ GraphicsOptions::GraphicsOptions(
   defaultShadowDepthOffset->route( updateOption );
   preferVertexBufferObject->route( updateOption );
   defaultShadowGeometryAlgorithm->route( updateOption );
+  defaultShadowCaster->route( updateOption );
 
   useCaching->setValue( true );
   cachingDelay->setValue( 5 );
@@ -100,6 +104,10 @@ GraphicsOptions::GraphicsOptions(
   defaultShadowGeometryAlgorithm->addValidValue( "GEOMETRY_SHADER" );
   defaultShadowGeometryAlgorithm->addValidValue( "CPU" );
   defaultShadowGeometryAlgorithm->setValue( "GEOMETRY_SHADER" );
+
+  if( !Scene::scenes.empty() ) {
+    defaultShadowCaster->setValue( (*Scene::scenes.begin())->getDefaultShadowCaster() );
+  }
 }
 
 

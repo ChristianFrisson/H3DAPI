@@ -33,6 +33,7 @@
 #include <H3D/SFBool.h>
 #include <H3D/SFInt32.h>
 #include <H3D/X3DGeometryNode.h>
+#include <H3D/ShadowCaster.h>
 
 namespace H3D {
 
@@ -45,6 +46,8 @@ namespace H3D {
   ///     ( <a href="examples/GraphicsOptions.x3d.html">Source</a> )
   class H3DAPI_API GraphicsOptions : public H3DOptionNode {
   public:
+
+    typedef TypedSFNode< ShadowCaster > SFShadowCaster;
     
     /// Constructor.
     GraphicsOptions( Inst< SFNode  > _metadata = 0,
@@ -56,7 +59,8 @@ namespace H3D {
                      Inst< SFFloat > _defaultShadowDarkness = 0,
                      Inst< SFFloat > _defaultShadowDepthOffset = 0,
                      Inst< SFBool > _preferVertexBufferObject = 0,
-                     Inst< SFString > _defaultShadowGeometryAlgorithm = 0 );
+                     Inst< SFString > _defaultShadowGeometryAlgorithm = 0,
+                     Inst< SFShadowCaster > _defaultShadowCaster = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -166,6 +170,11 @@ namespace H3D {
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFString > defaultShadowGeometryAlgorithm;
 
+    /// The defaultShadowCaster field contains the ShadowCaster node
+    /// used for default shadows.
+    ///
+    /// <b>Access type: </b> outputOnly \n
+    auto_ptr< SFShadowCaster > defaultShadowCaster;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

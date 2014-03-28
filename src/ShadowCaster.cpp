@@ -32,6 +32,8 @@
 #include <H3D/X3DShapeNode.h>
 #include <H3D/DirectionalLight.h>
 #include <H3D/NavigationInfo.h>
+#include <H3D/GaussianFilterShader.h>
+#include <H3D/RenderTargetTexture.h>
 
 using namespace H3D;
 
@@ -47,7 +49,20 @@ namespace ShadowCasterInternals {
   FIELDDB_ELEMENT( ShadowCaster, shadowDarkness, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ShadowCaster, shadowDepthOffset, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ShadowCaster, algorithm, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ShadowCaster, shadowShader, INPUT_OUTPUT );
 }
+
+const string shadow_rectangle = "\
+<Shape DEF=\"SHAPE\"> \
+  <Appearance DEF=\"APP\"> \
+  <RenderProperties blendEnabled=\"true\" blendFuncSrcFactorRGB=\"SRC_ALPHA\" blendFuncDstFactorRGB=\"ONE_MINUS_SRC_ALPHA\"/> \
+    <GaussianFilterShader DEF=\"SHADER\" type=\"FULL\"> \
+       <RenderTargetTexture DEF=\"TEXTURE\"/> \
+    </GaussianFilterShader> \
+  </Appearance> \
+  <FullscreenRectangle zValue=\"-0.99\"/> \
+</Shape>";
+
 
 ShadowCaster::ShadowCaster( 
                            Inst< SFNode>  _metadata,
@@ -56,14 +71,18 @@ ShadowCaster::ShadowCaster(
                            Inst< SFFloat            > _shadowDarkness,
                            Inst< SFFloat            > _shadowDepthOffset,
                            Inst< DisplayList        > _displayList,
-                           Inst< SFString           > _algorithm ) :
+                           Inst< SFString           > _algorithm,
+                           Inst< SFShaderNode       > _shadowShader ) :
   X3DChildNode( _metadata ),
   H3DDisplayListObject( _displayList ),
   object( _object ),
   light( _light ),
   shadowDarkness( _shadowDarkness ),
   shadowDepthOffset( _shadowDepthOffset ),
-  algorithm( _algorithm ) {
+  algorithm( _algorithm ),
+  generator( NULL ),
+  shadowShader( _shadowShader ),
+  last_shader( NULL ) {
   type_name = "ShadowCaster";
   database.initFields( this );
 
@@ -75,6 +94,8 @@ ShadowCaster::ShadowCaster(
   shadowDarkness->setValue( 0.4f );
   shadowDepthOffset->setValue( 6 );
   displayList->setCacheMode( DisplayList::OFF );
+
+ 
 }
 
 void ShadowCaster::addHeadLight() {
@@ -91,8 +112,8 @@ void ShadowCaster::addHeadLight() {
     Vec3f direction = Vec3f( 0, 0, -1 );
     if( vp ) {
       direction = 
-	vp->accForwardMatrix->getValue().getRotationPart() * 
-	(vp->totalOrientation->getValue() * Vec3f( 0, 0, -1 ));
+        vp->accForwardMatrix->getValue().getRotationPart() * 
+        (vp->totalOrientation->getValue() * Vec3f( 0, 0, -1 ));
     }
     DirectionalLight *dir_light = new DirectionalLight();
     dir_light->direction->setValue( direction );
@@ -100,20 +121,85 @@ void ShadowCaster::addHeadLight() {
   }
 }
 
+
+
 void ShadowCaster::render() {
   if( X3DShapeNode::geometry_render_mode == X3DShapeNode::SOLID ||
       X3DShapeNode::geometry_render_mode == X3DShapeNode::TRANSPARENT_BACK ||
       object->empty() || light->empty() ) return;
   X3DChildNode::render();
 
+  if( !generator.get() ) {
+    // set up a FrameBufferTextureGenerator that renders the current
+    // stencil buffer to a color texture to which the shadow shader
+    // is applied in order to e.g. blur shadow edges.
+    FrameBufferTextureGenerator *gen = new FrameBufferTextureGenerator;
+    stringstream s;
+    s << "ShadowCaster stencil fbo_" << this << endl;
+    gen->setName( s.str() );
+    gen->generateColorTextures->push_back( "RGBA" );
+    gen->generateDepthTexture->setValue( true );
+    gen->depthBufferType->setValue( "DEPTH24_STENCIL8" );
+    gen->samples->setValue( 4 );
+    gen->depthBufferStorage->setValue( "DEFAULT_COPY" );
+    gen->setRenderCallback( renderShadows, this );
+
+    AutoRef<Node> shape_node = X3D::createX3DNodeFromString( shadow_rectangle, &dn );
+    shape.reset( static_cast< Shape * > ( shape_node.get() ) );
+    GaussianFilterShader *shader;
+    RenderTargetTexture *texture;
+    dn.getNode( "SHADER", shader );
+    dn.getNode( "TEXTURE", texture );
+    texture->generator->setValue( gen );
+    generator.reset( gen );
+  }
+
+  X3DShaderNode *shader = shadowShader->getValue();
+  
+  if( shader ) {
+    if( shader != last_shader ) {
+      // new shader node, so make sure that the new shader is used 
+      // in the FrameBufferTextureGenerator
+      SFNode *texture_field = static_cast< SFNode * >(shader->getField( "texture" ));
+      RenderTargetTexture *texture;
+      dn.getNode( "TEXTURE", texture );
+      texture_field->setValue( texture );
+
+      Appearance *app;
+      dn.getNode( "APP", app );
+      app->shaders->clear();
+      app->shaders->push_back( shader );
+      last_shader = shader;
+    }
+
+    // render mail stencil buffer to fbo RGBA color buffer 
+    generator->render();
+
+    // render fbo color buffer with shader applied.
+    shape->traverseSG( TraverseInfo( vector< H3DHapticsDevice *>() ) );
+    shape->render();
+  } else {
+    // render shadows without fbo
+    renderShadows( NULL, 0, this );
+  }
+}
+
+
+void ShadowCaster::renderShadows( FrameBufferTextureGenerator *fbo, int i, void *args ) {
+  if( fbo ) {
+    glClearColor( 0, 0, 0, 0 );
+    glClear( GL_COLOR_BUFFER_BIT );
+  }
+  ShadowCaster *shadow_caster = static_cast< ShadowCaster * >( args ); 
+
   // set the darkness so that if a point is in shadow from all lights,
   // the darkness should be shadowDarkness.
   // Basically the solution to (1-x)^nr_lights = (1-shadowDarkness)
-  H3DFloat darkness = 1 - H3DPow( 1.f - shadowDarkness->getValue(),
-                                  1.f / light->size() );
+  H3DFloat darkness = 1 - H3DPow( 1.f - shadow_caster->shadowDarkness->getValue(),
+                                  1.f / shadow_caster->light->size() );
   
-  for( MFLightNode::const_iterator l = light->begin(); 
-       l != light->end(); ++l ) {
+  for( MFLightNode::const_iterator l = shadow_caster->light->begin(); 
+       l != shadow_caster->light->end(); l++ ) {
 
     glClear(GL_STENCIL_BUFFER_BIT );
     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | 
@@ -127,7 +213,7 @@ void ShadowCaster::render() {
                  GL_FALSE, GL_FALSE );// Don't Draw Into The Colour Buffer
     glEnable( GL_CULL_FACE );
     
-    const string &alg = algorithm->getValue();
+    const string &alg = shadow_caster->algorithm->getValue();
     glStencilFunc( GL_ALWAYS, 1, 0xFFFFFFFFL );
     
     if( alg == "ZPASS" ) {
@@ -158,12 +244,12 @@ void ShadowCaster::render() {
     // noticed however that using the scale part introduces artifacts in the
     // shadow volumes(look like the gaps between edges) so instead we
     // do not use the scale and have a default offset of 6 to compensate.
-    glPolygonOffset( 0, shadowDepthOffset->getValue() );
+    glPolygonOffset( 0, shadow_caster->shadowDepthOffset->getValue() );
     glEnable( GL_POLYGON_OFFSET_FILL );
 
     // First Pass. Increase Stencil Value In The Shadow 
-    for( MFShadowObjectNode::const_iterator o = object->begin(); 
-         o != object->end(); ++o ) {
+    for( MFShadowObjectNode::const_iterator o = shadow_caster->object->begin(); 
+         o != shadow_caster->object->end(); o++ ) {
 
       static_cast< H3DShadowObjectNode * >(*o)->renderShadow( static_cast< X3DLightNode * >(*l), alg == "ZFAIL" );
     }
@@ -177,8 +263,8 @@ void ShadowCaster::render() {
       glCullFace(GL_BACK);
     }
     
-    for( MFShadowObjectNode::const_iterator o = object->begin(); 
-         o != object->end(); ++o ) {
+    for( MFShadowObjectNode::const_iterator o = shadow_caster->object->begin(); 
+         o != shadow_caster->object->end(); o++ ) {
       static_cast< H3DShadowObjectNode * >(*o)->renderShadow( static_cast< X3DLightNode * >(*l), alg == "ZFAIL" );
     }
 
@@ -187,8 +273,16 @@ void ShadowCaster::render() {
     
     // Draw A Shadowing Rectangle Covering The Entire Screen
     glColor4f( 0.0f, 0.0f, 0.0f, darkness );
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    
+    if( fbo ) {
+      // if using fbo the shadow texture is blended at a later stage so we disable it
+      // here
+      glDisable( GL_BLEND );
+    } else {
+      glEnable( GL_BLEND );
+      glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    }
     glStencilFunc( GL_NOTEQUAL, 0, 0xFFFFFFFFL );
     glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
     glDisable( GL_DEPTH_TEST );
