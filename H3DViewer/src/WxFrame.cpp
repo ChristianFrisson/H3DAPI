@@ -213,7 +213,6 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   tree_view_dialog = new H3DViewerTreeViewDialog( this ); 
 #ifdef HAVE_WXPROPGRID
   program_settings_dialog = new H3DViewerFieldValuesDialogPropGrid( this ); 
-  program_settings_dialog->displayFieldsFromProgramSettings();
   program_settings_dialog->destroy_on_close = false;
 #endif
   plugins_dialog = new H3DViewerPluginsDialog( this ); 
@@ -1962,14 +1961,15 @@ void WxFrame::ShowTreeView(wxCommandEvent & event)
 void WxFrame::ShowProgramSettings(wxCommandEvent & event)
 {
 #ifdef HAVE_WXPROPGRID
-	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( program_settings_dialog->GetScreenRect() ) ) ) {
-		if( program_settings_dialog->IsIconized() )
-			program_settings_dialog->Iconize(false);
-		if( !program_settings_dialog->Show())
-		// already shown, bring it up
-			program_settings_dialog->SetFocus();
-	}
+  if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+	GetScreenRect().Intersects( program_settings_dialog->GetScreenRect() ) ) ) {
+    if( program_settings_dialog->IsIconized() )
+      program_settings_dialog->Iconize(false);
+    if( !program_settings_dialog->Show())
+      // already shown, bring it up
+      program_settings_dialog->SetFocus();
+  }
+  program_settings_dialog->displayFieldsFromProgramSettings();
 #endif
 }
 

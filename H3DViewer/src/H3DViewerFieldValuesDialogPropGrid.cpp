@@ -839,7 +839,7 @@ void H3DViewerFieldValuesPanelPropGrid::settingsCallback( Scene::ProgramSettings
                                                           void *data ) {
   H3DViewerFieldValuesPanelPropGrid *panel = 
     static_cast< H3DViewerFieldValuesPanelPropGrid * >( data );
-  if( panel->mode == 1 )
+  if( panel->mode == 1 && panel->IsShown() )
     panel->displayFieldsFromProgramSettings();
  /* if( event == Scene::ADD_SETTING ) {
     Console(4) << "Added:" << setting.name << endl; 
