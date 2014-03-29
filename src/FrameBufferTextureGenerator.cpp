@@ -578,6 +578,7 @@ void FrameBufferTextureGenerator::render()     {
 
     // render scene.
     if( render_func ) {
+       preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
       render_func( this, -1, render_func_data );
     } else {
       // Get background and set clear color
@@ -630,7 +631,7 @@ void FrameBufferTextureGenerator::render()     {
       }
 
       X3DShapeNode::geometry_render_mode= m;
-      if( current_shadow_caster ) current_shadow_caster->render();
+      if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
     }
 
     // blit multi sample render buffer to output textures if using multi sampling.
@@ -698,7 +699,7 @@ void FrameBufferTextureGenerator::render()     {
         }
       }
 
-      if( current_shadow_caster ) current_shadow_caster->render();
+      if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
 
       // blit multi sample render buffer to output textures if using multi sampling.
       if( nr_samples > 0 ) {
