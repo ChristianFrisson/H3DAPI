@@ -34,6 +34,8 @@
 #include <H3D/NavigationInfo.h>
 #include <H3D/GaussianFilterShader.h>
 #include <H3D/RenderTargetTexture.h>
+#include <H3D/X3D.h>
+#include <H3D/Appearance.h>
 
 using namespace H3D;
 

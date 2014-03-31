@@ -185,7 +185,7 @@ namespace H3D {
 
   protected:
     // Internal fbo that renders the main stencil buffer to a RGBA texture.
-    AutoRef< FrameBufferTextureGenerator > generator;
+    AutoRef< Node > generator;
 
     // DEFNodes of the nodes in shape.
     X3D::DEFNodes dn;
