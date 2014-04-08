@@ -943,6 +943,19 @@ def throwQuitAPIException():
 ##         containing all the nodes parents. I.e., [(found_node,(parent0,parent1,...)),...]
 def findNodes ( node, type_names, node_name= "", field_names= [], exactNodeName= True, verbose= False ):
   pass
+  
+## Take a screenshot of the current scene. H3D must be built
+## with FreeImage support for this function to succeed.
+##
+## <b>Example usage: </b>
+## \code
+## if takeScreenshot( "screenshot.png" ):
+##   print "Screenshot written to screenshot.png"
+## \endcode
+## \param url The url of the file to save to.
+## \return True if succeeded, False otherwise.
+def takeScreenshot( url ):
+  pass
 
 ## \namespace H3DInterface
 ## \var time 

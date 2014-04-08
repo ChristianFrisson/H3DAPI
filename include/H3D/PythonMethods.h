@@ -207,6 +207,8 @@ namespace H3D {
 */
 
     PyObject* pythonFindNodes( PyObject *self, PyObject *arg );
+
+    PyObject* pythonTakeScreenshot( PyObject *self, PyObject *arg );
   }
 
     
