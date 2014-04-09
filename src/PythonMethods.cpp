@@ -45,7 +45,6 @@
 #include <H3D/Scene.h>
 #include <H3D/ResourceResolver.h>
 #include <H3D/Field.h>
-#include <H3DUtil/LoadImageFunctions.h>
 #include "H3DInterface.py.h"
 
 #include <sstream>
@@ -3277,65 +3276,16 @@ call the base class __init__ function." );
         err << "Invalid argument(s) to function H3D.takeScreenshot( url ).";
         err << " url should be of string type.";
         PyErr_SetString( PyExc_ValueError, err.str().c_str() );
-        return Py_False;
+        return NULL;
       }
 
       string url( PyString_AsString( args ) );
-      if( url.empty() ) {
-        ostringstream err;
-        err << "Invalid argument(s) to function H3D.takeScreenshot( url ).";
-        err << " url should not be empty.";
-        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
-        return Py_False;
+      string success = H3DWindowNode::takeScreenShot( url );
+      if( success != "" ) {
+        PyErr_SetString( PyExc_ValueError, success.c_str() );
+        return 0;
       }
-
-      int default_x = 0;
-      int default_y = 0;
-      GLint viewport[4];
-      glGetIntegerv( GL_VIEWPORT, viewport );
-      {
-        GLenum error = glGetError();
-        if( error != GL_NO_ERROR ) {
-          ostringstream err;
-          err << "Could not get the current viewport dimensions"
-                     << ", screenshot will not be taken:"
-                     << gluErrorString(error);
-          PyErr_SetString( PyExc_ValueError, err.str().c_str() );
-          return Py_False;
-        }
-      }
-      default_x = viewport[0];
-      default_y = viewport[1];
-      auto_ptr< Image > image( new PixelImage( viewport[2], viewport[3], 1, 24, Image::RGB,Image::UNSIGNED ) );
-      glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-      glPixelStorei( GL_PACK_SKIP_PIXELS, 0 );
-      glPixelStorei( GL_PACK_ROW_LENGTH, 0 );
-      glPixelStorei( GL_PACK_SKIP_ROWS, 0 );
-      glReadPixels( viewport[0], viewport[1], viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE, image->getImageData() );
-      {
-        GLenum error = glGetError();
-        if( error != GL_NO_ERROR ) {
-          ostringstream err;
-          err << "ReadPixels failed"
-              << ", screenshot will not be taken:"
-              << gluErrorString(error);
-          PyErr_SetString( PyExc_ValueError, err.str().c_str() );
-          return Py_False;
-        }
-      }
-#ifdef HAVE_FREEIMAGE
-      if( H3DUtil::saveFreeImagePNG ( url, *image ) )
-        return Py_True;
-      else {
-        ostringstream err;
-        err << "Could not take screenshot! Saving to url " << url
-            << " failed. Make sure that the url is valid and that the application has the required permissions.";
-        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
-      }
-#else // HAVE_FREEIMAGE
-        PyErr_SetString( PyExc_ValueError, "Warning: Could not take screenshot! Compiled without the required FreeImage library." );
-#endif // HAVE_FREEIMAGE
-      return Py_False;
+      return NULL;
     }
   }
 }

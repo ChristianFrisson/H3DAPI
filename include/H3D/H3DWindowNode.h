@@ -514,6 +514,10 @@ namespace H3D {
 
 		bool window_is_made_active, check_if_stereo_obtained;
 		void checkIfStereoObtained();
+  public:
+    /// Saves the currently rendered buffer to file. That is, a screenshot
+    /// of the openGL window.
+    static string takeScreenShot( const string &url );
   };
 }
 

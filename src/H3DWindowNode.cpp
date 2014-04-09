@@ -61,6 +61,7 @@
 
 #include <GL/glew.h>
 #include <H3DUtil/H3DTimer.h>
+#include <H3DUtil/LoadImageFunctions.h>
 
 
 using namespace H3D;
@@ -1766,3 +1767,53 @@ LRESULT H3DWindowNode::Message(HWND _hWnd,
         wParam, lParam); 
 }
 #endif
+
+string H3DWindowNode::takeScreenShot( const string &url ) {
+  if( url.empty() ) {
+    ostringstream err;
+    err << "Invalid argument(s) to function H3D.takeScreenshot( url ).";
+    err << " url should not be empty.";
+    return err.str();
+  }
+  int default_x = 0;
+  int default_y = 0;
+  GLint viewport[4];
+  glGetIntegerv( GL_VIEWPORT, viewport );
+  GLenum error = glGetError();
+  if( error != GL_NO_ERROR ) {
+    ostringstream err;
+    err << "Could not get the current viewport dimensions"
+      << ", screenshot will not be taken:"
+      << gluErrorString(error);
+    return err.str();
+  }
+  default_x = viewport[0];
+  default_y = viewport[1];
+  auto_ptr< Image > image( new PixelImage( viewport[2], viewport[3], 1, 24, Image::RGB,Image::UNSIGNED ) );
+  glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+  glPixelStorei( GL_PACK_SKIP_PIXELS, 0 );
+  glPixelStorei( GL_PACK_ROW_LENGTH, 0 );
+  glPixelStorei( GL_PACK_SKIP_ROWS, 0 );
+  glReadPixels( viewport[0], viewport[1], viewport[2], viewport[3], GL_RGB, GL_UNSIGNED_BYTE, image->getImageData() );
+  error = glGetError();
+  if( error != GL_NO_ERROR ) {
+    ostringstream err;
+    err << "ReadPixels failed"
+      << ", screenshot will not be taken:"
+      << gluErrorString(error);
+    return err.str();
+  }
+#ifdef HAVE_FREEIMAGE
+  if( H3DUtil::saveFreeImagePNG ( url, *image ) )
+    return "";
+  else {
+    ostringstream err;
+    err << "Could not take screenshot! Saving to url " << url
+      << " failed. Make sure that the url is valid and that the application has the required permissions.";
+    return err.str();
+  }
+#else // HAVE_FREEIMAGE
+  return string( "Warning: Could not take screenshot! Compiled without the required FreeImage library." );
+#endif // HAVE_FREEIMAGE
+}
+
