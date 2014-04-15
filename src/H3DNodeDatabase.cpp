@@ -352,7 +352,7 @@ H3DNodeDatabase::FieldDBConstIterator & H3DNodeDatabase::FieldDBConstIterator::o
   return *this;
 }
 
-H3DNodeDatabase::H3DNodeDatabase( Node * n,
+H3DNodeDatabase::H3DNodeDatabase( const Node * n,
 																	H3DNodeDatabase *_parent ) :
 name( _parent->name ),
 createf( _parent->createf ),
@@ -367,7 +367,7 @@ database_allocated_dynamic( true ) {
 	parent->node_instance_database[n] = this;
 }
 
-H3DNodeDatabase *H3DNodeDatabase::lookupNodeInstance( Node * n ) {
+H3DNodeDatabase *H3DNodeDatabase::lookupNodeInstance( const Node * n ) {
 	H3DNodeDatabase *db_candidate = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
   if( db_candidate ) {
 		H3DNodeInstanceDatabase::iterator pos = db_candidate->node_instance_database.find( n );

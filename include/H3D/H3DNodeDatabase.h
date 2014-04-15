@@ -444,12 +444,12 @@ namespace H3D {
 		/// \note The reason for having two arguments is intialization order.
 		/// Some const variables will be initialized before parent, beause they are
 		/// declared before the parent variable in the header.
-    H3DNodeDatabase( Node * n,
+    H3DNodeDatabase( const Node * n,
                      H3DNodeDatabase *_parent );
 
-		typedef map< Node *, H3DNodeDatabase* > H3DNodeInstanceDatabase;
+		typedef map< const Node *, H3DNodeDatabase* > H3DNodeInstanceDatabase;
 		/// Get the database for a specific node instance.
-    static H3DNodeDatabase *lookupNodeInstance( Node * n );
+    static H3DNodeDatabase *lookupNodeInstance( const Node * n );
 	protected:
 		H3DNodeInstanceDatabase node_instance_database;
 		bool database_allocated_dynamic;
