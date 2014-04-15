@@ -6,41 +6,41 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />  
+    <Viewpoint position='0 0 0.6' />
     <Background skyColor="1 0 0"
-	backUrl  ="../textures/b_arch_00000.png"
-	frontUrl ="../textures/f_arch_00000.png"
-	leftUrl  ="../textures/l_arch_00000.png"
-	rightUrl ="../textures/r_arch_00000.png"
-	bottomUrl="../textures/d_arch_00000.png"
-	topUrl    ="../textures/t_arch_00000.png"   />
+                backUrl  ="../textures/b_arch_00000.png"
+                frontUrl ="../textures/f_arch_00000.png"
+                leftUrl  ="../textures/l_arch_00000.png"
+                rightUrl ="../textures/r_arch_00000.png"
+                bottomUrl="../textures/d_arch_00000.png"
+                topUrl    ="../textures/t_arch_00000.png"   />
     <Group>
       <Shape>
-	<Appearance> 
-	  <Material diffuseColor="1 0 0"/>
-	  <ComposedGeneratedShader>
-	    <PhongShader containerField="fragmentShaders"/>
-	    <EnvironmentMapShader containerField="fragmentShaders" fresnel="0.6">
-	      <ComposedCubeMapTexture containerField="environmentMap" >
-		<ImageTexture url="../textures/b_arch_00000rot.png"
-			      containerField="back"/>
-		<ImageTexture url="../textures/f_arch_00000rot.png"
-			      containerField="front"/>
-		<ImageTexture url="../textures/l_arch_00000rot.png"
-			      containerField="left"/>
-		<ImageTexture url="../textures/r_arch_00000rot.png"
-			      containerField="right"/>
-		<ImageTexture url="../textures/t_arch_00000.png"
-			      containerField="top"/>
-		<ImageTexture url="../textures/d_arch_00000.png"
-			      containerField="bottom"/>
-	      </ComposedCubeMapTexture>
-	    </EnvironmentMapShader>
-	  </ComposedGeneratedShader>
-	</Appearance>
-	<Cylinder radius="0.1" height="0.2" />
+        <Appearance>
+          <Material diffuseColor="1 0 0"/>
+          <ComposedGeneratedShader>
+            <PhongShader containerField="fragmentShaders"/>
+            <EnvironmentMapShader containerField="fragmentShaders" fresnel="0.6">
+              <ComposedCubeMapTexture containerField="environmentMap" >
+                <ImageTexture url="../textures/b_arch_00000rot.png"
+                              containerField="back"/>
+                <ImageTexture url="../textures/f_arch_00000rot.png"
+                              containerField="front"/>
+                <ImageTexture url="../textures/l_arch_00000rot.png"
+                              containerField="left"/>
+                <ImageTexture url="../textures/r_arch_00000rot.png"
+                              containerField="right"/>
+                <ImageTexture url="../textures/t_arch_00000.png"
+                              containerField="top"/>
+                <ImageTexture url="../textures/d_arch_00000.png"
+                              containerField="bottom"/>
+              </ComposedCubeMapTexture>
+            </EnvironmentMapShader>
+          </ComposedGeneratedShader>
+        </Appearance>
+        <Cylinder radius="0.1" height="0.2" />
       </Shape>
     </Group>
   </Scene>

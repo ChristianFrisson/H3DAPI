@@ -66,7 +66,7 @@ X3DComposedGeometryNode::X3DComposedGeometryNode(
                               Inst< SFBool                  > _colorPerVertex,
                               Inst< SFBool                  > _normalPerVertex,
                               Inst< SFBool                  > _solid,
-			                        Inst< MFVertexAttributeNode   > _attrib, 
+                              Inst< MFVertexAttributeNode   > _attrib,
                               Inst< SFFogCoordinate           > _fogCoord ) :
   X3DGeometryNode( _metadata, _bound, _displayList ),
   color          ( _color            ),

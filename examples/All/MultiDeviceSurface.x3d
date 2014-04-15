@@ -5,17 +5,17 @@
     <meta name='description' content='H3D MultiDeviceSurface example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <Shape>
       <Rectangle2D size='0.2 0.1'/>
       <Appearance>
-	<MultiDeviceSurface>
-	  <SmoothSurface />
-	  <FrictionalSurface />
-	</MultiDeviceSurface>
-        <TwoSidedMaterial 
+        <MultiDeviceSurface>
+          <SmoothSurface />
+          <FrictionalSurface />
+        </MultiDeviceSurface>
+        <TwoSidedMaterial
             diffuseColor='0 1 0'
             backDiffuseColor='1 0 0'
             separateBackColor='true'/>

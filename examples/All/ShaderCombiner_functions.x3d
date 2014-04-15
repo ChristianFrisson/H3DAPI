@@ -6,52 +6,52 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <ProtoDeclare name='ShaderCombinerRectangle'>
       <ProtoInterface>
-	<field accessType='inputOutput' name='position' type='SFVec3f' value='0 0 0'/>
-	<field accessType='inputOutput' name='text' type='MFString' value='"Hello"'/>
-	<field accessType='inputOutput' name='function' type='SFString' value='"SELECT0"'/>
+        <field accessType='inputOutput' name='position' type='SFVec3f' value='0 0 0'/>
+        <field accessType='inputOutput' name='text' type='MFString' value='"Hello"'/>
+        <field accessType='inputOutput' name='function' type='SFString' value='"SELECT0"'/>
       </ProtoInterface>
       <ProtoBody>
-	<Transform>
-	  <IS>
-	    <connect nodeField='translation' protoField='position' />
-	  </IS>
-	  <Transform translation="0 0.06 0" >
-	    <Shape>
-	      <Appearance>
-		<Material diffuseColor='1 1 1' />
-	      </Appearance>
-	      <Text>
-		<IS>
-		  <connect nodeField='string' protoField='text' />
-		</IS>
-		<FontStyle justify='MIDDLE' size='0.02' />
-	      </Text>
-	    </Shape>
-	  </Transform>
+        <Transform>
+          <IS>
+            <connect nodeField='translation' protoField='position' />
+          </IS>
+          <Transform translation="0 0.06 0" >
+            <Shape>
+              <Appearance>
+                <Material diffuseColor='1 1 1' />
+              </Appearance>
+              <Text>
+                <IS>
+                  <connect nodeField='string' protoField='text' />
+                </IS>
+                <FontStyle justify='MIDDLE' size='0.02' />
+              </Text>
+            </Shape>
+          </Transform>
 
-	  <Shape>
-	    <Appearance>
-	      <Material diffuseColor='1 0 0' />
-	      <ShaderCombiner value="0.5">
-		<IS>
-		  <connect nodeField='function' protoField='function' />
-		</IS>
-		<NormalShader />
-		<PhongShader >
-		  <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
-		</PhongShader>
-	      </ShaderCombiner>
-	    </Appearance>
-	    <Rectangle2D size="0.1 0.1"/>
-	  </Shape>
-	</Transform>
+          <Shape>
+            <Appearance>
+              <Material diffuseColor='1 0 0' />
+              <ShaderCombiner value="0.5">
+                <IS>
+                  <connect nodeField='function' protoField='function' />
+                </IS>
+                <NormalShader />
+                <PhongShader >
+                  <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
+                </PhongShader>
+              </ShaderCombiner>
+            </Appearance>
+            <Rectangle2D size="0.1 0.1"/>
+          </Shape>
+        </Transform>
       </ProtoBody>
     </ProtoDeclare>
-    
+
     <OrthoViewpoint  description="Orthographic view" fieldOfView="-0.25 -0.25 0.25 0.25" position="0 0 0.6" />
 
     <NavigationInfo type="NONE" />

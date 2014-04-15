@@ -6,31 +6,31 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <NavigationInfo type="NONE" />
 
     <Shape>
       <Appearance>
-	<ConvolutionFilterShader DEF="SHADER" >
-	  <ImageTexture url="textures/Day.jpg" />
-	</ConvolutionFilterShader>
+        <ConvolutionFilterShader DEF="SHADER" >
+          <ImageTexture url="textures/Day.jpg" />
+        </ConvolutionFilterShader>
       </Appearance>
       <FullscreenRectangle />
     </Shape>
-    
+
     <Transform>
       <Shape>
-	<Appearance>
-	  <Material diffuseColor="1 0 0"/>
-	  <RenderProperties depthTestEnabled="false" />
-	</Appearance>
-	<Text DEF="TEXT" string="Original" >
-	  <FontStyle family='SERIF' horizontal='true' 
-                     justify='MIDDLE' language='en' 
+        <Appearance>
+          <Material diffuseColor="1 0 0"/>
+          <RenderProperties depthTestEnabled="false" />
+        </Appearance>
+        <Text DEF="TEXT" string="Original" >
+          <FontStyle family='SERIF' horizontal='true'
+                     justify='MIDDLE' language='en'
                      leftToRight='true' size='0.1' renderType='TEXTURE' />
-	</Text>
+        </Text>
       </Shape>
     </Transform>
 

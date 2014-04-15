@@ -16,17 +16,17 @@
       <fieldValue name='offset' value='0 0.18 0' />
       <fieldValue name='string' value='"ParticleSystem"' />
     </ProtoInstance>
-    
+
 
     <Transform translation='-0.1 0.1 0'>
-      <ParticleSystem 
+      <ParticleSystem
           createParticles='true' enabled='true' particleLifetime='0.5'
           lifetimeVariation='0.5' maxParticles='100' particleSize='0.002 0.002'
           geometryType='SPRITE' colorKey='0'>
-        <Color 
+        <Color
             containerField='colorRamp' color='1 1 0' />
-        <PointEmitter 
-            speed='0.05' mass='0.0002' variation='0.5' 
+        <PointEmitter
+            speed='0.05' mass='0.0002' variation='0.5'
             surfaceArea="0.02" direction="0 0 0" />
       </ParticleSystem>
       <ProtoInstance name='Text'>
@@ -34,16 +34,16 @@
         <fieldValue name='string' value='"with PointEmitter"' />
       </ProtoInstance>
     </Transform>
-	
-  
+
+
     <Transform translation='0.1 0.1 0'>
-      <ParticleSystem 
+      <ParticleSystem
           createParticles='true' enabled='true' particleLifetime='0.5'
           lifetimeVariation='0.5' maxParticles='100' particleSize='0.002 0.002'
           geometryType='SPRITE' colorKey='0'>
         <Color containerField='colorRamp' color='0 1 0' />
-        <ConeEmitter 
-            speed='0.05' mass='0.0002' variation='' 
+        <ConeEmitter
+            speed='0.05' mass='0.0002' variation=''
             surfaceArea='0.02' direction='0 -1 0' position='' angle='1'/>
       </ParticleSystem>
       <ProtoInstance name='Text'>
@@ -51,15 +51,15 @@
         <fieldValue name='string' value='"with ConeEmitter"' />
       </ProtoInstance>
     </Transform>
-		
-    
+
+
     <Transform translation='-0.1 -0.1 0'>
-      <ParticleSystem 
-          createParticles='true' enabled='true' particleLifetime='0.5' 
+      <ParticleSystem
+          createParticles='true' enabled='true' particleLifetime='0.5'
           lifetimeVariation='0.5' maxParticles='100' particleSize='0.002 0.002'
           geometryType='SPRITE' colorKey='0'>
         <Color containerField='colorRamp' color='0 1 1' />
-        <SurfaceEmitter 
+        <SurfaceEmitter
             speed='0.05' mass='0.0002' variation='' surfaceArea='0.02'>
           <Cone bottomRadius='0.02' height='0.1' containerField='surface' />
         </SurfaceEmitter>
@@ -69,15 +69,15 @@
         <fieldValue name='string' value='"with SurfaceEmitter""(Cone)"' />
       </ProtoInstance>
     </Transform>
-	
-  
+
+
     <Transform translation='0.1 -0.1 0'>
-      <ParticleSystem 
+      <ParticleSystem
           createParticles='true' enabled='true' particleLifetime='5'
           lifetimeVariation='0.5' maxParticles='100' particleSize='0.002 0.002'
           geometryType='SPRITE' colorKey='0'>
         <Color containerField='colorRamp' color='1 0 1' />
-        <ExplosionEmitter 
+        <ExplosionEmitter
             speed='0.05' mass='0.0002' variation='0.5'
             surfaceArea='0.02' position='' />
       </ParticleSystem>

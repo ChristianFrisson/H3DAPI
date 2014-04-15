@@ -6,27 +6,29 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />  
+    <Viewpoint position='0 0 0.6' />
 
     <Group>
       <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D" generateColorTextures="RGBA" >
-	<!-- Scene to render to texture -->
-	<Shape>
-	  <Appearance> <Material diffuseColor="1 0 0" /> </Appearance>
-	    
-	  <Box size="0.2 0.2 0.2" />
-	</Shape>
+        <!-- Scene to render to texture -->
+        <Shape>
+          <Appearance>
+            <Material diffuseColor="1 0 0" />
+          </Appearance>
+
+          <Box size="0.2 0.2 0.2" />
+        </Shape>
       </FrameBufferTextureGenerator>
 
       <!-- Shape for rendering depth texture on -->
       <Shape>
-	<Appearance DEF="APP" >
-	  <Material/>
-	  <MultiTexture DEF="MT" />
-	</Appearance>
-	<FullscreenRectangle screenAligned="true" />
+        <Appearance DEF="APP" >
+          <Material/>
+          <MultiTexture DEF="MT" />
+        </Appearance>
+        <FullscreenRectangle screenAligned="true" />
       </Shape>
     </Group>
 

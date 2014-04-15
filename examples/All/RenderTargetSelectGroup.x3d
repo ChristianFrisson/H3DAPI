@@ -6,61 +6,64 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />  
+    <Viewpoint position='0 0 0.6' />
 
     <Group>
       <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D" generateDepthTexture="true" generateColorTextures='"RGBA" "RGBA" "RGBA"' >
-	<!-- Scene to render to texture 0 and 2-->
-	<RenderTargetSelectGroup renderTargets="0 2" >
-	  <Shape>
-	    <Appearance> 
-	      <Material />
-	    </Appearance>
-	    <Box size="0.4 0.2 0.2" />
-	  </Shape>
-	</RenderTargetSelectGroup> 
+        <!-- Scene to render to texture 0 and 2-->
+        <RenderTargetSelectGroup renderTargets="0 2" >
+          <Shape>
+            <Appearance>
+              <Material />
+            </Appearance>
+            <Box size="0.4 0.2 0.2" />
+          </Shape>
+        </RenderTargetSelectGroup>
 
-	<!-- Scene t0 render to texture 1 and 2-->
-	<RenderTargetSelectGroup renderTargets="1 2" >
-	  <Shape>
-	    <Appearance> 
-	      <Material />
-	    </Appearance>
-	    <Sphere radius="0.2" />
-	  </Shape>
-	</RenderTargetSelectGroup> 
+        <!-- Scene t0 render to texture 1 and 2-->
+        <RenderTargetSelectGroup renderTargets="1 2" >
+          <Shape>
+            <Appearance>
+              <Material />
+            </Appearance>
+            <Sphere radius="0.2" />
+          </Shape>
+        </RenderTargetSelectGroup>
       </FrameBufferTextureGenerator>
 
       <!-- Shape for rendering color texture 0 on -->
       <Transform translation="-0.2 0 0">
-	<Shape>
-	  <Appearance>
-	    <MultiTexture DEF="MT" mode='"REPLACE" "OFF" "OFF"'/>
-	    <Material/></Appearance>
-	  <Rectangle2D size="0.1 0.1"/>
-	</Shape>
+        <Shape>
+          <Appearance>
+            <MultiTexture DEF="MT" mode='"REPLACE" "OFF" "OFF"'/>
+            <Material/>
+          </Appearance>
+          <Rectangle2D size="0.1 0.1"/>
+        </Shape>
       </Transform>
 
       <!-- Shape for rendering color texture 1 on -->
       <Transform translation="0 0 0">
-	<Shape>
-	  <Appearance>
-	    <MultiTexture DEF="MT2" mode='"OFF" "REPLACE" "OFF"'/>
-	    <Material/></Appearance>
-	  <Rectangle2D size="0.1 0.1"/>
-	</Shape>
+        <Shape>
+          <Appearance>
+            <MultiTexture DEF="MT2" mode='"OFF" "REPLACE" "OFF"'/>
+            <Material/>
+          </Appearance>
+          <Rectangle2D size="0.1 0.1"/>
+        </Shape>
       </Transform>
 
       <!-- Shape for rendering color texture 2 on -->
       <Transform translation="0.2 0 0">
-	<Shape>
-	  <Appearance>
-	    <MultiTexture DEF="MT3" mode='"OFF" "OFF" "REPLACE"'/>
-	    <Material/></Appearance>
-	  <Rectangle2D size="0.1 0.1"/>
-	</Shape>
+        <Shape>
+          <Appearance>
+            <MultiTexture DEF="MT3" mode='"OFF" "OFF" "REPLACE"'/>
+            <Material/>
+          </Appearance>
+          <Rectangle2D size="0.1 0.1"/>
+        </Shape>
       </Transform>
     </Group>
     <ROUTE fromNode="GEN" fromField="colorTextures" toNode="MT" toField="texture" />

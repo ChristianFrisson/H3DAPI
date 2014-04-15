@@ -5,21 +5,21 @@
     <meta name='description' content='X3D PointLight example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
-    <PointLight DEF='L' 
-        ambientIntensity='0.9' color='0 1 0' global='true' 
-        intensity='0.7' on='true' attenuation='1 1 1' 
+    <PointLight DEF='L'
+        ambientIntensity='0.9' color='0 1 0' global='true'
+        intensity='0.7' on='true' attenuation='1 1 1'
         location='0.07 0.1 0.1' />
-    
+
     <Shape>
-			<Sphere radius='0.1' />
-			<Appearance>
-			  <Material diffuseColor='0.25 0.25 0.3' shininess='0.8' />
-		  </Appearance>
-		</Shape>
-    
+      <Sphere radius='0.1' />
+      <Appearance>
+        <Material diffuseColor='0.25 0.25 0.3' shininess='0.8' />
+      </Appearance>
+    </Shape>
+
     <Transform DEF='T'>
       <Shape>
         <Sphere radius='0.01' />
@@ -28,7 +28,7 @@
         </Appearance>
       </Shape>
     </Transform>
-    
+
     <ROUTE
         fromNode='L' fromField='location'
         toNode='T' toField='translation' />

@@ -360,7 +360,7 @@ namespace H3D {
     }
 
     /// add a field to the node database entry. The field is only added if
-		/// there is not already a field with that name in the database.
+    /// there is not already a field with that name in the database.
     void addField( FieldDBElement *f );
     
     /// getField() will search the node's field database for a field matching
@@ -440,19 +440,19 @@ namespace H3D {
       }
     }
 
-		/// Constructor, for dynamic nodes.
-		/// \note The reason for having two arguments is intialization order.
-		/// Some const variables will be initialized before parent, beause they are
-		/// declared before the parent variable in the header.
+    /// Constructor, for dynamic nodes.
+    /// \note The reason for having two arguments is intialization order.
+    /// Some const variables will be initialized before parent, beause they are
+    /// declared before the parent variable in the header.
     H3DNodeDatabase( const Node * n,
                      H3DNodeDatabase *_parent );
 
-		typedef map< const Node *, H3DNodeDatabase* > H3DNodeInstanceDatabase;
-		/// Get the database for a specific node instance.
+    typedef map< const Node *, H3DNodeDatabase* > H3DNodeInstanceDatabase;
+    /// Get the database for a specific node instance.
     static H3DNodeDatabase *lookupNodeInstance( const Node * n );
-	protected:
-		H3DNodeInstanceDatabase node_instance_database;
-		bool database_allocated_dynamic;
+  protected:
+    H3DNodeInstanceDatabase node_instance_database;
+    bool database_allocated_dynamic;
     
   };
     

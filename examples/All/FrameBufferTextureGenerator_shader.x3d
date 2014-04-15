@@ -6,49 +6,52 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />  
+    <Viewpoint position='0 0 0.6' />
 
     <Group>
       <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D" generateDepthTexture="true" generateColorTextures='"RGBA" "RGBA32F"' >
-	<!-- Scene tp render to texture -->
-	<Shape>
-	  <Appearance> 
+        <!-- Scene tp render to texture -->
+        <Shape>
+          <Appearance>
             <ComposedShader language="GLSL">
-	      <ShaderPart type="VERTEX" url="shaders/mrt.vert" />
-	      <ShaderPart type="FRAGMENT" url="shaders/mrt.frag" />
-            </ComposedShader>	
-	  </Appearance>
-	  <Box size="0.2 0.2 0.2" />
-	</Shape>
+              <ShaderPart type="VERTEX" url="shaders/mrt.vert" />
+              <ShaderPart type="FRAGMENT" url="shaders/mrt.frag" />
+            </ComposedShader>
+          </Appearance>
+          <Box size="0.2 0.2 0.2" />
+        </Shape>
       </FrameBufferTextureGenerator>
 
       <!-- Shape for rendering depth texture on -->
       <Shape>
-	<Appearance DEF="APP" ><Material/>
-	</Appearance>
-	<Rectangle2D size="0.1 0.1"/>
+        <Appearance DEF="APP" >
+          <Material/>
+        </Appearance>
+        <Rectangle2D size="0.1 0.1"/>
       </Shape>
 
       <!-- Shape for rendering color texture 0 on -->
       <Transform translation="0.2 0 0">
-	<Shape>
-	  <Appearance>
-	    <MultiTexture DEF="MT" mode='"REPLACE" "OFF"'/>
-	    <Material/></Appearance>
-	  <Rectangle2D size="0.1 0.1"/>
-	</Shape>
+        <Shape>
+          <Appearance>
+            <MultiTexture DEF="MT" mode='"REPLACE" "OFF"'/>
+            <Material/>
+          </Appearance>
+          <Rectangle2D size="0.1 0.1"/>
+        </Shape>
       </Transform>
 
       <!-- Shape for rendering color texture 1 on -->
       <Transform translation="0.2 -0.2 0">
-	<Shape>
-	  <Appearance>
-	    <MultiTexture DEF="MT2" mode='"OFF" "REPLACE"'/>
-	    <Material/></Appearance>
-	  <Rectangle2D size="0.1 0.1"/>
-	</Shape>
+        <Shape>
+          <Appearance>
+            <MultiTexture DEF="MT2" mode='"OFF" "REPLACE"'/>
+            <Material/>
+          </Appearance>
+          <Rectangle2D size="0.1 0.1"/>
+        </Shape>
       </Transform>
     </Group>
     <ROUTE fromNode="GEN" fromField="depthTexture" toNode="APP" toField="texture" />

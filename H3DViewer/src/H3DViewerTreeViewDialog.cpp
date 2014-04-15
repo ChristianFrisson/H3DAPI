@@ -371,15 +371,15 @@ void H3DViewerTreeViewDialog::OnTreeRightClick( wxTreeEvent& event ) {
   TreeViewTree->SelectItem( event.GetItem() );
   TreeIdMap::iterator ni = node_map.find( event.GetItem().m_pItem );
   X3DGeometryNode *geom = NULL;
-	X3DTextureNode * tex = NULL;
+  X3DTextureNode * tex = NULL;
   
   if( ni != node_map.end() ) {
    geom = dynamic_cast< X3DGeometryNode * >( (*ni).second.get() );
-	 tex = dynamic_cast< X3DTextureNode * >( (*ni).second.get() );
+   tex = dynamic_cast< X3DTextureNode * >( (*ni).second.get() );
   }
 
   if(geom) PopupMenu( menu_container->RightClickMenuGeometry );
-	else if(tex) PopupMenu( menu_container->RightClickMenuTexture );
+  else if(tex) PopupMenu( menu_container->RightClickMenuTexture );
   else PopupMenu( menu_container->RightClickMenu );
 }
 

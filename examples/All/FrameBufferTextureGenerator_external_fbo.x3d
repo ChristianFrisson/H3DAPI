@@ -14,9 +14,9 @@
       <FrameBufferTextureGenerator DEF="COLOR" outputTextureType="2D" samples="0" generateColorTextures = 'RGBA'  >
         <Billboard axisOfRotation = '0 0 0'>
           <Transform translation = '0 0.2 0.15'>
-            <Shape>  
-              <Text 
-            string='"H3DAPI rocks!""H3DAPI stones!"' 
+            <Shape>
+              <Text
+            string='"H3DAPI rocks!""H3DAPI stones!"'
             length='' maxExtent='0' solid='true'>
                 <FontStyle DEF='F' size='0.03' spacing='1.0' justify='MIDDLE'/>
               </Text>
@@ -32,7 +32,7 @@
         <Shape>
           <Appearance>
             <Material diffuseColor='0 1 1' />
-          </Appearance>      
+          </Appearance>
           <Disk2D innerRadius='0.2' outerRadius='1' solid='true' />
         </Shape>
 
@@ -50,7 +50,7 @@
             <field name="texture" type="MFNode" accessType="inputOutput" />
             <ShaderPart type="VERTEX" url="shaders/passthrough.vert" />
             <ShaderPart type="FRAGMENT" url="shaders/passthrough.frag" />
-          </ComposedShader>	
+          </ComposedShader>
         </Appearance>
         <FullscreenRectangle screenAligned="true" zValue="0.9" />
       </Shape>

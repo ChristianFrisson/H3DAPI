@@ -134,7 +134,7 @@ void MyApp::OnIdle(wxIdleEvent& event) {
       (*i)->idle();
   }
 #if defined( H3D_WINDOWS ) || defined( H3D_OSX ) || ( wxMAJOR_VERSION <= 2 && wxMINOR_VERSION < 9 )
-	wxApp::OnIdle(event);
+  wxApp::OnIdle(event);
 #endif
 }
 
@@ -149,7 +149,7 @@ bool MyApp::OnExceptionInMainLoop() {
   }
   catch (const Exception::H3DException &e) {
      wxMessageBox( wxString( e.message.c_str(), wxConvLibc ),
-		   wxT("Error"), wxOK | wxICON_EXCLAMATION);
+       wxT("Error"), wxOK | wxICON_EXCLAMATION);
     return false;
   }
   wxApp::OnExceptionInMainLoop();  
@@ -170,20 +170,20 @@ bool MyApp::OnInit()
   WxFrame *theWxFrame = new WxFrame( NULL, wxID_ANY,
                                      wxT("Particle Systems - Demo"),
                                      wxDefaultPosition, wxSize(800, 600) );
-	//glwindow constructed in the frame constructor.  Next line redundant.
-	//theWxFrame->glwindow = new H3DWxWidgetsWindow(theWxFrame);
-	theWxFrame->Show(true);
+  //glwindow constructed in the frame constructor.  Next line redundant.
+  //theWxFrame->glwindow = new H3DWxWidgetsWindow(theWxFrame);
+  theWxFrame->Show(true);
 
   if( cmd_line_filename != wxString() )
     theWxFrame->loadFile( toStr(cmd_line_filename) );
   //This next line is used to set the icon file h3d.ico, when created.
-	//theWxframe->SetIcon(wxIcon(_T("h3d_icn")));
+  //theWxframe->SetIcon(wxIcon(_T("h3d_icn")));
 
-    
-    // Using this line instead of the two previous lines will make
-    // WxWidgetsWindow create an instance of a wxframe with no menus and use
-    // this as parent to the canvas.
-    // WxWidgetsWindow *glwindow = new WxWidgetsWindow();
+
+  // Using this line instead of the two previous lines will make
+  // WxWidgetsWindow create an instance of a wxframe with no menus and use
+  // this as parent to the canvas.
+  // WxWidgetsWindow *glwindow = new WxWidgetsWindow();
 
   return true;
 }

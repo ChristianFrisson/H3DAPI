@@ -171,8 +171,8 @@ string ConvolutionFilterShader::getFragmentShaderString() {
       << ") / float( texture_width ), (1.0+" << pixelStepOffset->getValueAsString ( ) << ") / float( texture_height ) ); " << endl;
     string weightsInString = "";
     for( unsigned int i = 0; i< weights->size(); ++i ) {
-			stringstream ss;
-			ss << weights->getValueByIndex(i);
+      stringstream ss;
+      ss << weights->getValueByIndex(i);
       string currentValue( ss.str() );
       if( currentValue.find(".")==std::string::npos ) {
         currentValue+= ".0";

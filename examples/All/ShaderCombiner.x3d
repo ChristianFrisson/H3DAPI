@@ -6,19 +6,19 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position="0 0 0.6" />
 
     <Shape>
       <Appearance>
-	<Material diffuseColor='1 0 0' />
-	<ShaderCombiner function="BLEND_VALUE" value="0.5">
-	  <NormalShader />
-	  <PhongShader >
-	    <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
-	  </PhongShader>
-	</ShaderCombiner>
+        <Material diffuseColor='1 0 0' />
+        <ShaderCombiner function="BLEND_VALUE" value="0.5">
+          <NormalShader />
+          <PhongShader >
+            <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
+          </PhongShader>
+        </ShaderCombiner>
       </Appearance>
       <Cylinder radius="0.1" height="0.2" />
     </Shape>

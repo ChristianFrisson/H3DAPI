@@ -101,7 +101,7 @@ namespace H3D {
       Inst< SFTime >  _exitTime   = 0,
       Inst< SFBool >  _enabled    = 0,
       Inst< SFBool >  _isActive   = 0,
-	  Inst< SFBool >  _viewFrustumMode = 0 );
+      Inst< SFBool >  _viewFrustumMode = 0 );
     
     /// The SetTime class is specialize to set the value of either
     /// the inputTrue or inputFalse field in the BooleanFilter node
@@ -143,9 +143,9 @@ namespace H3D {
     /// <b>Access type:</b> inputOnly \n
     auto_ptr< SetTime > set_time;
 
-	  /// If true, isActive field will be true as long as the sensor
-	  /// stays within the view frustum without being affected by the
-	  /// depth test. Otherwise depth test will affect the result.
+    /// If true, isActive field will be true as long as the sensor
+    /// stays within the view frustum without being affected by the
+    /// depth test. Otherwise depth test will affect the result.
     /// 
     /// Default Value False
     /// <b>Access type:</b> inputOutput \n

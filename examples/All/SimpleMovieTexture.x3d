@@ -8,7 +8,7 @@
           compatible browser. Replace the path_to_movie.avi with the path to the file you want to play'/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <NavigationInfo type="NONE" />
@@ -17,56 +17,56 @@
     <Shape>
       <Appearance>
         <SimpleMovieTexture DEF = "MOVIE"
-			    url='movies/SphereMovie.avi' />
-      </Appearance>      
+          url='movies/SphereMovie.avi' />
+      </Appearance>
       <Rectangle2D size="0.2 0.15" />
     </Shape>
 
     <Group>
       <!-- Play button -->
       <Transform translation="-0.05 -0.15 0" >
-	<TouchSensor DEF="PLAY_TS" />
-	<Shape>
-	  <Appearance> 
-	    <Material /> 
-      <ImageTexture url="../textures/play.png" />
-	  </Appearance>
-	  <Rectangle2D size="0.04 0.04" />
-	</Shape>
+        <TouchSensor DEF="PLAY_TS" />
+        <Shape>
+          <Appearance>
+            <Material />
+            <ImageTexture url="../textures/play.png" />
+          </Appearance>
+          <Rectangle2D size="0.04 0.04" />
+        </Shape>
       </Transform>
 
       <!-- Stop button -->
       <Transform translation="0 -0.15 0" >
-	<TouchSensor DEF="STOP_TS" />
-	<Shape>
-	  <Appearance> 
-	    <Material /> 
-      <ImageTexture url="../textures/stop.png" />
-	  </Appearance>
-	  <Rectangle2D size="0.04 0.04" />
-	</Shape>
+        <TouchSensor DEF="STOP_TS" />
+        <Shape>
+          <Appearance>
+            <Material />
+            <ImageTexture url="../textures/stop.png" />
+          </Appearance>
+          <Rectangle2D size="0.04 0.04" />
+        </Shape>
       </Transform>
 
       <!-- Pause button -->
       <Transform translation="0.05 -0.15 0" >
-	<TouchSensor DEF="PAUSE_TS" />
-	<Shape>
-	  <Appearance> 
-	    <Material /> 
-      <ImageTexture url="../textures/pause.png" />
-	  </Appearance>
-	  <Rectangle2D size="0.04 0.04" />
-	</Shape>
+        <TouchSensor DEF="PAUSE_TS" />
+        <Shape>
+          <Appearance>
+            <Material />
+            <ImageTexture url="../textures/pause.png" />
+          </Appearance>
+          <Rectangle2D size="0.04 0.04" />
+        </Shape>
       </Transform>
 
     </Group>
 
-    <ROUTE fromNode="PLAY_TS" fromField="isActive" 
-	   toNode="MOVIE" toField="play" />
-    <ROUTE fromNode="STOP_TS" fromField="isActive" 
-	   toNode="MOVIE" toField="stop" />
-    <ROUTE fromNode="PAUSE_TS" fromField="isActive" 
-	   toNode="MOVIE" toField="pause" />
+    <ROUTE fromNode="PLAY_TS" fromField="isActive"
+     toNode="MOVIE" toField="play" />
+    <ROUTE fromNode="STOP_TS" fromField="isActive"
+     toNode="MOVIE" toField="stop" />
+    <ROUTE fromNode="PAUSE_TS" fromField="isActive"
+     toNode="MOVIE" toField="pause" />
 
 
   </Scene>

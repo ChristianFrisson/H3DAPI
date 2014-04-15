@@ -117,7 +117,7 @@ void WxWidgetsWindow::initWindow() {
 #endif
   // if we have a previous window, use same rendering context and destroy it.
   MyWxGLCanvas *old_canvas = theWxGLCanvas;
-	theWxGLCanvas = 
+  theWxGLCanvas = 
       new MyWxGLCanvas( this, theWindow, -1, wxDefaultPosition,
                         wxSize( width->getValue(), height->getValue() ), 
                         attribList );
@@ -149,9 +149,9 @@ void WxWidgetsWindow::initWindow() {
   theWxGLCanvas->Show();
   theWindow->Raise();
 
-	if( theWxGLCanvas->IsShownOnScreen() ) {
-		theWxGLCanvas->SetCurrent( *theWxGLContext );
-	}
+  if( theWxGLCanvas->IsShownOnScreen() ) {
+    theWxGLCanvas->SetCurrent( *theWxGLContext );
+  }
   glClearColor( 0, 0, 0, 1 );
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClear( GL_COLOR_BUFFER_BIT );
@@ -176,9 +176,9 @@ void WxWidgetsWindow::swapBuffers() {
 }
 
 void WxWidgetsWindow::makeWindowActive() {
-	if( theWxGLCanvas->IsShownOnScreen() ) {
-		theWxGLCanvas->SetCurrent( *theWxGLContext );
-	}
+  if( theWxGLCanvas->IsShownOnScreen() ) {
+    theWxGLCanvas->SetCurrent( *theWxGLContext );
+  }
 }
 
 BEGIN_EVENT_TABLE(WxWidgetsWindow::MyWxGLCanvas, wxGLCanvas)
@@ -215,7 +215,7 @@ WxWidgetsWindow::MyWxGLCanvas::MyWxGLCanvas( WxWidgetsWindow *_myOwner,
                                                   const wxPalette& _palette ):
 wxGLCanvas( _parent, _id, _attribList, _pos, _size,
             _style | wxFULL_REPAINT_ON_RESIZE | wxWANTS_CHARS, _name,
-						_palette ),
+            _palette ),
 myOwner( _myOwner )
 {
 }

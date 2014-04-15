@@ -6,7 +6,7 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <Background skyColor="0.5 0.5 0.5" />
@@ -18,48 +18,48 @@
       <Viewpoint position="0 0 0.6" containerField="viewpoint" />
       <!-- Scene to render to texture 0-->
       <RenderTargetSelectGroup renderTargets="0" >
-	<Shape>
-	  <Appearance> 
-	    <Material diffuseColor="0 1 0"/>
-	  </Appearance>
-	  <Box size="0.2 0.2 0.2" />
-	</Shape>
-      </RenderTargetSelectGroup> 
-      
+        <Shape>
+          <Appearance>
+            <Material diffuseColor="0 1 0"/>
+          </Appearance>
+          <Box size="0.2 0.2 0.2" />
+        </Shape>
+      </RenderTargetSelectGroup>
+
       <!-- Scene to render to texture 1-->
       <RenderTargetSelectGroup renderTargets="1" >
-	<Shape>
-	  <Appearance> 
-	    <Material diffuseColor="1 0 0" />
-	  </Appearance>
-	  <Sphere radius="0.2" />
-	</Shape>
-      </RenderTargetSelectGroup> 
+        <Shape>
+          <Appearance>
+            <Material diffuseColor="1 0 0" />
+          </Appearance>
+          <Sphere radius="0.2" />
+        </Shape>
+      </RenderTargetSelectGroup>
 
     </FrameBufferTextureGenerator>
 
     <!-- Render scene texture with applied shader -->
     <Transform translation="-0.15 0 0" >
       <Shape>
-	<Appearance>
-	  <RenderTargetTexture index="0">
-	    <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
-	  </RenderTargetTexture>
-	</Appearance>
-	<Rectangle2D size="0.2 0.2" />
+        <Appearance>
+          <RenderTargetTexture index="0">
+            <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
+          </RenderTargetTexture>
+        </Appearance>
+        <Rectangle2D size="0.2 0.2" />
       </Shape>
     </Transform>
 
     <Transform translation="0.15 0 0" >
       <Shape>
-	<Appearance>
-	  <RenderTargetTexture index="1">
-	    <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
-	  </RenderTargetTexture>
-	</Appearance>
-	<Rectangle2D size="0.2 0.2" />
+        <Appearance>
+          <RenderTargetTexture index="1">
+            <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
+          </RenderTargetTexture>
+        </Appearance>
+        <Rectangle2D size="0.2 0.2" />
       </Shape>
     </Transform>
-    
+
   </Scene>
 </X3D>

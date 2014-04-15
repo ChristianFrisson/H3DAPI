@@ -5,16 +5,16 @@
     <meta name='description' content='X3D SurfaceEmitter node example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <ParticleSystem createParticles = 'true' enabled = 'true' particleLifetime = '0.5' particleSize='0.005 0.005'>
       <Appearance>
         <Material diffuseColor='1 0 0' />
-       </Appearance>
-       <SurfaceEmitter speed='0.05' mass='0.0002' variation='' surfaceArea='0.02'>
-				<Cone bottomRadius='0.2' height='0.2' containerField='surface' />
-			 </SurfaceEmitter>
+      </Appearance>
+      <SurfaceEmitter speed='0.05' mass='0.0002' variation='' surfaceArea='0.02'>
+        <Cone bottomRadius='0.2' height='0.2' containerField='surface' />
+      </SurfaceEmitter>
     </ParticleSystem>
   </Scene>
 </X3D>

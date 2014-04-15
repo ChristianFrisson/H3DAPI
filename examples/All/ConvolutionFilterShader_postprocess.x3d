@@ -6,7 +6,7 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
 
@@ -19,25 +19,25 @@
     <!-- Render scene texture with applied shader -->
     <Shape>
       <Appearance>
-	<ConvolutionFilterShader DEF="SHADER" >
-	  <RenderTargetTexture>
-	    <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
-	  </RenderTargetTexture>
-	</ConvolutionFilterShader>
+        <ConvolutionFilterShader DEF="SHADER" >
+          <RenderTargetTexture>
+            <FrameBufferTextureGenerator USE="GEN" containerField="generator" />
+          </RenderTargetTexture>
+        </ConvolutionFilterShader>
       </Appearance>
       <FullscreenRectangle zValue="0.5" />
     </Shape>
-    
+
     <!-- Add info text -->
     <Billboard axisOfRotation="0 0 0">
       <Shape>
-	<Appearance>
-	  <Material diffuseColor="1 0 0"/>
-	  <RenderProperties depthTestEnabled="false" />
-	</Appearance>
-	<Text DEF="TEXT" string="Original" >
-	  <FontStyle family='SERIF' justify='MIDDLE' size='0.1' renderType='TEXTURE' />
-	</Text>
+        <Appearance>
+          <Material diffuseColor="1 0 0"/>
+          <RenderProperties depthTestEnabled="false" />
+        </Appearance>
+        <Text DEF="TEXT" string="Original" >
+          <FontStyle family='SERIF' justify='MIDDLE' size='0.1' renderType='TEXTURE' />
+        </Text>
       </Shape>
     </Billboard>
 

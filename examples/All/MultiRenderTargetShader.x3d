@@ -6,52 +6,54 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />  
+    <Viewpoint position='0 0 0.6' />
 
     <Group>
-      <FrameBufferTextureGenerator DEF="GEN" 
-				   outputTextureType="2D" 
-				   generateDepthTexture="true" 
-				   generateColorTextures='"RGBA" "RGBA"' >
-	<!-- Scene to render to texture -->
-	<Shape>
-	  <Appearance> 
-	    <Material diffuseColor="1 0 0"/>
-	    <!-- The MultiRenderTargetShader is set up to use a NormalShader for
-	    the first color texture(render target) and a PhongShader for the second -->
-	    <MultiRenderTargetShader >
-	      <NormalShader />
-	      <PhongShader >
-		 <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
-	      </PhongShader>
-	    </MultiRenderTargetShader>	
-	  </Appearance>
-	  <Box size="0.2 0.2 0.2" />
-	</Shape>
+      <FrameBufferTextureGenerator DEF="GEN"
+           outputTextureType="2D"
+           generateDepthTexture="true"
+           generateColorTextures='"RGBA" "RGBA"' >
+        <!-- Scene to render to texture -->
+        <Shape>
+          <Appearance>
+            <Material diffuseColor="1 0 0"/>
+            <!-- The MultiRenderTargetShader is set up to use a NormalShader for
+      the first color texture(render target) and a PhongShader for the second -->
+            <MultiRenderTargetShader >
+              <NormalShader />
+              <PhongShader >
+                <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
+              </PhongShader>
+            </MultiRenderTargetShader>
+          </Appearance>
+          <Box size="0.2 0.2 0.2" />
+        </Shape>
       </FrameBufferTextureGenerator>
 
       <Billboard axisOfRotation="0 0 0" >
-	<!-- Shape for rendering color texture 0 on -->
-	<Transform translation="-0.2 0 0">
-	  <Shape>
-	    <Appearance>
-	      <MultiTexture DEF="MT" mode='"REPLACE" "OFF"'/>
-	    <Material/></Appearance>
-	    <Rectangle2D size="0.2 0.2"/>
-	  </Shape>
-	</Transform>
-	
-	<!-- Shape for rendering color texture 1 on -->
-	<Transform translation="0.2 0 0">
-	  <Shape>
-	    <Appearance>
-	      <MultiTexture DEF="MT2" mode='"OFF" "REPLACE"'/>
-	    <Material/></Appearance>
-	    <Rectangle2D size="0.2 0.2"/>
-	  </Shape>
-	</Transform>
+        <!-- Shape for rendering color texture 0 on -->
+        <Transform translation="-0.2 0 0">
+          <Shape>
+            <Appearance>
+              <MultiTexture DEF="MT" mode='"REPLACE" "OFF"'/>
+              <Material/>
+            </Appearance>
+            <Rectangle2D size="0.2 0.2"/>
+          </Shape>
+        </Transform>
+
+        <!-- Shape for rendering color texture 1 on -->
+        <Transform translation="0.2 0 0">
+          <Shape>
+            <Appearance>
+              <MultiTexture DEF="MT2" mode='"OFF" "REPLACE"'/>
+              <Material/>
+            </Appearance>
+            <Rectangle2D size="0.2 0.2"/>
+          </Shape>
+        </Transform>
       </Billboard>
     </Group>
 

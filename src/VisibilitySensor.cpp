@@ -57,7 +57,7 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
                                     Inst< SFTime > _exitTime ,
                                     Inst< SFBool > _enabled ,
                                     Inst< SFBool > _isActive,
-									Inst< SFBool > _viewFrustumMode ) :
+                                    Inst< SFBool > _viewFrustumMode ) :
                                     X3DEnvironmentalSensorNode( _metadata, 
                                                                 _center, 
                                                                 _enabled, 
@@ -65,7 +65,7 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
                                                                 _enterTime,
                                                                 _exitTime,
                                                                 _isActive ),
-									viewFrustumMode(_viewFrustumMode),
+                  viewFrustumMode(_viewFrustumMode),
                                     set_time( new SetTime ) {
 
   type_name = "VisibilitySensor";
@@ -149,11 +149,11 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glDepthMask(GL_FALSE);
 
-	bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
-	if( viewFrustumMode->getValue() )
-	  glDisable(GL_DEPTH_TEST);
-	
-	// also disable texturing and any fancy shaders
+  bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+  if( viewFrustumMode->getValue() )
+    glDisable(GL_DEPTH_TEST);
+  
+  // also disable texturing and any fancy shaders
     glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queries[0]);
     // render bounding box for object i
     glBegin( GL_QUADS );
@@ -223,8 +223,8 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glDepthMask(GL_TRUE);
 
-	if( viewFrustumMode->getValue() && depthTestEnabled )
-	  glEnable(GL_DEPTH_TEST);
+  if( viewFrustumMode->getValue() && depthTestEnabled )
+    glEnable(GL_DEPTH_TEST);
       
     glGetQueryObjectuivARB(queries[0], GL_QUERY_RESULT_ARB,
                 &sampleCount);

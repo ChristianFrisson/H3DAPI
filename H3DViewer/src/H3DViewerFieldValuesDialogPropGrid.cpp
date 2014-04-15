@@ -221,8 +221,8 @@ void H3DViewerFieldValuesPanelPropGrid::displayFieldsFromNode( Node *n ) {
   }
 
   if( new_node ) {
-		// Using lookupTypeId here instead of lookupNodeInstance because
-		// the fields are not interesting here.
+    // Using lookupTypeId here instead of lookupNodeInstance because
+    // the fields are not interesting here.
     H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
     // cannot use AutoRef because we do not want the node to become initialized.
     Node *default_values_node = NULL;

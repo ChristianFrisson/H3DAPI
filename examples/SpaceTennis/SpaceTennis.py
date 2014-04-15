@@ -198,7 +198,7 @@ class SpaceTennisGame:
           if yPos < -0.125:
             yPos = -0.125
           elif yPos > 0.125:
-            yPos = 0.125		  
+            yPos = 0.125
         
           self.dn["R_T2"].position.setValue( Vec3f(xPos, yPos, 0 ))        
         

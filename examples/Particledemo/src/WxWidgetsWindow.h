@@ -106,8 +106,8 @@ namespace H3D {
       if( !have_parent ) {
         theWindow->Destroy();
       }
-			// Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
-			delete theWxGLContext;
+      // Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
+      delete theWxGLContext;
     }
 
     /// Calls wxGLCanvas::SwapBuffers
@@ -129,13 +129,13 @@ namespace H3D {
     static H3DNodeDatabase database;
 
     typedef void (*OnDropFileFunc)( wxCoord x, wxCoord y,
-		      const wxArrayString&,
-		      void * );
+          const wxArrayString&,
+          void * );
 
     /// Set a callback function that will be called when a file is
     /// dragged and dropped over the window.
     void onFileDraggedAndDroppedFunction( OnDropFileFunc func, 
-					  void * arg = NULL ) {
+            void * arg = NULL ) {
       drag_file_func = func;
       drag_file_func_arg = arg;
     }
@@ -169,11 +169,11 @@ namespace H3D {
       DragAndDropFile(WxWidgetsWindow *_owner) { owner = _owner; }
       
       virtual bool OnDropFiles(wxCoord x, wxCoord y,
-			       const wxArrayString& filenames) {
-	if( owner->drag_file_func ) {
-	  owner->drag_file_func( x, y, filenames, owner->drag_file_func_arg );
-	}
-	return true;
+             const wxArrayString& filenames) {
+        if( owner->drag_file_func ) {
+          owner->drag_file_func( x, y, filenames, owner->drag_file_func_arg );
+        }
+        return true;
       }
     protected:
       WxWidgetsWindow *owner;
@@ -190,7 +190,7 @@ namespace H3D {
     wxWindow * theWindow;
     MyWxGLCanvas * theWxGLCanvas;
     wxGLContext * theWxGLContext;
-	bool last_fullscreen;
+  bool last_fullscreen;
 
   bool fullscreen_initialized;
 

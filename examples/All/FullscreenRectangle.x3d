@@ -6,20 +6,20 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <Shape>
       <FullscreenRectangle />
       <Appearance>
-	<ImageTexture url="images/nautilus.jpg" />
+        <ImageTexture url="images/nautilus.jpg" />
       </Appearance>
     </Shape>
 
-<Shape>
+    <Shape>
       <Box size="0.1 0.1 0.1" />
       <Appearance>
-	<ImageTexture url="images/nautilus.jpg" />
+        <ImageTexture url="images/nautilus.jpg" />
       </Appearance>
     </Shape>
   </Scene>

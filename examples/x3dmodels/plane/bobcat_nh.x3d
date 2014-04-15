@@ -1,20 +1,20 @@
-
-  <Group>
-    <FitToBoxTransform boxCenter="0 0 0" boxSize="0.4 0.4 0.4" uniformScalingOnly="true" active="true">
-      <Transform>
-        <Shape DEF='Object'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='1.0 1.0 0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+<Group>
+  <FitToBoxTransform boxCenter="0 0 0" boxSize="0.4 0.4 0.4" uniformScalingOnly="true" active="true">
+    <Transform>
+      <Shape DEF='Object'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='1.0 1.0 0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 14, 27, -1,
               1, 15, 14, -1,
               2, 16, 15, -1,
@@ -44,10 +44,10 @@
               12, 13, 26, -1,
               13, 0, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               200.0 0 27.0,
               209.5 0 37.523075,
               219.0 0 40.153847,
@@ -77,23 +77,24 @@
               209.1604 650.0 69.984619,
               199.6604 650.0 77.0,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000001'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='1.0 1.0 0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000001'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='1.0 1.0 0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 14, 27, -1,
               1, 15, 14, -1,
               2, 16, 15, -1,
@@ -123,10 +124,10 @@
               12, 13, 26, -1,
               13, 0, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               200.0 0 27.0,
               209.5 0 37.523075,
               219.0 0 40.153847,
@@ -156,23 +157,24 @@
               209.1604 -650.0 69.984619,
               199.6604 -650.0 77.0,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000002'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='1.0 1.0 0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000002'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='1.0 1.0 0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 14, 27, -1,
               1, 15, 14, -1,
               2, 16, 15, -1,
@@ -202,10 +204,10 @@
               12, 13, 26, -1,
               13, 0, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               199.6604 0 29.153111,
               206.07515 0 35.074413,
               212.489899 0 36.554741,
@@ -235,23 +237,24 @@
               203.587677 -150.0 -43.747025,
               199.6604 -150.0 -40.846889,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000003'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='1.0 1.0 0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000003'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='1.0 1.0 0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               13, 14, 27, -1,
               0, 15, 14, -1,
               1, 16, 15, -1,
@@ -281,10 +284,10 @@
               11, 12, 26, -1,
               12, 13, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               206.07515 0 35.074413,
               212.489899 0 36.554741,
               218.904648 0 38.035065,
@@ -314,23 +317,24 @@
               203.587677 150.0 -43.747025,
               199.6604 150.0 -40.846889,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000004'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='1.0 1.0 0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000004'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='1.0 1.0 0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 14, 27, -1,
               1, 15, 14, -1,
               2, 16, 15, -1,
@@ -360,10 +364,10 @@
               12, 13, 26, -1,
               13, 0, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               569.301758 0 90.0,
               575.801758 0 94.800003,
               582.301758 0 96.0,
@@ -393,23 +397,24 @@
               611.120728 200.0 87.04615,
               607.120728 200.0 90.0,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000005'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='1.0 1.0 0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000005'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='1.0 1.0 0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 14, 27, -1,
               1, 15, 14, -1,
               2, 16, 15, -1,
@@ -439,10 +444,10 @@
               12, 13, 26, -1,
               13, 0, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               569.301758 0 90.0,
               575.801758 0 94.800003,
               582.301758 0 96.0,
@@ -472,24 +477,25 @@
               611.120728 -200.0 87.04615,
               607.120728 -200.0 90.0,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000006'>
-          <Appearance> <SmoothSurface />
-			<SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='0 0.501961 1.0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000006'>
+        <Appearance>
+          <SmoothSurface />
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='0 0.501961 1.0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 21, 20, -1,
               1, 22, 21, -1,
               2, 23, 22, -1,
@@ -1291,10 +1297,10 @@
               398, 399, 419, -1,
               399, 380, 400, -1,
             '
-            creaseAngle='70.0'
-            solid='false'
+          creaseAngle='70.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               71.382385 5.059263 87.681175,
               71.382385 4.792367 89.040855,
               71.382385 4.024218 90.403954,
@@ -1716,23 +1722,24 @@
               708.161072 0.444986 91.907906,
               708.161072 0.486389 106.083183,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000007'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='0 0.501961 1.0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000007'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='0 0.501961 1.0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 21, 20, -1,
               1, 22, 21, -1,
               2, 23, 22, -1,
@@ -2214,10 +2221,10 @@
               238, 239, 259, -1,
               239, 220, 240, -1,
             '
-            creaseAngle='70.0'
-            solid='false'
+          creaseAngle='70.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               31.03582 -155.168243 -46.125469,
               31.03582 -155.407135 -44.419422,
               31.03582 -156.100433 -42.880375,
@@ -2479,23 +2486,24 @@
               525.850281 -159.644745 -54.998493,
               525.850281 -159.573715 -50.488937,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000008'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='0 0.501961 1.0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000008'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='0 0.501961 1.0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               0, 21, 20, -1,
               1, 22, 21, -1,
               2, 23, 22, -1,
@@ -2977,10 +2985,10 @@
               238, 239, 259, -1,
               239, 220, 240, -1,
             '
-            creaseAngle='70.0'
-            solid='false'
+          creaseAngle='70.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               31.03582 164.930252 -46.125469,
               31.03582 164.69136 -44.419422,
               31.03582 163.998062 -42.880375,
@@ -3242,23 +3250,24 @@
               525.850281 160.453751 -54.998493,
               525.850281 160.52478 -50.488937,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000009'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='0 0.501961 1.0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000009'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='0 0.501961 1.0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               13, 14, 27, -1,
               0, 15, 14, -1,
               1, 16, 15, -1,
@@ -3288,10 +3297,10 @@
               11, 12, 26, -1,
               12, 13, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               239.774551 306.696686 40.0,
               240.862762 308.37085 40.0,
               241.950974 310.045013 40.0,
@@ -3321,23 +3330,24 @@
               240.138657 33.487362 100.0,
               239.080353 40.0 100.0,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000010'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='0 0.501961 1.0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000010'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='0 0.501961 1.0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               13, 14, 27, -1,
               0, 15, 14, -1,
               1, 16, 15, -1,
@@ -3367,10 +3377,10 @@
               11, 12, 26, -1,
               12, 13, 27, -1,
             '
-            creaseAngle='60.0'
-            solid='false'
+          creaseAngle='60.0'
+          solid='false'
             >
-            <Coordinate point='
+          <Coordinate point='
               239.774551 -293.303314 40.0,
               240.862762 -291.62915 40.0,
               241.950974 -289.954987 40.0,
@@ -3400,23 +3410,24 @@
               240.138657 -46.512638 100.0,
               239.080353 -40.0 100.0,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-      <Transform>
-        <Shape DEF='Object_000011'>
-          <Appearance> <SmoothSurface />
-            <Material
-              ambientIntensity='0.2'
-              diffuseColor='0 0 1.0'
-              emissiveColor='0 0 0'
-              shininess='0.2'
-              specularColor='0 0 0'
-              transparency='0'
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    <Transform>
+      <Shape DEF='Object_000011'>
+        <Appearance>
+          <SmoothSurface />
+          <Material
+            ambientIntensity='0.2'
+            diffuseColor='0 0 1.0'
+            emissiveColor='0 0 0'
+            shininess='0.2'
+            specularColor='0 0 0'
+            transparency='0'
             />
-          </Appearance>
-          <IndexedFaceSet
-            coordIndex='
+        </Appearance>
+        <IndexedFaceSet
+          coordIndex='
               2, 0, 1, -1,
               3, 2, 1, -1,
               4, 5, 0, -1,
@@ -3430,10 +3441,10 @@
               6, 5, 4, -1,
               7, 5, 6, -1,
             '
-            creaseAngle='0'
-            solid='true'
+          creaseAngle='0'
+          solid='true'
             >
-            <Coordinate point='
+          <Coordinate point='
               200.0 -2.5 50.0,
               230.0 -2.5 50.0,
               200.0 -2.5 75.0,
@@ -3443,8 +3454,8 @@
               200.0 12.5 75.0,
               230.0 12.5 75.0,
             '/>
-          </IndexedFaceSet>
-        </Shape>
-      </Transform>
-    </FitToBoxTransform>
-  </Group>
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+  </FitToBoxTransform>
+</Group>

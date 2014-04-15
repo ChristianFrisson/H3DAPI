@@ -6,18 +6,18 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />  
+    <Viewpoint position='0 0 0.6' />
     <Group>
       <Shape>
-	<Appearance> 
-	  <Material diffuseColor="1 0 0"/>
-	    <PhongShader>
-	      <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
-	    </PhongShader>
-	</Appearance>
-	<Rectangle2D size="0.2 0.2"/>
+        <Appearance>
+          <Material diffuseColor="1 0 0"/>
+          <PhongShader>
+            <ImageTexture  containerField="diffuseMap" url='images/nautilus.jpg' />
+          </PhongShader>
+        </Appearance>
+        <Rectangle2D size="0.2 0.2"/>
       </Shape>
     </Group>
   </Scene>

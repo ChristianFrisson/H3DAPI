@@ -5,17 +5,17 @@
     <meta name='description' content='X3D PointEmitter node example.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-	  <Viewpoint position='0 0 0.6' />
-      <ParticleSystem 
-          createParticles='true' enabled='true' particleLifetime='0.5'
-          lifetimeVariation='0.5' maxParticles='100' particleSize='0.002 0.002' colorKey='0'>
-        <Color 
-            containerField='colorRamp' color='1 1 0' />
-        <PointEmitter 
-            speed='0.05' mass='0.0002' variation='0.5' 
-            surfaceArea="0.02" direction="0 0 0" />
-			</ParticleSystem>
+    <Viewpoint position='0 0 0.6' />
+    <ParticleSystem
+        createParticles='true' enabled='true' particleLifetime='0.5'
+        lifetimeVariation='0.5' maxParticles='100' particleSize='0.002 0.002' colorKey='0'>
+      <Color
+          containerField='colorRamp' color='1 1 0' />
+      <PointEmitter
+          speed='0.05' mass='0.0002' variation='0.5'
+          surfaceArea="0.02" direction="0 0 0" />
+    </ParticleSystem>
   </Scene>
 </X3D>

@@ -43,8 +43,8 @@ namespace H3D {
   class H3DAPI_API H3DDynamicFieldsObject {
   public:
     /// Constructor.
-		/// \deprecated Use the one without explicit database pointer input ( the default )
-		/// The argument to this constructor will be ignored.
+    /// \deprecated Use the one without explicit database pointer input ( the default )
+    /// The argument to this constructor will be ignored.
     H3DDynamicFieldsObject( H3DNodeDatabase *_database ):
       database( NULL ), inherited_node( NULL ) {}
 
@@ -64,23 +64,23 @@ namespace H3D {
                                   Field *field ) {
       Node *n = dynamic_cast< Node * >( this );
       if( n ) {
-				if( !database.get() ) {
-					H3DNodeDatabase *parent_db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
-					database.reset( new H3DNodeDatabase( n, parent_db ) );
-				}
-				if( !database->getField( n, name ) ) {
-					// Set the placeholder to the node address.
-					inherited_node = n;
-					field->setOwner( n );
-					field->setName( name );
-					field->setAccessType( access );
-					database->addField( new DynamicFieldDBElement( database.get(),
-																												 name,
-																												 access,
-																												 field ) );
-					dynamic_fields.push_back( field );
-					return true;
-				}
+        if( !database.get() ) {
+          H3DNodeDatabase *parent_db = H3DNodeDatabase::lookupTypeId( typeid( *n ) );
+          database.reset( new H3DNodeDatabase( n, parent_db ) );
+        }
+        if( !database->getField( n, name ) ) {
+          // Set the placeholder to the node address.
+          inherited_node = n;
+          field->setOwner( n );
+          field->setName( name );
+          field->setAccessType( access );
+          database->addField( new DynamicFieldDBElement( database.get(),
+                                                         name,
+                                                         access,
+                                                         field ) );
+          dynamic_fields.push_back( field );
+          return true;
+        }
       }
       return false;
     }
@@ -123,10 +123,10 @@ namespace H3D {
     // result in an invalid value for dynamic_cast< Node * >(this) 
     // and the database is then not cleaned up properly.
     Node * inherited_node;
-	public:
-		
-		/// Constructor
-		H3DDynamicFieldsObject():
+  public:
+    
+    /// Constructor
+    H3DDynamicFieldsObject():
       database( NULL ), inherited_node( NULL ) {}
   };
 }

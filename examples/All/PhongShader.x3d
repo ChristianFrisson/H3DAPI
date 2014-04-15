@@ -6,16 +6,16 @@
       compatible browser. '/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />  
+    <Viewpoint position='0 0 0.6' />
     <Group>
       <Shape>
-	<Appearance> 
-	  <Material specularColor="1 1 1" shininess="0.3" diffuseColor="1 0 0"/>
-	  <PhongShader />
-	</Appearance>
-	<Cylinder radius="0.05" height="0.15"/>
+        <Appearance>
+          <Material specularColor="1 1 1" shininess="0.3" diffuseColor="1 0 0"/>
+          <PhongShader />
+        </Appearance>
+        <Cylinder radius="0.05" height="0.15"/>
       </Shape>
     </Group>
   </Scene>

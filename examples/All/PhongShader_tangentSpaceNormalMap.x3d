@@ -9,22 +9,22 @@
   <Scene>
     <Viewpoint position="0 0 0.6"/>
     <Shape>
-      <Appearance> 
-	<Material diffuseColor="1 0 0"/> 
-	<!-- The normalMapMatrix maps from color values[0-1] to tangent space[-1 - 1]. In this case the y-axis is flipped since the generated normal map values are this way. This is the case in many normal map generators including Blender -->
-	<PhongShader normalMapCoordSpace="TANGENT" normalMapMatrix="2 0 0 -1   0 -2 0 1  0 0 2 -1  0 0 0 1">
- 	  <ImageTexture containerField="normalMap" url="images/stone_wall_normal_map.bmp" />
-	  <ImageTexture containerField="diffuseMap" url="images/stone_wall.bmp" />
-	</PhongShader>
+      <Appearance>
+        <Material diffuseColor="1 0 0"/>
+        <!-- The normalMapMatrix maps from color values[0-1] to tangent space[-1 - 1]. In this case the y-axis is flipped since the generated normal map values are this way. This is the case in many normal map generators including Blender -->
+        <PhongShader normalMapCoordSpace="TANGENT" normalMapMatrix="2 0 0 -1   0 -2 0 1  0 0 2 -1  0 0 0 1">
+          <ImageTexture containerField="normalMap" url="images/stone_wall_normal_map.bmp" />
+          <ImageTexture containerField="diffuseMap" url="images/stone_wall.bmp" />
+        </PhongShader>
       </Appearance>
-      
+
       <!-- IndexedTriangleSet and IndexedFaceSet generates tangents and binormals
       used for a tangent normal map automatically. For any other geometry node
       a FloatVertexAttribute for tangents and binormals have to be specified manually -->
       <IndexedTriangleSet normalPerVertex="true" index = "0 1 2 0 2 3" >
-	<Coordinate point="-0.15 -0.15 0, 0.15 -0.15 0, 0.15 0.15 0, -0.15 0.15 0"/>
-	<!-- Explicit texture coordinates are required for tangent space normals. Any kind of texture coordinate generation will not work. -->
-	<TextureCoordinate point="0 0, 1 0, 1 1,  0 1"/>
+        <Coordinate point="-0.15 -0.15 0, 0.15 -0.15 0, 0.15 0.15 0, -0.15 0.15 0"/>
+        <!-- Explicit texture coordinates are required for tangent space normals. Any kind of texture coordinate generation will not work. -->
+        <TextureCoordinate point="0 0, 1 0, 1 1,  0 1"/>
       </IndexedTriangleSet>
     </Shape>
   </Scene>
